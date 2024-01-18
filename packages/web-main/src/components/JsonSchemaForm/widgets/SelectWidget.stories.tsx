@@ -32,3 +32,27 @@ export const Default = () => {
     </Container>
   );
 };
+
+export const MultiSelect = () => {
+  const schema: RJSFSchema = {
+    $schema: 'http://json-schema.org/draft-07/schema#',
+    type: 'object',
+    properties: {
+      field: {
+        type: 'array',
+        items: {
+          type: 'string',
+          enum: ['a', 'b', 'c'],
+        },
+        uniqueItems: true,
+      },
+    },
+  };
+  return (
+    <Container>
+      <JsonSchemaForm schema={schema} initialData={{}} uiSchema={{}}>
+        <Button type="submit" text="Submit" />
+      </JsonSchemaForm>
+    </Container>
+  );
+};

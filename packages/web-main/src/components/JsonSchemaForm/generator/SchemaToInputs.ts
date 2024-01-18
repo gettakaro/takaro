@@ -1,37 +1,35 @@
-import { TakaroConfigSchema } from '.';
-import { Input, InputType, SubType } from './inputTypes';
-import { UiSchema } from '@rjsf/utils';
+import { SchemaObject } from 'ajv';
+import { Input, InputType } from './inputTypes';
+import { UiSchema, StrictRJSFSchema } from '@rjsf/utils';
 
-export function schemaToInputs(schema: TakaroConfigSchema, uiSchema: UiSchema): Input[] {
-  const normalizedSchema: TakaroConfigSchema = {
+export function schemaToInputs(schema: SchemaObject, uiSchema: UiSchema): Input[] {
+  const normalizedSchema: SchemaObject = {
     type: 'object',
     properties: schema.properties ?? {},
     required: schema.required ?? [],
+    title: schema.title,
   };
 
-  const inputs: any[] = [];
+  return Object.entries(normalizedSchema.properties).map(([name, propertySchema]) => {
+    const property = propertySchema as StrictRJSFSchema;
 
-  for (const [name, property] of Object.entries(normalizedSchema.properties)) {
     const input: Record<string, any> = {
       name,
-      type: property?.enum ? InputType.enum : (property.type as InputType),
+      type: property.type,
       required: normalizedSchema.required.includes(name),
     };
 
-    if (property.default !== undefined) {
-      input.default = property.default;
-    }
-
-    if (property.title) {
-      input.title = property.title;
+    if (property.default !== undefined && property.default !== null) {
+      input.default = property.default as any;
     }
 
     if (property.description) {
       input.description = property.description;
     }
 
+    // input.type are the default JSON Schema types
     switch (input.type) {
-      case InputType.number:
+      case 'number':
         if (property.minimum) {
           input.minimum = property.minimum;
         }
@@ -40,39 +38,36 @@ export function schemaToInputs(schema: TakaroConfigSchema, uiSchema: UiSchema): 
           input.maximum = property.maximum;
         }
         break;
-      case InputType.enum:
-        if (uiSchema[name] && uiSchema[name]['ui:widget']) {
-          input.subType = uiSchema[name]['ui:widget'];
-        } else {
-          input.subType = SubType.custom;
-          input.values = property.enum;
-        }
-        break;
 
-      case InputType.string:
-        if (property.minLength) {
+      case 'string':
+        if (uiSchema[name] && uiSchema[name]['ui:widget'] && uiSchema[name]['ui:widget'] === 'item') {
+          input.type = InputType.item;
+          input.multiple = false;
+        } else if (property.enum) {
+          input.type = InputType.enum;
+          input.values = property.enum;
+        } else {
+          // InputType.string
           input.minLength = property.minLength;
-        }
-        if (property.maxLength) {
           input.maxLength = property.maxLength;
         }
-        break;
 
-      case InputType.array:
-        if (uiSchema[name] && uiSchema[name]['ui:widget']) {
-          input.subType = uiSchema[name]['ui:widget'];
+        break;
+      case 'array':
+        if (uiSchema[name] && uiSchema[name]['ui:widget'] && uiSchema[name]['ui:widget'] === 'item') {
+          input.type = InputType.item;
+          input.multiple = true;
         } else {
-          input.subType = SubType.custom;
-          input.values = property.items.enum;
+          input.values = property.items;
         }
         break;
-      case InputType.boolean:
+
+      case 'boolean':
         break;
 
       default:
         throw new Error('Unknown input type');
     }
-    inputs.push(input);
-  }
-  return inputs as Input[];
+    return input as Input;
+  });
 }

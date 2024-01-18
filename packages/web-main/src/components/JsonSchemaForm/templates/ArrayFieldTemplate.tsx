@@ -43,6 +43,7 @@ export function ArrayFieldTemplate<T = any, S extends StrictRJSFSchema = RJSFSch
     registry,
     uiOptions
   );
+
   // Button templates are not overridden in the uiSchema
   const {
     ButtonTemplates: { AddButton },
@@ -51,7 +52,7 @@ export function ArrayFieldTemplate<T = any, S extends StrictRJSFSchema = RJSFSch
     <Container>
       <ArrayFieldTitleTemplate
         idSchema={idSchema}
-        title={uiOptions.title || title}
+        title={title}
         schema={schema}
         uiSchema={uiSchema}
         required={required}
@@ -59,7 +60,7 @@ export function ArrayFieldTemplate<T = any, S extends StrictRJSFSchema = RJSFSch
       />
       <ArrayFieldDescriptionTemplate
         idSchema={idSchema}
-        description={uiOptions.description || schema.description}
+        description={schema.description}
         schema={schema}
         uiSchema={uiSchema}
         registry={registry}

@@ -2,7 +2,6 @@ import { forwardRef, PropsWithChildren, FormEvent } from 'react';
 import Form from '@rjsf/core';
 import { FormContextType, RJSFSchema, UiSchema } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
-import { customFields } from './fields';
 import { customWidgets } from './widgets';
 import { customTemplates } from './templates';
 
@@ -21,7 +20,7 @@ export const JsonSchemaForm = forwardRef<Form, PropsWithChildren<JsonSchemaFormP
   (
     {
       schema,
-      uiSchema = {},
+      uiSchema,
       initialData,
       formContext,
       onChange,
@@ -43,7 +42,6 @@ export const JsonSchemaForm = forwardRef<Form, PropsWithChildren<JsonSchemaFormP
     return (
       <Form
         schema={schema}
-        fields={customFields}
         widgets={customWidgets}
         uiSchema={uiSchema}
         // Disable live validation to avoid showing empty field errors when a user is setting up initial module config

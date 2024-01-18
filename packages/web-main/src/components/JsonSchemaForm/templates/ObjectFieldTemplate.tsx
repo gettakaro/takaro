@@ -73,10 +73,16 @@ export function ObjectFieldTemplate<T = any, S extends StrictRJSFSchema = RJSFSc
         />
       )}
       <div>
-        {properties.map((element, _index) =>
+        {properties.map((element, index) =>
           // Remove the <Grid> if the inner element is hidden as the <Grid>
           // itself would otherwise still take up space.
-          element.hidden ? element.content : <div style={{ marginBottom: '10px' }}>{element.content}</div>
+          element.hidden ? (
+            element.content
+          ) : (
+            <div key={`element-${title}-${index}`} style={{ marginBottom: '10px' }}>
+              {element.content}
+            </div>
+          )
         )}
         {canExpand<T, S, F>(schema, uiSchema, formData) && (
           <div>

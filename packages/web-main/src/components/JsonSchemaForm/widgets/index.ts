@@ -5,16 +5,11 @@ import { TextareaWidget } from './TextAreaWidget';
 import { CheckBoxWidget } from './CheckboxWidget';
 import { ItemWidget } from './ItemWidget';
 
-// UI names
-export enum UIWidgets {
-  item = 'item',
-  radio = 'radio',
-}
-
 export const customWidgets: RegistryWidgetsType = {
-  selectWidget: SelectWidget,
-  radioWidget: RadioWidget,
-  TextareaWidget: TextareaWidget,
+  // IMPORTANT: make sure if you are overriding a widget, that the key matches the name of the widget you are overriding
+  select: SelectWidget,
+  radio: RadioWidget,
+  textarea: TextareaWidget,
   checkbox: CheckBoxWidget,
   item: ItemWidget,
 };

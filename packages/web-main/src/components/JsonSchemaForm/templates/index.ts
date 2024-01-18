@@ -9,8 +9,10 @@ import { ArrayFieldTemplate } from './ArrayFieldTemplate';
 import { ArrayFieldItemTemplate } from './ArrayFieldItemTemplate';
 import { ObjectFieldTemplate } from './ObjectFieldTemplate';
 import { TitleFieldTemplate } from './TitleFieldTemplate';
+import { BaseInputTemplate } from './BaseInputTemplate';
 
 export const customTemplates: Partial<TemplatesType> = {
+  BaseInputTemplate,
   FieldTemplate,
   FieldErrorTemplate,
   ArrayFieldTemplate,

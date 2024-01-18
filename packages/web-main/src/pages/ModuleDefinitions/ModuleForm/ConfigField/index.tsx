@@ -1,9 +1,9 @@
 import { Control, UseFieldArrayRemove, UseFormResetField, useWatch } from 'react-hook-form';
-import { SelectField, TextField, Chip, TextAreaField, IconButton, Tooltip } from '@takaro/lib-components';
+import { SelectField, TextField, Chip, TextAreaField, IconButton, Tooltip, CheckBox } from '@takaro/lib-components';
 import { Header } from './style';
 import { IFormInputs } from '..';
-import { Input, InputType, SubType } from 'components/JsonSchemaForm/generator/inputTypes';
-import { FC, useCallback, useEffect, useState } from 'react';
+import { Input, InputType } from 'components/JsonSchemaForm/generator/inputTypes';
+import { FC, useEffect, useState } from 'react';
 import { AiOutlineDelete as RemoveIcon } from 'react-icons/ai';
 import { InputTypeToFieldsMap } from './TypeSpecificFieldsMap';
 
@@ -16,7 +16,7 @@ interface ConfigFieldProps {
   resetField: UseFormResetField<IFormInputs>;
 }
 
-export const ConfigField: FC<ConfigFieldProps> = ({ control, input, index, remove, id, resetField }) => {
+export const ConfigField: FC<ConfigFieldProps> = ({ control, index, remove, id, resetField }) => {
   const [initialised, setInitialised] = useState<boolean>(false);
   const output = useWatch<IFormInputs>({
     control,
@@ -27,11 +27,6 @@ export const ConfigField: FC<ConfigFieldProps> = ({ control, input, index, remov
     control,
     name: `configFields.${index}.type`,
   }) as InputType;
-
-  const subType = useWatch<IFormInputs>({
-    control,
-    name: `configFields.${index}.subType`,
-  });
 
   /* whenever the field type changes we swap all type dependent fields.
     `configFields.${index}.default` has the same name across different inputTypes.
@@ -55,6 +50,15 @@ export const ConfigField: FC<ConfigFieldProps> = ({ control, input, index, remov
             defaultValue: 0,
           });
           break;
+        case InputType.item:
+          resetField(`configFields.${index}.default`, {
+            defaultValue: undefined,
+          });
+          resetField(`configFields.${index}.multiple`, {
+            defaultValue: false,
+          });
+
+          break;
         case InputType.enum:
         case InputType.array:
           resetField(`configFields.${index}.default`, {
@@ -66,21 +70,6 @@ export const ConfigField: FC<ConfigFieldProps> = ({ control, input, index, remov
       setInitialised(true);
     }
   }, [inputType]);
-
-  /*  Whenever the field's subType changes we swap all type dependent fields.
-      `configFields.${index}.subType` has the same name across different inputTypes.
-      We need to reset the subType to undefined.
-    */
-  useEffect(() => {
-    console.log('subType', subType);
-    if ((subType === SubType.custom && initialised && inputType == InputType.enum) || inputType == InputType.array) {
-      resetField(`configFields.${index}.subType`, { defaultValue: undefined });
-    } else {
-      setInitialised(true);
-    }
-  }, [subType, inputType]);
-
-  const typeSpecificFields = useCallback(InputTypeToFieldsMap, [inputType, index, id]);
 
   return (
     <>
@@ -106,6 +95,7 @@ export const ConfigField: FC<ConfigFieldProps> = ({ control, input, index, remov
         name={`configFields.${index}.name`}
         required
         placeholder="Config field name"
+        description="The name of the field. This will be shown to the user."
       />
       <TextAreaField
         control={control}
@@ -114,6 +104,7 @@ export const ConfigField: FC<ConfigFieldProps> = ({ control, input, index, remov
         name={`configFields.${index}.description`}
         placeholder="Enables you to ..."
         required
+        description="Describe what this field does. This will be shown to the user."
       />
       <SelectField
         control={control}
@@ -135,7 +126,15 @@ export const ConfigField: FC<ConfigFieldProps> = ({ control, input, index, remov
           ))}
         </SelectField.OptionGroup>
       </SelectField>
-      {typeSpecificFields(control, input, index, id)[inputType]}
+      {InputTypeToFieldsMap(control, index, id)[inputType]}
+      <CheckBox
+        key={`configFields.${index}.required`}
+        control={control}
+        label="Is Field required?"
+        labelPosition="left"
+        name={`configFields.${index}.required`}
+        description="Makes sure the field is not empty. E.g. if you are depending on this field in the module code."
+      />
     </>
   );
 };

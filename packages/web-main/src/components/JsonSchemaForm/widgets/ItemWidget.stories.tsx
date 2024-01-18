@@ -34,7 +34,7 @@ export const Default = () => {
 
   const uiSchema: UiSchema = {
     [fieldId]: {
-      'ui:widget': 'itemWidget',
+      'ui:widget': 'item',
     },
   };
 

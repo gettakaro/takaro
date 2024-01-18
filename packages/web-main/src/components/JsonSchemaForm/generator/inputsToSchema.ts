@@ -1,94 +1,68 @@
-import { TakaroConfigSchema } from '.';
+import { StrictRJSFSchema } from '@rjsf/utils';
 import { SchemaObject } from 'ajv';
 import { UiSchema } from '@rjsf/utils';
-import { Input, AnyInput, InputType, SubType } from './inputTypes';
-import { UIWidgets } from '../widgets';
+import { Input, AnyInput, InputType } from './inputTypes';
 
-export function inputsToSchema(inputs: Array<Input>): TakaroConfigSchema {
-  const schema: TakaroConfigSchema = {
+export function inputsToSchema(inputs: Array<Input>): StrictRJSFSchema {
+  const schema: StrictRJSFSchema = {
     type: 'object',
     properties: {},
     required: [],
   };
 
   for (const input of inputs) {
-    if (input.required !== false) {
-      schema.required.push(input.name);
+    if (input.required === true) {
+      schema.required?.push(input.name);
     }
-    schema.properties[input.name] = getJsonSchemaElement(input);
+    schema.properties![input.name] = getJsonSchemaElement(input);
   }
   return schema;
-}
-
-export function inputsToUiSchema(inputs: Array<Input>): UiSchema {
-  const uiSchema: UiSchema = {};
-
-  for (const input of inputs) {
-    if (input.type === InputType.array || input.type === InputType.enum) {
-      if (input.subType === SubType.item) {
-        uiSchema[input.name] = {
-          'ui:widget': UIWidgets.item,
-        };
-      }
-    }
-  }
-
-  return uiSchema;
 }
 
 function getJsonSchemaElement(input: AnyInput) {
   const res: SchemaObject = {
     type: input.type,
+    title: input.name,
+    description: input.description,
   };
 
+  // not every input has a default value defined
   if (input.default !== undefined) {
     res.default = input.default;
   }
 
-  if (input.name) {
-    res.title = input.name;
-  }
-
-  if (input.description) {
-    res.description = input.description;
-  }
-
   switch (input.type) {
-    case InputType.enum:
-      // switch from subType.custom to subType.item does not get rid of default value
-      if (input.subType === SubType.item) {
-        delete res.default;
-      }
-
-      res.enum = input.values ?? [];
-      res.type = 'string';
-      break;
-
     case InputType.number:
-      if (input.minimum) {
-        res.minimum = input.minimum;
-      }
-
-      if (input.maximum) {
-        res.maximum = input.maximum;
-      }
-
+      res.minimum = input.minimum;
+      res.maximum = input.maximum;
       break;
 
     case InputType.string:
-      if (input.minLength) {
-        res.minLength = input.minLength;
-      }
-      if (input.maxLength) {
-        res.maxLength = input.maxLength;
-      }
+      res.minLength = input.minLength;
+      res.maxLength = input.maxLength;
+      break;
+
+    case InputType.enum:
+      res.enum = input.values;
+      res.type = 'string';
       break;
 
     case InputType.boolean:
       break;
 
     case InputType.array:
-      res.items = { type: 'string', enum: input.values ?? [], uniqueItems: true };
+      res.uniqueItems = true;
+      // `required` only makes sure the [property key] is defined but not that it has a value different from `undefined`
+      res.items = { type: 'string', enum: input.values ?? [], minItems: 1 };
+      break;
+
+    case InputType.item:
+      if (res.multiple) {
+        res.type = 'array';
+        res.items = { type: 'string', uniqueItems: true, minItems: 1 };
+      } else {
+        res.type = 'string';
+      }
       break;
 
     default:
@@ -96,4 +70,18 @@ function getJsonSchemaElement(input: AnyInput) {
   }
 
   return res;
+}
+
+export function inputsToUiSchema(inputs: Array<Input>): UiSchema {
+  const uiSchema: UiSchema = {};
+
+  for (const input of inputs) {
+    if (input.type === InputType.item) {
+      uiSchema[input.name] = {
+        'ui:widget': InputType.item,
+      };
+    }
+  }
+
+  return uiSchema;
 }

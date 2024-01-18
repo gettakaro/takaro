@@ -39,6 +39,7 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
   id,
   readonly,
   schema,
+  multiple,
   value,
   onChange,
 }: WidgetProps<T, S, F>) {
@@ -87,7 +88,7 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
       value={value}
       handleInputValueChange={(value) => setItemName(value)}
       isLoadingData={!enabled ? false : isLoadingItems}
-      multiSelect={false}
+      multiple={multiple}
       hasDescription={!!schema.description}
       render={(selectedItems) => {
         if (selectedItems.length === 0) {

@@ -1,30 +1,28 @@
 import { FC, Fragment, useEffect, useState } from 'react';
-import { Control, UseFieldArrayRemove, useForm, useWatch, useFieldArray, SubmitHandler } from 'react-hook-form';
+import { useForm, useFieldArray, SubmitHandler } from 'react-hook-form';
 import {
   Button,
   TextField,
   Drawer,
   CollapseList,
   TextAreaField,
-  Tooltip,
-  IconButton,
   FormError,
-  Chip,
   Alert,
-  Collapsible,
+  QuestionTooltip,
 } from '@takaro/lib-components';
-// import { zodResolver } from '@hookform/resolvers/zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { validationSchema } from './validationSchema';
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from 'paths';
 import { ModuleOutputDTO, ModuleOutputDTOAPI, PermissionCreateDTO } from '@takaro/apiclient';
-import { Title, Fields, PermissionCard, PermissionList, ButtonContainer } from './style';
-import { AiOutlineDelete as RemoveIcon, AiOutlinePlus as PlusIcon } from 'react-icons/ai';
+import { PermissionList, ButtonContainer } from './style';
 import { AxiosError } from 'axios';
 import { Input, InputType } from 'components/JsonSchemaForm/generator/inputTypes';
 import { schemaToInputs } from 'components/JsonSchemaForm/generator/SchemaToInputs';
 import { inputsToSchema, inputsToUiSchema } from 'components/JsonSchemaForm/generator/inputsToSchema';
 import { ConfigField } from './ConfigField';
 import { Divider } from '@ory/elements';
+import { PermissionField } from './PermissionField';
 
 export interface IFormInputs {
   name: string;
@@ -59,15 +57,18 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
     }
   }, [open, navigate]);
 
-  const { handleSubmit, control, resetField } = useForm<IFormInputs>({
-    mode: 'onSubmit',
+  const { handleSubmit, control, resetField, formState } = useForm<IFormInputs>({
+    mode: 'onChange',
     defaultValues: {
       name: mod?.name ?? undefined,
       description: mod?.description ?? undefined,
       permissions: mod?.permissions ?? undefined,
       configFields: mod ? schemaToInputs(JSON.parse(mod.configSchema), JSON.parse(mod.uiSchema)) : [],
     },
+    resolver: zodResolver(validationSchema),
   });
+
+  console.log(formState.errors);
 
   const {
     fields: permissionFields,
@@ -94,6 +95,7 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
   }, [isSuccess]);
 
   const submitHandler: SubmitHandler<IFormInputs> = ({ configFields, name, description, permissions }) => {
+    console.log('does this fire');
     const schema = inputsToSchema(configFields);
     const uiSchema = inputsToUiSchema(configFields);
     onSubmit({
@@ -110,7 +112,7 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
       <Drawer.Content>
         <Drawer.Heading>Edit Module</Drawer.Heading>
         <Drawer.Body>
-          <form onSubmit={handleSubmit(submitHandler)}>
+          <form id="module-definition" onSubmit={handleSubmit(submitHandler)}>
             <CollapseList>
               <CollapseList.Item title="General">
                 <TextField
@@ -130,16 +132,20 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
                 />
               </CollapseList.Item>
 
-              <CollapseList.Item title="Permissions">
-                <Collapsible open>
-                  <Collapsible.Trigger>What are permissions?</Collapsible.Trigger>
-                  <Collapsible.Content>
-                    Permissions are a way to control who can use the items inside your module or control the behavior of
-                    functions inside your module. For example, if you have a command that only admins should be able to
-                    use, you can create a permission for it and then check for it to the command. Or, you might want to
-                    have different behavior for different groups of players (e.g. regular players vs donators)
-                  </Collapsible.Content>
-                </Collapsible>
+              <CollapseList.Item
+                title={
+                  <>
+                    Permissions
+                    <QuestionTooltip>
+                      Permissions are a way to control who can use the items inside your module or control the behavior
+                      of functions inside your module. For example, if you have a command that only admins should be
+                      able to use, you can create a permission for it and then check for it to the command. Or, you
+                      might want to have different behavior for different groups of players (e.g. regular players vs
+                      donators)
+                    </QuestionTooltip>
+                  </>
+                }
+              >
                 {permissionFields.length > 0 && (
                   <PermissionList>
                     {permissionFields.map((field, index: number) => (
@@ -154,6 +160,7 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
                   </PermissionList>
                 )}
                 <Button
+                  variant="outline"
                   onClick={(_e) => {
                     addPermissionField({
                       permission: `Permission ${permissionFields.length + 1}`,
@@ -161,24 +168,25 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
                       friendlyName: '',
                     });
                   }}
-                  type="button"
-                  icon={<PlusIcon />}
                   fullWidth
-                  text="Permission"
+                  type="button"
+                  text="Create new permission"
                 ></Button>
               </CollapseList.Item>
 
-              <CollapseList.Item title="Config">
-                <Collapsible open>
-                  <Collapsible.Trigger>What are Config fields?</Collapsible.Trigger>
-                  <Collapsible.Content>
-                    Config fields are a way to control the behavior of your module. When a module is installed on a game
-                    server, Config fields can be tweaked to change the behavior of the module. For example, if you want
-                    to write a module that allows players to teleport to each other, you might want to have a config
-                    field that controls the cooldown of the command.
-                  </Collapsible.Content>
-                </Collapsible>
-
+              <CollapseList.Item
+                title={
+                  <>
+                    Config{' '}
+                    <QuestionTooltip>
+                      Config fields are a way to control the behavior of your module. When a module is installed on a
+                      game server, Config fields can be tweaked to change the behavior of the module. For example, if
+                      you want to write a module that allows players to teleport to each other, you might want to have a
+                      config field that controls the cooldown of the command.
+                    </QuestionTooltip>
+                  </>
+                }
+              >
                 {configFields.length > 0 && (
                   <Alert text="Every config field name should be unique!" variant="warning" />
                 )}
@@ -199,10 +207,10 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
                   );
                 })}
                 <Button
-                  text="Config field"
+                  text="Create new config field"
                   type="button"
                   fullWidth
-                  icon={<PlusIcon />}
+                  variant="outline"
                   onClick={() => {
                     addConfigField({
                       name: `Config field ${configFields.length + 1}`,
@@ -224,64 +232,10 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
         <Drawer.Footer>
           <ButtonContainer>
             <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
-            <Button fullWidth text="Save changes" />
+            <Button type="submit" form="module-definition" fullWidth text="Save changes" />
           </ButtonContainer>
         </Drawer.Footer>
       </Drawer.Content>
     </Drawer>
-  );
-};
-
-interface PermissionFieldProps {
-  control: Control<IFormInputs>;
-  id: string;
-  index: number;
-  remove: UseFieldArrayRemove;
-}
-
-const PermissionField: FC<PermissionFieldProps> = ({ index, id, remove, control }) => {
-  const permissionName = useWatch({ control, name: `permissions.${index}.permission` });
-  return (
-    <PermissionCard key={id} data-testid={`permission-${index}`}>
-      <Title>
-        <div className="inner">
-          <Chip color="primary" label={`Permission ${index + 1}`} />
-          <h3>{permissionName}</h3>
-        </div>
-        <Tooltip>
-          <Tooltip.Trigger asChild>
-            <IconButton
-              onClick={() => remove(index)}
-              icon={<RemoveIcon size={16} cursor="pointer" />}
-              ariaLabel="Remove permission"
-            />
-          </Tooltip.Trigger>
-          <Tooltip.Content>Remove</Tooltip.Content>
-        </Tooltip>
-      </Title>
-      <Fields>
-        <TextField
-          label="Name"
-          control={control}
-          name={`permissions.${index}.permission`}
-          description="This is the permission code name, what you will need to check for inside the module code"
-          required
-        />
-        <TextField
-          control={control}
-          label="Description"
-          name={`permissions.${index}.description`}
-          placeholder=""
-          required
-        />
-        <TextField
-          control={control}
-          label="Friendly name"
-          name={`permissions.${index}.friendlyName`}
-          description="This is the name that will be shown when editing permissions of a role"
-          required
-        />
-      </Fields>
-    </PermissionCard>
   );
 };

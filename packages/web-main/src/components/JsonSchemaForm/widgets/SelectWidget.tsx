@@ -1,7 +1,6 @@
 import { FormContextType, RJSFSchema, StrictRJSFSchema, WidgetProps } from '@rjsf/utils';
 import { UnControlledSelectField } from '@takaro/lib-components';
 
-// TODO: implement multiselect
 export function SelectWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema, F extends FormContextType = any>({
   name,
   options,
@@ -11,7 +10,9 @@ export function SelectWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchem
   id,
   readonly,
   schema,
+  defaultValue,
   value,
+  multiple = false,
   onChange,
 }: WidgetProps<T, S, F>) {
   const { enumOptions } = options;
@@ -24,20 +25,25 @@ export function SelectWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchem
       hasError={!!rawErrors.length}
       required={required}
       readOnly={readonly}
-      value={value}
+      value={value || defaultValue}
+      multiple={multiple}
       hasDescription={!!schema.description}
       onChange={onChange}
       render={(selectedItems) => {
         if (selectedItems.length === 0) {
           return <div>Select...</div>;
         }
-        return <div>{selectedItems[0].label}</div>;
+        return multiple ? (
+          <div>{selectedItems.map((items) => items.label).join(', ')}</div>
+        ) : (
+          <div>{selectedItems[0].label}</div>
+        );
       }}
     >
       <UnControlledSelectField.OptionGroup label="options">
         {enumOptions &&
           enumOptions.map(({ value, label }) => (
-            <UnControlledSelectField.Option key={`select-${value}`} value={value} label={value}>
+            <UnControlledSelectField.Option key={`select-${value}`} value={value} label={label}>
               <div>
                 <span>{label}</span>
               </div>
