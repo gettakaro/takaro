@@ -6,8 +6,8 @@ import SimpleBar from 'simplebar-react';
 import { FloatingFocusManager, FloatingOverlay, FloatingPortal, useMergeRefs } from '@floating-ui/react';
 import { useDrawerContext } from './DrawerContext';
 
-const StyledFloatingOverlay = styled(FloatingOverlay)<{ dragIndex: number }>`
-  background: rgba(0, 0, 0, ${({ dragIndex }) => Math.max(0.8 - dragIndex, 0.4)});
+const StyledFloatingOverlay = styled(FloatingOverlay)<{ dragPosition: number }>`
+  background: rgba(0, 0, 0, ${({ dragPosition }) => Math.max(0.8 - dragPosition, 0.4)});
   display: grid;
   place-items: end;
   max-height: 100vh;
@@ -72,7 +72,7 @@ export const DrawerContent = forwardRef<HTMLElement, HTMLProps<HTMLDivElement>>(
     <FloatingPortal root={root}>
       <AnimatePresence>
         {context.open && (
-          <StyledFloatingOverlay lockScroll dragIndex={dragPosition}>
+          <StyledFloatingOverlay lockScroll dragPosition={dragPosition}>
             <FloatingFocusManager context={context}>
               <Container
                 ref={ref}
