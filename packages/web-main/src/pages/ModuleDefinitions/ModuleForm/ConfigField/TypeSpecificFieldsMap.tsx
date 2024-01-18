@@ -4,7 +4,7 @@ import { TextField, TagField, CheckBox, SelectField } from '@takaro/lib-componen
 import { IFormInputs } from '..';
 import { useWatch } from 'react-hook-form';
 
-export const SubTypeToFieldsMap = (
+export const SubTypeFieldsMap = (
   control: Control<IFormInputs>,
   input: Input,
   index: number,
@@ -154,7 +154,7 @@ export const InputTypeToFieldsMap = (control: Control<IFormInputs>, input: Input
           ))}
         </SelectField.OptionGroup>
       </SelectField>,
-      selectedSubType && SubTypeToFieldsMap(control, input, index, id, enumValues, input.type)[selectedSubType],
+      selectedSubType && SubTypeFieldsMap(control, input, index, id, enumValues, input.type)[selectedSubType],
       <CheckBox
         key={`${input.type}-required-${id}`}
         control={control}
@@ -180,7 +180,7 @@ export const InputTypeToFieldsMap = (control: Control<IFormInputs>, input: Input
           ))}
         </SelectField.OptionGroup>
       </SelectField>,
-      selectedSubType && SubTypeToFieldsMap(control, input, index, id, enumValues, input.type)[selectedSubType],
+      selectedSubType && SubTypeFieldsMap(control, input, index, id, enumValues, input.type)[selectedSubType],
       <CheckBox
         key={`${input.type}-required-${id}`}
         control={control}

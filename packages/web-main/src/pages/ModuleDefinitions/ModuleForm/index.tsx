@@ -11,6 +11,7 @@ import {
   FormError,
   Chip,
   Alert,
+  Collapsible,
 } from '@takaro/lib-components';
 // import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from 'react-router-dom';
@@ -130,22 +131,15 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
               </CollapseList.Item>
 
               <CollapseList.Item title="Permissions">
-                {permissionFields.length === 0 && (
-                  <Alert
-                    variant="info"
-                    title="What are permissions?"
-                    action={{
-                      execute: () =>
-                        addPermissionField({ permission: 'My_Permission', description: '', friendlyName: '' }),
-                      text: 'Add first permission',
-                    }}
-                    text={`
-                  Permissions are a way to control who can use the items inside your module or control the behavior of
-                  functions inside your module. For example, if you have a command that only admins should be able to
-                  use, you can create a permission for it and then check for it to the command. Or, you might want to
-                  have different behavior for different groups of players (e.g. regular players vs donators)`}
-                  />
-                )}
+                <Collapsible open>
+                  <Collapsible.Trigger>What are permissions?</Collapsible.Trigger>
+                  <Collapsible.Content>
+                    Permissions are a way to control who can use the items inside your module or control the behavior of
+                    functions inside your module. For example, if you have a command that only admins should be able to
+                    use, you can create a permission for it and then check for it to the command. Or, you might want to
+                    have different behavior for different groups of players (e.g. regular players vs donators)
+                  </Collapsible.Content>
+                </Collapsible>
                 {permissionFields.length > 0 && (
                   <PermissionList>
                     {permissionFields.map((field, index: number) => (
@@ -159,45 +153,31 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
                     ))}
                   </PermissionList>
                 )}
-                {permissionFields.length > 0 && (
-                  <Button
-                    onClick={(_e) => {
-                      addPermissionField({
-                        permission: 'My_Permission',
-                        description: '',
-                        friendlyName: '',
-                      });
-                    }}
-                    type="button"
-                    icon={<PlusIcon />}
-                    fullWidth
-                    text="New permission"
-                  ></Button>
-                )}
+                <Button
+                  onClick={(_e) => {
+                    addPermissionField({
+                      permission: `Permission ${permissionFields.length + 1}`,
+                      description: '',
+                      friendlyName: '',
+                    });
+                  }}
+                  type="button"
+                  icon={<PlusIcon />}
+                  fullWidth
+                  text="Permission"
+                ></Button>
               </CollapseList.Item>
 
               <CollapseList.Item title="Config">
-                {configFields.length === 0 && (
-                  <Alert
-                    variant="info"
-                    title="What are Config fields?"
-                    action={{
-                      execute: () =>
-                        addConfigField({
-                          name: `Config field ${configFields.length + 1}`,
-                          type: InputType.string,
-                          description: '',
-                          required: false,
-                        }),
-                      text: 'Add first config field',
-                    }}
-                    text={`Config fields are a way to control the behavior of your module. When a module is installed
-                  on a game server, Config fields can be tweaked to change the behavior of the module. For example,
-                  if you want to write a module that allows players to teleport to each other, you might want to have a config
-                  field that controls the cooldown of the command.
-                `}
-                  />
-                )}
+                <Collapsible open>
+                  <Collapsible.Trigger>What are Config fields?</Collapsible.Trigger>
+                  <Collapsible.Content>
+                    Config fields are a way to control the behavior of your module. When a module is installed on a game
+                    server, Config fields can be tweaked to change the behavior of the module. For example, if you want
+                    to write a module that allows players to teleport to each other, you might want to have a config
+                    field that controls the cooldown of the command.
+                  </Collapsible.Content>
+                </Collapsible>
 
                 {configFields.length > 0 && (
                   <Alert text="Every config field name should be unique!" variant="warning" />
@@ -218,22 +198,20 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
                     </Fragment>
                   );
                 })}
-                {configFields.length > 0 && (
-                  <Button
-                    text="Config Field"
-                    type="button"
-                    fullWidth
-                    icon={<PlusIcon />}
-                    onClick={() => {
-                      addConfigField({
-                        name: `Config field ${configFields.length + 1}`,
-                        type: InputType.string,
-                        description: '',
-                        required: false,
-                      });
-                    }}
-                  />
-                )}
+                <Button
+                  text="Config field"
+                  type="button"
+                  fullWidth
+                  icon={<PlusIcon />}
+                  onClick={() => {
+                    addConfigField({
+                      name: `Config field ${configFields.length + 1}`,
+                      type: InputType.string,
+                      description: '',
+                      required: false,
+                    });
+                  }}
+                />
                 {/* TODO: There is currently a bug in react-hook-form regarding refine, which in our case breaks the 
         unique name validation. So for now we just add note to the user that the name must be unique 
         issue: https://github.com/react-hook-form/resolvers/issues/538#issuecomment-1504222680
@@ -267,7 +245,7 @@ const PermissionField: FC<PermissionFieldProps> = ({ index, id, remove, control 
     <PermissionCard key={id} data-testid={`permission-${index}`}>
       <Title>
         <div className="inner">
-          <Chip color="primary" label={`Permission: ${index + 1}`} />
+          <Chip color="primary" label={`Permission ${index + 1}`} />
           <h3>{permissionName}</h3>
         </div>
         <Tooltip>

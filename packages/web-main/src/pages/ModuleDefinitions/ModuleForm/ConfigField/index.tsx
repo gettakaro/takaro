@@ -33,9 +33,6 @@ export const ConfigField: FC<ConfigFieldProps> = ({ control, input, index, remov
     name: `configFields.${index}.subType`,
   });
 
-  console.log('inputType', inputType);
-  console.log('subType', subType);
-
   /* whenever the field type changes we swap all type dependent fields.
     `configFields.${index}.default` has the same name across different inputTypes.
     We need to reset the default value to the new type default value.
@@ -77,10 +74,7 @@ export const ConfigField: FC<ConfigFieldProps> = ({ control, input, index, remov
   useEffect(() => {
     console.log('subType', subType);
     if ((subType === SubType.custom && initialised && inputType == InputType.enum) || inputType == InputType.array) {
-      console.log('did this fire');
-      resetField(`configFields.${index}.subType`, {
-        defaultValue: undefined,
-      });
+      resetField(`configFields.${index}.subType`, { defaultValue: undefined });
     } else {
       setInitialised(true);
     }
