@@ -50,7 +50,13 @@ export const CollapsibleTrigger = forwardRef<HTMLElement, TriggerProps>(({ child
   }
 
   return (
-    <Container onClick={handleClick} aria-expanded={open} tabIndex={0} ref={ref as ForwardedRef<HTMLButtonElement>}>
+    <Container
+      type="button"
+      onClick={handleClick}
+      aria-expanded={open}
+      tabIndex={0}
+      ref={ref as ForwardedRef<HTMLButtonElement>}
+    >
       {children}
       {open === false && <ArrowRight size={12} />}
       {open === true && <ArrowDown size={12} />}
