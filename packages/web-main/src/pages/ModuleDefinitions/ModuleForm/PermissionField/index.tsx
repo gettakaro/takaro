@@ -37,7 +37,7 @@ export const PermissionField: FC<PermissionFieldProps> = ({ index, id, remove, c
           label="Name"
           control={control}
           name={`permissions.${index}.permission`}
-          description="This is the permission code name, what you will need to check for inside the module code"
+          description="This is the permission code name, what you will need to check for inside the module code."
           required
         />
         <TextField
@@ -51,7 +51,7 @@ export const PermissionField: FC<PermissionFieldProps> = ({ index, id, remove, c
           control={control}
           label="Friendly name"
           name={`permissions.${index}.friendlyName`}
-          description="This is the name that will be shown when editing permissions of a role"
+          description="This is the name that will be shown when editing permissions of a role."
           required
         />
       </Fields>

@@ -79,6 +79,7 @@ export const validationSchema = z.object({
             type: z.literal(InputType.enum.valueOf()),
             values: z.array(z.string()).nonempty(),
             default: z.string().nonempty(),
+            required: z.boolean(),
           }),
           z.object({
             type: z.literal(InputType.array.valueOf()),
