@@ -76,10 +76,11 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
             </ActionIconsContainer>
           </SpacedRow>
           <p>{mod.description}</p>
-          <span>
+          <span style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             {mod.commands.length > 0 && <p>Commands: {mod.commands.length}</p>}
             {mod.hooks.length > 0 && <p>Hooks: {mod.hooks.length}</p>}
             {mod.cronJobs.length > 0 && <p>Cronjobs: {mod.cronJobs.length}</p>}
+            {mod.permissions.length > 0 && <p>Permissions: {mod.permissions.length}</p>}
           </span>
         </CardBody>
       </Card>
