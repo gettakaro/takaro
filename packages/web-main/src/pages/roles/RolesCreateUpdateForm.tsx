@@ -6,7 +6,7 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { PATHS } from 'paths';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { validationSchema } from './validationSchema';
-import { ButtonContainer } from './style';
+import { ButtonContainer, PermissionContainer } from './style';
 
 interface CreateUpdateRoleFormProps {
   initialData?: RoleOutputDTO;
@@ -74,7 +74,7 @@ export const CreateUpdateRoleForm: FC<CreateUpdateRoleFormProps> = ({
               <CollapseList.Item title="Permissions">
                 {permissions.map((permission) => {
                   return (
-                    <div>
+                    <PermissionContainer hasCount={permission.canHaveCount ? true : false}>
                       <Switch
                         control={control}
                         label={permission.friendlyName}
@@ -91,7 +91,7 @@ export const CreateUpdateRoleForm: FC<CreateUpdateRoleFormProps> = ({
                           name={`permissions.${permission.id}.count`}
                         />
                       )}
-                    </div>
+                    </PermissionContainer>
                   );
                 })}
               </CollapseList.Item>
