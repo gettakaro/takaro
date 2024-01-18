@@ -19,6 +19,7 @@ export default {
     description: 'This is the description',
     hint: 'This is the hint',
     optionGroupLabel: 'Films',
+    canClear: false,
   },
 } as Meta<SelectFieldProps & ExtraStoryProps>;
 
@@ -41,6 +42,7 @@ export const onChange: StoryFn<SelectFieldProps & ExtraStoryProps> = (args) => {
         description={args.description}
         label={args.label}
         control={control}
+        canClear={args.canClear}
         name="film"
         hint={args.hint}
         render={(selectedItems) => {
@@ -101,6 +103,7 @@ export const OnSubmit: StoryFn<SelectFieldProps> = (args) => {
         <SelectField
           control={control}
           name="film"
+          canClear={args.canClear}
           label={args.label}
           description={args.description}
           render={(selectedItems) => {
@@ -164,7 +167,8 @@ export const MultiSelect: StoryFn<SelectFieldProps> = (args) => {
           control={control}
           name="film"
           label={args.label}
-          multiSelect
+          multiple
+          canClear={args.canClear}
           description={args.description}
           render={(selectedItems) => {
             const selectedFilms = films.filter((film) => selectedItems.some((item) => item.value === film.name));
@@ -212,6 +216,7 @@ export const Filter: StoryFn<SelectFieldProps & ExtraStoryProps> = (args) => {
         control={control}
         name="film"
         hint={args.hint}
+        canClear={args.canClear}
         enableFilter
         render={(selectedItems) => {
           if (selectedItems.length === 0) {

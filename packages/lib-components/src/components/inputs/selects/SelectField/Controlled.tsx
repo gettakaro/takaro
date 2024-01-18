@@ -31,6 +31,7 @@ export const ControlledSelectField: FC<ControlledSelectFieldProps> & SubComponen
     loading,
     enableFilter,
     inPortal,
+    canClear,
     hasMargin = true,
   } = defaultsApplier(props);
 
@@ -103,6 +104,7 @@ export const ControlledSelectField: FC<ControlledSelectFieldProps> & SubComponen
           hasError={!!error}
           hasDescription={!!description}
           readOnly={readOnly}
+          canClear={canClear}
           disabled={disabled}
           required={required}
           size={componentSize}

@@ -22,6 +22,7 @@ export const ControlledSelectQueryField: FC<ControlledSelectQueryFieldProps> & S
     disabled,
     hint,
     description,
+    canClear,
     name,
     multiple,
     control,
@@ -80,6 +81,7 @@ export const ControlledSelectQueryField: FC<ControlledSelectQueryFieldProps> & S
           inPortal={inPortal}
           onChange={field.onChange}
           onBlur={handleOnBlur}
+          canClear={canClear}
           onFocus={handleOnFocus}
           value={field.value}
           debounce={debounce}

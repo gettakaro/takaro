@@ -8,6 +8,7 @@ import {
   isValidElement,
   cloneElement,
   useMemo,
+  MouseEvent,
 } from 'react';
 import {
   autoUpdate,
@@ -21,8 +22,7 @@ import {
   offset,
   useClick,
 } from '@floating-ui/react';
-
-import { AiOutlineSearch as SearchIcon } from 'react-icons/ai';
+import { AiOutlineSearch as SearchIcon, AiOutlineClose as ClearIcon } from 'react-icons/ai';
 import { defaultInputProps, defaultInputPropsFactory, GenericInputPropsFunctionHandlers } from '../../../InputProps';
 import { useDebounce } from '../../../../../hooks';
 import { setAriaDescribedBy } from '../../../layout';
@@ -31,9 +31,8 @@ import { SelectItem, SelectContext, getLabelFromChildren } from '../../';
 
 /* The SearchField depends on a few things of <Select/> */
 import { GroupLabel } from '../../SelectField/style';
-
 import { SelectContainer, SelectButton, StyledArrowIcon, StyledFloatingOverlay } from '../../sharedStyle';
-import { Spinner } from '../../../../../components';
+import { IconButton, Spinner } from '../../../../../components';
 import { GenericTextField } from '../../../TextField/Generic';
 
 interface SharedSelectQueryFieldProps {
@@ -48,6 +47,9 @@ interface SharedSelectQueryFieldProps {
   handleInputValueChange: (value: string) => void;
   /// render inPortal
   inPortal?: boolean;
+
+  /// When true, The select icon will be replaced by a cross icon to clear the selected value.
+  canClear?: boolean;
 
   /// The selected items shown in the select field
   render?: (selectedItems: SelectItem[]) => React.ReactNode;
@@ -99,6 +101,7 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
     readOnly,
     render,
     multiple = false,
+    canClear = false,
     debounce = 250,
     isLoadingData: isLoading = false,
     handleInputValueChange,
@@ -147,6 +150,13 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
       setActiveIndex(0);
     }
   }
+
+  const handleClear = (e: MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setSelectedItems([]);
+    if (onChange) onChange(multiple ? ([] as string[]) : ('' as any));
+  };
 
   /* This handles the case where the value is changed externally (e.g. from a parent component) */
   /* onChange propagates the value to the parent component, but since the value prop is not a required prop, the parent might not reflect the change
@@ -267,7 +277,12 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
         ) : (
           <div>{selectedItems.length === 0 ? 'Select' : selectedItems.map((item) => item.label).join(', ')}</div>
         )}
-        {!readOnly && <StyledArrowIcon size={16} />}
+
+        {!readOnly && canClear && selectedItems.length > 0 && !open ? (
+          <IconButton size="tiny" icon={<ClearIcon />} ariaLabel="clear" onClick={(e) => handleClear(e)} />
+        ) : (
+          <StyledArrowIcon size={16} />
+        )}
       </SelectButton>
       {open &&
         !readOnly &&

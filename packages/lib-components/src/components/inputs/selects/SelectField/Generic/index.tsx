@@ -9,10 +9,12 @@ import {
   useEffect,
   useMemo,
   ReactElement,
+  MouseEvent,
 } from 'react';
 import { GroupContainer, GroupLabel } from '../style';
 import { SelectContainer, StyledFloatingOverlay, StyledArrowIcon, SelectButton } from '../../sharedStyle';
 import { FilterInput } from './FilterInput';
+import { AiOutlineClose as ClearIcon } from 'react-icons/ai';
 
 import {
   useFloating,
@@ -33,6 +35,7 @@ import { defaultInputPropsFactory, defaultInputProps, GenericInputPropsFunctionH
 import { Option, OptionGroup, SubComponentTypes } from '../../SubComponents';
 import { setAriaDescribedBy } from '../../../layout';
 import { SelectItem, SelectContext, getLabelFromChildren } from '../../';
+import { IconButton } from '../../../../../components/';
 
 interface SharedSelectFieldProps {
   render: (selectedItems: SelectItem[]) => React.ReactNode;
@@ -40,6 +43,9 @@ interface SharedSelectFieldProps {
   /// Rendering in portal will render the selectDropdown independent from its parent container.
   /// this is useful when select is rendered in other floating elements with limited space.
   inPortal?: boolean;
+
+  /// When true, The select icon will be replaced by a cross icon to clear the selected value.
+  canClear?: boolean;
 }
 
 interface MultiSelectFieldProps extends SharedSelectFieldProps {
@@ -83,6 +89,7 @@ export const GenericSelectField: FC<GenericSelectFieldProps> & SubComponentTypes
     disabled,
     enableFilter = false,
     multiple = false,
+    canClear = false,
   } = defaultsApplier(props);
 
   const listItemsRef = useRef<Array<HTMLLIElement | null>>([]);
@@ -124,6 +131,14 @@ export const GenericSelectField: FC<GenericSelectFieldProps> & SubComponentTypes
       }),
     ],
   });
+
+  const handleClear = (e: MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setSelectedItems([]);
+
+    if (onChange) onChange(multiple ? ([] as string[]) : ('' as any));
+  };
 
   const { getReferenceProps, getFloatingProps, getItemProps } = useInteractions([
     useClick(context),
@@ -264,7 +279,11 @@ export const GenericSelectField: FC<GenericSelectFieldProps> & SubComponentTypes
         {...getReferenceProps()}
       >
         {render(selectedItems)}
-        {!readOnly && <StyledArrowIcon size={16} />}
+        {!readOnly && canClear && selectedItems.length > 0 && !open ? (
+          <IconButton size="tiny" icon={<ClearIcon />} ariaLabel="clear" onClick={(e) => handleClear(e)} />
+        ) : (
+          <StyledArrowIcon size={16} />
+        )}
       </SelectButton>
       {open &&
         !readOnly &&
