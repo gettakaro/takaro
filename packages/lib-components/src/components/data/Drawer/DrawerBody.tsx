@@ -2,14 +2,15 @@ import { FC, PropsWithChildren, useId, useLayoutEffect } from 'react';
 import { useDrawerContext } from './DrawerContext';
 import { styled } from '../../../styled';
 
-const Container = styled.div`
+const Container = styled.div<{ canDrag: boolean }>`
   position: relative;
   /* Large left padding is for the drawer handle */
-  padding: ${({ theme }) => `0 ${theme.spacing['2_5']} ${theme.spacing[2]} ${theme.spacing['4']}`};
+  padding: ${({ theme, canDrag }) =>
+    `0 ${theme.spacing['2_5']} ${theme.spacing[2]} ${canDrag ? theme.spacing['4'] : theme.spacing['2_5']}`};
 `;
 
 export const DrawerBody: FC<PropsWithChildren> = ({ children }) => {
-  const { setLabelId } = useDrawerContext();
+  const { setLabelId, canDrag } = useDrawerContext();
   const id = useId();
 
   useLayoutEffect(() => {
@@ -17,5 +18,5 @@ export const DrawerBody: FC<PropsWithChildren> = ({ children }) => {
     return () => setLabelId(undefined);
   }, [id, setLabelId]);
 
-  return <Container>{children}</Container>;
+  return <Container canDrag={canDrag}>{children}</Container>;
 };

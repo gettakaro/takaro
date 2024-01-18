@@ -44,7 +44,7 @@ export const HandleContainer = styled.div`
 `;
 
 export const DrawerContent = forwardRef<HTMLElement, HTMLProps<HTMLDivElement>>((props, propRef) => {
-  const { context, labelId, descriptionId, getFloatingProps, setOpen } = useDrawerContext();
+  const { context, labelId, descriptionId, getFloatingProps, setOpen, canDrag } = useDrawerContext();
 
   const ref = useMergeRefs([context.refs.setFloating, propRef]);
   const [dragPosition, setDragPosition] = useState<number>(0);
@@ -86,16 +86,18 @@ export const DrawerContent = forwardRef<HTMLElement, HTMLProps<HTMLDivElement>>(
                 exit={{
                   x: '100%',
                 }}
-                drag="x"
+                drag={canDrag ? 'x' : false}
                 dragConstraints={{ left: 0, right: 0 }}
                 onDrag={handleDrag}
                 onDragEnd={handleDragEnd}
                 dragElastic={{ left: 0, right: 0.4 }}
                 layout
               >
-                <HandleContainer>
-                  <div />
-                </HandleContainer>
+                {canDrag && (
+                  <HandleContainer>
+                    <div />
+                  </HandleContainer>
+                )}
                 <SimpleBar style={{ maxHeight: '92vh' }}>{props.children}</SimpleBar>
               </Container>
             </FloatingFocusManager>
