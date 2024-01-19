@@ -1,11 +1,12 @@
 import 'reflect-metadata';
-import { GameEvents } from '@takaro/modules';
+import { EventTypes, GameEvents } from '@takaro/modules';
 import { Client } from '@takaro/apiclient';
 import { io, Socket } from 'socket.io-client';
 import { integrationConfig } from './integrationConfig.js';
+import { ValueOf } from 'type-fest';
 
 export interface IDetectedEvent {
-  event: GameEvents;
+  event: EventTypes;
   data: any;
 }
 
@@ -30,13 +31,13 @@ export class EventsAwaiter {
     });
   }
 
-  async waitForEvents(expectedEvent: GameEvents | string, amount = 1) {
+  async waitForEvents(expectedEvent: EventTypes | string, amount = 1) {
     const events: IDetectedEvent[] = [];
     let hasFinished = false;
 
     return Promise.race([
       new Promise<IDetectedEvent[]>(async (resolve) => {
-        if (Object.values(GameEvents).includes(expectedEvent as GameEvents)) {
+        if (Object.values(GameEvents).includes(expectedEvent as ValueOf<typeof GameEvents>)) {
           this.socket.on('gameEvent', (_gameserverId, event, data) => {
             if (event !== expectedEvent) {
               // log.warn(`Received event ${event} but expected ${expectedEvent}`);

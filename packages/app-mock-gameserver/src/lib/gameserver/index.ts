@@ -9,9 +9,9 @@ import {
   IGamePlayer,
   EventChatMessage,
   EventPlayerConnected,
-  EventTypes,
   EventPlayerDisconnected,
   IPosition,
+  HookEvents,
 } from '@takaro/modules';
 import { faker } from '@faker-js/faker';
 import { config } from '../../config.js';
@@ -126,7 +126,7 @@ class MockGameserver implements IMockGameServer {
             msg: `${p.name} connected`,
             timestamp: new Date(),
           });
-          this.socketServer.io.emit(EventTypes.PLAYER_CONNECTED, event);
+          this.socketServer.io.emit(HookEvents.PLAYER_CONNECTED, event);
         })
       );
       output.rawResult = 'Connected all players';
