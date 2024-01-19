@@ -9,7 +9,12 @@ import { IItemDTO, IPlayerReferenceDTO } from '@takaro/gameserver';
 import { Type } from 'class-transformer';
 import { PlayerRoleAssignmentOutputDTO, RoleService } from './RoleService.js';
 import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
-import { IGamePlayer } from '@takaro/modules';
+import {
+  IGamePlayer,
+  TakaroEventCurrencyAdded,
+  TakaroEventCurrencyDeducted,
+  TakaroEventPlayerNewIpDetected,
+} from '@takaro/modules';
 
 import { GeoIpDbName, open } from 'geolite2-redist';
 import maxmind, { CityResponse } from 'maxmind';
@@ -238,10 +243,13 @@ export class PlayerOnGameServerService extends TakaroService<
             gameserverId,
             playerId: resolved.playerId,
             eventName: EVENT_TYPES.PLAYER_NEW_IP_DETECTED,
-            meta: {
-              new: newIpRecord,
-              old: resolved.ipHistory[resolved.ipHistory.length - 1],
-            },
+            meta: await new TakaroEventPlayerNewIpDetected().construct({
+              ip: data.ip,
+              city: newIpRecord.city,
+              country: newIpRecord.country,
+              latitude: newIpRecord.latitude,
+              longitude: newIpRecord.longitude,
+            }),
           })
         );
       }
@@ -277,7 +285,9 @@ export class PlayerOnGameServerService extends TakaroService<
         playerId: senderRecord.playerId,
         gameserverId: senderRecord.gameServerId,
         userId,
-        meta: { amount, receiver: receiverRecord.playerId },
+        meta: await new TakaroEventCurrencyDeducted().construct({
+          amount,
+        }),
       })
     );
 
@@ -287,7 +297,9 @@ export class PlayerOnGameServerService extends TakaroService<
         playerId: receiverRecord.playerId,
         gameserverId: receiverRecord.gameServerId,
         userId,
-        meta: { amount, sender: senderRecord.playerId },
+        meta: await new TakaroEventCurrencyAdded().construct({
+          amount,
+        }),
       })
     );
   }
@@ -304,7 +316,9 @@ export class PlayerOnGameServerService extends TakaroService<
         playerId: record.playerId,
         gameserverId: record.gameServerId,
         userId,
-        meta: { amount },
+        meta: await new TakaroEventCurrencyDeducted().construct({
+          amount,
+        }),
       })
     );
   }
@@ -321,7 +335,9 @@ export class PlayerOnGameServerService extends TakaroService<
         playerId: record.playerId,
         gameserverId: record.gameServerId,
         userId,
-        meta: { amount },
+        meta: await new TakaroEventCurrencyAdded().construct({
+          amount,
+        }),
       })
     );
   }

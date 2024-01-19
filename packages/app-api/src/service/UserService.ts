@@ -4,11 +4,12 @@ import { send } from '@takaro/email';
 
 import { UserModel, UserRepo } from '../db/user.js';
 import { IsEmail, IsOptional, IsString, Length, ValidateNested } from 'class-validator';
-import { TakaroDTO, TakaroModelDTO, traceableClass } from '@takaro/util';
+import { TakaroDTO, TakaroModelDTO, errors, traceableClass } from '@takaro/util';
 import { RoleService, UserAssignmentOutputDTO } from './RoleService.js';
 import { Type } from 'class-transformer';
 import { ory } from '@takaro/auth';
 import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
+import { TakaroEventRoleAssigned, TakaroEventRoleRemoved } from '@takaro/modules';
 
 export class UserOutputDTO extends TakaroModelDTO<UserOutputDTO> {
   @IsString()
@@ -136,15 +137,14 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
     const roleService = new RoleService(this.domainId);
 
     const role = await roleService.findOne(roleId);
+    if (!role) throw new errors.NotFoundError(`Role ${roleId} not found`);
 
     await this.repo.assignRole(userId, roleId, expiresAt);
     await eventService.create(
       await new EventCreateDTO().construct({
         eventName: EVENT_TYPES.ROLE_ASSIGNED,
         userId,
-        meta: {
-          role,
-        },
+        meta: await new TakaroEventRoleAssigned().construct({ role: { id: role.id, name: role.name } }),
       })
     );
   }
@@ -153,6 +153,7 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
     const eventService = new EventService(this.domainId);
     const roleService = new RoleService(this.domainId);
     const role = await roleService.findOne(roleId);
+    if (!role) throw new errors.NotFoundError(`Role ${roleId} not found`);
 
     await this.repo.removeRole(userId, roleId);
 
@@ -160,9 +161,7 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
       await new EventCreateDTO().construct({
         eventName: EVENT_TYPES.ROLE_REMOVED,
         userId,
-        meta: {
-          role,
-        },
+        meta: await new TakaroEventRoleRemoved().construct({ role: { id: role.id, name: role.name } }),
       })
     );
   }

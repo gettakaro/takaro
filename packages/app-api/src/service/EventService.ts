@@ -11,7 +11,7 @@ import { Type } from 'class-transformer';
 import { GameServerOutputDTO } from './GameServerService.js';
 import { ModuleOutputDTO } from './ModuleService.js';
 import { UserOutputDTO } from './UserService.js';
-import { TakaroEvents } from '@takaro/modules';
+import { EventMapping, EventPayload, TakaroEvents } from '@takaro/modules';
 import { ValueOf } from 'type-fest';
 
 export const EVENT_TYPES = {
@@ -93,7 +93,7 @@ export class EventCreateDTO extends TakaroDTO<EventCreateDTO> {
 
   @IsOptional()
   @IsObject()
-  meta: Record<string, unknown>;
+  meta: EventPayload;
 }
 
 export class EventUpdateDTO extends TakaroDTO<EventUpdateDTO> {}
@@ -123,6 +123,16 @@ export class EventService extends TakaroService<EventModel, EventOutputDTO, Even
   }
 
   async create(data: EventCreateDTO): Promise<EventOutputDTO> {
+    const dto = EventMapping[data.eventName];
+    if (!dto) throw new errors.BadRequestError(`Event ${data.eventName} is not supported`);
+
+    const eventMeta = await new dto().construct(data.meta.toJSON());
+    await eventMeta.validate({
+      forbidNonWhitelisted: false,
+      whitelist: true,
+      forbidUnknownValues: false,
+    });
+
     const created = await this.repo.create(data);
 
     const socketServer = await getSocketServer();

@@ -3,6 +3,9 @@ import { ctx, logger } from '@takaro/util';
 import { config } from '../config.js';
 import { TakaroWorker, IEventQueueData } from '@takaro/queues';
 import {
+  EventChatMessage,
+  EventEntityKilled,
+  EventPlayerDeath,
   isChatMessageEvent,
   isConnectedEvent,
   isDisconnectedEvent,
@@ -57,9 +60,9 @@ async function processJob(job: Job<IEventQueueData>) {
           eventName: EVENT_TYPES.CHAT_MESSAGE,
           gameserverId: gameServerId,
           playerId: resolvedPlayer.id,
-          meta: {
-            message: event.msg,
-          },
+          meta: await new EventChatMessage().construct({
+            msg: event.msg,
+          }),
         })
       );
     }
@@ -100,9 +103,9 @@ async function processJob(job: Job<IEventQueueData>) {
           eventName: EVENT_TYPES.PLAYER_DEATH,
           gameserverId: gameServerId,
           playerId: resolvedPlayer.id,
-          meta: {
+          meta: await new EventPlayerDeath().construct({
             position: event.position,
-          },
+          }),
         })
       );
     }
@@ -113,10 +116,10 @@ async function processJob(job: Job<IEventQueueData>) {
           eventName: EVENT_TYPES.ENTITY_KILLED,
           gameserverId: gameServerId,
           playerId: resolvedPlayer.id,
-          meta: {
+          meta: await new EventEntityKilled().construct({
             entity: event.entity,
             weapon: event.weapon,
-          },
+          }),
         })
       );
     }

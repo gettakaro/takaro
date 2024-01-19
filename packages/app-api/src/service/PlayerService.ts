@@ -2,11 +2,11 @@ import { TakaroService } from './Base.js';
 
 import { ISteamData, PlayerModel, PlayerRepo } from '../db/player.js';
 import { IsBoolean, IsISO8601, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
-import { TakaroDTO, TakaroModelDTO, traceableClass } from '@takaro/util';
+import { TakaroDTO, TakaroModelDTO, errors, traceableClass } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { PlayerOnGameServerService, PlayerOnGameserverOutputDTO } from './PlayerOnGameserverService.js';
-import { IGamePlayer } from '@takaro/modules';
+import { IGamePlayer, TakaroEventRoleAssigned, TakaroEventRoleRemoved } from '@takaro/modules';
 import { IPlayerReferenceDTO } from '@takaro/gameserver';
 import { Type } from 'class-transformer';
 import { PlayerRoleAssignmentOutputDTO, RoleService } from './RoleService.js';
@@ -220,9 +220,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
         eventName: EVENT_TYPES.ROLE_ASSIGNED,
         gameserverId,
         playerId: targetId,
-        meta: {
-          role,
-        },
+        meta: await new TakaroEventRoleAssigned().construct({ role }),
       })
     );
   }
@@ -233,15 +231,14 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     const roleService = new RoleService(this.domainId);
 
     const role = await roleService.findOne(roleId);
+    if (!role) throw new errors.NotFoundError(`Role ${roleId} not found`);
     await this.repo.removeRole(targetId, roleId, gameserverId);
     await eventService.create(
       await new EventCreateDTO().construct({
         eventName: EVENT_TYPES.ROLE_REMOVED,
         playerId: targetId,
         gameserverId,
-        meta: {
-          role,
-        },
+        meta: await new TakaroEventRoleRemoved().construct({ role: { id: role.id, name: role.name } }),
       })
     );
   }
