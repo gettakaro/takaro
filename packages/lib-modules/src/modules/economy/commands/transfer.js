@@ -5,9 +5,9 @@ async function main() {
   const takaro = await getTakaro(data);
   const { player: sender, arguments: args, gameServerId, module: mod } = data;
 
-  const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data;
+  const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data.value;
 
-  const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data;
+  const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data.value;
 
   // args.receiver has an argument type of "player". Arguments of this type are automatically resolved to the player's id.
   // If the player doesn't exist or multiple players with the same name where found, it will have thrown an error before this command is executed.
