@@ -1,9 +1,9 @@
 import { ModuleOutputDTO, GameServerOutputDTO, RoleOutputDTO, PlayerOutputDTO } from '@takaro/apiclient';
 import { integrationConfig, IntegrationTest, EventsAwaiter } from '@takaro/test';
-import { GameEvents } from '../dto/index.js';
+import { EventTypes, GameEvents } from '../dto/index.js';
 
 export interface IDetectedEvent {
-  event: GameEvents;
+  event: EventTypes;
   data: any;
 }
 

@@ -1,15 +1,19 @@
 import { IsDate, IsEnum, IsString, ValidateNested, IsOptional, IsNumber } from 'class-validator';
 import { TakaroDTO } from '@takaro/util';
 import { Type } from 'class-transformer';
+import { BaseEvent } from './base.js';
+import { ValueOf } from 'type-fest';
 
-export enum GameEvents {
-  LOG_LINE = 'log',
-  PLAYER_CONNECTED = 'player-connected',
-  PLAYER_DISCONNECTED = 'player-disconnected',
-  CHAT_MESSAGE = 'chat-message',
-  PLAYER_DEATH = 'player-death',
-  ENTITY_KILLED = 'entity-killed',
-}
+export const GameEvents = {
+  LOG_LINE: 'log',
+  PLAYER_CONNECTED: 'player-connected',
+  PLAYER_DISCONNECTED: 'player-disconnected',
+  CHAT_MESSAGE: 'chat-message',
+  PLAYER_DEATH: 'player-death',
+  ENTITY_KILLED: 'entity-killed',
+} as const;
+
+export type GameEventTypes = ValueOf<typeof GameEvents>;
 
 export class IGamePlayer extends TakaroDTO<IGamePlayer> {
   /**
@@ -48,12 +52,12 @@ export class IGamePlayer extends TakaroDTO<IGamePlayer> {
   ping?: number;
 }
 
-export class BaseGameEvent<T> extends TakaroDTO<T> {
+export class BaseGameEvent<T> extends BaseEvent<T> {
   @IsDate()
   timestamp: Date = new Date();
 
   @IsEnum(GameEvents)
-  type: string;
+  declare type: ValueOf<typeof GameEvents>;
 
   @IsString()
   msg: string;
@@ -150,3 +154,12 @@ export function isPlayerDeathEvent(a: BaseGameEvent<unknown>): a is EventPlayerD
 export function isEntityKilledEvent(a: BaseGameEvent<unknown>): a is EventEntityKilled {
   return a.type === GameEvents.ENTITY_KILLED;
 }
+
+export const GameEventsMapping = {
+  [GameEvents.PLAYER_CONNECTED]: EventPlayerConnected,
+  [GameEvents.PLAYER_DISCONNECTED]: EventPlayerDisconnected,
+  [GameEvents.CHAT_MESSAGE]: EventChatMessage,
+  [GameEvents.PLAYER_DEATH]: EventPlayerDeath,
+  [GameEvents.ENTITY_KILLED]: EventEntityKilled,
+  [GameEvents.LOG_LINE]: EventLogLine,
+} as const;

@@ -4,7 +4,7 @@ import { createReadStream } from 'fs';
 import readline from 'node:readline/promises';
 import { IPlayerReferenceDTO } from '@takaro/gameserver';
 
-import { EventLogLine, GameEvents } from '@takaro/modules';
+import { EventLogLine, GameEventTypes } from '@takaro/modules';
 import { getMockServer } from './index.js';
 import { MockServerSocketServer } from '../socket/socketTypes.js';
 
@@ -14,7 +14,7 @@ let isScenarioPlaying = false;
 
 interface IScenarioEvent {
   time: number;
-  event: GameEvents;
+  event: GameEventTypes;
   data: Record<string, unknown>;
 }
 
