@@ -48,6 +48,7 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
   const enabled = itemName !== '';
 
   const { data: gameServer, isLoading: isLoadingGameServer } = useGameServer(gameServerId);
+
   const { data, isLoading: isLoadingItems } = useItems(
     { search: { name: [itemName] }, filters: { gameserverId: [gameServerId] } },
     { enabled }

@@ -76,20 +76,21 @@ export const validationSchema = z.object({
             required: z.boolean(),
           }),
           z.object({
-            type: z.literal(InputType.enum.valueOf()),
+            type: z.literal(InputType.select.valueOf()),
             values: z.array(z.string()).nonempty(),
-            default: z.string().nonempty(),
-            required: z.boolean(),
-          }),
-          z.object({
-            type: z.literal(InputType.array.valueOf()),
-            values: z.array(z.string()).nonempty(),
-            default: z.array(z.string()),
+            default: z.union([z.string().nonempty(), z.array(z.string())]),
             required: z.boolean(),
           }),
           z.object({
             type: z.literal(InputType.item.valueOf()),
             multiple: z.boolean(),
+            required: z.boolean(),
+          }),
+          z.object({
+            type: z.literal(InputType.country.valueOf()),
+            multiple: z.boolean(),
+            default: z.union([z.string(), z.array(z.string())]),
+            // there is no validation on `default` key of country, because default is not a required field and since it is a select field, users cannot enter invalid values
             required: z.boolean(),
           }),
         ])

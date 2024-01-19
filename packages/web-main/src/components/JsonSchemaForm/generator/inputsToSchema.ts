@@ -2,12 +2,14 @@ import { StrictRJSFSchema } from '@rjsf/utils';
 import { SchemaObject } from 'ajv';
 import { UiSchema } from '@rjsf/utils';
 import { Input, AnyInput, InputType } from './inputTypes';
+import { countryCodes } from 'components/selects/CountrySelect/countryCodes';
 
 export function inputsToSchema(inputs: Array<Input>): StrictRJSFSchema {
   const schema: StrictRJSFSchema = {
     type: 'object',
     properties: {},
     required: [],
+    $schema: 'http://json-schema.org/draft-07/schema#',
   };
 
   for (const input of inputs) {
@@ -42,26 +44,38 @@ function getJsonSchemaElement(input: AnyInput) {
       res.maxLength = input.maxLength;
       break;
 
-    case InputType.enum:
-      res.enum = input.values;
-      res.type = 'string';
+    case InputType.select:
+      if (input.multiple) {
+        res.type = 'array';
+        res.uniqueItems = true;
+        res.items = { type: 'string', enum: input.values ?? [], minItems: 1 };
+      } else {
+        res.enum = input.values;
+        res.type = 'string';
+      }
       break;
 
     case InputType.boolean:
       break;
 
-    case InputType.array:
-      res.uniqueItems = true;
-      // `required` only makes sure the [property key] is defined but not that it has a value different from `undefined`
-      res.items = { type: 'string', enum: input.values ?? [], minItems: 1 };
-      break;
-
     case InputType.item:
-      if (res.multiple) {
+      res['x-component'] = InputType.item;
+      if (input.multiple) {
         res.type = 'array';
-        res.items = { type: 'string', uniqueItems: true, minItems: 1 };
+        res.uniqueItems = true;
+        res.items = { type: 'string', minItems: 1 };
       } else {
         res.type = 'string';
+      }
+      break;
+
+    case InputType.country:
+      res['x-component'] = InputType.country;
+      const oneOf = countryCodes.map(({ code, name }) => ({ const: code, title: name }));
+      if (input.multiple) {
+        (res.type = 'array'), (res.uniqueItems = true), (res.items = { type: 'string', anyOf: oneOf });
+      } else {
+        (res.type = 'string'), (res.oneOf = oneOf);
       }
       break;
 

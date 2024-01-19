@@ -3,14 +3,12 @@ export enum InputType {
   string = 'string',
   number = 'number',
   boolean = 'boolean',
-  enum = 'enum',
-  array = 'array',
-
-  // custom
+  select = 'select',
   item = 'item',
-  // TODO: add date, role, variable?
+  country = 'country',
 }
 
+// TODO: required should not be a property of base since boolean does not have it
 export interface BaseObject {
   type: InputType;
   required: boolean;
@@ -20,6 +18,12 @@ export interface BaseObject {
 
 interface ItemInput extends BaseObject {
   type: InputType.item;
+  default?: string;
+  multiple: boolean;
+}
+
+interface CountryInput extends BaseObject {
+  type: InputType.country;
   default?: string;
   multiple: boolean;
 }
@@ -43,17 +47,12 @@ interface BooleanInput extends BaseObject {
   default?: boolean;
 }
 
-export interface EnumInput extends BaseObject {
-  type: InputType.enum;
+export interface SelectInput extends BaseObject {
+  type: InputType.select;
   values: string[];
-  default?: string;
+  multiple: boolean;
+  default?: string | string[];
 }
 
-interface ArrayInput extends BaseObject {
-  type: InputType.array;
-  values: string[];
-  default?: string[];
-}
-
-export type AnyInput = EnumInput | NumberInput | StringInput | BooleanInput | ArrayInput | ItemInput;
+export type AnyInput = SelectInput | NumberInput | StringInput | BooleanInput | ItemInput | CountryInput;
 export type Input = AnyInput & { name: string };

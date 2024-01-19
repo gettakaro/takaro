@@ -3,14 +3,17 @@ import { InputType } from 'components/JsonSchemaForm/generator/inputTypes';
 import { TextField, TagField, CheckBox, SelectField, Switch } from '@takaro/lib-components';
 import { IFormInputs } from '..';
 import { useWatch } from 'react-hook-form';
+import { CountrySelect } from 'components/selects/CountrySelect';
 
 export const InputTypeToFieldsMap = (control: Control<IFormInputs>, index: number, id: string) => {
   // In case of enum or array, we need the enum values to be able to set the default value
-  const enumValues = useWatch<IFormInputs>({
+  const values = useWatch<IFormInputs>({
     name: `configFields.${index}.values`,
     control,
     defaultValue: [],
   }) as string[];
+
+  const multiple = useWatch<IFormInputs>({ name: `configFields.${index}.multiple`, control }) as boolean | undefined;
 
   return {
     [InputType.string]: [
@@ -73,30 +76,39 @@ export const InputTypeToFieldsMap = (control: Control<IFormInputs>, index: numbe
         description="When a user installs the module, this will be the default value for this field."
       />,
     ],
-    [InputType.enum]: [
+    [InputType.select]: [
       <TagField
         name={`configFields.${index}.values`}
-        key={`${InputType.enum}-enum-${id}`}
+        key={`${InputType.select}-enum-${id}`}
         control={control}
         label="Possible values"
         isEditOnRemove
         placeholder="Press enter to add a value."
       />,
-      enumValues.length > 0 && (
+      <Switch
+        key={`${InputType.select}-multiple-${id}`}
+        name={`configFields.${index}.multiple`}
+        control={control}
+        label="Multiple"
+        description="If you want to allow the user to select multiple countries"
+      />,
+      values.length > 0 && (
         <SelectField
-          key={`${InputType.enum}-default-${id}`}
+          key={`${InputType.select}-default-${id}`}
           control={control}
           name={`configFields.${index}.default`}
           label="default value"
+          canClear={true}
+          multiple={multiple ? true : false}
           render={(selectedItems) => {
             if (selectedItems.length === 0) {
-              return <div>Select default value...</div>;
+              return <div>{multiple ? 'Select default values...' : 'Select default value...'}</div>;
             }
-            return <div>{selectedItems[0].label}</div>;
+            return <div>{multiple ? selectedItems.map((item) => item.label).join(', ') : selectedItems[0].label}</div>;
           }}
         >
           <SelectField.OptionGroup>
-            {enumValues.map((enumValue: string) => (
+            {values.map((enumValue: string) => (
               <SelectField.Option key={`${enumValue}-${id}`} value={enumValue} label={enumValue}>
                 <span>{enumValue}</span>
               </SelectField.Option>
@@ -107,45 +119,28 @@ export const InputTypeToFieldsMap = (control: Control<IFormInputs>, index: numbe
     ],
     [InputType.item]: [
       <Switch
-        key={`${InputType.enum}-multiple-${id}`}
+        key={`${InputType.item}-multiple-${id}`}
         name={`configFields.${index}.multiple`}
         control={control}
         label="Multiple items?"
         description="If you want to allow the user to select multiple items"
       />,
     ],
-    [InputType.array]: [
-      <TagField
-        name={`configFields.${index}.values`}
-        key={`${InputType.enum}-enum-${id}`}
+    [InputType.country]: [
+      <Switch
+        key={`${InputType.country}-multiple-${id}`}
+        name={`configFields.${index}.multiple`}
         control={control}
-        label="Possible values"
-        isEditOnRemove
-        placeholder="Press enter to add a value."
+        label="Multiple countries?"
+        description="If you want to allow the user to select multiple countries"
       />,
-      enumValues.length > 0 && (
-        <SelectField
-          key={`${InputType.array}-default-${id}`}
-          control={control}
-          name={`configFields.${index}.default`}
-          multiple={true}
-          label={'Default values'}
-          render={(selectedItems) => {
-            if (selectedItems.length === 0) {
-              return <div>Select default values...</div>;
-            }
-            return <div>{selectedItems.map((item) => item.label).join(', ')}</div>;
-          }}
-        >
-          <SelectField.OptionGroup>
-            {enumValues.map((enumValue: string) => (
-              <SelectField.Option key={`${enumValue}-${id}`} value={enumValue} label={enumValue}>
-                <span>{enumValue}</span>
-              </SelectField.Option>
-            ))}
-          </SelectField.OptionGroup>
-        </SelectField>
-      ),
+      <CountrySelect
+        name={`configFields.${index}.default`}
+        label="Default selected"
+        key={`${InputType.country}-values-${id}`}
+        multiple={multiple ? true : false}
+        control={control}
+      />,
     ],
   };
 };

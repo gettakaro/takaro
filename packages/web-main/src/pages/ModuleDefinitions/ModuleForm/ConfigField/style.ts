@@ -16,3 +16,9 @@ export const Header = styled.div`
     }
   }
 `;
+
+export const Inner = styled.div`
+  p {
+    color: ${({ theme }) => theme.colors.textAlt};
+  }
+`;

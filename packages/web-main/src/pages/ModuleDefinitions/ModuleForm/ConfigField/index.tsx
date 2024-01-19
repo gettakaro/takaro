@@ -1,11 +1,12 @@
 import { Control, UseFieldArrayRemove, UseFormResetField, useWatch } from 'react-hook-form';
 import { SelectField, TextField, Chip, TextAreaField, IconButton, Tooltip, CheckBox } from '@takaro/lib-components';
-import { Header } from './style';
+import { Header, Inner } from './style';
 import { IFormInputs } from '..';
 import { Input, InputType } from 'components/JsonSchemaForm/generator/inputTypes';
 import { FC, useEffect, useState } from 'react';
 import { AiOutlineDelete as RemoveIcon } from 'react-icons/ai';
-import { InputTypeToFieldsMap } from './TypeSpecificFieldsMap';
+import { InputTypeToFieldsMap } from './InputTypeToFieldsMap';
+import { groupedByCategory } from './InputTypeByCategory';
 
 interface ConfigFieldProps {
   input: Input;
@@ -51,20 +52,14 @@ export const ConfigField: FC<ConfigFieldProps> = ({ control, index, remove, id, 
           });
           break;
         case InputType.item:
+        case InputType.country:
+        case InputType.select:
           resetField(`configFields.${index}.default`, {
             defaultValue: undefined,
           });
           resetField(`configFields.${index}.multiple`, {
             defaultValue: false,
           });
-
-          break;
-        case InputType.enum:
-        case InputType.array:
-          resetField(`configFields.${index}.default`, {
-            defaultValue: undefined,
-          });
-          break;
       }
     } else {
       setInitialised(true);
@@ -118,23 +113,30 @@ export const ConfigField: FC<ConfigFieldProps> = ({ control, index, remove, id, 
           </div>
         )}
       >
-        <SelectField.OptionGroup label="type">
-          {Object.values(InputType).map((type) => (
-            <SelectField.Option key={`${type}-${id}`} value={type} label={type}>
-              <span>{type}</span>
-            </SelectField.Option>
-          ))}
-        </SelectField.OptionGroup>
+        {Object.entries(groupedByCategory).map(([category, infos]) => (
+          <SelectField.OptionGroup key={category} label={category}>
+            {infos.map(({ type, description }) => (
+              <SelectField.Option key={`${type}-${id}`} value={type} label={type}>
+                <Inner>
+                  <span>{type}</span>
+                  <p>{description}</p>
+                </Inner>
+              </SelectField.Option>
+            ))}
+          </SelectField.OptionGroup>
+        ))}
       </SelectField>
       {InputTypeToFieldsMap(control, index, id)[inputType]}
-      <CheckBox
-        key={`configFields.${index}.required`}
-        control={control}
-        label="Is Field required?"
-        labelPosition="left"
-        name={`configFields.${index}.required`}
-        description="Makes sure the field is not empty. E.g. if you are depending on this field in the module code."
-      />
+      {inputType !== InputType.boolean && (
+        <CheckBox
+          key={`configFields.${index}.required`}
+          control={control}
+          label="Is Field required?"
+          labelPosition="left"
+          name={`configFields.${index}.required`}
+          description="Makes sure the field is not empty. E.g. if you are depending on this field in the module code."
+        />
+      )}
     </>
   );
 };

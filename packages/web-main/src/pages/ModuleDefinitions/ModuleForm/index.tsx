@@ -66,7 +66,7 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
       name: mod?.name ?? undefined,
       description: mod?.description ?? undefined,
       permissions: mod?.permissions ?? undefined,
-      configFields: mod ? schemaToInputs(JSON.parse(mod.configSchema), JSON.parse(mod.uiSchema)) : [],
+      configFields: mod ? schemaToInputs(JSON.parse(mod.configSchema)) : [],
     },
     resolver: zodResolver(validationSchema),
   });

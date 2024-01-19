@@ -26,9 +26,11 @@ export function SelectWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchem
       required={required}
       /* if it is not required it means it can be set to undefined ? or should we set it to the default value? */
       canClear={!required}
+      enableFilter={enumOptions && enumOptions.length > 5}
       readOnly={readonly}
       value={value || defaultValue}
       multiple={multiple}
+      inPortal={true}
       hasDescription={!!schema.description}
       onChange={onChange}
       render={(selectedItems) => {

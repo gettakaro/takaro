@@ -1,8 +1,8 @@
 import { SchemaObject } from 'ajv';
 import { Input, InputType } from './inputTypes';
-import { UiSchema, StrictRJSFSchema } from '@rjsf/utils';
+import { StrictRJSFSchema } from '@rjsf/utils';
 
-export function schemaToInputs(schema: SchemaObject, uiSchema: UiSchema): Input[] {
+export function schemaToInputs(schema: SchemaObject): Input[] {
   const normalizedSchema: SchemaObject = {
     type: 'object',
     properties: schema.properties ?? {},
@@ -40,11 +40,15 @@ export function schemaToInputs(schema: SchemaObject, uiSchema: UiSchema): Input[
         break;
 
       case 'string':
-        if (uiSchema[name] && uiSchema[name]['ui:widget'] && uiSchema[name]['ui:widget'] === 'item') {
+        if (property['x-component'] === InputType.item) {
           input.type = InputType.item;
           input.multiple = false;
+        } else if (property['x-component'] === InputType.country) {
+          input.type = InputType.country;
+          input.multiple = false;
         } else if (property.enum) {
-          input.type = InputType.enum;
+          input.type = InputType.select;
+          input.multiple = false;
           input.values = property.enum;
         } else {
           // InputType.string
@@ -54,9 +58,11 @@ export function schemaToInputs(schema: SchemaObject, uiSchema: UiSchema): Input[
 
         break;
       case 'array':
-        if (uiSchema[name] && uiSchema[name]['ui:widget'] && uiSchema[name]['ui:widget'] === 'item') {
+        input.multiple = true;
+        if (property['x-component'] === InputType.item) {
           input.type = InputType.item;
-          input.multiple = true;
+        } else if (property['x-component'] === InputType.country) {
+          input.type = InputType.country;
         } else {
           input.values = property.items;
         }
