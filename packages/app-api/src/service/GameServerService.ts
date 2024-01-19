@@ -31,9 +31,13 @@ import { PlayerService } from './PlayerService.js';
 import { PlayerOnGameServerService, PlayerOnGameServerUpdateDTO } from './PlayerOnGameserverService.js';
 import { ItemCreateDTO, ItemsService } from './ItemsService.js';
 import { randomUUID } from 'crypto';
-const Ajv = _Ajv as unknown as typeof _Ajv.default;
 
-const ajv = new Ajv({ useDefaults: true });
+const Ajv = _Ajv as unknown as typeof _Ajv.default;
+const ajv = new Ajv({ useDefaults: true, strict: true });
+
+// Since input types have undistinguishable schemas. We need an annotation to parse into the correct input type.
+// E.g. a select and country input both have an enum schema, to distinguish them we use the x-component: 'country'.
+ajv.addKeyword('x-component');
 
 const gameClassCache = new Map<string, IGameServer>();
 
