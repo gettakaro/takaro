@@ -54,11 +54,11 @@ export const PlayerProfileFrame: FC = () => {
     {
       text: 'Global',
       // If serverId is not valid it will be directed by the failed requests.
-      to: PATHS.player.global.overview(playerId),
+      to: PATHS.player.global.profile(playerId),
     },
     {
       text: 'Gameserver',
-      to: PATHS.player.gameServer.overview(playerId),
+      to: PATHS.player.gameServer.profile(playerId),
     },
   ];
 

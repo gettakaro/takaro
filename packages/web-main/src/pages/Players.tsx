@@ -291,13 +291,13 @@ const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
           <Dropdown.Menu.Item
             label="Go to player profile"
             icon={<ProfileIcon />}
-            onClick={() => navigate(`${PATHS.player.global(player.id)}`)}
+            onClick={() => navigate(`${PATHS.player.global.profile(player.id)}`)}
           />
 
           <Dropdown.Menu.Item
             label="Edit roles"
             icon={<EditIcon />}
-            onClick={() => navigate(PATHS.player.assignRole(player.id))}
+            onClick={() => navigate(PATHS.player.global.assignRole(player.id))}
             disabled={!isLoadingManageRolesPermission && !hasManageRoles}
           />
 

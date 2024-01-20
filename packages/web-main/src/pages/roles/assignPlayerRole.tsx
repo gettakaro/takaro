@@ -63,7 +63,7 @@ const AssignRoleForm: FC<IAssignRoleFormProps> = ({ roles, gameServers }) => {
     }
 
     if (!open) {
-      navigate(PATHS.player.global.overview(playerId));
+      navigate(PATHS.player.global.profile(playerId));
     }
   }, [open, navigate]);
 
@@ -80,7 +80,7 @@ const AssignRoleForm: FC<IAssignRoleFormProps> = ({ roles, gameServers }) => {
   const onSubmit: SubmitHandler<IFormInputs> = async ({ id, roleId, gameServerId, expiresAt }) => {
     if (gameServerId === 'null') gameServerId = undefined;
     await mutateAsync({ id, roleId, gameServerId, expiresAt });
-    navigate(PATHS.player.global.overview(id));
+    navigate(PATHS.player.global.profile(id));
   };
 
   return (

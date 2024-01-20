@@ -66,11 +66,11 @@ export const PATHS = {
 
   player: {
     global: {
-      overview: (playerId: string) => `/players/${playerId}/global/`,
+      profile: (playerId: string) => `/players/${playerId}/global`,
       assignRole: (playerId: string) => `/players/${playerId}/global/assign-role`,
     },
     gameServer: {
-      overview: (playerId: string) => `/players/${playerId}/gameserver`,
+      profile: (playerId: string) => `/players/${playerId}/gameserver`,
     },
   },
 

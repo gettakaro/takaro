@@ -109,12 +109,12 @@ export const Router: FC = () => (
           <Route element={<PermissionsGuard permissions={[PERMISSIONS.ReadPlayers]} />}>
             <Route element={<Players />} path={PATHS.players()} />
             <Route element={<FrameLayoutRoute frame="playerProfile" />}>
-              <Route element={<PlayerProfile />} path={PATHS.player.global.overview(':playerId')}>
+              <Route element={<PlayerProfile />} path={PATHS.player.global.profile(':playerId')}>
                 <Route element={<PermissionsGuard permissions={[PERMISSIONS.ManagePlayers]} />}>
                   <Route element={<AssignPlayerRole />} path={PATHS.player.global.assignRole(':playerId')} />
                 </Route>
               </Route>
-              <Route element={<PlayerProfileGameServer />} path={PATHS.player.gameServer.overview(':playerId')} />
+              <Route element={<PlayerProfileGameServer />} path={PATHS.player.gameServer.profile(':playerId')} />
             </Route>
           </Route>
 
