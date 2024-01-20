@@ -11,30 +11,24 @@ import { Type } from 'class-transformer';
 import { GameServerOutputDTO } from './GameServerService.js';
 import { ModuleOutputDTO } from './ModuleService.js';
 import { UserOutputDTO } from './UserService.js';
+import { TakaroEvents } from '@takaro/modules';
+import { ValueOf } from 'type-fest';
 
-export enum EVENT_TYPES {
-  PLAYER_CONNECTED = 'player-connected',
-  PLAYER_DISCONNECTED = 'player-disconnected',
-  CHAT_MESSAGE = 'chat-message',
-  PLAYER_DEATH = 'player-death',
-  ENTITY_KILLED = 'entity-killed',
-  ROLE_ASSIGNED = 'role-assigned',
-  ROLE_REMOVED = 'role-removed',
-  ROLE_CREATED = 'role-created',
-  ROLE_UPDATED = 'role-updated',
-  ROLE_DELETED = 'role-deleted',
-  COMMAND_EXECUTED = 'command-executed',
-  HOOK_EXECUTED = 'hook-executed',
-  CRONJOB_EXECUTED = 'cronjob-executed',
-  CURRENCY_ADDED = 'currency-added',
-  CURRENCY_DEDUCTED = 'currency-deducted',
-  SETTINGS_SET = 'settings-set',
-  PLAYER_NEW_IP_DETECTED = 'player-new-ip-detected',
-}
+export const EVENT_TYPES = {
+  ...TakaroEvents,
+  // All game events except for LOG_LINE
+  PLAYER_CONNECTED: 'player-connected',
+  PLAYER_DISCONNECTED: 'player-disconnected',
+  CHAT_MESSAGE: 'chat-message',
+  PLAYER_DEATH: 'player-death',
+  ENTITY_KILLED: 'entity-killed',
+} as const;
+
+export type EventTypes = ValueOf<typeof EVENT_TYPES>;
 
 export class EventOutputDTO extends TakaroModelDTO<EventOutputDTO> {
   @IsEnum(EVENT_TYPES)
-  eventName!: EVENT_TYPES;
+  eventName!: EventTypes;
 
   @IsOptional()
   @IsUUID()
@@ -79,7 +73,7 @@ export class EventOutputDTO extends TakaroModelDTO<EventOutputDTO> {
 
 export class EventCreateDTO extends TakaroDTO<EventCreateDTO> {
   @IsEnum(EVENT_TYPES)
-  eventName!: EVENT_TYPES;
+  eventName!: EventTypes;
 
   @IsOptional()
   @IsUUID()

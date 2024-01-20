@@ -7,7 +7,6 @@ export {
   useGameServerCreate,
   useGameServerUpdate,
   useGameServer,
-  useGameServerSettings,
   useGameServerSendMessage,
   // modules
   useGameServerModuleInstall,

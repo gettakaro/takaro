@@ -32,7 +32,6 @@ export const NavBar = styled.nav<{ variant: HorizontalNavVariant }>`
       switch (variant) {
         case 'block':
           return `
-            font-size: ${theme.fontSize.mediumLarge};
             font-weight: bold;
             padding: ${theme.spacing['0_75']};
           `;
@@ -44,7 +43,8 @@ export const NavBar = styled.nav<{ variant: HorizontalNavVariant }>`
       }
     }}
     border-radius: ${({ theme }) => theme.borderRadius.small};
-    color: ${({ theme }) => theme.colors.textAlt};
+    text-color: ${({ theme }) => theme.colors.textAlt};
+    font-size: ${({ theme }) => theme.fontSize.medium};
 
     &.active {
       color: ${({ theme }) => theme.colors.text};

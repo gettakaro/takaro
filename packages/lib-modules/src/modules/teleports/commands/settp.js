@@ -16,7 +16,7 @@ async function main() {
     throw new TakaroUserError('You do not have permission to use teleports.');
   }
 
-  const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data;
+  const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data.value;
 
   const existingVariable = await takaro.variable.variableControllerSearch({
     filters: {

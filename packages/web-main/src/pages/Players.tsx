@@ -302,20 +302,20 @@ const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
           />
 
           <Dropdown.Menu.Item
-            label="Ban from ALL game servers"
+            label="Ban from ALL game servers (coming soon)"
             icon={<BanIcon />}
             onClick={async () => {
               setOpenBanDialog(true);
             }}
-            disabled={!isLoadingManagePlayersPermission && !hasManagePlayers}
+            disabled={(!isLoadingManagePlayersPermission && !hasManagePlayers) || true}
           />
           <Dropdown.Menu.Item
-            label="Unban from ALL game servers"
+            label="Unban from ALL game servers (coming soon)"
             icon={<UnBanIcon />}
             onClick={async () => {
               setOpenUnbanDialog(true);
             }}
-            disabled={!isLoadingManagePlayersPermission && !hasManagePlayers}
+            disabled={(!isLoadingManagePlayersPermission && !hasManagePlayers) || true}
           />
         </Dropdown.Menu>
       </Dropdown>
