@@ -69,6 +69,12 @@ function getJsonSchemaElement(input: AnyInput) {
       }
       break;
 
+    case InputType.duration:
+      res['x-component'] = InputType.duration;
+      res.type = 'number';
+      res.minimum = 0;
+      break;
+
     case InputType.country:
       res['x-component'] = InputType.country;
       const oneOf = countryCodes.map(({ code, name }) => ({ const: code, title: name }));
@@ -93,6 +99,11 @@ export function inputsToUiSchema(inputs: Array<Input>): UiSchema {
     if (input.type === InputType.item) {
       uiSchema[input.name] = {
         'ui:widget': InputType.item,
+      };
+    }
+    if (input.type === InputType.duration) {
+      uiSchema[input.name] = {
+        'ui:widget': InputType.duration,
       };
     }
   }

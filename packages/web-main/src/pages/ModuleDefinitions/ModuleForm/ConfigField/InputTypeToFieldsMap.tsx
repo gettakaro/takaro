@@ -1,6 +1,6 @@
 import { Control } from 'react-hook-form';
 import { InputType } from 'components/JsonSchemaForm/generator/inputTypes';
-import { TextField, TagField, CheckBox, SelectField, Switch } from '@takaro/lib-components';
+import { TextField, TagField, CheckBox, SelectField, Switch, DurationField } from '@takaro/lib-components';
 import { IFormInputs } from '..';
 import { useWatch } from 'react-hook-form';
 import { CountrySelect } from 'components/selects/CountrySelect';
@@ -139,6 +139,14 @@ export const InputTypeToFieldsMap = (control: Control<IFormInputs>, index: numbe
         label="Default selected"
         key={`${InputType.country}-values-${id}`}
         multiple={multiple ? true : false}
+        control={control}
+      />,
+    ],
+    [InputType.duration]: [
+      <DurationField
+        key={`${InputType.duration}-default-${id}`}
+        name={`configFields.${index}.default`}
+        label="Default value"
         control={control}
       />,
     ],

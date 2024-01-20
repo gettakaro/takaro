@@ -6,6 +6,7 @@ export enum InputType {
   select = 'select',
   item = 'item',
   country = 'country',
+  duration = 'duration',
 }
 
 // TODO: required should not be a property of base since boolean does not have it
@@ -26,6 +27,11 @@ interface CountryInput extends BaseObject {
   type: InputType.country;
   default?: string;
   multiple: boolean;
+}
+
+interface DurationInput extends BaseObject {
+  type: InputType.duration;
+  default?: number;
 }
 
 interface StringInput extends BaseObject {
@@ -54,5 +60,12 @@ export interface SelectInput extends BaseObject {
   default?: string | string[];
 }
 
-export type AnyInput = SelectInput | NumberInput | StringInput | BooleanInput | ItemInput | CountryInput;
+export type AnyInput =
+  | SelectInput
+  | NumberInput
+  | StringInput
+  | BooleanInput
+  | ItemInput
+  | CountryInput
+  | DurationInput;
 export type Input = AnyInput & { name: string };

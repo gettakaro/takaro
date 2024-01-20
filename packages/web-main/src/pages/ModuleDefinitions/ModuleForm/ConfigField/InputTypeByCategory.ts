@@ -31,12 +31,17 @@ const inputTypeInfo: InputTypeInfo[] = [
   {
     type: InputType.item,
     category: 'custom',
-    description: 'An input field providing a list of items available on the game server.',
+    description: 'A dropdown menu providing a list of items available on the game server.',
   },
   {
     type: InputType.country,
     category: 'custom',
     description: 'A dropdown menu with a list of countries.',
+  },
+  {
+    type: InputType.duration,
+    category: 'custom',
+    description: 'A time period input field.',
   },
 ];
 
