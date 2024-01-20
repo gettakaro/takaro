@@ -43,7 +43,7 @@ export const NavBar = styled.nav<{ variant: HorizontalNavVariant }>`
       }
     }}
     border-radius: ${({ theme }) => theme.borderRadius.small};
-    text-color: ${({ theme }) => theme.colors.textAlt};
+    color: ${({ theme }) => theme.colors.textAlt};
     font-size: ${({ theme }) => theme.fontSize.medium};
 
     &.active {
