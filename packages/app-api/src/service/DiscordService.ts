@@ -204,7 +204,7 @@ export class DiscordService extends TakaroService<
     await Promise.all(
       gameServers.results.map((gameServer) => {
         const hookService = new HookService(this.domainId);
-        return hookService.handleEvent(messageDTO, gameServer.id);
+        return hookService.handleEvent(messageDTO.type, messageDTO, gameServer.id);
       })
     );
   }

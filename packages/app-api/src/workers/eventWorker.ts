@@ -39,7 +39,7 @@ async function processJob(job: Job<IEventQueueData>) {
 
   const eventService = new EventService(domainId);
   const hooksService = new HookService(domainId);
-  await hooksService.handleEvent(event, gameServerId);
+  await hooksService.handleEvent(type, event, gameServerId);
 
   const socketServer = await getSocketServer();
   socketServer.emit(domainId, 'gameEvent', [gameServerId, type, event]);

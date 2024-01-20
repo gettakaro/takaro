@@ -35,7 +35,6 @@ const takaro = new AdminClient({
 interface IFunctionResult {
   success: boolean;
   logs: TakaroEventFunctionLog[];
-  requestId?: string;
 }
 
 export type FunctionExecutor = (code: string, data: Record<string, unknown>, token: string) => Promise<IFunctionResult>;
@@ -186,7 +185,7 @@ export async function executeFunction(
       }
     }
 
-    await eventService.create(eventData);
+    await eventService.create(await new EventCreateDTO().construct({ ...eventData, meta }));
   } catch (err: any) {
     if (err instanceof RateLimiterRes) {
       log.warn('Function execution rate limited');
@@ -195,7 +194,7 @@ export async function executeFunction(
         reason: 'rate limited',
         tryAgainIn: err.msBeforeNext,
       });
-      await eventService.create(eventData);
+      await eventService.create(await new EventCreateDTO().construct({ ...eventData, meta }));
       return null;
     }
 
@@ -208,7 +207,7 @@ export async function executeFunction(
 
     Sentry.captureException(err);
     log.error('executeFunction', err);
-    await eventService.create(eventData);
+    await eventService.create(await new EventCreateDTO().construct({ ...eventData, meta }));
     return null;
   }
 }

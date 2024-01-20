@@ -107,6 +107,12 @@ export interface BanPlayerOutputDTO {
 export interface BaseDiscordEvent {
     /**
      * 
+     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+     * @memberof BaseDiscordEvent
+     */
+    'timestamp': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+    /**
+     * 
      * @type {string}
      * @memberof BaseDiscordEvent
      */
@@ -115,9 +121,28 @@ export interface BaseDiscordEvent {
 /**
  * 
  * @export
+ * @interface BaseEvent
+ */
+export interface BaseEvent {
+    /**
+     * 
+     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+     * @memberof BaseEvent
+     */
+    'timestamp': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ * 
+ * @export
  * @interface BaseGameEvent
  */
 export interface BaseGameEvent {
+    /**
+     * 
+     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+     * @memberof BaseGameEvent
+     */
+    'timestamp': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
     /**
      * 
      * @type {string}
@@ -137,6 +162,12 @@ export interface BaseTakaroEvent {
      * @memberof BaseTakaroEvent
      */
     'msg': string;
+    /**
+     * 
+     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+     * @memberof BaseTakaroEvent
+     */
+    'timestamp': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  * 
@@ -1213,6 +1244,12 @@ export interface EventChatMessage {
     'player': IGamePlayer;
     /**
      * 
+     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+     * @memberof EventChatMessage
+     */
+    'timestamp': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+    /**
+     * 
      * @type {string}
      * @memberof EventChatMessage
      */
@@ -1256,10 +1293,10 @@ export interface EventCreateDTO {
     'gameserverId'?: string;
     /**
      * 
-     * @type {EventOutputDTOMeta}
+     * @type {object}
      * @memberof EventCreateDTO
      */
-    'meta'?: EventOutputDTOMeta;
+    'meta'?: object;
 }
 
 export const EventCreateDTOEventNameEnum = {
@@ -1366,6 +1403,12 @@ export interface EventEntityKilled {
     'weapon': string;
     /**
      * 
+     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+     * @memberof EventEntityKilled
+     */
+    'timestamp': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+    /**
+     * 
      * @type {string}
      * @memberof EventEntityKilled
      */
@@ -1377,6 +1420,12 @@ export interface EventEntityKilled {
  * @interface EventLogLine
  */
 export interface EventLogLine {
+    /**
+     * 
+     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+     * @memberof EventLogLine
+     */
+    'timestamp': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
     /**
      * 
      * @type {string}
@@ -1531,6 +1580,12 @@ export interface EventPlayerConnected {
     'player': IGamePlayer;
     /**
      * 
+     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+     * @memberof EventPlayerConnected
+     */
+    'timestamp': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+    /**
+     * 
      * @type {string}
      * @memberof EventPlayerConnected
      */
@@ -1562,6 +1617,12 @@ export interface EventPlayerDeath {
     'position'?: IPosition;
     /**
      * 
+     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+     * @memberof EventPlayerDeath
+     */
+    'timestamp': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+    /**
+     * 
      * @type {string}
      * @memberof EventPlayerDeath
      */
@@ -1579,6 +1640,12 @@ export interface EventPlayerDisconnected {
      * @memberof EventPlayerDisconnected
      */
     'player': IGamePlayer;
+    /**
+     * 
+     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+     * @memberof EventPlayerDisconnected
+     */
+    'timestamp': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
     /**
      * 
      * @type {string}
@@ -2670,6 +2737,12 @@ export interface HookEventDiscordMessage {
      * @memberof HookEventDiscordMessage
      */
     'channel': EventDiscordChannel;
+    /**
+     * 
+     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+     * @memberof HookEventDiscordMessage
+     */
+    'timestamp': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  * 
@@ -2931,19 +3004,25 @@ export interface HookTriggerDTO {
      * @type {string}
      * @memberof HookTriggerDTO
      */
-    'eventType': HookTriggerDTOEventTypeEnum;
-    /**
-     * 
-     * @type {IPlayerReferenceDTO}
-     * @memberof HookTriggerDTO
-     */
-    'player'?: IPlayerReferenceDTO;
+    'playerId'?: string;
     /**
      * 
      * @type {string}
      * @memberof HookTriggerDTO
      */
-    'msg'?: string;
+    'moduleId'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof HookTriggerDTO
+     */
+    'eventType': HookTriggerDTOEventTypeEnum;
+    /**
+     * 
+     * @type {object}
+     * @memberof HookTriggerDTO
+     */
+    'eventMeta': object;
 }
 
 export const HookTriggerDTOEventTypeEnum = {
@@ -5977,6 +6056,12 @@ export interface TakaroEventCommandExecuted {
      * @memberof TakaroEventCommandExecuted
      */
     'command'?: TakaroEventCommandDetails;
+    /**
+     * 
+     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+     * @memberof TakaroEventCommandExecuted
+     */
+    'timestamp': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  * 
@@ -5990,6 +6075,12 @@ export interface TakaroEventCurrencyAdded {
      * @memberof TakaroEventCurrencyAdded
      */
     'amount': number;
+    /**
+     * 
+     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+     * @memberof TakaroEventCurrencyAdded
+     */
+    'timestamp': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  * 
@@ -6003,6 +6094,12 @@ export interface TakaroEventCurrencyDeducted {
      * @memberof TakaroEventCurrencyDeducted
      */
     'amount': number;
+    /**
+     * 
+     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+     * @memberof TakaroEventCurrencyDeducted
+     */
+    'timestamp': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  * 
@@ -6037,12 +6134,6 @@ export interface TakaroEventFunctionResult {
     'logs': Array<TakaroEventFunctionLog>;
     /**
      * 
-     * @type {string}
-     * @memberof TakaroEventFunctionResult
-     */
-    'requestId': string;
-    /**
-     * 
      * @type {boolean}
      * @memberof TakaroEventFunctionResult
      */
@@ -6058,7 +6149,7 @@ export interface TakaroEventFunctionResult {
      * @type {number}
      * @memberof TakaroEventFunctionResult
      */
-    'tryAgainIn': number;
+    'tryAgainIn'?: number;
 }
 /**
  * 
@@ -6096,6 +6187,12 @@ export interface TakaroEventPlayerNewIpDetected {
      * @memberof TakaroEventPlayerNewIpDetected
      */
     'ip': string;
+    /**
+     * 
+     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+     * @memberof TakaroEventPlayerNewIpDetected
+     */
+    'timestamp': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  * 
@@ -6109,6 +6206,12 @@ export interface TakaroEventRoleAssigned {
      * @memberof TakaroEventRoleAssigned
      */
     'role': TakaroEventRoleMeta;
+    /**
+     * 
+     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+     * @memberof TakaroEventRoleAssigned
+     */
+    'timestamp': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  * 
@@ -6122,6 +6225,12 @@ export interface TakaroEventRoleCreated {
      * @memberof TakaroEventRoleCreated
      */
     'role': TakaroEventRoleMeta;
+    /**
+     * 
+     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+     * @memberof TakaroEventRoleCreated
+     */
+    'timestamp': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  * 
@@ -6135,6 +6244,12 @@ export interface TakaroEventRoleDeleted {
      * @memberof TakaroEventRoleDeleted
      */
     'role': TakaroEventRoleMeta;
+    /**
+     * 
+     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+     * @memberof TakaroEventRoleDeleted
+     */
+    'timestamp': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  * 
@@ -6167,6 +6282,12 @@ export interface TakaroEventRoleRemoved {
      * @memberof TakaroEventRoleRemoved
      */
     'role': TakaroEventRoleMeta;
+    /**
+     * 
+     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+     * @memberof TakaroEventRoleRemoved
+     */
+    'timestamp': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  * 
@@ -6180,6 +6301,12 @@ export interface TakaroEventRoleUpdated {
      * @memberof TakaroEventRoleUpdated
      */
     'role': TakaroEventRoleMeta;
+    /**
+     * 
+     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+     * @memberof TakaroEventRoleUpdated
+     */
+    'timestamp': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  * 
@@ -6199,6 +6326,12 @@ export interface TakaroEventSettingsSet {
      * @memberof TakaroEventSettingsSet
      */
     'value'?: string;
+    /**
+     * 
+     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+     * @memberof TakaroEventSettingsSet
+     */
+    'timestamp': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  * 
@@ -11669,7 +11802,7 @@ export const HookApiAxiosParamCreator = function (configuration?: Configuration)
             };
         },
         /**
-         *  Required permissions: `MANAGE_MODULES`
+         * Trigger a hook. This is used for testing purposes, the event will not actually be created but the hook-logic will be executed.      You can pass any data you want, but it must validate against the corresponding event metadata. Eg to trigger the `chat-message` event, you must pass an object with a `message` property Required permissions: `MANAGE_MODULES`
          * @summary Trigger
          * @param {HookTriggerDTO} [hookTriggerDTO] HookTriggerDTO
          * @param {*} [options] Override http request option.
@@ -11807,7 +11940,7 @@ export const HookApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
         /**
-         *  Required permissions: `MANAGE_MODULES`
+         * Trigger a hook. This is used for testing purposes, the event will not actually be created but the hook-logic will be executed.      You can pass any data you want, but it must validate against the corresponding event metadata. Eg to trigger the `chat-message` event, you must pass an object with a `message` property Required permissions: `MANAGE_MODULES`
          * @summary Trigger
          * @param {HookTriggerDTO} [hookTriggerDTO] HookTriggerDTO
          * @param {*} [options] Override http request option.
@@ -11884,7 +12017,7 @@ export const HookApiFactory = function (configuration?: Configuration, basePath?
             return localVarFp.hookControllerSearch(hookSearchInputDTO, options).then((request) => request(axios, basePath));
         },
         /**
-         *  Required permissions: `MANAGE_MODULES`
+         * Trigger a hook. This is used for testing purposes, the event will not actually be created but the hook-logic will be executed.      You can pass any data you want, but it must validate against the corresponding event metadata. Eg to trigger the `chat-message` event, you must pass an object with a `message` property Required permissions: `MANAGE_MODULES`
          * @summary Trigger
          * @param {HookTriggerDTO} [hookTriggerDTO] HookTriggerDTO
          * @param {*} [options] Override http request option.
@@ -11963,7 +12096,7 @@ export class HookApi extends BaseAPI {
     }
 
     /**
-     *  Required permissions: `MANAGE_MODULES`
+     * Trigger a hook. This is used for testing purposes, the event will not actually be created but the hook-logic will be executed.      You can pass any data you want, but it must validate against the corresponding event metadata. Eg to trigger the `chat-message` event, you must pass an object with a `message` property Required permissions: `MANAGE_MODULES`
      * @summary Trigger
      * @param {HookTriggerDTO} [hookTriggerDTO] HookTriggerDTO
      * @param {*} [options] Override http request option.

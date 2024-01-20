@@ -1,6 +1,5 @@
 import {
   IsBoolean,
-  IsDate,
   IsEnum,
   IsIP,
   IsISO31661Alpha2,
@@ -31,9 +30,6 @@ export const TakaroEvents = {
 } as const;
 
 export class BaseTakaroEvent<T> extends BaseEvent<T> {
-  @IsDate()
-  timestamp: Date = new Date();
-
   @IsEnum(TakaroEvents)
   declare type: ValueOf<typeof TakaroEvents>;
 
@@ -82,9 +78,6 @@ export class TakaroEventFunctionResult extends TakaroDTO<TakaroEventFunctionResu
   @Type(() => TakaroEventFunctionLog)
   logs: TakaroEventFunctionLog[];
 
-  @IsString()
-  requestId: string;
-
   @IsBoolean()
   success: boolean;
 
@@ -93,6 +86,7 @@ export class TakaroEventFunctionResult extends TakaroDTO<TakaroEventFunctionResu
   reason: string;
 
   @IsNumber()
+  @IsOptional()
   tryAgainIn: number;
 }
 

@@ -1,7 +1,7 @@
 import { TakaroService } from './Base.js';
 
 import { IsEnum, IsObject, IsOptional, IsUUID, ValidateNested } from 'class-validator';
-import { TakaroDTO, TakaroModelDTO, errors, traceableClass } from '@takaro/util';
+import { TakaroDTO, TakaroModelDTO, errors, isTakaroDTO, traceableClass } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { EventModel, EventRepo } from '../db/event.js';
@@ -93,7 +93,7 @@ export class EventCreateDTO extends TakaroDTO<EventCreateDTO> {
 
   @IsOptional()
   @IsObject()
-  meta: EventPayload;
+  meta: TakaroDTO<any>;
 }
 
 export class EventUpdateDTO extends TakaroDTO<EventUpdateDTO> {}
@@ -126,7 +126,14 @@ export class EventService extends TakaroService<EventModel, EventOutputDTO, Even
     const dto = EventMapping[data.eventName];
     if (!dto) throw new errors.BadRequestError(`Event ${data.eventName} is not supported`);
 
-    const eventMeta = await new dto().construct(data.meta.toJSON());
+    let eventMeta = null;
+
+    if (isTakaroDTO(data.meta)) {
+      eventMeta = await new dto().construct(data.meta.toJSON());
+    } else {
+      eventMeta = await new dto().construct(data.meta);
+    }
+
     await eventMeta.validate({
       forbidNonWhitelisted: false,
       whitelist: true,

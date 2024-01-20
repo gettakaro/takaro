@@ -120,13 +120,6 @@ export class Meta {
       };
     }
 
-    const eventCreateMetaSchema = spec.components?.schemas?.EventCreateDTO;
-    if (eventCreateMetaSchema && 'properties' in eventCreateMetaSchema && eventCreateMetaSchema.properties) {
-      eventCreateMetaSchema.properties.meta = {
-        oneOf: [...allEvents.map((e) => ({ $ref: `#/components/schemas/${e}` }))],
-      };
-    }
-
     return spec;
   }
 
