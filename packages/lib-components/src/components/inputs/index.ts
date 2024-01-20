@@ -55,6 +55,10 @@ export { Description } from './layout/Description';
 export { DateRangePicker } from './Date/DateRangePicker';
 export type { DateRangePickerProps } from './Date/DateRangePicker';
 
+export { ControlledDurationField as DurationField } from './DurationField/Controlled';
+export type { ControlledDurationFieldProps as DurationFieldProps } from './DurationField/Controlled';
+export { GenericDurationField as UnControlledDurationField } from './DurationField/Generic';
+
 export { ControlledDatePicker as DatePicker } from './Date/DatePicker/Controlled';
 export type { ControlledDatePickerProps as DatePickerProps } from './Date/DatePicker/Controlled';
 export { GenericDatePicker as UnControlledDatePicker } from './Date/DatePicker/Generic';
