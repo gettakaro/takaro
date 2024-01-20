@@ -71,6 +71,7 @@ export const PATHS = {
     },
     inventory: (playerId: string) => `/players/${playerId}/inventory`,
     events: (playerId: string) => `/players/${playerId}/events`,
+    economy: (playerId: string) => `/players/${playerId}/economy`,
   },
 
   user: {

@@ -17,6 +17,8 @@ import { usePlayerOnGameServers } from 'queries/players/queries';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
 const Container = styled.div`
+  height: 100%;
+
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing['4']};
@@ -64,6 +66,10 @@ export const PlayerProfileFrame: FC = () => {
     {
       text: 'Inventory',
       to: PATHS.player.inventory(playerId),
+    },
+    {
+      text: 'Economy',
+      to: PATHS.player.economy(playerId),
     },
   ];
 

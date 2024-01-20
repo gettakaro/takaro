@@ -46,6 +46,7 @@ import GameServerConsole from 'pages/gameserver/dashboards/GameServerConsole';
 import GameServerStatistics from 'pages/gameserver/dashboards/GameServerStatistics';
 import { PlayerInventory } from 'pages/player/gameserver/PlayerInventory';
 import { PlayerEvents } from 'pages/player/gameserver/PlayerEvents';
+import { PlayerEconomy } from 'pages/player/gameserver/PlayerEconomy';
 
 const SentryRoutes = withSentryReactRouterV6Routing(Routes);
 
@@ -117,6 +118,7 @@ export const Router: FC = () => (
               </Route>
               <Route element={<PlayerInventory />} path={PATHS.player.inventory(':playerId')} />
               <Route element={<PlayerEvents />} path={PATHS.player.events(':playerId')} />
+              <Route element={<PlayerEconomy />} path={PATHS.player.economy(':playerId')} />
             </Route>
           </Route>
 
