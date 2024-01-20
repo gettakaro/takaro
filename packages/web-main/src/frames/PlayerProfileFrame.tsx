@@ -13,16 +13,8 @@ const Container = styled.div`
   gap: ${({ theme }) => theme.spacing['4']};
 `;
 
-const Section = styled.div`
+const Header = styled.div`
   display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing['1']};
-`;
-
-export const ChipContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
   gap: ${({ theme }) => theme.spacing['1']};
 `;
 
@@ -64,35 +56,33 @@ export const PlayerProfileFrame: FC = () => {
 
   return (
     <Container>
-      <Section>
-        <div style={{ display: 'flex', gap: theme.spacing[1] }}>
-          <img src={player?.steamAvatar} alt="avatar" style={{ width: '120px', height: '120px' }} />
-          <div style={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'column' }}>
-            <h1 style={{ lineHeight: 1 }}>{player?.name}</h1>
-            <div style={{ display: 'flex', gap: theme.spacing[2] }}>
-              <Stats border={false} direction="horizontal">
-                <Stats.Stat
-                  description="Member since"
-                  value={DateTime.fromISO(player?.createdAt).toLocaleString({
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric',
-                  })}
-                />
-                <Stats.Stat
-                  description="Last seen"
-                  value={DateTime.fromISO(player?.updatedAt).toLocaleString({
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric',
-                  })}
-                />
-                <Stats.Stat description="Joined servers" value={'1'} />
-              </Stats>
-            </div>
+      <Header>
+        <img src={player?.steamAvatar} alt="avatar" style={{ width: '120px', height: '120px' }} />
+        <div style={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'column' }}>
+          <h1 style={{ lineHeight: 1 }}>{player?.name}</h1>
+          <div style={{ display: 'flex', gap: theme.spacing[2] }}>
+            <Stats border={false} direction="horizontal">
+              <Stats.Stat
+                description="Member since"
+                value={DateTime.fromISO(player?.createdAt).toLocaleString({
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}
+              />
+              <Stats.Stat
+                description="Last seen"
+                value={DateTime.fromISO(player?.updatedAt).toLocaleString({
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
+                })}
+              />
+              <Stats.Stat description="Joined servers" value={'1'} />
+            </Stats>
           </div>
         </div>
-      </Section>
+      </Header>
 
       <HorizontalNav items={links} variant="underline" />
 
