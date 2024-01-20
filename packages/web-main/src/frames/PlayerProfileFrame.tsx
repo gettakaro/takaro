@@ -1,4 +1,13 @@
-import { Stats, styled, Skeleton, useTheme, HorizontalNav, HorizontalNavLink } from '@takaro/lib-components';
+import {
+  Stats,
+  styled,
+  Skeleton,
+  useTheme,
+  HorizontalNav,
+  HorizontalNavLink,
+  Avatar,
+  getInitials,
+} from '@takaro/lib-components';
 import { PATHS } from 'paths';
 import { usePlayer } from 'queries/players';
 import { FC } from 'react';
@@ -57,7 +66,10 @@ export const PlayerProfileFrame: FC = () => {
   return (
     <Container>
       <Header>
-        <img src={player?.steamAvatar} alt="avatar" style={{ width: '120px', height: '120px' }} />
+        <Avatar size="large" variant="rounded">
+          <Avatar.Image src={player?.steamAvatar} />
+          <Avatar.FallBack>{getInitials(player?.name)}</Avatar.FallBack>
+        </Avatar>
         <div style={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'column' }}>
           <h1 style={{ lineHeight: 1 }}>{player?.name}</h1>
           <div style={{ display: 'flex', gap: theme.spacing[2] }}>
