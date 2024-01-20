@@ -48,7 +48,7 @@ export class EventOutputDTO extends TakaroModelDTO<EventOutputDTO> {
 
   @IsOptional()
   @IsObject()
-  meta: Record<string, unknown>;
+  meta: EventPayload;
 
   @IsOptional()
   @Type(() => PlayerOutputDTO)

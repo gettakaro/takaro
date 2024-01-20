@@ -70,6 +70,7 @@ export interface IPosition {
 }
 
 export class EventLogLine extends BaseGameEvent<EventLogLine> {
+  @IsString()
   type = GameEvents.LOG_LINE;
 }
 

@@ -188,7 +188,8 @@ export class TakaroEventSettingsSet extends BaseEvent<TakaroEventSettingsSet> {
   key: string;
 
   @IsString()
-  value: string;
+  @IsOptional()
+  value: string | null;
 }
 
 export const TakaroEventsMapping = {

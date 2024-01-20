@@ -7,6 +7,7 @@ import { IsBoolean } from 'class-validator';
 import { getMetrics, health } from '@takaro/util';
 import { OpenAPIObject } from 'openapi3-ts';
 import { PERMISSIONS } from '@takaro/auth';
+import { EventMapping } from '@takaro/modules';
 
 let spec: OpenAPIObject | undefined;
 
@@ -73,6 +74,8 @@ export class Meta {
       }
     );
 
+    // Add required permissions to operation descriptions
+
     const requiredPermsRegex = /authMiddleware\((.+)\)/;
 
     storage.uses.forEach((use) => {
@@ -103,6 +106,24 @@ export class Meta {
     if (spec.components?.schemas) {
       spec.components.schemas.PERMISSIONS = {
         enum: Object.values(PERMISSIONS),
+      };
+    }
+
+    // Force event meta to be the correct types
+    // TODO: figure out how to do this 'properly' with class-validator
+    const allEvents = Object.values(EventMapping).map((e) => e.name);
+
+    const eventOutputMetaSchema = spec.components?.schemas?.EventOutputDTO;
+    if (eventOutputMetaSchema && 'properties' in eventOutputMetaSchema && eventOutputMetaSchema.properties) {
+      eventOutputMetaSchema.properties.meta = {
+        oneOf: [...allEvents.map((e) => ({ $ref: `#/components/schemas/${e}` }))],
+      };
+    }
+
+    const eventCreateMetaSchema = spec.components?.schemas?.EventCreateDTO;
+    if (eventCreateMetaSchema && 'properties' in eventCreateMetaSchema && eventCreateMetaSchema.properties) {
+      eventCreateMetaSchema.properties.meta = {
+        oneOf: [...allEvents.map((e) => ({ $ref: `#/components/schemas/${e}` }))],
       };
     }
 
