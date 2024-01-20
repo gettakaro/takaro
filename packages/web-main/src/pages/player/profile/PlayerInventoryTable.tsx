@@ -66,28 +66,25 @@ export const PlayerInventoryTable: FC<IPlayerInventoryProps> = ({ pogs }) => {
     const serverType = getServerType(server);
 
     return (
-      <>
-        <h2>{server?.name}</h2>
-        <Grid>
-          {player.inventory.map((item, index) => (
-            <Tooltip placement={'top'}>
-              <Tooltip.Trigger asChild>
-                <GridItem key={index}>
-                  <ItemIcon
-                    src={serverType ? `/icons/${serverType}/${item.code}.png` : placeholderIcon}
-                    alt={item.name}
-                    onError={(e) => (e.currentTarget.src = placeholderIcon)}
-                  />
-                  <ItemName>
-                    {item.amount}x {item.name}
-                  </ItemName>
-                </GridItem>
-              </Tooltip.Trigger>
-              {item.description?.length && <Tooltip.Content>{item.description}</Tooltip.Content>}
-            </Tooltip>
-          ))}
-        </Grid>
-      </>
+      <Grid>
+        {player.inventory.map((item, index) => (
+          <Tooltip placement={'top'}>
+            <Tooltip.Trigger asChild>
+              <GridItem key={index}>
+                <ItemIcon
+                  src={serverType ? `/icons/${serverType}/${item.code}.png` : placeholderIcon}
+                  alt={item.name}
+                  onError={(e) => (e.currentTarget.src = placeholderIcon)}
+                />
+                <ItemName>
+                  {item.amount} x {item.name}
+                </ItemName>
+              </GridItem>
+            </Tooltip.Trigger>
+            {item.description?.length && <Tooltip.Content>{item.description}</Tooltip.Content>}
+          </Tooltip>
+        ))}
+      </Grid>
     );
   });
 

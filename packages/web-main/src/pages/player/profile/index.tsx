@@ -11,19 +11,7 @@ import { usePlayerOnGameServers } from 'queries/players/queries';
 import { IpHistoryOutputDTO } from '@takaro/apiclient';
 import { CountryCodeToEmoji } from 'components/CountryCodeToEmoji';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
-
-const Section = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing['1']};
-`;
-
-export const ChipContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  gap: ${({ theme }) => theme.spacing['1']};
-`;
+import { Section } from './style';
 
 const IpInfoContainer = styled.div`
   display: flex;

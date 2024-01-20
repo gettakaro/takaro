@@ -1,4 +1,4 @@
-import { styled, Skeleton } from '@takaro/lib-components';
+import { Skeleton } from '@takaro/lib-components';
 import { PATHS } from 'paths';
 import { usePlayer } from 'queries/players';
 import { FC } from 'react';
@@ -7,24 +7,8 @@ import { PlayerInventoryTable } from '../PlayerInventoryTable';
 import { usePlayerOnGameServers } from 'queries/players/queries';
 import { EventFeedWidget } from 'components/events/EventFeedWidget';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
-
-export const ChipContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  gap: ${({ theme }) => theme.spacing['1']};
-`;
-
-const Section = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing['1']};
-`;
-
-const Container = styled.div`
-  max-height: 100%;
-  overflow-y: auto;
-`;
+import { Container, Section } from '../style';
+import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 
 export const PlayerProfileGameServer: FC = () => {
   const { playerId } = useParams<{ playerId: string }>();
@@ -44,6 +28,8 @@ export const PlayerProfileGameServer: FC = () => {
 
   useDocumentTitle(player?.name || 'Player Profile');
 
+  const { selectedGameServerId } = useSelectedGameServer();
+
   if (isLoading || isLoadingPogs || !player || !pogs) {
     return <Skeleton variant="rectangular" width="100%" height="100%" />;
   }
@@ -57,7 +43,7 @@ export const PlayerProfileGameServer: FC = () => {
 
       <Section>
         <h2>Events</h2>
-        <EventFeedWidget query={{ filters: { playerId: [playerId] } }} />
+        <EventFeedWidget query={{ filters: { playerId: [playerId], gameserverId: [selectedGameServerId] } }} />
       </Section>
     </Container>
   );

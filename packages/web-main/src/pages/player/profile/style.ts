@@ -13,4 +13,22 @@ export const SocialContainer = styled.div`
   gap: ${({ theme }) => theme.spacing['1']};
 `;
 
+export const Section = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing['1']};
+`;
+
+export const Container = styled.div`
+  max-height: 100%;
+  overflow-y: auto;
+`;
+
+export const ChipContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: ${({ theme }) => theme.spacing['1']};
+`;
+
 export const Social = styled.div``;
