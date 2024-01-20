@@ -62,11 +62,12 @@ export const Container = styled.div<{ size: Size; variant?: AvatarVariant }>`
   }
 
   span {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
-    height: 100%;
+    /* 2px is the size of the border */
+    width: calc(100% - 2px);
+    height: calc(100% - 2px);
     ${({ theme, variant }) => {
       switch (variant) {
         case 'square':
@@ -79,44 +80,45 @@ export const Container = styled.div<{ size: Size; variant?: AvatarVariant }>`
     }}
     background - color: ${({ theme }) => theme.colors.background};
     border: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
-    ${({ size, theme }) => {
-      switch (size) {
-        case 'tiny':
-          return `
-          width: 1.8rem;
-          height: 1.8rem;
+  }
+
+  ${({ size, theme }) => {
+    switch (size) {
+      case 'tiny':
+        return `
+          width: 2rem;
+          height: 2rem;
           font-size: .8rem;
           line-height: .8rem;
         `;
-        case 'small':
-          return `
+      case 'small':
+        return `
           width: 3.125rem;
           height: 3.125rem;
           font-size: ${theme.fontSize.small};
           line-height: 3.125rem;
         `;
-        case 'medium':
-          return `
+      case 'medium':
+        return `
           width: 6rem;
           height: 6rem;
           font-size: 2rem;
           line-height: 2rem;
         `;
-        case 'large':
-          return `
+      case 'large':
+        return `
           width: 12.5rem;
           height: 12.5rem;
           font-size: 2.8rem;
           line-height: 2.8rem;
         `;
-        case 'huge':
-          return `
+      case 'huge':
+        return `
           width: 16rem;
           height: 16rem;
           font-size: 3rem;
           line-height: 3rem;
         `;
-      }
-    }}
-  }
+    }
+  }}
 `;
