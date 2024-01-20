@@ -69,9 +69,8 @@ export const PATHS = {
       profile: (playerId: string) => `/players/${playerId}/global`,
       assignRole: (playerId: string) => `/players/${playerId}/global/assign-role`,
     },
-    gameServer: {
-      profile: (playerId: string) => `/players/${playerId}/gameserver`,
-    },
+    inventory: (playerId: string) => `/players/${playerId}/inventory`,
+    events: (playerId: string) => `/players/${playerId}/events`,
   },
 
   user: {

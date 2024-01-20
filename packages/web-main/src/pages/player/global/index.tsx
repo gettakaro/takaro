@@ -11,7 +11,7 @@ import { usePlayerOnGameServers } from 'queries/players/queries';
 import { IpHistoryOutputDTO } from '@takaro/apiclient';
 import { CountryCodeToEmoji } from 'components/CountryCodeToEmoji';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { Section } from './style';
+import { Section } from '../style';
 
 const IpInfoContainer = styled.div`
   display: flex;
@@ -57,7 +57,7 @@ const IpInfo: FC<{ ipInfo: IpHistoryOutputDTO[] }> = ({ ipInfo }) => {
   );
 };
 
-export const PlayerProfile: FC = () => {
+export const PlayerGlobalProfile: FC = () => {
   const { playerId } = useParams<{ playerId: string }>();
   const navigate = useNavigate();
   if (!playerId) {

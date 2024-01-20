@@ -58,8 +58,12 @@ export const PlayerProfileFrame: FC = () => {
       to: PATHS.player.global.profile(playerId),
     },
     {
-      text: 'Gameserver',
-      to: PATHS.player.gameServer.profile(playerId),
+      text: 'Events',
+      to: PATHS.player.events(playerId),
+    },
+    {
+      text: 'Inventory',
+      to: PATHS.player.inventory(playerId),
     },
   ];
 
@@ -90,7 +94,7 @@ export const PlayerProfileFrame: FC = () => {
                   year: 'numeric',
                 })}
               />
-              <Stats.Stat description="Joined servers" value={'1'} />
+              <Stats.Stat description="Joined servers" value={`${pogs.data.length ?? 0}`} />
             </Stats>
           </div>
         </div>
