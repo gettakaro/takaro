@@ -4,6 +4,8 @@ import { RadioWidget } from './RadioWidget';
 import { TextareaWidget } from './TextAreaWidget';
 import { CheckBoxWidget } from './CheckboxWidget';
 import { ItemWidget } from './ItemWidget';
+import { DurationWidget } from './DurationWidget';
+import { InputType } from '../generator/inputTypes';
 
 export const customWidgets: RegistryWidgetsType = {
   // IMPORTANT: make sure if you are overriding a widget, that the key matches the name of the widget you are overriding
@@ -11,5 +13,6 @@ export const customWidgets: RegistryWidgetsType = {
   radio: RadioWidget,
   textarea: TextareaWidget,
   checkbox: CheckBoxWidget,
-  item: ItemWidget,
+  [InputType.item]: ItemWidget,
+  [InputType.duration]: DurationWidget,
 };
