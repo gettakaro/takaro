@@ -6,6 +6,7 @@ import {
   EventChatMessage,
   EventEntityKilled,
   EventPlayerDeath,
+  HookEvents,
   isChatMessageEvent,
   isConnectedEvent,
   isDisconnectedEvent,
@@ -38,8 +39,11 @@ async function processJob(job: Job<IEventQueueData>) {
   const { type, event, domainId, gameServerId } = job.data;
 
   const eventService = new EventService(domainId);
-  const hooksService = new HookService(domainId);
-  await hooksService.handleEvent(type, event, gameServerId);
+
+  if (type === HookEvents.LOG_LINE) {
+    const hooksService = new HookService(domainId);
+    await hooksService.handleEvent(type, event, gameServerId);
+  }
 
   const socketServer = await getSocketServer();
   socketServer.emit(domainId, 'gameEvent', [gameServerId, type, event]);

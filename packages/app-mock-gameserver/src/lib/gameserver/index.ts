@@ -124,7 +124,6 @@ class MockGameserver implements IMockGameServer {
           const event = await new EventPlayerConnected().construct({
             player: p,
             msg: `${p.name} connected`,
-            timestamp: new Date(),
           });
           this.socketServer.io.emit(HookEvents.PLAYER_CONNECTED, event);
         })
@@ -281,7 +280,6 @@ class MockGameserver implements IMockGameServer {
   private async sendLog(msg: string) {
     const logLine = await new EventLogLine().construct({
       msg,
-      timestamp: new Date(),
     });
     this.socketServer.io.emit(GameEvents.LOG_LINE, logLine);
   }

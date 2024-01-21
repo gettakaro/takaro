@@ -18,7 +18,7 @@ export const executeFunctionLocal: FunctionExecutor = async (
   const logs: TakaroEventFunctionLog[] = [];
 
   function pushLog(...args: string[]) {
-    // Ugly as unknown  as TakaroEventFunctionLog here
+    // Ugly "as unknown  as TakaroEventFunctionLog" here
     // Dont want to make this an async function...
     logs.push({ msg: args[0], details: { args: args.slice(1) } } as unknown as TakaroEventFunctionLog);
   }

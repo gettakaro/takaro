@@ -115,8 +115,8 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
             name="country"
             value={
               <>
-                <CountryCodeToEmoji countryCode={(event.meta as any).new.country} />
-                {(event.meta as any).new.country}
+                <CountryCodeToEmoji countryCode={(event.meta as any).country} />
+                {(event.meta as any).country}
               </>
             }
           />
