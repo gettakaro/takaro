@@ -25,6 +25,8 @@ jobs:
           cache: 'npm'
 
       - run: ./scripts/dev-init.sh
+      if: ${{ failure() }}
+      run: echo "Error: Initialization script failed to execute."
 
       - name: Build packages
         run: |
