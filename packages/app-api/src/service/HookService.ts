@@ -21,6 +21,7 @@ import { TakaroDTO, errors, TakaroModelDTO, traceableClass } from '@takaro/util'
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { GameServerService } from './GameServerService.js';
+<<<<<<< HEAD
 import { HookEvents, isDiscordMessageEvent, EventPayload, EventTypes, EventMapping } from '@takaro/modules';
 import { PlayerOnGameServerService } from './PlayerOnGameserverService.js';
 
@@ -30,6 +31,18 @@ interface IHandleHookOptions {
   gameServerId: string;
   playerId?: string;
 }
+=======
+import {
+  HookEvents,
+  EventChatMessage,
+  EventPlayerConnected,
+  EventPlayerDisconnected,
+  EventLogLine,
+  isDiscordMessageEvent,
+  EventPayload,
+  EventTypes,
+} from '@takaro/modules';
+>>>>>>> origin/main
 
 @ValidatorConstraint()
 export class IsSafeRegex implements ValidatorConstraintInterface {
@@ -113,6 +126,14 @@ export class HookTriggerDTO extends TakaroDTO<HookTriggerDTO> {
   @IsUUID()
   gameServerId: string;
 
+<<<<<<< HEAD
+=======
+  @IsEnum(HookEvents)
+  eventType!: EventTypes;
+
+  @Type(() => IPlayerReferenceDTO)
+  @ValidateNested()
+>>>>>>> origin/main
   @IsOptional()
   @IsUUID()
   playerId?: string;
@@ -192,8 +213,12 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
     return id;
   }
 
+<<<<<<< HEAD
   async handleEvent(opts: IHandleHookOptions) {
     const { eventData, eventType, gameServerId, playerId } = opts;
+=======
+  async handleEvent(eventData: EventPayload, gameServerId: string) {
+>>>>>>> origin/main
     const gameServerService = new GameServerService(this.domainId);
 
     const triggeredHooks = await this.repo.getTriggeredHooks(eventType, gameServerId);
@@ -244,10 +269,46 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
   }
 
   async trigger(data: HookTriggerDTO) {
+<<<<<<< HEAD
     const dto = EventMapping[data.eventType];
 
     if (!dto) {
       throw new errors.BadRequestError('Invalid event type');
+=======
+    let eventData: EventPayload | null = null;
+    const gameServerService = new GameServerService(this.domainId);
+
+    const player = await gameServerService.getPlayer(data.gameServerId, data.player);
+
+    if (!player) throw new errors.NotFoundError('Player not found');
+
+    switch (data.eventType) {
+      case HookEvents.CHAT_MESSAGE:
+        eventData = await new EventChatMessage().construct({
+          player,
+          msg: data.msg,
+        });
+        break;
+      case HookEvents.PLAYER_CONNECTED:
+        eventData = await new EventPlayerConnected().construct({
+          player,
+          msg: 'Player connected',
+        });
+        break;
+      case HookEvents.PLAYER_DISCONNECTED:
+        eventData = await new EventPlayerDisconnected().construct({
+          player,
+          msg: 'Player disconnected',
+        });
+        break;
+      case HookEvents.LOG_LINE:
+        eventData = await new EventLogLine().construct({
+          msg: data.msg,
+        });
+        break;
+      default:
+        throw new errors.NotFoundError('Unknown event');
+>>>>>>> origin/main
     }
 
     const eventData = await new dto().construct(data.eventMeta);

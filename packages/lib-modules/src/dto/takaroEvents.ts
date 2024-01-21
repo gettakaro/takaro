@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import {
   IsBoolean,
   IsEnum,
@@ -13,6 +14,11 @@ import { BaseEvent } from './base.js';
 import { ValueOf } from 'type-fest';
 import { Type } from 'class-transformer';
 import { TakaroDTO } from '@takaro/util';
+=======
+import { IsDate, IsEnum, IsString } from 'class-validator';
+import { BaseEvent } from './base.js';
+import { ValueOf } from 'type-fest';
+>>>>>>> origin/main
 
 export const TakaroEvents = {
   ROLE_ASSIGNED: 'role-assigned',
@@ -30,6 +36,12 @@ export const TakaroEvents = {
 } as const;
 
 export class BaseTakaroEvent<T> extends BaseEvent<T> {
+<<<<<<< HEAD
+=======
+  @IsDate()
+  timestamp: Date = new Date();
+
+>>>>>>> origin/main
   @IsEnum(TakaroEvents)
   declare type: ValueOf<typeof TakaroEvents>;
 
@@ -37,6 +49,7 @@ export class BaseTakaroEvent<T> extends BaseEvent<T> {
   msg: string;
 }
 
+<<<<<<< HEAD
 export class TakaroEventPlayerNewIpDetected extends BaseEvent<TakaroEventPlayerNewIpDetected> {
   @IsString()
   type = TakaroEvents.PLAYER_NEW_IP_DETECTED;
@@ -201,10 +214,16 @@ export class TakaroEventSettingsSet extends BaseEvent<TakaroEventSettingsSet> {
   @IsString()
   @IsOptional()
   value: string | null;
+=======
+export class TakaroEventRoleAssigned extends BaseEvent<TakaroEventRoleAssigned> {
+  @IsString()
+  type = TakaroEvents.ROLE_ASSIGNED;
+>>>>>>> origin/main
 }
 
 export const TakaroEventsMapping = {
   [TakaroEvents.ROLE_ASSIGNED]: TakaroEventRoleAssigned,
+<<<<<<< HEAD
   [TakaroEvents.PLAYER_NEW_IP_DETECTED]: TakaroEventPlayerNewIpDetected,
   [TakaroEvents.CURRENCY_DEDUCTED]: TakaroEventCurrencyDeducted,
   [TakaroEvents.CURRENCY_ADDED]: TakaroEventCurrencyAdded,
@@ -216,4 +235,19 @@ export const TakaroEventsMapping = {
   [TakaroEvents.SETTINGS_SET]: TakaroEventSettingsSet,
   [TakaroEvents.HOOK_EXECUTED]: TakaroEventHookExecuted,
   [TakaroEvents.CRONJOB_EXECUTED]: TakaroEventCronjobExecuted,
+=======
+
+  // TODO: should type these properly
+  [TakaroEvents.ROLE_REMOVED]: TakaroEventRoleAssigned,
+  [TakaroEvents.ROLE_CREATED]: TakaroEventRoleAssigned,
+  [TakaroEvents.ROLE_UPDATED]: TakaroEventRoleAssigned,
+  [TakaroEvents.ROLE_DELETED]: TakaroEventRoleAssigned,
+  [TakaroEvents.COMMAND_EXECUTED]: TakaroEventRoleAssigned,
+  [TakaroEvents.HOOK_EXECUTED]: TakaroEventRoleAssigned,
+  [TakaroEvents.CRONJOB_EXECUTED]: TakaroEventRoleAssigned,
+  [TakaroEvents.CURRENCY_ADDED]: TakaroEventRoleAssigned,
+  [TakaroEvents.CURRENCY_DEDUCTED]: TakaroEventRoleAssigned,
+  [TakaroEvents.SETTINGS_SET]: TakaroEventRoleAssigned,
+  [TakaroEvents.PLAYER_NEW_IP_DETECTED]: TakaroEventRoleAssigned,
+>>>>>>> origin/main
 } as const;

@@ -134,6 +134,57 @@ export interface BaseEvent {
 /**
  * 
  * @export
+ * @interface BaseDiscordEvent
+ */
+export interface BaseDiscordEvent {
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof BaseDiscordEvent
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {string}
+   * @memberof BaseDiscordEvent
+   */
+  type: BaseDiscordEventTypeEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof BaseDiscordEvent
+   */
+  msg: string;
+}
+
+export const BaseDiscordEventTypeEnum = {
+  DiscordMessage: 'discord-message',
+} as const;
+
+export type BaseDiscordEventTypeEnum = (typeof BaseDiscordEventTypeEnum)[keyof typeof BaseDiscordEventTypeEnum];
+
+/**
+ *
+ * @export
+ * @interface BaseEvent
+ */
+export interface BaseEvent {
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof BaseEvent
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {string}
+   * @memberof BaseEvent
+   */
+  type: string;
+}
+/**
+ *
+ * @export
  * @interface BaseGameEvent
  */
 export interface BaseGameEvent {
@@ -171,6 +222,49 @@ export interface BaseTakaroEvent {
 }
 /**
  * 
+ * @export
+ * @interface BaseTakaroEvent
+ */
+export interface BaseTakaroEvent {
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof BaseTakaroEvent
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {string}
+   * @memberof BaseTakaroEvent
+   */
+  type: BaseTakaroEventTypeEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof BaseTakaroEvent
+   */
+  msg: string;
+}
+
+export const BaseTakaroEventTypeEnum = {
+  RoleAssigned: 'role-assigned',
+  RoleRemoved: 'role-removed',
+  RoleCreated: 'role-created',
+  RoleUpdated: 'role-updated',
+  RoleDeleted: 'role-deleted',
+  CommandExecuted: 'command-executed',
+  HookExecuted: 'hook-executed',
+  CronjobExecuted: 'cronjob-executed',
+  CurrencyAdded: 'currency-added',
+  CurrencyDeducted: 'currency-deducted',
+  SettingsSet: 'settings-set',
+  PlayerNewIpDetected: 'player-new-ip-detected',
+} as const;
+
+export type BaseTakaroEventTypeEnum = (typeof BaseTakaroEventTypeEnum)[keyof typeof BaseTakaroEventTypeEnum];
+
+/**
+ *
  * @export
  * @interface CommandArgumentCreateDTO
  */
@@ -1300,6 +1394,7 @@ export interface EventCreateDTO {
 }
 
 export const EventCreateDTOEventNameEnum = {
+<<<<<<< HEAD
     RoleAssigned: 'role-assigned',
     RoleRemoved: 'role-removed',
     RoleCreated: 'role-created',
@@ -1317,6 +1412,25 @@ export const EventCreateDTOEventNameEnum = {
     ChatMessage: 'chat-message',
     PlayerDeath: 'player-death',
     EntityKilled: 'entity-killed'
+=======
+  RoleAssigned: 'role-assigned',
+  RoleRemoved: 'role-removed',
+  RoleCreated: 'role-created',
+  RoleUpdated: 'role-updated',
+  RoleDeleted: 'role-deleted',
+  CommandExecuted: 'command-executed',
+  HookExecuted: 'hook-executed',
+  CronjobExecuted: 'cronjob-executed',
+  CurrencyAdded: 'currency-added',
+  CurrencyDeducted: 'currency-deducted',
+  SettingsSet: 'settings-set',
+  PlayerNewIpDetected: 'player-new-ip-detected',
+  PlayerConnected: 'player-connected',
+  PlayerDisconnected: 'player-disconnected',
+  ChatMessage: 'chat-message',
+  PlayerDeath: 'player-death',
+  EntityKilled: 'entity-killed',
+>>>>>>> origin/main
 } as const;
 
 export type EventCreateDTOEventNameEnum = typeof EventCreateDTOEventNameEnum[keyof typeof EventCreateDTOEventNameEnum];
@@ -1539,6 +1653,7 @@ export interface EventOutputDTO {
 }
 
 export const EventOutputDTOEventNameEnum = {
+<<<<<<< HEAD
     RoleAssigned: 'role-assigned',
     RoleRemoved: 'role-removed',
     RoleCreated: 'role-created',
@@ -1556,6 +1671,25 @@ export const EventOutputDTOEventNameEnum = {
     ChatMessage: 'chat-message',
     PlayerDeath: 'player-death',
     EntityKilled: 'entity-killed'
+=======
+  RoleAssigned: 'role-assigned',
+  RoleRemoved: 'role-removed',
+  RoleCreated: 'role-created',
+  RoleUpdated: 'role-updated',
+  RoleDeleted: 'role-deleted',
+  CommandExecuted: 'command-executed',
+  HookExecuted: 'hook-executed',
+  CronjobExecuted: 'cronjob-executed',
+  CurrencyAdded: 'currency-added',
+  CurrencyDeducted: 'currency-deducted',
+  SettingsSet: 'settings-set',
+  PlayerNewIpDetected: 'player-new-ip-detected',
+  PlayerConnected: 'player-connected',
+  PlayerDisconnected: 'player-disconnected',
+  ChatMessage: 'chat-message',
+  PlayerDeath: 'player-death',
+  EntityKilled: 'entity-killed',
+>>>>>>> origin/main
 } as const;
 
 export type EventOutputDTOEventNameEnum = typeof EventOutputDTOEventNameEnum[keyof typeof EventOutputDTOEventNameEnum];
@@ -1692,6 +1826,7 @@ export interface EventSearchInputAllowedFilters {
 }
 
 export const EventSearchInputAllowedFiltersEventNameEnum = {
+<<<<<<< HEAD
     RoleAssigned: 'role-assigned',
     RoleRemoved: 'role-removed',
     RoleCreated: 'role-created',
@@ -1709,6 +1844,25 @@ export const EventSearchInputAllowedFiltersEventNameEnum = {
     ChatMessage: 'chat-message',
     PlayerDeath: 'player-death',
     EntityKilled: 'entity-killed'
+=======
+  RoleAssigned: 'role-assigned',
+  RoleRemoved: 'role-removed',
+  RoleCreated: 'role-created',
+  RoleUpdated: 'role-updated',
+  RoleDeleted: 'role-deleted',
+  CommandExecuted: 'command-executed',
+  HookExecuted: 'hook-executed',
+  CronjobExecuted: 'cronjob-executed',
+  CurrencyAdded: 'currency-added',
+  CurrencyDeducted: 'currency-deducted',
+  SettingsSet: 'settings-set',
+  PlayerNewIpDetected: 'player-new-ip-detected',
+  PlayerConnected: 'player-connected',
+  PlayerDisconnected: 'player-disconnected',
+  ChatMessage: 'chat-message',
+  PlayerDeath: 'player-death',
+  EntityKilled: 'entity-killed',
+>>>>>>> origin/main
 } as const;
 
 export type EventSearchInputAllowedFiltersEventNameEnum = typeof EventSearchInputAllowedFiltersEventNameEnum[keyof typeof EventSearchInputAllowedFiltersEventNameEnum];
@@ -2690,6 +2844,7 @@ export interface HookCreateDTO {
 }
 
 export const HookCreateDTOEventTypeEnum = {
+<<<<<<< HEAD
     Log: 'log',
     PlayerConnected: 'player-connected',
     PlayerDisconnected: 'player-disconnected',
@@ -2709,6 +2864,27 @@ export const HookCreateDTOEventTypeEnum = {
     CurrencyDeducted: 'currency-deducted',
     SettingsSet: 'settings-set',
     PlayerNewIpDetected: 'player-new-ip-detected'
+=======
+  Log: 'log',
+  PlayerConnected: 'player-connected',
+  PlayerDisconnected: 'player-disconnected',
+  ChatMessage: 'chat-message',
+  PlayerDeath: 'player-death',
+  EntityKilled: 'entity-killed',
+  DiscordMessage: 'discord-message',
+  RoleAssigned: 'role-assigned',
+  RoleRemoved: 'role-removed',
+  RoleCreated: 'role-created',
+  RoleUpdated: 'role-updated',
+  RoleDeleted: 'role-deleted',
+  CommandExecuted: 'command-executed',
+  HookExecuted: 'hook-executed',
+  CronjobExecuted: 'cronjob-executed',
+  CurrencyAdded: 'currency-added',
+  CurrencyDeducted: 'currency-deducted',
+  SettingsSet: 'settings-set',
+  PlayerNewIpDetected: 'player-new-ip-detected',
+>>>>>>> origin/main
 } as const;
 
 export type HookCreateDTOEventTypeEnum = typeof HookCreateDTOEventTypeEnum[keyof typeof HookCreateDTOEventTypeEnum];
@@ -2719,6 +2895,7 @@ export type HookCreateDTOEventTypeEnum = typeof HookCreateDTOEventTypeEnum[keyof
  * @interface HookEventDiscordMessage
  */
 export interface HookEventDiscordMessage {
+<<<<<<< HEAD
     /**
      * 
      * @type {string}
@@ -2743,6 +2920,38 @@ export interface HookEventDiscordMessage {
      * @memberof HookEventDiscordMessage
      */
     'timestamp': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+=======
+  /**
+   *
+   * @type {string}
+   * @memberof HookEventDiscordMessage
+   */
+  type: string;
+  /**
+   *
+   * @type {string}
+   * @memberof HookEventDiscordMessage
+   */
+  msg: string;
+  /**
+   *
+   * @type {EventDiscordUser}
+   * @memberof HookEventDiscordMessage
+   */
+  author: EventDiscordUser;
+  /**
+   *
+   * @type {EventDiscordChannel}
+   * @memberof HookEventDiscordMessage
+   */
+  channel: EventDiscordChannel;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof HookEventDiscordMessage
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+>>>>>>> origin/main
 }
 /**
  * 
@@ -2820,6 +3029,7 @@ export interface HookOutputDTO {
 }
 
 export const HookOutputDTOEventTypeEnum = {
+<<<<<<< HEAD
     Log: 'log',
     PlayerConnected: 'player-connected',
     PlayerDisconnected: 'player-disconnected',
@@ -2839,6 +3049,27 @@ export const HookOutputDTOEventTypeEnum = {
     CurrencyDeducted: 'currency-deducted',
     SettingsSet: 'settings-set',
     PlayerNewIpDetected: 'player-new-ip-detected'
+=======
+  Log: 'log',
+  PlayerConnected: 'player-connected',
+  PlayerDisconnected: 'player-disconnected',
+  ChatMessage: 'chat-message',
+  PlayerDeath: 'player-death',
+  EntityKilled: 'entity-killed',
+  DiscordMessage: 'discord-message',
+  RoleAssigned: 'role-assigned',
+  RoleRemoved: 'role-removed',
+  RoleCreated: 'role-created',
+  RoleUpdated: 'role-updated',
+  RoleDeleted: 'role-deleted',
+  CommandExecuted: 'command-executed',
+  HookExecuted: 'hook-executed',
+  CronjobExecuted: 'cronjob-executed',
+  CurrencyAdded: 'currency-added',
+  CurrencyDeducted: 'currency-deducted',
+  SettingsSet: 'settings-set',
+  PlayerNewIpDetected: 'player-new-ip-detected',
+>>>>>>> origin/main
 } as const;
 
 export type HookOutputDTOEventTypeEnum = typeof HookOutputDTOEventTypeEnum[keyof typeof HookOutputDTOEventTypeEnum];
@@ -2895,6 +3126,7 @@ export interface HookSearchInputAllowedFilters {
 }
 
 export const HookSearchInputAllowedFiltersEventTypeEnum = {
+<<<<<<< HEAD
     Log: 'log',
     PlayerConnected: 'player-connected',
     PlayerDisconnected: 'player-disconnected',
@@ -2914,6 +3146,27 @@ export const HookSearchInputAllowedFiltersEventTypeEnum = {
     CurrencyDeducted: 'currency-deducted',
     SettingsSet: 'settings-set',
     PlayerNewIpDetected: 'player-new-ip-detected'
+=======
+  Log: 'log',
+  PlayerConnected: 'player-connected',
+  PlayerDisconnected: 'player-disconnected',
+  ChatMessage: 'chat-message',
+  PlayerDeath: 'player-death',
+  EntityKilled: 'entity-killed',
+  DiscordMessage: 'discord-message',
+  RoleAssigned: 'role-assigned',
+  RoleRemoved: 'role-removed',
+  RoleCreated: 'role-created',
+  RoleUpdated: 'role-updated',
+  RoleDeleted: 'role-deleted',
+  CommandExecuted: 'command-executed',
+  HookExecuted: 'hook-executed',
+  CronjobExecuted: 'cronjob-executed',
+  CurrencyAdded: 'currency-added',
+  CurrencyDeducted: 'currency-deducted',
+  SettingsSet: 'settings-set',
+  PlayerNewIpDetected: 'player-new-ip-detected',
+>>>>>>> origin/main
 } as const;
 
 export type HookSearchInputAllowedFiltersEventTypeEnum = typeof HookSearchInputAllowedFiltersEventTypeEnum[keyof typeof HookSearchInputAllowedFiltersEventTypeEnum];
@@ -3026,6 +3279,7 @@ export interface HookTriggerDTO {
 }
 
 export const HookTriggerDTOEventTypeEnum = {
+<<<<<<< HEAD
     Log: 'log',
     PlayerConnected: 'player-connected',
     PlayerDisconnected: 'player-disconnected',
@@ -3045,6 +3299,27 @@ export const HookTriggerDTOEventTypeEnum = {
     CurrencyDeducted: 'currency-deducted',
     SettingsSet: 'settings-set',
     PlayerNewIpDetected: 'player-new-ip-detected'
+=======
+  Log: 'log',
+  PlayerConnected: 'player-connected',
+  PlayerDisconnected: 'player-disconnected',
+  ChatMessage: 'chat-message',
+  PlayerDeath: 'player-death',
+  EntityKilled: 'entity-killed',
+  DiscordMessage: 'discord-message',
+  RoleAssigned: 'role-assigned',
+  RoleRemoved: 'role-removed',
+  RoleCreated: 'role-created',
+  RoleUpdated: 'role-updated',
+  RoleDeleted: 'role-deleted',
+  CommandExecuted: 'command-executed',
+  HookExecuted: 'hook-executed',
+  CronjobExecuted: 'cronjob-executed',
+  CurrencyAdded: 'currency-added',
+  CurrencyDeducted: 'currency-deducted',
+  SettingsSet: 'settings-set',
+  PlayerNewIpDetected: 'player-new-ip-detected',
+>>>>>>> origin/main
 } as const;
 
 export type HookTriggerDTOEventTypeEnum = typeof HookTriggerDTOEventTypeEnum[keyof typeof HookTriggerDTOEventTypeEnum];
@@ -3088,6 +3363,7 @@ export interface HookUpdateDTO {
 }
 
 export const HookUpdateDTOEventTypeEnum = {
+<<<<<<< HEAD
     Log: 'log',
     PlayerConnected: 'player-connected',
     PlayerDisconnected: 'player-disconnected',
@@ -3107,6 +3383,27 @@ export const HookUpdateDTOEventTypeEnum = {
     CurrencyDeducted: 'currency-deducted',
     SettingsSet: 'settings-set',
     PlayerNewIpDetected: 'player-new-ip-detected'
+=======
+  Log: 'log',
+  PlayerConnected: 'player-connected',
+  PlayerDisconnected: 'player-disconnected',
+  ChatMessage: 'chat-message',
+  PlayerDeath: 'player-death',
+  EntityKilled: 'entity-killed',
+  DiscordMessage: 'discord-message',
+  RoleAssigned: 'role-assigned',
+  RoleRemoved: 'role-removed',
+  RoleCreated: 'role-created',
+  RoleUpdated: 'role-updated',
+  RoleDeleted: 'role-deleted',
+  CommandExecuted: 'command-executed',
+  HookExecuted: 'hook-executed',
+  CronjobExecuted: 'cronjob-executed',
+  CurrencyAdded: 'currency-added',
+  CurrencyDeducted: 'currency-deducted',
+  SettingsSet: 'settings-set',
+  PlayerNewIpDetected: 'player-new-ip-detected',
+>>>>>>> origin/main
 } as const;
 
 export type HookUpdateDTOEventTypeEnum = typeof HookUpdateDTOEventTypeEnum[keyof typeof HookUpdateDTOEventTypeEnum];
@@ -3537,6 +3834,7 @@ export interface ItemOutputDTOAPI {
  * @interface ItemSearchInputAllowedFilters
  */
 export interface ItemSearchInputAllowedFilters {
+<<<<<<< HEAD
     /**
      * 
      * @type {Array<string>}
@@ -3561,6 +3859,32 @@ export interface ItemSearchInputAllowedFilters {
      * @memberof ItemSearchInputAllowedFilters
      */
     'gameserverId'?: Array<string>;
+=======
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ItemSearchInputAllowedFilters
+   */
+  id?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ItemSearchInputAllowedFilters
+   */
+  name?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ItemSearchInputAllowedFilters
+   */
+  code?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ItemSearchInputAllowedFilters
+   */
+  gameserverId?: Array<string>;
+>>>>>>> origin/main
 }
 /**
  * 
@@ -4304,6 +4628,7 @@ export type NOTDOMAINSCOPEDTakaroModelDTOCreatedAt = string;
  */
 
 export const PERMISSIONS = {
+<<<<<<< HEAD
     Root: 'ROOT',
     ManageUsers: 'MANAGE_USERS',
     ReadUsers: 'READ_USERS',
@@ -4323,6 +4648,27 @@ export const PERMISSIONS = {
     ManageEvents: 'MANAGE_EVENTS',
     ReadItems: 'READ_ITEMS',
     ManageItems: 'MANAGE_ITEMS'
+=======
+  Root: 'ROOT',
+  ManageUsers: 'MANAGE_USERS',
+  ReadUsers: 'READ_USERS',
+  ManageRoles: 'MANAGE_ROLES',
+  ReadRoles: 'READ_ROLES',
+  ManageGameservers: 'MANAGE_GAMESERVERS',
+  ReadGameservers: 'READ_GAMESERVERS',
+  ReadModules: 'READ_MODULES',
+  ManageModules: 'MANAGE_MODULES',
+  ReadPlayers: 'READ_PLAYERS',
+  ManagePlayers: 'MANAGE_PLAYERS',
+  ManageSettings: 'MANAGE_SETTINGS',
+  ReadSettings: 'READ_SETTINGS',
+  ReadVariables: 'READ_VARIABLES',
+  ManageVariables: 'MANAGE_VARIABLES',
+  ReadEvents: 'READ_EVENTS',
+  ManageEvents: 'MANAGE_EVENTS',
+  ReadItems: 'READ_ITEMS',
+  ManageItems: 'MANAGE_ITEMS',
+>>>>>>> origin/main
 } as const;
 
 export type PERMISSIONS = typeof PERMISSIONS[keyof typeof PERMISSIONS];
@@ -4408,6 +4754,7 @@ export type ParamKeyKeyEnum = typeof ParamKeyKeyEnum[keyof typeof ParamKeyKeyEnu
  * @interface ParamSenderReceiver
  */
 export interface ParamSenderReceiver {
+<<<<<<< HEAD
     /**
      * 
      * @type {string}
@@ -4426,6 +4773,26 @@ export interface ParamSenderReceiver {
      * @memberof ParamSenderReceiver
      */
     'receiver': string;
+=======
+  /**
+   *
+   * @type {string}
+   * @memberof ParamSenderReceiver
+   */
+  gameServerId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ParamSenderReceiver
+   */
+  sender: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ParamSenderReceiver
+   */
+  receiver: string;
+>>>>>>> origin/main
 }
 /**
  * 
@@ -6336,6 +6703,25 @@ export interface TakaroEventSettingsSet {
 /**
  * 
  * @export
+ * @interface TakaroEventRoleAssigned
+ */
+export interface TakaroEventRoleAssigned {
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventRoleAssigned
+   */
+  type: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventRoleAssigned
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
  * @interface TakaroModelDTO
  */
 export interface TakaroModelDTO {
@@ -7154,6 +7540,7 @@ export interface VariableUpdateDTO {
  * @export
  */
 export const CommandApiAxiosParamCreator = function (configuration?: Configuration) {
+<<<<<<< HEAD
     return {
         /**
          *  Required permissions: `MANAGE_MODULES`
@@ -7170,6 +7557,27 @@ export const CommandApiAxiosParamCreator = function (configuration?: Configurati
             if (configuration) {
                 baseOptions = configuration.baseOptions;
             }
+=======
+  return {
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Create
+     * @param {CommandCreateDTO} [commandCreateDTO] CommandCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commandControllerCreate: async (
+      commandCreateDTO?: CommandCreateDTO,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/command`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+>>>>>>> origin/main
 
             const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
@@ -7181,10 +7589,36 @@ export const CommandApiAxiosParamCreator = function (configuration?: Configurati
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
+<<<<<<< HEAD
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(commandCreateDTO, localVarRequestOptions, configuration)
+=======
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Create argument
+     * @param {CommandArgumentCreateDTO} [commandArgumentCreateDTO] CommandArgumentCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commandControllerCreateArgument: async (
+      commandArgumentCreateDTO?: CommandArgumentCreateDTO,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/command/argument`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+>>>>>>> origin/main
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -7214,8 +7648,33 @@ export const CommandApiAxiosParamCreator = function (configuration?: Configurati
             // authentication domainAuth required
 
 
+<<<<<<< HEAD
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
+=======
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `READ_MODULES`
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commandControllerGetOne: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('commandControllerGetOne', 'id', id);
+      const localVarPath = `/command/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+>>>>>>> origin/main
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -7250,7 +7709,32 @@ export const CommandApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+<<<<<<< HEAD
             // authentication domainAuth required
+=======
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commandControllerRemove: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('commandControllerRemove', 'id', id);
+      const localVarPath = `/command/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+>>>>>>> origin/main
 
 
     
@@ -7282,9 +7766,34 @@ export const CommandApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
+<<<<<<< HEAD
             const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+=======
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Remove argument
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commandControllerRemoveArgument: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('commandControllerRemoveArgument', 'id', id);
+      const localVarPath = `/command/argument/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+>>>>>>> origin/main
 
             // authentication domainAuth required
 
@@ -7294,6 +7803,7 @@ export const CommandApiAxiosParamCreator = function (configuration?: Configurati
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
+<<<<<<< HEAD
             return {
                 url: toPathString(localVarUrlObj),
                 options: localVarRequestOptions,
@@ -7317,6 +7827,31 @@ export const CommandApiAxiosParamCreator = function (configuration?: Configurati
             if (configuration) {
                 baseOptions = configuration.baseOptions;
             }
+=======
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `READ_MODULES`
+     * @summary Search
+     * @param {CommandSearchInputDTO} [commandSearchInputDTO] CommandSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commandControllerSearch: async (
+      commandSearchInputDTO?: CommandSearchInputDTO,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/command/search`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+>>>>>>> origin/main
 
             const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
@@ -7330,6 +7865,7 @@ export const CommandApiAxiosParamCreator = function (configuration?: Configurati
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
+<<<<<<< HEAD
             return {
                 url: toPathString(localVarUrlObj),
                 options: localVarRequestOptions,
@@ -7350,6 +7886,35 @@ export const CommandApiAxiosParamCreator = function (configuration?: Configurati
             if (configuration) {
                 baseOptions = configuration.baseOptions;
             }
+=======
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Trigger
+     * @param {string} id
+     * @param {CommandTriggerDTO} [commandTriggerDTO] CommandTriggerDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commandControllerTrigger: async (
+      id: string,
+      commandTriggerDTO?: CommandTriggerDTO,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('commandControllerTrigger', 'id', id);
+      const localVarPath = `/command/{id}/trigger`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+>>>>>>> origin/main
 
             const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
@@ -7361,10 +7926,40 @@ export const CommandApiAxiosParamCreator = function (configuration?: Configurati
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
+<<<<<<< HEAD
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(commandSearchInputDTO, localVarRequestOptions, configuration)
+=======
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Update
+     * @param {string} id
+     * @param {CommandUpdateDTO} [commandUpdateDTO] CommandUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commandControllerUpdate: async (
+      id: string,
+      commandUpdateDTO?: CommandUpdateDTO,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('commandControllerUpdate', 'id', id);
+      const localVarPath = `/command/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+>>>>>>> origin/main
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -7398,8 +7993,38 @@ export const CommandApiAxiosParamCreator = function (configuration?: Configurati
             // authentication domainAuth required
 
 
+<<<<<<< HEAD
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
+=======
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Update argument
+     * @param {string} id
+     * @param {CommandArgumentUpdateDTO} [commandArgumentUpdateDTO] CommandArgumentUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commandControllerUpdateArgument: async (
+      id: string,
+      commandArgumentUpdateDTO?: CommandArgumentUpdateDTO,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('commandControllerUpdateArgument', 'id', id);
+      const localVarPath = `/command/argument/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+>>>>>>> origin/main
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -7498,6 +8123,7 @@ export const CommandApiAxiosParamCreator = function (configuration?: Configurati
  * CommandApi - functional programming interface
  * @export
  */
+<<<<<<< HEAD
 export const CommandApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = CommandApiAxiosParamCreator(configuration)
     return {
@@ -7622,6 +8248,227 @@ export const CommandApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
     }
+=======
+export const CommandApiFp = function (configuration?: Configuration) {
+  const localVarAxiosParamCreator = CommandApiAxiosParamCreator(configuration);
+  return {
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Create
+     * @param {CommandCreateDTO} [commandCreateDTO] CommandCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async commandControllerCreate(
+      commandCreateDTO?: CommandCreateDTO,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CommandOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.commandControllerCreate(commandCreateDTO, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['CommandApi.commandControllerCreate']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Create argument
+     * @param {CommandArgumentCreateDTO} [commandArgumentCreateDTO] CommandArgumentCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async commandControllerCreateArgument(
+      commandArgumentCreateDTO?: CommandArgumentCreateDTO,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CommandArgumentDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.commandControllerCreateArgument(
+        commandArgumentCreateDTO,
+        options
+      );
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['CommandApi.commandControllerCreateArgument']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `READ_MODULES`
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async commandControllerGetOne(
+      id: string,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CommandOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.commandControllerGetOne(id, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['CommandApi.commandControllerGetOne']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async commandControllerRemove(
+      id: string,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<IdUuidDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.commandControllerRemove(id, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['CommandApi.commandControllerRemove']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Remove argument
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async commandControllerRemoveArgument(
+      id: string,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<IdUuidDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.commandControllerRemoveArgument(id, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['CommandApi.commandControllerRemoveArgument']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `READ_MODULES`
+     * @summary Search
+     * @param {CommandSearchInputDTO} [commandSearchInputDTO] CommandSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async commandControllerSearch(
+      commandSearchInputDTO?: CommandSearchInputDTO,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CommandOutputArrayDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.commandControllerSearch(commandSearchInputDTO, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['CommandApi.commandControllerSearch']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Trigger
+     * @param {string} id
+     * @param {CommandTriggerDTO} [commandTriggerDTO] CommandTriggerDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async commandControllerTrigger(
+      id: string,
+      commandTriggerDTO?: CommandTriggerDTO,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.commandControllerTrigger(
+        id,
+        commandTriggerDTO,
+        options
+      );
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['CommandApi.commandControllerTrigger']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Update
+     * @param {string} id
+     * @param {CommandUpdateDTO} [commandUpdateDTO] CommandUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async commandControllerUpdate(
+      id: string,
+      commandUpdateDTO?: CommandUpdateDTO,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CommandOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.commandControllerUpdate(id, commandUpdateDTO, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['CommandApi.commandControllerUpdate']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Update argument
+     * @param {string} id
+     * @param {CommandArgumentUpdateDTO} [commandArgumentUpdateDTO] CommandArgumentUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async commandControllerUpdateArgument(
+      id: string,
+      commandArgumentUpdateDTO?: CommandArgumentUpdateDTO,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CommandArgumentDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.commandControllerUpdateArgument(
+        id,
+        commandArgumentUpdateDTO,
+        options
+      );
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['CommandApi.commandControllerUpdateArgument']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+  };
+>>>>>>> origin/main
 };
 
 /**
@@ -7629,6 +8476,7 @@ export const CommandApiFp = function(configuration?: Configuration) {
  * @export
  */
 export const CommandApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+<<<<<<< HEAD
     const localVarFp = CommandApiFp(configuration)
     return {
         /**
@@ -7725,6 +8573,128 @@ export const CommandApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.commandControllerUpdateArgument(id, commandArgumentUpdateDTO, options).then((request) => request(axios, basePath));
         },
     };
+=======
+  const localVarFp = CommandApiFp(configuration);
+  return {
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Create
+     * @param {CommandCreateDTO} [commandCreateDTO] CommandCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commandControllerCreate(commandCreateDTO?: CommandCreateDTO, options?: any): AxiosPromise<CommandOutputDTOAPI> {
+      return localVarFp.commandControllerCreate(commandCreateDTO, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Create argument
+     * @param {CommandArgumentCreateDTO} [commandArgumentCreateDTO] CommandArgumentCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commandControllerCreateArgument(
+      commandArgumentCreateDTO?: CommandArgumentCreateDTO,
+      options?: any
+    ): AxiosPromise<CommandArgumentDTOAPI> {
+      return localVarFp
+        .commandControllerCreateArgument(commandArgumentCreateDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `READ_MODULES`
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commandControllerGetOne(id: string, options?: any): AxiosPromise<CommandOutputDTOAPI> {
+      return localVarFp.commandControllerGetOne(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commandControllerRemove(id: string, options?: any): AxiosPromise<IdUuidDTOAPI> {
+      return localVarFp.commandControllerRemove(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Remove argument
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commandControllerRemoveArgument(id: string, options?: any): AxiosPromise<IdUuidDTOAPI> {
+      return localVarFp.commandControllerRemoveArgument(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `READ_MODULES`
+     * @summary Search
+     * @param {CommandSearchInputDTO} [commandSearchInputDTO] CommandSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commandControllerSearch(
+      commandSearchInputDTO?: CommandSearchInputDTO,
+      options?: any
+    ): AxiosPromise<CommandOutputArrayDTOAPI> {
+      return localVarFp
+        .commandControllerSearch(commandSearchInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Trigger
+     * @param {string} id
+     * @param {CommandTriggerDTO} [commandTriggerDTO] CommandTriggerDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commandControllerTrigger(id: string, commandTriggerDTO?: CommandTriggerDTO, options?: any): AxiosPromise<void> {
+      return localVarFp
+        .commandControllerTrigger(id, commandTriggerDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Update
+     * @param {string} id
+     * @param {CommandUpdateDTO} [commandUpdateDTO] CommandUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commandControllerUpdate(
+      id: string,
+      commandUpdateDTO?: CommandUpdateDTO,
+      options?: any
+    ): AxiosPromise<CommandOutputDTOAPI> {
+      return localVarFp
+        .commandControllerUpdate(id, commandUpdateDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Update argument
+     * @param {string} id
+     * @param {CommandArgumentUpdateDTO} [commandArgumentUpdateDTO] CommandArgumentUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    commandControllerUpdateArgument(
+      id: string,
+      commandArgumentUpdateDTO?: CommandArgumentUpdateDTO,
+      options?: any
+    ): AxiosPromise<CommandArgumentDTOAPI> {
+      return localVarFp
+        .commandControllerUpdateArgument(id, commandArgumentUpdateDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+  };
+>>>>>>> origin/main
 };
 
 /**
@@ -7734,6 +8704,7 @@ export const CommandApiFactory = function (configuration?: Configuration, basePa
  * @extends {BaseAPI}
  */
 export class CommandApi extends BaseAPI {
+<<<<<<< HEAD
     /**
      *  Required permissions: `MANAGE_MODULES`
      * @summary Create
@@ -7844,6 +8815,143 @@ export class CommandApi extends BaseAPI {
     public commandControllerUpdateArgument(id: string, commandArgumentUpdateDTO?: CommandArgumentUpdateDTO, options?: RawAxiosRequestConfig) {
         return CommandApiFp(this.configuration).commandControllerUpdateArgument(id, commandArgumentUpdateDTO, options).then((request) => request(this.axios, this.basePath));
     }
+=======
+  /**
+   *  Required permissions: `MANAGE_MODULES`
+   * @summary Create
+   * @param {CommandCreateDTO} [commandCreateDTO] CommandCreateDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof CommandApi
+   */
+  public commandControllerCreate(commandCreateDTO?: CommandCreateDTO, options?: RawAxiosRequestConfig) {
+    return CommandApiFp(this.configuration)
+      .commandControllerCreate(commandCreateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `MANAGE_MODULES`
+   * @summary Create argument
+   * @param {CommandArgumentCreateDTO} [commandArgumentCreateDTO] CommandArgumentCreateDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof CommandApi
+   */
+  public commandControllerCreateArgument(
+    commandArgumentCreateDTO?: CommandArgumentCreateDTO,
+    options?: RawAxiosRequestConfig
+  ) {
+    return CommandApiFp(this.configuration)
+      .commandControllerCreateArgument(commandArgumentCreateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `READ_MODULES`
+   * @summary Get one
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof CommandApi
+   */
+  public commandControllerGetOne(id: string, options?: RawAxiosRequestConfig) {
+    return CommandApiFp(this.configuration)
+      .commandControllerGetOne(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `MANAGE_MODULES`
+   * @summary Remove
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof CommandApi
+   */
+  public commandControllerRemove(id: string, options?: RawAxiosRequestConfig) {
+    return CommandApiFp(this.configuration)
+      .commandControllerRemove(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `MANAGE_MODULES`
+   * @summary Remove argument
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof CommandApi
+   */
+  public commandControllerRemoveArgument(id: string, options?: RawAxiosRequestConfig) {
+    return CommandApiFp(this.configuration)
+      .commandControllerRemoveArgument(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `READ_MODULES`
+   * @summary Search
+   * @param {CommandSearchInputDTO} [commandSearchInputDTO] CommandSearchInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof CommandApi
+   */
+  public commandControllerSearch(commandSearchInputDTO?: CommandSearchInputDTO, options?: RawAxiosRequestConfig) {
+    return CommandApiFp(this.configuration)
+      .commandControllerSearch(commandSearchInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `MANAGE_MODULES`
+   * @summary Trigger
+   * @param {string} id
+   * @param {CommandTriggerDTO} [commandTriggerDTO] CommandTriggerDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof CommandApi
+   */
+  public commandControllerTrigger(id: string, commandTriggerDTO?: CommandTriggerDTO, options?: RawAxiosRequestConfig) {
+    return CommandApiFp(this.configuration)
+      .commandControllerTrigger(id, commandTriggerDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `MANAGE_MODULES`
+   * @summary Update
+   * @param {string} id
+   * @param {CommandUpdateDTO} [commandUpdateDTO] CommandUpdateDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof CommandApi
+   */
+  public commandControllerUpdate(id: string, commandUpdateDTO?: CommandUpdateDTO, options?: RawAxiosRequestConfig) {
+    return CommandApiFp(this.configuration)
+      .commandControllerUpdate(id, commandUpdateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `MANAGE_MODULES`
+   * @summary Update argument
+   * @param {string} id
+   * @param {CommandArgumentUpdateDTO} [commandArgumentUpdateDTO] CommandArgumentUpdateDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof CommandApi
+   */
+  public commandControllerUpdateArgument(
+    id: string,
+    commandArgumentUpdateDTO?: CommandArgumentUpdateDTO,
+    options?: RawAxiosRequestConfig
+  ) {
+    return CommandApiFp(this.configuration)
+      .commandControllerUpdateArgument(id, commandArgumentUpdateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+>>>>>>> origin/main
 }
 
 
@@ -7853,6 +8961,7 @@ export class CommandApi extends BaseAPI {
  * @export
  */
 export const CronJobApiAxiosParamCreator = function (configuration?: Configuration) {
+<<<<<<< HEAD
     return {
         /**
          *  Required permissions: `MANAGE_MODULES`
@@ -7869,6 +8978,27 @@ export const CronJobApiAxiosParamCreator = function (configuration?: Configurati
             if (configuration) {
                 baseOptions = configuration.baseOptions;
             }
+=======
+  return {
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Create
+     * @param {CronJobCreateDTO} [cronJobCreateDTO] CronJobCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    cronJobControllerCreate: async (
+      cronJobCreateDTO?: CronJobCreateDTO,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/cronjob`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+>>>>>>> origin/main
 
             const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
@@ -7880,10 +9010,35 @@ export const CronJobApiAxiosParamCreator = function (configuration?: Configurati
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
+<<<<<<< HEAD
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(cronJobCreateDTO, localVarRequestOptions, configuration)
+=======
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `READ_MODULES`
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    cronJobControllerGetOne: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('cronJobControllerGetOne', 'id', id);
+      const localVarPath = `/cronjob/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+>>>>>>> origin/main
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -7915,6 +9070,31 @@ export const CronJobApiAxiosParamCreator = function (configuration?: Configurati
 
             // authentication domainAuth required
 
+<<<<<<< HEAD
+=======
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    cronJobControllerRemove: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('cronJobControllerRemove', 'id', id);
+      const localVarPath = `/cronjob/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+>>>>>>> origin/main
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -7949,7 +9129,33 @@ export const CronJobApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+<<<<<<< HEAD
             // authentication domainAuth required
+=======
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `READ_MODULES`
+     * @summary Search
+     * @param {CronJobSearchInputDTO} [cronJobSearchInputDTO] CronJobSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    cronJobControllerSearch: async (
+      cronJobSearchInputDTO?: CronJobSearchInputDTO,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/cronjob/search`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+>>>>>>> origin/main
 
 
     
@@ -7982,7 +9188,33 @@ export const CronJobApiAxiosParamCreator = function (configuration?: Configurati
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+<<<<<<< HEAD
             // authentication domainAuth required
+=======
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Trigger
+     * @param {CronJobTriggerDTO} [cronJobTriggerDTO] CronJobTriggerDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    cronJobControllerTrigger: async (
+      cronJobTriggerDTO?: CronJobTriggerDTO,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/cronjob/trigger`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+>>>>>>> origin/main
 
 
     
@@ -8014,9 +9246,39 @@ export const CronJobApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
+<<<<<<< HEAD
             const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+=======
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Update
+     * @param {string} id
+     * @param {CronJobUpdateDTO} [cronJobUpdateDTO] CronJobUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    cronJobControllerUpdate: async (
+      id: string,
+      cronJobUpdateDTO?: CronJobUpdateDTO,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('cronJobControllerUpdate', 'id', id);
+      const localVarPath = `/cronjob/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+>>>>>>> origin/main
 
             // authentication domainAuth required
 
@@ -8081,6 +9343,7 @@ export const CronJobApiAxiosParamCreator = function (configuration?: Configurati
  * CronJobApi - functional programming interface
  * @export
  */
+<<<<<<< HEAD
 export const CronJobApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = CronJobApiAxiosParamCreator(configuration)
     return {
@@ -8164,6 +9427,146 @@ export const CronJobApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
     }
+=======
+export const CronJobApiFp = function (configuration?: Configuration) {
+  const localVarAxiosParamCreator = CronJobApiAxiosParamCreator(configuration);
+  return {
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Create
+     * @param {CronJobCreateDTO} [cronJobCreateDTO] CronJobCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async cronJobControllerCreate(
+      cronJobCreateDTO?: CronJobCreateDTO,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CronJobOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.cronJobControllerCreate(cronJobCreateDTO, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['CronJobApi.cronJobControllerCreate']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `READ_MODULES`
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async cronJobControllerGetOne(
+      id: string,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CronJobOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.cronJobControllerGetOne(id, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['CronJobApi.cronJobControllerGetOne']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async cronJobControllerRemove(
+      id: string,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<IdUuidDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.cronJobControllerRemove(id, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['CronJobApi.cronJobControllerRemove']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `READ_MODULES`
+     * @summary Search
+     * @param {CronJobSearchInputDTO} [cronJobSearchInputDTO] CronJobSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async cronJobControllerSearch(
+      cronJobSearchInputDTO?: CronJobSearchInputDTO,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CronJobOutputArrayDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.cronJobControllerSearch(cronJobSearchInputDTO, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['CronJobApi.cronJobControllerSearch']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Trigger
+     * @param {CronJobTriggerDTO} [cronJobTriggerDTO] CronJobTriggerDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async cronJobControllerTrigger(
+      cronJobTriggerDTO?: CronJobTriggerDTO,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.cronJobControllerTrigger(cronJobTriggerDTO, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['CronJobApi.cronJobControllerTrigger']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Update
+     * @param {string} id
+     * @param {CronJobUpdateDTO} [cronJobUpdateDTO] CronJobUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async cronJobControllerUpdate(
+      id: string,
+      cronJobUpdateDTO?: CronJobUpdateDTO,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CronJobOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.cronJobControllerUpdate(id, cronJobUpdateDTO, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['CronJobApi.cronJobControllerUpdate']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+  };
+>>>>>>> origin/main
 };
 
 /**
@@ -8171,6 +9574,7 @@ export const CronJobApiFp = function(configuration?: Configuration) {
  * @export
  */
 export const CronJobApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+<<<<<<< HEAD
     const localVarFp = CronJobApiFp(configuration)
     return {
         /**
@@ -8235,6 +9639,85 @@ export const CronJobApiFactory = function (configuration?: Configuration, basePa
             return localVarFp.cronJobControllerUpdate(id, cronJobUpdateDTO, options).then((request) => request(axios, basePath));
         },
     };
+=======
+  const localVarFp = CronJobApiFp(configuration);
+  return {
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Create
+     * @param {CronJobCreateDTO} [cronJobCreateDTO] CronJobCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    cronJobControllerCreate(cronJobCreateDTO?: CronJobCreateDTO, options?: any): AxiosPromise<CronJobOutputDTOAPI> {
+      return localVarFp.cronJobControllerCreate(cronJobCreateDTO, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `READ_MODULES`
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    cronJobControllerGetOne(id: string, options?: any): AxiosPromise<CronJobOutputDTOAPI> {
+      return localVarFp.cronJobControllerGetOne(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    cronJobControllerRemove(id: string, options?: any): AxiosPromise<IdUuidDTOAPI> {
+      return localVarFp.cronJobControllerRemove(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `READ_MODULES`
+     * @summary Search
+     * @param {CronJobSearchInputDTO} [cronJobSearchInputDTO] CronJobSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    cronJobControllerSearch(
+      cronJobSearchInputDTO?: CronJobSearchInputDTO,
+      options?: any
+    ): AxiosPromise<CronJobOutputArrayDTOAPI> {
+      return localVarFp
+        .cronJobControllerSearch(cronJobSearchInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Trigger
+     * @param {CronJobTriggerDTO} [cronJobTriggerDTO] CronJobTriggerDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    cronJobControllerTrigger(cronJobTriggerDTO?: CronJobTriggerDTO, options?: any): AxiosPromise<void> {
+      return localVarFp
+        .cronJobControllerTrigger(cronJobTriggerDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Update
+     * @param {string} id
+     * @param {CronJobUpdateDTO} [cronJobUpdateDTO] CronJobUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    cronJobControllerUpdate(
+      id: string,
+      cronJobUpdateDTO?: CronJobUpdateDTO,
+      options?: any
+    ): AxiosPromise<CronJobOutputDTOAPI> {
+      return localVarFp
+        .cronJobControllerUpdate(id, cronJobUpdateDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+  };
+>>>>>>> origin/main
 };
 
 /**
@@ -8244,6 +9727,7 @@ export const CronJobApiFactory = function (configuration?: Configuration, basePa
  * @extends {BaseAPI}
  */
 export class CronJobApi extends BaseAPI {
+<<<<<<< HEAD
     /**
      *  Required permissions: `MANAGE_MODULES`
      * @summary Create
@@ -8316,6 +9800,92 @@ export class CronJobApi extends BaseAPI {
     public cronJobControllerUpdate(id: string, cronJobUpdateDTO?: CronJobUpdateDTO, options?: RawAxiosRequestConfig) {
         return CronJobApiFp(this.configuration).cronJobControllerUpdate(id, cronJobUpdateDTO, options).then((request) => request(this.axios, this.basePath));
     }
+=======
+  /**
+   *  Required permissions: `MANAGE_MODULES`
+   * @summary Create
+   * @param {CronJobCreateDTO} [cronJobCreateDTO] CronJobCreateDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof CronJobApi
+   */
+  public cronJobControllerCreate(cronJobCreateDTO?: CronJobCreateDTO, options?: RawAxiosRequestConfig) {
+    return CronJobApiFp(this.configuration)
+      .cronJobControllerCreate(cronJobCreateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `READ_MODULES`
+   * @summary Get one
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof CronJobApi
+   */
+  public cronJobControllerGetOne(id: string, options?: RawAxiosRequestConfig) {
+    return CronJobApiFp(this.configuration)
+      .cronJobControllerGetOne(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `MANAGE_MODULES`
+   * @summary Remove
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof CronJobApi
+   */
+  public cronJobControllerRemove(id: string, options?: RawAxiosRequestConfig) {
+    return CronJobApiFp(this.configuration)
+      .cronJobControllerRemove(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `READ_MODULES`
+   * @summary Search
+   * @param {CronJobSearchInputDTO} [cronJobSearchInputDTO] CronJobSearchInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof CronJobApi
+   */
+  public cronJobControllerSearch(cronJobSearchInputDTO?: CronJobSearchInputDTO, options?: RawAxiosRequestConfig) {
+    return CronJobApiFp(this.configuration)
+      .cronJobControllerSearch(cronJobSearchInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `MANAGE_MODULES`
+   * @summary Trigger
+   * @param {CronJobTriggerDTO} [cronJobTriggerDTO] CronJobTriggerDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof CronJobApi
+   */
+  public cronJobControllerTrigger(cronJobTriggerDTO?: CronJobTriggerDTO, options?: RawAxiosRequestConfig) {
+    return CronJobApiFp(this.configuration)
+      .cronJobControllerTrigger(cronJobTriggerDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `MANAGE_MODULES`
+   * @summary Update
+   * @param {string} id
+   * @param {CronJobUpdateDTO} [cronJobUpdateDTO] CronJobUpdateDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof CronJobApi
+   */
+  public cronJobControllerUpdate(id: string, cronJobUpdateDTO?: CronJobUpdateDTO, options?: RawAxiosRequestConfig) {
+    return CronJobApiFp(this.configuration)
+      .cronJobControllerUpdate(id, cronJobUpdateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+>>>>>>> origin/main
 }
 
 
@@ -9485,6 +11055,7 @@ export class ExternalAuthApi extends BaseAPI {
  * @export
  */
 export const FunctionApiAxiosParamCreator = function (configuration?: Configuration) {
+<<<<<<< HEAD
     return {
         /**
          *  Required permissions: `MANAGE_MODULES`
@@ -9501,6 +11072,27 @@ export const FunctionApiAxiosParamCreator = function (configuration?: Configurat
             if (configuration) {
                 baseOptions = configuration.baseOptions;
             }
+=======
+  return {
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Create
+     * @param {FunctionCreateDTO} [functionCreateDTO] FunctionCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    functionControllerCreate: async (
+      functionCreateDTO?: FunctionCreateDTO,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/function`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+>>>>>>> origin/main
 
             const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
@@ -9512,10 +11104,35 @@ export const FunctionApiAxiosParamCreator = function (configuration?: Configurat
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
+<<<<<<< HEAD
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(functionCreateDTO, localVarRequestOptions, configuration)
+=======
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `READ_MODULES`
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    functionControllerGetOne: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('functionControllerGetOne', 'id', id);
+      const localVarPath = `/function/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+>>>>>>> origin/main
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -9547,6 +11164,31 @@ export const FunctionApiAxiosParamCreator = function (configuration?: Configurat
 
             // authentication domainAuth required
 
+<<<<<<< HEAD
+=======
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    functionControllerRemove: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('functionControllerRemove', 'id', id);
+      const localVarPath = `/function/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+>>>>>>> origin/main
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -9581,7 +11223,33 @@ export const FunctionApiAxiosParamCreator = function (configuration?: Configurat
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+<<<<<<< HEAD
             // authentication domainAuth required
+=======
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `READ_MODULES`
+     * @summary Search
+     * @param {FunctionSearchInputDTO} [functionSearchInputDTO] FunctionSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    functionControllerSearch: async (
+      functionSearchInputDTO?: FunctionSearchInputDTO,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/function/search`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+>>>>>>> origin/main
 
 
     
@@ -9614,7 +11282,37 @@ export const FunctionApiAxiosParamCreator = function (configuration?: Configurat
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+<<<<<<< HEAD
             // authentication domainAuth required
+=======
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Update
+     * @param {string} id
+     * @param {FunctionUpdateDTO} [functionUpdateDTO] FunctionUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    functionControllerUpdate: async (
+      id: string,
+      functionUpdateDTO?: FunctionUpdateDTO,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('functionControllerUpdate', 'id', id);
+      const localVarPath = `/function/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+>>>>>>> origin/main
 
 
     
@@ -9677,6 +11375,7 @@ export const FunctionApiAxiosParamCreator = function (configuration?: Configurat
  * FunctionApi - functional programming interface
  * @export
  */
+<<<<<<< HEAD
 export const FunctionApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = FunctionApiAxiosParamCreator(configuration)
     return {
@@ -9747,6 +11446,131 @@ export const FunctionApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
     }
+=======
+export const FunctionApiFp = function (configuration?: Configuration) {
+  const localVarAxiosParamCreator = FunctionApiAxiosParamCreator(configuration);
+  return {
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Create
+     * @param {FunctionCreateDTO} [functionCreateDTO] FunctionCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async functionControllerCreate(
+      functionCreateDTO?: FunctionCreateDTO,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FunctionOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.functionControllerCreate(functionCreateDTO, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['FunctionApi.functionControllerCreate']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `READ_MODULES`
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async functionControllerGetOne(
+      id: string,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FunctionOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.functionControllerGetOne(id, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['FunctionApi.functionControllerGetOne']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async functionControllerRemove(
+      id: string,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<IdUuidDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.functionControllerRemove(id, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['FunctionApi.functionControllerRemove']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `READ_MODULES`
+     * @summary Search
+     * @param {FunctionSearchInputDTO} [functionSearchInputDTO] FunctionSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async functionControllerSearch(
+      functionSearchInputDTO?: FunctionSearchInputDTO,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FunctionOutputArrayDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.functionControllerSearch(
+        functionSearchInputDTO,
+        options
+      );
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['FunctionApi.functionControllerSearch']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Update
+     * @param {string} id
+     * @param {FunctionUpdateDTO} [functionUpdateDTO] FunctionUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async functionControllerUpdate(
+      id: string,
+      functionUpdateDTO?: FunctionUpdateDTO,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FunctionOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.functionControllerUpdate(
+        id,
+        functionUpdateDTO,
+        options
+      );
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['FunctionApi.functionControllerUpdate']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+  };
+>>>>>>> origin/main
 };
 
 /**
@@ -9754,6 +11578,7 @@ export const FunctionApiFp = function(configuration?: Configuration) {
  * @export
  */
 export const FunctionApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+<<<<<<< HEAD
     const localVarFp = FunctionApiFp(configuration)
     return {
         /**
@@ -9808,6 +11633,75 @@ export const FunctionApiFactory = function (configuration?: Configuration, baseP
             return localVarFp.functionControllerUpdate(id, functionUpdateDTO, options).then((request) => request(axios, basePath));
         },
     };
+=======
+  const localVarFp = FunctionApiFp(configuration);
+  return {
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Create
+     * @param {FunctionCreateDTO} [functionCreateDTO] FunctionCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    functionControllerCreate(functionCreateDTO?: FunctionCreateDTO, options?: any): AxiosPromise<FunctionOutputDTOAPI> {
+      return localVarFp
+        .functionControllerCreate(functionCreateDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `READ_MODULES`
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    functionControllerGetOne(id: string, options?: any): AxiosPromise<FunctionOutputDTOAPI> {
+      return localVarFp.functionControllerGetOne(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    functionControllerRemove(id: string, options?: any): AxiosPromise<IdUuidDTOAPI> {
+      return localVarFp.functionControllerRemove(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `READ_MODULES`
+     * @summary Search
+     * @param {FunctionSearchInputDTO} [functionSearchInputDTO] FunctionSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    functionControllerSearch(
+      functionSearchInputDTO?: FunctionSearchInputDTO,
+      options?: any
+    ): AxiosPromise<FunctionOutputArrayDTOAPI> {
+      return localVarFp
+        .functionControllerSearch(functionSearchInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Update
+     * @param {string} id
+     * @param {FunctionUpdateDTO} [functionUpdateDTO] FunctionUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    functionControllerUpdate(
+      id: string,
+      functionUpdateDTO?: FunctionUpdateDTO,
+      options?: any
+    ): AxiosPromise<FunctionOutputDTOAPI> {
+      return localVarFp
+        .functionControllerUpdate(id, functionUpdateDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+  };
+>>>>>>> origin/main
 };
 
 /**
@@ -9817,6 +11711,7 @@ export const FunctionApiFactory = function (configuration?: Configuration, baseP
  * @extends {BaseAPI}
  */
 export class FunctionApi extends BaseAPI {
+<<<<<<< HEAD
     /**
      *  Required permissions: `MANAGE_MODULES`
      * @summary Create
@@ -9877,6 +11772,78 @@ export class FunctionApi extends BaseAPI {
     public functionControllerUpdate(id: string, functionUpdateDTO?: FunctionUpdateDTO, options?: RawAxiosRequestConfig) {
         return FunctionApiFp(this.configuration).functionControllerUpdate(id, functionUpdateDTO, options).then((request) => request(this.axios, this.basePath));
     }
+=======
+  /**
+   *  Required permissions: `MANAGE_MODULES`
+   * @summary Create
+   * @param {FunctionCreateDTO} [functionCreateDTO] FunctionCreateDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof FunctionApi
+   */
+  public functionControllerCreate(functionCreateDTO?: FunctionCreateDTO, options?: RawAxiosRequestConfig) {
+    return FunctionApiFp(this.configuration)
+      .functionControllerCreate(functionCreateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `READ_MODULES`
+   * @summary Get one
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof FunctionApi
+   */
+  public functionControllerGetOne(id: string, options?: RawAxiosRequestConfig) {
+    return FunctionApiFp(this.configuration)
+      .functionControllerGetOne(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `MANAGE_MODULES`
+   * @summary Remove
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof FunctionApi
+   */
+  public functionControllerRemove(id: string, options?: RawAxiosRequestConfig) {
+    return FunctionApiFp(this.configuration)
+      .functionControllerRemove(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `READ_MODULES`
+   * @summary Search
+   * @param {FunctionSearchInputDTO} [functionSearchInputDTO] FunctionSearchInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof FunctionApi
+   */
+  public functionControllerSearch(functionSearchInputDTO?: FunctionSearchInputDTO, options?: RawAxiosRequestConfig) {
+    return FunctionApiFp(this.configuration)
+      .functionControllerSearch(functionSearchInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `MANAGE_MODULES`
+   * @summary Update
+   * @param {string} id
+   * @param {FunctionUpdateDTO} [functionUpdateDTO] FunctionUpdateDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof FunctionApi
+   */
+  public functionControllerUpdate(id: string, functionUpdateDTO?: FunctionUpdateDTO, options?: RawAxiosRequestConfig) {
+    return FunctionApiFp(this.configuration)
+      .functionControllerUpdate(id, functionUpdateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+>>>>>>> origin/main
 }
 
 
@@ -9886,6 +11853,7 @@ export class FunctionApi extends BaseAPI {
  * @export
  */
 export const GameServerApiAxiosParamCreator = function (configuration?: Configuration) {
+<<<<<<< HEAD
     return {
         /**
          *  Required permissions: `MANAGE_GAMESERVERS`
@@ -10772,12 +12740,925 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
             };
         },
     }
+=======
+  return {
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Ban player
+     * @param {string} gameServerId
+     * @param {string} playerId
+     * @param {BanPlayerInputDTO} [banPlayerInputDTO] BanPlayerInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerBanPlayer: async (
+      gameServerId: string,
+      playerId: string,
+      banPlayerInputDTO?: BanPlayerInputDTO,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'gameServerId' is not null or undefined
+      assertParamExists('gameServerControllerBanPlayer', 'gameServerId', gameServerId);
+      // verify required parameter 'playerId' is not null or undefined
+      assertParamExists('gameServerControllerBanPlayer', 'playerId', playerId);
+      const localVarPath = `/gameserver/{gameServerId}/player/{playerId}/ban`
+        .replace(`{${'gameServerId'}}`, encodeURIComponent(String(gameServerId)))
+        .replace(`{${'playerId'}}`, encodeURIComponent(String(playerId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(banPlayerInputDTO, localVarRequestOptions, configuration);
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Create
+     * @param {GameServerCreateDTO} [gameServerCreateDTO] GameServerCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerCreate: async (
+      gameServerCreateDTO?: GameServerCreateDTO,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/gameserver`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(gameServerCreateDTO, localVarRequestOptions, configuration);
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Execute command
+     * @param {string} id
+     * @param {CommandExecuteInputDTO} [commandExecuteInputDTO] CommandExecuteInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerExecuteCommand: async (
+      id: string,
+      commandExecuteInputDTO?: CommandExecuteInputDTO,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('gameServerControllerExecuteCommand', 'id', id);
+      const localVarPath = `/gameserver/{id}/command`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        commandExecuteInputDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Get import
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerGetImport: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('gameServerControllerGetImport', 'id', id);
+      const localVarPath = `/gameserver/import/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `READ_GAMESERVERS`
+     * @summary Get installed modules
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerGetInstalledModules: async (
+      id: string,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('gameServerControllerGetInstalledModules', 'id', id);
+      const localVarPath = `/gameserver/{id}/modules`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `READ_GAMESERVERS`
+     * @summary Get module installation
+     * @param {string} gameServerId
+     * @param {string} moduleId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerGetModuleInstallation: async (
+      gameServerId: string,
+      moduleId: string,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'gameServerId' is not null or undefined
+      assertParamExists('gameServerControllerGetModuleInstallation', 'gameServerId', gameServerId);
+      // verify required parameter 'moduleId' is not null or undefined
+      assertParamExists('gameServerControllerGetModuleInstallation', 'moduleId', moduleId);
+      const localVarPath = `/gameserver/{gameServerId}/module/{moduleId}`
+        .replace(`{${'gameServerId'}}`, encodeURIComponent(String(gameServerId)))
+        .replace(`{${'moduleId'}}`, encodeURIComponent(String(moduleId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `READ_GAMESERVERS`
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerGetOne: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('gameServerControllerGetOne', 'id', id);
+      const localVarPath = `/gameserver/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `READ_PLAYERS`
+     * @summary Get players
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerGetPlayers: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('gameServerControllerGetPlayers', 'id', id);
+      const localVarPath = `/gameserver/{id}/players`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `READ_GAMESERVERS`
+     * @summary Get types
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerGetTypes: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      const localVarPath = `/gameserver/types`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Give item
+     * @param {string} gameServerId
+     * @param {string} playerId
+     * @param {GiveItemInputDTO} [giveItemInputDTO] GiveItemInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerGiveItem: async (
+      gameServerId: string,
+      playerId: string,
+      giveItemInputDTO?: GiveItemInputDTO,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'gameServerId' is not null or undefined
+      assertParamExists('gameServerControllerGiveItem', 'gameServerId', gameServerId);
+      // verify required parameter 'playerId' is not null or undefined
+      assertParamExists('gameServerControllerGiveItem', 'playerId', playerId);
+      const localVarPath = `/gameserver/{gameServerId}/player/{playerId}/giveItem`
+        .replace(`{${'gameServerId'}}`, encodeURIComponent(String(gameServerId)))
+        .replace(`{${'playerId'}}`, encodeURIComponent(String(playerId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(giveItemInputDTO, localVarRequestOptions, configuration);
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Import a gameserver from CSMM Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Import from csmm
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerImportFromCSMM: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      const localVarPath = `/gameserver/import`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Install module
+     * @param {string} gameServerId
+     * @param {string} moduleId
+     * @param {ModuleInstallDTO} [moduleInstallDTO] ModuleInstallDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerInstallModule: async (
+      gameServerId: string,
+      moduleId: string,
+      moduleInstallDTO?: ModuleInstallDTO,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'gameServerId' is not null or undefined
+      assertParamExists('gameServerControllerInstallModule', 'gameServerId', gameServerId);
+      // verify required parameter 'moduleId' is not null or undefined
+      assertParamExists('gameServerControllerInstallModule', 'moduleId', moduleId);
+      const localVarPath = `/gameserver/{gameServerId}/modules/{moduleId}`
+        .replace(`{${'gameServerId'}}`, encodeURIComponent(String(gameServerId)))
+        .replace(`{${'moduleId'}}`, encodeURIComponent(String(moduleId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(moduleInstallDTO, localVarRequestOptions, configuration);
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Kick player
+     * @param {string} gameServerId
+     * @param {string} playerId
+     * @param {KickPlayerInputDTO} [kickPlayerInputDTO] KickPlayerInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerKickPlayer: async (
+      gameServerId: string,
+      playerId: string,
+      kickPlayerInputDTO?: KickPlayerInputDTO,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'gameServerId' is not null or undefined
+      assertParamExists('gameServerControllerKickPlayer', 'gameServerId', gameServerId);
+      // verify required parameter 'playerId' is not null or undefined
+      assertParamExists('gameServerControllerKickPlayer', 'playerId', playerId);
+      const localVarPath = `/gameserver/{gameServerId}/player/{playerId}/kick`
+        .replace(`{${'gameServerId'}}`, encodeURIComponent(String(gameServerId)))
+        .replace(`{${'playerId'}}`, encodeURIComponent(String(playerId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(kickPlayerInputDTO, localVarRequestOptions, configuration);
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary List bans
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerListBans: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('gameServerControllerListBans', 'id', id);
+      const localVarPath = `/gameserver/{id}/bans`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerRemove: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('gameServerControllerRemove', 'id', id);
+      const localVarPath = `/gameserver/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `READ_GAMESERVERS`
+     * @summary Search
+     * @param {GameServerSearchInputDTO} [gameServerSearchInputDTO] GameServerSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerSearch: async (
+      gameServerSearchInputDTO?: GameServerSearchInputDTO,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/gameserver/search`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        gameServerSearchInputDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Send message
+     * @param {string} id
+     * @param {MessageSendInputDTO} [messageSendInputDTO] MessageSendInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerSendMessage: async (
+      id: string,
+      messageSendInputDTO?: MessageSendInputDTO,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('gameServerControllerSendMessage', 'id', id);
+      const localVarPath = `/gameserver/{id}/message`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(messageSendInputDTO, localVarRequestOptions, configuration);
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Teleport player
+     * @param {string} gameServerId
+     * @param {string} playerId
+     * @param {TeleportPlayerInputDTO} [teleportPlayerInputDTO] TeleportPlayerInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerTeleportPlayer: async (
+      gameServerId: string,
+      playerId: string,
+      teleportPlayerInputDTO?: TeleportPlayerInputDTO,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'gameServerId' is not null or undefined
+      assertParamExists('gameServerControllerTeleportPlayer', 'gameServerId', gameServerId);
+      // verify required parameter 'playerId' is not null or undefined
+      assertParamExists('gameServerControllerTeleportPlayer', 'playerId', playerId);
+      const localVarPath = `/gameserver/{gameServerId}/player/{playerId}/teleport`
+        .replace(`{${'gameServerId'}}`, encodeURIComponent(String(gameServerId)))
+        .replace(`{${'playerId'}}`, encodeURIComponent(String(playerId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        teleportPlayerInputDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `READ_GAMESERVERS`
+     * @summary Test reachability
+     * @param {GameServerTestReachabilityInputDTO} [gameServerTestReachabilityInputDTO] GameServerTestReachabilityInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerTestReachability: async (
+      gameServerTestReachabilityInputDTO?: GameServerTestReachabilityInputDTO,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/gameserver/reachability`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        gameServerTestReachabilityInputDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `READ_GAMESERVERS`
+     * @summary Test reachability for id
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerTestReachabilityForId: async (
+      id: string,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('gameServerControllerTestReachabilityForId', 'id', id);
+      const localVarPath = `/gameserver/{id}/reachability`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Unban player
+     * @param {string} gameServerId
+     * @param {string} playerId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerUnbanPlayer: async (
+      gameServerId: string,
+      playerId: string,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'gameServerId' is not null or undefined
+      assertParamExists('gameServerControllerUnbanPlayer', 'gameServerId', gameServerId);
+      // verify required parameter 'playerId' is not null or undefined
+      assertParamExists('gameServerControllerUnbanPlayer', 'playerId', playerId);
+      const localVarPath = `/gameserver/{gameServerId}/player/{playerId}/unban`
+        .replace(`{${'gameServerId'}}`, encodeURIComponent(String(gameServerId)))
+        .replace(`{${'playerId'}}`, encodeURIComponent(String(playerId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Uninstall module
+     * @param {string} gameServerId
+     * @param {string} moduleId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerUninstallModule: async (
+      gameServerId: string,
+      moduleId: string,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'gameServerId' is not null or undefined
+      assertParamExists('gameServerControllerUninstallModule', 'gameServerId', gameServerId);
+      // verify required parameter 'moduleId' is not null or undefined
+      assertParamExists('gameServerControllerUninstallModule', 'moduleId', moduleId);
+      const localVarPath = `/gameserver/{gameServerId}/modules/{moduleId}`
+        .replace(`{${'gameServerId'}}`, encodeURIComponent(String(gameServerId)))
+        .replace(`{${'moduleId'}}`, encodeURIComponent(String(moduleId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Update
+     * @param {string} id
+     * @param {GameServerUpdateDTO} [gameServerUpdateDTO] GameServerUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerUpdate: async (
+      id: string,
+      gameServerUpdateDTO?: GameServerUpdateDTO,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('gameServerControllerUpdate', 'id', id);
+      const localVarPath = `/gameserver/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(gameServerUpdateDTO, localVarRequestOptions, configuration);
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+  };
+>>>>>>> origin/main
 };
 
 /**
  * GameServerApi - functional programming interface
  * @export
  */
+<<<<<<< HEAD
 export const GameServerApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = GameServerApiAxiosParamCreator(configuration)
     return {
@@ -11095,6 +13976,607 @@ export const GameServerApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
     }
+=======
+export const GameServerApiFp = function (configuration?: Configuration) {
+  const localVarAxiosParamCreator = GameServerApiAxiosParamCreator(configuration);
+  return {
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Ban player
+     * @param {string} gameServerId
+     * @param {string} playerId
+     * @param {BanPlayerInputDTO} [banPlayerInputDTO] BanPlayerInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerBanPlayer(
+      gameServerId: string,
+      playerId: string,
+      banPlayerInputDTO?: BanPlayerInputDTO,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerBanPlayer(
+        gameServerId,
+        playerId,
+        banPlayerInputDTO,
+        options
+      );
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['GameServerApi.gameServerControllerBanPlayer']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Create
+     * @param {GameServerCreateDTO} [gameServerCreateDTO] GameServerCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerCreate(
+      gameServerCreateDTO?: GameServerCreateDTO,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GameServerOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerCreate(
+        gameServerCreateDTO,
+        options
+      );
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['GameServerApi.gameServerControllerCreate']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Execute command
+     * @param {string} id
+     * @param {CommandExecuteInputDTO} [commandExecuteInputDTO] CommandExecuteInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerExecuteCommand(
+      id: string,
+      commandExecuteInputDTO?: CommandExecuteInputDTO,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CommandExecuteDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerExecuteCommand(
+        id,
+        commandExecuteInputDTO,
+        options
+      );
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['GameServerApi.gameServerControllerExecuteCommand']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Get import
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerGetImport(
+      id: string,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ImportOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerGetImport(id, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['GameServerApi.gameServerControllerGetImport']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `READ_GAMESERVERS`
+     * @summary Get installed modules
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerGetInstalledModules(
+      id: string,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ModuleInstallationOutputArrayDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerGetInstalledModules(id, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath =
+        operationServerMap['GameServerApi.gameServerControllerGetInstalledModules']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `READ_GAMESERVERS`
+     * @summary Get module installation
+     * @param {string} gameServerId
+     * @param {string} moduleId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerGetModuleInstallation(
+      gameServerId: string,
+      moduleId: string,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ModuleInstallationOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerGetModuleInstallation(
+        gameServerId,
+        moduleId,
+        options
+      );
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath =
+        operationServerMap['GameServerApi.gameServerControllerGetModuleInstallation']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `READ_GAMESERVERS`
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerGetOne(
+      id: string,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GameServerOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerGetOne(id, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['GameServerApi.gameServerControllerGetOne']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `READ_PLAYERS`
+     * @summary Get players
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerGetPlayers(
+      id: string,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerOnGameserverOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerGetPlayers(id, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['GameServerApi.gameServerControllerGetPlayers']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `READ_GAMESERVERS`
+     * @summary Get types
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerGetTypes(
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GameServerTypesOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerGetTypes(options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['GameServerApi.gameServerControllerGetTypes']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Give item
+     * @param {string} gameServerId
+     * @param {string} playerId
+     * @param {GiveItemInputDTO} [giveItemInputDTO] GiveItemInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerGiveItem(
+      gameServerId: string,
+      playerId: string,
+      giveItemInputDTO?: GiveItemInputDTO,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerGiveItem(
+        gameServerId,
+        playerId,
+        giveItemInputDTO,
+        options
+      );
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['GameServerApi.gameServerControllerGiveItem']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     * Import a gameserver from CSMM Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Import from csmm
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerImportFromCSMM(
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ImportOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerImportFromCSMM(options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['GameServerApi.gameServerControllerImportFromCSMM']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Install module
+     * @param {string} gameServerId
+     * @param {string} moduleId
+     * @param {ModuleInstallDTO} [moduleInstallDTO] ModuleInstallDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerInstallModule(
+      gameServerId: string,
+      moduleId: string,
+      moduleInstallDTO?: ModuleInstallDTO,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ModuleInstallationOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerInstallModule(
+        gameServerId,
+        moduleId,
+        moduleInstallDTO,
+        options
+      );
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['GameServerApi.gameServerControllerInstallModule']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Kick player
+     * @param {string} gameServerId
+     * @param {string} playerId
+     * @param {KickPlayerInputDTO} [kickPlayerInputDTO] KickPlayerInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerKickPlayer(
+      gameServerId: string,
+      playerId: string,
+      kickPlayerInputDTO?: KickPlayerInputDTO,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerKickPlayer(
+        gameServerId,
+        playerId,
+        kickPlayerInputDTO,
+        options
+      );
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['GameServerApi.gameServerControllerKickPlayer']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary List bans
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerListBans(
+      id: string,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BanPlayerOutputDTO>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerListBans(id, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['GameServerApi.gameServerControllerListBans']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerRemove(
+      id: string,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<IdUuidDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerRemove(id, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['GameServerApi.gameServerControllerRemove']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `READ_GAMESERVERS`
+     * @summary Search
+     * @param {GameServerSearchInputDTO} [gameServerSearchInputDTO] GameServerSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerSearch(
+      gameServerSearchInputDTO?: GameServerSearchInputDTO,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GameServerOutputArrayDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerSearch(
+        gameServerSearchInputDTO,
+        options
+      );
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['GameServerApi.gameServerControllerSearch']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Send message
+     * @param {string} id
+     * @param {MessageSendInputDTO} [messageSendInputDTO] MessageSendInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerSendMessage(
+      id: string,
+      messageSendInputDTO?: MessageSendInputDTO,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerSendMessage(
+        id,
+        messageSendInputDTO,
+        options
+      );
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['GameServerApi.gameServerControllerSendMessage']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Teleport player
+     * @param {string} gameServerId
+     * @param {string} playerId
+     * @param {TeleportPlayerInputDTO} [teleportPlayerInputDTO] TeleportPlayerInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerTeleportPlayer(
+      gameServerId: string,
+      playerId: string,
+      teleportPlayerInputDTO?: TeleportPlayerInputDTO,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerTeleportPlayer(
+        gameServerId,
+        playerId,
+        teleportPlayerInputDTO,
+        options
+      );
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['GameServerApi.gameServerControllerTeleportPlayer']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `READ_GAMESERVERS`
+     * @summary Test reachability
+     * @param {GameServerTestReachabilityInputDTO} [gameServerTestReachabilityInputDTO] GameServerTestReachabilityInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerTestReachability(
+      gameServerTestReachabilityInputDTO?: GameServerTestReachabilityInputDTO,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GameServerTestReachabilityDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerTestReachability(
+        gameServerTestReachabilityInputDTO,
+        options
+      );
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['GameServerApi.gameServerControllerTestReachability']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `READ_GAMESERVERS`
+     * @summary Test reachability for id
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerTestReachabilityForId(
+      id: string,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GameServerTestReachabilityDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerTestReachabilityForId(id, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath =
+        operationServerMap['GameServerApi.gameServerControllerTestReachabilityForId']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Unban player
+     * @param {string} gameServerId
+     * @param {string} playerId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerUnbanPlayer(
+      gameServerId: string,
+      playerId: string,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerUnbanPlayer(
+        gameServerId,
+        playerId,
+        options
+      );
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['GameServerApi.gameServerControllerUnbanPlayer']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Uninstall module
+     * @param {string} gameServerId
+     * @param {string} moduleId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerUninstallModule(
+      gameServerId: string,
+      moduleId: string,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ModuleInstallationOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerUninstallModule(
+        gameServerId,
+        moduleId,
+        options
+      );
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['GameServerApi.gameServerControllerUninstallModule']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Update
+     * @param {string} id
+     * @param {GameServerUpdateDTO} [gameServerUpdateDTO] GameServerUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerUpdate(
+      id: string,
+      gameServerUpdateDTO?: GameServerUpdateDTO,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GameServerOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerUpdate(
+        id,
+        gameServerUpdateDTO,
+        options
+      );
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['GameServerApi.gameServerControllerUpdate']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+  };
+>>>>>>> origin/main
 };
 
 /**
@@ -11102,6 +14584,7 @@ export const GameServerApiFp = function(configuration?: Configuration) {
  * @export
  */
 export const GameServerApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+<<<<<<< HEAD
     const localVarFp = GameServerApiFp(configuration)
     return {
         /**
@@ -11349,6 +14832,347 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
             return localVarFp.gameServerControllerUpdate(id, gameServerUpdateDTO, options).then((request) => request(axios, basePath));
         },
     };
+=======
+  const localVarFp = GameServerApiFp(configuration);
+  return {
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Ban player
+     * @param {string} gameServerId
+     * @param {string} playerId
+     * @param {BanPlayerInputDTO} [banPlayerInputDTO] BanPlayerInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerBanPlayer(
+      gameServerId: string,
+      playerId: string,
+      banPlayerInputDTO?: BanPlayerInputDTO,
+      options?: any
+    ): AxiosPromise<APIOutput> {
+      return localVarFp
+        .gameServerControllerBanPlayer(gameServerId, playerId, banPlayerInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Create
+     * @param {GameServerCreateDTO} [gameServerCreateDTO] GameServerCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerCreate(
+      gameServerCreateDTO?: GameServerCreateDTO,
+      options?: any
+    ): AxiosPromise<GameServerOutputDTOAPI> {
+      return localVarFp
+        .gameServerControllerCreate(gameServerCreateDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Execute command
+     * @param {string} id
+     * @param {CommandExecuteInputDTO} [commandExecuteInputDTO] CommandExecuteInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerExecuteCommand(
+      id: string,
+      commandExecuteInputDTO?: CommandExecuteInputDTO,
+      options?: any
+    ): AxiosPromise<CommandExecuteDTOAPI> {
+      return localVarFp
+        .gameServerControllerExecuteCommand(id, commandExecuteInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Get import
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerGetImport(id: string, options?: any): AxiosPromise<ImportOutputDTOAPI> {
+      return localVarFp.gameServerControllerGetImport(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `READ_GAMESERVERS`
+     * @summary Get installed modules
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerGetInstalledModules(
+      id: string,
+      options?: any
+    ): AxiosPromise<ModuleInstallationOutputArrayDTOAPI> {
+      return localVarFp
+        .gameServerControllerGetInstalledModules(id, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `READ_GAMESERVERS`
+     * @summary Get module installation
+     * @param {string} gameServerId
+     * @param {string} moduleId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerGetModuleInstallation(
+      gameServerId: string,
+      moduleId: string,
+      options?: any
+    ): AxiosPromise<ModuleInstallationOutputDTOAPI> {
+      return localVarFp
+        .gameServerControllerGetModuleInstallation(gameServerId, moduleId, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `READ_GAMESERVERS`
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerGetOne(id: string, options?: any): AxiosPromise<GameServerOutputDTOAPI> {
+      return localVarFp.gameServerControllerGetOne(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `READ_PLAYERS`
+     * @summary Get players
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerGetPlayers(id: string, options?: any): AxiosPromise<PlayerOnGameserverOutputDTOAPI> {
+      return localVarFp.gameServerControllerGetPlayers(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `READ_GAMESERVERS`
+     * @summary Get types
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerGetTypes(options?: any): AxiosPromise<GameServerTypesOutputDTOAPI> {
+      return localVarFp.gameServerControllerGetTypes(options).then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Give item
+     * @param {string} gameServerId
+     * @param {string} playerId
+     * @param {GiveItemInputDTO} [giveItemInputDTO] GiveItemInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerGiveItem(
+      gameServerId: string,
+      playerId: string,
+      giveItemInputDTO?: GiveItemInputDTO,
+      options?: any
+    ): AxiosPromise<void> {
+      return localVarFp
+        .gameServerControllerGiveItem(gameServerId, playerId, giveItemInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     * Import a gameserver from CSMM Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Import from csmm
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerImportFromCSMM(options?: any): AxiosPromise<ImportOutputDTOAPI> {
+      return localVarFp.gameServerControllerImportFromCSMM(options).then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Install module
+     * @param {string} gameServerId
+     * @param {string} moduleId
+     * @param {ModuleInstallDTO} [moduleInstallDTO] ModuleInstallDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerInstallModule(
+      gameServerId: string,
+      moduleId: string,
+      moduleInstallDTO?: ModuleInstallDTO,
+      options?: any
+    ): AxiosPromise<ModuleInstallationOutputDTOAPI> {
+      return localVarFp
+        .gameServerControllerInstallModule(gameServerId, moduleId, moduleInstallDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Kick player
+     * @param {string} gameServerId
+     * @param {string} playerId
+     * @param {KickPlayerInputDTO} [kickPlayerInputDTO] KickPlayerInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerKickPlayer(
+      gameServerId: string,
+      playerId: string,
+      kickPlayerInputDTO?: KickPlayerInputDTO,
+      options?: any
+    ): AxiosPromise<APIOutput> {
+      return localVarFp
+        .gameServerControllerKickPlayer(gameServerId, playerId, kickPlayerInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary List bans
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerListBans(id: string, options?: any): AxiosPromise<BanPlayerOutputDTO> {
+      return localVarFp.gameServerControllerListBans(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerRemove(id: string, options?: any): AxiosPromise<IdUuidDTOAPI> {
+      return localVarFp.gameServerControllerRemove(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `READ_GAMESERVERS`
+     * @summary Search
+     * @param {GameServerSearchInputDTO} [gameServerSearchInputDTO] GameServerSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerSearch(
+      gameServerSearchInputDTO?: GameServerSearchInputDTO,
+      options?: any
+    ): AxiosPromise<GameServerOutputArrayDTOAPI> {
+      return localVarFp
+        .gameServerControllerSearch(gameServerSearchInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Send message
+     * @param {string} id
+     * @param {MessageSendInputDTO} [messageSendInputDTO] MessageSendInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerSendMessage(
+      id: string,
+      messageSendInputDTO?: MessageSendInputDTO,
+      options?: any
+    ): AxiosPromise<APIOutput> {
+      return localVarFp
+        .gameServerControllerSendMessage(id, messageSendInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Teleport player
+     * @param {string} gameServerId
+     * @param {string} playerId
+     * @param {TeleportPlayerInputDTO} [teleportPlayerInputDTO] TeleportPlayerInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerTeleportPlayer(
+      gameServerId: string,
+      playerId: string,
+      teleportPlayerInputDTO?: TeleportPlayerInputDTO,
+      options?: any
+    ): AxiosPromise<APIOutput> {
+      return localVarFp
+        .gameServerControllerTeleportPlayer(gameServerId, playerId, teleportPlayerInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `READ_GAMESERVERS`
+     * @summary Test reachability
+     * @param {GameServerTestReachabilityInputDTO} [gameServerTestReachabilityInputDTO] GameServerTestReachabilityInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerTestReachability(
+      gameServerTestReachabilityInputDTO?: GameServerTestReachabilityInputDTO,
+      options?: any
+    ): AxiosPromise<GameServerTestReachabilityDTOAPI> {
+      return localVarFp
+        .gameServerControllerTestReachability(gameServerTestReachabilityInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `READ_GAMESERVERS`
+     * @summary Test reachability for id
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerTestReachabilityForId(
+      id: string,
+      options?: any
+    ): AxiosPromise<GameServerTestReachabilityDTOAPI> {
+      return localVarFp
+        .gameServerControllerTestReachabilityForId(id, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Unban player
+     * @param {string} gameServerId
+     * @param {string} playerId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerUnbanPlayer(gameServerId: string, playerId: string, options?: any): AxiosPromise<APIOutput> {
+      return localVarFp
+        .gameServerControllerUnbanPlayer(gameServerId, playerId, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Uninstall module
+     * @param {string} gameServerId
+     * @param {string} moduleId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerUninstallModule(
+      gameServerId: string,
+      moduleId: string,
+      options?: any
+    ): AxiosPromise<ModuleInstallationOutputDTOAPI> {
+      return localVarFp
+        .gameServerControllerUninstallModule(gameServerId, moduleId, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `MANAGE_GAMESERVERS`
+     * @summary Update
+     * @param {string} id
+     * @param {GameServerUpdateDTO} [gameServerUpdateDTO] GameServerUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerUpdate(
+      id: string,
+      gameServerUpdateDTO?: GameServerUpdateDTO,
+      options?: any
+    ): AxiosPromise<GameServerOutputDTOAPI> {
+      return localVarFp
+        .gameServerControllerUpdate(id, gameServerUpdateDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+  };
+>>>>>>> origin/main
 };
 
 /**
@@ -11358,6 +15182,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
  * @extends {BaseAPI}
  */
 export class GameServerApi extends BaseAPI {
+<<<<<<< HEAD
     /**
      *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Ban player
@@ -11371,6 +15196,28 @@ export class GameServerApi extends BaseAPI {
     public gameServerControllerBanPlayer(gameServerId: string, playerId: string, banPlayerInputDTO?: BanPlayerInputDTO, options?: RawAxiosRequestConfig) {
         return GameServerApiFp(this.configuration).gameServerControllerBanPlayer(gameServerId, playerId, banPlayerInputDTO, options).then((request) => request(this.axios, this.basePath));
     }
+=======
+  /**
+   *  Required permissions: `MANAGE_GAMESERVERS`
+   * @summary Ban player
+   * @param {string} gameServerId
+   * @param {string} playerId
+   * @param {BanPlayerInputDTO} [banPlayerInputDTO] BanPlayerInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerBanPlayer(
+    gameServerId: string,
+    playerId: string,
+    banPlayerInputDTO?: BanPlayerInputDTO,
+    options?: RawAxiosRequestConfig
+  ) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerBanPlayer(gameServerId, playerId, banPlayerInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+>>>>>>> origin/main
 
     /**
      *  Required permissions: `MANAGE_GAMESERVERS`
@@ -11421,6 +15268,7 @@ export class GameServerApi extends BaseAPI {
         return GameServerApiFp(this.configuration).gameServerControllerGetInstalledModules(id, options).then((request) => request(this.axios, this.basePath));
     }
 
+<<<<<<< HEAD
     /**
      *  Required permissions: `READ_GAMESERVERS`
      * @summary Get module installation
@@ -11433,6 +15281,26 @@ export class GameServerApi extends BaseAPI {
     public gameServerControllerGetModuleInstallation(gameServerId: string, moduleId: string, options?: RawAxiosRequestConfig) {
         return GameServerApiFp(this.configuration).gameServerControllerGetModuleInstallation(gameServerId, moduleId, options).then((request) => request(this.axios, this.basePath));
     }
+=======
+  /**
+   *  Required permissions: `READ_GAMESERVERS`
+   * @summary Get module installation
+   * @param {string} gameServerId
+   * @param {string} moduleId
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerGetModuleInstallation(
+    gameServerId: string,
+    moduleId: string,
+    options?: RawAxiosRequestConfig
+  ) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerGetModuleInstallation(gameServerId, moduleId, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+>>>>>>> origin/main
 
     /**
      *  Required permissions: `READ_GAMESERVERS`
@@ -11469,6 +15337,7 @@ export class GameServerApi extends BaseAPI {
         return GameServerApiFp(this.configuration).gameServerControllerGetTypes(options).then((request) => request(this.axios, this.basePath));
     }
 
+<<<<<<< HEAD
     /**
      *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Give item
@@ -11482,6 +15351,28 @@ export class GameServerApi extends BaseAPI {
     public gameServerControllerGiveItem(gameServerId: string, playerId: string, giveItemInputDTO?: GiveItemInputDTO, options?: RawAxiosRequestConfig) {
         return GameServerApiFp(this.configuration).gameServerControllerGiveItem(gameServerId, playerId, giveItemInputDTO, options).then((request) => request(this.axios, this.basePath));
     }
+=======
+  /**
+   *  Required permissions: `MANAGE_GAMESERVERS`
+   * @summary Give item
+   * @param {string} gameServerId
+   * @param {string} playerId
+   * @param {GiveItemInputDTO} [giveItemInputDTO] GiveItemInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerGiveItem(
+    gameServerId: string,
+    playerId: string,
+    giveItemInputDTO?: GiveItemInputDTO,
+    options?: RawAxiosRequestConfig
+  ) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerGiveItem(gameServerId, playerId, giveItemInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+>>>>>>> origin/main
 
     /**
      * Import a gameserver from CSMM Required permissions: `MANAGE_GAMESERVERS`
@@ -11494,6 +15385,7 @@ export class GameServerApi extends BaseAPI {
         return GameServerApiFp(this.configuration).gameServerControllerImportFromCSMM(options).then((request) => request(this.axios, this.basePath));
     }
 
+<<<<<<< HEAD
     /**
      *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Install module
@@ -11521,6 +15413,49 @@ export class GameServerApi extends BaseAPI {
     public gameServerControllerKickPlayer(gameServerId: string, playerId: string, kickPlayerInputDTO?: KickPlayerInputDTO, options?: RawAxiosRequestConfig) {
         return GameServerApiFp(this.configuration).gameServerControllerKickPlayer(gameServerId, playerId, kickPlayerInputDTO, options).then((request) => request(this.axios, this.basePath));
     }
+=======
+  /**
+   *  Required permissions: `MANAGE_GAMESERVERS`
+   * @summary Install module
+   * @param {string} gameServerId
+   * @param {string} moduleId
+   * @param {ModuleInstallDTO} [moduleInstallDTO] ModuleInstallDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerInstallModule(
+    gameServerId: string,
+    moduleId: string,
+    moduleInstallDTO?: ModuleInstallDTO,
+    options?: RawAxiosRequestConfig
+  ) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerInstallModule(gameServerId, moduleId, moduleInstallDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `MANAGE_GAMESERVERS`
+   * @summary Kick player
+   * @param {string} gameServerId
+   * @param {string} playerId
+   * @param {KickPlayerInputDTO} [kickPlayerInputDTO] KickPlayerInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerKickPlayer(
+    gameServerId: string,
+    playerId: string,
+    kickPlayerInputDTO?: KickPlayerInputDTO,
+    options?: RawAxiosRequestConfig
+  ) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerKickPlayer(gameServerId, playerId, kickPlayerInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+>>>>>>> origin/main
 
     /**
      *  Required permissions: `MANAGE_GAMESERVERS`
@@ -11571,6 +15506,7 @@ export class GameServerApi extends BaseAPI {
         return GameServerApiFp(this.configuration).gameServerControllerSendMessage(id, messageSendInputDTO, options).then((request) => request(this.axios, this.basePath));
     }
 
+<<<<<<< HEAD
     /**
      *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Teleport player
@@ -11584,6 +15520,28 @@ export class GameServerApi extends BaseAPI {
     public gameServerControllerTeleportPlayer(gameServerId: string, playerId: string, teleportPlayerInputDTO?: TeleportPlayerInputDTO, options?: RawAxiosRequestConfig) {
         return GameServerApiFp(this.configuration).gameServerControllerTeleportPlayer(gameServerId, playerId, teleportPlayerInputDTO, options).then((request) => request(this.axios, this.basePath));
     }
+=======
+  /**
+   *  Required permissions: `MANAGE_GAMESERVERS`
+   * @summary Teleport player
+   * @param {string} gameServerId
+   * @param {string} playerId
+   * @param {TeleportPlayerInputDTO} [teleportPlayerInputDTO] TeleportPlayerInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerTeleportPlayer(
+    gameServerId: string,
+    playerId: string,
+    teleportPlayerInputDTO?: TeleportPlayerInputDTO,
+    options?: RawAxiosRequestConfig
+  ) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerTeleportPlayer(gameServerId, playerId, teleportPlayerInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+>>>>>>> origin/main
 
     /**
      *  Required permissions: `READ_GAMESERVERS`
@@ -11609,6 +15567,7 @@ export class GameServerApi extends BaseAPI {
         return GameServerApiFp(this.configuration).gameServerControllerTestReachabilityForId(id, options).then((request) => request(this.axios, this.basePath));
     }
 
+<<<<<<< HEAD
     /**
      *  Required permissions: `MANAGE_GAMESERVERS`
      * @summary Unban player
@@ -11634,6 +15593,37 @@ export class GameServerApi extends BaseAPI {
     public gameServerControllerUninstallModule(gameServerId: string, moduleId: string, options?: RawAxiosRequestConfig) {
         return GameServerApiFp(this.configuration).gameServerControllerUninstallModule(gameServerId, moduleId, options).then((request) => request(this.axios, this.basePath));
     }
+=======
+  /**
+   *  Required permissions: `MANAGE_GAMESERVERS`
+   * @summary Unban player
+   * @param {string} gameServerId
+   * @param {string} playerId
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerUnbanPlayer(gameServerId: string, playerId: string, options?: RawAxiosRequestConfig) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerUnbanPlayer(gameServerId, playerId, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `MANAGE_GAMESERVERS`
+   * @summary Uninstall module
+   * @param {string} gameServerId
+   * @param {string} moduleId
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerUninstallModule(gameServerId: string, moduleId: string, options?: RawAxiosRequestConfig) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerUninstallModule(gameServerId, moduleId, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+>>>>>>> origin/main
 
     /**
      *  Required permissions: `MANAGE_GAMESERVERS`
@@ -11656,6 +15646,7 @@ export class GameServerApi extends BaseAPI {
  * @export
  */
 export const HookApiAxiosParamCreator = function (configuration?: Configuration) {
+<<<<<<< HEAD
     return {
         /**
          *  Required permissions: `MANAGE_MODULES`
@@ -11672,6 +15663,27 @@ export const HookApiAxiosParamCreator = function (configuration?: Configuration)
             if (configuration) {
                 baseOptions = configuration.baseOptions;
             }
+=======
+  return {
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Create
+     * @param {HookCreateDTO} [hookCreateDTO] HookCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    hookControllerCreate: async (
+      hookCreateDTO?: HookCreateDTO,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/hook`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+>>>>>>> origin/main
 
             const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
@@ -11683,10 +15695,35 @@ export const HookApiAxiosParamCreator = function (configuration?: Configuration)
     
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
+<<<<<<< HEAD
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(hookCreateDTO, localVarRequestOptions, configuration)
+=======
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `READ_MODULES`
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    hookControllerGetOne: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('hookControllerGetOne', 'id', id);
+      const localVarPath = `/hook/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+>>>>>>> origin/main
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -11718,6 +15755,31 @@ export const HookApiAxiosParamCreator = function (configuration?: Configuration)
 
             // authentication domainAuth required
 
+<<<<<<< HEAD
+=======
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    hookControllerRemove: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('hookControllerRemove', 'id', id);
+      const localVarPath = `/hook/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+>>>>>>> origin/main
 
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
@@ -11752,7 +15814,33 @@ export const HookApiAxiosParamCreator = function (configuration?: Configuration)
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+<<<<<<< HEAD
             // authentication domainAuth required
+=======
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `READ_MODULES`
+     * @summary Search
+     * @param {HookSearchInputDTO} [hookSearchInputDTO] HookSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    hookControllerSearch: async (
+      hookSearchInputDTO?: HookSearchInputDTO,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/hook/search`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+>>>>>>> origin/main
 
 
     
@@ -11785,7 +15873,33 @@ export const HookApiAxiosParamCreator = function (configuration?: Configuration)
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+<<<<<<< HEAD
             // authentication domainAuth required
+=======
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Trigger
+     * @param {HookTriggerDTO} [hookTriggerDTO] HookTriggerDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    hookControllerTrigger: async (
+      hookTriggerDTO?: HookTriggerDTO,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/hook/trigger`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+>>>>>>> origin/main
 
 
     
@@ -11817,9 +15931,39 @@ export const HookApiAxiosParamCreator = function (configuration?: Configuration)
                 baseOptions = configuration.baseOptions;
             }
 
+<<<<<<< HEAD
             const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+=======
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Update
+     * @param {string} id
+     * @param {HookUpdateDTO} [hookUpdateDTO] HookUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    hookControllerUpdate: async (
+      id: string,
+      hookUpdateDTO?: HookUpdateDTO,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('hookControllerUpdate', 'id', id);
+      const localVarPath = `/hook/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+>>>>>>> origin/main
 
             // authentication domainAuth required
 
@@ -11884,6 +16028,7 @@ export const HookApiAxiosParamCreator = function (configuration?: Configuration)
  * HookApi - functional programming interface
  * @export
  */
+<<<<<<< HEAD
 export const HookApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = HookApiAxiosParamCreator(configuration)
     return {
@@ -11967,6 +16112,146 @@ export const HookApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
     }
+=======
+export const HookApiFp = function (configuration?: Configuration) {
+  const localVarAxiosParamCreator = HookApiAxiosParamCreator(configuration);
+  return {
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Create
+     * @param {HookCreateDTO} [hookCreateDTO] HookCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async hookControllerCreate(
+      hookCreateDTO?: HookCreateDTO,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<HookOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.hookControllerCreate(hookCreateDTO, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['HookApi.hookControllerCreate']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `READ_MODULES`
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async hookControllerGetOne(
+      id: string,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<HookOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.hookControllerGetOne(id, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['HookApi.hookControllerGetOne']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async hookControllerRemove(
+      id: string,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<IdUuidDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.hookControllerRemove(id, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['HookApi.hookControllerRemove']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `READ_MODULES`
+     * @summary Search
+     * @param {HookSearchInputDTO} [hookSearchInputDTO] HookSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async hookControllerSearch(
+      hookSearchInputDTO?: HookSearchInputDTO,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<HookOutputArrayDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.hookControllerSearch(hookSearchInputDTO, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['HookApi.hookControllerSearch']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Trigger
+     * @param {HookTriggerDTO} [hookTriggerDTO] HookTriggerDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async hookControllerTrigger(
+      hookTriggerDTO?: HookTriggerDTO,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.hookControllerTrigger(hookTriggerDTO, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['HookApi.hookControllerTrigger']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Update
+     * @param {string} id
+     * @param {HookUpdateDTO} [hookUpdateDTO] HookUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async hookControllerUpdate(
+      id: string,
+      hookUpdateDTO?: HookUpdateDTO,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<HookOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.hookControllerUpdate(id, hookUpdateDTO, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['HookApi.hookControllerUpdate']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+  };
+>>>>>>> origin/main
 };
 
 /**
@@ -11974,6 +16259,7 @@ export const HookApiFp = function(configuration?: Configuration) {
  * @export
  */
 export const HookApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+<<<<<<< HEAD
     const localVarFp = HookApiFp(configuration)
     return {
         /**
@@ -12038,6 +16324,72 @@ export const HookApiFactory = function (configuration?: Configuration, basePath?
             return localVarFp.hookControllerUpdate(id, hookUpdateDTO, options).then((request) => request(axios, basePath));
         },
     };
+=======
+  const localVarFp = HookApiFp(configuration);
+  return {
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Create
+     * @param {HookCreateDTO} [hookCreateDTO] HookCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    hookControllerCreate(hookCreateDTO?: HookCreateDTO, options?: any): AxiosPromise<HookOutputDTOAPI> {
+      return localVarFp.hookControllerCreate(hookCreateDTO, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `READ_MODULES`
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    hookControllerGetOne(id: string, options?: any): AxiosPromise<HookOutputDTOAPI> {
+      return localVarFp.hookControllerGetOne(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Remove
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    hookControllerRemove(id: string, options?: any): AxiosPromise<IdUuidDTOAPI> {
+      return localVarFp.hookControllerRemove(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `READ_MODULES`
+     * @summary Search
+     * @param {HookSearchInputDTO} [hookSearchInputDTO] HookSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    hookControllerSearch(hookSearchInputDTO?: HookSearchInputDTO, options?: any): AxiosPromise<HookOutputArrayDTOAPI> {
+      return localVarFp.hookControllerSearch(hookSearchInputDTO, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Trigger
+     * @param {HookTriggerDTO} [hookTriggerDTO] HookTriggerDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    hookControllerTrigger(hookTriggerDTO?: HookTriggerDTO, options?: any): AxiosPromise<void> {
+      return localVarFp.hookControllerTrigger(hookTriggerDTO, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Update
+     * @param {string} id
+     * @param {HookUpdateDTO} [hookUpdateDTO] HookUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    hookControllerUpdate(id: string, hookUpdateDTO?: HookUpdateDTO, options?: any): AxiosPromise<HookOutputDTOAPI> {
+      return localVarFp.hookControllerUpdate(id, hookUpdateDTO, options).then((request) => request(axios, basePath));
+    },
+  };
+>>>>>>> origin/main
 };
 
 /**
@@ -12047,6 +16399,7 @@ export const HookApiFactory = function (configuration?: Configuration, basePath?
  * @extends {BaseAPI}
  */
 export class HookApi extends BaseAPI {
+<<<<<<< HEAD
     /**
      *  Required permissions: `MANAGE_MODULES`
      * @summary Create
@@ -12119,6 +16472,92 @@ export class HookApi extends BaseAPI {
     public hookControllerUpdate(id: string, hookUpdateDTO?: HookUpdateDTO, options?: RawAxiosRequestConfig) {
         return HookApiFp(this.configuration).hookControllerUpdate(id, hookUpdateDTO, options).then((request) => request(this.axios, this.basePath));
     }
+=======
+  /**
+   *  Required permissions: `MANAGE_MODULES`
+   * @summary Create
+   * @param {HookCreateDTO} [hookCreateDTO] HookCreateDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof HookApi
+   */
+  public hookControllerCreate(hookCreateDTO?: HookCreateDTO, options?: RawAxiosRequestConfig) {
+    return HookApiFp(this.configuration)
+      .hookControllerCreate(hookCreateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `READ_MODULES`
+   * @summary Get one
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof HookApi
+   */
+  public hookControllerGetOne(id: string, options?: RawAxiosRequestConfig) {
+    return HookApiFp(this.configuration)
+      .hookControllerGetOne(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `MANAGE_MODULES`
+   * @summary Remove
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof HookApi
+   */
+  public hookControllerRemove(id: string, options?: RawAxiosRequestConfig) {
+    return HookApiFp(this.configuration)
+      .hookControllerRemove(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `READ_MODULES`
+   * @summary Search
+   * @param {HookSearchInputDTO} [hookSearchInputDTO] HookSearchInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof HookApi
+   */
+  public hookControllerSearch(hookSearchInputDTO?: HookSearchInputDTO, options?: RawAxiosRequestConfig) {
+    return HookApiFp(this.configuration)
+      .hookControllerSearch(hookSearchInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `MANAGE_MODULES`
+   * @summary Trigger
+   * @param {HookTriggerDTO} [hookTriggerDTO] HookTriggerDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof HookApi
+   */
+  public hookControllerTrigger(hookTriggerDTO?: HookTriggerDTO, options?: RawAxiosRequestConfig) {
+    return HookApiFp(this.configuration)
+      .hookControllerTrigger(hookTriggerDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `MANAGE_MODULES`
+   * @summary Update
+   * @param {string} id
+   * @param {HookUpdateDTO} [hookUpdateDTO] HookUpdateDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof HookApi
+   */
+  public hookControllerUpdate(id: string, hookUpdateDTO?: HookUpdateDTO, options?: RawAxiosRequestConfig) {
+    return HookApiFp(this.configuration)
+      .hookControllerUpdate(id, hookUpdateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+>>>>>>> origin/main
 }
 
 

@@ -53,6 +53,12 @@ export class IGamePlayer extends TakaroDTO<IGamePlayer> {
 }
 
 export class BaseGameEvent<T> extends BaseEvent<T> {
+<<<<<<< HEAD
+=======
+  @IsDate()
+  timestamp: Date = new Date();
+
+>>>>>>> origin/main
   @IsEnum(GameEvents)
   declare type: ValueOf<typeof GameEvents>;
 

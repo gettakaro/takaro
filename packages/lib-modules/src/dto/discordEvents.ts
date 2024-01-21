@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import { IsBoolean, IsEnum, IsString, ValidateNested } from 'class-validator';
+=======
+import { IsBoolean, IsDate, IsEnum, IsString, ValidateNested } from 'class-validator';
+>>>>>>> origin/main
 import { Type } from 'class-transformer';
 import { TakaroDTO } from '@takaro/util';
 import { ValueOf } from 'type-fest';
@@ -9,6 +13,12 @@ export const DiscordEvents = {
 } as const;
 
 export class BaseDiscordEvent<T> extends BaseEvent<T> {
+<<<<<<< HEAD
+=======
+  @IsDate()
+  timestamp: Date = new Date();
+
+>>>>>>> origin/main
   @IsEnum(DiscordEvents)
   declare type: ValueOf<typeof DiscordEvents>;
 

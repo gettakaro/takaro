@@ -101,7 +101,11 @@ export class HookRepo extends ITakaroRepo<HookModel, HookOutputDTO, HookCreateDT
     await query.updateAndFetchById(id, { functionId });
   }
 
+<<<<<<< HEAD
   async getTriggeredHooks(eventType: EventTypes, gameServerId?: string): Promise<HookOutputDTO[]> {
+=======
+  async getTriggeredHooks(eventType: EventTypes, gameServerId: string): Promise<HookOutputDTO[]> {
+>>>>>>> origin/main
     const { query } = await this.getModel();
 
     const whereClause: Record<string, string> = {

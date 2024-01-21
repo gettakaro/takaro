@@ -11,9 +11,14 @@ import { Type } from 'class-transformer';
 import { GameServerOutputDTO } from './GameServerService.js';
 import { ModuleOutputDTO } from './ModuleService.js';
 import { UserOutputDTO } from './UserService.js';
+<<<<<<< HEAD
 import { EventMapping, EventPayload, TakaroEvents } from '@takaro/modules';
 import { ValueOf } from 'type-fest';
 import { HookService } from './HookService.js';
+=======
+import { TakaroEvents } from '@takaro/modules';
+import { ValueOf } from 'type-fest';
+>>>>>>> origin/main
 
 export const EVENT_TYPES = {
   ...TakaroEvents,

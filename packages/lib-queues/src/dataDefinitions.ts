@@ -34,7 +34,10 @@ export interface IJobData extends IBaseJobData {
 
 export interface IHookJobData extends IJobData {
   eventData: EventPayload;
+<<<<<<< HEAD
   playerId?: string;
+=======
+>>>>>>> origin/main
 }
 
 export interface ICommandJobData extends IJobData {
