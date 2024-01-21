@@ -30,7 +30,9 @@ export async function up(knex: Knex): Promise<void> {
     })
   );
 
-  await knex('playerIpHistory').insert(newRecords);
+  if (newRecords.length) {
+    await knex('playerIpHistory').insert(newRecords);
+  }
   await knex.schema.dropTable('playerOnGameServerIp');
 }
 
