@@ -44,7 +44,7 @@ export abstract class TakaroEmitter {
 
       // Validate the data, it is user-input after all :)
       if (isTakaroDTO(data)) {
-        if (!data.timestamp) data.timestamp = new Date();
+        if (!data.timestamp) data.timestamp = new Date().toISOString();
         // await data.validate();
       }
 
