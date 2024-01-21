@@ -53,16 +53,24 @@ async function cleanUp() {
 }
 
 async function main() {
+  console.log('Starting cleanup...');
   await cleanUp();
+  console.log('Cleanup complete.');
+  await writeFile('./reports/integrationTests/docker-logs.txt', 'Cleanup complete.\n', { flag: 'a' });
+  console.log('Creating reports directory...');
   await mkdir('./reports/integrationTests', { recursive: true });
+  console.log('Reports directory created.');
+  await writeFile('./reports/integrationTests/docker-logs.txt', 'Reports directory created.\n', { flag: 'a' });
 
   console.log('Bringing up datastores');
   await upMany(['postgresql', 'redis', 'postgresql_kratos', 'postgresql_hydra'], composeOpts);
   await sleep(1000);
+  console.log('Datastores are up');
 
   console.log('Running SQL migrations...');
   await run('hydra-migrate', 'migrate -c /etc/config/hydra/hydra.yml sql -e --yes', { ...composeOpts, log: false });
   await run('kratos-migrate', '-c /etc/config/kratos/kratos.yml migrate sql -e --yes', { ...composeOpts, log: false });
+  console.log('SQL migrations completed');
 
   await upMany(['kratos', 'hydra', 'hydra-e2e'], composeOpts);
 
@@ -91,10 +99,14 @@ async function main() {
   }
 
   console.log('Pulling latest images...');
+  console.log('Pulling latest images...');
   await pullAll({ ...composeOpts, log: false });
+  await writeFile('./reports/integrationTests/docker-logs.txt', 'Pulled latest images.\n', { flag: 'a' });
 
   console.log('Running Takaro SQL migrations...');
   await run('takaro_api', 'npm -w packages/app-api run db:migrate', composeOpts);
+  await writeFile('./reports/integrationTests/docker-logs.txt', 'Takaro SQL migrations completed.\n', { flag: 'a' });
+  console.log('Takaro SQL migrations completed');
 
   console.log('Starting all containers...');
   await upAll(composeOpts);
@@ -155,9 +167,12 @@ async function main() {
 main()
   .then((res) => {
     console.log(res);
+    await writeFile('./reports/integrationTests/docker-logs.txt', 'All containers started.\n', { flag: 'a' });
     process.exit(0);
   })
-  .catch((e) => {
+  .catch(async (e) => {
     console.error(e);
+    await writeFile('./reports/integrationTests/integration-test-errors.txt', `Error: ${e.message}\n${e.stack}`);
+    await cleanUp();
     process.exit(1);
   });
