@@ -81,6 +81,9 @@ jobs:
       - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v4
+
+      if: ${{ failure() }}
+      run: echo "Error: Docker build and push failed."
         with:
           context: .
           file: ${{ matrix.package.dockerfile }}
