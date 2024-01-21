@@ -42,7 +42,11 @@ async function processJob(job: Job<IEventQueueData>) {
 
   if (type === HookEvents.LOG_LINE) {
     const hooksService = new HookService(domainId);
-    await hooksService.handleEvent(type, event, gameServerId);
+    await hooksService.handleEvent({
+      eventType: HookEvents.LOG_LINE,
+      eventData: event,
+      gameServerId,
+    });
   }
 
   const socketServer = await getSocketServer();

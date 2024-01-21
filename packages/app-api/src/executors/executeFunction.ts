@@ -185,6 +185,13 @@ export async function executeFunction(
       }
     }
 
+    // Ensure all logs are TakaroEventFunctionLog
+    meta.result.logs = await Promise.all(
+      result.logs.map(async (log) => {
+        return new TakaroEventFunctionLog().construct(log);
+      })
+    );
+
     await eventService.create(await new EventCreateDTO().construct({ ...eventData, meta }));
   } catch (err: any) {
     if (err instanceof RateLimiterRes) {

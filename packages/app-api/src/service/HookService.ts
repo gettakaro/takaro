@@ -22,6 +22,14 @@ import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { GameServerService } from './GameServerService.js';
 import { HookEvents, isDiscordMessageEvent, EventPayload, EventTypes, EventMapping } from '@takaro/modules';
+import { PlayerOnGameServerService } from './PlayerOnGameserverService.js';
+
+interface IHandleHookOptions {
+  eventType: EventTypes;
+  eventData: EventPayload;
+  gameServerId: string;
+  playerId?: string;
+}
 
 @ValidatorConstraint()
 export class IsSafeRegex implements ValidatorConstraintInterface {
@@ -184,7 +192,8 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
     return id;
   }
 
-  async handleEvent(eventType: EventTypes, eventData: EventPayload, gameServerId: string) {
+  async handleEvent(opts: IHandleHookOptions) {
+    const { eventData, eventType, gameServerId, playerId } = opts;
     const gameServerService = new GameServerService(this.domainId);
 
     const triggeredHooks = await this.repo.getTriggeredHooks(eventType, gameServerId);
@@ -202,6 +211,14 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
     if (hooksAfterFilters.length) {
       this.log.info(`Found ${hooksAfterFilters.length} hooks that match the event`);
 
+      const playerOnGameServerService = new PlayerOnGameServerService(this.domainId);
+      const resolvedPlayer = await playerOnGameServerService.find({
+        filters: {
+          playerId: [playerId],
+          gameServerId: [gameServerId],
+        },
+      });
+
       await Promise.all(
         hooksAfterFilters.map(async (hook) => {
           const moduleInstallation = await gameServerService.getModuleInstallation(gameServerId, hook.moduleId);
@@ -218,6 +235,8 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
             domainId: this.domainId,
             functionId: hook.function.id,
             gameServerId,
+            playerId,
+            player: resolvedPlayer.results[0],
           });
         })
       );
@@ -238,6 +257,11 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
       forbidUnknownValues: false,
     });
 
-    return this.handleEvent(data.eventType, eventData, data.gameServerId);
+    return this.handleEvent({
+      eventType: data.eventType,
+      eventData,
+      gameServerId: data.gameServerId,
+      playerId: data.playerId,
+    });
   }
 }

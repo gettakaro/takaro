@@ -144,7 +144,12 @@ export class EventService extends TakaroService<EventModel, EventOutputDTO, Even
     const created = await this.repo.create(data);
 
     const hookService = new HookService(this.domainId);
-    await hookService.handleEvent(created.eventName, created.meta, data.gameserverId);
+    await hookService.handleEvent({
+      eventType: created.eventName,
+      eventData: eventMeta,
+      gameServerId: created.gameserverId,
+      playerId: created.playerId,
+    });
 
     const socketServer = await getSocketServer();
     socketServer.emit(this.domainId, 'event', [created]);

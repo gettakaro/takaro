@@ -94,7 +94,6 @@ export class TakaroEventFunctionLog extends TakaroDTO<TakaroEventFunctionLog> {
   @IsString()
   msg: string;
 
-  @IsObject()
   @IsOptional()
   details: Record<string, unknown> | string | undefined;
 }
@@ -120,6 +119,24 @@ export class TakaroEventCommandExecuted extends BaseEvent<TakaroEventCommandExec
   @ValidateNested()
   @Type(() => TakaroEventCommandDetails)
   command: TakaroEventCommandDetails;
+}
+
+export class TakaroEventHookExecuted extends BaseEvent<TakaroEventHookExecuted> {
+  @IsString()
+  type = TakaroEvents.HOOK_EXECUTED;
+
+  @ValidateNested({ each: true })
+  @Type(() => TakaroEventFunctionResult)
+  result: TakaroEventFunctionResult;
+}
+
+export class TakaroEventCronjobExecuted extends BaseEvent<TakaroEventCronjobExecuted> {
+  @IsString()
+  type = TakaroEvents.CRONJOB_EXECUTED;
+
+  @ValidateNested({ each: true })
+  @Type(() => TakaroEventFunctionResult)
+  result: TakaroEventFunctionResult;
 }
 
 export class TakaroEventRoleMeta extends TakaroDTO<TakaroEventRoleMeta> {
@@ -197,8 +214,6 @@ export const TakaroEventsMapping = {
   [TakaroEvents.ROLE_UPDATED]: TakaroEventRoleUpdated,
   [TakaroEvents.ROLE_DELETED]: TakaroEventRoleDeleted,
   [TakaroEvents.SETTINGS_SET]: TakaroEventSettingsSet,
-
-  // TODO: should type these properly
-  [TakaroEvents.HOOK_EXECUTED]: TakaroEventRoleAssigned,
-  [TakaroEvents.CRONJOB_EXECUTED]: TakaroEventRoleAssigned,
+  [TakaroEvents.HOOK_EXECUTED]: TakaroEventHookExecuted,
+  [TakaroEvents.CRONJOB_EXECUTED]: TakaroEventCronjobExecuted,
 } as const;
