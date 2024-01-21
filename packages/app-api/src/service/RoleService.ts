@@ -20,6 +20,7 @@ import { RoleModel, RoleRepo } from '../db/role.js';
 import { TakaroService } from './Base.js';
 import { ModuleService } from './ModuleService.js';
 import { EventService, EventCreateDTO, EVENT_TYPES } from './EventService.js';
+import { TakaroEventRoleCreated, TakaroEventRoleDeleted, TakaroEventRoleUpdated } from '@takaro/modules';
 
 @ValidatorConstraint()
 export class IsPermissionArray implements ValidatorConstraintInterface {
@@ -215,9 +216,7 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
       await new EventCreateDTO().construct({
         eventName: EVENT_TYPES.ROLE_UPDATED,
         userId,
-        meta: {
-          role: res,
-        },
+        meta: await new TakaroEventRoleUpdated().construct({ role: { id: res.id, name: res.name } }),
       })
     );
 
@@ -240,9 +239,7 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
       await new EventCreateDTO().construct({
         eventName: EVENT_TYPES.ROLE_DELETED,
         userId,
-        meta: {
-          role: toDelete,
-        },
+        meta: await new TakaroEventRoleDeleted().construct({ role: { id: toDelete.id, name: toDelete.name } }),
       })
     );
 
@@ -262,9 +259,7 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
       await new EventCreateDTO().construct({
         eventName: EVENT_TYPES.ROLE_CREATED,
         userId,
-        meta: {
-          role: res,
-        },
+        meta: await new TakaroEventRoleCreated().construct({ role: { id: res.id, name: res.name } }),
       })
     );
 

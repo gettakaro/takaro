@@ -101,8 +101,16 @@ export class HookRepo extends ITakaroRepo<HookModel, HookOutputDTO, HookCreateDT
     await query.updateAndFetchById(id, { functionId });
   }
 
-  async getTriggeredHooks(eventType: EventTypes, gameServerId: string): Promise<HookOutputDTO[]> {
+  async getTriggeredHooks(eventType: EventTypes, gameServerId?: string): Promise<HookOutputDTO[]> {
     const { query } = await this.getModel();
+
+    const whereClause: Record<string, string> = {
+      'hooks.eventType': eventType,
+    };
+
+    if (gameServerId) {
+      whereClause['gameservers.id'] = gameServerId;
+    }
 
     const hookIds: string[] = (
       await query
@@ -111,10 +119,7 @@ export class HookRepo extends ITakaroRepo<HookModel, HookOutputDTO, HookCreateDT
         .innerJoin('modules', 'hooks.moduleId', 'modules.id')
         .innerJoin('moduleAssignments', 'moduleAssignments.moduleId', 'modules.id')
         .innerJoin('gameservers', 'moduleAssignments.gameserverId', 'gameservers.id')
-        .where({
-          'hooks.eventType': eventType,
-          'gameservers.id': gameServerId,
-        })
+        .where(whereClause)
     )
       // @ts-expect-error Knex is confused because we start from the 'normal' query object
       // but we create a query that does NOT produce a Model

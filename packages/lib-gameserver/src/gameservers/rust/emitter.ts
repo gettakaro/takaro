@@ -124,7 +124,6 @@ export class RustEmitter extends TakaroEmitter {
     this.emit(
       GameEvents.LOG_LINE,
       await new EventLogLine().construct({
-        timestamp: new Date(),
         msg: e.Message,
       })
     );
@@ -157,7 +156,6 @@ export class RustEmitter extends TakaroEmitter {
       return new EventPlayerConnected().construct({
         player,
         msg: msg,
-        timestamp: new Date(),
       });
     }
 
@@ -183,7 +181,6 @@ export class RustEmitter extends TakaroEmitter {
       return new EventPlayerDisconnected().construct({
         player,
         msg,
-        timestamp: new Date(),
       });
     }
 
@@ -201,7 +198,7 @@ export class RustEmitter extends TakaroEmitter {
         gameId: parsed.UserId,
         name: parsed.Username,
       }),
-      timestamp: new Date(parsed.Time * 1000),
+      timestamp: new Date(parsed.Time * 1000).toISOString(),
     });
   }
 
@@ -228,7 +225,6 @@ export class RustEmitter extends TakaroEmitter {
         y: parseFloat(yCoord),
         z: parseFloat(zCoord),
       },
-      timestamp: new Date(),
     });
   }
 
@@ -246,8 +242,6 @@ export class RustEmitter extends TakaroEmitter {
         name: killerName,
       }),
       entity: entityName,
-
-      timestamp: new Date(),
     });
   }
 

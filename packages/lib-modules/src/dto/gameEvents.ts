@@ -1,4 +1,4 @@
-import { IsDate, IsEnum, IsString, ValidateNested, IsOptional, IsNumber } from 'class-validator';
+import { IsEnum, IsString, ValidateNested, IsOptional, IsNumber } from 'class-validator';
 import { TakaroDTO } from '@takaro/util';
 import { Type } from 'class-transformer';
 import { BaseEvent } from './base.js';
@@ -53,9 +53,6 @@ export class IGamePlayer extends TakaroDTO<IGamePlayer> {
 }
 
 export class BaseGameEvent<T> extends BaseEvent<T> {
-  @IsDate()
-  timestamp: Date = new Date();
-
   @IsEnum(GameEvents)
   declare type: ValueOf<typeof GameEvents>;
 
@@ -70,6 +67,7 @@ export interface IPosition {
 }
 
 export class EventLogLine extends BaseGameEvent<EventLogLine> {
+  @IsString()
   type = GameEvents.LOG_LINE;
 }
 

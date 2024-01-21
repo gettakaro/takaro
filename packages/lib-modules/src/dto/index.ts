@@ -7,6 +7,7 @@ import { BaseEvent } from './base.js';
 export * from './discordEvents.js';
 export * from './gameEvents.js';
 export * from './takaroEvents.js';
+export * from './base.js';
 
 export const HookEvents = {
   ...GameEvents,
