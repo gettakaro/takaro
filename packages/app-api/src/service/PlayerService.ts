@@ -6,13 +6,23 @@ import { TakaroDTO, TakaroModelDTO, errors, traceableClass } from '@takaro/util'
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { PlayerOnGameServerService, PlayerOnGameserverOutputDTO } from './PlayerOnGameserverService.js';
-import { IGamePlayer, TakaroEventRoleAssigned, TakaroEventRoleRemoved } from '@takaro/modules';
+import {
+  IGamePlayer,
+  TakaroEventRoleAssigned,
+  TakaroEventRoleRemoved,
+  TakaroEventPlayerNewIpDetected,
+} from '@takaro/modules';
 import { IPlayerReferenceDTO } from '@takaro/gameserver';
 import { Type } from 'class-transformer';
 import { PlayerRoleAssignmentOutputDTO, RoleService } from './RoleService.js';
 import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
 import { steamApi } from '../lib/steamApi.js';
 import { config } from '../config.js';
+
+import { GeoIpDbName, open } from 'geolite2-redist';
+import maxmind, { CityResponse } from 'maxmind';
+
+const ipLookup = await open(GeoIpDbName.City, (path) => maxmind.open<CityResponse>(path));
 
 export class PlayerOutputDTO extends TakaroModelDTO<PlayerOutputDTO> {
   @IsString()
@@ -60,6 +70,34 @@ export class PlayerOutputDTO extends TakaroModelDTO<PlayerOutputDTO> {
   @ValidateNested({ each: true })
   @Type(() => PlayerOnGameserverOutputDTO)
   playerOnGameServers?: PlayerOnGameserverOutputDTO[];
+
+  @ValidateNested({ each: true })
+  @Type(() => IpHistoryOutputDTO)
+  ipHistory: IpHistoryOutputDTO[];
+}
+
+export class IpHistoryOutputDTO extends TakaroDTO<IpHistoryOutputDTO> {
+  @IsISO8601()
+  createdAt: string;
+
+  @IsString()
+  ip: string;
+
+  @IsString()
+  @IsOptional()
+  country: string;
+
+  @IsString()
+  @IsOptional()
+  city: string;
+
+  @IsString()
+  @IsOptional()
+  latitude: string;
+
+  @IsString()
+  @IsOptional()
+  longitude: string;
 }
 
 export class PlayerOutputWithRolesDTO extends PlayerOutputDTO {
@@ -286,5 +324,40 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
 
     await this.repo.setSteamData(fullData);
     return toRefresh.length;
+  }
+
+  async observeIp(playerId: string, gameServerId: string, ip: string) {
+    const lookupResult = (await ipLookup).get(ip);
+
+    let newIpRecord;
+
+    if (lookupResult && lookupResult.country) {
+      newIpRecord = await this.repo.observeIp(playerId, gameServerId, ip, {
+        country: lookupResult.country.iso_code,
+        city: lookupResult.city?.names.en || null,
+        latitude: lookupResult.location?.latitude.toString() || null,
+        longitude: lookupResult.location?.longitude.toString() || null,
+      });
+    } else {
+      newIpRecord = await this.repo.observeIp(playerId, gameServerId, ip, null);
+    }
+
+    if (newIpRecord) {
+      const eventsService = new EventService(this.domainId);
+      await eventsService.create(
+        await new EventCreateDTO().construct({
+          gameserverId: gameServerId,
+          playerId: playerId,
+          eventName: EVENT_TYPES.PLAYER_NEW_IP_DETECTED,
+          meta: await new TakaroEventPlayerNewIpDetected().construct({
+            ip: ip,
+            city: newIpRecord.city,
+            country: newIpRecord.country,
+            latitude: newIpRecord.latitude,
+            longitude: newIpRecord.longitude,
+          }),
+        })
+      );
+    }
   }
 }

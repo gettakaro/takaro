@@ -140,7 +140,7 @@ export const PlayerProfile: FC = () => {
       <Divider />
 
       <h2>IP History</h2>
-      <IpInfo ipInfo={pogs.data.map((pog) => pog.ipHistory).flat()} />
+      <IpInfo ipInfo={data.ipHistory} />
 
       <PlayerRolesTable roles={data?.roleAssignments} playerId={playerId} playerName={data?.name} />
 

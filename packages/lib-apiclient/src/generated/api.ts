@@ -107,16 +107,16 @@ export interface BanPlayerOutputDTO {
 export interface BaseDiscordEvent {
     /**
      * 
-     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
-     * @memberof BaseDiscordEvent
-     */
-    'timestamp': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
-    /**
-     * 
      * @type {string}
      * @memberof BaseDiscordEvent
      */
     'msg': string;
+    /**
+     * 
+     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+     * @memberof BaseDiscordEvent
+     */
+    'timestamp': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  * 
@@ -139,16 +139,16 @@ export interface BaseEvent {
 export interface BaseGameEvent {
     /**
      * 
-     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
-     * @memberof BaseGameEvent
-     */
-    'timestamp': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
-    /**
-     * 
      * @type {string}
      * @memberof BaseGameEvent
      */
     'msg': string;
+    /**
+     * 
+     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+     * @memberof BaseGameEvent
+     */
+    'timestamp': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  * 
@@ -4905,12 +4905,6 @@ export interface PlayerOnGameserverOutputDTO {
     'inventory': Array<IItemDTO>;
     /**
      * 
-     * @type {Array<IpHistoryOutputDTO>}
-     * @memberof PlayerOnGameserverOutputDTO
-     */
-    'ipHistory': Array<IpHistoryOutputDTO>;
-    /**
-     * 
      * @type {string}
      * @memberof PlayerOnGameserverOutputDTO
      */
@@ -5043,12 +5037,6 @@ export interface PlayerOnGameserverOutputWithRolesDTO {
      * @memberof PlayerOnGameserverOutputWithRolesDTO
      */
     'inventory': Array<IItemDTO>;
-    /**
-     * 
-     * @type {Array<IpHistoryOutputDTO>}
-     * @memberof PlayerOnGameserverOutputWithRolesDTO
-     */
-    'ipHistory': Array<IpHistoryOutputDTO>;
 }
 /**
  * 
@@ -5147,6 +5135,12 @@ export interface PlayerOutputDTO {
      * @memberof PlayerOutputDTO
      */
     'playerOnGameServers'?: Array<PlayerOnGameserverOutputDTO>;
+    /**
+     * 
+     * @type {Array<IpHistoryOutputDTO>}
+     * @memberof PlayerOutputDTO
+     */
+    'ipHistory': Array<IpHistoryOutputDTO>;
     /**
      * 
      * @type {string}
@@ -5287,6 +5281,12 @@ export interface PlayerOutputWithRolesDTO {
      * @memberof PlayerOutputWithRolesDTO
      */
     'playerOnGameServers'?: Array<PlayerOnGameserverOutputDTO>;
+    /**
+     * 
+     * @type {Array<IpHistoryOutputDTO>}
+     * @memberof PlayerOutputWithRolesDTO
+     */
+    'ipHistory': Array<IpHistoryOutputDTO>;
 }
 /**
  * 
