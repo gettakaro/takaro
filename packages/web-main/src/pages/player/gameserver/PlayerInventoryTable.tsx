@@ -2,9 +2,10 @@ import { FC } from 'react';
 import { Tooltip, styled, Skeleton } from '@takaro/lib-components';
 import { useGameServers } from 'queries/gameservers';
 import { GameServerOutputDTO, GameServerOutputDTOTypeEnum, PlayerOnGameserverOutputDTO } from '@takaro/apiclient';
+import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 
 interface IPlayerInventoryProps {
-  pogs: PlayerOnGameserverOutputDTO[];
+  pog: PlayerOnGameserverOutputDTO;
 }
 
 const Grid = styled.div`
@@ -32,16 +33,17 @@ const ItemName = styled.p`
   overflow-x: scroll;
 `;
 
-export const PlayerInventoryTable: FC<IPlayerInventoryProps> = ({ pogs }) => {
+export const PlayerInventoryTable: FC<IPlayerInventoryProps> = ({ pog }) => {
+  const { selectedGameServerId } = useSelectedGameServer();
   const { data: gameservers, isLoading } = useGameServers({
     filters: {
-      id: pogs.map((player) => player.gameServerId),
+      id: [selectedGameServerId],
     },
   });
 
   if (isLoading) return <Skeleton variant="rectangular" width="100%" height="100%" />;
 
-  if (!pogs.length) return <p>No inventory data</p>;
+  if (pog.inventory.length === 0) return <p>No inventory data</p>;
 
   function getServerType(server: GameServerOutputDTO | undefined) {
     if (!server) return null;
@@ -56,40 +58,31 @@ export const PlayerInventoryTable: FC<IPlayerInventoryProps> = ({ pogs }) => {
     }
   }
 
-  if (!pogs.length) return null;
   const placeholderIcon = '/favicon.ico';
 
-  const components = pogs.map((player) => {
-    if (!player.inventory.length) return null;
-    const server = gameservers?.pages[0].data.find((server) => server.id === player.gameServerId);
+  const server = gameservers?.pages[0]?.data[0];
 
-    const serverType = getServerType(server);
+  const serverType = getServerType(server);
 
-    return (
-      <>
-        <h2>{server?.name}</h2>
-        <Grid>
-          {player.inventory.map((item, index) => (
-            <Tooltip placement={'top'}>
-              <Tooltip.Trigger asChild>
-                <GridItem key={index}>
-                  <ItemIcon
-                    src={serverType ? `/icons/${serverType}/${item.code}.png` : placeholderIcon}
-                    alt={item.name}
-                    onError={(e) => (e.currentTarget.src = placeholderIcon)}
-                  />
-                  <ItemName>
-                    {item.amount}x {item.name}
-                  </ItemName>
-                </GridItem>
-              </Tooltip.Trigger>
-              {item.description?.length && <Tooltip.Content>{item.description}</Tooltip.Content>}
-            </Tooltip>
-          ))}
-        </Grid>
-      </>
-    );
-  });
-
-  return <>{components}</>;
+  return (
+    <Grid>
+      {pog.inventory.map((item, index) => (
+        <Tooltip placement={'top'}>
+          <Tooltip.Trigger asChild>
+            <GridItem key={index}>
+              <ItemIcon
+                src={serverType ? `/icons/${serverType}/${item.code}.png` : placeholderIcon}
+                alt={item.name}
+                onError={(e) => (e.currentTarget.src = placeholderIcon)}
+              />
+              <ItemName>
+                {item.amount} x {item.name}
+              </ItemName>
+            </GridItem>
+          </Tooltip.Trigger>
+          {item.description?.length && <Tooltip.Content>{item.description}</Tooltip.Content>}
+        </Tooltip>
+      ))}
+    </Grid>
+  );
 };

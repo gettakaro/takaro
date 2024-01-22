@@ -30,6 +30,8 @@ export const EventFeedWidget: FC<IProps> = ({ query }) => {
 
   if (isLoading || !rawEvents) return <Skeleton variant="rectangular" width="100%" height="100%" />;
 
+  if (events.length === 0) return <p>No events found</p>;
+
   return (
     <EventFeed>
       {events.flatMap((event) => (
