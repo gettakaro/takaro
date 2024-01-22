@@ -3,7 +3,7 @@ import { getTakaro, getData, checkPermission, TakaroUserError } from '@takaro/he
 async function main() {
   const data = await getData();
   const takaro = await getTakaro(data);
-  const { player: granter, arguments: args, gameServerId } = data;
+  const { pog: granter, arguments: args, gameServerId } = data;
 
   // args.receiver has an argument type of "player". Arguments of this type are automatically resolved to the player's id.
   // If the player doesn't exist or multiple players with the same name where found, it will have thrown an error before this command is executed.

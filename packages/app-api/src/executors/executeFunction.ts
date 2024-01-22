@@ -75,7 +75,12 @@ export async function executeFunction(
   const functionRes = await client.function.functionControllerGetOne(functionId);
   const eventService = new EventService(domainId);
 
-  const meta: Partial<TakaroEventCommandExecuted> = {};
+  const dataForEvent = { ...data };
+  delete dataForEvent.token;
+  delete dataForEvent.url;
+  const meta: Partial<TakaroEventCommandExecuted> = {
+    data: dataForEvent,
+  };
 
   const eventData = await new EventCreateDTO().construct({
     moduleId: data.module.moduleId,
@@ -88,7 +93,6 @@ export async function executeFunction(
     const command = await commandService.findOne(data.itemId);
     if (!command) throw new errors.InternalServerError();
 
-    eventData.playerId = data.player.playerId;
     eventData.eventName = EVENT_TYPES.COMMAND_EXECUTED;
 
     meta.command = await new TakaroEventCommandDetails().construct({
@@ -102,12 +106,12 @@ export async function executeFunction(
       const commandsConfig = data.module.systemConfig?.commands as Record<string, any>;
       const cost = commandsConfig[command?.name]?.cost;
       if (cost) {
-        if (data.player.currency < cost) {
+        if (data.pog.currency < cost) {
           await client.gameserver.gameServerControllerSendMessage(data.gameServerId, {
             message: 'You do not have enough currency to execute this command.',
             opts: {
               recipient: {
-                gameId: data.player.gameId,
+                gameId: data.pog.gameId,
               },
             },
           });
@@ -151,7 +155,7 @@ export async function executeFunction(
           message: result.logs[result.logs.length - 1].msg,
           opts: {
             recipient: {
-              gameId: data.player.gameId,
+              gameId: data.pog.gameId,
             },
           },
         });
@@ -160,7 +164,7 @@ export async function executeFunction(
           message: 'Oops, something went wrong while executing your command. Please try again later.',
           opts: {
             recipient: {
-              gameId: data.player.gameId,
+              gameId: data.pog.gameId,
             },
           },
         });
@@ -179,7 +183,7 @@ export async function executeFunction(
             log.warn('Command execution failed, not deducting cost');
           } else {
             const playerOnGameServerService = new PlayerOnGameServerService(domainId);
-            await playerOnGameServerService.deductCurrency(data.player.id, cost);
+            await playerOnGameServerService.deductCurrency(data.pog.id, cost);
           }
         }
       }

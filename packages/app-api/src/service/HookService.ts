@@ -1,5 +1,5 @@
 import { TakaroService } from './Base.js';
-import { queueService } from '@takaro/queues';
+import { IHookJobData, queueService } from '@takaro/queues';
 
 import { HookModel, HookRepo } from '../db/hook.js';
 import {
@@ -23,6 +23,7 @@ import { PaginatedOutput } from '../db/base.js';
 import { GameServerService } from './GameServerService.js';
 import { HookEvents, isDiscordMessageEvent, EventPayload, EventTypes, EventMapping } from '@takaro/modules';
 import { PlayerOnGameServerService } from './PlayerOnGameserverService.js';
+import { PlayerService } from './PlayerService.js';
 
 interface IHandleHookOptions {
   eventType: EventTypes;
@@ -211,13 +212,26 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
     if (hooksAfterFilters.length) {
       this.log.info(`Found ${hooksAfterFilters.length} hooks that match the event`);
 
-      const playerOnGameServerService = new PlayerOnGameServerService(this.domainId);
-      const resolvedPlayer = await playerOnGameServerService.find({
-        filters: {
-          playerId: [playerId],
-          gameServerId: [gameServerId],
-        },
-      });
+      const hookData: Partial<IHookJobData> = {
+        eventData: eventData,
+        domainId: this.domainId,
+        gameServerId,
+      };
+
+      if (playerId) {
+        const playerOnGameServerService = new PlayerOnGameServerService(this.domainId);
+        const playerService = new PlayerService(this.domainId);
+        const resolvedPlayer = await playerOnGameServerService.find({
+          filters: {
+            playerId: [playerId],
+            gameServerId: [gameServerId],
+          },
+        });
+        const globalPlayer = await playerService.findOne(playerId);
+
+        hookData.pog = resolvedPlayer.results[0];
+        hookData.player = globalPlayer;
+      }
 
       await Promise.all(
         hooksAfterFilters.map(async (hook) => {
@@ -228,16 +242,11 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
             if (eventData.channel.id !== configuredChannel) return;
           }
 
-          return queueService.queues.hooks.queue.add({
-            itemId: hook.id,
-            module: await gameServerService.getModuleInstallation(gameServerId, hook.moduleId),
-            eventData: eventData,
-            domainId: this.domainId,
-            functionId: hook.function.id,
-            gameServerId,
-            playerId,
-            player: resolvedPlayer.results[0],
-          });
+          hookData.functionId = hook.function.id;
+          hookData.itemId = hook.id;
+          hookData.module = await gameServerService.getModuleInstallation(gameServerId, hook.moduleId);
+
+          return queueService.queues.hooks.queue.add(hookData as IHookJobData);
         })
       );
     }

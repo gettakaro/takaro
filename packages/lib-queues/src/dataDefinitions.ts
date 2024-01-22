@@ -1,5 +1,9 @@
 import { GameEvents, GameEventsMapping, EventPayload } from '@takaro/modules';
-import { ModuleInstallationOutputDTO, PlayerOnGameserverOutputWithRolesDTO } from '@takaro/apiclient';
+import {
+  ModuleInstallationOutputDTO,
+  PlayerOnGameserverOutputWithRolesDTO,
+  PlayerOutputWithRolesDTO,
+} from '@takaro/apiclient';
 import { ValueOf } from 'type-fest';
 
 export interface IParsedCommand {
@@ -34,11 +38,13 @@ export interface IJobData extends IBaseJobData {
 
 export interface IHookJobData extends IJobData {
   eventData: EventPayload;
-  playerId?: string;
+  player?: PlayerOutputWithRolesDTO;
+  pog?: PlayerOnGameserverOutputWithRolesDTO;
 }
 
 export interface ICommandJobData extends IJobData {
-  player: PlayerOnGameserverOutputWithRolesDTO;
+  player: PlayerOutputWithRolesDTO;
+  pog: PlayerOnGameserverOutputWithRolesDTO;
   arguments: IParsedCommand['arguments'];
 }
 

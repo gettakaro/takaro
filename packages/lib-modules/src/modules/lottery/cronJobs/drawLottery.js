@@ -70,7 +70,7 @@ async function main() {
   let tickets = [];
 
   try {
-    const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data;
+    const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data.value;
     const ticketCost = mod.systemConfig.commands.buyTicket.cost;
 
     tickets = (

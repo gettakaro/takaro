@@ -86,7 +86,6 @@ export class EventsAwaiter {
           if (hasFinished) return;
           const msg = `Event ${expectedEvent} timed out - received ${events.length}/${amount} events.`;
           console.warn(msg);
-          console.warn(JSON.stringify(events, null, 2));
           reject(new Error(msg));
         }, 5000);
       }),

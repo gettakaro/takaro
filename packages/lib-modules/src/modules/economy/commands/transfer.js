@@ -3,7 +3,7 @@ import { getTakaro, getData, TakaroUserError } from '@takaro/helpers';
 async function main() {
   const data = await getData();
   const takaro = await getTakaro(data);
-  const { player: sender, arguments: args, gameServerId, module: mod } = data;
+  const { pog: sender, arguments: args, gameServerId, module: mod } = data;
 
   const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data.value;
 

@@ -66,7 +66,7 @@ export class PlayerModel extends TakaroModel {
 
   steamLastFetch: Date;
   steamAvatar: string;
-  steamAccountCreated: Date;
+  steamAccountCreated: string;
   steamCommunityBanned: boolean;
   steamEconomyBan: string;
   steamVacBanned: boolean;
@@ -285,7 +285,7 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
 
         if ('steamAccountCreated' in item) {
           updateObj.steamAccountCreated = item.steamAccountCreated
-            ? new Date(item.steamAccountCreated * 1000)
+            ? new Date(item.steamAccountCreated * 1000).toISOString()
             : undefined;
         }
 
