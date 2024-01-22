@@ -1,6 +1,6 @@
 import { EventsAwaiter } from '../test/waitForEvents.js';
 import { GameServerOutputDTO, ModuleOutputDTO, PlayerOutputDTO } from '@takaro/apiclient';
-import { EventTypes } from '@takaro/modules';
+import { HookEvents } from '@takaro/modules';
 import { IntegrationTest } from '../integrationTest.js';
 import { integrationConfig } from '../test/integrationConfig.js';
 
@@ -36,7 +36,7 @@ export const setup = async function (this: IntegrationTest<ISetupData>): Promise
 
   const eventsAwaiter = new EventsAwaiter();
   await eventsAwaiter.connect(this.client);
-  const connectedEvents = eventsAwaiter.waitForEvents(EventTypes.PLAYER_CONNECTED, 10);
+  const connectedEvents = eventsAwaiter.waitForEvents(HookEvents.PLAYER_CONNECTED, 10);
 
   await Promise.all([
     this.client.gameserver.gameServerControllerExecuteCommand(gameServer1.data.data.id, { command: 'connectAll' }),

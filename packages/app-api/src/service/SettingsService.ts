@@ -5,6 +5,7 @@ import { PaginatedOutput } from '../db/base.js';
 import { SettingsModel, SettingsRepo } from '../db/settings.js';
 import { TakaroService } from './Base.js';
 import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
+import { TakaroEventSettingsSet } from '@takaro/modules';
 
 export enum SETTINGS_KEYS {
   commandPrefix = 'commandPrefix',
@@ -102,7 +103,7 @@ export class SettingsService extends TakaroService<SettingsModel, Settings, neve
         eventName: EVENT_TYPES.SETTINGS_SET,
         gameserverId: this.gameServerId,
         userId,
-        meta: { key, value },
+        meta: await new TakaroEventSettingsSet().construct({ key, value }),
       })
     );
 

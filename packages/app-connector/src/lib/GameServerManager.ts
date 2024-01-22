@@ -1,5 +1,5 @@
 import { TakaroEmitter, getGame } from '@takaro/gameserver';
-import { EventTypes, GameEvents } from '@takaro/modules';
+import { GameEvents } from '@takaro/modules';
 import { logger } from '@takaro/util';
 import { AdminClient, Client } from '@takaro/apiclient';
 import { config } from '../config.js';
@@ -65,6 +65,11 @@ class GameServerManager {
   async add(domainId: string, gameServerId: string) {
     const gameServer = await getGameServer(domainId, gameServerId);
 
+    if (!gameServer.reachable) {
+      this.log.warn(`GameServer ${gameServerId} is not reachable, skipping...`);
+      return;
+    }
+
     const emitter = (
       await getGame(gameServer.type, gameServer.connectionInfo as Record<string, unknown>, {})
     ).getEventEmitter();
@@ -97,10 +102,10 @@ class GameServerManager {
       this.log.error('Error from game server', error);
     });
 
-    emitter.on(EventTypes.LOG_LINE, async (logLine) => {
+    emitter.on(GameEvents.LOG_LINE, async (logLine) => {
       this.log.debug('Received a logline event', logLine);
       await this.eventsQueue.add({
-        type: EventTypes.LOG_LINE,
+        type: GameEvents.LOG_LINE,
         event: logLine,
         domainId,
         gameServerId,

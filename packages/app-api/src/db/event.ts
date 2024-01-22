@@ -1,7 +1,7 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
 import { errors, traceableClass } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
-import { EVENT_TYPES, EventCreateDTO, EventOutputDTO, EventUpdateDTO } from '../service/EventService.js';
+import { EventCreateDTO, EventOutputDTO, EventTypes, EventUpdateDTO } from '../service/EventService.js';
 import { MODULE_TABLE_NAME, ModuleModel } from './module.js';
 import { Model } from 'objection';
 import { GAMESERVER_TABLE_NAME, GameServerModel } from './gameserver.js';
@@ -13,7 +13,7 @@ export const EVENT_TABLE_NAME = 'events';
 export class EventModel extends TakaroModel {
   static tableName = EVENT_TABLE_NAME;
 
-  eventName: EVENT_TYPES;
+  eventName: EventTypes;
 
   moduleId: string;
   playerId: string;

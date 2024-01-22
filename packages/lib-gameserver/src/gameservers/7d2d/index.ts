@@ -18,6 +18,7 @@ import { InventoryItem } from './apiResponses.js';
 import { Worker } from 'worker_threads';
 import path from 'path';
 import * as url from 'url';
+import { DateTime, Duration, DurationLikeObject } from 'luxon';
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 @traceableClass('game:7d2d')
@@ -181,7 +182,42 @@ export class SevenDaysToDie implements IGameServer {
   }
 
   async banPlayer(options: BanDTO) {
-    const command = `ban add EOS_${options.player.gameId} ${options.expiresAt} ${options.reason}`;
+    // If no expiresAt is provided, assume 'permanent'. 500 years is pretty long ;)
+    const expiresAt = options.expiresAt ?? '2521-01-01 00:00:00';
+
+    const expiresAtDate = DateTime.fromISO(expiresAt);
+    const now = DateTime.local();
+    let duration = Duration.fromMillis(expiresAtDate.diff(now).milliseconds);
+
+    let unit: keyof DurationLikeObject = 'minute';
+    duration = duration.shiftTo('minutes'); // Convert to minutes
+
+    if (duration.minutes >= 60) {
+      unit = 'hour';
+      duration = duration.shiftTo('hours'); // Convert to hours
+    }
+
+    if (duration.hours >= 24) {
+      unit = 'day';
+      duration = duration.shiftTo('days'); // Convert to days
+    }
+
+    if (duration.days >= 7) {
+      unit = 'week';
+      duration = duration.shiftTo('weeks'); // Convert to weeks
+    }
+
+    if (duration.weeks >= 4) {
+      unit = 'month';
+      duration = duration.shiftTo('months'); // Convert to months
+    }
+
+    if (duration.months >= 12) {
+      unit = 'year';
+      duration = duration.shiftTo('years'); // Convert to years
+    }
+
+    const command = `ban add EOS_${options.player.gameId} ${Math.round(duration.as(unit))} ${unit} ${options.reason}`;
     await this.executeConsoleCommand(command);
   }
 

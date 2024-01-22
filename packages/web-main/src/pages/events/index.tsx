@@ -89,6 +89,9 @@ const treeData = [
       {
         name: EventOutputDTOEventNameEnum.PlayerNewIpDetected,
       },
+      {
+        name: EventOutputDTOEventNameEnum.ServerStatusChanged,
+      },
     ],
   },
   {

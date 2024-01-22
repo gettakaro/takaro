@@ -13,7 +13,7 @@ async function main() {
     throw new TakaroUserError('You do not have permission to use grant currency command.');
   }
 
-  const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data;
+  const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data.value;
   const granterName = (await takaro.player.playerControllerGetOne(granter.playerId)).data.data.name;
   const receiverName = (await takaro.player.playerControllerGetOne(receiver.playerId)).data.data.name;
   await takaro.playerOnGameserver.playerOnGameServerControllerAddCurrency(receiver.gameServerId, receiver.playerId, {

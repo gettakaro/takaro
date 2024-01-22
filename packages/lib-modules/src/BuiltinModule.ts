@@ -1,7 +1,7 @@
 import { readdir, readFile } from 'fs/promises';
 import path from 'path';
 import * as url from 'url';
-import { HookEventTypes } from './dto/index.js';
+import { EventTypes } from './dto/index.js';
 import { PermissionCreateDTO } from '@takaro/apiclient';
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
@@ -26,7 +26,7 @@ export interface ICommand extends IModuleItem {
 }
 
 export interface IHook extends IModuleItem {
-  eventType: HookEventTypes;
+  eventType: EventTypes;
 }
 
 export interface ICronJob extends IModuleItem {
