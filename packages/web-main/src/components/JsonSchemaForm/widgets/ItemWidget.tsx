@@ -30,6 +30,14 @@ const Inner = styled.div`
   }
 `;
 
+const shouldFilter = (value: unknown, multiple: boolean): boolean => {
+  if (multiple) {
+    return value !== undefined && (value as string[]).length !== 0;
+  } else {
+    return value !== undefined;
+  }
+};
+
 export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema, F extends FormContextType = any>({
   name,
   disabled,
@@ -44,16 +52,29 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
 }: WidgetProps<T, S, F>) {
   const { selectedGameServerId: gameServerId } = useSelectedGameServer();
   const [itemName, setItemName] = useState<string>('');
+
   const enabled = itemName !== '';
+  const shouldPreviousItemsBeLoaded = shouldFilter(value, multiple as boolean);
 
   const { data: gameServer, isLoading: isLoadingGameServer } = useGameServer(gameServerId);
+  const { data: previousItems, isLoading: isLoadingPreviousItems } = useItems(
+    {
+      filters: { gameserverId: [gameServerId], ...(shouldPreviousItemsBeLoaded && { id: multiple ? value : [value] }) },
+    },
+    { enabled: shouldPreviousItemsBeLoaded }
+  );
 
   const { data, isLoading: isLoadingItems } = useItems(
-    { search: { name: [itemName] }, filters: { gameserverId: [gameServerId] } },
+    { ...(itemName !== '' && { search: { name: [itemName] } }), filters: { gameserverId: [gameServerId] } },
     { enabled }
   );
 
-  const items = data?.pages.flatMap((page) => page.data) ?? [];
+  const searchedItems = data?.pages.flatMap((page) => page.data) ?? [];
+
+  // get rid of duplicates
+  const items = [...searchedItems, ...(previousItems?.pages.flatMap((page) => page.data) ?? [])].filter(
+    (item, index, self) => self.findIndex((i) => i.id === item.id) === index
+  );
 
   const renderIcon = (gameServer: GameServerOutputDTO, item: ItemsOutputDTO) => {
     if (item.code && gameServer && gameServerTypeToIconFolderMap[gameServer.type] !== 'Mock') {
@@ -69,7 +90,7 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
     }
   };
 
-  if (isLoadingGameServer) {
+  if (isLoadingGameServer || (isLoadingPreviousItems && shouldPreviousItemsBeLoaded)) {
     return <Skeleton variant="rectangular" width="100%" height="40px" />;
   }
 
@@ -86,6 +107,7 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
       required={required}
       readOnly={readonly}
       value={value}
+      onChange={onChange}
       handleInputValueChange={(value) => setItemName(value)}
       isLoadingData={!enabled ? false : isLoadingItems}
       multiple={multiple}
@@ -111,7 +133,6 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
 
         return <div>{selectedItems.map((item) => item.label).join(',')}</div>;
       }}
-      onChange={onChange}
     >
       <SelectQueryField.OptionGroup label="options">
         {items.map((item) => (

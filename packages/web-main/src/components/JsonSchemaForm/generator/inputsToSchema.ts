@@ -63,7 +63,7 @@ function getJsonSchemaElement(input: AnyInput) {
       if (input.multiple) {
         res.type = 'array';
         res.uniqueItems = true;
-        res.items = { type: 'string', minItems: 1 };
+        res.items = { type: 'string' };
       } else {
         res.type = 'string';
       }
