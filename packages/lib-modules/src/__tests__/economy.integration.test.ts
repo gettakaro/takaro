@@ -218,7 +218,7 @@ const tests = [
       const transferAmount = 500;
       const prefix = (
         await this.client.settings.settingsControllerGetOne('commandPrefix', this.setupData.gameserver.id)
-      ).data.data;
+      ).data.data.value;
 
       const sender = this.setupData.players[0];
       const senderPog = sender.playerOnGameServers?.find((pog) => pog.gameServerId === this.setupData.gameserver.id);

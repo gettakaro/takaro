@@ -9,9 +9,9 @@ import {
   IGamePlayer,
   EventChatMessage,
   EventPlayerConnected,
-  EventTypes,
   EventPlayerDisconnected,
   IPosition,
+  HookEvents,
 } from '@takaro/modules';
 import { faker } from '@faker-js/faker';
 import { config } from '../../config.js';
@@ -124,9 +124,8 @@ class MockGameserver implements IMockGameServer {
           const event = await new EventPlayerConnected().construct({
             player: p,
             msg: `${p.name} connected`,
-            timestamp: new Date(),
           });
-          this.socketServer.io.emit(EventTypes.PLAYER_CONNECTED, event);
+          this.socketServer.io.emit(HookEvents.PLAYER_CONNECTED, event);
         })
       );
       output.rawResult = 'Connected all players';
@@ -281,7 +280,6 @@ class MockGameserver implements IMockGameServer {
   private async sendLog(msg: string) {
     const logLine = await new EventLogLine().construct({
       msg,
-      timestamp: new Date(),
     });
     this.socketServer.io.emit(GameEvents.LOG_LINE, logLine);
   }
