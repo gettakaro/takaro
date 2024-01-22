@@ -10,6 +10,16 @@ export interface IDetectedEvent {
   data: any;
 }
 
+export const sorter = (a: IDetectedEvent, b: IDetectedEvent) => {
+  if (a.data.timestamp < b.data.timestamp) {
+    return -1;
+  }
+  if (a.data.timestamp > b.data.timestamp) {
+    return 1;
+  }
+  return 0;
+};
+
 export class EventsAwaiter {
   socket: Socket;
 
@@ -33,6 +43,7 @@ export class EventsAwaiter {
 
   async waitForEvents(expectedEvent: EventTypes | string, amount = 1) {
     const events: IDetectedEvent[] = [];
+    const discardedEvents: IDetectedEvent[] = [];
     let hasFinished = false;
 
     return Promise.race([
@@ -42,6 +53,7 @@ export class EventsAwaiter {
             if (event !== expectedEvent) {
               // log.warn(`Received event ${event} but expected ${expectedEvent}`);
               //console.log(JSON.stringify({ event, data }, null, 2));
+              discardedEvents.push({ event, data });
               return;
             }
 
@@ -58,6 +70,8 @@ export class EventsAwaiter {
           this.socket.on('event', (event) => {
             if (event.eventName === expectedEvent) {
               events.push({ event, data: event });
+            } else {
+              discardedEvents.push({ event, data: event });
             }
 
             if (events.length === amount) {
@@ -70,7 +84,7 @@ export class EventsAwaiter {
       new Promise<IDetectedEvent[]>((_, reject) => {
         setTimeout(() => {
           if (hasFinished) return;
-          const msg = `Event ${expectedEvent} timed out - received ${events.length}/${amount} events`;
+          const msg = `Event ${expectedEvent} timed out - received ${events.length}/${amount} events.`;
           console.warn(msg);
           console.warn(JSON.stringify(events, null, 2));
           reject(new Error(msg));

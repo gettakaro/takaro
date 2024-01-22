@@ -1,7 +1,7 @@
 import { TakaroService } from './Base.js';
 
 import { IsEnum, IsObject, IsOptional, IsUUID, ValidateNested } from 'class-validator';
-import { TakaroDTO, TakaroModelDTO, errors, traceableClass } from '@takaro/util';
+import { TakaroDTO, TakaroModelDTO, errors, isTakaroDTO, traceableClass } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { EventModel, EventRepo } from '../db/event.js';
@@ -11,8 +11,9 @@ import { Type } from 'class-transformer';
 import { GameServerOutputDTO } from './GameServerService.js';
 import { ModuleOutputDTO } from './ModuleService.js';
 import { UserOutputDTO } from './UserService.js';
-import { TakaroEvents } from '@takaro/modules';
+import { EventMapping, EventPayload, TakaroEvents } from '@takaro/modules';
 import { ValueOf } from 'type-fest';
+import { HookService } from './HookService.js';
 
 export const EVENT_TYPES = {
   ...TakaroEvents,
@@ -48,7 +49,7 @@ export class EventOutputDTO extends TakaroModelDTO<EventOutputDTO> {
 
   @IsOptional()
   @IsObject()
-  meta: Record<string, unknown>;
+  meta: EventPayload;
 
   @IsOptional()
   @Type(() => PlayerOutputDTO)
@@ -93,7 +94,7 @@ export class EventCreateDTO extends TakaroDTO<EventCreateDTO> {
 
   @IsOptional()
   @IsObject()
-  meta: Record<string, unknown>;
+  meta: TakaroDTO<any>;
 }
 
 export class EventUpdateDTO extends TakaroDTO<EventUpdateDTO> {}
@@ -123,7 +124,32 @@ export class EventService extends TakaroService<EventModel, EventOutputDTO, Even
   }
 
   async create(data: EventCreateDTO): Promise<EventOutputDTO> {
+    const dto = EventMapping[data.eventName];
+    if (!dto) throw new errors.BadRequestError(`Event ${data.eventName} is not supported`);
+
+    let eventMeta = null;
+
+    if (isTakaroDTO(data.meta)) {
+      eventMeta = await new dto().construct(data.meta.toJSON());
+    } else {
+      eventMeta = await new dto().construct(data.meta);
+    }
+
+    await eventMeta.validate({
+      forbidNonWhitelisted: false,
+      whitelist: true,
+      forbidUnknownValues: false,
+    });
+
     const created = await this.repo.create(data);
+
+    const hookService = new HookService(this.domainId);
+    await hookService.handleEvent({
+      eventType: created.eventName,
+      eventData: eventMeta,
+      gameServerId: created.gameserverId,
+      playerId: created.playerId,
+    });
 
     const socketServer = await getSocketServer();
     socketServer.emit(this.domainId, 'event', [created]);

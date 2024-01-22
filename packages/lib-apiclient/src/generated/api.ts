@@ -117,30 +117,17 @@ export interface BanPlayerOutputDTO {
 export interface BaseDiscordEvent {
   /**
    *
-   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
-   * @memberof BaseDiscordEvent
-   */
-  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
-  /**
-   *
-   * @type {string}
-   * @memberof BaseDiscordEvent
-   */
-  type: BaseDiscordEventTypeEnum;
-  /**
-   *
    * @type {string}
    * @memberof BaseDiscordEvent
    */
   msg: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof BaseDiscordEvent
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
-
-export const BaseDiscordEventTypeEnum = {
-  DiscordMessage: 'discord-message',
-} as const;
-
-export type BaseDiscordEventTypeEnum = (typeof BaseDiscordEventTypeEnum)[keyof typeof BaseDiscordEventTypeEnum];
-
 /**
  *
  * @export
@@ -153,12 +140,6 @@ export interface BaseEvent {
    * @memberof BaseEvent
    */
   timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
-  /**
-   *
-   * @type {string}
-   * @memberof BaseEvent
-   */
-  type: string;
 }
 /**
  *
@@ -168,35 +149,17 @@ export interface BaseEvent {
 export interface BaseGameEvent {
   /**
    *
-   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
-   * @memberof BaseGameEvent
-   */
-  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
-  /**
-   *
-   * @type {string}
-   * @memberof BaseGameEvent
-   */
-  type: BaseGameEventTypeEnum;
-  /**
-   *
    * @type {string}
    * @memberof BaseGameEvent
    */
   msg: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof BaseGameEvent
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
-
-export const BaseGameEventTypeEnum = {
-  Log: 'log',
-  PlayerConnected: 'player-connected',
-  PlayerDisconnected: 'player-disconnected',
-  ChatMessage: 'chat-message',
-  PlayerDeath: 'player-death',
-  EntityKilled: 'entity-killed',
-} as const;
-
-export type BaseGameEventTypeEnum = (typeof BaseGameEventTypeEnum)[keyof typeof BaseGameEventTypeEnum];
-
 /**
  *
  * @export
@@ -205,41 +168,17 @@ export type BaseGameEventTypeEnum = (typeof BaseGameEventTypeEnum)[keyof typeof 
 export interface BaseTakaroEvent {
   /**
    *
-   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
-   * @memberof BaseTakaroEvent
-   */
-  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
-  /**
-   *
-   * @type {string}
-   * @memberof BaseTakaroEvent
-   */
-  type: BaseTakaroEventTypeEnum;
-  /**
-   *
    * @type {string}
    * @memberof BaseTakaroEvent
    */
   msg: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof BaseTakaroEvent
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
-
-export const BaseTakaroEventTypeEnum = {
-  RoleAssigned: 'role-assigned',
-  RoleRemoved: 'role-removed',
-  RoleCreated: 'role-created',
-  RoleUpdated: 'role-updated',
-  RoleDeleted: 'role-deleted',
-  CommandExecuted: 'command-executed',
-  HookExecuted: 'hook-executed',
-  CronjobExecuted: 'cronjob-executed',
-  CurrencyAdded: 'currency-added',
-  CurrencyDeducted: 'currency-deducted',
-  SettingsSet: 'settings-set',
-  PlayerNewIpDetected: 'player-new-ip-detected',
-} as const;
-
-export type BaseTakaroEventTypeEnum = (typeof BaseTakaroEventTypeEnum)[keyof typeof BaseTakaroEventTypeEnum];
-
 /**
  *
  * @export
@@ -1327,26 +1266,8 @@ export interface EventChatMessage {
    * @type {string}
    * @memberof EventChatMessage
    */
-  type: EventChatMessageTypeEnum;
-  /**
-   *
-   * @type {string}
-   * @memberof EventChatMessage
-   */
   msg: string;
 }
-
-export const EventChatMessageTypeEnum = {
-  Log: 'log',
-  PlayerConnected: 'player-connected',
-  PlayerDisconnected: 'player-disconnected',
-  ChatMessage: 'chat-message',
-  PlayerDeath: 'player-death',
-  EntityKilled: 'entity-killed',
-} as const;
-
-export type EventChatMessageTypeEnum = (typeof EventChatMessageTypeEnum)[keyof typeof EventChatMessageTypeEnum];
-
 /**
  *
  * @export
@@ -1404,6 +1325,7 @@ export const EventCreateDTOEventNameEnum = {
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
+  ServerStatusChanged: 'server-status-changed',
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
@@ -1505,26 +1427,27 @@ export interface EventEntityKilled {
    * @type {string}
    * @memberof EventEntityKilled
    */
-  type: EventEntityKilledTypeEnum;
+  msg: string;
+}
+/**
+ *
+ * @export
+ * @interface EventLogLine
+ */
+export interface EventLogLine {
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof EventLogLine
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
   /**
    *
    * @type {string}
-   * @memberof EventEntityKilled
+   * @memberof EventLogLine
    */
   msg: string;
 }
-
-export const EventEntityKilledTypeEnum = {
-  Log: 'log',
-  PlayerConnected: 'player-connected',
-  PlayerDisconnected: 'player-disconnected',
-  ChatMessage: 'chat-message',
-  PlayerDeath: 'player-death',
-  EntityKilled: 'entity-killed',
-} as const;
-
-export type EventEntityKilledTypeEnum = (typeof EventEntityKilledTypeEnum)[keyof typeof EventEntityKilledTypeEnum];
-
 /**
  *
  * @export
@@ -1582,10 +1505,10 @@ export interface EventOutputDTO {
   gameserverId?: string;
   /**
    *
-   * @type {object}
+   * @type {EventOutputDTOMeta}
    * @memberof EventOutputDTO
    */
-  meta?: object;
+  meta?: EventOutputDTOMeta;
   /**
    *
    * @type {PlayerOutputDTO}
@@ -1643,6 +1566,7 @@ export const EventOutputDTOEventNameEnum = {
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
+  ServerStatusChanged: 'server-status-changed',
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
@@ -1652,6 +1576,32 @@ export const EventOutputDTOEventNameEnum = {
 
 export type EventOutputDTOEventNameEnum =
   (typeof EventOutputDTOEventNameEnum)[keyof typeof EventOutputDTOEventNameEnum];
+
+/**
+ * @type EventOutputDTOMeta
+ * @export
+ */
+export type EventOutputDTOMeta =
+  | EventChatMessage
+  | EventEntityKilled
+  | EventLogLine
+  | EventPlayerConnected
+  | EventPlayerDeath
+  | EventPlayerDisconnected
+  | HookEventDiscordMessage
+  | TakaroEventCommandExecuted
+  | TakaroEventCronjobExecuted
+  | TakaroEventCurrencyAdded
+  | TakaroEventCurrencyDeducted
+  | TakaroEventHookExecuted
+  | TakaroEventPlayerNewIpDetected
+  | TakaroEventRoleAssigned
+  | TakaroEventRoleCreated
+  | TakaroEventRoleDeleted
+  | TakaroEventRoleRemoved
+  | TakaroEventRoleUpdated
+  | TakaroEventServerStatusChanged
+  | TakaroEventSettingsSet;
 
 /**
  *
@@ -1676,27 +1626,8 @@ export interface EventPlayerConnected {
    * @type {string}
    * @memberof EventPlayerConnected
    */
-  type: EventPlayerConnectedTypeEnum;
-  /**
-   *
-   * @type {string}
-   * @memberof EventPlayerConnected
-   */
   msg: string;
 }
-
-export const EventPlayerConnectedTypeEnum = {
-  Log: 'log',
-  PlayerConnected: 'player-connected',
-  PlayerDisconnected: 'player-disconnected',
-  ChatMessage: 'chat-message',
-  PlayerDeath: 'player-death',
-  EntityKilled: 'entity-killed',
-} as const;
-
-export type EventPlayerConnectedTypeEnum =
-  (typeof EventPlayerConnectedTypeEnum)[keyof typeof EventPlayerConnectedTypeEnum];
-
 /**
  *
  * @export
@@ -1732,26 +1663,8 @@ export interface EventPlayerDeath {
    * @type {string}
    * @memberof EventPlayerDeath
    */
-  type: EventPlayerDeathTypeEnum;
-  /**
-   *
-   * @type {string}
-   * @memberof EventPlayerDeath
-   */
   msg: string;
 }
-
-export const EventPlayerDeathTypeEnum = {
-  Log: 'log',
-  PlayerConnected: 'player-connected',
-  PlayerDisconnected: 'player-disconnected',
-  ChatMessage: 'chat-message',
-  PlayerDeath: 'player-death',
-  EntityKilled: 'entity-killed',
-} as const;
-
-export type EventPlayerDeathTypeEnum = (typeof EventPlayerDeathTypeEnum)[keyof typeof EventPlayerDeathTypeEnum];
-
 /**
  *
  * @export
@@ -1775,27 +1688,8 @@ export interface EventPlayerDisconnected {
    * @type {string}
    * @memberof EventPlayerDisconnected
    */
-  type: EventPlayerDisconnectedTypeEnum;
-  /**
-   *
-   * @type {string}
-   * @memberof EventPlayerDisconnected
-   */
   msg: string;
 }
-
-export const EventPlayerDisconnectedTypeEnum = {
-  Log: 'log',
-  PlayerConnected: 'player-connected',
-  PlayerDisconnected: 'player-disconnected',
-  ChatMessage: 'chat-message',
-  PlayerDeath: 'player-death',
-  EntityKilled: 'entity-killed',
-} as const;
-
-export type EventPlayerDisconnectedTypeEnum =
-  (typeof EventPlayerDisconnectedTypeEnum)[keyof typeof EventPlayerDisconnectedTypeEnum];
-
 /**
  *
  * @export
@@ -1847,6 +1741,7 @@ export const EventSearchInputAllowedFiltersEventNameEnum = {
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
+  ServerStatusChanged: 'server-status-changed',
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
@@ -2863,6 +2758,7 @@ export const HookCreateDTOEventTypeEnum = {
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
+  ServerStatusChanged: 'server-status-changed',
 } as const;
 
 export type HookCreateDTOEventTypeEnum = (typeof HookCreateDTOEventTypeEnum)[keyof typeof HookCreateDTOEventTypeEnum];
@@ -2873,12 +2769,6 @@ export type HookCreateDTOEventTypeEnum = (typeof HookCreateDTOEventTypeEnum)[key
  * @interface HookEventDiscordMessage
  */
 export interface HookEventDiscordMessage {
-  /**
-   *
-   * @type {string}
-   * @memberof HookEventDiscordMessage
-   */
-  type: string;
   /**
    *
    * @type {string}
@@ -2999,6 +2889,7 @@ export const HookOutputDTOEventTypeEnum = {
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
+  ServerStatusChanged: 'server-status-changed',
 } as const;
 
 export type HookOutputDTOEventTypeEnum = (typeof HookOutputDTOEventTypeEnum)[keyof typeof HookOutputDTOEventTypeEnum];
@@ -3074,6 +2965,7 @@ export const HookSearchInputAllowedFiltersEventTypeEnum = {
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
+  ServerStatusChanged: 'server-status-changed',
 } as const;
 
 export type HookSearchInputAllowedFiltersEventTypeEnum =
@@ -3166,19 +3058,25 @@ export interface HookTriggerDTO {
    * @type {string}
    * @memberof HookTriggerDTO
    */
-  eventType: HookTriggerDTOEventTypeEnum;
-  /**
-   *
-   * @type {IPlayerReferenceDTO}
-   * @memberof HookTriggerDTO
-   */
-  player?: IPlayerReferenceDTO;
+  playerId?: string;
   /**
    *
    * @type {string}
    * @memberof HookTriggerDTO
    */
-  msg?: string;
+  moduleId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof HookTriggerDTO
+   */
+  eventType: HookTriggerDTOEventTypeEnum;
+  /**
+   *
+   * @type {object}
+   * @memberof HookTriggerDTO
+   */
+  eventMeta: object;
 }
 
 export const HookTriggerDTOEventTypeEnum = {
@@ -3201,6 +3099,7 @@ export const HookTriggerDTOEventTypeEnum = {
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
+  ServerStatusChanged: 'server-status-changed',
 } as const;
 
 export type HookTriggerDTOEventTypeEnum =
@@ -3264,6 +3163,7 @@ export const HookUpdateDTOEventTypeEnum = {
   CurrencyDeducted: 'currency-deducted',
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
+  ServerStatusChanged: 'server-status-changed',
 } as const;
 
 export type HookUpdateDTOEventTypeEnum = (typeof HookUpdateDTOEventTypeEnum)[keyof typeof HookUpdateDTOEventTypeEnum];
@@ -5065,12 +4965,6 @@ export interface PlayerOnGameserverOutputDTO {
   inventory: Array<IItemDTO>;
   /**
    *
-   * @type {Array<IpHistoryOutputDTO>}
-   * @memberof PlayerOnGameserverOutputDTO
-   */
-  ipHistory: Array<IpHistoryOutputDTO>;
-  /**
-   *
    * @type {string}
    * @memberof PlayerOnGameserverOutputDTO
    */
@@ -5203,12 +5097,6 @@ export interface PlayerOnGameserverOutputWithRolesDTO {
    * @memberof PlayerOnGameserverOutputWithRolesDTO
    */
   inventory: Array<IItemDTO>;
-  /**
-   *
-   * @type {Array<IpHistoryOutputDTO>}
-   * @memberof PlayerOnGameserverOutputWithRolesDTO
-   */
-  ipHistory: Array<IpHistoryOutputDTO>;
 }
 /**
  *
@@ -5307,6 +5195,12 @@ export interface PlayerOutputDTO {
    * @memberof PlayerOutputDTO
    */
   playerOnGameServers?: Array<PlayerOnGameserverOutputDTO>;
+  /**
+   *
+   * @type {Array<IpHistoryOutputDTO>}
+   * @memberof PlayerOutputDTO
+   */
+  ipHistory: Array<IpHistoryOutputDTO>;
   /**
    *
    * @type {string}
@@ -5447,6 +5341,12 @@ export interface PlayerOutputWithRolesDTO {
    * @memberof PlayerOutputWithRolesDTO
    */
   playerOnGameServers?: Array<PlayerOnGameserverOutputDTO>;
+  /**
+   *
+   * @type {Array<IpHistoryOutputDTO>}
+   * @memberof PlayerOutputWithRolesDTO
+   */
+  ipHistory: Array<IpHistoryOutputDTO>;
 }
 /**
  *
@@ -6178,19 +6078,383 @@ export interface SettingsSetDTO {
 /**
  *
  * @export
+ * @interface TakaroEventCommandDetails
+ */
+export interface TakaroEventCommandDetails {
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventCommandDetails
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventCommandDetails
+   */
+  name: string;
+  /**
+   *
+   * @type {object}
+   * @memberof TakaroEventCommandDetails
+   */
+  arguments: object;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventCommandExecuted
+ */
+export interface TakaroEventCommandExecuted {
+  /**
+   *
+   * @type {Array<TakaroEventFunctionResult>}
+   * @memberof TakaroEventCommandExecuted
+   */
+  result: Array<TakaroEventFunctionResult>;
+  /**
+   *
+   * @type {TakaroEventCommandDetails}
+   * @memberof TakaroEventCommandExecuted
+   */
+  command?: TakaroEventCommandDetails;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventCommandExecuted
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventCronjobExecuted
+ */
+export interface TakaroEventCronjobExecuted {
+  /**
+   *
+   * @type {Array<TakaroEventFunctionResult>}
+   * @memberof TakaroEventCronjobExecuted
+   */
+  result: Array<TakaroEventFunctionResult>;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventCronjobExecuted
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventCurrencyAdded
+ */
+export interface TakaroEventCurrencyAdded {
+  /**
+   *
+   * @type {number}
+   * @memberof TakaroEventCurrencyAdded
+   */
+  amount: number;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventCurrencyAdded
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventCurrencyDeducted
+ */
+export interface TakaroEventCurrencyDeducted {
+  /**
+   *
+   * @type {number}
+   * @memberof TakaroEventCurrencyDeducted
+   */
+  amount: number;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventCurrencyDeducted
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventFunctionLog
+ */
+export interface TakaroEventFunctionLog {
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventFunctionLog
+   */
+  msg: string;
+  /**
+   *
+   * @type {any}
+   * @memberof TakaroEventFunctionLog
+   */
+  details?: any;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventFunctionResult
+ */
+export interface TakaroEventFunctionResult {
+  /**
+   *
+   * @type {Array<TakaroEventFunctionLog>}
+   * @memberof TakaroEventFunctionResult
+   */
+  logs: Array<TakaroEventFunctionLog>;
+  /**
+   *
+   * @type {boolean}
+   * @memberof TakaroEventFunctionResult
+   */
+  success: boolean;
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventFunctionResult
+   */
+  reason?: string;
+  /**
+   *
+   * @type {number}
+   * @memberof TakaroEventFunctionResult
+   */
+  tryAgainIn?: number;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventHookExecuted
+ */
+export interface TakaroEventHookExecuted {
+  /**
+   *
+   * @type {Array<TakaroEventFunctionResult>}
+   * @memberof TakaroEventHookExecuted
+   */
+  result: Array<TakaroEventFunctionResult>;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventHookExecuted
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventPlayerNewIpDetected
+ */
+export interface TakaroEventPlayerNewIpDetected {
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventPlayerNewIpDetected
+   */
+  country: string;
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventPlayerNewIpDetected
+   */
+  city: string;
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventPlayerNewIpDetected
+   */
+  longitude: string;
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventPlayerNewIpDetected
+   */
+  latitude: string;
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventPlayerNewIpDetected
+   */
+  ip: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventPlayerNewIpDetected
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
  * @interface TakaroEventRoleAssigned
  */
 export interface TakaroEventRoleAssigned {
   /**
    *
-   * @type {string}
+   * @type {TakaroEventRoleMeta}
    * @memberof TakaroEventRoleAssigned
    */
-  type: string;
+  role: TakaroEventRoleMeta;
   /**
    *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
    * @memberof TakaroEventRoleAssigned
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventRoleCreated
+ */
+export interface TakaroEventRoleCreated {
+  /**
+   *
+   * @type {TakaroEventRoleMeta}
+   * @memberof TakaroEventRoleCreated
+   */
+  role: TakaroEventRoleMeta;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventRoleCreated
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventRoleDeleted
+ */
+export interface TakaroEventRoleDeleted {
+  /**
+   *
+   * @type {TakaroEventRoleMeta}
+   * @memberof TakaroEventRoleDeleted
+   */
+  role: TakaroEventRoleMeta;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventRoleDeleted
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventRoleMeta
+ */
+export interface TakaroEventRoleMeta {
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventRoleMeta
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventRoleMeta
+   */
+  name: string;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventRoleRemoved
+ */
+export interface TakaroEventRoleRemoved {
+  /**
+   *
+   * @type {TakaroEventRoleMeta}
+   * @memberof TakaroEventRoleRemoved
+   */
+  role: TakaroEventRoleMeta;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventRoleRemoved
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventRoleUpdated
+ */
+export interface TakaroEventRoleUpdated {
+  /**
+   *
+   * @type {TakaroEventRoleMeta}
+   * @memberof TakaroEventRoleUpdated
+   */
+  role: TakaroEventRoleMeta;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventRoleUpdated
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventServerStatusChanged
+ */
+export interface TakaroEventServerStatusChanged {
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventServerStatusChanged
+   */
+  status: string;
+  /**
+   *
+   * @type {object}
+   * @memberof TakaroEventServerStatusChanged
+   */
+  details?: object;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventServerStatusChanged
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventSettingsSet
+ */
+export interface TakaroEventSettingsSet {
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventSettingsSet
+   */
+  key: string;
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventSettingsSet
+   */
+  value?: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventSettingsSet
    */
   timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
@@ -12662,7 +12926,7 @@ export const HookApiAxiosParamCreator = function (configuration?: Configuration)
       };
     },
     /**
-     *  Required permissions: `MANAGE_MODULES`
+     * Trigger a hook. This is used for testing purposes, the event will not actually be created but the hook-logic will be executed.      You can pass any data you want, but it must validate against the corresponding event metadata. Eg to trigger the `chat-message` event, you must pass an object with a `message` property Required permissions: `MANAGE_MODULES`
      * @summary Trigger
      * @param {HookTriggerDTO} [hookTriggerDTO] HookTriggerDTO
      * @param {*} [options] Override http request option.
@@ -12838,7 +13102,7 @@ export const HookApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *  Required permissions: `MANAGE_MODULES`
+     * Trigger a hook. This is used for testing purposes, the event will not actually be created but the hook-logic will be executed.      You can pass any data you want, but it must validate against the corresponding event metadata. Eg to trigger the `chat-message` event, you must pass an object with a `message` property Required permissions: `MANAGE_MODULES`
      * @summary Trigger
      * @param {HookTriggerDTO} [hookTriggerDTO] HookTriggerDTO
      * @param {*} [options] Override http request option.
@@ -12934,7 +13198,7 @@ export const HookApiFactory = function (configuration?: Configuration, basePath?
       return localVarFp.hookControllerSearch(hookSearchInputDTO, options).then((request) => request(axios, basePath));
     },
     /**
-     *  Required permissions: `MANAGE_MODULES`
+     * Trigger a hook. This is used for testing purposes, the event will not actually be created but the hook-logic will be executed.      You can pass any data you want, but it must validate against the corresponding event metadata. Eg to trigger the `chat-message` event, you must pass an object with a `message` property Required permissions: `MANAGE_MODULES`
      * @summary Trigger
      * @param {HookTriggerDTO} [hookTriggerDTO] HookTriggerDTO
      * @param {*} [options] Override http request option.
@@ -13021,7 +13285,7 @@ export class HookApi extends BaseAPI {
   }
 
   /**
-   *  Required permissions: `MANAGE_MODULES`
+   * Trigger a hook. This is used for testing purposes, the event will not actually be created but the hook-logic will be executed.      You can pass any data you want, but it must validate against the corresponding event metadata. Eg to trigger the `chat-message` event, you must pass an object with a `message` property Required permissions: `MANAGE_MODULES`
    * @summary Trigger
    * @param {HookTriggerDTO} [hookTriggerDTO] HookTriggerDTO
    * @param {*} [options] Override http request option.
