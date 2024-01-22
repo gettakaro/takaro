@@ -34,6 +34,10 @@ export const NavBar = styled.nav<{ variant: HorizontalNavVariant }>`
           return `
             font-weight: bold;
             padding: ${theme.spacing['0_75']};
+            span {
+              position: relative;
+              z-index: 10;
+            }
           `;
         case 'underline':
           return `
@@ -48,11 +52,6 @@ export const NavBar = styled.nav<{ variant: HorizontalNavVariant }>`
 
     &.active {
       color: ${({ theme }) => theme.colors.text};
-    }
-
-    span {
-      position: relative;
-      z-index: 10;
     }
   }
 `;

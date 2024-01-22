@@ -73,6 +73,8 @@ export const PlayerProfileFrame: FC = () => {
     },
   ];
 
+  const pog = pogs.data.find((p) => p.playerId === playerId);
+
   return (
     <Container>
       <Header>
@@ -108,7 +110,7 @@ export const PlayerProfileFrame: FC = () => {
 
       <HorizontalNav items={links} variant="underline" />
 
-      <Outlet />
+      <Outlet context={{ pog, player }} />
     </Container>
   );
 };

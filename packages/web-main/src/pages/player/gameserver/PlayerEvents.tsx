@@ -1,13 +1,11 @@
-import { Skeleton } from '@takaro/lib-components';
+import { Skeleton, useTheme } from '@takaro/lib-components';
 import { PATHS } from 'paths';
-import { usePlayer } from 'queries/players';
 import { FC } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { usePlayerOnGameServers } from 'queries/players/queries';
+import { useParams, useNavigate, useOutletContext } from 'react-router-dom';
 import { EventFeedWidget } from 'components/events/EventFeedWidget';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { Container, Section } from '../style';
+import { Section } from '../style';
 import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
+import { PlayerOnGameserverOutputDTO } from '@takaro/apiclient';
 
 export const PlayerEvents: FC = () => {
   const { playerId } = useParams<{ playerId: string }>();
@@ -17,27 +15,19 @@ export const PlayerEvents: FC = () => {
     return <Skeleton variant="rectangular" width="100%" height="100%" />;
   }
 
-  const { data: player, isLoading } = usePlayer(playerId);
-
-  const { data: pogs, isLoading: isLoadingPogs } = usePlayerOnGameServers({
-    filters: {
-      playerId: [playerId],
-    },
-  });
-
-  useDocumentTitle(player?.name || 'Player Profile');
-
   const { selectedGameServerId } = useSelectedGameServer();
 
-  if (isLoading || isLoadingPogs || !player || !pogs) {
-    return <Skeleton variant="rectangular" width="100%" height="100%" />;
+  const { pog } = useOutletContext<{ pog: PlayerOnGameserverOutputDTO }>();
+
+  if (!pog) {
+    return null;
   }
 
+  const theme = useTheme();
+
   return (
-    <Container>
-      <Section style={{ height: '100%', overflowY: 'auto' }}>
-        <EventFeedWidget query={{ filters: { playerId: [playerId], gameserverId: [selectedGameServerId] } }} />
-      </Section>
-    </Container>
+    <Section style={{ height: '100%', overflowY: 'auto', paddingRight: theme.spacing[2] }}>
+      <EventFeedWidget query={{ filters: { playerId: [playerId], gameserverId: [selectedGameServerId] } }} />
+    </Section>
   );
 };
