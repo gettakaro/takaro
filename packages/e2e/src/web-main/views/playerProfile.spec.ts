@@ -33,5 +33,5 @@ extendedTest('can view player economy', async ({ page, extended }) => {
 
   await PlayerProfilePage.gotoEconomy();
 
-  await expect(page.getByText('Coming soon.')).toBeVisible();
+  await expect(page.getByText('Coming soon')).toBeVisible();
 });
