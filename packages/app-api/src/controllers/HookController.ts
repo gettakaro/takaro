@@ -9,7 +9,7 @@ import { Type } from 'class-transformer';
 import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
-import { EventTypes } from '@takaro/modules';
+import { EventTypes, HookEvents } from '@takaro/modules';
 import { builtinModuleModificationMiddleware } from '../middlewares/builtinModuleModification.js';
 
 export class HookOutputDTOAPI extends APIOutput<HookOutputDTO> {
@@ -38,8 +38,8 @@ class HookSearchInputAllowedFilters {
   name!: string[];
 
   @IsOptional()
-  @IsEnum({ ...EventTypes }, { each: true })
-  eventType!: (typeof EventTypes)[];
+  @IsEnum({ ...HookEvents }, { each: true })
+  eventType!: EventTypes[];
 }
 
 class HookSearchInputDTO extends ITakaroQuery<HookSearchInputAllowedFilters> {
@@ -109,6 +109,10 @@ export class HookController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]))
   @Post('/hook/trigger')
+  @OpenAPI({
+    description: `Trigger a hook. This is used for testing purposes, the event will not actually be created but the hook-logic will be executed. 
+    You can pass any data you want, but it must validate against the corresponding event metadata. Eg to trigger the \`chat-message\` event, you must pass an object with a \`message\` property`,
+  })
   async trigger(@Req() req: AuthenticatedRequest, @Body() data: HookTriggerDTO) {
     const service = new HookService(req.domainId);
     await service.trigger(data);

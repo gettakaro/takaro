@@ -3,7 +3,7 @@ import { Meta, StoryFn } from '@storybook/react';
 import { CollapseList } from '.';
 
 export default {
-  title: 'Navigation/CollapseList',
+  title: 'Other/CollapseList',
   component: CollapseList,
 } as Meta;
 

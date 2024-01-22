@@ -5,14 +5,14 @@ import { useGameServers } from 'queries/gameservers';
 import { AiOutlineDelete as DeleteIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
 import { usePlayerRoleUnassign } from 'queries/roles';
 import { useNavigate } from 'react-router-dom';
-import { StyledDialogBody } from './style';
-import { Loading, useTableActions, Table, Button, Dropdown, IconButton, Dialog } from '@takaro/lib-components';
+import { StyledDialogBody } from '../style';
+import { useTableActions, Table, Button, Dropdown, IconButton, Dialog, Skeleton } from '@takaro/lib-components';
 import { PATHS } from 'paths';
 import { DateTime } from 'luxon';
 
 const AssignRole: FC<{ playerId: string }> = ({ playerId }) => {
   const navigate = useNavigate();
-  return <Button onClick={() => navigate(PATHS.player.assignRole(playerId))} text="Assign role" />;
+  return <Button onClick={() => navigate(PATHS.player.global.assignRole(playerId))} text="Assign role" />;
 };
 
 interface IPlayerRolesTableProps {
@@ -37,7 +37,7 @@ export const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId, 
   });
 
   if (isLoading || !data) {
-    return <Loading />;
+    return <Skeleton variant="rectangular" width="100%" height="100%" />;
   }
 
   const gameServers = data?.pages.flatMap((page) => page.data);

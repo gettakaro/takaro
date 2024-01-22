@@ -5,5 +5,5 @@ export const viewports = {
   md: '992px',
   sm: '768px',
   xs: '576px',
-  xxs: '450px'
+  xxs: '450px',
 };

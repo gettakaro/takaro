@@ -16,12 +16,12 @@ fi
 
 echo "Deleting data..."
 
-docker-compose down
+docker compose down
 
 sudo rm -rf ./_data/db
 sudo rm -rf ./_data/kratos-db
 sudo rm -rf ./_data/hydra-db
 
-docker-compose up -d
+docker compose up -d
 
 echo "Data deleted! You can recreate data via the dev-data script"

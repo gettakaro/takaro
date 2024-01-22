@@ -4,7 +4,7 @@ async function main() {
   const data = await getData();
   const takaro = await getTakaro(data);
 
-  const { player, gameServerId, module: mod, arguments: args } = data;
+  const { pog, gameServerId, module: mod, arguments: args } = data;
 
   const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data;
 
@@ -12,7 +12,7 @@ async function main() {
     throw new TakaroUserError('Public teleports are disabled.');
   }
 
-  const hasPermission = checkPermission(player, 'TELEPORTS_CREATE_PUBLIC');
+  const hasPermission = checkPermission(pog, 'TELEPORTS_CREATE_PUBLIC');
 
   if (!hasPermission) {
     throw new TakaroUserError('You do not have permission to create public teleports.');
@@ -24,7 +24,7 @@ async function main() {
     },
     filters: {
       gameServerId: [gameServerId],
-      playerId: [player.playerId],
+      playerId: [pog.playerId],
       moduleId: [mod.moduleId],
     },
   });
@@ -43,7 +43,7 @@ async function main() {
   const teleportRes = await takaro.variable.variableControllerSearch({
     filters: {
       gameServerId: [gameServerId],
-      playerId: [player.playerId],
+      playerId: [pog.playerId],
       moduleId: [mod.moduleId],
       key: [`tp_${args.tp}`],
     },

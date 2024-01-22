@@ -1,4 +1,4 @@
-import { Card, Skeleton, styled, useTheme } from '@takaro/lib-components';
+import { Card, styled, useTheme } from '@takaro/lib-components';
 import { FC } from 'react';
 import { useGameServer } from 'queries/gameservers';
 import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
@@ -10,12 +10,15 @@ import { EventFeedWidget } from 'components/events/EventFeedWidget';
 
 const GridContainer = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: minmax(50px, auto) 1fr;
+
+  grid-template-columns: 1fr 0.4fr;
+  grid-template-rows: minmax(auto, 40%) 1fr;
+
   width: 100%;
   height: 100%;
+  max-height: calc(100% - 60px);
+
   gap: ${({ theme }) => theme.spacing[1]};
-  max-height: 85vh;
 `;
 
 const SpanCell = styled.div`
@@ -31,22 +34,8 @@ const GameServerOverview: FC = () => {
   const { data: gameServer, isLoading } = useGameServer(selectedGameServerId);
   const theme = useTheme();
 
-  if (isLoading) {
-    return (
-      <GridContainer>
-        <SpanCell>
-          <Skeleton variant="rectangular" width="100%" height="100%" />
-        </SpanCell>
-        <Skeleton variant="rectangular" width="100%" height="100%" />
-        <Skeleton variant="rectangular" width="100%" height="100%" />
-        <Skeleton variant="rectangular" width="100%" height="100%" />
-      </GridContainer>
-    );
-  }
-
-  // TODO: handle this
-  if (gameServer === undefined) {
-    return <>could not load data</>;
+  if (isLoading || gameServer === undefined) {
+    return <> </>;
   }
 
   return (

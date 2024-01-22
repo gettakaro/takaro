@@ -12,19 +12,23 @@ export async function getTakaro(
     log: logger ? logger : console,
   });
 
-  if (data.player) {
+  if (data.pog) {
     const sendPmToPlayer = async (message: string) => {
       return takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
         message,
         opts: {
           recipient: {
-            gameId: data.player.gameId,
+            gameId: data.pog.gameId,
           },
         },
       });
     };
 
-    data.player.pm = sendPmToPlayer;
+    data.pog.pm = sendPmToPlayer;
+
+    if (data.player) {
+      data.player.pm = sendPmToPlayer;
+    }
   }
 
   return takaro;

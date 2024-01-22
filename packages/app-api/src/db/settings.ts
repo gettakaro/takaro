@@ -1,7 +1,13 @@
 import { TakaroModel } from '@takaro/db';
 import { errors, traceableClass } from '@takaro/util';
 import { ITakaroRepo, PaginatedOutput } from './base.js';
-import { DEFAULT_SETTINGS, Settings, SETTINGS_KEYS } from '../service/SettingsService.js';
+import {
+  DEFAULT_SETTINGS,
+  Settings,
+  SETTINGS_KEYS,
+  SettingsMode,
+  SettingsOutputDTO,
+} from '../service/SettingsService.js';
 
 export const SETTINGS_TABLE_NAME = 'settings';
 
@@ -52,51 +58,55 @@ export class SettingsRepo extends ITakaroRepo<SettingsModel, Settings, never, ne
     throw new errors.NotImplementedError();
   }
 
-  async get(key: SETTINGS_KEYS): Promise<Settings[SETTINGS_KEYS]> {
-    let data: SettingsModel | undefined;
+  async get(key: SETTINGS_KEYS): Promise<SettingsOutputDTO> {
     const { query } = await this.getModel();
     const { query: query2 } = await this.getModel();
 
     const domainSetting = await query.where({ key, gameServerId: null }).first();
-    const gameServerSetting = await query2.where({ key, gameServerId: this.gameServerId }).first();
+    const gameServerSetting = await query2.where({ key }).andWhere({ gameServerId: this.gameServerId }).first();
+
+    if (!domainSetting && !gameServerSetting) {
+      return await new SettingsOutputDTO().construct({
+        key,
+        value: DEFAULT_SETTINGS[key],
+        type: SettingsMode.Default,
+      });
+    }
 
     if (this.gameServerId) {
-      data = gameServerSetting?.value ? gameServerSetting : domainSetting;
+      if (gameServerSetting?.value) {
+        return await new SettingsOutputDTO().construct({
+          key,
+          value: gameServerSetting?.value,
+          type: SettingsMode.Override,
+        });
+      } else {
+        return await new SettingsOutputDTO().construct({
+          key,
+          value: domainSetting?.value,
+          type: SettingsMode.Inherit,
+        });
+      }
     } else {
-      data = domainSetting;
+      return await new SettingsOutputDTO().construct({
+        key,
+        value: domainSetting?.value,
+        type: SettingsMode.Global,
+      });
     }
-
-    if (!data) {
-      return DEFAULT_SETTINGS[key] as string;
-    }
-
-    return data.value;
   }
 
-  async getAll(): Promise<Settings> {
-    const { query } = await this.getModel();
-    const { query: query2 } = await this.getModel();
-
-    const domainSetting = await query.where({ gameServerId: null });
-    const gameServerSetting = await query2.where({ gameServerId: this.gameServerId });
-
-    const toReturn = await new Settings().construct();
+  async getAll(): Promise<SettingsOutputDTO[]> {
+    const toReturn: Array<Promise<SettingsOutputDTO>> = [];
 
     for (const key of Object.values(SETTINGS_KEYS)) {
-      if (this.gameServerId) {
-        toReturn[key] =
-          gameServerSetting.find((x) => x.key === key)?.value ||
-          domainSetting.find((x) => x.key === key)?.value ||
-          DEFAULT_SETTINGS[key];
-      } else {
-        toReturn[key] = domainSetting.find((x) => x.key === key)?.value || DEFAULT_SETTINGS[key];
-      }
+      toReturn.push(this.get(key));
     }
 
-    return toReturn;
+    return Promise.all(toReturn);
   }
 
-  async set(key: SETTINGS_KEYS, value: string | null): Promise<Settings> {
+  async set(key: SETTINGS_KEYS, value: string | null): Promise<SettingsOutputDTO[]> {
     const { query } = await this.getModel();
 
     if (value === null) {
@@ -107,7 +117,7 @@ export class SettingsRepo extends ITakaroRepo<SettingsModel, Settings, never, ne
     await query
       .insert({ domain: this.domainId, gameServerId: this.gameServerId, key, value })
       .onConflict(['domain', 'key', 'gameServerId'])
-      .merge({ value });
+      .merge(['value']);
 
     return this.getAll();
   }

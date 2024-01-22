@@ -8,21 +8,21 @@ async function main() {
   const data = await getData();
   const takaro = await getTakaro(data);
 
-  const { player, gameServerId, module: mod, arguments: args } = data;
+  const { pog, gameServerId, module: mod, arguments: args } = data;
 
-  const hasPermission = checkPermission(player, 'TELEPORTS_USE');
+  const hasPermission = checkPermission(pog, 'TELEPORTS_USE');
 
   if (!hasPermission) {
     throw new TakaroUserError('You do not have permission to use teleports.');
   }
 
-  const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data;
+  const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data.value;
 
   const existingVariable = await takaro.variable.variableControllerSearch({
     filters: {
       key: [getVariableKey(args.tp)],
       gameServerId: [gameServerId],
-      playerId: [player.playerId],
+      playerId: [pog.playerId],
       moduleId: [mod.moduleId],
     },
   });
@@ -37,7 +37,7 @@ async function main() {
     },
     filters: {
       gameServerId: [gameServerId],
-      playerId: [player.playerId],
+      playerId: [pog.playerId],
       moduleId: [mod.moduleId],
     },
   });
@@ -52,13 +52,13 @@ async function main() {
     key: getVariableKey(args.tp),
     value: JSON.stringify({
       name: args.tp,
-      x: data.player.positionX,
-      y: data.player.positionY,
-      z: data.player.positionZ,
+      x: data.pog.positionX,
+      y: data.pog.positionY,
+      z: data.pog.positionZ,
     }),
     gameServerId,
     moduleId: mod.moduleId,
-    playerId: player.playerId,
+    playerId: pog.playerId,
   });
 
   await data.player.pm(`Teleport ${args.tp} set.`);

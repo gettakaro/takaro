@@ -44,12 +44,17 @@ export const Option: FC<OptionProps> = ({ children, index = 0, value, onChange, 
     // array of values
     if (multiSelect) {
       const updatedItems = toggleSelectedItem(selectedItems, { value, label });
+
+      // NOTE: checking if the items actually changed here does not matter, since the onChange will have been triggered on the first selected/deselected item.
       setSelectedItems(updatedItems);
       if (onChange) onChange(updatedItems.map((item) => item.value));
     } else {
       // single value
-      setSelectedItems([{ value, label }]);
-      if (onChange) onChange(value);
+      // NOTE: Check if the item is actually changed, otherwise don't do anything. This prevents the dirty state from being triggered when the user clicks on the same item.
+      if (selectedItems[0]?.value !== value) {
+        setSelectedItems([{ value, label }]);
+        if (onChange) onChange(value);
+      }
       setOpen(false);
     }
   };
@@ -103,7 +108,7 @@ export const Option: FC<OptionProps> = ({ children, index = 0, value, onChange, 
         />
       )}
       <span style={{ marginLeft: multiSelect ? '10px' : 0 }}>{children}</span>{' '}
-      {!multiSelect && selectedItems.includes({ value, label }) && <StyledCheckIcon />}
+      {!multiSelect && hasSelectedItem(selectedItems, { value, label }) && <StyledCheckIcon />}
     </OptionContainer>
   );
 };

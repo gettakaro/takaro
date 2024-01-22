@@ -16,7 +16,7 @@ const Container = styled.div<{ canClick: boolean; variant: Variant }>`
   }
 
   &:focus {
-    border-color: ${({ theme }) => theme.colors.primary};
+    border-color: ${({ theme, canClick }) => (canClick ? theme.colors.primary : theme.colors.backgroundAccent)};
   }
 
   &:active {

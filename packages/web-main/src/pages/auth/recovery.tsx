@@ -2,7 +2,7 @@ import { FC, useCallback, useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { RecoveryFlow, UpdateRecoveryFlowBody } from '@ory/client';
 import { useAuth } from 'hooks/useAuth';
-import { styled, Loading, Company } from '@takaro/lib-components';
+import { styled, Company, Skeleton } from '@takaro/lib-components';
 import { UserAuthCard } from '@ory/elements';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
@@ -84,7 +84,7 @@ export const Recovery: FC = () => {
     createFlow();
   }, []);
 
-  if (!flow) return <Loading />;
+  if (!flow) return <Skeleton variant="rectangular" width="100%" height="100%" />;
 
   return (
     <>

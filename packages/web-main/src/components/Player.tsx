@@ -38,18 +38,17 @@ export const Player: FC<PlayerProps> = ({ playerId, name, avatarUrl, showAvatar,
     return <Chip variant="outline" color="backgroundAccent" label="unknown" />;
   }
 
-  const avatar = !avatarUrl ? (
-    <Avatar size="tiny" alt="steam-avatar">
-      {getInitials(name)}
+  const avatar = (
+    <Avatar size="tiny">
+      <Avatar.Image src={avatarUrl} alt={`steam-avatar-${name}`} />
+      <Avatar.FallBack>{getInitials(name)}</Avatar.FallBack>
     </Avatar>
-  ) : (
-    <Avatar size="tiny" src={avatarUrl} alt="steam-avatar" />
   );
 
   return (
     <Link
-      to={PATHS.player.profile(playerId)}
-      style={{ display: 'flex', alignItems: 'center', gap: '5px', width: 'fit-content' }}
+      to={PATHS.player.global.profile(playerId)}
+      style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: 'fit-content' }}
     >
       {showAvatar && avatar}
       <span>{name}</span>

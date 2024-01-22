@@ -1,4 +1,4 @@
-import { Loading, Skeleton, styled, useTheme } from '@takaro/lib-components';
+import { Skeleton, styled, useTheme } from '@takaro/lib-components';
 import { FC, useMemo } from 'react';
 import { Outlet } from 'react-router-dom';
 import { ModuleInstallCard, CardList } from 'components/cards';
@@ -47,7 +47,7 @@ const GameServerModules: FC = () => {
   }
 
   if (!installations || !data || !mappedModules) {
-    return <Loading />;
+    return <> </>;
   }
 
   const installedModules = mappedModules.filter((mod) => mod.installed);

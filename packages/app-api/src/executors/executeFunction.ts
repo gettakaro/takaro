@@ -10,6 +10,13 @@ import { RateLimiterRedis, RateLimiterRes } from 'rate-limiter-flexible';
 import { CommandService } from '../service/CommandService.js';
 import { PlayerOnGameServerService } from '../service/PlayerOnGameserverService.js';
 import { EVENT_TYPES, EventCreateDTO, EventService } from '../service/EventService.js';
+import {
+  TakaroEventCommandDetails,
+  TakaroEventCommandExecuted,
+  TakaroEventFunctionLog,
+  TakaroEventFunctionResult,
+  BaseEvent,
+} from '@takaro/modules';
 
 let rateLimiter: RateLimiterRedis | null = null;
 
@@ -25,15 +32,9 @@ const takaro = new AdminClient({
   log: logger('adminClient'),
 });
 
-export interface ILog {
-  msg: string;
-  details?: Record<string, unknown> | string;
-}
-
 interface IFunctionResult {
   success: boolean;
-  logs: ILog[];
-  requestId?: string;
+  logs: TakaroEventFunctionLog[];
 }
 
 export type FunctionExecutor = (code: string, data: Record<string, unknown>, token: string) => Promise<IFunctionResult>;
@@ -73,34 +74,44 @@ export async function executeFunction(
 
   const functionRes = await client.function.functionControllerGetOne(functionId);
   const eventService = new EventService(domainId);
+
+  const dataForEvent = { ...data };
+  delete dataForEvent.token;
+  delete dataForEvent.url;
+  const meta: Partial<TakaroEventCommandExecuted> = {
+    data: dataForEvent,
+  };
+
   const eventData = await new EventCreateDTO().construct({
     moduleId: data.module.moduleId,
     gameserverId: data.gameServerId,
-    meta: {},
+    meta: new BaseEvent(),
   });
 
   if (isCommandData(data)) {
     const commandService = new CommandService(domainId);
     const command = await commandService.findOne(data.itemId);
-    eventData.playerId = data.player.playerId;
+    if (!command) throw new errors.InternalServerError();
+
     eventData.eventName = EVENT_TYPES.COMMAND_EXECUTED;
-    eventData.meta['command'] = {
-      id: command?.id,
-      name: command?.name,
+
+    meta.command = await new TakaroEventCommandDetails().construct({
+      id: command.id,
+      name: command.name,
       arguments: data.arguments,
-    };
+    });
 
     if (!command) throw new errors.InternalServerError();
     if ('commands' in data.module.systemConfig) {
       const commandsConfig = data.module.systemConfig?.commands as Record<string, any>;
       const cost = commandsConfig[command?.name]?.cost;
       if (cost) {
-        if (data.player.currency < cost) {
+        if (data.pog.currency < cost) {
           await client.gameserver.gameServerControllerSendMessage(data.gameServerId, {
             message: 'You do not have enough currency to execute this command.',
             opts: {
               recipient: {
-                gameId: data.player.gameId,
+                gameId: data.pog.gameId,
               },
             },
           });
@@ -112,7 +123,6 @@ export async function executeFunction(
 
   if (isHookData(data)) {
     eventData.eventName = EVENT_TYPES.HOOK_EXECUTED;
-    eventData.meta['eventData'] = data.eventData;
   }
 
   if (isCronData(data)) {
@@ -126,23 +136,26 @@ export async function executeFunction(
     switch (config.get('functions.executionMode')) {
       case EXECUTION_MODE.LOCAL:
         result = await executeFunctionLocal(functionRes.data.data.code, data, token);
-        eventData.meta['result'] = result;
+        meta.result = await new TakaroEventFunctionResult().construct(result);
         break;
       case EXECUTION_MODE.LAMBDA:
         result = await executeLambda({ fn: functionRes.data.data.code, data, token, domainId });
-        eventData.meta['result'] = result;
+        meta.result = await new TakaroEventFunctionResult().construct(result);
         break;
       default:
         throw new errors.ConfigError(`Invalid execution mode: ${config.get('functions.executionMode')}`);
     }
 
     if (isCommandData(data) && !result.success) {
-      if (result.logs.length && (result.logs[result.logs.length - 1].details as string)?.includes('TakaroUserError')) {
+      if (
+        result.logs.length &&
+        (result.logs[result.logs.length - 1].details as unknown as string)?.includes('TakaroUserError')
+      ) {
         await client.gameserver.gameServerControllerSendMessage(data.gameServerId, {
           message: result.logs[result.logs.length - 1].msg,
           opts: {
             recipient: {
-              gameId: data.player.gameId,
+              gameId: data.pog.gameId,
             },
           },
         });
@@ -151,7 +164,7 @@ export async function executeFunction(
           message: 'Oops, something went wrong while executing your command. Please try again later.',
           opts: {
             recipient: {
-              gameId: data.player.gameId,
+              gameId: data.pog.gameId,
             },
           },
         });
@@ -170,35 +183,42 @@ export async function executeFunction(
             log.warn('Command execution failed, not deducting cost');
           } else {
             const playerOnGameServerService = new PlayerOnGameServerService(domainId);
-            await playerOnGameServerService.deductCurrency(data.player.id, cost);
+            await playerOnGameServerService.deductCurrency(data.pog.id, cost);
           }
         }
       }
     }
 
-    await eventService.create(eventData);
+    // Ensure all logs are TakaroEventFunctionLog
+    meta.result.logs = await Promise.all(
+      result.logs.map(async (log) => {
+        return new TakaroEventFunctionLog().construct(log);
+      })
+    );
+
+    await eventService.create(await new EventCreateDTO().construct({ ...eventData, meta }));
   } catch (err: any) {
     if (err instanceof RateLimiterRes) {
       log.warn('Function execution rate limited');
-      eventData.meta['result'] = {
+      meta.result = await new TakaroEventFunctionResult().construct({
         success: false,
         reason: 'rate limited',
         tryAgainIn: err.msBeforeNext,
-      };
-      await eventService.create(eventData);
+      });
+      await eventService.create(await new EventCreateDTO().construct({ ...eventData, meta }));
       return null;
     }
 
     if ('message' in err) {
-      eventData.meta['result'] = {
+      meta.result = await new TakaroEventFunctionResult().construct({
         success: false,
         reason: err.message,
-      };
+      });
     }
 
     Sentry.captureException(err);
     log.error('executeFunction', err);
-    await eventService.create(eventData);
+    await eventService.create(await new EventCreateDTO().construct({ ...eventData, meta }));
     return null;
   }
 }
