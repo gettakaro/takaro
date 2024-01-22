@@ -111,11 +111,14 @@ export async function processJob(job: Job<IGameServerQueueData>) {
         const resolvedPlayer = await playerService.resolveRef(player, gameServerId);
         await gameServerService.getPlayerLocation(gameServerId, resolvedPlayer.id);
 
+        if (player.ip) {
+          await playerService.observeIp(resolvedPlayer.id, gameServerId, player.ip);
+        }
+
         await playerOnGameServerService.addInfo(
           player,
           gameServerId,
           await new PlayerOnGameServerUpdateDTO().construct({
-            ip: player.ip,
             ping: player.ping,
           })
         );

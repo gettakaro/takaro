@@ -4,15 +4,9 @@ import { FC } from 'react';
 import { useParams, useNavigate, Outlet, useOutletContext } from 'react-router-dom';
 import { DateTime } from 'luxon';
 import { PlayerRolesTable } from './PlayerRolesTable';
-import {
-  IpHistoryOutputDTO,
-  PlayerOnGameserverOutputDTO,
-  PlayerOutputDTO,
-  PlayerOutputWithRolesDTO,
-} from '@takaro/apiclient';
+import { IpHistoryOutputDTO, PlayerOutputDTO, PlayerOutputWithRolesDTO } from '@takaro/apiclient';
 import { CountryCodeToEmoji } from 'components/CountryCodeToEmoji';
 import { Container, Section } from '../style';
-import { usePlayerOnGameServers } from 'queries/players/queries';
 
 const IpInfoContainer = styled.div`
   display: flex;
@@ -127,16 +121,10 @@ export const PlayerGlobalProfile: FC = () => {
     return <Skeleton variant="rectangular" width="100%" height="100%" />;
   }
 
-  const { player } = useOutletContext<{ pog: PlayerOnGameserverOutputDTO; player: PlayerOutputWithRolesDTO }>();
+  const { player } = useOutletContext<{ player: PlayerOutputWithRolesDTO }>();
 
-  const { data: pogs, isLoading } = usePlayerOnGameServers({
-    filters: {
-      playerId: [playerId],
-    },
-  });
-
-  if (isLoading || !player || !pogs) {
-    return <Skeleton variant="rectangular" width="100%" height="100%" />;
+  if (!player) {
+    return <p>Player not found</p>;
   }
 
   return (
@@ -150,7 +138,7 @@ export const PlayerGlobalProfile: FC = () => {
       </Section>
       <Section>
         <h2>IP History</h2>
-        <IpInfo ipInfo={pogs.data.map((pog) => pog.ipHistory).flat()} />
+        <IpInfo ipInfo={player.ipHistory} />
       </Section>
 
       <PlayerRolesTable roles={player?.roleAssignments} playerId={playerId} playerName={player?.name} />

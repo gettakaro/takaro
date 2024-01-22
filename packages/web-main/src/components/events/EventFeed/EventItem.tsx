@@ -78,6 +78,14 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
   let properties = <></>;
 
   switch (event.eventName) {
+    case EventOutputDTOEventNameEnum.ServerStatusChanged:
+      properties = (
+        <>
+          <EventProperty name="gameserver" value={event.gameServer?.name} />
+          <EventProperty name="status" value={meta?.status} />
+        </>
+      );
+      break;
     case EventOutputDTOEventNameEnum.ChatMessage:
       properties = (
         <>
@@ -115,8 +123,8 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
             name="country"
             value={
               <>
-                <CountryCodeToEmoji countryCode={(event.meta as any).new.country} />
-                {(event.meta as any).new.country}
+                <CountryCodeToEmoji countryCode={(event.meta as any).country} />
+                {(event.meta as any).country}
               </>
             }
           />
@@ -166,6 +174,8 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
         <>
           <EventProperty name="user" value={event.user?.name} />
           {event.gameServer ? <EventProperty name="gameserver" value={event.gameServer?.name} /> : null}
+          <EventProperty name="key" value={(event.meta as any).key} />
+          <EventProperty name="value" value={(event.meta as any).value} />
         </>
       );
       break;

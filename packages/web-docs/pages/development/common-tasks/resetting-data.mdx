@@ -1,4 +1,13 @@
+import { Callout } from 'nextra-theme-docs';
+
 ## Resetting data
+
+<Callout type="warning" emoji="⚠️">
+  <p>
+    <strong>Warning:</strong> This will delete all data from the database. This includes all domains, users, and their
+    related data. This is not reversible. DO NOT run this in production.
+  </p>
+</Callout>
 
 There are two ways to reset database data, each applicable in different situations. If your environment is running correctly, you can quickly delete all domains (with related data) using the `dev-remove-domains.mjs` script. This script will talk to the Takaro API, thus if your application is not running this will fail. This script is significantly faster than the other option.
 

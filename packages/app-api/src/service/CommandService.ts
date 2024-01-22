@@ -350,7 +350,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
 
     const eventDto = await new EventChatMessage().construct({
       player: playerOnGameserver,
-      timestamp: new Date(),
+      timestamp: new Date().toISOString(),
       msg: triggered.msg,
     });
 
