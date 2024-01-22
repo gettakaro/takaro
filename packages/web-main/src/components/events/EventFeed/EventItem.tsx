@@ -78,6 +78,14 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
   let properties = <></>;
 
   switch (event.eventName) {
+    case EventOutputDTOEventNameEnum.ServerStatusChanged:
+      properties = (
+        <>
+          <EventProperty name="gameserver" value={event.gameServer?.name} />
+          <EventProperty name="status" value={meta?.status} />
+        </>
+      );
+      break;
     case EventOutputDTOEventNameEnum.ChatMessage:
       properties = (
         <>
