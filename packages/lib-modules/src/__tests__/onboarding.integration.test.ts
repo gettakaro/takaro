@@ -19,6 +19,7 @@ const tests = [
       const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
       await this.client.hook.hookControllerTrigger({
         gameServerId: this.setupData.gameserver.id,
+        playerId: this.setupData.players[0].id,
         eventType: GameEvents.PLAYER_CONNECTED,
         eventMeta: await new EventPlayerConnected().construct({
           player: {
