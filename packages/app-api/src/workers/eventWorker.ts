@@ -2,17 +2,7 @@ import { Job } from 'bullmq';
 import { ctx, logger } from '@takaro/util';
 import { config } from '../config.js';
 import { TakaroWorker, IEventQueueData } from '@takaro/queues';
-import {
-  EventChatMessage,
-  EventEntityKilled,
-  EventPlayerDeath,
-  HookEvents,
-  isChatMessageEvent,
-  isConnectedEvent,
-  isDisconnectedEvent,
-  isEntityKilledEvent,
-  isPlayerDeathEvent,
-} from '@takaro/modules';
+import { EventChatMessage, EventEntityKilled, EventPlayerDeath, HookEvents } from '@takaro/modules';
 import { getSocketServer } from '../lib/socketServer.js';
 import { HookService } from '../service/HookService.js';
 import { PlayerService } from '../service/PlayerService.js';
@@ -59,9 +49,10 @@ async function processJob(job: Job<IEventQueueData>) {
     const pogs = await playerOnGameServerService.findAssociations(event.player.gameId, gameServerId);
     const pog = pogs[0];
 
-    if (isChatMessageEvent(event)) {
+    if (type === HookEvents.CHAT_MESSAGE) {
+      const chatMessage = event as EventChatMessage;
       const commandService = new CommandService(domainId);
-      await commandService.handleChatMessage(event, gameServerId);
+      await commandService.handleChatMessage(chatMessage, gameServerId);
 
       await eventService.create(
         await new EventCreateDTO().construct({
@@ -75,7 +66,7 @@ async function processJob(job: Job<IEventQueueData>) {
       );
     }
 
-    if (isConnectedEvent(event)) {
+    if (type === EVENT_TYPES.PLAYER_CONNECTED) {
       await playerOnGameServerService.update(
         pog.id,
         await new PlayerOnGameServerUpdateDTO().construct({ online: true })
@@ -90,7 +81,7 @@ async function processJob(job: Job<IEventQueueData>) {
       );
     }
 
-    if (isDisconnectedEvent(event)) {
+    if (type === EVENT_TYPES.PLAYER_DISCONNECTED) {
       await playerOnGameServerService.update(
         pog.id,
         await new PlayerOnGameServerUpdateDTO().construct({ online: false })
@@ -105,28 +96,30 @@ async function processJob(job: Job<IEventQueueData>) {
       );
     }
 
-    if (isPlayerDeathEvent(event)) {
+    if (type === EVENT_TYPES.PLAYER_DEATH) {
+      const playerDeath = event as EventPlayerDeath;
       await eventService.create(
         await new EventCreateDTO().construct({
           eventName: EVENT_TYPES.PLAYER_DEATH,
           gameserverId: gameServerId,
           playerId: resolvedPlayer.id,
           meta: await new EventPlayerDeath().construct({
-            position: event.position,
+            position: playerDeath.position,
           }),
         })
       );
     }
 
-    if (isEntityKilledEvent(event)) {
+    if (type === EVENT_TYPES.ENTITY_KILLED) {
+      const entityKilled = event as EventEntityKilled;
       await eventService.create(
         await new EventCreateDTO().construct({
           eventName: EVENT_TYPES.ENTITY_KILLED,
           gameserverId: gameServerId,
           playerId: resolvedPlayer.id,
           meta: await new EventEntityKilled().construct({
-            entity: event.entity,
-            weapon: event.weapon,
+            entity: entityKilled.entity,
+            weapon: entityKilled.weapon,
           }),
         })
       );
