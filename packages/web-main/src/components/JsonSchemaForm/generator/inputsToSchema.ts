@@ -60,6 +60,10 @@ function getJsonSchemaElement(input: AnyInput) {
     case InputType.boolean:
       break;
 
+    case InputType.array:
+      (res.type = 'array'), (res.items = { type: 'string' });
+      break;
+
     case InputType.item:
       res['x-component'] = InputType.item;
       if (input.multiple) {

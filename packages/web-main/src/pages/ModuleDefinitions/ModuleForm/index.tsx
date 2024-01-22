@@ -96,7 +96,6 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
   }, [isSuccess]);
 
   const submitHandler: SubmitHandler<IFormInputs> = ({ configFields, name, description, permissions }) => {
-    console.log('does this fire');
     const schema = inputsToSchema(configFields);
     const uiSchema = inputsToUiSchema(configFields);
     onSubmit({

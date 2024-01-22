@@ -32,6 +32,7 @@ export const ConfigField: FC<ConfigFieldProps> = ({ control, index, remove, id, 
   /* whenever the field type changes we swap all type dependent fields.
     `configFields.${index}.default` has the same name across different inputTypes.
     We need to reset the default value to the new type default value.
+    because otherwise incorrect values are passed to fields that don't know how to handle them.
   */
   useEffect(() => {
     if (inputType && initialised) {
@@ -54,6 +55,11 @@ export const ConfigField: FC<ConfigFieldProps> = ({ control, index, remove, id, 
         case InputType.duration:
           resetField(`configFields.${index}.default`, {
             defaultValue: 0,
+          });
+          break;
+        case InputType.array:
+          resetField(`configFields.${index}.default`, {
+            defaultValue: [],
           });
           break;
         case InputType.item:

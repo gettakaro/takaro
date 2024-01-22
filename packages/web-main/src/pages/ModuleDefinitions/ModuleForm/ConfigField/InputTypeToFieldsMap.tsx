@@ -78,8 +78,8 @@ export const InputTypeToFieldsMap = (control: Control<IFormInputs>, index: numbe
     ],
     [InputType.array]: [
       <TagField
-        name={`configFields.${index}.values`}
-        key={`${InputType.array}-enum-${id}`}
+        name={`configFields.${index}.default`}
+        key={`${InputType.array}-default-${id}`}
         control={control}
         label="Possible values"
         isEditOnRemove
