@@ -32,6 +32,7 @@ jobs:
 
       - name: Setup Pages
         uses: actions/configure-pages@v2
+          pages-branch: 'gh-pages'
 
       - name: Use Node.js 18.18
         uses: actions/setup-node@v1
