@@ -47,6 +47,7 @@ function getJsonSchemaElement(input: AnyInput) {
 
     case InputType.select:
       if (input.multiple) {
+        res['x-component'] = InputType.select;
         res.type = 'array';
         res.uniqueItems = true;
         res.items = { type: 'string', enum: input.values ?? [], minItems: 1 };

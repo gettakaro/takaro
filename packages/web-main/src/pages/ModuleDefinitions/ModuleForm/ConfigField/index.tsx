@@ -51,6 +51,11 @@ export const ConfigField: FC<ConfigFieldProps> = ({ control, index, remove, id, 
             defaultValue: 0,
           });
           break;
+        case InputType.duration:
+          resetField(`configFields.${index}.default`, {
+            defaultValue: 0,
+          });
+          break;
         case InputType.item:
         case InputType.country:
         case InputType.select:

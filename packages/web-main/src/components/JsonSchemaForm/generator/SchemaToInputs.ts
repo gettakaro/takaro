@@ -58,7 +58,6 @@ export function schemaToInputs(schema: SchemaObject): Input[] {
           input.minLength = property.minLength;
           input.maxLength = property.maxLength;
         }
-
         break;
       case 'array':
         input.multiple = true;
@@ -66,7 +65,7 @@ export function schemaToInputs(schema: SchemaObject): Input[] {
           input.type = InputType.item;
         } else if (property['x-component'] === InputType.country) {
           input.type = InputType.country;
-        } else {
+        } else if (property['x-component'] === InputType.select) {
           input.values = property.items;
         }
         break;

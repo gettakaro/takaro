@@ -82,6 +82,10 @@ export const validationSchema = z.object({
             required: z.boolean(),
           }),
           z.object({
+            type: z.literal(InputType.array.valueOf()),
+            required: z.boolean(),
+          }),
+          z.object({
             type: z.literal(InputType.duration.valueOf()),
             default: z.number().positive(),
             required: z.boolean(),

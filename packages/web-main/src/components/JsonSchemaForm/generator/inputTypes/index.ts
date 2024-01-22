@@ -3,6 +3,7 @@ export enum InputType {
   string = 'string',
   number = 'number',
   boolean = 'boolean',
+  array = 'array',
   select = 'select',
   item = 'item',
   country = 'country',
@@ -27,6 +28,11 @@ interface CountryInput extends BaseObject {
   type: InputType.country;
   default?: string;
   multiple: boolean;
+}
+
+interface ArrayInput extends BaseObject {
+  type: InputType.array;
+  default?: string[];
 }
 
 interface DurationInput extends BaseObject {
@@ -67,5 +73,7 @@ export type AnyInput =
   | BooleanInput
   | ItemInput
   | CountryInput
-  | DurationInput;
+  | DurationInput
+  | ArrayInput;
+
 export type Input = AnyInput & { name: string };

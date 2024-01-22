@@ -76,6 +76,16 @@ export const InputTypeToFieldsMap = (control: Control<IFormInputs>, index: numbe
         description="When a user installs the module, this will be the default value for this field."
       />,
     ],
+    [InputType.array]: [
+      <TagField
+        name={`configFields.${index}.values`}
+        key={`${InputType.array}-enum-${id}`}
+        control={control}
+        label="Possible values"
+        isEditOnRemove
+        placeholder="Press enter to add a value."
+      />,
+    ],
     [InputType.select]: [
       <TagField
         name={`configFields.${index}.values`}

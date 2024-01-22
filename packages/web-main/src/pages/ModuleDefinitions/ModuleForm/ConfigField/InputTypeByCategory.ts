@@ -21,7 +21,12 @@ const inputTypeInfo: InputTypeInfo[] = [
   {
     type: InputType.boolean,
     category: 'basic',
-    description: 'A checkbox that toggles between `true` and `false`. ',
+    description: 'A checkbox that toggles between `true` and `false`.',
+  },
+  {
+    type: InputType.array,
+    category: 'basic',
+    description: 'A field that allows multiple string values to be entered.',
   },
   {
     type: InputType.select,
