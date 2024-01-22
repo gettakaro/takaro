@@ -1,9 +1,9 @@
 import { ModuleOutputDTO, GameServerOutputDTO, RoleOutputDTO, PlayerOutputDTO } from '@takaro/apiclient';
 import { integrationConfig, IntegrationTest, EventsAwaiter } from '@takaro/test';
-import { GameEvents } from '../dto/index.js';
+import { EventTypes, GameEvents } from '../dto/index.js';
 
 export interface IDetectedEvent {
-  event: GameEvents;
+  event: EventTypes;
   data: any;
 }
 
@@ -17,6 +17,7 @@ export interface IModuleTestsSetupData {
   economyModule: ModuleOutputDTO;
   serverMessagesModule: ModuleOutputDTO;
   lotteryModule: ModuleOutputDTO;
+  geoBlockModule: ModuleOutputDTO;
   role: RoleOutputDTO;
   players: PlayerOutputDTO[];
   eventAwaiter: EventsAwaiter;
@@ -66,6 +67,9 @@ export const modulesTestSetup = async function (
   const lotteryModule = modules.find((m) => m.name === 'lottery');
   if (!lotteryModule) throw new Error('lottery module not found');
 
+  const geoBlockModule = modules.find((m) => m.name === 'geoBlock');
+  if (!geoBlockModule) throw new Error('geoBlock module not found');
+
   const eventAwaiter = new EventsAwaiter();
   await eventAwaiter.connect(this.client);
 
@@ -96,6 +100,7 @@ export const modulesTestSetup = async function (
     gimmeModule,
     economyModule,
     lotteryModule,
+    geoBlockModule,
     gameserver: gameserver.data.data,
     role: roleRes.data.data,
     players: playersRes.data.data,

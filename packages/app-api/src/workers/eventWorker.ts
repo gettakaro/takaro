@@ -3,6 +3,10 @@ import { ctx, logger } from '@takaro/util';
 import { config } from '../config.js';
 import { TakaroWorker, IEventQueueData } from '@takaro/queues';
 import {
+  EventChatMessage,
+  EventEntityKilled,
+  EventPlayerDeath,
+  HookEvents,
   isChatMessageEvent,
   isConnectedEvent,
   isDisconnectedEvent,
@@ -35,8 +39,15 @@ async function processJob(job: Job<IEventQueueData>) {
   const { type, event, domainId, gameServerId } = job.data;
 
   const eventService = new EventService(domainId);
-  const hooksService = new HookService(domainId);
-  await hooksService.handleEvent(event, gameServerId);
+
+  if (type === HookEvents.LOG_LINE) {
+    const hooksService = new HookService(domainId);
+    await hooksService.handleEvent({
+      eventType: HookEvents.LOG_LINE,
+      eventData: event,
+      gameServerId,
+    });
+  }
 
   const socketServer = await getSocketServer();
   socketServer.emit(domainId, 'gameEvent', [gameServerId, type, event]);
@@ -57,9 +68,9 @@ async function processJob(job: Job<IEventQueueData>) {
           eventName: EVENT_TYPES.CHAT_MESSAGE,
           gameserverId: gameServerId,
           playerId: resolvedPlayer.id,
-          meta: {
-            message: event.msg,
-          },
+          meta: await new EventChatMessage().construct({
+            msg: event.msg,
+          }),
         })
       );
     }
@@ -100,9 +111,9 @@ async function processJob(job: Job<IEventQueueData>) {
           eventName: EVENT_TYPES.PLAYER_DEATH,
           gameserverId: gameServerId,
           playerId: resolvedPlayer.id,
-          meta: {
+          meta: await new EventPlayerDeath().construct({
             position: event.position,
-          },
+          }),
         })
       );
     }
@@ -113,10 +124,10 @@ async function processJob(job: Job<IEventQueueData>) {
           eventName: EVENT_TYPES.ENTITY_KILLED,
           gameserverId: gameServerId,
           playerId: resolvedPlayer.id,
-          meta: {
+          meta: await new EventEntityKilled().construct({
             entity: event.entity,
             weapon: event.weapon,
-          },
+          }),
         })
       );
     }

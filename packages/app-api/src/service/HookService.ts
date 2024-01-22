@@ -1,10 +1,10 @@
 import { TakaroService } from './Base.js';
 import { queueService } from '@takaro/queues';
-import { IPlayerReferenceDTO } from '@takaro/gameserver';
 
 import { HookModel, HookRepo } from '../db/hook.js';
 import {
   IsEnum,
+  IsObject,
   IsOptional,
   IsString,
   IsUUID,
@@ -21,17 +21,15 @@ import { TakaroDTO, errors, TakaroModelDTO, traceableClass } from '@takaro/util'
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { GameServerService } from './GameServerService.js';
-import {
-  EventMapping,
-  EventTypes,
-  HookEventTypes,
-  HookEvents,
-  EventChatMessage,
-  EventPlayerConnected,
-  EventPlayerDisconnected,
-  EventLogLine,
-  isDiscordMessageEvent,
-} from '@takaro/modules';
+import { HookEvents, isDiscordMessageEvent, EventPayload, EventTypes, EventMapping } from '@takaro/modules';
+import { PlayerOnGameServerService } from './PlayerOnGameserverService.js';
+
+interface IHandleHookOptions {
+  eventType: EventTypes;
+  eventData: EventPayload;
+  gameServerId: string;
+  playerId?: string;
+}
 
 @ValidatorConstraint()
 export class IsSafeRegex implements ValidatorConstraintInterface {
@@ -50,8 +48,8 @@ export class HookOutputDTO extends TakaroModelDTO<HookOutputDTO> {
   @ValidateNested()
   function: FunctionOutputDTO;
 
-  @IsEnum(EventTypes)
-  eventType!: HookEventTypes;
+  @IsEnum(HookEvents)
+  eventType!: EventTypes;
 
   @IsUUID()
   moduleId: string;
@@ -72,8 +70,8 @@ export class HookCreateDTO extends TakaroDTO<HookCreateDTO> {
   @IsUUID()
   moduleId: string;
 
-  @IsEnum(EventTypes)
-  eventType!: HookEventTypes;
+  @IsEnum(HookEvents)
+  eventType!: EventTypes;
 
   @IsOptional()
   @IsString()
@@ -98,9 +96,9 @@ export class HookUpdateDTO extends TakaroDTO<HookUpdateDTO> {
   @IsOptional()
   regex: string;
 
-  @IsEnum(EventTypes)
+  @IsEnum(HookEvents)
   @IsOptional()
-  eventType!: HookEventTypes;
+  eventType!: EventTypes;
 
   @IsOptional()
   @IsString()
@@ -115,17 +113,19 @@ export class HookTriggerDTO extends TakaroDTO<HookTriggerDTO> {
   @IsUUID()
   gameServerId: string;
 
-  @IsEnum(EventTypes)
-  eventType!: HookEventTypes;
-
-  @Type(() => IPlayerReferenceDTO)
-  @ValidateNested()
   @IsOptional()
-  player: IPlayerReferenceDTO;
+  @IsUUID()
+  playerId?: string;
 
-  @IsString()
   @IsOptional()
-  msg: string;
+  @IsUUID()
+  moduleId?: string;
+
+  @IsEnum(HookEvents)
+  eventType!: EventTypes;
+
+  @IsObject()
+  eventMeta: EventPayload;
 }
 
 @traceableClass('service:hook')
@@ -192,22 +192,32 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
     return id;
   }
 
-  async handleEvent(eventData: EventMapping[HookEvents], gameServerId: string) {
+  async handleEvent(opts: IHandleHookOptions) {
+    const { eventData, eventType, gameServerId, playerId } = opts;
     const gameServerService = new GameServerService(this.domainId);
 
-    const triggeredHooks = await this.repo.getTriggeredHooks(eventData.type, gameServerId);
+    const triggeredHooks = await this.repo.getTriggeredHooks(eventType, gameServerId);
 
     const hooksAfterFilters = triggeredHooks
       // Regex checks
       .filter((hook) => {
         if (!hook.regex) return true;
-
+        if (!('msg' in eventData)) return false;
+        if (typeof eventData.msg !== 'string') return false;
         const regex = new RegExp(hook.regex);
         return regex.test(eventData.msg);
       });
 
     if (hooksAfterFilters.length) {
       this.log.info(`Found ${hooksAfterFilters.length} hooks that match the event`);
+
+      const playerOnGameServerService = new PlayerOnGameServerService(this.domainId);
+      const resolvedPlayer = await playerOnGameServerService.find({
+        filters: {
+          playerId: [playerId],
+          gameServerId: [gameServerId],
+        },
+      });
 
       await Promise.all(
         hooksAfterFilters.map(async (hook) => {
@@ -225,6 +235,8 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
             domainId: this.domainId,
             functionId: hook.function.id,
             gameServerId,
+            playerId,
+            player: resolvedPlayer.results[0],
           });
         })
       );
@@ -232,41 +244,24 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
   }
 
   async trigger(data: HookTriggerDTO) {
-    let eventData: EventMapping[keyof EventMapping] | null = null;
-    const gameServerService = new GameServerService(this.domainId);
+    const dto = EventMapping[data.eventType];
 
-    const player = await gameServerService.getPlayer(data.gameServerId, data.player);
-
-    if (!player) throw new errors.NotFoundError('Player not found');
-
-    switch (data.eventType) {
-      case EventTypes.CHAT_MESSAGE:
-        eventData = await new EventChatMessage().construct({
-          player,
-          msg: data.msg,
-        });
-        break;
-      case EventTypes.PLAYER_CONNECTED:
-        eventData = await new EventPlayerConnected().construct({
-          player,
-          msg: 'Player connected',
-        });
-        break;
-      case EventTypes.PLAYER_DISCONNECTED:
-        eventData = await new EventPlayerDisconnected().construct({
-          player,
-          msg: 'Player disconnected',
-        });
-        break;
-      case EventTypes.LOG_LINE:
-        eventData = await new EventLogLine().construct({
-          msg: data.msg,
-        });
-        break;
-      default:
-        throw new errors.NotFoundError('Unknown event');
+    if (!dto) {
+      throw new errors.BadRequestError('Invalid event type');
     }
 
-    return this.handleEvent(eventData, data.gameServerId);
+    const eventData = await new dto().construct(data.eventMeta);
+    await eventData.validate({
+      forbidNonWhitelisted: false,
+      whitelist: true,
+      forbidUnknownValues: false,
+    });
+
+    return this.handleEvent({
+      eventType: data.eventType,
+      eventData,
+      gameServerId: data.gameServerId,
+      playerId: data.playerId,
+    });
   }
 }
