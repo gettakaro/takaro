@@ -7,7 +7,6 @@ import { useParams } from 'react-router-dom';
 
 import { Page } from '../pages/Page';
 import { ErrorBoundary } from '@sentry/react';
-import {} from 'hooks/useSelectedGameServerContext';
 import { SelectedGameServerContext } from 'context/selectedGameServerContext';
 
 const Container = styled.div`

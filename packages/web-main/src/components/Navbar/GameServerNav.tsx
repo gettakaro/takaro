@@ -21,15 +21,24 @@ export const GameServerNav: FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { data, isLoading } = useGameServers();
+  const { data, isLoading, isRefetching } = useGameServers();
   const { selectedGameServerId, setSelectedGameServerId } = useSelectedGameServer();
 
   useEffect(() => {
-    // If there is no selectedGameServerId, select the first one.
-    if (selectedGameServerId === '' && data && data.pages[0].data.length > 0) {
+    // if the selected server is empty and there's data, set the selected server to the first server.
+    if (selectedGameServerId === '' && data?.pages.length) {
       setSelectedGameServerId(data.pages[0].data[0].id);
+
+      return;
     }
-  }, [isLoading]);
+
+    // if there's no data or the selected server is not in the data, reset the selected server.
+    if (!data || data.pages.find((page) => page.data.every((server) => server.id !== selectedGameServerId))) {
+      setSelectedGameServerId('');
+
+      return;
+    }
+  }, [isLoading, isRefetching]);
 
   const gameServerLinks: NavbarLink[] = useMemo(() => {
     return [
