@@ -27,31 +27,31 @@ const IpWhoisLink = styled.a`
 `;
 
 const IpInfo: FC<{ ipInfo: IpHistoryOutputDTO[] }> = ({ ipInfo }) => {
+  if (ipInfo.length === 0) {
+    return <p>No records</p>;
+  }
+
   return (
     <IpInfoContainer>
-      {ipInfo.length === 0 ? (
-        <span>No records</span>
-      ) : (
-        ipInfo.map((ip) => {
-          return (
-            <IpInfoLine>
-              <Tooltip>
-                <Tooltip.Trigger asChild>
-                  <CountryCodeToEmoji countryCode={ip.country} />
-                </Tooltip.Trigger>
-                <Tooltip.Content>{ip.country}</Tooltip.Content>
-              </Tooltip>
-              <span>{DateTime.fromISO(ip.createdAt).toLocaleString(DateTime.DATETIME_MED)}</span>
-              <span>
-                <IpWhoisLink href={`https://www.whois.com/whois/${ip.ip}`} target="_blank">
-                  {ip.ip}
-                </IpWhoisLink>
-              </span>
-              <span>{ip.city}</span>
-            </IpInfoLine>
-          );
-        })
-      )}
+      {ipInfo.map((ip) => {
+        return (
+          <IpInfoLine>
+            <Tooltip>
+              <Tooltip.Trigger asChild>
+                <CountryCodeToEmoji countryCode={ip.country} />
+              </Tooltip.Trigger>
+              <Tooltip.Content>{ip.country}</Tooltip.Content>
+            </Tooltip>
+            <span>{DateTime.fromISO(ip.createdAt).toLocaleString(DateTime.DATETIME_MED)}</span>
+            <span>
+              <IpWhoisLink href={`https://www.whois.com/whois/${ip.ip}`} target="_blank">
+                {ip.ip}
+              </IpWhoisLink>
+            </span>
+            <span>{ip.city}</span>
+          </IpInfoLine>
+        );
+      })}
     </IpInfoContainer>
   );
 };
