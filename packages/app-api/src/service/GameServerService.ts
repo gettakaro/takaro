@@ -139,6 +139,7 @@ export class GameServerService extends TakaroService<
       domainId: this.domainId,
       gameServerId: createdServer.id,
       operation: 'create',
+      time: new Date().toISOString(),
     });
 
     await queueService.queues.itemsSync.queue.add(
@@ -164,6 +165,7 @@ export class GameServerService extends TakaroService<
       domainId: this.domainId,
       gameServerId: id,
       operation: 'delete',
+      time: new Date().toISOString(),
     });
     await this.repo.delete(id);
     return id;
@@ -176,6 +178,7 @@ export class GameServerService extends TakaroService<
       domainId: this.domainId,
       gameServerId: id,
       operation: 'update',
+      time: new Date().toISOString(),
     });
     return updatedServer;
   }
