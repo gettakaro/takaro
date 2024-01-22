@@ -17,6 +17,7 @@ import { PermissionCreateDTO, PermissionOutputDTO } from './RoleService.js';
 
 // Curse you ESM... :(
 import _Ajv from 'ajv';
+import { getEmptyConfigSchema } from '../lib/systemConfig.js';
 
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 const ajv = new Ajv({ useDefaults: true, strict: true, allErrors: true });
@@ -153,7 +154,10 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
 
   async create(mod: ModuleCreateDTO) {
     try {
-      ajv.compile(JSON.parse(mod.configSchema) ?? '{}');
+      if (!mod.configSchema) {
+        mod.configSchema = JSON.stringify(getEmptyConfigSchema());
+      }
+      ajv.compile(JSON.parse(mod.configSchema));
       const created = await this.repo.create(mod);
       return created;
     } catch (e) {
@@ -163,7 +167,13 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
 
   async update(id: string, mod: ModuleUpdateDTO) {
     try {
-      ajv.compile(JSON.parse(mod.configSchema) ?? '{}');
+      if (mod.configSchema === '{}') {
+        mod.configSchema = JSON.stringify(getEmptyConfigSchema());
+      }
+
+      if (mod.configSchema) {
+        ajv.compile(JSON.parse(mod.configSchema));
+      }
       const updated = await this.repo.update(id, mod);
       return updated;
     } catch (e) {

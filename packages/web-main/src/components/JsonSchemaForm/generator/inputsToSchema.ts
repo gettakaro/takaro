@@ -6,10 +6,11 @@ import { countryCodes } from 'components/selects/CountrySelect/countryCodes';
 
 export function inputsToSchema(inputs: Array<Input>): StrictRJSFSchema {
   const schema: StrictRJSFSchema = {
+    $schema: 'http://json-schema.org/draft-07/schema#',
     type: 'object',
     properties: {},
     required: [],
-    $schema: 'http://json-schema.org/draft-07/schema#',
+    additionalProperties: false,
   };
 
   for (const input of inputs) {
