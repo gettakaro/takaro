@@ -1,5 +1,5 @@
 import { Client, EventOutputArrayDTOAPI, EventSearchInputDTO } from '@takaro/apiclient';
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { UseInfiniteQueryOptions, useInfiniteQuery } from '@tanstack/react-query';
 import { InfiniteScroll as InfiniteScrollComponent } from '@takaro/lib-components';
 import { AxiosError } from 'axios';
 import { useApiClient } from 'hooks/useApiClient';
@@ -17,7 +17,10 @@ const fetchEvents = async (apiClient: Client, queryParams: EventSearchInputDTO):
   return events.data;
 };
 
-export const useEvents = (queryParams: EventSearchInputDTO = {}) => {
+export const useEvents = (
+  queryParams: EventSearchInputDTO = {},
+  opts?: UseInfiniteQueryOptions<EventOutputArrayDTOAPI, AxiosError<EventOutputArrayDTOAPI, any>>
+) => {
   const apiClient = useApiClient();
 
   const queryOpts = useInfiniteQuery<EventOutputArrayDTOAPI, AxiosError<EventOutputArrayDTOAPI>>({
@@ -27,6 +30,7 @@ export const useEvents = (queryParams: EventSearchInputDTO = {}) => {
       return events;
     },
     getNextPageParam: (lastPage, pages) => hasNextPage(lastPage.meta, pages.length),
+    ...opts,
   });
 
   const InfiniteScroll = useMemo(() => {

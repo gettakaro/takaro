@@ -1,6 +1,13 @@
 import { FC, MouseEvent, useEffect, useState } from 'react';
 import { Button, Chip, Dialog, Dropdown, IconButton, Tooltip, Card, Skeleton } from '@takaro/lib-components';
-import { EventOutputDTO, GameServerOutputDTO, PERMISSIONS } from '@takaro/apiclient';
+import {
+  EventOutputDTO,
+  EventSearchInputAllowedFiltersEventNameEnum,
+  EventSearchInputDTOSortDirectionEnum,
+  GameServerOutputDTO,
+  PERMISSIONS,
+  TakaroEventServerStatusChanged,
+} from '@takaro/apiclient';
 import { useNavigate } from 'react-router-dom';
 import { AiOutlineMenu as MenuIcon } from 'react-icons/ai';
 
@@ -12,12 +19,22 @@ import { PermissionsGuard } from 'components/PermissionsGuard';
 import { CardBody } from '../style';
 import { useSocket } from 'hooks/useSocket';
 import { usePlayerOnGameServers } from 'queries/players/queries';
+import { useEvents } from 'queries/events';
 
 export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reachable }) => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const navigate = useNavigate();
   const { selectedGameServerId, setSelectedGameServerId } = useSelectedGameServer();
   const { mutateAsync, isLoading: isDeleting } = useGameServerRemove();
+  const { data: serverStatusEvent, isLoading: isLoadingServerStatus } = useEvents(
+    {
+      sortBy: 'createdAt',
+      sortDirection: EventSearchInputDTOSortDirectionEnum.Asc,
+      filters: { gameserverId: [id], eventName: [EventSearchInputAllowedFiltersEventNameEnum.ServerStatusChanged] },
+    },
+    { enabled: reachable }
+  );
+
   const { socket } = useSocket();
   const {
     data: onlinePogs,
@@ -68,7 +85,20 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
       >
         <CardBody>
           <Header>
-            {reachable ? <span>online</span> : <Chip label={'offline'} color="error" variant="outline" />}
+            {reachable ? (
+              <span>online</span>
+            ) : (
+              <Tooltip>
+                <Tooltip.Trigger asChild>
+                  <Chip label={'offline'} color="error" variant="outline" />
+                </Tooltip.Trigger>
+                <Tooltip.Content>
+                  {isLoadingServerStatus
+                    ? 'loading server status'
+                    : (serverStatusEvent?.pages[0].data[0].meta as TakaroEventServerStatusChanged).status}
+                </Tooltip.Content>
+              </Tooltip>
+            )}
             <PermissionsGuard requiredPermissions={[[PERMISSIONS.ReadGameservers, PERMISSIONS.ManageGameservers]]}>
               <Dropdown>
                 <Dropdown.Trigger asChild>
