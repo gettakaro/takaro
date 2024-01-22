@@ -1,6 +1,6 @@
 import { TakaroWorker, IConnectorQueueData } from '@takaro/queues';
 import { Job } from 'bullmq';
-import { errors, logger } from '@takaro/util';
+import { ctx, errors, logger } from '@takaro/util';
 import { gameServerManager } from './GameServerManager.js';
 
 const log = logger('worker:connector');
@@ -12,6 +12,11 @@ export class ConnectorWorker extends TakaroWorker<IConnectorQueueData> {
 }
 
 async function processJob(job: Job<IConnectorQueueData>) {
+  ctx.addData({
+    domain: job.data.domainId,
+    gameServer: job.data.gameServerId,
+  });
+
   switch (job.data.operation) {
     case 'create':
       await gameServerManager.add(job.data.domainId, job.data.gameServerId);

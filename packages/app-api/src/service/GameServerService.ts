@@ -17,7 +17,7 @@ import { errors, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { SettingsService } from './SettingsService.js';
 import { TakaroDTO } from '@takaro/util';
 import { queueService } from '@takaro/queues';
-import { IPosition } from '@takaro/modules';
+import { HookEvents, IPosition, TakaroEventServerStatusChanged } from '@takaro/modules';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { ModuleService } from './ModuleService.js';
@@ -31,6 +31,7 @@ import { PlayerService } from './PlayerService.js';
 import { PlayerOnGameServerService, PlayerOnGameServerUpdateDTO } from './PlayerOnGameserverService.js';
 import { ItemCreateDTO, ItemsService } from './ItemsService.js';
 import { randomUUID } from 'crypto';
+import { EventCreateDTO, EventService } from './EventService.js';
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 
 const ajv = new Ajv({ useDefaults: true });
@@ -188,10 +189,22 @@ export class GameServerService extends TakaroService<
       const instance = await this.getGame(id);
       const reachability = await instance.testReachability();
 
-      if (reachability.connectable) {
-        await this.repo.update(id, await new GameServerUpdateDTO().construct({ reachable: true }));
-      } else {
-        await this.repo.update(id, await new GameServerUpdateDTO().construct({ reachable: false }));
+      const currentServer = await this.findOne(id);
+
+      if (currentServer.reachable !== reachability.connectable) {
+        this.log.info(`Updating reachability for ${id} to ${reachability.connectable}`);
+        await this.update(id, await new GameServerUpdateDTO().construct({ reachable: reachability.connectable }));
+        const eventService = new EventService(this.domainId);
+        await eventService.create(
+          await new EventCreateDTO().construct({
+            eventName: HookEvents.SERVER_STATUS_CHANGED,
+            gameserverId: id,
+            meta: await new TakaroEventServerStatusChanged().construct({
+              status: reachability.connectable ? 'online' : 'offline',
+              details: reachability.reason,
+            }),
+          })
+        );
       }
 
       return reachability;

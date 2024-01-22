@@ -65,6 +65,11 @@ class GameServerManager {
   async add(domainId: string, gameServerId: string) {
     const gameServer = await getGameServer(domainId, gameServerId);
 
+    if (!gameServer.reachable) {
+      this.log.warn(`GameServer ${gameServerId} is not reachable, skipping...`);
+      return;
+    }
+
     const emitter = (
       await getGame(gameServer.type, gameServer.connectionInfo as Record<string, unknown>, {})
     ).getEventEmitter();
