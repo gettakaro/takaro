@@ -60,8 +60,8 @@ export const validationSchema = z.object({
           z.object({
             type: z.literal(InputType.string.valueOf()),
             default: z.string(),
-            minLength: z.number().min(1).max(100),
-            maxLength: z.number().min(2).max(100),
+            minLength: z.number().min(1).max(100).optional(),
+            maxLength: z.number().min(1).max(100).optional(),
             required: z.boolean(),
           }),
           z.object({

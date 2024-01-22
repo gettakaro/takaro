@@ -59,6 +59,9 @@ test('Creating module with config, saves the config', async ({ page, takaro }) =
   await page.locator('textarea[name="configFields\\.0\\.description"]').fill('config field description');
   await page.getByLabel('Default value').fill('my string default value');
 
+  await page.locator('input[name="configFields\\.0\\.minLength"]').fill('1');
+  await page.locator('input[name="configFields\\.0\\.maxLength"]').fill('20');
+
   await page.getByRole('button', { name: 'Save changes' }).click();
 
   await expect(page.getByText(moduleName)).toBeVisible();
