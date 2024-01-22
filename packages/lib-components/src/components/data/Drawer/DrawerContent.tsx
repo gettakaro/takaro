@@ -3,17 +3,8 @@ import { styled } from '../../../styled';
 import { AnimatePresence, motion, PanInfo } from 'framer-motion';
 import SimpleBar from 'simplebar-react';
 
-import { FloatingFocusManager, FloatingOverlay, FloatingPortal, useMergeRefs } from '@floating-ui/react';
+import { FloatingFocusManager, FloatingPortal, useMergeRefs, FloatingOverlay } from '@floating-ui/react';
 import { useDrawerContext } from './DrawerContext';
-
-const StyledFloatingOverlay = styled(FloatingOverlay)<{ dragPosition: number }>`
-  background: rgba(0, 0, 0, ${({ dragPosition }) => Math.max(0.8 - dragPosition, 0.4)});
-  display: grid;
-  place-items: end;
-  max-height: 100vh;
-  max-width: 100vw;
-  overflow: hidden !important;
-`;
 
 const Container = styled(motion.div)`
   position: relative;
@@ -72,7 +63,17 @@ export const DrawerContent = forwardRef<HTMLElement, HTMLProps<HTMLDivElement>>(
     <FloatingPortal root={root}>
       <AnimatePresence>
         {context.open && (
-          <StyledFloatingOverlay lockScroll dragPosition={dragPosition}>
+          <FloatingOverlay
+            lockScroll
+            style={{
+              placeItems: 'end',
+              maxHeight: '100vh',
+              maxWidth: '100vw',
+              overflow: 'hidden!important',
+              display: 'grid',
+              background: `rgba(0, 0, 0, ${Math.max(0.8 - dragPosition, 0.4)})`,
+            }}
+          >
             <FloatingFocusManager context={context}>
               <Container
                 ref={ref}
@@ -101,7 +102,7 @@ export const DrawerContent = forwardRef<HTMLElement, HTMLProps<HTMLDivElement>>(
                 <SimpleBar style={{ maxHeight: '92vh' }}>{props.children}</SimpleBar>
               </Container>
             </FloatingFocusManager>
-          </StyledFloatingOverlay>
+          </FloatingOverlay>
         )}
       </AnimatePresence>
     </FloatingPortal>
