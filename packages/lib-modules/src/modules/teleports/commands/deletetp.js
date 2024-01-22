@@ -4,13 +4,13 @@ async function main() {
   const data = await getData();
   const takaro = await getTakaro(data);
 
-  const { player, gameServerId, arguments: args, module: mod } = data;
+  const { pog, gameServerId, arguments: args, module: mod } = data;
 
   const existingVariable = await takaro.variable.variableControllerSearch({
     filters: {
       key: [`tp_${args.tp}`],
       gameServerId: [gameServerId],
-      playerId: [player.playerId],
+      playerId: [pog.playerId],
       moduleId: [mod.moduleId],
     },
   });

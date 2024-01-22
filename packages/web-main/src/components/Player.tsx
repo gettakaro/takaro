@@ -47,7 +47,7 @@ export const Player: FC<PlayerProps> = ({ playerId, name, avatarUrl, showAvatar,
 
   return (
     <Link
-      to={PATHS.player.profile(playerId)}
+      to={PATHS.player.global.profile(playerId)}
       style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: 'fit-content' }}
     >
       {showAvatar && avatar}

@@ -4,7 +4,7 @@ async function main() {
   const data = await getData();
   const takaro = await getTakaro(data);
 
-  const { gameServerId, playerId, player } = data;
+  const { gameServerId, player, pog } = data;
   const { country } = data.eventData;
   const { ban, banDuration, countries, message, mode } = data.module.userConfig;
 
@@ -12,18 +12,18 @@ async function main() {
     if (ban) {
       const now = new Date();
       const expiresAt = new Date(now.getTime() + banDuration * 1000);
-      await takaro.gameserver.gameServerControllerBanPlayer(gameServerId, playerId, {
+      await takaro.gameserver.gameServerControllerBanPlayer(gameServerId, player.id, {
         reason: message,
         expiresAt,
       });
     } else {
-      await takaro.gameserver.gameServerControllerKickPlayer(gameServerId, playerId, {
+      await takaro.gameserver.gameServerControllerKickPlayer(gameServerId, player.id, {
         reason: message,
       });
     }
   }
 
-  const isImmune = checkPermission(player, 'GEOBLOCK_IMMUNITY');
+  const isImmune = checkPermission(pog, 'GEOBLOCK_IMMUNITY');
   if (isImmune) {
     console.log('Player has immunity, no action');
     return;

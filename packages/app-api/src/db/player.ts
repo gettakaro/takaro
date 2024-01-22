@@ -66,7 +66,7 @@ export class PlayerModel extends TakaroModel {
 
   steamLastFetch: Date;
   steamAvatar: string;
-  steamAccountCreated: Date;
+  steamAccountCreated: string;
   steamCommunityBanned: boolean;
   steamEconomyBan: string;
   steamVacBanned: boolean;
@@ -134,10 +134,10 @@ export class PlayerIPHistoryModel extends TakaroModel {
     return {
       player: {
         relation: Model.BelongsToOneRelation,
-        modelClass: PlayerOnGameServerModel,
+        modelClass: PlayerModel,
         join: {
           from: `${PlayerIPHistoryModel.tableName}.playerId`,
-          to: `${PLAYER_TABLE_NAME}.id`,
+          to: `${PlayerModel.tableName}.id`,
         },
       },
     };
@@ -285,7 +285,7 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
 
         if ('steamAccountCreated' in item) {
           updateObj.steamAccountCreated = item.steamAccountCreated
-            ? new Date(item.steamAccountCreated * 1000)
+            ? new Date(item.steamAccountCreated * 1000).toISOString()
             : undefined;
         }
 

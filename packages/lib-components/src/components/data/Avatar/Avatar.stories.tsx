@@ -20,15 +20,24 @@ export default {
   title: 'Data/Avatar',
   component: Avatar,
   decorators: [(story) => <Wrapper>{story()}</Wrapper>],
+  argTypes: {
+    variant: {
+      options: ['square', 'rounded', 'circle'],
+      control: {
+        type: 'radio',
+      },
+    },
+  },
   args: {
     size: 'medium',
     unstackOnHover: false,
+    variant: 'circle',
     max: 3,
   },
 } as Meta<AvatarProps & AvatarGroupProps>;
 
 export const Default: StoryFn<AvatarProps> = (args) => (
-  <Avatar size={args.size}>
+  <Avatar size={args.size} variant={args.variant}>
     <Avatar.Image src={placeholder01} />
     <Avatar.FallBack>{getInitials('Harry Potter')}</Avatar.FallBack>
   </Avatar>
@@ -60,23 +69,23 @@ export const Fallback: StoryFn = () => (
 );
 export const Group: StoryFn<AvatarProps & AvatarGroupProps> = (args) => (
   <Avatar.Group max={args.max} unstackOnHover={args.unstackOnHover}>
-    <Avatar size={args.size}>
+    <Avatar size={args.size} variant={args.variant}>
       <Avatar.Image src={placeholder01} />
       <Avatar.FallBack>{getInitials('Harry Potter')}</Avatar.FallBack>
     </Avatar>
-    <Avatar size={args.size}>
+    <Avatar size={args.size} variant={args.variant}>
       <Avatar.Image src={placeholder02} />
       <Avatar.FallBack>{getInitials('Harry Potter')}</Avatar.FallBack>
     </Avatar>
-    <Avatar size={args.size}>
+    <Avatar size={args.size} variant={args.variant}>
       <Avatar.Image src={placeholder03} />
       <Avatar.FallBack>{getInitials('Harry Potter')}</Avatar.FallBack>
     </Avatar>
-    <Avatar size={args.size}>
+    <Avatar size={args.size} variant={args.variant}>
       <Avatar.Image src={placeholder01} />
       <Avatar.FallBack>{getInitials('Harry Potter')}</Avatar.FallBack>
     </Avatar>
-    <Avatar size={args.size}>
+    <Avatar size={args.size} variant={args.variant}>
       <Avatar.Image src={placeholder02} />
       <Avatar.FallBack>{getInitials('Harry Potter')}</Avatar.FallBack>
     </Avatar>

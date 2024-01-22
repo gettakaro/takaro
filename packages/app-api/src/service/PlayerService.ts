@@ -44,7 +44,7 @@ export class PlayerOutputDTO extends TakaroModelDTO<PlayerOutputDTO> {
 
   @IsISO8601()
   @IsOptional()
-  steamAccountCreated?: Date;
+  steamAccountCreated?: string;
 
   @IsBoolean()
   @IsOptional()

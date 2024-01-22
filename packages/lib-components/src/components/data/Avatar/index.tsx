@@ -103,17 +103,26 @@ interface SubComponentTypes {
   Group: typeof AvatarGroup;
 }
 
+export type AvatarVariant = 'square' | 'rounded' | 'circle';
+
 export interface AvatarProps {
   size?: Size;
+  variant?: AvatarVariant;
 }
 
 // TODO: skeleton loading
-export const Avatar: FC<PropsWithChildren<AvatarProps>> & SubComponentTypes = ({ size = 'medium', children }) => {
+export const Avatar: FC<PropsWithChildren<AvatarProps>> & SubComponentTypes = ({
+  size = 'medium',
+  variant,
+  children,
+}) => {
   const [imageLoadingStatus, setImageLoadingStatus] = useState<ImageLoadingStatus>('idle');
 
   return (
     <AvatarContext.Provider value={{ imageLoadingStatus, onImageLoadingStatusChange: setImageLoadingStatus }}>
-      <Container size={size}>{children}</Container>
+      <Container size={size} variant={variant}>
+        {children}
+      </Container>
     </AvatarContext.Provider>
   );
 };

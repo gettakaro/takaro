@@ -57,6 +57,7 @@ export class BaseGameEvent<T> extends BaseEvent<T> {
   declare type: ValueOf<typeof GameEvents>;
 
   @IsString()
+  @IsOptional()
   msg: string;
 }
 
@@ -131,26 +132,6 @@ export class EventEntityKilled extends BaseGameEvent<EventEntityKilled> {
 
   @IsString()
   weapon: string;
-}
-
-export function isConnectedEvent(a: BaseGameEvent<unknown>): a is EventPlayerConnected {
-  return a.type === GameEvents.PLAYER_CONNECTED;
-}
-
-export function isDisconnectedEvent(a: BaseGameEvent<unknown>): a is EventPlayerDisconnected {
-  return a.type === GameEvents.PLAYER_DISCONNECTED;
-}
-
-export function isChatMessageEvent(a: BaseGameEvent<unknown>): a is EventChatMessage {
-  return a.type === GameEvents.CHAT_MESSAGE;
-}
-
-export function isPlayerDeathEvent(a: BaseGameEvent<unknown>): a is EventPlayerDeath {
-  return a.type === GameEvents.PLAYER_DEATH;
-}
-
-export function isEntityKilledEvent(a: BaseGameEvent<unknown>): a is EventEntityKilled {
-  return a.type === GameEvents.ENTITY_KILLED;
 }
 
 export const GameEventsMapping = {
