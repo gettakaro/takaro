@@ -35,13 +35,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Repo metadata
-        id: repo
-        uses: actions/github-script@v3
-        with:
-          script: |
-            const repo = await github.repos.get(context.repo)
-            return repo.data
+
       - name: Prepare
         id: prep
         run: |
