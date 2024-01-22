@@ -2,7 +2,9 @@ name: Builds
 
 on:
   push:
-    branches-ignore:
+  pull_request:
+    branches:
+      - '**'
       - main
 
 concurrency:
