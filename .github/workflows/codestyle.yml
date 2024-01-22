@@ -2,6 +2,9 @@ name: Code style
 
 on:
   push:
+    branches-ignore:
+      - main
+  pull_request:
     branches:
       - '**'
 
@@ -33,7 +36,6 @@ jobs:
 
       - name: Run Prettier
         run: npm run test:style:fix
-
       - name: Check for modifications
         id: git-diff-check
         run: echo ::set-output name=modified::$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)
