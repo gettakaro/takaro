@@ -11,7 +11,7 @@ export default {
     label: 'Duration',
     placeholder: 'this is the placeholder',
     description: 'This is the description',
-    hint: 'Duration',
+    hint: 'this is the hint',
     disabled: false,
     readOnly: false,
     required: false,
