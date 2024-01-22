@@ -14,7 +14,6 @@ export const GroupContainer = styled.div<{ size: Size; unStackOnHover: boolean }
 
   div {
     transition: margin-left 0.2s ease-in-out;
-    border: 0.1rem solid ${({ theme }) => theme.colors.backgroundAccent};
     /* mind the negative sign here */
     margin-left: -${({ theme }) => theme.spacing['5']};
 
@@ -78,7 +77,7 @@ export const Container = styled.div<{ size: Size; variant?: AvatarVariant }>`
           return 'border-radius: 50%;';
       }
     }}
-    background - color: ${({ theme }) => theme.colors.background};
+    background-color: ${({ theme }) => theme.colors.background};
     border: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
   }
 
