@@ -134,10 +134,10 @@ export class PlayerIPHistoryModel extends TakaroModel {
     return {
       player: {
         relation: Model.BelongsToOneRelation,
-        modelClass: PlayerOnGameServerModel,
+        modelClass: PlayerModel,
         join: {
           from: `${PlayerIPHistoryModel.tableName}.playerId`,
-          to: `${PLAYER_TABLE_NAME}.id`,
+          to: `${PlayerModel.tableName}.id`,
         },
       },
     };
