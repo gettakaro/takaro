@@ -14,7 +14,8 @@ async function main() {
     })
   ).data.data;
 
-  const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', data.gameServerId)).data.data;
+  const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', data.gameServerId)).data.data
+    .value;
 
   // TODO: change this to name when it become available in playerOnGameServer
   const richestStrings = richest.map(async (pog, index) => {

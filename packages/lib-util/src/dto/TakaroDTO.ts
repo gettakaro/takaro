@@ -1,4 +1,4 @@
-import { IsISO8601, IsString, validate } from 'class-validator';
+import { IsISO8601, IsString, ValidatorOptions, validate } from 'class-validator';
 import { Exclude, instanceToPlain } from 'class-transformer';
 import { logger } from '../logger.js';
 import * as errors from '../errors.js';
@@ -9,16 +9,26 @@ type Nullable<T> = {
   [P in keyof T]: T[P] | null | undefined;
 };
 
+type DeepPartial<T> = {
+  [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];
+};
+
 /**
  * Generic Data Transfer Object, used widely in Takaro to pass data back and forth between components
  * Allows validation of properties when instantiated and JSON (de)serialization
  */
 export class TakaroDTO<T> {
-  async validate() {
+  /**
+   * Validates the DTO instance
+   * @throws {ValidationError} if validation fails
+   * @returns {Promise<void>}
+   */
+  async validate(extraOpts: ValidatorOptions = {}) {
     const validationErrors = await validate(this, {
       forbidUnknownValues: true,
       forbidNonWhitelisted: true,
       whitelist: true,
+      ...extraOpts,
     });
 
     if (validationErrors.length) {
@@ -32,7 +42,7 @@ export class TakaroDTO<T> {
     return instanceToPlain(this, {});
   }
 
-  async construct(data?: Nullable<Partial<T>>) {
+  async construct(data?: Nullable<DeepPartial<T>>) {
     if (!data) {
       return this;
     }

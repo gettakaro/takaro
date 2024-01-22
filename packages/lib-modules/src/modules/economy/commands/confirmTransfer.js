@@ -36,7 +36,7 @@ async function main() {
 
   const receiverName = (await takaro.player.playerControllerGetOne(pendingTransfer.receiver.playerId)).data.data.name;
   const senderName = (await takaro.player.playerControllerGetOne(sender.playerId)).data.data.name;
-  const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data;
+  const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data.value;
 
   const messageToSender = sender.pm(
     `You successfully transferred ${pendingTransfer.amount} ${currencyName} to ${receiverName}`

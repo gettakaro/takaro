@@ -13,7 +13,7 @@ async function main() {
     throw new TakaroUserError('You do not have permission to use revoke currency command.');
   }
 
-  const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data;
+  const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data.value;
   const revokerName = (await takaro.player.playerControllerGetOne(revoker.playerId)).data.data.name;
   const receiverName = (await takaro.player.playerControllerGetOne(receiver.playerId)).data.data.name;
   await takaro.playerOnGameserver.playerOnGameServerControllerDeductCurrency(receiver.gameServerId, receiver.playerId, {

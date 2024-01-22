@@ -1,7 +1,8 @@
 import { logger } from '@takaro/util';
 import { MockConnectionInfo } from './connectionInfo.js';
-import { IEventMap, TakaroEmitter } from '../../TakaroEmitter.js';
+import { TakaroEmitter } from '../../TakaroEmitter.js';
 import { Socket } from 'socket.io-client';
+import { EventMapping, GameEventTypes } from '@takaro/modules';
 
 const log = logger('Mock');
 export class MockEmitter extends TakaroEmitter {
@@ -19,8 +20,14 @@ export class MockEmitter extends TakaroEmitter {
     this.io.offAny(this.scopedListener);
   }
 
-  private listener(event: keyof IEventMap, args: Parameters<IEventMap[keyof IEventMap]>[0]) {
+  private async listener(event: GameEventTypes, args: any) {
     log.debug(`Transmitting event ${event}`);
-    this.emit(event, args);
+    const dto = EventMapping[event];
+
+    if (dto) {
+      this.emit(event, await new dto().construct(args));
+    } else {
+      this.emit(event, args);
+    }
   }
 }

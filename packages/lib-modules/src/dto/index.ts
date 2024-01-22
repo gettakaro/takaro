@@ -1,29 +1,25 @@
-import { DiscordEvents, HookEventDiscordMessage } from './discordEvents.js';
-import {
-  EventChatMessage,
-  EventEntityKilled,
-  EventLogLine,
-  EventPlayerConnected,
-  EventPlayerDeath,
-  EventPlayerDisconnected,
-  GameEvents,
-} from './gameEvents.js';
+import { DiscordEvents, DiscordEventsMapping } from './discordEvents.js';
+import { GameEvents, GameEventsMapping } from './gameEvents.js';
+import { TakaroEvents, TakaroEventsMapping } from './takaroEvents.js';
+import { ValueOf } from 'type-fest';
+import { BaseEvent } from './base.js';
 
 export * from './discordEvents.js';
 export * from './gameEvents.js';
+export * from './takaroEvents.js';
+export * from './base.js';
 
-export type EventMapping = {
-  [GameEvents.LOG_LINE]: EventLogLine;
-  [GameEvents.PLAYER_CONNECTED]: EventPlayerConnected;
-  [GameEvents.PLAYER_DISCONNECTED]: EventPlayerDisconnected;
-  [GameEvents.CHAT_MESSAGE]: EventChatMessage;
-  [GameEvents.PLAYER_DEATH]: EventPlayerDeath;
-  [GameEvents.ENTITY_KILLED]: EventEntityKilled;
+export const HookEvents = {
+  ...GameEvents,
+  ...DiscordEvents,
+  ...TakaroEvents,
+} as const;
 
-  [DiscordEvents.DISCORD_MESSAGE]: HookEventDiscordMessage;
-};
+export const EventMapping: Record<EventTypes, typeof BaseEvent<any>> = {
+  ...GameEventsMapping,
+  ...DiscordEventsMapping,
+  ...TakaroEventsMapping,
+} as const;
 
-export const EventTypes = { ...GameEvents, ...DiscordEvents };
-
-export type HookEvents = keyof EventMapping;
-export type HookEventTypes = EventMapping[HookEvents]['type'];
+export type EventPayload = ValueOf<(typeof EventMapping)[ValueOf<typeof HookEvents>]>;
+export type EventTypes = ValueOf<typeof HookEvents>;

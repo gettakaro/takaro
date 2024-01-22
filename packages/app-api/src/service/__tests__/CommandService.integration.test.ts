@@ -3,7 +3,7 @@ import { CommandOutputDTO, GameServerOutputDTO, ModuleOutputDTO, ModuleInstallat
 import { CommandService } from '../CommandService.js';
 import { queueService } from '@takaro/queues';
 import { Mock } from '@takaro/gameserver';
-import { IGamePlayer, EventChatMessage, EventTypes } from '@takaro/modules';
+import { IGamePlayer, EventChatMessage, HookEvents } from '@takaro/modules';
 import Sinon from 'sinon';
 
 export async function getMockPlayer(extra: Partial<IGamePlayer> = {}): Promise<IGamePlayer> {
@@ -52,7 +52,7 @@ async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStanda
 
   const eventsAwaiter = new EventsAwaiter();
   await eventsAwaiter.connect(this.client);
-  const connectedEvents = eventsAwaiter.waitForEvents(EventTypes.PLAYER_CONNECTED, 5);
+  const connectedEvents = eventsAwaiter.waitForEvents(HookEvents.PLAYER_CONNECTED, 5);
 
   await this.client.gameserver.gameServerControllerExecuteCommand(gameserver.id, {
     command: 'connectAll',
