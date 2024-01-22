@@ -35,7 +35,20 @@ const validationSchema = z.object({
 
 export type GenericDurationFieldProps = DurationProps & GenericInputPropsFunctionHandlers<number, HTMLDivElement>;
 export const GenericDurationField = forwardRef<HTMLDivElement, GenericDurationFieldProps>(
-  ({ onChange, hasError, value, name, disabled = false, readOnly = false, placeholder }, ref) => {
+  (
+    {
+      onChange,
+      hasError,
+      value,
+      name,
+      disabled = false,
+      readOnly = false,
+      placeholder = 'Select a duration',
+      onBlur,
+      onFocus,
+    },
+    ref
+  ) => {
     const { control, handleSubmit, setValue } = useForm<z.infer<typeof validationSchema>>({
       mode: 'onSubmit',
       resolver: zodResolver(validationSchema),
@@ -68,11 +81,12 @@ export const GenericDurationField = forwardRef<HTMLDivElement, GenericDurationFi
       setOpen(false);
     };
 
+    const formId = `${name}-form`;
+
     return (
       <Popover open={open} onOpenChange={setOpen}>
         <Popover.Trigger asChild>
           <DurationContainer
-            aria-role="button"
             disabled={disabled}
             readOnly={readOnly}
             aria-disabled={disabled}
@@ -80,75 +94,85 @@ export const GenericDurationField = forwardRef<HTMLDivElement, GenericDurationFi
             ref={ref}
             hasError={hasError}
             aria-labelledby={name}
+            onFocus={onFocus}
+            onBlur={onBlur}
             onClick={() => !readOnly && !disabled && setOpen(!open)}
           >
-            {value ? Duration.fromMillis(value).rescale().toHuman() : placeholder}
+            {value ? Duration.fromMillis(value).rescale().toHuman({ listStyle: 'long' }) : placeholder}
           </DurationContainer>
         </Popover.Trigger>
         <Popover.Content>
           <InnerContent>
-            {fields.length >= 1 && (
-              <form onSubmit={handleSubmit(onSubmit)}>
-                <h2>Select a duration</h2>
-                {fields.map((field, index) => (
-                  <FieldContainer
-                    hasMultipleFields={fields.length > 1}
-                    key={`${name}-${field.id}-${index}`}
-                    id={field.id}
+            <form id={formId}>
+              <h2>Select a duration</h2>
+              {fields.map((field, index) => (
+                <FieldContainer
+                  hasMultipleFields={fields.length > 1}
+                  key={`${name}-${field.id}-${index}`}
+                  id={field.id}
+                >
+                  <TextField
+                    key={`${name}-${index}-value`}
+                    name={`durations.${index}.value`}
+                    control={control}
+                    type="number"
+                  />
+                  <SelectField
+                    key={`${name}-${index}-unit`}
+                    inPortal
+                    control={control}
+                    name={`durations.${index}.unit`}
+                    multiple={false}
+                    render={(selectedItems) => {
+                      if (selectedItems.length === 0) {
+                        return <div>Select...</div>;
+                      }
+                      return <div>{selectedItems[0].label}</div>;
+                    }}
                   >
-                    <TextField key={`${name}-`} name={`durations.${index}.value`} control={control} type="number" />
-                    <SelectField
-                      inPortal
-                      control={control}
-                      name={`durations.${index}.unit`}
-                      multiple={false}
-                      render={(selectedItems) => {
-                        if (selectedItems.length === 0) {
-                          return <div>Select...</div>;
-                        }
-                        return <div>{selectedItems[0].label}</div>;
-                      }}
-                    >
-                      <SelectField.OptionGroup>
-                        {luxonUnits.map((unit) => (
-                          <SelectField.Option value={unit} label={unit}>
-                            {unit}
-                          </SelectField.Option>
-                        ))}
-                      </SelectField.OptionGroup>
-                    </SelectField>
-                    {fields.length !== 1 && (
-                      <Tooltip>
-                        <Tooltip.Trigger>
-                          <IconButton
-                            ariaLabel="Remove field"
-                            icon={<RemoveIcon />}
-                            onClick={() => removeField(index)}
-                          />
-                        </Tooltip.Trigger>
-                        <Tooltip.Content>Remove field</Tooltip.Content>
-                      </Tooltip>
-                    )}
-                    {index === fields.length - 1 && (
-                      <Tooltip>
-                        <Tooltip.Trigger>
-                          <IconButton
-                            icon={<AddIcon />}
-                            ariaLabel="Add field"
-                            onClick={() => addField({ value: 0, unit: 'seconds' })}
-                          />
-                        </Tooltip.Trigger>
-                        <Tooltip.Content>Add field</Tooltip.Content>
-                      </Tooltip>
-                    )}
-                  </FieldContainer>
-                ))}
-                <ButtonContainer>
-                  <Button type="button" variant="clear" text="Cancel" onClick={() => setOpen(false)} />
-                  <Button type="submit" text="Apply" />
-                </ButtonContainer>
-              </form>
-            )}
+                    <SelectField.OptionGroup key={`${name}-${index}-option-group`}>
+                      {luxonUnits.map((unit) => (
+                        <SelectField.Option key={`${name}-${index}-option-${unit}`} value={unit} label={unit}>
+                          {unit}
+                        </SelectField.Option>
+                      ))}
+                    </SelectField.OptionGroup>
+                  </SelectField>
+                  {fields.length !== 1 && (
+                    <Tooltip key={`${name}-${index}-remove-field`}>
+                      <Tooltip.Trigger>
+                        <IconButton ariaLabel="Remove field" icon={<RemoveIcon />} onClick={() => removeField(index)} />
+                      </Tooltip.Trigger>
+                      <Tooltip.Content>Remove field</Tooltip.Content>
+                    </Tooltip>
+                  )}
+                  {index === fields.length - 1 && fields.length < luxonUnits.length && (
+                    <Tooltip key={`${name}-${index}-add-field`}>
+                      <Tooltip.Trigger>
+                        <IconButton
+                          icon={<AddIcon />}
+                          ariaLabel="Add field"
+                          onClick={() => addField({ value: 0, unit: 'seconds' })}
+                        />
+                      </Tooltip.Trigger>
+                      <Tooltip.Content>Add field</Tooltip.Content>
+                    </Tooltip>
+                  )}
+                </FieldContainer>
+              ))}
+              <ButtonContainer>
+                <Button
+                  form={formId}
+                  type="submit"
+                  fullWidth
+                  text="Apply"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleSubmit(onSubmit)();
+                  }}
+                />
+              </ButtonContainer>
+            </form>
           </InnerContent>
         </Popover.Content>
       </Popover>

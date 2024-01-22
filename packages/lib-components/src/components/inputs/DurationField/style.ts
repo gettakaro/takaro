@@ -3,6 +3,7 @@ import { styled } from '../../../styled';
 export const Container = styled.div``;
 
 export const DurationContainer = styled.div<{ hasError: boolean; disabled: boolean; readOnly: boolean }>`
+  position: relative;
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
   padding: ${({ theme }) => theme.spacing['0_75']};
   width: 100%;
@@ -17,7 +18,7 @@ export const InnerContent = styled.div`
   padding: ${({ theme }) => theme.spacing['0_75']};
 
   h2 {
-    margin-bottom: ${({ theme }) => theme.spacing['0_5']};
+    margin-bottom: ${({ theme }) => theme.spacing['1']};
   }
 `;
 
@@ -35,5 +36,5 @@ export const FieldContainer = styled.div<{ hasMultipleFields: boolean }>`
 
 export const ButtonContainer = styled.div`
   display: flex;
-  align-items: center;
+  justify-content: flex-end;
 `;

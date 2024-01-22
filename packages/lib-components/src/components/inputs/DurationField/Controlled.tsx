@@ -23,9 +23,11 @@ export const ControlledDurationField: FC<ControlledDurationFieldProps> = (props)
 
   const handleOnBlur = () => {
     field.onBlur();
+    setShowError(true);
+  };
+  const handleOnFocus = () => {
     setShowError(false);
   };
-  const handleOnFocus = () => {};
 
   return (
     <InputWrapper>
@@ -51,9 +53,7 @@ export const ControlledDurationField: FC<ControlledDurationFieldProps> = (props)
           ref={field.ref}
           onBlur={handleOnBlur}
           onFocus={handleOnFocus}
-          onChange={(values) => {
-            field.onChange(values);
-          }}
+          onChange={field.onChange}
           placeholder={placeholder}
           hasError={!!error}
           hasDescription={!!description}

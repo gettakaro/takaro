@@ -70,9 +70,10 @@ function getJsonSchemaElement(input: AnyInput) {
       break;
 
     case InputType.duration:
+      // required because duration in schema looks the same as number
       res['x-component'] = InputType.duration;
       res.type = 'number';
-      res.minimum = 0;
+      res.minimum = 1; // should atleast be 1 millisecond
       break;
 
     case InputType.country:

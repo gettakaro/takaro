@@ -30,7 +30,6 @@ const Inner = styled.div`
   }
 `;
 
-// TODO: implement multiselect
 export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema, F extends FormContextType = any>({
   name,
   disabled,

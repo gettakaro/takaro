@@ -147,6 +147,7 @@ export const InputTypeToFieldsMap = (control: Control<IFormInputs>, index: numbe
         key={`${InputType.duration}-default-${id}`}
         name={`configFields.${index}.default`}
         label="Default value"
+        placeholder="Select default duration..."
         control={control}
       />,
     ],

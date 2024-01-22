@@ -21,11 +21,11 @@ const inputTypeInfo: InputTypeInfo[] = [
   {
     type: InputType.boolean,
     category: 'basic',
-    description: 'A checkbox that toggles between true and false values.',
+    description: 'A checkbox that toggles between `true` and `false`. ',
   },
   {
     type: InputType.select,
-    category: 'basic',
+    category: 'custom',
     description: 'A dropdown menu with a list of self defined options.',
   },
   {
@@ -41,7 +41,7 @@ const inputTypeInfo: InputTypeInfo[] = [
   {
     type: InputType.duration,
     category: 'custom',
-    description: 'A time period input field.',
+    description: 'A field where a duration can be entered with multiple units.',
   },
 ];
 

@@ -30,6 +30,9 @@ export function schemaToInputs(schema: SchemaObject): Input[] {
     // input.type are the default JSON Schema types
     switch (input.type) {
       case 'number':
+        if (property['x-component'] === InputType.duration) {
+          input.type = InputType.duration;
+        }
         if (property.minimum) {
           input.minimum = property.minimum;
         }
