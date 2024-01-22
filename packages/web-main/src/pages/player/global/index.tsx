@@ -77,8 +77,8 @@ const InfoCardBody = styled.div`
 `;
 
 const CardContainer = styled.div`
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: minmax(554px, max-content) max-content;
   gap: ${({ theme }) => theme.spacing['2']};
   width: 100%;
 `;
