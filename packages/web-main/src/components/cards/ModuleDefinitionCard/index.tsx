@@ -16,7 +16,7 @@ interface IModuleCardProps {
 
 export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
-  const { mutateAsync, isLoading: isDeleting } = useModuleRemove();
+  const { mutateAsync, isPending: isDeleting } = useModuleRemove();
   const navigate = useNavigate();
 
   const handleOnDelete = async (e: MouseEvent) => {

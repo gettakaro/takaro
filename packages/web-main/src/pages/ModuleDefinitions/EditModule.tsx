@@ -9,7 +9,7 @@ import { PATHS } from 'paths';
 const EditModule: FC = () => {
   const { moduleId } = useParams();
   const { data, isLoading, error } = useModule(moduleId!);
-  const { mutate, isSuccess, isLoading: isSubmitting, error: formError } = useModuleUpdate();
+  const { mutate, isSuccess, isPending: isSubmitting, error: formError } = useModuleUpdate();
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
 

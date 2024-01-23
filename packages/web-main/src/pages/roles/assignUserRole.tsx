@@ -36,7 +36,7 @@ export const AssignUserRole: FC = () => {
 
 const AssignUserRoleForm: FC<IAssignRoleFormProps> = ({ roles }) => {
   const [open, setOpen] = useState(true);
-  const { mutateAsync, isLoading, error } = useUserAssignRole();
+  const { mutateAsync, isPending, error } = useUserAssignRole();
   const navigate = useNavigate();
   const { userId } = useParams<{ userId: string }>();
 
@@ -81,7 +81,7 @@ const AssignUserRoleForm: FC<IAssignRoleFormProps> = ({ roles }) => {
                   label={'Expiration date'}
                   name={'expiresAt'}
                   required={false}
-                  loading={isLoading}
+                  loading={isPending}
                   description={'The role will be automatically removed after this date'}
                   popOverPlacement={'bottom'}
                   timePickerOptions={{ interval: 30 }}
@@ -96,7 +96,7 @@ const AssignUserRoleForm: FC<IAssignRoleFormProps> = ({ roles }) => {
         <Drawer.Footer>
           <ButtonContainer>
             <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
-            <Button fullWidth text="Save changes" isLoading={isLoading} type="submit" form="assign-user-role-form" />
+            <Button fullWidth text="Save changes" isLoading={isPending} type="submit" form="assign-user-role-form" />
           </ButtonContainer>
         </Drawer.Footer>
       </Drawer.Content>

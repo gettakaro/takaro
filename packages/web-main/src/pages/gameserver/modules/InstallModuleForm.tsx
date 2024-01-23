@@ -19,7 +19,7 @@ const InstallModule: FC = () => {
   const [userConfigSubmitted, setUserConfigSubmitted] = useState(false);
   const [systemConfigSubmitted, setSystemConfigSubmitted] = useState(false);
   const navigate = useNavigate();
-  const { mutate, isLoading, error, isSuccess } = useGameServerModuleInstall();
+  const { mutate, isPending, error, isSuccess } = useGameServerModuleInstall();
   const { serverId, moduleId } = useParams();
   const { data: mod, isLoading: moduleLoading } = useModule(moduleId!);
   const { data: modInstallation, isLoading: moduleInstallationLoading } = useGameServerModuleInstallation(
@@ -121,7 +121,7 @@ const InstallModule: FC = () => {
             <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
             <Button
               fullWidth
-              isLoading={isLoading}
+              isLoading={isPending}
               text={actionType}
               type="button"
               onClick={() => {

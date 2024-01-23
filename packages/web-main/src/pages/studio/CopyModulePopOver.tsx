@@ -47,11 +47,11 @@ export const validationSchema = z.object({
 export const CopyModulePopOver = () => {
   const { moduleData } = useModule();
   const { data: mod } = useModuleApi(moduleData.id);
-  const { mutateAsync: createModule, isLoading: moduleCreateLoading, error: moduleCreateError } = useModuleCreate();
-  const { mutateAsync: createHook, isLoading: hookCreateLoading } = useHookCreate();
-  const { mutateAsync: createCommand, isLoading: commandCreateLoading } = useCommandCreate();
-  const { mutateAsync: createCronJob, isLoading: cronJobCreateLoading } = useCronJobCreate();
-  const { mutateAsync: removeModule, isLoading: moduleRemoveLoading } = useModuleRemove();
+  const { mutateAsync: createModule, isPending: moduleCreateLoading, error: moduleCreateError } = useModuleCreate();
+  const { mutateAsync: createHook, isPending: hookCreateLoading } = useHookCreate();
+  const { mutateAsync: createCommand, isPending: commandCreateLoading } = useCommandCreate();
+  const { mutateAsync: createCronJob, isPending: cronJobCreateLoading } = useCronJobCreate();
+  const { mutateAsync: removeModule, isPending: moduleRemoveLoading } = useModuleRemove();
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);

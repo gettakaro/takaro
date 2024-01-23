@@ -13,7 +13,7 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  const { mutate, isLoading: isDeleting } = useRoleRemove();
+  const { mutate, isPending: isDeleting } = useRoleRemove();
 
   const handleOnEditClick = (e: MouseEvent): void => {
     e.stopPropagation();

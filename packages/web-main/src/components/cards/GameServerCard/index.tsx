@@ -17,7 +17,7 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const navigate = useNavigate();
   const { selectedGameServerId, setSelectedGameServerId } = useSelectedGameServer();
-  const { mutateAsync, isLoading: isDeleting } = useGameServerRemove();
+  const { mutateAsync, isPending: isDeleting } = useGameServerRemove();
   const { socket } = useSocket();
   const {
     data: onlinePogs,

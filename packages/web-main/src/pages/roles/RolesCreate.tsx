@@ -13,7 +13,7 @@ export const RolesCreate: FC = () => {
   if (isLoadingPermissions || !permissions) return <Skeleton variant="rectangular" width="100%" height="100%" />;
 
   const navigate = useNavigate();
-  const { mutateAsync, isLoading: isCreatingRole } = useRoleCreate();
+  const { mutateAsync, isPending: isCreatingRole } = useRoleCreate();
 
   useEffect(() => {
     if (!open) {

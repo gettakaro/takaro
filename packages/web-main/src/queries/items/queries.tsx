@@ -7,16 +7,11 @@ import {
   ItemsOutputDTO,
   ItemUpdateDTO,
 } from '@takaro/apiclient';
-import {
-  useInfiniteQuery,
-  UseInfiniteQueryOptions,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery, keepPreviousData, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { useApiClient } from 'hooks/useApiClient';
 import { hasNextPage } from '../util';
+
 import { InfiniteScroll as InfiniteScrollComponent } from '@takaro/lib-components';
 import { useMemo } from 'react';
 import * as Sentry from '@sentry/react';
@@ -27,22 +22,20 @@ export const itemKeys = {
   detail: (id: string) => [...itemKeys.all, id] as const,
 };
 
-export const useItems = (
-  queryParams: ItemSearchInputDTO = { page: 0 },
-  opts?: UseInfiniteQueryOptions<ItemOutputArrayDTOAPI, AxiosError<ItemOutputArrayDTOAPI, any>>
-) => {
+export const useItems = (queryParams: ItemSearchInputDTO = { page: 0 }, opts?: any) => {
   const apiClient = useApiClient();
 
   const queryOpts = useInfiniteQuery<ItemOutputArrayDTOAPI, AxiosError<ItemOutputArrayDTOAPI>>({
     queryKey: [...itemKeys.list(), { ...queryParams }],
-    queryFn: async ({ pageParam = queryParams.page }) =>
+    queryFn: async ({ pageParam }) =>
       (
         await apiClient.item.itemControllerSearch({
           ...queryParams,
-          page: pageParam,
+          page: pageParam as number,
         })
       ).data,
-    keepPreviousData: true,
+    initialPageParam: queryParams.page,
+    placeholderData: keepPreviousData,
     getNextPageParam: (lastPage, pages) => hasNextPage(lastPage.meta, pages.length),
     ...opts,
   });
@@ -73,7 +66,7 @@ export const useItemCreate = () => {
   return useMutation<ItemsOutputDTO, AxiosError<ItemsOutputDTO>, ItemCreateDTO>({
     mutationFn: async (item) => (await apiClient.item.itemControllerCreate(item)).data.data,
     onSuccess: (newItem) => {
-      queryClient.invalidateQueries(itemKeys.list());
+      queryClient.invalidateQueries({ queryKey: itemKeys.list() });
       queryClient.setQueryData(itemKeys.detail(newItem.id), newItem);
     },
   });
@@ -100,7 +93,6 @@ export const useGameServerRemove = () => {
         Sentry.captureException(e);
       }
     },
-    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -120,7 +112,7 @@ export const useGameServerUpdate = () => {
     onSuccess: async (updatedGameServer) => {
       try {
         // remove cache of gameserver list
-        await queryClient.invalidateQueries(itemKeys.list());
+        await queryClient.invalidateQueries({ queryKey: itemKeys.list() });
 
         // update cache of gameserver
         queryClient.setQueryData(itemKeys.detail(updatedGameServer.id), updatedGameServer);
@@ -128,6 +120,5 @@ export const useGameServerUpdate = () => {
         Sentry.captureException(e);
       }
     },
-    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };

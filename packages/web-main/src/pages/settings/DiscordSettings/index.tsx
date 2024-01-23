@@ -17,7 +17,7 @@ export const DiscordSettings = () => {
   const theme = useTheme();
   const {
     data: guilds,
-    isLoading,
+    isPending,
     isError,
     InfiniteScroll,
     refetch,
@@ -26,7 +26,7 @@ export const DiscordSettings = () => {
     sortDirection: 'desc',
   });
 
-  if (isLoading) {
+  if (isPending) {
     return (
       <>
         <Flex style={{ marginBottom: theme.spacing[2] }}>

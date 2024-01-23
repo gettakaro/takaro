@@ -3,7 +3,7 @@ import { FC } from 'react';
 import { ModuleForm, ModuleFormSubmitProps } from './ModuleForm';
 
 const CreateModule: FC = () => {
-  const { mutate, isSuccess, error, isLoading } = useModuleCreate();
+  const { mutate, isSuccess, error, isPending } = useModuleCreate();
   const onSubmit = async (fields: ModuleFormSubmitProps) => {
     mutate({
       name: fields.name,
@@ -13,7 +13,7 @@ const CreateModule: FC = () => {
       permissions: fields.permissions,
     });
   };
-  return <ModuleForm onSubmit={onSubmit} isLoading={isLoading} isSuccess={isSuccess} error={error} />;
+  return <ModuleForm onSubmit={onSubmit} isLoading={isPending} isSuccess={isSuccess} error={error} />;
 };
 
 export default CreateModule;

@@ -10,7 +10,7 @@ export const RolesUpdate = () => {
   const { roleId } = useParams();
   const { data: role, isLoading: isLoadingRole } = useRole(roleId!);
   const { data: permissions, isLoading: isLoadingPermissions } = usePermissions();
-  const { mutateAsync, isLoading: isUpdatingRole } = useRoleUpdate();
+  const { mutateAsync, isPending: isUpdatingRole } = useRoleUpdate();
   const navigate = useNavigate();
 
   if (isLoadingPermissions || !permissions || isLoadingRole)

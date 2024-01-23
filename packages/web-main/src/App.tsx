@@ -17,6 +17,7 @@ const queryClient = new QueryClient({
     queries: {
       // This is a temporary fix for the flashing behaviour in studio
       refetchOnWindowFocus: false,
+      throwOnError: (error) => (error as AxiosError).response!.status >= 500,
       retry: (failureCount, error) => {
         // SPECIAL CASE: if there is no `status`, this is `network error` meaning axios could not connect to the server at all
         if (!(error as AxiosError).status) {

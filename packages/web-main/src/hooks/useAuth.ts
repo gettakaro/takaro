@@ -45,7 +45,6 @@ export function useAuth() {
           },
         })
       ).data.data,
-    cacheTime: 0,
   });
 
   if (!cachedClient) {

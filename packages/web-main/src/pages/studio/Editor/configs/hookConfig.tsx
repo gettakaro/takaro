@@ -24,7 +24,7 @@ const validationSchema = z.object({
 
 export const HookConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
   const { data } = useHook(moduleItem.itemId);
-  const { mutateAsync, isLoading } = useHookUpdate();
+  const { mutateAsync, isPending } = useHookUpdate();
 
   const { control, setValue, handleSubmit } = useForm<IFormInputs>({
     mode: 'onSubmit',
@@ -70,7 +70,7 @@ export const HookConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
           ))}
         </SelectField.OptionGroup>
       </SelectField>
-      {!readOnly && <Button isLoading={isLoading} fullWidth type="submit" text="Save hook config" />}
+      {!readOnly && <Button isLoading={isPending} fullWidth type="submit" text="Save hook config" />}
     </form>
   );
 };
