@@ -9,7 +9,7 @@ import { useDocumentTitle } from 'hooks/useDocumentTitle';
 export const Roles: FC = () => {
   useDocumentTitle('Roles');
   const navigate = useNavigate();
-  const { data: roles, isLoading, isError, InfiniteScroll } = useRoles();
+  const { data: roles, isLoading, isError, InfiniteScroll } = useRoles({ sortBy: 'system', sortDirection: 'desc' });
 
   if (isLoading) {
     return (
