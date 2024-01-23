@@ -1,4 +1,5 @@
 import {
+  EventChatMessage,
   EventOutputDTO,
   EventSearchInputAllowedFiltersEventNameEnum,
   EventSearchInputDTOSortDirectionEnum,
@@ -21,7 +22,8 @@ const Message = styled.span`
 `;
 
 const ChatMessage: FC<{ chatMessage: EventOutputDTO }> = ({ chatMessage }) => {
-  if (!chatMessage.meta || !('message' in chatMessage.meta)) return null;
+  const meta = chatMessage.meta as EventChatMessage;
+  if (!meta || !('msg' in meta)) return null;
 
   const friendlyTimeStamp = new Date(chatMessage.createdAt).toLocaleTimeString();
 
@@ -39,7 +41,7 @@ const ChatMessage: FC<{ chatMessage: EventOutputDTO }> = ({ chatMessage }) => {
       <div style={{ fontWeight: 'bold' }}>
         <Player playerId={player.id} name={player.name} showAvatar={true} avatarUrl={player.steamAvatar} />
       </div>
-      <span>{chatMessage.meta.message as string}</span>
+      <span>{meta.msg as string}</span>
     </Message>
   );
 };
