@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo } from 'react';
+import { FC, useMemo } from 'react';
 import { NavbarLink, renderLink } from '.';
 import { GameServerSelectNav } from './GameServerSelectNav';
 import { Button } from '@takaro/lib-components';
@@ -21,24 +21,8 @@ export const GameServerNav: FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { data, isLoading, isRefetching } = useGameServers();
+  const { data } = useGameServers();
   const { selectedGameServerId, setSelectedGameServerId } = useSelectedGameServer();
-
-  useEffect(() => {
-    // if the selected server is empty and there's data, set the selected server to the first server.
-    if (selectedGameServerId === '' && data?.pages.length) {
-      setSelectedGameServerId(data.pages[0].data[0].id);
-
-      return;
-    }
-
-    // if there's no data or the selected server is not in the data, reset the selected server.
-    if (!data || data.pages.find((page) => page.data.every((server) => server.id !== selectedGameServerId))) {
-      setSelectedGameServerId('');
-
-      return;
-    }
-  }, [isLoading, isRefetching]);
 
   const gameServerLinks: NavbarLink[] = useMemo(() => {
     return [
