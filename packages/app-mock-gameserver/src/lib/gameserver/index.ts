@@ -102,9 +102,9 @@ class MockGameserver implements IMockGameServer {
     }
 
     return {
-      x: parseInt(player.positionX, 10),
-      y: parseInt(player.positionY, 10),
-      z: parseInt(player.positionZ, 10),
+      x: parseInt(faker.random.numeric(4), 10),
+      y: parseInt(faker.random.numeric(4), 10),
+      z: parseInt(faker.random.numeric(4), 10),
     };
   }
 

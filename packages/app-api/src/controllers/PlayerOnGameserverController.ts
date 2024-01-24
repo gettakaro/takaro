@@ -1,4 +1,4 @@
-import { IsBoolean, IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsBoolean, IsDateString, IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
@@ -14,7 +14,7 @@ import {
 } from '../service/PlayerOnGameserverService.js';
 import { onlyIfEconomyEnabledMiddleware } from '../middlewares/onlyIfEconomyEnabled.js';
 import { PlayerService } from '../service/PlayerService.js';
-import { PlayerPingStat } from '../lib/stat.js';
+import { PlayerLocationStat, PlayerPingStat } from '../lib/stat.js';
 
 export class PlayerOnGameserverOutputDTOAPI extends APIOutput<PlayerOnGameserverOutputWithRolesDTO> {
   @Type(() => PlayerOnGameserverOutputWithRolesDTO)
@@ -66,11 +66,11 @@ class PlayerOnGameServerSetCurrencyInputDTO {
 }
 
 class PlayerOnGameServerStatsInputDTO {
-  @IsString()
-  startISO!: string;
+  @IsDateString()
+  timeRangeStart!: string;
 
-  @IsString()
-  endISO!: string;
+  @IsDateString()
+  timeRangeEnd!: string;
 }
 
 class ParamSenderReceiver {
@@ -181,8 +181,25 @@ export class PlayerOnGameServerController {
     const res = await pingStatService.read({
       playerId: params.playerId,
       gameServerId: params.gameServerId,
-      startISO: body.startISO,
-      endISO: body.endISO,
+      timeRangeStart: body.timeRangeStart,
+      timeRangeEnd: body.timeRangeEnd,
+    });
+    return apiResponse(res);
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_PLAYERS]))
+  @Post('/gameserver/:gameServerId/player/:playerId/stats/location')
+  async location(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: PogParam,
+    @Body() body: PlayerOnGameServerStatsInputDTO
+  ) {
+    const locationStatService = new PlayerLocationStat(req.domainId);
+    const res = await locationStatService.read({
+      playerId: params.playerId,
+      gameServerId: params.gameServerId,
+      timeRangeStart: body.timeRangeStart,
+      timeRangeEnd: body.timeRangeEnd,
     });
     return apiResponse(res);
   }
