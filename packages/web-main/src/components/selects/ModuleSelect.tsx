@@ -1,4 +1,4 @@
-import { Select, styled } from '@takaro/lib-components';
+import { SelectField, styled } from '@takaro/lib-components';
 import { FC } from 'react';
 import { CustomSelectProps } from '.';
 import { useModules } from 'queries/modules';
@@ -42,7 +42,7 @@ export const ModuleSelect: FC<CustomSelectProps> = ({
   }
 
   return (
-    <Select
+    <SelectField
       control={control}
       name={selectName}
       label={label}
@@ -54,22 +54,22 @@ export const ModuleSelect: FC<CustomSelectProps> = ({
       inPortal={inPortal}
       required={required}
       loading={loading}
-      render={(selectedIndex) => {
-        if (selectedIndex === undefined || selectedIndex === -1) {
+      render={(selectedItems) => {
+        if (selectedItems.length === 0) {
           return <div>Select...</div>;
         }
-        return <div>{modules[selectedIndex].name}</div>;
+        return <div>{selectedItems[0].label}</div>;
       }}
     >
-      <Select.OptionGroup>
+      <SelectField.OptionGroup>
         {modules.map(({ id, name }) => (
-          <Select.Option key={`select-${selectName}-${id}`} value={id} label={name}>
+          <SelectField.Option key={`select-${selectName}-${id}`} value={id} label={name}>
             <Inner>
               <span>{name}</span>
             </Inner>
-          </Select.Option>
+          </SelectField.Option>
         ))}
-      </Select.OptionGroup>
-    </Select>
+      </SelectField.OptionGroup>
+    </SelectField>
   );
 };

@@ -30,7 +30,7 @@ const Label = styled.label<{
   top: 50%;
   transform: translateY(-50%);
   p {
-    color: gray;
+    color: ${({ theme }) => theme.colors.textAlt};
     background-color: ${({ theme }) => theme.colors.background};
     font-size: 1.325rem;
     padding: ${({ theme }) => `0 ${theme.spacing['0_5']}`};
@@ -56,7 +56,7 @@ const Label = styled.label<{
 const Line = styled.div`
   width: 100%;
   height: 1px;
-  background-color: ${({ theme }) => theme.colors.backgroundAlt};
+  background-color: ${({ theme }) => theme.colors.backgroundAccent};
 `;
 
 type LabelProps = {

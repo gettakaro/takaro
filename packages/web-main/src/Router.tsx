@@ -19,7 +19,6 @@ import { DiscordSettings } from './pages/settings/DiscordSettings';
 import CreateModule from 'pages/ModuleDefinitions/CreateModule';
 import EditModule from 'pages/ModuleDefinitions/EditModule';
 import InstallModule from 'pages/gameserver/modules/InstallModuleForm';
-import GameServerDashboard from 'pages/gameserver/GameServerDashboard';
 import GameServerSettings from 'pages/gameserver/GameServerSettings';
 import GameServerModules from 'pages/gameserver/GameServerModules';
 import { Recovery } from 'pages/auth/recovery';
@@ -32,7 +31,7 @@ import { Events } from 'pages/events';
 import { Roles } from './pages/roles';
 import { RolesCreate } from './pages/roles/RolesCreate';
 import { RolesUpdate } from './pages/roles/RolesUpdate';
-import { PlayerProfile } from 'pages/player/profile';
+import { PlayerGlobalProfile } from 'pages/player/global';
 import { AssignPlayerRole } from 'pages/roles/assignPlayerRole';
 import { UserProfile } from 'pages/users/profile';
 import { AssignUserRole } from 'pages/roles/assignUserRole';
@@ -41,7 +40,13 @@ import Forbidden from 'pages/Forbidden';
 import { LogOut } from 'pages/LogOut';
 import { LogoutSuccess } from 'pages/LogoutSuccess';
 import { VariablesCreate, VariablesUpdate } from 'pages/variables/VariableCreateAndUpdate';
-import { ImportGameServer } from 'pages/gameserver/import';
+import { ImportGameServer } from 'pages/gameserver/ImportGameServer';
+import GameServerOverview from 'pages/gameserver/dashboards/GameServerOverview';
+import GameServerConsole from 'pages/gameserver/dashboards/GameServerConsole';
+import GameServerStatistics from 'pages/gameserver/dashboards/GameServerStatistics';
+import { PlayerInventory } from 'pages/player/gameserver/PlayerInventory';
+import { PlayerEvents } from 'pages/player/gameserver/PlayerEvents';
+import { PlayerEconomy } from 'pages/player/gameserver/PlayerEconomy';
 
 const SentryRoutes = withSentryReactRouterV6Routing(Routes);
 
@@ -70,7 +75,11 @@ export const Router: FC = () => (
           {/* ======================== Game Server ======================== */}
 
           <Route element={<PermissionsGuard permissions={[PERMISSIONS.ReadGameservers]} />}>
-            <Route element={<GameServerDashboard />} path={PATHS.gameServer.dashboard(':serverId')} />
+            <Route element={<FrameLayoutRoute frame="gameServerDashboard" />}>
+              <Route element={<GameServerOverview />} path={PATHS.gameServer.dashboard.overview(':serverId')} />
+              <Route element={<GameServerConsole />} path={PATHS.gameServer.dashboard.console(':serverId')} />
+              <Route element={<GameServerStatistics />} path={PATHS.gameServer.dashboard.statistics(':serverId')} />
+            </Route>
           </Route>
 
           <Route
@@ -101,10 +110,15 @@ export const Router: FC = () => (
           {/* ======================== PLayer ======================== */}
           <Route element={<PermissionsGuard permissions={[PERMISSIONS.ReadPlayers]} />}>
             <Route element={<Players />} path={PATHS.players()} />
-            <Route element={<PlayerProfile />} path={PATHS.player.profile(':playerId')}>
-              <Route element={<PermissionsGuard permissions={[PERMISSIONS.ManagePlayers]} />}>
-                <Route element={<AssignPlayerRole />} path={PATHS.player.assignRole(':playerId')} />
+            <Route element={<FrameLayoutRoute frame="playerProfile" />}>
+              <Route element={<PlayerGlobalProfile />} path={PATHS.player.global.profile(':playerId')}>
+                <Route element={<PermissionsGuard permissions={[PERMISSIONS.ManagePlayers]} />}>
+                  <Route element={<AssignPlayerRole />} path={PATHS.player.global.assignRole(':playerId')} />
+                </Route>
               </Route>
+              <Route element={<PlayerInventory />} path={PATHS.player.inventory(':playerId')} />
+              <Route element={<PlayerEvents />} path={PATHS.player.events(':playerId')} />
+              <Route element={<PlayerEconomy />} path={PATHS.player.economy(':playerId')} />
             </Route>
           </Route>
 

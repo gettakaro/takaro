@@ -1,29 +1,12 @@
 import { FC, Fragment, useMemo, ReactElement } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { Button, Switch, TextField } from '@takaro/lib-components';
-import { AiFillSave } from 'react-icons/ai';
+import { Button, Switch, TextField, camelCaseToSpaces } from '@takaro/lib-components';
 import { Settings } from '@takaro/apiclient';
-import { useApiClient } from 'hooks/useApiClient';
-import { useGameServerSettings } from 'queries/gameservers';
+import { useGlobalGameServerSettings, useSetGlobalSetting } from 'queries/settings';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { useSnackbar } from 'notistack';
-import { useQueryClient } from '@tanstack/react-query';
-
-export function camelCaseToSpaces(str: string) {
-  return (
-    str
-      // Insert a space before all caps
-      .replace(/([A-Z])/g, ' $1')
-      // Uppercase the first character
-      .replace(/^./, function (str) {
-        return str.toUpperCase();
-      })
-      // Trim and convert the string to lowercase
-      .toLowerCase()
-  );
-}
 
 export function dirtyValues(dirtyFields: object | boolean, allValues: object): object {
   // If *any* item in an array was modified, the entire array must be submitted, because there's no way to indicate
@@ -61,24 +44,21 @@ export function mapSettings<T extends Promise<unknown>>(
 
 export const GlobalGameServerSettings: FC = () => {
   useDocumentTitle('Settings');
-  const apiClient = useApiClient();
   const { enqueueSnackbar } = useSnackbar();
-  const queryClient = useQueryClient();
+  const { mutateAsync: setGlobalSetting } = useSetGlobalSetting();
 
-  const { data, isLoading } = useGameServerSettings();
+  const { data, isLoading } = useGlobalGameServerSettings();
 
   const validationSchema = useMemo(() => {
-    const schema = {};
     if (data) {
-      mapSettings(data, async (key) => {
-        if (booleanFields.includes(key)) {
-          schema[key] = z.boolean();
-        } else {
-          schema[key] = z.string();
-        }
-      });
+      const res = data.reduce((acc, { key }) => {
+        booleanFields.includes(key) ? (acc[key] = z.boolean()) : (acc[key] = z.string());
+        return acc;
+      }, {});
+      return z.object(res);
     }
-    return z.object(schema);
+
+    return z.object({});
   }, [data]);
 
   const { control, handleSubmit, setValue, formState, reset } = useForm<IFormInputs>({
@@ -87,16 +67,15 @@ export const GlobalGameServerSettings: FC = () => {
   });
 
   const onSubmit: SubmitHandler<IFormInputs> = async (values) => {
-    const dirty = dirtyValues(formState.dirtyFields, values);
-    try {
-      await mapSettings(dirty as unknown as Settings, async (key, value) =>
-        apiClient.settings.settingsControllerSet(key, {
-          value: value!,
-        })
-      );
+    const changedFields = dirtyValues(formState.dirtyFields, values) as Settings;
 
-      // Since all server settings are affected, we invalidate the entire settings query
-      queryClient.invalidateQueries(['settings']);
+    try {
+      await mapSettings(changedFields, async (key, value) => {
+        if (typeof value === 'boolean') {
+          return await setGlobalSetting({ key, value: value ? 'true' : 'false' });
+        }
+        return await setGlobalSetting({ key, value: value as string });
+      });
 
       enqueueSnackbar('Settings has been successfully saved', { variant: 'default' });
       reset({}, { keepValues: true });
@@ -110,7 +89,7 @@ export const GlobalGameServerSettings: FC = () => {
     const settingsComponents: ReactElement[] = [];
     if (data) {
       // TODO: this should be mapped using the new config generator
-      mapSettings(data, async (key, value) => {
+      data.forEach(({ key, value }) => {
         if (booleanFields.includes(key)) {
           settingsComponents.push(<Switch control={control} label={camelCaseToSpaces(key)} name={key} key={key} />);
           setValue(key, value === 'true');
@@ -131,9 +110,8 @@ export const GlobalGameServerSettings: FC = () => {
           {settings}
           <Button
             disabled={!formState.isDirty}
-            icon={<AiFillSave />}
             isLoading={isLoading}
-            text="Save"
+            text="Save settings"
             type="submit"
             variant="default"
           />

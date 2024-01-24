@@ -33,6 +33,7 @@ export const PopoverContent = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElemen
             context={floatingContext}
             fill={theme.colors.background}
             stroke={theme.colors.backgroundAccent}
+            style={{ transform: 'translateY(-1px)' }}
             strokeWidth={1}
           />
         </Container>

@@ -4,6 +4,7 @@ import { errors, traceableClass } from '@takaro/util';
 import { GameServerModel, GAMESERVER_TABLE_NAME } from './gameserver.js';
 import { ITakaroRepo } from './base.js';
 import {
+  IpHistoryOutputDTO,
   PlayerCreateDTO,
   PlayerOutputDTO,
   PlayerOutputWithRolesDTO,
@@ -22,6 +23,13 @@ export interface ISteamData {
   steamVacBanned: boolean;
   steamsDaysSinceLastBan: number;
   steamNumberOfVACBans: number;
+}
+
+interface IObserveIPOpts {
+  country: string | null;
+  city: string | null;
+  longitude: string | null;
+  latitude: string | null;
 }
 
 export const PLAYER_TABLE_NAME = 'players';
@@ -58,7 +66,7 @@ export class PlayerModel extends TakaroModel {
 
   steamLastFetch: Date;
   steamAvatar: string;
-  steamAccountCreated: Date;
+  steamAccountCreated: string;
   steamCommunityBanned: boolean;
   steamEconomyBan: string;
   steamVacBanned: boolean;
@@ -111,6 +119,31 @@ export class PlayerModel extends TakaroModel {
   }
 }
 
+export class PlayerIPHistoryModel extends TakaroModel {
+  static tableName = 'playerIpHistory';
+
+  playerId!: string;
+  gameServerId!: string;
+  ip!: string;
+  country!: string | null;
+  city!: string | null;
+  longitude!: string | null;
+  latitude!: string | null;
+
+  static get relationMappings() {
+    return {
+      player: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: PlayerModel,
+        join: {
+          from: `${PlayerIPHistoryModel.tableName}.playerId`,
+          to: `${PlayerModel.tableName}.id`,
+        },
+      },
+    };
+  }
+}
+
 @traceableClass('repo:player')
 export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, PlayerCreateDTO, PlayerUpdateDTO> {
   async getModel() {
@@ -121,6 +154,16 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
       query: model.query().modify('domainScoped', this.domainId),
     };
   }
+
+  async getIPHistoryModel() {
+    const knex = await this.getKnex();
+    const model = PlayerIPHistoryModel.bindKnex(knex);
+    return {
+      model,
+      query: model.query().modify('domainScoped', this.domainId),
+    };
+  }
+
   async find(filters: ITakaroQuery<PlayerOutputWithRolesDTO>) {
     const { query } = await this.getModel();
     const extend = filters.extend || [];
@@ -136,13 +179,19 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
 
   async findOne(id: string): Promise<PlayerOutputWithRolesDTO> {
     const { query } = await this.getModel();
-    const data = await query.findById(id).withGraphFetched('roleAssignments.role.permissions');
+    const res = await query.findById(id).withGraphFetched('roleAssignments.role.permissions');
+    const { query: ipQuery } = await this.getIPHistoryModel();
 
-    if (!data) {
+    if (!res) {
       throw new errors.NotFoundError();
     }
 
-    return new PlayerOutputWithRolesDTO().construct(data);
+    const data = await new PlayerOutputWithRolesDTO().construct(res);
+
+    const ipHistory = await ipQuery.where({ playerId: data.id }).orderBy('createdAt', 'desc').limit(10);
+    data.ipHistory = await Promise.all(ipHistory.map((ip) => new IpHistoryOutputDTO().construct(ip)));
+
+    return data;
   }
 
   async create(item: PlayerCreateDTO): Promise<PlayerOutputDTO> {
@@ -236,12 +285,53 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
 
         if ('steamAccountCreated' in item) {
           updateObj.steamAccountCreated = item.steamAccountCreated
-            ? new Date(item.steamAccountCreated * 1000)
+            ? new Date(item.steamAccountCreated * 1000).toISOString()
             : undefined;
         }
 
         return query.update(updateObj).where('steamId', item.steamId);
       })
     );
+  }
+
+  /**
+   * Checks if the last ip address of the player is the same as the current one.
+   * If not, it will add the new ip address to the history.
+   * @param ip Ip address
+   * @param country Country code
+   */
+  async observeIp(playerId: string, gameServerId: string, ip: string, ipData: IObserveIPOpts | null) {
+    const { query } = await this.getIPHistoryModel();
+    const { query: query2 } = await this.getIPHistoryModel();
+
+    const lastIp = await query.select('ip').where({ playerId }).orderBy('createdAt', 'desc').limit(1).first();
+
+    if (lastIp && lastIp.ip === ip) {
+      return;
+    }
+
+    let res: PlayerIPHistoryModel;
+
+    if (ipData) {
+      res = await query.insert({
+        playerId,
+        gameServerId,
+        ip,
+        country: ipData.country,
+        city: ipData.city,
+        longitude: ipData.longitude,
+        latitude: ipData.latitude,
+        domain: this.domainId,
+      });
+    } else {
+      res = await query.insert({
+        playerId,
+        gameServerId,
+        ip,
+        domain: this.domainId,
+      });
+    }
+
+    return await query2.findById(res.id);
   }
 }

@@ -5,12 +5,14 @@ export const Container = styled(motion.div)`
   width: 0;
   position: relative;
   height: 100vh;
-  background-color: ${({ theme }) => theme.colors.backgroundAlt};
+  background-color: ${({ theme }) => theme.colors.background};
   display: flex;
   align-items: flex-start;
   flex-direction: column;
   justify-content: space-between;
-  padding: ${({ theme }) => `${theme.spacing[4]} ${theme.spacing[1]} ${theme.spacing['1_5']} ${theme.spacing[1]}`};
+  padding: ${({ theme }) => `${theme.spacing[5]} ${theme.spacing[1]} ${theme.spacing['1_5']} ${theme.spacing[1]}`};
+
+  gap: ${({ theme }) => theme.spacing[2]};
 
   .company-icon {
     margin: 0 auto;
@@ -42,12 +44,20 @@ export const NoServersCallToAction = styled(motion.div)`
   gap: ${({ theme }) => theme.spacing[2]};
 `;
 
+export const IconNavContainer = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: ${({ theme }) => theme.spacing[2]};
+`;
+
 export const Nav = styled.nav`
   display: flex;
   gap: ${({ theme }) => theme.spacing['0_75']};
   width: 100%;
   flex-direction: column;
-  margin-top: ${({ theme }) => theme.spacing[3]};
 
   h3 {
     font-size: ${({ theme }) => theme.fontSize.tiny};
@@ -87,12 +97,7 @@ export const Nav = styled.nav`
     }
 
     &.active {
-      svg {
-        fill: ${({ theme }) => theme.colors.primary};
-      }
-      p {
-        color: white;
-      }
+      background-color: ${({ theme }) => theme.colors.backgroundAlt};
     }
   }
 `;

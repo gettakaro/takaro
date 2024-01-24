@@ -2,13 +2,7 @@ import { Job } from 'bullmq';
 import { ctx, logger } from '@takaro/util';
 import { config } from '../config.js';
 import { TakaroWorker, IEventQueueData } from '@takaro/queues';
-import {
-  isChatMessageEvent,
-  isConnectedEvent,
-  isDisconnectedEvent,
-  isEntityKilledEvent,
-  isPlayerDeathEvent,
-} from '@takaro/modules';
+import { EventChatMessage, EventEntityKilled, EventPlayerDeath, HookEvents } from '@takaro/modules';
 import { getSocketServer } from '../lib/socketServer.js';
 import { HookService } from '../service/HookService.js';
 import { PlayerService } from '../service/PlayerService.js';
@@ -35,8 +29,15 @@ async function processJob(job: Job<IEventQueueData>) {
   const { type, event, domainId, gameServerId } = job.data;
 
   const eventService = new EventService(domainId);
-  const hooksService = new HookService(domainId);
-  await hooksService.handleEvent(event, gameServerId);
+
+  if (type === HookEvents.LOG_LINE) {
+    const hooksService = new HookService(domainId);
+    await hooksService.handleEvent({
+      eventType: HookEvents.LOG_LINE,
+      eventData: event,
+      gameServerId,
+    });
+  }
 
   const socketServer = await getSocketServer();
   socketServer.emit(domainId, 'gameEvent', [gameServerId, type, event]);
@@ -48,23 +49,24 @@ async function processJob(job: Job<IEventQueueData>) {
     const pogs = await playerOnGameServerService.findAssociations(event.player.gameId, gameServerId);
     const pog = pogs[0];
 
-    if (isChatMessageEvent(event)) {
+    if (type === HookEvents.CHAT_MESSAGE) {
+      const chatMessage = event as EventChatMessage;
       const commandService = new CommandService(domainId);
-      await commandService.handleChatMessage(event, gameServerId);
+      await commandService.handleChatMessage(chatMessage, gameServerId);
 
       await eventService.create(
         await new EventCreateDTO().construct({
           eventName: EVENT_TYPES.CHAT_MESSAGE,
           gameserverId: gameServerId,
           playerId: resolvedPlayer.id,
-          meta: {
-            message: event.msg,
-          },
+          meta: await new EventChatMessage().construct({
+            msg: event.msg,
+          }),
         })
       );
     }
 
-    if (isConnectedEvent(event)) {
+    if (type === EVENT_TYPES.PLAYER_CONNECTED) {
       await playerOnGameServerService.update(
         pog.id,
         await new PlayerOnGameServerUpdateDTO().construct({ online: true })
@@ -79,7 +81,7 @@ async function processJob(job: Job<IEventQueueData>) {
       );
     }
 
-    if (isDisconnectedEvent(event)) {
+    if (type === EVENT_TYPES.PLAYER_DISCONNECTED) {
       await playerOnGameServerService.update(
         pog.id,
         await new PlayerOnGameServerUpdateDTO().construct({ online: false })
@@ -94,29 +96,31 @@ async function processJob(job: Job<IEventQueueData>) {
       );
     }
 
-    if (isPlayerDeathEvent(event)) {
+    if (type === EVENT_TYPES.PLAYER_DEATH) {
+      const playerDeath = event as EventPlayerDeath;
       await eventService.create(
         await new EventCreateDTO().construct({
           eventName: EVENT_TYPES.PLAYER_DEATH,
           gameserverId: gameServerId,
           playerId: resolvedPlayer.id,
-          meta: {
-            position: event.position,
-          },
+          meta: await new EventPlayerDeath().construct({
+            position: playerDeath.position,
+          }),
         })
       );
     }
 
-    if (isEntityKilledEvent(event)) {
+    if (type === EVENT_TYPES.ENTITY_KILLED) {
+      const entityKilled = event as EventEntityKilled;
       await eventService.create(
         await new EventCreateDTO().construct({
           eventName: EVENT_TYPES.ENTITY_KILLED,
           gameserverId: gameServerId,
           playerId: resolvedPlayer.id,
-          meta: {
-            entity: event.entity,
-            weapon: event.weapon,
-          },
+          meta: await new EventEntityKilled().construct({
+            entity: entityKilled.entity,
+            weapon: entityKilled.weapon,
+          }),
         })
       );
     }

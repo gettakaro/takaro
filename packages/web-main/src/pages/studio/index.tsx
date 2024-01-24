@@ -11,25 +11,23 @@ import { Header } from './Header';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { EventFeedWidget } from 'components/events/EventFeedWidget';
 
+const EventsWrapper = styled.div`
+  padding-right: ${({ theme }) => theme.spacing[1]};
+`;
+
 const Wrapper = styled.div`
-  padding: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[2]}} ${theme.spacing[2]} 0`};
+  padding: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[2]} ${theme.spacing[2]} 0`};
 `;
 
-const Container = styled.div`
+const Content = styled.div`
   display: flex;
-`;
-
-const ConfigWrapper = styled.div`
-  padding: ${({ theme }) => theme.spacing[1]};
+  /* calculates the remaining height of the screen minus the header and the padding */
+  height: calc(calc(100vh - 39px) - 1.2rem);
 `;
 
 const StyledResizable = styled(Resizable)`
-  border-right: 2px solid ${({ theme }): string => theme.colors.background};
-  border-top-right-radius: ${({ theme }) => theme.borderRadius.medium};
-
-  &:hover {
-    border-right: 2px solid ${({ theme }): string => theme.colors.backgroundAlt};
-  }
+  height: 100%;
+  padding: 0 ${({ theme }) => theme.spacing[1]};
 `;
 
 const Studio: FC = () => {
@@ -63,7 +61,7 @@ const Studio: FC = () => {
   return (
     <Wrapper>
       <Header />
-      <Container>
+      <Content>
         <StyledResizable
           enable={{
             top: false,
@@ -77,28 +75,28 @@ const Studio: FC = () => {
           }}
           defaultSize={{
             width: '300px',
-            height: '100vh',
+            height: '100%',
           }}
           minWidth="500px"
-          maxHeight="100vh"
-          minHeight="100vh"
+          maxHeight="100%"
+          minHeight="0"
         >
           <CollapseList>
             <CollapseList.Item title="File explorer">
               <FileExplorer sandpack={sandpack} />
             </CollapseList.Item>
             <CollapseList.Item title={configMap[activeModule.type]}>
-              <ConfigWrapper>{getConfigComponent(activeModule.type)}</ConfigWrapper>
+              {getConfigComponent(activeModule.type)}
             </CollapseList.Item>
             <CollapseList.Item title={'Last executions'}>
-              <ConfigWrapper>
+              <EventsWrapper>
                 <EventFeedWidget query={{ filters: { moduleId: [moduleData.id] } }} />
-              </ConfigWrapper>
+              </EventsWrapper>
             </CollapseList.Item>
           </CollapseList>
         </StyledResizable>
         <Editor readOnly={moduleData.isBuiltIn} />
-      </Container>
+      </Content>
     </Wrapper>
   );
 };

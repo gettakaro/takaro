@@ -1,12 +1,10 @@
 import { useContext, createContext } from 'react';
-import { useDialog } from '../../../hooks/useDialog';
+import { useDialog } from './useDialog';
 
 type ContextType =
   | (ReturnType<typeof useDialog> & {
       setLabelId: React.Dispatch<React.SetStateAction<string | undefined>>;
-      setDescriptionId: React.Dispatch<
-        React.SetStateAction<string | undefined>
-      >;
+      setDescriptionId: React.Dispatch<React.SetStateAction<string | undefined>>;
     })
   | null;
 

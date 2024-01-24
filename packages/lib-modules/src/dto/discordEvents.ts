@@ -1,9 +1,19 @@
-import { IsBoolean, IsString, ValidateNested } from 'class-validator';
+import { IsBoolean, IsEnum, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { TakaroDTO } from '@takaro/util';
+import { ValueOf } from 'type-fest';
+import { BaseEvent } from './base.js';
 
-export enum DiscordEvents {
-  DISCORD_MESSAGE = 'discord-message',
+export const DiscordEvents = {
+  DISCORD_MESSAGE: 'discord-message',
+} as const;
+
+export class BaseDiscordEvent<T> extends BaseEvent<T> {
+  @IsEnum(DiscordEvents)
+  declare type: ValueOf<typeof DiscordEvents>;
+
+  @IsString()
+  msg: string;
 }
 
 export class EventDiscordUser extends TakaroDTO<EventDiscordUser> {
@@ -31,7 +41,7 @@ export class EventDiscordChannel extends TakaroDTO<EventDiscordChannel> {
   name: string;
 }
 
-export class HookEventDiscordMessage extends TakaroDTO<HookEventDiscordMessage> {
+export class HookEventDiscordMessage extends BaseEvent<HookEventDiscordMessage> {
   @IsString()
   type = DiscordEvents.DISCORD_MESSAGE;
 
@@ -53,3 +63,7 @@ export function isDiscordMessageEvent(a: unknown): a is HookEventDiscordMessage 
   }
   return false;
 }
+
+export const DiscordEventsMapping = {
+  [DiscordEvents.DISCORD_MESSAGE]: HookEventDiscordMessage,
+} as const;

@@ -58,7 +58,7 @@ function App() {
       muted: darkTheme.colors.primary,
       emphasis: darkTheme.colors.primary,
       disabled: darkTheme.colors.disabled,
-      subtle: darkTheme.colors.tertiary,
+      subtle: darkTheme.colors.backgroundAccent,
     },
     foreground: {
       def: darkTheme.colors.text,
@@ -72,7 +72,7 @@ function App() {
     background: {
       surface: darkTheme.colors.background,
       canvas: darkTheme.colors.backgroundAlt,
-      subtle: darkTheme.colors.gray,
+      subtle: darkTheme.colors.background,
     },
     error: {
       def: darkTheme.colors.error,

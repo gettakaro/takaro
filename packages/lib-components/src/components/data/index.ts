@@ -1,9 +1,6 @@
 export { Avatar } from './Avatar';
 export type { AvatarProps } from './Avatar';
 
-export { AvatarGroup } from './AvatarGroup';
-export type { AvatarGroupProps } from './AvatarGroup';
-
 export { Chip } from './Chip';
 export type { ChipProps } from './Chip';
 
@@ -26,3 +23,6 @@ export type { LinkCardProps } from './LinkCard';
 
 export { DateFormatter } from './DateFormatter';
 export type { DateFormatterProps } from './DateFormatter';
+
+export { CopyId } from './CopyId';
+export type { CopyIdProps } from './CopyId';

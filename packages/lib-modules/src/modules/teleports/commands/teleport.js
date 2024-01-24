@@ -4,9 +4,9 @@ async function main() {
   const data = await getData();
   const takaro = await getTakaro(data);
 
-  const { player, gameServerId, arguments: args, module: mod } = data;
+  const { pog, gameServerId, arguments: args, module: mod } = data;
 
-  if (!checkPermission(player, 'TELEPORTS_USE')) {
+  if (!checkPermission(pog, 'TELEPORTS_USE')) {
     throw new TakaroUserError('You do not have permission to use teleports.');
   }
 
@@ -14,7 +14,7 @@ async function main() {
     filters: {
       key: [`tp_${args.tp}`],
       gameServerId: [gameServerId],
-      playerId: [player.playerId],
+      playerId: [pog.playerId],
       moduleId: [mod.moduleId],
     },
     sortBy: 'key',
@@ -52,7 +52,7 @@ async function main() {
     filters: {
       key: ['lastExecuted'],
       gameServerId: [gameServerId],
-      playerId: [player.playerId],
+      playerId: [pog.playerId],
       moduleId: [mod.moduleId],
     },
     sortBy: 'key',
@@ -64,7 +64,7 @@ async function main() {
     const createRes = await takaro.variable.variableControllerCreate({
       key: 'lastExecuted',
       gameServerId,
-      playerId: player.playerId,
+      playerId: pog.playerId,
       moduleId: mod.moduleId,
       value: new Date().toISOString(),
     });
@@ -82,7 +82,7 @@ async function main() {
 
   const teleport = JSON.parse(teleports[0].value);
 
-  await takaro.gameserver.gameServerControllerTeleportPlayer(gameServerId, player.playerId, {
+  await takaro.gameserver.gameServerControllerTeleportPlayer(gameServerId, pog.playerId, {
     x: teleport.x,
     y: teleport.y,
     z: teleport.z,

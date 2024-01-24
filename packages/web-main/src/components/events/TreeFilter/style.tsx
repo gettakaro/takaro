@@ -9,6 +9,10 @@ export const List = styled.ul`
 export const ListItem = styled.li<{ isBranch?: boolean }>`
   margin-left: ${({ isBranch, theme }) => (isBranch ? '0' : theme.spacing[2])};
   margin-bottom: ${({ isBranch, theme }) => (isBranch ? theme.spacing[1] : theme.spacing['0_75'])};
+
+  label {
+    cursor: pointer;
+  }
 `;
 
 export const ListItemHeader = styled.div<{ isBranch?: boolean }>`

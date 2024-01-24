@@ -25,6 +25,10 @@ export class ItemOutputArrayDTOAPI extends APIOutput<ItemsOutputDTO[]> {
 class ItemSearchInputAllowedFilters {
   @IsOptional()
   @IsString({ each: true })
+  id!: string[];
+
+  @IsOptional()
+  @IsString({ each: true })
   name!: string[];
 
   @IsOptional()

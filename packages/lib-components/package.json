@@ -8,8 +8,8 @@
   "main": "src/index.ts",
   "types": "src/index.ts",
   "scripts": {
-    "build": "storybook build",
-    "start:dev": "NODE_OPTIONS='' storybook dev -p 13002",
+    "build": "storybook build -c ../../.storybook",
+    "start:dev": "NODE_OPTIONS='' storybook dev -c ../../.storybook -p 13002",
     "_test": "jest",
     "test:unit": "CI=true vitest",
     "test:watch": "jest --watch",
@@ -19,13 +19,6 @@
   "devDependencies": {
     "@hookform/devtools": "^4.2.2",
     "@mdx-js/react": "^2.1.5",
-    "@storybook/addon-a11y": "7.5.3",
-    "@storybook/addon-essentials": "7.5.3",
-    "@storybook/addon-links": "7.5.3",
-    "@storybook/builder-vite": "7.5.3",
-    "@storybook/cli": "7.5.3",
-    "@storybook/react": "7.5.3",
-    "@storybook/react-vite": "7.5.3",
     "@types/jest": "^28.1.6",
     "@types/react-window": "^1.8.5",
     "@types/styled-components": "^5.1.25",
@@ -64,9 +57,7 @@
     "react-window": "^1.8.8",
     "simplebar-react": "^3.2.4",
     "styled-components": "^5.3.5",
-    "web-vitals": "^2.1.2"
-  },
-  "dependencies": {
+    "web-vitals": "^2.1.2",
     "@visx/visx": "^3.6.1"
   }
 }

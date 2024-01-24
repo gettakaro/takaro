@@ -1,78 +1,132 @@
-import { FC, PropsWithChildren } from 'react';
-import { styled } from '../../../styled';
+import {
+  Children,
+  FC,
+  forwardRef,
+  ImgHTMLAttributes,
+  PropsWithChildren,
+  ReactElement,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from 'react';
 import { Size } from '../../../styled/types';
+import { Container, GroupContainer } from './style';
+import { AvatarContext, ImageLoadingStatus, useAvatarContext } from './context';
+import { useCallbackRef } from '../../../hooks';
+import { useImageLoadingStatus } from './useImageLoadingStatus';
+import { Skeleton } from '../../../components';
 
-const Container = styled.div<{ src?: string; size: Size; isCircle: boolean }>`
-  border-radius: ${({ isCircle }): string => (isCircle ? '50%' : '30%')};
-  background-size: cover;
-  background-position: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: 700;
+// * -------------------------------------------------------------------------------------------------
+// * Avatar Image
+// * -----------------------------------------------------------------------------------------------*/
 
-  ${({ src, theme }): string => {
-    return src
-      ? `background-image: url(${src});`
-      : `background-color: ${theme.colors.background};
-         border: 1px solid ${theme.colors.backgroundAccent};`;
-  }}
+interface AvatarImageProps extends ImgHTMLAttributes<HTMLImageElement> {
+  onLoadingStatusChange?: (status: ImageLoadingStatus) => void;
+}
 
-  ${({ size, theme }) => {
-    switch (size) {
-      case 'tiny':
-        return `
-          width: 1.6rem;
-          height: 1.6rem;
-          font-size: .8rem;
-        `;
-      case 'small':
-        return `
-          width: 3.125rem;
-          height: 3.125rem;
-          font-size: ${theme.fontSize.small};
-        `;
-      case 'medium':
-        return `
-          width: 6rem;
-          height: 6rem;
-          font-size: 2rem;
-        `;
-      case 'large':
-        return `
-          width: 14rem;
-          height: 14rem;
-          font-size: 2.8rem;
-        `;
-      case 'huge':
-        return `
-          width: 20rem;
-          height: 20rem;
-          font-size: 3rem;
-        `;
+const AvatarImage = forwardRef<HTMLImageElement, AvatarImageProps>(
+  ({ onLoadingStatusChange, src, ...imageProps }, ref) => {
+    const context = useAvatarContext();
+    const imageLoadingStatus = useImageLoadingStatus(src);
+    const handleLoadingStatusChange = useCallbackRef((status: ImageLoadingStatus) => {
+      onLoadingStatusChange && onLoadingStatusChange(status);
+      context.onImageLoadingStatusChange(status);
+    });
+
+    useLayoutEffect(() => {
+      if (imageLoadingStatus !== 'idle') {
+        handleLoadingStatusChange(imageLoadingStatus);
+      }
+    }, [imageLoadingStatus, handleLoadingStatusChange]);
+
+    if (imageLoadingStatus === 'loading') {
+      return <Skeleton variant="circular" width="100%" height="100%" />;
     }
-  }}
-`;
+
+    return imageLoadingStatus === 'loaded' ? <img {...imageProps} ref={ref} src={src} /> : null;
+  }
+);
+
+// * -------------------------------------------------------------------------------------------------
+// * FallBack
+// * -----------------------------------------------------------------------------------------------*/
+
+interface AvatarFallBackProps {
+  delayMs?: number;
+}
+
+export const AvatarFallBack = forwardRef<HTMLSpanElement, PropsWithChildren<AvatarFallBackProps>>(
+  ({ children, delayMs = 250 }, ref) => {
+    const { imageLoadingStatus } = useAvatarContext();
+    const [canRender, setCanRender] = useState(delayMs === undefined);
+
+    useEffect(() => {
+      if (delayMs !== undefined) {
+        const timerId = window.setTimeout(() => setCanRender(true), delayMs);
+        return () => window.clearTimeout(timerId);
+      }
+    }, [delayMs]);
+
+    return canRender && imageLoadingStatus !== 'loaded' ? <span ref={ref}>{children}</span> : null;
+  }
+);
+
+// * -------------------------------------------------------------------------------------------------
+// * FallBack
+// * -----------------------------------------------------------------------------------------------*/
+
+export interface AvatarGroupProps {
+  /// Max amount of avatars that should be shown
+  max?: number;
+  /// Unstack avatar on hover
+  unstackOnHover?: boolean;
+}
+
+export const AvatarGroup: FC<PropsWithChildren<AvatarGroupProps>> = ({ max = 3, children, unstackOnHover = false }) => {
+  // get size of first child
+  const size = (Children.toArray(children)[0] as ReactElement<AvatarProps>).props.size;
+
+  return (
+    <GroupContainer size={size ?? 'medium'} unStackOnHover={unstackOnHover}>
+      {Children.toArray(children).slice(0, Math.min(Children.count(children), max))}
+    </GroupContainer>
+  );
+};
+
+// * -------------------------------------------------------------------------------------------------
+// * Avatar
+// * -----------------------------------------------------------------------------------------------*/
+
+interface SubComponentTypes {
+  FallBack: typeof AvatarFallBack;
+  Image: typeof AvatarImage;
+  Group: typeof AvatarGroup;
+}
+
+export type AvatarVariant = 'square' | 'rounded' | 'circle';
 
 export interface AvatarProps {
-  alt: string;
-  src?: string;
   size?: Size;
-  isCircle?: boolean;
+  variant?: AvatarVariant;
 }
 
 // TODO: skeleton loading
-export const Avatar: FC<PropsWithChildren<AvatarProps>> = ({
+export const Avatar: FC<PropsWithChildren<AvatarProps>> & SubComponentTypes = ({
   size = 'medium',
-  alt,
-  src = undefined,
+  variant,
   children,
-  isCircle = true,
 }) => {
+  const [imageLoadingStatus, setImageLoadingStatus] = useState<ImageLoadingStatus>('idle');
+
   return (
-    <Container aria-label={alt} isCircle={isCircle} role="img" size={size} src={src}>
-      {children}
-    </Container>
+    <AvatarContext.Provider value={{ imageLoadingStatus, onImageLoadingStatusChange: setImageLoadingStatus }}>
+      <Container size={size} variant={variant}>
+        {children}
+      </Container>
+    </AvatarContext.Provider>
   );
 };
+
+Avatar.FallBack = AvatarFallBack;
+Avatar.Image = AvatarImage;
+Avatar.Group = AvatarGroup;

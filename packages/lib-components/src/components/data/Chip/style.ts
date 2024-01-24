@@ -11,10 +11,11 @@ export const Container = styled.div<{
   display: inline-flex;
   align-items: center;
   justify-content: space-between;
-  padding: ${({ theme }) => `${theme.spacing['0_1']} ${theme.spacing['0_5']}`};
+  padding: ${({ theme }) => `${theme.spacing['0_25']} ${theme.spacing['0_5']}`};
   border-radius: ${({ theme }) => theme.borderRadius.small};
   cursor: ${({ clickable }): string => (clickable ? 'pointer' : 'auto')};
   width: fit-content;
+  height: 20px;
 
   svg {
     margin-left: ${({ theme }) => theme.spacing['0_5']};
@@ -49,7 +50,7 @@ export const Container = styled.div<{
     overflow: hidden;
     text-overflow: ellipsis;
 
-    font-size: ${({ theme }) => theme.fontSize.tiny};
+    font-size: ${({ theme }) => theme.fontSize.medium};
     user-select: none;
 
     ${({ theme, color, outline }) => {
@@ -58,6 +59,7 @@ export const Container = styled.div<{
       }
       switch (color) {
         case 'backgroundAccent':
+        case 'secondary':
           return `color: ${theme.colors.text};`;
         default:
           return `color: ${theme.colors[color]};`;

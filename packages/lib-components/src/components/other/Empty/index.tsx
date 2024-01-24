@@ -56,7 +56,7 @@ const ActionContainer = styled.div`
 const Description = styled.p`
   max-width: 300px;
   margin: 0.5rem auto 1rem auto;
-  color: gray;
+  color: ${({ theme }) => theme.colors.textAlt};
   text-align: center;
 `;
 

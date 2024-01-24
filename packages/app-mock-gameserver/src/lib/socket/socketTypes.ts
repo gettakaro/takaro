@@ -2,19 +2,20 @@ import { IPlayerReferenceDTO } from '@takaro/gameserver';
 
 import {
   GameEvents,
-  EventMapping,
   EventLogLine,
   EventChatMessage,
   EventPlayerConnected,
   EventPlayerDisconnected,
   EventPlayerDeath,
   EventEntityKilled,
+  GameEventTypes,
+  EventPayload,
 } from '@takaro/modules';
 import { Socket, Server } from 'socket.io';
 import { IMockGameServer } from '../gameserver/index.js';
 
 export interface ServerToClientEvents {
-  gameEvent: (type: GameEvents, data: EventMapping[GameEvents]) => void;
+  gameEvent: (type: GameEventTypes, data: EventPayload) => void;
   [GameEvents.LOG_LINE]: (line: EventLogLine) => void;
   [GameEvents.CHAT_MESSAGE]: (message: EventChatMessage) => void;
   [GameEvents.PLAYER_CONNECTED]: (player: EventPlayerConnected) => void;

@@ -38,12 +38,13 @@ export const InputContainer = styled.div`
     margin: ${({ theme }) => `auto ${theme.spacing[0]}`};
     right: ${({ theme }) => theme.spacing['1']};
     cursor: pointer;
-    fill: ${({ theme }) => theme.colors.text};
+    fill: ${({ theme }) => theme.colors.textAlt};
   }
 `;
 
 export const PrefixContainer = styled.div<{ hasError: boolean }>`
-  background-color: ${({ theme, hasError }): string => (hasError ? theme.colors.error : theme.colors.primary)};
+  background-color: ${({ theme, hasError }): string => (hasError ? theme.colors.error : theme.colors.backgroundAlt)};
+  border: 1px solid ${({ theme, hasError }): string => (hasError ? theme.colors.error : theme.colors.backgroundAccent)};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -54,7 +55,8 @@ export const PrefixContainer = styled.div<{ hasError: boolean }>`
 `;
 
 export const SuffixContainer = styled.div<{ hasError: boolean }>`
-  background-color: ${({ theme, hasError }): string => (hasError ? theme.colors.error : theme.colors.primary)};
+  background-color: ${({ theme, hasError }): string => (hasError ? theme.colors.error : theme.colors.backgroundAlt)};
+  border: 1px solid ${({ theme, hasError }): string => (hasError ? theme.colors.error : theme.colors.backgroundAccent)};
   display: flex;
   align-items: center;
   justify-content: center;
@@ -88,9 +90,6 @@ export const Input = styled.input<{
 
   &:focus {
     border: 1px solid ${({ theme, hasError }): string => (hasError ? theme.colors.error : theme.colors.primary)};
-
-    ${({ hasPrefix }) => hasPrefix && 'border-left: none;'}
-    ${({ hasSuffix }) => hasSuffix && 'border-right: none;'}
   }
   ::placeholder {
     color: ${({ theme }): string => theme.colors.textAlt};

@@ -1,7 +1,7 @@
 import { forwardRef, useEffect } from 'react';
 import { useInView } from 'react-intersection-observer';
 import { useMergeRefs } from '@floating-ui/react';
-import { Button } from '../../../components';
+import { Spinner } from '../../../components';
 
 export interface InfiniteScrollProps {
   isFetchingNextPage: boolean;
@@ -10,8 +10,8 @@ export interface InfiniteScrollProps {
   hasNextPage?: boolean;
 }
 
-export const InfiniteScroll = forwardRef<HTMLButtonElement, InfiniteScrollProps>(
-  ({ hasNextPage = false, isFetching, isFetchingNextPage, fetchNextPage }, propRef) => {
+export const InfiniteScroll = forwardRef<HTMLDivElement, InfiniteScrollProps>(
+  ({ hasNextPage = false, fetchNextPage }, propRef) => {
     const { ref: viewRef, inView } = useInView();
     const ref = useMergeRefs([propRef, viewRef]);
 
@@ -21,23 +21,16 @@ export const InfiniteScroll = forwardRef<HTMLButtonElement, InfiniteScrollProps>
       }
     }, [inView]);
 
-    // This is a fallback in case the user doesn't scroll down enough to trigger the inView event.
-    // the user will have to manually click the button to load more.
-    const handleOnClick = () => {
-      fetchNextPage();
-    };
-
     return (
       <>
         {hasNextPage && (
-          <Button
-            isLoading={isFetchingNextPage}
-            text={isFetchingNextPage ? 'Loading more...' : 'Load more'}
+          <div
             ref={ref}
-            onClick={handleOnClick}
-          />
+            style={{ display: 'flex', height: '100%', width: '100%', justifyContent: 'center', alignItems: 'center' }}
+          >
+            <Spinner size="medium" />
+          </div>
         )}
-        <div>{isFetching && !isFetchingNextPage ? 'updating data' : null}</div>
       </>
     );
   }

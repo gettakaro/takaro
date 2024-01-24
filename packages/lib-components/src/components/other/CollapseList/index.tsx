@@ -5,9 +5,16 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useTheme } from '../../../hooks';
 
 const StyledList = styled.div`
+  height: 100%;
   display: flex;
   flex-direction: column;
+
+  & > *:not(:last-child) {
+    flex-shrink: 0;
+  }
+
   & > div:last-child {
+    min-height: 0;
     flex-grow: 1;
   }
 `;
@@ -32,7 +39,8 @@ const Header = styled.div<{ isCollapsed: boolean }>`
   min-height: 4rem;
   padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing[1]}`};
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
-  border-radius: ${({ theme }) => theme.borderRadius.small};
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+  border: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
   margin-bottom: ${({ theme, isCollapsed }) => (isCollapsed ? theme.spacing['0_75'] : 0)};
 
   svg {
@@ -46,7 +54,15 @@ const Item: FC<PropsWithChildren<ItemProps>> = ({ collapsed = false, title, chil
   const theme = useTheme();
 
   return (
-    <div style={{ width: '100%' }} role="treeitem">
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: 0,
+        width: '100%',
+      }}
+      role="treeitem"
+    >
       <Header isCollapsed={isCollapsed} onClick={() => setIsCollapsed((prev) => !prev)}>
         <h3>{title}</h3>
         <ArrowUp size={18} />
@@ -55,9 +71,10 @@ const Item: FC<PropsWithChildren<ItemProps>> = ({ collapsed = false, title, chil
       <AnimatePresence>
         {!isCollapsed && (
           <motion.div
+            style={{ maxHeight: '100%' }}
             key={`collapse-item-${title}`}
             variants={{
-              open: { opacity: 1, height: 'auto' },
+              open: { opacity: 1, height: 'auto', flexGrow: 1, minHeight: 0, overflowY: 'auto' },
               collapsed: { opacity: 0, height: 0 },
             }}
             initial="collapsed"
@@ -73,7 +90,7 @@ const Item: FC<PropsWithChildren<ItemProps>> = ({ collapsed = false, title, chil
               transition={{ duration: 0.125, ease: 'linear' }}
               style={{
                 transformOrigin: 'top center',
-                padding: `${theme.spacing['0_75']} ${theme.spacing['0']} ${theme.spacing['1_5']} ${theme.spacing['0']}`,
+                padding: `${theme.spacing['0_75']} ${theme.spacing['0_5']} ${theme.spacing['1_5']} ${theme.spacing['1']}`,
               }}
             >
               {children}

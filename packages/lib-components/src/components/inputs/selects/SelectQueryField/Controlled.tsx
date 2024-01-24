@@ -1,0 +1,96 @@
+import { FC, PropsWithChildren, useState } from 'react';
+import { useController } from 'react-hook-form';
+import { ControlledInputProps, defaultInputPropsFactory, defaultInputProps } from '../../InputProps';
+import { GenericSelectQueryField, SelectQueryFieldProps } from './Generic';
+import { Option, OptionGroup, SubComponentTypes } from '../SubComponents';
+import { ErrorMessage, Label, Wrapper, Description } from '../../layout';
+import { Container } from '../sharedStyle';
+
+export type ControlledSelectQueryFieldProps = PropsWithChildren<SelectQueryFieldProps & ControlledInputProps>;
+
+const defaultsApplier = defaultInputPropsFactory<ControlledSelectQueryFieldProps>(defaultInputProps);
+
+export const ControlledSelectQueryField: FC<ControlledSelectQueryFieldProps> & SubComponentTypes = (props) => {
+  const {
+    required,
+    size: componentSize,
+    label,
+    children,
+    placeholder,
+    readOnly,
+    disabled,
+    hint,
+    description,
+    name,
+    multiSelect,
+    control,
+    inPortal,
+    debounce,
+    isLoadingData,
+    handleInputValueChange,
+  } = defaultsApplier(props);
+
+  const {
+    field,
+    fieldState: { error },
+  } = useController({
+    name,
+    control,
+  });
+
+  const [showError, setShowError] = useState<boolean>(true);
+
+  const handleOnBlur = () => {
+    field.onBlur();
+    setShowError(true);
+  };
+
+  const handleOnFocus = () => {
+    setShowError(false);
+  };
+
+  return (
+    <Wrapper>
+      <Container>
+        {label && (
+          <Label
+            error={!!error}
+            text={label}
+            required={required}
+            position="top"
+            size={componentSize}
+            disabled={disabled}
+            hint={hint}
+          />
+        )}
+        <GenericSelectQueryField
+          name={name}
+          id={name}
+          isLoadingData={isLoadingData}
+          hasError={!!error}
+          placeholder={placeholder}
+          hasDescription={!!description}
+          readOnly={readOnly}
+          disabled={disabled}
+          multiSelect={multiSelect}
+          required={required}
+          size={componentSize}
+          inPortal={inPortal}
+          onChange={field.onChange}
+          onBlur={handleOnBlur}
+          onFocus={handleOnFocus}
+          value={field.value}
+          debounce={debounce}
+          handleInputValueChange={handleInputValueChange}
+        >
+          {children}
+        </GenericSelectQueryField>
+        {error && error.message && showError && <ErrorMessage message={error.message} />}
+      </Container>
+      {description && <Description description={description} inputName={name} />}
+    </Wrapper>
+  );
+};
+
+ControlledSelectQueryField.OptionGroup = OptionGroup;
+ControlledSelectQueryField.Option = Option;

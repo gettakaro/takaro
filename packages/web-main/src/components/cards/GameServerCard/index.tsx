@@ -1,24 +1,45 @@
-import { FC, MouseEvent, useState } from 'react';
-import { Button, Chip, Dialog, Dropdown, IconButton, Tooltip, Card } from '@takaro/lib-components';
-import { PERMISSIONS } from '@takaro/apiclient';
-import { Header, TitleContainer } from './style';
-import { GameServerOutputDTO } from '@takaro/apiclient';
+import { FC, MouseEvent, useEffect, useState } from 'react';
+import { Button, Chip, Dialog, Dropdown, IconButton, Tooltip, Card, Skeleton } from '@takaro/lib-components';
+import { EventOutputDTO, GameServerOutputDTO, PERMISSIONS } from '@takaro/apiclient';
 import { useNavigate } from 'react-router-dom';
-
 import { AiOutlineMenu as MenuIcon } from 'react-icons/ai';
+
 import { PATHS } from 'paths';
+import { Header, TitleContainer, DetailsContainer } from './style';
 import { useGameServerRemove } from 'queries/gameservers';
 import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 import { PermissionsGuard } from 'components/PermissionsGuard';
 import { CardBody } from '../style';
+import { useSocket } from 'hooks/useSocket';
+import { usePlayerOnGameServers } from 'queries/players/queries';
 
 export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reachable }) => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const navigate = useNavigate();
-
-  const { mutateAsync, isLoading: isDeleting } = useGameServerRemove();
-
   const { selectedGameServerId, setSelectedGameServerId } = useSelectedGameServer();
+  const { mutateAsync, isLoading: isDeleting } = useGameServerRemove();
+  const { socket } = useSocket();
+  const {
+    data: onlinePogs,
+    isLoading: isLoadingPogs,
+    refetch,
+  } = usePlayerOnGameServers({
+    filters: {
+      online: [true],
+      gameServerId: [id],
+    },
+  });
+
+  useEffect(() => {
+    socket.on('event', (event: EventOutputDTO) => {
+      if (event.eventName === 'player-connected') refetch();
+      if (event.eventName === 'player-disconnected') refetch();
+    });
+
+    return () => {
+      socket.off('event');
+    };
+  }, []);
 
   const handleOnEditClick = (e: MouseEvent): void => {
     e.stopPropagation();
@@ -26,7 +47,6 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
   };
   const handleOnDeleteClick = (e: MouseEvent) => {
     e.stopPropagation();
-
     setOpenDialog(true);
   };
 
@@ -41,7 +61,11 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
 
   return (
     <>
-      <Card role="link" onClick={() => navigate(PATHS.gameServer.dashboard(id))} data-testid={`gameserver-${id}-card`}>
+      <Card
+        role="link"
+        onClick={() => navigate(PATHS.gameServer.dashboard.overview(id))}
+        data-testid={`gameserver-${id}-card`}
+      >
         <CardBody>
           <Header>
             {reachable ? <span>online</span> : <Chip label={'offline'} color="error" variant="outline" />}
@@ -57,17 +81,28 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
               </Dropdown>
             </PermissionsGuard>
           </Header>
-          <TitleContainer>
-            <h3>{name}</h3>
+          <DetailsContainer>
+            <TitleContainer>
+              <h3>{name}</h3>
+              <div>
+                <Tooltip placement="bottom">
+                  <Tooltip.Trigger asChild>
+                    <p>{type}</p>
+                  </Tooltip.Trigger>
+                  <Tooltip.Content>Game server type</Tooltip.Content>
+                </Tooltip>
+              </div>
+            </TitleContainer>
             <div>
-              <Tooltip placement="bottom">
-                <Tooltip.Trigger asChild>
-                  <p>{type}</p>
-                </Tooltip.Trigger>
-                <Tooltip.Content>Game server type</Tooltip.Content>
-              </Tooltip>
+              {isLoadingPogs && (
+                <p>
+                  <Skeleton variant="rectangular" width="100px" height="15px" />
+                </p>
+              )}
+              {!isLoadingPogs && !onlinePogs && <p>Online players: unknown</p>}
+              {onlinePogs && <p>Online players: {onlinePogs?.data.length}</p>}
             </div>
-          </TitleContainer>
+          </DetailsContainer>
         </CardBody>
       </Card>
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>

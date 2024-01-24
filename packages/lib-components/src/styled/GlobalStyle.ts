@@ -38,7 +38,10 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background-color: ${({ theme }) => theme.colors.background};
-    scrollbar-gutter: stable;
+
+    @supports (scrollbar-gutter: stable) {
+      scrollbar-gutter: stable;
+    }
   }
 
   body{
@@ -72,6 +75,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     font-weight: 500;
   }
 
+
   strong {
     padding: ${({ theme }) => `0 ${theme.spacing['0_25']}`};
     border-radius: ${({ theme }) => theme.borderRadius.small};
@@ -101,12 +105,22 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     border-color: transparent;
     background-color: ${({ theme }) => theme.colors.backgroundAlt};
     color: ${({ theme }) => theme.colors.text};
+    font-family: inherit;
     &[readOnly]{
       cursor: not-allowed;
       &:focus {
         border-color: none!important;
       }
     }
+
+    &:disabled {
+      cursor: not-allowed;
+      &:focus {
+        border-color: none!important;
+      }
+    }
+
+
     &:focus {
       outline: 0;
     }
@@ -171,10 +185,13 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
       bottom: 0;
       left: 0;
       transform: translateX(-100%);
-      background-image: linear-gradient( 90deg, ${({ theme }): string => theme.colors.placeholderHighlight}d3 0, ${({
-  theme,
-}): string => theme.colors.placeholderHighlight}4d 20%, ${({ theme }): string =>
-  theme.colors.placeholderHighlight}66 60%, ${({ theme }): string => theme.colors.placeholderHighlight}d3);
+      background-image: linear-gradient(
+        90deg, 
+        ${({ theme }): string => theme.colors.placeholderHighlight}d3 0, 
+        ${({ theme }): string => theme.colors.placeholderHighlight}4d 20%, 
+        ${({ theme }): string => theme.colors.placeholderHighlight}66 60%, 
+        ${({ theme }): string => theme.colors.placeholderHighlight}d3
+      );
       animation: ${skeletonLoading} 2.5s infinite ease-in-out;
     }
   }

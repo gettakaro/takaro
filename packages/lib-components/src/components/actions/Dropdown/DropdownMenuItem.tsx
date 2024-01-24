@@ -2,7 +2,7 @@ import { useListItem } from '@floating-ui/react';
 import { cloneElement, FC, ReactElement, MouseEvent } from 'react';
 import { useDropdownContext } from './DropdownContext';
 import { styled } from '../../../styled';
-import { AiOutlineClose as UndoIcon } from 'react-icons/ai';
+import { AiOutlineClose as UndoIcon, AiOutlineCheck as CheckmarkIcon } from 'react-icons/ai';
 import { motion } from 'framer-motion';
 import { GenericCheckBox } from '../../../components/inputs/CheckBox/Generic';
 
@@ -44,7 +44,7 @@ interface DropdownMenuItemProps {
   iconPosition?: 'left' | 'right';
   onClick: (e: MouseEvent<HTMLButtonElement>) => void;
   active?: boolean;
-  activeStyle?: 'checkbox' | 'undo';
+  activeStyle?: 'checkbox' | 'undo' | 'checkmark';
 }
 
 export const DropdownMenuItem: FC<DropdownMenuItemProps> = ({
@@ -121,7 +121,8 @@ export const DropdownMenuItem: FC<DropdownMenuItemProps> = ({
         <span>{label}</span>
         {icon && iconPosition === 'right' && getIcon()}
       </div>
-      {active && activeStyle === 'undo' && <UndoIcon size={16} />}
+      {active && activeStyle === 'undo' && <UndoIcon style={{ marginLeft: '10px' }} size={16} />}
+      {active && activeStyle === 'checkmark' && <CheckmarkIcon style={{ marginLeft: '10px' }} size={16} />}
     </Container>
   );
 };
