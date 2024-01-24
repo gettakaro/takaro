@@ -22,3 +22,21 @@ We recommend you to use this migration tool only if you have a lot of data in CS
 just starting out, we recommend you to start fresh with Takaro.
 
 </Callout>
+
+## Takaro roles are completely different than CSMM roles, how does that work?
+
+Roles work differently in Takaro than in CSMM. In CSMM, roles are assigned a 'level' which establishes a hierarchy; a lower number indicates a higher rank, with 0 being the superadmin/root level.
+Permissions in CSMM are typically configured to require a role level lower than a specific threshold, such as 1000.
+
+Takaro, however, approaches roles differently:
+
+- In Takaro, roles do not have a 'level'. Instead, they are composed of 'permissions'.
+- These permissions determine what actions can be performed within the Takaro API. You can refer to the [Takaro API Documentation](/api-docs/enums/_takaro_apiclient.PERMISSIONS.html) for details on built-in permissions.
+- Modules in Takaro can also define their own permissions. These permissions are automatically integrated into the roles.
+- An example of this can be seen on the role editing page in Takaro, where module-specific permissions are listed.
+
+Thus, while CSMM uses a level-based system for roles, Takaro utilizes a permission-based approach, offering a different and more granular control over user capabilities.
+
+[More information on Takaro roles can be found in the documentation](./roles-and-permissions.md).
+
+![Takaro role editing page](../assets/images/faq/roles-module-permissions.png)
