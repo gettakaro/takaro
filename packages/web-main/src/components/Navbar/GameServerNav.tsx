@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo } from 'react';
+import { FC, useMemo } from 'react';
 import { NavbarLink, renderLink } from '.';
 import { GameServerSelectNav } from './GameServerSelectNav';
 import { Button } from '@takaro/lib-components';
@@ -23,13 +23,6 @@ export const GameServerNav: FC = () => {
 
   const { data } = useGameServers();
   const { selectedGameServerId, setSelectedGameServerId } = useSelectedGameServer();
-
-  useEffect(() => {
-    // If there is no selectedGameServerId, select the first one.
-    if (selectedGameServerId === '' && data && data.pages[0].data.length > 0) {
-      setSelectedGameServerId(data.pages[0].data[0].id);
-    }
-  }, [selectedGameServerId]);
 
   const gameServerLinks: NavbarLink[] = useMemo(() => {
     return [
