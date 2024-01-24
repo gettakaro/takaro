@@ -11,7 +11,7 @@ import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 import { PermissionsGuard } from 'components/PermissionsGuard';
 import { CardBody } from '../style';
 import { useSocket } from 'hooks/useSocket';
-import { usePlayerOnGameServers } from 'queries/players/queries';
+import { usePlayerOnGameServers } from 'queries/pog/queries';
 
 export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reachable }) => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);

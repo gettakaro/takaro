@@ -10,7 +10,6 @@ export default defineConfig({
     sourcemap: true,
     cssMinify: 'lightningcss',
   },
-
   server: {
     warmup: {
       clientFiles: [

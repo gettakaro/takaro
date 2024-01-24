@@ -3,7 +3,8 @@ import { Skeleton, styled } from '@takaro/lib-components';
 import { Player } from 'components/Player';
 import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 import { useSocket } from 'hooks/useSocket';
-import { usePlayerOnGameServers, usePlayers } from 'queries/players/queries';
+import { usePlayerOnGameServers } from 'queries/pog/queries';
+import { usePlayers } from 'queries/players';
 import { FC, useEffect } from 'react';
 import { Card } from './style';
 

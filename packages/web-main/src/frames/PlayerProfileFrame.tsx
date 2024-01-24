@@ -13,7 +13,7 @@ import { usePlayer } from 'queries/players';
 import { FC } from 'react';
 import { useParams, useNavigate, Outlet } from 'react-router-dom';
 import { DateTime } from 'luxon';
-import { usePlayerOnGameServers } from 'queries/players/queries';
+import { usePlayerOnGameServers } from 'queries/pog/queries';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
 const Container = styled.div`
