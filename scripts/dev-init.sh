@@ -43,6 +43,32 @@ if [ ! -d "./_data/grafana" ]; then
 	fi
 fi
 
+# Same for postgres
+if [ ! -d "./_data/db" ]; then
+  mkdir -p ./_data/db
+  if command -v sudo >/dev/null 2>&1; then
+    sudo chown -R 1000:1000 ./_data/db
+  fi
+fi
+
+# Same for postgres (hydra)
+if [ ! -d "./_data/hydra-db/" ]; then
+  mkdir -p ./_data/db
+  if command -v sudo >/dev/null 2>&1; then
+    sudo chown -R 1000:1000 ./_data/hydra-db
+  fi
+fi
+
+# Same for postgres (kratos)
+if [ ! -d "./_data/kratos-db/" ]; then
+  mkdir -p ./_data/db
+  if command -v sudo >/dev/null 2>&1; then
+    sudo chown -R 1000:1000 ./_data/kratos-db
+  fi
+fi
+
+
+
 printHeader "Installing node dependencies"
 npm ci
 
@@ -66,5 +92,4 @@ npm run-script -w packages/test build
 
 npx ts-node scripts/getMonacoCustomTypes.ts
 
-# npm run-script -w packages/app-api build
 # npm run-script -w packages/app-agent build

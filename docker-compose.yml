@@ -15,6 +15,7 @@ services:
     image: postgres:15
     volumes:
       - ./_data/db:/var/lib/postgresql/data
+    user: 1000:1000
     ports:
       - 127.0.0.1:13100:5432
     environment:
@@ -148,6 +149,7 @@ services:
       - ./containers/ory/kratos:/etc/config/kratos
   postgresql_kratos:
     image: postgres:15
+    user: 1000:1000
     ports:
       - 127.0.0.1:13101:5432
     volumes:
@@ -192,6 +194,7 @@ services:
 
   postgresql_hydra:
     image: postgres:15
+    user: 1000:1000
     ports:
       - 127.0.0.1:13102:5432
     volumes:
@@ -200,6 +203,21 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: hydra
+  
+  influxdb:
+    image: influxdb:2.7.5-alpine
+    ports:
+      - '8086:8086' # UI
+      # - '8088:8088' # Default port for `influxdb backup` and `influxd restore`
+    volumes:
+      - ./_data/influx-db:/var/lib/influxdb2
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_ORG: ${INFLUXDB_ORG}
+      DOCKER_INFLUXDB_INIT_USERNAME: ${INFLUXDB_USER}
+      DOCKER_INFLUXDB_INIT_PASSWORD: ${INFLUXDB_PASSWORD}
+      DOCKER_INFLUXDB_INIT_BUCKET: ${INFLUXDB_BUCKET}
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: ${INFLUXDB_ADMIN_TOKEN}
 
   #  mailslurper:
   #    image: oryd/mailslurper:latest-smtps

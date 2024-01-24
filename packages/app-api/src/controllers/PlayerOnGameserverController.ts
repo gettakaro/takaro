@@ -14,6 +14,7 @@ import {
 } from '../service/PlayerOnGameserverService.js';
 import { onlyIfEconomyEnabledMiddleware } from '../middlewares/onlyIfEconomyEnabled.js';
 import { PlayerService } from '../service/PlayerService.js';
+import { PlayerPingStat } from '../lib/stat.js';
 
 export class PlayerOnGameserverOutputDTOAPI extends APIOutput<PlayerOnGameserverOutputWithRolesDTO> {
   @Type(() => PlayerOnGameserverOutputWithRolesDTO)
@@ -62,6 +63,14 @@ class PlayerOnGameServerSearchInputDTO extends ITakaroQuery<PlayerOnGameServerSe
 class PlayerOnGameServerSetCurrencyInputDTO {
   @IsNumber()
   currency!: number;
+}
+
+class PlayerOnGameServerStatsInputDTO {
+  @IsString()
+  startISO!: string;
+
+  @IsString()
+  endISO!: string;
 }
 
 class ParamSenderReceiver {
@@ -159,5 +168,22 @@ export class PlayerOnGameServerController {
     const playerService = new PlayerService(req.domainId);
     const pog = await playerService.getRef(params.playerId, params.gameServerId);
     return apiResponse(await service.deductCurrency(pog.id, body.currency));
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_PLAYERS]))
+  @Post('/gameserver/:gameServerId/player/:playerId/stats/ping')
+  async ping(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: PogParam,
+    @Body() body: PlayerOnGameServerStatsInputDTO
+  ) {
+    const pingStatService = new PlayerPingStat(req.domainId);
+    const res = await pingStatService.read({
+      playerId: params.playerId,
+      gameServerId: params.gameServerId,
+      startISO: body.startISO,
+      endISO: body.endISO,
+    });
+    return apiResponse(res);
   }
 }

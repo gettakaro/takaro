@@ -21,6 +21,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@influxdata/influxdb-client": "^1.33.2",
+    "@influxdata/influxdb-client-apis": "^1.33.2",
     "@socket.io/admin-ui": "^0.5.0",
     "@takaro/db": "0.0.1",
     "@takaro/email": "0.0.1",

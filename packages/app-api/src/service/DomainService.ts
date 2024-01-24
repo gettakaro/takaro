@@ -85,7 +85,6 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
     if (!existing) {
       throw new errors.NotFoundError();
     }
-
     const gameServerService = new GameServerService(id);
     const allGameServers = await gameServerService.find({});
     for (const gameServer of allGameServers.results) {

@@ -25,6 +25,13 @@ interface IHttpConfig extends IBaseConfig {
       clientSecret?: string;
     };
   };
+  influxdb: {
+    host: string;
+    port: number;
+    org: string;
+    token: string;
+    bucket: string;
+  };
   discord: {
     botToken?: string;
   };
@@ -153,6 +160,38 @@ const configSchema = {
       format: Number,
       default: ms('1m'),
       env: 'KPI_INTERVAL',
+    },
+  },
+  influxdb: {
+    host: {
+      doc: 'The Influxdb host to connect to',
+      format: String,
+      default: 'localhost',
+      env: 'INFLUXDB_HOST',
+    },
+    port: {
+      doc: 'The Influxdb port to connect to',
+      format: Number,
+      default: 8086,
+      env: 'INFLUXDB_PORT',
+    },
+    org: {
+      doc: 'The influxdb organisation to connect with',
+      format: String,
+      default: '',
+      env: 'INFLUXDB_ORG',
+    },
+    token: {
+      doc: 'The Influxdb token to connect with',
+      format: String,
+      default: '',
+      env: 'INFLUXDB_ADMIN_TOKEN',
+    },
+    bucket: {
+      doc: 'The Influxdb bucket to use. Temporary until we have multiple buckets',
+      format: String,
+      default: '',
+      env: 'INFLUXDB_BUCKET',
     },
   },
   steam: {

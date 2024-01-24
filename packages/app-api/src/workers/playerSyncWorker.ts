@@ -7,6 +7,7 @@ import { GameServerService } from '../service/GameServerService.js';
 import { ctx } from '@takaro/util';
 import { PlayerService } from '../service/PlayerService.js';
 import { PlayerOnGameServerService, PlayerOnGameServerUpdateDTO } from '../service/PlayerOnGameserverService.js';
+import { PlayerPingStat } from '../lib/stat.js';
 
 const log = logger('worker:playerSync');
 
@@ -88,6 +89,7 @@ export async function processJob(job: Job<IGameServerQueueData>) {
     const gameServerService = new GameServerService(domainId);
     const playerService = new PlayerService(domainId);
     const playerOnGameServerService = new PlayerOnGameServerService(domainId);
+    const playerPingStat = new PlayerPingStat(domainId);
 
     const onlinePlayers = await gameServerService.getPlayers(gameServerId);
 
@@ -98,6 +100,7 @@ export async function processJob(job: Job<IGameServerQueueData>) {
         .setOnlinePlayers(gameServerId, onlinePlayers)
         .then(() => job.log(`Set online players (${onlinePlayers.length}) for game server: ${gameServerId}`))
     );
+
     promises.push(
       gameServerService
         .syncInventories(gameServerId)
@@ -115,6 +118,14 @@ export async function processJob(job: Job<IGameServerQueueData>) {
           await playerService.observeIp(resolvedPlayer.id, gameServerId, player.ip);
         }
 
+        if (player.ping) {
+          await playerPingStat.write({
+            playerId: resolvedPlayer.id,
+            gameServerId,
+            ping: player.ping,
+          });
+        }
+
         await playerOnGameServerService.addInfo(
           player,
           gameServerId,
@@ -122,6 +133,7 @@ export async function processJob(job: Job<IGameServerQueueData>) {
             ping: player.ping,
           })
         );
+
         await job.log(`Synced player ${player.gameId} on game server ${gameServerId}`);
       })
     );
