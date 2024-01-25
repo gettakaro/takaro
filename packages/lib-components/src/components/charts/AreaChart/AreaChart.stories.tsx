@@ -6,7 +6,7 @@ import { styled } from '../../../styled';
 import { bisector } from '@visx/vendor/d3-array';
 
 export default {
-  title: 'Chart/AreaChart',
+  title: 'Charts/AreaChart',
   component: AreaChart,
   args: {
     showBrush: true,

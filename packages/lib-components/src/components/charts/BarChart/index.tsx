@@ -254,7 +254,7 @@ const Chart = <T,>({
               id={PATTERN_ID}
               height={8}
               width={8}
-              stroke={theme.colors.tertiary}
+              stroke={theme.colors.backgroundAccent}
               strokeWidth={1}
               orientation={['diagonal']}
             />
@@ -270,7 +270,7 @@ const Chart = <T,>({
               onChange={onBrushChange}
               selectedBoxStyle={{
                 fill: `url(#${PATTERN_ID})`,
-                stroke: theme.colors.tertiary,
+                stroke: theme.colors.backgroundAccent,
               }}
               useWindowMoveEvents
               handleSize={8}

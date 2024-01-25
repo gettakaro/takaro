@@ -5,7 +5,7 @@ import { styled } from '../../../styled';
 import letterFrequency, { LetterFrequency } from '@visx/mock-data/lib/mocks/letterFrequency';
 
 export default {
-  title: 'Chart/BarChart',
+  title: 'Charts/BarChart',
   component: BarChart,
 } as Meta<BarChartProps<LetterFrequency>>;
 
