@@ -6,6 +6,11 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 
+const options = [
+  { value: 'm', label: 'male' },
+  { value: 'f', label: 'female' },
+];
+
 export default {
   title: 'Inputs/RadioGroup',
   component: RadioGroup,
@@ -54,11 +59,16 @@ export const OnSubmit: StoryFn<RadioGroupProps> = (args) => {
           hint={args.hint}
           required={args.required}
           description={args.description}
-          options={[
-            { label: 'male', labelPosition: 'right', value: 'm' },
-            { label: 'female', labelPosition: 'right', value: 'f' },
-          ]}
-        />
+        >
+          {options.map(({ value, label }) => (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+              <RadioGroup.Item value={value} id={value} />
+              <label htmlFor={value} style={{ cursor: 'pointer' }}>
+                {label}
+              </label>
+            </div>
+          ))}
+        </RadioGroup>
         <Button text="submit" type="submit" />
       </form>
       <div>Result: {result}</div>
