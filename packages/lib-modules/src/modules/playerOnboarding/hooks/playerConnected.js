@@ -4,7 +4,7 @@ async function main() {
   const data = await getData();
   const takaro = await getTakaro(data);
 
-  const player = data.eventData.player;
+  const { player } = data;
 
   const rawMessage = data.module.userConfig.message;
   const message = rawMessage.replace('{player}', player.name);

@@ -4,11 +4,11 @@ async function main() {
   const data = await getData();
   const takaro = await getTakaro();
 
-  const { player, gameServerId, arguments: args, module: mod } = data;
+  const { pog, gameServerId, arguments: args, module: mod } = data;
 
   const varKey = 'lottery_tickets_bought';
 
-  if (!checkPermission(player, 'LOTTERY_BUY')) {
+  if (!checkPermission(pog, 'LOTTERY_BUY')) {
     throw new TakaroUserError('You do not have permission to buy lottery tickets.');
   }
 
@@ -18,7 +18,7 @@ async function main() {
         gameServerId: [gameServerId],
         key: [varKey],
         moduleId: [mod.moduleId],
-        playerId: [player.playerId],
+        playerId: [pog.playerId],
       },
     })
   ).data.data;
@@ -31,7 +31,7 @@ async function main() {
 
     await takaro.variable.variableControllerUpdate(ticketsBought.id, {
       key: varKey,
-      playerId: player.playerId,
+      playerId: pog.playerId,
       moduleId: mod.moduleId,
       gameServerId,
       value: JSON.stringify({ amount: ticketsBoughtAmount + args.amount }),
@@ -46,22 +46,22 @@ async function main() {
       }),
       gameServerId,
       moduleId: mod.moduleId,
-      playerId: player.playerId,
+      playerId: pog.playerId,
     });
   }
 
-  if (args.amount > 1) {
+  if (args.amount >= 1) {
     const amount = args.amount * mod.systemConfig.commands.buyTicket.cost;
 
-    await takaro.playerOnGameserver.playerOnGameServerControllerDeductCurrency(gameServerId, player.id, {
+    await takaro.playerOnGameserver.playerOnGameServerControllerDeductCurrency(gameServerId, pog.playerId, {
       currency: amount,
     });
   }
 
   const ticketPrice = args.amount * mod.systemConfig.commands.buyTicket.cost;
-  const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data;
+  const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data.value;
 
-  await player.pm(`You have successfully bought ${args.amount} tickets for ${ticketPrice} ${currencyName}. Good luck!`);
+  await pog.pm(`You have successfully bought ${args.amount} tickets for ${ticketPrice} ${currencyName}. Good luck!`);
 }
 
 await main();

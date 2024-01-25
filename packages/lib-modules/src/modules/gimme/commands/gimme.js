@@ -19,7 +19,7 @@ async function main() {
   const randomOption = items.concat(commands)[randomIndex];
 
   if (randomIndex < items.length) {
-    await takaro.gameserver.gameServerControllerGiveItem(data.gameServerId, data.player.playerId, {
+    await takaro.gameserver.gameServerControllerGiveItem(data.gameServerId, data.player.id, {
       name: randomOption,
       amount: 1,
     });

@@ -64,7 +64,10 @@ export async function matchSnapshot<SetupData>(
   const snapshotData = filterFields(JSON.parse(file), filteredFields);
 
   try {
-    expect(filterFields(fullData, filteredFields)).to.deep.equal(snapshotData);
+    expect(filterFields(fullData, filteredFields)).to.deep.equal(
+      snapshotData,
+      `Snapshot does not match: ${snapshotPath}`
+    );
   } catch (error) {
     if (integrationConfig.get('overwriteSnapshots')) {
       await writeFile(snapshotPath, JSON.stringify(fullData, null, 2));

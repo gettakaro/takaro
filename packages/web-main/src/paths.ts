@@ -41,7 +41,7 @@ export const PATHS = {
 
   gameServer: {
     dashboard: {
-      overview: (serverId: string) => `/server/dashboard/${serverId}`,
+      overview: (serverId: string) => `/server/dashboard/${serverId}/overview`,
       console: (serverId: string) => `/server/dashboard/${serverId}/console`,
       statistics: (serverId: string) => `/server/dashboard/${serverId}/statistics`,
     },
@@ -65,8 +65,13 @@ export const PATHS = {
   },
 
   player: {
-    profile: (playerId: string) => `/players/${playerId}`,
-    assignRole: (playerId: string) => `/players/${playerId}/assign-role`,
+    global: {
+      profile: (playerId: string) => `/players/${playerId}/global`,
+      assignRole: (playerId: string) => `/players/${playerId}/global/assign-role`,
+    },
+    inventory: (playerId: string) => `/players/${playerId}/inventory`,
+    events: (playerId: string) => `/players/${playerId}/events`,
+    economy: (playerId: string) => `/players/${playerId}/economy`,
   },
 
   user: {

@@ -44,7 +44,7 @@ class SocketServer {
 
       this.log.info(`New connection: ${socket.id}`);
       socket.onAny(async (event: keyof IMockGameServer | 'ping', ...args) => {
-        this.log.info(`Event: ${event}`);
+        this.log.verbose(`Event: ${event}`);
 
         if (event === 'ping') {
           args[args.length - 1]('pong');
@@ -58,7 +58,7 @@ class SocketServer {
           // But TS does not like this (for good reason)
           // Making the exception here because this is a mock server...
           const result = await instance[event](...args);
-          this.log.info('Result', { result });
+          this.log.verbose('Result', { result });
           args[args.length - 1](result);
         } else {
           this.log.warn(`Event ${event} not found`);

@@ -3,7 +3,7 @@ import { getTakaro, getData, TakaroUserError } from '@takaro/helpers';
 async function main() {
   const data = await getData();
   const takaro = await getTakaro(data);
-  const { gameServerId, player: sender, module: mod } = data;
+  const { gameServerId, pog: sender, module: mod } = data;
 
   // try to find a variable with key "confirmTransfer"
   const variables = (
@@ -36,7 +36,7 @@ async function main() {
 
   const receiverName = (await takaro.player.playerControllerGetOne(pendingTransfer.receiver.playerId)).data.data.name;
   const senderName = (await takaro.player.playerControllerGetOne(sender.playerId)).data.data.name;
-  const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data;
+  const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data.value;
 
   const messageToSender = sender.pm(
     `You successfully transferred ${pendingTransfer.amount} ${currencyName} to ${receiverName}`

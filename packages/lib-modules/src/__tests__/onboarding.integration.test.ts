@@ -1,6 +1,6 @@
 import { IntegrationTest, expect } from '@takaro/test';
 import { IModuleTestsSetupData, modulesTestSetup } from './setupData.integration.test.js';
-import { GameEvents } from '../dto/gameEvents.js';
+import { EventPlayerConnected, GameEvents } from '../dto/gameEvents.js';
 
 const group = 'Onboarding';
 const groupStarterkit = 'Onboarding - Starterkit';
@@ -19,10 +19,14 @@ const tests = [
       const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
       await this.client.hook.hookControllerTrigger({
         gameServerId: this.setupData.gameserver.id,
+        playerId: this.setupData.players[0].id,
         eventType: GameEvents.PLAYER_CONNECTED,
-        player: {
-          gameId: '1',
-        },
+        eventMeta: await new EventPlayerConnected().construct({
+          player: {
+            gameId: '1',
+          },
+          msg: 'Player connected',
+        }),
       });
 
       expect((await events).length).to.be.eq(1);

@@ -1,6 +1,7 @@
 import { BuiltinModule } from './BuiltinModule.js';
 import { ChatBridge } from './modules/chatBridge/index.js';
 import { Economy } from './modules/economy/index.js';
+import { GeoBlock } from './modules/geoBlock/index.js';
 import { Gimme } from './modules/gimme/index.js';
 import { HighPingKicker } from './modules/highPingKicker/index.js';
 import { Lottery } from './modules/lottery/index.js';
@@ -27,6 +28,7 @@ export async function getModules(): Promise<Array<BuiltinModule>> {
       new HighPingKicker(),
       new Economy(),
       new Lottery(),
+      new GeoBlock(),
     ];
     await Promise.all(cached.map((mod) => mod.construct()));
   }
