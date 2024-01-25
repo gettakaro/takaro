@@ -8,7 +8,9 @@ import { GameServerService } from '../service/GameServerService.js';
 import { PlayerService } from '../service/PlayerService.js';
 import { UserService } from '../service/UserService.js';
 import { config } from '../config.js';
-import { addCounter } from '@takaro/util';
+import { addCounter, logger } from '@takaro/util';
+
+const log = logger('kpi');
 
 class KPI {
   private gauges: Record<string, Gauge> = {
@@ -44,78 +46,83 @@ class KPI {
 
   private interval: NodeJS.Timeout;
 
-  async start() {
-    this.interval = setInterval(
-      addCounter(
-        async () => {
-          const domainRepo = new DomainRepo();
+  private async handleKPI() {
+    try {
+      log.debug('Updating KPI metrics');
+      const domainRepo = new DomainRepo();
 
-          const domains = await domainRepo.find({});
-          this.gauges.domains.set(domains.total);
+      const domains = await domainRepo.find({});
+      this.gauges.domains.set(domains.total);
 
-          // For each domain, expose the underlying metrics
-          const results = await Promise.all(
-            domains.results.map(async (domain) => {
-              const domainId = domain.id;
-              const gameServerService = new GameServerService(domainId);
-              const playerService = new PlayerService(domainId);
-              const userService = new UserService(domainId);
+      // For each domain, expose the underlying metrics
+      const results = await Promise.all(
+        domains.results.map(async (domain) => {
+          const domainId = domain.id;
+          const gameServerService = new GameServerService(domainId);
+          const playerService = new PlayerService(domainId);
+          const userService = new UserService(domainId);
 
-              const gameServers = await gameServerService.find({});
-              this.gauges.gameServers.set({ domain: domainId }, gameServers.total);
+          const gameServers = await gameServerService.find({});
+          this.gauges.gameServers.set({ domain: domainId }, gameServers.total);
 
-              const players = await playerService.find({});
-              this.gauges.players.set({ domain: domainId }, players.total);
+          const players = await playerService.find({});
+          this.gauges.players.set({ domain: domainId }, players.total);
 
-              const users = await userService.find({});
-              this.gauges.users.set({ domain: domainId }, users.total);
+          const users = await userService.find({});
+          this.gauges.users.set({ domain: domainId }, users.total);
 
-              let domainInstalledModules = 0;
+          let domainInstalledModules = 0;
 
-              for (const server of gameServers.results) {
-                const installedModules = await gameServerService.getInstalledModules({ gameserverId: server.id });
-                this.gauges.installedModules.set({ domain: domainId, gameServer: server.id }, installedModules.length);
-                domainInstalledModules += installedModules.length;
-              }
+          for (const server of gameServers.results) {
+            const installedModules = await gameServerService.getInstalledModules({ gameserverId: server.id });
+            this.gauges.installedModules.set({ domain: domainId, gameServer: server.id }, installedModules.length);
+            domainInstalledModules += installedModules.length;
+          }
 
-              this.gauges.installedModules.set({ domain: domainId }, domainInstalledModules);
+          this.gauges.installedModules.set({ domain: domainId }, domainInstalledModules);
 
-              return {
-                gameServers: gameServers.total,
-                players: players.total,
-                users: users.total,
-                installedModules: domainInstalledModules,
-              };
-            })
-          );
+          return {
+            gameServers: gameServers.total,
+            players: players.total,
+            users: users.total,
+            installedModules: domainInstalledModules,
+          };
+        })
+      );
 
-          // Calculate the totals
-          const totals = results.reduce(
-            (acc, curr) => {
-              acc.gameServers += curr.gameServers;
-              acc.players += curr.players;
-              acc.users += curr.users;
-              acc.installedModules += curr.installedModules;
-              return acc;
-            },
-            {
-              gameServers: 0,
-              players: 0,
-              users: 0,
-              installedModules: 0,
-            }
-          );
-
-          this.gauges.gameServers.set(totals.gameServers);
-          this.gauges.players.set(totals.players);
-          this.gauges.users.set(totals.users);
-          this.gauges.installedModules.set(totals.installedModules);
+      // Calculate the totals
+      const totals = results.reduce(
+        (acc, curr) => {
+          acc.gameServers += curr.gameServers;
+          acc.players += curr.players;
+          acc.users += curr.users;
+          acc.installedModules += curr.installedModules;
+          return acc;
         },
         {
-          name: 'kpi',
-          help: 'KPI metrics',
+          gameServers: 0,
+          players: 0,
+          users: 0,
+          installedModules: 0,
         }
-      ),
+      );
+
+      this.gauges.gameServers.set(totals.gameServers);
+      this.gauges.players.set(totals.players);
+      this.gauges.users.set(totals.users);
+      this.gauges.installedModules.set(totals.installedModules);
+    } catch (error) {
+      log.error('Error while updating KPI metrics', error);
+    }
+  }
+
+  async start() {
+    await this.handleKPI();
+    this.interval = setInterval(
+      addCounter(this.handleKPI, {
+        name: 'kpi',
+        help: 'KPI metrics',
+      }),
       config.get('takaro.kpiInterval')
     );
   }
