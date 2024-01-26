@@ -5,7 +5,7 @@ import { matchSnapshot } from './snapshots.js';
 import { integrationConfig } from './main.js';
 import { expect } from './test/expect.js';
 import { AdminClient, Client, AxiosResponse, isAxiosError } from '@takaro/apiclient';
-
+import { randomUUID } from 'crypto';
 export class IIntegrationTest<SetupData> {
   snapshot!: boolean;
   group!: string;
@@ -88,7 +88,7 @@ export class IntegrationTest<SetupData> {
 
   private async setupStandardEnvironment() {
     const createdDomain = await this.adminClient.domain.domainControllerCreate({
-      name: `${testDomainPrefix}${this.test.name}`.slice(0, 49),
+      name: `${testDomainPrefix}-${randomUUID()}`.slice(0, 49),
     });
     this.standardDomainId = createdDomain.data.data.createdDomain.id;
 
