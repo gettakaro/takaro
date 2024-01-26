@@ -119,7 +119,7 @@ class KPI {
   async start() {
     await this.handleKPI();
     this.interval = setInterval(
-      addCounter(this.handleKPI, {
+      addCounter(this.handleKPI.bind(this), {
         name: 'kpi',
         help: 'KPI metrics',
       }),
