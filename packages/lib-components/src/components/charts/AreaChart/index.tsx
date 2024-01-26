@@ -1,7 +1,7 @@
-import { Margin, ChartProps, InnerChartProps } from '..';
+import { useCallback, useMemo, useRef, useState } from 'react';
+
 import { ParentSize } from '@visx/responsive';
 import { GridColumns } from '@visx/grid';
-import { useCallback, useMemo, useRef, useState } from 'react';
 import { Group } from '@visx/group';
 import { AreaClosed, Line, Bar } from '@visx/shape';
 import { max, extent } from '@visx/vendor/d3-array';
@@ -9,12 +9,13 @@ import { scaleTime, scaleLinear } from '@visx/scale';
 import { AxisBottom, AxisLeft } from '@visx/axis';
 import { curveMonotoneX } from '@visx/curve';
 import { localPoint } from '@visx/event';
-import { useTooltip, Tooltip, TooltipWithBounds, defaultStyles } from '@visx/tooltip';
+import { useTooltip, Tooltip, TooltipWithBounds } from '@visx/tooltip';
 import { timeFormat } from '@visx/vendor/d3-time-format';
 import { PatternLines } from '@visx/pattern';
 import { Brush } from '@visx/brush';
 import { Bounds } from '@visx/brush/lib/types';
 
+import { Margin, ChartProps, InnerChartProps, getDefaultTooltipStyles } from '..';
 import { useTheme } from '../../../hooks';
 import { useGradients } from '../useGradients';
 import { BrushHandle } from '../BrushHandle';
@@ -31,6 +32,7 @@ export interface AreaChartProps<T> extends ChartProps {
   brushMargin?: Margin;
 }
 
+// eslint-disable-next-line quotes
 const formatDate = timeFormat("%b %d, '%y");
 
 const defaultMargin = { top: 10, right: 0, bottom: 25, left: 40 };
@@ -265,7 +267,7 @@ const Chart = <T,>({
             <Line
               from={{ x: tooltipLeft, y: margin.top }}
               to={{ x: tooltipLeft, y: mainChartInnerHeight + margin.top }}
-              stroke={theme.colors.tertiary}
+              stroke={theme.colors.backgroundAccent}
               strokeWidth={1}
               pointerEvents="none"
               strokeDasharray="4,1"
@@ -285,7 +287,7 @@ const Chart = <T,>({
               cx={tooltipLeft}
               cy={tooltipTop}
               r={4}
-              fill={theme.colors.tertiary}
+              fill={theme.colors.backgroundAccent}
               stroke="white"
               strokeWidth={2}
               pointerEvents="none"
@@ -312,7 +314,7 @@ const Chart = <T,>({
               id={PATTERN_ID}
               height={8}
               width={8}
-              stroke={theme.colors.tertiary}
+              stroke={theme.colors.backgroundAccent}
               strokeWidth={1}
               orientation={['diagonal']}
             />
@@ -328,7 +330,7 @@ const Chart = <T,>({
               onChange={onBrushChange}
               selectedBoxStyle={{
                 fill: `url(#${PATTERN_ID})`,
-                stroke: theme.colors.tertiary,
+                stroke: theme.colors.backgroundAccent,
               }}
               useWindowMoveEvents
               handleSize={8}
@@ -385,14 +387,7 @@ const Chart = <T,>({
             key={`${name}-tooltip`}
             top={tooltipTop - 12}
             left={tooltipLeft + 12 + margin.left}
-            style={{
-              ...defaultStyles,
-              background: theme.colors.background,
-              border: `1px solid ${theme.colors.backgroundAccent}`,
-              borderRadius: theme.borderRadius.small,
-              color: theme.colors.text,
-              fontSize: theme.fontSize.small,
-            }}
+            style={getDefaultTooltipStyles(theme)}
           >
             {unitPosition === 'left' && unit ? unit : ''}
             {yAccessor(tooltipData)}
@@ -402,14 +397,9 @@ const Chart = <T,>({
             top={mainChartInnerHeight + margin.top - 14}
             left={tooltipLeft}
             style={{
-              ...defaultStyles,
+              ...getDefaultTooltipStyles(theme),
               minWidth: 72,
-              backgroundColor: theme.colors.background,
               textAlign: 'center',
-              color: theme.colors.text,
-              border: `1px solid ${theme.colors.backgroundAccent}`,
-              borderRadius: theme.borderRadius.small,
-              fontSize: theme.fontSize.small,
               transform: 'translateX(-50%)',
             }}
           >

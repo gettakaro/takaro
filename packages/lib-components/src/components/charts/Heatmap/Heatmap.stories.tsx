@@ -10,8 +10,8 @@ export default {
 } as Meta<HeatmapProps<number>>;
 
 const Wrapper = styled.div`
-  height: 50vh;
-  width: 100%;
+  height: 250px;
+  width: 250px;
 `;
 
 interface Data {
@@ -26,12 +26,30 @@ const data: Data[] = Array.from({ length: 30 }, (_, i) => ({
 }));
 
 export const Default: StoryFn<HeatmapProps<number>> = () => {
-  const getTimestamp = (d: Data) => d.timestamp;
-  const getValue = (d: Data) => (d.value ? 1 : 0);
+  // Extract the day of the week from the timestamp (0 for Sunday, 6 for Saturday)
+  const yAccessor = (d: Data) => DateTime.fromISO(d.timestamp).weekday;
+  // Extract the week of the month from the timestamp
+  const xAccessor = (d: Data): number => Math.floor(DateTime.fromISO(d.timestamp).day / 7);
+  // Convert boolean value to 0 or 1 because the heatmap expects a number
+  const zAccessor = (d: Data) => (d.value ? 1 : 0);
+
+  const tooltipAccessor = (d: Data) => {
+    const date = DateTime.fromISO(d.timestamp);
+    // format: "Sun, 10 jan: online
+    return `${date.weekdayShort}, ${date.day} ${date.monthShort}: ${d.value ? 'online' : 'offline'}`;
+  };
 
   return (
     <Wrapper>
-      <HeatMap<Data> data={data} xAccessor={getTimestamp} yAccessor={getValue} variant="month" name="online" />
+      <HeatMap<Data>
+        data={data}
+        xAccessor={xAccessor}
+        yAccessor={yAccessor}
+        zAccessor={zAccessor}
+        tooltipAccessor={tooltipAccessor}
+        variant="month"
+        name="online"
+      />
     </Wrapper>
   );
 };
