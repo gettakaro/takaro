@@ -11,6 +11,7 @@ const tests = [
       if (!this.standardDomainId) throw new Error('No domain ID');
       return this.adminClient.domain.domainControllerGetOne(this.standardDomainId);
     },
+    filteredFields: ['name'],
   }),
   new IntegrationTest<void>({
     group,
