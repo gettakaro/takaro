@@ -91,7 +91,7 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
         <>
           <EventProperty name="gameserver" value={event.gameServer?.name} />
           <EventProperty name="player" value={event.player?.name} />
-          <EventProperty name="message" value={meta?.message} />
+          <EventProperty name="message" value={meta?.msg} />
         </>
       );
       break;
