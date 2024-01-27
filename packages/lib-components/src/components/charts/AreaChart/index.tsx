@@ -90,7 +90,7 @@ export const AreaChart = <T,>({
   );
 };
 
-type InnerBarChartProps<T> = InnerChartProps & AreaChartProps<T>;
+type InnerAreaChartProps<T> = InnerChartProps & AreaChartProps<T>;
 
 const Chart = <T,>({
   data,
@@ -110,7 +110,7 @@ const Chart = <T,>({
   unitPosition = 'left',
   xBisector,
   axisXLabel,
-}: InnerBarChartProps<T>) => {
+}: InnerAreaChartProps<T>) => {
   const PATTERN_ID = `${name}-brush_pattern`;
   const theme = useTheme();
   const gradients = useGradients(name);
@@ -152,7 +152,7 @@ const Chart = <T,>({
         range: [0, mainChartInnerWidth],
         domain: extent(filteredData, xAccessor) as [Date, Date],
       }),
-    [mainChartInnerWidth, filteredData, mainChartInnerWidth]
+    [mainChartInnerWidth, filteredData]
   );
 
   const yScale = useMemo(
@@ -162,7 +162,7 @@ const Chart = <T,>({
         domain: [0, (max(filteredData, yAccessor) || 0) + mainChartInnerHeight / 3],
         nice: true,
       }),
-    [mainChartInnerHeight, filteredData, mainChartInnerHeight]
+    [mainChartInnerHeight, filteredData]
   );
 
   const xBrushScale = useMemo(
