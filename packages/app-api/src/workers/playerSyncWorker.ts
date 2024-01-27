@@ -137,12 +137,12 @@ export async function processJob(job: Job<IGameServerQueueData>) {
             ping: player.ping,
           })
         );
-<<<<<<< HEAD
+
 
         await job.log(`Synced player ${player.gameId} on game server ${gameServerId}`);
-=======
+
         await log.debug(`Synced player ${player.gameId} on game server ${gameServerId}`);
->>>>>>> origin/main
+
       })
     );
 
