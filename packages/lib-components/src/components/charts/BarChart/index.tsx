@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState } from 'react';
+
 import { Bar } from '@visx/shape';
 import { Group } from '@visx/group';
 import { GridRows } from '@visx/grid';
@@ -10,9 +11,9 @@ import { AxisBottom, AxisLeft } from '@visx/axis';
 import { Brush } from '@visx/brush';
 import { PatternLines } from '@visx/pattern';
 
-import { ChartProps, InnerChartProps, Margin } from '..';
 import { useGradients } from '../useGradients';
 import { useTheme } from '../../../hooks';
+import { ChartProps, InnerChartProps, Margin } from '../util';
 import { BrushHandle } from '../BrushHandle';
 
 export interface BarChartProps<T> extends ChartProps {

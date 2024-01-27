@@ -1,12 +1,11 @@
-import { getDefaultTooltipStyles, InnerChartProps, Margin } from '..';
+import { MouseEvent } from 'react';
+
 import { ParentSize } from '@visx/responsive';
 import { Group } from '@visx/group';
 import { LineRadial } from '@visx/shape';
 import { scaleLog, scaleTime } from '@visx/vendor/d3-scale';
-import { useTheme } from '../../../hooks';
 import { useTooltipInPortal, useTooltip } from '@visx/tooltip';
 import { localPoint } from '@visx/event';
-import { MouseEvent } from 'react';
 import { GridAngle, GridRadial } from '@visx/grid';
 import { AxisLeft } from '@visx/axis';
 import { motion } from 'framer-motion';
@@ -14,6 +13,9 @@ import { extent } from '@visx/vendor/d3-array';
 import { curveBasisOpen } from '@visx/curve';
 import { NumberLike } from '@visx/scale';
 import { LinearGradient } from '@visx/gradient';
+
+import { getDefaultTooltipStyles, InnerChartProps, Margin } from '../util';
+import { useTheme } from '../../../hooks';
 
 const formatTicks = (val: NumberLike) => String(val);
 

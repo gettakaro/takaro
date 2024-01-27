@@ -1,14 +1,16 @@
 import { MouseEvent } from 'react';
-import { getDefaultTooltipStyles, InnerChartProps, Margin } from '..';
+
 import { ParentSize } from '@visx/responsive';
 import { Group } from '@visx/group';
 import { Line, LineRadial } from '@visx/shape';
 import { scaleLinear } from '@visx/vendor/d3-scale';
-import { useTheme } from '../../../hooks';
 import { useTooltipInPortal, useTooltip } from '@visx/tooltip';
 import { Point } from '@visx/point';
-import { genAngles, genPoints, genPolygonPoints } from './util';
-import localPoint from '@visx/event/lib/localPointGeneric';
+import { localPoint } from '@visx/event';
+
+import { getDefaultTooltipStyles, InnerChartProps, Margin } from '../util';
+import { genAngles, genPoints, genPolygonPoints } from './generators';
+import { useTheme } from '../../../hooks';
 
 export interface RadarChartProps<T> {
   name: string;

@@ -1,14 +1,16 @@
-import { getDefaultTooltipStyles, InnerChartProps, Margin } from '..';
+import { MouseEvent } from 'react';
+
 import { ParentSize } from '@visx/responsive';
 import { scaleLinear } from '@visx/scale';
 import { Group } from '@visx/group';
 import { AxisTop, AxisLeft } from '@visx/axis';
 import { HeatmapRect } from '@visx/heatmap';
-import { useTheme } from '../../../hooks';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
 import { localPoint } from '@visx/event';
 import { scaleBand } from '@visx/scale';
-import { MouseEvent } from 'react';
+
+import { getDefaultTooltipStyles, InnerChartProps, Margin } from '../util';
+import { useTheme } from '../../../hooks';
 
 interface InnerBin {
   bin: number;

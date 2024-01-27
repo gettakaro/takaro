@@ -1,12 +1,14 @@
-import { getChartColors, getDefaultTooltipStyles, InnerChartProps, Margin } from '..';
+import { MouseEvent } from 'react';
+
 import { ParentSize } from '@visx/responsive';
 import { Group } from '@visx/group';
 import { Pie } from '@visx/shape';
 import { scaleOrdinal } from '@visx/vendor/d3-scale';
-import { useTheme } from '../../../hooks';
 import { useTooltipInPortal, useTooltip } from '@visx/tooltip';
 import { localPoint } from '@visx/event';
-import { MouseEvent } from 'react';
+
+import { useTheme } from '../../../hooks';
+import { getChartColors, getDefaultTooltipStyles, InnerChartProps, Margin } from '../util';
 
 type PieChartVariant = 'pie' | 'donut';
 

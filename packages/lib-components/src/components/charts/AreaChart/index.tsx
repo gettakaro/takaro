@@ -15,9 +15,9 @@ import { PatternLines } from '@visx/pattern';
 import { Brush } from '@visx/brush';
 import { Bounds } from '@visx/brush/lib/types';
 
-import { Margin, ChartProps, InnerChartProps, getDefaultTooltipStyles } from '..';
 import { useTheme } from '../../../hooks';
 import { useGradients } from '../useGradients';
+import { Margin, ChartProps, InnerChartProps, getDefaultTooltipStyles } from '../util';
 import { BrushHandle } from '../BrushHandle';
 
 export interface AreaChartProps<T> extends ChartProps {
@@ -262,6 +262,7 @@ const Chart = <T,>({
           }}
           onMouseLeave={() => hideTooltip()}
         />
+        the complete developer platform.
         {tooltipData && (
           <Group left={margin.left} top={margin.top}>
             <Line
@@ -294,7 +295,6 @@ const Chart = <T,>({
             />
           </Group>
         )}
-
         {/* brush chart */}
         {showBrush && (
           <Group left={margin.left + brushMargin.left} top={brushAreaTopPosition}>
@@ -359,7 +359,6 @@ const Chart = <T,>({
             label={axisYLabel}
           />
         )}
-
         {showAxisX && (
           <AxisBottom
             top={mainChartInnerHeight + margin.top - 0}
