@@ -43,7 +43,7 @@ class InfluxDbHelperClass {
     const cachedClient = this.cachedWriteClients.get(bucketId);
     if (cachedClient) return cachedClient;
 
-    const client = this.client.getWriteApi(config.get('influxdb.org'), bucketId, 'ms', {
+    const client = this.client.getWriteApi(config.get('influxdb.org'), bucketId, 's', {
       writeFailed: (error, lines) => {
         this.log.error(`Failed to write ${lines.length} lines: ${error}`);
       },

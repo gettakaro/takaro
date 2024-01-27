@@ -103,7 +103,7 @@ export class PlayerPingStat extends BaseStat {
       .tag('playerId', opts.playerId)
       .tag('gameServerId', opts.gameServerId)
       .intField('ping', opts.ping)
-      .timestamp(Date.now());
+      .timestamp(DateTime.now().toSeconds());
     this.writer.writePoint(point);
   }
 
@@ -151,7 +151,7 @@ export class PlayerLocationStat extends BaseStat {
       .floatField('locationX', opts.location.x)
       .floatField('locationY', opts.location.y)
       .floatField('locationZ', opts.location.z)
-      .timestamp(Date.now());
+      .timestamp(DateTime.now().toSeconds());
     this.writer.writePoint(point);
   }
 
