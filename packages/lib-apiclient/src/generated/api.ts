@@ -152,7 +152,7 @@ export interface BaseGameEvent {
    * @type {string}
    * @memberof BaseGameEvent
    */
-  msg: string;
+  msg?: string;
   /**
    *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
@@ -1266,7 +1266,7 @@ export interface EventChatMessage {
    * @type {string}
    * @memberof EventChatMessage
    */
-  msg: string;
+  msg?: string;
 }
 /**
  *
@@ -1427,7 +1427,7 @@ export interface EventEntityKilled {
    * @type {string}
    * @memberof EventEntityKilled
    */
-  msg: string;
+  msg?: string;
 }
 /**
  *
@@ -1446,7 +1446,7 @@ export interface EventLogLine {
    * @type {string}
    * @memberof EventLogLine
    */
-  msg: string;
+  msg?: string;
 }
 /**
  *
@@ -1626,7 +1626,7 @@ export interface EventPlayerConnected {
    * @type {string}
    * @memberof EventPlayerConnected
    */
-  msg: string;
+  msg?: string;
 }
 /**
  *
@@ -1663,7 +1663,7 @@ export interface EventPlayerDeath {
    * @type {string}
    * @memberof EventPlayerDeath
    */
-  msg: string;
+  msg?: string;
 }
 /**
  *
@@ -1688,7 +1688,7 @@ export interface EventPlayerDisconnected {
    * @type {string}
    * @memberof EventPlayerDisconnected
    */
-  msg: string;
+  msg?: string;
 }
 /**
  *
@@ -6108,6 +6108,12 @@ export interface TakaroEventCommandDetails {
 export interface TakaroEventCommandExecuted {
   /**
    *
+   * @type {any}
+   * @memberof TakaroEventCommandExecuted
+   */
+  data: any;
+  /**
+   *
    * @type {Array<TakaroEventFunctionResult>}
    * @memberof TakaroEventCommandExecuted
    */
@@ -6131,6 +6137,12 @@ export interface TakaroEventCommandExecuted {
  * @interface TakaroEventCronjobExecuted
  */
 export interface TakaroEventCronjobExecuted {
+  /**
+   *
+   * @type {any}
+   * @memberof TakaroEventCronjobExecuted
+   */
+  data: any;
   /**
    *
    * @type {Array<TakaroEventFunctionResult>}
@@ -6238,6 +6250,12 @@ export interface TakaroEventFunctionResult {
  * @interface TakaroEventHookExecuted
  */
 export interface TakaroEventHookExecuted {
+  /**
+   *
+   * @type {any}
+   * @memberof TakaroEventHookExecuted
+   */
+  data: any;
   /**
    *
    * @type {Array<TakaroEventFunctionResult>}
@@ -6422,10 +6440,10 @@ export interface TakaroEventServerStatusChanged {
   status: string;
   /**
    *
-   * @type {object}
+   * @type {any}
    * @memberof TakaroEventServerStatusChanged
    */
-  details?: object;
+  details?: any;
   /**
    *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
@@ -10527,7 +10545,7 @@ export class FunctionApi extends BaseAPI {
 export const GameServerApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Ban a player from a gameserver. Requires gameserver to be online and reachable. Required permissions: `MANAGE_GAMESERVERS`
      * @summary Ban player
      * @param {string} gameServerId
      * @param {string} playerId
@@ -10574,7 +10592,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Create a gameserver Required permissions: `MANAGE_GAMESERVERS`
      * @summary Create
      * @param {GameServerCreateDTO} [gameServerCreateDTO] GameServerCreateDTO
      * @param {*} [options] Override http request option.
@@ -10611,7 +10629,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Execute a raw command on a gameserver. Requires gameserver to be online and reachable. Required permissions: `MANAGE_GAMESERVERS`
      * @summary Execute command
      * @param {string} id
      * @param {CommandExecuteInputDTO} [commandExecuteInputDTO] CommandExecuteInputDTO
@@ -10656,7 +10674,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Fetch status of an import from CSMM Required permissions: `MANAGE_GAMESERVERS`
      * @summary Get import
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -10689,7 +10707,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *  Required permissions: `READ_GAMESERVERS`
+     * Get all module installations for a gameserver Required permissions: `READ_GAMESERVERS`
      * @summary Get installed modules
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -10725,7 +10743,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *  Required permissions: `READ_GAMESERVERS`
+     * Get a module installation by id Required permissions: `READ_GAMESERVERS`
      * @summary Get module installation
      * @param {string} gameServerId
      * @param {string} moduleId
@@ -10767,7 +10785,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *  Required permissions: `READ_GAMESERVERS`
+     * Fetch a gameserver by id Required permissions: `READ_GAMESERVERS`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -10800,7 +10818,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *  Required permissions: `READ_PLAYERS`
+     * Fetch a list of players on a gameserver. Requires gameserver to be online and reachable. Required permissions: `READ_PLAYERS`
      * @summary Get players
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -10833,7 +10851,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *  Required permissions: `READ_GAMESERVERS`
+     * Fetch gameserver types (7dtd, Rust, ...) Required permissions: `READ_GAMESERVERS`
      * @summary Get types
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -10863,7 +10881,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Give an item to a player. Requires gameserver to be online and reachable. Depending on the underlying game implementation, it\'s possible that the item is dropped on the ground instead of placed directly in the player\'s inventory. Required permissions: `MANAGE_GAMESERVERS`
      * @summary Give item
      * @param {string} gameServerId
      * @param {string} playerId
@@ -10910,7 +10928,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     * Import a gameserver from CSMM Required permissions: `MANAGE_GAMESERVERS`
+     * Import a gameserver from CSMM. Required permissions: `MANAGE_GAMESERVERS`
      * @summary Import from csmm
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -10940,7 +10958,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Install a module on a gameserver. If the module is already installed, it will be updated. Required permissions: `MANAGE_GAMESERVERS`
      * @summary Install module
      * @param {string} gameServerId
      * @param {string} moduleId
@@ -10987,7 +11005,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Kick a player from a gameserver. Requires gameserver to be online and reachable. Required permissions: `MANAGE_GAMESERVERS`
      * @summary Kick player
      * @param {string} gameServerId
      * @param {string} playerId
@@ -11034,7 +11052,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * List bans for a gameserver. Requires gameserver to be online and reachable. Required permissions: `MANAGE_GAMESERVERS`
      * @summary List bans
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -11067,7 +11085,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Delete a gameserver Required permissions: `MANAGE_GAMESERVERS`
      * @summary Remove
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -11100,7 +11118,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *  Required permissions: `READ_GAMESERVERS`
+     * Fetch gameservers Required permissions: `READ_GAMESERVERS`
      * @summary Search
      * @param {GameServerSearchInputDTO} [gameServerSearchInputDTO] GameServerSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -11141,7 +11159,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Send a message in gameserver chat. Requires gameserver to be online and reachable. Required permissions: `MANAGE_GAMESERVERS`
      * @summary Send message
      * @param {string} id
      * @param {MessageSendInputDTO} [messageSendInputDTO] MessageSendInputDTO
@@ -11182,7 +11200,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Teleport a player to a location. Requires gameserver to be online and reachable. Required permissions: `MANAGE_GAMESERVERS`
      * @summary Teleport player
      * @param {string} gameServerId
      * @param {string} playerId
@@ -11233,7 +11251,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *  Required permissions: `READ_GAMESERVERS`
+     * Test if Takaro can connect to a gameserver. Will do a thorough check and report details. Required permissions: `READ_GAMESERVERS`
      * @summary Test reachability
      * @param {GameServerTestReachabilityInputDTO} [gameServerTestReachabilityInputDTO] GameServerTestReachabilityInputDTO
      * @param {*} [options] Override http request option.
@@ -11274,7 +11292,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *  Required permissions: `READ_GAMESERVERS`
+     * Test if Takaro can connect to a gameserver. Will do a thorough check and report details. Required permissions: `READ_GAMESERVERS`
      * @summary Test reachability for id
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -11310,7 +11328,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Unban a player from a gameserver. Requires gameserver to be online and reachable. Required permissions: `MANAGE_GAMESERVERS`
      * @summary Unban player
      * @param {string} gameServerId
      * @param {string} playerId
@@ -11352,7 +11370,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Uninstall a module from a gameserver. This will not delete the module from the database. Required permissions: `MANAGE_GAMESERVERS`
      * @summary Uninstall module
      * @param {string} gameServerId
      * @param {string} moduleId
@@ -11394,7 +11412,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Update a gameserver Required permissions: `MANAGE_GAMESERVERS`
      * @summary Update
      * @param {string} id
      * @param {GameServerUpdateDTO} [gameServerUpdateDTO] GameServerUpdateDTO
@@ -11445,7 +11463,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = GameServerApiAxiosParamCreator(configuration);
   return {
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Ban a player from a gameserver. Requires gameserver to be online and reachable. Required permissions: `MANAGE_GAMESERVERS`
      * @summary Ban player
      * @param {string} gameServerId
      * @param {string} playerId
@@ -11476,7 +11494,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Create a gameserver Required permissions: `MANAGE_GAMESERVERS`
      * @summary Create
      * @param {GameServerCreateDTO} [gameServerCreateDTO] GameServerCreateDTO
      * @param {*} [options] Override http request option.
@@ -11501,7 +11519,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Execute a raw command on a gameserver. Requires gameserver to be online and reachable. Required permissions: `MANAGE_GAMESERVERS`
      * @summary Execute command
      * @param {string} id
      * @param {CommandExecuteInputDTO} [commandExecuteInputDTO] CommandExecuteInputDTO
@@ -11529,7 +11547,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Fetch status of an import from CSMM Required permissions: `MANAGE_GAMESERVERS`
      * @summary Get import
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -11551,7 +11569,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *  Required permissions: `READ_GAMESERVERS`
+     * Get all module installations for a gameserver Required permissions: `READ_GAMESERVERS`
      * @summary Get installed modules
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -11574,7 +11592,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *  Required permissions: `READ_GAMESERVERS`
+     * Get a module installation by id Required permissions: `READ_GAMESERVERS`
      * @summary Get module installation
      * @param {string} gameServerId
      * @param {string} moduleId
@@ -11603,7 +11621,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *  Required permissions: `READ_GAMESERVERS`
+     * Fetch a gameserver by id Required permissions: `READ_GAMESERVERS`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -11625,7 +11643,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *  Required permissions: `READ_PLAYERS`
+     * Fetch a list of players on a gameserver. Requires gameserver to be online and reachable. Required permissions: `READ_PLAYERS`
      * @summary Get players
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -11647,7 +11665,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *  Required permissions: `READ_GAMESERVERS`
+     * Fetch gameserver types (7dtd, Rust, ...) Required permissions: `READ_GAMESERVERS`
      * @summary Get types
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -11667,7 +11685,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Give an item to a player. Requires gameserver to be online and reachable. Depending on the underlying game implementation, it\'s possible that the item is dropped on the ground instead of placed directly in the player\'s inventory. Required permissions: `MANAGE_GAMESERVERS`
      * @summary Give item
      * @param {string} gameServerId
      * @param {string} playerId
@@ -11698,7 +11716,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     * Import a gameserver from CSMM Required permissions: `MANAGE_GAMESERVERS`
+     * Import a gameserver from CSMM. Required permissions: `MANAGE_GAMESERVERS`
      * @summary Import from csmm
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -11718,7 +11736,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Install a module on a gameserver. If the module is already installed, it will be updated. Required permissions: `MANAGE_GAMESERVERS`
      * @summary Install module
      * @param {string} gameServerId
      * @param {string} moduleId
@@ -11749,7 +11767,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Kick a player from a gameserver. Requires gameserver to be online and reachable. Required permissions: `MANAGE_GAMESERVERS`
      * @summary Kick player
      * @param {string} gameServerId
      * @param {string} playerId
@@ -11780,7 +11798,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * List bans for a gameserver. Requires gameserver to be online and reachable. Required permissions: `MANAGE_GAMESERVERS`
      * @summary List bans
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -11802,7 +11820,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Delete a gameserver Required permissions: `MANAGE_GAMESERVERS`
      * @summary Remove
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -11824,7 +11842,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *  Required permissions: `READ_GAMESERVERS`
+     * Fetch gameservers Required permissions: `READ_GAMESERVERS`
      * @summary Search
      * @param {GameServerSearchInputDTO} [gameServerSearchInputDTO] GameServerSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -11849,7 +11867,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Send a message in gameserver chat. Requires gameserver to be online and reachable. Required permissions: `MANAGE_GAMESERVERS`
      * @summary Send message
      * @param {string} id
      * @param {MessageSendInputDTO} [messageSendInputDTO] MessageSendInputDTO
@@ -11877,7 +11895,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Teleport a player to a location. Requires gameserver to be online and reachable. Required permissions: `MANAGE_GAMESERVERS`
      * @summary Teleport player
      * @param {string} gameServerId
      * @param {string} playerId
@@ -11908,7 +11926,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *  Required permissions: `READ_GAMESERVERS`
+     * Test if Takaro can connect to a gameserver. Will do a thorough check and report details. Required permissions: `READ_GAMESERVERS`
      * @summary Test reachability
      * @param {GameServerTestReachabilityInputDTO} [gameServerTestReachabilityInputDTO] GameServerTestReachabilityInputDTO
      * @param {*} [options] Override http request option.
@@ -11933,7 +11951,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *  Required permissions: `READ_GAMESERVERS`
+     * Test if Takaro can connect to a gameserver. Will do a thorough check and report details. Required permissions: `READ_GAMESERVERS`
      * @summary Test reachability for id
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -11956,7 +11974,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Unban a player from a gameserver. Requires gameserver to be online and reachable. Required permissions: `MANAGE_GAMESERVERS`
      * @summary Unban player
      * @param {string} gameServerId
      * @param {string} playerId
@@ -11984,7 +12002,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Uninstall a module from a gameserver. This will not delete the module from the database. Required permissions: `MANAGE_GAMESERVERS`
      * @summary Uninstall module
      * @param {string} gameServerId
      * @param {string} moduleId
@@ -12012,7 +12030,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Update a gameserver Required permissions: `MANAGE_GAMESERVERS`
      * @summary Update
      * @param {string} id
      * @param {GameServerUpdateDTO} [gameServerUpdateDTO] GameServerUpdateDTO
@@ -12050,7 +12068,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
   const localVarFp = GameServerApiFp(configuration);
   return {
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Ban a player from a gameserver. Requires gameserver to be online and reachable. Required permissions: `MANAGE_GAMESERVERS`
      * @summary Ban player
      * @param {string} gameServerId
      * @param {string} playerId
@@ -12069,7 +12087,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
         .then((request) => request(axios, basePath));
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Create a gameserver Required permissions: `MANAGE_GAMESERVERS`
      * @summary Create
      * @param {GameServerCreateDTO} [gameServerCreateDTO] GameServerCreateDTO
      * @param {*} [options] Override http request option.
@@ -12084,7 +12102,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
         .then((request) => request(axios, basePath));
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Execute a raw command on a gameserver. Requires gameserver to be online and reachable. Required permissions: `MANAGE_GAMESERVERS`
      * @summary Execute command
      * @param {string} id
      * @param {CommandExecuteInputDTO} [commandExecuteInputDTO] CommandExecuteInputDTO
@@ -12101,7 +12119,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
         .then((request) => request(axios, basePath));
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Fetch status of an import from CSMM Required permissions: `MANAGE_GAMESERVERS`
      * @summary Get import
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -12111,7 +12129,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
       return localVarFp.gameServerControllerGetImport(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *  Required permissions: `READ_GAMESERVERS`
+     * Get all module installations for a gameserver Required permissions: `READ_GAMESERVERS`
      * @summary Get installed modules
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -12126,7 +12144,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
         .then((request) => request(axios, basePath));
     },
     /**
-     *  Required permissions: `READ_GAMESERVERS`
+     * Get a module installation by id Required permissions: `READ_GAMESERVERS`
      * @summary Get module installation
      * @param {string} gameServerId
      * @param {string} moduleId
@@ -12143,7 +12161,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
         .then((request) => request(axios, basePath));
     },
     /**
-     *  Required permissions: `READ_GAMESERVERS`
+     * Fetch a gameserver by id Required permissions: `READ_GAMESERVERS`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -12153,7 +12171,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
       return localVarFp.gameServerControllerGetOne(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *  Required permissions: `READ_PLAYERS`
+     * Fetch a list of players on a gameserver. Requires gameserver to be online and reachable. Required permissions: `READ_PLAYERS`
      * @summary Get players
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -12163,7 +12181,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
       return localVarFp.gameServerControllerGetPlayers(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *  Required permissions: `READ_GAMESERVERS`
+     * Fetch gameserver types (7dtd, Rust, ...) Required permissions: `READ_GAMESERVERS`
      * @summary Get types
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -12172,7 +12190,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
       return localVarFp.gameServerControllerGetTypes(options).then((request) => request(axios, basePath));
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Give an item to a player. Requires gameserver to be online and reachable. Depending on the underlying game implementation, it\'s possible that the item is dropped on the ground instead of placed directly in the player\'s inventory. Required permissions: `MANAGE_GAMESERVERS`
      * @summary Give item
      * @param {string} gameServerId
      * @param {string} playerId
@@ -12191,7 +12209,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
         .then((request) => request(axios, basePath));
     },
     /**
-     * Import a gameserver from CSMM Required permissions: `MANAGE_GAMESERVERS`
+     * Import a gameserver from CSMM. Required permissions: `MANAGE_GAMESERVERS`
      * @summary Import from csmm
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -12200,7 +12218,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
       return localVarFp.gameServerControllerImportFromCSMM(options).then((request) => request(axios, basePath));
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Install a module on a gameserver. If the module is already installed, it will be updated. Required permissions: `MANAGE_GAMESERVERS`
      * @summary Install module
      * @param {string} gameServerId
      * @param {string} moduleId
@@ -12219,7 +12237,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
         .then((request) => request(axios, basePath));
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Kick a player from a gameserver. Requires gameserver to be online and reachable. Required permissions: `MANAGE_GAMESERVERS`
      * @summary Kick player
      * @param {string} gameServerId
      * @param {string} playerId
@@ -12238,7 +12256,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
         .then((request) => request(axios, basePath));
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * List bans for a gameserver. Requires gameserver to be online and reachable. Required permissions: `MANAGE_GAMESERVERS`
      * @summary List bans
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -12248,7 +12266,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
       return localVarFp.gameServerControllerListBans(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Delete a gameserver Required permissions: `MANAGE_GAMESERVERS`
      * @summary Remove
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -12258,7 +12276,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
       return localVarFp.gameServerControllerRemove(id, options).then((request) => request(axios, basePath));
     },
     /**
-     *  Required permissions: `READ_GAMESERVERS`
+     * Fetch gameservers Required permissions: `READ_GAMESERVERS`
      * @summary Search
      * @param {GameServerSearchInputDTO} [gameServerSearchInputDTO] GameServerSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -12273,7 +12291,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
         .then((request) => request(axios, basePath));
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Send a message in gameserver chat. Requires gameserver to be online and reachable. Required permissions: `MANAGE_GAMESERVERS`
      * @summary Send message
      * @param {string} id
      * @param {MessageSendInputDTO} [messageSendInputDTO] MessageSendInputDTO
@@ -12290,7 +12308,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
         .then((request) => request(axios, basePath));
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Teleport a player to a location. Requires gameserver to be online and reachable. Required permissions: `MANAGE_GAMESERVERS`
      * @summary Teleport player
      * @param {string} gameServerId
      * @param {string} playerId
@@ -12309,7 +12327,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
         .then((request) => request(axios, basePath));
     },
     /**
-     *  Required permissions: `READ_GAMESERVERS`
+     * Test if Takaro can connect to a gameserver. Will do a thorough check and report details. Required permissions: `READ_GAMESERVERS`
      * @summary Test reachability
      * @param {GameServerTestReachabilityInputDTO} [gameServerTestReachabilityInputDTO] GameServerTestReachabilityInputDTO
      * @param {*} [options] Override http request option.
@@ -12324,7 +12342,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
         .then((request) => request(axios, basePath));
     },
     /**
-     *  Required permissions: `READ_GAMESERVERS`
+     * Test if Takaro can connect to a gameserver. Will do a thorough check and report details. Required permissions: `READ_GAMESERVERS`
      * @summary Test reachability for id
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -12339,7 +12357,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
         .then((request) => request(axios, basePath));
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Unban a player from a gameserver. Requires gameserver to be online and reachable. Required permissions: `MANAGE_GAMESERVERS`
      * @summary Unban player
      * @param {string} gameServerId
      * @param {string} playerId
@@ -12352,7 +12370,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
         .then((request) => request(axios, basePath));
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Uninstall a module from a gameserver. This will not delete the module from the database. Required permissions: `MANAGE_GAMESERVERS`
      * @summary Uninstall module
      * @param {string} gameServerId
      * @param {string} moduleId
@@ -12369,7 +12387,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
         .then((request) => request(axios, basePath));
     },
     /**
-     *  Required permissions: `MANAGE_GAMESERVERS`
+     * Update a gameserver Required permissions: `MANAGE_GAMESERVERS`
      * @summary Update
      * @param {string} id
      * @param {GameServerUpdateDTO} [gameServerUpdateDTO] GameServerUpdateDTO
@@ -12396,7 +12414,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
  */
 export class GameServerApi extends BaseAPI {
   /**
-   *  Required permissions: `MANAGE_GAMESERVERS`
+   * Ban a player from a gameserver. Requires gameserver to be online and reachable. Required permissions: `MANAGE_GAMESERVERS`
    * @summary Ban player
    * @param {string} gameServerId
    * @param {string} playerId
@@ -12417,7 +12435,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *  Required permissions: `MANAGE_GAMESERVERS`
+   * Create a gameserver Required permissions: `MANAGE_GAMESERVERS`
    * @summary Create
    * @param {GameServerCreateDTO} [gameServerCreateDTO] GameServerCreateDTO
    * @param {*} [options] Override http request option.
@@ -12431,7 +12449,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *  Required permissions: `MANAGE_GAMESERVERS`
+   * Execute a raw command on a gameserver. Requires gameserver to be online and reachable. Required permissions: `MANAGE_GAMESERVERS`
    * @summary Execute command
    * @param {string} id
    * @param {CommandExecuteInputDTO} [commandExecuteInputDTO] CommandExecuteInputDTO
@@ -12450,7 +12468,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *  Required permissions: `MANAGE_GAMESERVERS`
+   * Fetch status of an import from CSMM Required permissions: `MANAGE_GAMESERVERS`
    * @summary Get import
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -12464,7 +12482,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *  Required permissions: `READ_GAMESERVERS`
+   * Get all module installations for a gameserver Required permissions: `READ_GAMESERVERS`
    * @summary Get installed modules
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -12478,7 +12496,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *  Required permissions: `READ_GAMESERVERS`
+   * Get a module installation by id Required permissions: `READ_GAMESERVERS`
    * @summary Get module installation
    * @param {string} gameServerId
    * @param {string} moduleId
@@ -12497,7 +12515,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *  Required permissions: `READ_GAMESERVERS`
+   * Fetch a gameserver by id Required permissions: `READ_GAMESERVERS`
    * @summary Get one
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -12511,7 +12529,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *  Required permissions: `READ_PLAYERS`
+   * Fetch a list of players on a gameserver. Requires gameserver to be online and reachable. Required permissions: `READ_PLAYERS`
    * @summary Get players
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -12525,7 +12543,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *  Required permissions: `READ_GAMESERVERS`
+   * Fetch gameserver types (7dtd, Rust, ...) Required permissions: `READ_GAMESERVERS`
    * @summary Get types
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
@@ -12538,7 +12556,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *  Required permissions: `MANAGE_GAMESERVERS`
+   * Give an item to a player. Requires gameserver to be online and reachable. Depending on the underlying game implementation, it\'s possible that the item is dropped on the ground instead of placed directly in the player\'s inventory. Required permissions: `MANAGE_GAMESERVERS`
    * @summary Give item
    * @param {string} gameServerId
    * @param {string} playerId
@@ -12559,7 +12577,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   * Import a gameserver from CSMM Required permissions: `MANAGE_GAMESERVERS`
+   * Import a gameserver from CSMM. Required permissions: `MANAGE_GAMESERVERS`
    * @summary Import from csmm
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
@@ -12572,7 +12590,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *  Required permissions: `MANAGE_GAMESERVERS`
+   * Install a module on a gameserver. If the module is already installed, it will be updated. Required permissions: `MANAGE_GAMESERVERS`
    * @summary Install module
    * @param {string} gameServerId
    * @param {string} moduleId
@@ -12593,7 +12611,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *  Required permissions: `MANAGE_GAMESERVERS`
+   * Kick a player from a gameserver. Requires gameserver to be online and reachable. Required permissions: `MANAGE_GAMESERVERS`
    * @summary Kick player
    * @param {string} gameServerId
    * @param {string} playerId
@@ -12614,7 +12632,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *  Required permissions: `MANAGE_GAMESERVERS`
+   * List bans for a gameserver. Requires gameserver to be online and reachable. Required permissions: `MANAGE_GAMESERVERS`
    * @summary List bans
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -12628,7 +12646,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *  Required permissions: `MANAGE_GAMESERVERS`
+   * Delete a gameserver Required permissions: `MANAGE_GAMESERVERS`
    * @summary Remove
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -12642,7 +12660,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *  Required permissions: `READ_GAMESERVERS`
+   * Fetch gameservers Required permissions: `READ_GAMESERVERS`
    * @summary Search
    * @param {GameServerSearchInputDTO} [gameServerSearchInputDTO] GameServerSearchInputDTO
    * @param {*} [options] Override http request option.
@@ -12659,7 +12677,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *  Required permissions: `MANAGE_GAMESERVERS`
+   * Send a message in gameserver chat. Requires gameserver to be online and reachable. Required permissions: `MANAGE_GAMESERVERS`
    * @summary Send message
    * @param {string} id
    * @param {MessageSendInputDTO} [messageSendInputDTO] MessageSendInputDTO
@@ -12678,7 +12696,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *  Required permissions: `MANAGE_GAMESERVERS`
+   * Teleport a player to a location. Requires gameserver to be online and reachable. Required permissions: `MANAGE_GAMESERVERS`
    * @summary Teleport player
    * @param {string} gameServerId
    * @param {string} playerId
@@ -12699,7 +12717,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *  Required permissions: `READ_GAMESERVERS`
+   * Test if Takaro can connect to a gameserver. Will do a thorough check and report details. Required permissions: `READ_GAMESERVERS`
    * @summary Test reachability
    * @param {GameServerTestReachabilityInputDTO} [gameServerTestReachabilityInputDTO] GameServerTestReachabilityInputDTO
    * @param {*} [options] Override http request option.
@@ -12716,7 +12734,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *  Required permissions: `READ_GAMESERVERS`
+   * Test if Takaro can connect to a gameserver. Will do a thorough check and report details. Required permissions: `READ_GAMESERVERS`
    * @summary Test reachability for id
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -12730,7 +12748,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *  Required permissions: `MANAGE_GAMESERVERS`
+   * Unban a player from a gameserver. Requires gameserver to be online and reachable. Required permissions: `MANAGE_GAMESERVERS`
    * @summary Unban player
    * @param {string} gameServerId
    * @param {string} playerId
@@ -12745,7 +12763,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *  Required permissions: `MANAGE_GAMESERVERS`
+   * Uninstall a module from a gameserver. This will not delete the module from the database. Required permissions: `MANAGE_GAMESERVERS`
    * @summary Uninstall module
    * @param {string} gameServerId
    * @param {string} moduleId
@@ -12760,7 +12778,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   *  Required permissions: `MANAGE_GAMESERVERS`
+   * Update a gameserver Required permissions: `MANAGE_GAMESERVERS`
    * @summary Update
    * @param {string} id
    * @param {GameServerUpdateDTO} [gameServerUpdateDTO] GameServerUpdateDTO
