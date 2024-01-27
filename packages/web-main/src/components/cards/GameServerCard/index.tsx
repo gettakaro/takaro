@@ -94,11 +94,7 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
               </div>
             </TitleContainer>
             <div>
-              {isLoadingPogs && (
-                <p>
-                  <Skeleton variant="rectangular" width="100px" height="15px" />
-                </p>
-              )}
+              {isLoadingPogs && <Skeleton variant="rectangular" width="100px" height="15px" />}
               {!isLoadingPogs && !onlinePogs && <p>Online players: unknown</p>}
               {onlinePogs && <p>Online players: {onlinePogs?.data.length}</p>}
             </div>

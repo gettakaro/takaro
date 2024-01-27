@@ -116,9 +116,15 @@ export const GameServerSelectView: FC<GameServerSelectViewProps> = ({
       hasMargin={false}
       render={(selectedItems) => {
         if (selectedItems.length === 0) {
-          return <div>Select...</div>;
+          return <p>Select...</p>;
         }
-        const selected = gameServers.find((server) => server.id === selectedItems[0].value)!;
+        let selected = gameServers.find((server) => server.id === selectedItems[0].value);
+
+        // Couldn't find the selected server, select the first one
+        if (!selected) {
+          selected = gameServers[0];
+        }
+
         return (
           <Inner>
             {gameTypeMap[selected.type].icon}

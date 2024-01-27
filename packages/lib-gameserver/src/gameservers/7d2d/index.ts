@@ -106,7 +106,7 @@ export class SevenDaysToDie implements IGameServer {
 
   async testReachability(): Promise<TestReachabilityOutputDTO> {
     try {
-      const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Request timed out')), 5000));
+      const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Request timed out')), 10000));
 
       await Promise.race([this.apiClient.getStats(), timeout]);
       await Promise.race([this.executeConsoleCommand('version'), timeout]);

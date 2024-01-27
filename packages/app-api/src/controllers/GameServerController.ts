@@ -211,6 +211,9 @@ class ImportOutputDTOAPI extends APIOutput<ImportOutputDTO> {
 export class GameServerController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS]))
   @ResponseSchema(GameServerOutputArrayDTOAPI)
+  @OpenAPI({
+    description: 'Fetch gameservers',
+  })
   @Post('/gameserver/search')
   async search(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: GameServerSearchInputDTO) {
     const service = new GameServerService(req.domainId);
@@ -228,6 +231,9 @@ export class GameServerController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS]))
   @ResponseSchema(GameServerTypesOutputDTOAPI)
+  @OpenAPI({
+    description: 'Fetch gameserver types (7dtd, Rust, ...)',
+  })
   @Get('/gameserver/types')
   async getTypes(@Req() req: AuthenticatedRequest) {
     const service = new GameServerService(req.domainId);
@@ -236,6 +242,9 @@ export class GameServerController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS]))
   @ResponseSchema(GameServerOutputDTOAPI)
+  @OpenAPI({
+    description: 'Fetch a gameserver by id',
+  })
   @Get('/gameserver/:id')
   async getOne(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new GameServerService(req.domainId);
@@ -244,6 +253,9 @@ export class GameServerController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(GameServerOutputDTOAPI)
+  @OpenAPI({
+    description: 'Create a gameserver',
+  })
   @Post('/gameserver')
   async create(@Req() req: AuthenticatedRequest, @Body() data: GameServerCreateDTO) {
     const service = new GameServerService(req.domainId);
@@ -252,6 +264,9 @@ export class GameServerController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(GameServerOutputDTOAPI)
+  @OpenAPI({
+    description: 'Update a gameserver',
+  })
   @Put('/gameserver/:id')
   async update(@Req() req: AuthenticatedRequest, @Params() params: ParamId, @Body() data: GameServerUpdateDTO) {
     const service = new GameServerService(req.domainId);
@@ -260,6 +275,9 @@ export class GameServerController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(IdUuidDTOAPI)
+  @OpenAPI({
+    description: 'Delete a gameserver',
+  })
   @Delete('/gameserver/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new GameServerService(req.domainId);
@@ -269,6 +287,9 @@ export class GameServerController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS]))
   @ResponseSchema(GameServerTestReachabilityDTOAPI)
+  @OpenAPI({
+    description: 'Test if Takaro can connect to a gameserver. Will do a thorough check and report details.',
+  })
   @Get('/gameserver/:id/reachability')
   async testReachabilityForId(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new GameServerService(req.domainId);
@@ -278,6 +299,9 @@ export class GameServerController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS]))
   @ResponseSchema(GameServerTestReachabilityDTOAPI)
+  @OpenAPI({
+    description: 'Test if Takaro can connect to a gameserver. Will do a thorough check and report details.',
+  })
   @Post('/gameserver/reachability')
   async testReachability(@Req() req: AuthenticatedRequest, @Body() data: GameServerTestReachabilityInputDTO) {
     const service = new GameServerService(req.domainId);
@@ -287,6 +311,9 @@ export class GameServerController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS]))
   @ResponseSchema(ModuleInstallationOutputDTOAPI)
+  @OpenAPI({
+    description: 'Get a module installation by id',
+  })
   @Get('/gameserver/:gameServerId/module/:moduleId')
   async getModuleInstallation(@Req() req: AuthenticatedRequest, @Params() params: ParamIdAndModuleId) {
     const service = new GameServerService(req.domainId);
@@ -296,6 +323,9 @@ export class GameServerController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS]))
   @ResponseSchema(ModuleInstallationOutputArrayDTOAPI)
+  @OpenAPI({
+    description: 'Get all module installations for a gameserver',
+  })
   @Get('/gameserver/:id/modules')
   async getInstalledModules(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new GameServerService(req.domainId);
@@ -305,6 +335,9 @@ export class GameServerController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(ModuleInstallationOutputDTOAPI)
+  @OpenAPI({
+    description: 'Install a module on a gameserver. If the module is already installed, it will be updated.',
+  })
   @Post('/gameserver/:gameServerId/modules/:moduleId')
   async installModule(
     @Req() req: AuthenticatedRequest,
@@ -318,6 +351,9 @@ export class GameServerController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(ModuleInstallationOutputDTOAPI)
+  @OpenAPI({
+    description: 'Uninstall a module from a gameserver. This will not delete the module from the database.',
+  })
   @Delete('/gameserver/:gameServerId/modules/:moduleId')
   async uninstallModule(@Req() req: AuthenticatedRequest, @Params() params: ParamIdAndModuleId) {
     const service = new GameServerService(req.domainId);
@@ -326,6 +362,9 @@ export class GameServerController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(CommandExecuteDTOAPI)
+  @OpenAPI({
+    description: 'Execute a raw command on a gameserver. Requires gameserver to be online and reachable.',
+  })
   @Post('/gameserver/:id/command')
   async executeCommand(
     @Req() req: AuthenticatedRequest,
@@ -339,6 +378,9 @@ export class GameServerController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(APIOutput)
+  @OpenAPI({
+    description: 'Send a message in gameserver chat. Requires gameserver to be online and reachable.',
+  })
   @Post('/gameserver/:id/message')
   async sendMessage(@Req() req: AuthenticatedRequest, @Params() params: ParamId, @Body() data: MessageSendInputDTO) {
     const service = new GameServerService(req.domainId);
@@ -348,6 +390,9 @@ export class GameServerController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(APIOutput)
+  @OpenAPI({
+    description: 'Teleport a player to a location. Requires gameserver to be online and reachable.',
+  })
   @Post('/gameserver/:gameServerId/player/:playerId/teleport')
   async teleportPlayer(
     @Req() req: AuthenticatedRequest,
@@ -365,6 +410,9 @@ export class GameServerController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(APIOutput)
+  @OpenAPI({
+    description: 'Kick a player from a gameserver. Requires gameserver to be online and reachable.',
+  })
   @Post('/gameserver/:gameServerId/player/:playerId/kick')
   async kickPlayer(@Req() req: AuthenticatedRequest, @Params() params: PogParam, @Body() data: KickPlayerInputDTO) {
     const service = new GameServerService(req.domainId);
@@ -374,6 +422,9 @@ export class GameServerController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(APIOutput)
+  @OpenAPI({
+    description: 'Ban a player from a gameserver. Requires gameserver to be online and reachable.',
+  })
   @Post('/gameserver/:gameServerId/player/:playerId/ban')
   async banPlayer(@Req() req: AuthenticatedRequest, @Params() params: PogParam, @Body() data: BanPlayerInputDTO) {
     const service = new GameServerService(req.domainId);
@@ -383,6 +434,9 @@ export class GameServerController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(APIOutput)
+  @OpenAPI({
+    description: 'Unban a player from a gameserver. Requires gameserver to be online and reachable.',
+  })
   @Post('/gameserver/:gameServerId/player/:playerId/unban')
   async unbanPlayer(@Req() req: AuthenticatedRequest, @Params() params: PogParam) {
     const service = new GameServerService(req.domainId);
@@ -392,6 +446,9 @@ export class GameServerController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(BanPlayerOutputDTO)
+  @OpenAPI({
+    description: 'List bans for a gameserver. Requires gameserver to be online and reachable.',
+  })
   @Get('/gameserver/:id/bans')
   async listBans(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new GameServerService(req.domainId);
@@ -401,6 +458,11 @@ export class GameServerController {
 
   @Post('/gameserver/:gameServerId/player/:playerId/giveItem')
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
+  @OpenAPI({
+    description:
+      // eslint-disable-next-line quotes
+      "Give an item to a player. Requires gameserver to be online and reachable. Depending on the underlying game implementation, it's possible that the item is dropped on the ground instead of placed directly in the player's inventory.",
+  })
   async giveItem(@Req() req: AuthenticatedRequest, @Params() params: PogParam, @Body() data: GiveItemInputDTO) {
     const service = new GameServerService(req.domainId);
     const result = await service.giveItem(params.gameServerId, params.playerId, data.name, data.amount);
@@ -409,6 +471,9 @@ export class GameServerController {
 
   @Get('/gameserver/:id/players')
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_PLAYERS]))
+  @OpenAPI({
+    description: 'Fetch a list of players on a gameserver. Requires gameserver to be online and reachable.',
+  })
   @ResponseSchema(PlayerOnGameserverOutputDTOAPI)
   async getPlayers(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new GameServerService(req.domainId);
@@ -419,6 +484,9 @@ export class GameServerController {
   @Get('/gameserver/import/:id')
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(ImportOutputDTOAPI)
+  @OpenAPI({
+    description: 'Fetch status of an import from CSMM',
+  })
   async getImport(@Req() req: AuthenticatedRequest, @Params() params: ImportOutputDTO) {
     const service = new GameServerService(req.domainId);
     const result = await service.getImport(params.id);
@@ -428,7 +496,7 @@ export class GameServerController {
   @Post('/gameserver/import')
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @OpenAPI({
-    description: 'Import a gameserver from CSMM',
+    description: 'Import a gameserver from CSMM.',
   })
   @ResponseSchema(ImportOutputDTOAPI)
   async importFromCSMM(@Req() req: AuthenticatedRequest, @UploadedFile('import.json') _file: Express.Multer.File) {

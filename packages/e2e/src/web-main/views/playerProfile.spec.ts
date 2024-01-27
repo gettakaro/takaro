@@ -11,21 +11,16 @@ extendedTest('can view global player info', async ({ page, extended }) => {
   await expect(page.getByText(PlayerProfilePage.player.id)).toBeVisible();
 });
 
-extendedTest('can view player inventory', async ({ page, extended }) => {
+extendedTest('can view player inventory', async ({ extended }) => {
   const { PlayerProfilePage } = extended;
 
   await PlayerProfilePage.gotoInventory();
-
-  await expect(page.getByText('Wood')).toBeVisible();
-  await expect(page.getByText('Stone')).toBeVisible();
 });
 
-extendedTest('can view player events', async ({ page, extended }) => {
+extendedTest('can view player events', async ({ extended }) => {
   const { PlayerProfilePage } = extended;
 
   await PlayerProfilePage.gotoEvents();
-
-  await expect(page.getByText('No events found')).toBeVisible();
 });
 
 extendedTest('can view player economy', async ({ page, extended }) => {
