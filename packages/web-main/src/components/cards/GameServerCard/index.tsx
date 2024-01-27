@@ -61,7 +61,11 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
 
   return (
     <>
-      <Card role="link" onClick={() => navigate(PATHS.gameServer.dashboard(id))} data-testid={`gameserver-${id}-card`}>
+      <Card
+        role="link"
+        onClick={() => navigate(PATHS.gameServer.dashboard.overview(id))}
+        data-testid={`gameserver-${id}-card`}
+      >
         <CardBody>
           <Header>
             {reachable ? <span>online</span> : <Chip label={'offline'} color="error" variant="outline" />}
@@ -90,11 +94,7 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
               </div>
             </TitleContainer>
             <div>
-              {isLoadingPogs && (
-                <p>
-                  <Skeleton variant="rectangular" width="100px" height="15px" />
-                </p>
-              )}
+              {isLoadingPogs && <Skeleton variant="rectangular" width="100px" height="15px" />}
               {!isLoadingPogs && !onlinePogs && <p>Online players: unknown</p>}
               {onlinePogs && <p>Online players: {onlinePogs?.data.length}</p>}
             </div>

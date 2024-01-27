@@ -1,4 +1,5 @@
 import {
+  BaseEvent,
   EventChatMessage,
   EventEntityKilled,
   EventLogLine,
@@ -7,7 +8,7 @@ import {
   EventPlayerDisconnected,
   GameEvents,
 } from '@takaro/modules';
-import { errors, logger } from '@takaro/util';
+import { errors, isTakaroDTO, logger } from '@takaro/util';
 import { isPromise } from 'util/types';
 
 const log = logger('TakaroEmitter');
@@ -36,15 +37,16 @@ export abstract class TakaroEmitter {
     return getErrorProxyHandler(this);
   }
 
-  async emit<E extends keyof IEventMap>(event: E, data: Parameters<IEventMap[E]>[0]) {
+  async emit<E extends keyof IEventMap>(event: E, data: BaseEvent<unknown> | Error) {
     try {
       // No listeners are attached, return early
       if (!this.listenerMap.has(event)) return;
 
       // Validate the data, it is user-input after all :)
-      /*       if (isTakaroDTO(data)) {
-              await data.validate();
-            } */
+      if (isTakaroDTO(data)) {
+        if (!data.timestamp) data.timestamp = new Date().toISOString();
+        // await data.validate();
+      }
 
       const listeners = this.listenerMap.get(event);
 

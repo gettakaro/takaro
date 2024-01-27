@@ -45,7 +45,7 @@ const setup = async function (this: IntegrationTest<IModuleTestsSetupData>): Pro
   });
 
   const tasks = pogs.data.data.map((pog) => {
-    return this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(pog.id, {
+    return this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(pog.gameServerId, pog.playerId, {
       currency: playerStartBalance,
     });
   });
@@ -100,7 +100,7 @@ const tests = [
 
       const currencyName = (
         await this.client.settings.settingsControllerGetOne('currencyName', this.setupData.gameserver.id)
-      ).data.data;
+      ).data.data.value;
 
       expect((await events).length).to.be.eq(1);
       expect((await events)[0].data.msg).to.be.eq(
@@ -182,7 +182,7 @@ const tests = [
     test: async function () {
       const currencyName = (
         await this.client.settings.settingsControllerGetOne('currencyName', this.setupData.gameserver.id)
-      ).data.data;
+      ).data.data.value;
 
       const playerAmount = this.setupData.players.length;
       const ticketEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, playerAmount);
@@ -277,7 +277,7 @@ const tests = [
 
       const currencyName = (
         await this.client.settings.settingsControllerGetOne('currencyName', this.setupData.gameserver.id)
-      ).data.data;
+      ).data.data.value;
 
       const waitForEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 2);
 

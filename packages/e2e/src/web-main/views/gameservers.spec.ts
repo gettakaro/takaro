@@ -17,6 +17,8 @@ test('Can use call to action if there are no gameservers', async ({ page, takaro
 // currently broken because when server is created the selectedGameServerId is set to the newly created server
 // But for some reason this redirects the page to the server specific dashboard instead of staying on the gameservers page.
 test('Can create gameserver', async ({ page, takaro }) => {
+  await page.goto('/');
+
   const { GameServersPage } = takaro;
 
   const serverName = 'My new server';
@@ -110,7 +112,7 @@ test.describe('Dashboard', () => {
   test.describe('Command history', () => {
     test('Pressing arrow up should show last command', async ({ takaro }) => {
       const { GameServersPage } = takaro;
-      await GameServersPage.gotoGameServer();
+      await GameServersPage.gotoGameServerConsole();
 
       await GameServersPage.page.getByPlaceholder('Type here to execute a command..').type('Command 1');
       await GameServersPage.page.keyboard.press('Enter');
@@ -124,7 +126,7 @@ test.describe('Dashboard', () => {
     test('Pressing up arrow twice should show the command before the last', async ({ takaro }) => {
       const { GameServersPage } = takaro;
 
-      await GameServersPage.gotoGameServer();
+      await GameServersPage.gotoGameServerConsole();
       await GameServersPage.page.getByPlaceholder('Type here to execute a command..').type('Command 1');
       await GameServersPage.page.keyboard.press('Enter');
 
@@ -141,7 +143,7 @@ test.describe('Dashboard', () => {
     test('Pressing down arrow after pressing up arrow should return to last command', async ({ takaro }) => {
       const { GameServersPage } = takaro;
 
-      await GameServersPage.gotoGameServer();
+      await GameServersPage.gotoGameServerConsole();
       await GameServersPage.page.getByPlaceholder('Type here to execute a command..').type('Command 1');
       await GameServersPage.page.keyboard.press('Enter');
 
@@ -155,7 +157,7 @@ test.describe('Dashboard', () => {
     test('Reaching top of history and pressing up arrow again should not change input', async ({ takaro }) => {
       const { GameServersPage } = takaro;
 
-      await GameServersPage.gotoGameServer();
+      await GameServersPage.gotoGameServerConsole();
       await GameServersPage.page.getByPlaceholder('Type here to execute a command..').type('Command 1');
       await GameServersPage.page.keyboard.press('Enter');
 
@@ -169,7 +171,7 @@ test.describe('Dashboard', () => {
     test('Reaching bottom or empty command and pressing down arrow should not change input', async ({ takaro }) => {
       const { GameServersPage } = takaro;
 
-      await GameServersPage.gotoGameServer();
+      await GameServersPage.gotoGameServerConsole();
       await GameServersPage.page.getByPlaceholder('Type here to execute a command..').click();
       await GameServersPage.page.keyboard.press('ArrowDown');
 
@@ -179,7 +181,7 @@ test.describe('Dashboard', () => {
     test('Command history should have a cap of 50 commands', async ({ takaro }) => {
       const { GameServersPage } = takaro;
 
-      await GameServersPage.gotoGameServer();
+      await GameServersPage.gotoGameServerConsole();
 
       for (let i = 1; i <= 52; i++) {
         await GameServersPage.page.getByPlaceholder('Type here to execute a command..').type(`Command ${i}`);

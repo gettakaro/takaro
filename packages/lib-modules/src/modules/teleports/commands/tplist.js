@@ -4,7 +4,7 @@ async function main() {
   const data = await getData();
   const takaro = await getTakaro(data);
 
-  const { player, gameServerId, module: mod } = data;
+  const { pog, gameServerId, module: mod } = data;
 
   const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data;
 
@@ -12,7 +12,7 @@ async function main() {
     await takaro.variable.variableControllerSearch({
       filters: {
         gameServerId: [gameServerId],
-        playerId: [player.playerId],
+        playerId: [pog.playerId],
         moduleId: [mod.moduleId],
       },
       search: {
@@ -40,8 +40,8 @@ async function main() {
   const teleports = maybePublicTeleports.filter((tele) => {
     const teleport = JSON.parse(tele.value);
 
-    const isPublic = teleport.public && teleport.playerId !== player.playerId;
-    const isOwned = ownedTeleports.find((t) => t.playerId === player.playerId);
+    const isPublic = teleport.public && teleport.playerId !== pog.playerId;
+    const isOwned = ownedTeleports.find((t) => t.playerId === pog.playerId);
 
     return isPublic || isOwned;
   });

@@ -28,7 +28,7 @@ async function drawWinner(takaro, gameServerId, tickets) {
 
   return {
     name: winner.name,
-    pogId: pog.data.data[0].id,
+    playerId: pog.data.data[0].playerId,
   };
 }
 
@@ -42,7 +42,7 @@ async function refundPlayer(takaro, gameServerId, playerId, amount, currencyName
     })
   ).data.data[0];
 
-  await takaro.playerOnGameserver.playerOnGameServerControllerAddCurrency(pog.id, {
+  await takaro.playerOnGameserver.playerOnGameServerControllerAddCurrency(gameServerId, pog.playerId, {
     currency: amount,
   });
 
@@ -70,7 +70,7 @@ async function main() {
   let tickets = [];
 
   try {
-    const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data;
+    const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data.value;
     const ticketCost = mod.systemConfig.commands.buyTicket.cost;
 
     tickets = (
@@ -104,7 +104,7 @@ async function main() {
     }
 
     const totalPrize = getTotalPrize(tickets, ticketCost, mod.userConfig.profitMargin);
-    const { name: winnerName, pogId: winnerPogId } = await drawWinner(takaro, gameServerId, tickets);
+    const { name: winnerName, playerId } = await drawWinner(takaro, gameServerId, tickets);
 
     await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {
       message: 'The lottery raffle is about to start!',
@@ -112,7 +112,7 @@ async function main() {
     await takaro.gameserver.gameServerControllerSendMessage(gameServerId, { message: 'drumrolls please...' });
     await takaro.gameserver.gameServerControllerSendMessage(gameServerId, { message: 'The winner is...' });
 
-    await takaro.playerOnGameserver.playerOnGameServerControllerAddCurrency(winnerPogId, {
+    await takaro.playerOnGameserver.playerOnGameServerControllerAddCurrency(gameServerId, playerId, {
       currency: totalPrize,
     });
 

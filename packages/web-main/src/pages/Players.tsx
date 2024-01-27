@@ -5,8 +5,6 @@ import {
   useTableActions,
   IconButton,
   Dropdown,
-  Avatar,
-  getInitials,
   Dialog,
   Button,
   TextField,
@@ -78,19 +76,9 @@ const Players: FC = () => {
         const name = info.getValue();
         if (!name) return '';
 
-        const avatar = info.row.original.steamAvatar;
-        return (
-          <div style={{ display: 'flex', gap: '10px' }}>
-            {!avatar ? (
-              <Avatar size="tiny" alt="steam-avatar">
-                {getInitials(name)}
-              </Avatar>
-            ) : (
-              <Avatar size="tiny" src={avatar} alt="steam-avatar" />
-            )}
-            <Player playerId={info.row.original.id} />
-          </div>
-        );
+        const player = info.row.original;
+
+        return <Player playerId={player.id} name={player.name} showAvatar={true} avatarUrl={player.steamAvatar} />;
       },
       enableColumnFilter: true,
       enableSorting: true,
@@ -303,31 +291,31 @@ const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
           <Dropdown.Menu.Item
             label="Go to player profile"
             icon={<ProfileIcon />}
-            onClick={() => navigate(`${PATHS.player.profile(player.id)}`)}
+            onClick={() => navigate(`${PATHS.player.global.profile(player.id)}`)}
           />
 
           <Dropdown.Menu.Item
             label="Edit roles"
             icon={<EditIcon />}
-            onClick={() => navigate(PATHS.player.assignRole(player.id))}
+            onClick={() => navigate(PATHS.player.global.assignRole(player.id))}
             disabled={!isLoadingManageRolesPermission && !hasManageRoles}
           />
 
           <Dropdown.Menu.Item
-            label="Ban from ALL game servers"
+            label="Ban from ALL game servers (coming soon)"
             icon={<BanIcon />}
             onClick={async () => {
               setOpenBanDialog(true);
             }}
-            disabled={!isLoadingManagePlayersPermission && !hasManagePlayers}
+            disabled={(!isLoadingManagePlayersPermission && !hasManagePlayers) || true}
           />
           <Dropdown.Menu.Item
-            label="Unban from ALL game servers"
+            label="Unban from ALL game servers (coming soon)"
             icon={<UnBanIcon />}
             onClick={async () => {
               setOpenUnbanDialog(true);
             }}
-            disabled={!isLoadingManagePlayersPermission && !hasManagePlayers}
+            disabled={(!isLoadingManagePlayersPermission && !hasManagePlayers) || true}
           />
         </Dropdown.Menu>
       </Dropdown>

@@ -27,7 +27,7 @@ export const Container = styled.label<{
     font-size: 1rem;
     color: ${({ theme, error, disabled }): string => {
       if (disabled) {
-        return theme.colors.gray;
+        return theme.colors.disabled;
       }
       if (error) {
         return theme.colors.error;

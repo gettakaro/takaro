@@ -17,6 +17,7 @@ interface IIntegrationTestConfig extends IBaseConfig {
     url: string;
   };
   overwriteSnapshots: boolean;
+  waitForEventsTimeout: number;
 }
 
 const configSchema = {
@@ -85,6 +86,12 @@ const configSchema = {
     format: Boolean,
     default: false,
     env: 'OVERWRITE_SNAPSHOTS',
+  },
+  waitForEventsTimeout: {
+    doc: 'During tests, we often wait for a certain event to occur to "solve" the async nature of the tests. This is the timeout for that.',
+    format: Number,
+    default: 10000,
+    env: 'WAIT_FOR_EVENTS_TIMEOUT',
   },
 };
 

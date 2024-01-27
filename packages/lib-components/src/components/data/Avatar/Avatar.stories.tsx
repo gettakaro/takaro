@@ -1,8 +1,7 @@
-// TODO: save images locally so when there is no network they are still loaded.
 import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
-import { Avatar, AvatarProps } from '.';
+import { Avatar, AvatarGroupProps, AvatarProps } from '.';
 import { getInitials } from '../../../helpers';
 
 const Wrapper = styled.div`
@@ -14,43 +13,81 @@ const Wrapper = styled.div`
 `;
 
 const placeholder01 = 'images/placeholder-01.jpeg';
+const placeholder02 = 'images/placeholder-02.jpeg';
+const placeholder03 = 'images/placeholder-03.jpeg';
 
 export default {
   title: 'Data/Avatar',
   component: Avatar,
   decorators: [(story) => <Wrapper>{story()}</Wrapper>],
-} as Meta<AvatarProps>;
+  argTypes: {
+    variant: {
+      options: ['square', 'rounded', 'circle'],
+      control: {
+        type: 'radio',
+      },
+    },
+  },
+  args: {
+    size: 'medium',
+    unstackOnHover: false,
+    variant: 'circle',
+    max: 3,
+  },
+} as Meta<AvatarProps & AvatarGroupProps>;
 
 export const Default: StoryFn<AvatarProps> = (args) => (
-  <Avatar {...args} alt="Harry Potter" src={placeholder01} />
+  <Avatar size={args.size} variant={args.variant}>
+    <Avatar.Image src={placeholder01} />
+    <Avatar.FallBack>{getInitials('Harry Potter')}</Avatar.FallBack>
+  </Avatar>
 );
 
-export const Sizes: StoryFn = () => (
+export const Fallback: StoryFn = () => (
   <>
-    <Avatar alt="Harry Potter" size="tiny" src={placeholder01} />
-    <Avatar alt="Harry Potter" size="small" src={placeholder01} />
-    <Avatar alt="Harry Potter" size="medium" src={placeholder01} />
-    <Avatar alt="Harry Potter" size="large" src={placeholder01} />
-    <Avatar alt="Harry Potter" size="huge" src={placeholder01} />
+    <Avatar size="tiny">
+      <Avatar.Image src="/broken" />
+      <Avatar.FallBack>{getInitials('Harry Potter')}</Avatar.FallBack>
+    </Avatar>
+    <Avatar size="small">
+      <Avatar.Image src="/broken" />
+      <Avatar.FallBack>{getInitials('Harry Potter')}</Avatar.FallBack>
+    </Avatar>
+    <Avatar size="medium">
+      <Avatar.Image src="/broken" />
+      <Avatar.FallBack>{getInitials('Harry Potter')}</Avatar.FallBack>
+    </Avatar>
+    <Avatar size="large">
+      <Avatar.Image src="/broken" />
+      <Avatar.FallBack>{getInitials('Harry Potter')}</Avatar.FallBack>
+    </Avatar>
+    <Avatar size="huge">
+      <Avatar.Image src="/broken" />
+      <Avatar.FallBack>{getInitials('Harry Potter')}</Avatar.FallBack>
+    </Avatar>
   </>
 );
-
-export const Initials: StoryFn = () => (
-  <>
-    <Avatar alt="Harry Potter" size="tiny">
-      {getInitials('Harry Potter')}
+export const Group: StoryFn<AvatarProps & AvatarGroupProps> = (args) => (
+  <Avatar.Group max={args.max} unstackOnHover={args.unstackOnHover}>
+    <Avatar size={args.size} variant={args.variant}>
+      <Avatar.Image src={placeholder01} />
+      <Avatar.FallBack>{getInitials('Harry Potter')}</Avatar.FallBack>
     </Avatar>
-    <Avatar alt="Albus Severus Potter" size="small">
-      {getInitials('Albus Severus Potter')}
+    <Avatar size={args.size} variant={args.variant}>
+      <Avatar.Image src={placeholder02} />
+      <Avatar.FallBack>{getInitials('Harry Potter')}</Avatar.FallBack>
     </Avatar>
-    <Avatar alt="James Sirius Potter" size="medium">
-      {getInitials('James Sirius Potter ')}
+    <Avatar size={args.size} variant={args.variant}>
+      <Avatar.Image src={placeholder03} />
+      <Avatar.FallBack>{getInitials('Harry Potter')}</Avatar.FallBack>
     </Avatar>
-    <Avatar alt="Lily Luna Potter" size="large">
-      {getInitials('Lily Luna Potter')}
+    <Avatar size={args.size} variant={args.variant}>
+      <Avatar.Image src={placeholder01} />
+      <Avatar.FallBack>{getInitials('Harry Potter')}</Avatar.FallBack>
     </Avatar>
-    <Avatar alt="Lily Luna Potter" size="huge">
-      {getInitials('Lily Luna Potter')}
+    <Avatar size={args.size} variant={args.variant}>
+      <Avatar.Image src={placeholder02} />
+      <Avatar.FallBack>{getInitials('Harry Potter')}</Avatar.FallBack>
     </Avatar>
-  </>
+  </Avatar.Group>
 );

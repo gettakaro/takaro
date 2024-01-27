@@ -252,13 +252,13 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
 
   async handleChatMessage(chatMessage: EventChatMessage, gameServerId: string) {
     const prefix = await new SettingsService(this.domainId, gameServerId).get(SETTINGS_KEYS.commandPrefix);
-    if (!chatMessage.msg.startsWith(prefix)) {
+    if (!chatMessage.msg.startsWith(prefix.value)) {
       // Message doesn't start with configured prefix
       // Ignore it
       return;
     }
 
-    const commandName = chatMessage.msg.slice(prefix.length).split(' ')[0];
+    const commandName = chatMessage.msg.slice(prefix.value.length).split(' ')[0];
 
     const triggeredCommands = await this.repo.getTriggeredCommands(commandName, gameServerId);
 
@@ -272,8 +272,10 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
 
       const gameServerService = new GameServerService(this.domainId);
       const playerOnGameServerService = new PlayerOnGameServerService(this.domainId);
+      const playerService = new PlayerService(this.domainId);
 
-      const resolvedPlayer = await playerOnGameServerService.resolveRef(chatMessage.player, gameServerId);
+      const pog = await playerOnGameServerService.resolveRef(chatMessage.player, gameServerId);
+      const player = await playerService.findOne(pog.playerId);
 
       const parsedCommands = await Promise.all(
         triggeredCommands.map(async (c) => {
@@ -297,7 +299,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
             data: {
               timestamp: chatMessage.timestamp,
               ...parsedCommand,
-              player: resolvedPlayer,
+              player: pog,
               module: await gameServerService.getModuleInstallation(gameServerId, c.moduleId),
             },
           };
@@ -327,10 +329,11 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
             domainId: this.domainId,
             functionId: db.function.id,
             itemId: db.id,
-            player: resolvedPlayer,
+            pog: pog,
             arguments: data.arguments,
             module: data.module,
             gameServerId,
+            player,
           },
           { delay }
         );
@@ -350,7 +353,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
 
     const eventDto = await new EventChatMessage().construct({
       player: playerOnGameserver,
-      timestamp: new Date(),
+      timestamp: new Date().toISOString(),
       msg: triggered.msg,
     });
 

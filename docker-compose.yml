@@ -54,13 +54,13 @@ services:
       - ./packages/lib-util:/app/packages/lib-util
 
       - ./packages/test:/app/packages/test
+      - ./.storybook:/app/.storybook
 
       - ./reports:/app/reports
       - ./scripts:/app/scripts
     env_file:
       - .env
     environment:
-      LOGGING_LEVEL: debug
       NODE_OPTIONS: '--loader ts-node/esm'
       REDIS_HOST: redis
       POSTGRES_HOST: postgresql

@@ -7,13 +7,13 @@ import { useParams } from 'react-router-dom';
 
 import { Page } from '../pages/Page';
 import { ErrorBoundary } from '@sentry/react';
-import {} from 'hooks/useSelectedGameServerContext';
 import { SelectedGameServerContext } from 'context/selectedGameServerContext';
 
 const Container = styled.div`
   display: flex;
-  height: 100%;
-  background-color: ${({ theme }) => theme.colors.backgroundAlt};
+  height: calc(100vh - 1.2rem);
+  background-color: ${({ theme }) => theme.colors.background};
+  overflow: hidden;
 `;
 
 const ContentContainer = styled(motion.div)`

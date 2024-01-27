@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { Divider, Loading, styled } from '@takaro/lib-components';
+import { Divider, Skeleton, styled, useTheme } from '@takaro/lib-components';
 import { PERMISSIONS } from '@takaro/apiclient';
 import { useInfiniteModules } from 'queries/modules';
 import { Outlet } from 'react-router-dom';
@@ -21,10 +21,11 @@ const SubText = styled.p`
 export const ModuleDefinitions: FC = () => {
   useDocumentTitle('Modules');
   const navigate = useNavigate();
+  const theme = useTheme();
   const { data: modules, isLoading, InfiniteScroll } = useInfiniteModules();
 
   if (isLoading) {
-    return <Loading />;
+    return <Skeleton variant="rectangular" width="100%" height="100%" />;
   }
 
   if (!modules) {
@@ -36,7 +37,7 @@ export const ModuleDefinitions: FC = () => {
   const customModules = flattenedModules.filter((mod) => !mod.builtin);
 
   return (
-    <>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: theme.spacing[1] }}>
       <p>
         Modules are the building blocks of your game server. They consist of commands, cronjobs, or hooks. You can
         install the built-in modules easily, just configure them!. Advanced users can create their own modules.
@@ -70,6 +71,6 @@ export const ModuleDefinitions: FC = () => {
         <Outlet />
       </CardList>
       {InfiniteScroll}
-    </>
+    </div>
   );
 };

@@ -1,0 +1,21 @@
+{
+  "body": {
+    "meta": {},
+    "data": [
+      {
+        "key": "commandPrefix",
+        "value": "/",
+        "type": "default"
+      }
+    ]
+  },
+  "status": 200,
+  "test": {
+    "group": "SettingsController",
+    "snapshot": true,
+    "name": "Correctly handles global settings and the delete",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

@@ -47,9 +47,13 @@ const tests = [
         })
       ).data.data;
       if (playerOnGameServer.length === 0) throw new Error('player not found');
-      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(playerOnGameServer[0].id, {
-        currency: 1000,
-      });
+      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
+        playerOnGameServer[0].gameServerId,
+        playerOnGameServer[0].playerId,
+        {
+          currency: 1000,
+        }
+      );
 
       // trigger balance command
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
@@ -81,9 +85,13 @@ const tests = [
           })
         ).data.data;
         if (playerOnGameServer.length === 0) throw new Error('player not found');
-        return this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(playerOnGameServer[0].id, {
-          currency: 1000 * index,
-        });
+        return this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
+          playerOnGameServer[0].gameServerId,
+          playerOnGameServer[0].playerId,
+          {
+            currency: 1000 * index,
+          }
+        );
       });
       await Promise.all(giveCurrencies);
 
@@ -120,9 +128,13 @@ const tests = [
       const sender = this.setupData.players[0];
       const senderPog = sender.playerOnGameServers?.find((pog) => pog.gameServerId === this.setupData.gameserver.id);
       if (!senderPog) throw new Error('Sender playerOnGameServer does not exist');
-      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(senderPog.id, {
-        currency: transferAmount,
-      });
+      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
+        senderPog.gameServerId,
+        senderPog.playerId,
+        {
+          currency: transferAmount,
+        }
+      );
 
       const receiver = this.setupData.players[1];
       const receiverPog = receiver.playerOnGameServers?.find(
@@ -142,10 +154,16 @@ const tests = [
       expect((await events).length).to.be.eq(2);
 
       // check if balances are correct
-      const updatedSender = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(senderPog.id);
+      const updatedSender = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
+        senderPog.gameServerId,
+        senderPog.playerId
+      );
       expect(updatedSender.data.data.currency).to.be.eq(0);
 
-      const updatedReceiver = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(receiverPog.id);
+      const updatedReceiver = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
+        receiverPog.gameServerId,
+        receiverPog.playerId
+      );
       expect(updatedReceiver.data.data.currency).to.be.eq(transferAmount);
 
       expect(messages[0]).to.be.eq(`You received ${transferAmount} test coin from ${sender.name}`);
@@ -200,14 +218,18 @@ const tests = [
       const transferAmount = 500;
       const prefix = (
         await this.client.settings.settingsControllerGetOne('commandPrefix', this.setupData.gameserver.id)
-      ).data.data;
+      ).data.data.value;
 
       const sender = this.setupData.players[0];
       const senderPog = sender.playerOnGameServers?.find((pog) => pog.gameServerId === this.setupData.gameserver.id);
       if (!senderPog) throw new Error('Sender playerOnGameServer does not exist');
-      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(senderPog.id, {
-        currency: transferAmount,
-      });
+      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
+        senderPog.gameServerId,
+        senderPog.playerId,
+        {
+          currency: transferAmount,
+        }
+      );
 
       const receiver = this.setupData.players[1];
       const receiverPog = receiver.playerOnGameServers?.find(
@@ -227,10 +249,20 @@ const tests = [
 
       // check if balances have not changed yet
       expect(
-        (await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(senderPog.id)).data.data.currency
+        (
+          await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
+            senderPog.gameServerId,
+            senderPog.playerId
+          )
+        ).data.data.currency
       ).to.be.eq(transferAmount);
       expect(
-        (await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(receiverPog.id)).data.data.currency
+        (
+          await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
+            receiverPog.gameServerId,
+            receiverPog.playerId
+          )
+        ).data.data.currency
       ).to.be.eq(0);
       expect(messages.length).to.be.eq(1);
       expect(messages[0]).to.be.eq(
@@ -249,10 +281,20 @@ const tests = [
       messages = (await events).sort(sorter).map((e) => e.data.msg as string);
       expect((await events).length).to.be.eq(2);
       expect(
-        (await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(senderPog.id)).data.data.currency
+        (
+          await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
+            senderPog.gameServerId,
+            senderPog.playerId
+          )
+        ).data.data.currency
       ).to.be.eq(0);
       expect(
-        (await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(receiverPog.id)).data.data.currency
+        (
+          await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
+            receiverPog.gameServerId,
+            receiverPog.playerId
+          )
+        ).data.data.currency
       ).to.be.eq(transferAmount);
 
       expect(messages[0]).to.be.eq(`You received ${transferAmount} test coin from ${sender.name}`);
@@ -323,7 +365,12 @@ const tests = [
 
       const messages = (await events).sort(sorter).map((e) => e.data.msg as string);
       expect(
-        (await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(receiverPog.id)).data.data.currency
+        (
+          await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
+            receiverPog.gameServerId,
+            receiverPog.playerId
+          )
+        ).data.data.currency
       ).to.be.eq(grantAmount);
       expect(messages[0]).to.be.eq(`Granted ${grantAmount} test coin by ${granter.name}`);
       expect(messages[1]).to.be.eq(`You successfully granted ${grantAmount} test coin to ${receiver.name}`);
@@ -344,9 +391,13 @@ const tests = [
         (pog) => pog.gameServerId === this.setupData.gameserver.id
       );
       if (!receiverPog) throw new Error('Receiver playerOnGameServer does not exist');
-      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(receiverPog.id, {
-        currency: revokeAmount,
-      });
+      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
+        receiverPog.gameServerId,
+        receiverPog.playerId,
+        {
+          currency: revokeAmount,
+        }
+      );
 
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
@@ -376,7 +427,12 @@ const tests = [
 
       const messages = (await events).sort(sorter).map((e) => e.data.msg as string);
       expect(
-        (await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(receiverPog.id)).data.data.currency
+        (
+          await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
+            receiverPog.gameServerId,
+            receiverPog.playerId
+          )
+        ).data.data.currency
       ).to.be.eq(0);
       expect(messages[0]).to.be.eq(`${revokeAmount} test coin were revoked by ${revoker.name}`);
       expect(messages[1]).to.be.eq(`You successfully revoked ${revokeAmount} test coin of ${receiver.name}'s balance`);

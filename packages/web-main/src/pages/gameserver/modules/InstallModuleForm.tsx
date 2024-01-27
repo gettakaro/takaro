@@ -92,7 +92,7 @@ const InstallModule: FC = () => {
   }
 
   const isInstalled = modInstallation?.createdAt !== undefined;
-  const actionType = isInstalled ? 'Update' : 'Install';
+  const actionType = isInstalled ? 'Update module' : 'Install module';
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>

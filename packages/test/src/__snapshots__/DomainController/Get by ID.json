@@ -15,7 +15,9 @@
     "group": "DomainController",
     "name": "Get by ID",
     "expectedStatus": 200,
-    "filteredFields": [],
+    "filteredFields": [
+      "name"
+    ],
     "standardEnvironment": true
   }
 }

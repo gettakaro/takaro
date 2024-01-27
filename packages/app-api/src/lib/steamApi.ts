@@ -55,7 +55,7 @@ class SteamApi {
       });
 
       this._client.interceptors.request.use((request) => {
-        this.log.info(`➡️ ${request.method?.toUpperCase()} ${request.url}`, {
+        this.log.debug(`➡️ ${request.method?.toUpperCase()} ${request.url}`, {
           method: request.method,
           url: request.url,
         });
@@ -64,7 +64,7 @@ class SteamApi {
 
       this._client.interceptors.response.use(
         (response) => {
-          this.log.info(
+          this.log.debug(
             `⬅️ ${response.request.method?.toUpperCase()} ${response.request.path} ${response.status} ${
               response.statusText
             }`,

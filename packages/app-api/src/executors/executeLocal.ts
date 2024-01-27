@@ -1,7 +1,8 @@
 import { getTakaro, checkPermission, TakaroUserError, axios, _, nextCronJobRun } from '@takaro/helpers';
 import vm from 'node:vm';
-import { FunctionExecutor, ILog } from './executeFunction.js';
+import { FunctionExecutor } from './executeFunction.js';
 import { config } from '../config.js';
+import { TakaroEventFunctionLog } from '@takaro/modules';
 
 /**
  * !!!!!!!!!!!!!!!!!!!!! node:vm is not secure, don't use this in production !!!!!!!!!!!!!!!!!
@@ -14,10 +15,12 @@ export const executeFunctionLocal: FunctionExecutor = async (
   data.token = token;
   data.url = config.get('takaro.url');
 
-  const logs: ILog[] = [];
+  const logs: TakaroEventFunctionLog[] = [];
 
   function pushLog(...args: string[]) {
-    logs.push({ msg: args[0], details: { args: args.slice(1) } });
+    // Ugly "as unknown  as TakaroEventFunctionLog" here
+    // Dont want to make this an async function...
+    logs.push({ msg: args[0], details: { args: args.slice(1) } } as unknown as TakaroEventFunctionLog);
   }
 
   const patchedConsole = {
@@ -71,10 +74,9 @@ export const executeFunctionLocal: FunctionExecutor = async (
       success: true,
     };
   } catch (error) {
-    logs.push({
-      msg: (error as Error).message,
-      details: (error as Error).stack,
-    });
+    logs.push(
+      await new TakaroEventFunctionLog().construct({ msg: (error as Error).message, details: (error as Error).stack })
+    );
 
     return {
       logs,

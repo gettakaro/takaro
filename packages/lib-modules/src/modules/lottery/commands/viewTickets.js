@@ -4,11 +4,11 @@ async function main() {
   const data = await getData();
   const takaro = await getTakaro();
 
-  const { player, gameServerId, module: mod } = data;
+  const { pog, gameServerId, module: mod } = data;
 
   const varKey = 'lottery_tickets_bought';
 
-  if (!checkPermission(player, 'LOTTERY_VIEW_TICKETS')) {
+  if (!checkPermission(pog, 'LOTTERY_VIEW_TICKETS')) {
     throw new TakaroUserError('You do not have permission to view lottery tickets.');
   }
 
@@ -18,7 +18,7 @@ async function main() {
         gameServerId,
         key: varKey,
         moduleId: mod.id,
-        playerId: player.playerId,
+        playerId: pog.playerId,
       },
     })
   ).data.data;
@@ -29,7 +29,7 @@ async function main() {
     ticketsBought = parseInt(JSON.parse(tickets[0].value).amount, 10);
   }
 
-  await player.pm(`You have bought ${ticketsBought} tickets.`);
+  await pog.pm(`You have bought ${ticketsBought} tickets.`);
 }
 
 await main();

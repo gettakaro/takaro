@@ -1,6 +1,6 @@
 import { TakaroService } from './Base.js';
 
-import { IsBoolean, IsIP, IsISO8601, IsNumber, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
+import { IsBoolean, IsIP, IsNumber, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
 import { TakaroDTO, TakaroModelDTO, ctx, errors, traceableClass } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
@@ -9,36 +9,7 @@ import { IItemDTO, IPlayerReferenceDTO } from '@takaro/gameserver';
 import { Type } from 'class-transformer';
 import { PlayerRoleAssignmentOutputDTO, RoleService } from './RoleService.js';
 import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
-import { IGamePlayer } from '@takaro/modules';
-
-import { GeoIpDbName, open } from 'geolite2-redist';
-import maxmind, { CityResponse } from 'maxmind';
-
-const ipLookup = await open(GeoIpDbName.City, (path) => maxmind.open<CityResponse>(path));
-
-export class IpHistoryOutputDTO extends TakaroDTO<IpHistoryOutputDTO> {
-  @IsISO8601()
-  createdAt: string;
-
-  @IsString()
-  ip: string;
-
-  @IsString()
-  @IsOptional()
-  country: string;
-
-  @IsString()
-  @IsOptional()
-  city: string;
-
-  @IsString()
-  @IsOptional()
-  latitude: string;
-
-  @IsString()
-  @IsOptional()
-  longitude: string;
-}
+import { IGamePlayer, TakaroEventCurrencyAdded, TakaroEventCurrencyDeducted } from '@takaro/modules';
 
 export class PlayerOnGameserverOutputDTO extends TakaroModelDTO<PlayerOnGameserverOutputDTO> {
   @IsString()
@@ -79,10 +50,6 @@ export class PlayerOnGameserverOutputDTO extends TakaroModelDTO<PlayerOnGameserv
   @ValidateNested({ each: true })
   @Type(() => IItemDTO)
   inventory: IItemDTO[];
-
-  @ValidateNested({ each: true })
-  @Type(() => IpHistoryOutputDTO)
-  ipHistory: IpHistoryOutputDTO[];
 }
 
 export class PlayerOnGameserverOutputWithRolesDTO extends PlayerOnGameserverOutputDTO {
@@ -208,45 +175,12 @@ export class PlayerOnGameServerService extends TakaroService<
     return this.findOne(player.id);
   }
 
-  async getRef(playerId: string, gameserverId: string) {
+  async getRef(playerId: string, gameserverId: string): Promise<PlayerOnGameserverOutputDTO> {
     return this.repo.getRef(playerId, gameserverId);
   }
 
   async addInfo(ref: IPlayerReferenceDTO, gameserverId: string, data: PlayerOnGameServerUpdateDTO) {
     const resolved = await this.resolveRef(ref, gameserverId);
-
-    if (data.ip) {
-      const lookupResult = (await ipLookup).get(data.ip);
-
-      let newIpRecord;
-
-      if (lookupResult && lookupResult.country) {
-        newIpRecord = await this.repo.observeIp(resolved.id, data.ip, {
-          country: lookupResult.country.iso_code,
-          city: lookupResult.city?.names.en || null,
-          latitude: lookupResult.location?.latitude.toString() || null,
-          longitude: lookupResult.location?.longitude.toString() || null,
-        });
-      } else {
-        newIpRecord = await this.repo.observeIp(resolved.id, data.ip, null);
-      }
-
-      if (newIpRecord) {
-        const eventsService = new EventService(this.domainId);
-        await eventsService.create(
-          await new EventCreateDTO().construct({
-            gameserverId,
-            playerId: resolved.playerId,
-            eventName: EVENT_TYPES.PLAYER_NEW_IP_DETECTED,
-            meta: {
-              new: newIpRecord,
-              old: resolved.ipHistory[resolved.ipHistory.length - 1],
-            },
-          })
-        );
-      }
-    }
-
     return this.update(resolved.id, data);
   }
 
@@ -277,7 +211,9 @@ export class PlayerOnGameServerService extends TakaroService<
         playerId: senderRecord.playerId,
         gameserverId: senderRecord.gameServerId,
         userId,
-        meta: { amount, receiver: receiverRecord.playerId },
+        meta: await new TakaroEventCurrencyDeducted().construct({
+          amount,
+        }),
       })
     );
 
@@ -287,7 +223,9 @@ export class PlayerOnGameServerService extends TakaroService<
         playerId: receiverRecord.playerId,
         gameserverId: receiverRecord.gameServerId,
         userId,
-        meta: { amount, sender: senderRecord.playerId },
+        meta: await new TakaroEventCurrencyAdded().construct({
+          amount,
+        }),
       })
     );
   }
@@ -304,7 +242,9 @@ export class PlayerOnGameServerService extends TakaroService<
         playerId: record.playerId,
         gameserverId: record.gameServerId,
         userId,
-        meta: { amount },
+        meta: await new TakaroEventCurrencyDeducted().construct({
+          amount,
+        }),
       })
     );
   }
@@ -321,7 +261,9 @@ export class PlayerOnGameServerService extends TakaroService<
         playerId: record.playerId,
         gameserverId: record.gameServerId,
         userId,
-        meta: { amount },
+        meta: await new TakaroEventCurrencyAdded().construct({
+          amount,
+        }),
       })
     );
   }
