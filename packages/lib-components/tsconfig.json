@@ -16,8 +16,5 @@
         "test/testUtils.tsx"
       ]
     }
-  },
-  "include": [
-    "./src/components/charts/GeoMercator/world.json"
-  ]
+  }
 }

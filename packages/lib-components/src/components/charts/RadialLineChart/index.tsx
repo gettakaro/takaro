@@ -22,7 +22,7 @@ const formatTicks = (val: NumberLike) => String(val);
 const green = '#e5fd3d';
 export const blue = '#aeeef8';
 
-export interface RadialChartProps<T> {
+export interface RadialLineChartProps<T> {
   name: string;
   data: T[];
   margin?: Margin;
@@ -32,14 +32,14 @@ export interface RadialChartProps<T> {
 }
 
 const defaultMargin = { top: 10, right: 0, bottom: 25, left: 40 };
-export const RadialChart = <T,>({
+export const RadialLineChart = <T,>({
   data,
   yAccessor,
   xAccessor,
   tooltipAccessor,
   name,
   margin = defaultMargin,
-}: RadialChartProps<T>) => {
+}: RadialLineChartProps<T>) => {
   return (
     <>
       <ParentSize>
@@ -60,9 +60,17 @@ export const RadialChart = <T,>({
   );
 };
 
-type InnerPieChartProps<T> = InnerChartProps & RadialChartProps<T>;
+type InnerRadialLineChartProps<T> = InnerChartProps & RadialLineChartProps<T>;
 
-const Chart = <T,>({ width, xAccessor, yAccessor, data, name, height, tooltipAccessor }: InnerPieChartProps<T>) => {
+const Chart = <T,>({
+  width,
+  xAccessor,
+  yAccessor,
+  data,
+  name,
+  height,
+  tooltipAccessor,
+}: InnerRadialLineChartProps<T>) => {
   const theme = useTheme();
 
   const { tooltipData, tooltipLeft, tooltipTop, tooltipOpen, hideTooltip, showTooltip } = useTooltip<string>();
@@ -138,9 +146,9 @@ const Chart = <T,>({ width, xAccessor, yAccessor, data, name, height, tooltipAcc
           tickFormat={formatTicks}
           hideAxisLine
         />
-        <LineRadial angle={angle} radius={radius} curve={curveBasisOpen}>
+        <LineRadial<T> angle={angle} radius={radius} curve={curveBasisOpen}>
           {({ path }) => {
-            const d = path(data.map(yAccessor)) ?? '';
+            const d = path(data) ?? '';
             return (
               <motion.path
                 d={d}

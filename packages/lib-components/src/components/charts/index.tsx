@@ -13,5 +13,8 @@ export type { PieChartProps } from './PieChart';
 export { RadarChart } from './RadarChart';
 export type { RadarChartProps } from './RadarChart';
 
-export { RadialChart } from './RadialChart';
-export type { RadialChartProps } from './RadialChart';
+export { RadialLineChart } from './RadialLineChart';
+export type { RadialLineChartProps } from './RadialLineChart';
+
+export { RadialBarChart } from './RadialBarChart';
+export type { RadialBarChartProps } from './RadialBarChart';

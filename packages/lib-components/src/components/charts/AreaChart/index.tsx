@@ -125,10 +125,9 @@ const Chart = <T,>({
     if (val instanceof Date) {
       date = val;
     } else {
-      // Here, 'val' is either a number or an object with a 'valueOf()' method.
+      // 'val' is either a number or an object with a 'valueOf()' method.
       date = new Date(val.valueOf());
     }
-
     return formatDate(date);
   };
 
