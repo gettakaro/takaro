@@ -4,7 +4,7 @@ import { useRadioGroupContext } from './context';
 import { styled } from '../../../styled';
 import { motion } from 'framer-motion';
 
-const RadioItemContainer = styled.div<{ readOnly: boolean; isChecked: boolean }>`
+const RadioItemContainer = styled.div<{ readOnly: boolean; isChecked: boolean; disabled: boolean }>`
   display: grid;
   place-items: center;
   min-width: ${({ theme }) => theme.spacing['2_5']};
@@ -22,7 +22,8 @@ const RadioItemContainer = styled.div<{ readOnly: boolean; isChecked: boolean }>
       return theme.colors.backgroundAccent;
     }};
 
-  background-color: ${({ theme, readOnly }) => (readOnly ? theme.colors.backgroundAccent : theme.colors.background)};
+  background-color: ${({ theme, readOnly, disabled }) =>
+    readOnly || disabled ? theme.colors.backgroundAccent : theme.colors.background};
   border-radius: 100%;
   cursor: ${({ readOnly }) => (readOnly ? 'normal' : 'pointer')};
   overflow: visible;
@@ -62,12 +63,18 @@ const variants = {
 
 export const RadioItem = forwardRef<HTMLDivElement, RadioItemProps>(
   ({ readOnly = false, disabled = false, value }, ref) => {
-    const { setSelectedValue, selectedValue, name } = useRadioGroupContext();
+    const {
+      setSelectedValue,
+      selectedValue,
+      name,
+      disabled: groupDisabled,
+      readOnly: groupReadOnly,
+    } = useRadioGroupContext();
     const checked = selectedValue === value;
     const inputRef = useRef<HTMLInputElement>(null);
 
     const handleOnClick = () => {
-      if (readOnly || disabled) return;
+      if (readOnly || disabled || groupDisabled || groupReadOnly) return;
       inputRef.current?.click();
     };
 
@@ -87,7 +94,8 @@ export const RadioItem = forwardRef<HTMLDivElement, RadioItemProps>(
         />
         <RadioItemContainer
           isChecked={checked}
-          readOnly={readOnly}
+          readOnly={readOnly || groupReadOnly}
+          disabled={disabled || groupDisabled}
           onClick={handleOnClick}
           tabIndex={disabled ? -1 : 0}
           role="radio"
@@ -97,7 +105,7 @@ export const RadioItem = forwardRef<HTMLDivElement, RadioItemProps>(
             initial={checked ? 'selected' : 'deselected'}
             animate={checked ? 'selected' : 'deselected'}
             isChecked={checked}
-            readOnly={readOnly}
+            readOnly={readOnly || groupReadOnly}
             transition={getTransition()}
             variants={variants}
           />

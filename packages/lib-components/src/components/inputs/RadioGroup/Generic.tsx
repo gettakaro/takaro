@@ -9,7 +9,7 @@ export interface RadioGroupSubComponents {
   Item: typeof RadioItem;
 }
 
-export type RadioGroupProps = PropsWithChildren<GenericInputProps<string, HTMLDivElement>>;
+export type RadioGroupProps = PropsWithChildren<GenericInputProps<string, HTMLInputElement>>;
 const defaultsApplier = defaultInputPropsFactory<RadioGroupProps>(defaultInputProps);
 
 export const GenericRadioGroup: FC<RadioGroupProps> & RadioGroupSubComponents = (props) => {
@@ -22,7 +22,9 @@ export const GenericRadioGroup: FC<RadioGroupProps> & RadioGroupSubComponents = 
 
   return (
     <Container role="radiogroup" aria-describedby={setAriaDescribedBy(name, hasDescription)}>
-      <RadioGroupContext.Provider value={{ name, selectedValue: value, setSelectedValue: handleChange }}>
+      <RadioGroupContext.Provider
+        value={{ name, selectedValue: value, setSelectedValue: handleChange, readOnly, disabled }}
+      >
         {children}
       </RadioGroupContext.Provider>
     </Container>

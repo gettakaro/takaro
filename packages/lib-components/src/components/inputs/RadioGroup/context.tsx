@@ -4,6 +4,8 @@ interface ContextValue {
   selectedValue: string;
   setSelectedValue: (e: ChangeEvent<HTMLInputElement>) => void;
   name: string;
+  disabled: boolean;
+  readOnly: boolean;
 }
 
 export const RadioGroupContext = createContext<ContextValue>({} as ContextValue);

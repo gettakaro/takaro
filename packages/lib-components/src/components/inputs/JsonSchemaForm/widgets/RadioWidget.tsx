@@ -1,17 +1,8 @@
-import {
-  FormContextType,
-  RJSFSchema,
-  StrictRJSFSchema,
-  WidgetProps,
-} from '@rjsf/utils';
-import { GenericRadioGroup, Option } from '../../RadioGroup';
+import { FormContextType, RJSFSchema, StrictRJSFSchema, WidgetProps } from '@rjsf/utils';
+import { useTheme } from '@takaro/lib-components';
+import { GenericRadioGroup } from '../../RadioGroup';
 
-// TODO: implement multiselect
-export function RadioWidget<
-  T = unknown,
-  S extends StrictRJSFSchema = RJSFSchema,
-  F extends FormContextType = any
->({
+export function RadioWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema, F extends FormContextType = any>({
   name,
   options,
   disabled,
@@ -24,16 +15,7 @@ export function RadioWidget<
   onChange,
 }: WidgetProps<T, S, F>) {
   const { enumOptions } = options;
-
-  const radioOptions: Option[] = enumOptions
-    ? enumOptions.map((option) => {
-        return {
-          labelPosition: 'left',
-          label: option.label,
-          value: option.value,
-        };
-      })
-    : [];
+  const theme = useTheme();
 
   return (
     <GenericRadioGroup
@@ -43,10 +25,26 @@ export function RadioWidget<
       readOnly={readonly}
       disabled={disabled}
       onChange={onChange}
-      options={radioOptions}
       required={required}
       hasError={!!rawErrors.length}
       hasDescription={!!schema.description}
-    />
+    >
+      {enumOptions &&
+        enumOptions.map(({ value, label }) => (
+          <div
+            key={`${id}-${value}-container`}
+            style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: theme.spacing[1] }}
+          >
+            <GenericRadioGroup.Item key={`${id}-${value}-item`} value={value} id={value} />
+            <label
+              key={`${id}-${value}-label`}
+              htmlFor={value}
+              style={{ cursor: !disabled && !readOnly ? 'pointer' : 'default' }}
+            >
+              {label}
+            </label>
+          </div>
+        ))}
+    </GenericRadioGroup>
   );
 }
