@@ -39,7 +39,7 @@ export function RadioWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema
             <label
               key={`${id}-${value}-label`}
               htmlFor={value}
-              style={{ cursor: !disabled && !readOnly ? 'pointer' : 'default' }}
+              style={{ cursor: !disabled && !readonly ? 'pointer' : 'default' }}
             >
               {label}
             </label>
