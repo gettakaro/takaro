@@ -119,7 +119,7 @@ jobs:
   e2e:
     needs: [docker]
     timeout-minutes: 60
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
