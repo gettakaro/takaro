@@ -1,4 +1,4 @@
-import { IsBoolean, IsDateString, IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsBoolean, IsISO8601, IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
@@ -66,10 +66,10 @@ class PlayerOnGameServerSetCurrencyInputDTO {
 }
 
 class PlayerOnGameServerStatsInputDTO {
-  @IsDateString()
+  @IsISO8601()
   timeRangeStart!: string;
 
-  @IsDateString()
+  @IsISO8601()
   timeRangeEnd!: string;
 }
 

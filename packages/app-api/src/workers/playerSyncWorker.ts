@@ -115,17 +115,15 @@ export async function processJob(job: Job<IGameServerQueueData>) {
 
         const location = await gameServerService.getPlayerLocation(gameServerId, resolvedPlayer.id);
         const playerLocationStat = new PlayerLocationStat(domainId);
-        log.debug('this is the location', location);
-        if (location) {
-          await playerLocationStat.write({ playerId: resolvedPlayer.id, gameServerId, location });
-        }
 
+        if (location) {
+          playerLocationStat.write({ playerId: resolvedPlayer.id, gameServerId, location });
+        }
         if (player.ip) {
           await playerService.observeIp(resolvedPlayer.id, gameServerId, player.ip);
         }
-
         if (player.ping) {
-          await playerPingStat.write({
+          playerPingStat.write({
             playerId: resolvedPlayer.id,
             gameServerId,
             ping: player.ping,

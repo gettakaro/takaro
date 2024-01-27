@@ -187,6 +187,12 @@ const configSchema = {
       default: '',
       env: 'INFLUXDB_ADMIN_TOKEN',
     },
+    batchSize: {
+      doc: 'The amount of points to write per batch. Points are only written when the batch is full',
+      format: Number,
+      default: 5000,
+      env: 'INFLUXDB_BATCH_SIZE',
+    },
     bucket: {
       doc: 'The Influxdb bucket to use. Temporary until we have multiple buckets',
       format: String,
