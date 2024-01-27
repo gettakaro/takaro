@@ -151,7 +151,7 @@ const configSchema = {
     kpiInterval: {
       doc: 'The interval at which to update the KPI metrics',
       format: Number,
-      default: ms('1m'),
+      default: ms('60m'),
       env: 'KPI_INTERVAL',
     },
   },

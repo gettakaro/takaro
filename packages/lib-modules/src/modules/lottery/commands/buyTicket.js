@@ -50,7 +50,7 @@ async function main() {
     });
   }
 
-  if (args.amount >= 1) {
+  if (args.amount > 1) {
     const amount = args.amount * mod.systemConfig.commands.buyTicket.cost;
 
     await takaro.playerOnGameserver.playerOnGameServerControllerDeductCurrency(gameServerId, pog.playerId, {
