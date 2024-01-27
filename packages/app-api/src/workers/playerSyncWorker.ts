@@ -35,7 +35,7 @@ export async function processJob(job: Job<IGameServerQueueData>) {
   });
 
   if (job.data.domainId === 'all') {
-    log.info('Processing playerSync job for all domains');
+    log.debug('Processing playerSync job for all domains');
 
     const domainsService = new DomainService();
     const domains = await domainsService.find({});
@@ -56,9 +56,9 @@ export async function processJob(job: Job<IGameServerQueueData>) {
                 { domainId: domain.id, gameServerId: gs.id },
                 { jobId: `playerSync-${domain.id}-${gs.id}-${Date.now()}` }
               );
-              await job.log(`Added playerSync job for domain: ${domain.id} and game server: ${gs.id}`);
+              log.debug(`Added playerSync job for domain: ${domain.id} and game server: ${gs.id}`);
             } else {
-              await job.log(`Game server ${gs.id} from domain ${domain.id} is not reachable, skipping...`);
+              log.debug(`Game server ${gs.id} from domain ${domain.id} is not reachable, skipping...`);
             }
           })
         );
@@ -85,7 +85,7 @@ export async function processJob(job: Job<IGameServerQueueData>) {
 
   if (job.data.gameServerId) {
     const { domainId, gameServerId } = job.data;
-    log.info(`Processing playerSync job for domain: ${domainId} and game server: ${gameServerId}`);
+    log.debug(`Processing playerSync job for domain: ${domainId} and game server: ${gameServerId}`);
     const gameServerService = new GameServerService(domainId);
     const playerService = new PlayerService(domainId);
     const playerOnGameServerService = new PlayerOnGameServerService(domainId);
@@ -98,13 +98,13 @@ export async function processJob(job: Job<IGameServerQueueData>) {
     promises.push(
       playerOnGameServerService
         .setOnlinePlayers(gameServerId, onlinePlayers)
-        .then(() => job.log(`Set online players (${onlinePlayers.length}) for game server: ${gameServerId}`))
+        .then(() => log.debug(`Set online players (${onlinePlayers.length}) for game server: ${gameServerId}`))
     );
 
     promises.push(
       gameServerService
         .syncInventories(gameServerId)
-        .then(() => job.log(`Synced inventories for game server: ${gameServerId}`))
+        .then(() => log.debug(`Synced inventories for game server: ${gameServerId}`))
     );
 
     promises.push(
@@ -137,8 +137,7 @@ export async function processJob(job: Job<IGameServerQueueData>) {
             ping: player.ping,
           })
         );
-
-        await job.log(`Synced player ${player.gameId} on game server ${gameServerId}`);
+        log.debug(`Synced player ${player.gameId} on game server ${gameServerId}`);
       })
     );
 

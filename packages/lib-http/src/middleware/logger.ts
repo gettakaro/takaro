@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { logger, ctx } from '@takaro/util';
 
 const SUPPRESS_BODY_KEYWORDS = ['password', 'newPassword'];
+const HIDDEN_ROUTES = ['/metrics', '/health', '/healthz', '/ready', '/readyz'];
 import { context, trace } from '@opentelemetry/api';
 const log = logger('http');
 
@@ -12,6 +13,10 @@ const log = logger('http');
 export const LoggingMiddleware = ctx.wrap('HTTP', loggingMiddleware);
 
 async function loggingMiddleware(req: Request, res: Response, next: NextFunction) {
+  if (HIDDEN_ROUTES.includes(req.originalUrl)) {
+    return next();
+  }
+
   const requestStartMs = Date.now();
 
   const hideData = SUPPRESS_BODY_KEYWORDS.some((keyword) => (JSON.stringify(req.body) || '').includes(keyword));

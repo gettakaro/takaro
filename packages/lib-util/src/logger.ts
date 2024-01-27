@@ -53,16 +53,13 @@ if (config.get('mode') === 'test' && process.env.LOGGING_LEVEL === undefined) {
   level = 'none';
 }
 
-const transports = [
-  new winston.transports.Console({
-    level,
-    format: config.get('logging.json') ? jsonFormat : simpleFormat,
-    silent: level === 'none',
-  }),
-];
+const transports = [new winston.transports.Console()];
 
 const mainLogger = winston.createLogger({
   transports,
+  level,
+  format: config.get('logging.json') ? jsonFormat : simpleFormat,
+  silent: level === 'none',
 });
 
 export function logger(namespace: string, meta?: JsonObject): winston.Logger {
