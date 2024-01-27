@@ -39,7 +39,7 @@ abstract class BaseStat {
 
   protected buildQuery(
     query: ParameterizedQuery,
-    opts: BaseStatReadOpts & { measurement: string }
+    opts: BaseStatReadOpts & { measurement: string; aggregate?: boolean }
   ): ParameterizedQuery {
     this.logger.debug(`querying ${opts.measurement}`);
     const base = flux`from(bucket: ${fluxString(this.bucket)})
@@ -48,37 +48,13 @@ abstract class BaseStat {
       this.domainId
     )})`;
     const q = flux`${base} ${query}`; // I guess not all queries will have an aggregation (e.g. players from certain countries) ${this.getDynAggregationWindow({ timeRangeEnd: opts.timeRangeEnd, timeRangeStart: opts.timeRangeStart })})}
-    this.logger.verbose(q);
-    return q;
-  }
 
-  private getDynAggregationWindow(opts: BaseStatReadOpts): ParameterizedQuery {
-    const start = DateTime.fromISO(opts.timeRangeStart);
-    const end = DateTime.fromISO(opts.timeRangeEnd);
-    const diff = start.diff(end).toObject(); // { days: 1, hours: 2, minutes: 3, ... }
-    let period = '';
-
-    if (diff.years) {
-      period = '1mo';
-    } else if (diff.quarters) {
-      period = '15d';
-    } else if (diff.months) {
-      period = '1d';
-    } else if (diff.weeks) {
-      period = '6h';
-    } else if (diff.days) {
-      period = '1h';
-    } else if (diff.hours) {
-      period = '5m';
-    } else if (diff.minutes) {
-      period = '5s';
+    if (opts.aggregate) {
+      return flux`${q} |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)`; // v.windowPeriod will automatically calculate a reasonable window period based on the time range
     }
 
-    return flux`|> aggregateWindow(
-                      every: ${period}, 
-                      fn: mean, 
-                      createEmpty: false
-                )`;
+    this.logger.verbose(q);
+    return q;
   }
 }
 
@@ -114,11 +90,11 @@ export class PlayerPingStat extends BaseStat {
     )})
       |> keep(columns: ["_time", "_value"])
     `;
-
     const query = this.buildQuery(subQ, {
       measurement: this.measurement,
       timeRangeEnd: opts.timeRangeEnd,
       timeRangeStart: opts.timeRangeStart,
+      aggregate: true,
     });
     return await this.reader.collectRows<PlayerPingStatOutput>(query, (row, tableMeta) => ({
       timestamp: row[tableMeta.column('_time').index],
@@ -166,6 +142,7 @@ export class PlayerLocationStat extends BaseStat {
       measurement: this.measurement,
       timeRangeEnd: opts.timeRangeEnd,
       timeRangeStart: opts.timeRangeStart,
+      aggregate: true,
     });
 
     return await this.reader.collectRows<PlayerLocationStatOutput>(query, (row, tableMeta) => ({
