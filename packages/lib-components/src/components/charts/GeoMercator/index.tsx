@@ -1,11 +1,12 @@
-import { ParentSize } from '@visx/responsive';
-import { Graticule, Mercator } from '@visx/geo';
-import { useTheme } from '../../../hooks';
 import * as topojson from 'topojson-client';
 import topology from './world.json';
-import { scaleQuantize } from '@visx/vendor/d3-scale';
+
+import { Graticule, Mercator } from '@visx/geo';
+import { scaleQuantize } from '@visx/scale';
+import { ParentSize } from '@visx/responsive';
 
 import { InnerChartProps, Margin } from '../util';
+import { useTheme } from '../../../hooks';
 
 interface FeatureShape {
   type: 'Feature';
@@ -71,16 +72,9 @@ const Chart = <T,>({
 // tooltipAccessor
 InnerGeoMercator<T>) => {
   const theme = useTheme();
-  const color = scaleQuantize<string>([
-    '#ffb01d',
-    '#ffa020',
-    '#ff9221',
-    '#ff8424',
-    '#ff7425',
-    '#fc5e2f',
-    '#f94b3a',
-    '#f63a48',
-  ]);
+  const color = scaleQuantize<string>({
+    range: ['#ffb01d', '#ffa020', '#ff9221', '#ff8424', '#ff7425', '#fc5e2f', '#f94b3a', '#f63a48'],
+  });
   const centerX = width / 2;
   const centerY = height / 2;
   const scale = (width / 630) * 100;

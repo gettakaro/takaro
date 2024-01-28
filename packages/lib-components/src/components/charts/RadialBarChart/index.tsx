@@ -1,4 +1,4 @@
-import { MouseEvent } from 'react';
+import { MouseEvent, useCallback } from 'react';
 import { Arc } from '@visx/shape';
 import { Group } from '@visx/group';
 import { scaleBand, scaleRadial } from '@visx/scale';
@@ -71,16 +71,19 @@ const Chart = <T,>({
     scroll: true,
   });
 
-  const handleMouseOver = (event: MouseEvent) => {
-    const target = event.target as SVGElement;
-    const coords = localPoint(target.ownerSVGElement!, event);
-    const data = JSON.parse(target.dataset.tooltip!);
-    showTooltip({
-      tooltipLeft: coords?.x,
-      tooltipTop: coords?.y,
-      tooltipData: tooltipAccessor(data),
-    });
-  };
+  const handleMouseOver = useCallback(
+    (event: MouseEvent) => {
+      const target = event.target as SVGElement;
+      const coords = localPoint(target.ownerSVGElement!, event);
+      const data = JSON.parse(target.dataset.tooltip!);
+      showTooltip({
+        tooltipLeft: coords?.x,
+        tooltipTop: coords?.y,
+        tooltipData: tooltipAccessor(data),
+      });
+    },
+    [data, tooltipAccessor]
+  );
 
   // bounds
   const xMax = width - margin.left - margin.right;
@@ -119,7 +122,7 @@ const Chart = <T,>({
             <>
               <Arc
                 key={`bar-${xVal}`}
-                cornerRadius={2}
+                cornerRadius={3}
                 startAngle={startAngle}
                 endAngle={endAngle}
                 outerRadius={outerRadius}
@@ -127,6 +130,9 @@ const Chart = <T,>({
                 fill={theme.colors.primary}
                 onMouseOver={handleMouseOver}
                 onMouseOut={hideTooltip}
+                onMouseLeave={hideTooltip}
+                data-tooltip={JSON.stringify(d)}
+                style={{ cursor: 'pointer' }}
               />
               <Text
                 x={textX}

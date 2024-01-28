@@ -3,7 +3,7 @@ import { MouseEvent } from 'react';
 import { ParentSize } from '@visx/responsive';
 import { Group } from '@visx/group';
 import { LineRadial } from '@visx/shape';
-import { scaleLog, scaleTime } from '@visx/vendor/d3-scale';
+import { scaleTime, scaleLog, NumberLike } from '@visx/scale';
 import { useTooltipInPortal, useTooltip } from '@visx/tooltip';
 import { localPoint } from '@visx/event';
 import { GridAngle, GridRadial } from '@visx/grid';
@@ -11,16 +11,12 @@ import { AxisLeft } from '@visx/axis';
 import { motion } from 'framer-motion';
 import { extent } from '@visx/vendor/d3-array';
 import { curveBasisOpen } from '@visx/curve';
-import { NumberLike } from '@visx/scale';
-import { LinearGradient } from '@visx/gradient';
 
 import { getDefaultTooltipStyles, InnerChartProps, Margin } from '../util';
 import { useTheme } from '../../../hooks';
+import { useGradients } from '../useGradients';
 
 const formatTicks = (val: NumberLike) => String(val);
-
-const green = '#e5fd3d';
-export const blue = '#aeeef8';
 
 export interface RadialLineChartProps<T> {
   name: string;
@@ -72,6 +68,7 @@ const Chart = <T,>({
   tooltipAccessor,
 }: InnerRadialLineChartProps<T>) => {
   const theme = useTheme();
+  const gradients = useGradients(name);
 
   const { tooltipData, tooltipLeft, tooltipTop, tooltipOpen, hideTooltip, showTooltip } = useTooltip<string>();
   const { containerRef, TooltipInPortal } = useTooltipInPortal({
@@ -79,15 +76,21 @@ const Chart = <T,>({
     scroll: true,
   });
 
-  const xScale = scaleTime([0, Math.PI * 2], extent(data, xAccessor));
-  const yScale = scaleLog(extent(data, yAccessor));
+  const xScale = scaleTime<number>({
+    range: [0, Math.PI * 2],
+    domain: extent(data, xAccessor) as [number, number],
+  });
+
+  const yScale = scaleLog<number>({
+    domain: extent(data, yAccessor) as [number, number],
+  });
 
   const firstPoint = yAccessor(data[0]);
   const lastPoint = yAccessor(data[data.length - 1]);
 
   const angle = (d: T) => xScale(xAccessor(d)) ?? 0;
   const radius = (d: T) => yScale(yAccessor(d)) ?? 0;
-  const padding = 20;
+  const padding = 15;
 
   // Update scale output to match component dimensions
   yScale.range([0, height / 2 - padding]);
@@ -106,13 +109,13 @@ const Chart = <T,>({
 
   return width < 10 ? null : (
     <svg ref={containerRef} width={width} height={height}>
-      <LinearGradient from={green} to={blue} id="line-gradient" />
+      {gradients.chart.gradient}
       <rect width={width} height={height} fill={theme.colors.background} rx={14} />
       <Group top={height / 2} left={width / 2}>
         <GridAngle
           scale={xScale}
           outerRadius={height / 2 - padding}
-          stroke={theme.colors.backgroundAlt}
+          stroke={theme.colors.backgroundAccent}
           strokeWidth={1}
           strokeOpacity={0.3}
           strokeDasharray="5,2"
@@ -134,13 +137,11 @@ const Chart = <T,>({
           tickStroke="none"
           tickLabelProps={{
             fontSize: 8,
-            fill: theme.colors.error,
+            fill: theme.colors.text,
             fillOpacity: 1,
             textAnchor: 'middle',
             dx: '1em',
             dy: '-0.5em',
-            stroke: '#744cca',
-            strokeWidth: 0.5,
             paintOrder: 'stroke',
           }}
           tickFormat={formatTicks}
@@ -148,7 +149,7 @@ const Chart = <T,>({
         />
         <LineRadial<T> angle={angle} radius={radius} curve={curveBasisOpen}>
           {({ path }) => {
-            const d = path(data) ?? '';
+            const d = path(data) || '';
             return (
               <motion.path
                 d={d}
@@ -159,7 +160,7 @@ const Chart = <T,>({
                 onMouseOut={hideTooltip}
                 data-tooltip={JSON.stringify(data)}
                 fill="none"
-                stroke={'url(#line-gradient)'}
+                stroke={theme.colors.primary}
               />
             );
           }}
@@ -167,7 +168,7 @@ const Chart = <T,>({
         {[firstPoint, lastPoint].map((d, i) => {
           const cx = ((xScale(d) ?? 0) * Math.PI) / 180;
           const cy = -(yScale(d) ?? 0);
-          return <circle key={`line-cap-${i}`} cx={cx} cy={cy} fill={theme.colors.success} r={3} />;
+          return <circle key={`line-cap-${i}`} cx={cx} cy={cy} fill={theme.colors.primary} r={2} />;
         })}
       </Group>
       {tooltipOpen && tooltipData && (

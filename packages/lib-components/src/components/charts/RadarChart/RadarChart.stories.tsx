@@ -22,13 +22,14 @@ export const Default: StoryFn<RadarChartProps<LetterFrequency>> = () => {
   };
 
   // only show the first few letters
-  const data = letterFrequency.slice(2, 10);
+  const data = letterFrequency.slice(2, 9);
 
   return (
     <Wrapper>
       <RadarChart<LetterFrequency>
         name="letterFrequency"
         yAccessor={getLetterFrequency}
+        xAccessor={getLetter}
         tooltipAccessor={tooltipAccessor}
         data={data}
       />

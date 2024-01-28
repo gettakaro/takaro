@@ -35,8 +35,8 @@ export interface AreaChartProps<T> extends ChartProps {
 // eslint-disable-next-line quotes
 const formatDate = timeFormat("%b %d, '%y");
 
-const defaultMargin = { top: 10, right: 0, bottom: 25, left: 40 };
-const defaultBrushMargin = { top: 0, bottom: 0, left: 10, right: 10 };
+const defaultMargin = { top: 20, left: 50, bottom: 20, right: 20 };
+const defaultBrushMargin = { top: 10, bottom: 15, left: 50, right: 20 };
 const defaultShowAxisX = true;
 const defaultShowAxisY = true;
 const defaultShowGrid = true;
@@ -62,7 +62,6 @@ export const AreaChart = <T,>({
   if (!data || data.length === 0) return null;
 
   // TODO: handle loading state
-
   return (
     <ParentSize>
       {(parent) => (
@@ -131,57 +130,63 @@ const Chart = <T,>({
     return formatDate(date);
   };
 
-  const brushHeight = showBrush ? brushMargin.bottom + brushMargin.top + 100 : 0;
-  const bottomAxisHeight = showAxisX ? 25 : 0;
+  const chartSeparation = 30;
+  const innerHeight = height - margin.top - margin.bottom;
+  const topChartBottomMargin = chartSeparation + 10;
+  const topChartHeight = 0.8 * innerHeight - topChartBottomMargin;
+  const bottomChartHeight = innerHeight - topChartHeight - chartSeparation;
 
-  // Actual chart dimensions
-  const mainChartInnerHeight = height - margin.top - margin.bottom - brushHeight - bottomAxisHeight;
-  const mainChartInnerWidth = width - margin.left - margin.right;
+  // bounds
+  const xMax = Math.max(width - margin.left - margin.right, 0);
+  const yMax = Math.max(topChartHeight, 0);
 
-  const separationBetweenBrushAndChart = 50;
-  const mainChartAreaHeight = 0.85 * mainChartInnerHeight - separationBetweenBrushAndChart;
-  const brushAreaHeight = mainChartInnerHeight - mainChartAreaHeight - separationBetweenBrushAndChart;
-
-  const brushAreaInnerWidth = Math.max(mainChartInnerWidth - brushMargin.left - brushMargin.right, 0);
-  const brushAreaInnerHeight = Math.max(brushAreaHeight - brushMargin.top - brushMargin.bottom, 0);
-  const brushAreaTopPosition = margin.top + mainChartInnerHeight + separationBetweenBrushAndChart + brushMargin.top;
+  const xBrushMax = Math.max(width - brushMargin.left - brushMargin.right, 0);
+  const yBrushMax = Math.max(bottomChartHeight - brushMargin.top - brushMargin.bottom, 0);
 
   const xScale = useMemo(
     () =>
       scaleTime<number>({
-        range: [0, mainChartInnerWidth],
+        range: [0, xMax],
         domain: extent(filteredData, xAccessor) as [Date, Date],
       }),
-    [mainChartInnerWidth, filteredData]
+    [xMax, filteredData]
   );
 
   const yScale = useMemo(
     () =>
       scaleLinear({
-        range: [mainChartInnerHeight, 0],
-        domain: [0, (max(filteredData, yAccessor) || 0) + mainChartInnerHeight / 3],
+        range: [yMax, 0],
+        domain: [0, (max(filteredData, yAccessor) || 0) + yMax / 4],
         nice: true,
       }),
-    [mainChartInnerHeight, filteredData]
+    [yMax, filteredData]
   );
 
   const xBrushScale = useMemo(
     () =>
       scaleTime<number>({
-        range: [0, brushAreaInnerWidth],
+        range: [0, xBrushMax],
         domain: extent(data, xAccessor) as [Date, Date],
       }),
-    [brushAreaInnerWidth, mainChartInnerWidth]
+    [xBrushMax]
   );
 
   const yBrushScale = useMemo(
     () =>
       scaleLinear({
-        range: [brushAreaInnerHeight, 0],
+        range: [yBrushMax, 0],
         domain: [0, max(data, yAccessor) || 0],
         nice: true,
       }),
-    [brushAreaInnerHeight, data, mainChartInnerHeight]
+    [yBrushMax]
+  );
+
+  const initialBrushPosition = useMemo(
+    () => ({
+      start: { x: xBrushScale(xAccessor(data[0])) },
+      end: { x: xBrushScale(xAccessor(data[data.length - 1])) },
+    }),
+    [xBrushScale]
   );
 
   const onBrushChange = (domain: Bounds | null) => {
@@ -214,23 +219,24 @@ const Chart = <T,>({
         tooltipTop: tooltipY,
       });
     },
-    [showTooltip, yScale, xScale, xBisector, filteredData, yAccessor, xAccessor]
+    [yScale, xScale, xBisector, filteredData, yAccessor, xAccessor, width, height]
   );
 
+  if (width < 10) return null;
   return (
     <div>
       <svg width={width} height={height}>
         {gradients.chart.gradient}
         {gradients.background.gradient}
-        <rect width={width} height={height} fill={`url(#${gradients.background.id})`} rx={14} />
+        <rect x={0} y={0} width={width} height={height} fill={`url(#${gradients.background.id})`} rx={14} />
         {showGrid && (
           <GridColumns
             top={margin.top}
             left={margin.left}
             scale={xScale}
-            height={mainChartInnerHeight}
-            strokeDasharray="1,3"
-            stroke={theme.colors.primary}
+            height={yMax}
+            strokeDasharray="1,5"
+            stroke={theme.colors.backgroundAccent}
             strokeOpacity={0.2}
             pointerEvents="none"
           />
@@ -241,7 +247,7 @@ const Chart = <T,>({
             y={(d) => yScale(yAccessor(d)) ?? 0}
             data={filteredData}
             yScale={yScale}
-            strokeWidth={2}
+            strokeWidth={1}
             stroke={theme.colors.primary}
             fill={`url(#${gradients.chart.id})`}
             curve={curveMonotoneX}
@@ -250,23 +256,20 @@ const Chart = <T,>({
         <Bar
           x={margin.left}
           y={margin.top}
-          width={mainChartInnerWidth}
-          height={mainChartInnerHeight}
+          width={xMax}
+          height={yMax}
           fill="transparent"
           rx={14}
           onTouchStart={handleTooltip}
           onTouchMove={handleTooltip}
-          onMouseMove={(e) => {
-            handleTooltip(e);
-          }}
-          onMouseLeave={() => hideTooltip()}
+          onMouseMove={handleTooltip}
+          onMouseLeave={hideTooltip}
         />
-        the complete developer platform.
         {tooltipData && (
           <Group left={margin.left} top={margin.top}>
             <Line
               from={{ x: tooltipLeft, y: margin.top }}
-              to={{ x: tooltipLeft, y: mainChartInnerHeight + margin.top }}
+              to={{ x: tooltipLeft, y: yMax + margin.top }}
               stroke={theme.colors.backgroundAccent}
               strokeWidth={1}
               pointerEvents="none"
@@ -296,11 +299,11 @@ const Chart = <T,>({
         )}
         {/* brush chart */}
         {showBrush && (
-          <Group left={margin.left + brushMargin.left} top={brushAreaTopPosition}>
+          <Group left={margin.left} top={topChartHeight + topChartBottomMargin + margin.top}>
             <AreaClosed<T>
               x={(d) => xBrushScale(xAccessor(d)) ?? 0}
               y={(d) => yBrushScale(yAccessor(d)) ?? 0}
-              width={brushAreaInnerWidth}
+              width={xBrushMax}
               data={data}
               yScale={yBrushScale}
               strokeWidth={1}
@@ -308,7 +311,6 @@ const Chart = <T,>({
               fill={`url(#${gradients.chart.id})`}
               curve={curveMonotoneX}
             />
-            );
             <PatternLines
               id={PATTERN_ID}
               height={8}
@@ -320,11 +322,12 @@ const Chart = <T,>({
             <Brush
               xScale={xBrushScale}
               yScale={yBrushScale}
-              width={brushAreaInnerWidth}
-              height={brushAreaInnerHeight}
+              width={xBrushMax}
+              height={yBrushMax}
               innerRef={brushRef}
               resizeTriggerAreas={['left', 'right']}
               brushDirection="horizontal"
+              initialBrushPosition={initialBrushPosition}
               margin={brushMargin}
               onChange={onBrushChange}
               selectedBoxStyle={{
@@ -341,8 +344,9 @@ const Chart = <T,>({
           <AxisLeft
             top={margin.top}
             left={margin.left}
-            strokeWidth={3}
+            strokeWidth={1}
             hideZero
+            numTicks={5}
             stroke={theme.colors.backgroundAlt}
             labelOffset={42}
             tickStroke={theme.colors.backgroundAlt}
@@ -360,10 +364,11 @@ const Chart = <T,>({
         )}
         {showAxisX && (
           <AxisBottom
-            top={mainChartInnerHeight + margin.top - 0}
+            top={yMax + margin.top}
             left={margin.left}
-            strokeWidth={3}
+            strokeWidth={1}
             stroke={theme.colors.backgroundAlt}
+            numTicks={width > 520 ? 10 : 5}
             hideZero
             tickLabelProps={{
               fill: theme.colors.textAlt,
@@ -373,6 +378,9 @@ const Chart = <T,>({
             tickFormat={tickFormatDate}
             labelProps={{
               fill: theme.colors.textAlt,
+              fontSize: theme.fontSize.tiny,
+              y: 35,
+              x: width / 2 - margin.left,
             }}
             scale={xScale}
             label={axisXLabel}
@@ -392,7 +400,7 @@ const Chart = <T,>({
             {unitPosition === 'right' && unit ? unit : ''}
           </TooltipWithBounds>
           <Tooltip
-            top={mainChartInnerHeight + margin.top - 14}
+            top={yMax + margin.top - 14}
             left={tooltipLeft}
             style={{
               ...getDefaultTooltipStyles(theme),

@@ -1,12 +1,13 @@
-import { MouseEvent } from 'react';
+import { MouseEvent, useCallback } from 'react';
 
 import { ParentSize } from '@visx/responsive';
 import { Group } from '@visx/group';
 import { Line, LineRadial } from '@visx/shape';
-import { scaleLinear } from '@visx/vendor/d3-scale';
+import { scaleLinear } from '@visx/scale';
 import { useTooltipInPortal, useTooltip } from '@visx/tooltip';
 import { Point } from '@visx/point';
 import { localPoint } from '@visx/event';
+import { Text } from '@visx/text';
 
 import { getDefaultTooltipStyles, InnerChartProps, Margin } from '../util';
 import { genAngles, genPoints, genPolygonPoints } from './generators';
@@ -16,6 +17,7 @@ export interface RadarChartProps<T> {
   name: string;
   data: T[];
   margin?: Margin;
+  xAccessor: (d: T) => string;
   yAccessor: (d: T) => number;
   tooltipAccessor: (d: T) => string;
   levels?: number;
@@ -24,6 +26,7 @@ export interface RadarChartProps<T> {
 const defaultMargin = { top: 10, right: 0, bottom: 25, left: 40 };
 export const RadarChart = <T,>({
   data,
+  xAccessor,
   yAccessor,
   tooltipAccessor,
   name,
@@ -40,6 +43,7 @@ export const RadarChart = <T,>({
             width={parent.width}
             height={parent.height}
             margin={margin}
+            xAccessor={xAccessor}
             yAccessor={yAccessor}
             levels={levels}
             tooltipAccessor={tooltipAccessor}
@@ -58,6 +62,7 @@ const Chart = <T,>({
   data,
   name,
   levels = 5,
+  xAccessor,
   height,
   margin = defaultMargin,
   tooltipAccessor,
@@ -74,20 +79,29 @@ const Chart = <T,>({
   const innerHeight = height - margin.top - margin.bottom;
   const radius = Math.min(innerWidth, innerHeight) / 2;
 
-  const radialScale = scaleLinear<number>([360, 0], [0, Math.PI * 2]);
-  const yScale = scaleLinear<number>([0, Math.max(...data.map(yAccessor))], [0, radius]);
+  const radialScale = scaleLinear<number>({
+    domain: [360, 0],
+    range: [0, Math.PI * 2],
+  });
+  const yScale = scaleLinear<number>({
+    domain: [0, Math.max(...data.map(yAccessor))],
+    range: [0, radius],
+  });
 
-  const handleMouseOver = (event: MouseEvent) => {
-    const target = event.target as SVGElement;
-    const coords = localPoint(target.ownerSVGElement!, event);
-    const data = JSON.parse(target.dataset.tooltip!);
+  const handleMouseOver = useCallback(
+    (event: MouseEvent) => {
+      const target = event.target as SVGElement;
+      const coords = localPoint(target.ownerSVGElement!, event);
+      const data = JSON.parse(target.dataset.tooltip!);
 
-    showTooltip({
-      tooltipLeft: coords?.x,
-      tooltipTop: coords?.y,
-      tooltipData: tooltipAccessor(data),
-    });
-  };
+      showTooltip({
+        tooltipLeft: coords?.x,
+        tooltipTop: coords?.y,
+        tooltipData: tooltipAccessor(data),
+      });
+    },
+    [data, tooltipAccessor]
+  );
 
   const webs = genAngles(data.length);
   const points = genPoints(data.length, radius);
@@ -112,7 +126,20 @@ const Chart = <T,>({
           />
         ))}
         {[...new Array(data.length)].map((_, i) => (
-          <Line key={`radar-line-${i}`} from={zeroPoint} to={points[i]} stroke={theme.colors.backgroundAccent} />
+          <>
+            <Line key={`radar-line-${i}`} from={zeroPoint} to={points[i]} stroke={theme.colors.backgroundAccent} />
+            <Text
+              textAnchor="middle"
+              verticalAnchor="middle"
+              y={points[i].y}
+              x={points[i].x}
+              dy={points[i].y / 12}
+              dx={points[i].x / 12}
+              fill={theme.colors.text}
+            >
+              {xAccessor(data[i])}
+            </Text>
+          </>
         ))}
         <polygon
           points={polygonPoints.pointString}
@@ -134,7 +161,7 @@ const Chart = <T,>({
             fill={theme.colors.primary}
           />
         ))}
-      </Group>{' '}
+      </Group>
       {tooltipOpen && tooltipData && (
         <TooltipInPortal
           key={`tooltip-${name}`}

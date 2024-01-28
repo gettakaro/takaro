@@ -11,22 +11,21 @@ export default {
   args: {
     showBrush: true,
     showGrid: true,
-    axisXLabel: 'Date',
+    axisXLabel: '',
     axisYLabel: 'Close Price',
     unit: '$',
   },
 } as Meta<AreaChartProps<AppleStock>>;
 
 const Wrapper = styled.div`
-  height: 80vh;
-  width: 100%;
+  height: 500px;
+  width: 500px;
 `;
 
 export const Default: StoryFn<AreaChartProps<AppleStock>> = (args) => {
   const getDate = (d: AppleStock) => new Date(d.date);
   const getStockValue = (d: AppleStock) => d.close;
   const bisectDate = bisector<AppleStock, Date>((d) => new Date(d.date)).left;
-
   return (
     <Wrapper>
       <AreaChart<AppleStock>

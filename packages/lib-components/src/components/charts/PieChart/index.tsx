@@ -1,9 +1,9 @@
-import { MouseEvent } from 'react';
+import { MouseEvent, useCallback } from 'react';
 
 import { ParentSize } from '@visx/responsive';
 import { Group } from '@visx/group';
 import { Pie } from '@visx/shape';
-import { scaleOrdinal } from '@visx/vendor/d3-scale';
+import { scaleOrdinal } from '@visx/scale';
 import { useTooltipInPortal, useTooltip } from '@visx/tooltip';
 import { localPoint } from '@visx/event';
 
@@ -80,20 +80,26 @@ const Chart = <T,>({
   const centerY = innerHeight / 2;
   const donutThickness = 50;
 
-  const getArcColor = scaleOrdinal(data.map(xAccessor), getChartColors(theme));
+  const getArcColor = scaleOrdinal({
+    domain: data.map(xAccessor),
+    range: getChartColors(theme),
+  });
   const pieSortValues = (a: number, b: number) => b - a;
 
-  const handleMouseOver = (event: MouseEvent) => {
-    const target = event.target as SVGElement;
-    const coords = localPoint(target.ownerSVGElement!, event);
-    const data = JSON.parse(target.dataset.tooltip!);
+  const handleMouseOver = useCallback(
+    (event: MouseEvent) => {
+      const target = event.target as SVGElement;
+      const coords = localPoint(target.ownerSVGElement!, event);
+      const data = JSON.parse(target.dataset.tooltip!);
 
-    showTooltip({
-      tooltipLeft: coords?.x,
-      tooltipTop: coords?.y,
-      tooltipData: tooltipAccessor(data),
-    });
-  };
+      showTooltip({
+        tooltipLeft: coords?.x,
+        tooltipTop: coords?.y,
+        tooltipData: tooltipAccessor(data),
+      });
+    },
+    [data, tooltipAccessor]
+  );
 
   return width < 10 ? null : (
     <svg ref={containerRef} id={name} width={width} height={height}>

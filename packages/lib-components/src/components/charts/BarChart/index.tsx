@@ -25,8 +25,8 @@ export interface BarChartProps<T> extends ChartProps {
   brushMargin?: Margin;
 }
 
-const defaultMargin = { top: 40, right: 0, bottom: 0, left: 0 };
-const defaultBrushMargin = { top: 0, bottom: 20, left: 10, right: 10 };
+const defaultMargin = { top: 20, left: 50, bottom: 20, right: 20 };
+const defaultBrushMargin = { top: 10, bottom: 15, left: 50, right: 20 };
 const defaultShowAxisX = true;
 const defaultShowAxisY = true;
 const defaultShowGrid = true;
@@ -198,7 +198,7 @@ const Chart = <T,>({
               y={yMax - barHeight}
               width={barWidth}
               height={barHeight}
-              fill={`url(#${gradients.chart.id})`}
+              fill={theme.colors.primary}
             />
           );
         })}
