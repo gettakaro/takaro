@@ -71,12 +71,61 @@ export class FunctionController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_MODULES]))
   @ResponseSchema(FunctionOutputDTOAPI)
   @Get('/function/:id')
+  @OpenAPI({
+    description: 'Retrieve a single function by its ID.',
+    parameters: [
+      {
+        in: 'path',
+        name: 'id',
+        required: true,
+        schema: { type: 'string' },
+        description: 'ID of the function to retrieve.'
+      }
+    ],
+    responses: {
+      '200': {
+        description: 'Function details.',
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/FunctionOutputDTOAPI' }
+          }
+        }
+      }
+    },
+    security: [{ domainAuth: [] }]
+  })
+  @ResponseSchema(FunctionOutputDTOAPI)
+  @Get('/function/:id')
   async getOne(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new FunctionService(req.domainId);
     return apiResponse(await service.findOne(params.id));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), builtinModuleModificationMiddleware)
+  @ResponseSchema(FunctionOutputDTOAPI)
+  @OpenAPI({
+    description: 'Create a new function.',
+    requestBody: {
+      description: 'Data for creating a new function.',
+      required: true,
+      content: {
+        'application/json': {
+          schema: { $ref: '#/components/schemas/FunctionCreateDTO' }
+        }
+      }
+    },
+    responses: {
+      '200': {
+        description: 'Successfully created function.',
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/FunctionOutputDTOAPI' }
+          }
+        }
+      }
+    },
+    security: [{ domainAuth: [] }]
+  })
   @ResponseSchema(FunctionOutputDTOAPI)
   @Post('/function')
   async create(@Req() req: AuthenticatedRequest, @Body() data: FunctionCreateDTO) {
@@ -86,6 +135,39 @@ export class FunctionController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), builtinModuleModificationMiddleware)
   @ResponseSchema(FunctionOutputDTOAPI)
+  @OpenAPI({
+    description: 'Update a specific function by its ID.',
+    parameters: [
+      {
+        in: 'path',
+        name: 'id',
+        required: true,
+        schema: { type: 'string' },
+        description: 'ID of the function to update.'
+      }
+    ],
+    requestBody: {
+      description: 'Data for updating the function.',
+      required: true,
+      content: {
+        'application/json': {
+          schema: { $ref: '#/components/schemas/FunctionUpdateDTO' }
+        }
+      }
+    },
+    responses: {
+      '200': {
+        description: 'Successfully updated the function.',
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/FunctionOutputDTOAPI' }
+          }
+        }
+      }
+    },
+    security: [{ domainAuth: [] }]
+  })
+  @ResponseSchema(FunctionOutputDTOAPI)
   @Put('/function/:id')
   async update(@Req() req: AuthenticatedRequest, @Params() params: ParamId, @Body() data: FunctionUpdateDTO) {
     const service = new FunctionService(req.domainId);
@@ -93,6 +175,31 @@ export class FunctionController {
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), builtinModuleModificationMiddleware)
+  @ResponseSchema(IdUuidDTOAPI)
+  @Delete('/function/:id')
+  @OpenAPI({
+    description: 'Delete a specific function by its ID.',
+    parameters: [
+      {
+        in: 'path',
+        name: 'id',
+        required: true,
+        schema: { type: 'string' },
+        description: 'ID of the function to delete.'
+      }
+    ],
+    responses: {
+      '200': {
+        description: 'Successfully deleted the function.',
+        content: {
+          'application/json': {
+            schema: { $ref: '#/components/schemas/IdUuidDTOAPI' }
+          }
+        }
+      }
+    },
+    security: [{ domainAuth: [] }]
+  })
   @ResponseSchema(IdUuidDTOAPI)
   @Delete('/function/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
