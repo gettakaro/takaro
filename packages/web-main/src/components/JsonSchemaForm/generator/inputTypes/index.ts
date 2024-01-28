@@ -32,6 +32,9 @@ interface CountryInput extends BaseObject {
 
 interface ArrayInput extends BaseObject {
   type: InputType.array;
+  uniqueItems?: boolean;
+  minItems?: number;
+  maxItems?: number;
   default?: string[];
 }
 

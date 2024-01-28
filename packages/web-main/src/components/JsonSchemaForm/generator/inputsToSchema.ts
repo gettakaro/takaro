@@ -50,7 +50,8 @@ function getJsonSchemaElement(input: AnyInput) {
         res['x-component'] = InputType.select;
         res.type = 'array';
         res.uniqueItems = true;
-        res.items = { type: 'string', enum: input.values ?? [], minItems: 1 };
+        res.items = { type: 'string', enum: input.values ?? [] };
+        res.minItems = 1;
       } else {
         res.enum = input.values;
         res.type = 'string';
@@ -61,7 +62,11 @@ function getJsonSchemaElement(input: AnyInput) {
       break;
 
     case InputType.array:
-      (res.type = 'array'), (res.items = { type: 'string' });
+      res.type = 'array';
+      res.items = { type: 'string' };
+      res.minItems = input.minItems;
+      res.maxItems = input.maxItems;
+      res.uniqueItems = input.uniqueItems;
       break;
 
     case InputType.item:

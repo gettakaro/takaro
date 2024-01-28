@@ -59,7 +59,7 @@ export const validationSchema = z.object({
         .discriminatedUnion('type', [
           z.object({
             type: z.literal(InputType.string.valueOf()),
-            default: z.string(),
+            default: z.string().optional(),
             minLength: z.number().min(1).max(100).optional(),
             maxLength: z.number().min(1).max(100).optional(),
             required: z.boolean(),
@@ -70,25 +70,29 @@ export const validationSchema = z.object({
           }),
           z.object({
             type: z.literal(InputType.number.valueOf()),
-            default: z.number().min(0),
-            minimum: z.number().min(0),
-            maximum: z.number().min(1),
+            default: z.number().min(0).optional(),
+            minimum: z.number().min(0).optional(),
+            maximum: z.number().min(1).optional(),
             required: z.boolean(),
           }),
           z.object({
             type: z.literal(InputType.select.valueOf()),
             values: z.array(z.string()).nonempty(),
-            default: z.union([z.string().nonempty(), z.array(z.string())]),
+            default: z.union([z.string().nonempty(), z.array(z.string())]).optional(),
+            multiple: z.boolean(),
             required: z.boolean(),
           }),
           z.object({
             type: z.literal(InputType.array.valueOf()),
-            default: z.array(z.string()),
+            default: z.array(z.string()).optional(),
             required: z.boolean(),
+            minItems: z.number().min(1).optional(),
+            maxItems: z.number().min(1).optional(),
+            uniqueItems: z.boolean().optional(),
           }),
           z.object({
             type: z.literal(InputType.duration.valueOf()),
-            default: z.number().positive(),
+            default: z.number().positive().optional(),
             required: z.boolean(),
           }),
           z.object({
@@ -99,7 +103,7 @@ export const validationSchema = z.object({
           z.object({
             type: z.literal(InputType.country.valueOf()),
             multiple: z.boolean(),
-            default: z.union([z.string(), z.array(z.string())]),
+            default: z.union([z.string(), z.array(z.string())]).optional(),
             // there is no validation on `default` key of country, because default is not a required field and since it is a select field, users cannot enter invalid values
             required: z.boolean(),
           }),

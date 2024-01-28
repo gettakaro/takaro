@@ -12,7 +12,7 @@ import { EnvVars } from 'EnvVars';
 import '@ory/elements/style.css';
 import { AxiosError } from 'axios';
 
-const queryClient = new QueryClient({
+export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       // This is a temporary fix for the flashing behaviour in studio

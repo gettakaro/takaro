@@ -90,13 +90,13 @@ export const ControlledTextField: FC<ControlledTextFieldProps> = (props) => {
           readOnly={readOnly}
           onChange={(e) => {
             if (type === 'number') {
-              if (Number(e.target.value)) {
+              if (Number(e.target.value) || Number(e.target.value) === 0) {
                 field.onChange(Number(e.target.value));
               } else {
-                field.onChange(null);
+                field.onChange(undefined);
               }
               if (e.target.value === '') {
-                field.onChange(null);
+                field.onChange(undefined);
               }
             } else {
               field.onChange(e.target.value);

@@ -81,9 +81,33 @@ export const InputTypeToFieldsMap = (control: Control<IFormInputs>, index: numbe
         name={`configFields.${index}.default`}
         key={`${InputType.array}-default-${id}`}
         control={control}
-        label="Possible values"
+        label="Default values"
         isEditOnRemove
+        description="When a user installs the module, A list of strings will be set with these values set by default. The user can add, remove and edit these values."
         placeholder="Press enter to add a value."
+      />,
+      <TextField
+        name={`configFields.${index}.minItems`}
+        key={`${InputType.array}-minItems-${id}`}
+        control={control}
+        type="number"
+        label="Minimum items"
+        description="Requires the user to add at least this number of items to the list."
+      />,
+      <TextField
+        name={`configFields.${index}.maxItems`}
+        key={`${InputType.array}-maxItems-${id}`}
+        control={control}
+        type="number"
+        label="Maximum items"
+        description="Limits the number of items the user can add to this list."
+      />,
+      <Switch
+        name={`configFields.${index}.uniqueItems`}
+        key={`${InputType.array}-uniqueItems-${id}`}
+        control={control}
+        label="Unique items"
+        description="If you want to allow the user to add duplicate items to the list or not."
       />,
     ],
     [InputType.select]: [
@@ -96,11 +120,11 @@ export const InputTypeToFieldsMap = (control: Control<IFormInputs>, index: numbe
         placeholder="Press enter to add a value."
       />,
       <Switch
-        key={`${InputType.select}-multiple-${id}`}
         name={`configFields.${index}.multiple`}
+        key={`${InputType.select}-multiple-${id}`}
         control={control}
         label="Multiple"
-        description="If you want to allow the user to select multiple countries"
+        description="If you want to allow the user to select multiple items from the list."
       />,
       values.length > 0 && (
         <SelectField

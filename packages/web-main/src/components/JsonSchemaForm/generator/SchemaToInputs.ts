@@ -60,13 +60,29 @@ export function schemaToInputs(schema: SchemaObject): Input[] {
         }
         break;
       case 'array':
-        input.multiple = true;
+        // default array type should not set the input.multiple
         if (property['x-component'] === InputType.item) {
           input.type = InputType.item;
+          input.multiple = true;
         } else if (property['x-component'] === InputType.country) {
           input.type = InputType.country;
+          input.multiple = true;
         } else if (property['x-component'] === InputType.select) {
-          input.values = property.items;
+          input.type = InputType.select;
+          input.values = (property.items as any)['enum'];
+          input.multiple = true;
+        } else if (property.items!['type'] !== 'string') {
+          throw new Error('SchemaToInputs: property.items.type must be of type string');
+        } else {
+          if (property.minItems) {
+            input.minItems = property.minItems;
+          }
+          if (property.maxItems) {
+            input.maxItems = property.maxItems;
+          }
+          if (property.uniqueItems) {
+            input.uniqueItems = property.uniqueItems;
+          }
         }
         break;
 
