@@ -1,6 +1,6 @@
 import { styled, Card as CardBase } from '@takaro/lib-components';
 
-export const Card = styled(CardBase)`
+export const StyledCard = styled(CardBase)`
   height: 100%;
   width: 100%;
 `;
