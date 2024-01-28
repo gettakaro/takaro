@@ -79,20 +79,20 @@ export class FunctionController {
         name: 'id',
         required: true,
         schema: { type: 'string' },
-        description: 'ID of the function to retrieve.'
-      }
+        description: 'ID of the function to retrieve.',
+      },
     ],
     responses: {
       '200': {
         description: 'Function details.',
         content: {
           'application/json': {
-            schema: { $ref: '#/components/schemas/FunctionOutputDTOAPI' }
-          }
-        }
-      }
+            schema: { $ref: '#/components/schemas/FunctionOutputDTOAPI' },
+          },
+        },
+      },
     },
-    security: [{ domainAuth: [] }]
+    security: [{ domainAuth: [] }],
   })
   @ResponseSchema(FunctionOutputDTOAPI)
   @Get('/function/:id')
@@ -110,21 +110,21 @@ export class FunctionController {
       required: true,
       content: {
         'application/json': {
-          schema: { $ref: '#/components/schemas/FunctionCreateDTO' }
-        }
-      }
+          schema: { $ref: '#/components/schemas/FunctionCreateDTO' },
+        },
+      },
     },
     responses: {
       '200': {
         description: 'Successfully created function.',
         content: {
           'application/json': {
-            schema: { $ref: '#/components/schemas/FunctionOutputDTOAPI' }
-          }
-        }
-      }
+            schema: { $ref: '#/components/schemas/FunctionOutputDTOAPI' },
+          },
+        },
+      },
     },
-    security: [{ domainAuth: [] }]
+    security: [{ domainAuth: [] }],
   })
   @ResponseSchema(FunctionOutputDTOAPI)
   @Post('/function')
@@ -143,29 +143,29 @@ export class FunctionController {
         name: 'id',
         required: true,
         schema: { type: 'string' },
-        description: 'ID of the function to update.'
-      }
+        description: 'ID of the function to update.',
+      },
     ],
     requestBody: {
       description: 'Data for updating the function.',
       required: true,
       content: {
         'application/json': {
-          schema: { $ref: '#/components/schemas/FunctionUpdateDTO' }
-        }
-      }
+          schema: { $ref: '#/components/schemas/FunctionUpdateDTO' },
+        },
+      },
     },
     responses: {
       '200': {
         description: 'Successfully updated the function.',
         content: {
           'application/json': {
-            schema: { $ref: '#/components/schemas/FunctionOutputDTOAPI' }
-          }
-        }
-      }
+            schema: { $ref: '#/components/schemas/FunctionOutputDTOAPI' },
+          },
+        },
+      },
     },
-    security: [{ domainAuth: [] }]
+    security: [{ domainAuth: [] }],
   })
   @ResponseSchema(FunctionOutputDTOAPI)
   @Put('/function/:id')
@@ -185,20 +185,20 @@ export class FunctionController {
         name: 'id',
         required: true,
         schema: { type: 'string' },
-        description: 'ID of the function to delete.'
-      }
+        description: 'ID of the function to delete.',
+      },
     ],
     responses: {
       '200': {
         description: 'Successfully deleted the function.',
         content: {
           'application/json': {
-            schema: { $ref: '#/components/schemas/IdUuidDTOAPI' }
-          }
-        }
-      }
+            schema: { $ref: '#/components/schemas/IdUuidDTOAPI' },
+          },
+        },
+      },
     },
-    security: [{ domainAuth: [] }]
+    security: [{ domainAuth: [] }],
   })
   @ResponseSchema(IdUuidDTOAPI)
   @Delete('/function/:id')
