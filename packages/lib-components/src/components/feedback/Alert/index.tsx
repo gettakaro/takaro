@@ -1,4 +1,4 @@
-import { forwardRef, useState } from 'react';
+import { forwardRef, MouseEvent, useState } from 'react';
 import { Container, Grid, IconContainer, ButtonContainer } from './style';
 import {
   AiFillCheckCircle as Success,
@@ -28,6 +28,18 @@ export interface AlertProps {
 export const Alert = forwardRef<HTMLDivElement, AlertProps>(
   ({ variant, title, text, dismiss = false, elevation = 4, action }, ref) => {
     const [visible, setVisible] = useState(true);
+
+    const handleExecute = (e: MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault();
+      e.stopPropagation();
+      action?.execute();
+    };
+
+    const handleDismiss = (e: MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setVisible(false);
+    };
 
     function getIcon() {
       switch (variant) {
@@ -77,8 +89,8 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(
               )}
               <div />
               <ButtonContainer show={dismiss || action ? true : false} variant={variant}>
-                {action && <button onClick={() => action.execute()}>{action.text}</button>}
-                {dismiss && <button onClick={() => setVisible(false)}>Dismiss</button>}
+                {action && <button onClick={handleExecute}>{action.text}</button>}
+                {dismiss && <button onClick={handleDismiss}>Dismiss</button>}
               </ButtonContainer>
             </Grid>
           </Container>

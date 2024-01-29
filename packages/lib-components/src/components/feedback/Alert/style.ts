@@ -21,7 +21,7 @@ export const Container = styled(motion.div)<{
     justify-content: flex-start;
   }
   p {
-    margin-top: ${({ theme, hasTitle }) => (hasTitle ? theme.spacing['1_5'] : theme.spacing[0])};
+    margin-top: ${({ theme, hasTitle }) => (hasTitle ? theme.spacing['0_5'] : theme.spacing[0])};
   }
   p,
   li {
