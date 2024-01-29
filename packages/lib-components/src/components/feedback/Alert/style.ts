@@ -52,9 +52,10 @@ export const Container = styled(motion.div)<{
   }}
 `;
 
-export const Grid = styled.div`
+export const Grid = styled.div<{ hasTitle: boolean }>`
   display: grid;
-  grid-template-columns: ${({ theme }) => theme.spacing[5]} 1fr;
+  grid-template-columns: ${({ theme, hasTitle }) =>
+    !hasTitle ? `${theme.spacing[5]} 1fr fit-content(100px)` : `${theme.spacing[5]} 1fr`};} 
   align-items: center;
 `;
 
@@ -71,11 +72,12 @@ export const IconContainer = styled.div<{ variant: AlertVariants }>`
 export const ButtonContainer = styled.div<{
   show: boolean;
   variant: AlertVariants;
+  hasTitle: boolean;
 }>`
   display: ${({ show }): string => (show ? 'flex' : 'none')};
+  align-items: center;
+  margin-top: ${({ theme, hasTitle }): string => (hasTitle ? theme.spacing['1'] : theme.spacing[0])};
   button {
-    margin-top: ${({ theme }) => theme.spacing[1]};
-    margin-right: ${({ theme }) => theme.spacing[2]};
     padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing['0_5']}`};
     border-radius: ${({ theme }) => theme.borderRadius.medium};
     background-color: ${({ theme, variant }): string => lighten('0.2', theme.colors[variant])};

@@ -53,3 +53,14 @@ export const SingleLine: StoryObj<AlertProps> = {
     variant: 'info',
   },
 };
+
+export const SingleLineWithAction: StoryObj<AlertProps> = {
+  args: {
+    text: 'This is a single line now',
+    variant: 'error',
+    action: {
+      execute: () => {},
+      text: 'details',
+    },
+  },
+};

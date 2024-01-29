@@ -1,4 +1,4 @@
-import { FC, Fragment, useEffect, useState } from 'react';
+import { FC, Fragment, useEffect, useMemo, useState } from 'react';
 import { useForm, useFieldArray, SubmitHandler } from 'react-hook-form';
 import {
   Button,
@@ -25,6 +25,7 @@ import { inputsToSchema, inputsToUiSchema } from 'components/JsonSchemaForm/gene
 import { ConfigField } from './ConfigField';
 import { Divider } from '@ory/elements';
 import { PermissionField } from './PermissionField';
+import { ConfigFieldErrorDetail } from './ConfigFieldErrorDetail';
 
 export interface IFormInputs {
   name: string;
@@ -60,13 +61,21 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
     }
   }, [open, navigate]);
 
+  const { initialConfigFields, configFieldErrors } = useMemo(() => {
+    if (mod) {
+      const { inputs, errors } = schemaToInputs(JSON.parse(mod.configSchema));
+      return { initialConfigFields: inputs, configFieldErrors: errors };
+    }
+    return { initialConfigFields: [], configFieldErrors: [] };
+  }, [mod]);
+
   const { handleSubmit, control, resetField } = useForm<IFormInputs>({
     mode: 'onChange',
     defaultValues: {
       name: mod?.name ?? undefined,
       description: mod?.description ?? undefined,
       permissions: mod?.permissions ?? undefined,
-      configFields: mod ? schemaToInputs(JSON.parse(mod.configSchema)) : [],
+      configFields: initialConfigFields,
     },
     resolver: zodResolver(validationSchema),
   });
@@ -188,7 +197,7 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
               <CollapseList.Item
                 title={
                   <>
-                    Config{' '}
+                    Config
                     <QuestionTooltip>
                       Config fields are a way to control the behavior of your module. When a module is installed on a
                       game server, Config fields can be tweaked to change the behavior of the module. For example, if
@@ -199,8 +208,19 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
                 }
               >
                 {configFields.length > 0 && (
-                  <Alert text="Every config field name should be unique!" variant="warning" />
+                  <Alert text="Every config field should have a unique name!" variant="warning" />
                 )}
+                {configFieldErrors.map((error, index) => {
+                  return (
+                    <ConfigFieldErrorDetail
+                      key={`config-field-error-${index}`}
+                      data={error.data}
+                      detail={error.detail}
+                      title={error.message}
+                    />
+                  );
+                })}
+
                 {configFields.map((field, index) => {
                   return (
                     <Fragment key={`config-field-wrapper-${field.id}`}>

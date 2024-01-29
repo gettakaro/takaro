@@ -2,96 +2,121 @@ import { SchemaObject } from 'ajv';
 import { Input, InputType } from './inputTypes';
 import { StrictRJSFSchema } from '@rjsf/utils';
 
-export function schemaToInputs(schema: SchemaObject): Input[] {
-  const normalizedSchema: SchemaObject = {
-    type: 'object',
-    properties: schema.properties ?? {},
-    required: schema.required ?? [],
-    title: schema.title,
-  };
+interface SchemaToInputsError {
+  message: string;
+  detail: string;
+  data: object;
+}
 
-  return Object.entries(normalizedSchema.properties).map(([name, propertySchema]) => {
+export interface SchemaToInputsResult {
+  inputs: Input[];
+  errors: SchemaToInputsError[];
+}
+
+export function schemaToInputs(schema: SchemaObject): SchemaToInputsResult {
+  const inputs: Input[] = [];
+  const errors: SchemaToInputsError[] = [];
+
+  // should have properties and start with object
+  if (schema.properties === undefined || schema.type !== 'object') {
+    errors.push({
+      message: 'Failed to parse config fields',
+      detail: 'Schema does not contain any properties.',
+      data: schema as object,
+    });
+    return { inputs, errors };
+  }
+
+  Object.entries(schema.properties).forEach(([name, propertySchema]) => {
     const property = propertySchema as StrictRJSFSchema;
+    try {
+      const input: Record<string, any> = {
+        name,
+        type: property.type,
+        required: schema.required.includes(name),
+      };
 
-    const input: Record<string, any> = {
-      name,
-      type: property.type,
-      required: normalizedSchema.required.includes(name),
-    };
+      if (property.default !== undefined && property.default !== null) {
+        input.default = property.default as any;
+      }
 
-    if (property.default !== undefined && property.default !== null) {
-      input.default = property.default as any;
-    }
+      if (property.description) {
+        input.description = property.description;
+      }
 
-    if (property.description) {
-      input.description = property.description;
-    }
-
-    // input.type are the default JSON Schema types
-    switch (input.type) {
-      case 'number':
-        if (property['x-component'] === InputType.duration) {
-          input.type = InputType.duration;
-        }
-        if (property.minimum) {
-          input.minimum = property.minimum;
-        }
-
-        if (property.maximum) {
-          input.maximum = property.maximum;
-        }
-        break;
-
-      case 'string':
-        if (property['x-component'] === InputType.item) {
-          input.type = InputType.item;
-          input.multiple = false;
-        } else if (property['x-component'] === InputType.country) {
-          input.type = InputType.country;
-          input.multiple = false;
-        } else if (property.enum) {
-          input.type = InputType.select;
-          input.multiple = false;
-          input.values = property.enum;
-        } else {
-          // InputType.string
-          input.minLength = property.minLength;
-          input.maxLength = property.maxLength;
-        }
-        break;
-      case 'array':
-        // default array type should not set the input.multiple
-        if (property['x-component'] === InputType.item) {
-          input.type = InputType.item;
-          input.multiple = true;
-        } else if (property['x-component'] === InputType.country) {
-          input.type = InputType.country;
-          input.multiple = true;
-        } else if (property['x-component'] === InputType.select) {
-          input.type = InputType.select;
-          input.values = (property.items as any)['enum'];
-          input.multiple = true;
-        } else if (property.items!['type'] !== 'string') {
-          throw new Error('SchemaToInputs: property.items.type must be of type string');
-        } else {
-          if (property.minItems) {
-            input.minItems = property.minItems;
+      // input.type are the default JSON Schema types
+      switch (input.type) {
+        case 'number':
+          if (property['x-component'] === InputType.duration) {
+            input.type = InputType.duration;
           }
-          if (property.maxItems) {
-            input.maxItems = property.maxItems;
+          if (property.minimum) {
+            input.minimum = property.minimum;
           }
-          if (property.uniqueItems) {
-            input.uniqueItems = property.uniqueItems;
+
+          if (property.maximum) {
+            input.maximum = property.maximum;
           }
-        }
-        break;
+          break;
 
-      case 'boolean':
-        break;
+        case 'string':
+          if (property['x-component'] === InputType.item) {
+            input.type = InputType.item;
+            input.multiple = false;
+          } else if (property['x-component'] === InputType.country) {
+            input.type = InputType.country;
+            input.multiple = false;
+          } else if (property.enum) {
+            input.type = InputType.select;
+            input.multiple = false;
+            input.values = property.enum;
+          } else {
+            // InputType.string
+            input.minLength = property.minLength;
+            input.maxLength = property.maxLength;
+          }
+          break;
+        case 'array':
+          // default array type should not set the input.multiple
+          if (property['x-component'] === InputType.item) {
+            input.type = InputType.item;
+            input.multiple = true;
+          } else if (property['x-component'] === InputType.country) {
+            input.type = InputType.country;
+            input.multiple = true;
+          } else if (property['x-component'] === InputType.select) {
+            input.type = InputType.select;
+            input.values = (property.items as any)['enum'];
+            input.multiple = true;
+          } else if (property.items!['type'] !== 'string') {
+            throw new Error('property.items.type MUST be of type string');
+          } else {
+            if (property.minItems) {
+              input.minItems = property.minItems;
+            }
+            if (property.maxItems) {
+              input.maxItems = property.maxItems;
+            }
+            if (property.uniqueItems) {
+              input.uniqueItems = property.uniqueItems;
+            }
+          }
+          break;
 
-      default:
-        throw new Error('Unknown input type');
+        case 'boolean':
+          break;
+
+        default:
+          throw new Error('Unknown input type');
+      }
+      inputs.push(input as Input);
+    } catch (e) {
+      errors.push({
+        message: `Error processing config field '${name}'. Please try to recreate the field using the config details`,
+        detail: 'The following config field could not be processed.',
+        data: property as object,
+      });
     }
-    return input as Input;
   });
+  return { inputs, errors };
 }

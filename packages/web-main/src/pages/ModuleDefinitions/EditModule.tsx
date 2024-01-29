@@ -7,8 +7,9 @@ import { useNavigate } from 'react-router-dom';
 import { PATHS } from 'paths';
 
 const EditModule: FC = () => {
-  const { moduleId } = useParams();
-  const { data, isLoading, error } = useModule(moduleId!);
+  // moduleId is awlays set to reach this component.
+  const { moduleId } = useParams() as { moduleId: string };
+  const { data, isLoading, error } = useModule(moduleId);
   const { mutate, isSuccess, isPending: isSubmitting, error: formError } = useModuleUpdate();
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
@@ -25,7 +26,7 @@ const EditModule: FC = () => {
   const onSubmit = async (fields: ModuleFormSubmitProps) => {
     mutate({
       // if moduleId is not present it will have failed before this point.
-      id: moduleId!,
+      id: moduleId,
       moduleUpdate: {
         name: fields.name,
         description: fields.description,
@@ -35,6 +36,8 @@ const EditModule: FC = () => {
       },
     });
   };
+
+  data.configSchema = JSON.stringify({ schema: 'invalid' });
 
   return <ModuleForm mod={data} onSubmit={onSubmit} isLoading={isSubmitting} isSuccess={isSuccess} error={formError} />;
 };
