@@ -45,7 +45,7 @@ export const ConfigFieldErrorDetail: FC<ConfigFieldErrorDetailProps> = ({ data, 
       <Dialog open={open} onOpenChange={setOpen}>
         <StyledContent>
           <Dialog.Heading>
-            <h3>{title}</h3>
+            <h3>Error in config</h3>
             <p>{detail}</p>
           </Dialog.Heading>
           <StyledBody>

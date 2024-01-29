@@ -37,8 +37,6 @@ const EditModule: FC = () => {
     });
   };
 
-  data.configSchema = JSON.stringify({ schema: 'invalid' });
-
   return <ModuleForm mod={data} onSubmit={onSubmit} isLoading={isSubmitting} isSuccess={isSuccess} error={formError} />;
 };
 

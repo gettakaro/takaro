@@ -49,13 +49,13 @@ export function schemaToInputs(schema: SchemaObject): SchemaToInputsResult {
         case 'number':
           if (property['x-component'] === InputType.duration) {
             input.type = InputType.duration;
-          }
-          if (property.minimum) {
-            input.minimum = property.minimum;
-          }
-
-          if (property.maximum) {
-            input.maximum = property.maximum;
+          } else {
+            if (property.minimum) {
+              input.minimum = property.minimum;
+            }
+            if (property.maximum) {
+              input.maximum = property.maximum;
+            }
           }
           break;
 
@@ -112,7 +112,7 @@ export function schemaToInputs(schema: SchemaObject): SchemaToInputsResult {
       inputs.push(input as Input);
     } catch (e) {
       errors.push({
-        message: `Error processing config field '${name}'. Please try to recreate the field using the config details`,
+        message: `Error processing config field: '${name}'. Please try to recreate the field using the config details.`,
         detail: 'The following config field could not be processed.',
         data: property as object,
       });

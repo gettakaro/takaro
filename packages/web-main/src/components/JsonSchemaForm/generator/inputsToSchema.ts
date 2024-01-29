@@ -51,7 +51,6 @@ function getJsonSchemaElement(input: AnyInput) {
         res.type = 'array';
         res.uniqueItems = true;
         res.items = { type: 'string', enum: input.values ?? [] };
-        res.minItems = 1;
       } else {
         res.enum = input.values;
         res.type = 'string';
@@ -64,9 +63,16 @@ function getJsonSchemaElement(input: AnyInput) {
     case InputType.array:
       res.type = 'array';
       res.items = { type: 'string' };
-      res.minItems = input.minItems;
-      res.maxItems = input.maxItems;
-      res.uniqueItems = input.uniqueItems;
+
+      if (input.minItems) {
+        res.minItems = input.minItems;
+      }
+      if (input.maxItems) {
+        res.maxItems = input.maxItems;
+      }
+      if (input.uniqueItems) {
+        res.uniqueItems = input.uniqueItems;
+      }
       break;
 
     case InputType.item:
