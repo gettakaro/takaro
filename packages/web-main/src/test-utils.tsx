@@ -5,15 +5,20 @@ import { render, RenderOptions } from '@testing-library/react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from 'App';
 import { FC, PropsWithChildren } from 'react';
+import { MemoryRouter } from 'react-router-dom';
+
+window.scrollTo = () => {};
 
 const providers: FC<PropsWithChildren> = ({ children }) => {
   return (
     <ThemeProvider theme={darkTheme}>
       <QueryClientProvider client={queryClient}>
-        <SnackbarProvider>
-          <GlobalStyle />
-          {children}
-        </SnackbarProvider>
+        <MemoryRouter>
+          <SnackbarProvider>
+            <GlobalStyle />
+            {children}
+          </SnackbarProvider>
+        </MemoryRouter>
       </QueryClientProvider>
     </ThemeProvider>
   );
