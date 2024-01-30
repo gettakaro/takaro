@@ -5,7 +5,7 @@ import { IFormInputs } from '..';
 import { Input, InputType } from '../../schemaConversion/inputTypes';
 import { FC, useEffect, useState } from 'react';
 import { AiOutlineDelete as RemoveIcon } from 'react-icons/ai';
-import { InputTypeToFieldsMap } from './InputTypeToFieldsMap';
+import { InputTypeToConfigFieldMap } from './InputTypeToConfigFieldMap';
 import { groupedByCategory } from './InputTypeByCategory';
 
 interface ConfigFieldProps {
@@ -36,41 +36,14 @@ export const ConfigField: FC<ConfigFieldProps> = ({ control, index, remove, id, 
   */
   useEffect(() => {
     if (inputType && initialised) {
-      switch (inputType) {
-        case InputType.boolean:
-          resetField(`configFields.${index}.default`, {
-            defaultValue: true,
-          });
-          break;
-        case InputType.string:
-          resetField(`configFields.${index}.default`, {
-            defaultValue: '',
-          });
-          break;
-        case InputType.number:
-          resetField(`configFields.${index}.default`, {
-            defaultValue: 0,
-          });
-          break;
-        case InputType.duration:
-          resetField(`configFields.${index}.default`, {
-            defaultValue: 0,
-          });
-          break;
-        case InputType.array:
-          resetField(`configFields.${index}.default`, {
-            defaultValue: [],
-          });
-          break;
-        case InputType.item:
-        case InputType.country:
-        case InputType.select:
-          resetField(`configFields.${index}.default`, {
-            defaultValue: undefined,
-          });
-          resetField(`configFields.${index}.multiple`, {
-            defaultValue: false,
-          });
+      resetField(`configFields.${index}.default`, {
+        defaultValue: undefined,
+      });
+
+      if (inputType === InputType.item || inputType === InputType.country || inputType === InputType.select) {
+        resetField(`configFields.${index}.multiple`, {
+          defaultValue: false,
+        });
       }
     } else {
       setInitialised(true);
@@ -137,7 +110,7 @@ export const ConfigField: FC<ConfigFieldProps> = ({ control, index, remove, id, 
           </SelectField.OptionGroup>
         ))}
       </SelectField>
-      {InputTypeToFieldsMap(control, index, id)[inputType]}
+      {InputTypeToConfigFieldMap(control, index, id)[inputType]}
       {inputType !== InputType.boolean && (
         <CheckBox
           key={`configFields.${index}.required`}

@@ -5,7 +5,7 @@ import { IFormInputs } from '..';
 import { useWatch } from 'react-hook-form';
 import { CountrySelect } from 'components/selects/CountrySelect';
 
-export const InputTypeToFieldsMap = (control: Control<IFormInputs>, index: number, id: string) => {
+export const InputTypeToConfigFieldMap = (control: Control<IFormInputs>, index: number, id: string) => {
   // In case of enum or array, we need the enum values to be able to set the default value
   const values = useWatch<IFormInputs>({
     name: `configFields.${index}.values`,
