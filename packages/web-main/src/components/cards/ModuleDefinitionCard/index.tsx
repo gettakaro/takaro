@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { SpacedRow, ActionIconsContainer } from '../style';
 import { CardBody } from '../style';
 import { PermissionsGuard } from 'components/PermissionsGuard';
+import { AiOutlineEdit as EditIcon, AiOutlineDelete as DeleteIcon, AiOutlineLink as LinkIcon } from 'react-icons/ai';
 
 interface IModuleCardProps {
   mod: ModuleOutputDTO;
@@ -35,9 +36,13 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
     setOpenDialog(true);
   };
 
+  const handleOnOpenClick = () => {
+    window.open(PATHS.studio.module(mod.id));
+  };
+
   return (
     <>
-      <Card role="link" onClick={() => window.open(PATHS.studio.module(mod.id))}>
+      <Card role="link">
         <CardBody>
           <SpacedRow>
             <h2>{mod.name}</h2>
@@ -67,8 +72,9 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
                       <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
                     </Dropdown.Trigger>
                     <Dropdown.Menu>
-                      <Dropdown.Menu.Item onClick={handleOnEditClick} label="Edit module" />
-                      <Dropdown.Menu.Item onClick={handleOnDeleteClick} label="Delete module" />
+                      <Dropdown.Menu.Item icon={<EditIcon />} onClick={handleOnEditClick} label="Edit module" />
+                      <Dropdown.Menu.Item icon={<DeleteIcon />} onClick={handleOnDeleteClick} label="Delete module" />
+                      <Dropdown.Menu.Item icon={<LinkIcon />} onClick={handleOnOpenClick} label="Open in studio" />
                     </Dropdown.Menu>
                   </Dropdown>
                 </PermissionsGuard>
