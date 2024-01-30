@@ -17,13 +17,10 @@ const baseConfigFieldShape = z.object({
     .nonempty('Name cannot be empty'),
   description: z
     .string()
-    .min(4, {
-      message: 'Description requires a minimum length of 4 characters',
-    })
     .max(1000, {
       message: 'Description requires a maximum length of 1000 characters',
     })
-    .nonempty('Description cannot be empty'),
+    .optional(),
 });
 
 export const validationSchema = z.object({

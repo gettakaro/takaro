@@ -26,10 +26,12 @@ function getJsonSchemaElement(input: AnyInput) {
   const res: SchemaObject = {
     type: input.type,
     title: input.name,
-    description: input.description,
   };
 
-  // not every input has a default value defined
+  if (input.description) {
+    res.description = input.description;
+  }
+
   if (input.default !== undefined) {
     res.default = input.default;
   }
