@@ -5,6 +5,11 @@ import { TextFieldProps, GenericTextField } from '.';
 import { Container, InputContainer } from './style';
 import { Label, ErrorMessage, InputWrapper, Description } from '../layout';
 
+function isNumber(value: unknown) {
+  const number = Number(value);
+  return !isNaN(number) && isFinite(number);
+}
+
 export type ControlledTextFieldProps = ControlledInputProps & TextFieldProps;
 
 const defaultsApplier = defaultInputPropsFactory<ControlledTextFieldProps>(defaultInputProps);
@@ -28,12 +33,11 @@ export const ControlledTextField: FC<ControlledTextFieldProps> = (props) => {
     control,
   } = defaultsApplier(props);
 
+  const [showError, setShowError] = useState<boolean>(false);
   const { field, fieldState } = useController({
     name,
     control,
   });
-
-  const [showError, setShowError] = useState<boolean>(false);
 
   const handleOnFocus = () => {
     setShowError(true);
@@ -90,12 +94,9 @@ export const ControlledTextField: FC<ControlledTextFieldProps> = (props) => {
           readOnly={readOnly}
           onChange={(e) => {
             if (type === 'number') {
-              if (Number(e.target.value) || Number(e.target.value) === 0) {
+              if (isNumber(e.target.value)) {
                 field.onChange(Number(e.target.value));
               } else {
-                field.onChange(undefined);
-              }
-              if (e.target.value === '') {
                 field.onChange(undefined);
               }
             } else {
