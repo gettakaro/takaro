@@ -9,7 +9,7 @@ export type ControlledDurationFieldProps = DurationProps & ControlledInputProps;
 const defaultsApplier = defaultInputPropsFactory<ControlledDurationFieldProps>(defaultInputProps);
 
 export const ControlledDurationField: FC<ControlledDurationFieldProps> = (props) => {
-  const { name, required, readOnly, disabled, size, label, placeholder, control, hint, description } =
+  const { name, required, readOnly, disabled, size, label, placeholder, control, hint, description, canClear } =
     defaultsApplier(props);
 
   const {
@@ -59,6 +59,7 @@ export const ControlledDurationField: FC<ControlledDurationFieldProps> = (props)
           hasDescription={!!description}
           disabled={disabled}
           value={field.value}
+          canClear={canClear}
         />
         {error && error.message && showError && <ErrorMessage message={error.message} />}
       </Container>

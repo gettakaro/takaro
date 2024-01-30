@@ -1,3 +1,4 @@
+import { MouseEvent } from 'react';
 import { SelectField, TextField } from '..';
 import { useForm, SubmitHandler, useFieldArray } from 'react-hook-form';
 import { AiOutlineDelete as RemoveIcon, AiOutlinePlus as AddIcon } from 'react-icons/ai';
@@ -8,10 +9,15 @@ import { DurationContainer, FieldContainer, InnerContent, ButtonContainer } from
 import { Button, IconButton, Popover, Tooltip } from '../../../components';
 import { Duration } from 'luxon';
 import { GenericInputPropsFunctionHandlers } from '../InputProps';
+import { AiOutlineClose as ResetIcon, AiOutlineDown as ArrowIcon } from 'react-icons/ai';
 
 const durationObjectToUnitAndValue = (millis: number): { unit: LuxonUnit; value: number }[] => {
-  const obj = Duration.fromMillis(millis).rescale().toObject();
+  // fallback, otherwise there is is no option to set a new duration.
+  if (millis === 0) {
+    return [{ unit: 'milliseconds', value: 0 }];
+  }
 
+  const obj = Duration.fromMillis(millis).rescale().toObject();
   return Object.entries(obj).map(([unit, value]) => {
     return { unit: unit as LuxonUnit, value: value || 0 };
   });
@@ -19,6 +25,7 @@ const durationObjectToUnitAndValue = (millis: number): { unit: LuxonUnit; value:
 
 export interface DurationProps {
   placeholder?: string;
+  canClear?: boolean;
 }
 
 type LuxonUnit = 'years' | 'months' | 'weeks' | 'days' | 'hours' | 'minutes' | 'seconds' | 'milliseconds';
@@ -43,6 +50,7 @@ export const GenericDurationField = forwardRef<HTMLDivElement, GenericDurationFi
       name,
       disabled = false,
       readOnly = false,
+      canClear = false,
       placeholder = 'Select a duration',
       onBlur,
       onFocus,
@@ -53,7 +61,7 @@ export const GenericDurationField = forwardRef<HTMLDivElement, GenericDurationFi
       mode: 'onSubmit',
       resolver: zodResolver(validationSchema),
       defaultValues: {
-        durations: value ? durationObjectToUnitAndValue(value) : [],
+        durations: value || value === 0 ? durationObjectToUnitAndValue(value) : [],
       },
     });
 
@@ -67,7 +75,7 @@ export const GenericDurationField = forwardRef<HTMLDivElement, GenericDurationFi
     }, [open]);
 
     useEffect(() => {
-      if (value) {
+      if (value || value == 0) {
         setValue('durations', durationObjectToUnitAndValue(value));
       }
     }, [value]);
@@ -79,6 +87,11 @@ export const GenericDurationField = forwardRef<HTMLDivElement, GenericDurationFi
       }, Duration.fromMillis(0));
       onChange(totalDuration.toMillis());
       setOpen(false);
+    };
+
+    const handleReset = (e: MouseEvent) => {
+      e.stopPropagation();
+      onChange(undefined as unknown as number);
     };
 
     const formId = `${name}-form`;
@@ -99,6 +112,12 @@ export const GenericDurationField = forwardRef<HTMLDivElement, GenericDurationFi
             onClick={() => !readOnly && !disabled && setOpen(!open)}
           >
             {value ? Duration.fromMillis(value).rescale().toHuman({ listStyle: 'long' }) : placeholder}
+
+            {canClear && !readOnly && !disabled && value && !open ? (
+              <IconButton icon={<ResetIcon />} ariaLabel="Reset duration" onClick={handleReset} />
+            ) : (
+              <ArrowIcon size={16} />
+            )}
           </DurationContainer>
         </Popover.Trigger>
         <Popover.Content>

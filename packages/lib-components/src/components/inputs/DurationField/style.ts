@@ -11,6 +11,8 @@ export const DurationContainer = styled.div<{ hasError: boolean; disabled: boole
   border-radius: ${({ theme }) => theme.borderRadius.medium};
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: ${({ theme }) => theme.spacing['0_5']};
   cursor: ${({ disabled, readOnly }) => (disabled || readOnly ? 'default' : 'pointer')};
 `;
 
