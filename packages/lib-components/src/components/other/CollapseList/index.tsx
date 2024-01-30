@@ -81,7 +81,7 @@ const Item: FC<PropsWithChildren<ItemProps>> = ({ collapsed = false, title, chil
       <AnimatePresence>
         {!isCollapsed && (
           <motion.div
-            style={{ maxHeight: '100%' }}
+            style={{ maxHeight: '100%', overflowY: 'hidden' }}
             key={`collapse-item-${title}`}
             variants={{
               open: { opacity: 1, height: 'auto', flexGrow: 1, minHeight: 0, overflowY: 'auto' },
@@ -112,5 +112,4 @@ const Item: FC<PropsWithChildren<ItemProps>> = ({ collapsed = false, title, chil
   );
 };
 
-// set dot component
 CollapseList.Item = Item;

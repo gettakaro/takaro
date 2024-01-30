@@ -20,6 +20,10 @@ const providers: FC<PropsWithChildren> = ({ children }) => {
   dialogPortalRoot.setAttribute('id', 'dialog');
   document.body.appendChild(dialogPortalRoot);
 
+  // replace getComputedStyle with a mock that returns the values we need
+  const { getComputedStyle } = window;
+  window.getComputedStyle = (elt) => getComputedStyle(elt);
+
   return (
     <ThemeProvider theme={darkTheme}>
       <QueryClientProvider client={queryClient}>
