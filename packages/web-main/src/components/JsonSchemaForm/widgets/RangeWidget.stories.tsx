@@ -23,7 +23,7 @@ export const Default = () => {
     properties: {
       amount: {
         description: 'This is the description',
-        type: 'integer',
+        type: 'number',
         minimum: 1,
         maximum: 50,
         default: 5,

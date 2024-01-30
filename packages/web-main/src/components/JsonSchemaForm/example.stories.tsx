@@ -4,6 +4,7 @@ import { RJSFSchema } from '@rjsf/utils';
 import Form from '@rjsf/core';
 import { JsonSchemaForm } from './index';
 import { Button, styled } from '@takaro/lib-components';
+import { InputType } from 'pages/ModuleDefinitions/schemaConversion/inputTypes';
 
 const Container = styled.div`
   width: 100%;
@@ -57,7 +58,7 @@ export const submitProgrammatically: StoryFn = () => {
     type: 'object',
     properties: {
       maxTeleports: {
-        type: 'integer',
+        type: InputType.number,
         minimum: 1,
         maximum: 50,
         default: 5,

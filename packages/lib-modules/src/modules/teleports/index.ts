@@ -10,7 +10,7 @@ export class Teleports extends BuiltinModule {
         type: 'object',
         properties: {
           timeout: {
-            type: 'integer',
+            type: 'number',
             description: 'The time in milliseconds required between teleports',
             minimum: 0,
             default: 1000,

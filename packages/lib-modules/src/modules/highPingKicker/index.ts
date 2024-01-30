@@ -10,11 +10,11 @@ export class HighPingKicker extends BuiltinModule {
         type: 'object',
         properties: {
           pingThreshold: {
-            type: 'integer',
+            type: 'number',
             default: 200,
           },
           warningsBeforeKick: {
-            type: 'integer',
+            type: 'number',
             default: 3,
           },
         },
