@@ -64,3 +64,14 @@ export const SingleLineWithAction: StoryObj<AlertProps> = {
     },
   },
 };
+
+export const SingleLineLongWithAction: StoryObj<AlertProps> = {
+  args: {
+    text: 'This is a very very very very very very very very very very long line that stretches to 2 lines',
+    variant: 'error',
+    action: {
+      execute: () => {},
+      text: 'details',
+    },
+  },
+};

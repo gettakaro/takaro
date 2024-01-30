@@ -57,6 +57,7 @@ export const Grid = styled.div<{ hasTitle: boolean }>`
   grid-template-columns: ${({ theme, hasTitle }) =>
     !hasTitle ? `${theme.spacing[5]} 1fr fit-content(100px)` : `${theme.spacing[5]} 1fr`};} 
   align-items: center;
+  gap: ${({ theme, hasTitle }) => (hasTitle ? 0 : theme.spacing['0_5'])};
 `;
 
 export const IconContainer = styled.div<{ variant: AlertVariants }>`
