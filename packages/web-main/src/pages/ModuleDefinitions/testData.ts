@@ -2,18 +2,20 @@ import { InputType } from './schemaConversion/inputTypes';
 import { SchemaObject } from 'ajv';
 import { countryCodes } from 'components/selects/CountrySelect/countryCodes';
 
-type TestData = Record<
-  string,
-  {
-    description: string;
-    schema: SchemaObject;
-    inputs: Record<string, unknown>[];
-  }
->;
+type ValidSchema = {
+  name: string;
+  schema: SchemaObject;
+  inputs: Record<string, unknown>[];
+};
 
-export const testData: TestData = {
-  required: {
-    description: 'required field',
+export const validSchemas: ValidSchema[] = [
+  {
+    name: 'empty schema',
+    schema: {},
+    inputs: [],
+  },
+  {
+    name: 'required field',
     schema: {
       $schema: 'http://json-schema.org/draft-07/schema#',
       type: 'object',
@@ -30,7 +32,7 @@ export const testData: TestData = {
     inputs: [
       {
         name: 'required field',
-        type: InputType.string,
+        type: InputType.text,
         required: true,
         default: undefined,
         description: 'This field is required',
@@ -39,8 +41,8 @@ export const testData: TestData = {
       },
     ],
   },
-  boolean: {
-    description: 'Basic boolean field',
+  {
+    name: 'Basic boolean field',
     schema: {
       $schema: 'http://json-schema.org/draft-07/schema#',
       type: 'object',
@@ -65,8 +67,8 @@ export const testData: TestData = {
       },
     ],
   },
-  string: {
-    description: 'string field',
+  {
+    name: 'string field',
     schema: {
       $schema: 'http://json-schema.org/draft-07/schema#',
       type: 'object',
@@ -83,7 +85,7 @@ export const testData: TestData = {
     inputs: [
       {
         name: 'string field',
-        type: InputType.string,
+        type: InputType.text,
         required: false,
         default: undefined,
         description: 'string field description',
@@ -92,8 +94,8 @@ export const testData: TestData = {
       },
     ],
   },
-  stringExtended: {
-    description: 'string field with default value',
+  {
+    name: 'string field with default value',
     schema: {
       $schema: 'http://json-schema.org/draft-07/schema#',
       type: 'object',
@@ -111,7 +113,7 @@ export const testData: TestData = {
     inputs: [
       {
         name: 'string field',
-        type: InputType.string,
+        type: InputType.text,
         required: false,
         default: 'default value',
         description: 'string field description',
@@ -120,8 +122,8 @@ export const testData: TestData = {
       },
     ],
   },
-  number: {
-    description: 'number field',
+  {
+    name: 'number field',
     schema: {
       $schema: 'http://json-schema.org/draft-07/schema#',
       type: 'object',
@@ -148,8 +150,8 @@ export const testData: TestData = {
       },
     ],
   },
-  numberExtended: {
-    description: 'number field with default, min and max value',
+  {
+    name: 'number field with default, min and max value',
     schema: {
       $schema: 'http://json-schema.org/draft-07/schema#',
       type: 'object',
@@ -178,9 +180,8 @@ export const testData: TestData = {
       },
     ],
   },
-  legacyInteger: {
-    description:
-      'In earlier versions of schema, inputType.Integer was used which does not allow floating point numbers',
+  {
+    name: 'In earlier versions of schema, inputType.Integer was used which does not allow floating point numbers',
     schema: {
       $schema: 'http://json-schema.org/draft-07/schema#',
       type: 'object',
@@ -209,8 +210,8 @@ export const testData: TestData = {
       },
     ],
   },
-  array: {
-    description: 'array field with default value',
+  {
+    name: 'array field with default value',
     schema: {
       $schema: 'http://json-schema.org/draft-07/schema#',
       type: 'object',
@@ -238,8 +239,8 @@ export const testData: TestData = {
       },
     ],
   },
-  arrayExtended: {
-    description: 'array field with default value, uniqueItems, minItems and maxItems',
+  {
+    name: 'array field with default value, uniqueItems, minItems and maxItems',
     schema: {
       $schema: 'http://json-schema.org/draft-07/schema#',
       type: 'object',
@@ -273,16 +274,16 @@ export const testData: TestData = {
       },
     ],
   },
-  select: {
-    description: 'select field',
+  {
+    name: 'enumeration field',
     schema: {
       $schema: 'http://json-schema.org/draft-07/schema#',
       type: 'object',
       properties: {
-        'select field': {
+        'enumeration field': {
           type: 'string',
-          title: 'select field',
-          description: 'select field description',
+          title: 'enumeration field',
+          description: 'enumeration field description',
           enum: ['cata', 'brunkel', 'emiel'],
         },
       },
@@ -291,28 +292,28 @@ export const testData: TestData = {
     },
     inputs: [
       {
-        name: 'select field',
-        type: InputType.select,
+        name: 'enumeration field',
+        type: InputType.enumeration,
         required: false,
         multiple: false,
         default: undefined,
-        description: 'select field description',
+        description: 'enumeration field description',
         values: ['cata', 'brunkel', 'emiel'],
       },
     ],
   },
-  selectExtended: {
-    description: 'Multiselect field',
+  {
+    name: 'Multi enumeration field',
     schema: {
       $schema: 'http://json-schema.org/draft-07/schema#',
       type: 'object',
       properties: {
-        'select field': {
-          'x-component': InputType.select,
+        'enumeration field': {
+          'x-component': InputType.enumeration,
           type: 'array',
           uniqueItems: true,
-          title: 'select field',
-          description: 'select field description',
+          title: 'enumeration field',
+          description: 'enumeration field description',
           items: {
             type: 'string',
             enum: ['cata', 'brunkel', 'emiel'],
@@ -324,18 +325,18 @@ export const testData: TestData = {
     },
     inputs: [
       {
-        name: 'select field',
-        type: InputType.select,
+        name: 'enumeration field',
+        type: InputType.enumeration,
         required: false,
         multiple: true,
         default: undefined,
-        description: 'select field description',
+        description: 'enumeration field description',
         values: ['cata', 'brunkel', 'emiel'],
       },
     ],
   },
-  duration: {
-    description: 'duration field',
+  {
+    name: 'duration field',
     schema: {
       $schema: 'http://json-schema.org/draft-07/schema#',
       type: 'object',
@@ -360,8 +361,8 @@ export const testData: TestData = {
       },
     ],
   },
-  item: {
-    description: 'item field',
+  {
+    name: 'item field',
     schema: {
       $schema: 'http://json-schema.org/draft-07/schema#',
       type: 'object',
@@ -386,8 +387,8 @@ export const testData: TestData = {
       },
     ],
   },
-  itemExtended: {
-    description: 'item field with multiple',
+  {
+    name: 'item field with multiple',
     schema: {
       $schema: 'http://json-schema.org/draft-07/schema#',
       type: 'object',
@@ -416,8 +417,8 @@ export const testData: TestData = {
       },
     ],
   },
-  country: {
-    description: 'country field',
+  {
+    name: 'country field',
     schema: {
       $schema: 'http://json-schema.org/draft-07/schema#',
       type: 'object',
@@ -443,8 +444,8 @@ export const testData: TestData = {
       },
     ],
   },
-  countryExtended: {
-    description: 'country field with multiple',
+  {
+    name: 'country field with multiple',
     schema: {
       $schema: 'http://json-schema.org/draft-07/schema#',
       type: 'object',
@@ -474,4 +475,39 @@ export const testData: TestData = {
       },
     ],
   },
+];
+
+type InvalidSchema = {
+  name: string;
+  schema: SchemaObject;
 };
+
+export const invalidSchemas: InvalidSchema[] = [
+  {
+    name: 'Schema should start with an object',
+    schema: {
+      $schema: 'http://json-schema.org/draft-07/schema#',
+      type: 'string',
+    },
+  },
+  {
+    name: 'array field with items.type != string',
+    schema: {
+      $schema: 'http://json-schema.org/draft-07/schema#',
+      type: 'object',
+      properties: {
+        'array field': {
+          type: 'array',
+          title: 'array field',
+          description: 'array field description',
+          default: ['brunkel', 'cata', 'emiel'],
+          items: {
+            type: 'number',
+          },
+        },
+      },
+      required: [],
+      additionalProperties: false,
+    },
+  },
+];

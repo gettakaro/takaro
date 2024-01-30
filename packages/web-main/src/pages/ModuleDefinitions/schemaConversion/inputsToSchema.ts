@@ -42,14 +42,15 @@ function getJsonSchemaElement(input: AnyInput) {
       res.maximum = input.maximum;
       break;
 
-    case InputType.string:
+    case InputType.text:
+      res.type = 'string';
       res.minLength = input.minLength;
       res.maxLength = input.maxLength;
       break;
 
-    case InputType.select:
+    case InputType.enumeration:
       if (input.multiple) {
-        res['x-component'] = InputType.select;
+        res['x-component'] = InputType.enumeration;
         res.type = 'array';
         res.uniqueItems = true;
         res.items = { type: 'string', enum: input.values ?? [] };

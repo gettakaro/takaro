@@ -74,11 +74,11 @@ export function schemaToInputs(schema: SchemaObject): SchemaToInputsResult {
             input.type = InputType.country;
             input.multiple = false;
           } else if (property.enum) {
-            input.type = InputType.select;
+            input.type = InputType.enumeration;
             input.multiple = false;
             input.values = property.enum;
           } else {
-            // InputType.string
+            input.type = InputType.text;
             input.minLength = property.minLength;
             input.maxLength = property.maxLength;
           }
@@ -91,8 +91,8 @@ export function schemaToInputs(schema: SchemaObject): SchemaToInputsResult {
           } else if (property['x-component'] === InputType.country) {
             input.type = InputType.country;
             input.multiple = true;
-          } else if (property['x-component'] === InputType.select) {
-            input.type = InputType.select;
+          } else if (property['x-component'] === InputType.enumeration) {
+            input.type = InputType.enumeration;
             input.values = (property.items as any)['enum'];
             input.multiple = true;
           } else if (property.items!['type'] !== 'string') {

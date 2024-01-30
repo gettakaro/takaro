@@ -1,5 +1,5 @@
 import { Control, UseFieldArrayRemove, UseFormResetField, useWatch } from 'react-hook-form';
-import { SelectField, TextField, Chip, TextAreaField, IconButton, Tooltip, CheckBox } from '@takaro/lib-components';
+import { SelectField, TextField, Chip, TextAreaField, IconButton, Tooltip, Switch } from '@takaro/lib-components';
 import { Header, Inner } from './style';
 import { IFormInputs } from '..';
 import { Input, InputType } from '../../schemaConversion/inputTypes';
@@ -39,7 +39,7 @@ export const ConfigField: FC<ConfigFieldProps> = ({ control, index, remove, id, 
   useEffect(() => {
     if (inputType && initialised) {
       switch (inputType) {
-        case InputType.string:
+        case InputType.text:
           resetField(`configFields.${index}.default`, {
             defaultValue: '',
           });
@@ -69,7 +69,7 @@ export const ConfigField: FC<ConfigFieldProps> = ({ control, index, remove, id, 
             defaultValue: '',
           });
           break;
-        case InputType.select:
+        case InputType.enumeration:
           resetField(`configFields.${index}.multiple`, {
             defaultValue: false,
           });
@@ -81,8 +81,6 @@ export const ConfigField: FC<ConfigFieldProps> = ({ control, index, remove, id, 
           resetField(`configFields.${index}.default`, {
             defaultValue: [],
           });
-          break;
-
           break;
       }
     } else {
@@ -122,7 +120,6 @@ export const ConfigField: FC<ConfigFieldProps> = ({ control, index, remove, id, 
         rows={8}
         name={`configFields.${index}.description`}
         placeholder="Enables you to ..."
-        required
         description="Describe what this field does. This will be shown to the user."
       />
       <SelectField
@@ -152,11 +149,10 @@ export const ConfigField: FC<ConfigFieldProps> = ({ control, index, remove, id, 
       </SelectField>
       {InputTypeToConfigFieldMap(control, index, id)[inputType]}
       {inputType !== InputType.boolean && (
-        <CheckBox
+        <Switch
           key={`configFields.${index}.required`}
           control={control}
           label="Is Field required?"
-          labelPosition="left"
           name={`configFields.${index}.required`}
           description="Makes sure the field is not empty. E.g. if you are depending on this field in the module code."
         />

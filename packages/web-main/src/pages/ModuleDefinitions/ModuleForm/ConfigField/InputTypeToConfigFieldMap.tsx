@@ -1,6 +1,6 @@
 import { Control } from 'react-hook-form';
 import { InputType } from '../../schemaConversion/inputTypes';
-import { TextField, TagField, CheckBox, SelectField, Switch, DurationField } from '@takaro/lib-components';
+import { TextField, TagField, SelectField, Switch, DurationField } from '@takaro/lib-components';
 import { IFormInputs } from '..';
 import { useWatch } from 'react-hook-form';
 import { CountrySelect } from 'components/selects/CountrySelect';
@@ -20,10 +20,10 @@ export const InputTypeToConfigFieldMap = (control: Control<IFormInputs>, index: 
   const multiple = useWatch<IFormInputs>({ name: `configFields.${index}.multiple`, control }) as boolean | undefined;
 
   return {
-    [InputType.string]: [
+    [InputType.text]: [
       <TextField
         name={getName('default')}
-        key={`${InputType.string}-default-${id}`}
+        key={`${InputType.text}-default-${id}`}
         control={control}
         type="text"
         label="Default value"
@@ -31,7 +31,7 @@ export const InputTypeToConfigFieldMap = (control: Control<IFormInputs>, index: 
       />,
       <TextField
         name={getName('minLength')}
-        key={`${InputType.string}-minLength-${id}`}
+        key={`${InputType.text}-minLength-${id}`}
         control={control}
         type="number"
         label="Minimum length"
@@ -39,7 +39,7 @@ export const InputTypeToConfigFieldMap = (control: Control<IFormInputs>, index: 
       />,
       <TextField
         name={getName('maxLength')}
-        key={`${InputType.string}-maxLength-${id}`}
+        key={`${InputType.text}-maxLength-${id}`}
         control={control}
         type="number"
         placeholder="100"
@@ -71,11 +71,10 @@ export const InputTypeToConfigFieldMap = (control: Control<IFormInputs>, index: 
       />,
     ],
     [InputType.boolean]: [
-      <CheckBox
+      <Switch
         name={getName('default')}
         key={`${InputType.boolean}-default-${id}`}
         control={control}
-        labelPosition="left"
         label="Default value"
         description="When a user installs the module, this will be the default value for this field."
       />,
@@ -114,10 +113,10 @@ export const InputTypeToConfigFieldMap = (control: Control<IFormInputs>, index: 
         description="If you want to allow the user to add duplicate items to the list or not."
       />,
     ],
-    [InputType.select]: [
+    [InputType.enumeration]: [
       <TagField
         name={getName('values')}
-        key={`${InputType.select}-enum-${id}`}
+        key={`${InputType.enumeration}-enum-${id}`}
         control={control}
         label="Possible values"
         isEditOnRemove
@@ -125,14 +124,14 @@ export const InputTypeToConfigFieldMap = (control: Control<IFormInputs>, index: 
       />,
       <Switch
         name={getName('multiple')}
-        key={`${InputType.select}-multiple-${id}`}
+        key={`${InputType.enumeration}-multiple-${id}`}
         control={control}
         label="Multiple"
         description="If you want to allow the user to select multiple items from the list."
       />,
       values.length > 0 && (
         <SelectField
-          key={`${InputType.select}-default-${id}`}
+          key={`${InputType.enumeration}-default-${id}`}
           control={control}
           name={getName('default')}
           label="default value"

@@ -252,7 +252,7 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
                     onClick={() => {
                       addConfigField({
                         name: `Config field ${configFields.length + 1}`,
-                        type: InputType.string,
+                        type: InputType.text,
                         description: '',
                         required: false,
                       });

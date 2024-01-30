@@ -54,7 +54,7 @@ export const validationSchema = z.object({
       z
         .discriminatedUnion('type', [
           z.object({
-            type: z.literal(InputType.string.valueOf()),
+            type: z.literal(InputType.text.valueOf()),
             default: z.string().optional(),
             minLength: z.number().min(1).max(100).optional(),
             maxLength: z.number().min(1).max(100).optional(),
@@ -72,7 +72,7 @@ export const validationSchema = z.object({
             required: z.boolean(),
           }),
           z.object({
-            type: z.literal(InputType.select.valueOf()),
+            type: z.literal(InputType.enumeration.valueOf()),
             values: z.array(z.string()).nonempty(),
             default: z.union([z.string().nonempty(), z.array(z.string())]).optional(),
             multiple: z.boolean(),
@@ -123,7 +123,7 @@ export const validationSchema = z.object({
 
     .superRefine((data, ctx) => {
       data.forEach((item) => {
-        if (item.type === InputType.string.valueOf()) {
+        if (item.type === InputType.text.valueOf()) {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           if (item.minLength >= item.maxLength) {

@@ -1,10 +1,10 @@
 export enum InputType {
   // These are the default JSON Schema types
-  string = 'string',
+  text = 'text',
   number = 'number',
   boolean = 'boolean',
   array = 'array',
-  select = 'select',
+  enumeration = 'enumeration',
   item = 'item',
   country = 'country',
   duration = 'duration',
@@ -44,7 +44,7 @@ interface DurationInput extends BaseObject {
 }
 
 interface StringInput extends BaseObject {
-  type: InputType.string;
+  type: InputType.text;
   minLength?: number;
   maxLength?: number;
   default?: string;
@@ -62,15 +62,15 @@ interface BooleanInput extends BaseObject {
   default?: boolean;
 }
 
-export interface SelectInput extends BaseObject {
-  type: InputType.select;
+export interface EnumerationInput extends BaseObject {
+  type: InputType.enumeration;
   values: string[];
   multiple: boolean;
   default?: string | string[];
 }
 
 export type AnyInput =
-  | SelectInput
+  | EnumerationInput
   | NumberInput
   | StringInput
   | BooleanInput

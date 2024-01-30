@@ -3,24 +3,7 @@ import { render } from 'test-utils';
 import { ModuleForm } from '.';
 import { ModuleOutputDTO } from '@takaro/apiclient';
 import { DateTime } from 'luxon';
-import { testData } from '../testData';
-
-const testSchemaToInputRender = (testKey: keyof typeof testData) => {
-  it(`Should convert ${testData[testKey].description}`, () => {
-    const { schema } = testData[testKey];
-
-    const { queryByRole } = render(
-      <ModuleForm
-        onSubmit={() => {}}
-        isLoading={false}
-        mod={createModuleDTO({ configSchema: JSON.stringify(schema) })}
-        isSuccess={false}
-        error={null}
-      />
-    );
-    expect(queryByRole('status')).toBeNull();
-  });
-};
+import { validSchemas, invalidSchemas } from '../testData';
 
 function createModuleDTO(overrides: Partial<ModuleOutputDTO> = {}): ModuleOutputDTO {
   return {
@@ -41,56 +24,33 @@ function createModuleDTO(overrides: Partial<ModuleOutputDTO> = {}): ModuleOutput
 }
 
 describe('Render ConfigFields', () => {
-  it('Should show error when schema is invalid', () => {
-    const invalidSchema = JSON.stringify({ schema: 'invalid' });
-    const { getByText } = render(
-      <ModuleForm
-        onSubmit={() => {}}
-        isLoading={false}
-        mod={createModuleDTO({ configSchema: invalidSchema })}
-        isSuccess={false}
-        error={null}
-      />
-    );
-    expect(getByText('Failed to parse config fields')).toBeDefined();
+  validSchemas.forEach((test) => {
+    it(`Should render ${test.name} without errors`, () => {
+      const { queryByRole } = render(
+        <ModuleForm
+          onSubmit={() => {}}
+          isLoading={false}
+          mod={createModuleDTO({ configSchema: JSON.stringify(test.schema) })}
+          isSuccess={false}
+          error={null}
+        />
+      );
+      expect(queryByRole('status')).toBeNull();
+    });
   });
 
-  describe('String type', () => {
-    testSchemaToInputRender('string');
-    testSchemaToInputRender('stringExtended');
-  });
-
-  describe('Number type', () => {
-    testSchemaToInputRender('number');
-    testSchemaToInputRender('numberExtended');
-    testSchemaToInputRender('legacyInteger');
-  });
-
-  describe('Array type', () => {
-    testSchemaToInputRender('array');
-    testSchemaToInputRender('arrayExtended');
-  });
-
-  describe('Select type', () => {
-    testSchemaToInputRender('select');
-    testSchemaToInputRender('selectExtended');
-  });
-
-  describe('Boolean type', () => {
-    testSchemaToInputRender('boolean');
-  });
-
-  describe('Duration type', () => {
-    testSchemaToInputRender('duration');
-  });
-
-  describe('Item type', () => {
-    testSchemaToInputRender('item');
-    testSchemaToInputRender('itemExtended');
-  });
-
-  describe('Country type', () => {
-    testSchemaToInputRender('country');
-    testSchemaToInputRender('countryExtended');
+  invalidSchemas.forEach((test) => {
+    it('Should show error when schema is invalid', () => {
+      const { getByText } = render(
+        <ModuleForm
+          onSubmit={() => {}}
+          isLoading={false}
+          mod={createModuleDTO({ configSchema: JSON.stringify(test.schema) })}
+          isSuccess={false}
+          error={null}
+        />
+      );
+      expect(getByText('Failed to parse config fields')).toBeDefined();
+    });
   });
 });

@@ -18,7 +18,19 @@ export const Header = styled.div`
 `;
 
 export const Inner = styled.div`
+  background-color: ${({ theme }) => theme.colors.backgroundAlt};
+
+  span {
+    &:first-letter {
+      text-transform: capitalize;
+    }
+  }
+
   p {
     color: ${({ theme }) => theme.colors.textAlt};
+    text-transform: lowercase;
+    &:first-letter {
+      text-transform: capitalize;
+    }
   }
 `;

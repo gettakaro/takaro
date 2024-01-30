@@ -9,7 +9,7 @@ interface InputTypeInfo {
 // IMPORTANT: update inputTypeInfo when adding a new InputType
 const inputTypeInfo: InputTypeInfo[] = [
   {
-    type: InputType.string,
+    type: InputType.text,
     category: 'basic',
     description: 'A single-line text input field for entering text.',
   },
@@ -29,7 +29,7 @@ const inputTypeInfo: InputTypeInfo[] = [
     description: 'A field that allows multiple string values to be entered.',
   },
   {
-    type: InputType.select,
+    type: InputType.enumeration,
     category: 'custom',
     description: 'A dropdown menu with a list of self defined options.',
   },
