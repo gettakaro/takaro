@@ -23,7 +23,11 @@ export const ChatMessagesCard: FC = () => {
   const { data, isLoading, refetch } = useEvents({
     filters: {
       gameserverId: [selectedGameServerId],
-      eventName: [EventSearchInputAllowedFiltersEventNameEnum.ChatMessage],
+      eventName: [
+        EventSearchInputAllowedFiltersEventNameEnum.ChatMessage,
+        EventName.PlayerConnected,
+        EventName.PlayerDisconnected,
+      ],
     },
     sortBy: 'createdAt',
     sortDirection: EventSearchInputDTOSortDirectionEnum.Desc,
@@ -47,14 +51,14 @@ export const ChatMessagesCard: FC = () => {
 
   if (isLoading) return <Skeleton variant="rectangular" width="100%" height="100%" />;
 
-  const messages = data?.pages?.flatMap((page) => page.data) ?? [];
+  const events = data?.pages?.flatMap((page) => page.data) ?? [];
 
   return (
     <StyledCard variant={'outline'}>
       <CardBody>
         <Scrollable>
-          {messages.map((msg) => (
-            <ChatMessage key={msg.id} chatMessage={msg} />
+          {events.map((event) => (
+            <ChatMessage key={event.id} event={event} />
           ))}
         </Scrollable>
         <ChatInput
