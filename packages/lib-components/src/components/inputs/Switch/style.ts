@@ -37,11 +37,11 @@ export const Dot = styled(motion.span)<{
   $isChecked: boolean;
   readOnly: boolean;
 }>`
+  will-change: right;
   position: absolute;
   margin-top: -0.45rem;
-  top: 50%;
+  top: calc(50% - 0.62rem);
   border-radius: 50%;
-  transform: translateY(-30%);
   width: 2.1rem;
   height: 2.1rem;
   background-color: ${({ theme, readOnly, $isChecked }) => {
