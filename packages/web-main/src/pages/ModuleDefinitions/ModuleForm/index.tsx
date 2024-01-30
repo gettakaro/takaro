@@ -19,9 +19,9 @@ import { ModuleOutputDTO, ModuleOutputDTOAPI, PermissionCreateDTO } from '@takar
 import { PermissionList, ButtonContainer } from './style';
 import { AiOutlinePlus as PlusIcon } from 'react-icons/ai';
 import { AxiosError } from 'axios';
-import { Input, InputType } from 'components/JsonSchemaForm/generator/inputTypes';
-import { schemaToInputs } from 'components/JsonSchemaForm/generator/SchemaToInputs';
-import { inputsToSchema, inputsToUiSchema } from 'components/JsonSchemaForm/generator/inputsToSchema';
+import { Input, InputType } from '../schemaConversion/inputTypes';
+import { schemaToInputs } from '../schemaConversion/SchemaToInputs';
+import { inputsToSchema, inputsToUiSchema } from '../schemaConversion/inputsToSchema';
 import { ConfigField } from './ConfigField';
 import { Divider } from '@ory/elements';
 import { PermissionField } from './PermissionField';

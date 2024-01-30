@@ -1,4 +1,4 @@
-import { InputType } from 'components/JsonSchemaForm/generator/inputTypes';
+import { InputType } from '../../schemaConversion/inputTypes';
 
 interface InputTypeInfo {
   type: InputType;

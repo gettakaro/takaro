@@ -1,8 +1,8 @@
 import React from 'react';
-import { RJSFSchema } from '@rjsf/utils';
 import { JsonSchemaForm } from '..';
 import { styled, Button } from '@takaro/lib-components';
-import { InputType } from '../generator/inputTypes';
+import { InputType } from '../../../pages/ModuleDefinitions/schemaConversion/inputTypes';
+import { SchemaObject } from 'ajv';
 
 const Container = styled.div`
   width: 100%;
@@ -14,10 +14,11 @@ export default {
 };
 
 export const Default = () => {
-  const schema: RJSFSchema = {
+  const schema: SchemaObject = {
     $schema: 'http://json-schema.org/draft-07/schema#',
     type: 'object',
     properties: {
+      'x-component': InputType.duration,
       duration: {
         type: 'number',
       },

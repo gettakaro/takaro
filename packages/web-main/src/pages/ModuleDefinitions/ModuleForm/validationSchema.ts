@@ -1,8 +1,7 @@
 import { z } from 'zod';
-import { InputType } from '../../../components/JsonSchemaForm/generator/inputTypes';
+import { InputType } from '../schemaConversion/inputTypes';
 
-// Validationschema for configFields is temporarily disabled since nesting discriminatedUnions is not supported.
-// New features for zod.discriminatedUnion were set on hold since it will be replaced by zod.switch.
+// NOTE: nested discriminated unions are not supported by zod
 // https://github.com/colinhacks/zod/issues/1618
 // https://github.com/colinhacks/zod/issues/2106#issuecomment-1836566278
 // based on selected value in select field (with name type)

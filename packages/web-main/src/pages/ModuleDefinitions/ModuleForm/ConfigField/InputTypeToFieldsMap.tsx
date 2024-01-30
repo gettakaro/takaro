@@ -1,5 +1,5 @@
 import { Control } from 'react-hook-form';
-import { InputType } from 'components/JsonSchemaForm/generator/inputTypes';
+import { InputType } from '../../schemaConversion/inputTypes';
 import { TextField, TagField, CheckBox, SelectField, Switch, DurationField } from '@takaro/lib-components';
 import { IFormInputs } from '..';
 import { useWatch } from 'react-hook-form';

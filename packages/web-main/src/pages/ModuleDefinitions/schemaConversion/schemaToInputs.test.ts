@@ -7,8 +7,6 @@ describe('schemaToInputs', () => {
   const testSchemaToInputs = (testKey: keyof typeof testData) => {
     it(`Should convert ${testData[testKey].description}`, () => {
       const { schema, inputs } = testData[testKey];
-
-      console.log(schemaToInputs(schema).inputs, inputs);
       expect(schemaToInputs(schema).inputs).toEqual(inputs as unknown as Input[]);
     });
   };

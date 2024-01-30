@@ -2,7 +2,7 @@ import { Control, UseFieldArrayRemove, UseFormResetField, useWatch } from 'react
 import { SelectField, TextField, Chip, TextAreaField, IconButton, Tooltip, CheckBox } from '@takaro/lib-components';
 import { Header, Inner } from './style';
 import { IFormInputs } from '..';
-import { Input, InputType } from 'components/JsonSchemaForm/generator/inputTypes';
+import { Input, InputType } from '../../schemaConversion/inputTypes';
 import { FC, useEffect, useState } from 'react';
 import { AiOutlineDelete as RemoveIcon } from 'react-icons/ai';
 import { InputTypeToFieldsMap } from './InputTypeToFieldsMap';

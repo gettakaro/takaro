@@ -5,7 +5,7 @@ import { TextareaWidget } from './TextAreaWidget';
 import { CheckBoxWidget } from './CheckboxWidget';
 import { ItemWidget } from './ItemWidget';
 import { DurationWidget } from './DurationWidget';
-import { InputType } from '../generator/inputTypes';
+import { InputType } from '../../../pages/ModuleDefinitions/schemaConversion/inputTypes';
 
 export const customWidgets: RegistryWidgetsType = {
   // IMPORTANT: make sure if you are overriding a widget, that the key matches the name of the widget you are overriding
