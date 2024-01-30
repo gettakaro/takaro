@@ -15,7 +15,7 @@ const Container = styled(motion.button)<{ isActive: boolean }>`
   justify-content: flex-start;
   width: 100%;
   padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing['0_75']}`};
-  border-radius: ${({ theme }) => theme.borderRadius.medium};
+  border-radius: ${({ theme }) => theme.borderRadius.small};
 
   span {
     margin-left: ${({ theme }) => theme.spacing['0_75']};
@@ -33,7 +33,7 @@ const Container = styled(motion.button)<{ isActive: boolean }>`
   }
 
   &:hover {
-    background-color: ${({ theme }) => theme.colors.secondary};
+    background-color: ${({ theme }) => theme.colors.backgroundAlt};
   }
 `;
 

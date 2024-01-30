@@ -15,7 +15,18 @@ const Container = styled.div`
   background-color: ${({ theme }) => theme.colors.background};
   border: 0.1rem solid ${({ theme }) => theme.colors.backgroundAccent};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
-  padding: ${({ theme }) => theme.spacing['0_5']};
+
+  button {
+    &:first-child {
+      border-top-left-radius: ${({ theme }) => theme.borderRadius.large};
+      border-top-right-radius: ${({ theme }) => theme.borderRadius.large};
+    }
+
+    &:last-child {
+      border-bottom-left-radius: ${({ theme }) => theme.borderRadius.large};
+      border-bottom-right-radius: ${({ theme }) => theme.borderRadius.large};
+    }
+  }
 `;
 
 type DropdownMenuComponent = {
