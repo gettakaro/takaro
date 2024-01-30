@@ -17,7 +17,7 @@ import { errors, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { SettingsService } from './SettingsService.js';
 import { TakaroDTO } from '@takaro/util';
 import { queueService } from '@takaro/queues';
-import { HookEvents, IPosition, TakaroEventServerStatusChanged } from '@takaro/modules';
+import { HookEvents, IPosition, TakaroEventServerStatusChanged, GameEvents, EventChatMessage } from '@takaro/modules';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { ModuleService } from './ModuleService.js';
@@ -356,7 +356,21 @@ export class GameServerService extends TakaroService<
 
   async sendMessage(gameServerId: string, message: string, opts: IMessageOptsDTO) {
     const gameInstance = await this.getGame(gameServerId);
-    return gameInstance.sendMessage(message, opts);
+    await gameInstance.sendMessage(message, opts);
+
+    const eventService = new EventService(this.domainId);
+    const meta = await new EventChatMessage().construct({
+      msg: message,
+      timestamp: new Date().toISOString(),
+    });
+
+    await eventService.create(
+      await new EventCreateDTO().construct({
+        eventName: GameEvents.CHAT_MESSAGE,
+        gameserverId: gameServerId,
+        meta,
+      })
+    );
   }
 
   async teleportPlayer(gameServerId: string, playerId: string, position: IPosition) {

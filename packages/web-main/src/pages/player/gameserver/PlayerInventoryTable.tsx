@@ -29,9 +29,7 @@ const ItemIcon = styled.img`
   margin-bottom: ${(props) => props.theme.spacing[1]};
 `;
 
-const ItemName = styled.p`
-  overflow-x: scroll;
-`;
+const ItemName = styled.p``;
 
 export const PlayerInventoryTable: FC<IPlayerInventoryProps> = ({ pog }) => {
   const { selectedGameServerId } = useSelectedGameServer();
@@ -75,12 +73,10 @@ export const PlayerInventoryTable: FC<IPlayerInventoryProps> = ({ pog }) => {
                 alt={item.name}
                 onError={(e) => (e.currentTarget.src = placeholderIcon)}
               />
-              <ItemName>
-                {item.amount} x {item.name}
-              </ItemName>
+              <ItemName>{item.amount}</ItemName>
             </GridItem>
           </Tooltip.Trigger>
-          {item.description?.length && <Tooltip.Content>{item.description}</Tooltip.Content>}
+          <Tooltip.Content>{item.name}</Tooltip.Content>
         </Tooltip>
       ))}
     </Grid>
