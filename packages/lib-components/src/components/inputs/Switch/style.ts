@@ -34,7 +34,7 @@ export const ContentContainer = styled.button<{ isChecked: boolean; hasError: bo
 `;
 
 export const Dot = styled(motion.span)<{
-  isChecked: boolean;
+  $isChecked: boolean;
   readOnly: boolean;
 }>`
   position: absolute;
@@ -44,8 +44,8 @@ export const Dot = styled(motion.span)<{
   transform: translateY(-30%);
   width: 2.1rem;
   height: 2.1rem;
-  background-color: ${({ theme, readOnly, isChecked }) => {
-    let color = isChecked ? theme.colors.white : theme.colors.white;
+  background-color: ${({ theme, readOnly, $isChecked }) => {
+    let color = $isChecked ? theme.colors.white : theme.colors.white;
     if (readOnly) {
       color = theme.colors.disabled;
     }
