@@ -3,15 +3,18 @@ import { AlertVariants } from '.';
 import { motion } from 'framer-motion';
 import { lighten, darken } from 'polished';
 
+// Since this actually a motion.div we are passing props to that only should be consumed by styled compmonents
+// and not being passed the the underlying react node, we can prefix the prop names with `$`to turn it into
+// a transient prop.
 export const Container = styled(motion.div)<{
-  variant: AlertVariants;
-  hasTitle: boolean;
-  elevation: Elevation;
+  $variant: AlertVariants;
+  $hasTitle: boolean;
+  $elevation: Elevation;
 }>`
   width: 100%;
   padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing[1]}`};
   border-radius: ${({ theme }) => theme.borderRadius.large};
-  box-shadow: ${({ theme, elevation }) => theme.elevation[elevation]};
+  box-shadow: ${({ theme, $elevation }) => theme.elevation[$elevation]};
   margin: ${({ theme }) => `${theme.spacing['1_5']} auto`};
   h2 {
     font-size: 1.825rem;
@@ -21,7 +24,7 @@ export const Container = styled(motion.div)<{
     justify-content: flex-start;
   }
   p {
-    margin-top: ${({ theme, hasTitle }) => (hasTitle ? theme.spacing['0_5'] : theme.spacing[0])};
+    margin-top: ${({ theme, $hasTitle }) => ($hasTitle ? theme.spacing['0_5'] : theme.spacing[0])};
   }
   p,
   li {
@@ -36,17 +39,17 @@ export const Container = styled(motion.div)<{
     }
   }
   /* set background color equal to provided type */
-  ${({ variant, theme }): string => {
+  ${({ $variant, theme }): string => {
     return `
-        background-color: ${lighten('0.3', theme.colors[variant])};
+        background-color: ${lighten('0.3', theme.colors[$variant])};
         h2 {
-          color: ${darken('0.2', theme.colors[variant])};
+          color: ${darken('0.2', theme.colors[$variant])};
         }
         p, li {
-          color: ${darken('0.2', theme.colors[variant])};
+          color: ${darken('0.2', theme.colors[$variant])};
         }
         ::marker {
-          color: ${darken('0.2', theme.colors[variant])};
+          color: ${darken('0.2', theme.colors[$variant])};
         }
         `;
   }}

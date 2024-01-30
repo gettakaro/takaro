@@ -61,10 +61,10 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(
           <Container
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            hasTitle={hasTitle}
+            $hasTitle={hasTitle}
             initial={{ opacity: 0 }}
-            variant={variant}
-            elevation={elevation}
+            $variant={variant}
+            $elevation={elevation}
             transition={{ duration: 0.2 }}
             ref={ref}
           >
