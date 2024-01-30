@@ -1,8 +1,14 @@
 import { ModuleInstallationOutputDTO, ModuleOutputDTO } from '@takaro/apiclient';
-import { Tooltip, Dialog, Button, IconButton, Card, useTheme } from '@takaro/lib-components';
+import { Dialog, Button, IconButton, Card, useTheme, Dropdown } from '@takaro/lib-components';
 import { PATHS } from 'paths';
 import { FC, useState, MouseEvent } from 'react';
-import { AiOutlineDelete as DeleteIcon, AiOutlineSetting as ConfigIcon } from 'react-icons/ai';
+import {
+  AiOutlineDelete as UninstallIcon,
+  AiOutlineSetting as ConfigIcon,
+  AiOutlineMenu as MenuIcon,
+  AiOutlineLink as LinkIcon,
+  AiOutlineEye as ViewIcon,
+} from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom';
 import { SpacedRow, ActionIconsContainer, CardBody } from '../style';
 import { useGameServerModuleUninstall } from 'queries/gameservers';
@@ -31,11 +37,44 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation }) =
     setOpenDialog(false);
   };
 
+  const handleConfigure = () => {
+    navigate(PATHS.gameServer.moduleInstallations.install(selectedGameServerId, mod.id));
+  };
+
+  const handleUninstall = (e: MouseEvent) => {
+    e.stopPropagation();
+    setOpenDialog(true);
+  };
+
+  const handleOpenInStudio = () => {
+    window.open(PATHS.studio.module(mod.id));
+  };
+
   return (
     <>
       <Card data-testid={`module-${mod.id}`}>
         <CardBody>
-          <h2>{mod.name}</h2>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <h2>{mod.name}</h2>
+            {installation && (
+              <Dropdown>
+                <Dropdown.Trigger asChild>
+                  <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
+                </Dropdown.Trigger>
+                <Dropdown.Menu>
+                  <Dropdown.Menu.Item
+                    disabled
+                    onClick={() => {}}
+                    label="View module (coming soon)"
+                    icon={<ViewIcon />}
+                  />
+                  <Dropdown.Menu.Item onClick={handleConfigure} label="Configure module" icon={<ConfigIcon />} />
+                  <Dropdown.Menu.Item onClick={handleUninstall} label="Uninstall module" icon={<UninstallIcon />} />
+                  <Dropdown.Menu.Item onClick={handleOpenInStudio} label="View in Studio" icon={<LinkIcon />} />
+                </Dropdown.Menu>
+              </Dropdown>
+            )}
+          </div>
           <p>{mod.description}</p>
           <SpacedRow>
             <span style={{ color: `${theme.colors.primary} !important` }}>
@@ -44,35 +83,7 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation }) =
               {mod.cronJobs.length > 0 && <p>Cronjobs: {mod.cronJobs.length}</p>}
             </span>
             <ActionIconsContainer>
-              {installation ? (
-                <>
-                  <Tooltip>
-                    <Tooltip.Trigger asChild>
-                      <IconButton
-                        onClick={() => {
-                          navigate(PATHS.gameServer.moduleInstallations.install(selectedGameServerId, mod.id));
-                        }}
-                        ariaLabel="Configure module"
-                        icon={<ConfigIcon />}
-                      />
-                    </Tooltip.Trigger>
-                    <Tooltip.Content>Configure</Tooltip.Content>
-                  </Tooltip>
-                  <Tooltip>
-                    <Tooltip.Trigger asChild>
-                      <IconButton
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setOpenDialog(true);
-                        }}
-                        icon={<DeleteIcon key={`uninstall-module-icon-${mod.id}`} />}
-                        ariaLabel="Uninstall module"
-                      />
-                    </Tooltip.Trigger>
-                    <Tooltip.Content>Uninstall</Tooltip.Content>
-                  </Tooltip>
-                </>
-              ) : (
+              {!installation && (
                 <Button
                   text="Install"
                   onClick={() => {
