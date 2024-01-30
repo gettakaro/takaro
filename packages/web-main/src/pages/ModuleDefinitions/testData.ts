@@ -1,4 +1,4 @@
-import { InputType } from './inputTypes';
+import { InputType } from './schemaConversion/inputTypes';
 import { SchemaObject } from 'ajv';
 import { countryCodes } from 'components/selects/CountrySelect/countryCodes';
 
@@ -156,6 +156,37 @@ export const testData: TestData = {
       properties: {
         'number field': {
           type: 'number',
+          title: 'number field',
+          description: 'number field description',
+          minimum: 1,
+          maximum: 10,
+          default: 5,
+        },
+      },
+      required: [],
+      additionalProperties: false,
+    },
+    inputs: [
+      {
+        name: 'number field',
+        type: InputType.number,
+        required: false,
+        description: 'number field description',
+        default: 5,
+        minimum: 1,
+        maximum: 10,
+      },
+    ],
+  },
+  legacyInteger: {
+    description:
+      'In earlier versions of schema, inputType.Integer was used which does not allow floating point numbers',
+    schema: {
+      $schema: 'http://json-schema.org/draft-07/schema#',
+      type: 'object',
+      properties: {
+        'number field': {
+          type: 'integer',
           title: 'number field',
           description: 'number field description',
           minimum: 1,

@@ -44,6 +44,13 @@ export function schemaToInputs(schema: SchemaObject): SchemaToInputsResult {
         input.description = property.description;
       }
 
+      // Legacy: initially we used the integer type for numbers
+      // But this does not allow for floating point numbers.
+      // As a fallback we convert integer to number
+      if (input.type === 'integer') {
+        input.type = InputType.number;
+      }
+
       // input.type are the default JSON Schema types
       switch (input.type) {
         case 'number':

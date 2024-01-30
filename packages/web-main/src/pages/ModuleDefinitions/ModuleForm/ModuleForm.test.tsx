@@ -1,8 +1,25 @@
-import { beforeEach, describe, it } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { render } from 'test-utils';
 import { ModuleForm } from '.';
 import { ModuleOutputDTO } from '@takaro/apiclient';
 import { DateTime } from 'luxon';
+import { testData } from '../testData';
+
+const testSchemaToInputRender = (testKey: keyof typeof testData) => {
+  it(`Should convert ${testData[testKey].description}`, () => {
+    const { schema } = testData[testKey];
+
+    render(
+      <ModuleForm
+        onSubmit={() => {}}
+        isLoading={false}
+        mod={createModuleDTO({ configSchema: JSON.stringify(schema) })}
+        isSuccess={false}
+        error={null}
+      />
+    );
+  });
+};
 
 function createModuleDTO(overrides: Partial<ModuleOutputDTO> = {}): ModuleOutputDTO {
   return {
@@ -22,14 +39,10 @@ function createModuleDTO(overrides: Partial<ModuleOutputDTO> = {}): ModuleOutput
   };
 }
 
-describe('EditModule', () => {
-  beforeEach(() => {
-    // Add a div with the required ID to the document body
-  });
-
-  it('Should gracefully handle invalid configSchema', () => {
+describe('Render ConfigFields', () => {
+  it('Should show error when schema is invalid', () => {
     const invalidSchema = JSON.stringify({ schema: 'invalid' });
-    render(
+    const { getByText } = render(
       <ModuleForm
         onSubmit={() => {}}
         isLoading={false}
@@ -38,5 +51,44 @@ describe('EditModule', () => {
         error={null}
       />
     );
+    expect(getByText('Failed to parse config fields')).toBeDefined();
+  });
+
+  describe('String type', () => {
+    testSchemaToInputRender('string');
+    testSchemaToInputRender('stringExtended');
+  });
+
+  describe('Number type', () => {
+    testSchemaToInputRender('number');
+    testSchemaToInputRender('numberExtended');
+  });
+
+  describe('Array type', () => {
+    testSchemaToInputRender('array');
+    testSchemaToInputRender('arrayExtended');
+  });
+
+  describe('Select type', () => {
+    testSchemaToInputRender('select');
+    testSchemaToInputRender('selectExtended');
+  });
+
+  describe('Boolean type', () => {
+    testSchemaToInputRender('boolean');
+  });
+
+  describe('Duration type', () => {
+    testSchemaToInputRender('duration');
+  });
+
+  describe('Item type', () => {
+    testSchemaToInputRender('item');
+    testSchemaToInputRender('itemExtended');
+  });
+
+  describe('Country type', () => {
+    testSchemaToInputRender('country');
+    testSchemaToInputRender('countryExtended');
   });
 });

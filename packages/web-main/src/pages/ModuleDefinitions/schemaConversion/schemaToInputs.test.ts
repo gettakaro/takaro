@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { schemaToInputs } from './SchemaToInputs';
-import { testData } from './testData';
+import { testData } from '../testData';
 import { Input } from './inputTypes';
 
 describe('schemaToInputs', () => {
@@ -43,6 +43,7 @@ describe('schemaToInputs', () => {
   describe('Number type', () => {
     testSchemaToInputs('number');
     testSchemaToInputs('numberExtended');
+    testSchemaToInputs('legacyInteger');
   });
 
   describe('Array type', () => {

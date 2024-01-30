@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { testData } from './testData';
+import { testData } from '../testData';
 import { inputsToSchema } from './inputsToSchema';
 import { Input } from './inputTypes';
 
