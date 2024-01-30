@@ -6,7 +6,7 @@ import { DateTime } from 'luxon';
 import { PlayerRolesTable } from './PlayerRolesTable';
 import { IpHistoryOutputDTO, PlayerOutputDTO, PlayerOutputWithRolesDTO } from '@takaro/apiclient';
 import { CountryCodeToEmoji } from 'components/CountryCodeToEmoji';
-import { Container, Section } from '../style';
+import { Container, Scrollable, Section } from '../style';
 
 const IpInfoContainer = styled.div`
   display: flex;
@@ -128,22 +128,26 @@ export const PlayerGlobalProfile: FC = () => {
   }
 
   return (
-    <Container>
-      <Section>
-        <h2>Info</h2>
-        <CardContainer>
-          <PlayerInfoCard player={player} />
-          <SteamInfoCard player={player} />
-        </CardContainer>
-      </Section>
-      <Section>
-        <h2>IP History</h2>
-        <IpInfo ipInfo={player.ipHistory} />
-      </Section>
+    <Scrollable>
+      <Container>
+        <Section>
+          <h2>Info</h2>
+          <CardContainer>
+            <PlayerInfoCard player={player} />
+            <SteamInfoCard player={player} />
+          </CardContainer>
+        </Section>
+        <Section>
+          <h2>IP History</h2>
+          <IpInfo ipInfo={player.ipHistory} />
+        </Section>
 
-      <PlayerRolesTable roles={player?.roleAssignments} playerId={playerId} playerName={player?.name} />
+        <Section>
+          <PlayerRolesTable roles={player?.roleAssignments} playerId={playerId} playerName={player?.name} />
+        </Section>
 
-      <Outlet />
-    </Container>
+        <Outlet />
+      </Container>
+    </Scrollable>
   );
 };
