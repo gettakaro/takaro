@@ -23,6 +23,7 @@ export function DurationWidget<T = unknown, S extends StrictRJSFSchema = RJSFSch
       readOnly={readonly}
       value={value || defaultValue}
       hasDescription={!!schema.description}
+      canClear={!required}
       onChange={onChange}
     />
   );
