@@ -10,6 +10,16 @@ import { MemoryRouter } from 'react-router-dom';
 window.scrollTo = () => {};
 
 const providers: FC<PropsWithChildren> = ({ children }) => {
+  // add portal for drawer
+  const drawerPortalRoot = document.createElement('div');
+  drawerPortalRoot.setAttribute('id', 'drawer');
+  document.body.appendChild(drawerPortalRoot);
+
+  // add portal for dialog
+  const dialogPortalRoot = document.createElement('div');
+  dialogPortalRoot.setAttribute('id', 'dialog');
+  document.body.appendChild(dialogPortalRoot);
+
   return (
     <ThemeProvider theme={darkTheme}>
       <QueryClientProvider client={queryClient}>
