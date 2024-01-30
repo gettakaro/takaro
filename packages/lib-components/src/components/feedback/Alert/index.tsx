@@ -67,6 +67,7 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(
             $elevation={elevation}
             transition={{ duration: 0.2 }}
             ref={ref}
+            role="status"
           >
             <Grid hasTitle={hasTitle}>
               <IconContainer variant={variant}>{getIcon()}</IconContainer>
