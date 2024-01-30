@@ -33,17 +33,57 @@ export const ConfigField: FC<ConfigFieldProps> = ({ control, index, remove, id, 
     `configFields.${index}.default` has the same name across different inputTypes.
     We need to reset the default value to the new type default value.
     because otherwise incorrect values are passed to fields that don't know how to handle them.
+    Limitation: values cannot be reset to undefined. Resulting in potentially unwanted default values.
+    source: https://github.com/orgs/react-hook-form/discussions/5858
   */
   useEffect(() => {
     if (inputType && initialised) {
-      resetField(`configFields.${index}.default`, {
-        defaultValue: undefined,
-      });
+      switch (inputType) {
+        case InputType.string:
+          resetField(`configFields.${index}.default`, {
+            defaultValue: '',
+          });
+          break;
+        case InputType.number:
+        case InputType.duration:
+          resetField(`configFields.${index}.default`, {
+            defaultValue: 0,
+          });
+          break;
+        case InputType.boolean:
+          resetField(`configFields.${index}.default`, {
+            defaultValue: false,
+          });
+          break;
 
-      if (inputType === InputType.item || inputType === InputType.country || inputType === InputType.select) {
-        resetField(`configFields.${index}.multiple`, {
-          defaultValue: false,
-        });
+        case InputType.item:
+          resetField(`configFields.${index}.multiple`, {
+            defaultValue: false,
+          });
+          break;
+        case InputType.country:
+          resetField(`configFields.${index}.multiple`, {
+            defaultValue: false,
+          });
+          resetField(`configFields.${index}.default`, {
+            defaultValue: '',
+          });
+          break;
+        case InputType.select:
+          resetField(`configFields.${index}.multiple`, {
+            defaultValue: false,
+          });
+          resetField(`configFields.${index}.default`, {
+            defaultValue: '',
+          });
+          break;
+        case InputType.array:
+          resetField(`configFields.${index}.default`, {
+            defaultValue: [],
+          });
+          break;
+
+          break;
       }
     } else {
       setInitialised(true);

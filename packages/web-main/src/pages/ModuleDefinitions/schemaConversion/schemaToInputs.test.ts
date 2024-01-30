@@ -20,15 +20,6 @@ describe('schemaToInputs', () => {
     expect(errors).toHaveLength(1);
   });
 
-  it('Should throw error when schema does not contain any properties', () => {
-    const schema = {
-      $schema: 'http://json-schema.org/draft-07/schema#',
-      type: 'object',
-    };
-    const errors = schemaToInputs(schema).errors;
-    expect(errors).toHaveLength(1);
-  });
-
   it('Should convert to empty array when no schema is provided', () => {
     expect(schemaToInputs({}).inputs).toEqual([]);
   });

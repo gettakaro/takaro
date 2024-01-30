@@ -7,7 +7,6 @@ import {
   CollapseList,
   TextAreaField,
   FormError,
-  Alert,
   QuestionTooltip,
   useTheme,
 } from '@takaro/lib-components';
@@ -207,9 +206,6 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
                   </>
                 }
               >
-                {configFields.length > 0 && (
-                  <Alert text="Every config field should have a unique name!" variant="warning" />
-                )}
                 {configFieldErrors.map((error, index) => {
                   return (
                     <ConfigFieldErrorDetail

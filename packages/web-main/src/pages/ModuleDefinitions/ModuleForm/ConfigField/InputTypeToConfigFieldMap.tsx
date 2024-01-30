@@ -13,12 +13,16 @@ export const InputTypeToConfigFieldMap = (control: Control<IFormInputs>, index: 
     defaultValue: [],
   }) as string[];
 
+  const getName = (name: string) => {
+    return `configFields.${index}.${name}`;
+  };
+
   const multiple = useWatch<IFormInputs>({ name: `configFields.${index}.multiple`, control }) as boolean | undefined;
 
   return {
     [InputType.string]: [
       <TextField
-        name={`configFields.${index}.default`}
+        name={getName('default')}
         key={`${InputType.string}-default-${id}`}
         control={control}
         type="text"
@@ -26,7 +30,7 @@ export const InputTypeToConfigFieldMap = (control: Control<IFormInputs>, index: 
         description="When a user installs the module, this will be the default value for this field."
       />,
       <TextField
-        name={`configFields.${index}.minLength`}
+        name={getName('minLength')}
         key={`${InputType.string}-minLength-${id}`}
         control={control}
         type="number"
@@ -34,7 +38,7 @@ export const InputTypeToConfigFieldMap = (control: Control<IFormInputs>, index: 
         placeholder="0"
       />,
       <TextField
-        name={`configFields.${index}.maxLength`}
+        name={getName('maxLength')}
         key={`${InputType.string}-maxLength-${id}`}
         control={control}
         type="number"
@@ -44,7 +48,7 @@ export const InputTypeToConfigFieldMap = (control: Control<IFormInputs>, index: 
     ],
     [InputType.number]: [
       <TextField
-        name={`configFields.${index}.default`}
+        name={getName('default')}
         key={`${InputType.number}-default-${id}`}
         control={control}
         type="number"
@@ -52,14 +56,14 @@ export const InputTypeToConfigFieldMap = (control: Control<IFormInputs>, index: 
         description="When a user installs the module, this will be the default value for this field."
       />,
       <TextField
-        name={`configFields.${index}.minimum`}
+        name={getName('minimum')}
         key={`${InputType.number}-minimum-${id}`}
         control={control}
         type="number"
         label="Minimum"
       />,
       <TextField
-        name={`configFields.${index}.maximum`}
+        name={getName('maximum')}
         key={`${InputType.number}-maximum-${id}`}
         control={control}
         type="number"
@@ -68,7 +72,7 @@ export const InputTypeToConfigFieldMap = (control: Control<IFormInputs>, index: 
     ],
     [InputType.boolean]: [
       <CheckBox
-        name={`configFields.${index}.default`}
+        name={getName('default')}
         key={`${InputType.boolean}-default-${id}`}
         control={control}
         labelPosition="left"
@@ -78,7 +82,7 @@ export const InputTypeToConfigFieldMap = (control: Control<IFormInputs>, index: 
     ],
     [InputType.array]: [
       <TagField
-        name={`configFields.${index}.default`}
+        name={getName('default')}
         key={`${InputType.array}-default-${id}`}
         control={control}
         label="Default values"
@@ -87,7 +91,7 @@ export const InputTypeToConfigFieldMap = (control: Control<IFormInputs>, index: 
         placeholder="Press enter to add a value."
       />,
       <TextField
-        name={`configFields.${index}.minItems`}
+        name={getName('minItems')}
         key={`${InputType.array}-minItems-${id}`}
         control={control}
         type="number"
@@ -95,7 +99,7 @@ export const InputTypeToConfigFieldMap = (control: Control<IFormInputs>, index: 
         description="Requires the user to add at least this number of items to the list."
       />,
       <TextField
-        name={`configFields.${index}.maxItems`}
+        name={getName('maxItems')}
         key={`${InputType.array}-maxItems-${id}`}
         control={control}
         type="number"
@@ -103,7 +107,7 @@ export const InputTypeToConfigFieldMap = (control: Control<IFormInputs>, index: 
         description="Limits the number of items the user can add to this list."
       />,
       <Switch
-        name={`configFields.${index}.uniqueItems`}
+        name={getName('uniqueItems')}
         key={`${InputType.array}-uniqueItems-${id}`}
         control={control}
         label="Unique items"
@@ -112,7 +116,7 @@ export const InputTypeToConfigFieldMap = (control: Control<IFormInputs>, index: 
     ],
     [InputType.select]: [
       <TagField
-        name={`configFields.${index}.values`}
+        name={getName('values')}
         key={`${InputType.select}-enum-${id}`}
         control={control}
         label="Possible values"
@@ -120,7 +124,7 @@ export const InputTypeToConfigFieldMap = (control: Control<IFormInputs>, index: 
         placeholder="Press enter to add a value."
       />,
       <Switch
-        name={`configFields.${index}.multiple`}
+        name={getName('multiple')}
         key={`${InputType.select}-multiple-${id}`}
         control={control}
         label="Multiple"
@@ -130,7 +134,7 @@ export const InputTypeToConfigFieldMap = (control: Control<IFormInputs>, index: 
         <SelectField
           key={`${InputType.select}-default-${id}`}
           control={control}
-          name={`configFields.${index}.default`}
+          name={getName('default')}
           label="default value"
           canClear={true}
           multiple={multiple ? true : false}
@@ -154,7 +158,7 @@ export const InputTypeToConfigFieldMap = (control: Control<IFormInputs>, index: 
     [InputType.item]: [
       <Switch
         key={`${InputType.item}-multiple-${id}`}
-        name={`configFields.${index}.multiple`}
+        name={getName('multiple')}
         control={control}
         label="Multiple items?"
         description="If you want to allow the user to select multiple items"
@@ -163,23 +167,24 @@ export const InputTypeToConfigFieldMap = (control: Control<IFormInputs>, index: 
     [InputType.country]: [
       <Switch
         key={`${InputType.country}-multiple-${id}`}
-        name={`configFields.${index}.multiple`}
+        name={getName('multiple')}
         control={control}
         label="Multiple countries?"
         description="If you want to allow the user to select multiple countries"
       />,
       <CountrySelect
-        name={`configFields.${index}.default`}
-        label="Default selected"
+        name={getName('default')}
         key={`${InputType.country}-values-${id}`}
+        label="Default selected"
         multiple={multiple ? true : false}
         control={control}
       />,
     ],
     [InputType.duration]: [
       <DurationField
+        canClear
+        name={getName('default')}
         key={`${InputType.duration}-default-${id}`}
-        name={`configFields.${index}.default`}
         label="Default value"
         placeholder="Select default duration..."
         control={control}

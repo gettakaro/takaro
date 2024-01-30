@@ -18,7 +18,7 @@ export function schemaToInputs(schema: SchemaObject): SchemaToInputsResult {
   const errors: SchemaToInputsError[] = [];
 
   // should have properties and start with object
-  if (schema.properties === undefined || schema.type !== 'object') {
+  if (schema.type !== 'object') {
     errors.push({
       message: 'Failed to parse config fields',
       detail: 'Schema does not contain any properties.',

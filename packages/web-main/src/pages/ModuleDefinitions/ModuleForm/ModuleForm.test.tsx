@@ -9,7 +9,7 @@ const testSchemaToInputRender = (testKey: keyof typeof testData) => {
   it(`Should convert ${testData[testKey].description}`, () => {
     const { schema } = testData[testKey];
 
-    render(
+    const { queryByRole } = render(
       <ModuleForm
         onSubmit={() => {}}
         isLoading={false}
@@ -18,6 +18,7 @@ const testSchemaToInputRender = (testKey: keyof typeof testData) => {
         error={null}
       />
     );
+    expect(queryByRole('status')).toBeNull();
   });
 };
 
@@ -62,6 +63,7 @@ describe('Render ConfigFields', () => {
   describe('Number type', () => {
     testSchemaToInputRender('number');
     testSchemaToInputRender('numberExtended');
+    testSchemaToInputRender('legacyInteger');
   });
 
   describe('Array type', () => {
