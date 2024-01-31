@@ -2,18 +2,13 @@ import { InputType } from './schemaConversion/inputTypes';
 import { SchemaObject } from 'ajv';
 import { countryCodes } from 'components/selects/CountrySelect/countryCodes';
 
-type ValidSchema = {
+type Test = {
   name: string;
   schema: SchemaObject;
   inputs: Record<string, unknown>[];
 };
 
-export const validSchemas: ValidSchema[] = [
-  {
-    name: 'empty schema',
-    schema: {},
-    inputs: [],
-  },
+export const validSchemas: Test[] = [
   {
     name: 'required field',
     schema: {
@@ -158,36 +153,6 @@ export const validSchemas: ValidSchema[] = [
       properties: {
         'number field': {
           type: 'number',
-          title: 'number field',
-          description: 'number field description',
-          minimum: 1,
-          maximum: 10,
-          default: 5,
-        },
-      },
-      required: [],
-      additionalProperties: false,
-    },
-    inputs: [
-      {
-        name: 'number field',
-        type: InputType.number,
-        required: false,
-        description: 'number field description',
-        default: 5,
-        minimum: 1,
-        maximum: 10,
-      },
-    ],
-  },
-  {
-    name: 'In earlier versions of schema, inputType.Integer was used which does not allow floating point numbers',
-    schema: {
-      $schema: 'http://json-schema.org/draft-07/schema#',
-      type: 'object',
-      properties: {
-        'number field': {
-          type: 'integer',
           title: 'number field',
           description: 'number field description',
           minimum: 1,
@@ -477,18 +442,57 @@ export const validSchemas: ValidSchema[] = [
   },
 ];
 
-type InvalidSchema = {
-  name: string;
-  schema: SchemaObject;
-};
+/*  These are valid schema that can be converted to inputs.
+ * However, the inputs cannot be converted back to the original schema.
+ * E.g. legacy schemas.
+ */
+//
+export const validSchemasToInputs: Test[] = [
+  {
+    name: 'empty schema',
+    schema: {},
+    inputs: [],
+  },
+  {
+    name: 'Legacy integer',
+    schema: {
+      $schema: 'http://json-schema.org/draft-07/schema#',
+      type: 'object',
+      properties: {
+        'number field': {
+          type: 'integer',
+          title: 'number field',
+          description: 'number field description',
+          minimum: 1,
+          maximum: 10,
+          default: 5,
+        },
+      },
+      required: [],
+      additionalProperties: false,
+    },
+    inputs: [
+      {
+        name: 'number field',
+        type: InputType.number,
+        required: false,
+        description: 'number field description',
+        default: 5,
+        minimum: 1,
+        maximum: 10,
+      },
+    ],
+  },
+];
 
-export const invalidSchemas: InvalidSchema[] = [
+export const invalidSchemas: Test[] = [
   {
     name: 'Schema should start with an object',
     schema: {
       $schema: 'http://json-schema.org/draft-07/schema#',
       type: 'string',
     },
+    inputs: [],
   },
   {
     name: 'array field with items.type != string',
@@ -509,5 +513,6 @@ export const invalidSchemas: InvalidSchema[] = [
       required: [],
       additionalProperties: false,
     },
+    inputs: [],
   },
 ];

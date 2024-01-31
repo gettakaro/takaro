@@ -17,11 +17,15 @@ export function schemaToInputs(schema: SchemaObject): SchemaToInputsResult {
   const inputs: Input[] = [];
   const errors: SchemaToInputsError[] = [];
 
-  // should have properties and start with object
+  // empty, just return empty inputs
+  if (schema && typeof schema === 'object' && Object.keys(schema).length === 0) {
+    return { inputs, errors };
+  }
+
   if (schema.type !== 'object') {
     errors.push({
       message: 'Failed to parse config fields',
-      detail: 'Schema does not contain any properties.',
+      detail: 'Schema should be of type object',
       data: schema as object,
     });
     return { inputs, errors };
