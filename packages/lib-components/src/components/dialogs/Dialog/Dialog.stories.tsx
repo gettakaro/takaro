@@ -34,16 +34,8 @@ export const Default: StoryFn = () => {
           <Dialog.Body>
             <h2>Create module</h2>
             <p>Modules are what makes Takaro great.</p>
-            <form
-              onSubmit={handleSubmit(onSubmit)}
-              style={{ marginTop: '20px' }}
-            >
-              <TextField
-                label="Module name"
-                name="moduleName"
-                placeholder="cute kittens"
-                control={control}
-              />
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <TextField label="Module name" name="moduleName" placeholder="cute kittens" control={control} />
               <Button text="Create module" type="submit" fullWidth />
             </form>
           </Dialog.Body>
@@ -70,15 +62,10 @@ export const SingleActionDialog: StoryFn = () => {
           <Dialog.Body size="small">
             <h2>Go back to dashboard!</h2>
             <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua.
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+              dolore magna aliqua.
             </p>
-            <Button
-              onClick={handleAction}
-              size="large"
-              fullWidth
-              text="Go back to dashboard"
-            />
+            <Button onClick={handleAction} size="large" fullWidth text="Go back to dashboard" />
           </Dialog.Body>
         </Dialog.Content>
       </Dialog>

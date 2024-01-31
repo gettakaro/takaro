@@ -12,3 +12,5 @@ export * from './context.js';
 export { sleep } from './sleep.js';
 
 export { health } from './health.js';
+
+export { retry } from './retry.js';
