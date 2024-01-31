@@ -1,10 +1,17 @@
 import { StrictRJSFSchema } from '@rjsf/utils';
-import { SchemaObject } from 'ajv';
 import { UiSchema } from '@rjsf/utils';
-import { Input, AnyInput, InputType } from './inputTypes';
-import { countryCodes } from 'components/selects/CountrySelect/countryCodes';
+import { AnyInput, InputType } from './inputTypes';
 
-export function inputsToSchema(inputs: Array<Input>): StrictRJSFSchema {
+import { EnumerationProperty } from './inputTypes/Enumeration';
+import { BooleanProperty } from './inputTypes/Boolean';
+import { ArrayProperty } from './inputTypes/Array';
+import { ItemProperty } from './inputTypes/Item';
+import { DurationProperty } from './inputTypes/Duration';
+import { CountryProperty } from './inputTypes/Country';
+import { NumberProperty } from './inputTypes/Number';
+import { TextProperty } from './inputTypes/Text';
+
+export function inputsToSchema(inputs: Array<AnyInput>): StrictRJSFSchema {
   const schema: StrictRJSFSchema = {
     $schema: 'http://json-schema.org/draft-07/schema#',
     type: 'object',
@@ -23,97 +30,29 @@ export function inputsToSchema(inputs: Array<Input>): StrictRJSFSchema {
 }
 
 function getJsonSchemaElement(input: AnyInput) {
-  const res: SchemaObject = {
-    type: input.type,
-    title: input.name,
-  };
-
-  if (input.description) {
-    res.description = input.description;
-  }
-
-  if (input.default !== undefined) {
-    res.default = input.default;
-  }
-
   switch (input.type) {
     case InputType.number:
-      res.minimum = input.minimum;
-      res.maximum = input.maximum;
-      break;
-
+      return new NumberProperty(input).getProperty();
     case InputType.text:
-      res.type = 'string';
-      res.minLength = input.minLength;
-      res.maxLength = input.maxLength;
-      break;
-
+      return new TextProperty(input).getProperty();
     case InputType.enumeration:
-      if (input.multiple) {
-        res['x-component'] = InputType.enumeration;
-        res.type = 'array';
-        res.uniqueItems = true;
-        res.items = { type: 'string', enum: input.values ?? [] };
-      } else {
-        res.enum = input.values;
-        res.type = 'string';
-      }
-      break;
-
+      return new EnumerationProperty(input).getProperty();
     case InputType.boolean:
-      break;
-
+      return new BooleanProperty(input).getProperty();
     case InputType.array:
-      res.type = 'array';
-      res.items = { type: 'string' };
-
-      if (input.minItems) {
-        res.minItems = input.minItems;
-      }
-      if (input.maxItems) {
-        res.maxItems = input.maxItems;
-      }
-      if (input.uniqueItems) {
-        res.uniqueItems = input.uniqueItems;
-      }
-      break;
-
+      return new ArrayProperty(input).getProperty();
     case InputType.item:
-      res['x-component'] = InputType.item;
-      if (input.multiple) {
-        res.type = 'array';
-        res.uniqueItems = true;
-        res.items = { type: 'string' };
-      } else {
-        res.type = 'string';
-      }
-      break;
-
+      return new ItemProperty(input).getProperty();
     case InputType.duration:
-      // required because duration in schema looks the same as number
-      res['x-component'] = InputType.duration;
-      res.type = 'number';
-      res.minimum = 1; // should atleast be 1 millisecond
-      break;
-
+      return new DurationProperty(input).getProperty();
     case InputType.country:
-      res['x-component'] = InputType.country;
-      const oneOf = countryCodes.map(({ code, name }) => ({ const: code, title: name }));
-      if (input.multiple) {
-        (res.type = 'array'), (res.uniqueItems = true), (res.items = { type: 'string', anyOf: oneOf });
-      } else {
-        (res.type = 'string'), (res.oneOf = oneOf);
-      }
-      break;
-
+      return new CountryProperty(input).getProperty();
     default:
       throw new Error('Unknown input type');
   }
-
-  return res;
 }
 
-export function inputsToUiSchema(inputs: Array<Input>): UiSchema {
+export function inputsToUiSchema(inputs: Array<AnyInput>): UiSchema {
   const uiSchema: UiSchema = {};
 
   for (const input of inputs) {
@@ -128,6 +67,5 @@ export function inputsToUiSchema(inputs: Array<Input>): UiSchema {
       };
     }
   }
-
   return uiSchema;
 }

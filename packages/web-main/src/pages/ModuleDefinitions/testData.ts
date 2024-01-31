@@ -311,7 +311,6 @@ export const validSchemas: Test[] = [
           type: 'number',
           title: 'duration field',
           description: 'duration field description',
-          minimum: 1, // should atleast be 1 millisecond.
         },
       },
       required: [],

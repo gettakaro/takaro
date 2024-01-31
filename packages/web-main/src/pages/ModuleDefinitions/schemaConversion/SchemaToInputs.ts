@@ -1,5 +1,5 @@
 import { SchemaObject } from 'ajv';
-import { Input, InputType } from './inputTypes';
+import { AnyInput, InputType } from './inputTypes';
 import { StrictRJSFSchema } from '@rjsf/utils';
 
 interface SchemaToInputsError {
@@ -9,12 +9,12 @@ interface SchemaToInputsError {
 }
 
 export interface SchemaToInputsResult {
-  inputs: Input[];
+  inputs: AnyInput[];
   errors: SchemaToInputsError[];
 }
 
 export function schemaToInputs(schema: SchemaObject): SchemaToInputsResult {
-  const inputs: Input[] = [];
+  const inputs: AnyInput[] = [];
   const errors: SchemaToInputsError[] = [];
 
   // empty, just return empty inputs
@@ -120,7 +120,7 @@ export function schemaToInputs(schema: SchemaObject): SchemaToInputsResult {
         default:
           throw new Error('Unknown input type');
       }
-      inputs.push(input as Input);
+      inputs.push(input as AnyInput);
     } catch (e) {
       errors.push({
         message: `Error processing config field: '${name}'. Please try to recreate the field using the config details.`,

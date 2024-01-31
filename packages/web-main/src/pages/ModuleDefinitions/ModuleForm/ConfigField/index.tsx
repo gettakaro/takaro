@@ -2,14 +2,14 @@ import { Control, UseFieldArrayRemove, UseFormResetField, useWatch } from 'react
 import { SelectField, TextField, Chip, TextAreaField, IconButton, Tooltip, Switch } from '@takaro/lib-components';
 import { Header, Inner } from './style';
 import { IFormInputs } from '..';
-import { Input, InputType } from '../../schemaConversion/inputTypes';
+import { AnyInput, InputType } from '../../schemaConversion/inputTypes';
 import { FC, useEffect, useState } from 'react';
 import { AiOutlineDelete as RemoveIcon } from 'react-icons/ai';
 import { InputTypeToConfigFieldMap } from './InputTypeToConfigFieldMap';
 import { groupedByCategory } from './InputTypeByCategory';
 
 interface ConfigFieldProps {
-  input: Input;
+  input: AnyInput;
   control: Control<IFormInputs>;
   id: string;
   index: number;

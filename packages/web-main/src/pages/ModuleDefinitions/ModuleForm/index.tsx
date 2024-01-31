@@ -18,7 +18,7 @@ import { ModuleOutputDTO, ModuleOutputDTOAPI, PermissionCreateDTO } from '@takar
 import { PermissionList, ButtonContainer } from './style';
 import { AiOutlinePlus as PlusIcon } from 'react-icons/ai';
 import { AxiosError } from 'axios';
-import { Input, InputType } from '../schemaConversion/inputTypes';
+import { AnyInput, InputType } from '../schemaConversion/inputTypes';
 import { schemaToInputs } from '../schemaConversion/SchemaToInputs';
 import { inputsToSchema, inputsToUiSchema } from '../schemaConversion/inputsToSchema';
 import { ConfigField } from './ConfigField';
@@ -30,7 +30,7 @@ export interface IFormInputs {
   name: string;
   description?: string;
   permissions: PermissionCreateDTO[];
-  configFields: Input[];
+  configFields: AnyInput[];
 }
 
 export interface ModuleFormSubmitProps {
