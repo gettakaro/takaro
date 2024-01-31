@@ -217,7 +217,7 @@ export class SevenDaysToDie implements IGameServer {
       duration = duration.shiftTo('years'); // Convert to years
     }
 
-    const command = `ban add EOS_${options.player.gameId} ${Math.round(duration.as(unit))} ${unit} ${options.reason}`;
+    const command = `ban add EOS_${options.player.gameId} ${Math.round(duration.as(unit))} ${unit} "${options.reason}"`;
     await this.executeConsoleCommand(command);
   }
 

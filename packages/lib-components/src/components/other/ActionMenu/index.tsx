@@ -1,12 +1,4 @@
-import {
-  Children,
-  forwardRef,
-  Dispatch,
-  FC,
-  ReactElement,
-  SetStateAction,
-  PropsWithChildren,
-} from 'react';
+import { Children, forwardRef, Dispatch, FC, ReactElement, SetStateAction, PropsWithChildren } from 'react';
 import { Container, Item } from './style';
 import { AiOutlineCheck as CheckMarkIcon } from 'react-icons/ai';
 import { Elevation } from '../../../styled/';
@@ -38,14 +30,14 @@ export const ActionMenu = forwardRef<HTMLUListElement, ActionMenuProps>(
       >
         {Children.map(children, (child: ReactElement<ActionProps>, idx) => (
           <Item onClick={() => setSelected(idx)}>
+            {child}
             {selected === idx ? (
-              <div>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
                 <CheckMarkIcon size={15} />
               </div>
             ) : (
               <div className="checkmark-placeholder"></div>
             )}
-            {child}
           </Item>
         ))}
       </Container>

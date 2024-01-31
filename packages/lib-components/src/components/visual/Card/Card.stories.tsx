@@ -12,7 +12,7 @@ export default {
 
 export const Default: StoryFn<CardProps> = (args) => {
   return (
-    <Card {...args} onClick={() => {}}>
+    <Card variant={args.variant} onClick={() => {}}>
       this is the content
     </Card>
   );

@@ -2,6 +2,7 @@ import { FC, PropsWithChildren } from 'react';
 import { styled } from '@takaro/lib-components';
 
 const List = styled.ol`
+  width: 100%;
   position: relative;
   padding: 0;
   border-left: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
