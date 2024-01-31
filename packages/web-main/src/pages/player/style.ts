@@ -19,10 +19,13 @@ export const Section = styled.div`
   gap: ${({ theme }) => theme.spacing['1']};
 `;
 
-export const Container = styled.div`
-  max-height: 100%;
+export const Scrollable = styled.div`
   height: 100%;
+  width: 100%;
+  overflow-y: auto;
+`;
 
+export const Container = styled.div`
   max-width: ${({ theme }) => theme.breakpoint['large']}};
 
   display: flex;
@@ -31,7 +34,6 @@ export const Container = styled.div`
   gap: ${({ theme }) => theme.spacing['4']};
 
   width: 100%;
-  overflow-y: auto;
 `;
 
 export const ChipContainer = styled.div`
