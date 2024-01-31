@@ -18,12 +18,12 @@ export class PlayerOnboarding extends BuiltinModule {
             default: 'Welcome {player} to the server!',
           },
           starterKitItems: {
-            'x-component': 'item',
             type: 'array',
+            'x-component': 'item',
             title: 'Starter kit items',
             description:
               'List of items a player will receive when they execute the starterkit command for the first time.',
-            uniqeItems: true,
+            uniqueItems: true,
             items: {
               type: 'string',
             },
