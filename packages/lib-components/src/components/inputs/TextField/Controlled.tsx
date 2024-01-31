@@ -2,13 +2,9 @@ import { FC, useState } from 'react';
 import { useController } from 'react-hook-form';
 import { ControlledInputProps, defaultInputProps, defaultInputPropsFactory } from '../InputProps';
 import { TextFieldProps, GenericTextField } from '.';
+import { isNumber } from './Generic';
 import { Container, InputContainer } from './style';
 import { Label, ErrorMessage, InputWrapper, Description } from '../layout';
-
-function isNumber(value: unknown) {
-  const number = Number(value);
-  return !isNaN(number) && isFinite(number);
-}
 
 export type ControlledTextFieldProps = ControlledInputProps & TextFieldProps;
 

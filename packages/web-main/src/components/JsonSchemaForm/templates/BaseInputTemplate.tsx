@@ -28,11 +28,11 @@ export function BaseInputTemplate<T = any, S extends StrictRJSFSchema = RJSFSche
   } = props;
   const inputProps = getInputProps<T, S, F>(schema, type, options);
 
-  // Now we need to pull out the step, min, max into an inner `inputProps` for material-ui
   const _onChange = ({ target: { value } }: ChangeEvent<HTMLInputElement>) =>
     onChange(value === '' ? options.emptyValue : value);
   const _onBlur = ({ target: { value } }: FocusEvent<HTMLInputElement>) => onBlur(id, value);
   const _onFocus = ({ target: { value } }: FocusEvent<HTMLInputElement>) => onFocus(id, value);
+
   return (
     <UnControlledTextField
       id={id}
