@@ -5,7 +5,8 @@ import { matchSnapshot } from './snapshots.js';
 import { integrationConfig } from './main.js';
 import { expect } from './test/expect.js';
 import { AdminClient, Client, AxiosResponse, isAxiosError } from '@takaro/apiclient';
-
+import { randomUUID } from 'crypto';
+import { retry } from '@takaro/util';
 export class IIntegrationTest<SetupData> {
   snapshot!: boolean;
   group!: string;
@@ -88,7 +89,7 @@ export class IntegrationTest<SetupData> {
 
   private async setupStandardEnvironment() {
     const createdDomain = await this.adminClient.domain.domainControllerCreate({
-      name: `${testDomainPrefix}${this.test.name}`.slice(0, 49),
+      name: `${testDomainPrefix}-${randomUUID()}`.slice(0, 49),
     });
     this.standardDomainId = createdDomain.data.data.createdDomain.id;
 
@@ -104,15 +105,22 @@ export class IntegrationTest<SetupData> {
   }
 
   run() {
-    describe(`${this.test.group} - ${this.test.name}`, () => {
-      before(async () => {
-        if (this.test.standardEnvironment) {
-          await this.setupStandardEnvironment();
+    // Mocha has no way to access mocha context from a arrow function
+    // see: https://mochajs.org/#arrow-functions
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const integrationTestContext = this;
+
+    describe(`${this.test.group} - ${this.test.name}`, function () {
+      this.retries(integrationConfig.get('mocha.retries'));
+
+      async function setup(): Promise<void> {
+        if (integrationTestContext.test.standardEnvironment) {
+          await integrationTestContext.setupStandardEnvironment();
         }
 
-        if (this.test.setup) {
+        if (integrationTestContext.test.setup) {
           try {
-            this.setupData = await this.test.setup.bind(this)();
+            integrationTestContext.setupData = await integrationTestContext.test.setup.bind(integrationTestContext)();
           } catch (error) {
             if (!isAxiosError(error)) {
               throw error;
@@ -122,16 +130,18 @@ export class IntegrationTest<SetupData> {
             throw new Error(`Setup failed: ${JSON.stringify(error.response?.data)}}`);
           }
         }
-      });
+      }
 
-      after(async () => {
-        if (this.test.teardown) {
-          await this.test.teardown.bind(this)();
+      async function teardown(): Promise<void> {
+        if (integrationTestContext.test.teardown) {
+          await integrationTestContext.test.teardown.bind(integrationTestContext)();
         }
 
-        if (this.standardDomainId) {
+        if (integrationTestContext.standardDomainId) {
           try {
-            await this.adminClient.domain.domainControllerRemove(this.standardDomainId);
+            await integrationTestContext.adminClient.domain.domainControllerRemove(
+              integrationTestContext.standardDomainId
+            );
           } catch (error) {
             if (!isAxiosError(error)) {
               throw error;
@@ -141,19 +151,19 @@ export class IntegrationTest<SetupData> {
             }
           }
         }
-      });
+      }
 
-      it(this.test.name, async () => {
+      async function test(): Promise<void> {
         let response;
 
         try {
-          response = await this.test.test.bind(this)();
+          response = await integrationTestContext.test.test.bind(integrationTestContext)();
         } catch (error) {
           if (!isAxiosError(error)) {
             throw error;
           }
 
-          if (this.test.snapshot) {
+          if (integrationTestContext.test.snapshot) {
             response = error.response;
           } else {
             if (error.response?.data) {
@@ -163,14 +173,44 @@ export class IntegrationTest<SetupData> {
           }
         }
 
-        if (this.test.snapshot) {
+        if (integrationTestContext.test.snapshot) {
           if (!response) {
             throw new Error('No response returned from test');
           }
-          await matchSnapshot(this.test, response);
-          expect(response.status).to.equal(this.test.expectedStatus);
+          await matchSnapshot(integrationTestContext.test, response);
+          expect(response.status).to.equal(integrationTestContext.test.expectedStatus);
         }
-      });
+      }
+
+      const retryableSetup = () =>
+        retry(
+          setup,
+          integrationConfig.get('mocha.waitBetweenRetries'),
+          integrationConfig.get('mocha.retries'),
+          teardown
+        );
+      const retryableTeardown = () =>
+        retry(
+          teardown,
+          integrationConfig.get('mocha.waitBetweenRetries'),
+          integrationConfig.get('mocha.retries'),
+          async () => {}
+        );
+
+      beforeEach(retryableSetup);
+      afterEach(retryableTeardown);
+
+      it(integrationTestContext.test.name, () =>
+        retry(
+          test,
+          integrationConfig.get('mocha.waitBetweenRetries'),
+          integrationConfig.get('mocha.retries'),
+          async () => {
+            await retryableTeardown();
+            await retryableSetup();
+          }
+        )
+      );
     });
   }
 }

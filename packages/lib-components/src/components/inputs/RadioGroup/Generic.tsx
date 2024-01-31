@@ -1,39 +1,19 @@
-import { ChangeEvent, FC } from 'react';
+import { ChangeEvent, FC, PropsWithChildren } from 'react';
 import { defaultInputProps, defaultInputPropsFactory, GenericInputProps } from '../InputProps';
-import { GenericRadio } from './Radio';
+import { RadioItem } from './RadioItem';
 import { Container } from './style';
-import { Label } from '../../../components';
 import { setAriaDescribedBy } from '../layout';
+import { RadioGroupContext } from './context';
 
-export interface Option {
-  labelPosition: 'left' | 'right';
-  label: string;
-  value: string;
+export interface RadioGroupSubComponents {
+  Item: typeof RadioItem;
 }
 
-export interface RadioGroupProps extends GenericInputProps<string, HTMLDivElement> {
-  options: Option[];
-}
-
+export type RadioGroupProps = PropsWithChildren<GenericInputProps<string, HTMLInputElement>>;
 const defaultsApplier = defaultInputPropsFactory<RadioGroupProps>(defaultInputProps);
 
-// TODO: implement hint and description
-export const GenericRadioGroup: FC<RadioGroupProps> = (props) => {
-  const {
-    readOnly,
-    value: selectedValue,
-    name,
-    size,
-    options,
-    required,
-    onChange,
-    onBlur,
-    hasError,
-    hasDescription,
-    disabled,
-    onFocus,
-    id,
-  } = defaultsApplier(props);
+export const GenericRadioGroup: FC<RadioGroupProps> & RadioGroupSubComponents = (props) => {
+  const { readOnly, value, name, onChange, hasDescription, disabled, children } = defaultsApplier(props);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (readOnly || disabled) return;
@@ -41,51 +21,14 @@ export const GenericRadioGroup: FC<RadioGroupProps> = (props) => {
   };
 
   return (
-    <>
-      {options.map(({ label, value, labelPosition }) => {
-        return (
-          <Container role="radiogroup" aria-describedby={setAriaDescribedBy(name, hasDescription)}>
-            {label && labelPosition === 'left' && (
-              <Label
-                htmlFor={name}
-                text={label}
-                required={required}
-                position={labelPosition}
-                size={size}
-                error={hasError}
-                disabled={disabled}
-              />
-            )}
-            <GenericRadio
-              id={id}
-              key={`radio-option-${label}-${name}`}
-              onChange={handleChange}
-              onBlur={onBlur}
-              onFocus={onFocus}
-              name={name}
-              readOnly={readOnly}
-              value={value as string}
-              checked={selectedValue === value}
-              size={size}
-              required={required}
-              disabled={disabled}
-              hasError={hasError}
-              hasDescription={hasDescription}
-            />
-            {label && labelPosition === 'right' && (
-              <Label
-                htmlFor={name}
-                text={label}
-                required={required}
-                position={labelPosition}
-                size={size}
-                error={hasError}
-                disabled={disabled}
-              />
-            )}
-          </Container>
-        );
-      })}
-    </>
+    <Container role="radiogroup" aria-describedby={setAriaDescribedBy(name, hasDescription)}>
+      <RadioGroupContext.Provider
+        value={{ name, selectedValue: value, setSelectedValue: handleChange, readOnly, disabled }}
+      >
+        {children}
+      </RadioGroupContext.Provider>
+    </Container>
   );
 };
+
+GenericRadioGroup.Item = RadioItem;

@@ -87,7 +87,7 @@ export class EventsAwaiter {
           const msg = `Event ${expectedEvent} timed out - received ${events.length}/${amount} events.`;
           console.warn(msg);
           reject(new Error(msg));
-        }, 5000);
+        }, integrationConfig.get('waitForEventsTimeout'));
       }),
     ]);
   }
