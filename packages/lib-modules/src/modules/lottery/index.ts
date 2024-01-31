@@ -4,7 +4,7 @@ export class Lottery extends BuiltinModule {
   constructor() {
     super(
       'lottery',
-      'Players can buy tickets for a lottery, and the winner is chosen at random',
+      'Players can buy tickets for a lottery, and the winner is chosen at random.',
       JSON.stringify({
         $schema: 'http://json-schema.org/draft-07/schema#',
         type: 'object',
@@ -13,7 +13,7 @@ export class Lottery extends BuiltinModule {
             type: 'number',
             maximum: 1,
             minimum: 0,
-            description: 'The profit margin the server takes from the lottery',
+            description: 'The profit margin the server takes from the lottery.',
             default: 0.1,
           },
         },
@@ -27,12 +27,12 @@ export class Lottery extends BuiltinModule {
         permission: 'LOTTERY_BUY',
         friendlyName: 'Buy Lottery Tickets',
         canHaveCount: true,
-        description: 'Allows the player to buy lottery tickets',
+        description: 'Allows the player to buy lottery tickets.',
       },
       {
         permission: 'LOTTERY_VIEW_TICKETS',
         friendlyName: 'View Lottery Tickets',
-        description: 'Allows the player to view his lottery tickets',
+        description: 'Allows the player to view his lottery tickets.',
       },
     ];
 
@@ -49,12 +49,12 @@ export class Lottery extends BuiltinModule {
         function: '',
         name: 'buyTicket',
         trigger: 'buyTicket',
-        helpText: 'Buy a lottery ticket',
+        helpText: 'Buy a lottery ticket.',
         arguments: [
           {
             name: 'amount',
             type: 'number',
-            helpText: 'The amount of tickets to buy',
+            helpText: 'The amount of tickets to buy.',
             position: 0,
           },
         ],
@@ -63,14 +63,14 @@ export class Lottery extends BuiltinModule {
         function: '',
         name: 'viewTickets',
         trigger: 'viewTickets',
-        helpText: 'View your lottery tickets',
+        helpText: 'View your lottery tickets.',
         arguments: [],
       },
       {
         function: '',
         name: 'nextDraw',
         trigger: 'nextDraw',
-        helpText: 'View when the next draw is',
+        helpText: 'View when the next draw is.',
         arguments: [],
       },
     ];

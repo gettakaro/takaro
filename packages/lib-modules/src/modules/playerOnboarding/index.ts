@@ -10,22 +10,30 @@ export class PlayerOnboarding extends BuiltinModule {
         type: 'object',
         properties: {
           message: {
+            title: 'Message',
+            description: 'The message to send to the player when they join the server.',
             type: 'string',
             minLength: 1,
             maxLength: 256,
             default: 'Welcome {player} to the server!',
           },
           starterKitItems: {
+            'x-component': 'item',
             type: 'array',
+            title: 'Starter kit items',
+            description:
+              'List of items a player will receive when they execute the starterkit command for the first time.',
+            uniqeItems: true,
             items: {
               type: 'string',
-              minLength: 1,
-              maxLength: 512,
             },
-            default: [],
           },
         },
+        required: ['starterKitItems'],
         additionalProperties: false,
+      }),
+      JSON.stringify({
+        starterKitItems: { 'ui:widget': 'item' },
       })
     );
 
