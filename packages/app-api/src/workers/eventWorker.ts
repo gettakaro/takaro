@@ -103,9 +103,7 @@ async function processJob(job: Job<IEventQueueData>) {
           eventName: EVENT_TYPES.PLAYER_DEATH,
           gameserverId: gameServerId,
           playerId: resolvedPlayer.id,
-          meta: await new EventPlayerDeath().construct({
-            position: playerDeath.position,
-          }),
+          meta: await new EventPlayerDeath().construct(playerDeath),
         })
       );
     }
@@ -117,10 +115,7 @@ async function processJob(job: Job<IEventQueueData>) {
           eventName: EVENT_TYPES.ENTITY_KILLED,
           gameserverId: gameServerId,
           playerId: resolvedPlayer.id,
-          meta: await new EventEntityKilled().construct({
-            entity: entityKilled.entity,
-            weapon: entityKilled.weapon,
-          }),
+          meta: await new EventEntityKilled().construct(entityKilled),
         })
       );
     }

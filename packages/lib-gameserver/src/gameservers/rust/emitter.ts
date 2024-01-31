@@ -172,6 +172,9 @@ export class RustEmitter extends TakaroEmitter {
     if (event.player.steamId) {
       event.player.gameId = event.player.steamId;
     }
+    if (event.attacker && event.attacker.steamId) {
+      event.attacker.gameId = event.attacker.steamId;
+    }
     return event;
   }
 
