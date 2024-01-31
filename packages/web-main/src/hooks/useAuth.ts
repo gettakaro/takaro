@@ -1,6 +1,6 @@
 import { useConfig } from 'hooks/useConfig';
 import { Configuration, FrontendApi } from '@ory/client';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { UserOutputDTO, UserOutputWithRolesDTO } from '@takaro/apiclient';
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -30,9 +30,11 @@ const createClient = (config: TakaroConfig) => {
 export function useAuth() {
   const config = useConfig();
   const apiClient = useApiClient();
+  const queryClient = useQueryClient();
+
   const {
     data: sessionData,
-    isLoading,
+    isPending: isLoading,
     isError,
     error,
   } = useQuery<UserOutputWithRolesDTO, AxiosError<UserOutputWithRolesDTO>>({
@@ -45,6 +47,8 @@ export function useAuth() {
           },
         })
       ).data.data,
+    retry: 0,
+    gcTime: 0,
   });
 
   if (!cachedClient) {
@@ -55,6 +59,7 @@ export function useAuth() {
     if (!cachedClient) cachedClient = createClient(config);
     const logoutFlowRes = await cachedClient.createBrowserLogoutFlow();
     cachedClient = null;
+    queryClient.clear();
     window.location.href = logoutFlowRes.data.logout_url;
     return Promise.resolve();
   }
