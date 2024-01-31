@@ -47,7 +47,7 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
           <SpacedRow>
             <h2>{mod.name}</h2>
             <ActionIconsContainer>
-              {mod.builtin ? (
+              {mod.builtin && (
                 <Tooltip>
                   <Tooltip.Trigger>
                     <Company
@@ -65,20 +65,23 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
                     Open the module by clicking on it.
                   </Tooltip.Content>
                 </Tooltip>
-              ) : (
-                <PermissionsGuard requiredPermissions={[[PERMISSIONS.ManageModules]]}>
-                  <Dropdown>
-                    <Dropdown.Trigger asChild>
-                      <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
-                    </Dropdown.Trigger>
-                    <Dropdown.Menu>
-                      <Dropdown.Menu.Item icon={<EditIcon />} onClick={handleOnEditClick} label="Edit module" />
-                      <Dropdown.Menu.Item icon={<DeleteIcon />} onClick={handleOnDeleteClick} label="Delete module" />
-                      <Dropdown.Menu.Item icon={<LinkIcon />} onClick={handleOnOpenClick} label="Open in studio" />
-                    </Dropdown.Menu>
-                  </Dropdown>
-                </PermissionsGuard>
               )}
+              <Dropdown>
+                <Dropdown.Trigger asChild>
+                  <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
+                </Dropdown.Trigger>
+                <Dropdown.Menu>
+                  <PermissionsGuard requiredPermissions={[[PERMISSIONS.ManageModules]]}>
+                    {!mod.builtin && (
+                      <Dropdown.Menu.Item icon={<EditIcon />} onClick={handleOnEditClick} label="Edit module" />
+                    )}
+                    {!mod.builtin && (
+                      <Dropdown.Menu.Item icon={<DeleteIcon />} onClick={handleOnDeleteClick} label="Delete module" />
+                    )}
+                  </PermissionsGuard>
+                  <Dropdown.Menu.Item icon={<LinkIcon />} onClick={handleOnOpenClick} label="Open in studio" />
+                </Dropdown.Menu>
+              </Dropdown>
             </ActionIconsContainer>
           </SpacedRow>
           <p>{mod.description}</p>
