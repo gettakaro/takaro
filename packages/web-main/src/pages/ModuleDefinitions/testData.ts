@@ -396,9 +396,9 @@ export const validSchemas: ValidSchema[] = [
         'item field': {
           'x-component': InputType.item,
           type: 'array',
-          uniqueItems: true,
           title: 'item field',
           description: 'item field description',
+          uniqueItems: true,
           items: {
             type: 'string',
           },
