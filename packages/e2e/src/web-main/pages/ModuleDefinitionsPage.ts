@@ -23,7 +23,8 @@ export class ModuleDefinitionsPage extends BasePage {
   async open(name: string) {
     const [studioPage] = await Promise.all([
       this.page.context().waitForEvent('page'),
-      this.page.getByText(name).click(),
+      await this.page.getByRole('link', { name: name }).getByRole('button', { name: 'Settings' }).click(),
+      await this.page.getByRole('menuitem', { name: 'Open in studio' }).click(),
     ]);
     return studioPage;
   }
