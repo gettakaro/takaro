@@ -5,6 +5,7 @@ import { queueService } from '@takaro/queues';
 import { Mock } from '@takaro/gameserver';
 import { IGamePlayer, EventChatMessage, HookEvents } from '@takaro/modules';
 import Sinon from 'sinon';
+import { EventService } from '../EventService.js';
 
 export async function getMockPlayer(extra: Partial<IGamePlayer> = {}): Promise<IGamePlayer> {
   const data: Partial<IGamePlayer> = {
@@ -198,6 +199,8 @@ const tests = [
       );
 
       const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
+      sandbox.stub(EventService.prototype, 'create').resolves();
+
       sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves({
         x: 0,
         y: 0,
