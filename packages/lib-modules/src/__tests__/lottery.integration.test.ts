@@ -126,13 +126,8 @@ const tests = [
       );
 
       let pog = (
-        await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
-          filters: {
-            playerId: [player.id],
-            gameServerId: [this.setupData.gameserver.id],
-          },
-        })
-      ).data.data[0];
+        await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(this.setupData.gameserver.id, player.id)
+      ).data.data;
 
       expect(pog.currency).to.be.eq(playerStartBalance - ticketPrice);
       await expectTicketAmountLengthToBe(this.client, this.setupData.gameserver.id, this.setupData.lotteryModule.id, 1);
