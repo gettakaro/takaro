@@ -34,7 +34,7 @@ export const CreateUpdateRoleForm: FC<CreateUpdateRoleFormProps> = ({
     if (!open) {
       navigate(PATHS.roles.overview());
     }
-  }, [open, navigate]);
+  }, [open]);
 
   const { control, handleSubmit } = useForm<IFormInputs>({
     mode: 'onChange',

@@ -32,7 +32,7 @@ export const useDiscordGuilds = ({
 
   const query = useInfiniteQuery<GuildOutputArrayDTOAPI, AxiosError<GuildOutputDTOAPI>>({
     queryKey: [...discordKeys.guilds, page, sortBy, sortDirection, filters, search],
-    queryFn: async ({ pageParam = page }) =>
+    queryFn: async ({ pageParam }) =>
       (
         await apiClient.discord.discordControllerSearch({
           limit,
@@ -41,9 +41,10 @@ export const useDiscordGuilds = ({
           filters,
           search,
           extend,
-          page: pageParam,
+          page: pageParam as number,
         })
       ).data,
+    initialPageParam: page,
     getNextPageParam: (lastPage, pages) => hasNextPage(lastPage.meta, pages.length),
   });
 
@@ -109,7 +110,7 @@ export const useDiscordGuildUpdate = () => {
           };
         });
       } catch (error) {
-        queryClient.invalidateQueries(discordKeys.guilds);
+        queryClient.invalidateQueries({ queryKey: discordKeys.guilds });
       }
     },
   });

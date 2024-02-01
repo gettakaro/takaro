@@ -3,7 +3,7 @@ import { useController } from 'react-hook-form';
 import { ControlledInputProps, defaultInputPropsFactory, defaultInputProps } from '../../InputProps';
 import { GenericSelectQueryField, SelectQueryFieldProps } from './Generic';
 import { Option, OptionGroup, SubComponentTypes } from '../SubComponents';
-import { ErrorMessage, Label, Wrapper, Description } from '../../layout';
+import { ErrorMessage, Label, InputWrapper, Description } from '../../layout';
 import { Container } from '../sharedStyle';
 
 export type ControlledSelectQueryFieldProps = PropsWithChildren<SelectQueryFieldProps & ControlledInputProps>;
@@ -18,11 +18,13 @@ export const ControlledSelectQueryField: FC<ControlledSelectQueryFieldProps> & S
     children,
     placeholder,
     readOnly,
+    render,
     disabled,
     hint,
     description,
+    canClear,
     name,
-    multiSelect,
+    multiple,
     control,
     inPortal,
     debounce,
@@ -50,7 +52,7 @@ export const ControlledSelectQueryField: FC<ControlledSelectQueryFieldProps> & S
   };
 
   return (
-    <Wrapper>
+    <InputWrapper>
       <Container>
         {label && (
           <Label
@@ -71,13 +73,15 @@ export const ControlledSelectQueryField: FC<ControlledSelectQueryFieldProps> & S
           placeholder={placeholder}
           hasDescription={!!description}
           readOnly={readOnly}
+          render={render}
           disabled={disabled}
-          multiSelect={multiSelect}
+          multiple={multiple}
           required={required}
           size={componentSize}
           inPortal={inPortal}
           onChange={field.onChange}
           onBlur={handleOnBlur}
+          canClear={canClear}
           onFocus={handleOnFocus}
           value={field.value}
           debounce={debounce}
@@ -88,7 +92,7 @@ export const ControlledSelectQueryField: FC<ControlledSelectQueryFieldProps> & S
         {error && error.message && showError && <ErrorMessage message={error.message} />}
       </Container>
       {description && <Description description={description} inputName={name} />}
-    </Wrapper>
+    </InputWrapper>
   );
 };
 

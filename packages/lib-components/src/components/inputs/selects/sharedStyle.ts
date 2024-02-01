@@ -59,9 +59,7 @@ export const SelectButton = styled.div<{
   }
 `;
 
-export const StyledArrowIcon = styled(ArrowIcon)`
-  margin-left: ${({ theme }) => theme.spacing['0_75']};
-`;
+export const StyledArrowIcon = styled(ArrowIcon)``;
 
 export const StyledFloatingOverlay = styled(FloatingOverlay)`
   width: 100%;

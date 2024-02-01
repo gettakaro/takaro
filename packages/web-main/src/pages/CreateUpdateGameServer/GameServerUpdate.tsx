@@ -50,8 +50,8 @@ const UpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
   const [open, setOpen] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { mutateAsync, isLoading, error: gameServerUpdateError } = useGameServerUpdate();
-  const { mutateAsync: testReachabilityMutation, isLoading: testingConnection } = useGameServerReachabilityByConfig();
+  const { mutateAsync, isPending, error: gameServerUpdateError } = useGameServerUpdate();
+  const { mutateAsync: testReachabilityMutation, isPending: testingConnection } = useGameServerReachabilityByConfig();
   const [connectionOk, setConnectionOk] = useState<boolean>(false);
 
   // TODO: should merge this with similar memo in CreateGameServer.tsx
@@ -125,7 +125,7 @@ const UpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
                 <TextField
                   control={control}
                   label="Server name"
-                  loading={isLoading}
+                  loading={isPending}
                   name="name"
                   placeholder="My cool server"
                   required
@@ -135,7 +135,7 @@ const UpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
                   name="type"
                   label="Game Server"
                   required
-                  loading={isLoading}
+                  loading={isPending}
                   readOnly
                   render={(selectedItems) => {
                     if (selectedItems.length === 0) {
@@ -156,7 +156,7 @@ const UpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
                 </SelectField>
               </CollapseList.Item>
               <CollapseList.Item title="Connection info">
-                {connectionInfoFieldsMap(isLoading, control)[data.type]}
+                {connectionInfoFieldsMap(isPending, control)[data.type]}
               </CollapseList.Item>
             </form>
           </CollapseList>

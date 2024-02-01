@@ -10,9 +10,10 @@ export class Economy extends BuiltinModule {
         type: 'object',
         properties: {
           pendingAmount: {
+            title: 'Pending amount',
             type: 'number',
             description:
-              'When a player transfers money, they must confirm the transfer when the amount is equal or above this value. Set to 0 to disable',
+              'When a player transfers money, they must confirm the transfer when the amount is equal or above this value. Set to 0 to disable.',
             default: 0,
           },
         },
@@ -35,14 +36,14 @@ export class Economy extends BuiltinModule {
         function: '',
         name: 'balance',
         trigger: 'balance',
-        helpText: 'Check your balance',
+        helpText: 'Check your balance.',
         arguments: [],
       },
       {
         function: '',
         name: 'topCurrency',
         trigger: 'topcurrency',
-        helpText: 'List of the 10 players with the highest balance',
+        helpText: 'List of the 10 players with the highest balance.',
         arguments: [],
       },
       {
@@ -54,13 +55,13 @@ export class Economy extends BuiltinModule {
           {
             name: 'receiver',
             type: 'player',
-            helpText: 'The player to grant currency to',
+            helpText: 'The player to grant currency to.',
             position: 0,
           },
           {
             name: 'amount',
             type: 'number',
-            helpText: 'The amount of money',
+            helpText: 'The amount of money.',
             position: 1,
           },
         ],
@@ -74,13 +75,13 @@ export class Economy extends BuiltinModule {
           {
             name: 'receiver',
             type: 'player',
-            helpText: 'The player to revoke currency from',
+            helpText: 'The player to revoke currency from.',
             position: 0,
           },
           {
             name: 'amount',
             type: 'number',
-            helpText: 'The amount of money',
+            helpText: 'The amount of money.',
             position: 1,
           },
         ],
@@ -89,24 +90,24 @@ export class Economy extends BuiltinModule {
         function: '',
         name: 'confirmTransfer',
         trigger: 'confirmtransfer',
-        helpText: 'Confirms a pending transfer',
+        helpText: 'Confirms a pending transfer.',
       },
       {
         function: '',
         name: 'transfer',
         trigger: 'transfer',
-        helpText: 'Transfer money to another player',
+        helpText: 'Transfer money to another player.',
         arguments: [
           {
             name: 'receiver',
             type: 'player',
-            helpText: 'The player to transfer money to',
+            helpText: 'The player to transfer money to.',
             position: 0,
           },
           {
             name: 'amount',
             type: 'number',
-            helpText: 'The amount of money to transfer',
+            helpText: 'The amount of money to transfer.',
             position: 1,
           },
         ],
