@@ -9,19 +9,31 @@ import { MemoryRouter } from 'react-router-dom';
 import 'rc-slider/assets/index.css';
 import { Preview } from '@storybook/react';
 
-export default {
+const preview: Preview = {
+  parameters: {
+    controls: { expanded: true },
+    options: {
+      storySort: {
+        order: ['Design System', ['Introduction', 'Colors', 'Spacing', 'Elevation'], 'Lib Components', 'Web Main'],
+      },
+    },
+  },
   decorators: [
-    (Story) => (
-      <ThemeProvider theme={darkTheme}>
-        <MemoryRouter initialEntries={['/']}>
-          <SnackbarProvider>
-            <StepperProvider>
-              <GlobalStyle />
-              <Story />
-            </StepperProvider>
-          </SnackbarProvider>
-        </MemoryRouter>
-      </ThemeProvider>
-    ),
+    (Story) => {
+      return (
+        <ThemeProvider theme={darkTheme}>
+          <MemoryRouter initialEntries={['/']}>
+            <SnackbarProvider>
+              <StepperProvider>
+                <GlobalStyle />
+                <Story />
+              </StepperProvider>
+            </SnackbarProvider>
+          </MemoryRouter>
+        </ThemeProvider>
+      );
+    },
   ],
-} as Preview;
+};
+
+export default preview;

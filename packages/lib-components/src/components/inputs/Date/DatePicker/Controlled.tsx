@@ -2,7 +2,7 @@ import { FC, useState } from 'react';
 import { defaultInputProps, defaultInputPropsFactory, ControlledInputProps } from '../../InputProps';
 import { useController } from 'react-hook-form';
 import { GenericDatePicker, DatePickerProps } from './Generic';
-import { Label, ErrorMessage, Wrapper, Description } from '../../layout';
+import { Label, ErrorMessage, InputWrapper, Description } from '../../layout';
 import { Container } from './style';
 import { Skeleton } from '../../../../components';
 
@@ -52,7 +52,7 @@ export const ControlledDatePicker: FC<ControlledDatePickerProps> = (props) => {
   };
 
   return (
-    <Wrapper>
+    <InputWrapper>
       <Container>
         {label && (
           <Label
@@ -96,6 +96,6 @@ export const ControlledDatePicker: FC<ControlledDatePickerProps> = (props) => {
         {showError && error?.message && <ErrorMessage message={error.message} />}
       </Container>
       {description && <Description description={description} inputName={name} />}
-    </Wrapper>
+    </InputWrapper>
   );
 };

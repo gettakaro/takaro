@@ -1,27 +1,34 @@
 import { BuiltinModule } from '../../BuiltinModule.js';
+import { Duration } from 'luxon';
 
 export class Teleports extends BuiltinModule {
   constructor() {
     super(
       'teleports',
-      'A set of commands to allow players to set their own teleport points and teleport to them',
+      'A set of commands to allow players to set their own teleport points and teleport to them.',
       JSON.stringify({
         $schema: 'http://json-schema.org/draft-07/schema#',
         type: 'object',
         properties: {
           timeout: {
-            type: 'integer',
-            description: 'The time in milliseconds required between teleports',
+            title: 'Timeout',
+            description: 'The time one has to wait before teleporting again.',
+            'x-component': 'duration',
+            type: 'number',
             minimum: 0,
-            default: 1000,
+            default: Duration.fromObject({ second: 1 }).as('milliseconds'),
           },
           allowPublicTeleports: {
             type: 'boolean',
+            description: 'Players can create public teleports.',
             default: false,
           },
         },
         required: [],
         additionalProperties: false,
+      }),
+      JSON.stringify({
+        timeout: { 'ui:widget': 'duration' },
       })
     );
 
@@ -29,13 +36,13 @@ export class Teleports extends BuiltinModule {
       {
         permission: 'TELEPORTS_CREATE_PUBLIC',
         friendlyName: 'Create Public Teleports',
-        description: 'Allows the player to create public teleports',
+        description: 'Allows the player to create public teleports.',
         canHaveCount: true,
       },
       {
         permission: 'TELEPORTS_USE',
         friendlyName: 'Use Teleports',
-        description: 'Allows the player to use teleports modules',
+        description: 'Allows the player to use teleports modules.',
         canHaveCount: true,
       },
     ];
@@ -45,13 +52,13 @@ export class Teleports extends BuiltinModule {
         function: '',
         name: 'teleport',
         trigger: 'tp',
-        helpText: 'Teleports to one of your set locations',
+        helpText: 'Teleports to one of your set locations.',
         arguments: [
           {
             name: 'tp',
             type: 'string',
             defaultValue: undefined,
-            helpText: 'The location to teleport to',
+            helpText: 'The location to teleport to.',
             position: 0,
           },
         ],
@@ -60,19 +67,19 @@ export class Teleports extends BuiltinModule {
         function: '',
         name: 'tplist',
         trigger: 'tplist',
-        helpText: 'Lists all your set locations',
+        helpText: 'Lists all your set locations.',
       },
       {
         function: '',
         name: 'settp',
         trigger: 'settp',
-        helpText: 'Sets a location to teleport to',
+        helpText: 'Sets a location to teleport to.',
         arguments: [
           {
             name: 'tp',
             type: 'string',
             defaultValue: undefined,
-            helpText: 'The location name',
+            helpText: 'The location name.',
             position: 0,
           },
         ],
@@ -81,13 +88,13 @@ export class Teleports extends BuiltinModule {
         function: '',
         name: 'deletetp',
         trigger: 'deletetp',
-        helpText: 'Deletes a location',
+        helpText: 'Deletes a location.',
         arguments: [
           {
             name: 'tp',
             type: 'string',
             defaultValue: undefined,
-            helpText: 'The location name',
+            helpText: 'The location name.',
             position: 0,
           },
         ],
@@ -96,13 +103,13 @@ export class Teleports extends BuiltinModule {
         function: '',
         name: 'setpublic',
         trigger: 'setpublic',
-        helpText: 'Sets a teleport to be public, allowing other players to teleport to it',
+        helpText: 'Sets a teleport to be public, allowing other players to teleport to it.',
         arguments: [
           {
             name: 'tp',
             type: 'string',
             defaultValue: undefined,
-            helpText: 'The location name',
+            helpText: 'The location name.',
             position: 0,
           },
         ],
@@ -111,13 +118,13 @@ export class Teleports extends BuiltinModule {
         function: '',
         name: 'setprivate',
         trigger: 'setprivate',
-        helpText: 'Sets a teleport to be private, only the teleport owner can teleport to it',
+        helpText: 'Sets a teleport to be private, only the teleport owner can teleport to it.',
         arguments: [
           {
             name: 'tp',
             type: 'string',
             defaultValue: undefined,
-            helpText: 'The location name',
+            helpText: 'The location name.',
             position: 0,
           },
         ],

@@ -1,4 +1,4 @@
-import { styled, SelectField } from '@takaro/lib-components';
+import { styled } from '@takaro/lib-components';
 
 export const FilterContainer = styled.div<{ hasMultipleFields: boolean }>`
   display: grid;
@@ -20,10 +20,6 @@ export const ButtonContainer = styled.div`
 export const Box = styled.div`
   width: 800px;
   padding: ${({ theme }) => theme.spacing['1_5']};
-`;
-
-export const OperatorSelect = styled(SelectField)`
-  max-width: 10px;
 `;
 
 export const FlexShrink = styled.div`

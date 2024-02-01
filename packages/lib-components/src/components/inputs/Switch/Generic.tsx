@@ -56,7 +56,7 @@ export const GenericSwitch = forwardRef<HTMLButtonElement, GenericSwitchProps>((
           initial={{ right: isChecked ? '2px' : '25px' }}
           animate={{ right: isChecked ? '2px' : '25px' }}
           readOnly={readOnly}
-          isChecked={isChecked}
+          $isChecked={isChecked}
           layout
           transition={getTransition()}
         />

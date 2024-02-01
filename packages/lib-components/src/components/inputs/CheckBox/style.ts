@@ -14,11 +14,11 @@ export const Input = styled.input`
   visibility: hidden;
 `;
 
-export const BackgroundContainer = styled(motion.div)<{ size: Size }>`
+export const BackgroundContainer = styled(motion.div)<{ $size: Size }>`
   background-color: ${({ theme }) => theme.colors.primary};
 
-  ${({ size }): string => {
-    switch (size) {
+  ${({ $size }): string => {
+    switch ($size) {
       case 'tiny':
         return `
           width: 1.2rem;

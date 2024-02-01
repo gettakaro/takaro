@@ -10,7 +10,7 @@ interface VariableDeleteProps {
 }
 
 export const UserDeleteDialog: FC<VariableDeleteProps> = ({ user, openDialog, setOpenDialog }) => {
-  const { mutateAsync, isLoading: isDeleting, error } = useUserRemove();
+  const { mutateAsync, isPending: isDeleting, error } = useUserRemove();
 
   const handleOnDelete = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();

@@ -1,19 +1,16 @@
 import { useMemo, useState } from 'react';
-import {
-  useClick,
-  useDismiss,
-  useFloating,
-  useInteractions,
-} from '@floating-ui/react';
+import { useClick, useDismiss, useFloating, useInteractions } from '@floating-ui/react';
 
 export interface DrawerOptions {
   open?: boolean;
   initialOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
+  canDrag?: boolean;
 }
 
 export function useDrawer({
   initialOpen = false,
+  canDrag = false,
   open: controlledOpen,
   onOpenChange: setControlledOpen,
 }: DrawerOptions) {
@@ -48,6 +45,7 @@ export function useDrawer({
       descriptionId,
       setLabelId,
       setDescriptionId,
+      canDrag,
     }),
     [open, setOpen, interactions, data, labelId, descriptionId]
   );

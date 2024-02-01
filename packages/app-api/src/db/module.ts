@@ -21,6 +21,7 @@ export class ModuleModel extends TakaroModel {
   description: string;
 
   configSchema: string;
+  uiSchema: string;
 
   cronJobs: CronJobOutputDTO[];
   hooks: HookOutputDTO[];

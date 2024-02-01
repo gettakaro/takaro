@@ -1,4 +1,4 @@
-import { forwardRef, useState } from 'react';
+import { forwardRef, MouseEvent, useState } from 'react';
 import { Container, Grid, IconContainer, ButtonContainer } from './style';
 import {
   AiFillCheckCircle as Success,
@@ -29,6 +29,20 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(
   ({ variant, title, text, dismiss = false, elevation = 4, action }, ref) => {
     const [visible, setVisible] = useState(true);
 
+    const hasTitle = title ? true : false;
+
+    const handleExecute = (e: MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault();
+      e.stopPropagation();
+      action?.execute();
+    };
+
+    const handleDismiss = (e: MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setVisible(false);
+    };
+
     function getIcon() {
       switch (variant) {
         case 'success':
@@ -47,14 +61,15 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(
           <Container
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            hasTitle={title ? true : false}
+            $hasTitle={hasTitle}
             initial={{ opacity: 0 }}
-            variant={variant}
-            elevation={elevation}
+            $variant={variant}
+            $elevation={elevation}
             transition={{ duration: 0.2 }}
             ref={ref}
+            role="status"
           >
-            <Grid>
+            <Grid hasTitle={hasTitle}>
               <IconContainer variant={variant}>{getIcon()}</IconContainer>
 
               {/* If title is declared set title, otherwise put everything on single line */}
@@ -75,10 +90,10 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(
                   </ul>
                 )
               )}
-              <div />
-              <ButtonContainer show={dismiss || action ? true : false} variant={variant}>
-                {action && <button onClick={() => action.execute()}>{action.text}</button>}
-                {dismiss && <button onClick={() => setVisible(false)}>Dismiss</button>}
+              {hasTitle ? <div /> : null}
+              <ButtonContainer hasTitle={hasTitle} show={dismiss || action ? true : false} variant={variant}>
+                {action && <button onClick={handleExecute}>{action.text}</button>}
+                {dismiss && <button onClick={handleDismiss}>Dismiss</button>}
               </ButtonContainer>
             </Grid>
           </Container>

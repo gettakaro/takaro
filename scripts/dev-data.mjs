@@ -139,6 +139,7 @@ async function main() {
         console.log(`Skipping module ${mod.name} because it is disabled`);
         continue;
       }
+      console.log(`Installing module ${mod.name}`);
       await client.gameserver.gameServerControllerInstallModule(gameserver.id, mod.id, customConfig);
       console.log(`Installed module ${mod.name}`, customConfig);
     } catch (error) {

@@ -14,5 +14,5 @@ export type Filter = {
 };
 
 export enum Operator {
-  is = ':',
+  is = 'is',
 }

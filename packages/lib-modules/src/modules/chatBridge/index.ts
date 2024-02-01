@@ -11,11 +11,13 @@ export class ChatBridge extends BuiltinModule {
         type: 'object',
         properties: {
           sendPlayerConnected: {
+            title: 'Send player connected',
             type: 'boolean',
             description: 'Send a message when a player connects.',
             default: true,
           },
           sendPlayerDisconnected: {
+            title: 'Send player disconnected',
             type: 'boolean',
             description: 'Send a message when a player disconnects.',
             default: true,

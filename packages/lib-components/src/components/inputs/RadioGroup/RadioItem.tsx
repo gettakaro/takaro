@@ -37,15 +37,15 @@ const RadioItemContainer = styled.div<{ readOnly: boolean; isChecked: boolean; d
   }
 `;
 
-const Inner = styled(motion.div)<{ isChecked: boolean; readOnly: boolean }>`
+const Inner = styled(motion.div)<{ $isChecked: boolean; $readOnly: boolean }>`
   width: ${({ theme }) => theme.spacing['1_5']};
   height: ${({ theme }) => theme.spacing['1_5']};
   border-radius: 100%;
-  background-color: ${({ theme, readOnly }) => {
-    if (readOnly) return theme.colors.backgroundAlt;
+  background-color: ${({ theme, $readOnly }) => {
+    if ($readOnly) return theme.colors.backgroundAlt;
     return theme.colors.primary;
   }};
-  opacity: ${({ isChecked }): number => (isChecked ? 1 : 0)};
+  opacity: ${({ $isChecked }): number => ($isChecked ? 1 : 0)};
   transition: 0.1s opacity linear cubic-bezier(0.215, 0.61, 0.355, 1);
 `;
 
@@ -57,8 +57,8 @@ export interface RadioItemProps {
 }
 
 const variants = {
-  selected: { scale: 1 },
-  deselected: { scale: 0 },
+  checked: { scale: 1 },
+  unchecked: { scale: 0 },
 };
 
 export const RadioItem = forwardRef<HTMLDivElement, RadioItemProps>(
@@ -102,10 +102,10 @@ export const RadioItem = forwardRef<HTMLDivElement, RadioItemProps>(
           ref={ref}
         >
           <Inner
-            initial={checked ? 'selected' : 'deselected'}
-            animate={checked ? 'selected' : 'deselected'}
-            isChecked={checked}
-            readOnly={readOnly || groupReadOnly}
+            initial={checked ? 'checked' : 'unchecked'}
+            animate={checked ? 'checked' : 'unchecked'}
+            $isChecked={checked}
+            $readOnly={readOnly || groupReadOnly}
             transition={getTransition()}
             variants={variants}
           />

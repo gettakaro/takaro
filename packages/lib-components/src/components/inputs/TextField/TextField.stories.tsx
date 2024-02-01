@@ -27,6 +27,7 @@ export default {
     required: true,
     hint: 'this is the hint',
     prefix: 'https://',
+    type: 'text',
     suffix: '.io',
     loading: false,
     name: 'name',
@@ -48,6 +49,7 @@ export const onChange: StoryFn<TextFieldProps> = (args) => {
   return (
     <>
       <TextField
+        type={args.type}
         name={args.name}
         description={args.description}
         control={control}
@@ -88,6 +90,7 @@ export const OnSubmit: StoryFn<TextFieldProps> = (args) => {
           control={control}
           label={args.label}
           name={args.name}
+          type={args.type}
           placeholder={args.placeholder}
           required={args.required}
           loading={args.loading}
