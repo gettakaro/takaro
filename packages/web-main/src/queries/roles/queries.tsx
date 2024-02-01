@@ -48,7 +48,7 @@ export const useRoles = ({ page = 0, limit, sortBy, sortDirection, filters, sear
 
   const queryOpts = useInfiniteQuery<RoleOutputArrayDTOAPI, AxiosError<RoleOutputArrayDTOAPI>>({
     queryKey: queryKeys,
-    queryFn: async ({ pageParam = page }) =>
+    queryFn: async ({ pageParam }) =>
       (
         await apiClient.role.roleControllerSearch({
           limit,
@@ -56,11 +56,11 @@ export const useRoles = ({ page = 0, limit, sortBy, sortDirection, filters, sear
           sortDirection,
           filters,
           search,
-          page: pageParam,
+          page: pageParam as number,
         })
       ).data,
     getNextPageParam: (lastPage, pages) => hasNextPage(lastPage.meta, pages.length),
-    useErrorBoundary: (error) => error.response!.status >= 500,
+    initialPageParam: page,
   });
 
   const InfiniteScroll = useMemo(() => {
@@ -76,7 +76,6 @@ export const usePermissions = () => {
   return useQuery<PermissionOutputDTO[], AxiosError<PermissionOutputDTOAPI>>({
     queryKey: roleKeys.permissions(),
     queryFn: async () => (await apiClient.role.roleControllerGetPermissions()).data.data,
-    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -138,7 +137,7 @@ export const useRoleUpdate = () => {
         // update role in list of roles
         queryClient.setQueryData<InfiniteData<RoleOutputArrayDTOAPI>>(roleKeys.list(), (prev) => {
           if (!prev) {
-            queryClient.invalidateQueries(roleKeys.list());
+            queryClient.invalidateQueries({ queryKey: roleKeys.list() });
             throw new Error('Cannot update role list, because it does not exist');
           }
 
@@ -157,13 +156,12 @@ export const useRoleUpdate = () => {
         });
 
         // TODO: I think we can just update the detail query instead of invalidating it
-        queryClient.invalidateQueries(roleKeys.detail(updatedRole.id));
+        queryClient.invalidateQueries({ queryKey: roleKeys.detail(updatedRole.id) });
       } catch (e) {
         // TODO: pass extra context to the error
         Sentry.captureException(e);
       }
     },
-    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -197,7 +195,6 @@ export const useRoleRemove = () => {
         Sentry.captureException(e);
       }
     },
-    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -218,7 +215,7 @@ export const usePlayerRoleAssign = () => {
       // But no access to the ID there
       // At this point, we technically already know the req was successful
       // because it would have thrown an error otherwise
-      queryClient.invalidateQueries(playerKeys.detail(id));
+      queryClient.invalidateQueries({ queryKey: playerKeys.detail(id) });
       return res;
     },
   });
@@ -231,7 +228,7 @@ export const usePlayerRoleUnassign = () => {
     mutationFn: async ({ id, roleId, gameServerId }) => {
       const res = (await apiClient.player.playerControllerRemoveRole(id, roleId, { gameServerId })).data;
       // TODO: Same cache issue as in useRoleAssign...
-      queryClient.invalidateQueries(playerKeys.detail(id));
+      queryClient.invalidateQueries({ queryKey: playerKeys.detail(id) });
       return res;
     },
   });
@@ -248,7 +245,7 @@ export const useUserRoleAssign = () => {
   return useMutation<APIOutput, AxiosError<APIOutput>, IUserRoleAssign>({
     mutationFn: async ({ id, roleId }) => {
       const res = (await apiClient.user.userControllerAssignRole(id, roleId)).data;
-      queryClient.invalidateQueries(userKeys.detail(id));
+      queryClient.invalidateQueries({ queryKey: userKeys.detail(id) });
       return res;
     },
   });
@@ -260,7 +257,7 @@ export const useUserRoleUnassign = () => {
   return useMutation<APIOutput, AxiosError<APIOutput>, IUserRoleAssign>({
     mutationFn: async ({ id, roleId }) => {
       const res = (await apiClient.user.userControllerRemoveRole(id, roleId)).data;
-      queryClient.invalidateQueries(userKeys.detail(id));
+      queryClient.invalidateQueries({ queryKey: userKeys.detail(id) });
       return res;
     },
   });

@@ -78,7 +78,7 @@ const argumentTypeSelectOptions = [
 export const CommandConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
   const { data } = useCommand(moduleItem.itemId);
   const { data: settings } = useGlobalGameServerSetting('commandPrefix');
-  const { mutateAsync, error, isLoading } = useCommandUpdate();
+  const { mutateAsync, error, isPending } = useCommandUpdate();
 
   const { control, setValue, handleSubmit } = useForm<IFormInputs>({
     mode: 'onSubmit',
@@ -277,7 +277,7 @@ export const CommandConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
           {error && <FormError error={error} />}
         </ContentContainer>
       </CollapseList.Item>
-      {!readOnly && <Button isLoading={isLoading} fullWidth type="submit" text="Save command config" />}
+      {!readOnly && <Button isLoading={isPending} fullWidth type="submit" text="Save command config" />}
     </form>
   );
 };

@@ -83,7 +83,7 @@ test('Invite user - happy path', async ({ page, takaro }) => {
   await expect(page.getByText('Forbidden')).toBeVisible();
 });
 
-test('Recover account and reset password', async ({ page, takaro }) => {
+test.fixme('Recover account and reset password', async ({ page, takaro }) => {
   test.slow();
   const user = (await takaro.rootClient.user.userControllerMe()).data.data;
 

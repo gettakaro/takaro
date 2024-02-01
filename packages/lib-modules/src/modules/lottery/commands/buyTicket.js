@@ -12,6 +12,10 @@ async function main() {
     throw new TakaroUserError('You do not have permission to buy lottery tickets.');
   }
 
+  if (args.amount < 1) {
+    throw new TakaroUserError('You must buy at least 1 ticket.');
+  }
+
   const tickets = (
     await takaro.variable.variableControllerSearch({
       filters: {
@@ -50,15 +54,15 @@ async function main() {
     });
   }
 
-  if (args.amount > 1) {
-    const amount = args.amount * mod.systemConfig.commands.buyTicket.cost;
+  const ticketPrice = args.amount * mod.systemConfig.commands.buyTicket.cost;
 
+  // The price of the first ticket is deducted by the command execution itself.
+  if (args.amount > 1) {
     await takaro.playerOnGameserver.playerOnGameServerControllerDeductCurrency(gameServerId, pog.playerId, {
-      currency: amount,
+      currency: ticketPrice - 1,
     });
   }
 
-  const ticketPrice = args.amount * mod.systemConfig.commands.buyTicket.cost;
   const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data.value;
 
   await pog.pm(`You have successfully bought ${args.amount} tickets for ${ticketPrice} ${currencyName}. Good luck!`);

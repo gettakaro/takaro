@@ -4,16 +4,18 @@ import { DiscordEvents } from '@takaro/modules';
 import { ModuleOutputDTO } from '../service/ModuleService.js';
 import { ModuleOutputDTO as ModuleOutputDTOApi } from '@takaro/apiclient';
 
-export function getEmptySystemConfigSchema(): Ajv.AnySchemaObject {
+export function getEmptyConfigSchema(): Ajv.AnySchemaObject {
   return {
+    $schema: 'http://json-schema.org/draft-07/schema#',
     type: 'object',
     properties: {},
     required: [],
+    additionalProperties: false,
   };
 }
 
 export function getSystemConfigSchema(mod: ModuleOutputDTO | ModuleOutputDTOApi): string {
-  const systemConfigSchema = getEmptySystemConfigSchema();
+  const systemConfigSchema = getEmptyConfigSchema();
 
   if (mod.cronJobs.length) {
     systemConfigSchema.properties.cronJobs = {

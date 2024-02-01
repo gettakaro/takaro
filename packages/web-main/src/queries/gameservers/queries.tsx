@@ -18,13 +18,7 @@ import {
   TestReachabilityOutputDTO,
 } from '@takaro/apiclient';
 import { InfiniteScroll as InfiniteScrollComponent } from '@takaro/lib-components';
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-  useInfiniteQuery,
-  UseInfiniteQueryOptions,
-} from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, useInfiniteQuery, keepPreviousData } from '@tanstack/react-query';
 import { useApiClient } from 'hooks/useApiClient';
 import { useSnackbar } from 'notistack';
 import { hasNextPage } from '../util';
@@ -48,20 +42,21 @@ export const installedModuleKeys = {
 
 export const useGameServers = (
   queryParams: GameServerSearchInputDTO = { page: 0 },
-  opts?: UseInfiniteQueryOptions<GameServerOutputArrayDTOAPI, AxiosError<GameServerOutputArrayDTOAPI, any>>
+  opts?: any // TODO: not sure how to type this
 ) => {
   const apiClient = useApiClient();
 
   const queryOpts = useInfiniteQuery<GameServerOutputArrayDTOAPI, AxiosError<GameServerOutputArrayDTOAPI>>({
     queryKey: [...gameServerKeys.list(), { ...queryParams }],
-    queryFn: async ({ pageParam = queryParams.page }) =>
+    queryFn: async ({ pageParam }) =>
       (
         await apiClient.gameserver.gameServerControllerSearch({
           ...queryParams,
-          page: pageParam,
+          page: pageParam as number,
         })
       ).data,
-    keepPreviousData: true,
+    initialPageParam: queryParams.page,
+    placeholderData: keepPreviousData,
     getNextPageParam: (lastPage, pages) => hasNextPage(lastPage.meta, pages.length),
     ...opts,
   });
@@ -95,9 +90,7 @@ export const useGameServerCreate = () => {
     mutationFn: async (gameServer) => (await apiClient.gameserver.gameServerControllerCreate(gameServer)).data.data,
     onSuccess: async (newGameServer: GameServerOutputDTO) => {
       // invalidate all queries that have list in the key
-      await queryClient.invalidateQueries(gameServerKeys.list());
-
-      // create cache for new game server
+      await queryClient.invalidateQueries({ queryKey: gameServerKeys.list() });
       queryClient.setQueryData(gameServerKeys.detail(newGameServer.id), newGameServer);
 
       enqueueSnackbar('Game server has been created', { variant: 'default' });
@@ -151,7 +144,7 @@ export const useGameServerModuleInstall = () => {
       (await apiClient.gameserver.gameServerControllerInstallModule(gameServerId, moduleId, moduleInstall)).data.data,
     onSuccess: async (moduleInstallation: ModuleInstallationOutputDTO) => {
       // invalidate list of installed modules
-      await queryClient.invalidateQueries(installedModuleKeys.list(moduleInstallation.gameserverId));
+      await queryClient.invalidateQueries({ queryKey: installedModuleKeys.list(moduleInstallation.gameserverId) });
 
       // update installed module cache
       queryClient.setQueryData(
@@ -159,7 +152,6 @@ export const useGameServerModuleInstall = () => {
         moduleInstallation
       );
     },
-    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -192,12 +184,10 @@ export const useGameServerModuleUninstall = () => {
             : old!;
         }
       );
-
-      await queryClient.invalidateQueries(
-        installedModuleKeys.detail(deletedModule.gameserverId, deletedModule.moduleId)
-      );
+      await queryClient.invalidateQueries({
+        queryKey: installedModuleKeys.detail(deletedModule.gameserverId, deletedModule.moduleId),
+      });
     },
-    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -217,7 +207,7 @@ export const useGameServerUpdate = () => {
     onSuccess: async (updatedGameServer) => {
       try {
         // remove cache of gameserver list
-        await queryClient.invalidateQueries(gameServerKeys.list());
+        await queryClient.invalidateQueries({ queryKey: gameServerKeys.list() });
 
         // update cache of gameserver
         queryClient.setQueryData(gameServerKeys.detail(updatedGameServer.id), updatedGameServer);
@@ -225,7 +215,6 @@ export const useGameServerUpdate = () => {
         Sentry.captureException(e);
       }
     },
-    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -254,7 +243,6 @@ export const useGameServerRemove = () => {
         Sentry.captureException(e);
       }
     },
-    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -264,7 +252,6 @@ export const useGameServerReachabilityById = (id: string) => {
   return useQuery<TestReachabilityOutputDTO, AxiosError<GameServerTestReachabilityDTOAPI>>({
     queryKey: gameServerKeys.reachability(id),
     queryFn: async () => (await apiClient.gameserver.gameServerControllerTestReachabilityForId(id)).data.data,
-    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -294,7 +281,6 @@ export const useGameServerReachabilityByConfig = () => {
         })
       ).data.data;
     },
-    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 

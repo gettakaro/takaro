@@ -6,7 +6,7 @@ import { IsJSON, IsOptional, IsString, Length, ValidateNested } from 'class-vali
 import { Type } from 'class-transformer';
 import { CronJobCreateDTO, CronJobOutputDTO, CronJobService, CronJobUpdateDTO } from './CronJobService.js';
 import { HookCreateDTO, HookOutputDTO, HookService, HookUpdateDTO } from './HookService.js';
-import { TakaroDTO, TakaroModelDTO, traceableClass } from '@takaro/util';
+import { errors, TakaroDTO, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { getModules } from '@takaro/modules';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
@@ -14,6 +14,17 @@ import { CommandCreateDTO, CommandOutputDTO, CommandService, CommandUpdateDTO } 
 import { BuiltinModule } from '@takaro/modules';
 import { GameServerService } from './GameServerService.js';
 import { PermissionCreateDTO, PermissionOutputDTO } from './RoleService.js';
+
+// Curse you ESM... :(
+import _Ajv from 'ajv';
+import { getEmptyConfigSchema } from '../lib/systemConfig.js';
+
+const Ajv = _Ajv as unknown as typeof _Ajv.default;
+const ajv = new Ajv({ useDefaults: true, strict: true, allErrors: true });
+
+// Since input types have undistinguishable schemas. We need an annotation to parse into the correct input type.
+// E.g. a select and country input both have an enum schema, to distinguish them we use the x-component: 'country'.
+ajv.addKeyword('x-component');
 
 export class ModuleOutputDTO extends TakaroModelDTO<ModuleOutputDTO> {
   @IsString()
@@ -24,6 +35,9 @@ export class ModuleOutputDTO extends TakaroModelDTO<ModuleOutputDTO> {
 
   @IsJSON()
   configSchema: string;
+
+  @IsJSON()
+  uiSchema: string;
 
   @IsJSON()
   systemConfigSchema: string;
@@ -62,6 +76,10 @@ export class ModuleCreateDTO extends TakaroDTO<ModuleCreateDTO> {
   @IsOptional()
   configSchema: string;
 
+  @IsJSON()
+  @IsOptional()
+  uiSchema: string;
+
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => PermissionCreateDTO)
@@ -80,6 +98,10 @@ export class ModuleCreateInternalDTO extends TakaroDTO<ModuleCreateInternalDTO> 
   @IsJSON()
   @IsOptional()
   configSchema: string;
+
+  @IsJSON()
+  @IsOptional()
+  uiSchema: string;
 
   @IsString()
   @IsOptional()
@@ -106,6 +128,10 @@ export class ModuleUpdateDTO extends TakaroDTO<ModuleUpdateDTO> {
   @IsOptional()
   configSchema: string;
 
+  @IsJSON()
+  @IsOptional()
+  uiSchema: string;
+
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => PermissionCreateDTO)
@@ -126,13 +152,33 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     return this.repo.findOne(id);
   }
 
-  async create(item: ModuleCreateDTO) {
-    const created = await this.repo.create(item);
-    return created;
+  async create(mod: ModuleCreateDTO) {
+    try {
+      if (!mod.configSchema) {
+        mod.configSchema = JSON.stringify(getEmptyConfigSchema());
+      }
+      ajv.compile(JSON.parse(mod.configSchema));
+      const created = await this.repo.create(mod);
+      return created;
+    } catch (e) {
+      throw new errors.BadRequestError('Invalid config schema');
+    }
   }
-  async update(id: string, item: ModuleUpdateDTO) {
-    const updated = await this.repo.update(id, item);
-    return updated;
+
+  async update(id: string, mod: ModuleUpdateDTO) {
+    try {
+      if (mod.configSchema === '{}') {
+        mod.configSchema = JSON.stringify(getEmptyConfigSchema());
+      }
+
+      if (mod.configSchema) {
+        ajv.compile(JSON.parse(mod.configSchema));
+      }
+      const updated = await this.repo.update(id, mod);
+      return updated;
+    } catch (e) {
+      throw new errors.BadRequestError('Invalid config schema');
+    }
   }
 
   async delete(id: string) {

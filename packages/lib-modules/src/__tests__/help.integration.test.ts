@@ -26,9 +26,9 @@ const tests = [
 
       expect(sortedEvents[0].data.msg).to.be.eq('Available commands:');
       expect(sortedEvents[1].data.msg).to.be.eq(
-        'help: The text you are reading right now, displays information about commands'
+        'help: The text you are reading right now, displays information about commands.'
       );
-      expect(sortedEvents[2].data.msg).to.be.eq('ping: Replies with pong, useful for testing if the connection works');
+      expect(sortedEvents[2].data.msg).to.be.eq('ping: Replies with pong, useful for testing if the connection works.');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -55,20 +55,20 @@ const tests = [
       const sortedEvents = (await events).sort(sorter);
 
       expect(sortedEvents[0].data.msg).to.be.eq('Available commands:');
-      expect(sortedEvents[1].data.msg).to.be.eq('deletetp: Deletes a location');
+      expect(sortedEvents[1].data.msg).to.be.eq('deletetp: Deletes a location.');
       expect(sortedEvents[2].data.msg).to.be.eq(
-        'help: The text you are reading right now, displays information about commands'
+        'help: The text you are reading right now, displays information about commands.'
       );
-      expect(sortedEvents[3].data.msg).to.be.eq('ping: Replies with pong, useful for testing if the connection works');
+      expect(sortedEvents[3].data.msg).to.be.eq('ping: Replies with pong, useful for testing if the connection works.');
       expect(sortedEvents[4].data.msg).to.be.eq(
-        'setprivate: Sets a teleport to be private, only the teleport owner can teleport to it'
+        'setprivate: Sets a teleport to be private, only the teleport owner can teleport to it.'
       );
       expect(sortedEvents[5].data.msg).to.be.eq(
-        'setpublic: Sets a teleport to be public, allowing other players to teleport to it'
+        'setpublic: Sets a teleport to be public, allowing other players to teleport to it.'
       );
-      expect(sortedEvents[6].data.msg).to.be.eq('settp: Sets a location to teleport to');
-      expect(sortedEvents[7].data.msg).to.be.eq('teleport: Teleports to one of your set locations');
-      expect(sortedEvents[8].data.msg).to.be.eq('tplist: Lists all your set locations');
+      expect(sortedEvents[6].data.msg).to.be.eq('settp: Sets a location to teleport to.');
+      expect(sortedEvents[7].data.msg).to.be.eq('teleport: Teleports to one of your set locations.');
+      expect(sortedEvents[8].data.msg).to.be.eq('tplist: Lists all your set locations.');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -92,7 +92,7 @@ const tests = [
       expect((await events).length).to.be.eq(1);
       const sortedEvents = (await events).sort(sorter);
 
-      expect(sortedEvents[0].data.msg).to.be.eq('ping: Replies with pong, useful for testing if the connection works');
+      expect(sortedEvents[0].data.msg).to.be.eq('ping: Replies with pong, useful for testing if the connection works.');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({

@@ -4,7 +4,7 @@ import { ControlledInputProps, defaultInputProps, defaultInputPropsFactory } fro
 import { SliderProps, GenericSlider } from '.';
 import { Skeleton } from '../../../components';
 import { Container } from './style';
-import { Wrapper, Description, ErrorMessage, Label } from '../layout';
+import { InputWrapper, Description, ErrorMessage, Label } from '../layout';
 
 export type ControlledSliderProps = ControlledInputProps & SliderProps;
 
@@ -44,7 +44,7 @@ export const ControlledSlider: FC<ControlledSliderProps> = (props) => {
   }
 
   return (
-    <Wrapper>
+    <InputWrapper>
       <Container>
         {label && (
           <Label
@@ -82,6 +82,6 @@ export const ControlledSlider: FC<ControlledSliderProps> = (props) => {
         {error && error.message && <ErrorMessage message={error.message} />}
       </Container>
       {description && <Description description={description} inputName={name} />}
-    </Wrapper>
+    </InputWrapper>
   );
 };

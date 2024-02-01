@@ -3,7 +3,7 @@ import { useController } from 'react-hook-form';
 import { TagFieldProps, GenericTagField } from '.';
 import { Container, TagsContainer } from './style';
 import { ControlledInputProps, defaultInputProps, defaultInputPropsFactory } from '../InputProps';
-import { Wrapper, Description, ErrorMessage, Label } from '../layout';
+import { InputWrapper, Description, ErrorMessage, Label } from '../layout';
 
 export type ControlledTagFieldProps = TagFieldProps & ControlledInputProps;
 
@@ -50,7 +50,7 @@ export const ControlledTagField: FC<ControlledTagFieldProps> = (props) => {
   }
 
   return (
-    <Wrapper>
+    <InputWrapper>
       <Container>
         {label && (
           <Label
@@ -85,6 +85,6 @@ export const ControlledTagField: FC<ControlledTagFieldProps> = (props) => {
         {error && error.message && showError && <ErrorMessage message={error.message} />}
       </Container>
       {description && <Description description={description} inputName={name} />}
-    </Wrapper>
+    </InputWrapper>
   );
 };

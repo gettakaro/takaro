@@ -12,6 +12,9 @@ export default defineConfig({
     sourcemap: true,
     cssMinify: 'lightningcss',
   },
+  test: {
+    environment: 'jsdom',
+  },
   server: {
     warmup: {
       clientFiles: [

@@ -231,8 +231,8 @@ const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
   });
 
   const apiclient = useApiClient();
-  const { mutateAsync: mutateBanPlayer, isLoading: isLoadingBanPlayer } = useBanPlayerOnGameServer();
-  const { mutateAsync: mutateUnbanPlayer, isLoading: isLoadingUnbanPlayer } = useUnbanPlayerOnGameServer();
+  const { mutateAsync: mutateBanPlayer, isPending: isLoadingBanPlayer } = useBanPlayerOnGameServer();
+  const { mutateAsync: mutateUnbanPlayer, isPending: isLoadingUnbanPlayer } = useUnbanPlayerOnGameServer();
 
   const handleOnBanPlayer: SubmitHandler<FormInputs> = async ({ reason }) => {
     const pogs = (

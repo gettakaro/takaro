@@ -2,7 +2,7 @@ import { FC, useEffect, useRef, useState } from 'react';
 import { styled } from '../../../../styled';
 import { motion } from 'framer-motion';
 
-const Container = styled(motion.div)<{ isWrapped: boolean }>`
+const Container = styled(motion.div)<{ $isWrapped: boolean }>`
   position: absolute;
   display: flex;
   align-items: center;
@@ -16,8 +16,8 @@ const Container = styled(motion.div)<{ isWrapped: boolean }>`
   z-index: ${({ theme }) => theme.zIndex.errorMessage};
   top: 100%;
   bottom: auto;
-  padding: ${({ theme, isWrapped }) =>
-    isWrapped
+  padding: ${({ theme, $isWrapped }) =>
+    $isWrapped
       ? `${theme.spacing['0_5']} ${theme.spacing['1_5']} ${theme.spacing['0_5']} ${theme.spacing['1_5']}`
       : `${theme.spacing['0_25']} ${theme.spacing['1_5']} ${theme.spacing['0_5']} ${theme.spacing['1_5']}`};
 `;
@@ -50,7 +50,7 @@ export const ErrorMessage: FC<ErrorMessageProps> = ({ message }) => {
   }, [message]);
 
   return (
-    <Container initial={{ y: -10 }} animate={{ y: 0 }} isWrapped={isWrapped}>
+    <Container initial={{ y: -10 }} animate={{ y: 0 }} $isWrapped={isWrapped}>
       <Content ref={contentRef}>
         {message}
         {isWrapped}
