@@ -3,6 +3,14 @@ import { expect, sandbox } from '@takaro/test';
 import { RustConnectionInfo } from '../connectionInfo.js';
 import { CommandOutput } from '../../../interfaces/GameServer.js';
 import { Rust } from '../index.js';
+import { IGamePlayer } from '@takaro/modules';
+
+const MOCK_PLAYER = new IGamePlayer().construct({
+  ip: '169.169.169.80',
+  name: 'brunkel',
+  gameId: '76561198021481871',
+  steamId: '76561198021481871',
+});
 
 const testData = {
   oneBan: '\'1 76561198028175941 "" "no reason" -1\n\'',
@@ -83,6 +91,54 @@ describe('rust actions', () => {
 
       expect(result).to.be.an('array');
       expect(result).to.have.lengthOf(0);
+    });
+  });
+
+  describe('[getPlayerLocation]', () => {
+    it('Works for a single player', async () => {
+      const res = await new CommandOutput().construct({
+        rawResult: `SteamID           DisplayName POS                    ROT               \n${
+          (
+            await MOCK_PLAYER
+          ).gameId
+        } Catalysm    (-770.0, 1.0, -1090.7) (1.0, -0.1, -0.1) \n`,
+        success: undefined,
+        errorMessage: undefined,
+      });
+
+      const rustInstance = new Rust({} as RustConnectionInfo);
+      sandbox.stub(rustInstance, 'executeConsoleCommand').resolves(res);
+
+      const location = await rustInstance.getPlayerLocation(await MOCK_PLAYER);
+
+      expect(location).to.deep.equal({
+        x: -770.0,
+        y: 1.0,
+        z: -1090,
+      });
+    });
+
+    it('When output has multiple players', async () => {
+      const res = await new CommandOutput().construct({
+        rawResult: `SteamID           DisplayName POS                    ROT               \nfake_steam_id Catalysm    (-123.0, 1.0, -1090.7) (1.0, -0.1, -0.1) \n${
+          (
+            await MOCK_PLAYER
+          ).gameId
+        } Player2    (-780.0, 2.0, -1100.7) (1.1, -0.2, -0.2) \n76561198028175943 Player3    (-790.0, 3.0, -1110.7) (1.2, -0.3, -0.3) \n`,
+        success: undefined,
+        errorMessage: undefined,
+      });
+
+      const rustInstance = new Rust({} as RustConnectionInfo);
+      sandbox.stub(rustInstance, 'executeConsoleCommand').resolves(res);
+
+      const location = await rustInstance.getPlayerLocation(await MOCK_PLAYER);
+
+      expect(location).to.deep.equal({
+        x: -780.0,
+        y: 2.0,
+        z: -1100,
+      });
     });
   });
 });
