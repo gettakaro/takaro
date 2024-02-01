@@ -55,9 +55,13 @@ async function main() {
   }
 
   const ticketPrice = args.amount * mod.systemConfig.commands.buyTicket.cost;
-  await takaro.playerOnGameserver.playerOnGameServerControllerDeductCurrency(gameServerId, pog.playerId, {
-    currency: ticketPrice,
-  });
+
+  // The price of the first ticket is deducted by the command execution itself.
+  if (args.amount > 1) {
+    await takaro.playerOnGameserver.playerOnGameServerControllerDeductCurrency(gameServerId, pog.playerId, {
+      currency: ticketPrice - 1,
+    });
+  }
 
   const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data.value;
 
