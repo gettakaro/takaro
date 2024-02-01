@@ -2,7 +2,7 @@
 import 'reflect-metadata';
 
 import { matchSnapshot } from './snapshots.js';
-import { integrationConfig } from './main.js';
+import { integrationConfig, sandbox } from './main.js';
 import { expect } from './test/expect.js';
 import { AdminClient, Client, AxiosResponse, isAxiosError } from '@takaro/apiclient';
 import { randomUUID } from 'crypto';
@@ -114,6 +114,8 @@ export class IntegrationTest<SetupData> {
       this.retries(integrationConfig.get('mocha.retries'));
 
       async function setup(): Promise<void> {
+        sandbox.restore();
+
         if (integrationTestContext.test.standardEnvironment) {
           await integrationTestContext.setupStandardEnvironment();
         }
