@@ -56,8 +56,6 @@ async function main() {
         playerId: [pog.playerId],
         moduleId: [mod.moduleId],
       },
-      sortBy: 'key',
-      sortDirection: 'asc',
     });
     let lastExecutedRecord = lastExecuted.data.data[0];
 
@@ -69,6 +67,7 @@ async function main() {
         moduleId: mod.moduleId,
         value: new Date().toISOString(),
       });
+      console.log(createRes);
       lastExecutedRecord = createRes.data.data;
     } else {
       const lastExecutedTime = new Date(lastExecutedRecord.value);
@@ -80,6 +79,23 @@ async function main() {
         throw new TakaroUserError('You cannot teleport yet. Please wait before trying again.');
       }
     }
+
+    const teleport = JSON.parse(teleports[0].value);
+
+    await takaro.gameserver.gameServerControllerTeleportPlayer(gameServerId, pog.playerId, {
+      x: teleport.x,
+      y: teleport.y,
+      z: teleport.z,
+    });
+
+    await data.player.pm(`Teleported to ${teleport.name}.`);
+
+    if (timeout !== 0 && lastExecutedRecord) {
+      await takaro.variable.variableControllerUpdate(lastExecutedRecord.id, {
+        value: new Date().toISOString(),
+      });
+    }
+    return;
   }
 
   const teleport = JSON.parse(teleports[0].value);
@@ -91,12 +107,6 @@ async function main() {
   });
 
   await data.player.pm(`Teleported to ${teleport.name}.`);
-
-  if (timeout !== 0) {
-    await takaro.variable.variableControllerUpdate(lastExecutedRecord.id, {
-      value: new Date().toISOString(),
-    });
-  }
 }
 
 await main();

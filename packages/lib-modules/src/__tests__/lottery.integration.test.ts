@@ -84,6 +84,24 @@ const tests = [
     group,
     snapshot: false,
     setup,
+    name: 'cannot buy 0 lottery tickets',
+    test: async function () {
+      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
+      const player = this.setupData.players[0];
+
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/buyTicket 0',
+        playerId: player.id,
+      });
+
+      expect((await events).length).to.be.eq(1);
+      expect((await events)[0].data.msg).to.be.eq('You must buy at least 1 ticket.');
+    },
+  }),
+  new IntegrationTest<IModuleTestsSetupData>({
+    group,
+    snapshot: false,
+    setup,
     name: 'can buy lottery ticket',
     test: async function () {
       let events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
@@ -94,7 +112,7 @@ const tests = [
       const player = this.setupData.players[0];
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
-        msg: '/buyTicket 1',
+        msg: `/buyTicket ${ticketAmount}`,
         playerId: player.id,
       });
 
@@ -122,7 +140,7 @@ const tests = [
       events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
-        msg: '/buyTicket 1',
+        msg: `/buyTicket ${ticketAmount}`,
         playerId: player.id,
       });
 

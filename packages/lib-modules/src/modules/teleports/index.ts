@@ -36,13 +36,13 @@ export class Teleports extends BuiltinModule {
       {
         permission: 'TELEPORTS_CREATE_PUBLIC',
         friendlyName: 'Create Public Teleports',
-        description: 'Allows the player to create public teleports',
+        description: 'Allows the player to create public teleports.',
         canHaveCount: true,
       },
       {
         permission: 'TELEPORTS_USE',
         friendlyName: 'Use Teleports',
-        description: 'Allows the player to use teleports modules',
+        description: 'Allows the player to use teleports modules.',
         canHaveCount: true,
       },
     ];
@@ -52,13 +52,13 @@ export class Teleports extends BuiltinModule {
         function: '',
         name: 'teleport',
         trigger: 'tp',
-        helpText: 'Teleports to one of your set locations',
+        helpText: 'Teleports to one of your set locations.',
         arguments: [
           {
             name: 'tp',
             type: 'string',
             defaultValue: undefined,
-            helpText: 'The location to teleport to',
+            helpText: 'The location to teleport to.',
             position: 0,
           },
         ],

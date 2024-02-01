@@ -29,7 +29,7 @@ export class PlayerOnboarding extends BuiltinModule {
             },
           },
         },
-        required: ['starterKitItems'],
+        required: [],
         additionalProperties: false,
       }),
       JSON.stringify({
