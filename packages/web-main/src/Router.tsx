@@ -11,15 +11,15 @@ import GameServers from 'pages/GameServers';
 import Players from 'pages/Players';
 import { ModuleDefinitions } from 'pages/ModuleDefinitions';
 import { withSentryReactRouterV6Routing } from '@sentry/react';
-import GameServerCreate from 'pages/CreateUpdateGameServer/GameServerCreate';
-import GameServerUpdate from 'pages/CreateUpdateGameServer/GameServerUpdate';
+import { CreateGameServer } from 'pages/gameserverOverview/CreateGameServer';
+import { UpdateGameServer } from 'pages/gameserverOverview/UpdateGameServer';
 
 import { GlobalGameServerSettings } from './pages/settings/GlobalGameServerSettings';
 import { DiscordSettings } from './pages/settings/DiscordSettings';
 import CreateModule from 'pages/ModuleDefinitions/CreateModule';
 import EditModule from 'pages/ModuleDefinitions/EditModule';
 import ViewModule from 'pages/ModuleDefinitions/ViewModule';
-import InstallModule from 'pages/gameserver/modules/InstallModuleForm';
+import { InstallModule } from 'pages/gameserver/modules/InstallModule';
 import GameServerSettings from 'pages/gameserver/GameServerSettings';
 import GameServerModules from 'pages/gameserver/GameServerModules';
 import { Recovery } from 'pages/auth/recovery';
@@ -30,8 +30,10 @@ import Variables from 'pages/Variables';
 import { Events } from 'pages/events';
 
 import { Roles } from './pages/roles';
-import { RolesCreate } from './pages/roles/RolesCreate';
-import { RolesUpdate } from './pages/roles/RolesUpdate';
+import { ViewRole } from './pages/roles/ViewRole';
+import { CreateRole } from './pages/roles/CreateRole';
+import { UpdateRole } from './pages/roles/UpdateRole';
+
 import { PlayerGlobalProfile } from 'pages/player/global';
 import { AssignPlayerRole } from 'pages/roles/assignPlayerRole';
 import { UserProfile } from 'pages/users/profile';
@@ -92,18 +94,24 @@ export const Router: FC = () => (
           <Route element={<PermissionsGuard permissions={[PERMISSIONS.ReadGameservers, PERMISSIONS.ReadModules]} />}>
             <Route element={<GameServerModules />} path={PATHS.gameServer.modules(':serverId')} />
             <Route
-              element={<InstallModule />}
-              path={PATHS.gameServer.moduleInstallations.install(':serverId', ':moduleId')}
+              element={<InstallModule readOnly />}
+              path={PATHS.gameServer.moduleInstallations.view(':serverId', ':moduleId')}
             />
+            <Route element={<PermissionsGuard permissions={[PERMISSIONS.ManageModules]} />}>
+              <Route
+                element={<InstallModule />}
+                path={PATHS.gameServer.moduleInstallations.install(':serverId', ':moduleId')}
+              />
+            </Route>
           </Route>
 
           {/* ======================== GameServers ======================== */}
           <Route element={<PermissionsGuard permissions={[PERMISSIONS.ReadGameservers]} />}>
             <Route element={<GameServers />} path={PATHS.gameServers.overview()}>
               <Route element={<PermissionsGuard permissions={[PERMISSIONS.ManageGameservers]} />}>
-                <Route element={<GameServerCreate />} path={PATHS.gameServers.create()} />
+                <Route element={<CreateGameServer />} path={PATHS.gameServers.create()} />
                 <Route element={<ImportGameServer />} path={PATHS.gameServers.import()} />
-                <Route element={<GameServerUpdate />} path={PATHS.gameServers.update(':serverId')} />
+                <Route element={<UpdateGameServer />} path={PATHS.gameServers.update(':serverId')} />
               </Route>
             </Route>
           </Route>
@@ -159,7 +167,7 @@ export const Router: FC = () => (
           {/* ======================== Modules ======================== */}
           <Route element={<PermissionsGuard permissions={[PERMISSIONS.ReadModules]} />}>
             <Route element={<ModuleDefinitions />} path={PATHS.moduleDefinitions()}>
-              <Route element={<PermissionsGuard permissions={[PERMISSIONS.ManageModules]} />}>
+              <Route element={<PermissionsGuard permissions={[PERMISSIONS.ReadModules]} />}>
                 <Route element={<ViewModule />} path={PATHS.modules.view(':moduleId')} />
               </Route>
               <Route element={<PermissionsGuard permissions={[PERMISSIONS.ManageModules]} />}>
@@ -172,9 +180,12 @@ export const Router: FC = () => (
           {/* ======================== Roles ======================== */}
           <Route element={<PermissionsGuard permissions={[PERMISSIONS.ReadRoles]} />}>
             <Route element={<Roles />} path={PATHS.roles.overview()}>
+              <Route element={<PermissionsGuard permissions={[PERMISSIONS.ReadRoles]} />}>
+                <Route element={<ViewRole />} path={PATHS.roles.view(':roleId')} />
+              </Route>
               <Route element={<PermissionsGuard permissions={[PERMISSIONS.ManageRoles]} />}>
-                <Route element={<RolesCreate />} path={PATHS.roles.create()} />
-                <Route element={<RolesUpdate />} path={PATHS.roles.update(':roleId')} />
+                <Route element={<CreateRole />} path={PATHS.roles.create()} />
+                <Route element={<UpdateRole />} path={PATHS.roles.update(':roleId')} />
               </Route>
             </Route>
           </Route>

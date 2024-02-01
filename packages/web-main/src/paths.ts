@@ -18,6 +18,7 @@ export const PATHS = {
   roles: {
     overview: () => '/roles',
     create: () => '/roles/create',
+    view: (roleId: string) => `/roles/view/${roleId}`,
     update: (roleId: string) => `/roles/update/${roleId}`,
   },
   auth: {
@@ -50,6 +51,7 @@ export const PATHS = {
     update: (serverId: string) => `/server/${serverId}/update`,
     moduleInstallations: {
       install: (serverId: string, moduleId: string) => `/server/${serverId}/modules/${moduleId}/install`,
+      view: (serverId: string, moduleId: string) => `/server/${serverId}/modules/${moduleId}/view`,
     },
   },
 

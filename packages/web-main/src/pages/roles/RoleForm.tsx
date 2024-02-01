@@ -11,8 +11,8 @@ import { ButtonContainer, PermissionContainer } from './style';
 interface CreateUpdateRoleFormProps {
   initialData?: RoleOutputDTO;
   permissions: PermissionOutputDTO[];
-  isLoading: boolean;
-  onSubmit: SubmitHandler<IFormInputs>;
+  isLoading?: boolean;
+  onSubmit?: SubmitHandler<IFormInputs>;
 }
 
 export interface IFormInputs {
@@ -20,15 +20,11 @@ export interface IFormInputs {
   permissions: Record<string, { enabled: boolean; count?: number }>;
 }
 
-export const CreateUpdateRoleForm: FC<CreateUpdateRoleFormProps> = ({
-  initialData,
-  permissions,
-  isLoading,
-  onSubmit,
-}) => {
+export const RoleForm: FC<CreateUpdateRoleFormProps> = ({ initialData, permissions, isLoading = false, onSubmit }) => {
   const [open, setOpen] = useState(true);
   const [error] = useState<string | null>(null);
   const navigate = useNavigate();
+  const readOnly = onSubmit === undefined;
 
   useEffect(() => {
     if (!open) {
@@ -60,7 +56,7 @@ export const CreateUpdateRoleForm: FC<CreateUpdateRoleFormProps> = ({
         <Drawer.Heading>Create role</Drawer.Heading>
         <Drawer.Body>
           <CollapseList>
-            <form onSubmit={handleSubmit(onSubmit)} id="create-role-form">
+            <form onSubmit={onSubmit && handleSubmit(onSubmit)} id="create-role-form">
               <CollapseList.Item title="General">
                 <TextField
                   control={control}
@@ -68,6 +64,7 @@ export const CreateUpdateRoleForm: FC<CreateUpdateRoleFormProps> = ({
                   loading={isLoading}
                   name="name"
                   placeholder="My cool role"
+                  readOnly={readOnly}
                   required
                 />
               </CollapseList.Item>
@@ -81,12 +78,14 @@ export const CreateUpdateRoleForm: FC<CreateUpdateRoleFormProps> = ({
                         name={`permissions.${permission.id}.enabled`}
                         key={permission.id}
                         description={permission.description}
+                        readOnly={readOnly}
                       />
                       {permission.canHaveCount && (
                         <TextField
                           control={control}
                           label="Amount"
                           type="number"
+                          readOnly={readOnly}
                           placeholder="Enter amount"
                           name={`permissions.${permission.id}.count`}
                         />
@@ -100,10 +99,14 @@ export const CreateUpdateRoleForm: FC<CreateUpdateRoleFormProps> = ({
           </CollapseList>
         </Drawer.Body>
         <Drawer.Footer>
-          <ButtonContainer>
-            <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
-            <Button fullWidth text="Save changes" type="submit" form="create-role-form" />
-          </ButtonContainer>
+          {readOnly ? (
+            <Button text="Close view" fullWidth onClick={() => setOpen(false)} color="primary" />
+          ) : (
+            <ButtonContainer>
+              <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
+              <Button fullWidth text="Save changes" type="submit" form="create-role-form" />
+            </ButtonContainer>
+          )}
         </Drawer.Footer>
       </Drawer.Content>
     </Drawer>

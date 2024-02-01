@@ -9,6 +9,8 @@ import { useRoleRemove } from 'queries/roles/queries';
 import { RoleOutputDTO } from '@takaro/apiclient';
 import { CardBody } from '../style';
 
+import { AiOutlineEdit as EditIcon, AiOutlineDelete as DeleteIcon, AiOutlineEye as ViewIcon } from 'react-icons/ai';
+
 export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -22,6 +24,11 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
   const handleOnDeleteClick = (e: MouseEvent) => {
     e.stopPropagation();
     setOpenDialog(true);
+  };
+
+  const handleOnViewClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    navigate(PATHS.roles.view(id));
   };
 
   const handleOnDelete = (e: MouseEvent) => {
@@ -51,8 +58,14 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
                 <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
               </Dropdown.Trigger>
               <Dropdown.Menu>
-                {name !== 'root' ? <Dropdown.Menu.Item onClick={handleOnEditClick} label="Edit role" /> : null}
-                {!system ? <Dropdown.Menu.Item onClick={handleOnDeleteClick} label="Delete role" /> : null}
+                <Dropdown.Menu.Item onClick={handleOnViewClick} icon={<ViewIcon />} label="View role" />
+                {name !== 'root' ? (
+                  <Dropdown.Menu.Item onClick={handleOnEditClick} icon={<EditIcon />} label="Edit role" />
+                ) : null}
+                {!system ? (
+                  <Dropdown.Menu.Item onClick={handleOnDeleteClick} icon={<DeleteIcon />} label="Delete role" />
+                ) : null}
+
                 <Dropdown.Menu.Item onClick={() => {}} label="Manage users (coming soon)" disabled />
                 <Dropdown.Menu.Item onClick={() => {}} label="Manage players (coming soon)" disabled />
               </Dropdown.Menu>
