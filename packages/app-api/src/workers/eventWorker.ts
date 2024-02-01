@@ -44,6 +44,7 @@ async function processJob(job: Job<IEventQueueData>) {
 
   if ('player' in event && event.player) {
     const playerService = new PlayerService(domainId);
+    await playerService.sync(event.player, gameServerId);
     const playerOnGameServerService = new PlayerOnGameServerService(domainId);
     const resolvedPlayer = await playerService.resolveRef(event.player, gameServerId);
     const pogs = await playerOnGameServerService.findAssociations(event.player.gameId, gameServerId);
