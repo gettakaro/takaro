@@ -18,6 +18,7 @@ import { GlobalGameServerSettings } from './pages/settings/GlobalGameServerSetti
 import { DiscordSettings } from './pages/settings/DiscordSettings';
 import CreateModule from 'pages/ModuleDefinitions/CreateModule';
 import EditModule from 'pages/ModuleDefinitions/EditModule';
+import ViewModule from 'pages/ModuleDefinitions/ViewModule';
 import InstallModule from 'pages/gameserver/modules/InstallModuleForm';
 import GameServerSettings from 'pages/gameserver/GameServerSettings';
 import GameServerModules from 'pages/gameserver/GameServerModules';
@@ -158,6 +159,9 @@ export const Router: FC = () => (
           {/* ======================== Modules ======================== */}
           <Route element={<PermissionsGuard permissions={[PERMISSIONS.ReadModules]} />}>
             <Route element={<ModuleDefinitions />} path={PATHS.moduleDefinitions()}>
+              <Route element={<PermissionsGuard permissions={[PERMISSIONS.ManageModules]} />}>
+                <Route element={<ViewModule />} path={PATHS.modules.view(':moduleId')} />
+              </Route>
               <Route element={<PermissionsGuard permissions={[PERMISSIONS.ManageModules]} />}>
                 <Route element={<EditModule />} path={PATHS.modules.update(':moduleId')} />
                 <Route element={<CreateModule />} path={PATHS.modules.create()} />

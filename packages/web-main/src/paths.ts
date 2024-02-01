@@ -57,6 +57,7 @@ export const PATHS = {
     module: (moduleId: string) => `/modules/${moduleId}`,
     create: () => '/modules/create',
     update: (moduleId: string) => `/modules/update/${moduleId}`,
+    view: (moduleId: string) => `modules/view/${moduleId}`,
   },
 
   studio: {
