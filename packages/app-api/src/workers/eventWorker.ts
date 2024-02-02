@@ -9,6 +9,7 @@ import { PlayerService } from '../service/PlayerService.js';
 import { CommandService } from '../service/CommandService.js';
 import { EVENT_TYPES, EventCreateDTO, EventService } from '../service/EventService.js';
 import { PlayerOnGameServerService, PlayerOnGameServerUpdateDTO } from '../service/PlayerOnGameserverService.js';
+import { GameServerService } from '../service/GameServerService.js';
 
 const log = logger('worker:events');
 
@@ -44,9 +45,11 @@ async function processJob(job: Job<IEventQueueData>) {
 
   if ('player' in event && event.player) {
     const playerService = new PlayerService(domainId);
+    const gameServerService = new GameServerService(domainId);
     await playerService.sync(event.player, gameServerId);
     const playerOnGameServerService = new PlayerOnGameServerService(domainId);
     const resolvedPlayer = await playerService.resolveRef(event.player, gameServerId);
+    await gameServerService.getPlayerLocation(gameServerId, resolvedPlayer.id);
     const pogs = await playerOnGameServerService.findAssociations(event.player.gameId, gameServerId);
     const pog = pogs[0];
 
