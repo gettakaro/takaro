@@ -1,6 +1,5 @@
 import playwright from '@playwright/test';
 import { extendedTest } from '../fixtures/index.js';
-import builtinModules from '../fixtures/modules.json' assert { type: 'json' };
 const { expect } = playwright;
 
 extendedTest.describe('smoke', () => {
@@ -154,13 +153,13 @@ extendedTest.describe('filetree', () => {
 
 extendedTest.describe('Copy module', () => {
   extendedTest('Can copy builtin module', async ({ page, takaro }) => {
-    const mod = builtinModules[0];
+    const { studioPage } = takaro;
+    studioPage.goto();
+
+    await studioPage.page.getByRole('button', { name: 'Make copy of module' }).click();
+    await studioPage.page.getByRole('button', { name: 'Copy Module' }).click();
     await takaro.moduleDefinitionsPage.goto();
-    const studioPage = await takaro.moduleDefinitionsPage.open(mod.name);
-    await studioPage.getByRole('button', { name: 'Make copy of module' }).click();
-    await studioPage.getByRole('button', { name: 'Copy Module' }).click();
-    await takaro.moduleDefinitionsPage.goto();
-    await expect(page.getByText(`${mod.name}-copy`)).toBeVisible();
+    await expect(page.getByText(`${studioPage.mod.name}-copy`)).toBeVisible();
   });
   extendedTest.fixme('Cannot copy module with name that already exists', async ({}) => {});
 });
