@@ -78,7 +78,20 @@ export class SearchRoleInputDTO {
   name: string;
 }
 
+class PermissionModuleDTO extends TakaroDTO<PermissionModuleDTO> {
+  @IsUUID()
+  id: string;
+
+  @IsString()
+  name: string;
+}
+
 export class PermissionOutputDTO extends TakaroModelDTO<PermissionOutputDTO> {
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => PermissionModuleDTO)
+  module?: PermissionModuleDTO;
+
   @IsString()
   @IsNotEmpty()
   permission!: string;
@@ -93,7 +106,7 @@ export class PermissionOutputDTO extends TakaroModelDTO<PermissionOutputDTO> {
 
   @IsBoolean()
   @IsOptional()
-  canHaveCount: boolean;
+  canHaveCount?: boolean;
 }
 
 export class PermissionOnRoleDTO extends TakaroModelDTO<PermissionOnRoleDTO> {
@@ -313,7 +326,16 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
   async getPermissions() {
     const moduleService = new ModuleService(this.domainId);
     const modules = await moduleService.find({ limit: 1000 });
-    const modulePermissions = modules.results.map((mod) => mod.permissions).flat();
+    const modulePermissions = modules.results.flatMap((mod) =>
+      mod.permissions.map((permission) => ({
+        ...permission, // Spread the permission object if it's an object, otherwise wrap the permission in an object
+        module: {
+          id: mod.id,
+          name: mod.name,
+        },
+      }))
+    ) as PermissionOutputDTO[];
+
     const systemPermissions = await this.repo.getSystemPermissions();
 
     const allPermissions = systemPermissions.concat(modulePermissions);

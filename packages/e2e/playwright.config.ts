@@ -54,7 +54,7 @@ export default defineConfig({
   maxFailures: process.env.CI ? 10 : undefined,
 
   // Opt out of parallel tests on CI.
-  workers: process.env.CI ? 1 : undefined,
+  workers: process.env.CI ? 1 : 10,
 
   // Reporter to use
   reporter: [
