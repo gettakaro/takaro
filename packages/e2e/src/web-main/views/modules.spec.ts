@@ -121,6 +121,14 @@ test('Can delete module', async ({ page, takaro }) => {
   await expect(page.getByText(moduleName)).toHaveCount(0);
 });
 
+test('Can copy module', async ({ page, takaro }) => {
+  const { moduleDefinitionsPage } = takaro;
+  await moduleDefinitionsPage.goto();
+  const copyName = 'copy-name';
+  await moduleDefinitionsPage.copy('Module without functions', copyName);
+  await expect(page.getByText(copyName)).toBeVisible();
+});
+
 test('Can install module with empty config', async ({ page, takaro }) => {
   const modRes = await takaro.rootClient.module.moduleControllerSearch({
     filters: { name: ['Module without functions'] },

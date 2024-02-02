@@ -151,17 +151,14 @@ extendedTest.describe('filetree', () => {
   extendedTest.fixme('Can save command config', async ({}) => {});
 });
 
-extendedTest.describe('Copy module', () => {
-  extendedTest('Can copy builtin module', async ({ page, takaro }) => {
-    const { studioPage } = takaro;
-    studioPage.goto();
-
-    await studioPage.page.getByRole('button', { name: 'Make copy of module' }).click();
-    await studioPage.page.getByRole('button', { name: 'Copy Module' }).click();
-    await takaro.moduleDefinitionsPage.goto();
-    await expect(page.getByText(`${studioPage.mod.name}-copy`)).toBeVisible();
-  });
-  extendedTest.fixme('Cannot copy module with name that already exists', async ({}) => {});
+extendedTest('Can copy module', async ({ page, takaro }) => {
+  const { studioPage } = takaro;
+  await studioPage.goto();
+  await studioPage.page.getByRole('button', { name: 'Make copy of module' }).click();
+  await studioPage.page.getByLabel('Module name').fill(`${studioPage.mod.name}-copy`);
+  await studioPage.page.getByRole('button', { name: 'Copy Module' }).click();
+  await takaro.moduleDefinitionsPage.goto();
+  await expect(page.getByText(`${studioPage.mod.name}-copy`)).toBeVisible();
 });
 
 extendedTest.describe('Built-in modules', () => {
