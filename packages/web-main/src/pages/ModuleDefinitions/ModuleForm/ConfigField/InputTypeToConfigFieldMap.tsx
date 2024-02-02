@@ -18,6 +18,9 @@ export const InputTypeToConfigFieldMap = (control: Control<IFormInputs>, index: 
   };
 
   const multiple = useWatch<IFormInputs>({ name: `configFields.${index}.multiple`, control }) as boolean | undefined;
+  const uniqueItems = useWatch<IFormInputs>({ name: `configFields.${index}.uniqueItems`, control }) as
+    | boolean
+    | undefined;
 
   return {
     [InputType.text]: [
@@ -86,6 +89,7 @@ export const InputTypeToConfigFieldMap = (control: Control<IFormInputs>, index: 
         control={control}
         label="Default values"
         isEditOnRemove
+        allowDuplicates={!uniqueItems}
         description="When a user installs the module, A list of strings will be set with these values set by default. The user can add, remove and edit these values."
         placeholder="Press enter to add a value."
       />,
