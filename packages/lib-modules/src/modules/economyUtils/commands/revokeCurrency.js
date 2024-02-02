@@ -9,7 +9,7 @@ async function main() {
   // If the player doesn't exist or multiple players with the same name where found, it will have thrown an error before this command is executed.
   const receiver = args.receiver;
 
-  if (!checkPermission(revoker, 'ECONOMY_MANAGE_CURRENCY')) {
+  if (!checkPermission(revoker, 'ECONOMY_UTILS_MANAGE_CURRENCY')) {
     throw new TakaroUserError('You do not have permission to use revoke currency command.');
   }
 

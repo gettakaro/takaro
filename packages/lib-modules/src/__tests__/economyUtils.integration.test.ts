@@ -31,7 +31,7 @@ const tests = [
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.economyModule.id
+        this.setupData.economyUtilsModule.id
       );
 
       const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 2);
@@ -75,7 +75,7 @@ const tests = [
       // install module
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.economyModule.id
+        this.setupData.economyUtilsModule.id
       );
 
       const giveCurrencies = this.setupData.players.map(async (player, index) => {
@@ -120,7 +120,7 @@ const tests = [
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.economyModule.id
+        this.setupData.economyUtilsModule.id
       );
 
       const transferAmount = 500;
@@ -178,7 +178,7 @@ const tests = [
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.economyModule.id
+        this.setupData.economyUtilsModule.id
       );
 
       const sender = this.setupData.players[0];
@@ -207,7 +207,7 @@ const tests = [
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.economyModule.id,
+        this.setupData.economyUtilsModule.id,
         {
           userConfig: JSON.stringify({
             pendingAmount: 100,
@@ -309,7 +309,7 @@ const tests = [
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.economyModule.id,
+        this.setupData.economyUtilsModule.id,
         {
           userConfig: JSON.stringify({
             pendingAmount: 100,
@@ -338,11 +338,11 @@ const tests = [
 
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.economyModule.id
+        this.setupData.economyUtilsModule.id
       );
 
       // Change permissions of role to only have manageCurrency permission
-      const manageCurrencyPermission = await this.client.permissionCodesToInputs(['ECONOMY_MANAGE_CURRENCY']);
+      const manageCurrencyPermission = await this.client.permissionCodesToInputs(['ECONOMY_UTILS_MANAGE_CURRENCY']);
       await this.client.role.roleControllerUpdate(this.setupData.role.id, {
         permissions: [
           {
@@ -401,11 +401,11 @@ const tests = [
 
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.economyModule.id
+        this.setupData.economyUtilsModule.id
       );
 
       // Change permissions of role to only have manageCurrency permission
-      const manageCurrencyPermission = await this.client.permissionCodesToInputs(['ECONOMY_MANAGE_CURRENCY']);
+      const manageCurrencyPermission = await this.client.permissionCodesToInputs(['ECONOMY_UTILS_MANAGE_CURRENCY']);
       await this.client.role.roleControllerUpdate(this.setupData.role.id, {
         permissions: [
           {
@@ -455,7 +455,7 @@ const tests = [
 
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.economyModule.id
+        this.setupData.economyUtilsModule.id
       );
 
       // currency before revoke
