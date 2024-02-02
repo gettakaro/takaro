@@ -27,6 +27,7 @@ export const SpacedRow = styled.div`
 
 export const ActionIconsContainer = styled.span`
   display: flex;
+  align-items: center;
   gap: ${({ theme }) => theme.spacing[1]};
   svg:hover {
     color: ${({ theme }) => theme.colors.primary};

@@ -17,7 +17,6 @@ export const useGlobalGameServerSettings = (keys?: SettingsOutputDTOKeyEnum[]) =
   return useQuery<SettingsOutputDTO[], AxiosError<SettingsOutputDTOAPI>>({
     queryKey: settingKeys.list(),
     queryFn: async () => (await apiClient.settings.settingsControllerGet(keys, undefined)).data.data,
-    cacheTime: 0,
   });
 };
 
@@ -27,7 +26,6 @@ export const useGameServerSettings = (gameServerId: string, keys?: SettingsOutpu
   return useQuery<SettingsOutputDTO[], AxiosError<SettingsOutputDTOAPI>>({
     queryKey: settingKeys.listGameServer(gameServerId),
     queryFn: async () => (await apiClient.settings.settingsControllerGet(keys, gameServerId)).data.data,
-    cacheTime: 0,
   });
 };
 
@@ -64,7 +62,7 @@ export const useDeleteGameServerSetting = () => {
       return (await apiClient.settings.settingsControllerDelete(key, gameServerId)).data;
     },
     onSuccess: async () => {
-      queryClient.invalidateQueries(settingKeys.detail(deletedSettingKey!, deletedGameServerId!));
+      queryClient.invalidateQueries({ queryKey: settingKeys.detail(deletedSettingKey!, deletedGameServerId!) });
     },
   });
 };
@@ -85,7 +83,7 @@ export const useSetGlobalSetting = () => {
     onSuccess: async () => {
       // we need to invalidate the specific global setting and the entire list
       // also all gameserver settings because these might be affected by the global setting change
-      queryClient.invalidateQueries(settingKeys.all);
+      queryClient.invalidateQueries({ queryKey: settingKeys.all });
     },
   });
 };
@@ -112,8 +110,8 @@ export const useSetGameServerSetting = () => {
     },
     onSuccess: async () => {
       // invalidate the gameserver settings list and the specific setting key of the gameserver
-      queryClient.invalidateQueries(settingKeys.listGameServer(updatedGameServerId!));
-      queryClient.invalidateQueries(settingKeys.detail(updatedSettingKey!, updatedGameServerId!));
+      queryClient.invalidateQueries({ queryKey: settingKeys.listGameServer(updatedGameServerId!) });
+      queryClient.invalidateQueries({ queryKey: settingKeys.detail(updatedSettingKey!, updatedGameServerId!) });
     },
   });
 };

@@ -8,8 +8,7 @@ import {
   isValidElement,
   cloneElement,
   useMemo,
-  ReactElement,
-  useCallback,
+  MouseEvent,
 } from 'react';
 import {
   autoUpdate,
@@ -23,19 +22,17 @@ import {
   offset,
   useClick,
 } from '@floating-ui/react';
-
-import { AiOutlineSearch as SearchIcon } from 'react-icons/ai';
+import { AiOutlineSearch as SearchIcon, AiOutlineClose as ClearIcon } from 'react-icons/ai';
 import { defaultInputProps, defaultInputPropsFactory, GenericInputPropsFunctionHandlers } from '../../../InputProps';
 import { useDebounce } from '../../../../../hooks';
 import { setAriaDescribedBy } from '../../../layout';
 import { FeedBackContainer } from '../style';
-import { SelectItem, SelectContext } from '../../';
+import { SelectItem, SelectContext, getLabelFromChildren } from '../../';
 
 /* The SearchField depends on a few things of <Select/> */
 import { GroupLabel } from '../../SelectField/style';
-
 import { SelectContainer, SelectButton, StyledArrowIcon, StyledFloatingOverlay } from '../../sharedStyle';
-import { Spinner } from '../../../../../components';
+import { IconButton, Spinner } from '../../../../../components';
 import { GenericTextField } from '../../../TextField/Generic';
 
 interface SharedSelectQueryFieldProps {
@@ -44,19 +41,25 @@ interface SharedSelectQueryFieldProps {
   /// The placeholder text to show when the input is empty
   placeholder?: string;
   /// Debounce time in milliseconds (when clientside data it should be 0)
-  debounce: number;
+  debounce?: number;
   /// Triggered whenever the input value changes, debounced by 0.5 seconds.
   /// This is used to trigger the API call to get the new options
   handleInputValueChange: (value: string) => void;
   /// render inPortal
   inPortal?: boolean;
+
+  /// When true, The select icon will be replaced by a cross icon to clear the selected value.
+  canClear?: boolean;
+
+  /// The selected items shown in the select field
+  render?: (selectedItems: SelectItem[]) => React.ReactNode;
 }
 
 interface SingleSelectQueryFieldProps extends SharedSelectQueryFieldProps {
-  multiSelect?: false;
+  multiple?: false;
 }
 interface MultiSelectQueryFieldProps extends SharedSelectQueryFieldProps {
-  multiSelect: true;
+  multiple: true;
 }
 
 interface SingleSelectQueryFieldHandlers extends GenericInputPropsFunctionHandlers<string, HTMLDivElement> {
@@ -96,7 +99,9 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
     hasError,
     children,
     readOnly,
-    multiSelect = false,
+    render,
+    multiple = false,
+    canClear = false,
     debounce = 250,
     isLoadingData: isLoading = false,
     handleInputValueChange,
@@ -146,32 +151,14 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
     }
   }
 
-  const getLabel = useCallback(
-    (value: string) => {
-      const matchedGroup = Children.toArray(children).find((group) => {
-        if (!isValidElement(group)) return false;
+  const handleClear = (e: MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setSelectedItems([]);
 
-        const matchedOption = Children.toArray(group.props.children)
-          .filter(isValidElement)
-          .find((option: ReactElement) => option.props.value === value);
-
-        return Boolean(matchedOption);
-      });
-
-      if (matchedGroup && isValidElement(matchedGroup)) {
-        const matchedOption = Children.toArray(matchedGroup.props.children)
-          .filter(isValidElement)
-          .find((option: ReactElement) => option.props.value === value);
-
-        if (matchedOption) {
-          return (matchedOption as ReactElement).props.label;
-        }
-      }
-
-      return null;
-    },
-    [children]
-  );
+    // the undefined is an expection
+    if (onChange) onChange(multiple ? ([] as string[]) : (undefined as any));
+  };
 
   /* This handles the case where the value is changed externally (e.g. from a parent component) */
   /* onChange propagates the value to the parent component, but since the value prop is not a required prop, the parent might not reflect the change
@@ -179,7 +166,7 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
    */
   useEffect(() => {
     // Function to create an item with a value and label
-    const createItem = (v: string) => ({ value: v, label: getLabel(v) as unknown as string });
+    const createItem = (v: string) => ({ value: v, label: getLabelFromChildren(children, v) as unknown as string });
 
     if (Array.isArray(value)) {
       const items = value.map(createItem);
@@ -187,10 +174,10 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
     } else if (typeof value === 'string' && value !== '') {
       setSelectedItems([createItem(value)]);
     }
-  }, [value]);
+  }, [value, children]);
 
   const renderSelect = () => {
-    const hasOptions = options && Children.count(options[0].props.children) > 2;
+    const hasOptions = options && Children.count(options[0].props.children) > 1;
 
     // initialFocus=-1 is used to prevent the first item from being focused when the list opens
     return (
@@ -269,7 +256,7 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
         setActiveIndex,
         activeIndex,
         dataRef: context.dataRef,
-        multiSelect,
+        multiple,
         selectedItems,
         setSelectedItems,
         name,
@@ -287,8 +274,17 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
         aria-describedby={setAriaDescribedBy(name, hasDescription)}
         {...getReferenceProps()}
       >
-        <div>{selectedItems.length === 0 ? 'Select' : selectedItems.map((item) => item.label).join(', ')}</div>
-        {!readOnly && <StyledArrowIcon size={16} />}
+        {render ? (
+          render(selectedItems)
+        ) : (
+          <div>{selectedItems.length === 0 ? 'Select' : selectedItems.map((item) => item.label).join(', ')}</div>
+        )}
+
+        {!readOnly && canClear && selectedItems.length > 0 && !open ? (
+          <IconButton size="tiny" icon={<ClearIcon />} ariaLabel="clear" onClick={(e) => handleClear(e)} />
+        ) : (
+          <StyledArrowIcon size={16} />
+        )}
       </SelectButton>
       {open &&
         !readOnly &&

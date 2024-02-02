@@ -5,7 +5,7 @@ import { GenericSwitch } from '.';
 import { defaultInputProps, defaultInputPropsFactory } from '../InputProps';
 import { Label } from '../../../components';
 import { Container } from './style';
-import { Wrapper, Description } from '../layout';
+import { InputWrapper, Description } from '../layout';
 
 export type ControlledSwitchProps = ControlledInputProps;
 
@@ -23,7 +23,7 @@ export const ControlledSwitch: FC<ControlledSwitchProps> = (props) => {
   });
 
   return (
-    <Wrapper>
+    <InputWrapper>
       <Container>
         {label && (
           <Label
@@ -53,6 +53,6 @@ export const ControlledSwitch: FC<ControlledSwitchProps> = (props) => {
         />
       </Container>
       {description && <Description description={description} inputName={name} style={{ marginTop: 0 }} />}
-    </Wrapper>
+    </InputWrapper>
   );
 };

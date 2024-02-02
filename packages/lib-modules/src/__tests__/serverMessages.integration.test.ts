@@ -1,6 +1,7 @@
 import { IntegrationTest, expect } from '@takaro/test';
 import { IModuleTestsSetupData, modulesTestSetup } from './setupData.integration.test.js';
 import { GameEvents } from '../dto/index.js';
+import { sleep } from '@takaro/util';
 
 const group = 'Server messages';
 
@@ -80,16 +81,14 @@ const tests = [
       const numberOfEvents = 10;
       const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, numberOfEvents);
 
-      // Trigger it multiple times
-      await Promise.allSettled(
-        Array.from({ length: numberOfEvents }).map(() => {
-          return this.client.cronjob.cronJobControllerTrigger({
-            cronjobId: this.setupData.serverMessagesModule.cronJobs[0].id,
-            gameServerId: this.setupData.gameserver.id,
-            moduleId: this.setupData.serverMessagesModule.id,
-          });
-        })
-      );
+      for (let i = 0; i < numberOfEvents; i++) {
+        await sleep(Math.floor(Math.random() * 10) + 1);
+        await this.client.cronjob.cronJobControllerTrigger({
+          cronjobId: this.setupData.serverMessagesModule.cronJobs[0].id,
+          gameServerId: this.setupData.gameserver.id,
+          moduleId: this.setupData.serverMessagesModule.id,
+        });
+      }
 
       const messages = (await events).map((e) => e.data.msg);
       expect(messages).to.include('Test message 1');

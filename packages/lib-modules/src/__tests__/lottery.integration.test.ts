@@ -84,7 +84,25 @@ const tests = [
     group,
     snapshot: false,
     setup,
-    name: 'can buy lottery ticket',
+    name: 'Cannot buy 0 lottery tickets',
+    test: async function () {
+      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
+      const player = this.setupData.players[0];
+
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/buyTicket 0',
+        playerId: player.id,
+      });
+
+      expect((await events).length).to.be.eq(1);
+      expect((await events)[0].data.msg).to.be.eq('You must buy at least 1 ticket.');
+    },
+  }),
+  new IntegrationTest<IModuleTestsSetupData>({
+    group,
+    snapshot: false,
+    setup,
+    name: 'Can buy lottery ticket',
     test: async function () {
       let events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
 
@@ -94,7 +112,7 @@ const tests = [
       const player = this.setupData.players[0];
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
-        msg: '/buyTicket 1',
+        msg: `/buyTicket ${ticketAmount}`,
         playerId: player.id,
       });
 
@@ -108,13 +126,8 @@ const tests = [
       );
 
       let pog = (
-        await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
-          filters: {
-            playerId: [player.id],
-            gameServerId: [this.setupData.gameserver.id],
-          },
-        })
-      ).data.data[0];
+        await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(this.setupData.gameserver.id, player.id)
+      ).data.data;
 
       expect(pog.currency).to.be.eq(playerStartBalance - ticketPrice);
       await expectTicketAmountLengthToBe(this.client, this.setupData.gameserver.id, this.setupData.lotteryModule.id, 1);
@@ -122,7 +135,7 @@ const tests = [
       events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
-        msg: '/buyTicket 1',
+        msg: `/buyTicket ${ticketAmount}`,
         playerId: player.id,
       });
 
@@ -132,14 +145,8 @@ const tests = [
       );
 
       pog = (
-        await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
-          filters: {
-            playerId: [player.id],
-            gameServerId: [this.setupData.gameserver.id],
-          },
-        })
-      ).data.data[0];
-
+        await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(this.setupData.gameserver.id, player.id)
+      ).data.data;
       expect(pog.currency).to.be.eq(playerStartBalance - 2 * ticketPrice);
       await expectTicketAmountLengthToBe(this.client, this.setupData.gameserver.id, this.setupData.lotteryModule.id, 2);
     },
@@ -148,7 +155,7 @@ const tests = [
     group,
     snapshot: false,
     setup,
-    name: 'can view lottery tickets',
+    name: 'Can view lottery tickets',
     test: async function () {
       const wantAmount = 10;
 
@@ -178,7 +185,7 @@ const tests = [
     group,
     snapshot: false,
     setup,
-    name: 'can give the lottery winner the prize money',
+    name: 'Can give the lottery winner the prize money',
     test: async function () {
       const currencyName = (
         await this.client.settings.settingsControllerGetOne('currencyName', this.setupData.gameserver.id)
@@ -228,14 +235,8 @@ const tests = [
       }
 
       const winnerPog = (
-        await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
-          filters: {
-            playerId: [winner.id],
-            gameServerId: [this.setupData.gameserver.id],
-          },
-        })
-      ).data.data[0];
-
+        await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(this.setupData.gameserver.id, winner.id)
+      ).data.data;
       expect(winnerPog.currency).to.be.eq(playerStartBalance + (prize - ticketCost));
     },
   }),
@@ -243,7 +244,7 @@ const tests = [
     group,
     snapshot: false,
     setup,
-    name: 'if no players joined, the lottery is cancelled',
+    name: 'If no players joined, the lottery is cancelled',
     test: async function () {
       const waitForEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
@@ -263,7 +264,7 @@ const tests = [
     group,
     snapshot: false,
     setup,
-    name: 'if one player joined, the lottery is cancelled and the player gets his money back',
+    name: 'If one player joined, the lottery is cancelled and the player gets his money back',
     test: async function () {
       const waitForTicketEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
 
@@ -296,14 +297,8 @@ const tests = [
       );
 
       const pog = (
-        await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
-          filters: {
-            playerId: [player.id],
-            gameServerId: [this.setupData.gameserver.id],
-          },
-        })
-      ).data.data[0];
-
+        await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(this.setupData.gameserver.id, player.id)
+      ).data.data;
       expect(pog.currency).to.be.eq(playerStartBalance);
 
       expectTicketAmountLengthToBe(this.client, this.setupData.gameserver.id, this.setupData.lotteryModule.id);
@@ -313,7 +308,7 @@ const tests = [
     group,
     snapshot: false,
     setup,
-    name: 'can view next lottery draw',
+    name: 'Can view next lottery draw',
     test: async function () {
       const waitForEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
 

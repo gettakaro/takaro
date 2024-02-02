@@ -8,7 +8,7 @@ async function main() {
 
   const items = data.module.userConfig.starterKitItems;
 
-  if (!items.length) {
+  if (!items || items.length === 0) {
     throw new TakaroUserError(
       'No starter kit items configured. Please ask your server administrator to configure this.'
     );

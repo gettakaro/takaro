@@ -9,11 +9,12 @@ import {
   useEffect,
   useMemo,
   ReactElement,
-  useCallback,
+  MouseEvent,
 } from 'react';
 import { GroupContainer, GroupLabel } from '../style';
 import { SelectContainer, StyledFloatingOverlay, StyledArrowIcon, SelectButton } from '../../sharedStyle';
 import { FilterInput } from './FilterInput';
+import { AiOutlineClose as ClearIcon } from 'react-icons/ai';
 
 import {
   useFloating,
@@ -33,7 +34,8 @@ import {
 import { defaultInputPropsFactory, defaultInputProps, GenericInputPropsFunctionHandlers } from '../../../InputProps';
 import { Option, OptionGroup, SubComponentTypes } from '../../SubComponents';
 import { setAriaDescribedBy } from '../../../layout';
-import { SelectItem, SelectContext } from '../../';
+import { SelectItem, SelectContext, getLabelFromChildren } from '../../';
+import { IconButton } from '../../../../../components/';
 
 interface SharedSelectFieldProps {
   render: (selectedItems: SelectItem[]) => React.ReactNode;
@@ -41,14 +43,17 @@ interface SharedSelectFieldProps {
   /// Rendering in portal will render the selectDropdown independent from its parent container.
   /// this is useful when select is rendered in other floating elements with limited space.
   inPortal?: boolean;
+
+  /// When true, The select icon will be replaced by a cross icon to clear the selected value.
+  canClear?: boolean;
 }
 
 interface MultiSelectFieldProps extends SharedSelectFieldProps {
-  multiSelect: true;
+  multiple: true;
 }
 
 interface SingleSelectFieldProps extends SharedSelectFieldProps {
-  multiSelect?: false;
+  multiple?: false;
 }
 
 interface SingleSelectFieldHandlers extends GenericInputPropsFunctionHandlers<string, HTMLDivElement> {
@@ -83,7 +88,8 @@ export const GenericSelectField: FC<GenericSelectFieldProps> & SubComponentTypes
     inPortal = false,
     disabled,
     enableFilter = false,
-    multiSelect = false,
+    multiple = false,
+    canClear = false,
   } = defaultsApplier(props);
 
   const listItemsRef = useRef<Array<HTMLLIElement | null>>([]);
@@ -126,6 +132,14 @@ export const GenericSelectField: FC<GenericSelectFieldProps> & SubComponentTypes
     ],
   });
 
+  const handleClear = (e: MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setSelectedItems([]);
+
+    if (onChange) onChange(multiple ? ([] as string[]) : (undefined as any));
+  };
+
   const { getReferenceProps, getFloatingProps, getItemProps } = useInteractions([
     useClick(context),
     useRole(context, { role: 'listbox' }),
@@ -134,47 +148,19 @@ export const GenericSelectField: FC<GenericSelectFieldProps> & SubComponentTypes
       listRef: listItemsRef,
       activeIndex: activeIndex,
       // TODO
-      // selectedIndex: multiSelect ? null : (selectedIndex as number),
+      // selectedIndex: multiple ? null : (selectedIndex as number),
       onNavigate: setActiveIndex,
-      scrollItemIntoView: multiSelect ? false : true,
+      scrollItemIntoView: multiple ? false : true,
     }),
   ]);
-
-  const getLabel = useCallback(
-    (value: string) => {
-      const matchedGroup = Children.toArray(children).find((group) => {
-        if (!isValidElement(group)) return false;
-
-        const matchedOption = Children.toArray(group.props.children)
-          .filter(isValidElement)
-          .find((option: ReactElement) => option.props.value === value);
-
-        return Boolean(matchedOption);
-      });
-
-      if (matchedGroup && isValidElement(matchedGroup)) {
-        const matchedOption = Children.toArray(matchedGroup.props.children)
-          .filter(isValidElement)
-          .find((option: ReactElement) => option.props.value === value);
-
-        if (matchedOption) {
-          return (matchedOption as ReactElement).props.label;
-        }
-      }
-
-      return null;
-    },
-    [children]
-  );
 
   /* This handles the case where the value is changed externally (e.g. from a parent component) */
   /* onChange propagates the value to the parent component, but since the value prop is not a required prop, the parent might not reflect the change
    * which ends up not running this useEffect. Meaning we still need to update the selectedIndex when clicked on an option.
    */
-
   useEffect(() => {
     // Function to create an item with a value and label
-    const createItem = (v: string) => ({ value: v, label: getLabel(v) as unknown as string });
+    const createItem = (v: string) => ({ value: v, label: getLabelFromChildren(children, v) as unknown as string });
 
     if (Array.isArray(value)) {
       const items = value.map(createItem);
@@ -245,7 +231,7 @@ export const GenericSelectField: FC<GenericSelectFieldProps> & SubComponentTypes
       <FloatingFocusManager
         context={context}
         // TODO
-        // initialFocus={selectedItems && selectedItems.length > 0 ? selectedItems[0].label : filterInputRef}
+        //initialFocus={selectedItems && selectedItems.length > 0 ? selectedItems[0].label : filterInputRef}
       >
         <SelectContainer
           ref={refs.setFloating}
@@ -277,7 +263,7 @@ export const GenericSelectField: FC<GenericSelectFieldProps> & SubComponentTypes
         getItemProps,
         dataRef: context.dataRef,
         name,
-        multiSelect,
+        multiple,
       }}
     >
       <SelectButton
@@ -293,7 +279,11 @@ export const GenericSelectField: FC<GenericSelectFieldProps> & SubComponentTypes
         {...getReferenceProps()}
       >
         {render(selectedItems)}
-        {!readOnly && <StyledArrowIcon size={16} />}
+        {!readOnly && canClear && selectedItems.length > 0 && !open ? (
+          <IconButton size="tiny" icon={<ClearIcon />} ariaLabel="clear" onClick={(e) => handleClear(e)} />
+        ) : (
+          <StyledArrowIcon size={16} />
+        )}
       </SelectButton>
       {open &&
         !readOnly &&

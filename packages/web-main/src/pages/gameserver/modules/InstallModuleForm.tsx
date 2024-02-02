@@ -1,14 +1,7 @@
 import { FC, FormEvent, useCallback, useEffect, useRef, useState } from 'react';
-import {
-  Button,
-  Drawer,
-  CollapseList,
-  styled,
-  JsonSchemaForm,
-  DrawerSkeleton,
-  FormError,
-} from '@takaro/lib-components';
+import { Button, Drawer, CollapseList, styled, DrawerSkeleton, FormError } from '@takaro/lib-components';
 import Form from '@rjsf/core';
+import { JsonSchemaForm } from 'components/JsonSchemaForm';
 
 import { useNavigate, useParams } from 'react-router-dom';
 import { PATHS } from 'paths';
@@ -26,7 +19,7 @@ const InstallModule: FC = () => {
   const [userConfigSubmitted, setUserConfigSubmitted] = useState(false);
   const [systemConfigSubmitted, setSystemConfigSubmitted] = useState(false);
   const navigate = useNavigate();
-  const { mutate, isLoading, error, isSuccess } = useGameServerModuleInstall();
+  const { mutate, isPending, error, isSuccess } = useGameServerModuleInstall();
   const { serverId, moduleId } = useParams();
   const { data: mod, isLoading: moduleLoading } = useModule(moduleId!);
   const { data: modInstallation, isLoading: moduleInstallationLoading } = useGameServerModuleInstallation(
@@ -92,18 +85,18 @@ const InstallModule: FC = () => {
   }
 
   const isInstalled = modInstallation?.createdAt !== undefined;
-  const actionType = isInstalled ? 'Update module' : 'Install module';
+  const actionType = isInstalled ? 'Update' : 'Install';
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <Drawer.Content>
-        <Drawer.Heading>{actionType} Module</Drawer.Heading>
+        <Drawer.Heading>{actionType} module</Drawer.Heading>
         <Drawer.Body>
           <CollapseList>
             <CollapseList.Item title="User config">
               <JsonSchemaForm
                 schema={JSON.parse(mod?.configSchema as string)}
-                uiSchema={{}}
+                uiSchema={JSON.parse(mod?.uiSchema as string)}
                 initialData={modInstallation?.userConfig || userConfig}
                 hideSubmitButton
                 onSubmit={onUserConfigSubmit}
@@ -113,7 +106,7 @@ const InstallModule: FC = () => {
             <CollapseList.Item title="System config">
               <JsonSchemaForm
                 schema={JSON.parse(mod?.systemConfigSchema as string)}
-                uiSchema={{}}
+                uiSchema={{}} /* System config does not have uiSchema*/
                 initialData={modInstallation?.systemConfig || systemConfig}
                 hideSubmitButton
                 onSubmit={onSystemConfigSubmit}
@@ -128,7 +121,7 @@ const InstallModule: FC = () => {
             <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
             <Button
               fullWidth
-              isLoading={isLoading}
+              isLoading={isPending}
               text={actionType}
               type="button"
               onClick={() => {

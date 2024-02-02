@@ -9,17 +9,16 @@ import { CreateUpdateRoleForm, IFormInputs } from './RolesCreateUpdateForm';
 
 export const RolesCreate: FC = () => {
   const { data: permissions, isLoading: isLoadingPermissions } = usePermissions();
-
-  if (isLoadingPermissions || !permissions) return <Skeleton variant="rectangular" width="100%" height="100%" />;
-
   const navigate = useNavigate();
-  const { mutateAsync, isLoading: isCreatingRole } = useRoleCreate();
+  const { mutateAsync, isPending: isCreatingRole } = useRoleCreate();
 
   useEffect(() => {
     if (!open) {
       navigate(PATHS.roles.overview());
     }
   }, [open, navigate]);
+
+  if (isLoadingPermissions || !permissions) return <Skeleton variant="rectangular" width="100%" height="100%" />;
 
   const onSubmit: SubmitHandler<IFormInputs> = async ({ name, permissions: formPermissions }) => {
     try {

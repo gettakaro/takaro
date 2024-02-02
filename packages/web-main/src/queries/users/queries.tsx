@@ -1,4 +1,4 @@
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { useApiClient } from 'hooks/useApiClient';
 import {
   APIOutput,
@@ -29,15 +29,15 @@ export const useInfiniteUsers = (queryParams: UserSearchInputDTO = { page: 0 }) 
 
   const queryOpts = useInfiniteQuery<UserOutputArrayDTOAPI, AxiosError<UserOutputArrayDTOAPI>>({
     queryKey: [...userKeys.list(), { ...queryParams }],
-    queryFn: async ({ pageParam = queryParams.page }) =>
+    queryFn: async ({ pageParam }) =>
       (
         await apiClient.user.userControllerSearch({
           ...queryParams,
-          page: pageParam,
+          page: pageParam as number,
         })
       ).data,
     getNextPageParam: (lastPage, pages) => hasNextPage(lastPage.meta, pages.length),
-    useErrorBoundary: (error) => error.response!.status >= 500,
+    initialPageParam: queryParams.page,
   });
 
   const InfiniteScroll = useMemo(() => {
@@ -53,8 +53,7 @@ export const useUsers = (queryParams: UserSearchInputDTO = { page: 0 }) => {
   const queryOpts = useQuery<UserOutputArrayDTOAPI, AxiosError<UserOutputArrayDTOAPI>>({
     queryKey: [...userKeys.list(), { queryParams }],
     queryFn: async () => (await apiClient.user.userControllerSearch(queryParams)).data,
-    keepPreviousData: true,
-    useErrorBoundary: (error) => error.response!.status >= 500,
+    placeholderData: keepPreviousData,
   });
   return queryOpts;
 };
@@ -65,7 +64,6 @@ export const useUser = (userId: string) => {
   const queryOpts = useQuery<UserOutputWithRolesDTO, AxiosError<UserOutputWithRolesDTO>>({
     queryKey: [...userKeys.detail(userId)],
     queryFn: async () => (await apiClient.user.userControllerGetOne(userId)).data.data,
-    useErrorBoundary: (error) => error.response!.status >= 500,
   });
   return queryOpts;
 };
@@ -83,10 +81,9 @@ export const useUserAssignRole = () => {
   return useMutation<APIOutput, AxiosError<APIOutput>, IUserRoleAssign>({
     mutationFn: async ({ userId, roleId, expiresAt }) => {
       const res = (await apiClient.user.userControllerAssignRole(userId, roleId, { expiresAt })).data;
-      queryClient.invalidateQueries(userKeys.detail(userId));
+      queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
       return res;
     },
-    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -97,10 +94,9 @@ export const useUserRemoveRole = () => {
   return useMutation<APIOutput, AxiosError<APIOutput>, RoleInput>({
     mutationFn: async ({ userId, roleId }: RoleInput) => {
       const res = (await apiClient.user.userControllerRemoveRole(userId, roleId)).data;
-      queryClient.invalidateQueries(userKeys.detail(userId));
+      queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
       return res;
     },
-    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -110,9 +106,8 @@ export const useInviteUser = () => {
 
   return useMutation<APIOutput, AxiosError<APIOutput>, { email: string }>({
     mutationFn: async ({ email }) => (await apiClient.user.userControllerInvite({ email })).data,
-    useErrorBoundary: (error) => error.response!.status >= 500,
     onSuccess: async () => {
-      await queryClient.invalidateQueries(userKeys.list());
+      await queryClient.invalidateQueries({ queryKey: userKeys.list() });
     },
   });
 };
@@ -124,9 +119,8 @@ export const useUserRemove = () => {
 
   return useMutation<IdUuidDTO, AxiosError<IdUuidDTO>, { id: string }>({
     mutationFn: async ({ id }) => (await apiClient.user.userControllerRemove(id)).data.data,
-    useErrorBoundary: (error) => error.response!.status >= 500,
     onSuccess: async () => {
-      await queryClient.invalidateQueries(userKeys.list());
+      await queryClient.invalidateQueries({ queryKey: userKeys.list() });
       enqueueSnackbar('User has been deleted', { variant: 'default' });
     },
   });

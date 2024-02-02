@@ -4,19 +4,23 @@ export class Gimme extends BuiltinModule {
   constructor() {
     super(
       'gimme',
-      'A module that randomly selects item from a list of items and entities',
+      'Randomly selects an item from a list of items.',
       JSON.stringify({
         $schema: 'http://json-schema.org/draft-07/schema#',
         type: 'object',
         properties: {
           items: {
+            'x-component': 'item',
             type: 'array',
-            default: ['apple'],
+            title: 'Items',
+            description: 'List of items that a player can receive.',
+            uniqueItems: true,
             items: {
               type: 'string',
             },
           },
           commands: {
+            title: 'Commands',
             type: 'array',
             default: ['say hello from gimme'],
             items: {
@@ -26,6 +30,9 @@ export class Gimme extends BuiltinModule {
         },
         required: ['items'],
         additionalProperties: false,
+      }),
+      JSON.stringify({
+        items: { 'ui:widget': 'item' },
       })
     );
 
@@ -34,7 +41,7 @@ export class Gimme extends BuiltinModule {
         function: '',
         name: 'gimme',
         trigger: 'gimme',
-        helpText: 'Randomly selects item from a list of items and entities',
+        helpText: 'Randomly selects item from a list of items and entities.',
       },
     ];
   }
