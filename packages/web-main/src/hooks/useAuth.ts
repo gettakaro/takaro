@@ -58,6 +58,7 @@ export function useAuth() {
   async function logOut(): Promise<void> {
     if (!cachedClient) cachedClient = createClient(config);
     const logoutFlowRes = await cachedClient.createBrowserLogoutFlow();
+    localStorage.removeItem('selectedGameServerId');
     cachedClient = null;
     queryClient.clear();
     window.location.href = logoutFlowRes.data.logout_url;

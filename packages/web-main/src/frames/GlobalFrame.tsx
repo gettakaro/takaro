@@ -31,6 +31,7 @@ export const GlobalFrame: FC = () => {
   const { storedValue: gameServerId, setValue: setGameServerId } = useLocalStorage<string>('selectedGameServerId', '');
   const { serverId: pathServerId } = useParams();
 
+  // a new serverId was passed in the URL.
   if (pathServerId && pathServerId !== gameServerId) {
     setGameServerId(pathServerId);
   }
