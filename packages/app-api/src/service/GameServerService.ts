@@ -20,12 +20,10 @@ import { HookEvents, IPosition, TakaroEventServerStatusChanged, GameEvents, Even
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { ModuleService } from './ModuleService.js';
-import { JSONSchema } from 'class-validator-jsonschema';
 
 // Curse you ESM... :(
 import _Ajv from 'ajv';
 import { CronJobService } from './CronJobService.js';
-import { getEmptyConfigSchema } from '../lib/systemConfig.js';
 import { PlayerService } from './PlayerService.js';
 import { PlayerOnGameServerService, PlayerOnGameServerUpdateDTO } from './PlayerOnGameserverService.js';
 import { ItemCreateDTO, ItemsService } from './ItemsService.js';
@@ -106,7 +104,6 @@ export class ModuleInstallationOutputDTO extends TakaroModelDTO<ModuleInstallati
   @IsObject()
   userConfig: Record<string, any>;
 
-  @JSONSchema(getEmptyConfigSchema())
   @IsObject()
   systemConfig: Record<string, any>;
 }
