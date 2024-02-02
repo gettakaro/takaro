@@ -4,6 +4,13 @@ import { HookCreateDTOEventTypeEnum } from '@takaro/apiclient';
 
 const { expect } = playwright;
 
+test('Can view module', async ({ takaro, page }) => {
+  const { moduleDefinitionsPage } = takaro;
+  await moduleDefinitionsPage.goto();
+  await moduleDefinitionsPage.view('Module without functions');
+  expect(await page.getByLabel('Name').isEditable()).toBe(false);
+});
+
 test('Can create module', async ({ page, takaro }) => {
   const { moduleDefinitionsPage } = takaro;
   await moduleDefinitionsPage.goto();
@@ -127,10 +134,9 @@ test('Can install module with empty config', async ({ page, takaro }) => {
   //await navigateTo(page, 'server-modules');
   await page.goto(`/server/${takaro.gameServer.id}/modules`);
   await page.getByTestId(`module-${mod.id}`).getByRole('button', { name: 'Install' }).click();
-
   await page.getByRole('button', { name: 'Install' }).click();
 
-  await expect(page.getByTestId(`module-${mod.id}`).getByRole('button', { name: 'Uninstall module' })).toBeVisible();
+  await expect(page.getByTestId(`module-${mod.id}`).getByRole('button', { name: 'Settings' })).toBeVisible();
 });
 
 test('Can install a module with a discord hook', async ({ page, takaro }) => {
@@ -156,12 +162,8 @@ test('Can install a module with a discord hook', async ({ page, takaro }) => {
     .click();
 
   await page.getByTestId(`module-${mod.data.data.id}`).getByRole('button', { name: 'Install' }).click();
-
   await page.getByLabel('My hook Discord channel IDRequired').type('123');
-
   await page.getByRole('button', { name: 'Install' }).click();
 
-  await expect(
-    page.getByTestId(`module-${mod.data.data.id}`).getByRole('button', { name: 'Uninstall module' })
-  ).toBeVisible();
+  await expect(page.getByTestId(`module-${mod.data.data.id}`).getByRole('button', { name: 'Settings' })).toBeVisible();
 });

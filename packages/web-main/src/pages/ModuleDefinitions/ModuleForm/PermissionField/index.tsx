@@ -10,9 +10,10 @@ export interface PermissionFieldProps {
   id: string;
   index: number;
   remove: UseFieldArrayRemove;
+  readOnly: boolean;
 }
 
-export const PermissionField: FC<PermissionFieldProps> = ({ index, id, remove, control }) => {
+export const PermissionField: FC<PermissionFieldProps> = ({ index, id, remove, control, readOnly }) => {
   const permissionName = useWatch({ control, name: `permissions.${index}.permission` });
   return (
     <PermissionCard key={id} data-testid={`permission-${index}`}>
@@ -21,16 +22,18 @@ export const PermissionField: FC<PermissionFieldProps> = ({ index, id, remove, c
           <Chip color="primary" label={`Permission ${index + 1}`} />
           <h3>{permissionName}</h3>
         </div>
-        <Tooltip>
-          <Tooltip.Trigger asChild>
-            <IconButton
-              onClick={() => remove(index)}
-              icon={<RemoveIcon size={16} cursor="pointer" />}
-              ariaLabel="Remove permission"
-            />
-          </Tooltip.Trigger>
-          <Tooltip.Content>Remove</Tooltip.Content>
-        </Tooltip>
+        {!readOnly && (
+          <Tooltip>
+            <Tooltip.Trigger asChild>
+              <IconButton
+                onClick={() => remove(index)}
+                icon={<RemoveIcon size={16} cursor="pointer" />}
+                ariaLabel="Remove permission"
+              />
+            </Tooltip.Trigger>
+            <Tooltip.Content>Remove</Tooltip.Content>
+          </Tooltip>
+        )}
       </Title>
       <Fields>
         <TextField
@@ -39,6 +42,7 @@ export const PermissionField: FC<PermissionFieldProps> = ({ index, id, remove, c
           name={`permissions.${index}.permission`}
           description="This is the permission code name, what you will need to check for inside the module code."
           required
+          readOnly={readOnly}
         />
         <TextField
           control={control}
@@ -46,6 +50,7 @@ export const PermissionField: FC<PermissionFieldProps> = ({ index, id, remove, c
           name={`permissions.${index}.description`}
           placeholder=""
           required
+          readOnly={readOnly}
         />
         <TextField
           control={control}
@@ -53,6 +58,7 @@ export const PermissionField: FC<PermissionFieldProps> = ({ index, id, remove, c
           name={`permissions.${index}.friendlyName`}
           description="This is the name that will be shown when editing permissions of a role."
           required
+          readOnly={readOnly}
         />
       </Fields>
     </PermissionCard>

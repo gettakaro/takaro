@@ -9,7 +9,12 @@ import { useNavigate } from 'react-router-dom';
 import { SpacedRow, ActionIconsContainer } from '../style';
 import { CardBody } from '../style';
 import { PermissionsGuard } from 'components/PermissionsGuard';
-import { AiOutlineEdit as EditIcon, AiOutlineDelete as DeleteIcon, AiOutlineLink as LinkIcon } from 'react-icons/ai';
+import {
+  AiOutlineEdit as EditIcon,
+  AiOutlineDelete as DeleteIcon,
+  AiOutlineLink as LinkIcon,
+  AiOutlineEye as ViewIcon,
+} from 'react-icons/ai';
 
 interface IModuleCardProps {
   mod: ModuleOutputDTO;
@@ -29,6 +34,11 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
   const handleOnEditClick = (e: MouseEvent) => {
     e.stopPropagation();
     navigate(PATHS.modules.update(mod.id));
+  };
+
+  const handleOnViewClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    navigate(PATHS.modules.view(mod.id));
   };
 
   const handleOnDeleteClick = (e: MouseEvent) => {
@@ -72,6 +82,9 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
                 </Dropdown.Trigger>
                 <Dropdown.Menu>
                   <PermissionsGuard requiredPermissions={[[PERMISSIONS.ManageModules]]}>
+                    {!mod.builtin && (
+                      <Dropdown.Menu.Item icon={<ViewIcon />} onClick={handleOnViewClick} label="View module" />
+                    )}
                     {!mod.builtin && (
                       <Dropdown.Menu.Item icon={<EditIcon />} onClick={handleOnEditClick} label="Edit module" />
                     )}
