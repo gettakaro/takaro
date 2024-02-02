@@ -206,6 +206,16 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
         return acc;
       }, {} as Record<string, PermissionModel>);
 
+      const toUpdate = data.permissions.filter((permission) => {
+        const existingPermission = existingPermissionsMap[permission.permission];
+        if (!existingPermission) return false;
+        return (
+          existingPermission.friendlyName !== permission.friendlyName ||
+          existingPermission.canHaveCount !== permission.canHaveCount ||
+          existingPermission.description !== permission.description
+        );
+      });
+
       const toInsert = data.permissions.filter((permission) => !existingPermissionsMap[permission.permission]);
       const toDelete = existingPermissions.filter(
         (permission) => !data.permissions.find((p) => p.permission === permission.permission)
@@ -219,6 +229,15 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
             'id',
             toDelete.map((permission) => permission.id)
           );
+      }
+
+      for (const permission of toUpdate) {
+        const { friendlyName, canHaveCount, description } = permission;
+        await permissionModel
+          .query()
+          .update({ friendlyName, canHaveCount, description })
+          .where('moduleId', id)
+          .andWhere('permission', permission.permission);
       }
 
       if (toInsert.length) {

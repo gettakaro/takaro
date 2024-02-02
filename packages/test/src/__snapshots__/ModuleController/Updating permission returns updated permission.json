@@ -1,0 +1,42 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "id": "f30c85a2-4b9b-4766-8b22-2b9cfae5f1a1",
+      "createdAt": "2024-02-02T16:26:36.422Z",
+      "updatedAt": "2024-02-02T16:26:36.435Z",
+      "name": "Test module",
+      "description": "No description provided.",
+      "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{},\"required\":[],\"additionalProperties\":false}",
+      "uiSchema": "{}",
+      "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{},\"required\":[],\"additionalProperties\":false}",
+      "builtin": null,
+      "cronJobs": [],
+      "hooks": [],
+      "commands": [],
+      "permissions": [
+        {
+          "id": "20a01d80-13f7-4814-adf5-a07a983eec49",
+          "createdAt": "2024-02-02T16:26:36.423Z",
+          "updatedAt": "2024-02-02T16:26:36.436Z",
+          "moduleId": "f30c85a2-4b9b-4766-8b22-2b9cfae5f1a1",
+          "permission": "test",
+          "friendlyName": "new friendly name",
+          "description": "new description",
+          "canHaveCount": false
+        }
+      ]
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "ModuleController",
+    "snapshot": true,
+    "name": "Updating permission returns updated permission",
+    "filteredFields": [
+      "moduleId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}
