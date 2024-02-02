@@ -44,6 +44,7 @@ export const GenericSwitch = forwardRef<HTMLButtonElement, GenericSwitchProps>((
         id={id}
         isChecked={isChecked}
         disabled={disabled}
+        readOnly={readOnly}
         onClick={handleOnClick}
         ref={ref}
         aria-describedby={setAriaDescribedBy(name, hasDescription)}
@@ -55,7 +56,7 @@ export const GenericSwitch = forwardRef<HTMLButtonElement, GenericSwitchProps>((
         <Dot
           initial={{ right: isChecked ? '2px' : '25px' }}
           animate={{ right: isChecked ? '2px' : '25px' }}
-          readOnly={readOnly}
+          $readOnly={readOnly}
           $isChecked={isChecked}
           layout
           transition={getTransition()}

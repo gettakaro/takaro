@@ -36,6 +36,7 @@ export const JsonSchemaForm = forwardRef<Form, PropsWithChildren<JsonSchemaFormP
         'ui:submitButtonOptions': {
           norender: true,
         },
+        ...(readOnly ? { 'ui:readonly': true } : {}),
       };
     }
 

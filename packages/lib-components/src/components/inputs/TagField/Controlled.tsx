@@ -10,8 +10,20 @@ export type ControlledTagFieldProps = TagFieldProps & ControlledInputProps;
 const defaultsApplier = defaultInputPropsFactory<ControlledTagFieldProps>(defaultInputProps);
 
 export const ControlledTagField: FC<ControlledTagFieldProps> = (props) => {
-  const { loading, label, hint, disabled, required, description, placeholder, name, size, readOnly, control } =
-    defaultsApplier(props);
+  const {
+    loading,
+    label,
+    hint,
+    disabled,
+    required,
+    description,
+    placeholder,
+    name,
+    size,
+    readOnly,
+    control,
+    allowDuplicates,
+  } = defaultsApplier(props);
 
   const {
     field,
@@ -77,6 +89,7 @@ export const ControlledTagField: FC<ControlledTagFieldProps> = (props) => {
             field.onChange(values);
           }}
           placeholder={placeholder}
+          allowDuplicates={allowDuplicates}
           hasError={!!error}
           hasDescription={!!description}
           disabled={disabled}

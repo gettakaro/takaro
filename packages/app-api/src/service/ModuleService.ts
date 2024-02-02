@@ -158,11 +158,11 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
         mod.configSchema = JSON.stringify(getEmptyConfigSchema());
       }
       ajv.compile(JSON.parse(mod.configSchema));
-      const created = await this.repo.create(mod);
-      return created;
     } catch (e) {
       throw new errors.BadRequestError('Invalid config schema');
     }
+    const created = await this.repo.create(mod);
+    return created;
   }
 
   async update(id: string, mod: ModuleUpdateDTO) {

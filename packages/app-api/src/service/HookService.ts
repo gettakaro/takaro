@@ -228,7 +228,6 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
           },
         });
         const globalPlayer = await playerService.findOne(playerId);
-
         hookData.pog = resolvedPlayer.results[0];
         hookData.player = globalPlayer;
       }

@@ -15,9 +15,8 @@ const SubHeader = styled.h2`
 const GameServerModules: FC = () => {
   useGameServerDocumentTitle('Modules');
   const { selectedGameServerId } = useSelectedGameServer();
-  const { data: installations, isLoading } = useGameServerModuleInstallations(selectedGameServerId);
-
   const { data } = useInfiniteModules();
+  const { data: installations, isLoading } = useGameServerModuleInstallations(selectedGameServerId);
 
   const mappedModules = useMemo(() => {
     if (!installations || !data) {

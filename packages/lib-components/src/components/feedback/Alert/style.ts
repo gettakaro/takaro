@@ -25,6 +25,8 @@ export const Container = styled(motion.div)<{
   }
   p {
     margin-top: ${({ theme, $hasTitle }) => ($hasTitle ? theme.spacing['0_5'] : theme.spacing[0])};
+    margin-bottom: 0;
+    hyphens: auto;
   }
   p,
   li {
