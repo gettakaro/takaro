@@ -29,6 +29,9 @@ export default {
     loading: false,
     name: 'hasCar',
     description: 'This is a description',
+    readOnly: false,
+    required: true,
+    disabled: false,
   },
 } as Meta<SwitchProps>;
 

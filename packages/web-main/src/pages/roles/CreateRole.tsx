@@ -1,13 +1,13 @@
 import { FC, useEffect } from 'react';
 import { SubmitHandler } from 'react-hook-form';
-import { Skeleton } from '@takaro/lib-components';
+import { DrawerSkeleton } from '@takaro/lib-components';
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from 'paths';
 import * as Sentry from '@sentry/react';
 import { usePermissions, useRoleCreate } from 'queries/roles';
-import { CreateUpdateRoleForm, IFormInputs } from './RolesCreateUpdateForm';
+import { RoleForm, IFormInputs } from './RoleForm';
 
-export const RolesCreate: FC = () => {
+export const CreateRole: FC = () => {
   const { data: permissions, isLoading: isLoadingPermissions } = usePermissions();
   const navigate = useNavigate();
   const { mutateAsync, isPending: isCreatingRole } = useRoleCreate();
@@ -18,7 +18,7 @@ export const RolesCreate: FC = () => {
     }
   }, [open, navigate]);
 
-  if (isLoadingPermissions || !permissions) return <Skeleton variant="rectangular" width="100%" height="100%" />;
+  if (isLoadingPermissions || !permissions) return <DrawerSkeleton />;
 
   const onSubmit: SubmitHandler<IFormInputs> = async ({ name, permissions: formPermissions }) => {
     try {
@@ -38,5 +38,5 @@ export const RolesCreate: FC = () => {
     }
   };
 
-  return <CreateUpdateRoleForm onSubmit={onSubmit} isLoading={isCreatingRole} permissions={permissions} />;
+  return <RoleForm onSubmit={onSubmit} isLoading={isCreatingRole} permissions={permissions} />;
 };

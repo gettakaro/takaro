@@ -122,7 +122,7 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
   const { refs, strategy, x, y, context } = useFloating<HTMLInputElement>({
     whileElementsMounted: autoUpdate,
     open,
-    onOpenChange: setOpen,
+    onOpenChange: readOnly || disabled ? () => {} : setOpen,
     middleware: [
       offset(5),
       size({
@@ -265,6 +265,7 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
       <SelectButton
         id={id}
         ref={refs.setReference}
+        disabled={disabled}
         readOnly={readOnly}
         onBlur={onBlur}
         onFocus={onFocus}
@@ -287,7 +288,6 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
         )}
       </SelectButton>
       {open &&
-        !readOnly &&
         (!inPortal ? (
           <StyledFloatingOverlay lockScroll style={{ zIndex: 1000 }}>
             {renderSelect()}

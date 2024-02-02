@@ -45,8 +45,8 @@ export const validationSchema = z.object({
         .string()
         .nonempty('Permission cannot be empty')
         .refine((val) => !val.includes(' '), 'Spaces are not allowed.'),
-      description: z.string().optional(),
-      friendlyName: z.string().optional(),
+      description: z.string(),
+      friendlyName: z.string(),
     })
   ),
   configFields: z
