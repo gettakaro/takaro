@@ -31,6 +31,10 @@ export function schemaToInputs(schema: SchemaObject): SchemaToInputsResult {
     return { inputs, errors };
   }
 
+  if (!schema.properties) {
+    return { inputs, errors };
+  }
+
   Object.entries(schema.properties).forEach(([name, propertySchema]) => {
     const property = propertySchema as StrictRJSFSchema;
     try {
