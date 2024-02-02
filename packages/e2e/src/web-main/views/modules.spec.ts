@@ -4,6 +4,13 @@ import { HookCreateDTOEventTypeEnum } from '@takaro/apiclient';
 
 const { expect } = playwright;
 
+test('Can view module', async ({ takaro, page }) => {
+  const { moduleDefinitionsPage } = takaro;
+  await moduleDefinitionsPage.goto();
+  await moduleDefinitionsPage.view('Module without functions');
+  expect(await page.getByLabel('Name').isEditable()).toBe(false);
+});
+
 test('Can create module', async ({ page, takaro }) => {
   const { moduleDefinitionsPage } = takaro;
   await moduleDefinitionsPage.goto();
