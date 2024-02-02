@@ -6,7 +6,8 @@ import { useForm, SubmitHandler, useFieldArray } from 'react-hook-form';
 import { Switch, TextField, Button, SelectField, styled, Skeleton, camelCaseToSpaces } from '@takaro/lib-components';
 import { useSnackbar } from 'notistack';
 import { useApiClient } from 'hooks/useApiClient';
-import { SettingsOutputDTOTypeEnum } from '@takaro/apiclient';
+import { PERMISSIONS, SettingsOutputDTOTypeEnum } from '@takaro/apiclient';
+import { useHasPermission } from 'components/PermissionsGuard';
 
 const SettingsContainer = styled.div`
   display: grid;
@@ -41,10 +42,12 @@ const GameServerSettings: FC = () => {
     useGameServerSettings(selectedGameServerId);
   const { data: globalGameServerSettings, isLoading: isLoadingGlobalServerGameServerSettings } =
     useGlobalGameServerSettings();
-
+  const { hasPermission, isLoading: isLoadingPermissions } = useHasPermission([PERMISSIONS.ManageSettings]);
   const { mutateAsync: deleteGameServerSetting } = useDeleteGameServerSetting();
   const { enqueueSnackbar } = useSnackbar();
   const apiClient = useApiClient();
+
+  const readOnly = !hasPermission;
 
   const { control, handleSubmit, watch, formState, reset } = useForm<IFormInputs>({
     mode: 'onSubmit',
@@ -110,7 +113,7 @@ const GameServerSettings: FC = () => {
           }
           settingsComponents[key] = (fieldName: string, disabled: boolean) => (
             <NoSpacing>
-              <Switch control={control} name={fieldName} key={key} disabled={disabled} />
+              <Switch readOnly={readOnly} control={control} name={fieldName} key={key} disabled={disabled} />
             </NoSpacing>
           );
         } else {
@@ -121,7 +124,7 @@ const GameServerSettings: FC = () => {
           }
           settingsComponents[key] = (fieldName: string, disabled: boolean) => (
             <NoSpacing>
-              <TextField control={control} name={fieldName} key={key} disabled={disabled} />
+              <TextField readOnly={readOnly} control={control} name={fieldName} key={key} disabled={disabled} />
             </NoSpacing>
           );
         }
@@ -132,7 +135,7 @@ const GameServerSettings: FC = () => {
     return settingsComponents;
   }, [gameServerSettings, globalGameServerSettings]);
 
-  if (isLoadingGlobalServerGameServerSettings || isLoadingGameServerSettings) {
+  if (isLoadingGlobalServerGameServerSettings || isLoadingGameServerSettings || isLoadingPermissions) {
     return (
       <div>
         <SettingsContainer>
@@ -186,6 +189,7 @@ const GameServerSettings: FC = () => {
               </div>
               <NoSpacing>
                 <SelectField
+                  readOnly={readOnly}
                   control={control}
                   name={`settings.${index}.type`}
                   render={(selectedItems) =>
@@ -210,13 +214,15 @@ const GameServerSettings: FC = () => {
               )}
             </SettingsContainer>
           ))}
-          <Button
-            disabled={!formState.isDirty}
-            isLoading={isLoadingGameServerSettings}
-            text="Save"
-            type="submit"
-            variant="default"
-          />
+          {!readOnly && (
+            <Button
+              disabled={!formState.isDirty}
+              isLoading={isLoadingGameServerSettings}
+              text="Save"
+              type="submit"
+              variant="default"
+            />
+          )}
         </>
       </form>
     </>

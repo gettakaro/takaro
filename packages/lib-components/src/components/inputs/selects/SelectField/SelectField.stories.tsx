@@ -20,6 +20,8 @@ export default {
     hint: 'This is the hint',
     optionGroupLabel: 'Films',
     canClear: false,
+    readOnly: false,
+    disabled: false,
   },
 } as Meta<SelectFieldProps & ExtraStoryProps>;
 
@@ -45,6 +47,8 @@ export const onChange: StoryFn<SelectFieldProps & ExtraStoryProps> = (args) => {
         canClear={args.canClear}
         name="film"
         hint={args.hint}
+        readOnly={args.readOnly}
+        disabled={args.disabled}
         render={(selectedItems) => {
           if (selectedItems.length === 0) {
             return <div>Select...</div>;

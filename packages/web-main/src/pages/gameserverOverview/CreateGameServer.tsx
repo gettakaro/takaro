@@ -24,7 +24,7 @@ export interface IFormInputs {
   connectionInfo: MockConnectionInfo | RustConnectionInfo | SdtdConnectionInfo;
 }
 
-const CreateGameServer: FC = () => {
+export const CreateGameServer: FC = () => {
   const [open, setOpen] = useState(true);
   const [reachabilityError, setReachabilityError] = useState<string | null>(null);
   const [connectionOk, setConnectionOk] = useState<boolean>(false);
@@ -162,5 +162,3 @@ const CreateGameServer: FC = () => {
     </Drawer>
   );
 };
-
-export default CreateGameServer;

@@ -25,7 +25,7 @@ export class GameServersPage extends BasePage {
     await this.page.goto('/servers/create');
   }
 
-  async action(action: 'Edit' | 'Delete') {
+  async action(action: 'Edit' | 'Delete' | 'View') {
     const card = this.page.getByTestId(`gameserver-${this.gameServer.id}-card`);
     await card.getByRole('button', { name: 'Settings' }).click();
     await this.page.getByText(`${action} gameserver`).click();
