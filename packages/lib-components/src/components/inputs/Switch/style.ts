@@ -6,6 +6,7 @@ export const Container = styled.div`
   display: flex;
   flex-direction: row;
   text-align: left;
+  margin-bottom: ${({ theme }) => theme.spacing['0_5']};
 `;
 
 export const ContentContainer = styled.button<{ isChecked: boolean; hasError: boolean; readOnly: boolean }>`

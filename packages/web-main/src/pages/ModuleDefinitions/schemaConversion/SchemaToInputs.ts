@@ -31,7 +31,7 @@ export function schemaToInputs(schema: SchemaObject): SchemaToInputsResult {
     return { inputs, errors };
   }
 
-  if (!schema.properties) {
+  if (schema.properties === undefined) {
     return { inputs, errors };
   }
 

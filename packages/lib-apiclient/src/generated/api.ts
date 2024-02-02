@@ -4563,6 +4563,25 @@ export interface PermissionInputDTO {
 /**
  *
  * @export
+ * @interface PermissionModuleDTO
+ */
+export interface PermissionModuleDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof PermissionModuleDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PermissionModuleDTO
+   */
+  name: string;
+}
+/**
+ *
+ * @export
  * @interface PermissionOnRoleDTO
  */
 export interface PermissionOnRoleDTO {
@@ -4609,6 +4628,12 @@ export interface PermissionOnRoleDTO {
  * @interface PermissionOutputDTO
  */
 export interface PermissionOutputDTO {
+  /**
+   *
+   * @type {PermissionModuleDTO}
+   * @memberof PermissionOutputDTO
+   */
+  module?: PermissionModuleDTO;
   /**
    *
    * @type {string}

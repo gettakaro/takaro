@@ -1,8 +1,8 @@
 import { FC, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, CollapseList, Drawer, FormError, Switch, TextField } from '@takaro/lib-components';
+import { Button, Card, CollapseList, Drawer, FormError, Switch, TextField, useTheme } from '@takaro/lib-components';
 import { PermissionOutputDTO, RoleOutputDTO } from '@takaro/apiclient';
-import { useForm, SubmitHandler } from 'react-hook-form';
+import { useForm, SubmitHandler, Control } from 'react-hook-form';
 import { PATHS } from 'paths';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { validationSchema } from './validationSchema';
@@ -24,7 +24,23 @@ export const RoleForm: FC<CreateUpdateRoleFormProps> = ({ initialData, permissio
   const [open, setOpen] = useState(true);
   const [error] = useState<string | null>(null);
   const navigate = useNavigate();
+  const theme = useTheme();
   const readOnly = onSubmit === undefined;
+
+  const systemPermissions = permissions.filter((p) => !p.module);
+  const groupedModulePermissions = permissions.reduce((acc, permission) => {
+    if (permission.module) {
+      const moduleId = permission.module.id;
+      if (!acc[moduleId]) {
+        acc[moduleId] = {
+          module: permission.module,
+          permissions: [],
+        };
+      }
+      acc[moduleId].permissions.push(permission);
+    }
+    return acc;
+  }, {});
 
   useEffect(() => {
     if (!open) {
@@ -68,31 +84,27 @@ export const RoleForm: FC<CreateUpdateRoleFormProps> = ({ initialData, permissio
                   required
                 />
               </CollapseList.Item>
-              <CollapseList.Item title="Permissions">
-                {permissions.map((permission) => {
-                  return (
-                    <PermissionContainer hasCount={permission.canHaveCount ? true : false}>
-                      <Switch
-                        control={control}
-                        label={permission.friendlyName}
-                        name={`permissions.${permission.id}.enabled`}
+              <CollapseList.Item title="System permissions">
+                {systemPermissions.map((permission) => (
+                  <PermissionField key={permission.id} permission={permission} control={control} readOnly={readOnly} />
+                ))}
+              </CollapseList.Item>
+              <CollapseList.Item title="Module permissions">
+                {Object.values(groupedModulePermissions).map((group: any) => (
+                  <Card key={group.module.id} variant="outline" style={{ marginBottom: theme.spacing['2'] }}>
+                    <h3 style={{ marginBottom: theme.spacing['1'], textTransform: 'capitalize' }}>
+                      {group.module.name}
+                    </h3>
+                    {group.permissions.map((permission: any) => (
+                      <PermissionField
                         key={permission.id}
-                        description={permission.description}
+                        permission={permission}
+                        control={control}
                         readOnly={readOnly}
                       />
-                      {permission.canHaveCount && (
-                        <TextField
-                          control={control}
-                          label="Amount"
-                          type="number"
-                          readOnly={readOnly}
-                          placeholder="Enter amount"
-                          name={`permissions.${permission.id}.count`}
-                        />
-                      )}
-                    </PermissionContainer>
-                  );
-                })}
+                    ))}
+                  </Card>
+                ))}{' '}
               </CollapseList.Item>
               {error && <FormError message={error} />}
             </form>
@@ -110,5 +122,36 @@ export const RoleForm: FC<CreateUpdateRoleFormProps> = ({ initialData, permissio
         </Drawer.Footer>
       </Drawer.Content>
     </Drawer>
+  );
+};
+
+interface PermissionFieldProps {
+  permission: PermissionOutputDTO;
+  control: Control<IFormInputs>;
+  readOnly: boolean;
+}
+
+const PermissionField: FC<PermissionFieldProps> = ({ permission, control, readOnly }) => {
+  return (
+    <PermissionContainer hasCount={permission.canHaveCount ? true : false}>
+      <Switch
+        control={control}
+        label={`${permission.friendlyName}`}
+        name={`permissions.${permission.id}.enabled`}
+        key={permission.id}
+        description={permission.description}
+        readOnly={readOnly}
+      />
+      {permission.canHaveCount && (
+        <TextField
+          control={control}
+          label="Amount"
+          type="number"
+          readOnly={readOnly}
+          placeholder="Enter amount"
+          name={`permissions.${permission.id}.count`}
+        />
+      )}
+    </PermissionContainer>
   );
 };
