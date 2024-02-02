@@ -90,13 +90,19 @@ export class RoleRepo extends ITakaroRepo<RoleModel, RoleOutputDTO, ServiceRoleC
     return new RoleOutputDTO().construct({
       ...data,
       permissions: await Promise.all(
-        data.permissions?.map(async (c) =>
-          new PermissionOnRoleDTO().construct({
-            ...c,
-            permission: await new PermissionOutputDTO().construct(c.permission),
-            count: c.count || 0,
+        data.permissions
+          ?.sort((a, b) => {
+            if (a.permission.permission < b.permission.permission) return -1;
+            if (a.permission.permission > b.permission.permission) return 1;
+            return 0;
           })
-        )
+          .map(async (c) =>
+            new PermissionOnRoleDTO().construct({
+              ...c,
+              permission: await new PermissionOutputDTO().construct(c.permission),
+              count: c.count || 0,
+            })
+          )
       ),
     });
   }

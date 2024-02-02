@@ -64,7 +64,7 @@ export class Mock implements IGameServer {
 
   private async requestFromServer(event: string, ...args: any[]) {
     const client = await this.getClient();
-    return client.timeout(10000).emitWithAck(event, ...args);
+    return client.timeout(30000).emitWithAck(event, ...args);
   }
 
   async getPlayer(player: IPlayerReferenceDTO): Promise<IGamePlayer | null> {

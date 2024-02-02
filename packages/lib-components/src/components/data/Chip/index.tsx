@@ -10,6 +10,7 @@ export type ShowIcon = 'always' | 'hover';
 export interface ChipProps {
   label: string;
   disabled?: boolean;
+  readOnly?: boolean;
   dot?: boolean;
   onClick?: () => void;
   onDelete?: () => void;
@@ -27,6 +28,7 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
       variant = 'default',
       label,
       disabled = false,
+      readOnly = false,
       onClick = undefined,
       onDelete = undefined,
       isLoading = false,
@@ -40,7 +42,7 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
       return (
         <Container
           ref={ref}
-          clickable={onClick !== undefined}
+          clickable={!readOnly && !disabled && onClick !== undefined}
           color={color}
           disabled={disabled}
           outline={false}
@@ -67,7 +69,7 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
         {dot && <Dot color={color} outline={variant !== 'default'} />}
         <span>{label}</span>
         {!onDelete && icon && cloneElement(icon, { size: 12, className: 'icon' })}
-        {onDelete && <Icon onClick={onDelete} size={12} />}
+        {onDelete && !readOnly && !disabled && <Icon onClick={onDelete} size={12} />}
       </Container>
     );
   }

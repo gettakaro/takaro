@@ -102,7 +102,14 @@ export const GenericTagField = forwardRef<HTMLDivElement, GenericTagFieldProps>(
     return (
       <TagsContainer aria-labelledby={name} ref={ref}>
         {tags.map((tag) => (
-          <Tag key={tag} label={tag} onDelete={() => onTagDelete(tag)} disabled={disabled} color="secondary" />
+          <Tag
+            key={tag}
+            label={tag}
+            onDelete={() => onTagDelete(tag)}
+            disabled={disabled}
+            readOnly={readOnly}
+            color="secondary"
+          />
         ))}
         <input
           type="text"

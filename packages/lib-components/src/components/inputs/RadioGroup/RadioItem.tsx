@@ -1,8 +1,8 @@
-import { getTransition } from '../../../helpers';
 import { forwardRef, useRef } from 'react';
 import { useRadioGroupContext } from './context';
 import { styled } from '../../../styled';
 import { motion } from 'framer-motion';
+import { AiOutlineCheck as CheckMarkIcon } from 'react-icons/ai';
 
 const RadioItemContainer = styled.div<{ readOnly: boolean; isChecked: boolean; disabled: boolean }>`
   display: grid;
@@ -25,7 +25,12 @@ const RadioItemContainer = styled.div<{ readOnly: boolean; isChecked: boolean; d
   background-color: ${({ theme, readOnly, disabled }) =>
     readOnly || disabled ? theme.colors.backgroundAccent : theme.colors.background};
   border-radius: 100%;
-  cursor: ${({ readOnly }) => (readOnly ? 'normal' : 'pointer')};
+  cursor: ${({ readOnly, disabled }) => {
+    if (disabled) return 'not-allowed';
+    if (readOnly) return 'default';
+    return 'pointer';
+  }};
+
   overflow: visible;
 
   &.placeholder {
@@ -38,13 +43,17 @@ const RadioItemContainer = styled.div<{ readOnly: boolean; isChecked: boolean; d
 `;
 
 const Inner = styled(motion.div)<{ $isChecked: boolean; $readOnly: boolean }>`
-  width: ${({ theme }) => theme.spacing['1_5']};
-  height: ${({ theme }) => theme.spacing['1_5']};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: ${({ theme }) => theme.spacing['2_5']};
+  height: ${({ theme }) => theme.spacing['2_5']};
   border-radius: 100%;
   background-color: ${({ theme, $readOnly }) => {
     if ($readOnly) return theme.colors.backgroundAlt;
     return theme.colors.primary;
   }};
+  overflow: hidden;
   opacity: ${({ $isChecked }): number => ($isChecked ? 1 : 0)};
   transition: 0.1s opacity linear cubic-bezier(0.215, 0.61, 0.355, 1);
 `;
@@ -89,6 +98,8 @@ export const RadioItem = forwardRef<HTMLDivElement, RadioItemProps>(
           value={value}
           tabIndex={-1}
           checked={checked}
+          aria-readonly={readOnly || groupReadOnly}
+          aria-disabled={disabled || groupDisabled}
           onChange={(e) => setSelectedValue(e)}
           ref={inputRef}
         />
@@ -106,9 +117,10 @@ export const RadioItem = forwardRef<HTMLDivElement, RadioItemProps>(
             animate={checked ? 'checked' : 'unchecked'}
             $isChecked={checked}
             $readOnly={readOnly || groupReadOnly}
-            transition={getTransition()}
             variants={variants}
-          />
+          >
+            {checked && <CheckMarkIcon />}
+          </Inner>
         </RadioItemContainer>
       </>
     );

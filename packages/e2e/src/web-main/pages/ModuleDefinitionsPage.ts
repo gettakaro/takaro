@@ -64,6 +64,11 @@ export class ModuleDefinitionsPage extends BasePage {
     }
   }
 
+  async view(name: string) {
+    await this.page.getByRole('link', { name: name }).getByRole('button', { name: 'Settings' }).click();
+    await this.page.getByRole('menuitem', { name: 'View module' }).click();
+  }
+
   async delete(name: string) {
     await this.page.getByRole('link', { name: name }).getByRole('button', { name: 'Settings' }).click();
     await this.page.getByRole('menuitem', { name: 'Delete module' }).click();
