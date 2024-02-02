@@ -1,0 +1,36 @@
+{
+  "body": {
+    "meta": {},
+    "data": [
+      {
+        "key": "commandPrefix",
+        "value": "!",
+        "type": "override"
+      },
+      {
+        "key": "serverChatName",
+        "value": "Takaro",
+        "type": "default"
+      },
+      {
+        "key": "economyEnabled",
+        "value": "false",
+        "type": "default"
+      },
+      {
+        "key": "currencyName",
+        "value": "Takaro coins",
+        "type": "default"
+      }
+    ]
+  },
+  "status": 200,
+  "test": {
+    "group": "SettingsController",
+    "snapshot": true,
+    "name": "Setting for gameserver multiple times overwrites properly",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

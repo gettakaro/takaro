@@ -1,4 +1,8 @@
-import { EventOutputDTO, EventOutputDTOEventNameEnum, EventSearchInputAllowedFilters } from '@takaro/apiclient';
+import {
+  EventOutputDTO,
+  EventOutputDTOEventNameEnum as EventName,
+  EventSearchInputAllowedFilters,
+} from '@takaro/apiclient';
 import { styled, DateRangePicker, Button } from '@takaro/lib-components';
 import { EventFeed, EventItem } from 'components/events/EventFeed';
 import { EventFilter } from 'components/events/EventFilter';
@@ -72,22 +76,25 @@ const treeData = [
     name: 'Gameserver',
     children: [
       {
-        name: EventOutputDTOEventNameEnum.PlayerConnected,
+        name: EventName.PlayerConnected,
       },
       {
-        name: EventOutputDTOEventNameEnum.PlayerDisconnected,
+        name: EventName.PlayerDisconnected,
       },
       {
-        name: EventOutputDTOEventNameEnum.ChatMessage,
+        name: EventName.ChatMessage,
       },
       {
-        name: EventOutputDTOEventNameEnum.PlayerDeath,
+        name: EventName.PlayerDeath,
       },
       {
-        name: EventOutputDTOEventNameEnum.EntityKilled,
+        name: EventName.EntityKilled,
       },
       {
-        name: EventOutputDTOEventNameEnum.PlayerNewIpDetected,
+        name: EventName.PlayerNewIpDetected,
+      },
+      {
+        name: EventName.ServerStatusChanged,
       },
     ],
   },
@@ -96,13 +103,13 @@ const treeData = [
     defaultEnabled: true,
     children: [
       {
-        name: EventOutputDTOEventNameEnum.CronjobExecuted,
+        name: EventName.CronjobExecuted,
       },
       {
-        name: EventOutputDTOEventNameEnum.HookExecuted,
+        name: EventName.HookExecuted,
       },
       {
-        name: EventOutputDTOEventNameEnum.CommandExecuted,
+        name: EventName.CommandExecuted,
       },
     ],
   },
@@ -110,10 +117,10 @@ const treeData = [
     name: 'Economy',
     children: [
       {
-        name: EventOutputDTOEventNameEnum.CurrencyAdded,
+        name: EventName.CurrencyAdded,
       },
       {
-        name: EventOutputDTOEventNameEnum.CurrencyDeducted,
+        name: EventName.CurrencyDeducted,
       },
     ],
   },
@@ -121,22 +128,22 @@ const treeData = [
     name: 'Global',
     children: [
       {
-        name: EventOutputDTOEventNameEnum.RoleAssigned,
+        name: EventName.RoleAssigned,
       },
       {
-        name: EventOutputDTOEventNameEnum.RoleRemoved,
+        name: EventName.RoleRemoved,
       },
       {
-        name: EventOutputDTOEventNameEnum.RoleCreated,
+        name: EventName.RoleCreated,
       },
       {
-        name: EventOutputDTOEventNameEnum.RoleUpdated,
+        name: EventName.RoleUpdated,
       },
       {
-        name: EventOutputDTOEventNameEnum.RoleDeleted,
+        name: EventName.RoleDeleted,
       },
       {
-        name: EventOutputDTOEventNameEnum.SettingsSet,
+        name: EventName.SettingsSet,
       },
     ],
   },
@@ -146,7 +153,7 @@ const allFields = ['moduleId', 'gameserverId', 'playerId'];
 
 function clientSideFilter(
   event: EventOutputDTO,
-  eventTypes: EventOutputDTOEventNameEnum[],
+  eventTypes: EventName[],
   filters: Filter[],
   startDate: DateTime | null,
   endDate: DateTime | null
@@ -181,7 +188,7 @@ export const Events: FC = () => {
   const [startDate, setStartDate] = useState<DateTime | null>(null);
   const [endDate, setEndDate] = useState<DateTime | null>(null);
 
-  const [eventTypes, setEventTypes] = useState<EventOutputDTOEventNameEnum[]>([]);
+  const [eventTypes, setEventTypes] = useState<EventName[]>([]);
   const [tagFilters, setTagFilters] = useState<Filter[]>([]);
   const [searchFilters, setSearchFilters] = useState<Filter[]>([]);
 
@@ -338,7 +345,7 @@ export const Events: FC = () => {
           <TreeFilter
             data={treeData}
             addFilters={(f) => {
-              setEventTypes((prev) => [...prev, ...f] as EventOutputDTOEventNameEnum[]);
+              setEventTypes((prev) => [...prev, ...f] as EventName[]);
             }}
             removeFilters={(f) => {
               setEventTypes((prev) => prev.filter((filter) => !f.includes(filter)));

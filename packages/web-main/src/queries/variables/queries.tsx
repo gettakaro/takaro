@@ -1,4 +1,4 @@
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { useApiClient } from 'hooks/useApiClient';
 import {
   IdUuidDTO,
@@ -24,15 +24,15 @@ export const useInfiniteVariables = (queryParams: VariableSearchInputDTO = { pag
 
   const queryOpts = useInfiniteQuery<VariableOutputArrayDTOAPI, AxiosError<VariableOutputArrayDTOAPI>>({
     queryKey: [...variableKeys.list(), { ...queryParams }],
-    queryFn: async ({ pageParam = queryParams.page }) =>
+    queryFn: async ({ pageParam }) =>
       (
         await apiClient.variable.variableControllerSearch({
           ...queryParams,
-          page: pageParam,
+          page: pageParam as number,
         })
       ).data,
+    initialPageParam: queryParams.page,
     getNextPageParam: (lastPage, pages) => hasNextPage(lastPage.meta, pages.length),
-    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 
   const InfiniteScroll = useMemo(() => {
@@ -48,8 +48,7 @@ export const useVariables = (queryParams: VariableSearchInputDTO = { page: 0 }) 
   const queryOpts = useQuery<VariableOutputArrayDTOAPI, AxiosError<VariableOutputArrayDTOAPI>>({
     queryKey: [...variableKeys.list(), { queryParams }],
     queryFn: async () => (await apiClient.variable.variableControllerSearch(queryParams)).data,
-    keepPreviousData: true,
-    useErrorBoundary: (error) => error.response!.status >= 500,
+    placeholderData: keepPreviousData,
   });
   return queryOpts;
 };
@@ -75,7 +74,7 @@ export const useVariableCreate = () => {
     mutationFn: async (variable) => (await apiClient.variable.variableControllerCreate(variable)).data.data,
     onSuccess: async (newVariable) => {
       // update the list of variables to reflect the new variable
-      await queryClient.invalidateQueries(variableKeys.list());
+      await queryClient.invalidateQueries({ queryKey: variableKeys.list() });
 
       // Create cache key for the new variable
       queryClient.setQueryData(variableKeys.detail(newVariable.id), newVariable);
@@ -97,7 +96,7 @@ export const useVariableUpdate = () => {
       (await apiClient.variable.variableControllerUpdate(variableId, variableDetails)).data.data,
     onSuccess: async (updatedVar) => {
       // renew the list of variables to reflect the new variable
-      await queryClient.invalidateQueries(variableKeys.list());
+      await queryClient.invalidateQueries({ queryKey: variableKeys.list() });
 
       // update cache of updated variable
       queryClient.setQueryData(variableKeys.detail(updatedVar.id), updatedVar);
@@ -113,10 +112,10 @@ export const useVariableDelete = () => {
     mutationFn: async (variableId) => (await apiClient.variable.variableControllerDelete(variableId)).data.data,
     onSuccess: async (removedVar) => {
       // update the list of variables to reflect the new variable
-      await queryClient.invalidateQueries(variableKeys.list());
+      await queryClient.invalidateQueries({ queryKey: variableKeys.list() });
 
       // Delete cache for the deleted variable
-      queryClient.removeQueries(variableKeys.detail(removedVar.id));
+      queryClient.removeQueries({ queryKey: variableKeys.detail(removedVar.id) });
     },
   });
 };

@@ -8,7 +8,7 @@ async function main() {
 
   const items = data.module.userConfig.starterKitItems;
 
-  if (!items.length) {
+  if (!items || items.length === 0) {
     throw new TakaroUserError(
       'No starter kit items configured. Please ask your server administrator to configure this.'
     );
@@ -18,7 +18,7 @@ async function main() {
     filters: {
       key: [VARIABLE_KEY],
       gameServerId: [data.gameServerId],
-      playerId: [data.player.playerId],
+      playerId: [data.player.id],
     },
   });
 
@@ -30,7 +30,7 @@ async function main() {
 
   await Promise.all(
     items.map(async (item) => {
-      return takaro.gameserver.gameServerControllerGiveItem(data.gameServerId, data.player.playerId, {
+      return takaro.gameserver.gameServerControllerGiveItem(data.gameServerId, data.player.id, {
         name: item,
         amount: 1,
       });
@@ -41,7 +41,7 @@ async function main() {
     key: VARIABLE_KEY,
     value: '1',
     gameServerId: data.gameServerId,
-    playerId: data.player.playerId,
+    playerId: data.player.id,
   });
 
   await data.player.pm(`Gave ${items.length} items, enjoy!`);

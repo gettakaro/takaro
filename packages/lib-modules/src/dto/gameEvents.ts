@@ -1,15 +1,19 @@
-import { IsDate, IsEnum, IsString, ValidateNested, IsOptional, IsNumber } from 'class-validator';
+import { IsEnum, IsString, ValidateNested, IsOptional, IsNumber } from 'class-validator';
 import { TakaroDTO } from '@takaro/util';
 import { Type } from 'class-transformer';
+import { BaseEvent } from './base.js';
+import { ValueOf } from 'type-fest';
 
-export enum GameEvents {
-  LOG_LINE = 'log',
-  PLAYER_CONNECTED = 'player-connected',
-  PLAYER_DISCONNECTED = 'player-disconnected',
-  CHAT_MESSAGE = 'chat-message',
-  PLAYER_DEATH = 'player-death',
-  ENTITY_KILLED = 'entity-killed',
-}
+export const GameEvents = {
+  LOG_LINE: 'log',
+  PLAYER_CONNECTED: 'player-connected',
+  PLAYER_DISCONNECTED: 'player-disconnected',
+  CHAT_MESSAGE: 'chat-message',
+  PLAYER_DEATH: 'player-death',
+  ENTITY_KILLED: 'entity-killed',
+} as const;
+
+export type GameEventTypes = ValueOf<typeof GameEvents>;
 
 export class IGamePlayer extends TakaroDTO<IGamePlayer> {
   /**
@@ -48,14 +52,12 @@ export class IGamePlayer extends TakaroDTO<IGamePlayer> {
   ping?: number;
 }
 
-export class BaseGameEvent<T> extends TakaroDTO<T> {
-  @IsDate()
-  timestamp: Date = new Date();
-
+export class BaseGameEvent<T> extends BaseEvent<T> {
   @IsEnum(GameEvents)
-  type: string;
+  declare type: ValueOf<typeof GameEvents>;
 
   @IsString()
+  @IsOptional()
   msg: string;
 }
 
@@ -66,6 +68,7 @@ export interface IPosition {
 }
 
 export class EventLogLine extends BaseGameEvent<EventLogLine> {
+  @IsString()
   type = GameEvents.LOG_LINE;
 }
 
@@ -131,22 +134,11 @@ export class EventEntityKilled extends BaseGameEvent<EventEntityKilled> {
   weapon: string;
 }
 
-export function isConnectedEvent(a: BaseGameEvent<unknown>): a is EventPlayerConnected {
-  return a.type === GameEvents.PLAYER_CONNECTED;
-}
-
-export function isDisconnectedEvent(a: BaseGameEvent<unknown>): a is EventPlayerDisconnected {
-  return a.type === GameEvents.PLAYER_DISCONNECTED;
-}
-
-export function isChatMessageEvent(a: BaseGameEvent<unknown>): a is EventChatMessage {
-  return a.type === GameEvents.CHAT_MESSAGE;
-}
-
-export function isPlayerDeathEvent(a: BaseGameEvent<unknown>): a is EventPlayerDeath {
-  return a.type === GameEvents.PLAYER_DEATH;
-}
-
-export function isEntityKilledEvent(a: BaseGameEvent<unknown>): a is EventEntityKilled {
-  return a.type === GameEvents.ENTITY_KILLED;
-}
+export const GameEventsMapping = {
+  [GameEvents.PLAYER_CONNECTED]: EventPlayerConnected,
+  [GameEvents.PLAYER_DISCONNECTED]: EventPlayerDisconnected,
+  [GameEvents.CHAT_MESSAGE]: EventChatMessage,
+  [GameEvents.PLAYER_DEATH]: EventPlayerDeath,
+  [GameEvents.ENTITY_KILLED]: EventEntityKilled,
+  [GameEvents.LOG_LINE]: EventLogLine,
+} as const;

@@ -26,6 +26,8 @@ describe('GameEventEmitter', () => {
     emitter.on(GameEvents.PLAYER_CONNECTED, listenerSpy);
 
     // @ts-expect-error Should use the enum here
+    emitter.on('non-existent-event', listenerSpy);
+
     // But the raw string will also work in runtime when ignoring the compilation error
     emitter.on('player-connected', listenerSpy);
 

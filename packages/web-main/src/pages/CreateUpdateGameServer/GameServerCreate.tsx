@@ -29,8 +29,8 @@ const CreateGameServer: FC = () => {
   const [reachabilityError, setReachabilityError] = useState<string | null>(null);
   const [connectionOk, setConnectionOk] = useState<boolean>(false);
   const navigate = useNavigate();
-  const { mutateAsync, isLoading, error: gameServerCreateError } = useGameServerCreate();
-  const { mutateAsync: testReachabilityMutation, isLoading: testingConnection } = useGameServerReachabilityByConfig();
+  const { mutateAsync, isPending, error: gameServerCreateError } = useGameServerCreate();
+  const { mutateAsync: testReachabilityMutation, isPending: testingConnection } = useGameServerReachabilityByConfig();
   const { setSelectedGameServerId } = useSelectedGameServer();
 
   useEffect(() => {
@@ -98,7 +98,7 @@ const CreateGameServer: FC = () => {
                 <TextField
                   control={control}
                   label="Server name"
-                  loading={isLoading}
+                  loading={isPending}
                   name="name"
                   placeholder="My cool server"
                   required
@@ -109,7 +109,7 @@ const CreateGameServer: FC = () => {
                   name="type"
                   label="Game Server"
                   required
-                  loading={isLoading}
+                  loading={isPending}
                   render={(selectedItems) => {
                     if (selectedItems.length === 0) {
                       return <div>Select...</div>;
@@ -130,7 +130,7 @@ const CreateGameServer: FC = () => {
               </CollapseList.Item>
               {type !== undefined && (
                 <CollapseList.Item title="Connection info">
-                  {connectionInfoFieldsMap(isLoading, control)[type]}
+                  {connectionInfoFieldsMap(isPending, control)[type]}
                 </CollapseList.Item>
               )}
               {reachabilityError && <FormError message={reachabilityError} />}

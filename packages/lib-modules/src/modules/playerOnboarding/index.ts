@@ -1,5 +1,5 @@
 import { BuiltinModule } from '../../BuiltinModule.js';
-import { EventTypes } from '../../dto/index.js';
+import { HookEvents } from '../../dto/index.js';
 export class PlayerOnboarding extends BuiltinModule {
   constructor() {
     super(
@@ -10,6 +10,8 @@ export class PlayerOnboarding extends BuiltinModule {
         type: 'object',
         properties: {
           message: {
+            title: 'Message',
+            description: 'The message to send to the player when they join the server.',
             type: 'string',
             minLength: 1,
             maxLength: 256,
@@ -17,21 +19,27 @@ export class PlayerOnboarding extends BuiltinModule {
           },
           starterKitItems: {
             type: 'array',
+            'x-component': 'item',
+            title: 'Starter kit items',
+            description:
+              'List of items a player will receive when they execute the starterkit command for the first time.',
+            uniqueItems: true,
             items: {
               type: 'string',
-              minLength: 1,
-              maxLength: 512,
             },
-            default: [],
           },
         },
+        required: [],
         additionalProperties: false,
+      }),
+      JSON.stringify({
+        starterKitItems: { 'ui:widget': 'item' },
       })
     );
 
     this.hooks = [
       {
-        eventType: EventTypes.PLAYER_CONNECTED,
+        eventType: HookEvents.PLAYER_CONNECTED,
         name: 'playerConnected',
         function: '',
       },

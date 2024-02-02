@@ -20,6 +20,7 @@ export default {
     label: 'Film',
     debounce: 250,
     readOnly: false,
+    canClear: false,
   },
 } as Meta<SelectQueryFieldProps>;
 
@@ -61,6 +62,7 @@ export const ServerSideSubmit: StoryFn<SelectQueryFieldProps> = (args) => {
           debounce={args.debounce}
           control={control}
           loading={loading}
+          canClear={args.canClear}
           placeholder={args.placeholder}
           label={args.placeholder}
           /* The onChange returns the not debounced value, probably never needed, but is inherited by all inputFields */
@@ -89,7 +91,7 @@ export const ServerSideSubmit: StoryFn<SelectQueryFieldProps> = (args) => {
   );
 };
 
-export const ClientSideSubmit: StoryFn<SelectQueryFieldProps> = () => {
+export const ClientSideSubmit: StoryFn<SelectQueryFieldProps> = (args) => {
   interface FormValues {
     film: string;
   }
@@ -117,6 +119,7 @@ export const ClientSideSubmit: StoryFn<SelectQueryFieldProps> = () => {
           control={control}
           placeholder="Search for a film"
           label="Film"
+          canClear={args.canClear}
           /* The onChange returns the not debounced value, probably never needed, but is inherited by all inputFields */
           handleInputValueChange={handleInputChange}
           required={false}
@@ -143,7 +146,7 @@ export const ClientSideSubmit: StoryFn<SelectQueryFieldProps> = () => {
   );
 };
 
-export const ClientSideMultiSelectSubmit: StoryFn<SelectQueryFieldProps> = () => {
+export const ClientSideMultiSelectSubmit: StoryFn<SelectQueryFieldProps> = (args) => {
   interface FormValues {
     films: string[];
   }
@@ -181,8 +184,9 @@ export const ClientSideMultiSelectSubmit: StoryFn<SelectQueryFieldProps> = () =>
           /* The onChange returns the not debounced value, probably never needed, but is inherited by all inputFields */
           handleInputValueChange={handleInputChange}
           required={false}
+          canClear={args.canClear}
           debounce={0}
-          multiSelect
+          multiple
           name="films"
         >
           {/* In this case the label is the same as the value but ofcourse that can differ*/}
@@ -231,7 +235,7 @@ export const Generic: StoryFn<SelectQueryFieldProps> = () => {
         handleInputValueChange={handleInputChange}
         required={false}
         debounce={0}
-        multiSelect
+        multiple
         hasError={false}
         hasDescription={false}
         value={result}

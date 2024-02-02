@@ -34,7 +34,7 @@ export const ButtonContainer = styled.div`
 `;
 
 export const VariablesCreate = () => {
-  const { mutateAsync, isLoading, error } = useVariableCreate();
+  const { mutateAsync, isPending, error } = useVariableCreate();
 
   async function createVariable(variable: IFormInputs) {
     await mutateAsync({
@@ -47,7 +47,7 @@ export const VariablesCreate = () => {
   }
   return (
     <VariableCreateAndUpdateForm
-      isLoading={isLoading}
+      isLoading={isPending}
       submit={createVariable}
       type={ExecutionType.CREATE}
       error={error}

@@ -2,6 +2,7 @@ import { SelectField, styled } from '@takaro/lib-components';
 import { FC } from 'react';
 import { CustomSelectProps } from '.';
 import { useGameServerModuleInstallations } from 'queries/gameservers';
+import { ModuleInstallationOutputDTO } from '@takaro/apiclient';
 
 const Inner = styled.div`
   display: flex;
@@ -15,7 +16,6 @@ const Inner = styled.div`
 `;
 
 type InstalledModuleSelectProps = CustomSelectProps & { gameServerId: string };
-
 export const InstalledModuleSelect: FC<InstalledModuleSelectProps> = ({
   control,
   name,
@@ -34,6 +34,7 @@ export const InstalledModuleSelect: FC<InstalledModuleSelectProps> = ({
     throw new Error('InstalledModuleSelect: gameServerId is undefined');
   }
 
+  // TODO: extend with module
   const { data: modules, isLoading: isLoadingData } = useGameServerModuleInstallations(gameServerId);
 
   if (isLoadingData) {
@@ -45,6 +46,40 @@ export const InstalledModuleSelect: FC<InstalledModuleSelectProps> = ({
     return <div>no modules found</div>;
   }
 
+  return (
+    <InstalledModuleSelectView
+      required={required}
+      loading={loading}
+      control={control}
+      name={name}
+      label={label}
+      description={description}
+      readOnly={readOnly}
+      inPortal={inPortal}
+      disabled={disabled}
+      size={size}
+      hint={hint}
+      modules={modules}
+    />
+  );
+};
+
+export type InstalledModuleSelectViewProps = CustomSelectProps & { modules: ModuleInstallationOutputDTO[] };
+
+export const InstalledModuleSelectView: FC<InstalledModuleSelectViewProps> = ({
+  control,
+  name,
+  label,
+  description,
+  readOnly,
+  hint,
+  size,
+  loading,
+  disabled,
+  inPortal,
+  required,
+  modules,
+}) => {
   return (
     <SelectField
       control={control}

@@ -16,7 +16,7 @@ interface IModuleCardProps {
 
 export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation }) => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
-  const { mutateAsync: uninstallModule, isLoading: isDeleting } = useGameServerModuleUninstall();
+  const { mutateAsync: uninstallModule, isPending: isDeleting } = useGameServerModuleUninstall();
   const navigate = useNavigate();
   const { selectedGameServerId } = useSelectedGameServer();
   const theme = useTheme();

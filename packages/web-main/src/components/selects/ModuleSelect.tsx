@@ -2,6 +2,7 @@ import { SelectField, styled } from '@takaro/lib-components';
 import { FC } from 'react';
 import { CustomSelectProps } from '.';
 import { useModules } from 'queries/modules';
+import { ModuleOutputDTO } from '@takaro/apiclient';
 
 const Inner = styled.div`
   display: flex;
@@ -41,6 +42,39 @@ export const ModuleSelect: FC<CustomSelectProps> = ({
     return <div>no modules found</div>;
   }
 
+  return (
+    <ModuleSelectView
+      required={required}
+      loading={loading}
+      control={control}
+      readOnly={readOnly}
+      description={description}
+      size={size}
+      disabled={disabled}
+      inPortal={inPortal}
+      hint={hint}
+      name={selectName}
+      label={label}
+      modules={modules}
+    />
+  );
+};
+
+export type ModuleSelectViewProps = CustomSelectProps & { modules: ModuleOutputDTO[] };
+export const ModuleSelectView: FC<ModuleSelectViewProps> = ({
+  control,
+  modules,
+  name: selectName,
+  readOnly,
+  description,
+  size,
+  disabled,
+  inPortal,
+  hint,
+  required,
+  loading,
+  label,
+}) => {
   return (
     <SelectField
       control={control}

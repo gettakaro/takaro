@@ -7,7 +7,7 @@ async function main() {
   const discordChannel = data.module.systemConfig.hooks['DiscordToGame Discord channel ID'];
 
   await takaro.discord.discordControllerSendMessage(discordChannel, {
-    message: `[🔌 Connected]: ${data.eventData.player.name}`,
+    message: `[🔌 Connected]: ${data.player.name}`,
   });
 }
 

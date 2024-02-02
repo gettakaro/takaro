@@ -21,11 +21,12 @@ export const AuthenticationGuard: FC = () => {
   const [loading, isLoading] = useState<boolean>(true);
 
   const handleAuth = useCallback(() => {
+    if (isLoadingSession) return;
+
     if (isSessionError) {
       console.error(sessionError);
     }
 
-    if (isLoadingSession) return;
     try {
       if (!session) {
         return navigate(PATHS.login());

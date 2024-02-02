@@ -5,7 +5,7 @@ async function main() {
   const data = await getData();
   const takaro = await getTakaro(data);
   const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', data.gameServerId)).data.data;
-  await data.player.pm(`balance: ${data.player.currency} ${currencyName}`);
+  await data.player.pm(`balance: ${data.pog.currency} ${currencyName.value}`);
 }
 
 await main();

@@ -152,7 +152,6 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
     await this.emit(
       GameEvents.LOG_LINE,
       await new EventLogLine().construct({
-        timestamp: new Date(),
         msg: logLine.msg,
       })
     );

@@ -7,12 +7,13 @@ import { OnlinePlayersCard } from '../cards/OnlinePlayers';
 import { ChatMessagesCard } from '../cards/ChatMessages';
 import { Scrollable } from '../cards/style';
 import { EventFeedWidget } from 'components/events/EventFeedWidget';
+import { EventOutputDTOEventNameEnum as EventName } from '@takaro/apiclient';
 
 const GridContainer = styled.div`
   display: grid;
 
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: minmax(auto, 15%) 1fr;
+  grid-template-columns: 1fr 0.4fr;
+  grid-template-rows: minmax(auto, 40%) 1fr;
 
   width: 100%;
   height: 100%;
@@ -38,6 +39,31 @@ const GameServerOverview: FC = () => {
     return <> </>;
   }
 
+  const subscribedEvents = [
+    // Roles
+    EventName.RoleUpdated,
+    EventName.RoleDeleted,
+    EventName.RoleCreated,
+    EventName.RoleRemoved,
+    EventName.RoleAssigned,
+
+    // GameServer
+    EventName.EntityKilled,
+    EventName.PlayerDeath,
+
+    // Economy
+    EventName.CurrencyDeducted,
+    EventName.CurrencyAdded,
+
+    // Takaro
+    EventName.HookExecuted,
+    EventName.CronjobExecuted,
+    EventName.CommandExecuted,
+    EventName.SettingsSet,
+    EventName.PlayerNewIpDetected,
+    EventName.ServerStatusChanged,
+  ];
+
   return (
     <GridContainer>
       <SpanCell>
@@ -51,7 +77,7 @@ const GameServerOverview: FC = () => {
             query={{
               filters: {
                 gameserverId: [gameServer.id],
-                eventName: ['hook-executed', 'cronjob-executed', 'command-executed'],
+                eventName: subscribedEvents,
               },
             }}
           />

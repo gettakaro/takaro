@@ -1,5 +1,4 @@
 import { TakaroService } from './Base.js';
-
 import { GameServerModel, GameServerRepo } from '../db/gameserver.js';
 import { IsBoolean, IsEnum, IsJSON, IsObject, IsOptional, IsString, IsUUID, Length } from 'class-validator';
 import {
@@ -17,7 +16,7 @@ import { errors, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { SettingsService } from './SettingsService.js';
 import { TakaroDTO } from '@takaro/util';
 import { queueService } from '@takaro/queues';
-import { IPosition } from '@takaro/modules';
+import { HookEvents, IPosition, TakaroEventServerStatusChanged, GameEvents, EventChatMessage } from '@takaro/modules';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { ModuleService } from './ModuleService.js';
@@ -26,14 +25,19 @@ import { JSONSchema } from 'class-validator-jsonschema';
 // Curse you ESM... :(
 import _Ajv from 'ajv';
 import { CronJobService } from './CronJobService.js';
-import { getEmptySystemConfigSchema } from '../lib/systemConfig.js';
+import { getEmptyConfigSchema } from '../lib/systemConfig.js';
 import { PlayerService } from './PlayerService.js';
 import { PlayerOnGameServerService, PlayerOnGameServerUpdateDTO } from './PlayerOnGameserverService.js';
 import { ItemCreateDTO, ItemsService } from './ItemsService.js';
 import { randomUUID } from 'crypto';
-const Ajv = _Ajv as unknown as typeof _Ajv.default;
+import { EventCreateDTO, EventService } from './EventService.js';
 
-const ajv = new Ajv({ useDefaults: true });
+const Ajv = _Ajv as unknown as typeof _Ajv.default;
+const ajv = new Ajv({ useDefaults: true, strict: true });
+
+// Since input types have undistinguishable schemas. We need an annotation to parse into the correct input type.
+// E.g. a select and country input both have an enum schema, to distinguish them we use the x-component: 'country'.
+ajv.addKeyword('x-component');
 
 const gameClassCache = new Map<string, IGameServer>();
 
@@ -102,7 +106,7 @@ export class ModuleInstallationOutputDTO extends TakaroModelDTO<ModuleInstallati
   @IsObject()
   userConfig: Record<string, any>;
 
-  @JSONSchema(getEmptySystemConfigSchema())
+  @JSONSchema(getEmptyConfigSchema())
   @IsObject()
   systemConfig: Record<string, any>;
 }
@@ -139,6 +143,7 @@ export class GameServerService extends TakaroService<
       domainId: this.domainId,
       gameServerId: createdServer.id,
       operation: 'create',
+      time: new Date().toISOString(),
     });
 
     await queueService.queues.itemsSync.queue.add(
@@ -164,6 +169,7 @@ export class GameServerService extends TakaroService<
       domainId: this.domainId,
       gameServerId: id,
       operation: 'delete',
+      time: new Date().toISOString(),
     });
     await this.repo.delete(id);
     return id;
@@ -176,6 +182,7 @@ export class GameServerService extends TakaroService<
       domainId: this.domainId,
       gameServerId: id,
       operation: 'update',
+      time: new Date().toISOString(),
     });
     return updatedServer;
   }
@@ -185,10 +192,22 @@ export class GameServerService extends TakaroService<
       const instance = await this.getGame(id);
       const reachability = await instance.testReachability();
 
-      if (reachability.connectable) {
-        await this.repo.update(id, await new GameServerUpdateDTO().construct({ reachable: true }));
-      } else {
-        await this.repo.update(id, await new GameServerUpdateDTO().construct({ reachable: false }));
+      const currentServer = await this.findOne(id);
+
+      if (currentServer.reachable !== reachability.connectable) {
+        this.log.info(`Updating reachability for ${id} to ${reachability.connectable}`);
+        await this.update(id, await new GameServerUpdateDTO().construct({ reachable: reachability.connectable }));
+        const eventService = new EventService(this.domainId);
+        await eventService.create(
+          await new EventCreateDTO().construct({
+            eventName: HookEvents.SERVER_STATUS_CHANGED,
+            gameserverId: id,
+            meta: await new TakaroEventServerStatusChanged().construct({
+              status: reachability.connectable ? 'online' : 'offline',
+              details: reachability.reason,
+            }),
+          })
+        );
       }
 
       return reachability;
@@ -288,7 +307,11 @@ export class GameServerService extends TakaroService<
     }
 
     const settingsService = new SettingsService(this.domainId, id);
-    const settings = await settingsService.getAll();
+    const settingsArr = await settingsService.getAll();
+    const settings = settingsArr.reduce((acc, curr) => {
+      acc[curr.key] = curr.value;
+      return acc;
+    }, {} as Record<string, string>);
 
     gameInstance = await getGame(gameserver.type, gameserver.connectionInfo, settings);
 
@@ -336,7 +359,21 @@ export class GameServerService extends TakaroService<
 
   async sendMessage(gameServerId: string, message: string, opts: IMessageOptsDTO) {
     const gameInstance = await this.getGame(gameServerId);
-    return gameInstance.sendMessage(message, opts);
+    await gameInstance.sendMessage(message, opts);
+
+    const eventService = new EventService(this.domainId);
+    const meta = await new EventChatMessage().construct({
+      msg: message,
+      timestamp: new Date().toISOString(),
+    });
+
+    await eventService.create(
+      await new EventCreateDTO().construct({
+        eventName: GameEvents.CHAT_MESSAGE,
+        gameserverId: gameServerId,
+        meta,
+      })
+    );
   }
 
   async teleportPlayer(gameServerId: string, playerId: string, position: IPosition) {

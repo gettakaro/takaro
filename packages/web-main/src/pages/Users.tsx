@@ -30,7 +30,7 @@ const Users: FC = () => {
   useDocumentTitle('Users');
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<UserOutputWithRolesDTO>();
 
-  const { data, isLoading } = useUsers({
+  const { data, isPending } = useUsers({
     page: pagination.paginationState.pageIndex,
     limit: pagination.paginationState.pageSize,
     sortBy: sorting.sortingState[0]?.id,
@@ -94,7 +94,7 @@ const Users: FC = () => {
 
   // since pagination depends on data, we need to make sure that data is not undefined
   const p =
-    !isLoading && data
+    !isPending && data
       ? {
           paginationState: pagination.paginationState,
           setPaginationState: pagination.setPaginationState,
@@ -139,7 +139,7 @@ const InviteUser: FC = () => {
     resolver: zodResolver(validationSchema),
     mode: 'onSubmit',
   });
-  const { mutate, isLoading, isError, isSuccess, error } = useInviteUser();
+  const { mutate, isPending, isError, isSuccess, error } = useInviteUser();
 
   const onSubmit: SubmitHandler<IFormInputs> = (data) => {
     mutate({ email: data.userEmail });
@@ -177,7 +177,7 @@ const InviteUser: FC = () => {
                 required
               />
               {isError && <FormError error={error} />}
-              <Button isLoading={isLoading} text="Send invitation" type="submit" fullWidth />
+              <Button isLoading={isPending} text="Send invitation" type="submit" fullWidth />
             </form>
           </Dialog.Body>
         </Dialog.Content>

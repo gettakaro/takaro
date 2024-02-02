@@ -1,10 +1,4 @@
-import {
-  forwardRef,
-  cloneElement,
-  isValidElement,
-  HTMLProps,
-  PropsWithChildren,
-} from 'react';
+import { forwardRef, cloneElement, isValidElement, HTMLProps, PropsWithChildren } from 'react';
 import { usePopoverContext } from './PopoverContext';
 import { useMergeRefs } from '@floating-ui/react';
 
@@ -28,6 +22,8 @@ export const PopoverTrigger = forwardRef<HTMLElement, PopoverTriggerProps>(
           ...props,
           ...children.props,
           'data-state': context.open ? 'open' : 'closed',
+          onFocus: props.onFocus,
+          onBlur: props.onBlur,
         })
       );
     }

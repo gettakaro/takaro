@@ -4,7 +4,7 @@ import { GenericCheckBox } from '.';
 import { Container, CheckboxContainer } from './style';
 
 import { defaultInputProps, defaultInputPropsFactory, ControlledInputProps } from '../InputProps';
-import { Label, ErrorMessage, Wrapper, Description } from '../layout';
+import { Label, ErrorMessage, InputWrapper, Description } from '../layout';
 
 export interface CheckBoxProps {
   labelPosition?: 'left' | 'right';
@@ -39,7 +39,7 @@ export const ControlledCheckBox: FC<ControlledCheckBoxProps> = (props) => {
 
   if (loading) {
     return (
-      <Wrapper>
+      <InputWrapper>
         <Container>
           {/* CASE: Show label before <CheckBox /> */}
           {labelPosition === 'left' && label && (
@@ -70,12 +70,12 @@ export const ControlledCheckBox: FC<ControlledCheckBoxProps> = (props) => {
           )}
         </Container>
         {description && <Description description={description} inputName={name} />}
-      </Wrapper>
+      </InputWrapper>
     );
   }
 
   return (
-    <Wrapper>
+    <InputWrapper>
       <Container>
         {/* CASE: Show label before <CheckBox /> */}
         {labelPosition === 'left' && label && (
@@ -119,6 +119,6 @@ export const ControlledCheckBox: FC<ControlledCheckBoxProps> = (props) => {
         {error && error.message && <ErrorMessage message={error.message} />}
       </Container>
       {description && <Description description={description} inputName={name} />}
-    </Wrapper>
+    </InputWrapper>
   );
 };

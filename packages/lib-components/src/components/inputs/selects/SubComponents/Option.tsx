@@ -9,7 +9,7 @@ const StyledCheckIcon = styled(CheckIcon)`
   margin-left: ${({ theme }) => theme.spacing[1]};
 `;
 
-interface OptionProps extends PropsWithChildren {
+export interface OptionProps extends PropsWithChildren {
   value: string;
   label: string;
   disabled?: boolean;
@@ -37,19 +37,24 @@ function hasSelectedItem(selectedItems: SelectItem[], itemToCheck: SelectItem) {
 }
 
 export const Option: FC<OptionProps> = ({ children, index = 0, value, onChange, disabled = false, label }) => {
-  const { getItemProps, selectedItems, setSelectedItems, setOpen, listRef, activeIndex, dataRef, name, multiSelect } =
+  const { getItemProps, selectedItems, setSelectedItems, setOpen, listRef, activeIndex, dataRef, name, multiple } =
     useContext(SelectContext);
 
   const handleSelect = () => {
     // array of values
-    if (multiSelect) {
+    if (multiple) {
       const updatedItems = toggleSelectedItem(selectedItems, { value, label });
+
+      // NOTE: checking if the items actually changed here does not matter, since the onChange will have been triggered on the first selected/deselected item.
       setSelectedItems(updatedItems);
       if (onChange) onChange(updatedItems.map((item) => item.value));
     } else {
       // single value
-      setSelectedItems([{ value, label }]);
-      if (onChange) onChange(value);
+      // NOTE: Check if the item is actually changed, otherwise don't do anything. This prevents the dirty state from being triggered when the user clicks on the same item.
+      if (selectedItems[0]?.value !== value) {
+        setSelectedItems([{ value, label }]);
+        if (onChange) onChange(value);
+      }
       setOpen(false);
     }
   };
@@ -77,7 +82,7 @@ export const Option: FC<OptionProps> = ({ children, index = 0, value, onChange, 
       role="option"
       ref={(node: any) => (listRef.current[index] = node)}
       tabIndex={activeIndex === index ? 0 : 1}
-      isMultiSelect={multiSelect}
+      isMultiSelect={multiple}
       isActive={activeIndex === index}
       aria-disabled={disabled}
       isGrouped={false}
@@ -89,7 +94,7 @@ export const Option: FC<OptionProps> = ({ children, index = 0, value, onChange, 
         onKeyUp: handleKeyUp,
       })}
     >
-      {multiSelect && (
+      {multiple && (
         <GenericCheckBox
           size="tiny"
           id={`${name}-checkbox-${index}`}
@@ -102,8 +107,8 @@ export const Option: FC<OptionProps> = ({ children, index = 0, value, onChange, 
           value={hasSelectedItem(selectedItems, { value, label })}
         />
       )}
-      <span style={{ marginLeft: multiSelect ? '10px' : 0 }}>{children}</span>{' '}
-      {!multiSelect && selectedItems.includes({ value, label }) && <StyledCheckIcon />}
+      <span style={{ marginLeft: multiple ? '10px' : 0 }}>{children}</span>{' '}
+      {!multiple && hasSelectedItem(selectedItems, { value, label }) && <StyledCheckIcon />}
     </OptionContainer>
   );
 };

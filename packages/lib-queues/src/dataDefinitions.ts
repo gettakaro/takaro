@@ -1,5 +1,10 @@
-import { GameEvents, EventMapping } from '@takaro/modules';
-import { ModuleInstallationOutputDTO, PlayerOnGameserverOutputWithRolesDTO } from '@takaro/apiclient';
+import { GameEvents, GameEventsMapping, EventPayload } from '@takaro/modules';
+import {
+  ModuleInstallationOutputDTO,
+  PlayerOnGameserverOutputWithRolesDTO,
+  PlayerOutputWithRolesDTO,
+} from '@takaro/apiclient';
+import { ValueOf } from 'type-fest';
 
 export interface IParsedCommand {
   command: string;
@@ -32,11 +37,14 @@ export interface IJobData extends IBaseJobData {
 }
 
 export interface IHookJobData extends IJobData {
-  eventData: EventMapping[keyof EventMapping];
+  eventData: EventPayload;
+  player?: PlayerOutputWithRolesDTO;
+  pog?: PlayerOnGameserverOutputWithRolesDTO;
 }
 
 export interface ICommandJobData extends IJobData {
-  player: PlayerOnGameserverOutputWithRolesDTO;
+  player: PlayerOutputWithRolesDTO;
+  pog: PlayerOnGameserverOutputWithRolesDTO;
   arguments: IParsedCommand['arguments'];
 }
 
@@ -55,9 +63,9 @@ export function isCronData(data: IJobData): data is ICronJobData {
 }
 
 export interface IEventQueueData extends IBaseJobData {
-  type: GameEvents;
+  type: ValueOf<typeof GameEvents>;
   gameServerId: string;
-  event: EventMapping[GameEvents];
+  event: ValueOf<(typeof GameEventsMapping)[ValueOf<typeof GameEvents>]>;
 }
 
 export interface IConnectorQueueData extends IBaseJobData {

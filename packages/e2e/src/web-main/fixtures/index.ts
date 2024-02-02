@@ -14,8 +14,9 @@ import {
 } from '@takaro/apiclient';
 import humanId from 'human-id/dist/index.js';
 import { ModuleDefinitionsPage, StudioPage, GameServersPage, UsersPage } from '../pages/index.js';
-import { EventTypes } from '@takaro/modules';
+import { HookEvents } from '@takaro/modules';
 import { getAdminClient, login } from '../helpers.js';
+import { PlayerProfilePage } from '../pages/PlayerProfile.js';
 
 export enum PERMISSIONS {
   'ROOT' = 'ROOT',
@@ -167,6 +168,7 @@ export interface ExtendedFixture {
   extended: {
     mod: ModuleOutputDTO;
     players: PlayerOutputDTO[];
+    PlayerProfilePage: PlayerProfilePage;
   };
 }
 
@@ -178,7 +180,7 @@ export const extendedTest = main.extend<ExtendedFixture>({
       // required to add players to the gameserver
       const eventAwaiter = new EventsAwaiter();
       await eventAwaiter.connect(rootClient);
-      const connectedEvents = eventAwaiter.waitForEvents(EventTypes.PLAYER_CONNECTED);
+      const connectedEvents = eventAwaiter.waitForEvents(HookEvents.PLAYER_CONNECTED);
 
       // this creates a bunch of players
       await rootClient.gameserver.gameServerControllerExecuteCommand(gameServer.id, {
@@ -218,6 +220,7 @@ export const extendedTest = main.extend<ExtendedFixture>({
 
       await use({
         mod: mod.data.data,
+        PlayerProfilePage: new PlayerProfilePage(page, players[0]),
         players: players,
       });
     },

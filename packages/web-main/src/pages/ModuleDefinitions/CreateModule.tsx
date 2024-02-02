@@ -1,18 +1,19 @@
 import { useModuleCreate } from 'queries/modules';
 import { FC } from 'react';
-import { ModuleForm, ModuleFormSubmitFields } from './ModuleForm';
+import { ModuleForm, ModuleFormSubmitProps } from './ModuleForm';
 
 const CreateModule: FC = () => {
-  const { mutate, isSuccess, error, isLoading } = useModuleCreate();
-  const onSubmit = async (fields: ModuleFormSubmitFields) => {
+  const { mutate, isSuccess, error, isPending } = useModuleCreate();
+  const onSubmit = async (fields: ModuleFormSubmitProps) => {
     mutate({
       name: fields.name,
       description: fields.description,
-      configSchema: fields.schema,
+      configSchema: fields.schema, // this is already stringified
+      uiSchema: fields.uiSchema, // this is already stringified
       permissions: fields.permissions,
     });
   };
-  return <ModuleForm onSubmit={onSubmit} isLoading={isLoading} isSuccess={isSuccess} error={error} />;
+  return <ModuleForm onSubmit={onSubmit} isLoading={isPending} isSuccess={isSuccess} error={error} />;
 };
 
 export default CreateModule;

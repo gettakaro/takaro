@@ -1,5 +1,5 @@
 import { BuiltinModule } from '../../BuiltinModule.js';
-import { EventTypes } from '../../dto/index.js';
+import { HookEvents } from '../../dto/index.js';
 
 export class ChatBridge extends BuiltinModule {
   constructor() {
@@ -11,11 +11,13 @@ export class ChatBridge extends BuiltinModule {
         type: 'object',
         properties: {
           sendPlayerConnected: {
+            title: 'Send player connected',
             type: 'boolean',
             description: 'Send a message when a player connects.',
             default: true,
           },
           sendPlayerDisconnected: {
+            title: 'Send player disconnected',
             type: 'boolean',
             description: 'Send a message when a player disconnects.',
             default: true,
@@ -27,22 +29,22 @@ export class ChatBridge extends BuiltinModule {
 
     this.hooks = [
       {
-        eventType: EventTypes.DISCORD_MESSAGE,
+        eventType: HookEvents.DISCORD_MESSAGE,
         name: 'DiscordToGame',
         function: '',
       },
       {
-        eventType: EventTypes.CHAT_MESSAGE,
+        eventType: HookEvents.CHAT_MESSAGE,
         name: 'GameToDiscord',
         function: '',
       },
       {
-        eventType: EventTypes.PLAYER_CONNECTED,
+        eventType: HookEvents.PLAYER_CONNECTED,
         name: 'PlayerConnected',
         function: '',
       },
       {
-        eventType: EventTypes.PLAYER_DISCONNECTED,
+        eventType: HookEvents.PLAYER_DISCONNECTED,
         name: 'PlayerDisconnected',
         function: '',
       },

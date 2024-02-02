@@ -8,6 +8,7 @@ export default {
   title: 'Data/DateFormatter',
   component: DateFormatter,
   args: {
+    ISODate: DateTime.now().toISO(),
     format: DateTime.DATE_FULL,
   },
 } as Meta<DateFormatterProps>;
@@ -15,6 +16,11 @@ export default {
 export const Default: StoryFn<DateFormatterProps> = (args) => (
   <div>
     provides a wrapper component for formatting dates to the standard format used throughout takaro.
-    <DateFormatter ISODate={args.ISODate} format={args.format} />
+    <br />
+    The current date is formatted to format <strong>DATE_FULL</strong>
+    <br />
+    <strong>
+      <DateFormatter ISODate={args.ISODate} format={args.format} />
+    </strong>
   </div>
 );

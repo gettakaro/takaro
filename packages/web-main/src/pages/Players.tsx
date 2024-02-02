@@ -231,8 +231,8 @@ const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
   });
 
   const apiclient = useApiClient();
-  const { mutateAsync: mutateBanPlayer, isLoading: isLoadingBanPlayer } = useBanPlayerOnGameServer();
-  const { mutateAsync: mutateUnbanPlayer, isLoading: isLoadingUnbanPlayer } = useUnbanPlayerOnGameServer();
+  const { mutateAsync: mutateBanPlayer, isPending: isLoadingBanPlayer } = useBanPlayerOnGameServer();
+  const { mutateAsync: mutateUnbanPlayer, isPending: isLoadingUnbanPlayer } = useUnbanPlayerOnGameServer();
 
   const handleOnBanPlayer: SubmitHandler<FormInputs> = async ({ reason }) => {
     const pogs = (
@@ -291,31 +291,31 @@ const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
           <Dropdown.Menu.Item
             label="Go to player profile"
             icon={<ProfileIcon />}
-            onClick={() => navigate(`${PATHS.player.profile(player.id)}`)}
+            onClick={() => navigate(`${PATHS.player.global.profile(player.id)}`)}
           />
 
           <Dropdown.Menu.Item
             label="Edit roles"
             icon={<EditIcon />}
-            onClick={() => navigate(PATHS.player.assignRole(player.id))}
+            onClick={() => navigate(PATHS.player.global.assignRole(player.id))}
             disabled={!isLoadingManageRolesPermission && !hasManageRoles}
           />
 
           <Dropdown.Menu.Item
-            label="Ban from ALL game servers"
+            label="Ban from ALL game servers (coming soon)"
             icon={<BanIcon />}
             onClick={async () => {
               setOpenBanDialog(true);
             }}
-            disabled={!isLoadingManagePlayersPermission && !hasManagePlayers}
+            disabled={(!isLoadingManagePlayersPermission && !hasManagePlayers) || true}
           />
           <Dropdown.Menu.Item
-            label="Unban from ALL game servers"
+            label="Unban from ALL game servers (coming soon)"
             icon={<UnBanIcon />}
             onClick={async () => {
               setOpenUnbanDialog(true);
             }}
-            disabled={!isLoadingManagePlayersPermission && !hasManagePlayers}
+            disabled={(!isLoadingManagePlayersPermission && !hasManagePlayers) || true}
           />
         </Dropdown.Menu>
       </Dropdown>

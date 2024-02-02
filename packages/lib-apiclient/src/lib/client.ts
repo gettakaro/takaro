@@ -13,6 +13,7 @@ import {
   DiscordApi,
   EventApi,
   PlayerOnGameServerApi,
+  ItemApi,
 } from '../generated/api.js';
 import { BaseApiClient, IBaseApiClientConfig } from './baseClient.js';
 
@@ -76,6 +77,16 @@ export class Client extends BaseApiClient<IApiClientConfig> {
       throw new Error(`Not all permissions were found: ${permissions.join(', ')}`);
 
     return records;
+  }
+
+  get item() {
+    return new ItemApi(
+      {
+        isJsonMime: this.isJsonMime,
+      },
+      '',
+      this.axios
+    );
   }
 
   get user() {
