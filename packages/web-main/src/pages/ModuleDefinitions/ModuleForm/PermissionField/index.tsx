@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { IFormInputs } from '..';
 import { PermissionCard, Title, Fields } from './style';
 import { Control, UseFieldArrayRemove, useWatch } from 'react-hook-form';
-import { Tooltip, IconButton, TextField, Chip } from '@takaro/lib-components';
+import { Tooltip, IconButton, TextField, Chip, Switch } from '@takaro/lib-components';
 import { AiOutlineDelete as RemoveIcon } from 'react-icons/ai';
 
 export interface PermissionFieldProps {
@@ -40,7 +40,15 @@ export const PermissionField: FC<PermissionFieldProps> = ({ index, id, remove, c
           label="Name"
           control={control}
           name={`permissions.${index}.permission`}
-          description="This is the permission code name, what you will need to check for inside the module code."
+          description="This is the permission code name, what you will use inside the module code."
+          required
+          readOnly={readOnly}
+        />
+        <TextField
+          control={control}
+          label="Friendly name"
+          name={`permissions.${index}.friendlyName`}
+          description="This is the name that will be shown when editing permissions of a role."
           required
           readOnly={readOnly}
         />
@@ -52,12 +60,12 @@ export const PermissionField: FC<PermissionFieldProps> = ({ index, id, remove, c
           required
           readOnly={readOnly}
         />
-        <TextField
+        <Switch
           control={control}
-          label="Friendly name"
-          name={`permissions.${index}.friendlyName`}
-          description="This is the name that will be shown when editing permissions of a role."
-          required
+          name={`permissions.${index}.canHaveCount`}
+          label="Can have count"
+          description="Each permission can be associated with an abstract numerical value, serving various purposes. E.g. TELEPORTS_USE uses a count to restrict the number of teleport location a player can have.
+          Enabling this option associates a count with the permission."
           readOnly={readOnly}
         />
       </Fields>

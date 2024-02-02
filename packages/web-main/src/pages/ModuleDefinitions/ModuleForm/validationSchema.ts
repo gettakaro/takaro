@@ -47,6 +47,7 @@ export const validationSchema = z.object({
         .refine((val) => !val.includes(' '), 'Spaces are not allowed.'),
       description: z.string(),
       friendlyName: z.string(),
+      canHaveCount: z.boolean(),
     })
   ),
   configFields: z
