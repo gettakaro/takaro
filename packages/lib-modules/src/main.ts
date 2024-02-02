@@ -1,6 +1,6 @@
 import { BuiltinModule } from './BuiltinModule.js';
 import { ChatBridge } from './modules/chatBridge/index.js';
-import { Economy } from './modules/economy/index.js';
+import { EconomyUtils } from './modules/economyUtils/index.js';
 import { GeoBlock } from './modules/geoBlock/index.js';
 import { Gimme } from './modules/gimme/index.js';
 import { HighPingKicker } from './modules/highPingKicker/index.js';
@@ -26,7 +26,7 @@ export async function getModules(): Promise<Array<BuiltinModule>> {
       new ChatBridge(),
       new Gimme(),
       new HighPingKicker(),
-      new Economy(),
+      new EconomyUtils(),
       new Lottery(),
       new GeoBlock(),
     ];

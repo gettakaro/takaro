@@ -2,7 +2,7 @@ import { IntegrationTest, expect } from '@takaro/test';
 import { IModuleTestsSetupData, modulesTestSetup, sorter } from './setupData.integration.test.js';
 import { GameEvents } from '../dto/index.js';
 
-const group = 'Economy suite';
+const group = 'Economy utils suite';
 
 const customSetup = async function (this: IntegrationTest<IModuleTestsSetupData>): Promise<IModuleTestsSetupData> {
   const setupData = await modulesTestSetup.bind(this)();
