@@ -187,5 +187,3 @@ const UpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
     </Drawer>
   );
 };
-
-export default UpdateGameServer;

@@ -15,9 +15,10 @@ interface ConfigFieldProps {
   index: number;
   remove: UseFieldArrayRemove;
   resetField: UseFormResetField<IFormInputs>;
+  readOnly: boolean;
 }
 
-export const ConfigField: FC<ConfigFieldProps> = ({ control, index, remove, id, resetField }) => {
+export const ConfigField: FC<ConfigFieldProps> = ({ control, index, remove, id, resetField, readOnly }) => {
   const [initialised, setInitialised] = useState<boolean>(false);
   const output = useWatch<IFormInputs>({
     control,
@@ -95,21 +96,24 @@ export const ConfigField: FC<ConfigFieldProps> = ({ control, index, remove, id, 
           <Chip color="primary" label={`Field ${index + 1}`} />
           <h3>{output as string}</h3>
         </div>
-        <Tooltip>
-          <Tooltip.Trigger asChild>
-            <IconButton
-              onClick={() => remove(index)}
-              icon={<RemoveIcon cursor="pointer" size={18} />}
-              ariaLabel="Remove field"
-            />
-          </Tooltip.Trigger>
-          <Tooltip.Content>Remove field</Tooltip.Content>
-        </Tooltip>
+        {!readOnly && (
+          <Tooltip>
+            <Tooltip.Trigger asChild>
+              <IconButton
+                onClick={() => remove(index)}
+                icon={<RemoveIcon cursor="pointer" size={18} />}
+                ariaLabel="Remove field"
+              />
+            </Tooltip.Trigger>
+            <Tooltip.Content>Remove field</Tooltip.Content>
+          </Tooltip>
+        )}
       </Header>
       <TextField
         control={control}
         label="Name"
         name={`configFields.${index}.name`}
+        readOnly={readOnly}
         required
         placeholder="Config field name"
         description="The name of the field. This will be shown to the user."
@@ -118,6 +122,7 @@ export const ConfigField: FC<ConfigFieldProps> = ({ control, index, remove, id, 
         control={control}
         label="Description"
         rows={8}
+        readOnly={readOnly}
         name={`configFields.${index}.description`}
         placeholder="Enables you to ..."
         description="Describe what this field does. This will be shown to the user."
@@ -125,6 +130,7 @@ export const ConfigField: FC<ConfigFieldProps> = ({ control, index, remove, id, 
       <SelectField
         control={control}
         name={`configFields.${index}.type`}
+        readOnly={readOnly}
         label="Type"
         render={(selectedItems) => (
           <div>
@@ -147,9 +153,10 @@ export const ConfigField: FC<ConfigFieldProps> = ({ control, index, remove, id, 
           </SelectField.OptionGroup>
         ))}
       </SelectField>
-      {InputTypeToConfigFieldMap(control, index, id)[inputType]}
+      {InputTypeToConfigFieldMap(control, index, id, readOnly)[inputType]}
       {inputType !== InputType.boolean && (
         <Switch
+          readOnly={readOnly}
           key={`configFields.${index}.required`}
           control={control}
           label="Is Field required?"

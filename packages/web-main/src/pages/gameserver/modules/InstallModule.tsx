@@ -14,17 +14,21 @@ const ButtonContainer = styled.div`
   gap: ${({ theme }) => theme.spacing[2]};
 `;
 
-const InstallModule: FC = () => {
+interface InstallModuleProps {
+  readOnly?: boolean;
+}
+
+export const InstallModule: FC<InstallModuleProps> = ({ readOnly }) => {
   const [open, setOpen] = useState(true);
   const [userConfigSubmitted, setUserConfigSubmitted] = useState(false);
   const [systemConfigSubmitted, setSystemConfigSubmitted] = useState(false);
   const navigate = useNavigate();
   const { mutate, isPending, error, isSuccess } = useGameServerModuleInstall();
-  const { serverId, moduleId } = useParams();
-  const { data: mod, isLoading: moduleLoading } = useModule(moduleId!);
+  const { serverId, moduleId } = useParams() as { serverId: string; moduleId: string };
+  const { data: mod, isLoading: moduleLoading } = useModule(moduleId);
   const { data: modInstallation, isLoading: moduleInstallationLoading } = useGameServerModuleInstallation(
-    serverId!,
-    moduleId!
+    serverId,
+    moduleId
   );
 
   const [userConfig, setUserConfig] = useState<Record<string, unknown>>({});
@@ -32,10 +36,6 @@ const InstallModule: FC = () => {
 
   const userConfigFormRef = useRef<Form>(null);
   const systemConfigFormRef = useRef<Form>(null);
-
-  if (!serverId || !moduleId) {
-    throw new Error('No serverId or moduleId');
-  }
 
   const onUserConfigSubmit = ({ formData }, e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -95,6 +95,7 @@ const InstallModule: FC = () => {
           <CollapseList>
             <CollapseList.Item title="User config">
               <JsonSchemaForm
+                readOnly={readOnly}
                 schema={JSON.parse(mod?.configSchema as string)}
                 uiSchema={JSON.parse(mod?.uiSchema as string)}
                 initialData={modInstallation?.userConfig || userConfig}
@@ -105,6 +106,7 @@ const InstallModule: FC = () => {
             </CollapseList.Item>
             <CollapseList.Item title="System config">
               <JsonSchemaForm
+                readOnly={readOnly}
                 schema={JSON.parse(mod?.systemConfigSchema as string)}
                 uiSchema={{}} /* System config does not have uiSchema*/
                 initialData={modInstallation?.systemConfig || systemConfig}
@@ -117,23 +119,25 @@ const InstallModule: FC = () => {
         </Drawer.Body>
         <Drawer.Footer>
           {error && <FormError error={error} />}
-          <ButtonContainer>
-            <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
-            <Button
-              fullWidth
-              isLoading={isPending}
-              text={actionType}
-              type="button"
-              onClick={() => {
-                systemConfigFormRef.current?.formElement.current.requestSubmit();
-                userConfigFormRef.current?.formElement.current.requestSubmit();
-              }}
-            />
-          </ButtonContainer>
+          {readOnly ? (
+            <Button fullWidth text="Close view" onClick={() => setOpen(false)} color="primary" />
+          ) : (
+            <ButtonContainer>
+              <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
+              <Button
+                fullWidth
+                isLoading={isPending}
+                text={actionType}
+                type="button"
+                onClick={() => {
+                  systemConfigFormRef.current?.formElement.current.requestSubmit();
+                  userConfigFormRef.current?.formElement.current.requestSubmit();
+                }}
+              />
+            </ButtonContainer>
+          )}
         </Drawer.Footer>
       </Drawer.Content>
     </Drawer>
   );
 };
-
-export default InstallModule;
