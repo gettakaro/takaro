@@ -1,12 +1,13 @@
 import { FC, Fragment, useMemo, ReactElement } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { Button, Switch, TextField, camelCaseToSpaces } from '@takaro/lib-components';
-import { Settings } from '@takaro/apiclient';
+import { Settings, PERMISSIONS } from '@takaro/apiclient';
 import { useGlobalGameServerSettings, useSetGlobalSetting } from 'queries/settings';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { useSnackbar } from 'notistack';
+import { useHasPermission } from 'components/PermissionsGuard';
 
 export function dirtyValues(dirtyFields: object | boolean, allValues: object): object {
   // If *any* item in an array was modified, the entire array must be submitted, because there's no way to indicate
@@ -46,8 +47,12 @@ export const GlobalGameServerSettings: FC = () => {
   useDocumentTitle('Settings');
   const { enqueueSnackbar } = useSnackbar();
   const { mutateAsync: setGlobalSetting } = useSetGlobalSetting();
+  const { data, isLoading: isLoadingSettings } = useGlobalGameServerSettings();
+  const { isLoading: isLoadingPermission, hasPermission } = useHasPermission([PERMISSIONS.ManageSettings]);
 
-  const { data, isLoading } = useGlobalGameServerSettings();
+  if (isLoadingPermission) return <div>Loading...</div>;
+
+  const readOnly = !hasPermission;
 
   const validationSchema = useMemo(() => {
     if (data) {
@@ -91,10 +96,14 @@ export const GlobalGameServerSettings: FC = () => {
       // TODO: this should be mapped using the new config generator
       data.forEach(({ key, value }) => {
         if (booleanFields.includes(key)) {
-          settingsComponents.push(<Switch control={control} label={camelCaseToSpaces(key)} name={key} key={key} />);
+          settingsComponents.push(
+            <Switch readOnly={readOnly} control={control} label={camelCaseToSpaces(key)} name={key} key={key} />
+          );
           setValue(key, value === 'true');
         } else {
-          settingsComponents.push(<TextField control={control} label={camelCaseToSpaces(key)} name={key} key={key} />);
+          settingsComponents.push(
+            <TextField readOnly={readOnly} control={control} label={camelCaseToSpaces(key)} name={key} key={key} />
+          );
           if (value) setValue(key, value);
         }
       });
@@ -108,13 +117,15 @@ export const GlobalGameServerSettings: FC = () => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <Fragment>
           {settings}
-          <Button
-            disabled={!formState.isDirty}
-            isLoading={isLoading}
-            text="Save settings"
-            type="submit"
-            variant="default"
-          />
+          {!readOnly && (
+            <Button
+              disabled={!formState.isDirty}
+              isLoading={isLoadingSettings}
+              text="Save settings"
+              type="submit"
+              variant="default"
+            />
+          )}
         </Fragment>
       </form>
     </Fragment>

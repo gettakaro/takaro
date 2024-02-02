@@ -8,12 +8,12 @@ export const Container = styled.div`
   text-align: left;
 `;
 
-export const ContentContainer = styled.button<{ isChecked: boolean; hasError: boolean }>`
+export const ContentContainer = styled.button<{ isChecked: boolean; hasError: boolean; readOnly: boolean }>`
   position: relative;
   width: 4.2rem;
   height: 2.5rem;
   display: block;
-  cursor: pointer;
+  cursor: ${({ readOnly }) => (readOnly ? 'default' : 'pointer')};
   border-radius: 9999px;
   border: 0.1rem solid ${({ theme, hasError }) => (hasError ? theme.colors.error : theme.colors.backgroundAccent)};
   margin: ${({ theme }) => theme.spacing[0]};
@@ -35,7 +35,7 @@ export const ContentContainer = styled.button<{ isChecked: boolean; hasError: bo
 
 export const Dot = styled(motion.span)<{
   $isChecked: boolean;
-  readOnly: boolean;
+  $readOnly: boolean;
 }>`
   will-change: right;
   position: absolute;
@@ -44,10 +44,10 @@ export const Dot = styled(motion.span)<{
   border-radius: 50%;
   width: 2.1rem;
   height: 2.1rem;
-  background-color: ${({ theme, readOnly, $isChecked }) => {
+  background-color: ${({ theme, $readOnly, $isChecked }) => {
     let color = $isChecked ? theme.colors.white : theme.colors.white;
-    if (readOnly) {
-      color = theme.colors.disabled;
+    if ($readOnly) {
+      color = theme.colors.backgroundAccent;
     }
     return color;
   }};

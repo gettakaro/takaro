@@ -85,6 +85,7 @@ export const GenericTextField = forwardRef<HTMLInputElement, GenericTextFieldPro
         type={getFieldType(type, showPassword)}
         ref={ref}
         value={value}
+        aria-readonly={readOnly}
         aria-required={required}
         aria-describedby={setAriaDescribedBy(name, hasDescription)}
       />

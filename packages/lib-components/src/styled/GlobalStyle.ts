@@ -107,7 +107,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     color: ${({ theme }) => theme.colors.text};
     font-family: inherit;
     &[readOnly]{
-      cursor: not-allowed;
+      cursor: default;
       &:focus {
         border-color: none!important;
       }

@@ -109,7 +109,7 @@ export const GenericSelectField: FC<GenericSelectFieldProps> & SubComponentTypes
 
   const { x, y, refs, strategy, context } = useFloating({
     open,
-    onOpenChange: setOpen,
+    onOpenChange: disabled || readOnly ? () => {} : setOpen,
     whileElementsMounted: autoUpdate,
     middleware: [
       offset(5),
@@ -274,19 +274,19 @@ export const GenericSelectField: FC<GenericSelectFieldProps> & SubComponentTypes
         onFocus={onFocus}
         isOpen={open}
         tabIndex={disabled ? -1 : 0}
+        disabled={disabled}
         hasError={hasError}
         aria-describedby={setAriaDescribedBy(name, hasDescription)}
         {...getReferenceProps()}
       >
         {render(selectedItems)}
-        {!readOnly && canClear && selectedItems.length > 0 && !open ? (
+        {!readOnly && !disabled && canClear && selectedItems.length > 0 && !open ? (
           <IconButton size="tiny" icon={<ClearIcon />} ariaLabel="clear" onClick={(e) => handleClear(e)} />
         ) : (
           <StyledArrowIcon size={16} />
         )}
       </SelectButton>
       {open &&
-        !readOnly &&
         (!inPortal ? (
           <StyledFloatingOverlay lockScroll style={{ zIndex: 1000 }}>
             {renderSelect()}
