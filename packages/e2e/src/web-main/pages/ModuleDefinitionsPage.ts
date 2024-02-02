@@ -64,6 +64,19 @@ export class ModuleDefinitionsPage extends BasePage {
     }
   }
 
+  async copy(name: string, copyName: string) {
+    await this.page.getByRole('link', { name: name }).getByRole('button', { name: 'Settings' }).click();
+    await this.page.getByRole('menuitem', { name: 'Copy module' }).click();
+
+    await this.page.getByLabel('Module name').fill(copyName);
+    await this.page.getByRole('button', { name: 'Copy module' }).click();
+  }
+
+  async view(name: string) {
+    await this.page.getByRole('link', { name: name }).getByRole('button', { name: 'Settings' }).click();
+    await this.page.getByRole('menuitem', { name: 'View module' }).click();
+  }
+
   async delete(name: string) {
     await this.page.getByRole('link', { name: name }).getByRole('button', { name: 'Settings' }).click();
     await this.page.getByRole('menuitem', { name: 'Delete module' }).click();

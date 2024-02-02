@@ -59,6 +59,7 @@ export const OnSubmit: StoryFn<RadioGroupProps> = (args) => {
           label={args.label}
           name="gender"
           hint={args.hint}
+          disabled={args.disabled}
           required={args.required}
           description={args.description}
         >

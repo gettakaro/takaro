@@ -15,12 +15,12 @@ export function inputsToSchema(inputs: Array<AnyInput>): StrictRJSFSchema {
   const schema: StrictRJSFSchema = {
     $schema: 'http://json-schema.org/draft-07/schema#',
     type: 'object',
-    properties: {},
     required: [],
     additionalProperties: false,
   };
 
   for (const input of inputs) {
+    schema.properties = {};
     if (input.required === true) {
       schema.required?.push(input.name);
     }

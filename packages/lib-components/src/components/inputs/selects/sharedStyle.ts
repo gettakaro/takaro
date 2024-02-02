@@ -21,6 +21,7 @@ export const SelectContainer = styled.div`
 
 export const SelectButton = styled.div<{
   readOnly: boolean;
+  disabled: boolean;
   isOpen: boolean;
   hasError: boolean;
 }>`
@@ -29,7 +30,16 @@ export const SelectButton = styled.div<{
   align-items: center;
   text-align: left;
   width: 100%;
-  cursor: ${({ readOnly }) => (readOnly ? 'not-allowed' : 'pointer')};
+  cursor: ${({ readOnly, disabled }) => {
+    if (disabled) {
+      return 'not-allowed';
+    }
+    if (readOnly) {
+      return 'default';
+    }
+    return 'pointer';
+  }};
+
   font-family: inherit;
   padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing['1']}`};
   outline: 0;
@@ -45,7 +55,8 @@ export const SelectButton = styled.div<{
   text-transform: capitalize;
 
   &:focus {
-    border-color: ${({ theme, hasError }) => (hasError ? theme.colors.error : theme.colors.primary)};
+    border-color: ${({ theme, hasError, disabled }) =>
+      hasError ? theme.colors.error : disabled ? theme.colors.backgroundAccent : theme.colors.primary};
   }
 
   & > div {

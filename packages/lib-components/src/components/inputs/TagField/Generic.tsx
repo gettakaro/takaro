@@ -1,4 +1,4 @@
-import { forwardRef, KeyboardEvent, ClipboardEvent, useState } from 'react';
+import { forwardRef, KeyboardEvent, ClipboardEvent, useState, useEffect } from 'react';
 import { GenericInputPropsFunctionHandlers } from '../InputProps';
 import { ZodType } from 'zod';
 import { TagsContainer, Tag } from './style';
@@ -14,7 +14,7 @@ export interface TagFieldProps {
   disableBackspaceRemove?: boolean;
   // When using backspace, the item itself is removed and the value is shown in the inputfield
   isEditOnRemove?: boolean;
-  onExisting?: (tag: string) => void;
+  allowDuplicates?: boolean;
   placeholder?: string;
   onKeyUp?: (e: KeyboardEvent<HTMLInputElement>) => void;
 }
@@ -34,7 +34,7 @@ export const GenericTagField = forwardRef<HTMLDivElement, GenericTagFieldProps>(
       disableBackspaceRemove,
       value = [],
       onKeyUp,
-      onExisting,
+      allowDuplicates = false,
       isEditOnRemove,
       disabled = false,
       onBlur = () => {},
@@ -69,8 +69,8 @@ export const GenericTagField = forwardRef<HTMLDivElement, GenericTagFieldProps>(
         // TODO: check tag validation logic
         // if (tagValidationSchema && tagValidationSchema.parse(tags)) return;
 
-        if (tags.includes(text)) {
-          onExisting && onExisting(text);
+        if (tags.includes(text) && !allowDuplicates) {
+          // should not add duplicate tags
           return;
         }
 
@@ -80,6 +80,13 @@ export const GenericTagField = forwardRef<HTMLDivElement, GenericTagFieldProps>(
         e.currentTarget.value = '';
       }
     };
+
+    useEffect(() => {
+      // remove duplicates from tag list when allowDuplicates is set to false
+      if (!allowDuplicates) {
+        setTags([...new Set(tags)]);
+      }
+    }, [allowDuplicates]);
 
     const onTagDelete = (text: string) => {
       setTags(tags.filter((tag) => tag !== text));
@@ -102,7 +109,14 @@ export const GenericTagField = forwardRef<HTMLDivElement, GenericTagFieldProps>(
     return (
       <TagsContainer aria-labelledby={name} ref={ref}>
         {tags.map((tag) => (
-          <Tag key={tag} label={tag} onDelete={() => onTagDelete(tag)} disabled={disabled} color="secondary" />
+          <Tag
+            key={tag}
+            label={tag}
+            onDelete={() => onTagDelete(tag)}
+            disabled={disabled}
+            readOnly={readOnly}
+            color="secondary"
+          />
         ))}
         <input
           type="text"
