@@ -71,20 +71,28 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation }) =
                   <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
                 </Dropdown.Trigger>
                 <Dropdown.Menu>
-                  <PermissionsGuard requiredPermissions={[[PERMISSIONS.ManageModules]]}>
-                    <Dropdown.Menu.Item
-                      icon={<ViewIcon />}
-                      onClick={handleOnViewModuleConfigClick}
-                      label="View module config"
-                    />
-                    <Dropdown.Menu.Item
-                      icon={<ConfigIcon />}
-                      onClick={handleConfigureClick}
-                      label="Configure module "
-                    />
-                    <Dropdown.Menu.Item icon={<DeleteIcon />} onClick={handleOnDeleteClick} label="Uninstall module" />
+                  <Dropdown.Menu.Group label="Actions">
+                    <PermissionsGuard requiredPermissions={[[PERMISSIONS.ManageModules]]}>
+                      <Dropdown.Menu.Item
+                        icon={<ViewIcon />}
+                        onClick={handleOnViewModuleConfigClick}
+                        label="View module config"
+                      />
+                      <Dropdown.Menu.Item
+                        icon={<ConfigIcon />}
+                        onClick={handleConfigureClick}
+                        label="Configure module "
+                      />
+                      <Dropdown.Menu.Item
+                        icon={<DeleteIcon fill={theme.colors.error} />}
+                        onClick={handleOnDeleteClick}
+                        label="Uninstall module"
+                      />
+                    </PermissionsGuard>
+                  </Dropdown.Menu.Group>
+                  <Dropdown.Menu.Group>
                     <Dropdown.Menu.Item icon={<LinkIcon />} onClick={handleOnOpenClick} label="Open in studio" />
-                  </PermissionsGuard>
+                  </Dropdown.Menu.Group>
                 </Dropdown.Menu>
               </Dropdown>
             )}
