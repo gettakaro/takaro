@@ -3,14 +3,17 @@ import { styled } from '../../../styled';
 export const Wrapper = styled.div`
   height: 100%;
   font-weight: 500;
-  background-color: ${({ theme }) => theme.colors.backgroundAlt};
+  border-left: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
+  border-right: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
   position: relative;
   border-top-right-radius: ${({ theme }) => theme.borderRadius.large};
   border-top-left-radius: ${({ theme }) => theme.borderRadius.large};
 `;
 
 export const Header = styled.div`
-  background-color: ${({ theme }) => theme.colors.secondary};
+  background-color: ${({ theme }) => theme.colors.backgroundAlt};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
+  border-top: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
   height: 50px;
   display: flex;
   gap: ${({ theme }) => theme.spacing[1]};
