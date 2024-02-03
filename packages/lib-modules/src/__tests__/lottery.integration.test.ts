@@ -36,7 +36,7 @@ const setup = async function (this: IntegrationTest<IModuleTestsSetupData>): Pro
     gameServerId: data.gameserver.id,
   });
 
-  await this.client.gameserver.gameServerControllerInstallModule(data.gameserver.id, data.economyModule.id);
+  await this.client.gameserver.gameServerControllerInstallModule(data.gameserver.id, data.economyUtilsModule.id);
 
   const pogs = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
     filters: {

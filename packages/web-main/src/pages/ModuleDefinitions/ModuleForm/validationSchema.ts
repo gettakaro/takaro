@@ -28,8 +28,8 @@ export const moduleNameShape = z
   .min(4, {
     message: 'Module name requires a minimum length of 4 characters',
   })
-  .max(25, {
-    message: 'Module name requires a maximum length of 25 characters',
+  .max(35, {
+    message: 'Module name requires a maximum length of 35 characters',
   })
   .nonempty('Module name cannot be empty');
 
