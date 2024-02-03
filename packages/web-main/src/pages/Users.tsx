@@ -12,6 +12,7 @@ import {
   FormError,
   DateFormatter,
   CopyId,
+  useTheme,
 } from '@takaro/lib-components';
 import { UserOutputWithRolesDTO, UserSearchInputDTOSortDirectionEnum, PERMISSIONS } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
@@ -191,6 +192,7 @@ const InviteUser: FC = () => {
 
 const UserMenu: FC<{ user: UserOutputWithRolesDTO }> = ({ user }) => {
   const [openDeleteUserDialog, setOpenDeleteUserDialog] = useState<boolean>(false);
+  const theme = useTheme();
   const navigate = useNavigate();
   const { hasPermission: hasReadUsersPermission, isLoading: isLoadingReadUserPermission } = useHasPermission([
     PERMISSIONS.ReadUsers,
@@ -220,7 +222,7 @@ const UserMenu: FC<{ user: UserOutputWithRolesDTO }> = ({ user }) => {
           />
           <Dropdown.Menu.Item
             label="Delete user"
-            icon={<DeleteIcon />}
+            icon={<DeleteIcon fill={theme.colors.error} />}
             onClick={() => setOpenDeleteUserDialog(true)}
             disabled={!isLoadingManageRolesPermission && !hasManageRolesPermission}
           />
