@@ -17,6 +17,7 @@ import {
   AiOutlineCopy as CopyIcon,
 } from 'react-icons/ai';
 import { CopyModuleForm } from 'components/CopyModuleForm';
+import { useSnackbar } from 'notistack';
 
 interface IModuleCardProps {
   mod: ModuleOutputDTO;
@@ -28,11 +29,17 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
   const { mutateAsync, isPending: isDeleting } = useModuleRemove();
   const theme = useTheme();
   const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
 
   const handleOnDelete = async (e: MouseEvent) => {
     e.stopPropagation();
     await mutateAsync({ id: mod.id });
     setOpenDeleteDialog(false);
+  };
+
+  const handleOnCopySuccess = async (_moduleId: string) => {
+    enqueueSnackbar('Module successfully copied. ', { variant: 'default', type: 'success' });
+    setOpenCopyDialog(false);
   };
 
   const handleOnEditClick = (e: MouseEvent) => {
@@ -149,7 +156,7 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
             <h2>
               Copy module: <strong>{mod.name}</strong>
             </h2>
-            <CopyModuleForm moduleId={mod.id} onSuccess={() => setOpenCopyDialog(false)} />
+            <CopyModuleForm moduleId={mod.id} onSuccess={(e) => handleOnCopySuccess(e)} />
           </Dialog.Body>
         </Dialog.Content>
       </Dialog>

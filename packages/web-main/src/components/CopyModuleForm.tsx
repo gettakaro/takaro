@@ -123,7 +123,6 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ moduleId, onSuccess })
             )
           ),
         ]);
-        enqueueSnackbar('Module successfully copied. ', { variant: 'default', type: 'success' });
         onSuccess && onSuccess(createdModule.id);
       }
     } catch (error) {
