@@ -16,7 +16,7 @@ import {
 import { UserOutputWithRolesDTO, UserSearchInputDTOSortDirectionEnum, PERMISSIONS } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useUsers } from 'queries/users';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { PATHS } from 'paths';
 import { AiOutlineUser as ProfileIcon, AiOutlineEdit as EditIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
 import { useInviteUser } from 'queries/users/queries';
@@ -52,7 +52,10 @@ const Users: FC = () => {
     columnHelper.accessor('name', {
       header: 'Name',
       id: 'name',
-      cell: (info) => info.getValue(),
+      cell: (info) => {
+        const user = info.row.original;
+        return <Link to={PATHS.user.profile(user.id)}>{info.getValue()}</Link>;
+      },
     }),
     columnHelper.accessor('email', {
       header: 'Email',
