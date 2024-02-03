@@ -100,6 +100,7 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
         <>
           <EventProperty name="module" value={event.module?.name} />
           <EventProperty name="command" value={meta.command?.name} />
+          <EventProperty name="player" value={event.player?.name} />
           {Object.values(meta.command?.arguments).length ? (
             <EventProperty name="args" value={JSON.stringify(meta.command?.arguments)} />
           ) : null}
