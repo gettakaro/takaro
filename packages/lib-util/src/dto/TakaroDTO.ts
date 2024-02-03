@@ -25,9 +25,9 @@ export class TakaroDTO<T> {
    */
   async validate(extraOpts: ValidatorOptions = {}) {
     const validationErrors = await validate(this, {
-      forbidUnknownValues: true,
-      forbidNonWhitelisted: true,
+      forbidNonWhitelisted: false,
       whitelist: true,
+      forbidUnknownValues: false,
       ...extraOpts,
     });
 

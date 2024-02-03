@@ -476,12 +476,13 @@ export class GameServerService extends TakaroService<
     const items = await gameInstance.listItems();
 
     const toInsert = await Promise.all(
-      items.map((item) =>
-        new ItemCreateDTO().construct({
+      items.map((item) => {
+        delete item.amount;
+        return new ItemCreateDTO().construct({
           ...item,
           gameserverId: gameServerId,
-        })
-      )
+        });
+      })
     );
 
     await itemsService.upsertMany(toInsert);

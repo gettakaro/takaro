@@ -10,8 +10,9 @@ import {
   EventPlayerDeath,
   EventPlayerDisconnected,
   GameEvents,
-  IGamePlayer,
+  GameEventsMapping,
 } from '@takaro/modules';
+import { ValueOf } from 'type-fest';
 
 export enum RustEventType {
   DEFAULT = 'Generic',
@@ -19,19 +20,19 @@ export enum RustEventType {
   CHAT = 'Chat',
 }
 
-const EventRegexMap = {
-  [GameEvents.PLAYER_CONNECTED]: /\d{17}\/.+ joined \[.+\/\d{17}\]/,
-  [GameEvents.PLAYER_DISCONNECTED]: /.* disconnecting\: disconnect/,
-  [GameEvents.PLAYER_DEATH]: /(?<name>.+)\[\d+\] (was killed by|died) (.+)/,
-  [GameEvents.ENTITY_KILLED]:
-    /(?<killerName>.+)\[\d+\] killed (?<entityName>.+) at \((?<xCoord>[-\d.]+), (?<yCoord>[-\d.]+), (?<zCoord>[-\d.]+)\)/,
-};
-
 export interface RustEvent {
   Message: string;
   Identifier: number;
   Type: RustEventType;
   Stacktrace: string;
+}
+
+enum RustTypesType {
+  PLAYER_CONNECTED = 0,
+  PLAYER_DISCONNECTED = 1,
+  CHAT_MESSAGE = 2,
+  PLAYER_DEATH = 3,
+  ENTITY_KILLED = 4,
 }
 
 export class RustEmitter extends TakaroEmitter {
@@ -95,30 +96,39 @@ export class RustEmitter extends TakaroEmitter {
   }
 
   async parseMessage(e: RustEvent) {
-    // TODO: We probably want to handle the stacktrace first, because in that case it might be an invalid message.
-    // TODO: Certain events have a different type. We could split the events based on these types to improve performance.
-    if (EventRegexMap[GameEvents.PLAYER_CONNECTED].test(e.Message)) {
-      const data = await this.handlePlayerConnected(e);
-      this.emit(GameEvents.PLAYER_CONNECTED, data);
-    }
-    if (EventRegexMap[GameEvents.PLAYER_DISCONNECTED].test(e.Message)) {
-      const data = await this.handlePlayerDisconnected(e);
-      this.emit(GameEvents.PLAYER_DISCONNECTED, data);
-    }
+    if (e.Message.includes('[Hook Parser]')) {
+      const parsed = JSON.parse(e.Message.replace('[Hook Parser]', ''));
+      let dto: InstanceType<ValueOf<typeof GameEventsMapping>> | null = null;
+      switch (parsed.type) {
+        case RustTypesType.PLAYER_CONNECTED:
+          dto = await this.handlePlayerConnected(parsed.data);
+          break;
+        case RustTypesType.PLAYER_DISCONNECTED:
+          dto = await this.handlePlayerDisconnected(parsed.data);
+          break;
+        case RustTypesType.CHAT_MESSAGE:
+          dto = await this.handleChatMessage(parsed.data);
+          break;
+        case RustTypesType.PLAYER_DEATH:
+          dto = await this.handlePlayerDeath(parsed.data);
+          break;
+        case RustTypesType.ENTITY_KILLED:
+          dto = await this.handleEntityKilled(parsed.data);
+          break;
+        default:
+          this.log.warn('Unknown event type', parsed);
+          break;
+      }
 
-    if (EventRegexMap[GameEvents.PLAYER_DEATH].test(e.Message)) {
-      const data = await this.handlePlayerDeath(e);
-      this.emit(GameEvents.PLAYER_DEATH, data);
-    }
+      if (!dto) {
+        this.log.warn('dto undefined, could not determine type?', parsed);
+        return;
+      }
 
-    if (EventRegexMap[GameEvents.ENTITY_KILLED].test(e.Message)) {
-      const data = await this.handleEntityKilled(e);
-      this.emit(GameEvents.ENTITY_KILLED, data);
-    }
-
-    if (e.Type === RustEventType.CHAT) {
-      const data = await this.handleChatMessage(e);
-      this.emit(GameEvents.CHAT_MESSAGE, data);
+      await dto.validate({
+        whitelist: false,
+      });
+      this.emit(dto.type, dto);
     }
 
     this.emit(
@@ -129,120 +139,51 @@ export class RustEmitter extends TakaroEmitter {
     );
   }
 
-  private async handlePlayerConnected(e: RustEvent) {
-    // "msg": "169.169.169.80:65384/76561198021481871/brunkel joined [windows/76561198021481871]"
-    const msg = e.Message;
-    const expSearch =
-      /(?<ip>[0-9\.]+):(?<port>\d{5})\/(?<steamId>\d{17})\/(?<name>.+) joined \[(?<device>.+)\/\d{17}\]/.exec(msg);
+  private async handlePlayerConnected(data: Record<string, unknown>): Promise<EventPlayerConnected> {
+    const event = await new EventPlayerConnected().construct(data);
+    if (event.player.steamId) {
+      event.player.gameId = event.player.steamId;
+    }
+    return event;
+  }
 
-    if (
-      expSearch &&
-      expSearch.groups &&
-      expSearch.groups.ip &&
-      expSearch.groups.port &&
-      expSearch.groups.steamId &&
-      expSearch.groups.name &&
-      expSearch.groups.device
-    ) {
-      const player = await new IGamePlayer().construct({
-        gameId: expSearch.groups.steamId,
-        name: expSearch.groups.name,
-        steamId: expSearch.groups.steamId,
-        ip: expSearch.groups.ip,
-      });
+  private async handlePlayerDisconnected(data: Record<string, unknown>): Promise<EventPlayerDisconnected> {
+    const event = await new EventPlayerDisconnected().construct(data);
+    if (event.player.steamId) {
+      event.player.gameId = event.player.steamId;
+    }
+    return event;
+  }
 
-      this.log.debug('player: ', player);
-
-      return new EventPlayerConnected().construct({
-        player,
-        msg: msg,
-      });
+  private async handleChatMessage(data: Record<string, unknown>): Promise<EventChatMessage> {
+    delete data.channel;
+    const event = await new EventChatMessage().construct(data);
+    if (event.player) {
+      if (event.player.steamId) {
+        event.player.gameId = event.player.steamId;
+      }
     }
 
-    this.log.error('Could not parse `PlayerConnected` event correctly.', msg, expSearch);
-
-    throw new errors.GameServerError();
+    return event;
   }
 
-  private async handlePlayerDisconnected(e: RustEvent) {
-    // Example: 178.118.188.46:52210/76561198035925898/Emiel disconnecting: disconnect
-    const msg = e.Message;
-    const expSearch = /(?<ip>.*):(?<port>\d{5})\/(?<platformId>\d{17})\/(?<name>.*) disconnecting: disconnect/.exec(
-      msg
-    );
-
-    if (expSearch && expSearch.groups && expSearch.groups.platformId && expSearch.groups.name) {
-      const player = await new IGamePlayer().construct({
-        name: expSearch.groups.name,
-        steamId: expSearch.groups.platformId,
-        gameId: expSearch.groups.platformId,
-      });
-
-      return new EventPlayerDisconnected().construct({
-        player,
-        msg,
-      });
+  private async handlePlayerDeath(data: Record<string, unknown>): Promise<EventPlayerDeath> {
+    const event = await new EventPlayerDeath().construct(data);
+    if (event.player.steamId) {
+      event.player.gameId = event.player.steamId;
     }
-
-    this.log.error('Could not parse `playerDisconnected` event correctly.', msg, expSearch);
-
-    throw new errors.GameServerError();
+    if (event.attacker && event.attacker.steamId) {
+      event.attacker.gameId = event.attacker.steamId;
+    }
+    return event;
   }
 
-  private async handleChatMessage(e: RustEvent): Promise<EventChatMessage> {
-    const parsed = JSON.parse(e.Message);
-
-    return new EventChatMessage().construct({
-      msg: parsed.Message,
-      player: await new IGamePlayer().construct({
-        gameId: parsed.UserId,
-        name: parsed.Username,
-      }),
-      timestamp: new Date(parsed.Time * 1000).toISOString(),
-    });
-  }
-
-  private async handlePlayerDeath(logLine: RustEvent) {
-    const match = EventRegexMap[GameEvents.PLAYER_DEATH].exec(logLine.Message);
-    if (!match) throw new Error('Could not parse player death message');
-    const { groups } = match;
-    if (!groups) throw new Error('Could not parse player death message');
-
-    const { name } = groups;
-
-    const locationMatches = /at \((?<xCoord>[-\d.]+), (?<yCoord>[-\d.]+), (?<zCoord>[-\d.]+)\)/.exec(logLine.Message);
-    if (!locationMatches) throw new Error('Could not parse player death message');
-    const { xCoord, yCoord, zCoord } = locationMatches.groups || {};
-    if (!xCoord || !yCoord || !zCoord) throw new Error('Could not parse player death message');
-
-    return new EventPlayerDeath().construct({
-      msg: logLine.Message,
-      player: await new IGamePlayer().construct({
-        name,
-      }),
-      position: {
-        x: parseFloat(xCoord),
-        y: parseFloat(yCoord),
-        z: parseFloat(zCoord),
-      },
-    });
-  }
-
-  private async handleEntityKilled(logLine: RustEvent) {
-    const match = EventRegexMap[GameEvents.ENTITY_KILLED].exec(logLine.Message);
-    if (!match) throw new Error('Could not parse entity killed message');
-    const { groups } = match;
-    if (!groups) throw new Error('Could not parse entity killed message');
-
-    const { killerName, entityName } = groups;
-
-    return new EventEntityKilled().construct({
-      msg: logLine.Message,
-      player: await new IGamePlayer().construct({
-        name: killerName,
-      }),
-      entity: entityName,
-    });
+  private async handleEntityKilled(data: Record<string, unknown>): Promise<EventEntityKilled> {
+    const event = await new EventEntityKilled().construct(data);
+    if (event.player.steamId) {
+      event.player.gameId = event.player.steamId;
+    }
+    return event;
   }
 
   async listener(data: string) {
