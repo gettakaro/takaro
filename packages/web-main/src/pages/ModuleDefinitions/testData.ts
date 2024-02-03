@@ -118,6 +118,47 @@ export const validSchemas: Test[] = [
     ],
   },
   {
+    name: '2 string fields',
+    schema: {
+      $schema: 'http://json-schema.org/draft-07/schema#',
+      type: 'object',
+      properties: {
+        'config field 1': {
+          type: 'string',
+          title: 'config field 1',
+          description: 'string field description',
+        },
+        'config field 2': {
+          type: 'string',
+          title: 'config field 2',
+          description: 'string field description',
+        },
+      },
+      required: [],
+      additionalProperties: false,
+    },
+    inputs: [
+      {
+        name: 'config field 1',
+        type: InputType.text,
+        required: false,
+        default: undefined,
+        description: 'string field description',
+        minLength: undefined,
+        maxLength: undefined,
+      },
+      {
+        name: 'config field 2',
+        type: InputType.text,
+        required: false,
+        default: undefined,
+        description: 'string field description',
+        minLength: undefined,
+        maxLength: undefined,
+      },
+    ],
+  },
+  {
     name: 'number field',
     schema: {
       $schema: 'http://json-schema.org/draft-07/schema#',
