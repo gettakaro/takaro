@@ -14,7 +14,7 @@ export interface IModuleTestsSetupData {
   teleportsModule: ModuleOutputDTO;
   gimmeModule: ModuleOutputDTO;
   onboardingModule: ModuleOutputDTO;
-  economyModule: ModuleOutputDTO;
+  economyUtilsModule: ModuleOutputDTO;
   serverMessagesModule: ModuleOutputDTO;
   lotteryModule: ModuleOutputDTO;
   geoBlockModule: ModuleOutputDTO;
@@ -49,8 +49,8 @@ export const modulesTestSetup = async function (
   const teleportsModule = modules.find((m) => m.name === 'teleports');
   if (!teleportsModule) throw new Error('teleports module not found');
 
-  const economyModule = modules.find((m) => m.name === 'economy');
-  if (!economyModule) throw new Error('economy module not found');
+  const economyUtilsModule = modules.find((m) => m.name === 'economyUtils');
+  if (!economyUtilsModule) throw new Error('economyUtils module not found');
 
   const gimmeModule = modules.find((m) => m.name === 'gimme');
   if (!gimmeModule) throw new Error('gimme module not found');
@@ -98,7 +98,7 @@ export const modulesTestSetup = async function (
     serverMessagesModule,
     onboardingModule,
     gimmeModule,
-    economyModule,
+    economyUtilsModule,
     lotteryModule,
     geoBlockModule,
     gameserver: gameserver.data.data,

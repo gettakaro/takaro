@@ -43,7 +43,7 @@ extendedTest('Can create variable', async ({ page, takaro, extended }) => {
 
   // select module
   await page.locator('#moduleId').click();
-  await page.getByRole('option', { name: takaro.builtinModule.name }).click();
+  await page.getByRole('option', { name: takaro.builtinModule.name, exact: true }).click();
 
   await page.getByRole('button', { name: 'Save variable' }).click();
   await expect(page.getByText(variableName)).toBeVisible();
