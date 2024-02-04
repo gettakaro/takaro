@@ -112,6 +112,7 @@ const LogIn: FC = () => {
     try {
       if (loginFlow?.id) {
         await logIn(loginFlow?.id, email, password, csrfToken!);
+        localStorage.removeItem('selectedGameServerId');
         queryClient.removeQueries({ queryKey: ['session'] });
         navigate(PATHS.home());
       }
