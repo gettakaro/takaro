@@ -1,8 +1,13 @@
 import { FC, MouseEvent, useEffect, useState } from 'react';
-import { Button, Chip, Dialog, Dropdown, IconButton, Tooltip, Card, Skeleton } from '@takaro/lib-components';
+import { Button, Chip, Dialog, Dropdown, IconButton, Tooltip, Card, Skeleton, useTheme } from '@takaro/lib-components';
 import { EventOutputDTO, GameServerOutputDTO, PERMISSIONS } from '@takaro/apiclient';
 import { useNavigate } from 'react-router-dom';
-import { AiOutlineMenu as MenuIcon } from 'react-icons/ai';
+import {
+  AiOutlineMenu as MenuIcon,
+  AiOutlineDelete as DeleteIcon,
+  AiOutlineEdit as EditIcon,
+  AiOutlineLineChart as DashboardIcon,
+} from 'react-icons/ai';
 
 import { PATHS } from 'paths';
 import { Header, TitleContainer, DetailsContainer } from './style';
@@ -17,6 +22,7 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const navigate = useNavigate();
   const { selectedGameServerId, setSelectedGameServerId } = useSelectedGameServer();
+  const theme = useTheme();
   const { mutateAsync, isPending: isDeleting } = useGameServerRemove();
   const { socket } = useSocket();
   const {
@@ -75,8 +81,21 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
                   <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
                 </Dropdown.Trigger>
                 <Dropdown.Menu>
-                  <Dropdown.Menu.Item onClick={handleOnEditClick} label="Edit gameserver" />
-                  <Dropdown.Menu.Item onClick={handleOnDeleteClick} label="Delete gameserver" />
+                  <Dropdown.Menu.Group label="Actions">
+                    <Dropdown.Menu.Item icon={<EditIcon />} onClick={handleOnEditClick} label="Edit gameserver" />
+                    <Dropdown.Menu.Item
+                      icon={<DeleteIcon fill={theme.colors.error} />}
+                      onClick={handleOnDeleteClick}
+                      label="Delete gameserver"
+                    />
+                  </Dropdown.Menu.Group>
+                  <Dropdown.Menu.Group>
+                    <Dropdown.Menu.Item
+                      icon={<DashboardIcon />}
+                      onClick={() => navigate(PATHS.gameServer.dashboard.overview(id))}
+                      label="go to dashboard"
+                    />
+                  </Dropdown.Menu.Group>
                 </Dropdown.Menu>
               </Dropdown>
             </PermissionsGuard>

@@ -152,13 +152,20 @@ extendedTest.describe('filetree', () => {
 });
 
 extendedTest('Can copy module', async ({ page, takaro }) => {
-  const { studioPage } = takaro;
+  const { studioPage, moduleDefinitionsPage } = takaro;
+  const copyName = `${studioPage.mod.name}-copy`;
+
   await studioPage.goto();
   await studioPage.page.getByRole('button', { name: 'Make copy of module' }).click();
-  await studioPage.page.getByLabel('Module name').fill(`${studioPage.mod.name}-copy`);
+  await studioPage.page.getByLabel('Module name').fill(copyName);
   await studioPage.page.getByRole('button', { name: 'Copy Module' }).click();
-  await takaro.moduleDefinitionsPage.goto();
-  await expect(page.getByText(`${studioPage.mod.name}-copy`)).toBeVisible();
+
+  await studioPage.page.getByTestId('snack-module-copied').getByRole('img').first().click();
+  await studioPage.page.getByTestId('snack-module-copied').getByText('open new module').click();
+  await expect(page.getByText(copyName)).toBeVisible();
+
+  await moduleDefinitionsPage.goto();
+  await expect(page.getByText(copyName)).toBeVisible();
 });
 
 extendedTest.describe('Built-in modules', () => {

@@ -1,3 +1,4 @@
+import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { Button } from '../../../';
 import { useSnackbar } from 'notistack';
@@ -19,7 +20,7 @@ const CustomContent = styled.div`
 
 export default {
   title: 'Feedback/Snacks/DrawerSnack',
-  component: undefined
+  component: undefined,
 } as Meta;
 
 export const Downloads: StoryFn = () => {
@@ -37,7 +38,7 @@ export const Downloads: StoryFn = () => {
             <CheckMarkIcon /> Download now
           </p>
         </CustomContent>
-      )
+      ),
     });
   };
 
