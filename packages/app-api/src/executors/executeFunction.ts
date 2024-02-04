@@ -192,6 +192,7 @@ export async function executeFunction(
       }
     }
 
+    if (!meta.result.logs) meta.result.logs = [];
     // Ensure all logs are TakaroEventFunctionLog
     meta.result.logs = await Promise.all(
       result.logs.map(async (log) => {
