@@ -77,7 +77,6 @@ const Players: FC = () => {
         if (!name) return '';
 
         const player = info.row.original;
-
         return <Player playerId={player.id} name={player.name} showAvatar={true} avatarUrl={player.steamAvatar} />;
       },
       enableColumnFilter: true,
