@@ -19,13 +19,19 @@ export function inputsToSchema(inputs: Array<AnyInput>): StrictRJSFSchema {
     additionalProperties: false,
   };
 
-  for (const input of inputs) {
+  if (inputs.length !== 0) {
     schema.properties = {};
+  }
+
+  for (const input of inputs) {
     if (input.required === true) {
       schema.required?.push(input.name);
     }
-    schema.properties![input.name] = getJsonSchemaElement(input);
+    if (schema.properties) {
+      schema.properties[input.name] = getJsonSchemaElement(input);
+    }
   }
+
   return schema;
 }
 
