@@ -8,6 +8,7 @@ import {
 } from 'react-icons/ai';
 import { AnimatePresence } from 'framer-motion';
 import { Elevation } from '../../../styled/';
+import { Button } from '../../../components';
 
 export type AlertVariants = 'success' | 'error' | 'warning' | 'info';
 
@@ -92,8 +93,12 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(
               )}
               {hasTitle ? <div /> : null}
               <ButtonContainer hasTitle={hasTitle} show={dismiss || action ? true : false} variant={variant}>
-                {action && <button onClick={handleExecute}>{action.text}</button>}
-                {dismiss && <button onClick={handleDismiss}>Dismiss</button>}
+                {action && (
+                  <Button size="small" variant="outline" onClick={handleExecute} text={action.text} color={variant} />
+                )}
+                {dismiss && (
+                  <Button size="small" color="white" variant="outline" onClick={handleDismiss} text="Dismiss" />
+                )}
               </ButtonContainer>
             </Grid>
           </Container>

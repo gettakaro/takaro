@@ -1,5 +1,4 @@
 import { styled, Color, Size, AlertVariants } from '../../../styled';
-import { shade, lighten } from 'polished';
 
 export type ButtonColor = Color | AlertVariants | 'background' | 'white';
 
@@ -28,7 +27,6 @@ export const Default = styled.button<{
   }
   &:hover {
     background-position: right center;
-    background-color: ${({ theme, color }) => lighten(0.05, theme.colors[color])};
   }
 
   span {
@@ -111,7 +109,6 @@ export const Outline = styled(Default)<{ color: ButtonColor }>`
 
   &:hover {
     background-position: right center;
-    background-color: ${({ theme, color }): string => shade(0.8, theme.colors[color])};
   }
 
   &:disabled {
