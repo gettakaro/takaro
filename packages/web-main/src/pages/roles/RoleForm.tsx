@@ -106,7 +106,7 @@ export const RoleForm: FC<CreateUpdateRoleFormProps> = ({ initialData, permissio
                   </Card>
                 ))}{' '}
               </CollapseList.Item>
-              {error && <FormError message={error} />}
+              {error && <FormError error={error} />}
             </form>
           </CollapseList>
         </Drawer.Body>

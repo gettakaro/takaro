@@ -1,6 +1,14 @@
-import { FC, useEffect, useMemo, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { Button, SelectField, TextField, Drawer, CollapseList, FormError, errors } from '@takaro/lib-components';
+import {
+  Button,
+  SelectField,
+  TextField,
+  Drawer,
+  CollapseList,
+  FormError,
+  DrawerSkeleton,
+} from '@takaro/lib-components';
 import { ButtonContainer } from './style';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -26,11 +34,11 @@ export interface IFormInputs {
 }
 
 export const UpdateGameServer = () => {
-  const { serverId } = useParams();
-  const { data, isLoading } = useGameServer(serverId!);
+  const { serverId } = useParams() as { serverId: string };
+  const { data, isLoading } = useGameServer(serverId);
 
   if (isLoading) {
-    return <>isLoading</>;
+    return <DrawerSkeleton />;
   }
 
   if (!data || !serverId) {
@@ -53,18 +61,6 @@ const UpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
   const { mutateAsync: testReachabilityMutation, isPending: testingConnection } = useGameServerReachabilityByConfig();
   const [connectionOk, setConnectionOk] = useState<boolean>(false);
 
-  // TODO: should merge this with similar memo in CreateGameServer.tsx
-  const parsedGameServerUpdateError = useMemo(() => {
-    if (gameServerUpdateError) {
-      const err = errors.defineErrorType(gameServerUpdateError);
-
-      if (err instanceof errors.UniqueConstraintError) {
-        return 'A server with this name already exists.';
-      }
-      return;
-    }
-  }, [gameServerUpdateError]);
-
   useEffect(() => {
     if (!open) {
       navigate(PATHS.gameServers.overview());
@@ -83,7 +79,7 @@ const UpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
 
   const onSubmit: SubmitHandler<IFormInputs> = async ({ name, connectionInfo }) => {
     await mutateAsync({
-      gameServerId: serverId!,
+      gameServerId: serverId,
       gameServerDetails: {
         name,
         type: data.type,
@@ -155,8 +151,8 @@ const UpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
               </CollapseList.Item>
             </form>
           </CollapseList>
-          {error && <FormError message={error} />}
-          {parsedGameServerUpdateError && <FormError message={parsedGameServerUpdateError} />}
+          {error && <FormError error={error} />}
+          {gameServerUpdateError && <FormError error={gameServerUpdateError} />}
         </Drawer.Body>
         <Drawer.Footer>
           <ButtonContainer>

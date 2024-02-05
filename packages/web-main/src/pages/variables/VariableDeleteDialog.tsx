@@ -15,7 +15,7 @@ export const VariableDeleteDialog: FC<VariableDeleteProps> = ({ variable, openDi
   const handleOnDelete = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
     if (variable) {
-      await mutateAsync(variable.id);
+      await mutateAsync({ variableId: variable.id });
       setOpenDialog(false);
     }
   };

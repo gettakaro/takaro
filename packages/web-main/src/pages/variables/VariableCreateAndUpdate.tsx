@@ -1,6 +1,6 @@
-import { FC, useEffect, useMemo, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { errors, Button, TextField, Drawer, FormError, TextAreaField, Alert } from '@takaro/lib-components';
+import { Button, TextField, Drawer, FormError, TextAreaField, Alert } from '@takaro/lib-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate, useParams } from 'react-router-dom';
 import { VariableOutputDTO } from '@takaro/apiclient';
@@ -12,7 +12,6 @@ import { z } from 'zod';
 import { useVariable, useVariableUpdate } from 'queries/variables/queries';
 import { GameServerSelect, PlayerSelect } from 'components/selects';
 import { ModuleSelect } from 'components/selects/ModuleSelect';
-import { AxiosError } from 'axios';
 
 enum ExecutionType {
   CREATE = 'create',
@@ -97,7 +96,7 @@ interface CreateAndUpdateVariableformProps {
   isLoading: boolean;
   type: ExecutionType;
   submit: (variable: IFormInputs) => Promise<void>;
-  error?: AxiosError<any> | null;
+  error?: string | string[] | null;
 }
 
 interface IFormInputs {
@@ -113,7 +112,7 @@ const VariableCreateAndUpdateForm: FC<CreateAndUpdateVariableformProps> = ({
   isLoading,
   submit,
   type,
-  error: responseError,
+  error,
 }) => {
   const [open, setOpen] = useState(true);
   const navigate = useNavigate();
@@ -135,17 +134,6 @@ const VariableCreateAndUpdateForm: FC<CreateAndUpdateVariableformProps> = ({
       moduleId: variable?.moduleId,
     },
   });
-
-  const error = useMemo(() => {
-    if (responseError) {
-      const err = errors.defineErrorType(responseError);
-
-      if (err instanceof errors.UniqueConstraintError) {
-        return 'Variable with this key already exists';
-      }
-      return;
-    }
-  }, [responseError]);
 
   const onSubmit: SubmitHandler<IFormInputs> = async (variable) => {
     await submit(variable);
@@ -197,7 +185,7 @@ const VariableCreateAndUpdateForm: FC<CreateAndUpdateVariableformProps> = ({
               description="If a different value needs to be stored for each module, select the module here."
             />
 
-            {error && <FormError message={error} />}
+            {error && <FormError error={error} />}
           </form>
         </Drawer.Body>
         <Drawer.Footer>

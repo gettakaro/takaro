@@ -163,7 +163,7 @@ const LogIn: FC = () => {
           <TextField control={control} label="Email" loading={loading} name="email" placeholder="hi cutie" required />
           <TextField control={control} label="Password" loading={loading} name="password" required type="password" />
           <StyledLink to="/auth/recovery">Forgot your password?</StyledLink>
-          {error && <FormError message={error} />}
+          {error && <FormError error={error} />}
           <Button
             icon={<Mail />}
             isLoading={loading}

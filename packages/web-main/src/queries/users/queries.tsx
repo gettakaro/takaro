@@ -7,7 +7,7 @@ import {
   UserOutputWithRolesDTO,
   UserSearchInputDTO,
 } from '@takaro/apiclient';
-import { hasNextPage } from '../util';
+import { hasNextPage, mutationWrapper } from '../util';
 import { AxiosError } from 'axios';
 import { useMemo } from 'react';
 import { InfiniteScroll as InfiniteScrollComponent } from '@takaro/lib-components';
@@ -78,50 +78,68 @@ export const useUserAssignRole = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation<APIOutput, AxiosError<APIOutput>, IUserRoleAssign>({
-    mutationFn: async ({ userId, roleId, expiresAt }) => {
-      const res = (await apiClient.user.userControllerAssignRole(userId, roleId, { expiresAt })).data;
-      queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
-      return res;
-    },
-  });
+  return mutationWrapper<APIOutput, IUserRoleAssign>(
+    useMutation<APIOutput, AxiosError<APIOutput>, IUserRoleAssign>({
+      mutationFn: async ({ userId, roleId, expiresAt }) => {
+        const res = (await apiClient.user.userControllerAssignRole(userId, roleId, { expiresAt })).data;
+        queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
+        return res;
+      },
+    }),
+    {}
+  );
 };
 
 export const useUserRemoveRole = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation<APIOutput, AxiosError<APIOutput>, RoleInput>({
-    mutationFn: async ({ userId, roleId }: RoleInput) => {
-      const res = (await apiClient.user.userControllerRemoveRole(userId, roleId)).data;
-      queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
-      return res;
-    },
-  });
+  return mutationWrapper<APIOutput, RoleInput>(
+    useMutation<APIOutput, AxiosError<APIOutput>, RoleInput>({
+      mutationFn: async ({ userId, roleId }) => {
+        const res = (await apiClient.user.userControllerRemoveRole(userId, roleId)).data;
+        queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
+        return res;
+      },
+    }),
+    {}
+  );
 };
 
+interface InviteUserInput {
+  email: string;
+}
 export const useInviteUser = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation<APIOutput, AxiosError<APIOutput>, { email: string }>({
-    mutationFn: async ({ email }) => (await apiClient.user.userControllerInvite({ email })).data,
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: userKeys.list() });
-    },
-  });
+  return mutationWrapper<APIOutput, InviteUserInput>(
+    useMutation<APIOutput, AxiosError<APIOutput>, InviteUserInput>({
+      mutationFn: async ({ email }) => (await apiClient.user.userControllerInvite({ email })).data,
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: userKeys.list() });
+      },
+    }),
+    {}
+  );
 };
 
+interface UserRemoveInput {
+  id: string;
+}
 export const useUserRemove = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
   const { enqueueSnackbar } = useSnackbar();
 
-  return useMutation<IdUuidDTO, AxiosError<IdUuidDTO>, { id: string }>({
-    mutationFn: async ({ id }) => (await apiClient.user.userControllerRemove(id)).data.data,
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: userKeys.list() });
-      enqueueSnackbar('User has been deleted', { variant: 'default' });
-    },
-  });
+  return mutationWrapper<IdUuidDTO, UserRemoveInput>(
+    useMutation<IdUuidDTO, AxiosError<IdUuidDTO>, UserRemoveInput>({
+      mutationFn: async ({ id }) => (await apiClient.user.userControllerRemove(id)).data.data,
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: userKeys.list() });
+        enqueueSnackbar('User has been deleted', { variant: 'default' });
+      },
+    }),
+    {}
+  );
 };
