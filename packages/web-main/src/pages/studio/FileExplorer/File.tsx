@@ -16,6 +16,7 @@ import {
   AiOutlineClose as DeleteIcon,
   AiFillFileAdd as AddFileIcon,
 } from 'react-icons/ai';
+import { z } from 'zod';
 
 import { DiJsBadge as JsIcon } from 'react-icons/di';
 
@@ -126,6 +127,12 @@ export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, o
   const [hover, setHover] = useState<boolean>(false);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const fileRef = useRef<HTMLButtonElement>(null);
+
+  const fileNameValidation = z
+    .string()
+    .min(1, { message: 'The field must not be empty.' })
+    .max(30, { message: 'The field must not be longer than 30 characters.' })
+    .refine((value) => !value.includes('/'), { message: 'The field must not contain slashes.' });
 
   const [internalFileName, setInternalFileName] = useState(fileName);
   const [isEditing, setEditing] = useState<boolean>(false);
@@ -364,6 +371,7 @@ export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, o
               onEdited={handleRename}
               editingChange={(edited) => setEditing(edited)}
               disabled={moduleData.isBuiltIn}
+              validationSchema={fileNameValidation}
               required
               value={internalFileName}
             />
@@ -388,6 +396,7 @@ export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, o
             name="new-file"
             isEditing={true}
             editingChange={setShowNewFileField}
+            validationSchema={fileNameValidation}
             onEdited={handleNewFile}
           />
         </NewFileContainer>
