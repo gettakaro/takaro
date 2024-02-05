@@ -1,52 +1,15 @@
 import { useState } from 'react';
 import { ThemeProvider } from 'styled-components';
 import { ThemeProvider as OryThemeProvider } from '@ory/elements';
-import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { GlobalStyle, SnackbarProvider, darkTheme } from '@takaro/lib-components';
 import { oryThemeOverrides } from './OryThemeOverrides';
 import { Router } from './Router';
-import { isAxiosError } from 'axios';
 import { ConfigContext, TakaroConfig, getConfigVar } from 'context/configContext';
 import { EnvVars } from 'EnvVars';
-import * as Sentry from '@sentry/react';
-
 import '@ory/elements/style.css';
-
-export const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      refetchOnWindowFocus: true,
-      throwOnError: (error) => {
-        if (isAxiosError(error)) {
-          if (error.response && error.response.status >= 500) {
-            Sentry.captureException(error);
-            return true;
-          }
-          return false;
-        }
-        Sentry.captureException(error);
-        return true;
-      },
-      retry: (failureCount, error) => {
-        // third try, capture the error
-        if (failureCount === 3) {
-          Sentry.captureException(error);
-        }
-
-        // SPECIAL CASE: if there is no `status`, this is `network error` meaning axios could not connect to the server at all
-        if (isAxiosError(error) && error.status === undefined) {
-          return false;
-        }
-
-        if (isAxiosError(error) && error.status && error.status >= 500 && failureCount <= 2) {
-          return true;
-        }
-        return false;
-      },
-    },
-  },
-});
+import { queryClient } from './queryClient';
 
 function App() {
   const [config, setConfig] = useState<TakaroConfig>();
