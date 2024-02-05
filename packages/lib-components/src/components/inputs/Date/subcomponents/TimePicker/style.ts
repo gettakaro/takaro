@@ -21,11 +21,12 @@ export const List = styled.ul`
 
 export const Item = styled.li<{ isSelected: boolean }>`
   cursor: pointer;
-  background-color: ${({ theme, isSelected }) => (isSelected ? theme.colors.primary : 'transparent')};
+  background-color: ${({ theme, isSelected }) => (isSelected ? theme.colors.primaryShade : 'transparent')};
+  border: 1px solid ${({ theme, isSelected }) => (isSelected ? theme.colors.primary : 'transparent')};
   padding: ${({ theme }) => theme.spacing['0_5']};
   border-radius: ${({ theme }) => theme.borderRadius.small};
 
   &:hover {
-    background-color: ${({ theme }) => theme.colors.background};
+    background-color: ${({ theme, isSelected }) => (isSelected ? theme.colors.primaryShade : theme.colors.background)};
   }
 `;
