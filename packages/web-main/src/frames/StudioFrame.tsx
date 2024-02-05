@@ -8,6 +8,7 @@ import { useModule } from 'queries/modules';
 import { Loading, styled } from '@takaro/lib-components';
 import { ModuleOnboarding } from 'views/ModuleOnboarding';
 import { PATHS } from 'paths';
+import { ErrorBoundary } from 'components/ErrorBoundary';
 
 const Flex = styled.div`
   display: flex;
@@ -108,21 +109,23 @@ export const StudioFrame: FC = () => {
   }
 
   return (
-    <ModuleContext.Provider value={providerModuleData}>
-      <SandpackProvider
-        // TODO: eventually this should point to the module config file
-        customSetup={{
-          entry: Object.keys(files)[0],
-        }}
-        files={files}
-        prefix=""
-      >
-        <Flex>
-          <Wrapper>
-            <Outlet />
-          </Wrapper>
-        </Flex>
-      </SandpackProvider>
-    </ModuleContext.Provider>
+    <ErrorBoundary>
+      <ModuleContext.Provider value={providerModuleData}>
+        <SandpackProvider
+          // TODO: eventually this should point to the module config file
+          customSetup={{
+            entry: Object.keys(files)[0],
+          }}
+          files={files}
+          prefix=""
+        >
+          <Flex>
+            <Wrapper>
+              <Outlet />
+            </Wrapper>
+          </Flex>
+        </SandpackProvider>
+      </ModuleContext.Provider>
+    </ErrorBoundary>
   );
 };
