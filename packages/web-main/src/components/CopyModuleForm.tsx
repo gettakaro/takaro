@@ -2,8 +2,8 @@ import { z } from 'zod';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useSnackbar } from 'notistack';
-import { Button, TextField, FormError, errors, Alert } from '@takaro/lib-components';
-import { FC, useState } from 'react';
+import { Button, TextField, FormError, Alert } from '@takaro/lib-components';
+import { FC } from 'react';
 import { AiOutlineCopy as CopyIcon } from 'react-icons/ai';
 
 import {
@@ -28,16 +28,15 @@ interface CopyModuleFormProps {
 export const CopyModuleForm: FC<CopyModuleFormProps> = ({ moduleId, onSuccess }) => {
   const { data: mod, isPending } = useModule(moduleId);
   const { enqueueSnackbar } = useSnackbar();
-  const [error, setError] = useState<string | null>(null);
 
   const { control, handleSubmit } = useForm<z.infer<typeof validationSchema>>({
     resolver: zodResolver(validationSchema),
   });
 
   const { mutateAsync: createModule, isPending: moduleCreateLoading, error: moduleCreateError } = useModuleCreate();
-  const { mutateAsync: createHook, isPending: hookCreateLoading } = useHookCreate();
-  const { mutateAsync: createCommand, isPending: commandCreateLoading } = useCommandCreate();
-  const { mutateAsync: createCronJob, isPending: cronJobCreateLoading } = useCronJobCreate();
+  const { mutateAsync: createHook, isPending: hookCreateLoading, error: hookCreateError } = useHookCreate();
+  const { mutateAsync: createCommand, isPending: commandCreateLoading, error: commandCreateError } = useCommandCreate();
+  const { mutateAsync: createCronJob, isPending: cronJobCreateLoading, error: cronJobCreateError } = useCronJobCreate();
   const { mutateAsync: removeModule, isPending: moduleRemoveLoading } = useModuleRemove();
 
   const isLoading =
@@ -52,18 +51,7 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ moduleId, onSuccess })
     return;
   }
 
-  if (moduleCreateError && !error) {
-    const err = errors.defineErrorType(moduleCreateError);
-
-    if (err instanceof errors.UniqueConstraintError) {
-      setError('Module name already exists');
-    } else {
-      setError('Failed to copy module');
-    }
-  }
-
   const onSubmit: SubmitHandler<z.infer<typeof validationSchema>> = async ({ name }) => {
-    setError(null);
     const createdModule = await createModule({
       name,
       configSchema: mod.configSchema,
@@ -152,7 +140,10 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ moduleId, onSuccess })
       </form>
 
       <div style={{ height: '10px' }} />
-      {error && <FormError message={error} />}
+      {moduleCreateError && <FormError error={moduleCreateError} />}
+      {hookCreateError && <FormError error={hookCreateError} />}
+      {commandCreateError && <FormError error={commandCreateError} />}
+      {cronJobCreateError && <FormError error={cronJobCreateError} />}
     </>
   );
 };

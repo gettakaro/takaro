@@ -60,7 +60,7 @@ test('Should show error when creating a gameserver with name that already exists
   await hostInputs2.fill(integrationConfig.get('mockGameserver.host'));
   await GameServersPage.clickTestConnection();
   await GameServersPage.clickSave();
-  await expect(page.getByText('A server with this name already exists.')).toBeVisible();
+  await expect(page.getByText('Game server with this name already exists')).toBeVisible();
 });
 
 test('Should show error when updating a gameserver with name that already exists', async ({ page, takaro }) => {
@@ -83,7 +83,7 @@ test('Should show error when updating a gameserver with name that already exists
   await GameServersPage.nameCreateEdit(serverName);
   await GameServersPage.clickTestConnection();
   await GameServersPage.clickSave();
-  await expect(page.getByText('A server with this name already exists.')).toBeVisible();
+  await expect(page.getByText('Game server with this name already exists')).toBeVisible();
 });
 
 test('Can edit gameserver', async ({ page, takaro }) => {

@@ -34,6 +34,7 @@ const Content = styled.span`
   line-height: 1.2;
   min-height: ${({ theme }) => theme.spacing['2_5']};
   white-space: normal;
+  hyphens: auto;
 `;
 
 export interface ErrorMessageProps {

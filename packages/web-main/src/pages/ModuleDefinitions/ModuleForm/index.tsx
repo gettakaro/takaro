@@ -14,10 +14,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { validationSchema } from './validationSchema';
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from 'paths';
-import { ModuleOutputDTO, ModuleOutputDTOAPI, PermissionCreateDTO } from '@takaro/apiclient';
+import { ModuleOutputDTO, PermissionCreateDTO } from '@takaro/apiclient';
 import { PermissionList, ButtonContainer } from './style';
 import { AiOutlinePlus as PlusIcon } from 'react-icons/ai';
-import { AxiosError } from 'axios';
 import { AnyInput, InputType } from '../schemaConversion/inputTypes';
 import { schemaToInputs } from '../schemaConversion/SchemaToInputs';
 import { inputsToSchema, inputsToUiSchema } from '../schemaConversion/inputsToSchema';
@@ -46,7 +45,7 @@ interface ModuleFormProps {
   isLoading?: boolean;
   isSuccess?: boolean;
   onSubmit?: (data: ModuleFormSubmitProps) => void;
-  error: AxiosError<ModuleOutputDTOAPI, any> | null;
+  error: string | string[] | null;
 }
 
 export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess = false, onSubmit, isLoading = false, error }) => {

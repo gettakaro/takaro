@@ -3,6 +3,7 @@ import { breakpoint } from './breakpoint';
 import { elevationLight, elevationDark } from './elevation';
 import { spacing } from './spacing';
 import { zIndex } from './zIndex';
+import { shade } from 'polished';
 
 const fontSize = {
   tiny: '1rem',
@@ -31,6 +32,7 @@ export const lightTheme = {
   zIndex,
   colors: {
     primary: '#664de5',
+    primaryShade: shade(0.5, '#664de5'),
     secondary: '#030917',
     placeholder: '#f5f5f5',
     placeholderHighlight: '#ffffff',
@@ -60,6 +62,7 @@ export const darkTheme: ThemeType = {
   borderRadius,
   colors: {
     primary: '#664DE5',
+    primaryShade: shade(0.5, '#664de5'),
     secondary: '#353535',
     placeholder: '#202020',
     placeholderHighlight: '#303030',

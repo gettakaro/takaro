@@ -3,7 +3,44 @@ import { BaseError } from './base';
 import * as Sentry from '@sentry/react';
 import { ValidationError } from 'class-validator';
 
-export function defineErrorType(apiError: AxiosError<any>) {
+// Define a type for the error message mapping
+export interface ErrorMessageMapping {
+  UniqueConstraintError: string;
+  ResponseValidationError: string;
+}
+
+export function getErrorUserMessage(
+  apiError: AxiosError<any> | null,
+  errorMessages: Partial<ErrorMessageMapping>
+): string | string[] | null {
+  // If there is no error, return null
+  if (apiError === null) {
+    return null;
+  }
+
+  const err = transformError(apiError);
+
+  const defaultMesssage = 'An error occurred. Please try again later.';
+
+  if (!err) {
+    Sentry.captureException(apiError);
+    return defaultMesssage;
+  }
+
+  if (err instanceof NotAuthorizedError) {
+    return 'You are not authorized to perform this action';
+  }
+  if (err instanceof ResponseValidationError) {
+    return err.parseValidationError();
+  }
+
+  const messageType = err.constructor.name as keyof ErrorMessageMapping;
+  const message = errorMessages[messageType];
+
+  return message || defaultMesssage;
+}
+
+export function transformError(apiError: AxiosError<any>) {
   const error = apiError.response?.data.meta.error;
 
   if (!error) {

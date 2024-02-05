@@ -1,5 +1,6 @@
 import { styled } from '../../../styled';
 import { motion } from 'framer-motion';
+import { shade } from 'polished';
 
 export const Container = styled.div`
   position: relative;
@@ -16,13 +17,13 @@ export const ContentContainer = styled.button<{ isChecked: boolean; hasError: bo
   display: block;
   cursor: ${({ readOnly }) => (readOnly ? 'default' : 'pointer')};
   border-radius: 9999px;
-  border: 0.1rem solid ${({ theme, hasError }) => (hasError ? theme.colors.error : theme.colors.backgroundAccent)};
+  border: 0.1rem solid ${({ theme, hasError }) => (hasError ? theme.colors.error : theme.colors.primary)};
   margin: ${({ theme }) => theme.spacing[0]};
   background-color: ${({ theme, isChecked, hasError }) => {
     if (isChecked && hasError) {
       return theme.colors.error;
     }
-    return isChecked ? theme.colors.primary : theme.colors.background;
+    return isChecked ? theme.colors.primaryShade : shade(0.5, theme.colors.background);
   }};
 
   &:focus {

@@ -1,6 +1,6 @@
-import { FC, useEffect, useMemo, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { Button, SelectField, TextField, Drawer, CollapseList, FormError, errors } from '@takaro/lib-components';
+import { Button, SelectField, TextField, Drawer, CollapseList, FormError } from '@takaro/lib-components';
 import { ButtonContainer } from './style';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -11,7 +11,6 @@ import {
 } from '@takaro/apiclient';
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from 'paths';
-import * as Sentry from '@sentry/react';
 import { useGameServerCreate, useGameServerReachabilityByConfig } from 'queries/gameservers';
 import { connectionInfoFieldsMap } from './connectionInfoFieldsMap';
 import { validationSchema } from './validationSchema';
@@ -44,17 +43,6 @@ export const CreateGameServer: FC = () => {
     resolver: zodResolver(validationSchema),
   });
 
-  const parsedGameServerCreateError = useMemo(() => {
-    if (gameServerCreateError) {
-      const err = errors.defineErrorType(gameServerCreateError);
-
-      if (err instanceof errors.UniqueConstraintError) {
-        return 'A server with this name already exists.';
-      }
-      return;
-    }
-  }, [gameServerCreateError]);
-
   const onSubmit: SubmitHandler<IFormInputs> = async ({ type, connectionInfo, name }) => {
     try {
       const newGameServer = await mutateAsync({
@@ -66,9 +54,7 @@ export const CreateGameServer: FC = () => {
       // set the new gameserver as selected.
       setSelectedGameServerId(newGameServer.id);
       navigate(PATHS.gameServers.overview());
-    } catch (error) {
-      Sentry.captureException(error);
-    }
+    } catch {}
   };
 
   const { type, connectionInfo, name } = watch();
@@ -133,8 +119,8 @@ export const CreateGameServer: FC = () => {
                   {connectionInfoFieldsMap(isPending, control)[type]}
                 </CollapseList.Item>
               )}
-              {reachabilityError && <FormError message={reachabilityError} />}
-              {parsedGameServerCreateError && <FormError message={parsedGameServerCreateError} />}
+              {reachabilityError && <FormError error={reachabilityError} />}
+              {gameServerCreateError && <FormError error={gameServerCreateError} />}
             </form>
           </CollapseList>
         </Drawer.Body>

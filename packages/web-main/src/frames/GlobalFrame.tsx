@@ -1,12 +1,12 @@
 import { FC } from 'react';
 import { motion } from 'framer-motion';
-import { ErrorFallback, styled, useLocalStorage } from '@takaro/lib-components';
+import { styled, useLocalStorage } from '@takaro/lib-components';
 import { Outlet } from 'react-router-dom';
 import { Navbar } from 'components/Navbar';
 import { useParams } from 'react-router-dom';
 
 import { Page } from '../pages/Page';
-import { ErrorBoundary } from '@sentry/react';
+import { ErrorBoundary } from 'components/ErrorBoundary';
 import { SelectedGameServerContext } from 'context/selectedGameServerContext';
 
 const Container = styled.div`
@@ -43,7 +43,7 @@ export const GlobalFrame: FC = () => {
       <Container>
         <Navbar />
         <ContentContainer animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 0.5 }}>
-          <ErrorBoundary fallback={<ErrorFallback />}>
+          <ErrorBoundary>
             <Page>
               <Outlet context={{ gameServerId: gameServerId, setGameServerId }} />
             </Page>

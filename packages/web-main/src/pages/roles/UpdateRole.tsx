@@ -1,7 +1,6 @@
 import { DrawerSkeleton } from '@takaro/lib-components';
 import { PATHS } from 'paths';
 import { useParams, useNavigate } from 'react-router-dom';
-import * as Sentry from '@sentry/react';
 import { usePermissions, useRole, useRoleUpdate } from 'queries/roles/queries';
 import { SubmitHandler } from 'react-hook-form';
 import { RoleForm, IFormInputs } from './RoleForm';
@@ -35,9 +34,7 @@ export const UpdateRole = () => {
         },
       });
       navigate(PATHS.roles.overview());
-    } catch (error) {
-      Sentry.captureException(error);
-    }
+    } catch (error) {}
   };
 
   return <RoleForm onSubmit={onSubmit} initialData={role} permissions={permissions} isLoading={isUpdatingRole} />;

@@ -3,7 +3,6 @@ import { SubmitHandler } from 'react-hook-form';
 import { DrawerSkeleton } from '@takaro/lib-components';
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from 'paths';
-import * as Sentry from '@sentry/react';
 import { usePermissions, useRoleCreate } from 'queries/roles';
 import { RoleForm, IFormInputs } from './RoleForm';
 
@@ -33,9 +32,7 @@ export const CreateRole: FC = () => {
         permissions: activePermissions,
       });
       navigate(PATHS.roles.overview());
-    } catch (error) {
-      Sentry.captureException(error);
-    }
+    } catch (error) {}
   };
 
   return <RoleForm onSubmit={onSubmit} isLoading={isCreatingRole} permissions={permissions} />;

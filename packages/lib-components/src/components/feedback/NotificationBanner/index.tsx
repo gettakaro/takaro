@@ -2,13 +2,12 @@ import { FC, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Elevation, styled } from '../../../styled';
 import { AnimatePresence, motion } from 'framer-motion';
-import { shade } from 'polished';
 import { Tooltip } from '../Tooltip';
 import { AiOutlineClose as CloseIcon } from 'react-icons/ai';
 
 const Container = styled(motion.div)<{ $elevation: Elevation }>`
   position: sticky;
-  background-color: ${({ theme }): string => shade(0.5, theme.colors.primary)};
+  background-color: ${({ theme }): string => theme.colors.primaryShade};
   border: 1px solid ${({ theme }) => theme.colors.primary};
   display: flex;
   align-items: center;
