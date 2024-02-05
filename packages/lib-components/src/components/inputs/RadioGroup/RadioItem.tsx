@@ -3,6 +3,7 @@ import { useRadioGroupContext } from './context';
 import { styled } from '../../../styled';
 import { motion } from 'framer-motion';
 import { AiOutlineCheck as CheckMarkIcon } from 'react-icons/ai';
+import { shade } from 'polished';
 
 const RadioItemContainer = styled.div<{ readOnly: boolean; isChecked: boolean; disabled: boolean }>`
   display: grid;
@@ -23,7 +24,7 @@ const RadioItemContainer = styled.div<{ readOnly: boolean; isChecked: boolean; d
     }};
 
   background-color: ${({ theme, readOnly, disabled }) =>
-    readOnly || disabled ? theme.colors.backgroundAccent : theme.colors.background};
+    readOnly || disabled ? theme.colors.backgroundAccent : shade(0.5, theme.colors.background)};
   border-radius: 100%;
   cursor: ${({ readOnly, disabled }) => {
     if (disabled) return 'not-allowed';
@@ -51,7 +52,7 @@ const Inner = styled(motion.div)<{ $isChecked: boolean; $readOnly: boolean }>`
   border-radius: 100%;
   background-color: ${({ theme, $readOnly }) => {
     if ($readOnly) return theme.colors.backgroundAlt;
-    return theme.colors.primary;
+    return theme.colors.primaryShade;
   }};
   overflow: hidden;
   opacity: ${({ $isChecked }): number => ($isChecked ? 1 : 0)};

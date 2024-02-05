@@ -18,7 +18,7 @@ const Container = styled.div`
   border: 1px solid ${({ theme }) => theme.colors.error};
   border-radius: ${({ theme }) => theme.borderRadius.large};
   padding: ${({ theme }) => theme.spacing[2]};
-  background-color: ${({ theme }) => shade(0.7, theme.colors.error)};
+  background-color: ${({ theme }) => shade(0.5, theme.colors.error)};
   text-align: center;
 
   h1 {

@@ -1,5 +1,6 @@
 import { Size, styled } from '../../../styled';
 import { motion } from 'framer-motion';
+import { shade } from 'polished';
 
 export const Container = styled.div`
   position: relative;
@@ -15,7 +16,7 @@ export const Input = styled.input`
 `;
 
 export const BackgroundContainer = styled(motion.div)<{ $size: Size }>`
-  background-color: ${({ theme }) => theme.colors.primary};
+  background-color: ${({ theme }) => shade(0.5, theme.colors.primary)};
 
   ${({ $size }): string => {
     switch ($size) {

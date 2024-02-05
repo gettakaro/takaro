@@ -1,11 +1,13 @@
 import { FC, useEffect, useRef } from 'react';
 import { styled } from '../../../styled';
+import { shade } from 'polished';
 
 const Container = styled.div<{ hasMultiple: boolean }>`
   width: 100%;
   padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing[1]}`};
   margin-bottom: ${({ theme }) => theme.spacing[1]};
-  background-color: ${({ theme }) => theme.colors.error};
+  background-color: ${({ theme }) => shade(0.5, theme.colors.error)};
+  border: 1px solid ${({ theme }) => theme.colors.error};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
 
   p,
