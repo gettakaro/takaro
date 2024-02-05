@@ -175,6 +175,9 @@ export async function executeFunction(
       const commandService = new CommandService(domainId);
       const command = await commandService.findOne(data.itemId);
       if (!command) throw new errors.InternalServerError();
+
+      eventData.playerId = data.pog.playerId;
+
       if ('commands' in data.module.systemConfig) {
         const commandsConfig = data.module.systemConfig?.commands as Record<string, any>;
         const cost = commandsConfig[command?.name]?.cost;
@@ -189,6 +192,7 @@ export async function executeFunction(
       }
     }
 
+    if (!meta.result.logs) meta.result.logs = [];
     // Ensure all logs are TakaroEventFunctionLog
     meta.result.logs = await Promise.all(
       result.logs.map(async (log) => {
