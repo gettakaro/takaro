@@ -26,7 +26,6 @@ import {
   ModuleSearchInputDTO,
   ModuleUpdateDTO,
 } from '@takaro/apiclient';
-import * as Sentry from '@sentry/react';
 import { InfiniteScroll as InfiniteScrollComponent } from '@takaro/lib-components';
 
 import { hasNextPage } from '../util';
@@ -147,15 +146,11 @@ export const useModuleRemove = () => {
   return useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, ModuleRemove>({
     mutationFn: async ({ id }) => (await apiClient.module.moduleControllerRemove(id)).data.data,
     onSuccess: async (removedModule: IdUuidDTO) => {
-      try {
-        // remove cache of list of modules
-        await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
+      // remove cache of list of modules
+      await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
 
-        // Invalidate query of specific module
-        await queryClient.invalidateQueries({ queryKey: moduleKeys.detail(removedModule.id) });
-      } catch (e) {
-        Sentry.captureException(e);
-      }
+      // Invalidate query of specific module
+      await queryClient.invalidateQueries({ queryKey: moduleKeys.detail(removedModule.id) });
     },
   });
 };
@@ -172,13 +167,8 @@ export const useModuleUpdate = () => {
     mutationFn: async ({ id, moduleUpdate }) =>
       (await apiClient.module.moduleControllerUpdate(id, moduleUpdate)).data.data,
     onSuccess: async (updatedModule: ModuleOutputDTO) => {
-      try {
-        await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
-
-        queryClient.setQueryData(moduleKeys.detail(updatedModule.id), updatedModule);
-      } catch (e) {
-        Sentry.captureException(e);
-      }
+      await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
+      queryClient.setQueryData(moduleKeys.detail(updatedModule.id), updatedModule);
     },
   });
 };

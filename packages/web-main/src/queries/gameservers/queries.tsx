@@ -22,7 +22,6 @@ import { useQuery, useMutation, useQueryClient, useInfiniteQuery, keepPreviousDa
 import { useApiClient } from 'hooks/useApiClient';
 import { useSnackbar } from 'notistack';
 import { hasNextPage } from '../util';
-import * as Sentry from '@sentry/react';
 import { AxiosError } from 'axios';
 import { useMemo } from 'react';
 
@@ -205,15 +204,11 @@ export const useGameServerUpdate = () => {
       return (await apiClient.gameserver.gameServerControllerUpdate(gameServerId, gameServerDetails)).data.data;
     },
     onSuccess: async (updatedGameServer) => {
-      try {
-        // remove cache of gameserver list
-        await queryClient.invalidateQueries({ queryKey: gameServerKeys.list() });
+      // remove cache of gameserver list
+      await queryClient.invalidateQueries({ queryKey: gameServerKeys.list() });
 
-        // update cache of gameserver
-        queryClient.setQueryData(gameServerKeys.detail(updatedGameServer.id), updatedGameServer);
-      } catch (e) {
-        Sentry.captureException(e);
-      }
+      // update cache of gameserver
+      queryClient.setQueryData(gameServerKeys.detail(updatedGameServer.id), updatedGameServer);
     },
   });
 };
@@ -229,19 +224,15 @@ export const useGameServerRemove = () => {
   return useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, GameServerRemove>({
     mutationFn: async ({ id }) => (await apiClient.gameserver.gameServerControllerRemove(id)).data.data,
     onSuccess: async (removedGameServer: IdUuidDTO) => {
-      try {
-        // remove all cached information of game server list.
-        await queryClient.invalidateQueries({ queryKey: gameServerKeys.list() });
-        // remove all cached information about specific game server.
-        await queryClient.invalidateQueries({
-          queryKey: gameServerKeys.detail(removedGameServer.id),
-        });
-        queryClient.removeQueries({
-          queryKey: gameServerKeys.reachability(removedGameServer.id),
-        });
-      } catch (e) {
-        Sentry.captureException(e);
-      }
+      // remove all cached information of game server list.
+      await queryClient.invalidateQueries({ queryKey: gameServerKeys.list() });
+      // remove all cached information about specific game server.
+      await queryClient.invalidateQueries({
+        queryKey: gameServerKeys.detail(removedGameServer.id),
+      });
+      queryClient.removeQueries({
+        queryKey: gameServerKeys.reachability(removedGameServer.id),
+      });
     },
   });
 };

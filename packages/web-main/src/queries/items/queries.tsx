@@ -14,7 +14,6 @@ import { hasNextPage } from '../util';
 
 import { InfiniteScroll as InfiniteScrollComponent } from '@takaro/lib-components';
 import { useMemo } from 'react';
-import * as Sentry from '@sentry/react';
 
 export const itemKeys = {
   all: ['items'] as const,
@@ -83,15 +82,11 @@ export const useGameServerRemove = () => {
   return useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, ItemDelete>({
     mutationFn: async ({ id }) => (await apiClient.item.itemControllerDelete(id)).data.data,
     onSuccess: async (removedItem: IdUuidDTO) => {
-      try {
-        await queryClient.invalidateQueries({ queryKey: itemKeys.list() });
+      await queryClient.invalidateQueries({ queryKey: itemKeys.list() });
 
-        await queryClient.invalidateQueries({
-          queryKey: itemKeys.detail(removedItem.id),
-        });
-      } catch (e) {
-        Sentry.captureException(e);
-      }
+      await queryClient.invalidateQueries({
+        queryKey: itemKeys.detail(removedItem.id),
+      });
     },
   });
 };
@@ -110,15 +105,11 @@ export const useGameServerUpdate = () => {
       return (await apiClient.item.itemControllerUpdate(itemId, itemDetails)).data.data;
     },
     onSuccess: async (updatedGameServer) => {
-      try {
-        // remove cache of gameserver list
-        await queryClient.invalidateQueries({ queryKey: itemKeys.list() });
+      // remove cache of gameserver list
+      await queryClient.invalidateQueries({ queryKey: itemKeys.list() });
 
-        // update cache of gameserver
-        queryClient.setQueryData(itemKeys.detail(updatedGameServer.id), updatedGameServer);
-      } catch (e) {
-        Sentry.captureException(e);
-      }
+      // update cache of gameserver
+      queryClient.setQueryData(itemKeys.detail(updatedGameServer.id), updatedGameServer);
     },
   });
 };

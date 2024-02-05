@@ -17,7 +17,6 @@ import { useApiClient } from 'hooks/useApiClient';
 import { hasNextPage } from 'queries/util';
 import { useMemo } from 'react';
 import { InfiniteScroll as InfiniteScrollComponent } from '@takaro/lib-components';
-import * as Sentry from '@sentry/react';
 import { playerKeys } from 'queries/players/queries';
 import { userKeys } from 'queries/users';
 
@@ -133,34 +132,27 @@ export const useRoleUpdate = () => {
       return (await apiClient.role.roleControllerUpdate(roleId, roleDetails)).data.data;
     },
     onSuccess: async (updatedRole) => {
-      try {
-        // update role in list of roles
-        queryClient.setQueryData<InfiniteData<RoleOutputArrayDTOAPI>>(roleKeys.list(), (prev) => {
-          if (!prev) {
-            queryClient.invalidateQueries({ queryKey: roleKeys.list() });
-            throw new Error('Cannot update role list, because it does not exist');
-          }
+      // update role in list of roles
+      queryClient.setQueryData<InfiniteData<RoleOutputArrayDTOAPI>>(roleKeys.list(), (prev) => {
+        if (!prev) {
+          queryClient.invalidateQueries({ queryKey: roleKeys.list() });
+          throw new Error('Cannot update role list, because it does not exist');
+        }
 
-          return {
-            ...prev,
-            pages: prev.pages.map((page) => ({
-              ...page,
-              data: page.data.map((role) => {
-                if (role.id === updatedRole.id) {
-                  return updatedRole;
-                }
-                return role;
-              }),
-            })),
-          };
-        });
-
-        // TODO: I think we can just update the detail query instead of invalidating it
-        queryClient.invalidateQueries({ queryKey: roleKeys.detail(updatedRole.id) });
-      } catch (e) {
-        // TODO: pass extra context to the error
-        Sentry.captureException(e);
-      }
+        return {
+          ...prev,
+          pages: prev.pages.map((page) => ({
+            ...page,
+            data: page.data.map((role) => {
+              if (role.id === updatedRole.id) {
+                return updatedRole;
+              }
+              return role;
+            }),
+          })),
+        };
+      });
+      queryClient.invalidateQueries({ queryKey: roleKeys.detail(updatedRole.id) });
     },
   });
 };
@@ -176,24 +168,20 @@ export const useRoleRemove = () => {
   return useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, RoleRemove>({
     mutationFn: async ({ id }) => (await apiClient.role.roleControllerRemove(id)).data.data,
     onSuccess: (removedRole) => {
-      try {
-        // update list that contain this role
-        queryClient.setQueryData<InfiniteData<RoleOutputArrayDTOAPI>>(roleKeys.list(), (prev) => {
-          if (!prev) {
-            throw new Error('Cannot remove role from list, because list does not exist');
-          }
+      // update list that contain this role
+      queryClient.setQueryData<InfiniteData<RoleOutputArrayDTOAPI>>(roleKeys.list(), (prev) => {
+        if (!prev) {
+          throw new Error('Cannot remove role from list, because list does not exist');
+        }
 
-          return {
-            ...prev,
-            pages: prev.pages.map((page) => ({
-              ...page,
-              data: page.data.filter((role) => role.id !== removedRole.id),
-            })),
-          };
-        });
-      } catch (e) {
-        Sentry.captureException(e);
-      }
+        return {
+          ...prev,
+          pages: prev.pages.map((page) => ({
+            ...page,
+            data: page.data.filter((role) => role.id !== removedRole.id),
+          })),
+        };
+      });
     },
   });
 };
