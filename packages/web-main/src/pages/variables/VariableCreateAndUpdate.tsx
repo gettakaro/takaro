@@ -147,7 +147,7 @@ const VariableCreateAndUpdateForm: FC<CreateAndUpdateVariableformProps> = ({
         <Drawer.Body>
           <Alert
             variant="warning"
-            text="Most often you'll want to create and update variables using the variables API in your module code."
+            text="In most cases, you will prefer to utilize the variables API for creating and updating variables within your module code."
           />
           <details>
             <summary>What are variables?</summary>

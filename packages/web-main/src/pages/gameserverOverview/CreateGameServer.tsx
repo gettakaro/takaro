@@ -119,7 +119,7 @@ export const CreateGameServer: FC = () => {
                   {connectionInfoFieldsMap(isPending, control)[type]}
                 </CollapseList.Item>
               )}
-              reachabilityError && <FormError error={reachabilityError} />
+              {reachabilityError && <FormError error={reachabilityError} />}
               {gameServerCreateError && <FormError error={gameServerCreateError} />}
             </form>
           </CollapseList>
