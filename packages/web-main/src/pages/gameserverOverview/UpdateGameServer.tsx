@@ -13,7 +13,6 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from 'paths';
 import { useParams } from 'react-router-dom';
-import * as Sentry from '@sentry/react';
 import { useGameServer } from 'queries/gameservers';
 import { useGameServerReachabilityByConfig, useGameServerUpdate } from 'queries/gameservers/queries';
 import { connectionInfoFieldsMap } from './connectionInfoFieldsMap';
@@ -83,19 +82,15 @@ const UpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
   });
 
   const onSubmit: SubmitHandler<IFormInputs> = async ({ name, connectionInfo }) => {
-    try {
-      await mutateAsync({
-        gameServerId: serverId!,
-        gameServerDetails: {
-          name,
-          type: data.type,
-          connectionInfo: JSON.stringify(connectionInfo),
-        },
-      });
-      navigate(PATHS.gameServers.overview());
-    } catch (error) {
-      Sentry.captureException(error);
-    }
+    await mutateAsync({
+      gameServerId: serverId!,
+      gameServerDetails: {
+        name,
+        type: data.type,
+        connectionInfo: JSON.stringify(connectionInfo),
+      },
+    });
+    navigate(PATHS.gameServers.overview());
   };
 
   const { type, connectionInfo, name } = watch();

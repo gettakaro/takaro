@@ -11,7 +11,6 @@ import {
 } from '@takaro/apiclient';
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from 'paths';
-import * as Sentry from '@sentry/react';
 import { useGameServerCreate, useGameServerReachabilityByConfig } from 'queries/gameservers';
 import { connectionInfoFieldsMap } from './connectionInfoFieldsMap';
 import { validationSchema } from './validationSchema';
@@ -66,9 +65,7 @@ export const CreateGameServer: FC = () => {
       // set the new gameserver as selected.
       setSelectedGameServerId(newGameServer.id);
       navigate(PATHS.gameServers.overview());
-    } catch (error) {
-      Sentry.captureException(error);
-    }
+    } catch {}
   };
 
   const { type, connectionInfo, name } = watch();
