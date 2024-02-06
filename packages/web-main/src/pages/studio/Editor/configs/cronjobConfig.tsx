@@ -1,41 +1,49 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { TextField, Button } from '@takaro/lib-components';
+import { CronJobOutputDTO } from '@takaro/apiclient';
+import { TextField, Button, Alert } from '@takaro/lib-components';
 import { ModuleItemProperties } from 'context/moduleContext';
 import { useCronJob, useCronJobUpdate } from 'queries/modules';
-import { FC, useEffect } from 'react';
+import { FC } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
-interface IProps {
-  moduleItem: ModuleItemProperties;
-  readOnly?: boolean;
-}
-
-interface IFormInputs {
-  temporalValue: string;
-}
+import { ConfigLoading } from './ConfigLoading';
 
 const validationSchema = z.object({
   temporalValue: z.string(),
 });
+type FormInputs = z.infer<typeof validationSchema>;
 
-export const CronJobConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
-  const { data } = useCronJob(moduleItem.itemId);
+interface CronJobConfigProps {
+  moduleItem: ModuleItemProperties;
+  readOnly?: boolean;
+}
+
+export const CronJobConfig: FC<CronJobConfigProps> = ({ moduleItem, readOnly = false }) => {
+  const { data, isPending, isError } = useCronJob(moduleItem.itemId);
+  if (isPending) return <ConfigLoading />;
+  if (isError) return <Alert variant="error" text="Failed to load command config" />;
+  return <CronJobConfigForm cronjob={data} readOnly={readOnly} />;
+};
+
+interface CronJobConfigFormProps {
+  readOnly?: boolean;
+  cronjob: CronJobOutputDTO;
+}
+
+export const CronJobConfigForm: FC<CronJobConfigFormProps> = ({ cronjob, readOnly = false }) => {
   const { mutateAsync, isPending } = useCronJobUpdate();
 
-  const { control, setValue, handleSubmit } = useForm<IFormInputs>({
+  const { control, handleSubmit, formState } = useForm<FormInputs>({
     mode: 'onSubmit',
     resolver: zodResolver(validationSchema),
+    defaultValues: {
+      temporalValue: cronjob.temporalValue,
+    },
   });
 
-  useEffect(() => {
-    if (data) {
-      setValue('temporalValue', data?.temporalValue);
-    }
-  }, [data, setValue]);
-
-  const onSubmit: SubmitHandler<IFormInputs> = async (data) => {
+  const onSubmit: SubmitHandler<FormInputs> = async (data) => {
     await mutateAsync({
-      cronJobId: moduleItem.itemId,
+      cronJobId: cronjob.id,
       cronJob: data,
     });
   };
@@ -49,7 +57,15 @@ export const CronJobConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
         description="This controls when the cronjob triggers, you can use https://crontab.guru/ to help you with the syntax."
         readOnly={readOnly}
       />
-      {!readOnly && <Button isLoading={isPending} fullWidth type="submit" text="Save cronjob config" />}
+      {!readOnly && (
+        <Button
+          isLoading={isPending}
+          disabled={!formState.isDirty}
+          fullWidth
+          type="submit"
+          text="Save cronjob config"
+        />
+      )}
     </form>
   );
 };
