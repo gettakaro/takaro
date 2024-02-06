@@ -33,6 +33,9 @@ export { GenericSlider as UnControlledSlider } from './Slider/Generic';
 export { CodeField } from './CodeField';
 export type { CodeFieldProps } from './CodeField';
 
+export { ValueConfirmationField } from './ValueConfirmationField';
+export type { ValueConfirmationFieldProps } from './ValueConfirmationField';
+
 export { ControlledRadioGroup as RadioGroup } from './RadioGroup/Controlled';
 export type { ControlledRadioGroupProps as RadioGroupProps } from './RadioGroup/Controlled';
 export { GenericRadioGroup as UnControlledRadioGroup } from './RadioGroup/Generic';

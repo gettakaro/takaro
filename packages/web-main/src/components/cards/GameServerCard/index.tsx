@@ -1,5 +1,16 @@
 import { FC, MouseEvent, useEffect, useState } from 'react';
-import { Button, Chip, Dialog, Dropdown, IconButton, Tooltip, Card, Skeleton, useTheme } from '@takaro/lib-components';
+import {
+  Button,
+  Chip,
+  Dialog,
+  Dropdown,
+  IconButton,
+  Tooltip,
+  Card,
+  Skeleton,
+  useTheme,
+  ValueConfirmationField,
+} from '@takaro/lib-components';
 import { EventOutputDTO, GameServerOutputDTO, PERMISSIONS } from '@takaro/apiclient';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -20,6 +31,7 @@ import { usePlayerOnGameServers } from 'queries/players/queries';
 
 export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reachable }) => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [valid, setValid] = useState<boolean>(false);
   const navigate = useNavigate();
   const { selectedGameServerId, setSelectedGameServerId } = useSelectedGameServer();
   const theme = useTheme();
@@ -125,11 +137,19 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
           <Dialog.Heading>delete: gameserver</Dialog.Heading>
           <Dialog.Body size="medium">
             <p>
-              Are you sure you want to delete <strong>{name}</strong>?
+              Are you sure you want to delete <strong>{name}</strong>? To confirm, type <strong>{name}</strong> in the
+              input below.
             </p>
+            <ValueConfirmationField
+              value={name}
+              onValidChange={(v) => setValid(v)}
+              label="Game server name"
+              id="deleteGameServerConfirmation"
+            />
             <Button
               isLoading={isDeleting}
               onClick={() => handleOnDelete()}
+              disabled={!valid}
               fullWidth
               text={'Delete gameserver'}
               color="error"

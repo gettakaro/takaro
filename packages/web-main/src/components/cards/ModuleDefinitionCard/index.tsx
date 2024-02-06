@@ -1,5 +1,15 @@
 import { ModuleOutputDTO } from '@takaro/apiclient';
-import { Company, Tooltip, Dialog, Button, IconButton, Card, Dropdown, useTheme } from '@takaro/lib-components';
+import {
+  Company,
+  Tooltip,
+  Dialog,
+  Button,
+  IconButton,
+  Card,
+  Dropdown,
+  useTheme,
+  ValueConfirmationField,
+} from '@takaro/lib-components';
 import { PERMISSIONS } from '@takaro/apiclient';
 import { PATHS } from 'paths';
 import { useModuleRemove } from 'queries/modules';
@@ -25,6 +35,7 @@ interface IModuleCardProps {
 
 export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
+  const [isValid, setIsValid] = useState<boolean>(false);
   const [openCopyDialog, setOpenCopyDialog] = useState<boolean>(false);
   const { mutateAsync, isPending: isDeleting } = useModuleRemove();
   const theme = useTheme();
@@ -134,14 +145,22 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
           </Dialog.Heading>
           <Dialog.Body>
             <h2>Delete module</h2>
-            <p>
-              Are you sure you want to delete the module <strong>{mod.name}</strong>? This action is irreversible!{' '}
+            <p style={{ textAlign: 'center' }}>
+              Are you sure you want to delete the module <strong>{mod.name}</strong>? <br /> To confirm, type the module
+              name below.
             </p>
+            <ValueConfirmationField
+              id="deleteModuleConfirmation"
+              onValidChange={(valid) => setIsValid(valid)}
+              value={mod.name}
+              label="Module name"
+            />
             <Button
               isLoading={isDeleting}
               onClick={(e) => handleOnDelete(e)}
               fullWidth
-              text={'Delete module'}
+              disabled={!isValid}
+              text="Delete module"
               color="error"
             />
           </Dialog.Body>
