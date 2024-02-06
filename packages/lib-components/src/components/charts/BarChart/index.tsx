@@ -10,6 +10,7 @@ import { Bounds } from '@visx/brush/lib/types';
 import { AxisBottom, AxisLeft } from '@visx/axis';
 import { Brush } from '@visx/brush';
 import { PatternLines } from '@visx/pattern';
+import { shade } from 'polished';
 
 import { useGradients } from '../useGradients';
 import { useTheme } from '../../../hooks';
@@ -198,7 +199,8 @@ const Chart = <T,>({
               y={yMax - barHeight}
               width={barWidth}
               height={barHeight}
-              fill={theme.colors.primary}
+              fill={shade(0.5, theme.colors.primary)}
+              stroke={theme.colors.primary}
             />
           );
         })}

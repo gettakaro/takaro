@@ -1,18 +1,14 @@
-import { MouseEvent } from 'react';
-
 import { ParentSize } from '@visx/responsive';
 import { Group } from '@visx/group';
 import { LineRadial } from '@visx/shape';
 import { scaleTime, scaleLog, NumberLike } from '@visx/scale';
-import { useTooltipInPortal, useTooltip } from '@visx/tooltip';
-import { localPoint } from '@visx/event';
 import { GridAngle, GridRadial } from '@visx/grid';
 import { AxisLeft } from '@visx/axis';
 import { motion } from 'framer-motion';
 import { extent } from '@visx/vendor/d3-array';
 import { curveBasisOpen } from '@visx/curve';
 
-import { getDefaultTooltipStyles, InnerChartProps, Margin } from '../util';
+import { InnerChartProps, Margin } from '../util';
 import { useTheme } from '../../../hooks';
 import { useGradients } from '../useGradients';
 
@@ -24,7 +20,6 @@ export interface RadialLineChartProps<T> {
   margin?: Margin;
   xAccessor: (d: T) => number;
   yAccessor: (d: T) => number;
-  tooltipAccessor: (d: T) => string;
 }
 
 const defaultMargin = { top: 10, right: 0, bottom: 25, left: 40 };
@@ -32,7 +27,6 @@ export const RadialLineChart = <T,>({
   data,
   yAccessor,
   xAccessor,
-  tooltipAccessor,
   name,
   margin = defaultMargin,
 }: RadialLineChartProps<T>) => {
@@ -48,7 +42,6 @@ export const RadialLineChart = <T,>({
             margin={margin}
             yAccessor={yAccessor}
             xAccessor={xAccessor}
-            tooltipAccessor={tooltipAccessor}
           />
         )}
       </ParentSize>
@@ -58,23 +51,9 @@ export const RadialLineChart = <T,>({
 
 type InnerRadialLineChartProps<T> = InnerChartProps & RadialLineChartProps<T>;
 
-const Chart = <T,>({
-  width,
-  xAccessor,
-  yAccessor,
-  data,
-  name,
-  height,
-  tooltipAccessor,
-}: InnerRadialLineChartProps<T>) => {
+const Chart = <T,>({ width, xAccessor, yAccessor, data, name, height }: InnerRadialLineChartProps<T>) => {
   const theme = useTheme();
   const gradients = useGradients(name);
-
-  const { tooltipData, tooltipLeft, tooltipTop, tooltipOpen, hideTooltip, showTooltip } = useTooltip<string>();
-  const { containerRef, TooltipInPortal } = useTooltipInPortal({
-    detectBounds: true,
-    scroll: true,
-  });
 
   const xScale = scaleTime<number>({
     range: [0, Math.PI * 2],
@@ -96,19 +75,8 @@ const Chart = <T,>({
   yScale.range([0, height / 2 - padding]);
   const reverseYScale = yScale.copy().range(yScale.range().reverse());
 
-  const handleMouseOver = (event: MouseEvent) => {
-    const target = event.target as SVGElement;
-    const coords = localPoint(target.ownerSVGElement!, event);
-    const data = JSON.parse(target.dataset.tooltip!);
-    showTooltip({
-      tooltipLeft: coords?.x,
-      tooltipTop: coords?.y,
-      tooltipData: tooltipAccessor(data),
-    });
-  };
-
   return width < 10 ? null : (
-    <svg ref={containerRef} width={width} height={height}>
+    <svg width={width} height={height}>
       {gradients.chart.gradient}
       <rect width={width} height={height} fill={theme.colors.background} rx={14} />
       <Group top={height / 2} left={width / 2}>
@@ -156,9 +124,6 @@ const Chart = <T,>({
                 strokeWidth={2}
                 strokeOpacity={0.8}
                 strokeLinecap="round"
-                onMouseOver={handleMouseOver}
-                onMouseOut={hideTooltip}
-                data-tooltip={JSON.stringify(data)}
                 fill="none"
                 stroke={theme.colors.primary}
               />
@@ -171,16 +136,6 @@ const Chart = <T,>({
           return <circle key={`line-cap-${i}`} cx={cx} cy={cy} fill={theme.colors.primary} r={2} />;
         })}
       </Group>
-      {tooltipOpen && tooltipData && (
-        <TooltipInPortal
-          key={`tooltip-${name}`}
-          top={tooltipTop}
-          left={tooltipLeft}
-          style={getDefaultTooltipStyles(theme)}
-        >
-          {tooltipData}
-        </TooltipInPortal>
-      )}
     </svg>
   );
 };

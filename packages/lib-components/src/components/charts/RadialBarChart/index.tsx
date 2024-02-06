@@ -3,6 +3,7 @@ import { Arc } from '@visx/shape';
 import { Group } from '@visx/group';
 import { scaleBand, scaleRadial } from '@visx/scale';
 import { Text } from '@visx/text';
+import { shade } from 'polished';
 
 import { Margin, InnerChartProps, getDefaultTooltipStyles } from '../util';
 import { useTheme } from '../../../hooks';
@@ -72,10 +73,9 @@ const Chart = <T,>({
   });
 
   const handleMouseOver = useCallback(
-    (event: MouseEvent) => {
+    (event: MouseEvent, data: T) => {
       const target = event.target as SVGElement;
       const coords = localPoint(target.ownerSVGElement!, event);
-      const data = JSON.parse(target.dataset.tooltip!);
       showTooltip({
         tooltipLeft: coords?.x,
         tooltipTop: coords?.y,
@@ -127,11 +127,11 @@ const Chart = <T,>({
                 endAngle={endAngle}
                 outerRadius={outerRadius}
                 innerRadius={innerRadius}
-                fill={theme.colors.primary}
-                onMouseOver={handleMouseOver}
+                fill={shade(0.5, theme.colors.primary)}
+                stroke={theme.colors.primary}
+                onMouseOver={(e) => handleMouseOver(e, d)}
                 onMouseOut={hideTooltip}
                 onMouseLeave={hideTooltip}
-                data-tooltip={JSON.stringify(d)}
                 style={{ cursor: 'pointer' }}
               />
               <Text

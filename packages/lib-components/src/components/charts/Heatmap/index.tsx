@@ -1,15 +1,12 @@
-import { MouseEvent } from 'react';
-
 import { ParentSize } from '@visx/responsive';
 import { scaleLinear } from '@visx/scale';
 import { Group } from '@visx/group';
 import { AxisTop, AxisLeft } from '@visx/axis';
 import { HeatmapRect } from '@visx/heatmap';
-import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
-import { localPoint } from '@visx/event';
+import { useTooltipInPortal } from '@visx/tooltip';
 import { scaleBand } from '@visx/scale';
 
-import { getDefaultTooltipStyles, InnerChartProps, Margin } from '../util';
+import { InnerChartProps, Margin } from '../util';
 import { useTheme } from '../../../hooks';
 
 interface InnerBin {
@@ -83,30 +80,10 @@ const Chart = <T,>({
 }: InnerHeatmapProps<T>) => {
   const theme = useTheme();
 
-  type ToolTipData = {
-    row: number;
-    column: number;
-    count: number;
-    tooltip: string;
-  };
-
-  const { tooltipData, tooltipLeft, tooltipTop, tooltipOpen, hideTooltip, showTooltip } = useTooltip<ToolTipData>();
-  const { containerRef, TooltipInPortal } = useTooltipInPortal({
+  const { containerRef } = useTooltipInPortal({
     detectBounds: true,
     scroll: true,
   });
-
-  const handleMouseOver = (event: MouseEvent) => {
-    const target = event.target as SVGElement;
-    const coords = localPoint(target.ownerSVGElement!, event);
-    // Access and parse the data-bin attribute
-    const binData = target.dataset.bin ? JSON.parse(target.dataset.bin) : null;
-    showTooltip({
-      tooltipLeft: coords?.x,
-      tooltipTop: coords?.y,
-      tooltipData: binData,
-    });
-  };
 
   const colorMax = Math.max(...data.map(yAccessor));
 
@@ -181,10 +158,6 @@ const Chart = <T,>({
           {(heatmap) =>
             heatmap.map((heatmapBins) =>
               heatmapBins.map((bin) => {
-                const { row, column } = bin;
-                const rowData = transformedData[row];
-                const cellData = rowData.bins[column];
-
                 return (
                   <rect
                     key={`heatmap-rect-${bin.row}-${bin.column}`}
@@ -194,14 +167,6 @@ const Chart = <T,>({
                     y={bin.y}
                     fill={bin.color}
                     fillOpacity={bin.opacity}
-                    onMouseOver={handleMouseOver}
-                    onMouseOut={hideTooltip}
-                    data-bin={JSON.stringify({
-                      row: bin.row,
-                      column: bin.column,
-                      count: bin.count,
-                      tooltip: cellData.tooltip,
-                    })}
                   />
                 );
               })
@@ -209,11 +174,6 @@ const Chart = <T,>({
           }
         </HeatmapRect>
       </Group>
-      {tooltipOpen && tooltipData && (
-        <TooltipInPortal key={Math.random()} top={tooltipTop} left={tooltipLeft} style={getDefaultTooltipStyles(theme)}>
-          {tooltipData.tooltip}
-        </TooltipInPortal>
-      )}
     </svg>
   );
 };

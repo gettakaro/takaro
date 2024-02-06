@@ -20,13 +20,7 @@ export const Default: StoryFn<RadialLineChartProps<AppleStock>> = () => {
 
   return (
     <Wrapper>
-      <RadialLineChart<AppleStock>
-        name="AppleStock"
-        xAccessor={getDate}
-        yAccessor={getStockValue}
-        data={appleStock}
-        tooltipAccessor={(d) => `Tooltip content for '${d.close}'`}
-      />
+      <RadialLineChart<AppleStock> name="AppleStock" xAccessor={getDate} yAccessor={getStockValue} data={appleStock} />
     </Wrapper>
   );
 };

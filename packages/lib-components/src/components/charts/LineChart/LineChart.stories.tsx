@@ -20,6 +20,7 @@ const Wrapper = styled.div`
 export const Default: StoryFn<LineChartProps<AppleStock>> = (args) => {
   const getDate = (d: AppleStock) => new Date(d.date);
   const getStockValue = (d: AppleStock) => d.close;
+  const getTooltip = (d: AppleStock) => `Close: ${d.close}`;
 
   return (
     <Wrapper>
@@ -27,6 +28,7 @@ export const Default: StoryFn<LineChartProps<AppleStock>> = (args) => {
         name="AppleStock"
         xAccessor={getDate}
         yAccessor={getStockValue}
+        tooltipAccessor={getTooltip}
         data={appleStock}
         curveType={args.curveType}
       />

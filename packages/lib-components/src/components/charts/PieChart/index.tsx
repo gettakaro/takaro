@@ -6,6 +6,7 @@ import { Pie } from '@visx/shape';
 import { scaleOrdinal } from '@visx/scale';
 import { useTooltipInPortal, useTooltip } from '@visx/tooltip';
 import { localPoint } from '@visx/event';
+import { shade } from 'polished';
 
 import { useTheme } from '../../../hooks';
 import { getChartColors, getDefaultTooltipStyles, InnerChartProps, Margin } from '../util';
@@ -87,10 +88,9 @@ const Chart = <T,>({
   const pieSortValues = (a: number, b: number) => b - a;
 
   const handleMouseOver = useCallback(
-    (event: MouseEvent) => {
+    (event: MouseEvent, data: T) => {
       const target = event.target as SVGElement;
       const coords = localPoint(target.ownerSVGElement!, event);
-      const data = JSON.parse(target.dataset.tooltip!);
 
       showTooltip({
         tooltipLeft: coords?.x,
@@ -109,7 +109,7 @@ const Chart = <T,>({
           outerRadius={radius}
           innerRadius={variant === 'donut' ? radius - donutThickness : 0}
           cornerRadius={3}
-          padAngle={0.01}
+          padAngle={0.02}
           pieSortValues={pieSortValues}
           pieValue={yAccessor}
         >
@@ -123,10 +123,11 @@ const Chart = <T,>({
                 <g key={`arc-${arc.data}-${index}`}>
                   <path
                     d={arcPath}
-                    fill={arcFill}
+                    fill={shade(0.5, arcFill)}
+                    stroke={arcFill}
+                    strokeWidth={1}
                     onMouseOut={hideTooltip}
-                    onMouseOver={handleMouseOver}
-                    data-tooltip={JSON.stringify(arc.data)}
+                    onMouseOver={(e) => handleMouseOver(e, arc.data)}
                   />
                   {hasSpaceForLabel && (
                     <text

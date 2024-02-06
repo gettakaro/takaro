@@ -89,10 +89,9 @@ const Chart = <T,>({
   });
 
   const handleMouseOver = useCallback(
-    (event: MouseEvent) => {
+    (event: MouseEvent, data: T) => {
       const target = event.target as SVGElement;
       const coords = localPoint(target.ownerSVGElement!, event);
-      const data = JSON.parse(target.dataset.tooltip!);
 
       showTooltip({
         tooltipLeft: coords?.x,
@@ -154,10 +153,9 @@ const Chart = <T,>({
             cx={point.x}
             cy={point.y}
             onMouseOut={hideTooltip}
-            onMouseOver={handleMouseOver}
+            onMouseOver={(e) => handleMouseOver(e, data[i])}
             r={5}
             style={{ cursor: 'pointer' }}
-            data-tooltip={JSON.stringify(data[i])}
             fill={theme.colors.primary}
           />
         ))}

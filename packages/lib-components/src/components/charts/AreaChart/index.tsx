@@ -3,7 +3,7 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 import { ParentSize } from '@visx/responsive';
 import { GridColumns } from '@visx/grid';
 import { Group } from '@visx/group';
-import { AreaClosed, Line, Bar } from '@visx/shape';
+import { AreaClosed, Bar } from '@visx/shape';
 import { max, extent } from '@visx/vendor/d3-array';
 import { scaleTime, scaleLinear } from '@visx/scale';
 import { AxisBottom, AxisLeft } from '@visx/axis';
@@ -14,19 +14,19 @@ import { timeFormat } from '@visx/vendor/d3-time-format';
 import { PatternLines } from '@visx/pattern';
 import { Brush } from '@visx/brush';
 import { Bounds } from '@visx/brush/lib/types';
+import { bisector } from '@visx/vendor/d3-array';
 
 import { useTheme } from '../../../hooks';
 import { useGradients } from '../useGradients';
 import { Margin, ChartProps, InnerChartProps, getDefaultTooltipStyles } from '../util';
 import { BrushHandle } from '../BrushHandle';
+import { PointHighlight } from '../PointHighlight';
 
 export interface AreaChartProps<T> extends ChartProps {
   data: T[];
   xAccessor: (d: T) => Date;
-  xBisector: (array: ArrayLike<T>, x: Date, lo?: number | undefined, hi?: number | undefined) => number;
   yAccessor: (d: T) => number;
-  unit?: string;
-  unitPosition?: 'left' | 'right';
+  tooltipAccessor?: (d: T) => string;
   margin?: Margin;
   showBrush?: boolean;
   brushMargin?: Margin;
@@ -35,8 +35,8 @@ export interface AreaChartProps<T> extends ChartProps {
 // eslint-disable-next-line quotes
 const formatDate = timeFormat("%b %d, '%y");
 
-const defaultMargin = { top: 20, left: 50, bottom: 20, right: 20 };
-const defaultBrushMargin = { top: 10, bottom: 15, left: 50, right: 20 };
+const defaultMargin = { top: 20, left: 50, bottom: 20, right: 5 };
+const defaultBrushMargin = { top: 10, bottom: 15, left: 50, right: 5 };
 const defaultShowAxisX = true;
 const defaultShowAxisY = true;
 const defaultShowGrid = true;
@@ -45,6 +45,7 @@ export const AreaChart = <T,>({
   data,
   xAccessor,
   yAccessor,
+  tooltipAccessor,
   margin = defaultMargin,
   showGrid = defaultShowGrid,
   showBrush = false,
@@ -53,9 +54,6 @@ export const AreaChart = <T,>({
   showAxisX = defaultShowAxisX,
   showAxisY = defaultShowAxisY,
   axisXLabel,
-  xBisector,
-  unit,
-  unitPosition,
   axisYLabel,
 }: AreaChartProps<T>) => {
   // TODO: handle empty data
@@ -69,6 +67,7 @@ export const AreaChart = <T,>({
           name={name}
           xAccessor={xAccessor}
           yAccessor={yAccessor}
+          tooltipAccessor={tooltipAccessor}
           data={data}
           width={parent.width}
           height={parent.height}
@@ -78,11 +77,8 @@ export const AreaChart = <T,>({
           margin={margin}
           axisYLabel={axisYLabel}
           axisXLabel={axisXLabel}
-          xBisector={xBisector}
           showAxisX={showAxisX}
           showAxisY={showAxisY}
-          unit={unit}
-          unitPosition={unitPosition}
         />
       )}
     </ParentSize>
@@ -95,6 +91,7 @@ const Chart = <T,>({
   data,
   xAccessor,
   yAccessor,
+  tooltipAccessor,
   width,
   height,
   margin = defaultMargin,
@@ -105,9 +102,6 @@ const Chart = <T,>({
   showAxisX = defaultShowAxisX,
   showAxisY = defaultShowAxisY,
   axisYLabel,
-  unit,
-  unitPosition = 'left',
-  xBisector,
   axisXLabel,
 }: InnerAreaChartProps<T>) => {
   const PATTERN_ID = `${name}-brush_pattern`;
@@ -130,15 +124,15 @@ const Chart = <T,>({
     return formatDate(date);
   };
 
-  const chartSeparation = 30;
+  const chartSeparation = 15;
   const innerHeight = height - margin.top - margin.bottom;
   const topChartBottomMargin = chartSeparation + 10;
-  const topChartHeight = 0.8 * innerHeight - topChartBottomMargin;
+  const topChartHeight = showBrush ? 0.8 * innerHeight - topChartBottomMargin : innerHeight;
   const bottomChartHeight = innerHeight - topChartHeight - chartSeparation;
 
   // bounds
   const xMax = Math.max(width - margin.left - margin.right, 0);
-  const yMax = Math.max(topChartHeight, 0);
+  const yMax = Math.max(topChartHeight - margin.bottom, 0);
 
   const xBrushMax = Math.max(width - brushMargin.left - brushMargin.right, 0);
   const yBrushMax = Math.max(bottomChartHeight - brushMargin.top - brushMargin.bottom, 0);
@@ -156,7 +150,7 @@ const Chart = <T,>({
     () =>
       scaleLinear({
         range: [yMax, 0],
-        domain: [0, (max(filteredData, yAccessor) || 0) + yMax / 4],
+        domain: [0, max(filteredData, yAccessor) || 0],
         nice: true,
       }),
     [yMax, filteredData]
@@ -204,7 +198,7 @@ const Chart = <T,>({
     (event: React.TouchEvent<SVGRectElement> | React.MouseEvent<SVGRectElement>) => {
       const { x } = localPoint(event) || { x: 0 };
       const x0 = xScale.invert(x - margin.left);
-      let index = xBisector(filteredData, x0);
+      let index = bisector<T, Date>(xAccessor).left(filteredData, x0);
 
       // Clamp the index to ensure it's within the range of data points
       index = Math.min(filteredData.length - 1, Math.max(0, index));
@@ -219,7 +213,7 @@ const Chart = <T,>({
         tooltipTop: tooltipY,
       });
     },
-    [yScale, xScale, xBisector, filteredData, yAccessor, xAccessor, width, height]
+    [yScale, xScale, filteredData, yAccessor, xAccessor, width, height]
   );
 
   if (width < 10) return null;
@@ -266,36 +260,7 @@ const Chart = <T,>({
           onMouseLeave={hideTooltip}
         />
         {tooltipData && (
-          <Group left={margin.left} top={margin.top}>
-            <Line
-              from={{ x: tooltipLeft, y: margin.top }}
-              to={{ x: tooltipLeft, y: yMax + margin.top }}
-              stroke={theme.colors.backgroundAccent}
-              strokeWidth={1}
-              pointerEvents="none"
-              strokeDasharray="4,1"
-            />
-            <circle
-              cx={tooltipLeft}
-              cy={tooltipTop}
-              r={4}
-              fill="black"
-              fillOpacity={0.1}
-              stroke="black"
-              strokeOpacity={0.1}
-              strokeWidth={2}
-              pointerEvents="none"
-            />
-            <circle
-              cx={tooltipLeft}
-              cy={tooltipTop}
-              r={4}
-              fill={theme.colors.backgroundAccent}
-              stroke="white"
-              strokeWidth={2}
-              pointerEvents="none"
-            />
-          </Group>
+          <PointHighlight margin={margin} yMax={yMax} tooltipLeft={tooltipLeft} tooltipTop={tooltipTop} />
         )}
         {/* brush chart */}
         {showBrush && (
@@ -355,9 +320,7 @@ const Chart = <T,>({
               fontSize: theme.fontSize.small,
               textAnchor: 'end',
             }}
-            tickFormat={(val) =>
-              `${unitPosition === 'left' && unit ? unit : ''}${val}${unitPosition === 'right' && unit ? unit : ''}`
-            }
+            tickFormat={(val) => `${val}`}
             scale={yScale}
             label={axisYLabel}
           />
@@ -368,12 +331,12 @@ const Chart = <T,>({
             left={margin.left}
             strokeWidth={1}
             stroke={theme.colors.backgroundAlt}
-            numTicks={width > 520 ? 10 : 5}
             hideZero
+            numTicks={4}
             tickLabelProps={{
               fill: theme.colors.textAlt,
               fontSize: theme.fontSize.small,
-              textAnchor: 'middle',
+              textAnchor: 'end',
             }}
             tickFormat={tickFormatDate}
             labelProps={{
@@ -391,17 +354,15 @@ const Chart = <T,>({
         <div>
           <TooltipWithBounds
             key={`${name}-tooltip`}
-            top={tooltipTop - 12}
-            left={tooltipLeft + 12 + margin.left}
+            top={tooltipTop - margin.top}
+            left={tooltipLeft + margin.left}
             style={getDefaultTooltipStyles(theme)}
           >
-            {unitPosition === 'left' && unit ? unit : ''}
-            {yAccessor(tooltipData)}
-            {unitPosition === 'right' && unit ? unit : ''}
+            {tooltipAccessor ? tooltipAccessor(tooltipData) : yAccessor(tooltipData)}
           </TooltipWithBounds>
           <Tooltip
             top={yMax + margin.top - 14}
-            left={tooltipLeft}
+            left={tooltipLeft + margin.left}
             style={{
               ...getDefaultTooltipStyles(theme),
               minWidth: 72,
