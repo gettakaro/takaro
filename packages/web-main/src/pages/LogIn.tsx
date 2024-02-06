@@ -11,6 +11,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { AxiosError } from 'axios';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
+import { useQueryClient } from '@tanstack/react-query';
 
 const StyledLink = styled(Link)`
   width: 100%;
@@ -40,12 +41,6 @@ const Container = styled.div`
   gap: ${({ theme }) => theme.spacing[6]};
 `;
 
-// const Header = styled.div`
-//   display: flex;
-//   flex-direction: column;
-//   gap: ${({ theme }) => theme.spacing['0_5']};
-// `;
-
 interface IFormInputs {
   email: string;
   password: string;
@@ -54,6 +49,8 @@ interface IFormInputs {
 
 const LogIn: FC = () => {
   useDocumentTitle('Log in');
+
+  const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
   const [loginFlow, setLoginFlow] = useState<LoginFlow>();
   const [csrfToken, setCsrfToken] = useState<string>();
@@ -115,6 +112,8 @@ const LogIn: FC = () => {
     try {
       if (loginFlow?.id) {
         await logIn(loginFlow?.id, email, password, csrfToken!);
+        localStorage.removeItem('selectedGameServerId');
+        queryClient.removeQueries({ queryKey: ['session'] });
         navigate(PATHS.home());
       }
     } catch (error) {
@@ -164,7 +163,7 @@ const LogIn: FC = () => {
           <TextField control={control} label="Email" loading={loading} name="email" placeholder="hi cutie" required />
           <TextField control={control} label="Password" loading={loading} name="password" required type="password" />
           <StyledLink to="/auth/recovery">Forgot your password?</StyledLink>
-          {error && <FormError message={error} />}
+          {error && <FormError error={error} />}
           <Button
             icon={<Mail />}
             isLoading={loading}

@@ -23,7 +23,8 @@ export class ModuleDefinitionsPage extends BasePage {
   async open(name: string) {
     const [studioPage] = await Promise.all([
       this.page.context().waitForEvent('page'),
-      this.page.getByText(name).click(),
+      await this.page.getByRole('link', { name }).getByRole('button', { name: 'Settings' }).click(),
+      await this.page.getByRole('menuitem', { name: 'Open in studio' }).click(),
     ]);
     return studioPage;
   }
@@ -61,6 +62,19 @@ export class ModuleDefinitionsPage extends BasePage {
     if (save) {
       await this.page.getByRole('button', { name: 'Save changes' }).click();
     }
+  }
+
+  async copy(name: string, copyName: string) {
+    await this.page.getByRole('link', { name: name }).getByRole('button', { name: 'Settings' }).click();
+    await this.page.getByRole('menuitem', { name: 'Copy module' }).click();
+
+    await this.page.getByLabel('Module name').fill(copyName);
+    await this.page.getByRole('button', { name: 'Copy module' }).click();
+  }
+
+  async view(name: string) {
+    await this.page.getByRole('link', { name: name }).getByRole('button', { name: 'Settings' }).click();
+    await this.page.getByRole('menuitem', { name: 'View module' }).click();
   }
 
   async delete(name: string) {
@@ -114,11 +128,7 @@ export class ModuleDefinitionsPage extends BasePage {
   async fillPermission({ name, description, friendlyName }: Permission, index: number) {
     // Creates a new permission field
     // first button name is different
-    if (index == 0) {
-      await this.page.getByRole('button', { name: 'Add first permission' }).click();
-    } else {
-      await this.page.getByRole('button', { name: 'New permission' }).click();
-    }
+    await this.page.getByRole('button', { name: 'Create new permission' }).click();
 
     await this.page.locator(`[id="permissions.${index}.permission"]`).fill(name);
     await this.page.locator(`[id="permissions.${index}.description"]`).fill(description);

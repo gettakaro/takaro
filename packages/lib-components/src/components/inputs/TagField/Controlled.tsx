@@ -3,15 +3,27 @@ import { useController } from 'react-hook-form';
 import { TagFieldProps, GenericTagField } from '.';
 import { Container, TagsContainer } from './style';
 import { ControlledInputProps, defaultInputProps, defaultInputPropsFactory } from '../InputProps';
-import { Wrapper, Description, ErrorMessage, Label } from '../layout';
+import { InputWrapper, Description, ErrorMessage, Label } from '../layout';
 
 export type ControlledTagFieldProps = TagFieldProps & ControlledInputProps;
 
 const defaultsApplier = defaultInputPropsFactory<ControlledTagFieldProps>(defaultInputProps);
 
 export const ControlledTagField: FC<ControlledTagFieldProps> = (props) => {
-  const { loading, label, hint, disabled, required, description, placeholder, name, size, readOnly, control } =
-    defaultsApplier(props);
+  const {
+    loading,
+    label,
+    hint,
+    disabled,
+    required,
+    description,
+    placeholder,
+    name,
+    size,
+    readOnly,
+    control,
+    allowDuplicates,
+  } = defaultsApplier(props);
 
   const {
     field,
@@ -50,7 +62,7 @@ export const ControlledTagField: FC<ControlledTagFieldProps> = (props) => {
   }
 
   return (
-    <Wrapper>
+    <InputWrapper>
       <Container>
         {label && (
           <Label
@@ -77,6 +89,7 @@ export const ControlledTagField: FC<ControlledTagFieldProps> = (props) => {
             field.onChange(values);
           }}
           placeholder={placeholder}
+          allowDuplicates={allowDuplicates}
           hasError={!!error}
           hasDescription={!!description}
           disabled={disabled}
@@ -85,6 +98,6 @@ export const ControlledTagField: FC<ControlledTagFieldProps> = (props) => {
         {error && error.message && showError && <ErrorMessage message={error.message} />}
       </Container>
       {description && <Description description={description} inputName={name} />}
-    </Wrapper>
+    </InputWrapper>
   );
 };

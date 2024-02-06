@@ -2,8 +2,9 @@ import { FC, useState } from 'react';
 import { useController } from 'react-hook-form';
 import { ControlledInputProps, defaultInputProps, defaultInputPropsFactory } from '../InputProps';
 import { TextFieldProps, GenericTextField } from '.';
+import { isNumber } from './Generic';
 import { Container, InputContainer } from './style';
-import { Label, ErrorMessage, Wrapper, Description } from '../layout';
+import { Label, ErrorMessage, InputWrapper, Description } from '../layout';
 
 export type ControlledTextFieldProps = ControlledInputProps & TextFieldProps;
 
@@ -28,12 +29,11 @@ export const ControlledTextField: FC<ControlledTextFieldProps> = (props) => {
     control,
   } = defaultsApplier(props);
 
+  const [showError, setShowError] = useState<boolean>(false);
   const { field, fieldState } = useController({
     name,
     control,
   });
-
-  const [showError, setShowError] = useState<boolean>(false);
 
   const handleOnFocus = () => {
     setShowError(true);
@@ -46,7 +46,7 @@ export const ControlledTextField: FC<ControlledTextFieldProps> = (props) => {
 
   if (loading) {
     return (
-      <Wrapper>
+      <InputWrapper>
         <Container>
           {label && (
             <Label
@@ -61,12 +61,12 @@ export const ControlledTextField: FC<ControlledTextFieldProps> = (props) => {
           )}
           <InputContainer className="placeholder" />
         </Container>
-      </Wrapper>
+      </InputWrapper>
     );
   }
 
   return (
-    <Wrapper>
+    <InputWrapper>
       <Container>
         {label && (
           <Label
@@ -90,13 +90,10 @@ export const ControlledTextField: FC<ControlledTextFieldProps> = (props) => {
           readOnly={readOnly}
           onChange={(e) => {
             if (type === 'number') {
-              if (Number(e.target.value)) {
+              if (isNumber(e.target.value)) {
                 field.onChange(Number(e.target.value));
               } else {
-                field.onChange(null);
-              }
-              if (e.target.value === '') {
-                field.onChange(null);
+                field.onChange(undefined);
               }
             } else {
               field.onChange(e.target.value);
@@ -118,6 +115,6 @@ export const ControlledTextField: FC<ControlledTextFieldProps> = (props) => {
         )}
       </Container>
       {description && <Description description={description} inputName={name} />}
-    </Wrapper>
+    </InputWrapper>
   );
 };

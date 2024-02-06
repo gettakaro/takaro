@@ -1,5 +1,6 @@
 import { FC, KeyboardEvent, MouseEvent, useEffect, useRef, useState } from 'react';
-
+import { ErrorMessage } from '../layout';
+import { z } from 'zod';
 import { Container } from './style';
 
 export interface EditableFieldProps {
@@ -9,6 +10,8 @@ export interface EditableFieldProps {
 
   // fires when the input value is changed
   onEdited?: (value: string) => unknown;
+
+  validationSchema?: z.ZodSchema;
 
   disabled?: boolean;
   required?: boolean;
@@ -26,12 +29,14 @@ export const EditableField: FC<EditableFieldProps> = ({
   name,
   disabled = false,
   onEdited,
+  validationSchema,
   editingChange = () => {},
   loading = false,
 }) => {
   const [editing, setEditing] = useState(isEditing);
   const [inputValue, setInputValue] = useState<string>(value);
   const [spanValue, setSpanValue] = useState<string>(value);
+  const [error, setError] = useState<string | undefined>(undefined);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -42,10 +47,8 @@ export const EditableField: FC<EditableFieldProps> = ({
   }, [editing, inputRef]);
 
   useEffect(() => {
-    if (!editing && inputValue != spanValue) {
-      if (onEdited) {
-        onEdited(inputValue);
-      }
+    if (!editing && inputValue != spanValue && onEdited && !error) {
+      onEdited(inputValue);
       setSpanValue(inputValue);
     }
     editingChange(editing);
@@ -66,7 +69,7 @@ export const EditableField: FC<EditableFieldProps> = ({
       return;
     }
 
-    if (keys.indexOf(key) > -1 && inputRef.current && !disabled) {
+    if (keys.indexOf(key) > -1 && inputRef.current && !disabled && !error) {
       setEditing(false);
     }
   };
@@ -85,6 +88,25 @@ export const EditableField: FC<EditableFieldProps> = ({
     }
   };
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.currentTarget.value;
+    setInputValue(newValue);
+    validateInput(newValue);
+  };
+
+  const validateInput = (value: string) => {
+    if (!validationSchema) {
+      return;
+    }
+
+    const validationResult = validationSchema.safeParse(value);
+    if (!validationResult.success) {
+      setError(validationResult.error.errors[0].message);
+    } else {
+      setError(undefined);
+    }
+  };
+
   if (loading) {
     return <div>loading</div>;
   }
@@ -99,8 +121,9 @@ export const EditableField: FC<EditableFieldProps> = ({
             name={name}
             value={inputValue}
             aria-required={required}
-            onChange={(e) => setInputValue(e.currentTarget.value)}
+            onChange={handleChange}
           />
+          {error && <ErrorMessage message={error} />}
         </div>
       ) : (
         <div onClick={handleOnClick}>

@@ -5,9 +5,10 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { CommandOutputDTO, CronJobOutputDTO, HookOutputDTO } from '@takaro/apiclient';
 import { FunctionType, ModuleContext, ModuleData, ModuleItemProperties } from '../context/moduleContext';
 import { useModule } from 'queries/modules';
-import { Loading, styled } from '@takaro/lib-components';
+import { styled, Skeleton } from '@takaro/lib-components';
 import { ModuleOnboarding } from 'views/ModuleOnboarding';
 import { PATHS } from 'paths';
+import { ErrorBoundary } from 'components/ErrorBoundary';
 
 const Flex = styled.div`
   display: flex;
@@ -16,6 +17,13 @@ const Flex = styled.div`
 const Wrapper = styled.div`
   width: 100%;
   overflow-y: auto;
+`;
+
+const LoadingContainer = styled.div`
+  display: grid;
+  grid-template-columns: 0.35fr 1fr;
+  padding: ${({ theme }) => theme.spacing['2']};
+  gap: ${({ theme }) => theme.spacing['4']};
 `;
 
 /* TODO:
@@ -89,7 +97,12 @@ export const StudioFrame: FC = () => {
   })();
 
   if (isLoading) {
-    return <Loading />;
+    return (
+      <LoadingContainer>
+        <Skeleton width="100%" height="95vh" variant="text" />
+        <Skeleton width="100%" height="95vh" variant="text" />
+      </LoadingContainer>
+    );
   }
 
   if (isError && !isLoading) {
@@ -108,21 +121,23 @@ export const StudioFrame: FC = () => {
   }
 
   return (
-    <ModuleContext.Provider value={providerModuleData}>
-      <SandpackProvider
-        // TODO: eventually this should point to the module config file
-        customSetup={{
-          entry: Object.keys(files)[0],
-        }}
-        files={files}
-        prefix=""
-      >
-        <Flex>
-          <Wrapper>
-            <Outlet />
-          </Wrapper>
-        </Flex>
-      </SandpackProvider>
-    </ModuleContext.Provider>
+    <ErrorBoundary>
+      <ModuleContext.Provider value={providerModuleData}>
+        <SandpackProvider
+          // TODO: eventually this should point to the module config file
+          customSetup={{
+            entry: Object.keys(files)[0],
+          }}
+          files={files}
+          prefix=""
+        >
+          <Flex>
+            <Wrapper>
+              <Outlet />
+            </Wrapper>
+          </Flex>
+        </SandpackProvider>
+      </ModuleContext.Provider>
+    </ErrorBoundary>
   );
 };

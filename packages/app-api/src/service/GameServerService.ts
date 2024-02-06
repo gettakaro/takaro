@@ -1,5 +1,4 @@
 import { TakaroService } from './Base.js';
-
 import { GameServerModel, GameServerRepo } from '../db/gameserver.js';
 import { IsBoolean, IsEnum, IsJSON, IsObject, IsOptional, IsString, IsUUID, Length } from 'class-validator';
 import {
@@ -21,20 +20,22 @@ import { HookEvents, IPosition, TakaroEventServerStatusChanged, GameEvents, Even
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { ModuleService } from './ModuleService.js';
-import { JSONSchema } from 'class-validator-jsonschema';
 
 // Curse you ESM... :(
 import _Ajv from 'ajv';
 import { CronJobService } from './CronJobService.js';
-import { getEmptySystemConfigSchema } from '../lib/systemConfig.js';
 import { PlayerService } from './PlayerService.js';
 import { PlayerOnGameServerService, PlayerOnGameServerUpdateDTO } from './PlayerOnGameserverService.js';
 import { ItemCreateDTO, ItemsService } from './ItemsService.js';
 import { randomUUID } from 'crypto';
 import { EventCreateDTO, EventService } from './EventService.js';
-const Ajv = _Ajv as unknown as typeof _Ajv.default;
 
-const ajv = new Ajv({ useDefaults: true });
+const Ajv = _Ajv as unknown as typeof _Ajv.default;
+const ajv = new Ajv({ useDefaults: true, strict: true });
+
+// Since input types have undistinguishable schemas. We need an annotation to parse into the correct input type.
+// E.g. a select and country input both have an enum schema, to distinguish them we use the x-component: 'country'.
+ajv.addKeyword('x-component');
 
 const gameClassCache = new Map<string, IGameServer>();
 
@@ -103,7 +104,6 @@ export class ModuleInstallationOutputDTO extends TakaroModelDTO<ModuleInstallati
   @IsObject()
   userConfig: Record<string, any>;
 
-  @JSONSchema(getEmptySystemConfigSchema())
   @IsObject()
   systemConfig: Record<string, any>;
 }
@@ -476,12 +476,13 @@ export class GameServerService extends TakaroService<
     const items = await gameInstance.listItems();
 
     const toInsert = await Promise.all(
-      items.map((item) =>
-        new ItemCreateDTO().construct({
+      items.map((item) => {
+        delete item.amount;
+        return new ItemCreateDTO().construct({
           ...item,
           gameserverId: gameServerId,
-        })
-      )
+        });
+      })
     );
 
     await itemsService.upsertMany(toInsert);

@@ -1,5 +1,5 @@
 import { FC, MouseEvent, useState } from 'react';
-import { Button, Card, Chip, Dialog, Dropdown, IconButton, Tooltip } from '@takaro/lib-components';
+import { Button, Card, Chip, Dialog, Dropdown, IconButton, Tooltip, useTheme } from '@takaro/lib-components';
 import { Header, TitleContainer } from './style';
 import { useNavigate } from 'react-router-dom';
 
@@ -9,11 +9,14 @@ import { useRoleRemove } from 'queries/roles/queries';
 import { RoleOutputDTO } from '@takaro/apiclient';
 import { CardBody } from '../style';
 
+import { AiOutlineEdit as EditIcon, AiOutlineDelete as DeleteIcon, AiOutlineEye as ViewIcon } from 'react-icons/ai';
+
 export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const theme = useTheme();
   const navigate = useNavigate();
 
-  const { mutate, isLoading: isDeleting } = useRoleRemove();
+  const { mutate, isPending: isDeleting } = useRoleRemove();
 
   const handleOnEditClick = (e: MouseEvent): void => {
     e.stopPropagation();
@@ -22,6 +25,11 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
   const handleOnDeleteClick = (e: MouseEvent) => {
     e.stopPropagation();
     setOpenDialog(true);
+  };
+
+  const handleOnViewClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    navigate(PATHS.roles.view(id));
   };
 
   const handleOnDelete = (e: MouseEvent) => {
@@ -40,7 +48,7 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
                 <Tooltip.Trigger asChild>
                   <Chip label="system" color="backgroundAccent" variant="outline" />
                 </Tooltip.Trigger>
-                <Tooltip.Content>System roles are managed by Takaro and cannot be deleted</Tooltip.Content>
+                <Tooltip.Content>System roles are managed by Takaro and cannot be deleted.</Tooltip.Content>
               </Tooltip>
             ) : (
               <span />
@@ -51,8 +59,20 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
                 <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
               </Dropdown.Trigger>
               <Dropdown.Menu>
-                {name !== 'root' ? <Dropdown.Menu.Item onClick={handleOnEditClick} label="Edit role" /> : null}
-                {!system ? <Dropdown.Menu.Item onClick={handleOnDeleteClick} label="Delete role" /> : null}
+                <Dropdown.Menu.Group label="Actions">
+                  <Dropdown.Menu.Item onClick={handleOnViewClick} icon={<ViewIcon />} label="View role" />
+                  {name !== 'root' && (
+                    <Dropdown.Menu.Item onClick={handleOnEditClick} icon={<EditIcon />} label="Edit role" />
+                  )}
+                  {!system && (
+                    <Dropdown.Menu.Item
+                      onClick={handleOnDeleteClick}
+                      icon={<DeleteIcon fill={theme.colors.error} />}
+                      label="Delete role"
+                    />
+                  )}
+                </Dropdown.Menu.Group>
+
                 <Dropdown.Menu.Item onClick={() => {}} label="Manage users (coming soon)" disabled />
                 <Dropdown.Menu.Item onClick={() => {}} label="Manage players (coming soon)" disabled />
               </Dropdown.Menu>

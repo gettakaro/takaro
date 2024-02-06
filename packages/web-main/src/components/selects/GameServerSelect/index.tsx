@@ -1,7 +1,7 @@
 import { SelectField, Tooltip } from '@takaro/lib-components';
 import { useGameServers } from 'queries/gameservers';
 import { FC } from 'react';
-import { GameServerOutputDTOTypeEnum } from '@takaro/apiclient';
+import { GameServerOutputDTO, GameServerOutputDTOTypeEnum } from '@takaro/apiclient';
 import { CustomSelectProps } from '..';
 import icon7d2d from './7d2d-icon.png';
 import iconRust from './rust-icon.png';
@@ -40,6 +40,39 @@ export const GameServerSelect: FC<CustomSelectProps> = ({
     return <div>no game servers</div>;
   }
 
+  return (
+    <GameServerSelectView
+      control={control}
+      gameServers={gameServers}
+      readOnly={readOnly}
+      description={description}
+      size={size}
+      disabled={disabled}
+      inPortal={inPortal}
+      hint={hint}
+      name={selectName}
+      required={required}
+      loading={loading}
+      label="Game Server"
+    />
+  );
+};
+
+export type GameServerSelectViewProps = CustomSelectProps & { gameServers: GameServerOutputDTO[] };
+export const GameServerSelectView: FC<GameServerSelectViewProps> = ({
+  control,
+  gameServers,
+  name: selectName,
+  readOnly,
+  description,
+  size,
+  disabled,
+  inPortal,
+  hint,
+  required,
+  loading,
+  label,
+}) => {
   const renderOptionGroup = (groupLabel: string, typeEnum: GameServerOutputDTOTypeEnum) => {
     return (
       <SelectField.OptionGroup label={groupLabel} icon={gameTypeMap[typeEnum].icon}>
@@ -52,7 +85,7 @@ export const GameServerSelect: FC<CustomSelectProps> = ({
             <SelectField.Option key={`select-${selectName}-${serverName}`} value={id} label={serverName}>
               <Inner>
                 <span>{serverName}</span>
-                <Tooltip>
+                <Tooltip placement="right">
                   <Tooltip.Trigger asChild>
                     <StatusDot isReachable={reachable} />
                   </Tooltip.Trigger>
@@ -77,6 +110,7 @@ export const GameServerSelect: FC<CustomSelectProps> = ({
       disabled={disabled}
       inPortal={inPortal}
       hint={hint}
+      label={label}
       required={required}
       loading={loading}
       hasMargin={false}

@@ -5,7 +5,7 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import * as Sentry from '@sentry/react';
-import { BrowserTracing } from '@sentry/react';
+import * as SentryIntegration from '@sentry/integrations';
 import { useLocation, useNavigationType, createRoutesFromChildren, matchRoutes } from 'react-router-dom';
 
 // styles required for slider component we rely on
@@ -17,11 +17,17 @@ const root = createRoot(container);
 
 Sentry.init({
   dsn: 'https://1f9c7d5b5d7d43da938d9a3ec6215633@o387782.ingest.sentry.io/4504889880018944',
+  // To prevent this from being exceeded, we can should lower the sample to only send e.g. 20% of traces.
+  tracesSampleRate: 1.0,
+
   integrations: [
     new Sentry.Integrations.Breadcrumbs({
       console: false,
     }),
-    new BrowserTracing({
+    SentryIntegration.captureConsoleIntegration({
+      levels: ['error'],
+    }),
+    new Sentry.BrowserTracing({
       routingInstrumentation: Sentry.reactRouterV6Instrumentation(
         useEffect,
         useLocation,
@@ -31,10 +37,6 @@ Sentry.init({
       ),
     }),
   ],
-
-  // TODO: We only have x amount of free traces per month.
-  // To prevent this from being exceeded, we can should lower the sample to only send e.g. 20% of traces.
-  tracesSampleRate: 1,
 });
 
 root.render(<App />);

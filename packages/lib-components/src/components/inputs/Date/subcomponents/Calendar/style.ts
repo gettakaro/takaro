@@ -20,13 +20,14 @@ export const DayButton = styled.button<{ isSelected: boolean; isToday: boolean; 
   width: 2rem;
   margin-left: auto;
   margin-right: auto;
-  background-color: ${({ theme, isSelected }) => (isSelected ? theme.colors.primary : 'transparent')};
+  background-color: ${({ theme, isSelected }) => (isSelected ? theme.colors.primaryShade : 'transparent')};
+  border: 1px solid ${({ theme, isSelected }) => (isSelected ? theme.colors.primary : 'transparent')};
   color: white;
   padding: ${({ theme }) => theme.spacing['1_5']};
   margin: 0;
 
   &:hover {
-    background-color: ${({ theme, isSelected }) => (isSelected ? theme.colors.primary : theme.colors.secondary)};
+    background-color: ${({ theme, isSelected }) => (isSelected ? theme.colors.primaryShade : theme.colors.secondary)};
   }
 
   &:disabled {

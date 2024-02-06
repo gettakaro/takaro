@@ -3,17 +3,8 @@ import { styled } from '../../../styled';
 import { AnimatePresence, motion, PanInfo } from 'framer-motion';
 import SimpleBar from 'simplebar-react';
 
-import { FloatingFocusManager, FloatingOverlay, FloatingPortal, useMergeRefs } from '@floating-ui/react';
+import { FloatingFocusManager, FloatingPortal, useMergeRefs, FloatingOverlay } from '@floating-ui/react';
 import { useDrawerContext } from './DrawerContext';
-
-const StyledFloatingOverlay = styled(FloatingOverlay)<{ dragIndex: number }>`
-  background: rgba(0, 0, 0, ${({ dragIndex }) => Math.max(0.8 - dragIndex, 0.4)});
-  display: grid;
-  place-items: end;
-  max-height: 100vh;
-  max-width: 100vw;
-  overflow: hidden !important;
-`;
 
 const Container = styled(motion.div)`
   position: relative;
@@ -44,7 +35,7 @@ export const HandleContainer = styled.div`
 `;
 
 export const DrawerContent = forwardRef<HTMLElement, HTMLProps<HTMLDivElement>>((props, propRef) => {
-  const { context, labelId, descriptionId, getFloatingProps, setOpen } = useDrawerContext();
+  const { context, labelId, descriptionId, getFloatingProps, setOpen, canDrag } = useDrawerContext();
 
   const ref = useMergeRefs([context.refs.setFloating, propRef]);
   const [dragPosition, setDragPosition] = useState<number>(0);
@@ -72,7 +63,17 @@ export const DrawerContent = forwardRef<HTMLElement, HTMLProps<HTMLDivElement>>(
     <FloatingPortal root={root}>
       <AnimatePresence>
         {context.open && (
-          <StyledFloatingOverlay lockScroll dragIndex={dragPosition}>
+          <FloatingOverlay
+            lockScroll
+            style={{
+              placeItems: 'end',
+              maxHeight: '100vh',
+              maxWidth: '100vw',
+              overflow: 'hidden!important',
+              display: 'grid',
+              background: `rgba(0, 0, 0, ${Math.max(0.8 - dragPosition, 0.4)})`,
+            }}
+          >
             <FloatingFocusManager context={context}>
               <Container
                 ref={ref}
@@ -86,20 +87,22 @@ export const DrawerContent = forwardRef<HTMLElement, HTMLProps<HTMLDivElement>>(
                 exit={{
                   x: '100%',
                 }}
-                drag="x"
-                dragConstraints={{ left: 0, right: -20 }}
+                drag={canDrag ? 'x' : false}
+                dragConstraints={{ left: 0, right: 0 }}
                 onDrag={handleDrag}
                 onDragEnd={handleDragEnd}
                 dragElastic={{ left: 0, right: 0.4 }}
                 layout
               >
-                <HandleContainer>
-                  <div />
-                </HandleContainer>
+                {canDrag && (
+                  <HandleContainer>
+                    <div />
+                  </HandleContainer>
+                )}
                 <SimpleBar style={{ maxHeight: '92vh' }}>{props.children}</SimpleBar>
               </Container>
             </FloatingFocusManager>
-          </StyledFloatingOverlay>
+          </FloatingOverlay>
         )}
       </AnimatePresence>
     </FloatingPortal>

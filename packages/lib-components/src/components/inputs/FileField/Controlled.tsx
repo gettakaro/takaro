@@ -3,7 +3,7 @@ import { useController } from 'react-hook-form';
 import { ControlledInputProps, defaultInputProps, defaultInputPropsFactory } from '../InputProps';
 import { FileFieldProps, GenericFileField } from '.';
 import { Container, InputContainer } from './style';
-import { Label, ErrorMessage, Wrapper, Description } from '../layout';
+import { Label, ErrorMessage, InputWrapper, Description } from '../layout';
 
 export type ControlledFileFieldProps = ControlledInputProps & FileFieldProps;
 
@@ -43,7 +43,7 @@ export const ControlledFileField: FC<ControlledFileFieldProps> = (props) => {
 
   if (loading) {
     return (
-      <Wrapper>
+      <InputWrapper>
         <Container>
           {label && (
             <Label
@@ -58,12 +58,12 @@ export const ControlledFileField: FC<ControlledFileFieldProps> = (props) => {
           )}
           <InputContainer className="placeholder" />
         </Container>
-      </Wrapper>
+      </InputWrapper>
     );
   }
 
   return (
-    <Wrapper>
+    <InputWrapper>
       <Container>
         {label && (
           <Label
@@ -99,6 +99,6 @@ export const ControlledFileField: FC<ControlledFileFieldProps> = (props) => {
         )}
       </Container>
       {description && <Description description={description} inputName={name} />}
-    </Wrapper>
+    </InputWrapper>
   );
 };

@@ -79,6 +79,7 @@ export const Container = styled.div<{ size: Size; variant?: AvatarVariant }>`
     }}
     background-color: ${({ theme }) => theme.colors.background};
     border: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
+    margin-left: 0;
   }
 
   ${({ size, theme }) => {

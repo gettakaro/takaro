@@ -3,7 +3,7 @@ import { TextAreaFieldProps, GenericTextAreaField } from '.';
 import { ControlledInputProps, defaultInputPropsFactory, defaultInputProps } from '../InputProps';
 import { Container, TextAreaContainer } from './style';
 import { useController } from 'react-hook-form';
-import { Wrapper, Description, Label, ErrorMessage } from '../layout';
+import { InputWrapper, Description, Label, ErrorMessage } from '../layout';
 
 export type ControlledTextAreaFieldProps = TextAreaFieldProps & ControlledInputProps;
 
@@ -63,7 +63,7 @@ export const ControlledTextAreaField: FC<ControlledTextAreaFieldProps> = (props)
   }
 
   return (
-    <Wrapper>
+    <InputWrapper>
       <Container>
         {label && (
           <Label
@@ -96,6 +96,6 @@ export const ControlledTextAreaField: FC<ControlledTextAreaFieldProps> = (props)
         {error && error.message && showError && <ErrorMessage message={error.message} />}
       </Container>
       {description && <Description description={description} inputName={name} />}
-    </Wrapper>
+    </InputWrapper>
   );
 };

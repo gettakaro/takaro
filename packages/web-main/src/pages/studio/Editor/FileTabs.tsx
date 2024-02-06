@@ -292,7 +292,7 @@ const Tab: FC<TabProps> = ({
                 }}
               />
             </Tooltip.Trigger>
-            <Tooltip.Content>Close `{getFileName(filePath)}`</Tooltip.Content>
+            <Tooltip.Content>Close {getFileName(filePath)}</Tooltip.Content>
           </Tooltip>
         )}
       </TabButton>

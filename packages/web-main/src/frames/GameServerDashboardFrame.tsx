@@ -1,4 +1,5 @@
 import { HorizontalNav, useTheme } from '@takaro/lib-components';
+import { ErrorBoundary } from 'components/ErrorBoundary';
 import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 import { PATHS } from 'paths';
 import { FC } from 'react';
@@ -36,7 +37,9 @@ const GameServerDashboardFrame: FC = () => {
           },
         ]}
       />
-      <Outlet />
+      <ErrorBoundary>
+        <Outlet />
+      </ErrorBoundary>
     </div>
   );
 };

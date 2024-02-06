@@ -1,10 +1,10 @@
 import { FC, PropsWithChildren } from 'react';
 import { useController } from 'react-hook-form';
 import { ControlledInputProps, defaultInputProps, defaultInputPropsFactory } from '../InputProps';
+
 import { Container } from './style';
 import { RadioItem } from './RadioItem';
-
-import { Wrapper, ErrorMessage, Description } from '../layout';
+import { InputWrapper, ErrorMessage, Description } from '../layout';
 import { GenericRadioGroup, RadioGroupSubComponents } from './Generic';
 
 export type ControlledRadioGroupProps = PropsWithChildren<ControlledInputProps>;
@@ -20,7 +20,7 @@ export const ControlledRadioGroup: FC<ControlledRadioGroupProps> & RadioGroupSub
   } = useController({ name, control });
 
   return (
-    <Wrapper>
+    <InputWrapper>
       <Container>
         <GenericRadioGroup
           id={name}
@@ -39,7 +39,7 @@ export const ControlledRadioGroup: FC<ControlledRadioGroupProps> & RadioGroupSub
         {error && error.message && <ErrorMessage message={error.message} />}
       </Container>
       {description && <Description description={description} inputName={name} />}
-    </Wrapper>
+    </InputWrapper>
   );
 };
 

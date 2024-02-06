@@ -16,6 +16,7 @@ export const NavBar = styled.nav<{ variant: HorizontalNavVariant }>`
           width: fit-content;
           padding: ${theme.spacing['0_75']} ${theme.spacing['0_75']};
           border-radius: ${theme.borderRadius.medium};
+          border: 1px solid ${theme.colors.backgroundAccent};
         `;
       case 'underline':
         return `
@@ -74,7 +75,8 @@ export const Block = styled(motion.div)`
   z-index: 1;
   display: block;
   height: 100%;
-  background-color: ${({ theme }) => theme.colors.background};
+  border: 1px solid ${({ theme }) => theme.colors.primary};
+  background-color: ${({ theme }) => theme.colors.primaryShade};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
   content: '';
   width: 100%;

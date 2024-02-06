@@ -14,13 +14,14 @@ export { NotificationBanner } from './NotificationBanner';
 export type { NotificationBannerProps } from './NotificationBanner';
 
 export { ErrorFallback } from './ErrorFallback';
-export type { ErrorFallbackProps } from './ErrorFallback';
 
 export { ProgressBar } from './ProgressBar';
 export type { ProgressBarProps } from './ProgressBar';
 
 export { Tooltip } from './Tooltip';
 export type { TooltipProps } from './Tooltip';
+
+export { QuestionTooltip } from './QuestionTooltip';
 
 export { Popover } from './Popover';
 export type { PopoverProps } from './Popover';

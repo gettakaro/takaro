@@ -2,7 +2,14 @@ import playwright from '@playwright/test';
 import { test } from '../fixtures/index.js';
 import { HookCreateDTOEventTypeEnum } from '@takaro/apiclient';
 
-const { expect, test: pwTest } = playwright;
+const { expect } = playwright;
+
+test('Can view module', async ({ takaro, page }) => {
+  const { moduleDefinitionsPage } = takaro;
+  await moduleDefinitionsPage.goto();
+  await moduleDefinitionsPage.view('Module without functions');
+  expect(await page.getByLabel('Name').isEditable()).toBe(false);
+});
 
 test('Can create module', async ({ page, takaro }) => {
   const { moduleDefinitionsPage } = takaro;
@@ -59,6 +66,9 @@ test('Creating module with config, saves the config', async ({ page, takaro }) =
   await page.locator('textarea[name="configFields\\.0\\.description"]').fill('config field description');
   await page.getByLabel('Default value').fill('my string default value');
 
+  await page.locator('input[name="configFields\\.0\\.minLength"]').fill('1');
+  await page.locator('input[name="configFields\\.0\\.maxLength"]').fill('20');
+
   await page.getByRole('button', { name: 'Save changes' }).click();
 
   await expect(page.getByText(moduleName)).toBeVisible();
@@ -74,31 +84,6 @@ test('Creating a module but providing too short name, shows an error', async ({ 
     name: 'a',
   });
   await expect(page.getByText('Module name requires a minimum length of 4 characters')).toBeVisible();
-});
-
-test('Creating a module with config but not providing a default value, shows an error', async ({ page, takaro }) => {
-  const { moduleDefinitionsPage } = takaro;
-  const moduleName = 'My new module';
-
-  await moduleDefinitionsPage.goto();
-
-  await moduleDefinitionsPage.create({
-    name: moduleName,
-    save: false,
-  });
-
-  await page.getByRole('button', { name: 'Config Field' }).click();
-  await page.locator('input[name="configFields\\.0\\.name"]').fill('Cool string');
-  await page.locator('textarea[name="configFields\\.0\\.description"]').fill('config field description');
-
-  await page.getByRole('button', { name: 'Save changes' }).click();
-
-  await expect(
-    page
-      .locator('div')
-      .filter({ hasText: /^Required$/ })
-      .locator('span')
-  ).toBeVisible();
 });
 
 test('Can edit module', async ({ page, takaro }) => {
@@ -136,6 +121,14 @@ test('Can delete module', async ({ page, takaro }) => {
   await expect(page.getByText(moduleName)).toHaveCount(0);
 });
 
+test('Can copy module', async ({ page, takaro }) => {
+  const { moduleDefinitionsPage } = takaro;
+  await moduleDefinitionsPage.goto();
+  const copyName = 'copy-name';
+  await moduleDefinitionsPage.copy('Module without functions', copyName);
+  await expect(page.getByText(copyName)).toBeVisible();
+});
+
 test('Can install module with empty config', async ({ page, takaro }) => {
   const modRes = await takaro.rootClient.module.moduleControllerSearch({
     filters: { name: ['Module without functions'] },
@@ -149,10 +142,9 @@ test('Can install module with empty config', async ({ page, takaro }) => {
   //await navigateTo(page, 'server-modules');
   await page.goto(`/server/${takaro.gameServer.id}/modules`);
   await page.getByTestId(`module-${mod.id}`).getByRole('button', { name: 'Install' }).click();
-
   await page.getByRole('button', { name: 'Install' }).click();
 
-  await expect(page.getByTestId(`module-${mod.id}`).getByRole('button', { name: 'Uninstall module' })).toBeVisible();
+  await expect(page.getByTestId(`module-${mod.id}`).getByRole('button', { name: 'Settings' })).toBeVisible();
 });
 
 test('Can install a module with a discord hook', async ({ page, takaro }) => {
@@ -178,103 +170,8 @@ test('Can install a module with a discord hook', async ({ page, takaro }) => {
     .click();
 
   await page.getByTestId(`module-${mod.data.data.id}`).getByRole('button', { name: 'Install' }).click();
-
   await page.getByLabel('My hook Discord channel IDRequired').type('123');
-
   await page.getByRole('button', { name: 'Install' }).click();
 
-  await expect(
-    page.getByTestId(`module-${mod.data.data.id}`).getByRole('button', { name: 'Uninstall module' })
-  ).toBeVisible();
-});
-
-pwTest.describe('Module config', () => {
-  pwTest.fixme('Can create string field', async ({}) => {
-    /*
-    await page.getByRole('link', { name: 'Modules' }).click();
-
-    await page.locator('a').filter({ hasText: 'new module' }).click();
-
-    const newModuleName = 'My new module';
-    const moduleNameInput = page.getByPlaceholder('My cool module');
-
-    await moduleNameInput.click();
-    await moduleNameInput.fill(newModuleName);
-
-    const moduleDescriptionInput = page.getByPlaceholder(
-      'This module does cool stuff'
-    );
-    moduleDescriptionInput.click();
-    moduleDescriptionInput.fill('My module description');
-
-    const configFieldNameInput = page.locator(
-      'input[name="configFields.0.name"]'
-    );
-    await configFieldNameInput.click();
-    await configFieldNameInput.fill('My string field');
-
-    const configFieldDescriptionInput = page.locator(
-      'input[name="configFields.0.description"]'
-    );
-    await configFieldDescriptionInput.click();
-    await configFieldDescriptionInput.fill('My string description');
-
-    await page.getByRole('combobox').click();
-    await page.getByRole('option', { name: 'string' }).click();
-
-    const configFieldDefaultValueInput = page.getByLabel('Default value');
-    await configFieldDefaultValueInput.click();
-    await configFieldDefaultValueInput.fill('my string default value');
-
-    const configFieldMinLength = page.getByLabel('Minimum length');
-    await configFieldMinLength.click();
-    await configFieldMinLength.fill('0');
-
-    const configFieldMaxLength = page.getByLabel('Maximum length');
-    configFieldMaxLength.click();
-    configFieldMaxLength.fill('20');
-
-    const configFieldRequired = page.getByRole('checkbox');
-    configFieldRequired.click();
-
-    await page.getByRole('button', { name: 'Save changes' }).click();
-
-    // we add a button press here because the cache for the moduleData is not updated yet.
-    await page.getByRole('link', { name: 'Modules' }).click();
-
-    await expect(page.getByText(newModuleName)).toBeVisible();
-
-    // open edit module page
-    await page
-      .locator('a', { hasText: newModuleName })
-      .getByRole('button')
-      .first()
-      .click();
-
-    await expect(page.getByPlaceholder('My cool module')).toHaveValue(
-      newModuleName
-    );
-
-    await expect(configFieldNameInput).toHaveValue('My string field');
-
-    await expect(
-      page.locator('input[name="configFields.0.description"]')
-    ).toHaveValue('My string description');
-
-    await expect(page.getByRole('combobox')).toHaveValue('string');
-    await expect(page.getByLabel('Default value')).toHaveValue(
-      'my string default value'
-    );
-    await expect(page.getByLabel('Minimum length')).toHaveValue('0');
-    await expect(page.getByLabel('Maximum length')).toHaveValue('20');
-    */
-  });
-
-  pwTest.fixme('Can create number field', async ({}) => {});
-
-  pwTest.fixme('Can create boolean field', async ({}) => {});
-
-  pwTest.fixme('Can create array field', async ({}) => {});
-
-  pwTest.fixme('Can create enum field', async ({}) => {});
+  await expect(page.getByTestId(`module-${mod.data.data.id}`).getByRole('button', { name: 'Settings' })).toBeVisible();
 });

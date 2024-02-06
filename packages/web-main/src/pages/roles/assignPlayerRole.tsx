@@ -19,7 +19,7 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { useGameServers } from 'queries/gameservers';
 import { GameServerOutputDTO, RoleOutputDTO } from '@takaro/apiclient';
 import { DateTime } from 'luxon';
-import { RolesSelect } from 'components/selects';
+import { RoleSelect } from 'components/selects';
 
 interface IFormInputs {
   id: string;
@@ -52,7 +52,7 @@ export const AssignPlayerRole: FC = () => {
 
 const AssignRoleForm: FC<IAssignRoleFormProps> = ({ roles, gameServers }) => {
   const [open, setOpen] = useState(true);
-  const { mutateAsync, isLoading, error } = usePlayerRoleAssign();
+  const { mutateAsync, isPending, error } = usePlayerRoleAssign();
   const navigate = useNavigate();
   const { playerId } = useParams<{ playerId: string }>();
 
@@ -92,9 +92,7 @@ const AssignRoleForm: FC<IAssignRoleFormProps> = ({ roles, gameServers }) => {
             <form onSubmit={handleSubmit(onSubmit)} id="create-role-form">
               <CollapseList.Item title="General">
                 <TextField readOnly control={control} name="id" label="Player" />
-
-                <RolesSelect control={control} name="roleId" />
-
+                <RoleSelect control={control} name="roleId" />
                 <SelectField
                   control={control}
                   name="gameServerId"
@@ -122,7 +120,7 @@ const AssignRoleForm: FC<IAssignRoleFormProps> = ({ roles, gameServers }) => {
                   label={'Expiration date'}
                   name={'expiresAt'}
                   required={false}
-                  loading={isLoading}
+                  loading={isPending}
                   description={'The role will be automatically removed after this date'}
                   popOverPlacement={'bottom'}
                   allowPastDates={false}
@@ -137,7 +135,7 @@ const AssignRoleForm: FC<IAssignRoleFormProps> = ({ roles, gameServers }) => {
         <Drawer.Footer>
           <ButtonContainer>
             <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
-            <Button fullWidth text="Save changes" isLoading={isLoading} type="submit" form="create-role-form" />
+            <Button fullWidth text="Save changes" isLoading={isPending} type="submit" form="create-role-form" />
           </ButtonContainer>
         </Drawer.Footer>
       </Drawer.Content>

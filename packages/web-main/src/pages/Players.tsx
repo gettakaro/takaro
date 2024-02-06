@@ -77,7 +77,6 @@ const Players: FC = () => {
         if (!name) return '';
 
         const player = info.row.original;
-
         return <Player playerId={player.id} name={player.name} showAvatar={true} avatarUrl={player.steamAvatar} />;
       },
       enableColumnFilter: true,
@@ -86,7 +85,7 @@ const Players: FC = () => {
     columnHelper.accessor('steamId', {
       header: 'Steam ID',
       id: 'steamId',
-      cell: (info) => <CopyId placeholder="Steam ID" id={info.getValue()} />,
+      cell: (info) => <CopyId placeholder={info.getValue()} id={info.getValue()} />,
       enableColumnFilter: true,
     }),
 
@@ -231,8 +230,8 @@ const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
   });
 
   const apiclient = useApiClient();
-  const { mutateAsync: mutateBanPlayer, isLoading: isLoadingBanPlayer } = useBanPlayerOnGameServer();
-  const { mutateAsync: mutateUnbanPlayer, isLoading: isLoadingUnbanPlayer } = useUnbanPlayerOnGameServer();
+  const { mutateAsync: mutateBanPlayer, isPending: isLoadingBanPlayer } = useBanPlayerOnGameServer();
+  const { mutateAsync: mutateUnbanPlayer, isPending: isLoadingUnbanPlayer } = useUnbanPlayerOnGameServer();
 
   const handleOnBanPlayer: SubmitHandler<FormInputs> = async ({ reason }) => {
     const pogs = (

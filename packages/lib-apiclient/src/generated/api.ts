@@ -3941,6 +3941,12 @@ export interface ModuleCreateDTO {
   configSchema?: string;
   /**
    *
+   * @type {string}
+   * @memberof ModuleCreateDTO
+   */
+  uiSchema?: string;
+  /**
+   *
    * @type {Array<PermissionCreateDTO>}
    * @memberof ModuleCreateDTO
    */
@@ -3970,6 +3976,12 @@ export interface ModuleCreateInternalDTO {
    * @memberof ModuleCreateInternalDTO
    */
   configSchema?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ModuleCreateInternalDTO
+   */
+  uiSchema?: string;
   /**
    *
    * @type {string}
@@ -4132,6 +4144,12 @@ export interface ModuleOutputDTO {
    * @memberof ModuleOutputDTO
    */
   configSchema: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ModuleOutputDTO
+   */
+  uiSchema: string;
   /**
    *
    * @type {string}
@@ -4319,6 +4337,12 @@ export interface ModuleUpdateDTO {
    * @memberof ModuleUpdateDTO
    */
   configSchema?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ModuleUpdateDTO
+   */
+  uiSchema?: string;
   /**
    *
    * @type {Array<PermissionCreateDTO>}
@@ -4539,6 +4563,25 @@ export interface PermissionInputDTO {
 /**
  *
  * @export
+ * @interface PermissionModuleDTO
+ */
+export interface PermissionModuleDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof PermissionModuleDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PermissionModuleDTO
+   */
+  name: string;
+}
+/**
+ *
+ * @export
  * @interface PermissionOnRoleDTO
  */
 export interface PermissionOnRoleDTO {
@@ -4585,6 +4628,12 @@ export interface PermissionOnRoleDTO {
  * @interface PermissionOutputDTO
  */
 export interface PermissionOutputDTO {
+  /**
+   *
+   * @type {PermissionModuleDTO}
+   * @memberof PermissionOutputDTO
+   */
+  module?: PermissionModuleDTO;
   /**
    *
    * @type {string}

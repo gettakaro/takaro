@@ -1,27 +1,26 @@
 import playwright from '@playwright/test';
 import { extendedTest } from '../fixtures/index.js';
-
-import builtinModules from '../fixtures/modules.json' assert { type: 'json' };
 const { expect } = playwright;
 
 extendedTest.describe('smoke', () => {
-  extendedTest('should open onboarding when new module with no functions is created', async ({ takaro }) => {
-    // the Extended test sets the studiopage to a module with functions.
-    // So in this particular case, we need to set the correct module first.
-    const mod = await takaro.rootClient.module.moduleControllerCreate({ name: 'Module with no functions' });
-    takaro.studioPage.mod = mod.data.data;
-
-    await takaro.studioPage.goto();
-    await expect(takaro.studioPage.page.locator('h1', { hasText: 'Choose one to get started' })).toBeVisible();
-  });
-
-  // TODO: this extendedTest should move to modules
-  extendedTest('should open studio in new tab', async ({ page, context, takaro }) => {
+  extendedTest('should open onboarding when new module with no functions is created', async ({ takaro, context }) => {
     await takaro.moduleDefinitionsPage.goto();
 
     const [studioPage] = await Promise.all([
       context.waitForEvent('page'),
-      page.getByRole('link', { name: 'Module with functions' }).click(),
+      await takaro.moduleDefinitionsPage.open('Module without functions'),
+    ]);
+    await studioPage.waitForLoadState();
+    await expect(studioPage.locator('h1', { hasText: 'Choose one to get started' })).toBeVisible();
+  });
+
+  // TODO: this extendedTest should move to modules
+  extendedTest('should open studio in new tab', async ({ context, takaro }) => {
+    await takaro.moduleDefinitionsPage.goto();
+
+    const [studioPage] = await Promise.all([
+      context.waitForEvent('page'),
+      await takaro.moduleDefinitionsPage.open('Module with functions'),
     ]);
     await studioPage.waitForLoadState();
 
@@ -152,17 +151,21 @@ extendedTest.describe('filetree', () => {
   extendedTest.fixme('Can save command config', async ({}) => {});
 });
 
-extendedTest.describe('Copy module', () => {
-  extendedTest('Can copy builtin module', async ({ page, takaro }) => {
-    const mod = builtinModules[0];
-    await takaro.moduleDefinitionsPage.goto();
-    const studioPage = await takaro.moduleDefinitionsPage.open(mod.name);
-    await studioPage.getByRole('button', { name: 'Make copy of module' }).click();
-    await studioPage.getByRole('button', { name: 'Copy Module' }).click();
-    await takaro.moduleDefinitionsPage.goto();
-    await expect(page.getByText(`${mod.name}-copy`)).toBeVisible();
-  });
-  extendedTest.fixme('Cannot copy module with name that already exists', async ({}) => {});
+extendedTest('Can copy module', async ({ page, takaro }) => {
+  const { studioPage, moduleDefinitionsPage } = takaro;
+  const copyName = `${studioPage.mod.name}-copy`;
+
+  await studioPage.goto();
+  await studioPage.page.getByRole('button', { name: 'Make copy of module' }).click();
+  await studioPage.page.getByLabel('Module name').fill(copyName);
+  await studioPage.page.getByRole('button', { name: 'Copy Module' }).click();
+
+  await studioPage.page.getByTestId('snack-module-copied').getByRole('img').first().click();
+  await studioPage.page.getByTestId('snack-module-copied').getByText('open new module').click();
+  await expect(page.getByText(copyName)).toBeVisible();
+
+  await moduleDefinitionsPage.goto();
+  await expect(page.getByText(copyName)).toBeVisible();
 });
 
 extendedTest.describe('Built-in modules', () => {

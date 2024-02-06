@@ -2,7 +2,7 @@ import { FC, useState, useEffect, useCallback } from 'react';
 import { useAuth } from 'hooks/useAuth';
 import { Loading, styled } from '@takaro/lib-components';
 import { PATHS } from 'paths';
-import { setUser } from '@sentry/react';
+import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
 import { Outlet } from 'react-router-dom';
 
@@ -21,16 +21,17 @@ export const AuthenticationGuard: FC = () => {
   const [loading, isLoading] = useState<boolean>(true);
 
   const handleAuth = useCallback(() => {
+    if (isLoadingSession) return;
+
     if (isSessionError) {
       console.error(sessionError);
     }
 
-    if (isLoadingSession) return;
     try {
       if (!session) {
         return navigate(PATHS.login());
       }
-      setUser({ id: session.id });
+      Sentry.setUser({ id: session.id, email: session.email, username: session.name });
       setIsAuth(true);
     } catch (error) {
       navigate(PATHS.login());
