@@ -10,6 +10,7 @@ import { CronJobConfig, CommandConfig, HookConfig } from './Editor/configs';
 import { Header } from './Header';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { EventFeedWidget } from 'components/events/EventFeedWidget';
+import { ErrorBoundary } from 'components/ErrorBoundary';
 
 const EventsWrapper = styled.div`
   padding-right: ${({ theme }) => theme.spacing[1]};
@@ -83,15 +84,19 @@ const Studio: FC = () => {
         >
           <CollapseList>
             <CollapseList.Item title="File explorer">
-              <FileExplorer sandpack={sandpack} />
+              <ErrorBoundary>
+                <FileExplorer sandpack={sandpack} />
+              </ErrorBoundary>
             </CollapseList.Item>
             <CollapseList.Item title={configMap[activeModule.type]}>
-              {getConfigComponent(activeModule.type)}
+              <ErrorBoundary>{getConfigComponent(activeModule.type)}</ErrorBoundary>
             </CollapseList.Item>
             <CollapseList.Item title={'Last executions'}>
-              <EventsWrapper>
-                <EventFeedWidget query={{ filters: { moduleId: [moduleData.id] } }} />
-              </EventsWrapper>
+              <ErrorBoundary>
+                <EventsWrapper>
+                  <EventFeedWidget query={{ filters: { moduleId: [moduleData.id] } }} />
+                </EventsWrapper>
+              </ErrorBoundary>
             </CollapseList.Item>
           </CollapseList>
         </StyledResizable>

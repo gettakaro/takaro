@@ -37,11 +37,12 @@ export function schemaToInputs(schema: SchemaObject): SchemaToInputsResult {
 
   Object.entries(schema.properties).forEach(([name, propertySchema]) => {
     const property = propertySchema as StrictRJSFSchema;
+
     try {
       const input: Record<string, any> = {
         name,
         type: property.type,
-        required: schema.required.includes(name),
+        required: schema.required ? schema.required.includes(name) : false,
       };
 
       if (property.default !== undefined && property.default !== null) {

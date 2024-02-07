@@ -523,6 +523,32 @@ export const validSchemasToInputs: Test[] = [
       },
     ],
   },
+  {
+    name: 'schema without required property',
+    schema: {
+      $schema: 'http://json-schema.org/draft-07/schema#',
+      type: 'object',
+      properties: {
+        sendPlayerConnected: {
+          title: 'Send player connected',
+          type: 'boolean',
+          description: 'Send a message when a player connects.',
+          default: true,
+        },
+      },
+      required: undefined,
+      additionalProperties: false,
+    },
+    inputs: [
+      {
+        name: 'sendPlayerConnected',
+        type: InputType.boolean,
+        required: false,
+        description: 'Send a message when a player connects.',
+        default: true,
+      },
+    ],
+  },
 ];
 
 export const invalidSchemas: Test[] = [
