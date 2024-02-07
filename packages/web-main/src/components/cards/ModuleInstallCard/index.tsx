@@ -1,5 +1,5 @@
 import { ModuleInstallationOutputDTO, ModuleOutputDTO, PERMISSIONS } from '@takaro/apiclient';
-import { Dialog, Button, IconButton, Card, useTheme, Dropdown } from '@takaro/lib-components';
+import { Dialog, Button, IconButton, Card, useTheme, Dropdown, ValueConfirmationField } from '@takaro/lib-components';
 import { PermissionsGuard } from 'components/PermissionsGuard';
 
 import { PATHS } from 'paths';
@@ -25,6 +25,7 @@ interface IModuleCardProps {
 
 export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation }) => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [valid, setValid] = useState<boolean>(false);
   const { mutateAsync: uninstallModule, isPending: isDeleting } = useGameServerModuleUninstall();
   const navigate = useNavigate();
   const { selectedGameServerId } = useSelectedGameServer();
@@ -121,13 +122,21 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation }) =
         <Dialog.Content>
           <Dialog.Heading>Module uninstall</Dialog.Heading>
           <Dialog.Body>
-            <p>
-              Are you sure you want to uninstall the module <strong>{mod.name}</strong>? This action is irreversible!
+            <p style={{ alignContent: 'center' }}>
+              Are you sure you want to uninstall the module <strong>{mod.name}</strong>? To confirm, type the module
+              name below.
             </p>
+            <ValueConfirmationField
+              id="uninstallModuleConfirmation"
+              onValidChange={(valid) => setValid(valid)}
+              value={mod.name}
+              label="Module name"
+            />
             <Button
               isLoading={isDeleting}
               onClick={(e) => handleUninstall(e)}
               fullWidth
+              disabled={!valid}
               text="Uninstall module"
               color="error"
             />

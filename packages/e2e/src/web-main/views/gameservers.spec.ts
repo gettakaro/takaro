@@ -8,7 +8,7 @@ test('Can use call to action if there are no gameservers', async ({ page, takaro
   // lets delete it so we can test the call to action popup in navbar
   const { GameServersPage } = takaro;
   await GameServersPage.goto();
-  await GameServersPage.action('Delete');
+  await GameServersPage.delete(GameServersPage.gameServer.name);
   await expect(page.getByText(takaro.gameServer.name)).toHaveCount(0);
   await page.getByRole('button').getByText('Add a server').click();
   expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/servers/create`);
@@ -104,7 +104,7 @@ test('Can edit gameserver', async ({ page, takaro }) => {
 test('Can delete gameserver', async ({ page, takaro }) => {
   const { GameServersPage } = takaro;
   await GameServersPage.goto();
-  await GameServersPage.action('Delete');
+  await GameServersPage.delete(GameServersPage.gameServer.name);
   await expect(page.getByText(GameServersPage.gameServer.name)).toHaveCount(0);
 });
 

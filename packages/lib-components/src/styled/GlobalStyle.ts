@@ -81,7 +81,6 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
     border-radius: ${({ theme }) => theme.borderRadius.small};
     border: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
     background-color: ${({ theme }) => theme.colors.backgroundAlt};
-    text-transform: capitalize;
     font-weight: 400;
     white-space: no-wrap;
   }
