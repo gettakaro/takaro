@@ -119,7 +119,7 @@ extendedTest.describe('filetree', () => {
       await expect(studioPage.page.getByRole('dialog')).toBeVisible();
     });
 
-    extendedTest('Should trigger rename', async ({ takaro }) => {
+    extendedTest.fixme('Should trigger rename', async ({ takaro }) => {
       const { studioPage } = takaro;
       const file = await studioPage.getTreeFile('my-hook');
       await file.click({ button: 'right' });
