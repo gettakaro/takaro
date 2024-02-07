@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { useApiClient } from 'hooks/useApiClient';
 import {
   PlayerOnGameServerSearchInputDTO,
@@ -26,8 +26,7 @@ export const usePlayerOnGameServers = (queryParams: PlayerOnGameServerSearchInpu
   const queryOpts = useQuery<PlayerOnGameserverOutputArrayDTOAPI, AxiosError<PlayerOnGameserverOutputArrayDTOAPI>>({
     queryKey: [...pogKeys.list(), { queryParams }],
     queryFn: async () => (await apiClient.playerOnGameserver.playerOnGameServerControllerSearch(queryParams)).data,
-    keepPreviousData: true,
-    useErrorBoundary: (error) => error.response!.status >= 500,
+    placeholderData: keepPreviousData,
   });
   return queryOpts;
 };
@@ -46,7 +45,6 @@ export const usePingStat = ({ gameServerId, playerId, startISO, endISO }: PingSt
           endISO,
         })
       ).data,
-    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };
 
@@ -63,7 +61,7 @@ export const useSetCurrency = () => {
         })
       ).data.data,
     onSuccess: (updatedPog) => {
-      queryClient.invalidateQueries(pogKeys.list());
+      queryClient.invalidateQueries({ queryKey: pogKeys.list() });
       queryClient.setQueryData(pogKeys.detail(updatedPog.playerId, updatedPog.gameServerId), updatedPog);
     },
   });
@@ -81,7 +79,7 @@ export const useAddCurrency = () => {
         })
       ).data.data,
     onSuccess: (updatedPog) => {
-      queryClient.invalidateQueries(pogKeys.list());
+      queryClient.invalidateQueries({ queryKey: pogKeys.list() });
       queryClient.setQueryData(pogKeys.detail(updatedPog.playerId, updatedPog.gameServerId), updatedPog);
     },
   });
@@ -99,7 +97,7 @@ export const useDeductCurrency = () => {
         })
       ).data.data,
     onSuccess: (updatedPog) => {
-      queryClient.invalidateQueries(pogKeys.list());
+      queryClient.invalidateQueries({ queryKey: pogKeys.list() });
       queryClient.setQueryData(pogKeys.detail(updatedPog.playerId, updatedPog.gameServerId), updatedPog);
     },
   });
@@ -127,7 +125,7 @@ export const useTransactBetweenPlayers = () => {
       ).data.data,
     onSuccess: () => {
       // TODO: instead of invalidating all, should invalidate only the list, sender and receiver.
-      queryClient.invalidateQueries(pogKeys.all);
+      queryClient.invalidateQueries({ queryKey: pogKeys.all });
     },
   });
 };
