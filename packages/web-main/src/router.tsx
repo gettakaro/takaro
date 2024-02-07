@@ -1,16 +1,17 @@
-import { FC, lazy } from 'react';
-import { Route, Routes, BrowserRouter } from 'react-router-dom';
-
-import Dashboard from 'pages/Dashboard';
+import { lazy } from 'react';
+import { Route, createBrowserRouter, createRoutesFromElements } from 'react-router-dom';
 import { PATHS } from 'paths';
+import * as Sentry from '@sentry/react';
+
 import { AuthenticationGuard } from 'components/routes/AuthenticationGuard';
 import { PermissionsGuard } from 'components/routes/PermissionsGuard';
 import { FrameLayoutRoute } from 'components/routes/LayoutRoute';
 
+import Dashboard from 'pages/Dashboard';
 import GameServers from 'pages/GameServers';
 import Players from 'pages/Players';
+
 import { ModuleDefinitions } from 'pages/ModuleDefinitions';
-import { withSentryReactRouterV6Routing } from '@sentry/react';
 import { CreateGameServer } from 'pages/gameserverOverview/CreateGameServer';
 import { UpdateGameServer } from 'pages/gameserverOverview/UpdateGameServer';
 
@@ -51,8 +52,6 @@ import { PlayerInventory } from 'pages/player/gameserver/PlayerInventory';
 import { PlayerEvents } from 'pages/player/gameserver/PlayerEvents';
 import { PlayerEconomy } from 'pages/player/gameserver/PlayerEconomy';
 
-const SentryRoutes = withSentryReactRouterV6Routing(Routes);
-
 // Lazy load pages
 const LogIn = lazy(() => import('./pages/LogIn'));
 const Studio = lazy(() => import('./pages/studio'));
@@ -62,9 +61,11 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 // - source: https://www.youtube.com/watch?v=95B8mnhzoCM
 // - source: https://tkdodo.eu/blog/react-query-meets-react-router
 
-export const Router: FC = () => (
-  <BrowserRouter>
-    <SentryRoutes>
+const sentryCreateBrowserRouter = Sentry.wrapCreateBrowserRouter(createBrowserRouter);
+
+export const router = sentryCreateBrowserRouter(
+  createRoutesFromElements(
+    <>
       {/* ======================== Global ======================== */}
       <Route element={<AuthenticationGuard />} path={PATHS.home()}>
         <Route element={<FrameLayoutRoute frame="global" />}>
@@ -213,6 +214,6 @@ export const Router: FC = () => (
 
       {/* Page not found matches with everything => should stay at bottom */}
       <Route element={<NotFound />} path="*" />
-    </SentryRoutes>
-  </BrowserRouter>
+    </>
+  )
 );

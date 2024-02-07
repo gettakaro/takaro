@@ -3,9 +3,10 @@ import { ThemeProvider } from 'styled-components';
 import { ThemeProvider as OryThemeProvider } from '@ory/elements';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { RouterProvider } from 'react-router-dom';
 import { GlobalStyle, SnackbarProvider, darkTheme } from '@takaro/lib-components';
 import { oryThemeOverrides } from './OryThemeOverrides';
-import { Router } from './Router';
+import { router } from './router';
 import { ConfigContext, TakaroConfig, getConfigVar } from 'context/configContext';
 import { EnvVars } from 'EnvVars';
 import '@ory/elements/style.css';
@@ -44,7 +45,7 @@ function App() {
           <SnackbarProvider>
             <QueryClientProvider client={queryClient}>
               <GlobalStyle />
-              <Router />
+              <RouterProvider router={router} />
               {
                 // React query devtools are only included in bundles with NODE_ENV === 'development'.
                 // No need to manually exclude them.

@@ -1,7 +1,6 @@
 import { FC, useEffect, useMemo, useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { useParams, useNavigate, Outlet } from 'react-router-dom';
 import { SandpackProvider, SandpackFiles } from '@codesandbox/sandpack-react';
-import { useParams, useNavigate } from 'react-router-dom';
 import { CommandOutputDTO, CronJobOutputDTO, HookOutputDTO } from '@takaro/apiclient';
 import { FunctionType, ModuleContext, ModuleData, ModuleItemProperties } from '../context/moduleContext';
 import { useModule } from 'queries/modules';
@@ -38,13 +37,25 @@ export const StudioFrame: FC = () => {
   const { moduleId } = useParams();
   const navigate = useNavigate();
   const { data: mod, isSuccess, isError, isLoading } = useModule(moduleId!);
-
   const [moduleData, setModuleData] = useState<ModuleData>({
     fileMap: {},
     id: '',
     name: '',
     isBuiltIn: false,
   });
+
+  // Ideally, we should only block when there are unsaved changes but for that we should first get rid of sandpack.
+  useEffect(() => {
+    function handleOnBeforeUnload(event: BeforeUnloadEvent) {
+      event.preventDefault();
+      console.log('this fired');
+      return (event.returnValue = '');
+    }
+    window.addEventListener('beforeunload', handleOnBeforeUnload, { capture: true });
+    return () => {
+      window.removeEventListener('beforeunload', handleOnBeforeUnload, { capture: true });
+    };
+  }, []);
 
   const providerModuleData = useMemo(() => ({ moduleData, setModuleData }), [moduleData, setModuleData]);
 
