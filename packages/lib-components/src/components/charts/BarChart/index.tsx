@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState } from 'react';
+
 import { Bar } from '@visx/shape';
 import { Group } from '@visx/group';
 import { GridRows } from '@visx/grid';
@@ -9,10 +10,11 @@ import { Bounds } from '@visx/brush/lib/types';
 import { AxisBottom, AxisLeft } from '@visx/axis';
 import { Brush } from '@visx/brush';
 import { PatternLines } from '@visx/pattern';
+import { shade } from 'polished';
 
-import { ChartProps, InnerChartProps, Margin } from '..';
 import { useGradients } from '../useGradients';
 import { useTheme } from '../../../hooks';
+import { ChartProps, InnerChartProps, Margin } from '../util';
 import { BrushHandle } from '../BrushHandle';
 
 export interface BarChartProps<T> extends ChartProps {
@@ -24,8 +26,8 @@ export interface BarChartProps<T> extends ChartProps {
   brushMargin?: Margin;
 }
 
-const defaultMargin = { top: 40, right: 0, bottom: 0, left: 0 };
-const defaultBrushMargin = { top: 0, bottom: 20, left: 10, right: 10 };
+const defaultMargin = { top: 20, left: 50, bottom: 20, right: 20 };
+const defaultBrushMargin = { top: 10, bottom: 15, left: 50, right: 20 };
 const defaultShowAxisX = true;
 const defaultShowAxisY = true;
 const defaultShowGrid = true;
@@ -197,7 +199,8 @@ const Chart = <T,>({
               y={yMax - barHeight}
               width={barWidth}
               height={barHeight}
-              fill={`url(#${gradients.chart.id})`}
+              fill={shade(0.5, theme.colors.primary)}
+              stroke={theme.colors.primary}
             />
           );
         })}
@@ -254,7 +257,7 @@ const Chart = <T,>({
               id={PATTERN_ID}
               height={8}
               width={8}
-              stroke={theme.colors.tertiary}
+              stroke={theme.colors.backgroundAccent}
               strokeWidth={1}
               orientation={['diagonal']}
             />
@@ -270,7 +273,7 @@ const Chart = <T,>({
               onChange={onBrushChange}
               selectedBoxStyle={{
                 fill: `url(#${PATTERN_ID})`,
-                stroke: theme.colors.tertiary,
+                stroke: theme.colors.backgroundAccent,
               }}
               useWindowMoveEvents
               handleSize={8}

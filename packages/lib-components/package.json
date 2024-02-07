@@ -22,6 +22,7 @@
     "@types/jest": "^28.1.6",
     "@types/react-window": "^1.8.5",
     "@types/styled-components": "^5.1.25",
+    "@types/topojson-client": "^3.1.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "sort-package-json": "^1.53.1",
@@ -57,6 +58,22 @@
     "simplebar-react": "^3.2.4",
     "styled-components": "^5.3.5",
     "web-vitals": "^2.1.2",
-    "@visx/visx": "^3.6.1"
+    "@visx/scale": "^3.5.0",
+    "@visx/responsive": "^3.3.0",
+    "@visx/group": "^3.3.0",
+    "@visx/heatmap": "^3.3.0",
+    "@visx/tooltip": "^3.3.0",
+    "@visx/event": "^3.3.0",
+    "@visx/shape": "^3.5.0",
+    "@visx/grid": "^3.5.0",
+    "@visx/vendor": "^3.5.0",
+    "@visx/brush": "^3.6.1",
+    "@visx/axis": "^3.5.0",
+    "@visx/pattern": "3.3.0",
+    "@visx/curve": "^3.3.0",
+    "@visx/gradient": "^3.3.0",
+    "@visx/mock-data": "^3.3.0",
+    "@visx/geo": "3.5.0",
+    "topojson-client": "^3.1.0"
   }
 }
