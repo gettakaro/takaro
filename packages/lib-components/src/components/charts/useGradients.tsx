@@ -14,7 +14,13 @@ export const useGradients = (name: string) => {
   );
 
   const areaGradient = (
-    <LinearGradient id={AREA_GRADIENT_ID} from={theme.colors.primary} to={theme.colors.primary} toOpacity={0.2} />
+    <LinearGradient
+      id={AREA_GRADIENT_ID}
+      from={theme.colors.primary}
+      to={theme.colors.primary}
+      fromOpacity={0.6}
+      toOpacity={0.2}
+    />
   );
 
   // Returning both gradient elements and their IDs
