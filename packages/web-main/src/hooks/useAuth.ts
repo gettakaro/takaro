@@ -38,6 +38,7 @@ export function useAuth() {
     isError,
     error,
   } = useQuery<UserOutputWithRolesDTO, AxiosError<UserOutputWithRolesDTO>>({
+    staleTime: 5 * 60 * 1000,
     queryKey: ['session'],
     queryFn: async () =>
       (
@@ -48,7 +49,6 @@ export function useAuth() {
         })
       ).data.data,
     retry: 0,
-    gcTime: 0,
   });
 
   if (!cachedClient) {
@@ -58,6 +58,7 @@ export function useAuth() {
   async function logOut(): Promise<void> {
     if (!cachedClient) cachedClient = createClient(config);
     const logoutFlowRes = await cachedClient.createBrowserLogoutFlow();
+    localStorage.removeItem('selectedGameServerId');
     cachedClient = null;
     queryClient.clear();
     window.location.href = logoutFlowRes.data.logout_url;

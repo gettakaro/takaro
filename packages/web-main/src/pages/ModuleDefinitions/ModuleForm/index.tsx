@@ -14,10 +14,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { validationSchema } from './validationSchema';
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from 'paths';
-import { ModuleOutputDTO, ModuleOutputDTOAPI, PermissionCreateDTO } from '@takaro/apiclient';
+import { ModuleOutputDTO, PermissionCreateDTO } from '@takaro/apiclient';
 import { PermissionList, ButtonContainer } from './style';
 import { AiOutlinePlus as PlusIcon } from 'react-icons/ai';
-import { AxiosError } from 'axios';
 import { AnyInput, InputType } from '../schemaConversion/inputTypes';
 import { schemaToInputs } from '../schemaConversion/SchemaToInputs';
 import { inputsToSchema, inputsToUiSchema } from '../schemaConversion/inputsToSchema';
@@ -43,16 +42,17 @@ export interface ModuleFormSubmitProps {
 
 interface ModuleFormProps {
   mod?: ModuleOutputDTO;
-  isLoading: boolean;
-  isSuccess: boolean;
-  onSubmit: (data: ModuleFormSubmitProps) => void;
-  error: AxiosError<ModuleOutputDTOAPI, any> | null;
+  isLoading?: boolean;
+  isSuccess?: boolean;
+  onSubmit?: (data: ModuleFormSubmitProps) => void;
+  error: string | string[] | null;
 }
 
-export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLoading, error }) => {
+export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess = false, onSubmit, isLoading = false, error }) => {
   const [open, setOpen] = useState(true);
   const navigate = useNavigate();
   const theme = useTheme();
+  const readOnly = !onSubmit;
 
   useEffect(() => {
     if (!open) {
@@ -106,7 +106,7 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
   const submitHandler: SubmitHandler<IFormInputs> = ({ configFields, name, description, permissions }) => {
     const schema = inputsToSchema(configFields);
     const uiSchema = inputsToUiSchema(configFields);
-    onSubmit({
+    onSubmit!({
       name,
       description,
       permissions,
@@ -115,10 +115,17 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
     });
   };
 
+  function getTitle() {
+    if (mod) {
+      return readOnly ? 'View module' : 'Edit module';
+    }
+    return 'Create module';
+  }
+
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <Drawer.Content>
-        <Drawer.Heading>Edit Module</Drawer.Heading>
+        <Drawer.Heading>{getTitle()}</Drawer.Heading>
         <Drawer.Body>
           <form id="module-definition" onSubmit={handleSubmit(submitHandler)}>
             <CollapseList>
@@ -130,6 +137,7 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
                   name="name"
                   placeholder="My cool module"
                   required
+                  readOnly={readOnly}
                 />
                 <TextAreaField
                   control={control}
@@ -137,6 +145,7 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
                   placeholder="My module does cool things"
                   loading={isLoading}
                   name="description"
+                  readOnly={readOnly}
                 />
               </CollapseList.Item>
 
@@ -162,35 +171,38 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
                         id={field.id}
                         remove={removePermissionField}
                         key={field.id}
+                        readOnly={readOnly}
                         index={index}
                       />
                     ))}
                   </PermissionList>
                 )}
 
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    marginTop: theme.spacing['1'],
-                    marginBottom: theme.spacing['2'],
-                  }}
-                >
-                  <Button
-                    variant="outline"
-                    fullWidth
-                    icon={<PlusIcon />}
-                    onClick={(_e) => {
-                      addPermissionField({
-                        permission: `Permission ${permissionFields.length + 1}`,
-                        description: '',
-                        friendlyName: '',
-                      });
+                {!readOnly && (
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      marginTop: theme.spacing['1'],
+                      marginBottom: theme.spacing['2'],
                     }}
-                    type="button"
-                    text="Create new permission"
-                  />
-                </div>
+                  >
+                    <Button
+                      variant="outline"
+                      fullWidth
+                      icon={<PlusIcon />}
+                      onClick={(_e) => {
+                        addPermissionField({
+                          permission: `PERMISSION_${permissionFields.length + 1}`,
+                          description: '',
+                          friendlyName: '',
+                        });
+                      }}
+                      type="button"
+                      text="Create new permission"
+                    />
+                  </div>
+                )}
               </CollapseList.Item>
 
               <CollapseList.Item
@@ -226,6 +238,7 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
                         input={field as any} /* TODO: fix this type*/
                         control={control}
                         index={index}
+                        readOnly={readOnly}
                         remove={removeConfigField}
                         resetField={resetField}
                       />
@@ -234,31 +247,33 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
                   );
                 })}
 
-                <div
-                  style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    marginTop: theme.spacing['1'],
-                    marginBottom: theme.spacing['2'],
-                  }}
-                >
-                  <Button
-                    text="Create new config field"
-                    type="button"
-                    icon={<PlusIcon />}
-                    variant="outline"
-                    color="primary"
-                    fullWidth
-                    onClick={() => {
-                      addConfigField({
-                        name: `Config field ${configFields.length + 1}`,
-                        type: InputType.text,
-                        description: '',
-                        required: false,
-                      });
+                {!readOnly && (
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      marginTop: theme.spacing['1'],
+                      marginBottom: theme.spacing['2'],
                     }}
-                  />
-                </div>
+                  >
+                    <Button
+                      text="Create new config field"
+                      type="button"
+                      icon={<PlusIcon />}
+                      variant="outline"
+                      color="primary"
+                      fullWidth
+                      onClick={() => {
+                        addConfigField({
+                          name: `Config field ${configFields.length + 1}`,
+                          type: InputType.text,
+                          description: '',
+                          required: false,
+                        });
+                      }}
+                    />
+                  </div>
+                )}
                 {/* TODO: There is currently a bug in react-hook-form regarding refine, which in our case breaks the 
         unique name validation. So for now we just add note to the user that the name must be unique 
         issue: https://github.com/react-hook-form/resolvers/issues/538#issuecomment-1504222680
@@ -269,10 +284,14 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess, onSubmit, isLo
           </form>
         </Drawer.Body>
         <Drawer.Footer>
-          <ButtonContainer>
-            <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
-            <Button type="submit" form="module-definition" fullWidth text="Save changes" />
-          </ButtonContainer>
+          {!readOnly ? (
+            <ButtonContainer>
+              <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
+              <Button type="submit" form="module-definition" fullWidth text="Save changes" />
+            </ButtonContainer>
+          ) : (
+            <Button text="Close view" fullWidth onClick={() => setOpen(false)} color="primary" />
+          )}
         </Drawer.Footer>
       </Drawer.Content>
     </Drawer>

@@ -1,19 +1,9 @@
-import { styled, Popover, IconButton, Button, TextField, FormError, errors, Alert } from '@takaro/lib-components';
-import { AiOutlineCopy as CopyIcon } from 'react-icons/ai';
+import { styled, Popover, IconButton } from '@takaro/lib-components';
+import { CopyModuleForm } from 'components/CopyModuleForm';
 import { useModule } from 'hooks/useModule';
-import { useForm, SubmitHandler } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { AiOutlineCopy as CopyIcon, AiOutlineLink as LinkIcon } from 'react-icons/ai';
 import { useSnackbar } from 'notistack';
-import { z } from 'zod';
-import {
-  useCommandCreate,
-  useCronJobCreate,
-  useHookCreate,
-  useModuleCreate,
-  useModule as useModuleApi,
-  useModuleRemove,
-} from 'queries/modules';
 import { PATHS } from 'paths';
 import { useState } from 'react';
 
@@ -28,148 +18,70 @@ const PopoverHeading = styled.div`
   justify-content: space-between;
   margin-bottom: ${({ theme }) => theme.spacing[1]};
 `;
-interface FormInputs {
-  newName: string;
-}
 
-export const validationSchema = z.object({
-  newName: z
-    .string()
-    .min(4, {
-      message: 'Module name requires a minimum length of 4 characters',
-    })
-    .max(25, {
-      message: 'Module name requires a maximum length of 25 characters',
-    })
-    .nonempty('Module name cannot be empty'),
-});
+const CustomContent = styled.div`
+  h4 {
+    font-size: 1.2rem;
+  }
+  p {
+    display: flex;
+    align-items: center;
+
+    div {
+      cursor: pointer;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+    svg {
+      margin-right: 0.5rem;
+    }
+  }
+`;
 
 export const CopyModulePopOver = () => {
+  const [open, setOpen] = useState<boolean>(false);
   const { moduleData } = useModule();
-  const { data: mod } = useModuleApi(moduleData.id);
-  const { mutateAsync: createModule, isPending: moduleCreateLoading, error: moduleCreateError } = useModuleCreate();
-  const { mutateAsync: createHook, isPending: hookCreateLoading } = useHookCreate();
-  const { mutateAsync: createCommand, isPending: commandCreateLoading } = useCommandCreate();
-  const { mutateAsync: createCronJob, isPending: cronJobCreateLoading } = useCronJobCreate();
-  const { mutateAsync: removeModule, isPending: moduleRemoveLoading } = useModuleRemove();
-  const { enqueueSnackbar } = useSnackbar();
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const navigate = useNavigate();
-  const [error, setError] = useState<string | null>(null);
 
-  const { control, handleSubmit } = useForm<FormInputs>({
-    defaultValues: {
-      newName: `${moduleData.name}-copy`,
-    },
-    resolver: zodResolver(validationSchema),
-  });
-
-  const onSubmit: SubmitHandler<FormInputs> = async ({ newName }) => {
-    if (!mod) {
-      setError('Failed to copy module');
-      return;
-    }
-
-    const createdModule = await createModule({ name: newName, configSchema: mod.configSchema });
-
-    if (moduleCreateError) {
-      const err = errors.defineErrorType(moduleCreateError);
-
-      if (err instanceof errors.UniqueConstraintError) {
-        setError('Module name already exists');
-      } else {
-        setError('Failed to copy module');
-      }
-    }
-
-    try {
-      if (!moduleCreateError) {
-        await Promise.all([
-          Promise.all(
-            mod.hooks.map((hook) =>
-              createHook({
-                moduleId: createdModule.id,
-                name: hook.name,
-                eventType: hook.eventType,
-                regex: hook.regex ?? '',
-                function: hook.function.code,
-              })
-            )
-          ),
-          Promise.all(
-            mod.commands.map((command) =>
-              createCommand({
-                moduleId: createdModule.id,
-                name: command.name,
-                trigger: command.trigger,
-                helpText: command.helpText,
-                function: command.function.code,
-                arguments: command.arguments.map((arg) => ({
-                  name: arg.name,
-                  type: arg.type,
-                  helpText: arg.helpText,
-                  position: arg.position,
-                })),
-              })
-            )
-          ),
-          Promise.all(
-            mod.cronJobs.map((cronJob) =>
-              createCronJob({
-                moduleId: createdModule.id,
-                name: cronJob.name,
-                temporalValue: cronJob.temporalValue,
-                function: cronJob.function.code,
-              })
-            )
-          ),
-        ]);
-        enqueueSnackbar('Module copied successfully. ', { variant: 'default', type: 'success' });
-        navigate(PATHS.studio.module(createdModule.id));
-      }
-    } catch (error) {
-      await removeModule({ id: createdModule.id });
-    }
+  const handleSuccess = (moduleId: string) => {
+    enqueueSnackbar('Module copied', {
+      key: 'snack-module-copied',
+      anchorOrigin: { horizontal: 'right', vertical: 'bottom' },
+      variant: 'drawer',
+      children: (
+        <CustomContent>
+          <h4>Module copied</h4>
+          <p>
+            <LinkIcon />
+            <div
+              onClick={() => {
+                navigate(PATHS.studio.module(moduleId));
+                closeSnackbar('snack-module-copied');
+              }}
+            >
+              open new module
+            </div>
+          </p>
+        </CustomContent>
+      ),
+    });
+    setOpen(false);
   };
 
   return (
-    <Popover placement="bottom">
+    <Popover placement="bottom" onOpenChange={setOpen} open={open}>
       <Popover.Trigger asChild>
-        <IconButton icon={<CopyIcon />} ariaLabel="Make copy of module" />
+        <IconButton icon={<CopyIcon />} onClick={() => setOpen(!open)} ariaLabel="Make copy of module" />
       </Popover.Trigger>
       <Popover.Content>
         <PopoverBody>
           <PopoverHeading>
             <h2>Copy module</h2>
           </PopoverHeading>
-          <Alert
-            variant="info"
-            text="Copying a module copies commands with their original name. Leading to a simultaneous trigger if both modules are installed."
-          />
-
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <TextField
-              control={control}
-              name="newName"
-              placeholder="New Module Name"
-              label="New Module Name"
-              description="The copied module will contain all the same hooks, commands, and cron jobs as the original module."
-              required
-            />
-            <Button
-              isLoading={
-                moduleCreateLoading ||
-                hookCreateLoading ||
-                commandCreateLoading ||
-                cronJobCreateLoading ||
-                moduleRemoveLoading
-              }
-              type="submit"
-              icon={<CopyIcon />}
-              text="Copy Module"
-              fullWidth
-            />
-          </form>
-          {error && <FormError message={error} />}
+          <CopyModuleForm moduleId={moduleData.id} onSuccess={handleSuccess} />
         </PopoverBody>
       </Popover.Content>
     </Popover>

@@ -10,6 +10,7 @@ import { Type } from 'class-transformer';
 import { PlayerRoleAssignmentOutputDTO, RoleService } from './RoleService.js';
 import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
 import { IGamePlayer, TakaroEventCurrencyAdded, TakaroEventCurrencyDeducted } from '@takaro/modules';
+import { PlayerService } from './PlayerService.js';
 
 export class PlayerOnGameserverOutputDTO extends TakaroModelDTO<PlayerOnGameserverOutputDTO> {
   @IsString()
@@ -171,8 +172,14 @@ export class PlayerOnGameServerService extends TakaroService<
   }
 
   async resolveRef(ref: IPlayerReferenceDTO, gameserverId: string): Promise<PlayerOnGameserverOutputWithRolesDTO> {
-    const player = await this.repo.resolveRef(ref, gameserverId);
-    return this.findOne(player.id);
+    const pog = await this.repo.resolveRef(ref, gameserverId);
+
+    // This is a bit weird, it's not necessary to resolve the player here
+    // But this triggers role-expiry logic...
+    const playerService = new PlayerService(this.domainId);
+    await playerService.findOne(pog.playerId);
+
+    return this.findOne(pog.id);
   }
 
   async getRef(playerId: string, gameserverId: string): Promise<PlayerOnGameserverOutputDTO> {

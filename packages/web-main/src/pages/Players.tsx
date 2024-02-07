@@ -77,7 +77,6 @@ const Players: FC = () => {
         if (!name) return '';
 
         const player = info.row.original;
-
         return <Player playerId={player.id} name={player.name} showAvatar={true} avatarUrl={player.steamAvatar} />;
       },
       enableColumnFilter: true,
@@ -86,7 +85,7 @@ const Players: FC = () => {
     columnHelper.accessor('steamId', {
       header: 'Steam ID',
       id: 'steamId',
-      cell: (info) => <CopyId placeholder="Steam ID" id={info.getValue()} />,
+      cell: (info) => <CopyId placeholder={info.getValue()} id={info.getValue()} />,
       enableColumnFilter: true,
     }),
 

@@ -8,7 +8,6 @@ import { FunctionType, setExtraLibs } from './customTypes';
 import { defineTheme } from './theme';
 import { useFunctionUpdate } from 'queries/modules/queries';
 import { useSnackbar } from 'notistack';
-import * as Sentry from '@sentry/react';
 import { Button, Tooltip } from '@takaro/lib-components';
 import { AiFillSave as SaveIcon } from 'react-icons/ai';
 
@@ -72,7 +71,6 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
       }
     } catch (e) {
       enqueueSnackbar('Something went wrong while saving the file', { variant: 'default', type: 'error' });
-      Sentry.captureException(e);
     }
   };
 

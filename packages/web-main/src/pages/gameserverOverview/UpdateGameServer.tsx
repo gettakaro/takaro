@@ -1,22 +1,31 @@
-import { FC, useEffect, useMemo, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { Button, SelectField, TextField, Drawer, CollapseList, FormError, errors } from '@takaro/lib-components';
+import {
+  Button,
+  SelectField,
+  TextField,
+  Drawer,
+  CollapseList,
+  FormError,
+  DrawerSkeleton,
+} from '@takaro/lib-components';
 import { ButtonContainer } from './style';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   GameServerCreateDTOTypeEnum,
+  GameServerOutputDTO,
   MockConnectionInfo,
   RustConnectionInfo,
   SdtdConnectionInfo,
 } from '@takaro/apiclient';
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from 'paths';
-import * as Sentry from '@sentry/react';
-import { useGameServerCreate, useGameServerReachabilityByConfig } from 'queries/gameservers';
+import { useParams } from 'react-router-dom';
+import { useGameServer } from 'queries/gameservers';
+import { useGameServerReachabilityByConfig, useGameServerUpdate } from 'queries/gameservers/queries';
 import { connectionInfoFieldsMap } from './connectionInfoFieldsMap';
 import { validationSchema } from './validationSchema';
 import { gameTypeSelectOptions } from './GameTypeSelectOptions';
-import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 
 export interface IFormInputs {
   name: string;
@@ -24,14 +33,33 @@ export interface IFormInputs {
   connectionInfo: MockConnectionInfo | RustConnectionInfo | SdtdConnectionInfo;
 }
 
-const CreateGameServer: FC = () => {
+export const UpdateGameServer = () => {
+  const { serverId } = useParams() as { serverId: string };
+  const { data, isLoading } = useGameServer(serverId);
+
+  if (isLoading) {
+    return <DrawerSkeleton />;
+  }
+
+  if (!data || !serverId) {
+    return <>something went wrong</>;
+  }
+
+  return <UpdateGameServerForm data={data} serverId={serverId} />;
+};
+
+interface Props {
+  data: GameServerOutputDTO;
+  serverId: string;
+}
+
+const UpdateGameServerForm: FC<Props> = ({ data, serverId }) => {
   const [open, setOpen] = useState(true);
-  const [reachabilityError, setReachabilityError] = useState<string | null>(null);
-  const [connectionOk, setConnectionOk] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const { mutateAsync, isPending, error: gameServerCreateError } = useGameServerCreate();
+  const { mutateAsync, isPending, error: gameServerUpdateError } = useGameServerUpdate();
   const { mutateAsync: testReachabilityMutation, isPending: testingConnection } = useGameServerReachabilityByConfig();
-  const { setSelectedGameServerId } = useSelectedGameServer();
+  const [connectionOk, setConnectionOk] = useState<boolean>(false);
 
   useEffect(() => {
     if (!open) {
@@ -40,35 +68,25 @@ const CreateGameServer: FC = () => {
   }, [open, navigate]);
 
   const { control, handleSubmit, watch } = useForm<IFormInputs>({
-    mode: 'onSubmit',
+    mode: 'onChange',
     resolver: zodResolver(validationSchema),
+    defaultValues: {
+      type: data.type,
+      name: data.name,
+      connectionInfo: data?.connectionInfo,
+    },
   });
 
-  const parsedGameServerCreateError = useMemo(() => {
-    if (gameServerCreateError) {
-      const err = errors.defineErrorType(gameServerCreateError);
-
-      if (err instanceof errors.UniqueConstraintError) {
-        return 'A server with this name already exists.';
-      }
-      return;
-    }
-  }, [gameServerCreateError]);
-
-  const onSubmit: SubmitHandler<IFormInputs> = async ({ type, connectionInfo, name }) => {
-    try {
-      const newGameServer = await mutateAsync({
-        type,
+  const onSubmit: SubmitHandler<IFormInputs> = async ({ name, connectionInfo }) => {
+    await mutateAsync({
+      gameServerId: serverId,
+      gameServerDetails: {
         name,
+        type: data.type,
         connectionInfo: JSON.stringify(connectionInfo),
-      });
-
-      // set the new gameserver as selected.
-      setSelectedGameServerId(newGameServer.id);
-      navigate(PATHS.gameServers.overview());
-    } catch (error) {
-      Sentry.captureException(error);
-    }
+      },
+    });
+    navigate(PATHS.gameServers.overview());
   };
 
   const { type, connectionInfo, name } = watch();
@@ -81,19 +99,19 @@ const CreateGameServer: FC = () => {
 
     if (response.connectable) {
       setConnectionOk(true);
-      setReachabilityError(null);
+      setError(null);
     } else {
-      setReachabilityError(response.reason || 'Connection error');
+      setError(response.reason || 'Connection error');
     }
   };
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <Drawer.Content>
-        <Drawer.Heading>Create Game Server</Drawer.Heading>
+        <Drawer.Heading>Edit Game Server</Drawer.Heading>
         <Drawer.Body>
           <CollapseList>
-            <form onSubmit={handleSubmit(onSubmit)} id="create-game-server-form">
+            <form onSubmit={handleSubmit(onSubmit)} id="update-game-server-form">
               <CollapseList.Item title="General">
                 <TextField
                   control={control}
@@ -103,13 +121,13 @@ const CreateGameServer: FC = () => {
                   placeholder="My cool server"
                   required
                 />
-
                 <SelectField
                   control={control}
                   name="type"
                   label="Game Server"
                   required
                   loading={isPending}
+                  readOnly
                   render={(selectedItems) => {
                     if (selectedItems.length === 0) {
                       return <div>Select...</div>;
@@ -128,19 +146,17 @@ const CreateGameServer: FC = () => {
                   </SelectField.OptionGroup>
                 </SelectField>
               </CollapseList.Item>
-              {type !== undefined && (
-                <CollapseList.Item title="Connection info">
-                  {connectionInfoFieldsMap(isPending, control)[type]}
-                </CollapseList.Item>
-              )}
-              {reachabilityError && <FormError message={reachabilityError} />}
-              {parsedGameServerCreateError && <FormError message={parsedGameServerCreateError} />}
+              <CollapseList.Item title="Connection info">
+                {connectionInfoFieldsMap(isPending, control)[data.type]}
+              </CollapseList.Item>
             </form>
           </CollapseList>
+          {error && <FormError error={error} />}
+          {gameServerUpdateError && <FormError error={gameServerUpdateError} />}
         </Drawer.Body>
         <Drawer.Footer>
           <ButtonContainer>
-            <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
+            <Button text="Cancel" onClick={() => setOpen(false)} color="background" type="button" />
             <Button fullWidth isLoading={testingConnection} onClick={clickTestReachability} text="Test connection" />
             {connectionOk && (
               <Button
@@ -162,5 +178,3 @@ const CreateGameServer: FC = () => {
     </Drawer>
   );
 };
-
-export default CreateGameServer;

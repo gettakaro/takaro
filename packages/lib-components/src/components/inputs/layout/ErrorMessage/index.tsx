@@ -1,6 +1,7 @@
 import { FC, useEffect, useRef, useState } from 'react';
 import { styled } from '../../../../styled';
 import { motion } from 'framer-motion';
+import { shade } from 'polished';
 
 const Container = styled(motion.div)<{ $isWrapped: boolean }>`
   position: absolute;
@@ -10,8 +11,9 @@ const Container = styled(motion.div)<{ $isWrapped: boolean }>`
   left: 0;
   width: 100%;
   height: auto;
-  background-color: ${({ theme }): string => theme.colors.error};
+  background-color: ${({ theme }): string => shade(0.5, theme.colors.error)};
   overflow: hidden;
+  border: 1px solid ${({ theme }) => theme.colors.error};
   border-radius: ${({ theme }) => theme.borderRadius.small};
   z-index: ${({ theme }) => theme.zIndex.errorMessage};
   top: 100%;
@@ -30,8 +32,9 @@ const Content = styled.span`
   color: white;
   font-weight: 500;
   line-height: 1.2;
-  min-height: ${({ theme }) => theme.spacing[4]};
+  min-height: ${({ theme }) => theme.spacing['2_5']};
   white-space: normal;
+  hyphens: auto;
 `;
 
 export interface ErrorMessageProps {

@@ -1,7 +1,14 @@
-import { APIOutput, SettingsOutputDTO, SettingsOutputDTOAPI, SettingsOutputDTOKeyEnum } from '@takaro/apiclient';
+import {
+  APIOutput,
+  SettingsOutputArrayDTOAPI,
+  SettingsOutputDTO,
+  SettingsOutputDTOAPI,
+  SettingsOutputDTOKeyEnum,
+} from '@takaro/apiclient';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useApiClient } from 'hooks/useApiClient';
 import { AxiosError } from 'axios';
+import { mutationWrapper } from 'queries/util';
 
 export const settingKeys = {
   all: ['settings'] as const,
@@ -56,15 +63,18 @@ export const useDeleteGameServerSetting = () => {
   let deletedSettingKey: string | undefined;
   let deletedGameServerId: string | undefined;
 
-  return useMutation<APIOutput, AxiosError<APIOutput>, GameServerDeleteSettingInput>({
-    mutationFn: async ({ key, gameServerId }) => {
-      deletedGameServerId = gameServerId;
-      return (await apiClient.settings.settingsControllerDelete(key, gameServerId)).data;
-    },
-    onSuccess: async () => {
-      queryClient.invalidateQueries({ queryKey: settingKeys.detail(deletedSettingKey!, deletedGameServerId!) });
-    },
-  });
+  return mutationWrapper<SettingsOutputArrayDTOAPI, GameServerDeleteSettingInput>(
+    useMutation<APIOutput, AxiosError<APIOutput>, GameServerDeleteSettingInput>({
+      mutationFn: async ({ key, gameServerId }) => {
+        deletedGameServerId = gameServerId;
+        return (await apiClient.settings.settingsControllerDelete(key, gameServerId)).data;
+      },
+      onSuccess: async () => {
+        queryClient.invalidateQueries({ queryKey: settingKeys.detail(deletedSettingKey!, deletedGameServerId!) });
+      },
+    }),
+    {}
+  );
 };
 
 interface SetGlobalSettingInput {
@@ -76,16 +86,19 @@ export const useSetGlobalSetting = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation<APIOutput, AxiosError<APIOutput>, SetGlobalSettingInput>({
-    mutationFn: async ({ key, value }) => {
-      return (await apiClient.settings.settingsControllerSet(key, { value: value })).data;
-    },
-    onSuccess: async () => {
-      // we need to invalidate the specific global setting and the entire list
-      // also all gameserver settings because these might be affected by the global setting change
-      queryClient.invalidateQueries({ queryKey: settingKeys.all });
-    },
-  });
+  return mutationWrapper<APIOutput, SetGlobalSettingInput>(
+    useMutation<APIOutput, AxiosError<APIOutput>, SetGlobalSettingInput>({
+      mutationFn: async ({ key, value }) => {
+        return (await apiClient.settings.settingsControllerSet(key, { value: value })).data;
+      },
+      onSuccess: async () => {
+        // we need to invalidate the specific global setting and the entire list
+        // also all gameserver settings because these might be affected by the global setting change
+        queryClient.invalidateQueries({ queryKey: settingKeys.all });
+      },
+    }),
+    {}
+  );
 };
 
 interface SetGameServerSettingInput {
@@ -101,17 +114,20 @@ export const useSetGameServerSetting = () => {
   let updatedGameServerId: string | undefined;
   let updatedSettingKey: string | undefined;
 
-  return useMutation<APIOutput, AxiosError<APIOutput>, SetGameServerSettingInput>({
-    mutationFn: async ({ key, gameServerId, value }) => {
-      updatedGameServerId = gameServerId;
-      updatedSettingKey = key;
+  return mutationWrapper<APIOutput, SetGameServerSettingInput>(
+    useMutation<APIOutput, AxiosError<APIOutput>, SetGameServerSettingInput>({
+      mutationFn: async ({ key, gameServerId, value }) => {
+        updatedGameServerId = gameServerId;
+        updatedSettingKey = key;
 
-      return (await apiClient.settings.settingsControllerSet(key, { gameServerId: gameServerId, value: value })).data;
-    },
-    onSuccess: async () => {
-      // invalidate the gameserver settings list and the specific setting key of the gameserver
-      queryClient.invalidateQueries({ queryKey: settingKeys.listGameServer(updatedGameServerId!) });
-      queryClient.invalidateQueries({ queryKey: settingKeys.detail(updatedSettingKey!, updatedGameServerId!) });
-    },
-  });
+        return (await apiClient.settings.settingsControllerSet(key, { gameServerId: gameServerId, value: value })).data;
+      },
+      onSuccess: async () => {
+        // invalidate the gameserver settings list and the specific setting key of the gameserver
+        queryClient.invalidateQueries({ queryKey: settingKeys.listGameServer(updatedGameServerId!) });
+        queryClient.invalidateQueries({ queryKey: settingKeys.detail(updatedSettingKey!, updatedGameServerId!) });
+      },
+    }),
+    {}
+  );
 };

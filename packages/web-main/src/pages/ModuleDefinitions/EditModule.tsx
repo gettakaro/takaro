@@ -5,6 +5,7 @@ import { ModuleForm, ModuleFormSubmitProps } from './ModuleForm';
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
 import { PATHS } from 'paths';
+import { DrawerSkeleton } from '@takaro/lib-components';
 
 const EditModule: FC = () => {
   // moduleId is awlays set to reach this component.
@@ -15,7 +16,7 @@ const EditModule: FC = () => {
   const navigate = useNavigate();
 
   if (isLoading || !data) {
-    return <div>Loading...</div>;
+    return <DrawerSkeleton />;
   }
 
   if (error) {

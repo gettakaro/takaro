@@ -5,6 +5,7 @@ import { styled } from '@takaro/lib-components';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { PATHS } from 'paths';
 import { GameServerSelect } from 'components/selects';
+import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 
 export const StyledForm = styled.form`
   div {
@@ -24,6 +25,7 @@ export const GameServerSelectNav: FC<GameServerSelectNavProps> = ({ serverId, se
   const navigate = useNavigate();
   const location = useLocation();
   const { data, isLoading } = useGameServers();
+  const { selectedGameServerId, setSelectedGameServerId } = useSelectedGameServer();
 
   const { control, watch, setValue } = useForm<FormFields>({
     mode: 'onChange',
@@ -61,10 +63,12 @@ export const GameServerSelectNav: FC<GameServerSelectNavProps> = ({ serverId, se
     setValue('gameServerId', serverId);
   }, [serverId]);
 
-  // if there is there < 1 server, don't show the dropdown
-  if (!data || !gameServers || (gameServers && gameServers.length <= 1)) {
-    return null;
+  if (gameServers && gameServers.length === 1 && (selectedGameServerId === '' || selectedGameServerId === undefined)) {
+    setSelectedGameServerId(gameServers[0].id);
   }
+
+  // if there is there is only 1 server, don't show the dropdown
+  if (!data || !gameServers || (gameServers && gameServers.length === 1)) return null;
 
   return <GameServerSelect loading={isLoading} control={control} name="gameServerId" />;
 };

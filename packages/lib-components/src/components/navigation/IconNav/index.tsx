@@ -16,9 +16,11 @@ const Container = styled.nav`
     align-items: center;
     width: 100%;
     padding: ${({ theme }) => theme.spacing[1]};
+    border: 1px solid transparent;
     border-radius: ${({ theme }) => theme.borderRadius.small};
     &:hover {
-      background-color: ${({ theme }) => theme.colors.primary};
+      background-color: ${({ theme }) => theme.colors.primaryShade};
+      border-color: ${({ theme }) => theme.colors.primary};
     }
   }
 `;

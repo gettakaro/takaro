@@ -1,4 +1,4 @@
-import { Button, Dialog } from '@takaro/lib-components';
+import { Button, Dialog, FormError } from '@takaro/lib-components';
 import { useVariableDelete } from 'queries/variables';
 import { FC } from 'react';
 
@@ -9,12 +9,12 @@ interface VariablesDeleteProps {
 }
 
 export const VariablesDeleteDialog: FC<VariablesDeleteProps> = ({ variableIds, openDialog, setOpenDialog }) => {
-  const { mutateAsync, isPending: isDeleting } = useVariableDelete();
+  const { mutateAsync, isPending: isDeleting, error } = useVariableDelete();
 
   const handleOnDelete = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
 
-    const deletePromises = variableIds.map((id) => mutateAsync(id));
+    const deletePromises = variableIds.map((id) => mutateAsync({ variableId: id }));
     await Promise.all(deletePromises);
     setOpenDialog(false);
   };
@@ -37,6 +37,7 @@ export const VariablesDeleteDialog: FC<VariablesDeleteProps> = ({ variableIds, o
             color="error"
           />
         </Dialog.Body>
+        {error && <FormError error={error} />}
       </Dialog.Content>
     </Dialog>
   );

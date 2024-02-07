@@ -1,35 +1,15 @@
+import { useState } from 'react';
 import { ThemeProvider } from 'styled-components';
 import { ThemeProvider as OryThemeProvider } from '@ory/elements';
-import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { GlobalStyle, SnackbarProvider, darkTheme } from '@takaro/lib-components';
 import { oryThemeOverrides } from './OryThemeOverrides';
 import { Router } from './Router';
-import { useState } from 'react';
 import { ConfigContext, TakaroConfig, getConfigVar } from 'context/configContext';
 import { EnvVars } from 'EnvVars';
-
 import '@ory/elements/style.css';
-import { AxiosError } from 'axios';
-
-export const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      // This is a temporary fix for the flashing behaviour in studio
-      refetchOnWindowFocus: false,
-      throwOnError: (error) => (error as AxiosError).response!.status >= 500,
-      retry: (failureCount, error) => {
-        // SPECIAL CASE: if there is no `status`, this is `network error` meaning axios could not connect to the server at all
-        if (!(error as AxiosError).status) {
-          return false;
-        }
-
-        // retry 3 times (failureCount goes up on every fail)
-        return (error as AxiosError).response!.status >= 500 && failureCount <= 2 ? true : false;
-      },
-    },
-  },
-});
+import { queryClient } from './queryClient';
 
 function App() {
   const [config, setConfig] = useState<TakaroConfig>();

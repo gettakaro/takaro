@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useApiClient } from 'hooks/useApiClient';
 import { GameServerSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
+import { useGameServerCreateFromCSMMImport } from 'queries/gameservers';
 
 export interface IFormInputs {
   importData: FileList;
@@ -23,10 +24,10 @@ const validationSchema = z.object({
 });
 export const ImportGameServer: FC = () => {
   const [open, setOpen] = useState(true);
-  const [importError, setError] = useState<Error | null>(null);
   const [jobStatus, setJobStatus] = useState<any | null>(null);
   const [jobId, setJobId] = useState<string | null>(null);
   const [refreshInterval, setRefreshInterval] = useState<number | null>(null);
+  const { mutateAsync, error: importError } = useGameServerCreateFromCSMMImport();
   const navigate = useNavigate();
   const api = useApiClient();
 
@@ -77,34 +78,17 @@ export const ImportGameServer: FC = () => {
     }
   }, [jobStatus]);
 
-  const { control, handleSubmit, watch } = useForm<IFormInputs>({
+  const { control, handleSubmit } = useForm<IFormInputs>({
     mode: 'onSubmit',
     resolver: zodResolver(validationSchema),
   });
 
   const onSubmit: SubmitHandler<IFormInputs> = async ({ importData }) => {
-    try {
-      const formData = new FormData();
-      formData.append('import.json', importData[0]);
-
-      const res = await api.gameserver.gameServerControllerImportFromCSMM({
-        data: formData,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-
-      setJobId(res.data.data.id);
-    } catch (error) {
-      if (error instanceof Error) {
-        setError(error);
-      } else {
-        setError(new Error('Unknown error'));
-      }
-    }
+    const formData = new FormData();
+    formData.append('import.json', importData[0]);
+    const job = await mutateAsync({ config: formData });
+    setJobId(job.id);
   };
-
-  const { importData } = watch();
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
@@ -132,21 +116,12 @@ export const ImportGameServer: FC = () => {
               control={control}
             />
           </form>
-          {<FormError error={importError} />}
+          {importError && <FormError error={importError} />}
           {jobStatus && jobStatus.status !== 'completed' && jobStatus.status !== 'failed' && <Spinner size="medium" />}
           {jobStatus && <pre>{JSON.stringify(jobStatus, null, 2)}</pre>}
         </Drawer.Body>
         <Drawer.Footer>
-          <Button
-            fullWidth
-            text="Submit"
-            onClick={() => {
-              onSubmit({
-                importData,
-              });
-            }}
-            form="create-game-server-form"
-          />
+          <Button fullWidth text="Submit" form="import-game-server-form" />
         </Drawer.Footer>
       </Drawer.Content>
     </Drawer>

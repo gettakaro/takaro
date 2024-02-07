@@ -260,6 +260,42 @@ const tests = [
     },
     filteredFields: ['moduleId'],
   }),
+  new IntegrationTest<ModuleOutputDTO>({
+    group,
+    snapshot: true,
+    name: 'Updating permission returns updated permission',
+    setup: async function () {
+      return (
+        await this.client.module.moduleControllerCreate({
+          name: 'Test module',
+          permissions: [testPermission],
+        })
+      ).data.data;
+    },
+    test: async function () {
+      await this.client.module.moduleControllerUpdate(this.setupData.id, {
+        permissions: [
+          {
+            permission: testPermission.permission,
+            description: 'new description',
+            friendlyName: 'new friendly name',
+            canHaveCount: false,
+          },
+        ],
+      });
+
+      const getRes = await this.client.module.moduleControllerGetOne(this.setupData.id);
+
+      expect(getRes.data.data.permissions).to.have.length(1);
+      expect(getRes.data.data.permissions[0].permission).to.equal(testPermission.permission);
+      expect(getRes.data.data.permissions[0].description).to.equal('new description');
+      expect(getRes.data.data.permissions[0].friendlyName).to.equal('new friendly name');
+      expect(getRes.data.data.permissions[0].canHaveCount).to.equal(false);
+
+      return getRes;
+    },
+    filteredFields: ['moduleId'],
+  }),
 ];
 
 describe(group, function () {

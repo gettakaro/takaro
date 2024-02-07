@@ -23,16 +23,18 @@ const baseConfigFieldShape = z.object({
     .optional(),
 });
 
+export const moduleNameShape = z
+  .string()
+  .min(4, {
+    message: 'Module name requires a minimum length of 4 characters',
+  })
+  .max(35, {
+    message: 'Module name requires a maximum length of 35 characters',
+  })
+  .nonempty('Module name cannot be empty');
+
 export const validationSchema = z.object({
-  name: z
-    .string()
-    .min(4, {
-      message: 'Module name requires a minimum length of 4 characters',
-    })
-    .max(25, {
-      message: 'Module name requires a maximum length of 25 characters',
-    })
-    .nonempty('Module name cannot be empty'),
+  name: moduleNameShape,
   description: z
     .string()
     .max(100, {
@@ -45,8 +47,9 @@ export const validationSchema = z.object({
         .string()
         .nonempty('Permission cannot be empty')
         .refine((val) => !val.includes(' '), 'Spaces are not allowed.'),
-      description: z.string().optional(),
-      friendlyName: z.string().optional(),
+      description: z.string(),
+      friendlyName: z.string(),
+      canHaveCount: z.boolean().optional(),
     })
   ),
   configFields: z

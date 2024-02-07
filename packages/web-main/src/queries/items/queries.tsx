@@ -10,11 +10,10 @@ import {
 import { useInfiniteQuery, useMutation, useQuery, keepPreviousData, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { useApiClient } from 'hooks/useApiClient';
-import { hasNextPage } from '../util';
+import { hasNextPage, mutationWrapper } from '../util';
 
 import { InfiniteScroll as InfiniteScrollComponent } from '@takaro/lib-components';
 import { useMemo } from 'react';
-import * as Sentry from '@sentry/react';
 
 export const itemKeys = {
   all: ['items'] as const,
@@ -63,13 +62,16 @@ export const useItemCreate = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation<ItemsOutputDTO, AxiosError<ItemsOutputDTO>, ItemCreateDTO>({
-    mutationFn: async (item) => (await apiClient.item.itemControllerCreate(item)).data.data,
-    onSuccess: (newItem) => {
-      queryClient.invalidateQueries({ queryKey: itemKeys.list() });
-      queryClient.setQueryData(itemKeys.detail(newItem.id), newItem);
-    },
-  });
+  return mutationWrapper<ItemsOutputDTO, ItemCreateDTO>(
+    useMutation<ItemsOutputDTO, AxiosError<ItemsOutputDTO>, ItemCreateDTO>({
+      mutationFn: async (item) => (await apiClient.item.itemControllerCreate(item)).data.data,
+      onSuccess: (newItem) => {
+        queryClient.invalidateQueries({ queryKey: itemKeys.list() });
+        queryClient.setQueryData(itemKeys.detail(newItem.id), newItem);
+      },
+    }),
+    {}
+  );
 };
 
 interface ItemDelete {
@@ -80,20 +82,19 @@ export const useGameServerRemove = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, ItemDelete>({
-    mutationFn: async ({ id }) => (await apiClient.item.itemControllerDelete(id)).data.data,
-    onSuccess: async (removedItem: IdUuidDTO) => {
-      try {
+  return mutationWrapper<IdUuidDTO, ItemDelete>(
+    useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, ItemDelete>({
+      mutationFn: async ({ id }) => (await apiClient.item.itemControllerDelete(id)).data.data,
+      onSuccess: async (removedItem: IdUuidDTO) => {
         await queryClient.invalidateQueries({ queryKey: itemKeys.list() });
 
         await queryClient.invalidateQueries({
           queryKey: itemKeys.detail(removedItem.id),
         });
-      } catch (e) {
-        Sentry.captureException(e);
-      }
-    },
-  });
+      },
+    }),
+    {}
+  );
 };
 
 interface ItemUpdate {
@@ -105,20 +106,19 @@ export const useGameServerUpdate = () => {
   const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
-  return useMutation<ItemsOutputDTO, AxiosError<ItemsOutputDTO>, ItemUpdate>({
-    mutationFn: async ({ itemId, itemDetails }: ItemUpdate) => {
-      return (await apiClient.item.itemControllerUpdate(itemId, itemDetails)).data.data;
-    },
-    onSuccess: async (updatedGameServer) => {
-      try {
+  return mutationWrapper<ItemsOutputDTO, ItemUpdate>(
+    useMutation<ItemsOutputDTO, AxiosError<ItemsOutputDTO>, ItemUpdate>({
+      mutationFn: async ({ itemId, itemDetails }: ItemUpdate) => {
+        return (await apiClient.item.itemControllerUpdate(itemId, itemDetails)).data.data;
+      },
+      onSuccess: async (updatedGameServer) => {
         // remove cache of gameserver list
         await queryClient.invalidateQueries({ queryKey: itemKeys.list() });
 
         // update cache of gameserver
         queryClient.setQueryData(itemKeys.detail(updatedGameServer.id), updatedGameServer);
-      } catch (e) {
-        Sentry.captureException(e);
-      }
-    },
-  });
+      },
+    }),
+    {}
+  );
 };

@@ -135,11 +135,7 @@ export class EventService extends TakaroService<EventModel, EventOutputDTO, Even
       eventMeta = await new dto().construct(data.meta);
     }
 
-    await eventMeta.validate({
-      forbidNonWhitelisted: false,
-      whitelist: true,
-      forbidUnknownValues: false,
-    });
+    await eventMeta.validate();
 
     const created = await this.repo.create(data);
 

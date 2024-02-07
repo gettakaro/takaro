@@ -1,9 +1,9 @@
 import { BuiltinModule } from '../../BuiltinModule.js';
 
-export class Economy extends BuiltinModule {
+export class EconomyUtils extends BuiltinModule {
   constructor() {
     super(
-      'economy',
+      'economyUtils',
       'A set of commands to allow players to manage their currency.',
       JSON.stringify({
         $schema: 'http://json-schema.org/draft-07/schema#',
@@ -24,7 +24,7 @@ export class Economy extends BuiltinModule {
 
     this.permissions = [
       {
-        permission: 'ECONOMY_MANAGE_CURRENCY',
+        permission: 'ECONOMY_UTILS_MANAGE_CURRENCY',
         friendlyName: 'Manage currency',
         description:
           'Allows players to manage currency of other players. This includes granting and revoking currency.',
