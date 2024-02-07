@@ -36,7 +36,7 @@ export const CronJobConfigForm: FC<CronJobConfigFormProps> = ({ cronjob, readOnl
   const { control, handleSubmit, formState } = useForm<FormInputs>({
     mode: 'onSubmit',
     resolver: zodResolver(validationSchema),
-    defaultValues: {
+    values: {
       temporalValue: cronjob.temporalValue,
     },
   });

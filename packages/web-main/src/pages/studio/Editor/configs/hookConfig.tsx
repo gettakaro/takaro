@@ -36,7 +36,7 @@ export const HookConfigForm: FC<HookConfigFormProps> = ({ readOnly = false, hook
   const { control, handleSubmit, formState } = useForm<FormInputs>({
     mode: 'onSubmit',
     resolver: zodResolver(validationSchema),
-    defaultValues: {
+    values: {
       regex: hook.regex,
       eventType: hook.eventType,
     },

@@ -103,7 +103,7 @@ export const CommandConfigForm: FC<CommandConfigFormProps> = ({ command, readOnl
   const { control, handleSubmit, formState, reset } = useForm<z.infer<typeof validationSchema>>({
     mode: 'onSubmit',
     resolver: zodResolver(validationSchema),
-    defaultValues: {
+    values: {
       trigger: command.trigger,
       helpText: command.helpText,
       arguments: command.arguments
@@ -115,7 +115,7 @@ export const CommandConfigForm: FC<CommandConfigFormProps> = ({ command, readOnl
             type: arg.type as 'string' | 'number' | 'boolean' | 'player',
             position: arg.position,
             helpText: arg.helpText,
-            defaultValue: arg.defaultValue,
+            defaultValue: arg.defaultValue ?? null,
           };
         }),
     },
