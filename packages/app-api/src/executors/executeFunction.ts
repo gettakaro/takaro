@@ -57,8 +57,8 @@ export async function executeFunction(
     rateLimiter = new RateLimiterRedis({
       storeClient: redisClient,
       keyPrefix: 'worker:rateLimiter',
-      points: 1000,
-      duration: 60 * 60,
+      points: config.get('takaro.functionsRateLimit.points'),
+      duration: config.get('takaro.functionsRateLimit.duration') / 1000,
     });
   }
 
