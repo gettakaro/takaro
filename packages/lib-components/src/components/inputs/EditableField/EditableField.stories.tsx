@@ -2,6 +2,7 @@ import React from 'react';
 import { styled } from '../../../styled';
 import { Meta, StoryFn } from '@storybook/react';
 import { EditableFieldProps, EditableField } from '.';
+import { z } from 'zod';
 
 export default {
   title: 'Inputs/EditableField',
@@ -12,6 +13,9 @@ export default {
     value: 'I am the text, double click me',
     required: true,
     label: 'label',
+    validationSchema: z
+      .string()
+      .refine((value) => !value.includes('/'), { message: 'The field must not contain slashes.' }),
   },
 } as Meta<EditableFieldProps>;
 
@@ -23,7 +27,7 @@ const Container = styled.div`
 `;
 
 export const Default: StoryFn<EditableFieldProps> = (args) => {
-  const [value, setValue] = React.useState('');
+  const [value, setValue] = React.useState(args.value);
 
   return (
     <Container>
@@ -33,10 +37,10 @@ export const Default: StoryFn<EditableFieldProps> = (args) => {
         disabled={args.disabled}
         required={args.required}
         value={args.value}
+        validationSchema={args.validationSchema}
         onEdited={(value) => setValue(value)}
       />
-
-      <div>field edited: {value ? 'true' : 'false'}</div>
+      <div>The value: {value}</div>
     </Container>
   );
 };
@@ -46,8 +50,7 @@ export const RemoteEditEnable: StoryFn<EditableFieldProps> = (args) => {
 
   return (
     <Container>
-      This tests if we can change the state to editing from outside the
-      component
+      This tests if we can change the state to editing from outside the component
       <EditableField
         name="editableField"
         isEditing={editing}

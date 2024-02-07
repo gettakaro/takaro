@@ -1,6 +1,6 @@
 import { Meta, ColorPalette, ColorItem } from '@storybook/addon-docs';
 import { styled } from '../styled';
-import { theme } from '../styled/theme';
+import { darkTheme as theme } from '../styled/theme';
 
 <Meta title="Colors" />
 
@@ -17,16 +17,19 @@ import { theme } from '../styled/theme';
 <ColorItem title="theme.colors.warning" colors={[theme.colors.warning]} />
 <ColorItem title="theme.colors.error" colors={[theme.colors.error]} />
 
-## extra
+## backgrounds
 
 <ColorItem title="theme.colors.background" colors={[theme.colors.background]} />
-<ColorItem title="theme.colors.gray" colors={[theme.colors.gray]} />
-<ColorItem title="theme.colors.text" colors={[theme.colors.text]} />
+<ColorItem title="theme.colors.backgroundAlt" colors={[theme.colors.backgroundAlt]} />
+<ColorItem title="theme.colors.backgroundAccent" colors={[theme.colors.backgroundAccent]} />
+<ColorItem title="theme.colors.placeholder" colors={[theme.colors.placeholder]} />
+<ColorItem title="theme.colors.placeholderHighlight" colors={[theme.colors.placeholderHighlight]} />
+
 
 ## Text
 
 <ColorItem title="theme.colors.text" colors={[theme.colors.text]} />
-<ColorItem title="theme.colors.gray" colors={[theme.colors.gray]} />
-<ColorItem title="theme.colors.background" colors={[theme.colors.background]} />
+<ColorItem title="theme.colors.textAlt" colors={[theme.colors.textAlt]} />
+<ColorItem title="theme.colors.disabled" colors={[theme.colors.disabled]} />
 
 </ColorPalette>

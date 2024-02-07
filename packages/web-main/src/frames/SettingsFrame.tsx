@@ -3,6 +3,7 @@ import { Outlet } from 'react-router-dom';
 import { PATHS } from 'paths';
 import { styled, HorizontalNav, HorizontalNavLink } from '@takaro/lib-components';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { ErrorBoundary } from 'components/ErrorBoundary';
 
 const Container = styled.div`
   height: 100%;
@@ -37,7 +38,9 @@ export const SettingsFrame: FC = () => {
     <Container>
       <HorizontalNav items={links} variant="underline" />
       <ContentContainer>
-        <Outlet />
+        <ErrorBoundary>
+          <Outlet />
+        </ErrorBoundary>
       </ContentContainer>
     </Container>
   );

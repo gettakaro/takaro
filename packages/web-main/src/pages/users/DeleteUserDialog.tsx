@@ -1,7 +1,7 @@
 import { UserOutputWithRolesDTO } from '@takaro/apiclient';
-import { Button, Dialog, errors, FormError } from '@takaro/lib-components';
+import { Button, Dialog, FormError } from '@takaro/lib-components';
 import { useUserRemove } from 'queries/users';
-import { FC, useMemo } from 'react';
+import { FC } from 'react';
 
 interface VariableDeleteProps {
   user: UserOutputWithRolesDTO;
@@ -10,7 +10,7 @@ interface VariableDeleteProps {
 }
 
 export const UserDeleteDialog: FC<VariableDeleteProps> = ({ user, openDialog, setOpenDialog }) => {
-  const { mutateAsync, isLoading: isDeleting, error } = useUserRemove();
+  const { mutateAsync, isPending: isDeleting, error } = useUserRemove();
 
   const handleOnDelete = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
@@ -18,19 +18,6 @@ export const UserDeleteDialog: FC<VariableDeleteProps> = ({ user, openDialog, se
     await mutateAsync({ id: user.id });
     setOpenDialog(false);
   };
-
-  const errorMessage = useMemo(() => {
-    if (!error) return null;
-
-    const err = errors.defineErrorType(error);
-
-    if (err instanceof errors.InternalServerError) {
-      return 'Something went wrong. Please try again later.';
-    }
-    if (err instanceof errors.NotAuthorizedError) {
-      return 'You are not authorized to perform this action.';
-    }
-  }, [error]);
 
   return (
     <Dialog open={openDialog} onOpenChange={setOpenDialog}>
@@ -43,7 +30,7 @@ export const UserDeleteDialog: FC<VariableDeleteProps> = ({ user, openDialog, se
             Are you sure you want to delete <strong>{user.name}</strong>? This action cannot be undone!
             <br />
           </p>
-          {errorMessage && <FormError error={errorMessage} />}
+          {error && <FormError error={error} />}
           <Button
             isLoading={isDeleting}
             onClick={(e) => handleOnDelete(e)}

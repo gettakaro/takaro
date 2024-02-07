@@ -228,7 +228,6 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
           },
         });
         const globalPlayer = await playerService.findOne(playerId);
-
         hookData.pog = resolvedPlayer.results[0];
         hookData.player = globalPlayer;
       }
@@ -260,11 +259,7 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
     }
 
     const eventData = await new dto().construct(data.eventMeta);
-    await eventData.validate({
-      forbidNonWhitelisted: false,
-      whitelist: true,
-      forbidUnknownValues: false,
-    });
+    await eventData.validate();
 
     return this.handleEvent({
       eventType: data.eventType,

@@ -60,6 +60,12 @@ export async function processJob(job: Job<IGameServerQueueData>) {
             } else {
               log.debug(`Game server ${gs.id} from domain ${domain.id} is not reachable, skipping...`);
             }
+
+            // If the server is unreachable and it was reachable before, set all players offline
+            if (!reachable.connectable && reachable.connectable !== gs.reachable) {
+              const playerOnGameServerService = new PlayerOnGameServerService(domain.id);
+              await playerOnGameServerService.setOnlinePlayers(gs.id, []);
+            }
           })
         );
 

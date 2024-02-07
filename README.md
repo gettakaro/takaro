@@ -17,7 +17,7 @@ Here are some examples:
 
 - **Teleport module**: offers set of in-game commands enabling players to create their own teleport points and teleport to them.
 
-- **Economy module**: introduces a virtual currency, actively engaging players in earning and spending currency. Players can accumulate currency through diverse activities. E.g. defeating entities, earning daily login rewards and participating in bounty hunting. Additionally, players can transact currency among themselves or use it to purchase items from a customizable shop. 
+- **Economy utils module**: introduces a virtual currency, actively engaging players in earning and spending currency. Players can accumulate currency through diverse activities. E.g. defeating entities, earning daily login rewards and participating in bounty hunting. Additionally, players can transact currency among themselves or use it to purchase items from a customizable shop. 
 - **Bounty module**: builds upon the Economy module, this feature allows players to set bounties on other players. When a player with a bounty is defeated, the bounty reward is transferred to the victor. 
 
 

@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { styled } from '../../../styled';
-import { AiOutlineCrown as ErrorIcon } from 'react-icons/ai';
+import { shade } from 'polished';
 
 const Wrapper = styled.div`
   display: grid;
@@ -13,31 +13,35 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   max-width: 600px;
+  width: 100%;
   align-items: center;
+  border: 1px solid ${({ theme }) => theme.colors.error};
+  border-radius: ${({ theme }) => theme.borderRadius.large};
+  padding: ${({ theme }) => theme.spacing[2]};
+  background-color: ${({ theme }) => shade(0.5, theme.colors.error)};
   text-align: center;
-  p {
-    margin-bottom: ${({ theme }) => theme.spacing['1_5']};
+
+  h1 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: ${({ theme }) => theme.fontSize.mediumLarge};
+    margin-bottom: ${({ theme }) => theme.spacing['0_5']};
+
+    svg {
+      margin-right: ${({ theme }) => theme.spacing['0_75']};
+    }
   }
 `;
 
-export interface ErrorFallbackProps {
-  title?: string;
-  description?: string;
-  showIcon?: boolean;
-}
-
 // This should be used as a fallback component for error boundaries.
-export const ErrorFallback: FC<ErrorFallbackProps> = ({
-  title = 'Sorry king, we ran into an error!',
-  description = 'But thank you for giving us extra work.',
-  showIcon = true,
-}) => {
+export const ErrorFallback: FC = () => {
   return (
     <Wrapper>
       <Container>
-        {showIcon && <ErrorIcon size={80} />}
-        <h2>{title}</h2>
-        <p>{description}</p>
+        <h1>Oops, that's our bad!</h1>
+        <p>We are not exactly sure what happened, but something went wrong. </p>
+        <p>If you need immediate help, please let us know</p>
       </Container>
     </Wrapper>
   );

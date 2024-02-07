@@ -1,3 +1,5 @@
+/// <reference types="vitest" />
+
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import tsconfigPaths from 'vite-tsconfig-paths';
@@ -9,6 +11,9 @@ export default defineConfig({
     manifest: true,
     sourcemap: true,
     cssMinify: 'lightningcss',
+  },
+  test: {
+    environment: 'jsdom',
   },
   server: {
     warmup: {

@@ -1,5 +1,9 @@
-import { EventOutputDTO, EventOutputDTOEventNameEnum, EventSearchInputAllowedFilters } from '@takaro/apiclient';
-import { styled, DateRangePicker, Button } from '@takaro/lib-components';
+import {
+  EventOutputDTO,
+  EventOutputDTOEventNameEnum as EventName,
+  EventSearchInputAllowedFilters,
+} from '@takaro/apiclient';
+import { DateRangePicker, Button } from '@takaro/lib-components';
 import { EventFeed, EventItem } from 'components/events/EventFeed';
 import { EventFilter } from 'components/events/EventFilter';
 import { EventFilterTag } from 'components/events/EventFilter/Tag';
@@ -15,82 +19,32 @@ import { useEvents } from 'queries/events';
 import { FC, useEffect, useState } from 'react';
 
 import { HiStop as PauseIcon, HiPlay as PlayIcon, HiArrowPath as RefreshIcon } from 'react-icons/hi2';
-
-const ContentContainer = styled.div`
-  margin-top: ${({ theme }) => theme.spacing['1']};
-  display: flex;
-  flex-direction: row;
-  gap: ${({ theme }) => theme.spacing['4']};
-  width: 100%;
-`;
-
-const Flex = styled.div`
-  width: 100%;
-  display: flex;
-  gap: ${({ theme }) => theme.spacing['1']};
-`;
-
-const EventFilterContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing['1']};
-  margin-bottom: ${({ theme }) => theme.spacing['1']};
-  align-items: center;
-  width: 100%;
-`;
-
-const Header = styled.div`
-  width: 100%;
-  display: flex;
-  gap: ${({ theme }) => theme.spacing['1']};
-  margin-bottom: ${({ theme }) => theme.spacing['1']};
-`;
-
-const Filters = styled.div`
-  border: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
-  padding: ${({ theme }) => `${theme.spacing[2]}`};
-  min-height: 600px;
-  border-radius: ${({ theme }) => theme.borderRadius.medium};
-  min-width: 360px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  gap: 1rem;
-`;
-
-const ScrollableContainer = styled.div`
-  overflow-y: auto;
-  display: flex;
-  padding-left: 4px;
-  padding-right: ${({ theme }) => theme.spacing[4]};
-  width: 100%;
-  height: 80vh;
-`;
+import { ContentContainer, EventFilterContainer, Filters, Flex, Header, ScrollableContainer } from './style';
 
 const treeData = [
   {
     name: 'Gameserver',
     children: [
       {
-        name: EventOutputDTOEventNameEnum.PlayerConnected,
+        name: EventName.PlayerConnected,
       },
       {
-        name: EventOutputDTOEventNameEnum.PlayerDisconnected,
+        name: EventName.PlayerDisconnected,
       },
       {
-        name: EventOutputDTOEventNameEnum.ChatMessage,
+        name: EventName.ChatMessage,
       },
       {
-        name: EventOutputDTOEventNameEnum.PlayerDeath,
+        name: EventName.PlayerDeath,
       },
       {
-        name: EventOutputDTOEventNameEnum.EntityKilled,
+        name: EventName.EntityKilled,
       },
       {
-        name: EventOutputDTOEventNameEnum.PlayerNewIpDetected,
+        name: EventName.PlayerNewIpDetected,
       },
       {
-        name: EventOutputDTOEventNameEnum.ServerStatusChanged,
+        name: EventName.ServerStatusChanged,
       },
     ],
   },
@@ -99,13 +53,13 @@ const treeData = [
     defaultEnabled: true,
     children: [
       {
-        name: EventOutputDTOEventNameEnum.CronjobExecuted,
+        name: EventName.CronjobExecuted,
       },
       {
-        name: EventOutputDTOEventNameEnum.HookExecuted,
+        name: EventName.HookExecuted,
       },
       {
-        name: EventOutputDTOEventNameEnum.CommandExecuted,
+        name: EventName.CommandExecuted,
       },
     ],
   },
@@ -113,10 +67,10 @@ const treeData = [
     name: 'Economy',
     children: [
       {
-        name: EventOutputDTOEventNameEnum.CurrencyAdded,
+        name: EventName.CurrencyAdded,
       },
       {
-        name: EventOutputDTOEventNameEnum.CurrencyDeducted,
+        name: EventName.CurrencyDeducted,
       },
     ],
   },
@@ -124,22 +78,22 @@ const treeData = [
     name: 'Global',
     children: [
       {
-        name: EventOutputDTOEventNameEnum.RoleAssigned,
+        name: EventName.RoleAssigned,
       },
       {
-        name: EventOutputDTOEventNameEnum.RoleRemoved,
+        name: EventName.RoleRemoved,
       },
       {
-        name: EventOutputDTOEventNameEnum.RoleCreated,
+        name: EventName.RoleCreated,
       },
       {
-        name: EventOutputDTOEventNameEnum.RoleUpdated,
+        name: EventName.RoleUpdated,
       },
       {
-        name: EventOutputDTOEventNameEnum.RoleDeleted,
+        name: EventName.RoleDeleted,
       },
       {
-        name: EventOutputDTOEventNameEnum.SettingsSet,
+        name: EventName.SettingsSet,
       },
     ],
   },
@@ -149,7 +103,7 @@ const allFields = ['moduleId', 'gameserverId', 'playerId'];
 
 function clientSideFilter(
   event: EventOutputDTO,
-  eventTypes: EventOutputDTOEventNameEnum[],
+  eventTypes: EventName[],
   filters: Filter[],
   startDate: DateTime | null,
   endDate: DateTime | null
@@ -184,7 +138,7 @@ export const Events: FC = () => {
   const [startDate, setStartDate] = useState<DateTime | null>(null);
   const [endDate, setEndDate] = useState<DateTime | null>(null);
 
-  const [eventTypes, setEventTypes] = useState<EventOutputDTOEventNameEnum[]>([]);
+  const [eventTypes, setEventTypes] = useState<EventName[]>([]);
   const [tagFilters, setTagFilters] = useState<Filter[]>([]);
   const [searchFilters, setSearchFilters] = useState<Filter[]>([]);
 
@@ -341,7 +295,7 @@ export const Events: FC = () => {
           <TreeFilter
             data={treeData}
             addFilters={(f) => {
-              setEventTypes((prev) => [...prev, ...f] as EventOutputDTOEventNameEnum[]);
+              setEventTypes((prev) => [...prev, ...f] as EventName[]);
             }}
             removeFilters={(f) => {
               setEventTypes((prev) => prev.filter((filter) => !f.includes(filter)));

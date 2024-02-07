@@ -82,9 +82,11 @@ services:
       TEST_HTTP_TARGET: http://takaro_api:3000
       FUNCTIONS_EXECUTION_MODE: 'local'
       MOCK_GAMESERVER_HOST: 'http://takaro_mock_gameserver:3002'
+      MOCHA_RETRIES: ${MOCHA_RETRIES}
 
   takaro_api:
     image: ghcr.io/gettakaro/takaro-app-api:${DOCKER_TAG}
+    restart: always
     container_name: takaro_api
     volumes:
       - ./reports:/app/reports
@@ -112,6 +114,7 @@ services:
 
   takaro_web_main:
     image: ghcr.io/gettakaro/takaro-web-main:${DOCKER_TAG}
+    restart: always
     container_name: takaro_web_main
     environment:
       VITE_API: http://127.0.0.1:13000
@@ -120,6 +123,7 @@ services:
       - 13001:80
   takaro_mock_gameserver:
     image: ghcr.io/gettakaro/takaro-app-mock-gameserver:${DOCKER_TAG}
+    restart: always
     container_name: takaro_mock_gameserver
     environment:
       LOGGING_LEVEL: debug
@@ -128,6 +132,7 @@ services:
       - 3002:3002
   takaro_connector:
     image: ghcr.io/gettakaro/takaro-app-connector:${DOCKER_TAG}
+    restart: always
     container_name: takaro_connector
     environment:
       LOGGING_LEVEL: debug

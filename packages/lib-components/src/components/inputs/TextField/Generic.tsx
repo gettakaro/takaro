@@ -7,6 +7,11 @@ import { getFieldType, getInputMode } from './util';
 import { defaultInputProps, defaultInputPropsFactory, GenericInputProps } from '../InputProps';
 import { setAriaDescribedBy } from '../layout';
 
+export function isNumber(value: unknown) {
+  const number = Number(value);
+  return !isNaN(number) && isFinite(number);
+}
+
 export type TextFieldType = 'text' | 'password' | 'email' | 'number';
 
 export interface TextFieldProps {
@@ -45,7 +50,14 @@ export const GenericTextField = forwardRef<HTMLInputElement, GenericTextFieldPro
   const [showPassword, setShowPassword] = useState(false);
 
   const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
-    onChange(e);
+    // not a perfect solution, but works for now
+    if (type === 'number') {
+      if (isNumber(e.target.value) || e.target.value === '-') {
+        onChange(e);
+      }
+    } else {
+      onChange(e);
+    }
   };
 
   return (
@@ -73,6 +85,7 @@ export const GenericTextField = forwardRef<HTMLInputElement, GenericTextFieldPro
         type={getFieldType(type, showPassword)}
         ref={ref}
         value={value}
+        aria-readonly={readOnly}
         aria-required={required}
         aria-describedby={setAriaDescribedBy(name, hasDescription)}
       />

@@ -1,10 +1,11 @@
-import { FC, useState, useEffect, useCallback } from 'react';
+import { FC, useEffect } from 'react';
 import { useAuth } from 'hooks/useAuth';
 import { Loading, styled } from '@takaro/lib-components';
 import { PATHS } from 'paths';
-import { setUser } from '@sentry/react';
+import * as Sentry from '@sentry/react';
 import { useNavigate } from 'react-router-dom';
 import { Outlet } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
 
 const Container = styled.div`
   width: 100vw;
@@ -15,45 +16,33 @@ const Container = styled.div`
 `;
 
 export const AuthenticationGuard: FC = () => {
-  const { session, isLoadingSession, sessionError, isSessionError } = useAuth();
+  const { session, isLoadingSession, isSessionError } = useAuth();
   const navigate = useNavigate();
-  const [isAuth, setIsAuth] = useState<boolean>(false);
-  const [loading, isLoading] = useState<boolean>(true);
-
-  const handleAuth = useCallback(() => {
-    if (isSessionError) {
-      console.error(sessionError);
-    }
-
-    if (isLoadingSession) return;
-    try {
-      if (!session) {
-        return navigate(PATHS.login());
-      }
-      setUser({ id: session.id });
-      setIsAuth(true);
-    } catch (error) {
-      navigate(PATHS.login());
-    } finally {
-      isLoading(false);
-    }
-  }, [session, isLoadingSession, navigate]);
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
-    handleAuth();
-  }, [isLoadingSession]);
+    if (isLoadingSession) return;
 
-  if (loading || isLoadingSession)
+    if (!session) {
+      return navigate(PATHS.login());
+    } else {
+      Sentry.setUser({ id: session.id, email: session.email, username: session.name });
+    }
+  }, [session, isLoadingSession, navigate, isSessionError]);
+
+  if (isLoadingSession) {
     return (
       <Container>
         <Loading fill="#fff" />
       </Container>
     );
-
-  if (isAuth) {
-    return <Outlet />;
   }
 
-  // This should not be reachable
-  return <></>;
+  if (isSessionError) {
+    enqueueSnackbar('A failure happened during authentication.', { type: 'error' });
+    navigate(PATHS.login());
+    return <></>;
+  }
+
+  return session ? <Outlet /> : <></>;
 };

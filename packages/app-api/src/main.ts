@@ -152,3 +152,11 @@ async function domainInit(domain: DomainOutputDTO) {
     })
   );
 }
+
+process.on('unhandledRejection', (reason) => {
+  log.error('Unhandled Rejection at:', { reason: String(reason) });
+});
+
+process.on('uncaughtException', (error: Error) => {
+  log.error(`Caught exception: ${error}\n` + `Exception origin: ${error.stack}`);
+});

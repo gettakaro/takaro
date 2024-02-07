@@ -1,5 +1,6 @@
 import { Size, styled } from '../../../styled';
 import { motion } from 'framer-motion';
+import { shade } from 'polished';
 
 export const Container = styled.div`
   position: relative;
@@ -14,11 +15,11 @@ export const Input = styled.input`
   visibility: hidden;
 `;
 
-export const BackgroundContainer = styled(motion.div)<{ size: Size }>`
-  background-color: ${({ theme }) => theme.colors.primary};
+export const BackgroundContainer = styled(motion.div)<{ $size: Size }>`
+  background-color: ${({ theme }) => shade(0.5, theme.colors.primary)};
 
-  ${({ size }): string => {
-    switch (size) {
+  ${({ $size }): string => {
+    switch ($size) {
       case 'tiny':
         return `
           width: 1.2rem;

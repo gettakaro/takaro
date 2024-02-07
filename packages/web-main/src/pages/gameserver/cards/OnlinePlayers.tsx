@@ -6,7 +6,7 @@ import { useSocket } from 'hooks/useSocket';
 import { usePlayerOnGameServers } from 'queries/pog/queries';
 import { usePlayers } from 'queries/players';
 import { FC, useEffect } from 'react';
-import { Card } from './style';
+import { StyledCard } from './style';
 
 const Container = styled.div`
   display: flex;
@@ -54,7 +54,7 @@ export const OnlinePlayersCard: FC = () => {
   if (isLoading || isLoadingPlayers) return <Skeleton variant="rectangular" width="100%" height="100%" />;
 
   return (
-    <Card variant="outline">
+    <StyledCard variant="outline">
       <Container>
         <h2>{data?.data.length} Players Online</h2>
         <Players>
@@ -66,6 +66,6 @@ export const OnlinePlayersCard: FC = () => {
           })}
         </Players>
       </Container>
-    </Card>
+    </StyledCard>
   );
 };

@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren, useState } from 'react';
+import { FC, PropsWithChildren, ReactElement, useState } from 'react';
 import { styled } from '../../../styled';
 import { IoMdArrowDropup as ArrowUp } from 'react-icons/io';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -27,7 +27,7 @@ export const CollapseList: FC<PropsWithChildren> & {
 
 interface ItemProps {
   collapsed?: boolean;
-  title: string;
+  title: string | ReactElement;
   description?: string;
 }
 
@@ -42,6 +42,16 @@ const Header = styled.div<{ isCollapsed: boolean }>`
   border-radius: ${({ theme }) => theme.borderRadius.medium};
   border: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
   margin-bottom: ${({ theme, isCollapsed }) => (isCollapsed ? theme.spacing['0_75'] : 0)};
+
+  h3 {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    svg {
+      transform: none;
+    }
+  }
 
   svg {
     transform: ${({ isCollapsed }) => (isCollapsed ? 'rotate(0deg)' : 'rotate(180deg)')};
@@ -71,7 +81,7 @@ const Item: FC<PropsWithChildren<ItemProps>> = ({ collapsed = false, title, chil
       <AnimatePresence>
         {!isCollapsed && (
           <motion.div
-            style={{ maxHeight: '100%' }}
+            style={{ maxHeight: '100%', overflowY: 'hidden' }}
             key={`collapse-item-${title}`}
             variants={{
               open: { opacity: 1, height: 'auto', flexGrow: 1, minHeight: 0, overflowY: 'auto' },
@@ -102,5 +112,4 @@ const Item: FC<PropsWithChildren<ItemProps>> = ({ collapsed = false, title, chil
   );
 };
 
-// set dot component
 CollapseList.Item = Item;

@@ -1,13 +1,13 @@
 import { FC, useEffect, useRef } from 'react';
-
 import { styled } from '../../../styled';
-import axios from 'axios';
+import { shade } from 'polished';
 
 const Container = styled.div<{ hasMultiple: boolean }>`
   width: 100%;
   padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing[1]}`};
   margin-bottom: ${({ theme }) => theme.spacing[1]};
-  background-color: ${({ theme }) => theme.colors.error};
+  background-color: ${({ theme }) => shade(0.5, theme.colors.error)};
+  border: 1px solid ${({ theme }) => theme.colors.error};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
 
   p,
@@ -22,66 +22,30 @@ const Container = styled.div<{ hasMultiple: boolean }>`
   }
 `;
 
-const extractConstraints = (detail: any) => {
-  const constraints: any[] = [];
-
-  if (detail.constraints) {
-    constraints.push(...Object.values(detail.constraints));
-  }
-
-  if (Array.isArray(detail.children)) {
-    for (const child of detail.children) {
-      constraints.push(...extractConstraints(child));
-    }
-  }
-
-  return constraints;
-};
-
 export interface FormErrorProps {
-  message?: string | string[];
-  error?: unknown;
+  /// Message for each type of error
+  error?: string | string[] | null;
 }
 
-export const FormError: FC<FormErrorProps> = ({ message, error }) => {
+export const FormError: FC<FormErrorProps> = ({ error = 'Something went wrong.' }) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     containerRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [containerRef, message]);
+  }, [containerRef]);
 
-  if (!error && !message) {
-    return null;
+  if (error === null) {
+    return 'Something went wrong.';
   }
 
-  // If error provided and no custom message
-  // Try to parse error message from error object
-  if (error && !message) {
-    if (axios.isAxiosError(error)) {
-      message = error.response?.data?.meta.error.message ?? error.response?.data?.meta.error.code;
-
-      if (error.response?.data?.meta.error.code === 'ValidationError') {
-        const details = error.response?.data?.meta.error.details;
-        if (Array.isArray(details)) {
-          // Map over details array and extract the constraints from each children recursively
-          message = details.flatMap((detail) => extractConstraints(detail));
-        }
-      }
-    }
-  }
-
-  if (!message) {
-    message = ['Something went wrong'];
-  }
-
-  if (!Array.isArray(message)) {
-    message = [message];
+  if (error.constructor === String) {
+    error = [error];
   }
 
   return (
-    <Container ref={containerRef} autoFocus hasMultiple={message.length > 1}>
+    <Container ref={containerRef} autoFocus hasMultiple={error.length > 1}>
       <ul>
-        {message.map((m, i) => (
+        {(error as string[]).map((m, i) => (
           <li key={`form-error-message-${i}`}>{m}</li>
         ))}
       </ul>

@@ -99,12 +99,14 @@ export class ItemRepo extends ITakaroRepo<ItemsModel, ItemsOutputDTO, ItemCreate
     });
 
     // Transform items into a format suitable for bulk insert
-    const dataToInsert = items.map((item) => ({
-      ...item.toJSON(),
-      description: item.description || null,
-      icon: item.icon || null,
-      domain: this.domainId,
-    }));
+    const dataToInsert = items.map((item) => {
+      return {
+        ...item.toJSON(),
+        description: item.description || null,
+        icon: item.icon || null,
+        domain: this.domainId,
+      };
+    });
 
     const chunks = [];
 

@@ -9,7 +9,7 @@ export const Wrapper = styled.div<{
   position: relative;
   font-family: 'inconsolata';
   width: 100%;
-  background-color: ${({ theme }): string => theme.colors.backgroundAlt};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
 
   &:last-child {
     border-bottom: none;
@@ -20,11 +20,9 @@ export const Container = styled.div<{ isCollapsed: boolean }>`
   max-width: 100%;
   width: 100%;
   height: fit-content;
-
   display: grid;
   align-content: start;
   grid-template-columns: 4rem 18rem 1fr;
-
   margin: ${({ theme }) => theme.spacing[0]};
 `;
 

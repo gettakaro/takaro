@@ -1,6 +1,7 @@
 import { IntegrationTest, expect } from '@takaro/test';
 import { IModuleTestsSetupData, modulesTestSetup } from './setupData.integration.test.js';
 import { GameEvents } from '../dto/index.js';
+import { sleep } from '@takaro/util';
 
 const group = 'System config - cost';
 
@@ -95,6 +96,7 @@ const tests = [
 
       await Promise.all(
         Array.from({ length: amount }).map(async (_, index) => {
+          await sleep(10);
           await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
             msg: `/settp test${index}`,
             playerId: this.setupData.players[0].id,
@@ -107,6 +109,7 @@ const tests = [
       const events = this.setupData.eventAwaiter.waitForEvents('command-executed', amount);
       await Promise.all(
         Array.from({ length: amount }).map(async (_, index) => {
+          await sleep(1);
           await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
             msg: `/tp test${index}`,
             playerId: this.setupData.players[0].id,

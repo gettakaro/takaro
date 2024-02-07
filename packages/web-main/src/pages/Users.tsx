@@ -12,11 +12,12 @@ import {
   FormError,
   DateFormatter,
   CopyId,
+  useTheme,
 } from '@takaro/lib-components';
 import { UserOutputWithRolesDTO, UserSearchInputDTOSortDirectionEnum, PERMISSIONS } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useUsers } from 'queries/users';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { PATHS } from 'paths';
 import { AiOutlineUser as ProfileIcon, AiOutlineEdit as EditIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
 import { useInviteUser } from 'queries/users/queries';
@@ -30,7 +31,7 @@ const Users: FC = () => {
   useDocumentTitle('Users');
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<UserOutputWithRolesDTO>();
 
-  const { data, isLoading } = useUsers({
+  const { data, isPending } = useUsers({
     page: pagination.paginationState.pageIndex,
     limit: pagination.paginationState.pageSize,
     sortBy: sorting.sortingState[0]?.id,
@@ -52,7 +53,10 @@ const Users: FC = () => {
     columnHelper.accessor('name', {
       header: 'Name',
       id: 'name',
-      cell: (info) => info.getValue(),
+      cell: (info) => {
+        const user = info.row.original;
+        return <Link to={PATHS.user.profile(user.id)}>{info.getValue()}</Link>;
+      },
     }),
     columnHelper.accessor('email', {
       header: 'Email',
@@ -94,7 +98,7 @@ const Users: FC = () => {
 
   // since pagination depends on data, we need to make sure that data is not undefined
   const p =
-    !isLoading && data
+    !isPending && data
       ? {
           paginationState: pagination.paginationState,
           setPaginationState: pagination.setPaginationState,
@@ -139,7 +143,7 @@ const InviteUser: FC = () => {
     resolver: zodResolver(validationSchema),
     mode: 'onSubmit',
   });
-  const { mutate, isLoading, isError, isSuccess, error } = useInviteUser();
+  const { mutate, isPending, isError, isSuccess, error } = useInviteUser();
 
   const onSubmit: SubmitHandler<IFormInputs> = (data) => {
     mutate({ email: data.userEmail });
@@ -177,7 +181,7 @@ const InviteUser: FC = () => {
                 required
               />
               {isError && <FormError error={error} />}
-              <Button isLoading={isLoading} text="Send invitation" type="submit" fullWidth />
+              <Button isLoading={isPending} text="Send invitation" type="submit" fullWidth />
             </form>
           </Dialog.Body>
         </Dialog.Content>
@@ -188,6 +192,7 @@ const InviteUser: FC = () => {
 
 const UserMenu: FC<{ user: UserOutputWithRolesDTO }> = ({ user }) => {
   const [openDeleteUserDialog, setOpenDeleteUserDialog] = useState<boolean>(false);
+  const theme = useTheme();
   const navigate = useNavigate();
   const { hasPermission: hasReadUsersPermission, isLoading: isLoadingReadUserPermission } = useHasPermission([
     PERMISSIONS.ReadUsers,
@@ -217,7 +222,7 @@ const UserMenu: FC<{ user: UserOutputWithRolesDTO }> = ({ user }) => {
           />
           <Dropdown.Menu.Item
             label="Delete user"
-            icon={<DeleteIcon />}
+            icon={<DeleteIcon fill={theme.colors.error} />}
             onClick={() => setOpenDeleteUserDialog(true)}
             disabled={!isLoadingManageRolesPermission && !hasManageRolesPermission}
           />

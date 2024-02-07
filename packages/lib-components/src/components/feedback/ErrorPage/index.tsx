@@ -20,6 +20,7 @@ const Container = styled.div`
   
   p {
     font-size: 1.7rem;
+    text-align: center;
 
     &.error {
       margin-top: ${({ theme }) => theme.spacing[6]};

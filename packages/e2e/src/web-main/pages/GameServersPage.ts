@@ -25,15 +25,20 @@ export class GameServersPage extends BasePage {
     await this.page.goto('/servers/create');
   }
 
-  async action(action: 'Edit' | 'Delete') {
+  async delete(name: string) {
+    const card = this.page.getByTestId(`gameserver-${this.gameServer.id}-card`);
+    await card.getByRole('button', { name: 'Settings' }).click();
+    await this.page.getByText('delete gameserver').click();
+
+    await expect(this.page.getByRole('dialog')).toBeVisible();
+    await this.page.getByPlaceholder(name).fill(name);
+    await this.page.getByRole('button', { name: 'Delete gameserver' }).click();
+  }
+
+  async action(action: 'Edit' | 'View') {
     const card = this.page.getByTestId(`gameserver-${this.gameServer.id}-card`);
     await card.getByRole('button', { name: 'Settings' }).click();
     await this.page.getByText(`${action} gameserver`).click();
-
-    if (action === 'Delete') {
-      await expect(this.page.getByRole('dialog')).toBeVisible();
-      await this.page.getByRole('button', { name: 'Delete gameserver' }).click();
-    }
   }
 
   async nameCreateEdit(value: string) {

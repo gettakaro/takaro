@@ -27,6 +27,7 @@ export const GenericCheckBox = forwardRef<HTMLButtonElement, GenericCheckBoxProp
     name,
     hasDescription,
     size,
+    required,
   } = defaultsApplier(props);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -54,6 +55,7 @@ export const GenericCheckBox = forwardRef<HTMLButtonElement, GenericCheckBoxProp
     <>
       <input
         type="checkbox"
+        aria-required={required}
         aria-hidden="true"
         style={{ position: 'absolute', pointerEvents: 'none', opacity: 0, margin: 0 }}
         checked={value}
@@ -79,7 +81,7 @@ export const GenericCheckBox = forwardRef<HTMLButtonElement, GenericCheckBoxProp
         type="button"
       >
         <BackgroundContainer
-          size={size}
+          $size={size}
           initial={value ? 'checked' : 'unchecked'}
           animate={value ? 'checked' : 'unchecked'}
           variants={variants}

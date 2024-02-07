@@ -15,6 +15,7 @@ import { useParams, useNavigate, Outlet } from 'react-router-dom';
 import { DateTime } from 'luxon';
 import { usePlayerOnGameServers } from 'queries/pog/queries';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
+import { ErrorBoundary } from 'components/ErrorBoundary';
 
 const Container = styled.div`
   height: 100%;
@@ -110,7 +111,9 @@ export const PlayerProfileFrame: FC = () => {
 
       <HorizontalNav items={links} variant="underline" />
 
-      <Outlet context={{ pog, player }} />
+      <ErrorBoundary>
+        <Outlet context={{ pog, player }} />
+      </ErrorBoundary>
     </Container>
   );
 };

@@ -1,4 +1,4 @@
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery, keepPreviousData } from '@tanstack/react-query';
 import { useApiClient } from 'hooks/useApiClient';
 import { PlayerOutputArrayDTOAPI, PlayerOutputWithRolesDTO, PlayerSearchInputDTO } from '@takaro/apiclient';
 import { hasNextPage } from '../util';
@@ -17,15 +17,15 @@ export const useInfinitePlayers = ({ page, ...queryParams }: PlayerSearchInputDT
 
   const queryOpts = useInfiniteQuery<PlayerOutputArrayDTOAPI, AxiosError<PlayerOutputArrayDTOAPI>>({
     queryKey: [...playerKeys.list(), { ...queryParams }],
-    queryFn: async ({ pageParam = page }) =>
+    queryFn: async ({ pageParam }) =>
       (
         await apiClient.player.playerControllerSearch({
           ...queryParams,
-          page: pageParam,
+          page: pageParam as number,
         })
       ).data,
+    initialPageParam: page,
     getNextPageParam: (lastPage, pages) => hasNextPage(lastPage.meta, pages.length),
-    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 
   const InfiniteScroll = useMemo(() => {
@@ -41,8 +41,7 @@ export const usePlayers = (queryParams: PlayerSearchInputDTO = {}) => {
   const queryOpts = useQuery<PlayerOutputArrayDTOAPI, AxiosError<PlayerOutputArrayDTOAPI>>({
     queryKey: [...playerKeys.list(), { queryParams }],
     queryFn: async () => (await apiClient.player.playerControllerSearch(queryParams)).data,
-    keepPreviousData: true,
-    useErrorBoundary: (error) => error.response!.status >= 500,
+    placeholderData: keepPreviousData,
   });
   return queryOpts;
 };
@@ -53,6 +52,5 @@ export const usePlayer = (id: string) => {
   return useQuery<PlayerOutputWithRolesDTO, AxiosError<PlayerOutputWithRolesDTO>>({
     queryKey: playerKeys.detail(id),
     queryFn: async () => (await apiClient.player.playerControllerGetOne(id)).data.data,
-    useErrorBoundary: (error) => error.response!.status >= 500,
   });
 };

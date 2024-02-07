@@ -5,6 +5,7 @@ import { useAuth } from 'hooks/useAuth';
 import { styled, Company, Skeleton } from '@takaro/lib-components';
 import { UserAuthCard } from '@ory/elements';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
+import { PATHS } from 'paths';
 
 const Container = styled.div`
   display: flex;
@@ -61,7 +62,9 @@ export const Recovery: FC = () => {
 
   const submitFlow = (body: UpdateRecoveryFlowBody) => {
     // something unexpected went wrong and the flow was not set
-    if (!flow) return navigate('/login', { replace: true });
+    if (!flow) {
+      return navigate(PATHS.login(), { replace: true });
+    }
 
     oryClient
       .updateRecoveryFlow({ flow: flow.id, updateRecoveryFlowBody: body })
@@ -97,7 +100,12 @@ export const Recovery: FC = () => {
           // the flow is always required since it contains the UI form elements, UI error messages and csrf token
           flow={flow}
           // the recovery form should allow users to navigate to the login page
-          additionalProps={{ loginURL: '/login' }}
+          additionalProps={{
+            loginURL: {
+              handler: () => navigate(PATHS.login(), { replace: true }),
+              href: PATHS.login(),
+            },
+          }}
           // submit the form data to Ory
           onSubmit={({ body }) => submitFlow(body as UpdateRecoveryFlowBody)}
         />

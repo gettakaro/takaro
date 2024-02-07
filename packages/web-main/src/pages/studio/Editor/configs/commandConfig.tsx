@@ -9,31 +9,24 @@ import {
   TextField,
   Tooltip,
   Collapsible,
+  Alert,
 } from '@takaro/lib-components';
+
 import {
   AiOutlineClose as CloseIcon,
   AiOutlineCaretUp as UpArrowIcon,
   AiOutlineCaretDown as DownArrowIcon,
 } from 'react-icons/ai';
+
 import { ArgumentCard, ArgumentList, Column, ContentContainer, Fields, Flex } from './style';
 import { ModuleItemProperties } from 'context/moduleContext';
 import { useGlobalGameServerSetting } from 'queries/settings';
 import { useCommand, useCommandUpdate } from 'queries/modules';
-import { FC, useEffect } from 'react';
+import { FC } from 'react';
 import { useForm, useFieldArray, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
-import { CommandArgumentCreateDTO as Argument } from '@takaro/apiclient';
-
-interface IProps {
-  moduleItem: ModuleItemProperties;
-  readOnly?: boolean;
-}
-
-interface IFormInputs {
-  trigger: string;
-  helpText: string;
-  arguments: Argument[];
-}
+import { CommandOutputDTO, CommandUpdateDTO } from '@takaro/apiclient';
+import { ConfigLoading } from './ConfigLoading';
 
 const validationSchema = z.object({
   trigger: z.string().nonempty(),
@@ -75,20 +68,62 @@ const argumentTypeSelectOptions = [
   },
 ];
 
-export const CommandConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
-  const { data } = useCommand(moduleItem.itemId);
-  const { data: settings } = useGlobalGameServerSetting('commandPrefix');
-  const { mutateAsync, error, isLoading } = useCommandUpdate();
+interface CommandConfigProps {
+  moduleItem: ModuleItemProperties;
+  readOnly?: boolean;
+}
 
-  const { control, setValue, handleSubmit } = useForm<IFormInputs>({
+export const CommandConfig: FC<CommandConfigProps> = ({ moduleItem, readOnly }) => {
+  const { data: command, isPending: isLoadingCommand, isError } = useCommand(moduleItem.itemId);
+  const { data: settings, isPending: isLoadingSetting } = useGlobalGameServerSetting('commandPrefix');
+
+  if (isLoadingCommand || isLoadingSetting) {
+    return <ConfigLoading />;
+  }
+
+  if (isError) {
+    return <Alert variant="error" text="Failed to load command config" />;
+  }
+
+  // fallback to `/`
+  const prefix = (settings && settings?.value) ?? '/';
+
+  return <CommandConfigForm commandPrefix={prefix} command={command} readOnly={readOnly} />;
+};
+
+interface CommandConfigFormProps {
+  command: CommandOutputDTO;
+  readOnly?: boolean;
+  commandPrefix?: string;
+}
+
+export const CommandConfigForm: FC<CommandConfigFormProps> = ({ command, readOnly, commandPrefix }) => {
+  const { mutateAsync, error, isPending } = useCommandUpdate();
+
+  const { control, handleSubmit, formState, reset } = useForm<z.infer<typeof validationSchema>>({
     mode: 'onSubmit',
     resolver: zodResolver(validationSchema),
+    values: {
+      trigger: command.trigger,
+      helpText: command.helpText,
+      arguments: command.arguments
+        .sort((a, b) => a.position - b.position)
+        .map((arg) => {
+          return {
+            commandId: command.id,
+            name: arg.name,
+            type: arg.type as 'string' | 'number' | 'boolean' | 'player',
+            position: arg.position,
+            helpText: arg.helpText,
+            defaultValue: arg.defaultValue ?? null,
+          };
+        }),
+    },
   });
 
   const {
     fields,
     append: addField,
-    replace,
     remove,
     swap,
   } = useFieldArray({
@@ -96,47 +131,23 @@ export const CommandConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
     name: 'arguments',
   });
 
-  useEffect(() => {
-    if (data) {
-      setValue('trigger', data?.trigger);
-      setValue('helpText', data?.helpText);
-
-      replace(
-        // order arguments by position
-        data.arguments
-          .sort((a, b) => a.position - b.position)
-          .map((arg) => {
-            return {
-              commandId: moduleItem.itemId,
-              name: arg.name,
-              type: arg.type,
-              position: arg.position,
-              helpText: arg.helpText,
-              defaultValue: arg.defaultValue,
-            };
-          })
-      );
-    }
-  }, [data, moduleItem.itemId]);
-
-  const commandId = moduleItem.itemId;
-
-  const onSubmit: SubmitHandler<IFormInputs> = async (data) => {
+  const onSubmit: SubmitHandler<z.infer<typeof validationSchema>> = async (data) => {
     data.arguments = data.arguments.map((arg, index) => {
       return {
         name: arg.name,
         type: arg.type,
         helpText: arg.helpText,
-        commandId: commandId,
+        commandId: command.id,
         defaultValue: arg.defaultValue,
         position: index,
       };
     });
 
     await mutateAsync({
-      commandId,
-      command: data,
+      commandId: command.id,
+      command: data as CommandUpdateDTO,
     });
+    reset({}, { keepValues: true });
   };
 
   return (
@@ -146,7 +157,7 @@ export const CommandConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
         name="trigger"
         label="trigger"
         description="What users type ingame to trigger this command."
-        prefix={settings?.value}
+        prefix={commandPrefix}
         readOnly={readOnly}
       />
       <TextAreaField
@@ -157,20 +168,20 @@ export const CommandConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
         readOnly={readOnly}
       />
       <CollapseList.Item title="Arguments">
+        <Collapsible>
+          <Collapsible.Trigger>What are arguments?</Collapsible.Trigger>
+          <Collapsible.Content>
+            Arguments are how players can control the behavior of commands. For example, if you have a command that
+            spawns a vehicle, you might want to allow players to specify the color of the vehicle. You can do this by
+            adding an argument with the name "color" and the type "string". Players can then use the command like{' '}
+            <code>{commandPrefix}spawn red</code>
+          </Collapsible.Content>
+          <Collapsible.Content>
+            The order of arguments is important! The first argument will be the first word after the command trigger,
+            the second argument will be the second word, and so on.
+          </Collapsible.Content>
+        </Collapsible>
         <ContentContainer>
-          <Collapsible>
-            <Collapsible.Trigger>What are arguments?</Collapsible.Trigger>
-            <Collapsible.Content>
-              Arguments are how players can control the behavior of commands. For example, if you have a command that
-              spawns a vehicle, you might want to allow players to specify the color of the vehicle. You can do this by
-              adding an argument with the name "color" and the type "string". Players can then use the command like{' '}
-              <code>{settings?.value}spawn red</code>
-            </Collapsible.Content>
-            <Collapsible.Content>
-              The order of arguments is important! The first argument will be the first word after the command trigger,
-              the second argument will be the second word, and so on.
-            </Collapsible.Content>
-          </Collapsible>
           {fields.length > 0 && (
             <ArgumentList>
               {fields.map((field, index) => (
@@ -265,7 +276,7 @@ export const CommandConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
                   type: 'string',
                   defaultValue: '',
                   position: fields.length,
-                  commandId,
+                  commandId: command.id,
                 });
               }}
               type="button"
@@ -277,7 +288,15 @@ export const CommandConfig: FC<IProps> = ({ moduleItem, readOnly }) => {
           {error && <FormError error={error} />}
         </ContentContainer>
       </CollapseList.Item>
-      {!readOnly && <Button isLoading={isLoading} fullWidth type="submit" text="Save command config" />}
+      {!readOnly && (
+        <Button
+          isLoading={isPending}
+          disabled={!formState.isDirty}
+          fullWidth
+          type="submit"
+          text="Save command config"
+        />
+      )}
     </form>
   );
 };
