@@ -15,7 +15,6 @@ services:
     image: postgres:15
     volumes:
       - ./_data/db:/var/lib/postgresql/data
-    user: 1000:1000
     ports:
       - 127.0.0.1:13100:5432
     environment:
@@ -148,7 +147,6 @@ services:
       - ./containers/ory/kratos:/etc/config/kratos
   postgresql_kratos:
     image: postgres:15
-    user: 1000:1000
     ports:
       - 127.0.0.1:13101:5432
     volumes:
@@ -193,7 +191,6 @@ services:
 
   postgresql_hydra:
     image: postgres:15
-    user: 1000:1000
     ports:
       - 127.0.0.1:13102:5432
     volumes:
