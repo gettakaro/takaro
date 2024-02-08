@@ -72,6 +72,10 @@ export const PlayerProfileFrame: FC = () => {
       text: 'Economy',
       to: PATHS.player.economy(playerId),
     },
+    {
+      text: 'Game server stats',
+      to: PATHS.player.gameserver(playerId),
+    },
   ];
 
   const pog = pogs.data.find((p) => p.playerId === playerId);
