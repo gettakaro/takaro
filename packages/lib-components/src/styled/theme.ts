@@ -53,6 +53,7 @@ export const lightTheme = {
 };
 
 // todo: this should be the color of modals:#343434
+// TODO: this should be synced with the theme in e-mail
 export const darkTheme: ThemeType = {
   elevation: elevationDark,
   spacing,
