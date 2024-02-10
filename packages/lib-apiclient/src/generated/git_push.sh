@@ -34,6 +34,12 @@ git init
 # Adds the files in the local repository and stages them for commit.
 git add .
 
+  # Check if there are changes to commit
+  if git diff --staged --quiet; then
+      echo "No changes to commit."
+      exit 0
+  fi
+
 # Commits the tracked changes and prepares them to be pushed to a remote repository.
 git commit -m "$release_note"
 
