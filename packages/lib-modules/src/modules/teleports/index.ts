@@ -45,6 +45,12 @@ export class Teleports extends BuiltinModule {
         description: 'Allows the player to use teleports modules.',
         canHaveCount: true,
       },
+      {
+        permission: 'TELEPORTS_MANAGE_WAYPOINTS',
+        friendlyName: 'Manage waypoints',
+        description: 'Allows creating, deleting, and managing waypoints.',
+        canHaveCount: false,
+      },
     ];
 
     this.commands = [
@@ -128,6 +134,49 @@ export class Teleports extends BuiltinModule {
             position: 0,
           },
         ],
+      },
+      {
+        function: '',
+        name: 'setwaypoint',
+        trigger: 'setwaypoint',
+        helpText: 'Creates a new waypoint.',
+        arguments: [
+          {
+            name: 'waypoint',
+            type: 'string',
+            defaultValue: undefined,
+            helpText: 'The location name.',
+            position: 0,
+          },
+        ],
+      },
+      {
+        function: '',
+        name: 'deletewaypoint',
+        trigger: 'deletewaypoint',
+        helpText: 'Deletes a waypoint.',
+        arguments: [
+          {
+            name: 'waypoint',
+            type: 'string',
+            defaultValue: undefined,
+            helpText: 'The location name.',
+            position: 0,
+          },
+        ],
+      },
+      {
+        function: '',
+        name: 'listwaypoints',
+        trigger: 'waypoints',
+        helpText: 'Lists all waypoints.',
+      },
+      {
+        function: '',
+        name: 'teleportwaypoint',
+        trigger: 'teleportwaypoint',
+        helpText:
+          'Teleports to a waypoint. The module will install aliases for this command corresponding to the waypoint names.',
       },
     ];
   }

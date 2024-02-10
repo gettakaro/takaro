@@ -10,6 +10,10 @@ export interface IDetectedEvent {
   data: any;
 }
 
+interface IExtraFilters {
+  gameServerId?: string;
+}
+
 export const sorter = (a: IDetectedEvent, b: IDetectedEvent) => {
   if (a.data.timestamp < b.data.timestamp) {
     return -1;
@@ -41,7 +45,7 @@ export class EventsAwaiter {
     });
   }
 
-  async waitForEvents(expectedEvent: EventTypes | string, amount = 1) {
+  async waitForEvents(expectedEvent: EventTypes | string, amount = 1, extraFilters: Partial<IExtraFilters> = {}) {
     const events: IDetectedEvent[] = [];
     const discardedEvents: IDetectedEvent[] = [];
     let hasFinished = false;
@@ -58,6 +62,9 @@ export class EventsAwaiter {
             }
 
             if (event === expectedEvent) {
+              if (extraFilters.gameServerId && extraFilters.gameServerId !== _gameserverId) {
+                return;
+              }
               events.push({ event, data });
             }
 

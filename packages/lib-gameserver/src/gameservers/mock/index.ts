@@ -24,7 +24,11 @@ export class Mock implements IGameServer {
 
   constructor(config: MockConnectionInfo, private settings: Partial<Settings> = {}) {
     this.connectionInfo = config;
-    this.io = io(this.connectionInfo.host);
+    this.io = io(this.connectionInfo.host, {
+      query: {
+        name: config.name,
+      },
+    });
     this.emitter = new MockEmitter(this.connectionInfo, this.io);
   }
 
@@ -64,7 +68,7 @@ export class Mock implements IGameServer {
 
   private async requestFromServer(event: string, ...args: any[]) {
     const client = await this.getClient();
-    return client.timeout(30000).emitWithAck(event, ...args);
+    return client.timeout(30000).emitWithAck(event, this.connectionInfo.name, ...args);
   }
 
   async getPlayer(player: IPlayerReferenceDTO): Promise<IGamePlayer | null> {
