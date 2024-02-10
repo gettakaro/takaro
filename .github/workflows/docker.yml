@@ -110,6 +110,7 @@ jobs:
         run:  npx zx scripts/integration-tests.mjs
         env:
           DOCKER_TAG: ${{ needs.docker.outputs.docker_tag }}
+          TEST_LOGGING_LEVEL: verbose
           LOGGING_LEVEL: verbose
           LOGGING_JSON: true
 
