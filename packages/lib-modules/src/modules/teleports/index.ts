@@ -176,7 +176,7 @@ export class Teleports extends BuiltinModule {
         name: 'teleportwaypoint',
         trigger: 'teleportwaypoint',
         helpText:
-          'Teleports to a waypoint. The module will install aliases for this command corresponding to the waypoint names.',
+          'Placeholder command, this will not be used directly. The module will install aliases for this command corresponding to the waypoint names.',
       },
     ];
   }
