@@ -29,6 +29,7 @@ export const TakaroEvents = {
   SETTINGS_SET: 'settings-set',
   PLAYER_NEW_IP_DETECTED: 'player-new-ip-detected',
   SERVER_STATUS_CHANGED: 'server-status-changed',
+  PLAYER_CREATED: 'player-created',
 } as const;
 
 export class BaseTakaroEvent<T> extends BaseEvent<T> {
@@ -225,6 +226,11 @@ export class TakaroEventServerStatusChanged extends BaseEvent<TakaroEventServerS
   details?: Record<string, unknown> | string | null;
 }
 
+export class TakaroEventPlayerCreated extends BaseEvent<TakaroEventPlayerCreated> {
+  @IsString()
+  type = TakaroEvents.PLAYER_CREATED;
+}
+
 export const TakaroEventsMapping = {
   [TakaroEvents.ROLE_ASSIGNED]: TakaroEventRoleAssigned,
   [TakaroEvents.PLAYER_NEW_IP_DETECTED]: TakaroEventPlayerNewIpDetected,
@@ -239,4 +245,5 @@ export const TakaroEventsMapping = {
   [TakaroEvents.HOOK_EXECUTED]: TakaroEventHookExecuted,
   [TakaroEvents.CRONJOB_EXECUTED]: TakaroEventCronjobExecuted,
   [TakaroEvents.SERVER_STATUS_CHANGED]: TakaroEventServerStatusChanged,
+  [TakaroEvents.PLAYER_CREATED]: TakaroEventPlayerCreated,
 } as const;

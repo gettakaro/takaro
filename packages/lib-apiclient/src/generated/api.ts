@@ -1326,6 +1326,7 @@ export const EventCreateDTOEventNameEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+  PlayerCreated: 'player-created',
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
@@ -1567,6 +1568,7 @@ export const EventOutputDTOEventNameEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+  PlayerCreated: 'player-created',
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
@@ -1594,6 +1596,7 @@ export type EventOutputDTOMeta =
   | TakaroEventCurrencyAdded
   | TakaroEventCurrencyDeducted
   | TakaroEventHookExecuted
+  | TakaroEventPlayerCreated
   | TakaroEventPlayerNewIpDetected
   | TakaroEventRoleAssigned
   | TakaroEventRoleCreated
@@ -1742,6 +1745,7 @@ export const EventSearchInputAllowedFiltersEventNameEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+  PlayerCreated: 'player-created',
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
@@ -2759,6 +2763,7 @@ export const HookCreateDTOEventTypeEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+  PlayerCreated: 'player-created',
 } as const;
 
 export type HookCreateDTOEventTypeEnum = (typeof HookCreateDTOEventTypeEnum)[keyof typeof HookCreateDTOEventTypeEnum];
@@ -2890,6 +2895,7 @@ export const HookOutputDTOEventTypeEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+  PlayerCreated: 'player-created',
 } as const;
 
 export type HookOutputDTOEventTypeEnum = (typeof HookOutputDTOEventTypeEnum)[keyof typeof HookOutputDTOEventTypeEnum];
@@ -2966,6 +2972,7 @@ export const HookSearchInputAllowedFiltersEventTypeEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+  PlayerCreated: 'player-created',
 } as const;
 
 export type HookSearchInputAllowedFiltersEventTypeEnum =
@@ -3100,6 +3107,7 @@ export const HookTriggerDTOEventTypeEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+  PlayerCreated: 'player-created',
 } as const;
 
 export type HookTriggerDTOEventTypeEnum =
@@ -3164,6 +3172,7 @@ export const HookUpdateDTOEventTypeEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+  PlayerCreated: 'player-created',
 } as const;
 
 export type HookUpdateDTOEventTypeEnum = (typeof HookUpdateDTOEventTypeEnum)[keyof typeof HookUpdateDTOEventTypeEnum];
@@ -6315,6 +6324,25 @@ export interface TakaroEventHookExecuted {
    *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
    * @memberof TakaroEventHookExecuted
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventPlayerCreated
+ */
+export interface TakaroEventPlayerCreated {
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventPlayerCreated
+   */
+  gameServerId?: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventPlayerCreated
    */
   timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }

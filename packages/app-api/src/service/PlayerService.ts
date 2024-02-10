@@ -11,6 +11,7 @@ import {
   TakaroEventRoleAssigned,
   TakaroEventRoleRemoved,
   TakaroEventPlayerNewIpDetected,
+  TakaroEvents,
 } from '@takaro/modules';
 import { IPlayerReferenceDTO } from '@takaro/gameserver';
 import { Type } from 'class-transformer';
@@ -174,6 +175,12 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
 
   async create(item: PlayerCreateDTO) {
     const created = await this.repo.create(item);
+
+    const eventsService = new EventService(this.domainId);
+    await eventsService.create(
+      await new EventCreateDTO().construct({ eventName: TakaroEvents.PLAYER_CREATED, playerId: created.id })
+    );
+
     return created;
   }
 

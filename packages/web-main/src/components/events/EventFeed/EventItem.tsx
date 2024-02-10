@@ -195,6 +195,14 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
         </>
       );
       break;
+    case EventOutputDTOEventNameEnum.PlayerCreated:
+      properties = (
+        <>
+          <EventProperty name="gameserver" value={event.gameServer?.name || 'Global'} />
+          <EventProperty name="player" value={event.player?.name} />
+        </>
+      );
+      break;
   }
 
   return (
