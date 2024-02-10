@@ -38,7 +38,8 @@ export const setup = async function (this: IntegrationTest<ISetupData>): Promise
 
   const eventsAwaiter = new EventsAwaiter();
   await eventsAwaiter.connect(this.client);
-  const connectedEvents = eventsAwaiter.waitForEvents(HookEvents.PLAYER_CONNECTED, 10);
+  // 10 players, 10 pogs should be created
+  const connectedEvents = eventsAwaiter.waitForEvents(HookEvents.PLAYER_CREATED, 20);
 
   await Promise.all([
     this.client.gameserver.gameServerControllerExecuteCommand(gameServer1.data.data.id, { command: 'connectAll' }),
