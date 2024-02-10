@@ -27,6 +27,7 @@ interface IHttpConfig extends IBaseConfig {
   };
   discord: {
     botToken?: string;
+    handleEvents: boolean;
   };
   takaro: {
     clusterMode: CLUSTER_MODE;
@@ -125,6 +126,12 @@ const configSchema = {
       format: String,
       default: undefined,
       env: 'DISCORD_BOT_TOKEN',
+    },
+    handleEvents: {
+      doc: 'Whether to handle discord events. When running multiple instances, only one should handle events',
+      format: Boolean,
+      default: true,
+      env: 'DISCORD_HANDLE_EVENTS',
     },
   },
   takaro: {
