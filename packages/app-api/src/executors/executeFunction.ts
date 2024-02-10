@@ -148,6 +148,7 @@ export async function executeFunction(
 
     if (isCommandData(data) && !result.success) {
       if (
+        result.logs &&
         result.logs.length &&
         (result.logs[result.logs.length - 1].details as unknown as string)?.includes('TakaroUserError')
       ) {
