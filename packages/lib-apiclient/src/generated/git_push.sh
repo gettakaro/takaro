@@ -31,6 +31,13 @@ fi
 # Initialize the local directory as a Git repository
 git init
 
+# Check for any changes
+git diff --quiet --exit-code
+if [ $? -eq 0 ]; then
+    echo "No changes to commit."
+    exit 0
+fi
+
 # Adds the files in the local repository and stages them for commit.
 git add .
 
