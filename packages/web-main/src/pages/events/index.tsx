@@ -9,7 +9,7 @@ import { EventFilter } from 'components/events/EventFilter';
 import { EventFilterTag } from 'components/events/EventFilter/Tag';
 import { EventFilterTagList } from 'components/events/EventFilter/TagList';
 import { EventSearch } from 'components/events/EventSearch';
-import { TreeFilter } from 'components/events/TreeFilter';
+import { TreeFilter, TreeNode } from 'components/events/TreeFilter';
 import { Filter, Operator } from 'components/events/types';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { useSocket } from 'hooks/useSocket';
@@ -21,9 +21,10 @@ import { FC, useEffect, useState } from 'react';
 import { HiStop as PauseIcon, HiPlay as PlayIcon, HiArrowPath as RefreshIcon } from 'react-icons/hi2';
 import { ContentContainer, EventFilterContainer, Filters, Flex, Header, ScrollableContainer } from './style';
 
-const treeData = [
+const treeData: TreeNode[] = [
   {
     name: 'Gameserver',
+    defaultEnabled: true,
     children: [
       {
         name: EventName.PlayerConnected,
@@ -45,6 +46,9 @@ const treeData = [
       },
       {
         name: EventName.ServerStatusChanged,
+      },
+      {
+        name: EventName.PlayerCreated,
       },
     ],
   },
@@ -147,6 +151,17 @@ export const Events: FC = () => {
   const [events, setEvents] = useState<EventOutputDTO[] | null>(null);
 
   const { socket } = useSocket();
+
+  // If there are any events that are not in the treeData at this point, they're added to a new group called "Other"
+  const allEvents = Object.values(EventName);
+  const treeEvents = treeData.flatMap((branch) => branch.children?.map((node) => node.name) ?? []);
+  const otherEvents = allEvents.filter((event) => !treeEvents.includes(event));
+  if (otherEvents.length > 0) {
+    treeData.push({
+      name: 'Other',
+      children: otherEvents.map((event) => ({ name: event })),
+    });
+  }
 
   useEffect(() => {
     if (!live) {
