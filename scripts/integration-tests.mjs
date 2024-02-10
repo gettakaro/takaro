@@ -13,7 +13,7 @@ async function waitUntilHealthyHttp(url, maxRetries = 5) {
     if (stdout === '200') {
       return;
     }
-  } catch (err) {}
+  } catch (err) { }
 
   if (maxRetries > 0) {
     await sleep(1000);
@@ -23,9 +23,10 @@ async function waitUntilHealthyHttp(url, maxRetries = 5) {
   }
 }
 
+// Use env vars if set, otherwise generate random ones
 // These passwords are not super secure but it's better than hardcoding something like 'super_secret_password' here
-const POSTGRES_PASSWORD = randomUUID();
-const POSTGRES_ENCRYPTION_KEY = randomUUID();
+const POSTGRES_PASSWORD = process.env.POSTGRES_PASSWORD || randomUUID();
+const POSTGRES_ENCRYPTION_KEY = process.env.POSTGRES_ENCRYPTION_KEY || randomUUID();
 
 process.env = {
   ...process.env,
