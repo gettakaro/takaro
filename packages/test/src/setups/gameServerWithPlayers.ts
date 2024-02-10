@@ -17,6 +17,7 @@ export const setup = async function (this: IntegrationTest<ISetupData>): Promise
     type: 'MOCK',
     connectionInfo: JSON.stringify({
       host: integrationConfig.get('mockGameserver.host'),
+      name: 'mock1',
     }),
   });
 
@@ -25,6 +26,7 @@ export const setup = async function (this: IntegrationTest<ISetupData>): Promise
     type: 'MOCK',
     connectionInfo: JSON.stringify({
       host: integrationConfig.get('mockGameserver.host'),
+      name: 'mock2',
     }),
   });
 

@@ -221,6 +221,13 @@ export async function executeFunction(
       });
     }
 
+    if (err.constructor.name === 'SyntaxError') {
+      meta.result = await new TakaroEventFunctionResult().construct({
+        success: false,
+        reason: `SyntaxError: ${err.message}. Your javascript code is invalid.`,
+      });
+    }
+
     Sentry.captureException(err);
     log.error('executeFunction', err);
     await eventService.create(await new EventCreateDTO().construct({ ...eventData, meta }));

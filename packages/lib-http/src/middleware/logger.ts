@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { logger, ctx } from '@takaro/util';
 
 const SUPPRESS_BODY_KEYWORDS = ['password', 'newPassword'];
-const HIDDEN_ROUTES = ['/metrics', '/health', '/healthz', '/ready', '/readyz'];
+const HIDDEN_ROUTES = ['/metrics', '/health', '/healthz', '/ready', '/readyz', '/queues/api/queues'];
 import { context, trace } from '@opentelemetry/api';
 const log = logger('http');
 
@@ -13,7 +13,7 @@ const log = logger('http');
 export const LoggingMiddleware = ctx.wrap('HTTP', loggingMiddleware);
 
 async function loggingMiddleware(req: Request, res: Response, next: NextFunction) {
-  if (HIDDEN_ROUTES.includes(req.originalUrl)) {
+  if (HIDDEN_ROUTES.some((route) => req.originalUrl.startsWith(route))) {
     return next();
   }
 

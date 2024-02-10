@@ -1,4 +1,4 @@
-import { GameEvents, GameEventsMapping, EventPayload } from '@takaro/modules';
+import { GameEvents, GameEventsMapping, EventPayload, EventChatMessage } from '@takaro/modules';
 import {
   ModuleInstallationOutputDTO,
   PlayerOnGameserverOutputWithRolesDTO,
@@ -46,6 +46,8 @@ export interface ICommandJobData extends IJobData {
   player: PlayerOutputWithRolesDTO;
   pog: PlayerOnGameserverOutputWithRolesDTO;
   arguments: IParsedCommand['arguments'];
+  chatMessage: EventChatMessage;
+  trigger: string;
 }
 
 export type ICronJobData = IJobData;
