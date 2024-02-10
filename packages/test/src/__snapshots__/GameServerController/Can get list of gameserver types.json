@@ -4,7 +4,7 @@
     "data": [
       {
         "type": "MOCK",
-        "connectionInfoSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"title\":\"MockConnectionInfo\",\"type\":\"object\",\"properties\":{\"host\":{\"type\":\"string\"}},\"required\":[\"host\"]}"
+        "connectionInfoSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"title\":\"MockConnectionInfo\",\"type\":\"object\",\"properties\":{\"host\":{\"type\":\"string\"},\"name\":{\"type\":\"string\",\"default\":\"mock\"}},\"required\":[\"host\"]}"
       },
       {
         "type": "SEVENDAYSTODIE",

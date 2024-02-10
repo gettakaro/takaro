@@ -3,9 +3,9 @@ import { TakaroDTO } from '@takaro/util';
 
 export class MockConnectionInfo extends TakaroDTO<MockConnectionInfo> {
   @IsString()
-  public readonly host!: string;
+  public host!: string;
   @IsString()
-  public readonly name!: string;
+  public name!: string;
 }
 
 export const mockJsonSchema = {

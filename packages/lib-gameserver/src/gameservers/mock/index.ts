@@ -24,6 +24,7 @@ export class Mock implements IGameServer {
 
   constructor(config: MockConnectionInfo, private settings: Partial<Settings> = {}) {
     this.connectionInfo = config;
+    if (!this.connectionInfo.name) this.connectionInfo.name = 'default';
     this.io = io(this.connectionInfo.host, {
       query: {
         name: config.name,
