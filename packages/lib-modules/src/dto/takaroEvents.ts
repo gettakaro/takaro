@@ -35,6 +35,7 @@ export const TakaroEvents = {
   MODULE_DELETED: 'module-deleted',
   MODULE_INSTALLED: 'module-installed',
   MODULE_UNINSTALLED: 'module-uninstalled',
+  PLAYER_CREATED: 'player-created',
 } as const;
 
 export class BaseTakaroEvent<T> extends BaseEvent<T> {
@@ -261,6 +262,10 @@ export class TakaroEventModuleUninstalled extends BaseEvent<TakaroEventModuleUni
   @IsString()
   type = TakaroEvents.MODULE_UNINSTALLED;
 }
+export class TakaroEventPlayerCreated extends BaseEvent<TakaroEventPlayerCreated> {
+  @IsString()
+  type = TakaroEvents.PLAYER_CREATED;
+}
 
 export const TakaroEventsMapping = {
   [TakaroEvents.ROLE_ASSIGNED]: TakaroEventRoleAssigned,
@@ -281,4 +286,5 @@ export const TakaroEventsMapping = {
   [TakaroEvents.MODULE_DELETED]: TakaroEventModuleDeleted,
   [TakaroEvents.MODULE_INSTALLED]: TakaroEventModuleInstalled,
   [TakaroEvents.MODULE_UNINSTALLED]: TakaroEventModuleUninstalled,
+  [TakaroEvents.PLAYER_CREATED]: TakaroEventPlayerCreated,
 } as const;

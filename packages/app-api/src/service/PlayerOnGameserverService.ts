@@ -9,7 +9,7 @@ import { IItemDTO, IPlayerReferenceDTO } from '@takaro/gameserver';
 import { Type } from 'class-transformer';
 import { PlayerRoleAssignmentOutputDTO, RoleService } from './RoleService.js';
 import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
-import { IGamePlayer, TakaroEventCurrencyAdded, TakaroEventCurrencyDeducted } from '@takaro/modules';
+import { IGamePlayer, TakaroEventCurrencyAdded, TakaroEventCurrencyDeducted, TakaroEvents } from '@takaro/modules';
 import { PlayerService } from './PlayerService.js';
 
 export class PlayerOnGameserverOutputDTO extends TakaroModelDTO<PlayerOnGameserverOutputDTO> {
@@ -148,9 +148,12 @@ export class PlayerOnGameServerService extends TakaroService<
     return (await this.extend(data))[0];
   }
 
-  async create(item: PlayerOnGameServerCreateDTO) {
-    const created = await this.repo.create(item);
-    return this.findOne(created.id);
+  /**
+   * Not implemented, use the insertAssociation method instead
+   * @param _item
+   */
+  async create(_item: PlayerOnGameServerCreateDTO): Promise<PlayerOnGameserverOutputDTO> {
+    throw new errors.NotImplementedError();
   }
 
   async update(id: string, item: PlayerOnGameServerUpdateDTO) {
@@ -168,7 +171,18 @@ export class PlayerOnGameServerService extends TakaroService<
   }
 
   async insertAssociation(gameId: string, playerId: string, gameServerId: string) {
-    return this.repo.insertAssociation(gameId, playerId, gameServerId);
+    const created = await this.repo.insertAssociation(gameId, playerId, gameServerId);
+
+    const eventsService = new EventService(this.domainId);
+    await eventsService.create(
+      await new EventCreateDTO().construct({
+        eventName: TakaroEvents.PLAYER_CREATED,
+        playerId: playerId,
+        gameserverId: gameServerId,
+      })
+    );
+
+    return this.findOne(created.id);
   }
 
   async resolveRef(ref: IPlayerReferenceDTO, gameserverId: string): Promise<PlayerOnGameserverOutputWithRolesDTO> {
