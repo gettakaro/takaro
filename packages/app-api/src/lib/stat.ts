@@ -85,7 +85,7 @@ export class PlayerPingStat extends BaseStat {
 
   public async read(opts: PlayerPingStatReadOpts): Promise<PlayerPingStatOutput[]> {
     const subQ = flux`
-      |> filter(fn: (r) => r.playerId = ${fluxString(opts.playerId)} and r.gameServerId == ${fluxString(
+      |> filter(fn: (r) => r.playerId == ${fluxString(opts.playerId)} and r.gameServerId == ${fluxString(
       opts.gameServerId
     )})
       |> keep(columns: ["_time", "_value"])
