@@ -6,7 +6,7 @@ import { integrationConfig, sandbox } from './main.js';
 import { expect } from './test/expect.js';
 import { AdminClient, Client, AxiosResponse, isAxiosError } from '@takaro/apiclient';
 import { randomUUID } from 'crypto';
-import { retry } from '@takaro/util';
+import { logger, retry } from '@takaro/util';
 export class IIntegrationTest<SetupData> {
   snapshot!: boolean;
   group!: string;
@@ -19,13 +19,6 @@ export class IIntegrationTest<SetupData> {
   filteredFields?: string[];
 }
 
-const noopLog = {
-  info: () => {},
-  error: () => {},
-  warn: () => {},
-  debug: () => {},
-};
-
 const testDomainPrefix = 'integration-';
 
 const adminClient = new AdminClient({
@@ -35,7 +28,7 @@ const adminClient = new AdminClient({
     clientSecret: integrationConfig.get('auth.adminClientSecret'),
   },
   OAuth2URL: integrationConfig.get('auth.OAuth2URL'),
-  log: noopLog,
+  log: logger('test:adminClient'),
 });
 
 before(async () => {
@@ -61,8 +54,7 @@ before(async () => {
 });
 
 export class IntegrationTest<SetupData> {
-  protected log = noopLog;
-
+  private log = logger('test:integrationTest');
   public readonly adminClient: AdminClient = adminClient;
   public readonly client: Client;
 
