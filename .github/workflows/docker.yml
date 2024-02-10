@@ -110,6 +110,9 @@ jobs:
         run:  npx zx scripts/integration-tests.mjs
         env:
           DOCKER_TAG: ${{ needs.docker.outputs.docker_tag }}
+          LOGGING_LEVEL: verbose
+          LOGGING_JSON: true
+
       - uses: actions/upload-artifact@v3
         if: always()
         with:
