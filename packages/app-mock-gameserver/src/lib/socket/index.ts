@@ -40,10 +40,12 @@ class SocketServer {
     });
 
     this.io.on('connection', async (socket) => {
-      const instance = await getMockServer();
+      const name = socket.handshake.query.name as string;
+      const instance = await getMockServer(name);
 
-      this.log.info(`New connection: ${socket.id}`);
-      socket.onAny(async (event: keyof IMockGameServer | 'ping', ...args) => {
+      this.log.info(`New connection for ${name}: ${socket.id}`);
+      socket.onAny(async (event: keyof IMockGameServer | 'ping', name, ...args) => {
+        const instance = await getMockServer(name);
         this.log.verbose(`Event: ${event}`);
 
         if (event === 'ping') {

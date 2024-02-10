@@ -16,7 +16,8 @@ const tests = [
           gameServerId: [this.setupData.gameServer1.id],
         },
       });
-      expect(res.data.data.length).to.be.eq(this.setupData.players.length);
+      // Divide by 2 because we setup 2 test servers
+      expect(res.data.data.length).to.be.eq(this.setupData.players.length / 2);
     },
   }),
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
