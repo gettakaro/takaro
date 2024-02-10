@@ -67,6 +67,7 @@ services:
       dockerfile: containers/takaro/dev.Dockerfile
     command: ['sh']
     environment:
+      LOGGING_LEVEL: ${LOGGING_LEVEL:-info}
       NODE_OPTIONS: '--loader ts-node/esm'
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -91,7 +92,7 @@ services:
     volumes:
       - ./reports:/app/reports
     environment:
-      LOGGING_LEVEL: debug
+      LOGGING_LEVEL: ${LOGGING_LEVEL:-info}
       #LOGGING_MINIMAL: "true"
       REDIS_HOST: 'redis'
       JWT_SECRET: '${JWT_SECRET}'
@@ -126,7 +127,7 @@ services:
     restart: always
     container_name: takaro_mock_gameserver
     environment:
-      LOGGING_LEVEL: debug
+      LOGGING_LEVEL: ${LOGGING_LEVEL:-info}
       REDIS_HOST: 'redis'
     ports:
       - 3002:3002
@@ -135,7 +136,7 @@ services:
     restart: always
     container_name: takaro_connector
     environment:
-      LOGGING_LEVEL: debug
+      LOGGING_LEVEL: ${LOGGING_LEVEL:-info}
       REDIS_HOST: 'redis'
       ADMIN_CLIENT_ID: ${ADMIN_CLIENT_ID}
       ADMIN_CLIENT_SECRET: ${ADMIN_CLIENT_SECRET}
