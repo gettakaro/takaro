@@ -34,7 +34,12 @@ class DiscordBot {
         resolve();
       });
 
-      this.client.on('messageCreate', (message) => this.messageHandler(message));
+      if (config.get('discord.handleEvents')) {
+        this.log.info('Setting up event handling');
+        this.client.on('messageCreate', (message) => this.messageHandler(message));
+      } else {
+        this.log.info('Event handling is disabled');
+      }
 
       try {
         await this.client.login(config.get('discord.botToken'));
