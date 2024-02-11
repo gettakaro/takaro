@@ -139,7 +139,7 @@ class CommandExecuteInputDTO extends TakaroDTO<CommandExecuteInputDTO> {
 class MessageSendInputDTO extends TakaroDTO<MessageSendInputDTO> {
   @IsString()
   @MinLength(1)
-  @MaxLength(150)
+  @MaxLength(250)
   message!: string;
 
   @Type(() => IMessageOptsDTO)
