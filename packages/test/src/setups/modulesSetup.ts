@@ -1,6 +1,6 @@
 import { ModuleOutputDTO, GameServerOutputDTO, RoleOutputDTO, PlayerOutputDTO } from '@takaro/apiclient';
-import { integrationConfig, IntegrationTest, EventsAwaiter } from '@takaro/test';
-import { EventTypes, GameEvents } from '../dto/index.js';
+import { EventTypes, HookEvents } from '@takaro/modules';
+import { EventsAwaiter, IntegrationTest, integrationConfig } from '../main.js';
 
 export interface IDetectedEvent {
   event: EventTypes;
@@ -23,7 +23,7 @@ export interface IModuleTestsSetupData {
   eventAwaiter: EventsAwaiter;
 }
 
-export const sorter = (a: IDetectedEvent, b: IDetectedEvent) => {
+export const chatMessageSorter = (a: IDetectedEvent, b: IDetectedEvent) => {
   if (a.data.msg < b.data.msg) {
     return -1;
   }
@@ -38,13 +38,27 @@ export const modulesTestSetup = async function (
 ): Promise<IModuleTestsSetupData> {
   const modules = (await this.client.module.moduleControllerSearch()).data.data;
 
-  const gameserver = await this.client.gameserver.gameServerControllerCreate({
+  const eventAwaiter = new EventsAwaiter();
+  await eventAwaiter.connect(this.client);
+  // 10 players, 10 pogs should be created
+  const playerCreatedEvents = eventAwaiter.waitForEvents(HookEvents.PLAYER_CREATED, 20);
+
+  const gameServer1 = await this.client.gameserver.gameServerControllerCreate({
+    name: 'Gameserver 1',
+    type: 'MOCK',
     connectionInfo: JSON.stringify({
       host: integrationConfig.get('mockGameserver.host'),
-      name: 'integration-mock',
+      name: `test-${this.test.name}-${this.standardDomainId}-1`,
     }),
+  });
+
+  const gameServer2 = await this.client.gameserver.gameServerControllerCreate({
+    name: 'Gameserver 2',
     type: 'MOCK',
-    name: 'Test gameserver',
+    connectionInfo: JSON.stringify({
+      host: integrationConfig.get('mockGameserver.host'),
+      name: `test-${this.test.name}-${this.standardDomainId}-2`,
+    }),
   });
 
   const teleportsModule = modules.find((m) => m.name === 'teleports');
@@ -71,20 +85,25 @@ export const modulesTestSetup = async function (
   const geoBlockModule = modules.find((m) => m.name === 'geoBlock');
   if (!geoBlockModule) throw new Error('geoBlock module not found');
 
-  const eventAwaiter = new EventsAwaiter();
-  await eventAwaiter.connect(this.client);
+  await Promise.all([
+    this.client.gameserver.gameServerControllerExecuteCommand(gameServer1.data.data.id, { command: 'connectAll' }),
+    this.client.gameserver.gameServerControllerExecuteCommand(gameServer2.data.data.id, { command: 'connectAll' }),
+  ]);
 
-  const connectedEvents = eventAwaiter.waitForEvents(GameEvents.PLAYER_CONNECTED, 5);
-
-  await this.client.gameserver.gameServerControllerExecuteCommand(gameserver.data.data.id, {
-    command: 'connectAll',
-  });
-  await connectedEvents;
+  await playerCreatedEvents;
 
   const permissions = await this.client.permissionCodesToInputs(['ROOT']);
   const roleRes = await this.client.role.roleControllerCreate({ name: 'test role', permissions });
 
-  const playersRes = await this.client.player.playerControllerSearch({ extend: ['playerOnGameServers'] });
+  const pogsRes = (
+    await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
+      filters: { gameServerId: [gameServer1.data.data.id] },
+    })
+  ).data.data;
+  const playersRes = await this.client.player.playerControllerSearch({
+    filters: { id: pogsRes.map((p) => p.playerId) },
+    extend: ['playerOnGameServers'],
+  });
 
   await Promise.all(
     playersRes.data.data.map(async (player) => {
@@ -102,7 +121,7 @@ export const modulesTestSetup = async function (
     economyUtilsModule,
     lotteryModule,
     geoBlockModule,
-    gameserver: gameserver.data.data,
+    gameserver: gameServer1.data.data,
     role: roleRes.data.data,
     players: playersRes.data.data,
     eventAwaiter,

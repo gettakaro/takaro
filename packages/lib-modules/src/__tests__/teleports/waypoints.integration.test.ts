@@ -1,5 +1,5 @@
 import { IntegrationTest, expect, integrationConfig } from '@takaro/test';
-import { IModuleTestsSetupData, modulesTestSetup } from '../setupData.integration.test.js';
+import { IModuleTestsSetupData, modulesTestSetup } from '@takaro/test';
 import { GameEvents } from '../../dto/index.js';
 import { GameServerTypesOutputDTOTypeEnum, PlayerOutputDTO, RoleOutputDTO } from '@takaro/apiclient';
 
