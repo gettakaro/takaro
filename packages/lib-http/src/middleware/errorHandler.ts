@@ -46,7 +46,10 @@ export async function ErrorHandler(
 
   // If error is a JSON.parse error
   if (originalError instanceof SyntaxError) {
-    if (originalError.message.includes('Unexpected token')) {
+    if (
+      originalError.message.includes('Unexpected token') ||
+      originalError.message.includes('Unexpected end of JSON input')
+    ) {
       status = 400;
       parsedError = new errors.BadRequestError('Invalid JSON');
     }
