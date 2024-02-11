@@ -3,7 +3,6 @@ import { errors } from '@takaro/util';
 import { AuthenticatedRequest } from '../service/AuthService.js';
 import { SETTINGS_KEYS, SettingsService } from '../service/SettingsService.js';
 import { PlayerOnGameServerService, PlayerOnGameserverOutputDTO } from '../service/PlayerOnGameserverService.js';
-import { PlayerService } from '../service/PlayerService.js';
 
 export async function onlyIfEconomyEnabledMiddleware(
   req: AuthenticatedRequest,
@@ -16,13 +15,12 @@ export async function onlyIfEconomyEnabledMiddleware(
 
     // Could be a playerOnGameServer route
     const playerOnGameServerService = new PlayerOnGameServerService(req.domainId);
-    const playerService = new PlayerService(req.domainId);
 
     let maybePlayer: PlayerOnGameserverOutputDTO | null = null;
 
     if (req.params.playerId && req.params.gameServerId) {
       // This is a playerOnGameServer route, lets resolve the ref
-      maybePlayer = await playerService.getRef(req.params.playerId, req.params.gameServerId);
+      maybePlayer = await playerOnGameServerService.getPog(req.params.playerId, req.params.gameServerId);
     }
 
     if (req.params.sender && req.params.receiver) {

@@ -115,6 +115,9 @@ export class GameServerService extends TakaroService<
   GameServerCreateDTO,
   GameServerUpdateDTO
 > {
+  private playerService = new PlayerService(this.domainId);
+  private pogService = new PlayerOnGameServerService(this.domainId);
+
   get repo() {
     return new GameServerRepo(this.domainId);
   }
@@ -374,10 +377,10 @@ export class GameServerService extends TakaroService<
   }
 
   async teleportPlayer(gameServerId: string, playerId: string, position: IPosition) {
-    const playerService = new PlayerService(this.domainId);
     const gameInstance = await this.getGame(gameServerId);
+
     return gameInstance.teleportPlayer(
-      await playerService.getRef(playerId, gameServerId),
+      await this.pogService.getPog(playerId, gameServerId),
       position.x,
       position.y,
       position.z
@@ -385,8 +388,7 @@ export class GameServerService extends TakaroService<
   }
 
   async banPlayer(gameServerId: string, playerId: string, reason: string, expiresAt: string) {
-    const playerService = new PlayerService(this.domainId);
-    const player = await playerService.getRef(playerId, gameServerId);
+    const player = await this.pogService.getPog(playerId, gameServerId);
     const gameInstance = await this.getGame(gameServerId);
     return gameInstance.banPlayer(
       await new BanDTO().construct({
@@ -398,15 +400,13 @@ export class GameServerService extends TakaroService<
   }
 
   async kickPlayer(gameServerId: string, playerId: string, reason: string) {
-    const playerService = new PlayerService(this.domainId);
-    const player = await playerService.getRef(playerId, gameServerId);
+    const player = await this.pogService.getPog(playerId, gameServerId);
     const gameInstance = await this.getGame(gameServerId);
     return gameInstance.kickPlayer(player, reason);
   }
 
   async unbanPlayer(gameServerId: string, playerId: string) {
-    const playerService = new PlayerService(this.domainId);
-    const player = await playerService.getRef(playerId, gameServerId);
+    const player = await this.pogService.getPog(playerId, gameServerId);
     const gameInstance = await this.getGame(gameServerId);
     return gameInstance.unbanPlayer(player);
   }
@@ -416,50 +416,28 @@ export class GameServerService extends TakaroService<
     return gameInstance.listBans();
   }
   async giveItem(gameServerId: string, playerId: string, item: string, amount: number) {
-    const playerService = new PlayerService(this.domainId);
     const gameInstance = await this.getGame(gameServerId);
-    const playerRef = await playerService.getRef(playerId, gameServerId);
-    return gameInstance.giveItem(playerRef, item, amount);
+    const pog = await this.pogService.getPog(playerId, gameServerId);
+    return gameInstance.giveItem(pog, item, amount);
   }
 
   async getPlayers(gameServerId: string) {
     const gameInstance = await this.getGame(gameServerId);
-    const players = await gameInstance.getPlayers();
-
-    const playerOnGameServerService = new PlayerOnGameServerService(this.domainId);
-
-    try {
-      await Promise.all(
-        players.map(async (player) =>
-          playerOnGameServerService.addInfo(
-            player,
-            gameServerId,
-            await new PlayerOnGameServerUpdateDTO().construct({
-              ping: player.ping,
-              ip: player.ip,
-            })
-          )
-        )
-      );
-    } catch (error) {
-      this.log.warn('Failed to update player info', { error });
-    }
-
-    return players;
+    const gamePlayers = await gameInstance.getPlayers();
+    return gamePlayers;
   }
 
   async getPlayerLocation(gameServerId: string, playerId: string) {
-    const playerService = new PlayerService(this.domainId);
     const gameInstance = await this.getGame(gameServerId);
-    const playerRef = await playerService.getRef(playerId, gameServerId);
-    const location = await gameInstance.getPlayerLocation(playerRef);
+    const pog = await this.pogService.getPog(playerId, gameServerId);
+    const location = await gameInstance.getPlayerLocation(pog);
 
     if (!location) return location;
 
     const playerOnGameServerService = new PlayerOnGameServerService(this.domainId);
-    await playerOnGameServerService.addInfo(
-      playerRef,
-      gameServerId,
+
+    await playerOnGameServerService.update(
+      pog.id,
       await new PlayerOnGameServerUpdateDTO().construct({
         positionX: location.x,
         positionY: location.y,
@@ -497,7 +475,7 @@ export class GameServerService extends TakaroService<
     await Promise.all(
       onlinePlayers.map(async (p) => {
         const inventory = await gameInstance.getPlayerInventory(p);
-        const pog = await pogService.resolveRef(p, gameServerId);
+        const { pog } = await this.playerService.resolveRef(p, gameServerId);
         if (!pog) throw new errors.NotFoundError('Player not found');
         await pogRepo.syncInventory(pog.id, gameServerId, inventory);
       })

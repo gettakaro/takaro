@@ -5,7 +5,7 @@ import { TakaroDTO, TakaroModelDTO, ctx, errors, traceableClass } from '@takaro/
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { PlayerOnGameServerModel, PlayerOnGameServerRepo } from '../db/playerOnGameserver.js';
-import { IItemDTO, IPlayerReferenceDTO } from '@takaro/gameserver';
+import { IItemDTO } from '@takaro/gameserver';
 import { Type } from 'class-transformer';
 import { PlayerRoleAssignmentOutputDTO, RoleService } from './RoleService.js';
 import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
@@ -107,6 +107,8 @@ export class PlayerOnGameServerService extends TakaroService<
   PlayerOnGameServerCreateDTO,
   PlayerOnGameServerUpdateDTO
 > {
+  private playerService = new PlayerService(this.domainId);
+
   get repo() {
     return new PlayerOnGameServerRepo(this.domainId);
   }
@@ -128,6 +130,16 @@ export class PlayerOnGameServerService extends TakaroService<
           role: roles.results[0],
         })
       );
+    }
+
+    // Filter out any roles that are expired
+    for (const player of players) {
+      player.roles = player.roles.filter((role) => {
+        if (role.expiresAt) {
+          return new Date(role.expiresAt) > new Date();
+        }
+        return true;
+      });
     }
 
     return players;
@@ -166,8 +178,18 @@ export class PlayerOnGameServerService extends TakaroService<
     return id;
   }
 
-  async findAssociations(gameId: string, gameServerId: string) {
-    return this.repo.findGameAssociations(gameId, gameServerId);
+  async getPog(playerId: string, gameserverId: string): Promise<PlayerOnGameserverOutputDTO> {
+    return this.repo.getPog(playerId, gameserverId);
+  }
+
+  async findAssociations(gameId: string, gameServerId: string): Promise<PlayerOnGameserverOutputWithRolesDTO | null> {
+    const pogModel = await this.repo.findGameAssociations(gameId, gameServerId);
+
+    if (!pogModel) {
+      return null;
+    }
+
+    return this.findOne(pogModel.id);
   }
 
   async insertAssociation(gameId: string, playerId: string, gameServerId: string) {
@@ -183,26 +205,6 @@ export class PlayerOnGameServerService extends TakaroService<
     );
 
     return this.findOne(created.id);
-  }
-
-  async resolveRef(ref: IPlayerReferenceDTO, gameserverId: string): Promise<PlayerOnGameserverOutputWithRolesDTO> {
-    const pog = await this.repo.resolveRef(ref, gameserverId);
-
-    // This is a bit weird, it's not necessary to resolve the player here
-    // But this triggers role-expiry logic...
-    const playerService = new PlayerService(this.domainId);
-    await playerService.findOne(pog.playerId);
-
-    return this.findOne(pog.id);
-  }
-
-  async getRef(playerId: string, gameserverId: string): Promise<PlayerOnGameserverOutputDTO> {
-    return this.repo.getRef(playerId, gameserverId);
-  }
-
-  async addInfo(ref: IPlayerReferenceDTO, gameserverId: string, data: PlayerOnGameServerUpdateDTO) {
-    const resolved = await this.resolveRef(ref, gameserverId);
-    return this.update(resolved.id, data);
   }
 
   async setCurrency(id: string, currency: number) {
