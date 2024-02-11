@@ -133,6 +133,7 @@ async function main() {
       await run('takaro', 'npm run test', { ...composeOpts, NODE_ENV: test });
     }
   } catch (error) {
+    console.error(error);
     console.error('Tests failed');
     failed = true;
   }
