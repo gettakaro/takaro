@@ -1,9 +1,10 @@
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
-import React, { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { JsonSchemaForm } from '..';
 import { Button } from '@takaro/lib-components';
-import { SelectedGameServerContext } from 'context/selectedGameServerContext';
-import { useGameServers } from 'queries/gameservers';
+import { SelectedGameServerContext } from 'hooks/useSelectedGameServerContext';
+import { gameServersOptions } from 'queries/gameservers';
+import { useQuery } from '@tanstack/react-query';
 
 export default {
   title: 'Schema/Widgets/Item',
@@ -12,12 +13,13 @@ export default {
 export const Default = () => {
   const fieldId = 'item';
 
-  const { data, isLoading } = useGameServers();
-  const [selectedGameServerId, setSelectedGameServerId] = React.useState<string>();
+  const { data, isLoading } = useQuery(gameServersOptions({}));
+  const [selectedGameServerId, setSelectedGameServerId] = useState<string>();
 
   useEffect(() => {
     if (data) {
-      setSelectedGameServerId(data.pages[0].data[0].id);
+      // TODO
+      // setSelectedGameServerId(data.pages[0].data[0].id);
     }
   }, [data]);
 

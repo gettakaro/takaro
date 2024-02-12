@@ -1,1 +1,1 @@
-export { useEvents } from './queries';
+export { eventsOptions } from './queries';

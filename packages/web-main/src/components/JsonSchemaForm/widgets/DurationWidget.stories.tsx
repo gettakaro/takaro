@@ -1,7 +1,6 @@
-import React from 'react';
 import { JsonSchemaForm } from '..';
 import { styled, Button } from '@takaro/lib-components';
-import { InputType } from '../../../pages/ModuleDefinitions/schemaConversion/inputTypes';
+import { InputType } from '../../../routes/_auth/-modules/schemaConversion/inputTypes';
 import { SchemaObject } from 'ajv';
 
 const Container = styled.div`

@@ -3,25 +3,23 @@ import { NavbarLink, renderLink } from '.';
 import { GameServerSelectNav } from './GameServerSelectNav';
 import { Button } from '@takaro/lib-components';
 import { PERMISSIONS } from '@takaro/apiclient';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 import {
   AiOutlineAppstore as DashboardIcon,
   AiOutlineSetting as SettingsIcon,
   AiOutlineFunction as ModulesIcon,
   AiOutlinePlus as AddServerIcon,
 } from 'react-icons/ai';
-import { PATHS } from 'paths';
-import { useGameServers } from 'queries/gameservers';
+import { gameServersOptions } from 'queries/gameservers';
 import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 import { Nav, NoServersCallToAction } from './style';
+import { useQuery } from '@tanstack/react-query';
 
 // this needs to be separated from the rest of the navbar because it depends on the READ_GAMESERVERS permission.
 // Since the data hook is otherwise at the top level, it would result in an unwanted 401/403 response.
 export const GameServerNav: FC = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-
-  const { data } = useGameServers();
+  const { data } = useQuery(gameServersOptions({}));
   const { selectedGameServerId, setSelectedGameServerId } = useSelectedGameServer();
 
   const gameServerLinks: NavbarLink[] = useMemo(() => {
@@ -29,34 +27,45 @@ export const GameServerNav: FC = () => {
       {
         label: 'Dashboard',
         // If serverId is not valid it will be directed by the failed requests.
-        path: PATHS.gameServer.dashboard.overview(selectedGameServerId),
+
+        linkProps: {
+          to: '/gameserver/$gameServerId/dashboard/overview',
+          params: { gameServerId: selectedGameServerId },
+        },
         icon: <DashboardIcon />,
         requiredPermissions: [PERMISSIONS.ReadGameservers],
       },
       {
         label: 'Modules',
-        path: PATHS.gameServer.modules(selectedGameServerId),
+        linkProps: {
+          to: '/gameserver/$gameServerId/modules',
+          params: { gameServerId: selectedGameServerId },
+        },
         icon: <ModulesIcon />,
         requiredPermissions: [PERMISSIONS.ReadGameservers, PERMISSIONS.ReadModules],
       },
       {
         label: 'Settings',
-        path: PATHS.gameServer.settings(selectedGameServerId),
+        linkProps: {
+          to: '/gameserver/$gameServerId/settings',
+          params: { gameServerId: selectedGameServerId },
+        },
         icon: <SettingsIcon />,
         requiredPermissions: [PERMISSIONS.ReadSettings, PERMISSIONS.ReadGameservers],
       },
     ];
   }, [selectedGameServerId]);
 
-  const isInGameServerNav = gameServerLinks.some((link) => location.pathname.includes(link.path));
+  // TODO: not sure how to handle this yet.
+  // const isInGameServerNav = gameServerLinks.some((link) => location.pathname.includes(link.path));
 
   return (
     <Nav data-testid="server-nav">
-      {data && data.pages[0].data.length > 0 ? (
+      {data && data.data.length > 0 ? (
         <>
           <h3>Server</h3>
           <GameServerSelectNav
-            isInGameServerNav={isInGameServerNav}
+            isInGameServerNav={false}
             serverId={selectedGameServerId}
             setServerId={setSelectedGameServerId}
           />
@@ -74,7 +83,7 @@ export const GameServerNav: FC = () => {
             <Button
               icon={<AddServerIcon />}
               fullWidth
-              onClick={() => navigate(PATHS.gameServers.create())}
+              onClick={() => navigate({ to: '/gameservers/create' })}
               text="Add a server"
             />
           </NoServersCallToAction>

@@ -2,7 +2,6 @@ import { ModuleInstallationOutputDTO, ModuleOutputDTO, PERMISSIONS } from '@taka
 import { Dialog, Button, IconButton, Card, useTheme, Dropdown, ValueConfirmationField } from '@takaro/lib-components';
 import { PermissionsGuard } from 'components/PermissionsGuard';
 
-import { PATHS } from 'paths';
 import { FC, useState, MouseEvent } from 'react';
 import {
   AiOutlineDelete as DeleteIcon,
@@ -12,7 +11,7 @@ import {
   AiOutlineEye as ViewIcon,
 } from 'react-icons/ai';
 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 import { SpacedRow, ActionIconsContainer, CardBody } from '../style';
 import { useGameServerModuleUninstall } from 'queries/gameservers';
 import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
@@ -47,17 +46,23 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation }) =
   };
 
   const handleOnOpenClick = () => {
-    window.open(PATHS.studio.module(mod.id));
-  };
-
-  const handleConfigureClick = (e: MouseEvent) => {
-    e.stopPropagation();
-    navigate(PATHS.gameServer.moduleInstallations.install(selectedGameServerId, mod.id));
+    window.open(`/studio/${mod.id}`, '_blank');
   };
 
   const handleOnViewModuleConfigClick = (e: MouseEvent) => {
     e.stopPropagation();
-    navigate(PATHS.gameServer.moduleInstallations.view(selectedGameServerId, mod.id));
+    navigate({
+      to: '/gameserver/$gameServerId/module/$moduleId/install/view',
+      params: { gameServerId: selectedGameServerId, moduleId: mod.id },
+    });
+  };
+
+  const handleInstallConfigureClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    navigate({
+      to: '/gameserver/$gameServerId/module/$moduleId/install',
+      params: { gameServerId: selectedGameServerId, moduleId: mod.id },
+    });
   };
 
   return (
@@ -81,7 +86,7 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation }) =
                       />
                       <Dropdown.Menu.Item
                         icon={<ConfigIcon />}
-                        onClick={handleConfigureClick}
+                        onClick={handleInstallConfigureClick}
                         label="Configure module "
                       />
                       <Dropdown.Menu.Item
@@ -106,14 +111,7 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation }) =
               {mod.cronJobs.length > 0 && <p>Cronjobs: {mod.cronJobs.length}</p>}
             </span>
             <ActionIconsContainer>
-              {!installation && (
-                <Button
-                  text="Install"
-                  onClick={() => {
-                    navigate(PATHS.gameServer.moduleInstallations.install(selectedGameServerId, mod.id));
-                  }}
-                />
-              )}
+              {!installation && <Button text="Install" onClick={handleInstallConfigureClick} />}
             </ActionIconsContainer>
           </SpacedRow>
         </CardBody>

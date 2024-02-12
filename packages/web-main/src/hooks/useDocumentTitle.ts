@@ -1,6 +1,7 @@
-import { useGameServer } from 'queries/gameservers';
+import { gameServerOptions } from 'queries/gameservers';
 import { useEffect } from 'react';
 import { useSelectedGameServer } from './useSelectedGameServerContext';
+import { useQuery } from '@tanstack/react-query';
 
 export function useDocumentTitle(title: string) {
   useEffect(() => {
@@ -20,7 +21,7 @@ export function useDocumentTitle(title: string) {
 // alternative version that adds the currently selected gameServer name to the title
 export function useGameServerDocumentTitle(title: string) {
   const { selectedGameServerId } = useSelectedGameServer();
-  const { data: gameServer, isLoading } = useGameServer(selectedGameServerId);
+  const { data: gameServer, isLoading } = useQuery(gameServerOptions(selectedGameServerId));
 
   if (selectedGameServerId === null) {
     throw new Error('useGameServerDocumentTitle must be used within a GameServerRoute');

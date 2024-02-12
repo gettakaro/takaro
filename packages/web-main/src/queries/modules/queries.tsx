@@ -1,5 +1,5 @@
-import { useInfiniteQuery, useMutation, useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
-import { useApiClient } from 'hooks/useApiClient';
+import { useMutation, useQueryClient, queryOptions } from '@tanstack/react-query';
+import { getApiClient } from 'util/getApiClient';
 import {
   CommandCreateDTO,
   CommandOutputDTO,
@@ -26,11 +26,9 @@ import {
   ModuleSearchInputDTO,
   ModuleUpdateDTO,
 } from '@takaro/apiclient';
-import { InfiniteScroll as InfiniteScrollComponent } from '@takaro/lib-components';
 
-import { hasNextPage, mutationWrapper } from '../util';
+import { mutationWrapper } from '../util';
 import { AxiosError } from 'axios';
-import { useMemo } from 'react';
 import { ErrorMessageMapping } from '@takaro/lib-components/src/errors';
 
 export const moduleKeys = {
@@ -79,64 +77,20 @@ const defaultFunctionErrorMessages: Partial<ErrorMessageMapping> = {
   UniqueConstraintError: 'Function with this name already exists',
 };
 
-export const useInfiniteModules = ({ page, ...queryParams }: ModuleSearchInputDTO = { page: 0 }) => {
-  const apiClient = useApiClient();
-
-  const queryOpts = useInfiniteQuery<ModuleOutputArrayDTOAPI, AxiosError<ModuleOutputArrayDTOAPI>>({
+export const modulesOptions = (queryParams: ModuleSearchInputDTO = {}) =>
+  queryOptions<ModuleOutputArrayDTOAPI, AxiosError<ModuleOutputArrayDTOAPI>>({
     queryKey: [...moduleKeys.list(), { ...queryParams }],
-    queryFn: async ({ pageParam }) =>
-      (
-        await apiClient.module.moduleControllerSearch({
-          ...queryParams,
-          page: pageParam as number,
-        })
-      ).data,
-    initialPageParam: page,
-    getNextPageParam: (lastPage, pages) => hasNextPage(lastPage.meta, pages.length),
+    queryFn: async () => (await getApiClient().module.moduleControllerSearch(queryParams)).data,
   });
 
-  const InfiniteScroll = useMemo(() => {
-    return <InfiniteScrollComponent {...queryOpts} />;
-  }, [queryOpts]);
-
-  return { ...queryOpts, InfiniteScroll };
-};
-
-export const useModules = (queryParams: ModuleSearchInputDTO = { page: 0 }, opts?: any) => {
-  const apiClient = useApiClient();
-
-  const queryOpts = useInfiniteQuery<ModuleOutputArrayDTOAPI, AxiosError<ModuleOutputArrayDTOAPI>>({
-    queryKey: [...moduleKeys.list(), { ...queryParams }],
-    queryFn: async ({ pageParam }) =>
-      (
-        await apiClient.module.moduleControllerSearch({
-          ...queryParams,
-          page: pageParam as number,
-        })
-      ).data,
-    placeholderData: keepPreviousData,
-    getNextPageParam: (lastPage, pages) => hasNextPage(lastPage.meta, pages.length),
-    ...opts,
+export const moduleOptions = (moduleId: string) =>
+  queryOptions<ModuleOutputDTO, AxiosError<ModuleOutputDTOAPI>>({
+    queryKey: moduleKeys.detail(moduleId),
+    queryFn: async () => (await getApiClient().module.moduleControllerGetOne(moduleId)).data.data,
   });
-
-  const InfiniteScroll = useMemo(() => {
-    return <InfiniteScrollComponent {...queryOpts} />;
-  }, [queryOpts]);
-
-  return { ...queryOpts, InfiniteScroll };
-};
-
-export const useModule = (id: string) => {
-  const apiClient = useApiClient();
-
-  return useQuery<ModuleOutputDTO, AxiosError<ModuleOutputDTOAPI>>({
-    queryKey: moduleKeys.detail(id),
-    queryFn: async () => (await apiClient.module.moduleControllerGetOne(id)).data.data,
-  });
-};
 
 export const useModuleCreate = () => {
-  const apiClient = useApiClient();
+  const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
   return mutationWrapper<ModuleOutputDTO, ModuleCreateDTO>(
@@ -158,7 +112,7 @@ interface ModuleRemove {
 }
 
 export const useModuleRemove = () => {
-  const apiClient = useApiClient();
+  const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
   return mutationWrapper<IdUuidDTO, ModuleRemove>(
@@ -178,7 +132,7 @@ interface ModuleUpdate {
   id: string;
 }
 export const useModuleUpdate = () => {
-  const apiClient = useApiClient();
+  const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
   return mutationWrapper<ModuleOutputDTO, ModuleUpdate>(
@@ -197,17 +151,14 @@ export const useModuleUpdate = () => {
 // ==================================
 //              hooks
 // ==================================
-export const useHook = (hookId: string) => {
-  const apiClient = useApiClient();
-
-  return useQuery<HookOutputDTO, AxiosError>({
+export const hookOptions = (hookId: string) =>
+  queryOptions<HookOutputDTO, AxiosError<HookOutputDTOAPI>>({
     queryKey: hookKeys.detail(hookId),
-    queryFn: async () => (await apiClient.hook.hookControllerGetOne(hookId)).data.data,
+    queryFn: async () => (await getApiClient().hook.hookControllerGetOne(hookId)).data.data,
   });
-};
 
 export const useHookCreate = () => {
-  const apiClient = useApiClient();
+  const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
   return mutationWrapper<HookOutputDTO, HookCreateDTO>(
@@ -228,7 +179,7 @@ interface HookRemove {
 }
 
 export const useHookRemove = ({ moduleId }) => {
-  const apiClient = useApiClient();
+  const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
   return mutationWrapper<IdUuidDTO, HookRemove>(
@@ -249,7 +200,7 @@ interface HookUpdate {
   hook: HookUpdateDTO;
 }
 export const useHookUpdate = () => {
-  const apiClient = useApiClient();
+  const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
   return mutationWrapper<HookOutputDTO, HookUpdate>(
@@ -268,17 +219,15 @@ export const useHookUpdate = () => {
 // ==================================
 //              commands
 // ==================================
-export const useCommand = (commandId: string) => {
-  const apiClient = useApiClient();
 
-  return useQuery<CommandOutputDTO, AxiosError<CommandOutputDTOAPI>>({
+export const commandOptions = (commandId: string) =>
+  queryOptions<CommandOutputDTO, AxiosError<CommandOutputDTOAPI>>({
     queryKey: commandKeys.detail(commandId),
-    queryFn: async () => (await apiClient.command.commandControllerGetOne(commandId)).data.data,
+    queryFn: async () => (await getApiClient().command.commandControllerGetOne(commandId)).data.data,
   });
-};
 
 export const useCommandCreate = () => {
-  const apiClient = useApiClient();
+  const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
   return mutationWrapper<CommandOutputDTO, CommandCreateDTO>(
@@ -299,7 +248,7 @@ interface CommandUpdate {
   command: CommandUpdateDTO;
 }
 export const useCommandUpdate = () => {
-  const apiClient = useApiClient();
+  const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
   return mutationWrapper<CommandOutputDTO, CommandUpdate>(
@@ -321,7 +270,7 @@ interface CommandRemove {
 }
 
 export const useCommandRemove = ({ moduleId }) => {
-  const apiClient = useApiClient();
+  const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
   return mutationWrapper<IdUuidDTO, CommandRemove>(
@@ -345,17 +294,14 @@ export const useCommandRemove = ({ moduleId }) => {
 // ==================================
 //              cronjobs
 // ==================================
-export const useCronJob = (cronJobId: string) => {
-  const apiClient = useApiClient();
-
-  return useQuery<CronJobOutputDTO, AxiosError<CronJobOutputDTOAPI>>({
-    queryKey: cronJobKeys.detail(cronJobId),
-    queryFn: async () => (await apiClient.cronjob.cronJobControllerGetOne(cronJobId)).data.data,
+export const cronjobOptions = (cronjobId: string) =>
+  queryOptions<CronJobOutputDTO, AxiosError<CronJobOutputDTOAPI>>({
+    queryKey: cronJobKeys.detail(cronjobId),
+    queryFn: async () => (await getApiClient().cronjob.cronJobControllerGetOne(cronjobId)).data.data,
   });
-};
 
 export const useCronJobCreate = () => {
-  const apiClient = useApiClient();
+  const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
   return mutationWrapper<CronJobOutputDTO, CronJobCreateDTO>(
@@ -382,7 +328,7 @@ interface CronJobUpdate {
   cronJob: CronJobUpdateDTO;
 }
 export const useCronJobUpdate = () => {
-  const apiClient = useApiClient();
+  const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
   return mutationWrapper<CronJobOutputDTO, CronJobUpdate>(
@@ -409,7 +355,7 @@ interface CronJobRemove {
 }
 
 export const useCronJobRemove = ({ moduleId }: { moduleId: string }) => {
-  const apiClient = useApiClient();
+  const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
   return mutationWrapper<IdUuidDTO, CronJobRemove>(
@@ -433,17 +379,15 @@ export const useCronJobRemove = ({ moduleId }: { moduleId: string }) => {
 // ==================================
 //              functions
 // ==================================
-export const useFunction = (functionId: string) => {
-  const apiClient = useApiClient();
 
-  return useQuery({
+export const functionOptions = (functionId: string) =>
+  queryOptions<FunctionOutputDTO, AxiosError<FunctionOutputDTOAPI>>({
     queryKey: functionKeys.detail(functionId),
-    queryFn: async () => (await apiClient.function.functionControllerGetOne(functionId)).data.data,
+    queryFn: async () => (await getApiClient().function.functionControllerGetOne(functionId)).data.data,
   });
-};
 
 export const useFunctionCreate = () => {
-  const apiClient = useApiClient();
+  const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
   return mutationWrapper<FunctionOutputDTO, FunctionCreateDTO>(
@@ -466,7 +410,7 @@ interface FunctionUpdate {
   fn: FunctionUpdateDTO;
 }
 export const useFunctionUpdate = () => {
-  const apiClient = useApiClient();
+  const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
   return mutationWrapper<FunctionOutputDTO, FunctionUpdate>(
@@ -490,7 +434,7 @@ interface FunctionRemove {
 }
 
 export const useFunctionRemove = () => {
-  const apiClient = useApiClient();
+  const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
   return mutationWrapper<IdUuidDTO, FunctionRemove>(

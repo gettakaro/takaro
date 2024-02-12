@@ -1,8 +1,8 @@
 import { Avatar, Chip, getInitials } from '@takaro/lib-components';
-import { PATHS } from 'paths';
-import { usePlayer } from 'queries/players';
+import { playerOptions } from 'queries/players';
 import { FC } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
+import { useQuery } from '@tanstack/react-query';
 
 interface PlayerProps {
   playerId: string;
@@ -16,7 +16,7 @@ interface PlayerProps {
 type PlayerContainerProps = Pick<PlayerProps, 'showAvatar' | 'playerId'>;
 
 export const PlayerContainer: FC<PlayerContainerProps> = ({ playerId, showAvatar }) => {
-  const { data: player, isLoading, error } = usePlayer(playerId);
+  const { data: player, isLoading, error } = useQuery(playerOptions(playerId));
 
   return (
     <Player
@@ -47,7 +47,8 @@ export const Player: FC<PlayerProps> = ({ playerId, name, avatarUrl, showAvatar,
 
   return (
     <Link
-      to={PATHS.player.global.profile(playerId)}
+      to={'/player/$playerId'}
+      params={{ playerId }}
       style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: 'fit-content' }}
     >
       {showAvatar && avatar}

@@ -1,1 +1,6 @@
-export { usePlayers, usePlayer, useInfinitePlayers } from './queries';
+export {
+  // queries
+  playerOptions,
+  playersOptions,
+  playerOnGameServersOptions,
+} from './queries';

@@ -1,0 +1,74 @@
+import { Divider, Skeleton, styled, useTheme } from '@takaro/lib-components';
+import { PERMISSIONS } from '@takaro/apiclient';
+import { modulesOptions } from 'queries/modules';
+import { useDocumentTitle } from 'hooks/useDocumentTitle';
+import { PermissionsGuard } from 'components/PermissionsGuard';
+import { AddCard, CardList, ModuleDefinitionCard } from 'components/cards';
+import { useNavigate, Outlet } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
+
+const SubHeader = styled.h2<{ withMargin?: boolean }>`
+  font-size: ${({ theme }) => theme.fontSize.mediumLarge};
+  margin-bottom: ${({ theme, withMargin }) => (withMargin ? theme.spacing[2] : 0)}};
+`;
+
+const SubText = styled.p`
+  margin-bottom: ${({ theme }) => theme.spacing[2]};
+`;
+
+export const Route = createFileRoute('/_auth/modules')({
+  loader: ({ context }) => context.queryClient.ensureQueryData(modulesOptions({})),
+  component: Component,
+  pendingComponent: () => {
+    return <Skeleton variant="rectangular" height="100%" width="100%" />;
+  },
+});
+
+function Component() {
+  useDocumentTitle('Modules');
+  const navigate = useNavigate();
+  const theme = useTheme();
+  const modules = Route.useLoaderData();
+
+  const flattenedModules = modules.data;
+  const builtinModules = flattenedModules.filter((mod) => mod.builtin);
+  const customModules = flattenedModules.filter((mod) => !mod.builtin);
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: theme.spacing[1] }}>
+      <p>
+        Modules are the building blocks of your game server. They consist of commands, cronjobs, or hooks. You can
+        install the built-in modules easily, just configure them!. Advanced users can create their own modules.
+      </p>
+
+      <Divider />
+      <PermissionsGuard requiredPermissions={[PERMISSIONS.ManageModules]}>
+        <SubHeader>Custom</SubHeader>
+        <SubText>
+          You can create your own modules by starting from scratch or by copying a built-in module. To copy a built-in
+          module click on a built-in module & inside the editor click on the copy icon next to it's name.
+        </SubText>
+        <CardList>
+          <PermissionsGuard requiredPermissions={[PERMISSIONS.ManageModules]}>
+            <AddCard title="Module" onClick={() => navigate({ to: '/modules/create' })} />
+          </PermissionsGuard>
+          {customModules.map((mod) => (
+            <ModuleDefinitionCard key={mod.id} mod={mod} />
+          ))}
+        </CardList>
+      </PermissionsGuard>
+      <SubHeader>Built-in</SubHeader>
+      <SubText>
+        These modules are built-in from Takaro and can be installed per server through the modules page for a selected
+        gameserver. If you want to view how they are implemented, you can view the source by clicking on a module.
+      </SubText>
+      <CardList>
+        {builtinModules.map((mod) => (
+          <ModuleDefinitionCard key={mod.id} mod={mod} />
+        ))}
+        <Outlet />
+      </CardList>
+      {/*InfiniteScroll*/}
+    </div>
+  );
+}

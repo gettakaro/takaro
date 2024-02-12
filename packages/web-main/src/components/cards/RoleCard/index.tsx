@@ -1,10 +1,9 @@
 import { FC, MouseEvent, useState } from 'react';
 import { Button, Card, Chip, Dialog, Dropdown, IconButton, Tooltip, useTheme } from '@takaro/lib-components';
 import { Header, TitleContainer } from './style';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 
 import { AiOutlineMenu as MenuIcon } from 'react-icons/ai';
-import { PATHS } from 'paths';
 import { useRoleRemove } from 'queries/roles/queries';
 import { RoleOutputDTO } from '@takaro/apiclient';
 import { CardBody } from '../style';
@@ -20,7 +19,7 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
 
   const handleOnEditClick = (e: MouseEvent): void => {
     e.stopPropagation();
-    navigate(PATHS.roles.update(id));
+    navigate({ to: '/roles/update/$roleId', params: { roleId: id } });
   };
   const handleOnDeleteClick = (e: MouseEvent) => {
     e.stopPropagation();
@@ -29,7 +28,7 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
 
   const handleOnViewClick = (e: MouseEvent) => {
     e.stopPropagation();
-    navigate(PATHS.roles.view(id));
+    navigate({ to: '/roles/view/$roleId', params: { roleId: id } });
   };
 
   const handleOnDelete = (e: MouseEvent) => {

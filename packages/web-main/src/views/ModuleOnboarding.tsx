@@ -1,5 +1,5 @@
 import { FC, PropsWithChildren } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 import { Card, styled } from '@takaro/lib-components';
 import { useCommandCreate, useCronJobCreate, useHookCreate } from 'queries/modules';
 

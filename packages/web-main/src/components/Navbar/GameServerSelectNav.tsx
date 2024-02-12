@@ -1,11 +1,11 @@
 import { FC, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { useGameServers } from 'queries/gameservers';
+import { gameServersOptions } from 'queries/gameservers';
 import { styled } from '@takaro/lib-components';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { PATHS } from 'paths';
+import { useNavigate } from '@tanstack/react-router';
 import { GameServerSelect } from 'components/selects';
 import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
+import { useQuery } from '@tanstack/react-query';
 
 export const StyledForm = styled.form`
   div {
@@ -23,40 +23,40 @@ interface GameServerSelectNavProps {
 
 export const GameServerSelectNav: FC<GameServerSelectNavProps> = ({ serverId, setServerId, isInGameServerNav }) => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { data, isLoading } = useGameServers();
+  const { data, isLoading } = useQuery(gameServersOptions());
+
+  const gameServers = data?.data ?? [];
+
   const { selectedGameServerId, setSelectedGameServerId } = useSelectedGameServer();
 
   const { control, watch, setValue } = useForm<FormFields>({
     mode: 'onChange',
-    defaultValues: {
+    values: {
       gameServerId: serverId,
     },
   });
-
-  // flatten pages into a single array
-  const gameServers = data?.pages.flatMap((page) => page.data);
 
   // handle gameserver change event from the server dropdown
   useEffect(() => {
     const subscription = watch(({ gameServerId }) => {
       if (gameServerId && gameServerId !== serverId) {
-        const newLink = location.pathname.replace(serverId, gameServerId);
+        const newLink = window.location.pathname.replace(serverId, gameServerId);
         setServerId(gameServerId);
 
         // in case you are  in the global nav and you change the server, you should navigate to the dashboard of that server.
         if (!isInGameServerNav) {
-          navigate(PATHS.gameServer.dashboard.overview(gameServerId));
+          navigate({ to: '/gameserver/$gameServerId/dashboard/overview', params: { gameServerId } });
           return;
         }
 
-        if (newLink !== location.pathname) {
-          navigate(newLink);
+        if (newLink !== window.location.pathname) {
+          // TODO
+          // navigate({ to: newLink });
         }
       }
     });
     return () => subscription.unsubscribe();
-  }, [watch('gameServerId'), location.pathname]);
+  }, [watch('gameServerId'), window.location.pathname]);
 
   // if the serverId changes from the outside, update the form value
   useEffect(() => {

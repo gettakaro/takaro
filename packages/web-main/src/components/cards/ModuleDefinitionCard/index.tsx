@@ -11,11 +11,10 @@ import {
   ValueConfirmationField,
 } from '@takaro/lib-components';
 import { PERMISSIONS } from '@takaro/apiclient';
-import { PATHS } from 'paths';
 import { useModuleRemove } from 'queries/modules';
 import { FC, useState, MouseEvent } from 'react';
 import { AiOutlineMenu as MenuIcon } from 'react-icons/ai';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 import { SpacedRow, ActionIconsContainer } from '../style';
 import { CardBody } from '../style';
 import { PermissionsGuard } from 'components/PermissionsGuard';
@@ -55,12 +54,12 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
 
   const handleOnEditClick = (e: MouseEvent) => {
     e.stopPropagation();
-    navigate(PATHS.modules.update(mod.id));
+    navigate({ to: '/modules/update/$moduleId', params: { moduleId: mod.id } });
   };
 
   const handleOnViewClick = (e: MouseEvent) => {
     e.stopPropagation();
-    navigate(PATHS.modules.view(mod.id));
+    navigate({ to: '/modules/view/$moduleId', params: { moduleId: mod.id } });
   };
 
   const handleOnDeleteClick = (e: MouseEvent) => {
@@ -73,8 +72,10 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
     setOpenCopyDialog(true);
   };
 
-  const handleOnOpenClick = () => {
-    window.open(PATHS.studio.module(mod.id));
+  const handleOnOpenClick = (e) => {
+    e.stopPropogation();
+    // TODO: should have menu item link?
+    navigate({ to: '/studio/$moduleId', params: { moduleId: mod.id } });
   };
 
   return (

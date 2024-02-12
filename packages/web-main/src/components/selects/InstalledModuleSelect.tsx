@@ -1,8 +1,9 @@
 import { SelectField, styled } from '@takaro/lib-components';
 import { FC } from 'react';
 import { CustomSelectProps } from '.';
-import { useGameServerModuleInstallations } from 'queries/gameservers';
+import { gameServerModuleInstallationsOptions } from 'queries/gameservers';
 import { ModuleInstallationOutputDTO } from '@takaro/apiclient';
+import { useQuery } from '@tanstack/react-query';
 
 const Inner = styled.div`
   display: flex;
@@ -34,8 +35,7 @@ export const InstalledModuleSelect: FC<InstalledModuleSelectProps> = ({
     throw new Error('InstalledModuleSelect: gameServerId is undefined');
   }
 
-  // TODO: extend with module
-  const { data: modules, isLoading: isLoadingData } = useGameServerModuleInstallations(gameServerId);
+  const { data: modules, isLoading: isLoadingData } = useQuery(gameServerModuleInstallationsOptions(gameServerId));
 
   if (isLoadingData) {
     // TODO: better loading state

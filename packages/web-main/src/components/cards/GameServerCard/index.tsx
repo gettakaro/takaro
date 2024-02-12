@@ -12,22 +12,21 @@ import {
   ValueConfirmationField,
 } from '@takaro/lib-components';
 import { EventOutputDTO, GameServerOutputDTO, PERMISSIONS } from '@takaro/apiclient';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 import {
   AiOutlineMenu as MenuIcon,
   AiOutlineDelete as DeleteIcon,
   AiOutlineEdit as EditIcon,
   AiOutlineLineChart as DashboardIcon,
 } from 'react-icons/ai';
-
-import { PATHS } from 'paths';
 import { Header, TitleContainer, DetailsContainer } from './style';
 import { useGameServerRemove } from 'queries/gameservers';
 import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 import { PermissionsGuard } from 'components/PermissionsGuard';
 import { CardBody } from '../style';
 import { useSocket } from 'hooks/useSocket';
-import { usePlayerOnGameServers } from 'queries/players/queries';
+import { playerOnGameServersOptions } from 'queries/players';
+import { useQuery } from '@tanstack/react-query';
 
 export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reachable }) => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
@@ -41,12 +40,14 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
     data: onlinePogs,
     isLoading: isLoadingPogs,
     refetch,
-  } = usePlayerOnGameServers({
-    filters: {
-      online: [true],
-      gameServerId: [id],
-    },
-  });
+  } = useQuery(
+    playerOnGameServersOptions({
+      filters: {
+        online: [true],
+        gameServerId: [id],
+      },
+    })
+  );
 
   useEffect(() => {
     socket.on('event', (event: EventOutputDTO) => {
@@ -61,7 +62,7 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
 
   const handleOnEditClick = (e: MouseEvent): void => {
     e.stopPropagation();
-    navigate(PATHS.gameServers.update(id));
+    navigate({ to: '/gameservers/update/$gameServerId', params: { gameServerId: id } });
   };
   const handleOnDeleteClick = (e: MouseEvent) => {
     e.stopPropagation();
@@ -81,7 +82,7 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
     <>
       <Card
         role="link"
-        onClick={() => navigate(PATHS.gameServer.dashboard.overview(id))}
+        onClick={() => navigate({ to: '/gameserver/$gameServerId/dashboard/overview', params: { gameServerId: id } })}
         data-testid={`gameserver-${id}-card`}
       >
         <CardBody>
@@ -104,7 +105,9 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
                   <Dropdown.Menu.Group>
                     <Dropdown.Menu.Item
                       icon={<DashboardIcon />}
-                      onClick={() => navigate(PATHS.gameServer.dashboard.overview(id))}
+                      onClick={() =>
+                        navigate({ to: '/gameserver/$gameServerId/dashboard/overview', params: { gameServerId: id } })
+                      }
                       label="go to dashboard"
                     />
                   </Dropdown.Menu.Group>

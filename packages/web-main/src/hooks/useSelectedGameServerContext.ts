@@ -1,12 +1,16 @@
 import { useContext } from 'react';
-import { SelectedGameServerContext } from '../context/selectedGameServerContext';
+import { createContext } from 'react';
+
+export interface ISelectedGameServerContext {
+  selectedGameServerId: string;
+  setSelectedGameServerId: (id: string) => void;
+}
+export const SelectedGameServerContext = createContext<ISelectedGameServerContext | null>(null);
 
 export const useSelectedGameServer = () => {
   const context = useContext(SelectedGameServerContext);
-
   if (!context) {
-    throw new Error('Component must be wrapped with <SelectedGameServerProvider> to use this hook.');
+    throw new Error('useSelectedGameServer must be used within a SelectedGameServerProvider');
   }
-
   return context;
 };

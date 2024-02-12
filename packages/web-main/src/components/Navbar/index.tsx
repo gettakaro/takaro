@@ -1,8 +1,7 @@
 import { FC, cloneElement, ReactElement } from 'react';
-import { NavLink } from 'react-router-dom';
+import { Link, LinkProps } from '@tanstack/react-router';
 import { RequiredPermissions, Tooltip } from '@takaro/lib-components';
 import { UserDropdown } from './UserDropdown';
-import { PATHS } from 'paths';
 import { Nav, IconNav, Container, IconNavContainer } from './style';
 import { PERMISSIONS } from '@takaro/apiclient';
 import {
@@ -22,60 +21,81 @@ import {
 } from 'react-icons/ai';
 
 import { FaDiscord as DiscordIcon } from 'react-icons/fa';
-import { PermissionsGuard, useHasPermission } from 'components/PermissionsGuard';
+import { PermissionsGuard } from 'components/PermissionsGuard';
+import { useHasPermission } from 'hooks/useHasPermission';
 import { GameServerNav } from './GameServerNav';
 
 const domainLinks: NavbarLink[] = [
   {
     label: 'Dashboard',
-    path: PATHS.home(),
+    linkProps: {
+      to: '/dashboard',
+    },
     icon: <DashboardIcon />,
   },
   {
     label: 'Servers',
-    path: PATHS.gameServers.overview(),
+    linkProps: {
+      to: '/gameservers',
+    },
     icon: <GameServersIcon />,
     requiredPermissions: [PERMISSIONS.ReadGameservers],
   },
   {
     label: 'Events',
-    path: PATHS.events(),
+    linkProps: {
+      to: '/events',
+    },
     icon: <EventsIcon />,
     requiredPermissions: [PERMISSIONS.ReadEvents],
   },
   {
     label: 'Players',
-    path: PATHS.players(),
+    // TODO
+    linkProps: {
+      to: '/players' as any,
+    },
     icon: <PlayersIcon />,
     requiredPermissions: [PERMISSIONS.ReadPlayers],
   },
   {
     label: 'Users',
-    path: PATHS.users(),
+    // TODO
+    linkProps: {
+      to: '/users' as any,
+    },
     icon: <UsersIcon />,
     requiredPermissions: [PERMISSIONS.ReadUsers],
   },
   {
     label: 'Roles',
-    path: PATHS.roles.overview(),
+    linkProps: {
+      to: '/roles',
+    },
     icon: <RolesIcon />,
     requiredPermissions: [PERMISSIONS.ReadRoles],
   },
   {
     label: 'Modules',
-    path: PATHS.moduleDefinitions(),
+    linkProps: {
+      to: '/modules',
+    },
     icon: <ModulesIcon />,
     requiredPermissions: [PERMISSIONS.ReadModules],
   },
   {
     label: 'Variables',
-    path: PATHS.variables.overview(),
+    linkProps: {
+      to: '/variables',
+    },
     icon: <VariablesIcon />,
     requiredPermissions: [PERMISSIONS.ReadVariables],
   },
   {
     label: 'Settings',
-    path: PATHS.settings.overview(),
+    linkProps: {
+      to: '/settings/gameservers',
+    },
     icon: <SettingsIcon />,
     end: false,
     requiredPermissions: [PERMISSIONS.ReadSettings],
@@ -83,33 +103,33 @@ const domainLinks: NavbarLink[] = [
 ];
 
 export interface NavbarLink {
-  path: string;
+  linkProps: Partial<LinkProps>;
   label: string;
   icon: ReactElement;
   requiredPermissions?: RequiredPermissions;
   end?: boolean;
 }
 
-export const renderLink = ({ path, icon, label, end, requiredPermissions }: NavbarLink) => (
-  <PermissionsGuard key={`guard-${path}`} requiredPermissions={requiredPermissions || []}>
-    <div key={`wrapper-${path}`}>
-      <NavLink to={path} key={`link-${path}`} end={end}>
-        <span key={`inner-${path}`}>
-          {cloneElement(icon, { size: 20, key: `icon-${path}` })}
-          <p key={`label-${path}`}>{label}</p>
+export const renderLink = ({ linkProps, icon, label, requiredPermissions }: NavbarLink) => (
+  <PermissionsGuard key={`guard-${linkProps.to}`} requiredPermissions={requiredPermissions || []}>
+    <div key={`wrapper-${linkProps.to}`}>
+      <Link to={linkProps.to} key={`link-${linkProps.to}`}>
+        <span key={`inner-${linkProps.to}`}>
+          {cloneElement(icon, { size: 20, key: `icon-${linkProps.to}` })}
+          <p key={`label-${linkProps.to}`}>{label}</p>
         </span>
-      </NavLink>
+      </Link>
     </div>
   </PermissionsGuard>
 );
 
 export const Navbar: FC = () => {
-  const { hasPermission: hasReadGameServerPermission, isLoading } = useHasPermission([PERMISSIONS.ReadGameservers]);
+  const { hasPermission } = useHasPermission([PERMISSIONS.ReadGameservers]);
 
   return (
     <Container animate={{ width: 325 }} transition={{ duration: 1, type: 'spring', bounce: 0.5 }}>
       <IconNavContainer data-testid="takaro-icon-nav">
-        {!isLoading && hasReadGameServerPermission && <GameServerNav />}
+        {hasPermission && <GameServerNav />}
 
         <Nav data-testid="global-nav">
           {domainLinks.length > 0 && <h3>Global</h3>}

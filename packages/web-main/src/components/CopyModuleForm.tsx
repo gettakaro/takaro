@@ -10,11 +10,12 @@ import {
   useCommandCreate,
   useCronJobCreate,
   useHookCreate,
+  moduleOptions,
   useModuleCreate,
-  useModule,
   useModuleRemove,
 } from 'queries/modules';
-import { moduleNameShape } from 'pages/ModuleDefinitions/ModuleForm/validationSchema';
+import { moduleNameShape } from 'routes/_auth/-modules/ModuleForm/validationSchema';
+import { useQuery } from '@tanstack/react-query';
 
 const validationSchema = z.object({
   name: moduleNameShape,
@@ -26,7 +27,7 @@ interface CopyModuleFormProps {
 }
 
 export const CopyModuleForm: FC<CopyModuleFormProps> = ({ moduleId, onSuccess }) => {
-  const { data: mod, isPending } = useModule(moduleId);
+  const { data: mod, isPending } = useQuery(moduleOptions(moduleId));
   const { enqueueSnackbar } = useSnackbar();
 
   const { control, handleSubmit } = useForm<z.infer<typeof validationSchema>>({
