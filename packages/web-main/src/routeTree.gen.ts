@@ -15,6 +15,7 @@ import { Route as LogoutReturnImport } from './routes/logout-return';
 import { Route as LoginImport } from './routes/login';
 import { Route as ForbiddenImport } from './routes/forbidden';
 import { Route as AuthImport } from './routes/_auth';
+import { Route as IndexImport } from './routes/index';
 import { Route as StudioModuleIdImport } from './routes/studio.$moduleId';
 import { Route as AuthRolesImport } from './routes/_auth/roles';
 import { Route as AuthModulesImport } from './routes/_auth/modules';
@@ -76,6 +77,11 @@ const ForbiddenRoute = ForbiddenImport.update({
 
 const AuthRoute = AuthImport.update({
   id: '/_auth',
+  getParentRoute: () => rootRoute,
+} as any);
+
+const IndexRoute = IndexImport.update({
+  path: '/',
   getParentRoute: () => rootRoute,
 } as any);
 
@@ -290,6 +296,10 @@ const AuthGameserverGameServerIdModuleModuleIdInstallViewRoute =
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/': {
+      preLoaderRoute: typeof IndexImport;
+      parentRoute: typeof rootRoute;
+    };
     '/_auth': {
       preLoaderRoute: typeof AuthImport;
       parentRoute: typeof rootRoute;
@@ -476,6 +486,7 @@ declare module '@tanstack/react-router' {
 // Create and export the route tree
 
 export const routeTree = rootRoute.addChildren([
+  IndexRoute,
   AuthRoute.addChildren([
     AuthSettingsRoute,
     AuthDashboardRoute,
