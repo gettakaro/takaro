@@ -10,11 +10,16 @@ import { queryClient } from './queryClient';
 
 import { RouterProvider } from '@tanstack/react-router';
 import { OryProvider } from 'hooks/useOry';
-import { AuthProvider } from 'hooks/useAuth';
+import { AuthProvider, useAuth } from 'hooks/useAuth';
 import { router } from './router';
 import { getConfigVar } from 'util/getConfigVar';
 
-function App() {
+function InnerApp() {
+  const auth = useAuth();
+  return <RouterProvider router={router} context={{ auth }} />;
+}
+
+export function App() {
   const [hasLoadedConfig, setHasLoadedConfig] = useState<boolean>(true);
 
   // the config can be loaded before or after the app is loaded
@@ -43,7 +48,7 @@ function App() {
             <OryProvider>
               <AuthProvider>
                 <GlobalStyle />
-                <RouterProvider router={router} />
+                <InnerApp />
                 <ReactQueryDevtools initialIsOpen={false} position="bottom" buttonPosition="top-left" />
               </AuthProvider>
             </OryProvider>
@@ -53,5 +58,3 @@ function App() {
     </OryThemeProvider>
   );
 }
-
-export default App;

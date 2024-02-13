@@ -1,3 +1,4 @@
+import { createFileRoute } from '@tanstack/react-router';
 import { useEffect, useMemo, useState } from 'react';
 import { Button, Stats, styled } from '@takaro/lib-components';
 import { useSocket } from 'hooks/useSocket';
@@ -6,14 +7,13 @@ import { eventsOptions } from 'queries/events';
 import { DateTime } from 'luxon';
 import { useForm, useWatch } from 'react-hook-form';
 import { TimePeriodSelect } from 'components/selects';
-import { createFileRoute } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/dashboard')({
-  component: Component,
+  component: () => Component,
 });
 
-export const Container = styled.div`
+const Container = styled.div`
   h1 {
     font-size: ${({ theme }) => theme.fontSize.huge};
     margin-bottom: ${({ theme }) => theme.spacing[5]};

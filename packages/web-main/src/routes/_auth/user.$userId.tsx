@@ -3,12 +3,18 @@ import { Button, Divider, Dropdown, IconButton, Skeleton, Table, useTableActions
 import { useUserRemoveRole, userOptions } from 'queries/users';
 import { createColumnHelper } from '@tanstack/react-table';
 import { FC } from 'react';
-import { Outlet, useNavigate } from '@tanstack/react-router';
+import { Outlet, redirect, useNavigate } from '@tanstack/react-router';
 import { DateTime } from 'luxon';
 import { AiOutlineDelete as DeleteIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
 import { createFileRoute } from '@tanstack/react-router';
+import { hasPermission } from 'hooks/useHasPermission';
 
-export const Route = createFileRoute('/_auth/users/$userId')({
+export const Route = createFileRoute('/_auth/user/$userId')({
+  beforeLoad: ({ context }) => {
+    if (!hasPermission(context.auth.session, ['READ_USERS'])) {
+      throw redirect({ to: '/forbidden' });
+    }
+  },
   loader: ({ params, context }) => context.queryClient.ensureQueryData(userOptions(params.userId)),
   component: Component,
   pendingComponent: () => <Skeleton variant="rectangular" height="100%" width="100%" />,
@@ -46,7 +52,7 @@ const UserProfilePage: FC<UserProfileProps> = ({ user }) => {
 const AssignRole: FC<{ userId: string }> = ({ userId }) => {
   const navigate = useNavigate();
   return (
-    <Button onClick={() => navigate({ to: '/users/$userId/role/assign', params: { userId } })} text="Assign role" />
+    <Button onClick={() => navigate({ to: '/user/$userId/role/assign', params: { userId } })} text="Assign role" />
   );
 };
 

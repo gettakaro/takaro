@@ -1,27 +1,32 @@
-import { Fragment, ReactNode } from 'react';
-import { Button, Empty, Skeleton, styled, useTheme } from '@takaro/lib-components';
+import { Fragment } from 'react';
+import { Button, Card, Empty, Skeleton, styled, useTheme } from '@takaro/lib-components';
 import { LoginDiscordCard } from './-discord/LoginDiscordCard';
-import { useDiscordGuilds } from 'queries/discord';
 import { GuildCard } from './-discord/GuildCard';
-import { InviteCard } from './-discord/InviteCard';
 import { CardList } from 'components/cards';
 import { createFileRoute } from '@tanstack/react-router';
+import { discordGuildInfiniteQueryOptions, discordInviteQueryOptions } from 'queries/discord/queries';
+import { InfiniteScroll } from '@takaro/lib-components';
+import { useSuspenseInfiniteQuery } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/settings/discord')({
-  loader: () => {
-    const {
-      data: guilds,
-      InfiniteScroll,
-      refetch,
-    } = useDiscordGuilds({
-      sortBy: 'takaroEnabled',
-      sortDirection: 'desc',
-    });
-
-    return { guilds, InfiniteScroll, refetch };
+  loader: async ({ context }) => {
+    const opts = discordGuildInfiniteQueryOptions({ sortBy: 'takaroEnabled', sortDirection: 'desc', page: 0 });
+    const guilds =
+      context.queryClient.getQueryData(opts.queryKey) ?? (await context.queryClient.fetchInfiniteQuery(opts));
+    const invites = await context.queryClient.ensureQueryData(discordInviteQueryOptions());
+    return { guilds, invites };
   },
   pendingComponent: PendingComponent,
   component: Component,
+
+  /* TODO: not sure if this should be put here */
+  notFoundComponent: () => (
+    <Empty
+      header="No guilds found"
+      description="It seems like you don't have any guilds. Are you sure you have the rights to change guild settings on any of your discord servers"
+      actions={[]}
+    />
+  ),
 });
 
 const Flex = styled.div`
@@ -56,24 +61,34 @@ function PendingComponent() {
 }
 
 function Component() {
-  const { guilds, InfiniteScroll, refetch } = Route.useLoaderData();
-  let guildDisplay: ReactNode = null;
+  const loaderData = Route.useLoaderData();
+  const {
+    data: guilds,
+    isFetching,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useSuspenseInfiniteQuery({
+    ...discordGuildInfiniteQueryOptions({}),
+    initialData: loaderData.guilds,
+  });
 
-  // TODO: i think we should be able to handle this better
-  if (guilds === undefined) {
-    return <div>something went wrong</div>;
-  }
-
-  if (guilds.pages.length === 0 || guilds.pages[0].data.length === 0) {
-    guildDisplay = (
-      <Empty
-        header="No guilds found"
-        description="It seems like you don't have any guilds. Are you sure you have the rights to change guild settings on any of your discord servers"
-        actions={[<Button text="Try again" onClick={() => refetch()} />]}
-      />
-    );
-  } else {
-    guildDisplay = (
+  return (
+    <Fragment>
+      <Flex>
+        <LoginDiscordCard />
+        <Card>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '50px' }}>
+            <a href={loaderData.invites?.botInvite} target="_blank" rel="noreferrer">
+              <Button text="Invite bot" />
+            </a>
+            <a href={loaderData.invites?.devServer} target="_blank" rel="noreferrer">
+              <Button text="Join discord support server" />
+            </a>
+          </div>
+        </Card>
+      </Flex>
+      <h1> Guilds</h1>
       <CardList>
         {guilds.pages
           .flatMap((page) => page.data)
@@ -81,18 +96,12 @@ function Component() {
             <GuildCard key={guild.id} guild={guild} />
           ))}
       </CardList>
-    );
-  }
-
-  return (
-    <Fragment>
-      <Flex>
-        <LoginDiscordCard />
-        <InviteCard />
-      </Flex>
-      <h1> Guilds</h1>
-      {guildDisplay}
-      {InfiniteScroll}
+      <InfiniteScroll
+        isFetching={isFetching}
+        hasNextPage={hasNextPage}
+        fetchNextPage={fetchNextPage}
+        isFetchingNextPage={isFetchingNextPage}
+      />
     </Fragment>
   );
 }

@@ -11,10 +11,15 @@ import { Switch, TextField, Button, SelectField, styled, Skeleton, camelCaseToSp
 import { useSnackbar } from 'notistack';
 import { getApiClient } from 'util/getApiClient';
 import { PERMISSIONS, SettingsOutputDTOTypeEnum } from '@takaro/apiclient';
-import { useHasPermission } from 'hooks/useHasPermission';
-import { createFileRoute } from '@tanstack/react-router';
+import { hasPermission, useHasPermission } from 'hooks/useHasPermission';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/settings')({
+  beforeLoad: ({ context }) => {
+    if (!hasPermission(context.auth.session, [PERMISSIONS.ReadSettings])) {
+      throw redirect({ to: '/forbidden' });
+    }
+  },
   loader: async ({ params, context }) => {
     const gameServerSettings = await context.queryClient.ensureQueryData(
       gameServerSettingsOptions(params.gameServerId)

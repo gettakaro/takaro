@@ -16,8 +16,8 @@ export interface HorizontalNavProps {
 export const HorizontalNav: FC<HorizontalNavProps> = ({ links, variant }) => {
   return (
     <NavBar variant={variant}>
-      {links.map(({ text }) => (
-        <Link>
+      {links.map(({ text, ...rest }) => (
+        <Link {...rest}>
           {/* TODO: add link props back*/}
           {({ isActive }) => (
             <>

@@ -6,13 +6,19 @@ import { z } from 'zod';
 import { getApiClient } from 'util/getApiClient';
 import { GameServerSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { useGameServerCreateFromCSMMImport } from 'queries/gameservers';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
+import { hasPermission } from 'hooks/useHasPermission';
 
 export interface IFormInputs {
   importData: FileList;
 }
 
 export const Route = createFileRoute('/_auth/gameservers/create/import')({
+  beforeLoad: ({ context }) => {
+    if (!hasPermission(context.auth.session, ['MANAGE_GAMESERVERS'])) {
+      throw redirect({ to: '/forbidden' });
+    }
+  },
   component: Component,
 });
 

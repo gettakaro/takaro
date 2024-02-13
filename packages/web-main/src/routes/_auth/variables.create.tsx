@@ -1,8 +1,14 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 import { ExecutionType, IFormInputs, VariablesForm } from './-variables/VariableCreateUpdateForm';
 import { useVariableCreate } from 'queries/variables/queries.js';
+import { hasPermission } from 'hooks/useHasPermission';
 
 export const Route = createFileRoute('/_auth/variables/create')({
+  beforeLoad: ({ context }) => {
+    if (!hasPermission(context.auth.session, ['READ_VARIABLES', 'MANAGE_VARIABLES'])) {
+      throw redirect({ to: '/forbidden' });
+    }
+  },
   component: Component,
 });
 

@@ -1,12 +1,18 @@
 import { Stats, styled, Skeleton, useTheme, HorizontalNav, Avatar, getInitials } from '@takaro/lib-components';
-import { Outlet } from '@tanstack/react-router';
+import { Outlet, redirect } from '@tanstack/react-router';
 import { DateTime } from 'luxon';
 import { playerOptions, playerOnGameServersOptions } from 'queries/players/queries';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { ErrorBoundary } from 'components/ErrorBoundary';
 import { createFileRoute } from '@tanstack/react-router';
+import { hasPermission } from 'hooks/useHasPermission';
 
 export const Route = createFileRoute('/_auth/player/$playerId')({
+  beforeLoad: ({ context }) => {
+    if (!hasPermission(context.auth.session, ['READ_PLAYERS'])) {
+      throw redirect({ to: '/forbidden' });
+    }
+  },
   loader: async ({ params, context }) => {
     const [player, pogs] = await Promise.all([
       context.queryClient.ensureQueryData(playerOptions(params.playerId)),

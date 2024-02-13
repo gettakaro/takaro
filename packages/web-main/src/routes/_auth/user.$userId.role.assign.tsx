@@ -15,8 +15,9 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { useUserAssignRole } from 'queries/users';
 import { DateTime } from 'luxon';
 import { RoleSelect } from 'components/selects';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, notFound, redirect, useNavigate } from '@tanstack/react-router';
 import { z } from 'zod';
+import { hasPermission } from 'hooks/useHasPermission';
 
 const ButtonContainer = styled.div`
   display: flex;
@@ -32,8 +33,19 @@ const roleAssignValidationSchema = z.object({
 });
 type IFormInputs = z.infer<typeof roleAssignValidationSchema>;
 
-export const Route = createFileRoute('/_auth/users/$userId/role/assign')({
-  loader: ({ context }) => context.queryClient.ensureQueryData(rolesOptions({})),
+export const Route = createFileRoute('/_auth/user/$userId/role/assign')({
+  beforeLoad: ({ context }) => {
+    if (!hasPermission(context.auth.session, ['READ_ROLES', 'MANAGE_ROLES', 'READ_USERS', 'MANAGE_USERS'])) {
+      throw redirect({ to: '/forbidden' });
+    }
+  },
+  loader: async ({ context }) => {
+    const data = await context.queryClient.ensureQueryData(rolesOptions());
+    if (data.data.length === 0) {
+      throw notFound();
+    }
+    return data.data;
+  },
   component: Component,
   pendingComponent: () => <DrawerSkeleton />,
 });
@@ -47,7 +59,7 @@ function Component() {
 
   useEffect(() => {
     if (!open) {
-      navigate({ to: '/users/$userId', params: { userId } });
+      navigate({ to: '/user/$userId', params: { userId } });
     }
   }, [open]);
 
@@ -62,7 +74,7 @@ function Component() {
 
   const onSubmit: SubmitHandler<IFormInputs> = ({ id, roleId, expiresAt }) => {
     mutate({ userId: id, roleId, expiresAt });
-    navigate({ to: '/users/$userId', params: { userId: id } });
+    navigate({ to: '/user/$userId', params: { userId: id } });
   };
 
   return (

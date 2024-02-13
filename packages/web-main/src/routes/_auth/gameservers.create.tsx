@@ -1,14 +1,20 @@
 import { useEffect } from 'react';
 import { SubmitHandler } from 'react-hook-form';
-import { useNavigate } from '@tanstack/react-router';
+import { redirect, useNavigate } from '@tanstack/react-router';
 import { useGameServerCreate } from 'queries/gameservers';
 import { createFileRoute } from '@tanstack/react-router';
 import { CreateUpdateForm } from './-gameservers/CreateUpdateForm';
 import { IFormInputs } from './-gameservers/validationSchema';
 import { GameServerCreateDTOTypeEnum } from '@takaro/apiclient';
 import { RouterContext } from '../../router';
+import { hasPermission } from 'hooks/useHasPermission';
 
 export const Route = createFileRoute('/_auth/gameservers/create')({
+  beforeLoad: ({ context }) => {
+    if (!hasPermission(context.auth.session, ['MANAGE_GAMESERVERS'])) {
+      throw redirect({ to: '/forbidden' });
+    }
+  },
   component: Component,
 });
 

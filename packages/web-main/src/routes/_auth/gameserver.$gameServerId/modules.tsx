@@ -1,10 +1,11 @@
 import { Skeleton, styled, useTheme } from '@takaro/lib-components';
-import { Outlet } from '@tanstack/react-router';
+import { Outlet, redirect } from '@tanstack/react-router';
 import { ModuleInstallCard, CardList } from 'components/cards';
 import { gameServerModuleInstallationsOptions } from 'queries/gameservers';
 import { modulesOptions } from 'queries/modules';
 import { useGameServerDocumentTitle } from 'hooks/useDocumentTitle';
 import { createFileRoute } from '@tanstack/react-router';
+import { hasPermission } from 'hooks/useHasPermission';
 
 const SubHeader = styled.h2`
   font-size: ${({ theme }) => theme.fontSize.mediumLarge};
@@ -12,6 +13,11 @@ const SubHeader = styled.h2`
 `;
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/modules')({
+  beforeLoad: ({ context }) => {
+    if (!hasPermission(context.auth.session, ['READ_MODULES'])) {
+      throw redirect({ to: '/forbidden' });
+    }
+  },
   loader: async ({ params, context }) => {
     const [modules, moduleInstallations] = await Promise.all([
       context.queryClient.ensureQueryData(modulesOptions({})),

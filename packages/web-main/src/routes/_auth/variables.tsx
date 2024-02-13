@@ -1,29 +1,30 @@
-/*
 import { FC, Fragment, useMemo, useState } from 'react';
 import { Table, useTableActions, IconButton, Dropdown, Button, Divider, DateFormatter } from '@takaro/lib-components';
 import { VariableOutputDTO, VariableSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
-import { variableOptions } from 'queries/variables';
+import { variablesOptions } from 'queries/variables';
 import { AiOutlineEdit as EditIcon, AiOutlineDelete as DeleteIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { VariableValueDetail } from './-variables/VariableValueDetail';
 import { VariableDeleteDialog } from './-variables/VariableDeleteDialog';
 import { VariablesDeleteDialog } from './-variables/VariablesDeleteDialog';
 import { Outlet, createFileRoute, useNavigate } from '@tanstack/react-router';
-import { useQuery } from '@tanstack/react-query';
+import { useSuspenseQuery } from '@tanstack/react-query';
 
-export const Route = createFileRoute('/_auth/)variables')({
+export const Route = createFileRoute('/_auth/variables')({
+  loader: ({ context }) => context.queryClient.ensureQueryData(variablesOptions({ page: 0 })),
   component: Component,
 });
 
 function Component() {
   useDocumentTitle('Variables');
+  const loaderData = Route.useLoaderData();
   const { pagination, columnFilters, sorting, columnSearch, rowSelection } = useTableActions<VariableOutputDTO>();
   const navigate = useNavigate();
   const [openVariablesDialog, setOpenVariablesDialog] = useState<boolean>(false);
 
-  const { data, isLoading } = useQuery(
-    variableOptions({
+  const { data, isLoading } = useSuspenseQuery({
+    ...variablesOptions({
       page: pagination.paginationState.pageIndex,
       limit: pagination.paginationState.pageSize,
       sortBy: sorting.sortingState[0]?.id,
@@ -43,8 +44,9 @@ function Component() {
         playerId: columnSearch.columnSearchState.find((search) => search.id === 'playerId')?.value,
         moduleId: columnSearch.columnSearchState.find((search) => search.id === 'moduleId')?.value,
       },
-    })
-  );
+    }),
+    initialData: loaderData,
+  });
 
   const columnHelper = createColumnHelper<VariableOutputDTO>();
   const columnDefs = [
@@ -127,10 +129,10 @@ function Component() {
   const p =
     !isLoading && data
       ? {
-        paginationState: pagination.paginationState,
-        setPaginationState: pagination.setPaginationState,
-        pageOptions: pagination.getPageOptions(data),
-      }
+          paginationState: pagination.paginationState,
+          setPaginationState: pagination.setPaginationState,
+          pageOptions: pagination.getPageOptions(data),
+        }
       : undefined;
 
   return (
@@ -209,4 +211,4 @@ const VariableMenu: FC<{ variable: VariableOutputDTO }> = ({ variable }) => {
       <VariableDeleteDialog variable={variable} openDialog={openVariableDialog} setOpenDialog={setOpenVariableDialog} />
     </>
   );
-};*/
+};

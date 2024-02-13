@@ -1,8 +1,14 @@
-import { Outlet, createFileRoute } from '@tanstack/react-router';
+import { Outlet, createFileRoute, redirect } from '@tanstack/react-router';
 import { styled, HorizontalNav } from '@takaro/lib-components';
 import { ErrorBoundary } from 'components/ErrorBoundary';
+import { hasPermission } from 'hooks/useHasPermission';
 
-export const Route = createFileRoute('/_auth/_settings')({
+export const Route = createFileRoute('/_auth/settings')({
+  beforeLoad: ({ context }) => {
+    if (!hasPermission(context.auth.session, ['READ_SETTINGS'])) {
+      throw redirect({ to: '/forbidden' });
+    }
+  },
   component: Component,
 });
 
@@ -14,16 +20,6 @@ const ContentContainer = styled.div`
 `;
 
 function Component() {
-  // TODO: should navigate to the first link in the list when the user navigates to /settings
-  // const navigate = useNavigate();
-  /*
-  useEffect(() => {
-    if (location.pathname === PATHS.settings.overview()) {
-      navigate({ to: PATHS.settings.GameServerSettings() });
-    }
-  }, [location, navigate]);
-  */
-
   return (
     <Container>
       <HorizontalNav

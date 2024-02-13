@@ -1,9 +1,15 @@
 import { moduleOptions, useModuleUpdate } from 'queries/modules';
 import { ModuleForm, ModuleFormSubmitProps } from './-modules/ModuleForm';
 import { DrawerSkeleton } from '@takaro/lib-components';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, redirect } from '@tanstack/react-router';
+import { hasPermission } from 'hooks/useHasPermission';
 
 export const Route = createFileRoute('/_auth/modules/update/$moduleId')({
+  beforeLoad: ({ context }) => {
+    if (!hasPermission(context.auth.session, ['MANAGE_MODULES'])) {
+      throw redirect({ to: '/forbidden' });
+    }
+  },
   loader: ({ params, context }) => context.queryClient.ensureQueryData(moduleOptions(params.moduleId)),
   component: Component,
   pendingComponent: DrawerSkeleton,

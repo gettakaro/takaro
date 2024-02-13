@@ -2,9 +2,15 @@ import { DrawerSkeleton } from '@takaro/lib-components';
 import { useRoleUpdate, roleOptions, permissionsOptions } from 'queries/roles/queries';
 import { SubmitHandler } from 'react-hook-form';
 import { RoleForm, IFormInputs } from './-roles/RoleCreateUpdateForm';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, redirect } from '@tanstack/react-router';
+import { hasPermission } from 'hooks/useHasPermission';
 
 export const Route = createFileRoute('/_auth/roles/update/$roleId')({
+  beforeLoad: ({ context }) => {
+    if (!hasPermission(context.auth.session, ['READ_ROLES', 'MANAGE_ROLES'])) {
+      throw redirect({ to: '/forbidden' });
+    }
+  },
   loader: async ({ params, context }) => {
     const p1 = context.queryClient.ensureQueryData(roleOptions(params.roleId));
     const p2 = context.queryClient.ensureQueryData(permissionsOptions());

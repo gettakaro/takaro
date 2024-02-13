@@ -1,4 +1,4 @@
-/*import { FC, useEffect, useMemo, useState } from 'react';
+import { FC, useEffect, useMemo, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { AiOutlinePlus as PlusIcon, AiOutlineDelete as DeleteIcon } from 'react-icons/ai';
 import {
@@ -15,9 +15,9 @@ import {
   useTheme,
 } from '@takaro/lib-components';
 import { useUserRemove } from 'queries/users';
-import { UserOutputWithRolesDTO, /*UserSearchInputDTOSortDirectionEnum, PERMISSIONS } from '@takaro/apiclient';
+import { UserOutputWithRolesDTO, UserSearchInputDTOSortDirectionEnum, PERMISSIONS } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
-// import { useUsers } from 'queries/users';
+import { usersOptions } from 'queries/users';
 import { AiOutlineUser as ProfileIcon, AiOutlineEdit as EditIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
 import { useInviteUser } from 'queries/users/queries';
 import { z } from 'zod';
@@ -25,10 +25,22 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { useHasPermission } from 'hooks/useHasPermission';
 import { createFileRoute, useNavigate, Link } from '@tanstack/react-router';
+import { useSuspenseQuery } from '@tanstack/react-query';
 
-export const Route = createFileRoute('/users')({
-  loader: () => {
-    const { data, isPending } = useUsers({
+export const Route = createFileRoute('/_auth/users')({
+  loader: ({ context }) => {
+    return context.queryClient.ensureQueryData(usersOptions({ page: 0 }));
+  },
+  component: Component,
+});
+
+function Component() {
+  useDocumentTitle('Users');
+  const { pagination, columnFilters, sorting, columnSearch } = useTableActions<UserOutputWithRolesDTO>();
+  const loaderData = Route.useLoaderData();
+
+  const { data, isLoading } = useSuspenseQuery({
+    ...usersOptions({
       page: pagination.paginationState.pageIndex,
       limit: pagination.paginationState.pageSize,
       sortBy: sorting.sortingState[0]?.id,
@@ -43,18 +55,18 @@ export const Route = createFileRoute('/users')({
         name: columnSearch.columnSearchState.find((search) => search.id === 'name')?.value,
         discordId: columnSearch.columnSearchState.find((search) => search.id === 'discordId')?.value,
       },
-    });
-    return { data: {} };
-  },
-  component: Component,
-});
-*/
+    }),
+    initialData: loaderData,
+  });
 
-/*
-function Component() {
-  useDocumentTitle('Users');
-  const { pagination, columnFilters, sorting, columnSearch } = useTableActions<UserOutputWithRolesDTO>();
-  const { data } = Route.useLoaderData();
+  const p =
+    !isLoading && data
+      ? {
+          paginationState: pagination.paginationState,
+          setPaginationState: pagination.setPaginationState,
+          pageOptions: pagination.getPageOptions(data),
+        }
+      : undefined;
 
   const columnHelper = createColumnHelper<UserOutputWithRolesDTO>();
   const columnDefs = [
@@ -63,7 +75,11 @@ function Component() {
       id: 'name',
       cell: (info) => {
         const user = info.row.original;
-        return <Link to={PATHS.user.profile(user.id)}>{info.getValue()}</Link>;
+        return (
+          <Link to="/users/$userId" params={{ userId: user.id }}>
+            {info.getValue()}
+          </Link>
+        );
       },
     }),
     columnHelper.accessor('email', {
@@ -103,16 +119,6 @@ function Component() {
       cell: (info) => <UserMenu user={info.row.original} />,
     }),
   ];
-
-  // since pagination depends on data, we need to make sure that data is not undefined
-  const p =
-    !isPending && data
-      ? {
-        paginationState: pagination.paginationState,
-        setPaginationState: pagination.setPaginationState,
-        pageOptions: pagination.getPageOptions(data),
-      }
-      : undefined;
 
   return (
     <Table
@@ -200,12 +206,8 @@ const UserMenu: FC<{ user: UserOutputWithRolesDTO }> = ({ user }) => {
   const [openDeleteUserDialog, setOpenDeleteUserDialog] = useState<boolean>(false);
   const theme = useTheme();
   const navigate = useNavigate();
-  const { hasPermission: hasReadUsersPermission, isLoading: isLoadingReadUserPermission } = useHasPermission([
-    PERMISSIONS.ReadUsers,
-  ]);
-  const { hasPermission: hasManageRolesPermission, isLoading: isLoadingManageRolesPermission } = useHasPermission([
-    PERMISSIONS.ManageRoles,
-  ]);
+  const { hasPermission: hasReadUsersPermission } = useHasPermission([PERMISSIONS.ReadUsers]);
+  const { hasPermission: hasManageRolesPermission } = useHasPermission([PERMISSIONS.ManageRoles]);
 
   return (
     <>
@@ -215,22 +217,22 @@ const UserMenu: FC<{ user: UserOutputWithRolesDTO }> = ({ user }) => {
         </Dropdown.Trigger>
         <Dropdown.Menu>
           <Dropdown.Menu.Item
-            disabled={!isLoadingReadUserPermission && !hasReadUsersPermission}
+            disabled={!hasReadUsersPermission}
             label="Go to user profile"
             icon={<ProfileIcon />}
-            onClick={() => navigate({ to: PATHS.user.profile(user.id) })}
+            onClick={() => navigate({ to: 'users/$userId', params: { userId: user.id } })}
           />
           <Dropdown.Menu.Item
             label="Edit roles"
             icon={<EditIcon />}
-            onClick={() => navigate({ to: PATHS.user.assignRole(user.id) })}
-            disabled={!isLoadingManageRolesPermission && !hasManageRolesPermission}
+            onClick={() => navigate({ to: 'users/$userId/role/assign', params: { userId: user.id } })}
+            disabled={!hasManageRolesPermission}
           />
           <Dropdown.Menu.Item
             label="Delete user"
             icon={<DeleteIcon fill={theme.colors.error} />}
             onClick={() => setOpenDeleteUserDialog(true)}
-            disabled={!isLoadingManageRolesPermission && !hasManageRolesPermission}
+            disabled={!hasManageRolesPermission}
           />
         </Dropdown.Menu>
       </Dropdown>
@@ -279,4 +281,3 @@ export const UserDeleteDialog: FC<VariableDeleteProps> = ({ user, openDialog, se
     </Dialog>
   );
 };
-*/

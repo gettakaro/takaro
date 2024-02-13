@@ -6,8 +6,9 @@ import { moduleOptions } from 'queries/modules';
 import { styled, Skeleton } from '@takaro/lib-components';
 import { ModuleOnboarding } from 'views/ModuleOnboarding';
 import { ErrorBoundary } from 'components/ErrorBoundary';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 import { StudioInner } from './-studio/StudioInner';
+import { hasPermission } from 'hooks/useHasPermission';
 
 const Flex = styled.div`
   display: flex;
@@ -34,6 +35,11 @@ const LoadingContainer = styled.div`
  */
 
 export const Route = createFileRoute('/studio/$moduleId')({
+  beforeLoad: ({ context }) => {
+    if (!hasPermission(context.auth.session, ['MANAGE_MODULES'])) {
+      throw redirect({ to: '/forbidden' });
+    }
+  },
   loader: ({ params, context }) => context.queryClient.ensureQueryData(moduleOptions(params.moduleId)),
   component: Component,
   pendingComponent: () => {

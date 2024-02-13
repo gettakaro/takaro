@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react';
-import {
-  EventOutputDTO,
-  EventOutputDTOEventNameEnum as EventName,
-  EventSearchInputAllowedFilters,
-} from '@takaro/apiclient';
+import { createFileRoute } from '@tanstack/react-router'
+
+export const Route = createFileRoute('/_auth/events')({
+  component: () => <div>Hello /_auth/events!</div>
+})piclient';
 import { DateRangePicker, Button, styled } from '@takaro/lib-components';
 import { EventFeed, EventItem } from 'components/events/EventFeed';
 import { EventFilter } from 'components/events/EventFilter';
@@ -18,10 +17,16 @@ import _ from 'lodash';
 import { DateTime } from 'luxon';
 import { eventsOptions } from 'queries/events';
 import { HiStop as PauseIcon, HiPlay as PlayIcon, HiArrowPath as RefreshIcon } from 'react-icons/hi2';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
+import { hasPermission } from 'hooks/useHasPermission';
 
 export const Route = createFileRoute('/_auth/events')({
+  beforeLoad: async ({ context }) => {
+    if (!hasPermission(context.auth.session, ['READ_EVENTS'])) {
+      throw redirect({ to: '/forbidden' });
+    }
+  },
   component: Component,
 });
 

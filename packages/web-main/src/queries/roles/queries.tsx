@@ -11,10 +11,10 @@ import {
   PermissionOutputDTO,
   APIOutput,
 } from '@takaro/apiclient';
-import { InfiniteData, queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
+import { InfiniteData, infiniteQueryOptions, queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { getApiClient } from 'util/getApiClient';
-import { mutationWrapper } from 'queries/util';
+import { hasNextPage, mutationWrapper } from 'queries/util';
 import { playerKeys } from 'queries/players/queries';
 import { userKeys } from 'queries/users';
 import { ErrorMessageMapping } from '@takaro/lib-components/src/errors';
@@ -36,18 +36,19 @@ export const roleOptions = (roleId: string) =>
     queryFn: async () => (await getApiClient().role.roleControllerGetOne(roleId)).data.data,
   });
 
-export const rolesOptions = (opts: RoleSearchInputDTO) => {
+export const rolesOptions = (opts: RoleSearchInputDTO = {}) => {
   return queryOptions<RoleOutputArrayDTOAPI, AxiosError<RoleOutputArrayDTOAPI>>({
-    queryKey: [
-      ...roleKeys.list(),
-      opts.page,
-      opts.search,
-      opts.sortBy,
-      opts.filters,
-      opts.startDate,
-      opts.endDate,
-    ].filter(Boolean),
+    queryKey: [...roleKeys.list(), ...Object.values(opts)],
     queryFn: async () => (await getApiClient().role.roleControllerSearch(opts)).data,
+  });
+};
+
+export const rolesInfiniteQueryOptions = (opts: RoleSearchInputDTO = {}) => {
+  return infiniteQueryOptions<RoleOutputArrayDTOAPI, AxiosError<RoleOutputArrayDTOAPI>>({
+    queryKey: [...roleKeys.list(), ...Object.values(opts)],
+    queryFn: async () => (await getApiClient().role.roleControllerSearch(opts)).data,
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, pages) => hasNextPage(lastPage.meta, pages.length),
   });
 };
 

@@ -7,10 +7,15 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { useSnackbar } from 'notistack';
-import { useHasPermission } from 'hooks/useHasPermission';
-import { createFileRoute } from '@tanstack/react-router';
+import { hasPermission, useHasPermission } from 'hooks/useHasPermission';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/_auth/settings/gameservers')({
+  beforeLoad: ({ context }) => {
+    if (!hasPermission(context.auth.session, ['READ_SETTINGS'])) {
+      throw redirect({ to: '/forbidden' });
+    }
+  },
   loader: ({ context }) => context.queryClient.ensureQueryData(globalGameServerSettingsOptions()),
   component: Component,
   pendingComponent: PendingComponent,

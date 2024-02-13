@@ -1,13 +1,19 @@
 import { Fragment } from 'react';
 import { Button, Empty, EmptyPage, Skeleton } from '@takaro/lib-components';
 import { PERMISSIONS } from '@takaro/apiclient';
-import { createFileRoute, useNavigate, Outlet } from '@tanstack/react-router';
+import { createFileRoute, useNavigate, Outlet, redirect } from '@tanstack/react-router';
 import { gameServersOptions } from 'queries/gameservers';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { PermissionsGuard } from 'components/PermissionsGuard';
 import { AddCard, CardList, GameServerCard } from 'components/cards';
+import { hasPermission } from 'hooks/useHasPermission';
 
 export const Route = createFileRoute('/_auth/gameservers')({
+  beforeLoad: ({ context }) => {
+    if (!hasPermission(context.auth.session, ['READ_GAMESERVERS'])) {
+      throw redirect({ to: '/forbidden' });
+    }
+  },
   loader: ({ context }) => context.queryClient.ensureQueryData(gameServersOptions({})),
   component: Component,
   pendingComponent: () => {

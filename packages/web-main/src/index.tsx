@@ -1,7 +1,7 @@
 /// <reference path="./@tanstack.d.ts" />
 import { createRoot } from 'react-dom/client';
 import './index.css';
-import App from './App';
+import { App } from './App';
 import reportWebVitals from './reportWebVitals';
 import * as Sentry from '@sentry/react';
 import * as SentryIntegration from '@sentry/integrations';

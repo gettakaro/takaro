@@ -1,12 +1,18 @@
 import { DrawerSkeleton } from '@takaro/lib-components';
-import { createFileRoute, notFound } from '@tanstack/react-router';
+import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
 import { useNavigate } from '@tanstack/react-router';
 import { useVariableUpdate, variableOptions } from 'queries/variables/queries';
 import { VariablesForm, ExecutionType, IFormInputs } from './-variables/VariableCreateUpdateForm';
 import { useSnackbar } from 'notistack';
 import { queryClient } from 'queryClient';
+import { hasPermission } from 'hooks/useHasPermission';
 
 export const Route = createFileRoute('/_auth/variables/update/$variableId')({
+  beforeLoad: ({ context }) => {
+    if (!hasPermission(context.auth.session, ['READ_VARIABLES', 'MANAGE_VARIABLES'])) {
+      throw redirect({ to: '/forbidden' });
+    }
+  },
   loader: ({ params }) => queryClient.ensureQueryData(variableOptions(params.variableId)),
   component: Component,
   pendingComponent: DrawerSkeleton,

@@ -1,9 +1,15 @@
 import { HorizontalNav, useTheme } from '@takaro/lib-components';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 import { ErrorBoundary } from 'components/ErrorBoundary';
 import { Outlet } from '@tanstack/react-router';
+import { hasPermission } from 'hooks/useHasPermission';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/_dashboard')({
+  beforeLoad: ({ context }) => {
+    if (!hasPermission(context.auth.session, ['READ_GAMESERVERS'])) {
+      throw redirect({ to: '/forbidden' });
+    }
+  },
   component: Component,
 });
 

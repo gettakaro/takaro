@@ -4,8 +4,9 @@ import { modulesOptions } from 'queries/modules';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { PermissionsGuard } from 'components/PermissionsGuard';
 import { AddCard, CardList, ModuleDefinitionCard } from 'components/cards';
-import { useNavigate, Outlet } from '@tanstack/react-router';
+import { useNavigate, Outlet, redirect } from '@tanstack/react-router';
 import { createFileRoute } from '@tanstack/react-router';
+import { hasPermission } from 'hooks/useHasPermission';
 
 const SubHeader = styled.h2<{ withMargin?: boolean }>`
   font-size: ${({ theme }) => theme.fontSize.mediumLarge};
@@ -17,6 +18,11 @@ const SubText = styled.p`
 `;
 
 export const Route = createFileRoute('/_auth/modules')({
+  beforeLoad: ({ context }) => {
+    if (!hasPermission(context.auth.session, ['READ_MODULES'])) {
+      throw redirect({ to: '/forbidden' });
+    }
+  },
   loader: ({ context }) => context.queryClient.ensureQueryData(modulesOptions({})),
   component: Component,
   pendingComponent: () => {

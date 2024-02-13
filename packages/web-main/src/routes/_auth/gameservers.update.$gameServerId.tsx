@@ -1,13 +1,19 @@
 import { SubmitHandler } from 'react-hook-form';
 import { DrawerSkeleton } from '@takaro/lib-components';
-import { useNavigate } from '@tanstack/react-router';
+import { redirect, useNavigate } from '@tanstack/react-router';
 import { gameServerOptions } from 'queries/gameservers';
 import { useGameServerUpdate } from 'queries/gameservers/queries';
 import { createFileRoute } from '@tanstack/react-router';
 import { CreateUpdateForm } from './-gameservers/CreateUpdateForm';
 import { IFormInputs } from './-gameservers/validationSchema';
+import { hasPermission } from 'hooks/useHasPermission';
 
 export const Route = createFileRoute('/_auth/gameservers/update/$gameServerId')({
+  beforeLoad: ({ context }) => {
+    if (!hasPermission(context.auth.session, ['MANAGE_GAMESERVERS'])) {
+      throw redirect({ to: '/forbidden' });
+    }
+  },
   loader: ({ params, context }) => context.queryClient.ensureQueryData(gameServerOptions(params.gameServerId)),
   component: Component,
   pendingComponent: DrawerSkeleton,

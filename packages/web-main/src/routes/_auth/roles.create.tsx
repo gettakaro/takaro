@@ -3,9 +3,15 @@ import { SubmitHandler } from 'react-hook-form';
 import { DrawerSkeleton } from '@takaro/lib-components';
 import { permissionsOptions, useRoleCreate } from 'queries/roles';
 import { RoleForm, IFormInputs } from './-roles/RoleCreateUpdateForm';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
+import { hasPermission } from 'hooks/useHasPermission';
 
 export const Route = createFileRoute('/_auth/roles/create')({
+  beforeLoad: ({ context }) => {
+    if (!hasPermission(context.auth.session, ['MANAGE_ROLES'])) {
+      throw redirect({ to: '/forbidden' });
+    }
+  },
   loader: ({ context }) => context.queryClient.ensureQueryData(permissionsOptions()),
   component: Component,
   pendingComponent: DrawerSkeleton,

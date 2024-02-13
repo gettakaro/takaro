@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { Button, TextField, styled, errors, Company, FormError } from '@takaro/lib-components';
 import { AiFillMail as Mail } from 'react-icons/ai';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { Link, createFileRoute, useRouter } from '@tanstack/react-router';
+import { Link, createFileRoute, useNavigate, useRouter } from '@tanstack/react-router';
 import { LoginFlow } from '@ory/client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -11,8 +11,12 @@ import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { useOry } from 'hooks/useOry';
 import { getApiClient } from 'util/getApiClient';
 import { useAuth } from 'hooks/useAuth';
+import { flushSync } from 'react-dom';
 
 export const Route = createFileRoute('/login')({
+  validateSearch: z.object({
+    redirect: z.string().catch('/dashboard'),
+  }),
   component: Component,
 });
 
@@ -60,7 +64,9 @@ function Component() {
   const { oryClient } = useOry();
   const router = useRouter();
   const apiClient = getApiClient();
+  const search = Route.useSearch();
   const { setSession, session } = useAuth();
+  const navigate = useNavigate();
 
   const validationSchema = useMemo(
     () =>
@@ -89,12 +95,16 @@ function Component() {
       },
     });
 
+    localStorage.removeItem('selectedGameServerId');
     const res = await apiClient.user.userControllerMe({
       headers: {
         'Cache-Control': 'no-cache',
       },
     });
-    setSession(res.data.data);
+    flushSync(() => {
+      setSession(res.data.data);
+    });
+    navigate({ to: search.redirect });
   }
 
   useEffect(() => {
@@ -115,6 +125,10 @@ function Component() {
   const { control, handleSubmit, reset } = useForm<IFormInputs>({
     mode: 'onSubmit',
     resolver: zodResolver(validationSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
   });
 
   const onSubmit: SubmitHandler<IFormInputs> = async ({ email, password }) => {
@@ -123,8 +137,6 @@ function Component() {
     try {
       if (loginFlow?.id) {
         await logIn(loginFlow?.id, email, password, csrfToken!);
-        localStorage.removeItem('selectedGameServerId');
-        router.navigate({ to: '/settings/gameservers' });
       }
     } catch (error) {
       reset();
@@ -147,6 +159,7 @@ function Component() {
     }
   };
 
+  // we successfully logged in, redirect to dashboard
   if (session) {
     router.navigate({ to: '/dashboard' });
   }

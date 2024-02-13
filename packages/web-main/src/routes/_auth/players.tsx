@@ -1,4 +1,3 @@
-/*
 import { FC, Fragment, useState } from 'react';
 import {
   styled,
@@ -12,9 +11,9 @@ import {
   DateFormatter,
   CopyId,
 } from '@takaro/lib-components';
-import { PlayerOutputDTO, PERMISSIONS } from '@takaro/apiclient';
+import { PlayerOutputDTO, PERMISSIONS, PlayerSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import {
   AiOutlineUser as ProfileIcon,
   AiOutlineEdit as EditIcon,
@@ -22,7 +21,7 @@ import {
   AiOutlineUndo as UnBanIcon,
 } from 'react-icons/ai';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { useHasPermission } from 'hooks/useHasPermission';
+import { hasPermission, useHasPermission } from 'hooks/useHasPermission';
 import { useBanPlayerOnGameServer, useUnbanPlayerOnGameServer } from 'queries/gameservers';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
@@ -30,8 +29,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useSnackbar } from 'notistack';
 import { FaBan as BanIcon } from 'react-icons/fa';
 import { Player } from 'components/Player';
-import { useQuery } from '@tanstack/react-query';
+import { useSuspenseQuery } from '@tanstack/react-query';
 import { playersOptions } from 'queries/players';
+import { getApiClient } from 'util/getApiClient';
 
 export const StyledDialogBody = styled(Dialog.Body)`
   h2 {
@@ -39,13 +39,50 @@ export const StyledDialogBody = styled(Dialog.Body)`
   }
 `;
 export const Route = createFileRoute('/_auth/players')({
+  beforeLoad: ({ context }) => {
+    if (!hasPermission(context.auth.session, ['READ_PLAYERS'])) {
+      throw redirect({ to: '/forbidden' });
+    }
+  },
+  loader: ({ context }) =>
+    context.queryClient.ensureQueryData(
+      playersOptions({
+        sortBy: 'createdAt',
+        sortDirection: 'desc',
+      })
+    ),
   component: Component,
 });
 function Component() {
   useDocumentTitle('Players');
-  const { pagination, columnFilters, sorting, columnSearch } = useTableActions<PlayerOutputDTO>();
+  const loaderData = Route.useLoaderData();
 
-  //const {} = useQuery(playersOptions({ page: pagination.paginationState.pageIndex, columnFilters, sorting, columnSearch }));
+  const { pagination, columnFilters, sorting, columnSearch } = useTableActions<PlayerOutputDTO>();
+  const { data, isLoading } = useSuspenseQuery({
+    ...playersOptions({
+      page: pagination.paginationState.pageIndex,
+      limit: pagination.paginationState.pageSize,
+      sortBy: sorting.sortingState[0]?.id,
+      sortDirection: sorting.sortingState[0]?.desc
+        ? PlayerSearchInputDTOSortDirectionEnum.Desc
+        : PlayerSearchInputDTOSortDirectionEnum.Asc,
+      filters: {
+        name: columnFilters.columnFiltersState.find((filter) => filter.id === 'name')?.value,
+        steamId: columnFilters.columnFiltersState.find((filter) => filter.id === 'steamId')?.value,
+        epicOnlineServicesId: columnFilters.columnFiltersState.find((filter) => filter.id === 'epicOnlineServicesId')
+          ?.value,
+        xboxLiveId: columnFilters.columnFiltersState.find((filter) => filter.id === 'xboxLiveId')?.value,
+      },
+      search: {
+        name: columnSearch.columnSearchState.find((search) => search.id === 'name')?.value,
+        steamId: columnSearch.columnSearchState.find((search) => search.id === 'steamId')?.value,
+        epicOnlineServicesId: columnSearch.columnSearchState.find((search) => search.id === 'epicOnlineServicesId')
+          ?.value,
+        xboxLiveId: columnSearch.columnSearchState.find((search) => search.id === 'xboxLiveId')?.value,
+      },
+    }),
+    initialData: loaderData,
+  });
 
   // IMPORTANT: id should be identical to data object key.
   const columnHelper = createColumnHelper<PlayerOutputDTO>();
@@ -157,10 +194,10 @@ function Component() {
   const p =
     !isLoading && data
       ? {
-        paginationState: pagination.paginationState,
-        setPaginationState: pagination.setPaginationState,
-        pageOptions: pagination.getPageOptions(data),
-      }
+          paginationState: pagination.paginationState,
+          setPaginationState: pagination.setPaginationState,
+          pageOptions: pagination.getPageOptions(data),
+        }
       : undefined;
 
   return (
@@ -191,12 +228,12 @@ interface FormInputs {
 const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
   const [openBanDialog, setOpenBanDialog] = useState<boolean>(false);
   const [openUnbanDialog, setOpenUnbanDialog] = useState<boolean>(false);
-  const { hasPermission: hasManagePlayers } = useHasPermission([PERMISSIONS.ManagePlayers]);
   const { hasPermission: hasManageRoles } = useHasPermission([PERMISSIONS.ManageRoles]);
+  const { hasPermission: hasManagePlayers } = useHasPermission([PERMISSIONS.ManagePlayers]);
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const navigate = useNavigate();
+  const navigate = useNavigate({ from: Route.fullPath });
 
   const validationSchema = z.object({
     reason: z.string().min(1).max(100).nonempty(),
@@ -206,13 +243,12 @@ const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
     resolver: zodResolver(validationSchema),
   });
 
-  const apiclient = useApiClient();
   const { mutateAsync: mutateBanPlayer, isPending: isLoadingBanPlayer } = useBanPlayerOnGameServer();
   const { mutateAsync: mutateUnbanPlayer, isPending: isLoadingUnbanPlayer } = useUnbanPlayerOnGameServer();
 
   const handleOnBanPlayer: SubmitHandler<FormInputs> = async ({ reason }) => {
     const pogs = (
-      await apiclient.playerOnGameserver.playerOnGameServerControllerSearch({ filters: { playerId: [player.id] } })
+      await getApiClient().playerOnGameserver.playerOnGameServerControllerSearch({ filters: { playerId: [player.id] } })
     ).data.data;
 
     const bans = pogs.map((pog) => {
@@ -236,7 +272,7 @@ const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
 
   const handleOnUnbanPlayer = async () => {
     const pogs = (
-      await apiclient.playerOnGameserver.playerOnGameServerControllerSearch({ filters: { playerId: [player.id] } })
+      await getApiClient().playerOnGameserver.playerOnGameServerControllerSearch({ filters: { playerId: [player.id] } })
     ).data.data;
 
     const bans = pogs.map((pog) => {
@@ -265,13 +301,18 @@ const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
           <Dropdown.Menu.Item
             label="Go to player profile"
             icon={<ProfileIcon />}
-            onClick={() => navigate({ to: PATHS.player.global.profile(player.id) })}
+            // TODO: set the correct path
+            onClick={() => navigate({ to: '' })}
+
+            //PATHS.player.global.profile(player.id) })}
           />
 
           <Dropdown.Menu.Item
+            //PATHS.player.global.assignRole(player.id)
             label="Edit roles"
             icon={<EditIcon />}
-            onClick={() => navigate({ to: PATHS.player.global.assignRole(player.id) })}
+            // TODO: set the correct path
+            onClick={() => navigate({ to: '/a' })}
             disabled={!hasManageRoles}
           />
 
@@ -328,4 +369,4 @@ const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
       </Dialog>
     </>
   );
-};*/
+};
