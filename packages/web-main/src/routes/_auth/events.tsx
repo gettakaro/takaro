@@ -1,9 +1,9 @@
-import { createFileRoute } from '@tanstack/react-router'
-
-export const Route = createFileRoute('/_auth/events')({
-  component: () => <div>Hello /_auth/events!</div>
-})piclient';
-import { DateRangePicker, Button, styled } from '@takaro/lib-components';
+import { DateRangePicker, Button, styled, InfiniteScroll } from '@takaro/lib-components';
+import {
+  EventOutputDTO,
+  EventOutputDTOEventNameEnum as EventName,
+  EventSearchInputAllowedFilters,
+} from '@takaro/apiclient';
 import { EventFeed, EventItem } from 'components/events/EventFeed';
 import { EventFilter } from 'components/events/EventFilter';
 import { EventFilterTag } from 'components/events/EventFilter/Tag';
@@ -15,17 +15,28 @@ import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { useSocket } from 'hooks/useSocket';
 import _ from 'lodash';
 import { DateTime } from 'luxon';
-import { eventsOptions } from 'queries/events';
+import { eventsInfiniteQueryOptions, eventsOptions } from 'queries/events';
 import { HiStop as PauseIcon, HiPlay as PlayIcon, HiArrowPath as RefreshIcon } from 'react-icons/hi2';
 import { createFileRoute, redirect } from '@tanstack/react-router';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useSuspenseInfiniteQuery } from '@tanstack/react-query';
 import { hasPermission } from 'hooks/useHasPermission';
+import { useEffect, useState } from 'react';
 
 export const Route = createFileRoute('/_auth/events')({
   beforeLoad: async ({ context }) => {
     if (!hasPermission(context.auth.session, ['READ_EVENTS'])) {
       throw redirect({ to: '/forbidden' });
     }
+  },
+  loader: async ({ context }) => {
+    const opts = eventsInfiniteQueryOptions({
+      sortBy: 'createdAt',
+      sortDirection: 'desc',
+      extend: ['gameServer', 'module', 'player', 'user'],
+    });
+    const data =
+      context.queryClient.getQueryData(opts.queryKey) ?? (await context.queryClient.fetchInfiniteQuery(opts));
+    return data;
   },
   component: Component,
 });
@@ -194,7 +205,7 @@ function clientSideFilter(
 
 function Component() {
   useDocumentTitle('Events');
-
+  const loaderData = Route.useLoaderData();
   const [startDate, setStartDate] = useState<DateTime | null>(null);
   const [endDate, setEndDate] = useState<DateTime | null>(null);
 
@@ -250,8 +261,15 @@ function Component() {
     }
   }, [lastEventResponse]);
 
-  const { data: rawEvents, refetch } = useQuery(
-    eventsOptions({
+  const {
+    data: rawEvents,
+    refetch,
+    isFetching,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useSuspenseInfiniteQuery({
+    ...eventsInfiniteQueryOptions({
       search: { eventName: eventTypes },
       filters: filterFields,
       sortBy: 'createdAt',
@@ -259,12 +277,15 @@ function Component() {
       startDate: startDate?.toISO() ?? undefined,
       endDate: endDate?.toISO() ?? undefined,
       extend: ['gameServer', 'module', 'player', 'user'],
-    })
-  );
+    }),
+    initialData: loaderData,
+  });
+
+  console.log(hasNextPage);
 
   useEffect(() => {
     if (rawEvents) {
-      setEvents(rawEvents.data);
+      setEvents(rawEvents.pages.flatMap((page) => page.data));
     }
   }, [rawEvents]);
 
@@ -342,8 +363,12 @@ function Component() {
                 {events?.map((event) => (
                   <EventItem key={event.id} event={event} onDetailClick={() => {}} />
                 ))}
-                {/* TODO: add back infinite scroll?*/}
-                {/*InfiniteScroll*/}
+                <InfiniteScroll
+                  isFetching={isFetching}
+                  hasNextPage={hasNextPage}
+                  fetchNextPage={fetchNextPage}
+                  isFetchingNextPage={isFetchingNextPage}
+                />
               </EventFeed>
             </ScrollableContainer>
           </EventFilterContainer>

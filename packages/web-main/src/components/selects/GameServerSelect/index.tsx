@@ -28,12 +28,12 @@ export const GameServerSelect: FC<CustomSelectProps> = ({
   required,
 }) => {
   const { data, isLoading: isLoadingData } = useQuery(gameServersOptions({ sortBy: 'type' }));
+  const gameServers = data ?? [];
 
   if (isLoadingData) {
     // TODO: better loading state
     return <div>loading...</div>;
   }
-  const gameServers = data?.data ?? [];
 
   if (!gameServers) {
     return <div>no game servers</div>;

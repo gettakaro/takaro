@@ -28,7 +28,7 @@ export const discordGuildInfiniteQueryOptions = (opts: GuildSearchInputDTO) =>
     queryKey: [...discordKeys.guilds, ...Object.values(opts)],
     queryFn: async () => (await getApiClient().discord.discordControllerSearch(opts)).data,
     initialPageParam: 0,
-    getNextPageParam: (lastPage, pages) => hasNextPage(lastPage.meta, pages.length),
+    getNextPageParam: (lastPage) => hasNextPage(lastPage.meta),
   });
 
 export const discordInviteQueryOptions = () =>

@@ -60,7 +60,7 @@ export const PlayerInventoryTable: FC<IPlayerInventoryProps> = ({ pog }) => {
   }
 
   const placeholderIcon = '/favicon.ico';
-  const server = gameservers?.data[0];
+  const server = gameservers && gameservers[0];
   const serverType = getServerType(server);
 
   return (

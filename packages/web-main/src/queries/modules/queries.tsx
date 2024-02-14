@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient, queryOptions } from '@tanstack/react-query';
+import { useMutation, useQueryClient, queryOptions, infiniteQueryOptions } from '@tanstack/react-query';
 import { getApiClient } from 'util/getApiClient';
 import {
   CommandCreateDTO,
@@ -27,7 +27,7 @@ import {
   ModuleUpdateDTO,
 } from '@takaro/apiclient';
 
-import { mutationWrapper } from '../util';
+import { queryParamsToArray, hasNextPage, mutationWrapper } from '../util';
 import { AxiosError } from 'axios';
 import { ErrorMessageMapping } from '@takaro/lib-components/src/errors';
 
@@ -79,8 +79,16 @@ const defaultFunctionErrorMessages: Partial<ErrorMessageMapping> = {
 
 export const modulesOptions = (queryParams: ModuleSearchInputDTO = {}) =>
   queryOptions<ModuleOutputArrayDTOAPI, AxiosError<ModuleOutputArrayDTOAPI>>({
-    queryKey: [...moduleKeys.list(), { ...queryParams }],
+    queryKey: [...moduleKeys.list(), ...queryParamsToArray(queryParams)],
     queryFn: async () => (await getApiClient().module.moduleControllerSearch(queryParams)).data,
+  });
+
+export const modulesInfiniteQueryOptions = (queryParams: ModuleSearchInputDTO = {}) =>
+  infiniteQueryOptions<ModuleOutputArrayDTOAPI, AxiosError<ModuleOutputArrayDTOAPI>>({
+    queryKey: [...moduleKeys.list(), ...queryParamsToArray(queryParams)],
+    queryFn: async () => (await getApiClient().module.moduleControllerSearch(queryParams)).data,
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => hasNextPage(lastPage.meta),
   });
 
 export const moduleOptions = (moduleId: string) =>

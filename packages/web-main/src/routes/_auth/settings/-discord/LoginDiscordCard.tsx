@@ -17,12 +17,14 @@ export const LoginDiscordCard: FC = () => {
 
   const hasLinkedDiscord = !!session?.discordId;
 
+  console.log(getConfigVar('apiUrl'));
+
   return (
     <Card>
       <Body>
         <DiscordIcon size={48} color={hasLinkedDiscord ? colors.primary : colors.background} />
         <span>{hasLinkedDiscord ? '' : 'Not connected yet'}</span>
-        <a href={`${getConfigVar('apiUrl')}}/auth/discord?redirect=${window.location.href}`}>
+        <a href={`${getConfigVar('apiUrl')}/auth/discord?redirect=${window.location.href}`}>
           <Button text={hasLinkedDiscord ? 'Update connection' : 'Connect'} />
         </a>
       </Body>

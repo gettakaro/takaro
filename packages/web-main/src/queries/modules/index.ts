@@ -11,14 +11,17 @@ export {
   useModuleCreate,
   useModuleRemove,
   useModuleUpdate,
+
   // cronjobs
   useCronJobCreate,
   useCronJobRemove,
   useCronJobUpdate,
+
   // hooks
   useHookCreate,
   useHookRemove,
   useHookUpdate,
+
   // commands
   useCommandCreate,
   useCommandRemove,

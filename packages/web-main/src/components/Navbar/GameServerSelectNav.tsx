@@ -24,8 +24,7 @@ interface GameServerSelectNavProps {
 export const GameServerSelectNav: FC<GameServerSelectNavProps> = ({ serverId, setServerId, isInGameServerNav }) => {
   const navigate = useNavigate();
   const { data, isLoading } = useQuery(gameServersOptions());
-
-  const gameServers = data?.data ?? [];
+  const gameServers = data ?? [];
 
   const { selectedGameServerId, setSelectedGameServerId } = useSelectedGameServer();
 

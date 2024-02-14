@@ -4,7 +4,7 @@ import { DrawerSkeleton } from '@takaro/lib-components';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
 
-export const Route = createFileRoute('/_auth/modules/view/$moduleId')({
+export const Route = createFileRoute('/_auth/modules/$moduleId/view')({
   beforeLoad: ({ context }) => {
     if (!hasPermission(context.auth.session, ['READ_MODULES'])) {
       throw redirect({ to: '/forbidden' });

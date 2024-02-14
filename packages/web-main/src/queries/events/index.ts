@@ -1,1 +1,1 @@
-export { eventsOptions } from './queries';
+export { eventsOptions, eventsInfiniteQueryOptions } from './queries';

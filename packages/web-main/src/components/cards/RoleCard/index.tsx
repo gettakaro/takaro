@@ -23,7 +23,7 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
   };
   const handleOnDeleteClick = (e: MouseEvent) => {
     e.stopPropagation();
-    setOpenDialog(true);
+    e.shiftKey ? handleOnDelete(e) : setOpenDialog(true);
   };
 
   const handleOnViewClick = (e: MouseEvent) => {

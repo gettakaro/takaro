@@ -8,6 +8,7 @@ import {
   PlayerSearchInputDTO,
 } from '@takaro/apiclient';
 import { AxiosError } from 'axios';
+import { queryParamsToArray } from 'queries/util';
 
 export const playerKeys = {
   all: ['players'] as const,
@@ -19,7 +20,7 @@ export const playerKeys = {
 
 export const playersOptions = (queryParams: PlayerSearchInputDTO = {}) =>
   queryOptions<PlayerOutputArrayDTOAPI, AxiosError<PlayerOutputArrayDTOAPI>>({
-    queryKey: [...playerKeys.list(), { queryParams }],
+    queryKey: [...playerKeys.list(), ...queryParamsToArray(queryParams)],
     queryFn: async () => (await getApiClient().player.playerControllerSearch(queryParams)).data,
   });
 

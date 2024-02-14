@@ -31,7 +31,7 @@ export const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId, 
 
   const filteredServerIds = roles.filter((role) => role.gameServerId).map((role) => role.gameServerId);
 
-  const { data, isLoading } = useQuery(
+  const { data: gameServers, isLoading } = useQuery(
     gameServersOptions({
       filters: {
         id: filteredServerIds as string[],
@@ -39,10 +39,9 @@ export const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId, 
     })
   );
 
-  if (isLoading || !data) {
+  if (isLoading || !gameServers) {
     return <Skeleton variant="rectangular" width="100%" height="100%" />;
   }
-  const gameServers = data.data;
 
   const columnHelper = createColumnHelper<PlayerRoleAssignmentOutputDTO>();
 

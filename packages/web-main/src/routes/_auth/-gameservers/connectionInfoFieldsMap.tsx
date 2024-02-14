@@ -31,26 +31,22 @@ export const connectionInfoFieldsMap = (isLoading: boolean, control: Control<any
         loading={isLoading}
         required
       />,
-      <>
-        <Switch
-          label="Use TLS"
-          name="connectionInfo.useTls"
-          key="seven-days-to-die-use-tls"
-          description="TLS encrypts traffic between Takaro and your gameserver. Before you can use this, you need to have set up TLS on your gameserver! This typically involves setting up a reverse proxy like Nginx"
-          control={control}
-          loading={isLoading}
-        />
-      </>,
-      <>
-        <Switch
-          label="Use CPM"
-          name="connectionInfo.useCPM"
-          key="seven-days-to-die-use-cpm"
-          control={control}
-          loading={isLoading}
-          description="CPM is a helper mod for 7 Days to Die. Download at https://cpm.7d2d.download"
-        />
-      </>,
+      <Switch
+        label="Use TLS"
+        name="connectionInfo.useTls"
+        key="seven-days-to-die-use-tls"
+        description="TLS encrypts traffic between Takaro and your gameserver. Before you can use this, you need to have set up TLS on your gameserver! This typically involves setting up a reverse proxy like Nginx"
+        control={control}
+        loading={isLoading}
+      />,
+      <Switch
+        label="Use CPM"
+        name="connectionInfo.useCPM"
+        key="seven-days-to-die-use-cpm"
+        control={control}
+        loading={isLoading}
+        description="CPM is a helper mod for 7 Days to Die. Download at https://cpm.7d2d.download"
+      />,
     ],
     [GameServerCreateDTOTypeEnum.Mock]: [
       <TextField
@@ -61,6 +57,7 @@ export const connectionInfoFieldsMap = (isLoading: boolean, control: Control<any
         placeholder="http://127.0.0.1:3002"
         key="mock-event-host"
         loading={isLoading}
+        required
       />,
     ],
     [GameServerCreateDTOTypeEnum.Rust]: [
@@ -91,16 +88,14 @@ export const connectionInfoFieldsMap = (isLoading: boolean, control: Control<any
         loading={isLoading}
         required
       />,
-      <>
-        <Switch
-          label="Use TLS"
-          name="connectionInfo.useTls"
-          description="TLS encrypts traffic between Takaro and your gameserver. Before you can use this, you need to have set up TLS on your gameserver! This typically involves setting up a reverse proxy like Nginx"
-          key="use-tls"
-          control={control}
-          loading={isLoading}
-        />
-      </>,
+      <Switch
+        label="Use TLS"
+        name="connectionInfo.useTls"
+        description="TLS encrypts traffic between Takaro and your gameserver. Before you can use this, you need to have set up TLS on your gameserver! This typically involves setting up a reverse proxy like Nginx"
+        key="use-tls"
+        control={control}
+        loading={isLoading}
+      />,
     ],
   };
 };

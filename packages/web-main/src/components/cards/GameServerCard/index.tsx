@@ -10,6 +10,7 @@ import {
   Skeleton,
   useTheme,
   ValueConfirmationField,
+  Alert,
 } from '@takaro/lib-components';
 import { EventOutputDTO, GameServerOutputDTO, PERMISSIONS } from '@takaro/apiclient';
 import { useNavigate } from '@tanstack/react-router';
@@ -29,12 +30,12 @@ import { playerOnGameServersOptions } from 'queries/players';
 import { useQuery } from '@tanstack/react-query';
 
 export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reachable }) => {
-  const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const [valid, setValid] = useState<boolean>(false);
   const navigate = useNavigate();
   const { selectedGameServerId, setSelectedGameServerId } = useSelectedGameServer();
   const theme = useTheme();
-  const { mutateAsync, isPending: isDeleting } = useGameServerRemove();
+  const { mutate, isPending: isDeleting } = useGameServerRemove();
   const { socket } = useSocket();
   const {
     data: onlinePogs,
@@ -66,14 +67,17 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
   };
   const handleOnDeleteClick = (e: MouseEvent) => {
     e.stopPropagation();
-    setOpenDialog(true);
+
+    e.shiftKey ? handleOnDelete() : setOpenDeleteDialog(true);
   };
 
-  const handleOnDelete = async () => {
-    await mutateAsync({ id });
+  const handleOnDelete = () => {
+    mutate({ id });
 
     // if the gameserver was selected, deselect it
     if (selectedGameServerId === id) {
+      // If no gameserver is selected, the gameserver select should
+      // handle selecting a new gameserver.
       setSelectedGameServerId('');
     }
   };
@@ -135,10 +139,14 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
           </DetailsContainer>
         </CardBody>
       </Card>
-      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+      <Dialog open={openDeleteDialog} onOpenChange={setOpenDeleteDialog}>
         <Dialog.Content>
           <Dialog.Heading>delete: gameserver</Dialog.Heading>
           <Dialog.Body size="medium">
+            <Alert
+              variant="info"
+              text="You can hold down shift when deleting a gameserver to bypass this confirmation entirely."
+            />
             <p>
               Are you sure you want to delete <strong>{name}</strong>? To confirm, type <strong>{name}</strong> in the
               input below.
@@ -154,7 +162,7 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
               onClick={() => handleOnDelete()}
               disabled={!valid}
               fullWidth
-              text={'Delete gameserver'}
+              text="Delete gameserver"
               color="error"
             />
           </Dialog.Body>

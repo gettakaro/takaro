@@ -10,10 +10,8 @@ const baseShape = z.object({
     .min(4, {
       message: 'Server name requires a minimum length of 4 characters',
     })
-    .max(21, {
-      message: 'Server name requires a maximum length of 25 characters',
-    })
-    .nonempty('Server name cannot be empty'),
+    .max(21)
+    .min(1, { message: 'Server name cannot be empty' }),
 });
 
 export const validationSchema = baseShape.and(
@@ -24,9 +22,9 @@ export const validationSchema = baseShape.and(
         host: z
           .string()
           .regex(IPV4_AND_PORT_REGEX, 'The provided value is not of the format ipv4:port')
-          .nonempty('Host cannot not be empty'),
-        adminUser: z.string().nonempty('Admin user cannot be empty'),
-        adminToken: z.string().nonempty('Admin token cannot be empty'),
+          .min(1, { message: 'Host cannot not be empty' }),
+        adminUser: z.string().min(1, { message: 'Admin user cannot be empty' }),
+        adminToken: z.string().min(1, { message: 'Admin token cannot be empty' }),
         useTls: z.boolean(),
         useCPM: z.boolean(),
       }),
@@ -38,9 +36,9 @@ export const validationSchema = baseShape.and(
         host: z
           .string()
           .regex(IPV4_REGEX, 'The provided value is not a valid ipv4')
-          .nonempty('Server Ip cannot be empty'),
+          .min(1, { message: 'Server Ip cannot be empty' }),
         rconPort: z.number().nonnegative().min(1).max(65535),
-        rconPassword: z.string().nonempty('Rcon password cannot be empty'),
+        rconPassword: z.string().min(1, { message: 'Rcon password cannot be empty' }),
         useTls: z.boolean(),
       }),
     }),
@@ -48,7 +46,7 @@ export const validationSchema = baseShape.and(
     z.object({
       type: z.literal(GameServerCreateDTOTypeEnum.Mock.valueOf()),
       connectionInfo: z.object({
-        host: z.string().nonempty('Host cannot be empty'),
+        host: z.string().min(1, { message: 'Host cannot be empty' }),
         eventInterval: z.number().min(500),
         playerPoolSize: z.number().max(200).nonnegative('Player pool size cannot be negative'),
       }),

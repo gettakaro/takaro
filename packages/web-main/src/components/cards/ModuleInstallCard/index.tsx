@@ -1,5 +1,14 @@
 import { ModuleInstallationOutputDTO, ModuleOutputDTO, PERMISSIONS } from '@takaro/apiclient';
-import { Dialog, Button, IconButton, Card, useTheme, Dropdown, ValueConfirmationField } from '@takaro/lib-components';
+import {
+  Dialog,
+  Button,
+  IconButton,
+  Card,
+  useTheme,
+  Dropdown,
+  ValueConfirmationField,
+  Alert,
+} from '@takaro/lib-components';
 import { PermissionsGuard } from 'components/PermissionsGuard';
 
 import { FC, useState, MouseEvent } from 'react';
@@ -32,7 +41,7 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation }) =
 
   const handleOnDeleteClick = (e: MouseEvent) => {
     e.stopPropagation();
-    setOpenDialog(true);
+    e.shiftKey ? handleUninstall(e) : setOpenDialog(true);
   };
 
   const handleUninstall = async (e: MouseEvent) => {
@@ -52,7 +61,7 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation }) =
   const handleOnViewModuleConfigClick = (e: MouseEvent) => {
     e.stopPropagation();
     navigate({
-      to: '/gameserver/$gameServerId/module/$moduleId/install/view',
+      to: '/gameserver/$gameServerId/modules/$moduleId/install/view',
       params: { gameServerId: selectedGameServerId, moduleId: mod.id },
     });
   };
@@ -60,7 +69,7 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation }) =
   const handleInstallConfigureClick = (e: MouseEvent) => {
     e.stopPropagation();
     navigate({
-      to: '/gameserver/$gameServerId/module/$moduleId/install',
+      to: '/gameserver/$gameServerId/modules/$moduleId/install',
       params: { gameServerId: selectedGameServerId, moduleId: mod.id },
     });
   };
@@ -119,6 +128,7 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation }) =
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <Dialog.Content>
           <Dialog.Heading>Module uninstall</Dialog.Heading>
+
           <Dialog.Body>
             <p style={{ alignContent: 'center' }}>
               Are you sure you want to uninstall the module <strong>{mod.name}</strong>? To confirm, type the module
@@ -137,6 +147,10 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation }) =
               disabled={!valid}
               text="Uninstall module"
               color="error"
+            />
+            <Alert
+              variant="info"
+              text="You can hold down shift when uninstalling a module to bypass this confirmation entirely."
             />
           </Dialog.Body>
         </Dialog.Content>

@@ -1,8 +1,7 @@
 import { FC, useEffect, useState } from 'react';
-import { Button, SelectField, TextField, Drawer, CollapseList, FormError } from '@takaro/lib-components';
+import { Button, SelectField, TextField, Drawer, CollapseList, FormError, Alert } from '@takaro/lib-components';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { validationSchema, IFormInputs } from './validationSchema';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { IFormInputs } from './validationSchema';
 import { GameServerOutputDTO, GameServerTestReachabilityInputDTOTypeEnum } from '@takaro/apiclient';
 import { useGameServerReachabilityByConfig } from 'queries/gameservers';
 import { styled } from '@takaro/lib-components';
@@ -46,15 +45,32 @@ export const CreateUpdateForm: FC<CreateUpdateFormProps> = ({ initialData, isLoa
   const { mutateAsync: testReachabilityMutation, isPending: testingConnection } = useGameServerReachabilityByConfig();
   const navigate = useNavigate();
 
-  const { control, handleSubmit, watch } = useForm<IFormInputs>({
+  const { control, handleSubmit, watch, trigger, formState } = useForm<IFormInputs>({
     mode: 'onChange',
-    resolver: zodResolver(validationSchema),
-    defaultValues: initialData && {
-      name: initialData.name,
-      type: initialData.type,
-      connectionInfo: initialData.connectionInfo,
+    defaultValues: {
+      name: '',
+      type: '',
+      connectionInfo: {
+        host: '',
+        adminUser: '',
+        adminToken: '',
+        useTls: false,
+        useCPM: false,
+        rconPort: 0,
+        rconPassword: '',
+        eventInterval: 0,
+        playerPoolSize: 0,
+      },
     },
+    ...(initialData && {
+      values: {
+        name: initialData.name,
+        type: initialData.type,
+        connectionInfo: initialData.connectionInfo as any,
+      },
+    }),
   });
+
   const { type, connectionInfo } = watch();
 
   useEffect(() => {
@@ -77,13 +93,15 @@ export const CreateUpdateForm: FC<CreateUpdateFormProps> = ({ initialData, isLoa
     }
   };
 
+  const formId = 'gameserver-form';
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <Drawer.Content>
         <Drawer.Heading>Edit Game Server</Drawer.Heading>
         <Drawer.Body>
           <CollapseList>
-            <form onSubmit={handleSubmit(onSubmit)} id="update-game-server-form">
+            <Alert variant="warning" text="Form validation is temporarily disabled." />
+            <form onSubmit={handleSubmit(onSubmit)} id={formId}>
               <CollapseList.Item title="General">
                 <TextField
                   control={control}
@@ -99,7 +117,6 @@ export const CreateUpdateForm: FC<CreateUpdateFormProps> = ({ initialData, isLoa
                   label="Game Server"
                   required
                   loading={isLoading}
-                  readOnly
                   render={(selectedItems) => {
                     if (selectedItems.length === 0) {
                       return <div>Select...</div>;
@@ -119,7 +136,7 @@ export const CreateUpdateForm: FC<CreateUpdateFormProps> = ({ initialData, isLoa
                 </SelectField>
               </CollapseList.Item>
               <CollapseList.Item title="Connection info">
-                {connectionInfoFieldsMap(isLoading, control)[type]}
+                {type && connectionInfoFieldsMap(isLoading, control)[type]}
               </CollapseList.Item>
             </form>
           </CollapseList>
@@ -129,8 +146,16 @@ export const CreateUpdateForm: FC<CreateUpdateFormProps> = ({ initialData, isLoa
         <Drawer.Footer>
           <ButtonContainer>
             <Button text="Cancel" onClick={() => setOpen(false)} color="background" type="button" />
-            <Button fullWidth isLoading={testingConnection} onClick={clickTestReachability} text="Test connection" />
-            {connectionOk && <Button fullWidth text="Save changes" onClick={() => {}} form="create-game-server-form" />}
+            <Button
+              fullWidth
+              disabled={!formState.isValid}
+              isLoading={testingConnection}
+              onClick={clickTestReachability}
+              text="Test connection"
+            />
+            {connectionOk && (
+              <Button type="submit" fullWidth onClick={() => trigger()} text="Save changes" form={formId} />
+            )}
           </ButtonContainer>
         </Drawer.Footer>
       </Drawer.Content>

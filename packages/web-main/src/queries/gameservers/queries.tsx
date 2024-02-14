@@ -18,10 +18,9 @@ import {
   ModuleInstallDTO,
   TestReachabilityOutputDTO,
 } from '@takaro/apiclient';
-import { useMutation, useQueryClient, queryOptions } from '@tanstack/react-query';
+import { useMutation, useQueryClient, queryOptions, infiniteQueryOptions } from '@tanstack/react-query';
 import { getApiClient } from 'util/getApiClient';
-import { useSnackbar } from 'notistack';
-import { mutationWrapper } from '../util';
+import { hasNextPage, mutationWrapper, queryParamsToArray } from '../util';
 import { AxiosError } from 'axios';
 import { queryClient } from 'queryClient';
 import { ErrorMessageMapping } from '@takaro/lib-components/src/errors';
@@ -41,13 +40,22 @@ export const installedModuleKeys = {
 };
 
 const defaultGameServerErrorMessages: Partial<ErrorMessageMapping> = {
-  UniqueConstraintError: 'Game server with this name already exists',
+  UniqueConstraintError: 'Game server with this name already exists.',
 };
 
 export const gameServersOptions = (queryParams: GameServerSearchInputDTO = {}) => {
-  return queryOptions<GameServerOutputArrayDTOAPI, AxiosError<GameServerOutputArrayDTOAPI>>({
-    queryKey: [...gameServerKeys.list(), { ...queryParams }],
+  return queryOptions<GameServerOutputDTO[], AxiosError<GameServerOutputArrayDTOAPI>>({
+    queryKey: [...gameServerKeys.list(), ...queryParamsToArray(queryParams)],
+    queryFn: async () => (await getApiClient().gameserver.gameServerControllerSearch(queryParams)).data.data,
+  });
+};
+
+export const gameServersInfiniteQueryOptions = (queryParams: GameServerSearchInputDTO = {}) => {
+  return infiniteQueryOptions<GameServerOutputArrayDTOAPI, AxiosError<GameServerOutputArrayDTOAPI>>({
+    queryKey: [...gameServerKeys.list(), 'infinite', ...queryParamsToArray(queryParams)],
     queryFn: async () => (await getApiClient().gameserver.gameServerControllerSearch(queryParams)).data,
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => hasNextPage(lastPage.meta),
   });
 };
 
@@ -86,7 +94,6 @@ export const useGameServerCreateFromCSMMImport = () => {
 export const useGameServerCreate = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
-  const { enqueueSnackbar } = useSnackbar();
 
   return mutationWrapper<GameServerOutputDTO, GameServerCreateDTO>(
     useMutation<GameServerOutputDTO, AxiosError<any>, GameServerCreateDTO>({
@@ -95,7 +102,6 @@ export const useGameServerCreate = () => {
         // invalidate all queries that have list in the key
         await queryClient.invalidateQueries({ queryKey: gameServerKeys.list() });
         queryClient.setQueryData(gameServerKeys.detail(newGameServer.id), newGameServer);
-        enqueueSnackbar('Game server has been created', { variant: 'default' });
       },
     }),
     defaultGameServerErrorMessages

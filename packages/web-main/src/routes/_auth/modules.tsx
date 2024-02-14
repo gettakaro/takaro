@@ -1,12 +1,14 @@
 import { Divider, Skeleton, styled, useTheme } from '@takaro/lib-components';
 import { PERMISSIONS } from '@takaro/apiclient';
-import { modulesOptions } from 'queries/modules';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { PermissionsGuard } from 'components/PermissionsGuard';
 import { AddCard, CardList, ModuleDefinitionCard } from 'components/cards';
 import { useNavigate, Outlet, redirect } from '@tanstack/react-router';
 import { createFileRoute } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
+import { modulesInfiniteQueryOptions } from 'queries/modules/queries';
+import { useSuspenseInfiniteQuery } from '@tanstack/react-query';
+import { InfiniteScroll } from '@takaro/lib-components';
 
 const SubHeader = styled.h2<{ withMargin?: boolean }>`
   font-size: ${({ theme }) => theme.fontSize.mediumLarge};
@@ -23,7 +25,12 @@ export const Route = createFileRoute('/_auth/modules')({
       throw redirect({ to: '/forbidden' });
     }
   },
-  loader: ({ context }) => context.queryClient.ensureQueryData(modulesOptions({})),
+  loader: async ({ context }) => {
+    const opts = modulesInfiniteQueryOptions();
+    const modules =
+      context.queryClient.getQueryData(opts.queryKey) ?? (await context.queryClient.fetchInfiniteQuery(opts));
+    return modules;
+  },
   component: Component,
   pendingComponent: () => {
     return <Skeleton variant="rectangular" height="100%" width="100%" />;
@@ -34,9 +41,20 @@ function Component() {
   useDocumentTitle('Modules');
   const navigate = useNavigate();
   const theme = useTheme();
-  const modules = Route.useLoaderData();
+  const loader = Route.useLoaderData();
 
-  const flattenedModules = modules.data;
+  const {
+    data: modules,
+    isFetching,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useSuspenseInfiniteQuery({
+    ...modulesInfiniteQueryOptions(),
+    initialData: loader,
+  });
+
+  const flattenedModules = modules.pages.flatMap((page) => page.data);
   const builtinModules = flattenedModules.filter((mod) => mod.builtin);
   const customModules = flattenedModules.filter((mod) => !mod.builtin);
 
@@ -74,7 +92,12 @@ function Component() {
         ))}
         <Outlet />
       </CardList>
-      {/*InfiniteScroll*/}
+      <InfiniteScroll
+        isFetching={isFetching}
+        hasNextPage={hasNextPage}
+        fetchNextPage={fetchNextPage}
+        isFetchingNextPage={isFetchingNextPage}
+      />
     </div>
   );
 }

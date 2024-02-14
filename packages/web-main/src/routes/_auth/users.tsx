@@ -220,12 +220,12 @@ const UserMenu: FC<{ user: UserOutputWithRolesDTO }> = ({ user }) => {
             disabled={!hasReadUsersPermission}
             label="Go to user profile"
             icon={<ProfileIcon />}
-            onClick={() => navigate({ to: 'users/$userId', params: { userId: user.id } })}
+            onClick={() => navigate({ to: '/user/$userId', params: { userId: user.id } })}
           />
           <Dropdown.Menu.Item
             label="Edit roles"
             icon={<EditIcon />}
-            onClick={() => navigate({ to: 'users/$userId/role/assign', params: { userId: user.id } })}
+            onClick={() => navigate({ to: '/user/$userId/role/assign', params: { userId: user.id } })}
             disabled={!hasManageRolesPermission}
           />
           <Dropdown.Menu.Item

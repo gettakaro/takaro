@@ -1,12 +1,13 @@
 import { Fragment } from 'react';
-import { Button, Empty, EmptyPage, Skeleton } from '@takaro/lib-components';
+import { Button, Empty, EmptyPage, InfiniteScroll, Skeleton } from '@takaro/lib-components';
 import { PERMISSIONS } from '@takaro/apiclient';
 import { createFileRoute, useNavigate, Outlet, redirect } from '@tanstack/react-router';
-import { gameServersOptions } from 'queries/gameservers';
+import { gameServersInfiniteQueryOptions } from 'queries/gameservers';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { PermissionsGuard } from 'components/PermissionsGuard';
 import { AddCard, CardList, GameServerCard } from 'components/cards';
 import { hasPermission } from 'hooks/useHasPermission';
+import { useSuspenseInfiniteQuery } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/gameservers')({
   beforeLoad: ({ context }) => {
@@ -14,7 +15,10 @@ export const Route = createFileRoute('/_auth/gameservers')({
       throw redirect({ to: '/forbidden' });
     }
   },
-  loader: ({ context }) => context.queryClient.ensureQueryData(gameServersOptions({})),
+  loader: async ({ context }) => {
+    const opts = gameServersInfiniteQueryOptions();
+    return context.queryClient.getQueryData(opts.queryKey) ?? (await context.queryClient.fetchInfiniteQuery(opts));
+  },
   component: Component,
   pendingComponent: () => {
     return (
@@ -30,10 +34,21 @@ export const Route = createFileRoute('/_auth/gameservers')({
 
 function Component() {
   useDocumentTitle('Game Servers');
-  const gameServers = Route.useLoaderData();
+  const loaderData = Route.useLoaderData();
   const navigate = useNavigate();
 
-  if (!gameServers || gameServers.data.length === 0) {
+  const {
+    data: gameServers,
+    isFetching,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useSuspenseInfiniteQuery({
+    ...gameServersInfiniteQueryOptions(),
+    initialData: loaderData,
+  });
+
+  if (!gameServers || gameServers.pages.length === 0) {
     return (
       <EmptyPage>
         <Empty
@@ -49,9 +64,11 @@ function Component() {
   return (
     <Fragment>
       <CardList>
-        {gameServers.data.map((gameServer) => (
-          <GameServerCard key={gameServer.id} {...gameServer} />
-        ))}
+        {gameServers.pages
+          .flatMap((page) => page.data)
+          .map((gameServer) => (
+            <GameServerCard key={gameServer.id} {...gameServer} />
+          ))}{' '}
         <PermissionsGuard requiredPermissions={[PERMISSIONS.ManageGameservers]}>
           <AddCard title="Gameserver" onClick={() => navigate({ to: '/gameservers/create' })} />
         </PermissionsGuard>
@@ -59,8 +76,12 @@ function Component() {
           <AddCard title="Import from CSMM" onClick={() => navigate({ to: '/gameservers/create/import' })} />
         </PermissionsGuard>
       </CardList>
-      {/* TODO: add back infinite scrol*/}
-      {/*InfiniteScroll*/}
+      <InfiniteScroll
+        isFetching={isFetching}
+        hasNextPage={hasNextPage}
+        fetchNextPage={fetchNextPage}
+        isFetchingNextPage={isFetchingNextPage}
+      />
       {/* show editGameServer and newGameServer drawers above this listView*/}
       <Outlet />
     </Fragment>

@@ -61,7 +61,7 @@ export const GameServerNav: FC = () => {
 
   return (
     <Nav data-testid="server-nav">
-      {data && data.data.length > 0 ? (
+      {data && data.length > 0 ? (
         <>
           <h3>Server</h3>
           <GameServerSelectNav

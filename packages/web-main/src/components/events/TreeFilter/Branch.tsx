@@ -42,7 +42,7 @@ export const Branch: FC<TreeBranchProps> = ({ node, addFilters, removeFilters })
     <ListItem isBranch={true}>
       <ListItemHeader isBranch={true}>
         <ListItemName onClick={() => setIsOpen(!isOpen)} style={{ cursor: 'pointer' }}>
-          <DownArrowIcon />
+          <DownArrowIcon style={{ transform: isOpen ? 'none' : 'rotate(-90deg)' }} />
           <p>{node.name}</p>
         </ListItemName>
         <UnControlledCheckBox

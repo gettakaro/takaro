@@ -4,6 +4,7 @@ export {
   // queries
   gameServerOptions,
   gameServersOptions,
+  gameServersInfiniteQueryOptions,
   gameServerReachabilityOptions,
   gameServerModuleInstallationOptions,
   gameServerModuleInstallationsOptions,

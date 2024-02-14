@@ -41,7 +41,7 @@ export const Route = createFileRoute('/_auth/player/$playerId/role/assign')({
     const [roles, gameservers] = await Promise.all([p1, p2]);
     const gameServerOptions = [
       { name: 'Global - applies to all gameservers', id: 'null' } as GameServerOutputDTO,
-      ...gameservers.data,
+      ...gameservers,
     ];
     return { roles, gameServers: gameServerOptions };
   },

@@ -7,7 +7,7 @@ import {
   UserOutputWithRolesDTO,
   UserSearchInputDTO,
 } from '@takaro/apiclient';
-import { mutationWrapper } from '../util';
+import { queryParamsToArray, mutationWrapper } from '../util';
 import { AxiosError } from 'axios';
 import { useSnackbar } from 'notistack';
 
@@ -24,7 +24,7 @@ interface RoleInput {
 
 export const usersOptions = (queryParams: UserSearchInputDTO) =>
   queryOptions<UserOutputArrayDTOAPI, AxiosError<UserOutputArrayDTOAPI>>({
-    queryKey: [...userKeys.list(), { ...queryParams }],
+    queryKey: [...userKeys.list(), ...queryParamsToArray(queryParams)],
     queryFn: async () => (await getApiClient().user.userControllerSearch(queryParams)).data,
   });
 

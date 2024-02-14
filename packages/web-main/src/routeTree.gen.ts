@@ -47,20 +47,21 @@ import { Route as AuthPlayerPlayerIdInventoryImport } from './routes/_auth/playe
 import { Route as AuthPlayerPlayerIdGlobalImport } from './routes/_auth/player.$playerId/global'
 import { Route as AuthPlayerPlayerIdEventsImport } from './routes/_auth/player.$playerId/events'
 import { Route as AuthPlayerPlayerIdEconomyImport } from './routes/_auth/player.$playerId/economy'
-import { Route as AuthModulesViewModuleIdImport } from './routes/_auth/modules.view.$moduleId'
-import { Route as AuthModulesUpdateModuleIdImport } from './routes/_auth/modules.update.$moduleId'
+import { Route as AuthModulesModuleIdViewImport } from './routes/_auth/modules.$moduleId.view'
+import { Route as AuthModulesModuleIdUpdateImport } from './routes/_auth/modules.$moduleId.update'
+import { Route as AuthModulesModuleIdCopyImport } from './routes/_auth/modules.$moduleId.copy'
 import { Route as AuthGameserversUpdateGameServerIdImport } from './routes/_auth/gameservers.update.$gameServerId'
 import { Route as AuthGameserversCreateImportImport } from './routes/_auth/gameservers.create.import'
 import { Route as AuthGameserverGameServerIdSettingsImport } from './routes/_auth/gameserver.$gameServerId/settings'
 import { Route as AuthGameserverGameServerIdModulesImport } from './routes/_auth/gameserver.$gameServerId/modules'
-import { Route as AuthGameserverGameServerIdDashboardImport } from './routes/_auth/gameserver.$gameServerId/_dashboard'
+import { Route as AuthGameserverGameServerIdDashboardImport } from './routes/_auth/gameserver.$gameServerId/dashboard'
 import { Route as AuthUserUserIdRoleAssignImport } from './routes/_auth/user.$userId.role.assign'
 import { Route as AuthPlayerPlayerIdRoleAssignImport } from './routes/_auth/player.$playerId/role.assign'
-import { Route as AuthGameserverGameServerIdDashboardStatisticsImport } from './routes/_auth/gameserver.$gameServerId/dashboard/statistics'
-import { Route as AuthGameserverGameServerIdDashboardOverviewImport } from './routes/_auth/gameserver.$gameServerId/dashboard/overview'
-import { Route as AuthGameserverGameServerIdDashboardConsoleImport } from './routes/_auth/gameserver.$gameServerId/dashboard/console'
-import { Route as AuthGameserverGameServerIdModuleModuleIdInstallImport } from './routes/_auth/gameserver.$gameServerId/module.$moduleId.install'
-import { Route as AuthGameserverGameServerIdModuleModuleIdInstallViewImport } from './routes/_auth/gameserver.$gameServerId/module.$moduleId.install.view'
+import { Route as AuthGameserverGameServerIdDashboardStatisticsImport } from './routes/_auth/gameserver.$gameServerId/dashboard.statistics'
+import { Route as AuthGameserverGameServerIdDashboardOverviewImport } from './routes/_auth/gameserver.$gameServerId/dashboard.overview'
+import { Route as AuthGameserverGameServerIdDashboardConsoleImport } from './routes/_auth/gameserver.$gameServerId/dashboard.console'
+import { Route as AuthGameserverGameServerIdModulesModuleIdInstallImport } from './routes/_auth/gameserver.$gameServerId/modules.$moduleId.install'
+import { Route as AuthGameserverGameServerIdModulesModuleIdInstallViewImport } from './routes/_auth/gameserver.$gameServerId/modules.$moduleId.install.view'
 
 // Create/Update Routes
 
@@ -248,13 +249,18 @@ const AuthPlayerPlayerIdEconomyRoute = AuthPlayerPlayerIdEconomyImport.update({
   getParentRoute: () => AuthPlayerPlayerIdRoute,
 } as any)
 
-const AuthModulesViewModuleIdRoute = AuthModulesViewModuleIdImport.update({
-  path: '/view/$moduleId',
+const AuthModulesModuleIdViewRoute = AuthModulesModuleIdViewImport.update({
+  path: '/$moduleId/view',
   getParentRoute: () => AuthModulesRoute,
 } as any)
 
-const AuthModulesUpdateModuleIdRoute = AuthModulesUpdateModuleIdImport.update({
-  path: '/update/$moduleId',
+const AuthModulesModuleIdUpdateRoute = AuthModulesModuleIdUpdateImport.update({
+  path: '/$moduleId/update',
+  getParentRoute: () => AuthModulesRoute,
+} as any)
+
+const AuthModulesModuleIdCopyRoute = AuthModulesModuleIdCopyImport.update({
+  path: '/$moduleId/copy',
   getParentRoute: () => AuthModulesRoute,
 } as any)
 
@@ -284,7 +290,7 @@ const AuthGameserverGameServerIdModulesRoute =
 
 const AuthGameserverGameServerIdDashboardRoute =
   AuthGameserverGameServerIdDashboardImport.update({
-    id: '/_dashboard',
+    path: '/dashboard',
     getParentRoute: () => AuthGameserverGameServerIdRoute,
   } as any)
 
@@ -301,32 +307,32 @@ const AuthPlayerPlayerIdRoleAssignRoute =
 
 const AuthGameserverGameServerIdDashboardStatisticsRoute =
   AuthGameserverGameServerIdDashboardStatisticsImport.update({
-    path: '/dashboard/statistics',
-    getParentRoute: () => AuthGameserverGameServerIdRoute,
+    path: '/statistics',
+    getParentRoute: () => AuthGameserverGameServerIdDashboardRoute,
   } as any)
 
 const AuthGameserverGameServerIdDashboardOverviewRoute =
   AuthGameserverGameServerIdDashboardOverviewImport.update({
-    path: '/dashboard/overview',
-    getParentRoute: () => AuthGameserverGameServerIdRoute,
+    path: '/overview',
+    getParentRoute: () => AuthGameserverGameServerIdDashboardRoute,
   } as any)
 
 const AuthGameserverGameServerIdDashboardConsoleRoute =
   AuthGameserverGameServerIdDashboardConsoleImport.update({
-    path: '/dashboard/console',
-    getParentRoute: () => AuthGameserverGameServerIdRoute,
+    path: '/console',
+    getParentRoute: () => AuthGameserverGameServerIdDashboardRoute,
   } as any)
 
-const AuthGameserverGameServerIdModuleModuleIdInstallRoute =
-  AuthGameserverGameServerIdModuleModuleIdInstallImport.update({
-    path: '/module/$moduleId/install',
-    getParentRoute: () => AuthGameserverGameServerIdRoute,
+const AuthGameserverGameServerIdModulesModuleIdInstallRoute =
+  AuthGameserverGameServerIdModulesModuleIdInstallImport.update({
+    path: '/$moduleId/install',
+    getParentRoute: () => AuthGameserverGameServerIdModulesRoute,
   } as any)
 
-const AuthGameserverGameServerIdModuleModuleIdInstallViewRoute =
-  AuthGameserverGameServerIdModuleModuleIdInstallViewImport.update({
+const AuthGameserverGameServerIdModulesModuleIdInstallViewRoute =
+  AuthGameserverGameServerIdModulesModuleIdInstallViewImport.update({
     path: '/view',
-    getParentRoute: () => AuthGameserverGameServerIdModuleModuleIdInstallRoute,
+    getParentRoute: () => AuthGameserverGameServerIdModulesModuleIdInstallRoute,
   } as any)
 
 // Populate the FileRoutesByPath interface
@@ -449,7 +455,7 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthSettingsIndexImport
       parentRoute: typeof AuthSettingsImport
     }
-    '/_auth/gameserver/$gameServerId/_dashboard': {
+    '/_auth/gameserver/$gameServerId/dashboard': {
       preLoaderRoute: typeof AuthGameserverGameServerIdDashboardImport
       parentRoute: typeof AuthGameserverGameServerIdImport
     }
@@ -469,12 +475,16 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthGameserversUpdateGameServerIdImport
       parentRoute: typeof AuthGameserversImport
     }
-    '/_auth/modules/update/$moduleId': {
-      preLoaderRoute: typeof AuthModulesUpdateModuleIdImport
+    '/_auth/modules/$moduleId/copy': {
+      preLoaderRoute: typeof AuthModulesModuleIdCopyImport
       parentRoute: typeof AuthModulesImport
     }
-    '/_auth/modules/view/$moduleId': {
-      preLoaderRoute: typeof AuthModulesViewModuleIdImport
+    '/_auth/modules/$moduleId/update': {
+      preLoaderRoute: typeof AuthModulesModuleIdUpdateImport
+      parentRoute: typeof AuthModulesImport
+    }
+    '/_auth/modules/$moduleId/view': {
+      preLoaderRoute: typeof AuthModulesModuleIdViewImport
       parentRoute: typeof AuthModulesImport
     }
     '/_auth/player/$playerId/economy': {
@@ -507,15 +517,15 @@ declare module '@tanstack/react-router' {
     }
     '/_auth/gameserver/$gameServerId/dashboard/console': {
       preLoaderRoute: typeof AuthGameserverGameServerIdDashboardConsoleImport
-      parentRoute: typeof AuthGameserverGameServerIdImport
+      parentRoute: typeof AuthGameserverGameServerIdDashboardImport
     }
     '/_auth/gameserver/$gameServerId/dashboard/overview': {
       preLoaderRoute: typeof AuthGameserverGameServerIdDashboardOverviewImport
-      parentRoute: typeof AuthGameserverGameServerIdImport
+      parentRoute: typeof AuthGameserverGameServerIdDashboardImport
     }
     '/_auth/gameserver/$gameServerId/dashboard/statistics': {
       preLoaderRoute: typeof AuthGameserverGameServerIdDashboardStatisticsImport
-      parentRoute: typeof AuthGameserverGameServerIdImport
+      parentRoute: typeof AuthGameserverGameServerIdDashboardImport
     }
     '/_auth/player/$playerId/role/assign': {
       preLoaderRoute: typeof AuthPlayerPlayerIdRoleAssignImport
@@ -525,13 +535,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthUserUserIdRoleAssignImport
       parentRoute: typeof AuthUserUserIdImport
     }
-    '/_auth/gameserver/$gameServerId/module/$moduleId/install': {
-      preLoaderRoute: typeof AuthGameserverGameServerIdModuleModuleIdInstallImport
-      parentRoute: typeof AuthGameserverGameServerIdImport
+    '/_auth/gameserver/$gameServerId/modules/$moduleId/install': {
+      preLoaderRoute: typeof AuthGameserverGameServerIdModulesModuleIdInstallImport
+      parentRoute: typeof AuthGameserverGameServerIdModulesImport
     }
-    '/_auth/gameserver/$gameServerId/module/$moduleId/install/view': {
-      preLoaderRoute: typeof AuthGameserverGameServerIdModuleModuleIdInstallViewImport
-      parentRoute: typeof AuthGameserverGameServerIdModuleModuleIdInstallImport
+    '/_auth/gameserver/$gameServerId/modules/$moduleId/install/view': {
+      preLoaderRoute: typeof AuthGameserverGameServerIdModulesModuleIdInstallViewImport
+      parentRoute: typeof AuthGameserverGameServerIdModulesModuleIdInstallImport
     }
   }
 }
@@ -552,8 +562,9 @@ export const routeTree = rootRoute.addChildren([
     AuthLogoutRoute,
     AuthModulesRoute.addChildren([
       AuthModulesCreateRoute,
-      AuthModulesUpdateModuleIdRoute,
-      AuthModulesViewModuleIdRoute,
+      AuthModulesModuleIdCopyRoute,
+      AuthModulesModuleIdUpdateRoute,
+      AuthModulesModuleIdViewRoute,
     ]),
     AuthPlayersRoute,
     AuthRolesRoute.addChildren([
@@ -575,15 +586,17 @@ export const routeTree = rootRoute.addChildren([
     AuthAuthRecoveryRoute,
     AuthAuthVerificationRoute,
     AuthGameserverGameServerIdRoute.addChildren([
-      AuthGameserverGameServerIdDashboardRoute,
-      AuthGameserverGameServerIdModulesRoute,
-      AuthGameserverGameServerIdSettingsRoute,
-      AuthGameserverGameServerIdDashboardConsoleRoute,
-      AuthGameserverGameServerIdDashboardOverviewRoute,
-      AuthGameserverGameServerIdDashboardStatisticsRoute,
-      AuthGameserverGameServerIdModuleModuleIdInstallRoute.addChildren([
-        AuthGameserverGameServerIdModuleModuleIdInstallViewRoute,
+      AuthGameserverGameServerIdDashboardRoute.addChildren([
+        AuthGameserverGameServerIdDashboardConsoleRoute,
+        AuthGameserverGameServerIdDashboardOverviewRoute,
+        AuthGameserverGameServerIdDashboardStatisticsRoute,
       ]),
+      AuthGameserverGameServerIdModulesRoute.addChildren([
+        AuthGameserverGameServerIdModulesModuleIdInstallRoute.addChildren([
+          AuthGameserverGameServerIdModulesModuleIdInstallViewRoute,
+        ]),
+      ]),
+      AuthGameserverGameServerIdSettingsRoute,
     ]),
     AuthPlayerPlayerIdRoute.addChildren([
       AuthPlayerPlayerIdEconomyRoute,

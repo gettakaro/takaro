@@ -10,7 +10,7 @@ import { TimePeriodSelect } from 'components/selects';
 import { useQuery } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/dashboard')({
-  component: () => Component,
+  component: Component,
 });
 
 const Container = styled.div`

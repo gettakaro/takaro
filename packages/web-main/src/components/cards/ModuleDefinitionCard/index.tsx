@@ -9,6 +9,7 @@ import {
   Dropdown,
   useTheme,
   ValueConfirmationField,
+  Alert,
 } from '@takaro/lib-components';
 import { PERMISSIONS } from '@takaro/apiclient';
 import { useModuleRemove } from 'queries/modules';
@@ -25,8 +26,6 @@ import {
   AiOutlineEye as ViewIcon,
   AiOutlineCopy as CopyIcon,
 } from 'react-icons/ai';
-import { CopyModuleForm } from 'components/CopyModuleForm';
-import { useSnackbar } from 'notistack';
 
 interface IModuleCardProps {
   mod: ModuleOutputDTO;
@@ -35,11 +34,9 @@ interface IModuleCardProps {
 export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const [isValid, setIsValid] = useState<boolean>(false);
-  const [openCopyDialog, setOpenCopyDialog] = useState<boolean>(false);
   const { mutateAsync, isPending: isDeleting } = useModuleRemove();
   const theme = useTheme();
   const navigate = useNavigate();
-  const { enqueueSnackbar } = useSnackbar();
 
   const handleOnDelete = async (e: MouseEvent) => {
     e.stopPropagation();
@@ -47,40 +44,34 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
     setOpenDeleteDialog(false);
   };
 
-  const handleOnCopySuccess = async (_moduleId: string) => {
-    enqueueSnackbar('Module successfully copied. ', { variant: 'default', type: 'success' });
-    setOpenCopyDialog(false);
-  };
-
   const handleOnEditClick = (e: MouseEvent) => {
     e.stopPropagation();
-    navigate({ to: '/modules/update/$moduleId', params: { moduleId: mod.id } });
+    navigate({ to: '/modules/$moduleId/update', params: { moduleId: mod.id } });
   };
 
   const handleOnViewClick = (e: MouseEvent) => {
     e.stopPropagation();
-    navigate({ to: '/modules/view/$moduleId', params: { moduleId: mod.id } });
+    navigate({ to: '/modules/$moduleId/view', params: { moduleId: mod.id } });
   };
 
   const handleOnDeleteClick = (e: MouseEvent) => {
     e.stopPropagation();
-    setOpenDeleteDialog(true);
+    e.shiftKey ? handleOnDelete(e) : setOpenDeleteDialog(true);
   };
 
   const handleOnCopyClick = (e: MouseEvent) => {
     e.stopPropagation();
-    setOpenCopyDialog(true);
+    navigate({ to: '/modules/$moduleId/copy', params: { moduleId: mod.id } });
   };
 
-  const handleOnOpenClick = (e) => {
-    e.stopPropogation();
-    // TODO: should have menu item link?
+  const handleOnOpenClick = (e: MouseEvent) => {
+    e.stopPropagation();
     navigate({ to: '/studio/$moduleId', params: { moduleId: mod.id } });
   };
 
   return (
     <>
-      <Card role="link">
+      <Card>
         <CardBody>
           <SpacedRow>
             <h2>{mod.name}</h2>
@@ -142,13 +133,16 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
       <Dialog open={openDeleteDialog} onOpenChange={setOpenDeleteDialog}>
         <Dialog.Content>
           <Dialog.Heading size={4}>
-            Copy Module: <span style={{ textTransform: 'capitalize' }}>{mod.name}</span>{' '}
+            Delete Module: <span style={{ textTransform: 'capitalize' }}>{mod.name}</span>{' '}
           </Dialog.Heading>
-          <Dialog.Body>
-            <h2>Delete module</h2>
-            <p style={{ textAlign: 'center' }}>
-              Are you sure you want to delete the module <strong>{mod.name}</strong>? <br /> To confirm, type the module
-              name below.
+          <Dialog.Body size="medium">
+            <Alert
+              variant="info"
+              text="You can hold down shift when deleting a gameserver to bypass this confirmation entirely."
+            />
+            <p>
+              Are you sure you want to delete the module <strong>{mod.name}</strong>? To confirm, type the module name
+              below.
             </p>
             <ValueConfirmationField
               id="deleteModuleConfirmation"
@@ -164,19 +158,6 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
               text="Delete module"
               color="error"
             />
-          </Dialog.Body>
-        </Dialog.Content>
-      </Dialog>
-      <Dialog open={openCopyDialog} onOpenChange={setOpenCopyDialog}>
-        <Dialog.Content>
-          <Dialog.Heading size={4}>
-            Module: <span style={{ textTransform: 'capitalize' }}>{mod.name}</span>
-          </Dialog.Heading>
-          <Dialog.Body>
-            <h2>
-              Copy module: <strong>{mod.name}</strong>
-            </h2>
-            <CopyModuleForm moduleId={mod.id} onSuccess={(e) => handleOnCopySuccess(e)} />
           </Dialog.Body>
         </Dialog.Content>
       </Dialog>
