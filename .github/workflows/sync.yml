@@ -17,11 +17,10 @@ jobs:
       
       - name: copy
         env: 
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config --global user.name 'Takaro Team'
           git config --global user.email 'takaro-dev@takaro.io'
-          echo "https://x-access-token:${GITHUB_TOKEN}@api.github.com" > ~/.git-credentials
+          echo "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@api.github.com" > ~/.git-credentials
 
           git_temp_dir=/tmp/copybara
           mkdir -p $git_temp_dir
