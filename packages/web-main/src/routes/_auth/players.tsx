@@ -301,18 +301,13 @@ const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
           <Dropdown.Menu.Item
             label="Go to player profile"
             icon={<ProfileIcon />}
-            // TODO: set the correct path
-            onClick={() => navigate({ to: '' })}
-
-            //PATHS.player.global.profile(player.id) })}
+            onClick={() => navigate({ to: '/_auth/player/$playerId/global', params: { playerId: player.id } })}
           />
 
           <Dropdown.Menu.Item
-            //PATHS.player.global.assignRole(player.id)
             label="Edit roles"
             icon={<EditIcon />}
-            // TODO: set the correct path
-            onClick={() => navigate({ to: '/a' })}
+            onClick={() => navigate({ to: '/_auth/player/$playerId/role/assign', params: { playerId: player.id } })}
             disabled={!hasManageRoles}
           />
 

@@ -66,6 +66,7 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
 
   const handleOnOpenClick = (e: MouseEvent) => {
     e.stopPropagation();
+    // TODO: should open in new tab
     navigate({ to: '/studio/$moduleId', params: { moduleId: mod.id } });
   };
 
