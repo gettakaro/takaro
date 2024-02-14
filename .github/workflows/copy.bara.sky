@@ -1,0 +1,22 @@
+
+src_url = "git@github.com:gettakaro/takaro.git"
+dst_url = "git@github.com:gettakaro/takaro-private.git"
+
+
+core.workflow(
+  name = "default",
+
+  origin = git.origin(
+    url = src_url,
+    ref = "main",
+  ),
+
+  destination = git.destination(
+    url = dst_url,
+    fetch = "main",
+    push = "main"
+  ),
+
+  authoring=authoring.pass_thru('Takaro Team <takaro-dev@takaro.io>'),
+)
+

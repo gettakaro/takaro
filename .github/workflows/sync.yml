@@ -1,0 +1,32 @@
+name: Sync Takaro
+
+on: [push]
+  #push:
+  #  branches: ["main"]
+
+jobs:
+  sync: 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 
+        uses: actions/checkout@v4
+
+      - name: Download Copybara # +- 8mb
+        shell: bash
+        run: curl -SLO https://github.com/oilpan-gc/export-automation/releases/download/copybara/copybara_deploy.jar
+      
+      - name: copy
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --global user.name 'Takaro Team'
+          git config --global user.email 'takaro-dev@takaro.io'
+          echo "https://x-access-token:${GITHUB_TOKEN}@api.github.com" > ~/.git-credentials
+
+          git_temp_dir=/tmp/copybara
+          mkdir -p $git_temp_dir
+
+          java -jar ./copybara_deploy.jar \
+            "$PWD/.github/workflows/copy.bara.sky" \
+            --git-destination-path $git_temp_dir
+
