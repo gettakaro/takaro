@@ -1,12 +1,16 @@
-import { createFileRoute, redirect } from '@tanstack/react-router';
-import { styled, useLocalStorage, getTransition } from '@takaro/lib-components';
-import { Outlet } from '@tanstack/react-router';
+import { styled, getTransition } from '@takaro/lib-components';
 import { motion } from 'framer-motion';
 import { Navbar } from 'components/Navbar';
 import { ErrorBoundary } from 'components/ErrorBoundary';
-import { SelectedGameServerContext } from 'hooks/useSelectedGameServerContext';
+import { Outlet, createFileRoute, redirect } from '@tanstack/react-router';
+import { z } from 'zod';
+
+const authSchema = z.object({
+  gameServerId: z.string().catch(localStorage.getItem('gameServerId') ?? ''),
+});
 
 export const Route = createFileRoute('/_auth')({
+  validateSearch: authSchema,
   beforeLoad: ({ context }) => {
     if (context.auth === undefined || (context.auth && context.auth.isAuthenticated === false)) {
       throw redirect({ to: '/login', search: { redirect: location.href } });
@@ -16,38 +20,30 @@ export const Route = createFileRoute('/_auth')({
 });
 
 function Component() {
-  const { storedValue: gameServerId, setValue: setGameServerId } = useLocalStorage<string>('selectedGameServerId', '');
+  const { gameServerId } = Route.useSearch();
 
-  // TODO: basically when we detect a change a gameserverId as one of the URL params, we should update the context
-  // because the gameserverId is used in the nav, even on pages that don't directly rely on the gameserver.
-  /*  
-  if (pathServerId && pathServerId !== gameServerId) {
-    setGameServerId(pathServerId);
+  if (gameServerId !== localStorage.getItem('gameServerId')) {
+    localStorage.setItem('gameServerId', gameServerId);
   }
-  */
 
   return (
-    <SelectedGameServerContext.Provider
-      value={{ selectedGameServerId: gameServerId, setSelectedGameServerId: setGameServerId }}
-    >
-      <Container>
-        <Navbar />
-        <ContentContainer animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 0.5 }}>
-          <ErrorBoundary>
-            <Page
-              animate="animate"
-              initial="initial"
-              transition={{
-                ...getTransition(),
-              }}
-              variants={animations}
-            >
-              <Outlet />
-            </Page>
-          </ErrorBoundary>
-        </ContentContainer>
-      </Container>
-    </SelectedGameServerContext.Provider>
+    <Container>
+      <Navbar />
+      <ContentContainer animate={{ opacity: 1 }} transition={{ delay: 0.3, duration: 0.5 }}>
+        <ErrorBoundary>
+          <Page
+            animate="animate"
+            initial="initial"
+            transition={{
+              ...getTransition(),
+            }}
+            variants={animations}
+          >
+            <Outlet />
+          </Page>
+        </ErrorBoundary>
+      </ContentContainer>
+    </Container>
   );
 }
 

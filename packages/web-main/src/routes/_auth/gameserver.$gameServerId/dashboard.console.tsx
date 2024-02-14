@@ -28,7 +28,8 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/dashboard/
 
 function Component() {
   const gameServer = Route.useLoaderData();
-  useGameServerDocumentTitle('dashboard');
+
+  useGameServerDocumentTitle('dashboard', gameServer);
   const apiClient = getApiClient();
   const { socket } = useSocket();
   const { enqueueSnackbar } = useSnackbar();

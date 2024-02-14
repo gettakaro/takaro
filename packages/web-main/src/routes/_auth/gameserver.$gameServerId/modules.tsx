@@ -3,9 +3,9 @@ import { Outlet, redirect } from '@tanstack/react-router';
 import { ModuleInstallCard, CardList } from 'components/cards';
 import { gameServerModuleInstallationsOptions } from 'queries/gameservers';
 import { modulesOptions } from 'queries/modules';
-import { useGameServerDocumentTitle } from 'hooks/useDocumentTitle';
 import { createFileRoute } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
+import { useSuspenseQueries } from '@tanstack/react-query';
 
 const SubHeader = styled.h2`
   font-size: ${({ theme }) => theme.fontSize.mediumLarge};
@@ -24,7 +24,7 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/modules')(
       context.queryClient.ensureQueryData(gameServerModuleInstallationsOptions(params.gameServerId)),
     ]);
 
-    return { modules: modules.data, installations: moduleInstallations };
+    return { modules: modules, installations: moduleInstallations };
   },
   component: Component,
   pendingComponent: () => (
@@ -37,10 +37,18 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/modules')(
 });
 
 export function Component() {
-  useGameServerDocumentTitle('Modules');
-  const { modules, installations } = Route.useLoaderData();
+  const loaderData = Route.useLoaderData();
+  const { gameServerId } = Route.useParams();
+  //useGameServerDocumentTitle('Modules');
 
-  const mappedModules = modules.map((mod) => {
+  const [{ data: modules }, { data: installations }] = useSuspenseQueries({
+    queries: [
+      { ...modulesOptions({}), initialData: loaderData.modules },
+      { ...gameServerModuleInstallationsOptions(gameServerId), initialData: loaderData.installations },
+    ],
+  });
+
+  const mappedModules = modules.data.map((mod) => {
     const installation = installations.find((inst) => inst.moduleId === mod.id);
     return {
       ...mod,

@@ -2,6 +2,7 @@ import { FC, ReactElement, cloneElement } from 'react';
 import { Company } from '../../../components';
 import { useTheme } from '../../../hooks';
 import { styled } from '../../../styled';
+import { Link } from '@tanstack/react-router';
 import {
   AiOutlineBook,
   AiOutlineMenu,
@@ -75,7 +76,7 @@ const Container = styled.div`
   }
   `;
 
-const HomeLink = styled.a`
+const HomeLink = styled(Link)`
   display: flex;
   align-items: center;
   svg {
@@ -184,7 +185,7 @@ export const ErrorPage: FC<ErrorPageProps> = ({
           </ul>
         </>
       )}
-      <HomeLink href={homeRoute}>
+      <HomeLink to={homeRoute}>
         Or go back home <ArrowRightIcon />{' '}
       </HomeLink>
     </Container>

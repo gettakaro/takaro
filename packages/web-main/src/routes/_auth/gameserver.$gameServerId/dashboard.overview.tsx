@@ -34,8 +34,8 @@ const SpanCell = styled.div`
 `;
 
 function Component() {
-  useGameServerDocumentTitle('dashboard');
   const gameServer = Route.useLoaderData();
+  useGameServerDocumentTitle('dashboard', gameServer);
   const theme = useTheme();
 
   const subscribedEvents = [

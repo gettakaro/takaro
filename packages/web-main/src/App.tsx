@@ -49,7 +49,7 @@ export function App() {
               <AuthProvider>
                 <GlobalStyle />
                 <InnerApp />
-                <ReactQueryDevtools initialIsOpen={false} position="bottom" buttonPosition="top-left" />
+                <ReactQueryDevtools initialIsOpen={false} position="bottom" buttonPosition="bottom-left" />
               </AuthProvider>
             </OryProvider>
           </QueryClientProvider>

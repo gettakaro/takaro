@@ -9,7 +9,7 @@ import {
   Skeleton,
 } from '@takaro/lib-components';
 import { useQuery } from '@tanstack/react-query';
-import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
+import { getRouteApi } from '@tanstack/react-router';
 import { gameServerOptions } from 'queries/gameservers';
 import { itemsOptions } from 'queries/items';
 import { useState } from 'react';
@@ -51,9 +51,8 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
   value,
   onChange,
 }: WidgetProps<T, S, F>) {
-  const { selectedGameServerId: gameServerId } = useSelectedGameServer();
+  const { gameServerId } = getRouteApi('/_auth/gameserver/$gameServerId/modules/$moduleId/install').useSearch();
   const [itemName, setItemName] = useState<string>('');
-
   const enabled = itemName !== '';
   const shouldPreviousItemsBeLoaded = shouldFilter(value, multiple as boolean);
 

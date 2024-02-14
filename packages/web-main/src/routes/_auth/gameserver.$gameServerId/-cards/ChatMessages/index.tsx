@@ -3,7 +3,6 @@ import {
   EventSearchInputAllowedFiltersEventNameEnum,
   EventSearchInputDTOSortDirectionEnum,
 } from '@takaro/apiclient';
-import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 import { useSocket } from 'hooks/useSocket';
 import { eventsOptions } from 'queries/events';
 import { getApiClient } from 'util/getApiClient';
@@ -15,16 +14,17 @@ import { StyledCard, Scrollable } from '../style';
 import { ChatMessage } from './ChatMessage';
 import { ChatInput } from './ChatInput';
 import { useQuery } from '@tanstack/react-query';
+import { getRouteApi } from '@tanstack/react-router';
 
 export const ChatMessagesCard: FC = () => {
   const apiClient = getApiClient();
-  const { selectedGameServerId } = useSelectedGameServer();
+  const { gameServerId } = getRouteApi('/_auth/gameserver/$gameServerId/dashboard/overview').useParams();
   const { socket } = useSocket();
 
   const { data, isLoading, refetch } = useQuery(
     eventsOptions({
       filters: {
-        gameserverId: [selectedGameServerId],
+        gameserverId: [gameServerId],
         eventName: [
           EventSearchInputAllowedFiltersEventNameEnum.ChatMessage,
           EventName.PlayerConnected,
@@ -65,7 +65,7 @@ export const ChatMessagesCard: FC = () => {
         </Scrollable>
         <ChatInput
           onSubmit={async (msg) => {
-            await apiClient.gameserver.gameServerControllerSendMessage(selectedGameServerId, {
+            await apiClient.gameserver.gameServerControllerSendMessage(gameServerId, {
               message: msg,
             });
             refetch();

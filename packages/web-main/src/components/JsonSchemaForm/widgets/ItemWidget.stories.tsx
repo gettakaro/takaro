@@ -1,8 +1,7 @@
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { JsonSchemaForm } from '..';
 import { Button } from '@takaro/lib-components';
-import { SelectedGameServerContext } from 'hooks/useSelectedGameServerContext';
 import { gameServersOptions } from 'queries/gameservers';
 import { useQuery } from '@tanstack/react-query';
 
@@ -14,12 +13,9 @@ export const Default = () => {
   const fieldId = 'item';
 
   const { data, isLoading } = useQuery(gameServersOptions({}));
-  const [selectedGameServerId, setSelectedGameServerId] = useState<string>();
 
   useEffect(() => {
     if (data) {
-      // TODO
-      // setSelectedGameServerId(data.pages[0].data[0].id);
     }
   }, [data]);
 
@@ -44,13 +40,10 @@ export const Default = () => {
     return <div>Loading...</div>;
   }
 
+  // todo should wrap this in a route?
   return (
-    <SelectedGameServerContext.Provider
-      value={{ selectedGameServerId: selectedGameServerId!, setSelectedGameServerId }}
-    >
-      <JsonSchemaForm schema={schema} initialData={{}} uiSchema={uiSchema}>
-        <Button type="submit" text="Submit" onClick={() => console.log('form submitted')} />
-      </JsonSchemaForm>
-    </SelectedGameServerContext.Provider>
+    <JsonSchemaForm schema={schema} initialData={{}} uiSchema={uiSchema}>
+      <Button type="submit" text="Submit" onClick={() => console.log('form submitted')} />
+    </JsonSchemaForm>
   );
 };

@@ -73,6 +73,7 @@ function Component() {
         sortDirection: GameServerSearchInputDTOSortDirectionEnum.Desc,
         limit: 1,
       });
+      localStorage.setItem('gameServerId', newestServerRes.data.data[0].id);
       navigate({
         to: '/gameserver/$gameServerId/dashboard/overview',
         params: { gameServerId: newestServerRes.data.data[0].id },

@@ -6,7 +6,6 @@ import { CreateUpdateForm } from './-gameservers/CreateUpdateForm';
 import { IFormInputs } from './-gameservers/validationSchema';
 import { GameServerCreateDTOTypeEnum } from '@takaro/apiclient';
 import { hasPermission } from 'hooks/useHasPermission';
-import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 
 export const Route = createFileRoute('/_auth/gameservers/create')({
   beforeLoad: ({ context }) => {
@@ -20,7 +19,6 @@ export const Route = createFileRoute('/_auth/gameservers/create')({
 function Component() {
   const navigate = useNavigate({ from: Route.fullPath });
 
-  const { setSelectedGameServerId } = useSelectedGameServer();
   const { mutateAsync, isPending, error: gameServerCreateError } = useGameServerCreate();
 
   const onSubmit: SubmitHandler<IFormInputs> = async ({ type, connectionInfo, name }) => {
@@ -29,9 +27,8 @@ function Component() {
       name,
       connectionInfo: JSON.stringify(connectionInfo),
     });
-    // set the new gameserver as selected.
-    setSelectedGameServerId(newGameServer.id);
-    navigate({ to: '/gameservers' });
+    localStorage.setItem('gameServerId', newGameServer.id);
+    navigate({ to: '/gameservers', search: { gameServerId: newGameServer.id } });
   };
 
   return <CreateUpdateForm onSubmit={onSubmit} isLoading={isPending} error={gameServerCreateError} />;

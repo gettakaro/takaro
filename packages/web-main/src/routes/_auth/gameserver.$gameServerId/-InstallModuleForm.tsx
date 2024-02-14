@@ -54,7 +54,7 @@ export const InstallModuleForm: FC<InstallModuleFormProps> = ({ readOnly, mod, m
   const onSubmit = useCallback(async () => {
     mutate({
       gameServerId: gameServerId,
-      moduleId: gameServerId,
+      moduleId: mod.id,
       moduleInstall: {
         systemConfig: JSON.stringify(systemConfig),
         userConfig: JSON.stringify(userConfig),

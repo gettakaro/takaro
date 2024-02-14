@@ -1,18 +1,18 @@
-import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 import { booleanFields } from '../settings/gameservers';
 import {
   useDeleteGameServerSetting,
   gameServerSettingsOptions,
   globalGameServerSettingsOptions,
+  useSetGameServerSetting,
 } from 'queries/settings';
 import { ReactElement, useMemo } from 'react';
 import { useForm, SubmitHandler, useFieldArray } from 'react-hook-form';
 import { Switch, TextField, Button, SelectField, styled, Skeleton, camelCaseToSpaces } from '@takaro/lib-components';
 import { useSnackbar } from 'notistack';
-import { getApiClient } from 'util/getApiClient';
 import { PERMISSIONS, SettingsOutputDTOTypeEnum } from '@takaro/apiclient';
 import { hasPermission, useHasPermission } from 'hooks/useHasPermission';
 import { createFileRoute, redirect } from '@tanstack/react-router';
+import { useSuspenseQueries } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/settings')({
   beforeLoad: ({ context }) => {
@@ -21,10 +21,10 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/settings')
     }
   },
   loader: async ({ params, context }) => {
-    const gameServerSettings = await context.queryClient.ensureQueryData(
-      gameServerSettingsOptions(params.gameServerId)
-    );
-    const globalGameServerSettings = await context.queryClient.ensureQueryData(globalGameServerSettingsOptions());
+    const [gameServerSettings, globalGameServerSettings] = await Promise.all([
+      context.queryClient.ensureQueryData(gameServerSettingsOptions(params.gameServerId)),
+      context.queryClient.ensureQueryData(globalGameServerSettingsOptions()),
+    ]);
     return { gameServerSettings, globalGameServerSettings };
   },
   component: Component,
@@ -73,11 +73,19 @@ interface IFormInputs {
 const typeOptions = [SettingsOutputDTOTypeEnum.Inherit, SettingsOutputDTOTypeEnum.Override];
 
 function Component() {
-  const { selectedGameServerId } = useSelectedGameServer();
-  const { mutateAsync: deleteGameServerSetting } = useDeleteGameServerSetting();
+  const { mutate: deleteGameServerSetting } = useDeleteGameServerSetting();
+  const { mutate: setGameServerSetting } = useSetGameServerSetting();
+  const { gameServerId } = Route.useParams();
+
   const { enqueueSnackbar } = useSnackbar();
-  const apiClient = getApiClient();
-  const { gameServerSettings, globalGameServerSettings } = Route.useLoaderData();
+  const loaderData = Route.useLoaderData();
+
+  const [{ data: gameServerSettings }, { data: globalGameServerSettings }] = useSuspenseQueries({
+    queries: [
+      { ...gameServerSettingsOptions(gameServerId), initialData: loaderData.gameServerSettings },
+      { ...globalGameServerSettingsOptions(), initialData: loaderData.globalGameServerSettings },
+    ],
+  });
 
   const { hasPermission } = useHasPermission([PERMISSIONS.ManageSettings]);
   const readOnly = !hasPermission;
@@ -105,23 +113,21 @@ function Component() {
     }, [] as FormSetting[]);
 
     try {
-      const updates = changedFields.map((setting) => {
+      for (const setting of changedFields) {
         if (setting.type === 'inherit') {
-          return deleteGameServerSetting({ key: setting.key, gameServerId: selectedGameServerId });
+          deleteGameServerSetting({ key: setting.key, gameServerId: gameServerId });
+        } else {
+          // if the value is a boolean, we need to convert it to a string
+          if (typeof setting.value === 'boolean') {
+            setting.value = setting.value ? 'true' : 'false';
+          }
+          setGameServerSetting({
+            gameServerId: gameServerId,
+            key: setting.key,
+            value: setting.value,
+          });
         }
-
-        // if the value is a boolean, we need to convert it to a string
-        if (typeof setting.value === 'boolean') {
-          setting.value = setting.value ? 'true' : 'false';
-        }
-
-        apiClient.settings.settingsControllerSet(setting.key, {
-          value: setting.value,
-          gameServerId: selectedGameServerId,
-        });
-      });
-      await Promise.all(updates);
-
+      }
       enqueueSnackbar('Settings has been successfully saved', { variant: 'default' });
       reset({}, { keepValues: true });
     } catch (error) {

@@ -1,12 +1,12 @@
 import { EventOutputDTO } from '@takaro/apiclient';
 import { Skeleton, styled } from '@takaro/lib-components';
 import { Player } from 'components/Player';
-import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 import { useSocket } from 'hooks/useSocket';
 import { playerOnGameServersOptions, playersOptions } from 'queries/players/queries';
 import { FC, useEffect } from 'react';
 import { StyledCard } from './style';
 import { useQuery } from '@tanstack/react-query';
+import { getRouteApi } from '@tanstack/react-router';
 
 const Container = styled.div`
   display: flex;
@@ -23,14 +23,14 @@ const Players = styled.div`
 `;
 
 export const OnlinePlayersCard: FC = () => {
-  const { selectedGameServerId } = useSelectedGameServer();
+  const { gameServerId } = getRouteApi('/_auth/gameserver/$gameServerId/dashboard/overview').useParams();
   const { socket } = useSocket();
 
   const { data, isLoading, refetch } = useQuery(
     playerOnGameServersOptions({
       filters: {
         online: [true],
-        gameServerId: [selectedGameServerId],
+        gameServerId: [gameServerId],
       },
       extend: ['player'],
     })

@@ -13,7 +13,7 @@ import {
   Alert,
 } from '@takaro/lib-components';
 import { EventOutputDTO, GameServerOutputDTO, PERMISSIONS } from '@takaro/apiclient';
-import { useNavigate } from '@tanstack/react-router';
+import { getRouteApi, useNavigate } from '@tanstack/react-router';
 import {
   AiOutlineMenu as MenuIcon,
   AiOutlineDelete as DeleteIcon,
@@ -22,7 +22,6 @@ import {
 } from 'react-icons/ai';
 import { Header, TitleContainer, DetailsContainer } from './style';
 import { useGameServerRemove } from 'queries/gameservers';
-import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 import { PermissionsGuard } from 'components/PermissionsGuard';
 import { CardBody } from '../style';
 import { useSocket } from 'hooks/useSocket';
@@ -33,7 +32,7 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const [valid, setValid] = useState<boolean>(false);
   const navigate = useNavigate();
-  const { selectedGameServerId, setSelectedGameServerId } = useSelectedGameServer();
+  const { gameServerId } = getRouteApi('/_auth/gameservers').useSearch();
   const theme = useTheme();
   const { mutate, isPending: isDeleting } = useGameServerRemove();
   const { socket } = useSocket();
@@ -75,10 +74,9 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
     mutate({ id });
 
     // if the gameserver was selected, deselect it
-    if (selectedGameServerId === id) {
-      // If no gameserver is selected, the gameserver select should
-      // handle selecting a new gameserver.
-      setSelectedGameServerId('');
+    if (gameServerId === id) {
+      localStorage.removeItem('selectedGameServerId');
+      navigate({ to: '/gameservers' });
     }
   };
 
@@ -86,7 +84,13 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
     <>
       <Card
         role="link"
-        onClick={() => navigate({ to: '/gameserver/$gameServerId/dashboard/overview', params: { gameServerId: id } })}
+        onClick={() =>
+          navigate({
+            to: '/gameserver/$gameServerId/dashboard/overview',
+            params: { gameServerId: id },
+            search: { gameServerId: id },
+          })
+        }
         data-testid={`gameserver-${id}-card`}
       >
         <CardBody>

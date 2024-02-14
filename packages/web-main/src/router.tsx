@@ -17,7 +17,7 @@ export const router = createRouter({
   },
 
   // When a link is hovered, it will start preloading the data for the route.
-  defaultPreload: 'intent',
+  defaultPreload: false,
   // Atleast hover for 500ms before preloading the route.
   defaultPreloadDelay: 500,
 

@@ -21,6 +21,7 @@ export const GameServerSelect: FC<CustomSelectProps> = ({
   name: selectName,
   size,
   loading,
+  label = 'Game server',
   control,
   disabled,
   inPortal,
@@ -52,7 +53,7 @@ export const GameServerSelect: FC<CustomSelectProps> = ({
       name={selectName}
       required={required}
       loading={loading}
-      label="Game Server"
+      label={label}
     />
   );
 };

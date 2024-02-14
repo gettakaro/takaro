@@ -20,10 +20,9 @@ import {
   AiOutlineEye as ViewIcon,
 } from 'react-icons/ai';
 
-import { useNavigate } from '@tanstack/react-router';
+import { getRouteApi, useNavigate } from '@tanstack/react-router';
 import { SpacedRow, ActionIconsContainer, CardBody } from '../style';
 import { useGameServerModuleUninstall } from 'queries/gameservers';
-import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 
 interface IModuleCardProps {
   mod: ModuleOutputDTO;
@@ -36,7 +35,7 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation }) =
   const [valid, setValid] = useState<boolean>(false);
   const { mutateAsync: uninstallModule, isPending: isDeleting } = useGameServerModuleUninstall();
   const navigate = useNavigate();
-  const { selectedGameServerId } = useSelectedGameServer();
+  const { gameServerId } = getRouteApi('/_auth/gameserver/$gameServerId/modules').useSearch();
   const theme = useTheme();
 
   const handleOnDeleteClick = (e: MouseEvent) => {
@@ -62,7 +61,7 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation }) =
     e.stopPropagation();
     navigate({
       to: '/gameserver/$gameServerId/modules/$moduleId/install/view',
-      params: { gameServerId: selectedGameServerId, moduleId: mod.id },
+      params: { gameServerId, moduleId: mod.id },
     });
   };
 
@@ -70,7 +69,7 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation }) =
     e.stopPropagation();
     navigate({
       to: '/gameserver/$gameServerId/modules/$moduleId/install',
-      params: { gameServerId: selectedGameServerId, moduleId: mod.id },
+      params: { gameServerId, moduleId: mod.id },
     });
   };
 
