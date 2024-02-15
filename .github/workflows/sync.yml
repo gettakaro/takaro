@@ -8,8 +8,17 @@ jobs:
   sync: 
     runs-on: ubuntu-latest
     steps:
+      - name: Generate token
+        id: generate_token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.TAKARO_CI_APP_ID }}
+          private_key: ${{ secrets.TAKARO_CI_APP_PRIV_KEY }}
+
       - name: Checkout 
         uses: actions/checkout@v4
+        with:
+          token: ${{ steps.generate_token.outputs.token }} 
 
       - name: Download Copybara # +- 8mb
         shell: bash
@@ -18,9 +27,9 @@ jobs:
       - name: copy
         env: 
         run: |
-          git config --global user.name 'Takaro Team'
-          git config --global user.email 'takaro-dev@takaro.io'
-          echo "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@api.github.com" > ~/.git-credentials
+          git config --global user.name 'takaro-ci-bot[bot]'
+          git config --global user.email '138661031+takaro-ci-bot[bot]@users.noreply.github.com'
+          
 
           git_temp_dir=/tmp/copybara
           mkdir -p $git_temp_dir
