@@ -25,7 +25,6 @@ jobs:
         run: curl -SLO https://github.com/oilpan-gc/export-automation/releases/download/copybara/copybara_deploy.jar
       
       - name: copy
-        env: 
         run: |
           git config --global user.name 'takaro-ci-bot[bot]'
           git config --global user.email '138661031+takaro-ci-bot[bot]@users.noreply.github.com'
