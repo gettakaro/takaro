@@ -1,3 +1,3 @@
 # @takaro/modules
 
-Built-in modules for Takaro!!
+Built-in modules for Takaro
