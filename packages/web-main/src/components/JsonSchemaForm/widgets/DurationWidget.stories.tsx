@@ -1,6 +1,6 @@
 import { JsonSchemaForm } from '..';
 import { styled, Button } from '@takaro/lib-components';
-import { InputType } from '../../../routes/_auth/-modules/schemaConversion/inputTypes';
+import { InputType } from '../../../routes/_auth/_global/-modules/schemaConversion/inputTypes';
 import { SchemaObject } from 'ajv';
 
 const Container = styled.div`

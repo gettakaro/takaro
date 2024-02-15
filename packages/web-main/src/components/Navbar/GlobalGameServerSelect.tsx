@@ -32,19 +32,16 @@ export const GlobalGameServerSelect: FC<GameServerSelectNavProps> = ({
     const subscription = watch(({ gameServerId }) => {
       // a new gameserver was selected
       if (gameServerId && gameServerId !== selectedGameServerId) {
-        localStorage.setItem('gameServerId', gameServerId);
         const match = routeMatch({ to: '/gameserver/$gameServerId', fuzzy: true });
         if (match) {
           navigate({
             to: `/gameserver/$gameServerId/${match['**']}`,
             params: { gameServerId },
-            search: { gameServerId },
           });
         } else {
           navigate({
             to: '/gameserver/$gameServerId/dashboard/overview',
             params: { gameServerId },
-            search: { gameServerId },
           });
         }
       }

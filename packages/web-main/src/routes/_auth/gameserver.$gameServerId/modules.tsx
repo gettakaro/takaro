@@ -69,7 +69,7 @@ export function Component() {
           <SubHeader>Installed</SubHeader>
           <CardList>
             {installedModules.map((mod) => (
-              <ModuleInstallCard key={mod.id} mod={mod} installation={mod.installation} />
+              <ModuleInstallCard key={mod.id} mod={mod} installation={mod.installation} gameServerId={gameServerId} />
             ))}
           </CardList>
         </div>
@@ -79,7 +79,7 @@ export function Component() {
         <div style={{ overflowY: 'auto', height: '100%' }}>
           <CardList>
             {availableModules.map((mod) => (
-              <ModuleInstallCard key={mod.id} mod={mod} installation={mod.installation} />
+              <ModuleInstallCard key={mod.id} mod={mod} installation={mod.installation} gameServerId={gameServerId} />
             ))}
           </CardList>
         </div>

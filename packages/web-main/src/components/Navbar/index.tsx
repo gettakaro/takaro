@@ -1,5 +1,5 @@
 import { FC, cloneElement, ReactElement } from 'react';
-import { Link, LinkProps, getRouteApi } from '@tanstack/react-router';
+import { Link, LinkProps } from '@tanstack/react-router';
 import { RequiredPermissions, Tooltip } from '@takaro/lib-components';
 import { UserDropdown } from './UserDropdown';
 import { Nav, IconNav, Container, IconNavContainer } from './style';
@@ -51,7 +51,6 @@ const domainLinks: NavbarLink[] = [
   },
   {
     label: 'Players',
-    // TODO
     linkProps: {
       to: '/players' as any,
     },
@@ -60,7 +59,6 @@ const domainLinks: NavbarLink[] = [
   },
   {
     label: 'Users',
-    // TODO
     linkProps: {
       to: '/users' as any,
     },
@@ -123,15 +121,17 @@ export const renderLink = ({ linkProps, icon, label, requiredPermissions }: Navb
   </PermissionsGuard>
 );
 
-export const Navbar: FC = () => {
+interface NavbarProps {
+  showGameServerNav?: boolean;
+}
+
+export const Navbar: FC<NavbarProps> = ({ showGameServerNav }) => {
   const { hasPermission } = useHasPermission([PERMISSIONS.ReadGameservers]);
-  const { gameServerId } = getRouteApi('/_auth').useSearch();
 
   return (
     <Container animate={{ width: 325 }} transition={{ duration: 1, type: 'spring', bounce: 0.5 }}>
       <IconNavContainer data-testid="takaro-icon-nav">
-        {hasPermission && gameServerId && <GameServerNav />}
-
+        {hasPermission && showGameServerNav && <GameServerNav />}
         <Nav data-testid="global-nav">
           {domainLinks.length > 0 && <h3>Global</h3>}
           {domainLinks.map((link) => renderLink(link))}

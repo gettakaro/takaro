@@ -14,12 +14,12 @@ import { gameServersOptions } from 'queries/gameservers';
 import { Nav, NoServersCallToAction } from './style';
 import { useQuery } from '@tanstack/react-query';
 
+const route = getRouteApi('/_auth/gameserver/$gameServerId');
+
 export const GameServerNav: FC = () => {
   const navigate = useNavigate();
   const { data: gameservers } = useQuery(gameServersOptions());
-  const { gameServerId } = getRouteApi('/_auth').useSearch();
-
-  console.log('here', gameServerId);
+  const { gameServerId } = route.useParams();
 
   const gameServerLinks: NavbarLink[] = useMemo(() => {
     return [
@@ -55,7 +55,7 @@ export const GameServerNav: FC = () => {
 
   return (
     <Nav data-testid="server-nav">
-      {gameServerId && gameservers && gameservers.length > 0 ? (
+      {gameServerId && gameServerId !== '' && gameservers && gameservers.length > 0 ? (
         <>
           <h3>Game Server</h3>
           {gameservers.length > 1 && <GlobalGameServerSelect currentSelectedGameServerId={gameServerId} />}

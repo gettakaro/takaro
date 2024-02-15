@@ -13,7 +13,7 @@ import {
   Alert,
 } from '@takaro/lib-components';
 import { EventOutputDTO, GameServerOutputDTO, PERMISSIONS } from '@takaro/apiclient';
-import { getRouteApi, useNavigate } from '@tanstack/react-router';
+import { useNavigate } from '@tanstack/react-router';
 import {
   AiOutlineMenu as MenuIcon,
   AiOutlineDelete as DeleteIcon,
@@ -32,7 +32,6 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const [valid, setValid] = useState<boolean>(false);
   const navigate = useNavigate();
-  const { gameServerId } = getRouteApi('/_auth/gameservers').useSearch();
   const theme = useTheme();
   const { mutate, isPending: isDeleting } = useGameServerRemove();
   const { socket } = useSocket();
@@ -72,12 +71,6 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
 
   const handleOnDelete = () => {
     mutate({ id });
-
-    // if the gameserver was selected, deselect it
-    if (gameServerId === id) {
-      localStorage.removeItem('selectedGameServerId');
-      navigate({ to: '/gameservers' });
-    }
   };
 
   return (
@@ -88,7 +81,6 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
           navigate({
             to: '/gameserver/$gameServerId/dashboard/overview',
             params: { gameServerId: id },
-            search: { gameServerId: id },
           })
         }
         data-testid={`gameserver-${id}-card`}
@@ -117,6 +109,20 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
                         navigate({ to: '/gameserver/$gameServerId/dashboard/overview', params: { gameServerId: id } })
                       }
                       label="go to dashboard"
+                    />
+                    <Dropdown.Menu.Item
+                      icon={<DashboardIcon />}
+                      onClick={() =>
+                        navigate({ to: '/gameserver/$gameServerId/modules', params: { gameServerId: id } })
+                      }
+                      label="go to modules"
+                    />
+                    <Dropdown.Menu.Item
+                      icon={<DashboardIcon />}
+                      onClick={() =>
+                        navigate({ to: '/gameserver/$gameServerId/settings', params: { gameServerId: id } })
+                      }
+                      label="go to settings"
                     />
                   </Dropdown.Menu.Group>
                 </Dropdown.Menu>
@@ -152,8 +158,8 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
               text="You can hold down shift when deleting a gameserver to bypass this confirmation entirely."
             />
             <p>
-              Are you sure you want to delete <strong>{name}</strong>? To confirm, type <strong>{name}</strong> in the
-              input below.
+              Are you sure you want to delete the gameserver? To confirm, type <strong>{name}</strong> in the field
+              below.
             </p>
             <ValueConfirmationField
               value={name}

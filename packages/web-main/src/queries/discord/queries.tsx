@@ -19,13 +19,13 @@ export const discordKeys = {
 
 export const discordGuildQueryOptions = (opts: GuildSearchInputDTO) =>
   queryOptions<GuildOutputArrayDTOAPI, AxiosError<GuildOutputDTOAPI>>({
-    queryKey: [...discordKeys.guilds, Object.values(opts)],
+    queryKey: [...discordKeys.guilds, opts],
     queryFn: async () => (await getApiClient().discord.discordControllerSearch(opts)).data,
   });
 
 export const discordGuildInfiniteQueryOptions = (opts: GuildSearchInputDTO) =>
   infiniteQueryOptions<GuildOutputArrayDTOAPI, AxiosError<GuildOutputDTOAPI>>({
-    queryKey: [...discordKeys.guilds, ...Object.values(opts)],
+    queryKey: [...discordKeys.guilds, opts],
     queryFn: async () => (await getApiClient().discord.discordControllerSearch(opts)).data,
     initialPageParam: 0,
     getNextPageParam: (lastPage) => hasNextPage(lastPage.meta),

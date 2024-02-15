@@ -36,6 +36,10 @@ const LoadingContainer = styled.div`
 
 export const Route = createFileRoute('/studio/$moduleId')({
   beforeLoad: ({ context }) => {
+    if (context.auth === undefined || (context.auth && context.auth.isAuthenticated === false)) {
+      throw redirect({ to: '/login', search: { redirect: location.href } });
+    }
+
     if (!hasPermission(context.auth.session, ['MANAGE_MODULES'])) {
       throw redirect({ to: '/forbidden' });
     }
@@ -67,7 +71,6 @@ function Component() {
   useEffect(() => {
     function handleOnBeforeUnload(event: BeforeUnloadEvent) {
       event.preventDefault();
-      console.log('this fired');
       return (event.returnValue = '');
     }
     window.addEventListener('beforeunload', handleOnBeforeUnload, { capture: true });

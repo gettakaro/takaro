@@ -4,7 +4,7 @@ import { RJSFSchema } from '@rjsf/utils';
 import Form from '@rjsf/core';
 import { JsonSchemaForm } from './index';
 import { Button, styled } from '@takaro/lib-components';
-import { InputType } from '../../routes/_auth/-modules/schemaConversion/inputTypes';
+import { InputType } from '../../routes/_auth/_global/-modules/schemaConversion/inputTypes';
 
 const Container = styled.div`
   width: 100%;

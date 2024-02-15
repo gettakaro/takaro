@@ -3,6 +3,7 @@ import { routeTree } from './routeTree.gen';
 import { createRouter } from '@tanstack/react-router';
 import { QueryClient } from '@tanstack/react-query';
 import { IAuthContext } from 'hooks/useAuth';
+import { DefaultErrorComponent } from 'components/ErrorComponent';
 
 export interface RouterContext {
   queryClient: QueryClient;
@@ -16,6 +17,9 @@ export const router = createRouter({
     queryClient: queryClient,
   },
 
+  defaultErrorComponent: () => {
+    return <DefaultErrorComponent />;
+  },
   // When a link is hovered, it will start preloading the data for the route.
   defaultPreload: false,
   // Atleast hover for 500ms before preloading the route.

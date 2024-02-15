@@ -22,11 +22,9 @@ export const TooltipTrigger = forwardRef<HTMLElement, HTMLProps<HTMLElement> & T
       return cloneElement(
         children,
         context.getReferenceProps({
-          ref,
           ...props,
           ...children.props,
-
-          // TODO: not sure how to handle this with styled-components
+          ref,
           'data-state': context.open ? 'open' : 'closed',
         })
       );

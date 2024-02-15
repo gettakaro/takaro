@@ -18,7 +18,6 @@ export const HorizontalNav: FC<HorizontalNavProps> = ({ links, variant }) => {
     <NavBar variant={variant}>
       {links.map(({ text, ...rest }) => (
         <Link key={`${rest.to}-${text}`} {...rest}>
-          {/* TODO: add link props back*/}
           {({ isActive }) => (
             <>
               {isActive && variant === 'block' && <Block layoutId="block" />}

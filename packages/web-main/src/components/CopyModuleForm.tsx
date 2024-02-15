@@ -14,7 +14,7 @@ import {
   useModuleCreate,
   useModuleRemove,
 } from 'queries/modules';
-import { moduleNameShape } from 'routes/_auth/-modules/ModuleForm/validationSchema';
+import { moduleNameShape } from 'routes/_auth/_global/-modules/ModuleForm/validationSchema';
 import { useQuery } from '@tanstack/react-query';
 
 const validationSchema = z.object({

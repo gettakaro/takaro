@@ -1,4 +1,4 @@
-import { booleanFields } from '../settings/gameservers';
+import { booleanFields } from '../_global/settings/gameservers';
 import {
   useDeleteGameServerSetting,
   gameServerSettingsOptions,

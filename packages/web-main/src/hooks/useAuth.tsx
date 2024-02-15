@@ -2,6 +2,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { UserOutputWithRolesDTO } from '@takaro/apiclient';
 import { createContext, useCallback, useContext, useState } from 'react';
 import { useOry } from './useOry';
+import * as Sentry from '@sentry/react';
 
 export interface IAuthContext {
   logOut: () => Promise<void>;
@@ -20,16 +21,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   });
   const isAuthenticated = !!user;
 
-  // TODO: set user when sessiopn is available
-  // Sentry.setUser({ id: session.id, email: session.email, username: session.name });
-
   const logOut = useCallback(async () => {
     const logoutFlowRes = await oryClient.createBrowserLogoutFlow();
-    // TODO: disable ory session
-    // oryClient.disableMySession()
-    localStorage.removeItem('selectedGameServerId');
+    localStorage.removeItem('gameServerId');
     sessionStorage.removeItem('userSession');
-    // router.invalidate();
     queryClient.clear();
     window.location.href = logoutFlowRes.data.logout_url;
     return Promise.resolve();
@@ -38,6 +33,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Set session in both state and localStorage
   const setSession = useCallback((session: UserOutputWithRolesDTO) => {
     sessionStorage.setItem('userSession', JSON.stringify(session));
+    Sentry.setUser({ id: session.id, email: session.email, username: session.name });
     setUser(session);
   }, []);
 

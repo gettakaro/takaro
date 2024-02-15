@@ -20,7 +20,7 @@ import {
   AiOutlineEye as ViewIcon,
 } from 'react-icons/ai';
 
-import { getRouteApi, useNavigate } from '@tanstack/react-router';
+import { useNavigate } from '@tanstack/react-router';
 import { SpacedRow, ActionIconsContainer, CardBody } from '../style';
 import { useGameServerModuleUninstall } from 'queries/gameservers';
 
@@ -28,14 +28,14 @@ interface IModuleCardProps {
   mod: ModuleOutputDTO;
   installation?: ModuleInstallationOutputDTO;
   onClick?: () => void;
+  gameServerId: string;
 }
 
-export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation }) => {
+export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gameServerId }) => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [valid, setValid] = useState<boolean>(false);
   const { mutateAsync: uninstallModule, isPending: isDeleting } = useGameServerModuleUninstall();
   const navigate = useNavigate();
-  const { gameServerId } = getRouteApi('/_auth/gameserver/$gameServerId/modules').useSearch();
   const theme = useTheme();
 
   const handleOnDeleteClick = (e: MouseEvent) => {
