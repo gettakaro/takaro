@@ -32,7 +32,7 @@ const tests = [
         steamId: '76561198021481871',
       });
 
-      await playerService.sync(MOCK_PLAYER, this.setupData.id);
+      await playerService.resolveRef(MOCK_PLAYER, this.setupData.id);
 
       const players = await this.client.player.playerControllerSearch();
 
@@ -90,8 +90,8 @@ const tests = [
         steamId: playerRes.data.data.steamId,
       });
 
-      await playerService.sync(MOCK_PLAYER, this.setupData[0].id);
-      await playerService.sync(MOCK_PLAYER, this.setupData[1].id);
+      await playerService.resolveRef(MOCK_PLAYER, this.setupData[0].id);
+      await playerService.resolveRef(MOCK_PLAYER, this.setupData[1].id);
 
       const playersResAfter = await this.client.player.playerControllerSearch({
         filters: {
