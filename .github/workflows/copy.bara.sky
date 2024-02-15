@@ -1,6 +1,6 @@
 
-src_url = "git@github.com:gettakaro/takaro.git"
-dst_url = "git@github.com:gettakaro/takaro-private.git"
+src_url = "https://github.com/gettakaro/takaro.git"
+dst_url = "https://github.com/gettakaro/takaro-private.git"
 
 IGNORE_PATHS = [
   ".github/**",
