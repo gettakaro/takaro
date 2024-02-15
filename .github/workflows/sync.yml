@@ -25,10 +25,12 @@ jobs:
         run: curl -SLO https://github.com/oilpan-gc/export-automation/releases/download/copybara/copybara_deploy.jar
       
       - name: copy
+        env:
+          GH_TOKEN: ${{ steps.generate_token.outputs.token }}
         run: |
           git config --global user.name 'takaro-ci-bot[bot]'
           git config --global user.email '138661031+takaro-ci-bot[bot]@users.noreply.github.com'
-          
+          echo "https://x-access-token:${GH_TOKEN}@api.github.com" > ~/.git-credentials
 
           git_temp_dir=/tmp/copybara
           mkdir -p $git_temp_dir
