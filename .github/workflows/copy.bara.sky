@@ -1,0 +1,31 @@
+
+src_url = "https://github.com/gettakaro/takaro.git"
+dst_url = "https://github.com/gettakaro/takaro-private.git"
+
+IGNORE_PATHS = [
+  ".github/**",
+  "package-lock.json",
+  "packages/app-billing/**"
+]
+
+
+core.workflow(
+  name = "default",
+
+  origin = git.origin(
+    url = src_url,
+    ref = "main",
+  ),
+
+  destination = git.destination(
+    url = dst_url,
+    fetch = "main",
+    push = "main"
+  ),
+
+    origin_files=glob(['**'], exclude=IGNORE_PATHS),
+    destination_files=glob(['**'], exclude=IGNORE_PATHS),
+
+  authoring=authoring.pass_thru("takaro-ci-bot[bot] <138661031+takaro-ci-bot[bot]@users.noreply.github.com>"),
+)
+
