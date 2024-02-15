@@ -4,7 +4,6 @@ dst_url = "git@github.com:gettakaro/takaro-private.git"
 
 IGNOREPATHS = [
   ".github/**"
-
 ]
 
 
@@ -22,6 +21,6 @@ core.workflow(
     push = "main"
   ),
 
-  authoring=authoring.pass_thru("Takaro Team <takaro-dev@takaro.io>"),
+  authoring=authoring.pass_thru("takaro-ci-bot[bot] <138661031+takaro-ci-bot[bot]@users.noreply.github.com>"),
 )
 
