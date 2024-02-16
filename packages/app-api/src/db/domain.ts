@@ -4,11 +4,18 @@ import { errors, traceableClass } from '@takaro/util';
 import { DomainOutputDTO, DomainCreateInputDTO, DomainUpdateInputDTO } from '../service/DomainService.js';
 import { UserRepo } from './user.js';
 
+export enum DOMAIN_STATES {
+  ACTIVE = 'ACTIVE',
+  DISABLED = 'DISABLED',
+  MAINTENANCE = 'MAINTENANCE',
+}
+
 const TABLE_NAME = 'domains';
 
 export class DomainModel extends NOT_DOMAIN_SCOPED_TakaroModel {
   static tableName = TABLE_NAME;
   name!: string;
+  state!: DOMAIN_STATES;
 }
 
 @traceableClass('repo:domain')
