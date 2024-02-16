@@ -28,8 +28,8 @@ import { ErrorMessageMapping } from '@takaro/lib-components/src/errors';
 export const gameServerKeys = {
   all: ['gameservers'] as const,
   list: () => [...gameServerKeys.all, 'list'] as const,
-  detail: (id: string) => [...gameServerKeys.all, 'detail', id] as const,
-  reachability: (id: string) => [...gameServerKeys.all, 'reachable', id] as const,
+  detail: (gameServerId: string) => [...gameServerKeys.all, 'detail', gameServerId] as const,
+  reachability: (gameServerId: string) => [...gameServerKeys.all, 'reachable', gameServerId] as const,
 };
 
 export const installedModuleKeys = {
@@ -100,7 +100,7 @@ export const useGameServerCreate = () => {
       mutationFn: async (gameServer) => (await apiClient.gameserver.gameServerControllerCreate(gameServer)).data.data,
       onSuccess: async (newGameServer: GameServerOutputDTO) => {
         // invalidate all queries that have list in the key
-        await queryClient.invalidateQueries({ queryKey: gameServerKeys.list() });
+        await queryClient.invalidateQueries({ queryKey: gameServerKeys.list(), exact: false });
         queryClient.setQueryData(gameServerKeys.detail(newGameServer.id), newGameServer);
       },
     }),

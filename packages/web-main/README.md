@@ -16,7 +16,9 @@ To address this, `placeholderData` can be used. `placeholderData` has a broader 
 #### Tanstack-Router
 
 
-- loader: Routes have a prop called loader which allows data to be fetched before the page starts to render. Without that option the page is already rendering and on about the same time the request starts to happen.
+- **notFound**:  Do NOT use the `notFoundComponent` prop. Tanstack router provides a `NotFound()`. However, our apiClient returns a rejected promise on 404 errors, where react-query in return will automatically throw an error. Meaning the `notFoundComponent` will never be reached. Instead, the `errorComponent` is reached with status 404. We cannot redirect to the NotFound because that now redirects to the parents `notFoundComponent`.
+
+- **loader**: Routes have a prop called loader which allows data to be fetched before the page starts to render. Without that option the page is already rendering and on about the same time the request starts to happen.
 The main use case for this are links. Whenever you hover over a link (which points to a certain route), tanstack-router will automatically start a prefetch request. 
 
 

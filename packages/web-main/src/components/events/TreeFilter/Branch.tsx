@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react';
+import { FC, useState } from 'react';
 import { List, ListItem, ListItemHeader, ListItemName } from './style';
 import { AiOutlineDown as DownArrowIcon } from 'react-icons/ai';
 import { UnControlledCheckBox } from '@takaro/lib-components';
@@ -16,17 +16,10 @@ type TreeBranchProps = {
 // if all nodes are disabled, the branch should be disabled
 // if all nodes are enabled, the branch should be enabled
 export const Branch: FC<TreeBranchProps> = ({ node, addFilters, removeFilters }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isEnabled, setEnabled] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
+  const [isEnabled, setEnabled] = useState(node.defaultEnabled ?? false);
 
   const nodeFilters = node.children?.map((child) => child.name) ?? [];
-
-  useEffect(() => {
-    if (node.defaultEnabled) {
-      addFilters(nodeFilters);
-      setEnabled(true);
-    }
-  }, []);
 
   const handleCheckbox = () => {
     if (isEnabled) {
@@ -63,6 +56,7 @@ export const Branch: FC<TreeBranchProps> = ({ node, addFilters, removeFilters })
               addFilters={addFilters}
               removeFilters={removeFilters}
               isBranchEnabled={isEnabled}
+              defaultEnabled={node.defaultEnabled}
               key={`treeNode-${index}`}
             />
           ))}

@@ -1,7 +1,7 @@
 import { FC, useMemo } from 'react';
 import { NavbarLink, renderLink } from '.';
 import { GlobalGameServerSelect } from './GlobalGameServerSelect';
-import { Button } from '@takaro/lib-components';
+import { Button, Skeleton } from '@takaro/lib-components';
 import { PERMISSIONS } from '@takaro/apiclient';
 import { getRouteApi, useNavigate } from '@tanstack/react-router';
 import {
@@ -18,7 +18,7 @@ const route = getRouteApi('/_auth/gameserver/$gameServerId');
 
 export const GameServerNav: FC = () => {
   const navigate = useNavigate();
-  const { data: gameservers } = useQuery(gameServersOptions());
+  const { data: gameservers, isPending } = useQuery(gameServersOptions());
   const { gameServerId } = route.useParams();
 
   const gameServerLinks: NavbarLink[] = useMemo(() => {
@@ -52,6 +52,16 @@ export const GameServerNav: FC = () => {
       },
     ];
   }, [gameServerId]);
+
+  if (isPending) {
+    return (
+      <Nav data-testid="server-nav">
+        <h3>Game Server</h3>
+        <Skeleton variant="text" width="100%" height="35px" />
+        {gameServerLinks.map((link) => renderLink(link))}
+      </Nav>
+    );
+  }
 
   return (
     <Nav data-testid="server-nav">

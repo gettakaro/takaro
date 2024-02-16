@@ -5,7 +5,7 @@ import { gameServerModuleInstallationsOptions } from 'queries/gameservers';
 import { modulesOptions } from 'queries/modules';
 import { createFileRoute } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
-import { useSuspenseQueries } from '@tanstack/react-query';
+import { useSuspenseQuery } from '@tanstack/react-query';
 
 const SubHeader = styled.h2`
   font-size: ${({ theme }) => theme.fontSize.mediumLarge};
@@ -41,11 +41,13 @@ export function Component() {
   const { gameServerId } = Route.useParams();
   //useGameServerDocumentTitle('Modules');
 
-  const [{ data: modules }, { data: installations }] = useSuspenseQueries({
-    queries: [
-      { ...modulesOptions({}), initialData: loaderData.modules },
-      { ...gameServerModuleInstallationsOptions(gameServerId), initialData: loaderData.installations },
-    ],
+  const { data: installations } = useSuspenseQuery({
+    ...gameServerModuleInstallationsOptions(gameServerId),
+    initialData: loaderData.installations,
+  });
+  const { data: modules } = useSuspenseQuery({
+    ...modulesOptions({}),
+    initialData: loaderData.modules,
   });
 
   const mappedModules = modules.data.map((mod) => {

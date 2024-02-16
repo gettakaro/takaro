@@ -23,27 +23,23 @@ export const GlobalGameServerSelect: FC<GameServerSelectNavProps> = ({
   const navigate = useNavigate();
   const { control, watch } = useForm<FormFields>({
     mode: 'onChange',
-    values: {
+    defaultValues: {
       gameServerId: selectedGameServerId,
     },
   });
+  installedModules: {
+  }
 
   useEffect(() => {
     const subscription = watch(({ gameServerId }) => {
       // a new gameserver was selected
-      if (gameServerId && gameServerId !== selectedGameServerId) {
-        const match = routeMatch({ to: '/gameserver/$gameServerId', fuzzy: true });
-        if (match) {
-          navigate({
-            to: `/gameserver/$gameServerId/${match['**']}`,
-            params: { gameServerId },
-          });
-        } else {
-          navigate({
-            to: '/gameserver/$gameServerId/dashboard/overview',
-            params: { gameServerId },
-          });
-        }
+      const match = routeMatch({ to: '/gameserver/$gameServerId', fuzzy: true });
+      if (match) {
+        navigate({
+          to: `/gameserver/$gameServerId/${match['**']}`,
+          params: { gameServerId },
+          startTransition: true,
+        });
       }
     });
     return () => subscription.unsubscribe();

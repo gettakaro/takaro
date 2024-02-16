@@ -1,4 +1,4 @@
-import { SelectField, Tooltip } from '@takaro/lib-components';
+import { SelectField, Skeleton, Tooltip } from '@takaro/lib-components';
 import { gameServersOptions } from 'queries/gameservers';
 import { FC } from 'react';
 import { GameServerOutputDTO, GameServerOutputDTOTypeEnum } from '@takaro/apiclient';
@@ -32,8 +32,7 @@ export const GameServerSelect: FC<CustomSelectProps> = ({
   const gameServers = data ?? [];
 
   if (isLoadingData) {
-    // TODO: better loading state
-    return <div>loading...</div>;
+    return <Skeleton variant="text" width="100%" height="35px" />;
   }
 
   if (!gameServers) {

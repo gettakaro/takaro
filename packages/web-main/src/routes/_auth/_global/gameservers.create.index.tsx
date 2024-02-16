@@ -18,17 +18,15 @@ export const Route = createFileRoute('/_auth/_global/gameservers/create/')({
 
 function Component() {
   const navigate = useNavigate({ from: Route.fullPath });
-
-  const { mutateAsync, isPending, error: gameServerCreateError } = useGameServerCreate();
+  const { mutate, isPending, error: gameServerCreateError } = useGameServerCreate();
 
   const onSubmit: SubmitHandler<IFormInputs> = async ({ type, connectionInfo, name }) => {
-    const newGameServer = await mutateAsync({
+    mutate({
       type: type as GameServerCreateDTOTypeEnum,
       name,
       connectionInfo: JSON.stringify(connectionInfo),
     });
-    localStorage.setItem('gameServerId', newGameServer.id);
-    navigate({ to: '/gameservers', search: { gameServerId: newGameServer.id } });
+    navigate({ to: '/gameservers' });
   };
 
   return <CreateUpdateForm onSubmit={onSubmit} isLoading={isPending} error={gameServerCreateError} />;

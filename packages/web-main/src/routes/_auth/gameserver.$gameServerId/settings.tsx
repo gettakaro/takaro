@@ -128,7 +128,7 @@ function Component() {
           });
         }
       }
-      enqueueSnackbar('Settings has been successfully saved', { variant: 'default' });
+      enqueueSnackbar('Settings have been successfully saved', { variant: 'default' });
       reset({}, { keepValues: true });
     } catch (error) {
       enqueueSnackbar('An error occurred while saving settings', { variant: 'default', type: 'error' });
