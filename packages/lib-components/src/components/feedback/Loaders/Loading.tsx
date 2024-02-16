@@ -11,13 +11,7 @@ export const Loading: FC<LoadingProps> = ({ fill = undefined }) => {
     fill = theme.colors.primary;
   }
   return (
-    <svg
-      fill={fill}
-      height="105"
-      viewBox="0 0 105 105"
-      width="105"
-      xmlns="http://www.w3.org/2000/svg"
-    >
+    <svg fill={fill} height="105" viewBox="0 0 105 105" width="105" xmlns="http://www.w3.org/2000/svg">
       <circle cx="12.5" cy="12.5" r="12.5">
         <animate
           attributeName="fill-opacity"

@@ -10,7 +10,7 @@ export default {
    *  <StepperProvider /> requires no parameters.
    */
   title: 'Navigation/Stepper',
-  component: Stepper
+  component: Stepper,
 } as Meta;
 
 const StepBody = styled.div`

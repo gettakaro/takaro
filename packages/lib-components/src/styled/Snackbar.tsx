@@ -37,7 +37,6 @@ export const SnackBarStyles = css<{ theme: ThemeType }>`
   }
   /* error */
   div.SnackbarItem-variantError {
-    background-color: ${({ theme }): string =>
-      theme.colors.background}!important;
+    background-color: ${({ theme }): string => theme.colors.background}!important;
   }
 `;

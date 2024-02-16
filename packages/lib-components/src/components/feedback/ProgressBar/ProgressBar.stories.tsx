@@ -18,7 +18,7 @@ export default {
   args: {
     mode: 'indeterminate',
     showValue: false,
-  }
+  },
 } as Meta<ProgressBarProps>;
 
 export const Default: StoryFn<ProgressBarProps> = (args) => <ProgressBar {...args} />;
@@ -36,4 +36,3 @@ export const Determinate: StoryFn<ProgressBarProps> = () => {
     </>
   );
 };
-

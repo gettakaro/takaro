@@ -1,20 +1,6 @@
-import {
-  FC,
-  useEffect,
-  Children,
-  isValidElement,
-  ReactElement,
-  PropsWithChildren,
-} from 'react';
+import { FC, useEffect, Children, isValidElement, ReactElement, PropsWithChildren } from 'react';
 import { useStepper } from '../context';
-import {
-  Container,
-  StepperBody,
-  StepperHeader,
-  StepperHeaderItem,
-  StepCounter,
-  StepName,
-} from './style';
+import { Container, StepperBody, StepperHeader, StepperHeaderItem, StepCounter, StepName } from './style';
 import { AiOutlineCheck as CheckMark } from 'react-icons/ai';
 import { Spinner } from '../../..';
 import { StepStates } from '../stepStates';
@@ -26,12 +12,7 @@ const StepperSteps: FC<PropsWithChildren<void>> = ({ children }) => {
 
   useEffect(() => {
     const stepperSteps = Children.toArray(children)
-      .filter(
-        (step) =>
-          isValidElement(step) &&
-          typeof step.type !== 'string' &&
-          step.type.name === 'StepperStep'
-      )
+      .filter((step) => isValidElement(step) && typeof step.type !== 'string' && step.type.name === 'StepperStep')
       .map((step) => {
         if (isValidElement(step)) {
           return step.props;
@@ -46,11 +27,7 @@ const StepperSteps: FC<PropsWithChildren<void>> = ({ children }) => {
       {children &&
         Children.map(
           children,
-          (child) =>
-            steps.length !== 0 &&
-            isValidElement(child) &&
-            child.props.id === steps[currentStep].id &&
-            child
+          (child) => steps.length !== 0 && isValidElement(child) && child.props.id === steps[currentStep].id && child
         )}
     </div>
   );
@@ -91,10 +68,7 @@ export const Stepper: FC<PropsWithChildren<StepperProps>> & {
   }
 
   function handleClick(index: number, currentStep: number) {
-    if (
-      getStepState(index, currentStep) === StepStates.COMPLETE &&
-      canStepBack
-    ) {
+    if (getStepState(index, currentStep) === StepStates.COMPLETE && canStepBack) {
       setCurrentStep(index);
     }
   }
@@ -104,10 +78,7 @@ export const Stepper: FC<PropsWithChildren<StepperProps>> & {
       <StepperHeader>
         {steps.length &&
           steps.map((step: StepProps, index: number) => (
-            <StepperHeaderItem
-              key={step.id}
-              stepState={getStepState(index, currentStep)}
-            >
+            <StepperHeaderItem key={step.id} stepState={getStepState(index, currentStep)}>
               <StepCounter
                 canStepBack={canStepBack}
                 onClick={() => handleClick(index, currentStep)}

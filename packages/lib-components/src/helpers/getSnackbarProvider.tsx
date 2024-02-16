@@ -29,9 +29,9 @@ const snackbarOptions: Partial<SnackbarProviderProps> = {
   },
 };
 
-export const SnackbarProvider: FC<PropsWithChildren<unknown>> = ({
-  children,
-}) => <Provider {...snackbarOptions}>{children}</Provider>;
+export const SnackbarProvider: FC<PropsWithChildren<unknown>> = ({ children }) => (
+  <Provider {...snackbarOptions}>{children}</Provider>
+);
 
 declare module 'notistack' {
   interface VariantOverrides {
