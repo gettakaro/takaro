@@ -1,7 +1,7 @@
 import { TakaroEmitter, getGame } from '@takaro/gameserver';
 import { GameEvents } from '@takaro/modules';
 import { logger } from '@takaro/util';
-import { AdminClient, Client } from '@takaro/apiclient';
+import { AdminClient, Client, DomainOutputDTOStateEnum } from '@takaro/apiclient';
 import { config } from '../config.js';
 import { queueService } from '@takaro/queues';
 
@@ -43,7 +43,10 @@ class GameServerManager {
   async init() {
     await takaro.waitUntilHealthy(60000);
     const domains = await takaro.domain.domainControllerSearch();
-    for (const domain of domains.data.data) {
+
+    const enabledDomains = domains.data.data.filter((domain) => domain.state === DomainOutputDTOStateEnum.Active);
+
+    for (const domain of enabledDomains) {
       const client = await getDomainClient(domain.id);
       const gameServersRes = await client.gameserver.gameServerControllerSearch();
 
