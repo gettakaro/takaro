@@ -1,4 +1,5 @@
-import { IntegrationTest } from '@takaro/test';
+import { IntegrationTest, integrationConfig, expect } from '@takaro/test';
+import { DomainOutputDTOStateEnum, Client } from '@takaro/apiclient';
 
 const group = 'DomainController';
 
@@ -63,6 +64,36 @@ const tests = [
       return this.adminClient.domain.domainControllerRemove('invalid-id');
     },
     expectedStatus: 404,
+  }),
+  new IntegrationTest<void>({
+    group,
+    snapshot: true,
+    name: 'Setting domain state to disabled, blocks any following requests',
+    test: async function () {
+      if (!this.standardDomainId) throw new Error('No domain ID');
+
+      const apiClient = new Client({
+        url: integrationConfig.get('host'),
+        auth: {
+          username: this.standardLogin.username,
+          password: this.standardLogin.password,
+        },
+      });
+
+      await apiClient.login();
+
+      const usersBefore = await apiClient.user.userControllerSearch();
+
+      expect(usersBefore.data.data.length).to.be.greaterThan(0);
+
+      await this.adminClient.domain.domainControllerUpdate(this.standardDomainId, {
+        state: DomainOutputDTOStateEnum.Disabled,
+      });
+
+      return apiClient.user.userControllerSearch();
+    },
+    filteredFields: ['name'],
+    expectedStatus: 400,
   }),
 ];
 

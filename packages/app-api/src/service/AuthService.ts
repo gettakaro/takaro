@@ -13,6 +13,7 @@ import { REST } from '@discordjs/rest';
 import { Routes, RESTGetAPICurrentUserGuildsResult } from 'discord-api-types/v10';
 import oauth from 'passport-oauth2';
 import { DiscordService } from './DiscordService.js';
+import { domainStateMiddleware } from '../middlewares/domainStateMiddleware.js';
 
 interface DiscordUserInfo {
   id: string;
@@ -210,7 +211,7 @@ export class AuthService extends DomainScoped {
 
         req.user = user;
         req.domainId = user.domain;
-        next();
+        return domainStateMiddleware(req, _res, next);
       } catch (error) {
         log.error('Unexpected error in auth middleware', error);
         return next(new errors.ForbiddenError());

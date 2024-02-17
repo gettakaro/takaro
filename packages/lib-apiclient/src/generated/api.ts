@@ -1089,6 +1089,12 @@ export interface DomainOutputDTO {
    * @type {string}
    * @memberof DomainOutputDTO
    */
+  state: DomainOutputDTOStateEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof DomainOutputDTO
+   */
   id: string;
   /**
    *
@@ -1103,6 +1109,15 @@ export interface DomainOutputDTO {
    */
   updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
+
+export const DomainOutputDTOStateEnum = {
+  Active: 'ACTIVE',
+  Disabled: 'DISABLED',
+  Maintenance: 'MAINTENANCE',
+} as const;
+
+export type DomainOutputDTOStateEnum = (typeof DomainOutputDTOStateEnum)[keyof typeof DomainOutputDTOStateEnum];
+
 /**
  *
  * @export
@@ -1134,7 +1149,23 @@ export interface DomainSearchInputAllowedFilters {
    * @memberof DomainSearchInputAllowedFilters
    */
   name?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof DomainSearchInputAllowedFilters
+   */
+  state?: Array<DomainSearchInputAllowedFiltersStateEnum>;
 }
+
+export const DomainSearchInputAllowedFiltersStateEnum = {
+  Active: 'ACTIVE',
+  Disabled: 'DISABLED',
+  Maintenance: 'MAINTENANCE',
+} as const;
+
+export type DomainSearchInputAllowedFiltersStateEnum =
+  (typeof DomainSearchInputAllowedFiltersStateEnum)[keyof typeof DomainSearchInputAllowedFiltersStateEnum];
+
 /**
  *
  * @export
@@ -1216,8 +1247,24 @@ export interface DomainUpdateInputDTO {
    * @type {string}
    * @memberof DomainUpdateInputDTO
    */
-  name: string;
+  name?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof DomainUpdateInputDTO
+   */
+  state?: DomainUpdateInputDTOStateEnum;
 }
+
+export const DomainUpdateInputDTOStateEnum = {
+  Active: 'ACTIVE',
+  Disabled: 'DISABLED',
+  Maintenance: 'MAINTENANCE',
+} as const;
+
+export type DomainUpdateInputDTOStateEnum =
+  (typeof DomainUpdateInputDTOStateEnum)[keyof typeof DomainUpdateInputDTOStateEnum];
+
 /**
  *
  * @export
@@ -3914,6 +3961,12 @@ export interface MockConnectionInfo {
    * @memberof MockConnectionInfo
    */
   host: string;
+  /**
+   *
+   * @type {string}
+   * @memberof MockConnectionInfo
+   */
+  name: string;
 }
 /**
  *
