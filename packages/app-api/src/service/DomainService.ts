@@ -25,6 +25,10 @@ export class DomainCreateInputDTO extends TakaroDTO<DomainCreateInputDTO> {
   @Length(3, 200)
   @IsOptional()
   id: string;
+
+  @IsEnum(Object.values(DOMAIN_STATES))
+  @IsOptional()
+  state: DOMAIN_STATES;
 }
 
 export class DomainUpdateInputDTO extends TakaroDTO<DomainUpdateInputDTO> {
@@ -128,7 +132,9 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
       capitalize: false,
     });
 
-    const domain = await this.repo.create(await new DomainCreateInputDTO().construct({ id, name: input.name }));
+    const domain = await this.repo.create(
+      await new DomainCreateInputDTO().construct({ id, name: input.name, state: input.state ?? DOMAIN_STATES.ACTIVE })
+    );
 
     const userService = new UserService(domain.id);
     const roleService = new RoleService(domain.id);

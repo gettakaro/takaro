@@ -1002,7 +1002,23 @@ export interface DomainCreateInputDTO {
    * @memberof DomainCreateInputDTO
    */
   id?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof DomainCreateInputDTO
+   */
+  state?: DomainCreateInputDTOStateEnum;
 }
+
+export const DomainCreateInputDTOStateEnum = {
+  Active: 'ACTIVE',
+  Disabled: 'DISABLED',
+  Maintenance: 'MAINTENANCE',
+} as const;
+
+export type DomainCreateInputDTOStateEnum =
+  (typeof DomainCreateInputDTOStateEnum)[keyof typeof DomainCreateInputDTOStateEnum];
+
 /**
  *
  * @export
