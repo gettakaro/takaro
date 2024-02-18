@@ -17443,7 +17443,7 @@ export const UserApiFp = function (configuration?: Configuration) {
     async userControllerInvite(
       inviteCreateDTO?: InviteCreateDTO,
       options?: RawAxiosRequestConfig
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserOutputDTOAPI>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.userControllerInvite(inviteCreateDTO, options);
       const index = configuration?.serverIndex ?? 0;
       const operationBasePath = operationServerMap['UserApi.userControllerInvite']?.[index]?.url;
@@ -17665,7 +17665,7 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    userControllerInvite(inviteCreateDTO?: InviteCreateDTO, options?: any): AxiosPromise<APIOutput> {
+    userControllerInvite(inviteCreateDTO?: InviteCreateDTO, options?: any): AxiosPromise<UserOutputDTOAPI> {
       return localVarFp.userControllerInvite(inviteCreateDTO, options).then((request) => request(axios, basePath));
     },
     /**
