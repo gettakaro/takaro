@@ -185,10 +185,10 @@ export class UserController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_USERS], false))
   @Post('/user/invite')
-  @ResponseSchema(APIOutput)
+  @ResponseSchema(UserOutputDTOAPI)
   async invite(@Req() req: AuthenticatedRequest, @Body() data: InviteCreateDTO) {
     const service = new UserService(req.domainId);
-    await service.inviteUser(data.email);
-    return apiResponse();
+    const user = await service.inviteUser(data.email);
+    return apiResponse(user);
   }
 }
