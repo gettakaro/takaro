@@ -185,7 +185,7 @@ export class AuthService extends DomainScoped {
     return user;
   }
 
-  static getAuthMiddleware(permissions: PERMISSIONS[]) {
+  static getAuthMiddleware(permissions: PERMISSIONS[], domainStateCheck = true) {
     const fn = async (req: AuthenticatedRequest, _res: Response, next: NextFunction) => {
       try {
         const user = await this.getUserFromReq(req);
@@ -211,7 +211,9 @@ export class AuthService extends DomainScoped {
 
         req.user = user;
         req.domainId = user.domain;
-        return domainStateMiddleware(req, _res, next);
+
+        if (domainStateCheck) return domainStateMiddleware(req, _res, next);
+        return next();
       } catch (error) {
         log.error('Unexpected error in auth middleware', error);
         return next(new errors.ForbiddenError());

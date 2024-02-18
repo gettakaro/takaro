@@ -82,15 +82,15 @@ const tests = [
 
       await apiClient.login();
 
-      const usersBefore = await apiClient.user.userControllerSearch();
+      const rolesBefore = await apiClient.role.roleControllerSearch();
 
-      expect(usersBefore.data.data.length).to.be.greaterThan(0);
+      expect(rolesBefore.data.data.length).to.be.greaterThan(0);
 
       await this.adminClient.domain.domainControllerUpdate(this.standardDomainId, {
         state: DomainOutputDTOStateEnum.Disabled,
       });
 
-      return apiClient.user.userControllerSearch();
+      return apiClient.role.roleControllerSearch();
     },
     filteredFields: ['name'],
     expectedStatus: 400,
