@@ -25,7 +25,7 @@ test('Can create gameserver', async ({ page, takaro }) => {
   await expect(page.getByRole('heading', { name: serverName })).toBeVisible();
 });
 
-test.fixme('Should show error when creating a gameserver with name that already exists', async ({ page, takaro }) => {
+test('Should show error when creating a gameserver with name that already exists', async ({ page, takaro }) => {
   const { GameServersPage } = takaro;
   const serverName = 'My new server';
 
@@ -50,7 +50,7 @@ test.fixme('Should show error when creating a gameserver with name that already 
   await expect(page.getByText('Game server with this name already exists')).toBeVisible();
 });
 
-test.fixme('Should show error when updating a gameserver with name that already exists', async ({ page, takaro }) => {
+test('Should show error when updating a gameserver with name that already exists', async ({ page, takaro }) => {
   const { GameServersPage } = takaro;
   const serverName = 'My new server';
 

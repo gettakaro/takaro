@@ -18,10 +18,10 @@ export const Route = createFileRoute('/_auth/_global/gameservers/create/')({
 
 function Component() {
   const navigate = useNavigate({ from: Route.fullPath });
-  const { mutate, isPending, error: gameServerCreateError } = useGameServerCreate();
+  const { mutateAsync, isPending, error: gameServerCreateError } = useGameServerCreate();
 
   const onSubmit: SubmitHandler<IFormInputs> = async ({ type, connectionInfo, name }) => {
-    mutate({
+    await mutateAsync({
       type: type as GameServerCreateDTOTypeEnum,
       name,
       connectionInfo: JSON.stringify(connectionInfo),

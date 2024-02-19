@@ -100,7 +100,7 @@ export const useGameServerCreate = () => {
       mutationFn: async (gameServer) => (await apiClient.gameserver.gameServerControllerCreate(gameServer)).data.data,
       onSuccess: async (newGameServer: GameServerOutputDTO) => {
         // invalidate all queries that have list in the key
-        await queryClient.invalidateQueries({ queryKey: gameServerKeys.list(), exact: false });
+        await queryClient.invalidateQueries({ queryKey: gameServerKeys.list() });
         queryClient.setQueryData(gameServerKeys.detail(newGameServer.id), newGameServer);
       },
     }),

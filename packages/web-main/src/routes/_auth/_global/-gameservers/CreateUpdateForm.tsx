@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from 'react';
-import { Button, SelectField, TextField, Drawer, CollapseList, FormError, Alert } from '@takaro/lib-components';
+import { Button, SelectField, TextField, Drawer, CollapseList, FormError } from '@takaro/lib-components';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { IFormInputs } from './validationSchema';
+import { IFormInputs, validationSchema } from './validationSchema';
 import { GameServerOutputDTO, GameServerTestReachabilityInputDTOTypeEnum } from '@takaro/apiclient';
 import { useGameServerReachabilityByConfig } from 'queries/gameservers';
 import { styled } from '@takaro/lib-components';
@@ -16,6 +16,7 @@ interface CreateUpdateFormProps {
 }
 
 import { GameServerCreateDTOTypeEnum } from '@takaro/apiclient';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 const gameTypeSelectOptions = [
   {
@@ -47,20 +48,10 @@ export const CreateUpdateForm: FC<CreateUpdateFormProps> = ({ initialData, isLoa
 
   const { control, handleSubmit, watch, trigger, formState } = useForm<IFormInputs>({
     mode: 'onChange',
+    resolver: zodResolver(validationSchema),
     defaultValues: {
       name: '',
       type: '',
-      connectionInfo: {
-        host: '',
-        adminUser: '',
-        adminToken: '',
-        useTls: false,
-        useCPM: false,
-        rconPort: 0,
-        rconPassword: '',
-        eventInterval: 0,
-        playerPoolSize: 0,
-      },
     },
     ...(initialData && {
       values: {
@@ -100,7 +91,6 @@ export const CreateUpdateForm: FC<CreateUpdateFormProps> = ({ initialData, isLoa
         <Drawer.Heading>{initialData ? 'Update' : 'Create'} Game Server</Drawer.Heading>
         <Drawer.Body>
           <CollapseList>
-            <Alert variant="warning" text="Form validation is temporarily disabled." />
             <form onSubmit={handleSubmit(onSubmit)} id={formId}>
               <CollapseList.Item title="General">
                 <TextField
