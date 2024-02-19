@@ -1,7 +1,7 @@
 import { SubmitHandler } from 'react-hook-form';
 import { DrawerSkeleton } from '@takaro/lib-components';
 import { redirect, useNavigate } from '@tanstack/react-router';
-import { gameServerOptions } from 'queries/gameservers';
+import { gameServerQueryOptions } from 'queries/gameservers';
 import { useGameServerUpdate } from 'queries/gameservers/queries';
 import { createFileRoute } from '@tanstack/react-router';
 import { CreateUpdateForm } from './-gameservers/CreateUpdateForm';
@@ -14,7 +14,7 @@ export const Route = createFileRoute('/_auth/_global/gameservers/update/$gameSer
       throw redirect({ to: '/forbidden' });
     }
   },
-  loader: ({ params, context }) => context.queryClient.ensureQueryData(gameServerOptions(params.gameServerId)),
+  loader: ({ params, context }) => context.queryClient.ensureQueryData(gameServerQueryOptions(params.gameServerId)),
   component: Component,
   pendingComponent: DrawerSkeleton,
 });

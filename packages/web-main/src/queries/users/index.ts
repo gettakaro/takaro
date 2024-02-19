@@ -2,8 +2,8 @@ export {
   userKeys,
 
   // queries
-  userOptions,
-  usersOptions,
+  userQueryOptions,
+  usersQueryOptions,
 
   // mutations
   useUserAssignRole,

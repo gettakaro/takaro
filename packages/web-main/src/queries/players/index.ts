@@ -1,6 +1,6 @@
 export {
   // queries
-  playerOptions,
+  playerQueryOptions,
   playersOptions,
-  playerOnGameServersOptions,
+  playerOnGameServersQueryOptions,
 } from './queries';

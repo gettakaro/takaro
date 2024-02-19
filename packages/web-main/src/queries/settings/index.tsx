@@ -2,10 +2,10 @@ export {
   settingKeys,
 
   // queries
-  gameServerSettingOptions,
-  gameServerSettingsOptions,
-  globalGameServerSetingOptions,
-  globalGameServerSettingsOptions,
+  gameServerSettingQueryOptions,
+  gameServerSettingsQueryOptions,
+  globalGameServerSetingQueryOptions,
+  globalGameServerSettingsQueryOptions,
 
   // mutations
   useSetGlobalSetting,

@@ -1,5 +1,5 @@
 import { Avatar, Chip, getInitials } from '@takaro/lib-components';
-import { playerOptions } from 'queries/players';
+import { playerQueryOptions } from 'queries/players';
 import { FC } from 'react';
 import { Link } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
@@ -16,7 +16,7 @@ interface PlayerProps {
 type PlayerContainerProps = Pick<PlayerProps, 'showAvatar' | 'playerId'>;
 
 export const PlayerContainer: FC<PlayerContainerProps> = ({ playerId, showAvatar }) => {
-  const { data: player, isLoading, error } = useQuery(playerOptions(playerId));
+  const { data: player, isLoading, error } = useQuery(playerQueryOptions(playerId));
 
   return (
     <Player

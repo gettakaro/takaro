@@ -1,4 +1,4 @@
-import { moduleOptions, useModuleUpdate } from 'queries/modules';
+import { moduleQueryOptions, useModuleUpdate } from 'queries/modules';
 import { ModuleForm, ModuleFormSubmitProps } from './-modules/ModuleForm';
 import { DrawerSkeleton } from '@takaro/lib-components';
 import { createFileRoute, redirect } from '@tanstack/react-router';
@@ -10,7 +10,7 @@ export const Route = createFileRoute('/_auth/_global/modules/$moduleId/update')(
       throw redirect({ to: '/forbidden' });
     }
   },
-  loader: ({ params, context }) => context.queryClient.ensureQueryData(moduleOptions(params.moduleId)),
+  loader: ({ params, context }) => context.queryClient.ensureQueryData(moduleQueryOptions(params.moduleId)),
   component: Component,
   pendingComponent: DrawerSkeleton,
 });

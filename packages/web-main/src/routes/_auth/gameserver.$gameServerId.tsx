@@ -1,7 +1,7 @@
 import { ErrorPage } from '@takaro/lib-components';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
-import { gameServerOptions } from 'queries/gameservers';
+import { gameServerQueryOptions } from 'queries/gameservers';
 import { BaseLayout } from 'components/BaseLayout';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId')({
@@ -10,10 +10,8 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId')({
       throw redirect({ to: '/forbidden' });
     }
   },
-  loader: async ({ params, context }) => {
-    const gameServer = await context.queryClient.ensureQueryData(gameServerOptions(params.gameServerId));
-    return gameServer;
-  },
+  loader: async ({ params, context }) =>
+    await context.queryClient.ensureQueryData(gameServerQueryOptions(params.gameServerId)),
   component: Component,
   errorComponent: ErrorComponent,
 });

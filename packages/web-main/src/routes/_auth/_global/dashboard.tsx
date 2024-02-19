@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Button, Stats, styled } from '@takaro/lib-components';
 import { useSocket } from 'hooks/useSocket';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { eventsOptions } from 'queries/events';
+import { eventsQueryOptions } from 'queries/events';
 import { DateTime } from 'luxon';
 import { useForm, useWatch } from 'react-hook-form';
 import { TimePeriodSelect } from 'components/selects';
@@ -82,7 +82,7 @@ function Component() {
   // players online last 24 hours
   // We have total records in metadata
   const { data: playersConnected, isLoading: isLoadingPlayerConnected } = useQuery(
-    eventsOptions({
+    eventsQueryOptions({
       search: { eventName: ['player-connected'] },
       startDate,
       endDate: now,
@@ -90,7 +90,7 @@ function Component() {
   );
 
   const { data: cronjobsExecuted, isLoading: isLoadingCronJobsExecuted } = useQuery(
-    eventsOptions({
+    eventsQueryOptions({
       search: { eventName: ['cronjob-executed'] },
       startDate,
       endDate: now,
@@ -98,7 +98,7 @@ function Component() {
   );
 
   const { data: commandsExecuted, isLoading: isLoadingCommandsExecuted } = useQuery(
-    eventsOptions({
+    eventsQueryOptions({
       search: { eventName: ['command-executed'] },
       startDate,
       endDate: now,
@@ -106,7 +106,7 @@ function Component() {
   );
 
   const { data: HooksExecuted, isLoading: isLoadingHooksExecuted } = useQuery(
-    eventsOptions({
+    eventsQueryOptions({
       search: { eventName: ['hook-executed'] },
       startDate,
       endDate: now,

@@ -1,7 +1,7 @@
 import { GameServerOutputDTO, GameServerOutputDTOTypeEnum, ItemsOutputDTO } from '@takaro/apiclient';
 import { Avatar, getInitials, SelectQueryField, Skeleton, styled } from '@takaro/lib-components';
-import { gameServerOptions } from 'queries/gameservers';
-import { itemsOptions } from 'queries/items';
+import { gameServerQueryOptions } from 'queries/gameservers';
+import { itemsQueryOptions } from 'queries/items';
 import { FC, useState } from 'react';
 import { CustomQuerySelectProps } from '..';
 import { useQuery } from '@tanstack/react-query';
@@ -46,9 +46,9 @@ export const ItemSelect: FC<ItemSelectProps> = ({
 }) => {
   const [itemName, setItemName] = useState<string>('');
 
-  const { data: gameServer, isLoading: isLoadingGameServer } = useQuery(gameServerOptions(gameServerId));
+  const { data: gameServer, isLoading: isLoadingGameServer } = useQuery(gameServerQueryOptions(gameServerId));
   const { data, isLoading: isLoadingItems } = useQuery(
-    itemsOptions({ search: { name: [itemName] }, filters: { gameserverId: [gameServerId] } })
+    itemsQueryOptions({ search: { name: [itemName] }, filters: { gameserverId: [gameServerId] } })
   );
   const items = data?.data ?? [];
 

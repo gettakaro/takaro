@@ -2,8 +2,8 @@ export {
   itemKeys,
 
   // queries
-  itemOptions,
-  itemsOptions,
+  itemQueryOptions,
+  itemsQueryOptions,
 
   // mutations
   useItemCreate,

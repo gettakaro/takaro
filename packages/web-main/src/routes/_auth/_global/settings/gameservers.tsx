@@ -2,7 +2,7 @@ import { Fragment, useMemo, ReactElement } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { Button, Switch, TextField, camelCaseToSpaces } from '@takaro/lib-components';
 import { Settings, PERMISSIONS } from '@takaro/apiclient';
-import { useSetGlobalSetting, globalGameServerSettingsOptions } from 'queries/settings';
+import { useSetGlobalSetting, globalGameServerSettingsQueryOptions } from 'queries/settings';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
@@ -16,7 +16,7 @@ export const Route = createFileRoute('/_auth/_global/settings/gameservers')({
       throw redirect({ to: '/forbidden' });
     }
   },
-  loader: ({ context }) => context.queryClient.ensureQueryData(globalGameServerSettingsOptions()),
+  loader: ({ context }) => context.queryClient.ensureQueryData(globalGameServerSettingsQueryOptions()),
   component: Component,
   pendingComponent: PendingComponent,
 });

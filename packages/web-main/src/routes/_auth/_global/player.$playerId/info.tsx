@@ -6,11 +6,11 @@ import { FC } from 'react';
 import { Section, Container, Scrollable } from './-style';
 import { CountryCodeToEmoji } from 'components/CountryCodeToEmoji';
 import { DateTime } from 'luxon';
-import { playerOptions } from 'queries/players';
+import { playerQueryOptions } from 'queries/players';
 
 export const Route = createFileRoute('/_auth/_global/player/$playerId/info')({
   component: Component,
-  loader: async ({ context, params }) => context.queryClient.ensureQueryData(playerOptions(params.playerId)),
+  loader: async ({ context, params }) => context.queryClient.ensureQueryData(playerQueryOptions(params.playerId)),
 });
 
 function Component() {

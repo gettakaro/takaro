@@ -22,7 +22,7 @@ const defaultVariableErrorMessages: Partial<ErrorMessageMapping> = {
   UniqueConstraintError: 'Variable with this key already exists',
 };
 
-export const variableOptions = (variableId: string) =>
+export const variableQueryOptions = (variableId: string) =>
   queryOptions<VariableOutputDTO, AxiosError<VariableOutputDTO>>({
     queryKey: variableKeys.detail(variableId),
     queryFn: async () => {
@@ -31,7 +31,7 @@ export const variableOptions = (variableId: string) =>
     },
   });
 
-export const variablesOptions = (queryParams: VariableSearchInputDTO) =>
+export const variablesQueryOptions = (queryParams: VariableSearchInputDTO) =>
   queryOptions<VariableOutputArrayDTOAPI, AxiosError<VariableOutputArrayDTOAPI>>({
     queryKey: [...variableKeys.list(), ...queryParamsToArray(queryParams)],
     queryFn: async () => (await getApiClient().variable.variableControllerSearch(queryParams)).data,

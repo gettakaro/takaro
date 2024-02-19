@@ -1,7 +1,7 @@
 import { Console, Message, Skeleton, styled, useLocalStorage } from '@takaro/lib-components';
 import { getApiClient } from 'util/getApiClient';
 import { useSocket } from 'hooks/useSocket';
-import { gameServerOptions } from 'queries/gameservers';
+import { gameServerQueryOptions } from 'queries/gameservers';
 import { useGameServerDocumentTitle } from 'hooks/useDocumentTitle';
 import { useSnackbar } from 'notistack';
 import { createFileRoute } from '@tanstack/react-router';
@@ -13,7 +13,7 @@ const Container = styled.div`
 `;
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/dashboard/console')({
-  loader: ({ params, context }) => context.queryClient.ensureQueryData(gameServerOptions(params.gameServerId)),
+  loader: ({ params, context }) => context.queryClient.ensureQueryData(gameServerQueryOptions(params.gameServerId)),
   component: Component,
   pendingComponent: () => {
     return (

@@ -2,7 +2,7 @@ import { EventOutputDTO, EventSearchInputDTO } from '@takaro/apiclient';
 import { Skeleton } from '@takaro/lib-components';
 import { useQuery } from '@tanstack/react-query';
 import { EventFeed, EventItem } from 'components/events/EventFeed';
-import { eventsOptions } from 'queries/events';
+import { eventsQueryOptions } from 'queries/events';
 import { FC, useEffect, useState } from 'react';
 
 interface IProps {
@@ -13,7 +13,7 @@ export const EventFeedWidget: FC<IProps> = ({ query }) => {
   const [events, setEvents] = useState<EventOutputDTO[]>([]);
 
   const { data: rawEvents, isLoading } = useQuery(
-    eventsOptions({
+    eventsQueryOptions({
       ...query,
       extend: ['gameServer', 'module', 'player', 'user'],
       sortBy: 'createdAt',

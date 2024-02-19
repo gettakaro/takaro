@@ -21,7 +21,7 @@ const eventKeys = {
   list: () => [...eventKeys.all, 'list'] as const,
 };
 
-export const eventsOptions = (queryParams: EventSearchInputDTO) =>
+export const eventsQueryOptions = (queryParams: EventSearchInputDTO) =>
   queryOptions<EventOutputArrayDTOAPI, AxiosError<EventOutputArrayDTOAPI>>({
     queryKey: [...eventKeys.list(), queryParamsToArray(queryParams)],
     queryFn: async () => (await getApiClient().event.eventControllerSearch(queryParams)).data,
@@ -61,7 +61,6 @@ export const useEventSubscription = ({ enabled = true, ...queryParams }: EventSu
             filters: [], // TODO: implement filters
           })
         ) {
-          console.log('not included', newEvent);
           return prev;
         }
 

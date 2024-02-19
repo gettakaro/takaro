@@ -2,7 +2,7 @@ export {
   gameServerKeys,
 
   // queries
-  gameServerOptions,
+  gameServerQueryOptions,
   gameServersOptions,
   gameServersInfiniteQueryOptions,
   gameServerReachabilityOptions,

@@ -1,11 +1,11 @@
 export {
   // queries
-  hookOptions,
-  moduleOptions,
-  commandOptions,
-  cronjobOptions,
-  modulesOptions,
-  functionOptions,
+  hookQueryOptions,
+  moduleQueryOptions,
+  commandQueryOptions,
+  cronjobQueryOptions,
+  modulesQueryOptions,
+  functionQueryOptions,
 
   // mutations
   useModuleCreate,

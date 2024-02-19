@@ -1,7 +1,7 @@
 import { Dialog } from '@takaro/lib-components';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
-import { moduleOptions } from 'queries/modules';
+import { moduleQueryOptions } from 'queries/modules';
 import { useSnackbar } from 'notistack';
 import { useState } from 'react';
 import { CopyModuleForm } from 'components/CopyModuleForm';
@@ -12,7 +12,7 @@ export const Route = createFileRoute('/_auth/_global/modules/$moduleId/copy')({
       throw redirect({ to: '/forbidden' });
     }
   },
-  loader: async ({ params, context }) => context.queryClient.ensureQueryData(moduleOptions(params.moduleId)),
+  loader: async ({ params, context }) => context.queryClient.ensureQueryData(moduleQueryOptions(params.moduleId)),
   component: Component,
 });
 

@@ -1,7 +1,7 @@
 export {
   // queries
-  variableOptions,
-  variablesOptions,
+  variableQueryOptions,
+  variablesQueryOptions,
 
   // mutations
   useVariableCreate,

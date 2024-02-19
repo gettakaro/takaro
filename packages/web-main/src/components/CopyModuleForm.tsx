@@ -10,7 +10,7 @@ import {
   useCommandCreate,
   useCronJobCreate,
   useHookCreate,
-  moduleOptions,
+  moduleQueryOptions,
   useModuleCreate,
   useModuleRemove,
 } from 'queries/modules';
@@ -27,7 +27,7 @@ interface CopyModuleFormProps {
 }
 
 export const CopyModuleForm: FC<CopyModuleFormProps> = ({ moduleId, onSuccess }) => {
-  const { data: mod, isPending } = useQuery(moduleOptions(moduleId));
+  const { data: mod, isPending } = useQuery(moduleQueryOptions(moduleId));
   const { enqueueSnackbar } = useSnackbar();
 
   const { control, handleSubmit } = useForm<z.infer<typeof validationSchema>>({

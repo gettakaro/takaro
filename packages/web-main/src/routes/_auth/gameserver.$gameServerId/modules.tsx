@@ -2,7 +2,7 @@ import { Skeleton, styled, useTheme } from '@takaro/lib-components';
 import { Outlet, redirect } from '@tanstack/react-router';
 import { ModuleInstallCard, CardList } from 'components/cards';
 import { gameServerModuleInstallationsOptions } from 'queries/gameservers';
-import { modulesOptions } from 'queries/modules';
+import { modulesQueryOptions } from 'queries/modules';
 import { createFileRoute } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
 import { useSuspenseQuery } from '@tanstack/react-query';
@@ -20,7 +20,7 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/modules')(
   },
   loader: async ({ params, context }) => {
     const [modules, moduleInstallations] = await Promise.all([
-      context.queryClient.ensureQueryData(modulesOptions({})),
+      context.queryClient.ensureQueryData(modulesQueryOptions()),
       context.queryClient.ensureQueryData(gameServerModuleInstallationsOptions(params.gameServerId)),
     ]);
 
@@ -46,7 +46,7 @@ export function Component() {
     initialData: loaderData.installations,
   });
   const { data: modules } = useSuspenseQuery({
-    ...modulesOptions({}),
+    ...modulesQueryOptions(),
     initialData: loaderData.modules,
   });
 

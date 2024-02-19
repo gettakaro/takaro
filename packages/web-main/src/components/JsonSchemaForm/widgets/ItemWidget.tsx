@@ -10,8 +10,8 @@ import {
 } from '@takaro/lib-components';
 import { useQuery } from '@tanstack/react-query';
 import { getRouteApi } from '@tanstack/react-router';
-import { gameServerOptions } from 'queries/gameservers';
-import { itemsOptions } from 'queries/items';
+import { gameServerQueryOptions } from 'queries/gameservers';
+import { itemsQueryOptions } from 'queries/items/queries';
 import { useState } from 'react';
 
 const gameServerTypeToIconFolderMap = {
@@ -56,9 +56,9 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
   const enabled = itemName !== '';
   const shouldPreviousItemsBeLoaded = shouldFilter(value, multiple as boolean);
 
-  const { data: gameServer, isLoading: isLoadingGameServer } = useQuery(gameServerOptions(gameServerId));
+  const { data: gameServer, isLoading: isLoadingGameServer } = useQuery(gameServerQueryOptions(gameServerId));
   const { data: prev, isLoading: isLoadingPreviousItems } = useQuery(
-    itemsOptions({
+    itemsQueryOptions({
       filters: { gameserverId: [gameServerId], ...(shouldPreviousItemsBeLoaded && { id: multiple ? value : [value] }) },
     })
   );
@@ -66,7 +66,7 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
   const previousItems = prev?.data ?? [];
 
   const { data, isLoading: isLoadingItems } = useQuery(
-    itemsOptions({
+    itemsQueryOptions({
       ...(itemName !== '' && { search: { name: [itemName] } }),
       filters: { gameserverId: [gameServerId] },
     })

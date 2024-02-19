@@ -30,7 +30,7 @@ const defaultRoleErrorMessages: Partial<ErrorMessageMapping> = {
   UniqueConstraintError: 'Role with this name already exists',
 };
 
-export const roleOptions = (roleId: string) =>
+export const roleQueryOptions = (roleId: string) =>
   queryOptions<RoleOutputDTO, AxiosError<RoleOutputDTOAPI>>({
     queryKey: roleKeys.detail(roleId),
     queryFn: async () => (await getApiClient().role.roleControllerGetOne(roleId)).data.data,
@@ -52,7 +52,7 @@ export const rolesInfiniteQueryOptions = (opts: RoleSearchInputDTO = {}) => {
   });
 };
 
-export const permissionsOptions = () =>
+export const permissionsQueryOptions = () =>
   queryOptions<PermissionOutputDTO[], AxiosError<PermissionOutputDTOAPI>>({
     queryKey: roleKeys.permissions(),
     queryFn: async () => (await getApiClient().role.roleControllerGetPermissions()).data.data,

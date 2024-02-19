@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { SandpackProvider, SandpackFiles } from '@codesandbox/sandpack-react';
 import { CommandOutputDTO, CronJobOutputDTO, HookOutputDTO } from '@takaro/apiclient';
 import { FunctionType, ModuleContext, ModuleData, ModuleItemProperties } from 'hooks/useModule';
-import { moduleOptions } from 'queries/modules';
+import { moduleQueryOptions } from 'queries/modules';
 import { styled, Skeleton } from '@takaro/lib-components';
 import { ModuleOnboarding } from 'views/ModuleOnboarding';
 import { ErrorBoundary } from 'components/ErrorBoundary';
@@ -44,7 +44,7 @@ export const Route = createFileRoute('/studio/$moduleId')({
       throw redirect({ to: '/forbidden' });
     }
   },
-  loader: ({ params, context }) => context.queryClient.ensureQueryData(moduleOptions(params.moduleId)),
+  loader: ({ params, context }) => context.queryClient.ensureQueryData(moduleQueryOptions(params.moduleId)),
   component: Component,
   pendingComponent: () => {
     return (

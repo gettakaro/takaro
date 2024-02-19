@@ -59,7 +59,7 @@ export const gameServersInfiniteQueryOptions = (queryParams: GameServerSearchInp
   });
 };
 
-export const gameServerOptions = (gameServerId: string) => {
+export const gameServerQueryOptions = (gameServerId: string) => {
   return queryOptions<GameServerOutputDTO, AxiosError<GameServerOutputDTOAPI>>({
     queryKey: gameServerKeys.detail(gameServerId),
     queryFn: async () => (await getApiClient().gameserver.gameServerControllerGetOne(gameServerId)).data.data,

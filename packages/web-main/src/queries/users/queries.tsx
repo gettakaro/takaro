@@ -22,13 +22,13 @@ interface RoleInput {
   roleId: string;
 }
 
-export const usersOptions = (queryParams: UserSearchInputDTO) =>
+export const usersQueryOptions = (queryParams: UserSearchInputDTO) =>
   queryOptions<UserOutputArrayDTOAPI, AxiosError<UserOutputArrayDTOAPI>>({
     queryKey: [...userKeys.list(), ...queryParamsToArray(queryParams)],
     queryFn: async () => (await getApiClient().user.userControllerSearch(queryParams)).data,
   });
 
-export const userOptions = (userId: string) =>
+export const userQueryOptions = (userId: string) =>
   queryOptions<UserOutputWithRolesDTO, AxiosError<UserOutputWithRolesDTO>>({
     queryKey: userKeys.detail(userId),
     queryFn: async () => (await getApiClient().user.userControllerGetOne(userId)).data.data,

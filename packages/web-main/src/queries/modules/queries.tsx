@@ -75,7 +75,7 @@ const defaultFunctionErrorMessages: Partial<ErrorMessageMapping> = {
   UniqueConstraintError: 'Function with this name already exists',
 };
 
-export const modulesOptions = (queryParams: ModuleSearchInputDTO = {}) =>
+export const modulesQueryOptions = (queryParams: ModuleSearchInputDTO = {}) =>
   queryOptions<ModuleOutputArrayDTOAPI, AxiosError<ModuleOutputArrayDTOAPI>>({
     queryKey: [...moduleKeys.list(), ...queryParamsToArray(queryParams)],
     queryFn: async () => (await getApiClient().module.moduleControllerSearch(queryParams)).data,
@@ -89,7 +89,7 @@ export const modulesInfiniteQueryOptions = (queryParams: ModuleSearchInputDTO = 
     getNextPageParam: (lastPage) => hasNextPage(lastPage.meta),
   });
 
-export const moduleOptions = (moduleId: string) =>
+export const moduleQueryOptions = (moduleId: string) =>
   queryOptions<ModuleOutputDTO, AxiosError<ModuleOutputDTOAPI>>({
     queryKey: moduleKeys.detail(moduleId),
     queryFn: async () => (await getApiClient().module.moduleControllerGetOne(moduleId)).data.data,
@@ -157,7 +157,7 @@ export const useModuleUpdate = () => {
 // ==================================
 //              hooks
 // ==================================
-export const hookOptions = (hookId: string) =>
+export const hookQueryOptions = (hookId: string) =>
   queryOptions<HookOutputDTO, AxiosError<HookOutputDTOAPI>>({
     queryKey: moduleKeys.hooks.detail(hookId),
     queryFn: async () => (await getApiClient().hook.hookControllerGetOne(hookId)).data.data,
@@ -251,7 +251,7 @@ export const useHookUpdate = () => {
 //              commands
 // ==================================
 
-export const commandOptions = (commandId: string) =>
+export const commandQueryOptions = (commandId: string) =>
   queryOptions<CommandOutputDTO, AxiosError<CommandOutputDTOAPI>>({
     queryKey: moduleKeys.commands.detail(commandId),
     queryFn: async () => (await getApiClient().command.commandControllerGetOne(commandId)).data.data,
@@ -348,7 +348,7 @@ export const useCommandRemove = ({ moduleId }) => {
 // ==================================
 //              cronjobs
 // ==================================
-export const cronjobOptions = (cronjobId: string) =>
+export const cronjobQueryOptions = (cronjobId: string) =>
   queryOptions<CronJobOutputDTO, AxiosError<CronJobOutputDTOAPI>>({
     queryKey: moduleKeys.cronJobs.detail(cronjobId),
     queryFn: async () => (await getApiClient().cronjob.cronJobControllerGetOne(cronjobId)).data.data,
@@ -454,7 +454,7 @@ export const useCronJobRemove = ({ moduleId }: { moduleId: string }) => {
 // Otherwise cache will not be updated properly.
 // ==================================
 
-export const functionOptions = (functionId: string) =>
+export const functionQueryOptions = (functionId: string) =>
   queryOptions<FunctionOutputDTO, AxiosError<FunctionOutputDTOAPI>>({
     queryKey: moduleKeys.functions.detail(functionId),
     queryFn: async () => (await getApiClient().function.functionControllerGetOne(functionId)).data.data,

@@ -20,8 +20,8 @@ import {
 
 import { ArgumentCard, ArgumentList, Column, ContentContainer, Fields, Flex } from './style';
 import { ModuleItemProperties } from 'hooks/useModule';
-import { globalGameServerSetingOptions } from 'queries/settings';
-import { commandOptions, useCommandUpdate } from 'queries/modules';
+import { globalGameServerSetingQueryOptions } from 'queries/settings';
+import { commandQueryOptions, useCommandUpdate } from 'queries/modules';
 import { FC } from 'react';
 import { useForm, useFieldArray, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
@@ -30,12 +30,12 @@ import { ConfigLoading } from './ConfigLoading';
 import { useQuery } from '@tanstack/react-query';
 
 const validationSchema = z.object({
-  trigger: z.string().nonempty(),
+  trigger: z.string().min(1, { message: 'Trigger is required' }),
   helpText: z.string(),
   arguments: z.array(
     z.object({
-      commandId: z.string().nonempty(),
-      name: z.string().nonempty(),
+      commandId: z.string().min(1, { message: 'Command ID is required' }),
+      name: z.string().min(1, { message: 'Name is required' }),
       type: z.enum(['string', 'number', 'boolean', 'player'], {
         errorMap: () => {
           return {
@@ -43,7 +43,7 @@ const validationSchema = z.object({
           };
         },
       }),
-      helpText: z.string().nonempty(),
+      helpText: z.string().min(1, { message: 'Help text is required' }),
       defaultValue: z.string().nullable(),
       position: z.number().nonnegative(),
     })
@@ -75,8 +75,8 @@ interface CommandConfigProps {
 }
 
 export const CommandConfig: FC<CommandConfigProps> = ({ moduleItem, readOnly }) => {
-  const { data: command, isPending: isLoadingCommand, isError } = useQuery(commandOptions(moduleItem.itemId));
-  const { data: settings, isPending: isLoadingSetting } = useQuery(globalGameServerSetingOptions('commandPrefix'));
+  const { data: command, isPending: isLoadingCommand, isError } = useQuery(commandQueryOptions(moduleItem.itemId));
+  const { data: settings, isPending: isLoadingSetting } = useQuery(globalGameServerSetingQueryOptions('commandPrefix'));
 
   if (isLoadingCommand || isLoadingSetting) {
     return <ConfigLoading />;

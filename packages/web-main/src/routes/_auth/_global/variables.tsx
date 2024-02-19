@@ -2,7 +2,7 @@ import { FC, Fragment, useMemo, useState } from 'react';
 import { Table, useTableActions, IconButton, Dropdown, Button, Divider, DateFormatter } from '@takaro/lib-components';
 import { VariableOutputDTO, VariableSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
-import { variablesOptions } from 'queries/variables';
+import { variablesQueryOptions } from 'queries/variables';
 import { AiOutlineEdit as EditIcon, AiOutlineDelete as DeleteIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { VariableValueDetail } from './-variables/VariableValueDetail';
@@ -20,7 +20,7 @@ export const Route = createFileRoute('/_auth/_global/variables')({
   },
   loader: ({ context }) =>
     context.queryClient.ensureQueryData(
-      variablesOptions({
+      variablesQueryOptions({
         page: 0,
         extend: ['module', 'player', 'gameServer'],
       })
@@ -36,7 +36,7 @@ function Component() {
   const [openVariablesDialog, setOpenVariablesDialog] = useState<boolean>(false);
 
   const { data, isLoading } = useSuspenseQuery({
-    ...variablesOptions({
+    ...variablesQueryOptions({
       page: pagination.paginationState.pageIndex,
       limit: pagination.paginationState.pageSize,
       sortBy: sorting.sortingState[0]?.id,

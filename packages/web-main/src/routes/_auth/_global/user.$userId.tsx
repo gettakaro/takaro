@@ -1,6 +1,6 @@
 import { UserAssignmentOutputDTO, UserOutputWithRolesDTO } from '@takaro/apiclient';
 import { Button, Divider, Dropdown, IconButton, Skeleton, Table, useTableActions } from '@takaro/lib-components';
-import { useUserRemoveRole, userOptions } from 'queries/users';
+import { useUserRemoveRole, userQueryOptions } from 'queries/users';
 import { createColumnHelper } from '@tanstack/react-table';
 import { FC } from 'react';
 import { Outlet, redirect, useNavigate } from '@tanstack/react-router';
@@ -16,7 +16,7 @@ export const Route = createFileRoute('/_auth/_global/user/$userId')({
       throw redirect({ to: '/forbidden' });
     }
   },
-  loader: ({ params, context }) => context.queryClient.ensureQueryData(userOptions(params.userId)),
+  loader: ({ params, context }) => context.queryClient.ensureQueryData(userQueryOptions(params.userId)),
   component: Component,
   pendingComponent: () => <Skeleton variant="rectangular" height="100%" width="100%" />,
 });
@@ -25,7 +25,7 @@ function Component() {
   const loaderData = Route.useLoaderData();
   const { userId } = Route.useParams();
   const { data: user } = useSuspenseQuery({
-    ...userOptions(userId),
+    ...userQueryOptions(userId),
     initialData: loaderData,
   });
 

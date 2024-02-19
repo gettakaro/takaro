@@ -18,7 +18,7 @@ export const settingKeys = {
   detail: (key: string, gameServerId: string) => [...settingKeys.all, 'detail', key, gameServerId] as const,
 };
 
-export const globalGameServerSettingsOptions = (keys?: SettingsOutputDTOKeyEnum[]) => {
+export const globalGameServerSettingsQueryOptions = (keys?: SettingsOutputDTOKeyEnum[]) => {
   const apiClient = getApiClient();
   return queryOptions<SettingsOutputDTO[], AxiosError<SettingsOutputDTOAPI>>({
     queryKey: settingKeys.list(),
@@ -26,7 +26,7 @@ export const globalGameServerSettingsOptions = (keys?: SettingsOutputDTOKeyEnum[
   });
 };
 
-export const gameServerSettingsOptions = (gameServerId: string, keys?: SettingsOutputDTOKeyEnum[]) => {
+export const gameServerSettingsQueryOptions = (gameServerId: string, keys?: SettingsOutputDTOKeyEnum[]) => {
   const apiClient = getApiClient();
 
   return queryOptions<SettingsOutputDTO[], AxiosError<SettingsOutputDTOAPI>>({
@@ -35,7 +35,7 @@ export const gameServerSettingsOptions = (gameServerId: string, keys?: SettingsO
   });
 };
 
-export const globalGameServerSetingOptions = (key: SettingsOutputDTOKeyEnum) => {
+export const globalGameServerSetingQueryOptions = (key: SettingsOutputDTOKeyEnum) => {
   const apiClient = getApiClient();
   return queryOptions<SettingsOutputDTO, AxiosError<SettingsOutputDTOAPI>>({
     queryKey: settingKeys.globalDetail(key),
@@ -43,7 +43,7 @@ export const globalGameServerSetingOptions = (key: SettingsOutputDTOKeyEnum) => 
   });
 };
 
-export const gameServerSettingOptions = (key: SettingsOutputDTOKeyEnum, gameServerId: string) => {
+export const gameServerSettingQueryOptions = (key: SettingsOutputDTOKeyEnum, gameServerId: string) => {
   const apiClient = getApiClient();
   return queryOptions<SettingsOutputDTO, AxiosError<SettingsOutputDTOAPI>>({
     queryKey: settingKeys.detail(key, gameServerId),

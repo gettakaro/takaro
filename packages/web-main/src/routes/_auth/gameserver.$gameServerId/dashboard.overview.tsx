@@ -1,5 +1,5 @@
 import { Card, styled, useTheme } from '@takaro/lib-components';
-import { gameServerOptions } from 'queries/gameservers';
+import { gameServerQueryOptions } from 'queries/gameservers';
 import { useGameServerDocumentTitle } from 'hooks/useDocumentTitle';
 import { OnlinePlayersCard } from './-cards/OnlinePlayers';
 import { ChatMessagesCard } from './-cards/ChatMessages';
@@ -9,7 +9,7 @@ import { EventOutputDTOEventNameEnum as EventName } from '@takaro/apiclient';
 import { createFileRoute } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/dashboard/overview')({
-  loader: ({ params, context }) => context.queryClient.ensureQueryData(gameServerOptions(params.gameServerId)),
+  loader: ({ params, context }) => context.queryClient.ensureQueryData(gameServerQueryOptions(params.gameServerId)),
   component: Component,
   pendingComponent: () => {},
 });

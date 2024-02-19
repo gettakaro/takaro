@@ -18,13 +18,13 @@ export const itemKeys = {
   detail: (id: string) => [...itemKeys.all, id] as const,
 };
 
-export const itemsOptions = (queryParams: ItemSearchInputDTO) =>
+export const itemsQueryOptions = (queryParams: ItemSearchInputDTO) =>
   queryOptions<ItemOutputArrayDTOAPI, AxiosError<ItemOutputArrayDTOAPI>>({
     queryKey: [...itemKeys.list(), { ...queryParams }],
     queryFn: async () => (await getApiClient().item.itemControllerSearch(queryParams)).data,
   });
 
-export const itemOptions = (itemId: string) =>
+export const itemQueryOptions = (itemId: string) =>
   queryOptions<ItemsOutputDTO, AxiosError<ItemOutputArrayDTOAPI>>({
     queryKey: itemKeys.detail(itemId),
     queryFn: async () => (await getApiClient().item.itemControllerFindOne(itemId)).data.data,

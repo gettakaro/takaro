@@ -1,7 +1,7 @@
 import { SelectField, styled } from '@takaro/lib-components';
 import { FC } from 'react';
 import { CustomSelectProps } from '.';
-import { modulesOptions } from 'queries/modules';
+import { modulesQueryOptions } from 'queries/modules';
 import { ModuleOutputDTO } from '@takaro/apiclient';
 import { useQuery } from '@tanstack/react-query';
 
@@ -29,7 +29,7 @@ export const ModuleSelect: FC<CustomSelectProps> = ({
   required,
   label = 'Module',
 }) => {
-  const { data, isLoading: isLoadingData } = useQuery(modulesOptions());
+  const { data, isLoading: isLoadingData } = useQuery(modulesQueryOptions());
 
   if (isLoadingData) {
     // TODO: better loading state

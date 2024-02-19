@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { SubmitHandler } from 'react-hook-form';
 import { DrawerSkeleton } from '@takaro/lib-components';
-import { permissionsOptions, useRoleCreate } from 'queries/roles';
+import { permissionsQueryOptions, useRoleCreate } from 'queries/roles';
 import { RoleForm, IFormInputs } from './-roles/RoleCreateUpdateForm';
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
@@ -12,7 +12,7 @@ export const Route = createFileRoute('/_auth/_global/roles/create')({
       throw redirect({ to: '/forbidden' });
     }
   },
-  loader: ({ context }) => context.queryClient.ensureQueryData(permissionsOptions()),
+  loader: ({ context }) => context.queryClient.ensureQueryData(permissionsQueryOptions()),
   component: Component,
   pendingComponent: DrawerSkeleton,
 });

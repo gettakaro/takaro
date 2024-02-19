@@ -1,8 +1,8 @@
 import { booleanFields } from '../_global/settings/gameservers';
 import {
   useDeleteGameServerSetting,
-  gameServerSettingsOptions,
-  globalGameServerSettingsOptions,
+  gameServerSettingsQueryOptions,
+  globalGameServerSettingsQueryOptions,
   useSetGameServerSetting,
 } from 'queries/settings';
 import { ReactElement, useMemo } from 'react';
@@ -22,8 +22,8 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/settings')
   },
   loader: async ({ params, context }) => {
     const [gameServerSettings, globalGameServerSettings] = await Promise.all([
-      context.queryClient.ensureQueryData(gameServerSettingsOptions(params.gameServerId)),
-      context.queryClient.ensureQueryData(globalGameServerSettingsOptions()),
+      context.queryClient.ensureQueryData(gameServerSettingsQueryOptions(params.gameServerId)),
+      context.queryClient.ensureQueryData(globalGameServerSettingsQueryOptions()),
     ]);
     return { gameServerSettings, globalGameServerSettings };
   },
@@ -82,8 +82,8 @@ function Component() {
 
   const [{ data: gameServerSettings }, { data: globalGameServerSettings }] = useSuspenseQueries({
     queries: [
-      { ...gameServerSettingsOptions(gameServerId), initialData: loaderData.gameServerSettings },
-      { ...globalGameServerSettingsOptions(), initialData: loaderData.globalGameServerSettings },
+      { ...gameServerSettingsQueryOptions(gameServerId), initialData: loaderData.gameServerSettings },
+      { ...globalGameServerSettingsQueryOptions(), initialData: loaderData.globalGameServerSettings },
     ],
   });
 

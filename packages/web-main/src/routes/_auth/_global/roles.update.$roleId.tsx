@@ -1,5 +1,5 @@
 import { DrawerSkeleton } from '@takaro/lib-components';
-import { useRoleUpdate, roleOptions, permissionsOptions } from 'queries/roles/queries';
+import { useRoleUpdate, roleQueryOptions, permissionsQueryOptions } from 'queries/roles/queries';
 import { SubmitHandler } from 'react-hook-form';
 import { RoleForm, IFormInputs } from './-roles/RoleCreateUpdateForm';
 import { createFileRoute, redirect } from '@tanstack/react-router';
@@ -12,8 +12,8 @@ export const Route = createFileRoute('/_auth/_global/roles/update/$roleId')({
     }
   },
   loader: async ({ params, context }) => {
-    const p1 = context.queryClient.ensureQueryData(roleOptions(params.roleId));
-    const p2 = context.queryClient.ensureQueryData(permissionsOptions());
+    const p1 = context.queryClient.ensureQueryData(roleQueryOptions(params.roleId));
+    const p2 = context.queryClient.ensureQueryData(permissionsQueryOptions());
     const [role, permissions] = await Promise.all([p1, p2]);
     return { role, permissions };
   },

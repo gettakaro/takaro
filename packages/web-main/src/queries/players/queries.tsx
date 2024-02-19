@@ -24,13 +24,13 @@ export const playersOptions = (queryParams: PlayerSearchInputDTO = {}) =>
     queryFn: async () => (await getApiClient().player.playerControllerSearch(queryParams)).data,
   });
 
-export const playerOptions = (playerId: string) =>
+export const playerQueryOptions = (playerId: string) =>
   queryOptions<PlayerOutputWithRolesDTO, AxiosError<PlayerOutputWithRolesDTO>>({
     queryKey: playerKeys.detail(playerId),
     queryFn: async () => (await getApiClient().player.playerControllerGetOne(playerId)).data.data,
   });
 
-export const playerOnGameServersOptions = (queryParams: PlayerOnGameServerSearchInputDTO) =>
+export const playerOnGameServersQueryOptions = (queryParams: PlayerOnGameServerSearchInputDTO) =>
   queryOptions<PlayerOnGameserverOutputArrayDTOAPI, AxiosError<PlayerOnGameserverOutputArrayDTOAPI>>({
     queryKey: [...playerKeys.pogsList(), { queryParams }],
     queryFn: async () => (await getApiClient().playerOnGameserver.playerOnGameServerControllerSearch(queryParams)).data,

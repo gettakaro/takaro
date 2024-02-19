@@ -4,7 +4,7 @@ import {
   EventSearchInputDTOSortDirectionEnum,
 } from '@takaro/apiclient';
 import { useSocket } from 'hooks/useSocket';
-import { eventsOptions } from 'queries/events';
+import { eventsQueryOptions } from 'queries/events';
 import { getApiClient } from 'util/getApiClient';
 import { EventOutputDTOEventNameEnum as EventName } from '@takaro/apiclient';
 import { FC, useEffect } from 'react';
@@ -22,7 +22,7 @@ export const ChatMessagesCard: FC = () => {
   const { socket } = useSocket();
 
   const { data, isLoading, refetch } = useQuery(
-    eventsOptions({
+    eventsQueryOptions({
       filters: {
         gameserverId: [gameServerId],
         eventName: [

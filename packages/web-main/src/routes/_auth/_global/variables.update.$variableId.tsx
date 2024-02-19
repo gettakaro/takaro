@@ -1,7 +1,7 @@
 import { DrawerSkeleton } from '@takaro/lib-components';
 import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
 import { useNavigate } from '@tanstack/react-router';
-import { useVariableUpdate, variableOptions } from 'queries/variables/queries';
+import { useVariableUpdate, variableQueryOptions } from 'queries/variables/queries';
 import { VariablesForm, ExecutionType, IFormInputs } from './-variables/VariableCreateUpdateForm';
 import { useSnackbar } from 'notistack';
 import { queryClient } from 'queryClient';
@@ -13,7 +13,7 @@ export const Route = createFileRoute('/_auth/_global/variables/update/$variableI
       throw redirect({ to: '/forbidden' });
     }
   },
-  loader: ({ params }) => queryClient.ensureQueryData(variableOptions(params.variableId)),
+  loader: ({ params }) => queryClient.ensureQueryData(variableQueryOptions(params.variableId)),
   component: Component,
   pendingComponent: DrawerSkeleton,
 });
