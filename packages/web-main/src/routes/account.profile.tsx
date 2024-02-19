@@ -60,7 +60,7 @@ function Component() {
       .createBrowserSettingsFlow()
       .then(({ data: flow }) => {
         // Update URI query params to include flow id
-        navigate({ search: { flowId: flow.id } });
+        navigate({ search: { flowId: flow.id }, replace: true });
         // Set the flow data
         setFlow(flow);
       })
