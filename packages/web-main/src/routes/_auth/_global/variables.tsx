@@ -8,11 +8,23 @@ import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { VariableValueDetail } from './-variables/VariableValueDetail';
 import { VariableDeleteDialog } from './-variables/VariableDeleteDialog';
 import { VariablesDeleteDialog } from './-variables/VariablesDeleteDialog';
-import { Outlet, createFileRoute, useNavigate } from '@tanstack/react-router';
+import { Outlet, createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import { useSuspenseQuery } from '@tanstack/react-query';
+import { hasPermission } from 'hooks/useHasPermission';
 
 export const Route = createFileRoute('/_auth/_global/variables')({
-  loader: ({ context }) => context.queryClient.ensureQueryData(variablesOptions({ page: 0 })),
+  beforeLoad: ({ context }) => {
+    if (!hasPermission(context.auth.session, ['READ_VARIABLES'])) {
+      throw redirect({ to: '/forbidden' });
+    }
+  },
+  loader: ({ context }) =>
+    context.queryClient.ensureQueryData(
+      variablesOptions({
+        page: 0,
+        extend: ['module', 'player', 'gameServer'],
+      })
+    ),
   component: Component,
 });
 

@@ -2,17 +2,20 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { RecoveryFlow, UpdateRecoveryFlowBody } from '@ory/client';
 import { styled, Company, Skeleton } from '@takaro/lib-components';
-import { UserAuthCard } from '@ory/elements';
+import { RecoverySectionAdditionalProps, UserAuthCard } from '@ory/elements';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { createFileRoute } from '@tanstack/react-router';
 import { z } from 'zod';
 import { useOry } from 'hooks/useOry';
+import { AxiosError } from 'axios';
+import { useSnackbar } from 'notistack';
+import { flushSync } from 'react-dom';
 
 const searchSchema = z.object({
   flowId: z.string().catch(''),
 });
 
-export const Route = createFileRoute('/_auth/_global/auth/recovery')({
+export const Route = createFileRoute('/account/recovery')({
   component: Component,
   validateSearch: (search) => searchSchema.parse(search),
 });
@@ -38,10 +41,10 @@ const StyledUserCard = styled(UserAuthCard)`
 
 function Component() {
   useDocumentTitle('Recovery');
-  const [flow, setFlow] = useState<RecoveryFlow | null>(null);
+  const [flow, setFlow] = useState<RecoveryFlow>();
   const { flowId } = Route.useSearch();
   const { oryClient, oryError } = useOry();
-
+  const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate({ from: Route.fullPath });
 
   const getFlow = useCallback(
@@ -62,37 +65,38 @@ function Component() {
       .createBrowserRecoveryFlow()
       // flow contains the form fields, error messages and csrf token
       .then(({ data: flow }) => {
+        // Set the flow data
+
+        flushSync(() => {
+          setFlow(flow);
+        });
+
         // Update URI query params to include flow id
         navigate({ search: { flowId: flow.id } });
-        // Set the flow data
-        setFlow(flow);
       })
       .catch(sdkErrorHandler);
   };
 
-  const submitFlow = (body: UpdateRecoveryFlowBody) => {
-    // something unexpected went wrong and the flow was not set
+  const submitFlow = async (body: UpdateRecoveryFlowBody) => {
     if (!flow) {
+      enqueueSnackbar('Something went wrong, please try again', { type: 'error' });
       return navigate({ to: '/login', replace: true });
     }
 
-    oryClient
-      .updateRecoveryFlow({ flow: flow.id, updateRecoveryFlowBody: body })
-      .then(({ data: flow }) => {
-        // Form submission was successful, show the message to the user!
-        setFlow(flow);
-      })
-      .catch(sdkErrorHandler);
+    try {
+      const { data } = await oryClient.updateRecoveryFlow({ flow: flow.id, updateRecoveryFlowBody: body });
+      setFlow(data);
+    } catch (e) {
+      sdkErrorHandler(e as AxiosError);
+    }
   };
 
   useEffect(() => {
-    // the flow already exists
     if (flowId) {
-      getFlow(flowId).catch(createFlow); // if for some reason the flow has expired, we need to get a new one
-      return;
+      getFlow(flowId).catch(createFlow);
+    } else {
+      createFlow();
     }
-    // we assume there was no flow, so we create a new one
-    createFlow();
   }, []);
 
   if (!flow) return <Skeleton variant="rectangular" width="100%" height="100%" />;
@@ -101,20 +105,18 @@ function Component() {
     <>
       <Container>
         <Company size="huge" />
-
         <StyledUserCard
           title="Recovery"
           flowType={'recovery'}
-          // the flow is always required since it contains the UI form elements, UI error messages and csrf token
           flow={flow}
-          // the recovery form should allow users to navigate to the login page
-          additionalProps={{
-            loginURL: {
-              handler: () => navigate({ to: '/login', replace: true }),
-              href: '/login',
-            },
-          }}
-          // submit the form data to Ory
+          additionalProps={
+            {
+              loginURL: {
+                handler: () => navigate({ to: '/login', replace: true }),
+                href: '/login',
+              },
+            } as RecoverySectionAdditionalProps
+          }
           onSubmit={({ body }) => submitFlow(body as UpdateRecoveryFlowBody)}
         />
       </Container>

@@ -34,7 +34,7 @@ const domainLinks: NavbarLink[] = [
     icon: <DashboardIcon />,
   },
   {
-    label: 'Servers',
+    label: 'Game servers',
     linkProps: {
       to: '/gameservers',
     },

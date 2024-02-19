@@ -13,6 +13,9 @@ This however, introduces a challenge: transitioning between queries triggers loa
 
 To address this, `placeholderData` can be used. `placeholderData` has a broader use case, as it can also be used to show initial data. To keep the previous data, react-query has a helper function called `keepPreviousData` which retains data from the previous request and displays it to the user while the new request is being processed. The `queryResult` has a property `isPreviousData` which can be used to e.g. temporary style the data differently (e.g. muted color)
 
+- **mutate() vs mutateAsync()**: mutate doesn't return anything, while `mutateAsync()` returns a Promise containing the result of the mutation. Most of the time you'll want `mutate()`. The only situation where `mutateAsync()` is superior is when
+you really need the Promise e.g. When you fire off multiple mutations concurrently and want to wait for them all to be finished. 
+
 #### Tanstack-Router
 
 

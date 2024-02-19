@@ -23,7 +23,7 @@ interface IPlayerRolesTableProps {
 
 export const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId, playerName }) => {
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<PlayerRoleAssignmentOutputDTO>();
-  const { mutate } = usePlayerRoleUnassign();
+  const { mutate } = usePlayerRoleUnassign({ playerId });
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [deletingInfo, setDeletingInfo] = useState<CellContext<PlayerRoleAssignmentOutputDTO, unknown> | null>(null);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);

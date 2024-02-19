@@ -1,24 +1,23 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { Section } from './-style';
-import { PlayerInventoryTable } from './-PlayerInventoryTable';
-import { PlayerOnGameserverOutputDTO } from '@takaro/apiclient';
+// import { PlayerInventoryTable } from './-PlayerInventoryTable';
+// import { PlayerOnGameserverOutputDTO } from '@takaro/apiclient';
+import { playerOptions } from 'queries/players';
 
 export const Route = createFileRoute('/_auth/_global/player/$playerId/inventory')({
   component: Component,
+  loader: async ({ context, params }) => context.queryClient.ensureQueryData(playerOptions(params.playerId)),
 });
 
 function Component() {
   // TODO: should get pog here somehow
   // const { pog } = useOutletContext<{ pog: PlayerOnGameserverOutputDTO }>();
-  const pog = {} as PlayerOnGameserverOutputDTO;
-
-  if (!pog) {
-    return null;
-  }
+  //const pog = {} as PlayerOnGameserverOutputDTO;
 
   return (
     <Section style={{ minHeight: '250px' }}>
-      <PlayerInventoryTable pog={pog} />
+      Temporarily disabled
+      {/*<PlayerInventoryTable pog={pog} /> */}
     </Section>
   );
 }

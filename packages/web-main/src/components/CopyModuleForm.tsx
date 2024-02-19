@@ -84,7 +84,7 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ moduleId, onSuccess })
               })
             )
           ),
-          Promise.all(
+          await Promise.all(
             mod.commands.map((command) =>
               createCommand({
                 moduleId: createdModule.id,
@@ -101,7 +101,7 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ moduleId, onSuccess })
               })
             )
           ),
-          Promise.all(
+          await Promise.all(
             mod.cronJobs.map((cronJob) =>
               createCronJob({
                 moduleId: createdModule.id,
@@ -112,6 +112,7 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ moduleId, onSuccess })
             )
           ),
         ]);
+
         onSuccess && onSuccess(createdModule.id);
       }
     } catch (error) {

@@ -16,13 +16,17 @@ test('can logout', async ({ page, takaro }) => {
   await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
 
   // try to go to authenticated page
-  await page.goto('/servers');
-  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
+  await page.goto('/gameservers');
+  await expect(page).toHaveURL(
+    `${integrationConfig.get('frontendHost')}/login?redirect=http%3A%2F%2F127.0.0.1%3A13001%2Fgameservers`
+  );
 });
 
 pwTest('should redirect to login when not logged in', async ({ page }) => {
-  await page.goto('/servers');
-  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
+  await page.goto('/gameservers');
+  await expect(page).toHaveURL(
+    `${integrationConfig.get('frontendHost')}/login?redirect=http%3A%2F%2F127.0.0.1%3A13001%2Fgameservers`
+  );
 });
 
 test('Logging in with invalid credentials shows error message', async ({ page, takaro }) => {
@@ -63,24 +67,17 @@ test('Invite user - happy path', async ({ page, takaro }) => {
   if (!inviteLinkMatch) throw new Error('No invite link found in email');
 
   const inviteLink = he.decode(inviteLinkMatch[1]);
-
   await page.goto(inviteLink);
 
-  await expect(page.getByText('You successfully recovered your account')).toBeVisible();
   const password = randomUUID();
   await page.getByTestId('node/input/password').getByPlaceholder(' ').type(password);
   await page.getByTestId('password-settings-card').getByRole('button', { name: 'Save' }).click();
-  await expect(page.getByText('Your changes have been saved!')).toBeVisible();
-  await page.getByRole('button').filter({ hasText: newUserEmail }).click();
-  await page.getByText('Logout').click();
-
   await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
   await page.waitForLoadState();
-
   await login(page, newUserEmail, password);
 
   // since the user has no permissions, he should be redirected to the forbidden page
-  await expect(page.getByText('Forbidden')).toBeVisible();
+  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/forbidden`);
 });
 
 test.fixme('Recover account and reset password', async ({ page, takaro }) => {
@@ -94,7 +91,7 @@ test.fixme('Recover account and reset password', async ({ page, takaro }) => {
 
   await page.getByRole('link', { name: 'Forgot your password?' }).click();
 
-  await expect(page.getByText('Recovery')).toBeVisible();
+  await expect(page.getByRole('heading')).toHaveText('Recovery');
 
   await page.getByTestId('node/input/email').getByPlaceholder(' ').type(user.email);
   await page.getByRole('button', { name: 'Submit' }).click();

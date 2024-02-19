@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { Button, TextField, styled, errors, Company, FormError } from '@takaro/lib-components';
 import { AiFillMail as Mail } from 'react-icons/ai';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { Link, createFileRoute, useNavigate, useRouter } from '@tanstack/react-router';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { LoginFlow } from '@ory/client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -20,6 +20,7 @@ export const Route = createFileRoute('/login')({
   component: Component,
 });
 
+/*
 const StyledLink = styled(Link)`
   width: 100%;
   display: block;
@@ -31,6 +32,7 @@ const StyledLink = styled(Link)`
     text-decoration: underline;
   }
 `;
+*/
 
 const Container = styled.div`
   display: flex;
@@ -62,7 +64,6 @@ function Component() {
   const [csrfToken, setCsrfToken] = useState<string>();
   const [error, setError] = useState<string>();
   const { oryClient } = useOry();
-  const router = useRouter();
   const apiClient = getApiClient();
   const search = Route.useSearch();
   const { setSession, session } = useAuth();
@@ -71,8 +72,8 @@ function Component() {
   const validationSchema = useMemo(
     () =>
       z.object({
-        email: z.string().email('This is not a valid email address.').nonempty('Email is a required field.'),
-        password: z.string().nonempty('Password is a required field'),
+        email: z.string().email('This is not a valid email address.').min(1, { message: 'Email is a required field.' }),
+        password: z.string().min(1, { message: 'Password is a required field' }),
       }),
     []
   );
@@ -94,8 +95,6 @@ function Component() {
         method: 'password',
       },
     });
-
-    localStorage.removeItem('selectedGameServerId');
     const res = await apiClient.user.userControllerMe({
       headers: {
         'Cache-Control': 'no-cache',
@@ -104,7 +103,6 @@ function Component() {
     flushSync(() => {
       setSession(res.data.data);
     });
-    navigate({ to: search.redirect });
   }
 
   useEffect(() => {
@@ -159,9 +157,11 @@ function Component() {
     }
   };
 
-  // we successfully logged in, redirect to dashboard
+  // session == successfully logged in
   if (session) {
-    router.navigate({ to: '/dashboard' });
+    console.log('fired');
+    // redirect is always defined
+    navigate({ to: search.redirect });
   }
 
   return (
@@ -189,7 +189,7 @@ function Component() {
         <form onSubmit={handleSubmit(onSubmit)}>
           <TextField control={control} label="Email" loading={loading} name="email" placeholder="hi cutie" required />
           <TextField control={control} label="Password" loading={loading} name="password" required type="password" />
-          <StyledLink to="/auth/recovery">Forgot your password?</StyledLink>
+          {/* <StyledLink to="/account/recovery">Forgot your password?</StyledLink> */}
           {error && <FormError error={error} />}
           <Button
             icon={<Mail />}

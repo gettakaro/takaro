@@ -8,6 +8,7 @@ import { DateTime } from 'luxon';
 import { AiOutlineDelete as DeleteIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
 import { createFileRoute } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
+import { useSuspenseQuery } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/_global/user/$userId')({
   beforeLoad: ({ context }) => {
@@ -21,7 +22,13 @@ export const Route = createFileRoute('/_auth/_global/user/$userId')({
 });
 
 function Component() {
-  const user = Route.useLoaderData();
+  const loaderData = Route.useLoaderData();
+  const { userId } = Route.useParams();
+  const { data: user } = useSuspenseQuery({
+    ...userOptions(userId),
+    initialData: loaderData,
+  });
+
   return <UserProfilePage user={user} />;
 }
 
@@ -49,13 +56,6 @@ const UserProfilePage: FC<UserProfileProps> = ({ user }) => {
   );
 };
 
-const AssignRole: FC<{ userId: string }> = ({ userId }) => {
-  const navigate = useNavigate();
-  return (
-    <Button onClick={() => navigate({ to: '/user/$userId/role/assign', params: { userId } })} text="Assign role" />
-  );
-};
-
 interface IUserRolesTableProps {
   roles: UserAssignmentOutputDTO[];
   userId: string;
@@ -63,7 +63,8 @@ interface IUserRolesTableProps {
 
 const UserRolesTable: FC<IUserRolesTableProps> = ({ roles, userId }) => {
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<UserAssignmentOutputDTO>();
-  const { mutate } = useUserRemoveRole();
+  const { mutate } = useUserRemoveRole({ userId });
+  const navigate = useNavigate();
 
   const columnHelper = createColumnHelper<UserAssignmentOutputDTO>();
 
@@ -125,7 +126,9 @@ const UserRolesTable: FC<IUserRolesTableProps> = ({ roles, userId }) => {
       id="userRoles"
       columns={columnDefs}
       data={roles}
-      renderToolbar={() => <AssignRole userId={userId} />}
+      renderToolbar={() => (
+        <Button onClick={() => navigate({ to: '/user/$userId/role/assign', params: { userId } })} text="Assign role" />
+      )}
       pagination={{
         paginationState: pagination.paginationState,
         setPaginationState: pagination.setPaginationState,

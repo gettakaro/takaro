@@ -72,8 +72,7 @@ test('Creating module with config, saves the config', async ({ page, takaro }) =
   await page.getByRole('button', { name: 'Save changes' }).click();
 
   await expect(page.getByText(moduleName)).toBeVisible();
-  await page.getByRole('link', { name: moduleName }).getByRole('button', { name: 'Settings' }).click();
-  await page.getByRole('menuitem', { name: 'Edit module' }).click();
+  await moduleDefinitionsPage.view(moduleName);
   await expect(page.getByText('Cool string')).toBeVisible();
 });
 
@@ -104,7 +103,7 @@ test('Can edit module', async ({ page, takaro }) => {
     name: newModuleName,
     description: 'New description',
   });
-  await expect(page.getByRole('link', { name: newModuleName })).toBeVisible();
+  await expect(page.getByTestId(newModuleName)).toBeVisible();
 });
 
 test('Can delete module', async ({ page, takaro }) => {
@@ -140,7 +139,7 @@ test('Can install module with empty config', async ({ page, takaro }) => {
   // there is only 1 server
   // TODO: change to this when double slash issue is fixed
   //await navigateTo(page, 'server-modules');
-  await page.goto(`/server/${takaro.gameServer.id}/modules`);
+  await page.goto(`/gameserver/${takaro.gameServer.id}/modules`);
   await page.getByTestId(`module-${mod.id}`).getByRole('button', { name: 'Install' }).click();
   await page.getByRole('button', { name: 'Install' }).click();
 

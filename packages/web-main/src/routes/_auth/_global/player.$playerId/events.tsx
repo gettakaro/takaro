@@ -9,9 +9,7 @@ export const Route = createFileRoute('/_auth/_global/player/$playerId/events')({
 
 function Component() {
   const { playerId } = Route.useParams();
-
   const theme = useTheme();
-
   return (
     <Section style={{ height: '100%', overflowY: 'auto', paddingRight: theme.spacing[2] }}>
       <EventFeedWidget query={{ filters: { playerId: [playerId] } }} />

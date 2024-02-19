@@ -23,11 +23,17 @@ import { useInviteUser } from 'queries/users/queries';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { useHasPermission } from 'hooks/useHasPermission';
-import { createFileRoute, useNavigate, Link } from '@tanstack/react-router';
+import { hasPermission, useHasPermission } from 'hooks/useHasPermission';
+import { createFileRoute, useNavigate, Link, redirect } from '@tanstack/react-router';
 import { useSuspenseQuery } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/_global/users')({
+  beforeLoad: ({ context }) => {
+    if (!hasPermission(context.auth.session, ['READ_USERS'])) {
+      throw redirect({ to: '/forbidden' });
+    }
+  },
+
   loader: ({ context }) => {
     return context.queryClient.ensureQueryData(usersOptions({ page: 0 }));
   },
@@ -76,7 +82,7 @@ function Component() {
       cell: (info) => {
         const user = info.row.original;
         return (
-          <Link to="/users/$userId" params={{ userId: user.id }}>
+          <Link to="/user/$userId" params={{ userId: user.id }}>
             {info.getValue()}
           </Link>
         );

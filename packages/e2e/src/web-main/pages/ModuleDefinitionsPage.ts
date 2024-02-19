@@ -23,7 +23,7 @@ export class ModuleDefinitionsPage extends BasePage {
   async open(name: string) {
     const [studioPage] = await Promise.all([
       this.page.context().waitForEvent('page'),
-      await this.page.getByRole('link', { name }).getByRole('button', { name: 'Settings' }).click(),
+      await this.openSettings(name),
       await this.page.getByRole('menuitem', { name: 'Open in studio' }).click(),
     ]);
     return studioPage;
@@ -42,7 +42,7 @@ export class ModuleDefinitionsPage extends BasePage {
     permissions?: Permission[];
     save?: boolean;
   }) {
-    await this.page.getByRole('link', { name: oldName }).getByRole('button', { name: 'Settings' }).click();
+    await this.openSettings(oldName);
     await this.page.getByRole('menuitem', { name: 'Edit module' }).click();
 
     if (name) {
@@ -65,26 +65,28 @@ export class ModuleDefinitionsPage extends BasePage {
   }
 
   async copy(name: string, copyName: string) {
-    await this.page.getByRole('link', { name: name }).getByRole('button', { name: 'Settings' }).click();
+    await this.openSettings(name);
     await this.page.getByRole('menuitem', { name: 'Copy module' }).click();
-
     await this.page.getByLabel('Module name').fill(copyName);
     await this.page.getByRole('button', { name: 'Copy module' }).click();
   }
 
   async view(name: string) {
-    await this.page.getByRole('link', { name: name }).getByRole('button', { name: 'Settings' }).click();
+    await this.openSettings(name);
     await this.page.getByRole('menuitem', { name: 'View module' }).click();
   }
 
+  private async openSettings(name: string) {
+    await this.page.getByTestId(name).getByRole('button', { name: 'Settings' }).click();
+  }
+
   async delete(name: string) {
-    await this.page.getByRole('link', { name: name }).getByRole('button', { name: 'Settings' }).click();
+    await this.openSettings(name);
     await this.page.getByRole('menuitem', { name: 'Delete module' }).click();
     await this.page.getByPlaceholder(name).fill(name);
     await this.page.getByRole('button', { name: 'Delete module' }).click();
 
     await expect(this.page.getByText(name)).toHaveCount(0);
-    // TOOD: expect (module to be deleted)
   }
 
   // ===============================

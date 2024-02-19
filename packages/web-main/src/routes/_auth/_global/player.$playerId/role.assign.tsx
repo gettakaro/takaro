@@ -36,8 +36,8 @@ type IFormInputs = z.infer<typeof roleAssignValidationSchema>;
 
 export const Route = createFileRoute('/_auth/_global/player/$playerId/role/assign')({
   loader: async ({ context }) => {
-    const p1 = context.queryClient.ensureQueryData(rolesOptions({}));
-    const p2 = context.queryClient.ensureQueryData(gameServersOptions({}));
+    const p1 = context.queryClient.ensureQueryData(rolesOptions());
+    const p2 = context.queryClient.ensureQueryData(gameServersOptions());
     const [roles, gameservers] = await Promise.all([p1, p2]);
     const gameServerOptions = [
       { name: 'Global - applies to all gameservers', id: 'null' } as GameServerOutputDTO,

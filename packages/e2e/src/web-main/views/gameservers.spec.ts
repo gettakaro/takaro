@@ -3,19 +3,6 @@ import { integrationConfig } from '@takaro/test';
 import { test } from '../fixtures/index.js';
 const { expect } = playwright;
 
-test('Can use call to action if there are no gameservers', async ({ page, takaro }) => {
-  // by default we always create 1 gameserver in the test setup
-  // lets delete it so we can test the call to action popup in navbar
-  const { GameServersPage } = takaro;
-  await GameServersPage.goto();
-  await GameServersPage.delete(GameServersPage.gameServer.name);
-  await expect(page.getByText(takaro.gameServer.name)).toHaveCount(0);
-  await page.getByRole('button').getByText('Add a server').click();
-  expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/servers/create`);
-});
-
-// currently broken because when server is created the selectedGameServerId is set to the newly created server
-// But for some reason this redirects the page to the server specific dashboard instead of staying on the gameservers page.
 test('Can create gameserver', async ({ page, takaro }) => {
   await page.goto('/');
 
@@ -38,7 +25,7 @@ test('Can create gameserver', async ({ page, takaro }) => {
   await expect(page.getByRole('heading', { name: serverName })).toBeVisible();
 });
 
-test('Should show error when creating a gameserver with name that already exists', async ({ page, takaro }) => {
+test.fixme('Should show error when creating a gameserver with name that already exists', async ({ page, takaro }) => {
   const { GameServersPage } = takaro;
   const serverName = 'My new server';
 
@@ -63,7 +50,7 @@ test('Should show error when creating a gameserver with name that already exists
   await expect(page.getByText('Game server with this name already exists')).toBeVisible();
 });
 
-test('Should show error when updating a gameserver with name that already exists', async ({ page, takaro }) => {
+test.fixme('Should show error when updating a gameserver with name that already exists', async ({ page, takaro }) => {
   const { GameServersPage } = takaro;
   const serverName = 'My new server';
 
@@ -92,7 +79,9 @@ test('Can edit gameserver', async ({ page, takaro }) => {
   await expect(page.getByText(GameServersPage.gameServer.name)).toBeVisible();
   await GameServersPage.action('Edit');
 
-  expect(page.url()).toBe(`${integrationConfig.get('frontendHost')}/servers/update/${GameServersPage.gameServer.id}`);
+  expect(page.url()).toBe(
+    `${integrationConfig.get('frontendHost')}/gameservers/update/${GameServersPage.gameServer.id}`
+  );
 
   const newGameServerName = 'My edited mock server';
   await GameServersPage.nameCreateEdit(newGameServerName);

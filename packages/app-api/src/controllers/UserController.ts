@@ -180,7 +180,12 @@ export class UserController {
   @ResponseSchema(APIOutput)
   async removeRole(@Req() req: AuthenticatedRequest, @Params() params: ParamIdAndRoleId) {
     const service = new UserService(req.domainId);
-    return apiResponse(await service.removeRole(params.roleId, params.id));
+    await service.removeRole(params.roleId, params.id);
+    return apiResponse(
+      await new IdUuidDTO().construct({
+        id: params.roleId,
+      })
+    );
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_USERS]))

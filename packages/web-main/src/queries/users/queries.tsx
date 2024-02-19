@@ -30,7 +30,7 @@ export const usersOptions = (queryParams: UserSearchInputDTO) =>
 
 export const userOptions = (userId: string) =>
   queryOptions<UserOutputWithRolesDTO, AxiosError<UserOutputWithRolesDTO>>({
-    queryKey: [...userKeys.detail(userId)],
+    queryKey: userKeys.detail(userId),
     queryFn: async () => (await getApiClient().user.userControllerGetOne(userId)).data.data,
   });
 
@@ -40,32 +40,33 @@ interface IUserRoleAssign {
   expiresAt?: string;
 }
 
-export const useUserAssignRole = () => {
+export const useUserAssignRole = ({ userId }: { userId: string }) => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
   return mutationWrapper<APIOutput, IUserRoleAssign>(
     useMutation<APIOutput, AxiosError<APIOutput>, IUserRoleAssign>({
-      mutationFn: async ({ userId, roleId, expiresAt }) => {
-        const res = (await apiClient.user.userControllerAssignRole(userId, roleId, { expiresAt })).data;
+      mutationFn: async ({ userId, roleId, expiresAt }) =>
+        (await apiClient.user.userControllerAssignRole(userId, roleId, { expiresAt })).data,
+      onSuccess: async () => {
+        // invalidate user because new role assignment
         queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
-        return res;
       },
     }),
     {}
   );
 };
 
-export const useUserRemoveRole = () => {
+export const useUserRemoveRole = ({ userId }: { userId: string }) => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
   return mutationWrapper<APIOutput, RoleInput>(
     useMutation<APIOutput, AxiosError<APIOutput>, RoleInput>({
-      mutationFn: async ({ userId, roleId }) => {
-        const res = (await apiClient.user.userControllerRemoveRole(userId, roleId)).data;
+      mutationFn: async ({ userId, roleId }) => (await apiClient.user.userControllerRemoveRole(userId, roleId)).data,
+      onSuccess: async () => {
+        // invalidate user because new role assignment
         queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
-        return res;
       },
     }),
     {}

@@ -135,7 +135,7 @@ export const useRoleUpdate = () => {
             })),
           };
         });
-        queryClient.invalidateQueries({ queryKey: roleKeys.detail(updatedRole.id) });
+        await queryClient.invalidateQueries({ queryKey: roleKeys.detail(updatedRole.id) });
       },
     }),
     defaultRoleErrorMessages
@@ -200,7 +200,7 @@ export const usePlayerRoleAssign = () => {
   );
 };
 
-export const usePlayerRoleUnassign = () => {
+export const usePlayerRoleUnassign = ({ playerId }: { playerId: string }) => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
   return mutationWrapper<APIOutput, IPlayerRoleAssign>(
@@ -210,6 +210,9 @@ export const usePlayerRoleUnassign = () => {
         // TODO: Same cache issue as in useRoleAssign...
         queryClient.invalidateQueries({ queryKey: playerKeys.detail(id) });
         return res;
+      },
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: playerKeys.detail(playerId) });
       },
     }),
     {}
@@ -221,15 +224,17 @@ interface IUserRoleAssign {
   roleId: string;
 }
 
-export const useUserRoleAssign = () => {
+export const useUserRoleAssign = ({ userId }: { userId: string }) => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
   return mutationWrapper<APIOutput, IUserRoleAssign>(
     useMutation<APIOutput, AxiosError<APIOutput>, IUserRoleAssign>({
       mutationFn: async ({ id, roleId }) => {
         const res = (await apiClient.user.userControllerAssignRole(id, roleId)).data;
-        queryClient.invalidateQueries({ queryKey: userKeys.detail(id) });
         return res;
+      },
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
       },
     }),
     {}

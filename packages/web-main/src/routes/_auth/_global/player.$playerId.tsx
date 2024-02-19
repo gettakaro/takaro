@@ -79,8 +79,8 @@ function Component() {
       <HorizontalNav
         links={[
           {
-            text: 'Global',
-            to: '/player/$playerId/global',
+            text: 'Info',
+            to: '/player/$playerId/info',
             params: { playerId },
           },
           {
@@ -88,11 +88,13 @@ function Component() {
             to: '/player/$playerId/events',
             params: { playerId },
           },
+          /*
           {
             text: 'Inventory',
             to: '/player/$playerId/inventory',
             params: { playerId },
           },
+          */
           {
             text: 'Economy',
             to: '/player/$playerId/economy',

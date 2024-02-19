@@ -34,31 +34,29 @@ import { ErrorMessageMapping } from '@takaro/lib-components/src/errors';
 export const moduleKeys = {
   all: ['modules'] as const,
   list: () => [...moduleKeys.all, 'list'] as const,
+
+  hooks: {
+    all: ['hooks'] as const,
+    list: () => [...moduleKeys.hooks.all, 'list'] as const,
+    detail: (id: string) => [...moduleKeys.hooks.all, 'detail', id] as const,
+  },
+  commands: {
+    all: ['commands'] as const,
+    list: () => [...moduleKeys.commands.all, 'list'] as const,
+    detail: (id: string) => [...moduleKeys.commands.all, 'detail', id] as const,
+  },
+  cronJobs: {
+    all: ['cronjobs'] as const,
+    list: () => [...moduleKeys.cronJobs.all, 'list'] as const,
+    detail: (id: string) => [...moduleKeys.cronJobs.all, 'detail', id] as const,
+  },
+  functions: {
+    all: ['functions'] as const,
+    list: () => [...moduleKeys.functions.all, 'list'] as const,
+    detail: (id: string) => [...moduleKeys.functions.all, 'detail', id] as const,
+  },
+
   detail: (id: string) => [...moduleKeys.all, 'detail', id] as const,
-};
-
-export const hookKeys = {
-  all: ['hooks'] as const,
-  list: () => [...hookKeys.all, 'list'] as const,
-  detail: (id: string) => [...hookKeys.all, 'detail', id] as const,
-};
-
-export const commandKeys = {
-  all: ['commands'] as const,
-  list: () => [...commandKeys.all, 'list'] as const,
-  detail: (id: string) => [...commandKeys.all, 'detail', id] as const,
-};
-
-export const cronJobKeys = {
-  all: ['cronjobs'] as const,
-  list: () => [...cronJobKeys.all, 'list'] as const,
-  detail: (id: string) => [...cronJobKeys.all, 'detail', id] as const,
-};
-
-export const functionKeys = {
-  all: ['functions'] as const,
-  list: () => [...functionKeys.all, 'list'] as const,
-  detail: (id: string) => [...functionKeys.all, 'detail', id] as const,
 };
 
 const defaultModuleErrorMessages: Partial<ErrorMessageMapping> = {
@@ -108,7 +106,7 @@ export const useModuleCreate = () => {
 
       onSuccess: async (newModule: ModuleOutputDTO) => {
         await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
-        queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(newModule.id), newModule);
+        return queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(newModule.id), newModule);
       },
     }),
     defaultModuleErrorMessages
@@ -149,7 +147,7 @@ export const useModuleUpdate = () => {
         (await apiClient.module.moduleControllerUpdate(id, moduleUpdate)).data.data,
       onSuccess: async (updatedModule: ModuleOutputDTO) => {
         await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
-        queryClient.setQueryData(moduleKeys.detail(updatedModule.id), updatedModule);
+        return queryClient.setQueryData(moduleKeys.detail(updatedModule.id), updatedModule);
       },
     }),
     defaultModuleErrorMessages
@@ -161,7 +159,7 @@ export const useModuleUpdate = () => {
 // ==================================
 export const hookOptions = (hookId: string) =>
   queryOptions<HookOutputDTO, AxiosError<HookOutputDTOAPI>>({
-    queryKey: hookKeys.detail(hookId),
+    queryKey: moduleKeys.hooks.detail(hookId),
     queryFn: async () => (await getApiClient().hook.hookControllerGetOne(hookId)).data.data,
   });
 
@@ -173,9 +171,18 @@ export const useHookCreate = () => {
     useMutation<HookOutputDTO, AxiosError<HookOutputDTOAPI>, HookCreateDTO>({
       mutationFn: async (hook) => (await apiClient.hook.hookControllerCreate(hook)).data.data,
       onSuccess: async (newHook: HookOutputDTO) => {
-        await queryClient.invalidateQueries({ queryKey: hookKeys.list() });
-        await queryClient.invalidateQueries({ queryKey: moduleKeys.detail(newHook.moduleId) });
-        queryClient.setQueryData(hookKeys.detail(newHook.id), newHook);
+        await queryClient.invalidateQueries({ queryKey: moduleKeys.hooks.list() });
+        queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(newHook.moduleId), (prev) => {
+          if (!prev) {
+            // we are updating a module that does not have a cache entry
+            return prev;
+          }
+          return {
+            ...prev,
+            hooks: [...prev.hooks, newHook],
+          };
+        });
+        return queryClient.setQueryData(moduleKeys.hooks.detail(newHook.id), newHook);
       },
     }),
     defaultHookErrorMessages
@@ -194,9 +201,17 @@ export const useHookRemove = ({ moduleId }) => {
     useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, HookRemove>({
       mutationFn: async ({ hookId }) => (await apiClient.hook.hookControllerRemove(hookId)).data.data,
       onSuccess: async (removedHook: IdUuidDTO) => {
-        await queryClient.invalidateQueries({ queryKey: hookKeys.list() });
-        await queryClient.invalidateQueries({ queryKey: moduleKeys.detail(moduleId) });
-        queryClient.removeQueries({ queryKey: hookKeys.detail(removedHook.id) });
+        await queryClient.invalidateQueries({ queryKey: moduleKeys.hooks.list() });
+        queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(moduleId), (prev) => {
+          if (!prev) {
+            return prev;
+          }
+          return {
+            ...prev,
+            hooks: prev.hooks.filter((hook) => hook.id !== removedHook.id),
+          };
+        });
+        return queryClient.removeQueries({ queryKey: moduleKeys.hooks.detail(removedHook.id) });
       },
     }),
     defaultHookErrorMessages
@@ -215,9 +230,17 @@ export const useHookUpdate = () => {
     useMutation<HookOutputDTO, AxiosError<HookOutputDTOAPI>, HookUpdate>({
       mutationFn: async ({ hookId, hook }) => (await apiClient.hook.hookControllerUpdate(hookId, hook)).data.data,
       onSuccess: async (updatedHook: HookOutputDTO) => {
-        await queryClient.invalidateQueries({ queryKey: hookKeys.list() });
-        await queryClient.invalidateQueries({ queryKey: moduleKeys.detail(updatedHook.moduleId) });
-        queryClient.setQueryData(hookKeys.detail(updatedHook.id), updatedHook);
+        await queryClient.invalidateQueries({ queryKey: moduleKeys.hooks.list() });
+        queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(updatedHook.moduleId), (prev) => {
+          if (!prev) {
+            return prev;
+          }
+          return {
+            ...prev,
+            hooks: prev.hooks.map((h) => (h.id === updatedHook.id ? updatedHook : h)),
+          };
+        });
+        queryClient.setQueryData<HookOutputDTO>(moduleKeys.hooks.detail(updatedHook.id), updatedHook);
       },
     }),
     defaultHookErrorMessages
@@ -230,7 +253,7 @@ export const useHookUpdate = () => {
 
 export const commandOptions = (commandId: string) =>
   queryOptions<CommandOutputDTO, AxiosError<CommandOutputDTOAPI>>({
-    queryKey: commandKeys.detail(commandId),
+    queryKey: moduleKeys.commands.detail(commandId),
     queryFn: async () => (await getApiClient().command.commandControllerGetOne(commandId)).data.data,
   });
 
@@ -242,9 +265,17 @@ export const useCommandCreate = () => {
     useMutation<CommandOutputDTO, AxiosError<CommandOutputDTOAPI>, CommandCreateDTO>({
       mutationFn: async (command) => (await apiClient.command.commandControllerCreate(command)).data.data,
       onSuccess: async (newCommand: CommandOutputDTO) => {
-        await queryClient.invalidateQueries({ queryKey: commandKeys.list() });
-        await queryClient.invalidateQueries({ queryKey: moduleKeys.detail(newCommand.moduleId) });
-        queryClient.setQueryData(commandKeys.detail(newCommand.id), newCommand);
+        await queryClient.invalidateQueries({ queryKey: moduleKeys.commands.list() });
+        queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(newCommand.moduleId), (prev) => {
+          if (!prev) {
+            return prev;
+          }
+          return {
+            ...prev,
+            commands: [...prev.commands, newCommand],
+          };
+        });
+        return queryClient.setQueryData<CommandOutputDTO>(moduleKeys.commands.detail(newCommand.id), newCommand);
       },
     }),
     defaultCommandErrorMessages
@@ -264,9 +295,20 @@ export const useCommandUpdate = () => {
       mutationFn: async ({ commandId, command }) =>
         (await apiClient.command.commandControllerUpdate(commandId, command)).data.data,
       onSuccess: async (updatedCommand: CommandOutputDTO) => {
-        await queryClient.invalidateQueries({ queryKey: commandKeys.list() });
-        await queryClient.invalidateQueries({ queryKey: moduleKeys.detail(updatedCommand.moduleId) });
-        queryClient.setQueryData(commandKeys.detail(updatedCommand.id), updatedCommand);
+        await queryClient.invalidateQueries({ queryKey: moduleKeys.commands.list() });
+        queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(updatedCommand.id), (prev) => {
+          if (!prev) {
+            return prev;
+          }
+          return {
+            ...prev,
+            commands: prev.commands.map((c) => (c.id === updatedCommand.id ? updatedCommand : c)),
+          };
+        });
+        return queryClient.setQueryData<CommandOutputDTO>(
+          moduleKeys.commands.detail(updatedCommand.id),
+          updatedCommand
+        );
       },
     }),
     defaultCommandErrorMessages
@@ -286,13 +328,17 @@ export const useCommandRemove = ({ moduleId }) => {
       mutationFn: async ({ commandId }) => (await apiClient.command.commandControllerRemove(commandId)).data.data,
       onSuccess: async (removedCommand: IdUuidDTO) => {
         // invalidate list of commands
-        await queryClient.invalidateQueries({ queryKey: commandKeys.list() });
-
-        // Invalidate query of specific module which command belongs to
-        await queryClient.invalidateQueries({ queryKey: moduleKeys.detail(moduleId) });
-
-        // remove cache of specific command
-        queryClient.removeQueries({ queryKey: commandKeys.detail(removedCommand.id) });
+        await queryClient.invalidateQueries({ queryKey: moduleKeys.commands.list() });
+        queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(moduleId), (prev) => {
+          if (!prev) {
+            return prev;
+          }
+          return {
+            ...prev,
+            commands: prev.commands.filter((command) => command.id !== removedCommand.id),
+          };
+        });
+        queryClient.removeQueries({ queryKey: moduleKeys.commands.detail(removedCommand.id) });
       },
     }),
     defaultCommandErrorMessages
@@ -304,7 +350,7 @@ export const useCommandRemove = ({ moduleId }) => {
 // ==================================
 export const cronjobOptions = (cronjobId: string) =>
   queryOptions<CronJobOutputDTO, AxiosError<CronJobOutputDTOAPI>>({
-    queryKey: cronJobKeys.detail(cronjobId),
+    queryKey: moduleKeys.cronJobs.detail(cronjobId),
     queryFn: async () => (await getApiClient().cronjob.cronJobControllerGetOne(cronjobId)).data.data,
   });
 
@@ -318,13 +364,18 @@ export const useCronJobCreate = () => {
         (await apiClient.cronjob.cronJobControllerCreate(cronjob)).data.data,
       onSuccess: async (newCronJob: CronJobOutputDTO) => {
         // invalidate list of cronjobs
-        await queryClient.invalidateQueries({ queryKey: cronJobKeys.list() });
-
-        // invalidate query of specific module which cronjob belongs to
-        await queryClient.invalidateQueries({ queryKey: moduleKeys.detail(newCronJob.moduleId) });
-
+        await queryClient.invalidateQueries({ queryKey: moduleKeys.cronJobs.list() });
+        queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(newCronJob.moduleId), (prev) => {
+          if (!prev) {
+            return prev;
+          }
+          return {
+            ...prev,
+            cronJobs: [...prev.cronJobs, newCronJob],
+          };
+        });
         // add cache entry for new cronjob
-        queryClient.setQueryData(cronJobKeys.detail(newCronJob.id), newCronJob);
+        return queryClient.setQueryData<CronJobOutputDTO>(moduleKeys.cronJobs.detail(newCronJob.id), newCronJob);
       },
     }),
     defaultCronJobErrorMessages
@@ -345,13 +396,20 @@ export const useCronJobUpdate = () => {
         (await apiClient.cronjob.cronJobControllerUpdate(cronJobId, cronJob)).data.data,
       onSuccess: async (updatedCronJob: CronJobOutputDTO) => {
         // invalidate list of cronjob
-        await queryClient.invalidateQueries({ queryKey: cronJobKeys.list() });
-
-        // invalidate query of specific module which cronjob belongs to
-        await queryClient.invalidateQueries({ queryKey: moduleKeys.detail(updatedCronJob.moduleId) });
-
-        // update cache entry of specific cronjob
-        queryClient.setQueryData(cronJobKeys.detail(updatedCronJob.id), updatedCronJob);
+        await queryClient.invalidateQueries({ queryKey: moduleKeys.cronJobs.list() });
+        queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(updatedCronJob.moduleId), (prev) => {
+          if (!prev) {
+            return prev;
+          }
+          return {
+            ...prev,
+            cronJobs: prev.cronJobs.map((c) => (c.id === updatedCronJob.id ? updatedCronJob : c)),
+          };
+        });
+        return queryClient.setQueryData<CronJobOutputDTO>(
+          moduleKeys.cronJobs.detail(updatedCronJob.id),
+          updatedCronJob
+        );
       },
     }),
     defaultCronJobErrorMessages
@@ -371,13 +429,19 @@ export const useCronJobRemove = ({ moduleId }: { moduleId: string }) => {
       mutationFn: async ({ cronJobId }: { cronJobId: string }) =>
         (await apiClient.cronjob.cronJobControllerRemove(cronJobId)).data.data,
       onSuccess: async (removedCronJob: IdUuidDTO) => {
-        await queryClient.invalidateQueries({ queryKey: cronJobKeys.list() });
+        await queryClient.invalidateQueries({ queryKey: moduleKeys.cronJobs.list() });
 
-        // Invalidate query of specific module which cronjob belongs to
-        await queryClient.invalidateQueries({ queryKey: moduleKeys.detail(moduleId) });
-
+        queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(moduleId), (prev) => {
+          if (!prev) {
+            return prev;
+          }
+          return {
+            ...prev,
+            cronJobs: prev.cronJobs.filter((cronJob) => cronJob.id !== removedCronJob.id),
+          };
+        });
         // remove cache of specific cronjob
-        queryClient.removeQueries({ queryKey: cronJobKeys.detail(removedCronJob.id) });
+        queryClient.removeQueries({ queryKey: moduleKeys.cronJobs.detail(removedCronJob.id) });
       },
     }),
     defaultCronJobErrorMessages
@@ -386,11 +450,13 @@ export const useCronJobRemove = ({ moduleId }: { moduleId: string }) => {
 
 // ==================================
 //              functions
+// IMPORTANT: Only use function CRUD when you are not dealing with a cronjob, command or hook.
+// Otherwise cache will not be updated properly.
 // ==================================
 
 export const functionOptions = (functionId: string) =>
   queryOptions<FunctionOutputDTO, AxiosError<FunctionOutputDTOAPI>>({
-    queryKey: functionKeys.detail(functionId),
+    queryKey: moduleKeys.functions.detail(functionId),
     queryFn: async () => (await getApiClient().function.functionControllerGetOne(functionId)).data.data,
   });
 
@@ -403,10 +469,9 @@ export const useFunctionCreate = () => {
       mutationFn: async (fn) => (await apiClient.function.functionControllerCreate(fn)).data.data,
       onSuccess: async (newFn: FunctionOutputDTO) => {
         // invalidate list of functions
-        await queryClient.invalidateQueries({ queryKey: functionKeys.list() });
-
+        await queryClient.invalidateQueries({ queryKey: moduleKeys.functions.list() });
         // add cache entry for new function
-        queryClient.setQueryData(cronJobKeys.detail(newFn.id), newFn);
+        return queryClient.setQueryData<FunctionOutputDTO>(moduleKeys.functions.detail(newFn.id), newFn);
       },
     }),
     defaultFunctionErrorMessages
@@ -427,10 +492,9 @@ export const useFunctionUpdate = () => {
         (await apiClient.function.functionControllerUpdate(functionId, fn)).data.data,
       onSuccess: async (updatedFn: FunctionOutputDTO) => {
         // invalidate list of functions
-        await queryClient.invalidateQueries({ queryKey: functionKeys.list() });
-
+        await queryClient.invalidateQueries({ queryKey: moduleKeys.functions.list() });
         // update cache entry of specific function
-        queryClient.setQueryData(cronJobKeys.detail(updatedFn.id), updatedFn);
+        queryClient.setQueryData<FunctionOutputDTO>(moduleKeys.functions.detail(updatedFn.id), updatedFn);
       },
     }),
     defaultFunctionErrorMessages
@@ -450,10 +514,10 @@ export const useFunctionRemove = () => {
       mutationFn: async ({ functionId }) => (await apiClient.function.functionControllerRemove(functionId)).data.data,
       onSuccess: async (removedFn: IdUuidDTO) => {
         // invalidate list of functions
-        await queryClient.invalidateQueries({ queryKey: functionKeys.list() });
+        await queryClient.invalidateQueries({ queryKey: moduleKeys.functions.list() });
 
         // remove cache of specific function
-        queryClient.removeQueries({ queryKey: functionKeys.detail(removedFn.id) });
+        queryClient.removeQueries({ queryKey: moduleKeys.functions.detail(removedFn.id) });
       },
     }),
     defaultFunctionErrorMessages

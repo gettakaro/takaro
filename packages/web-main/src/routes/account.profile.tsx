@@ -11,7 +11,7 @@ const searchSchema = z.object({
   flowId: z.string().catch(''),
 });
 
-export const Route = createFileRoute('/_auth/_global/auth/profile')({
+export const Route = createFileRoute('/account/profile')({
   component: Component,
   validateSearch: (search) => searchSchema.parse(search),
 });
@@ -77,6 +77,7 @@ function Component() {
       .updateSettingsFlow({ flow: flow.id, updateSettingsFlowBody: body })
       .then(({ data: flow }) => {
         setFlow(flow);
+        navigate({ to: '/login' });
       })
       .catch(sdkErrorHandler);
   };

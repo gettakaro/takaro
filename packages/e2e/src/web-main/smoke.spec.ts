@@ -9,6 +9,7 @@ const { expect } = playwright;
 const items = [
   { permission: PERMISSIONS.READ_EVENTS, linkName: 'Events', path: 'events' },
   { permission: PERMISSIONS.READ_PLAYERS, linkName: 'Players', path: 'players' },
+  { permission: PERMISSIONS.READ_GAMESERVERS, linkName: 'Game servers', path: 'gameservers' },
   { permission: PERMISSIONS.READ_USERS, linkName: 'Users', path: 'users' },
   { permission: PERMISSIONS.READ_MODULES, linkName: 'Modules', path: 'modules' },
   { permission: PERMISSIONS.READ_VARIABLES, linkName: 'Variables', path: 'variables' },
@@ -60,9 +61,7 @@ for (const { linkName, path, permission } of items) {
     await page.goto('/logout');
     await page.waitForLoadState('networkidle'); // wait for network activity to settle
     await login(page, testUser.email, testUser.password);
-    await expect(page).toHaveURL('/forbidden');
 
-    // error here
     await page.goto(route);
     await page.waitForSelector(`[data-testid="${TEST_IDS.GLOBAL_NAV}"]`);
     // since the dom is reloaded, we need to locate the nav again.

@@ -12,7 +12,7 @@ const searchSchema = z.object({
   flowId: z.string().catch(''),
 });
 
-export const Route = createFileRoute('/_auth/_global/auth/verification')({
+export const Route = createFileRoute('/account/verification')({
   component: Component,
   validateSearch: (search) => searchSchema.parse(search),
 });

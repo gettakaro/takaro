@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 import { useEffect, useMemo, useState } from 'react';
 import { Button, Stats, styled } from '@takaro/lib-components';
 import { useSocket } from 'hooks/useSocket';
@@ -8,8 +8,14 @@ import { DateTime } from 'luxon';
 import { useForm, useWatch } from 'react-hook-form';
 import { TimePeriodSelect } from 'components/selects';
 import { useQuery } from '@tanstack/react-query';
+import { hasPermission } from 'hooks/useHasPermission';
 
 export const Route = createFileRoute('/_auth/_global/dashboard')({
+  beforeLoad: async ({ context }) => {
+    if (!hasPermission(context.auth.session, ['READ_EVENTS'])) {
+      throw redirect({ to: '/forbidden' });
+    }
+  },
   component: Component,
 });
 

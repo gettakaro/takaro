@@ -52,9 +52,9 @@ export const Route = createFileRoute('/_auth/_global/user/$userId/role/assign')(
 
 function Component() {
   const [open, setOpen] = useState(true);
-  const { mutate, isPending, error } = useUserAssignRole();
   const navigate = useNavigate({ from: Route.fullPath });
   const { userId } = Route.useParams();
+  const { mutate, isPending, error } = useUserAssignRole({ userId: userId });
   const roles = Route.useLoaderData();
 
   useEffect(() => {

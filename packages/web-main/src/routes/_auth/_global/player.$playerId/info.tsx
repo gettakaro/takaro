@@ -1,4 +1,4 @@
-import { IpHistoryOutputDTO, PlayerOutputDTO, PlayerOutputWithRolesDTO } from '@takaro/apiclient';
+import { IpHistoryOutputDTO, PlayerOutputDTO } from '@takaro/apiclient';
 import { Card, CopyId, Tooltip, styled } from '@takaro/lib-components';
 import { createFileRoute } from '@tanstack/react-router';
 import { PlayerRolesTable } from './-PlayerRolesTable';
@@ -6,16 +6,15 @@ import { FC } from 'react';
 import { Section, Container, Scrollable } from './-style';
 import { CountryCodeToEmoji } from 'components/CountryCodeToEmoji';
 import { DateTime } from 'luxon';
+import { playerOptions } from 'queries/players';
 
-export const Route = createFileRoute('/_auth/_global/player/$playerId/global')({
+export const Route = createFileRoute('/_auth/_global/player/$playerId/info')({
   component: Component,
+  loader: async ({ context, params }) => context.queryClient.ensureQueryData(playerOptions(params.playerId)),
 });
 
 function Component() {
-  // const { player } = useOutletContext<{ player: PlayerOutputWithRolesDTO }>();
-
-  // TODO: fix this placeholder
-  const player = {} as PlayerOutputWithRolesDTO;
+  const player = Route.useLoaderData();
   const { playerId } = Route.useParams();
 
   return (

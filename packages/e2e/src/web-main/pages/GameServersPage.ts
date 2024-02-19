@@ -10,19 +10,19 @@ export class GameServersPage extends BasePage {
   }
 
   async goto() {
-    await this.page.goto('/servers');
+    await this.page.goto('/gameservers');
   }
 
   async gotoGameServer() {
-    await this.page.goto(`/server/dashboard/${this.gameServer.id}`);
+    await this.page.goto(`/gameserver/${this.gameServer.id}/dashboard`);
   }
 
   async gotoGameServerConsole() {
-    await this.page.goto(`/server/dashboard/${this.gameServer.id}/console`);
+    await this.page.goto(`/gameserver/${this.gameServer.id}/dashboard/console`);
   }
 
   async create() {
-    await this.page.goto('/servers/create');
+    await this.page.goto('/gameservers/create');
   }
 
   async delete(name: string) {

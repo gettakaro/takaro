@@ -49,7 +49,7 @@ export const useVariableCreate = () => {
         await queryClient.invalidateQueries({ queryKey: variableKeys.list() });
 
         // Create cache key for the new variable
-        queryClient.setQueryData(variableKeys.detail(newVariable.id), newVariable);
+        queryClient.setQueryData<VariableOutputDTO>(variableKeys.detail(newVariable.id), newVariable);
       },
     }),
     defaultVariableErrorMessages
@@ -74,7 +74,7 @@ export const useVariableUpdate = () => {
         await queryClient.invalidateQueries({ queryKey: variableKeys.list() });
 
         // update cache of updated variable
-        queryClient.setQueryData(variableKeys.detail(updatedVar.id), updatedVar);
+        queryClient.setQueryData<VariableOutputDTO>(variableKeys.detail(updatedVar.id), updatedVar);
       },
     }),
     defaultVariableErrorMessages
