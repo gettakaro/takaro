@@ -59,6 +59,15 @@ export const connectionInfoFieldsMap = (isLoading: boolean, control: Control<any
         loading={isLoading}
         required
       />,
+      <TextField
+        control={control}
+        label="Name"
+        name="connectionInfo.name"
+        description="A name for the mock server, this can be used to have 'multiple' mock servers"
+        placeholder="mock1"
+        key="mock-event-name"
+        loading={isLoading}
+      />,
     ],
     [GameServerCreateDTOTypeEnum.Rust]: [
       <TextField

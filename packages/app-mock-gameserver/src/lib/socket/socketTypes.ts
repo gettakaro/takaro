@@ -15,13 +15,13 @@ import { Socket, Server } from 'socket.io';
 import { IMockGameServer } from '../gameserver/index.js';
 
 export interface ServerToClientEvents {
-  gameEvent: (type: GameEventTypes, data: EventPayload) => void;
-  [GameEvents.LOG_LINE]: (line: EventLogLine) => void;
-  [GameEvents.CHAT_MESSAGE]: (message: EventChatMessage) => void;
-  [GameEvents.PLAYER_CONNECTED]: (player: EventPlayerConnected) => void;
-  [GameEvents.PLAYER_DISCONNECTED]: (player: EventPlayerDisconnected) => void;
-  [GameEvents.PLAYER_DEATH]: (player: EventPlayerDeath) => void;
-  [GameEvents.ENTITY_KILLED]: (player: EventEntityKilled) => void;
+  gameEvent: (type: GameEventTypes, name: string, data: EventPayload) => void;
+  [GameEvents.LOG_LINE]: (line: Partial<EventLogLine> & { name: string }) => void;
+  [GameEvents.CHAT_MESSAGE]: (message: Partial<EventChatMessage> & { name: string }) => void;
+  [GameEvents.PLAYER_CONNECTED]: (player: Partial<EventPlayerConnected> & { name: string }) => void;
+  [GameEvents.PLAYER_DISCONNECTED]: (player: Partial<EventPlayerDisconnected> & { name: string }) => void;
+  [GameEvents.PLAYER_DEATH]: (player: Partial<EventPlayerDeath> & { name: string }) => void;
+  [GameEvents.ENTITY_KILLED]: (player: Partial<EventEntityKilled> & { name: string }) => void;
   pong: () => void;
 }
 

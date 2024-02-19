@@ -59,7 +59,7 @@ export async function playScenario(socketServer: MockServerSocketServer) {
           eventData.timestamp = new Date().toISOString();
 
           log.info(`Emitting event ${event.event} with data ${JSON.stringify(eventData)}`);
-          socketServer.emit(event.event, eventData as unknown as EventLogLine);
+          socketServer.emit(event.event, { name: this.name, ...(eventData as unknown as EventLogLine) });
 
           resolve();
         } catch (error) {

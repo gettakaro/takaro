@@ -148,6 +148,7 @@ export async function executeFunction(
 
     if (isCommandData(data) && !result.success) {
       if (
+        result.logs &&
         result.logs.length &&
         (result.logs[result.logs.length - 1].details as unknown as string)?.includes('TakaroUserError')
       ) {
@@ -217,6 +218,13 @@ export async function executeFunction(
       meta.result = await new TakaroEventFunctionResult().construct({
         success: false,
         reason: err.message,
+      });
+    }
+
+    if (err.constructor.name === 'SyntaxError') {
+      meta.result = await new TakaroEventFunctionResult().construct({
+        success: false,
+        reason: `SyntaxError: ${err.message}. Your javascript code is invalid.`,
       });
     }
 

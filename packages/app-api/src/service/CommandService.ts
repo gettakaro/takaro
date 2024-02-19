@@ -61,7 +61,7 @@ export class CommandArgumentOutputDTO extends TakaroModelDTO<CommandArgumentOutp
 
 export class CommandCreateDTO extends TakaroDTO<CommandCreateDTO> implements ICommand {
   @IsString()
-  @Length(3, 50)
+  @Length(3, 150)
   name: string;
 
   @IsString()
@@ -86,7 +86,7 @@ export class CommandCreateDTO extends TakaroDTO<CommandCreateDTO> implements ICo
 
 export class CommandArgumentCreateDTO extends TakaroDTO<CommandArgumentCreateDTO> implements ICommandArgument {
   @IsString()
-  @Length(2, 50)
+  @Length(2, 150)
   name: string;
 
   @IsString()
@@ -109,7 +109,7 @@ export class CommandArgumentCreateDTO extends TakaroDTO<CommandArgumentCreateDTO
 }
 
 export class CommandUpdateDTO extends TakaroDTO<CommandUpdateDTO> {
-  @Length(3, 50)
+  @Length(3, 150)
   @IsString()
   @IsOptional()
   name?: string;
@@ -134,7 +134,7 @@ export class CommandUpdateDTO extends TakaroDTO<CommandUpdateDTO> {
 
 export class CommandArgumentUpdateDTO extends TakaroDTO<CommandArgumentUpdateDTO> {
   @IsString()
-  @Length(3, 50)
+  @Length(3, 150)
   @IsOptional()
   name?: string;
 
@@ -334,6 +334,8 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
             module: data.module,
             gameServerId,
             player,
+            chatMessage,
+            trigger: commandName,
           },
           { delay }
         );

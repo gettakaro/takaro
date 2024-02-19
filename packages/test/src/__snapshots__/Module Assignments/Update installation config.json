@@ -2,11 +2,11 @@
   "body": {
     "meta": {},
     "data": {
-      "id": "e88c158b-42c5-4cf0-92f7-3928b4b47ab4",
-      "createdAt": "2023-11-26T13:45:54.778Z",
-      "updatedAt": "2023-11-26T13:45:54.825Z",
-      "gameserverId": "db1d7e45-6a66-4363-bf76-4661a41fcfa5",
-      "moduleId": "6df2243e-d4f3-484e-af1b-ff94fef3015e",
+      "id": "7c3a68b6-afad-4a61-970e-9b032efac492",
+      "createdAt": "2024-02-10T14:43:09.505Z",
+      "updatedAt": "2024-02-10T14:43:09.767Z",
+      "gameserverId": "47a63902-909f-4ad7-beed-13792593f06c",
+      "moduleId": "254723ea-7100-41a2-9dc7-36c48c6c0a54",
       "userConfig": {
         "timeout": 1337,
         "allowPublicTeleports": false
@@ -34,6 +34,22 @@
             "delay": 0
           },
           "setprivate": {
+            "cost": 0,
+            "delay": 0
+          },
+          "setwaypoint": {
+            "cost": 0,
+            "delay": 0
+          },
+          "listwaypoints": {
+            "cost": 0,
+            "delay": 0
+          },
+          "deletewaypoint": {
+            "cost": 0,
+            "delay": 0
+          },
+          "teleportwaypoint": {
             "cost": 0,
             "delay": 0
           }
