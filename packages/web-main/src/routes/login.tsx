@@ -159,7 +159,6 @@ function Component() {
 
   // session == successfully logged in
   if (session) {
-    console.log('fired');
     // redirect is always defined
     navigate({ to: search.redirect });
   }
