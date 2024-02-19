@@ -1002,7 +1002,23 @@ export interface DomainCreateInputDTO {
    * @memberof DomainCreateInputDTO
    */
   id?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof DomainCreateInputDTO
+   */
+  state?: DomainCreateInputDTOStateEnum;
 }
+
+export const DomainCreateInputDTOStateEnum = {
+  Active: 'ACTIVE',
+  Disabled: 'DISABLED',
+  Maintenance: 'MAINTENANCE',
+} as const;
+
+export type DomainCreateInputDTOStateEnum =
+  (typeof DomainCreateInputDTOStateEnum)[keyof typeof DomainCreateInputDTOStateEnum];
+
 /**
  *
  * @export
@@ -1089,6 +1105,12 @@ export interface DomainOutputDTO {
    * @type {string}
    * @memberof DomainOutputDTO
    */
+  state: DomainOutputDTOStateEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof DomainOutputDTO
+   */
   id: string;
   /**
    *
@@ -1103,6 +1125,15 @@ export interface DomainOutputDTO {
    */
   updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
+
+export const DomainOutputDTOStateEnum = {
+  Active: 'ACTIVE',
+  Disabled: 'DISABLED',
+  Maintenance: 'MAINTENANCE',
+} as const;
+
+export type DomainOutputDTOStateEnum = (typeof DomainOutputDTOStateEnum)[keyof typeof DomainOutputDTOStateEnum];
+
 /**
  *
  * @export
@@ -1134,7 +1165,23 @@ export interface DomainSearchInputAllowedFilters {
    * @memberof DomainSearchInputAllowedFilters
    */
   name?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof DomainSearchInputAllowedFilters
+   */
+  state?: Array<DomainSearchInputAllowedFiltersStateEnum>;
 }
+
+export const DomainSearchInputAllowedFiltersStateEnum = {
+  Active: 'ACTIVE',
+  Disabled: 'DISABLED',
+  Maintenance: 'MAINTENANCE',
+} as const;
+
+export type DomainSearchInputAllowedFiltersStateEnum =
+  (typeof DomainSearchInputAllowedFiltersStateEnum)[keyof typeof DomainSearchInputAllowedFiltersStateEnum];
+
 /**
  *
  * @export
@@ -1216,8 +1263,24 @@ export interface DomainUpdateInputDTO {
    * @type {string}
    * @memberof DomainUpdateInputDTO
    */
-  name: string;
+  name?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof DomainUpdateInputDTO
+   */
+  state?: DomainUpdateInputDTOStateEnum;
 }
+
+export const DomainUpdateInputDTOStateEnum = {
+  Active: 'ACTIVE',
+  Disabled: 'DISABLED',
+  Maintenance: 'MAINTENANCE',
+} as const;
+
+export type DomainUpdateInputDTOStateEnum =
+  (typeof DomainUpdateInputDTOStateEnum)[keyof typeof DomainUpdateInputDTOStateEnum];
+
 /**
  *
  * @export
@@ -3914,6 +3977,12 @@ export interface MockConnectionInfo {
    * @memberof MockConnectionInfo
    */
   host: string;
+  /**
+   *
+   * @type {string}
+   * @memberof MockConnectionInfo
+   */
+  name: string;
 }
 /**
  *
@@ -17453,7 +17522,7 @@ export const UserApiFp = function (configuration?: Configuration) {
     async userControllerInvite(
       inviteCreateDTO?: InviteCreateDTO,
       options?: RawAxiosRequestConfig
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserOutputDTOAPI>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.userControllerInvite(inviteCreateDTO, options);
       const index = configuration?.serverIndex ?? 0;
       const operationBasePath = operationServerMap['UserApi.userControllerInvite']?.[index]?.url;
@@ -17675,7 +17744,7 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    userControllerInvite(inviteCreateDTO?: InviteCreateDTO, options?: any): AxiosPromise<APIOutput> {
+    userControllerInvite(inviteCreateDTO?: InviteCreateDTO, options?: any): AxiosPromise<UserOutputDTOAPI> {
       return localVarFp.userControllerInvite(inviteCreateDTO, options).then((request) => request(axios, basePath));
     },
     /**

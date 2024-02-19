@@ -113,7 +113,7 @@ export class UserController {
     return apiResponse(user);
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_USERS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_USERS], false))
   @ResponseSchema(UserOutputArrayDTOAPI)
   @Post('/user/search')
   async search(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: UserSearchInputDTO) {
@@ -130,7 +130,7 @@ export class UserController {
     });
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_USERS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_USERS], false))
   @ResponseSchema(UserOutputDTOAPI)
   @Get('/user/:id')
   async getOne(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
@@ -138,7 +138,7 @@ export class UserController {
     return apiResponse(await service.findOne(params.id));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_USERS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_USERS], false))
   @ResponseSchema(UserOutputDTOAPI)
   @Post('/user')
   async create(@Req() req: AuthenticatedRequest, @Body() data: UserCreateInputDTO) {
@@ -146,7 +146,7 @@ export class UserController {
     return apiResponse(await service.create(data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_USERS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_USERS], false))
   @ResponseSchema(UserOutputDTOAPI)
   @Put('/user/:id')
   async update(@Req() req: AuthenticatedRequest, @Params() params: ParamId, @Body() data: UserUpdateDTO) {
@@ -154,7 +154,7 @@ export class UserController {
     return apiResponse(await service.update(params.id, data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_USERS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_USERS], false))
   @ResponseSchema(IdUuidDTOAPI)
   @Delete('/user/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
@@ -163,7 +163,7 @@ export class UserController {
     return apiResponse(await new IdUuidDTO().construct({ id: params.id }));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_USERS, PERMISSIONS.MANAGE_ROLES]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_USERS, PERMISSIONS.MANAGE_ROLES], false))
   @Post('/user/:id/role/:roleId')
   @ResponseSchema(APIOutput)
   async assignRole(
@@ -175,7 +175,7 @@ export class UserController {
     return apiResponse(await service.assignRole(params.roleId, params.id, data.expiresAt));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_USERS, PERMISSIONS.MANAGE_ROLES]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_USERS, PERMISSIONS.MANAGE_ROLES], false))
   @Delete('/user/:id/role/:roleId')
   @ResponseSchema(APIOutput)
   async removeRole(@Req() req: AuthenticatedRequest, @Params() params: ParamIdAndRoleId) {
@@ -188,12 +188,12 @@ export class UserController {
     );
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_USERS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_USERS], false))
   @Post('/user/invite')
-  @ResponseSchema(APIOutput)
+  @ResponseSchema(UserOutputDTOAPI)
   async invite(@Req() req: AuthenticatedRequest, @Body() data: InviteCreateDTO) {
     const service = new UserService(req.domainId);
-    await service.inviteUser(data.email);
-    return apiResponse();
+    const user = await service.inviteUser(data.email);
+    return apiResponse(user);
   }
 }
