@@ -118,8 +118,7 @@ jobs:
         env:
           DOCKER_TAG: ${{ needs.docker.outputs.docker_tag }}
           TEST_LOGGING_LEVEL: none
-          LOGGING_LEVEL: verbose
-          LOGGING_JSON: true
+          LOGGING_LEVEL: none
 
       - uses: actions/upload-artifact@v3
         if: always()
