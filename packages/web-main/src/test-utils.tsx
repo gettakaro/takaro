@@ -1,12 +1,21 @@
 import { ThemeProvider } from 'styled-components';
 import { GlobalStyle, SnackbarProvider, darkTheme } from '@takaro/lib-components';
-
+import { vi } from 'vitest';
 import { render, RenderOptions } from '@testing-library/react';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './queryClient';
 import { FC, PropsWithChildren } from 'react';
 
 window.scrollTo = () => {};
+
+vi.mock('@tanstack/react-router', () => ({
+  useNavigate: () => {
+    return {
+      navigate: () => {},
+    };
+  },
+  Link: <a />,
+}));
 
 const providers: FC<PropsWithChildren> = ({ children }) => {
   // add portal for drawer

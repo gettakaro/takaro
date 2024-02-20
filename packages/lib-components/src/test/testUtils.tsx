@@ -3,13 +3,22 @@ import { render, RenderOptions } from '@testing-library/react';
 import { lightTheme, GlobalStyle } from '@takaro/lib-components';
 import { ThemeProvider } from 'styled-components';
 import { SnackbarProvider } from '../helpers';
+import { createMemoryHistory, createRootRoute, createRouter, RouterProvider } from '@tanstack/react-router';
 
 const Providers: FC<PropsWithChildren<unknown>> = ({ children }) => {
+  const rootRoute = createRootRoute({
+    component: () => children,
+  });
+  const router = createRouter({
+    routeTree: rootRoute,
+    history: createMemoryHistory({ initialEntries: ['/'] }),
+  });
+
   return (
     <ThemeProvider theme={lightTheme}>
       <SnackbarProvider>
         <GlobalStyle />
-        {children}
+        <RouterProvider router={router} />
       </SnackbarProvider>
     </ThemeProvider>
   );

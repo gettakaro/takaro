@@ -76,7 +76,7 @@ const Container = styled.div`
   }
   `;
 
-const HomeLink = styled(Link)`
+const HomeLink = styled((props) => <Link {...props} />)`
   display: flex;
   align-items: center;
   svg {
