@@ -17,7 +17,7 @@ import { faker } from '@faker-js/faker';
 import { config } from '../../config.js';
 import { playScenario } from './scenario.js';
 
-export type IMockGameServer = Omit<IGameServer, 'getEventEmitter' | 'connectionInfo' | 'testReachability'>;
+export type IMockGameServer = Omit<IGameServer, 'getEventEmitter' | 'connectionInfo' | 'testReachability' | 'destroy'>;
 
 const REDIS_PREFIX = `mock-game:${config.get('mockserver.name')}:`;
 
