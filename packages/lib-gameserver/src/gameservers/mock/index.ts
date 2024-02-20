@@ -37,6 +37,11 @@ export class Mock implements IGameServer {
     return this.emitter;
   }
 
+  async destroy(): Promise<void> {
+    this.io.disconnect();
+    await this.emitter.stop();
+  }
+
   private async getClient(timeout = 2500): Promise<Socket> {
     if (this.io.connected) {
       return this.io;
@@ -103,6 +108,12 @@ export class Mock implements IGameServer {
         });
       }
 
+      // eslint-disable-next-line no-console
+      console.log('HERE MAYBE??');
+      // eslint-disable-next-line no-console
+      console.log('HERE MAYBE??');
+      // eslint-disable-next-line no-console
+      console.log(error);
       return new TestReachabilityOutputDTO().construct({
         connectable: false,
         reason: 'Unable to connect to server',

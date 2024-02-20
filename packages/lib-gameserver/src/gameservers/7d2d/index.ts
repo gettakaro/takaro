@@ -37,6 +37,10 @@ export class SevenDaysToDie implements IGameServer {
     return emitter;
   }
 
+  async destroy(): Promise<void> {
+    return;
+  }
+
   async getPlayer(player: IPlayerReferenceDTO): Promise<IGamePlayer | null> {
     const players = await this.getPlayers();
     return players.find((p) => p.gameId === player.gameId) || null;

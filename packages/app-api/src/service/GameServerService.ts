@@ -164,6 +164,9 @@ export class GameServerService extends TakaroService<
     });
     await Promise.all(installedModules.map((mod) => this.uninstallModule(id, mod.moduleId)));
 
+    const gameInstance = await this.getGame(id);
+    await gameInstance.destroy();
+
     gameClassCache.delete(id);
     await queueService.queues.connector.queue.add({
       domainId: this.domainId,
