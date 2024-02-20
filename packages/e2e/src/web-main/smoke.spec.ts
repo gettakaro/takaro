@@ -59,7 +59,7 @@ for (const { linkName, path, permission } of items) {
     // because we are adding a role using the api, react query will not know about this change
     // we need to get rid of the cached user data. We do this by logging out.
     await page.goto('/logout');
-    await page.waitForLoadState('networkidle'); // wait for network activity to settle
+    await page.waitForLoadState('domcontentloaded');
     await login(page, testUser.email, testUser.password);
 
     await page.goto(route);
