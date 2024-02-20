@@ -3,12 +3,15 @@ version: '3.1'
 services:
   postgresql:
     image: postgres:15
+    shm_size: 1g
     ports:
       - '5432:5432'
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - ./containers/postgres-test-cfg:/docker-entrypoint-initdb.d
 
   redis:
     extends:
