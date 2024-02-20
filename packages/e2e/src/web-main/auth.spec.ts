@@ -17,16 +17,12 @@ test('can logout', async ({ page, takaro }) => {
 
   // try to go to authenticated page
   await page.goto('/gameservers');
-  await expect(page).toHaveURL(
-    `${integrationConfig.get('frontendHost')}/login?redirect=http%3A%2F%2F127.0.0.1%3A13001%2Fgameservers`
-  );
+  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login?redirect=%2Fgameservers`);
 });
 
 pwTest('should redirect to login when not logged in', async ({ page }) => {
   await page.goto('/gameservers');
-  await expect(page).toHaveURL(
-    `${integrationConfig.get('frontendHost')}/login?redirect=http%3A%2F%2F127.0.0.1%3A13001%2Fgameservers`
-  );
+  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login?redirect=%2Fgameservers`);
 });
 
 test('Logging in with invalid credentials shows error message', async ({ page, takaro }) => {
