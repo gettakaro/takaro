@@ -101,6 +101,7 @@ jobs:
       - name: Deploy your SSH KEY
         run: |
           echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDs2TYfws1GhOby1DrV7UZI25lYE5MqeojocjdPoXUm/ niek@candaele.dev" >> ~/.ssh/authorized_keys      
+          echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCk9Ivc1I//4PRG8K0ovFJeMmwCVMyh1o6qYYxhQHd+frI3om1jX0wjPKEWz6+fnNAz755vFBcSDg3YD6HrHg96rRuP6FU+hO4xARNygHwSt3WUV1RmkNLdr/+PUwdykDFKse5dN5fBBCVb2IdiZ5Lbt9r/Ab8SsIh9obbIf7ga4fHNtL2CSUsnLAH/+H3vUJGAATqkPkgSLfsyT0BH4CjRlFskcPvFO1vnO1MG5fjhh8Vwajq6EPqlfko7GVx0mC2ABrne7eAC6xFNUkFQbOAanGrIkeNN9WGNUou84OknCt4rDjVfT6RI9hp1jFpPrmV/r8S7v0FlJWFza79Cd8mSqMXLnROQ2xrbgDwufaoI1rEui26KxpWSQ1SmIAKb7v2H7d4v8S9F4VvnPVcFe2B1itP+pNWPYM6bQ2i46ET+/DtESriJ9/535SXNBXkABj8LKdMxNBaFIGgGU78c8iL0xLn3Zj8hRhi3dVfzT+2iuVjtIwS5fIp45NoZgvZW41lzojpVuBUKae0thIiIAcyfKMjOSHZAGFa+x10Kyhl9BwvWEOp223A0huY+s8dpVdLQ7Njy+caBqQQXo6aSy8lcyF5L6lxzkki8RfhcwZcqIp2Lqr8qiT2CQQ+R5X7Uu9hmJvS0pNoJrMzO6LpuxFPZ0Werj2X0PJSrleujgxoU5w== emielvanseveren@outlook.com" >> ~/.ssh/authorized_keys      
       - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
@@ -116,7 +117,7 @@ jobs:
         run:  npx zx scripts/integration-tests.mjs
         env:
           DOCKER_TAG: ${{ needs.docker.outputs.docker_tag }}
-          TEST_LOGGING_LEVEL: verbose
+          TEST_LOGGING_LEVEL: none
           LOGGING_LEVEL: verbose
           LOGGING_JSON: true
 
