@@ -38,9 +38,8 @@ export const Filter: FC<FilterProps> = ({ filterFields }) => {
   const [open, setOpen] = useState<boolean>(false);
 
   const basedShape = z.object({
-    // TODO: check for all columns
-    column: z.string().nonempty({
-      message: 'Please select a valid column.',
+    name: z.string().nonempty({
+      message: 'Please select a valid field.',
     }),
     operator: z.nativeEnum(Operator, {
       errorMap: () => {
