@@ -7,15 +7,7 @@ import { FC, useCallback, useEffect, useMemo, useState } from 'react';
 import { ButtonContainer, Container, FilterActions, FilterContainer, StyledForm } from './style';
 import { FilterRow } from './field';
 import { DevTool } from '@hookform/devtools';
-
-export enum Operator {
-  is = ':',
-  contains = '*',
-}
-
-export const getOperatorLabel = (operator: Operator) => {
-  return Object.keys(Operator).find((key) => Operator[key as keyof typeof Operator] === operator) ?? '';
-};
+import { Operator } from './operator';
 
 export enum FilterInputType {
   string = 'string',
@@ -59,10 +51,6 @@ export const Filter: FC<FilterProps> = ({ filterFields }) => {
     }),
   });
 
-  const fieldNames = useMemo(() => {
-    return filterFields.map((field) => field.name);
-  }, [filterFields]);
-
   const validationSchema = useMemo(() => {
     return z.object({
       filters: z.array(
@@ -90,9 +78,9 @@ export const Filter: FC<FilterProps> = ({ filterFields }) => {
           .and(basedShape)
       ),
     });
-  }, [fieldNames]);
+  }, [filterFields]);
 
-  const { control, handleSubmit } = useForm<IFormInputs>({
+  const { control, handleSubmit, setValue } = useForm<IFormInputs>({
     mode: 'onSubmit',
 
     resolver: zodResolver(validationSchema),
@@ -162,7 +150,7 @@ export const Filter: FC<FilterProps> = ({ filterFields }) => {
                       <Tooltip.Content>Remove filter</Tooltip.Content>
                     </Tooltip>
                   )}
-                  <FilterRow index={index} id={field.id} fields={fieldNames} control={control} />
+                  <FilterRow index={index} id={field.id} fields={filterFields} control={control} setValue={setValue} />
                 </FilterContainer>
               );
             })}

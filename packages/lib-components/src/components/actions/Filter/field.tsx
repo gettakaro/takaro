@@ -1,17 +1,19 @@
-import { Control, useWatch } from 'react-hook-form';
+import { Control, UseFormSetValue, useWatch } from 'react-hook-form';
 import { SelectField, TextField } from '../../../components';
 import { FilterField, FilterInputType, getOperatorLabel, IFormInputs } from '.';
 import { Operator } from '.';
 import { camelCaseToSpaces } from '../../../helpers';
+import { useLayoutEffect } from 'react';
 
 interface FilterFieldProps {
   index: number;
   id: string;
-  fields: string[];
+  fields: FilterField[];
   control: Control<IFormInputs>;
+  setValue: UseFormSetValue<IFormInputs>;
 }
 
-export function FilterRow({ id, fields, index, control }: FilterFieldProps) {
+export function FilterRow({ id, fields, index, control, setValue }: FilterFieldProps) {
   const currentField = useWatch<IFormInputs>({
     control,
     name: `filters.${index}.name`,
@@ -20,31 +22,19 @@ export function FilterRow({ id, fields, index, control }: FilterFieldProps) {
     control,
     name: `filters.${index}.operator`,
   });
-  const getOperators = (fieldName: string | undefined) => {
-    const defaultOperators = [Operator.is, Operator.contains];
+  const currentType = useWatch<IFormInputs>({
+    control,
+    name: `filters.${index}.type`,
+  });
 
-    if (!fieldName) {
-      return defaultOperators;
-    }
+  const operators = getOperators(currentType as FilterInputType);
 
-    const field: FilterField = {
-      name: fieldName,
-      type: FilterInputType.string,
-    };
-    if (!field) {
-      return defaultOperators;
-    }
-
-    switch (field.type) {
-      case FilterInputType.number:
-      case FilterInputType.datetime:
-        return [Operator.is];
-      default:
-        return defaultOperators;
-    }
-  };
-
-  const operators = getOperators(currentField.toString());
+  useLayoutEffect(() => {
+    setValue(
+      `filters.${index}.type`,
+      fields.find((field) => field.name === currentField)?.type ?? FilterInputType.string
+    );
+  }, [currentField]);
 
   return (
     <>
@@ -57,15 +47,16 @@ export function FilterRow({ id, fields, index, control }: FilterFieldProps) {
           if (selectedItems.length === 0) {
             return 'Select a column';
           }
-          const field = fields.find((col) => col === selectedItems[0].value);
+          const field = fields.find((col) => col.name === selectedItems[0].value)?.name;
+
           return field;
         }}
       >
         <SelectField.OptionGroup>
           {fields.map((field) => (
-            <SelectField.Option key={field} value={field} label={field}>
+            <SelectField.Option key={field.name} value={field.name} label={field.name}>
               <div>
-                <span>{camelCaseToSpaces(field)}</span>
+                <span>{camelCaseToSpaces(field.name)}</span>
               </div>
             </SelectField.Option>
           ))}
