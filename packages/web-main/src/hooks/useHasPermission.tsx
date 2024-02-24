@@ -31,6 +31,10 @@ export const useHasPermission = (requiredPermissions: RequiredPermissions) => {
 
 // Non hook version
 export const hasPermission = (session: UserOutputWithRolesDTO, requiredPermissions: RequiredPermissions): boolean => {
+  if (!session) {
+    return false;
+  }
+
   const userPermissions = () => {
     if (session.roles === undefined || session.roles.length === 0) {
       return new Set() as Set<PERMISSIONS>;

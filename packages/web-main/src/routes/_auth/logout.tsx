@@ -1,24 +1,26 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useAuth } from 'hooks/useAuth';
 import { useEffect } from 'react';
-import { useNavigate } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/_auth/logout')({
   component: LogOut,
 });
 
 function LogOut() {
-  const { logOut, session } = useAuth();
+  const { logOut } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // We do not want to add session as a dependency here
-    if (session) {
-      logOut().then(() => {});
-    } else {
-      navigate({ to: '/login' });
-    }
-  }, [logOut]);
-
+    const performLogout = async () => {
+      try {
+        await logOut();
+        navigate({ to: '/login' });
+      } catch (error) {
+        console.error('Logout failed:', error);
+        navigate({ to: '/login' });
+      }
+    };
+    performLogout();
+  }, [navigate]);
   return <div>Logging out...</div>;
 }
