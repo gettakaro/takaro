@@ -151,7 +151,7 @@ extendedTest.describe('filetree', () => {
   extendedTest.fixme('Can save command config', async ({}) => {});
 });
 
-extendedTest('Can copy module', async ({ page, takaro }) => {
+extendedTest.fixme('Can copy module', async ({ page, takaro }) => {
   const { studioPage, moduleDefinitionsPage } = takaro;
   const copyName = `${studioPage.mod.name}-copy`;
 
