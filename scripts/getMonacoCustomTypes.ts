@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 // Extracted from https://github.com/Claviz/dts-extractor
 // And adjusted/integrated into the project
 
@@ -56,25 +57,28 @@ async function getDts({ nodeModulesPath, packages }: { nodeModulesPath: string; 
 
   await getTypingsForPackages(packages);
 
+  // Hacky fix...
+  // Replace all instances of "import(\"axios\").AxiosResponse" with "AxiosResponse
+  // There's some weird stuff going on with the axios types that I don't want to deal with
+
+  const clientTypings = typings['file://node_modules/@takaro/apiclient/dist/generated/api.d.ts'];
+  if (clientTypings) {
+    typings['file://node_modules/@takaro/apiclient/dist/generated/api.d.ts'] = clientTypings
+      .replace(/import\("axios"\)\.AxiosResponse/g, 'AxiosResponse')
+      .replace(/import\("axios"\)\.AxiosRequestConfig/g, 'AxiosRequestConfig');
+  }
+
   return typings;
 }
 
 async function main() {
   const dts = await getDts({
     nodeModulesPath: './node_modules',
-    packages: ['@takaro/helpers', '@takaro/queues', 'axios'],
+    packages: ['axios', '@takaro/helpers', '@takaro/queues'],
   });
 
-  const webMainEditorPath = path.join(
-    __dirname,
-    '..',
-    'packages',
-    'web-main',
-    'src',
-    'components',
-    'modules',
-    'Editor'
-  );
+  const webMainEditorPath = path.join(__dirname, '..', 'packages', 'web-main', 'src', 'pages', 'studio', 'Editor');
+
   await fs.ensureDir(webMainEditorPath);
   await fs.writeJSON(path.join(webMainEditorPath, 'monacoCustomTypes.json'), dts);
 
