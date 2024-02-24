@@ -4944,6 +4944,25 @@ export interface PlayerOnGameServerSetCurrencyInputDTO {
 /**
  *
  * @export
+ * @interface PlayerOnGameServerStatsInputDTO
+ */
+export interface PlayerOnGameServerStatsInputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameServerStatsInputDTO
+   */
+  startISO: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOnGameServerStatsInputDTO
+   */
+  endISO: string;
+}
+/**
+ *
+ * @export
  * @interface PlayerOnGameServerUpdateDTO
  */
 export interface PlayerOnGameServerUpdateDTO {
@@ -15352,6 +15371,57 @@ export const PlayerOnGameServerApiAxiosParamCreator = function (configuration?: 
     },
     /**
      *  Required permissions: `READ_PLAYERS`
+     * @summary Ping
+     * @param {string} gameserverId
+     * @param {string} playerId
+     * @param {PlayerOnGameServerStatsInputDTO} [playerOnGameServerStatsInputDTO] PlayerOnGameServerStatsInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerOnGameServerControllerPing: async (
+      gameserverId: string,
+      playerId: string,
+      playerOnGameServerStatsInputDTO?: PlayerOnGameServerStatsInputDTO,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'gameserverId' is not null or undefined
+      assertParamExists('playerOnGameServerControllerPing', 'gameserverId', gameserverId);
+      // verify required parameter 'playerId' is not null or undefined
+      assertParamExists('playerOnGameServerControllerPing', 'playerId', playerId);
+      const localVarPath = `/gameserver/{gameserverId}/player/{playerId}/stats/ping`
+        .replace(`{${'gameserverId'}}`, encodeURIComponent(String(gameserverId)))
+        .replace(`{${'playerId'}}`, encodeURIComponent(String(playerId)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        playerOnGameServerStatsInputDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `READ_PLAYERS`
      * @summary Search
      * @param {PlayerOnGameServerSearchInputDTO} [playerOnGameServerSearchInputDTO] PlayerOnGameServerSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -15603,6 +15673,38 @@ export const PlayerOnGameServerApiFp = function (configuration?: Configuration) 
     },
     /**
      *  Required permissions: `READ_PLAYERS`
+     * @summary Ping
+     * @param {string} gameserverId
+     * @param {string} playerId
+     * @param {PlayerOnGameServerStatsInputDTO} [playerOnGameServerStatsInputDTO] PlayerOnGameServerStatsInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async playerOnGameServerControllerPing(
+      gameserverId: string,
+      playerId: string,
+      playerOnGameServerStatsInputDTO?: PlayerOnGameServerStatsInputDTO,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.playerOnGameServerControllerPing(
+        gameserverId,
+        playerId,
+        playerOnGameServerStatsInputDTO,
+        options
+      );
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath =
+        operationServerMap['PlayerOnGameServerApi.playerOnGameServerControllerPing']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `READ_PLAYERS`
      * @summary Search
      * @param {PlayerOnGameServerSearchInputDTO} [playerOnGameServerSearchInputDTO] PlayerOnGameServerSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -15770,6 +15872,25 @@ export const PlayerOnGameServerApiFactory = function (
     },
     /**
      *  Required permissions: `READ_PLAYERS`
+     * @summary Ping
+     * @param {string} gameserverId
+     * @param {string} playerId
+     * @param {PlayerOnGameServerStatsInputDTO} [playerOnGameServerStatsInputDTO] PlayerOnGameServerStatsInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerOnGameServerControllerPing(
+      gameserverId: string,
+      playerId: string,
+      playerOnGameServerStatsInputDTO?: PlayerOnGameServerStatsInputDTO,
+      options?: any
+    ): AxiosPromise<void> {
+      return localVarFp
+        .playerOnGameServerControllerPing(gameserverId, playerId, playerOnGameServerStatsInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `READ_PLAYERS`
      * @summary Search
      * @param {PlayerOnGameServerSearchInputDTO} [playerOnGameServerSearchInputDTO] PlayerOnGameServerSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -15898,6 +16019,27 @@ export class PlayerOnGameServerApi extends BaseAPI {
   public playerOnGameServerControllerGetOne(gameServerId: string, playerId: string, options?: RawAxiosRequestConfig) {
     return PlayerOnGameServerApiFp(this.configuration)
       .playerOnGameServerControllerGetOne(gameServerId, playerId, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `READ_PLAYERS`
+   * @summary Ping
+   * @param {string} gameserverId
+   * @param {string} playerId
+   * @param {PlayerOnGameServerStatsInputDTO} [playerOnGameServerStatsInputDTO] PlayerOnGameServerStatsInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof PlayerOnGameServerApi
+   */
+  public playerOnGameServerControllerPing(
+    gameserverId: string,
+    playerId: string,
+    playerOnGameServerStatsInputDTO?: PlayerOnGameServerStatsInputDTO,
+    options?: RawAxiosRequestConfig
+  ) {
+    return PlayerOnGameServerApiFp(this.configuration)
+      .playerOnGameServerControllerPing(gameserverId, playerId, playerOnGameServerStatsInputDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

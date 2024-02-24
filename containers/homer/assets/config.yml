@@ -109,10 +109,10 @@ services:
   - name: "Dev tools"
     icon: "fas fa-cloud"
     items:
-      - name: "pgadmin"
+      - name: "Influxdb dashboard"
         icon: "fas fa-database"
-        subtitle: "Database UI for PostgreSQL"
-        url: "http://127.0.0.1:5050"
+        subtitle: "Database UI for influxdb"
+        url: "http://127.0.0.1:8086"
         target: "_blank"
       - name: "Bull dashboard"
         icon: "fas fa-chart-line"

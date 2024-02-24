@@ -66,5 +66,4 @@ npm run-script -w packages/test build
 
 npx ts-node scripts/getMonacoCustomTypes.ts
 
-# npm run-script -w packages/app-api build
 # npm run-script -w packages/app-agent build

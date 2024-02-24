@@ -51,6 +51,7 @@ import GameServerStatistics from 'pages/gameserver/dashboards/GameServerStatisti
 import { PlayerInventory } from 'pages/player/gameserver/PlayerInventory';
 import { PlayerEvents } from 'pages/player/gameserver/PlayerEvents';
 import { PlayerEconomy } from 'pages/player/gameserver/PlayerEconomy';
+import { GameServerStats } from 'pages/player/gameserver/GameServerStats';
 
 // Lazy load pages
 const LogIn = lazy(() => import('./pages/LogIn'));
@@ -129,6 +130,7 @@ export const router = sentryCreateBrowserRouter(
               <Route element={<PlayerInventory />} path={PATHS.player.inventory(':playerId')} />
               <Route element={<PlayerEvents />} path={PATHS.player.events(':playerId')} />
               <Route element={<PlayerEconomy />} path={PATHS.player.economy(':playerId')} />
+              <Route element={<GameServerStats />} path={PATHS.player.gameserver(':playerId')} />
             </Route>
           </Route>
 

@@ -8,6 +8,10 @@ services:
     extends:
       file: docker-compose.yml
       service: postgresql
+  influxdb:
+    extends:
+      file: docker-compose.yml
+      service: influxdb
   redis:
     extends:
       file: docker-compose.yml

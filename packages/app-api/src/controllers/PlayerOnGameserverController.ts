@@ -1,4 +1,4 @@
-import { IsBoolean, IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsBoolean, IsISO8601, IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
@@ -14,6 +14,7 @@ import {
 } from '../service/PlayerOnGameserverService.js';
 import { onlyIfEconomyEnabledMiddleware } from '../middlewares/onlyIfEconomyEnabled.js';
 import { PlayerService } from '../service/PlayerService.js';
+import { PlayerLocationStat, PlayerPingStat } from '../lib/stat.js';
 
 export class PlayerOnGameserverOutputDTOAPI extends APIOutput<PlayerOnGameserverOutputWithRolesDTO> {
   @Type(() => PlayerOnGameserverOutputWithRolesDTO)
@@ -62,6 +63,14 @@ class PlayerOnGameServerSearchInputDTO extends ITakaroQuery<PlayerOnGameServerSe
 class PlayerOnGameServerSetCurrencyInputDTO {
   @IsNumber()
   currency!: number;
+}
+
+class PlayerOnGameServerStatsInputDTO {
+  @IsISO8601()
+  timeRangeStart!: string;
+
+  @IsISO8601()
+  timeRangeEnd!: string;
 }
 
 class ParamSenderReceiver {
@@ -159,5 +168,39 @@ export class PlayerOnGameServerController {
     const playerService = new PlayerService(req.domainId);
     const pog = await playerService.getRef(params.playerId, params.gameServerId);
     return apiResponse(await service.deductCurrency(pog.id, body.currency));
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_PLAYERS]))
+  @Post('/gameserver/:gameServerId/player/:playerId/stats/ping')
+  async ping(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: PogParam,
+    @Body() body: PlayerOnGameServerStatsInputDTO
+  ) {
+    const pingStatService = new PlayerPingStat(req.domainId);
+    const res = await pingStatService.read({
+      playerId: params.playerId,
+      gameServerId: params.gameServerId,
+      timeRangeStart: body.timeRangeStart,
+      timeRangeEnd: body.timeRangeEnd,
+    });
+    return apiResponse(res);
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_PLAYERS]))
+  @Post('/gameserver/:gameServerId/player/:playerId/stats/location')
+  async location(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: PogParam,
+    @Body() body: PlayerOnGameServerStatsInputDTO
+  ) {
+    const locationStatService = new PlayerLocationStat(req.domainId);
+    const res = await locationStatService.read({
+      playerId: params.playerId,
+      gameServerId: params.gameServerId,
+      timeRangeStart: body.timeRangeStart,
+      timeRangeEnd: body.timeRangeEnd,
+    });
+    return apiResponse(res);
   }
 }

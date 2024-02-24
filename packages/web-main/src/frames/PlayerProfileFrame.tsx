@@ -13,7 +13,7 @@ import { usePlayer } from 'queries/players';
 import { FC } from 'react';
 import { useParams, useNavigate, Outlet } from 'react-router-dom';
 import { DateTime } from 'luxon';
-import { usePlayerOnGameServers } from 'queries/players/queries';
+import { usePlayerOnGameServers } from 'queries/pog/queries';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { ErrorBoundary } from 'components/ErrorBoundary';
 
@@ -71,6 +71,10 @@ export const PlayerProfileFrame: FC = () => {
     {
       text: 'Economy',
       to: PATHS.player.economy(playerId),
+    },
+    {
+      text: 'Game server stats',
+      to: PATHS.player.gameserver(playerId),
     },
   ];
 

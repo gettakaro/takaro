@@ -75,6 +75,7 @@ export const PATHS = {
     inventory: (playerId: string) => `/players/${playerId}/inventory`,
     events: (playerId: string) => `/players/${playerId}/events`,
     economy: (playerId: string) => `/players/${playerId}/economy`,
+    gameserver: (playerId: string) => `/players/${playerId}/gameserver`,
   },
 
   user: {
