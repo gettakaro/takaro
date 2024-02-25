@@ -7,7 +7,16 @@ const { expect } = playwright;
 
 // When a user certain specific READ_* permissions, they should be able to see the page
 const items = [
-  { permission: PERMISSIONS.READ_EVENTS, linkName: 'Events', path: 'events' },
+  {
+    permission: [
+      PERMISSIONS.READ_EVENTS,
+      PERMISSIONS.READ_GAMESERVERS,
+      PERMISSIONS.READ_PLAYERS,
+      PERMISSIONS.READ_USERS,
+    ],
+    linkName: 'Events',
+    path: 'events',
+  },
   { permission: PERMISSIONS.READ_PLAYERS, linkName: 'Players', path: 'players' },
   { permission: PERMISSIONS.READ_GAMESERVERS, linkName: 'Game servers', path: 'gameservers' },
   { permission: PERMISSIONS.READ_USERS, linkName: 'Users', path: 'users' },
