@@ -1,6 +1,7 @@
 import playwright from '@playwright/test';
 import { test } from './fixtures/index.js';
-import { userTest, PERMISSIONS } from './fixtures/index.js';
+import { userTest } from './fixtures/index.js';
+import { PERMISSIONS } from '@takaro/apiclient';
 import { login } from './helpers.js';
 import { TEST_IDS } from './testIds.js';
 const { expect } = playwright;
@@ -8,22 +9,17 @@ const { expect } = playwright;
 // When a user certain specific READ_* permissions, they should be able to see the page
 const items = [
   {
-    permission: [
-      PERMISSIONS.READ_EVENTS,
-      PERMISSIONS.READ_GAMESERVERS,
-      PERMISSIONS.READ_PLAYERS,
-      PERMISSIONS.READ_USERS,
-    ],
+    permission: [PERMISSIONS.ReadEvents, PERMISSIONS.ReadGameservers, PERMISSIONS.ReadPlayers, PERMISSIONS.ReadUsers],
     linkName: 'Events',
     path: 'events',
   },
-  { permission: PERMISSIONS.READ_PLAYERS, linkName: 'Players', path: 'players' },
-  { permission: PERMISSIONS.READ_GAMESERVERS, linkName: 'Game servers', path: 'gameservers' },
-  { permission: PERMISSIONS.READ_USERS, linkName: 'Users', path: 'users' },
-  { permission: PERMISSIONS.READ_MODULES, linkName: 'Modules', path: 'modules' },
-  { permission: PERMISSIONS.READ_VARIABLES, linkName: 'Variables', path: 'variables' },
-  { permission: PERMISSIONS.READ_SETTINGS, linkName: 'Settings', path: 'settings' },
-  { permission: PERMISSIONS.READ_ROLES, linkName: 'Roles', path: 'roles' },
+  { permission: PERMISSIONS.ReadPlayers, linkName: 'Players', path: 'players' },
+  { permission: PERMISSIONS.ReadGameservers, linkName: 'Game servers', path: 'gameservers' },
+  { permission: PERMISSIONS.ReadUsers, linkName: 'Users', path: 'users' },
+  { permission: PERMISSIONS.ReadModules, linkName: 'Modules', path: 'modules' },
+  { permission: PERMISSIONS.ReadVariables, linkName: 'Variables', path: 'variables' },
+  { permission: PERMISSIONS.ReadSettings, linkName: 'Settings', path: 'settings' },
+  { permission: PERMISSIONS.ReadRoles, linkName: 'Roles', path: 'roles' },
 
   // TODO: gameserver specific permissions are not fully implemented yet.
   // Once this has landed, extra tests should be added for these.
