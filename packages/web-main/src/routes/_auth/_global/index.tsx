@@ -5,11 +5,7 @@ import { hasPermission } from 'hooks/useHasPermission';
 
 export const Route = createFileRoute('/_auth/_global/')({
   beforeLoad: ({ context }) => {
-    if (
-      context.auth === undefined ||
-      context.auth === null ||
-      (context.auth && context.auth.isAuthenticated === false)
-    ) {
+    if (context.auth.isAuthenticated === false) {
       throw redirect({ to: '/login' });
     }
 

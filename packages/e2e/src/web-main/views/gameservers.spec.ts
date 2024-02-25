@@ -4,8 +4,6 @@ import { test } from '../fixtures/index.js';
 const { expect } = playwright;
 
 test('Can create gameserver', async ({ page, takaro }) => {
-  await page.goto('/');
-
   const { GameServersPage } = takaro;
 
   const serverName = 'My new server';

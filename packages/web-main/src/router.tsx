@@ -13,7 +13,12 @@ export interface RouterContext {
 export const router = createRouter({
   routeTree,
   context: {
-    auth: undefined!,
+    auth: {
+      isAuthenticated: false,
+      logOut: async () => {},
+      session: undefined!,
+      setSession: () => {},
+    },
     queryClient: queryClient,
   },
 

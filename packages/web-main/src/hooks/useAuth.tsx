@@ -3,6 +3,7 @@ import { UserOutputWithRolesDTO } from '@takaro/apiclient';
 import { createContext, useCallback, useContext, useState } from 'react';
 import { useOry } from './useOry';
 import * as Sentry from '@sentry/react';
+import { flushSync } from 'react-dom';
 
 export interface IAuthContext {
   logOut: () => Promise<void>;
@@ -32,9 +33,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Set session in both state and localStorage
   const setSession = useCallback((session: UserOutputWithRolesDTO) => {
-    sessionStorage.setItem('userSession', JSON.stringify(session));
-    Sentry.setUser({ id: session.id, email: session.email, username: session.name });
-    setUser(session);
+    flushSync(() => {
+      sessionStorage.setItem('userSession', JSON.stringify(session));
+      Sentry.setUser({ id: session.id, email: session.email, username: session.name });
+      setUser(session);
+    });
   }, []);
 
   return (

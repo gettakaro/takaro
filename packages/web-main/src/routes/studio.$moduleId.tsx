@@ -36,7 +36,7 @@ const LoadingContainer = styled.div`
 
 export const Route = createFileRoute('/studio/$moduleId')({
   beforeLoad: ({ context }) => {
-    if (context.auth === undefined || (context.auth && context.auth.isAuthenticated === false)) {
+    if (context.auth.isAuthenticated === false) {
       throw redirect({ to: '/login', search: { redirect: location.href } });
     }
 

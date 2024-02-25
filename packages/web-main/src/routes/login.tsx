@@ -11,7 +11,6 @@ import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { useOry } from 'hooks/useOry';
 import { getApiClient } from 'util/getApiClient';
 import { useAuth } from 'hooks/useAuth';
-import { flushSync } from 'react-dom';
 
 export const Route = createFileRoute('/login')({
   validateSearch: z.object({
@@ -100,9 +99,7 @@ function Component() {
         'Cache-Control': 'no-cache',
       },
     });
-    flushSync(() => {
-      setSession(res.data.data);
-    });
+    setSession(res.data.data);
   }
 
   useEffect(() => {

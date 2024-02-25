@@ -1,5 +1,6 @@
 import { PlayerOutputDTO } from '@takaro/apiclient';
 import { BasePage } from './BasePage.js';
+import { Page } from '@playwright/test';
 
 export class PlayerProfilePage extends BasePage {
   public player: PlayerOutputDTO;
