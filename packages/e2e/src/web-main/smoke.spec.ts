@@ -13,13 +13,13 @@ const items = [
     linkName: 'Events',
     path: 'events',
   },
-  { permission: PERMISSIONS.ReadPlayers, linkName: 'Players', path: 'players' },
-  { permission: PERMISSIONS.ReadGameservers, linkName: 'Game servers', path: 'gameservers' },
-  { permission: PERMISSIONS.ReadUsers, linkName: 'Users', path: 'users' },
-  { permission: PERMISSIONS.ReadModules, linkName: 'Modules', path: 'modules' },
-  { permission: PERMISSIONS.ReadVariables, linkName: 'Variables', path: 'variables' },
-  { permission: PERMISSIONS.ReadSettings, linkName: 'Settings', path: 'settings' },
-  { permission: PERMISSIONS.ReadRoles, linkName: 'Roles', path: 'roles' },
+  { permission: [PERMISSIONS.ReadPlayers], linkName: 'Players', path: 'players' },
+  { permission: [PERMISSIONS.ReadGameservers], linkName: 'Game servers', path: 'gameservers' },
+  { permission: [PERMISSIONS.ReadUsers], linkName: 'Users', path: 'users' },
+  { permission: [PERMISSIONS.ReadModules], linkName: 'Modules', path: 'modules' },
+  { permission: [PERMISSIONS.ReadVariables], linkName: 'Variables', path: 'variables' },
+  { permission: [PERMISSIONS.ReadSettings], linkName: 'Settings', path: 'settings' },
+  { permission: [PERMISSIONS.ReadRoles], linkName: 'Roles', path: 'roles' },
 
   // TODO: gameserver specific permissions are not fully implemented yet.
   // Once this has landed, extra tests should be added for these.
@@ -47,6 +47,7 @@ for (const { linkName, path, permission } of items) {
 
     // check if link is not visible in the navbar
     let nav = page.getByTestId(TEST_IDS.GLOBAL_NAV);
+    await expect(nav).toBeVisible();
     await expect(nav.getByRole('link', { name: linkName, exact: true })).toHaveCount(0);
 
     // check if link redirects to Forbidden page
@@ -56,7 +57,8 @@ for (const { linkName, path, permission } of items) {
 
     // add permissions
     const { rootClient, testUser } = takaro;
-    const permissions = await rootClient.permissionCodesToInputs([permission]);
+    const permissions = await rootClient.permissionCodesToInputs(permission);
+
     await rootClient.role.roleControllerUpdate(testUser.role.id, {
       permissions,
     });

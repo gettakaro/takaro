@@ -15,7 +15,7 @@ import { flushSync } from 'react-dom';
 
 export const Route = createFileRoute('/login')({
   validateSearch: z.object({
-    redirect: z.string().catch('/dashboard'),
+    redirect: z.string().catch('/'),
   }),
   component: Component,
 });

@@ -15,19 +15,19 @@ import { Route as LogoutReturnImport } from './routes/logout-return';
 import { Route as LoginImport } from './routes/login';
 import { Route as ForbiddenImport } from './routes/forbidden';
 import { Route as AuthImport } from './routes/_auth';
-import { Route as IndexImport } from './routes/index';
 import { Route as StudioModuleIdImport } from './routes/studio.$moduleId';
 import { Route as AccountVerificationImport } from './routes/account.verification';
 import { Route as AccountRecoveryImport } from './routes/account.recovery';
 import { Route as AccountProfileImport } from './routes/account.profile';
 import { Route as AuthLogoutImport } from './routes/_auth/logout';
 import { Route as AuthGlobalImport } from './routes/_auth/_global';
-import { Route as AuthGlobalPlayersImport } from './routes/_auth/_global/players';
+import { Route as AuthGlobalIndexImport } from './routes/_auth/_global/index';
 import { Route as AuthGameserverGameServerIdImport } from './routes/_auth/gameserver.$gameServerId';
 import { Route as AuthGlobalVariablesImport } from './routes/_auth/_global/variables';
 import { Route as AuthGlobalUsersImport } from './routes/_auth/_global/users';
 import { Route as AuthGlobalSettingsImport } from './routes/_auth/_global/settings';
 import { Route as AuthGlobalRolesImport } from './routes/_auth/_global/roles';
+import { Route as AuthGlobalPlayersImport } from './routes/_auth/_global/players';
 import { Route as AuthGlobalModulesImport } from './routes/_auth/_global/modules';
 import { Route as AuthGlobalGameserversImport } from './routes/_auth/_global/gameservers';
 import { Route as AuthGlobalEventsImport } from './routes/_auth/_global/events';
@@ -87,11 +87,6 @@ const AuthRoute = AuthImport.update({
   getParentRoute: () => rootRoute,
 } as any);
 
-const IndexRoute = IndexImport.update({
-  path: '/',
-  getParentRoute: () => rootRoute,
-} as any);
-
 const StudioModuleIdRoute = StudioModuleIdImport.update({
   path: '/studio/$moduleId',
   getParentRoute: () => rootRoute,
@@ -122,8 +117,8 @@ const AuthGlobalRoute = AuthGlobalImport.update({
   getParentRoute: () => AuthRoute,
 } as any);
 
-const AuthGlobalPlayersRoute = AuthGlobalPlayersImport.update({
-  path: '/players',
+const AuthGlobalIndexRoute = AuthGlobalIndexImport.update({
+  path: '/',
   getParentRoute: () => AuthGlobalRoute,
 } as any);
 
@@ -149,6 +144,11 @@ const AuthGlobalSettingsRoute = AuthGlobalSettingsImport.update({
 
 const AuthGlobalRolesRoute = AuthGlobalRolesImport.update({
   path: '/roles',
+  getParentRoute: () => AuthGlobalRoute,
+} as any);
+
+const AuthGlobalPlayersRoute = AuthGlobalPlayersImport.update({
+  path: '/players',
   getParentRoute: () => AuthGlobalRoute,
 } as any);
 
@@ -338,10 +338,6 @@ const AuthGameserverGameServerIdModulesModuleIdInstallViewRoute =
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      preLoaderRoute: typeof IndexImport;
-      parentRoute: typeof rootRoute;
-    };
     '/_auth': {
       preLoaderRoute: typeof AuthImport;
       parentRoute: typeof rootRoute;
@@ -398,6 +394,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthGlobalModulesImport;
       parentRoute: typeof AuthGlobalImport;
     };
+    '/_auth/_global/players': {
+      preLoaderRoute: typeof AuthGlobalPlayersImport;
+      parentRoute: typeof AuthGlobalImport;
+    };
     '/_auth/_global/roles': {
       preLoaderRoute: typeof AuthGlobalRolesImport;
       parentRoute: typeof AuthGlobalImport;
@@ -417,6 +417,10 @@ declare module '@tanstack/react-router' {
     '/_auth/gameserver/$gameServerId': {
       preLoaderRoute: typeof AuthGameserverGameServerIdImport;
       parentRoute: typeof AuthImport;
+    };
+    '/_auth/_global/': {
+      preLoaderRoute: typeof AuthGlobalIndexImport;
+      parentRoute: typeof AuthGlobalImport;
     };
     '/_auth/_global/modules/create': {
       preLoaderRoute: typeof AuthGlobalModulesCreateImport;
@@ -546,17 +550,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthGameserverGameServerIdModulesModuleIdInstallViewImport;
       parentRoute: typeof AuthGameserverGameServerIdModulesModuleIdInstallImport;
     };
-    '/_auth/_global/players': {
-      preLoaderRoute: typeof AuthGlobalPlayersImport;
-      parentRoute: typeof AuthGlobalImport;
-    };
   }
 }
 
 // Create and export the route tree
 
 export const routeTree = rootRoute.addChildren([
-  IndexRoute,
   AuthRoute.addChildren([
     AuthGlobalRoute.addChildren([
       AuthGlobalDashboardRoute,
@@ -572,6 +571,7 @@ export const routeTree = rootRoute.addChildren([
         AuthGlobalModulesModuleIdUpdateRoute,
         AuthGlobalModulesModuleIdViewRoute,
       ]),
+      AuthGlobalPlayersRoute,
       AuthGlobalRolesRoute.addChildren([
         AuthGlobalRolesCreateRoute,
         AuthGlobalRolesUpdateRoleIdRoute,
@@ -584,6 +584,7 @@ export const routeTree = rootRoute.addChildren([
       ]),
       AuthGlobalUsersRoute,
       AuthGlobalVariablesRoute.addChildren([AuthGlobalVariablesCreateRoute, AuthGlobalVariablesUpdateVariableIdRoute]),
+      AuthGlobalIndexRoute,
       AuthGlobalPlayerPlayerIdRoute.addChildren([
         AuthGlobalPlayerPlayerIdEconomyRoute,
         AuthGlobalPlayerPlayerIdEventsRoute,
@@ -593,7 +594,6 @@ export const routeTree = rootRoute.addChildren([
         AuthGlobalPlayerPlayerIdRoleAssignRoute,
       ]),
       AuthGlobalUserUserIdRoute.addChildren([AuthGlobalUserUserIdRoleAssignRoute]),
-      AuthGlobalPlayersRoute,
     ]),
     AuthLogoutRoute,
     AuthGameserverGameServerIdRoute.addChildren([
