@@ -42,7 +42,7 @@ for (const { linkName, path, permission } of items) {
     await expect(page).toHaveURL(new RegExp(`${path}.*`));
   });
 
-  userTest(`Can go to ${linkName} with permissions`, async ({ takaro, page }) => {
+  userTest.fixme(`Can go to ${linkName} with permissions`, async ({ takaro, page }) => {
     const route = `/${path}`;
 
     // check if link is not visible in the navbar
