@@ -1,7 +1,7 @@
 import { PERMISSIONS } from '@takaro/apiclient';
 import { ErrorPage } from '@takaro/lib-components';
 import { createFileRoute, redirect } from '@tanstack/react-router';
-import { hasPermission } from 'hooks/useHasPermission';
+import { getUserPermissions, hasPermission } from 'hooks/useHasPermission';
 
 export const Route = createFileRoute('/_auth/_global/')({
   beforeLoad: ({ context }) => {
@@ -11,6 +11,11 @@ export const Route = createFileRoute('/_auth/_global/')({
 
     if (hasPermission(context.auth.session, [PERMISSIONS.ReadEvents])) {
       throw redirect({ to: '/dashboard' });
+    }
+
+    /* if user has no permissions at all, so can't see any page, redirect to forbidden */
+    if (getUserPermissions(context.auth.session).length === 0) {
+      throw redirect({ to: '/forbidden' });
     }
   },
 

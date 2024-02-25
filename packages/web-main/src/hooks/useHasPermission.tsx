@@ -48,3 +48,16 @@ export const hasPermission = (session: UserOutputWithRolesDTO, requiredPermissio
 
   return hasPermissionHelper(Array.from(userPermissions()), requiredPermissions);
 };
+
+export const getUserPermissions = (session: UserOutputWithRolesDTO): PERMISSIONS[] => {
+  if (session.roles === undefined || session.roles.length === 0) {
+    return [];
+  }
+
+  return Array.from(
+    session.roles
+      .flatMap((assign) => assign.role.permissions.map((permission) => permission.permission.permission as PERMISSIONS))
+      .filter((permission) => Object.values(PERMISSIONS).includes(permission))
+      .reduce((acc, permission) => acc.add(permission), new Set()) as Set<PERMISSIONS>
+  );
+};
