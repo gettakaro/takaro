@@ -52,11 +52,12 @@ export class ModuleDefinitionsPage extends BasePage {
       await this.fillDescription(description);
     }
 
-    // TODO: delete existing permissions first
-    if (permissions) {
-      permissions.forEach(async (permission, index) => {
-        await this.fillPermission(permission, index);
-      });
+    if (permissions && permissions.length > 0) {
+      await Promise.all(
+        permissions.map(async (permission, index) => {
+          return this.fillPermission(permission, index);
+        })
+      );
     }
 
     if (save) {

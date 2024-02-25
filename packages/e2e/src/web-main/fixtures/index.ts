@@ -168,19 +168,19 @@ export const extendedTest = main.extend<ExtendedFixture>({
       });
 
       // create command, hook and cronjob
-      Promise.all([
-        await rootClient.command.commandControllerCreate({
+      await Promise.all([
+        rootClient.command.commandControllerCreate({
           moduleId: mod.data.data.id,
           name: 'my-command',
           trigger: 'test',
         }),
-        await rootClient.hook.hookControllerCreate({
+        rootClient.hook.hookControllerCreate({
           moduleId: mod.data.data.id,
           name: 'my-hook',
           regex: 'test',
           eventType: HookCreateDTOEventTypeEnum.Log,
         }),
-        await rootClient.cronjob.cronJobControllerCreate({
+        rootClient.cronjob.cronJobControllerCreate({
           moduleId: mod.data.data.id,
           name: 'my-cron',
           temporalValue: '* * * * *',

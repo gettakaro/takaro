@@ -143,7 +143,7 @@ extendedTest('Can view value details', async ({ page, takaro }) => {
   // we consider there to be only one variable at this point.
   await page.getByText('View value').click();
 
-  expect(page.getByText(variableValue)).toBeVisible();
+  await expect(page.getByText(variableValue)).toBeVisible();
 });
 
 extendedTest('Can update variable', async ({ page, takaro }) => {

@@ -8,7 +8,7 @@ test('Can view module', async ({ takaro, page }) => {
   const { moduleDefinitionsPage } = takaro;
   await moduleDefinitionsPage.goto();
   await moduleDefinitionsPage.view('Module without functions');
-  expect(await page.getByLabel('Name').isEditable()).toBe(false);
+  await expect(page.getByLabel('Name')).toBeEditable();
 });
 
 test('Can create module', async ({ page, takaro }) => {
