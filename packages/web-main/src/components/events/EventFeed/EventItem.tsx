@@ -195,6 +195,46 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
         </>
       );
       break;
+    case EventOutputDTOEventNameEnum.ModuleCreated:
+    case EventOutputDTOEventNameEnum.ModuleUpdated:
+    case EventOutputDTOEventNameEnum.ModuleDeleted:
+      properties = (
+        <>
+          {event.module ? (
+            <EventProperty name="module" value={event?.module?.name} />
+          ) : (
+            <EventProperty name="module" value={event?.moduleId} />
+          )}
+          {event.user ? (
+            <EventProperty name="user" value={event.user?.name} />
+          ) : (
+            <EventProperty name="user" value={event?.userId} />
+          )}
+        </>
+      );
+      break;
+    case EventOutputDTOEventNameEnum.ModuleInstalled:
+    case EventOutputDTOEventNameEnum.ModuleUninstalled:
+      properties = (
+        <>
+          {event.module ? (
+            <EventProperty name="module" value={event?.module?.name} />
+          ) : (
+            <EventProperty name="module" value={event?.moduleId} />
+          )}
+          {event.user ? (
+            <EventProperty name="user" value={event.user?.name} />
+          ) : (
+            <EventProperty name="user" value={event?.userId} />
+          )}
+          {event.gameServer ? (
+            <EventProperty name="gameserver" value={event.gameServer?.name} />
+          ) : (
+            <EventProperty name="gameserver" value={event.gameserverId} />
+          )}
+        </>
+      );
+      break;
   }
 
   return (
