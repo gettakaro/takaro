@@ -16,7 +16,15 @@ import { errors, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { SettingsService } from './SettingsService.js';
 import { TakaroDTO } from '@takaro/util';
 import { queueService } from '@takaro/queues';
-import { HookEvents, IPosition, TakaroEventServerStatusChanged, GameEvents, EventChatMessage } from '@takaro/modules';
+import {
+  HookEvents,
+  IPosition,
+  TakaroEventServerStatusChanged,
+  GameEvents,
+  EventChatMessage,
+  TakaroEventModuleInstalled,
+  TakaroEventModuleUninstalled,
+} from '@takaro/modules';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { ModuleService } from './ModuleService.js';
@@ -28,7 +36,7 @@ import { PlayerService } from './PlayerService.js';
 import { PlayerOnGameServerService, PlayerOnGameServerUpdateDTO } from './PlayerOnGameserverService.js';
 import { ItemCreateDTO, ItemsService } from './ItemsService.js';
 import { randomUUID } from 'crypto';
-import { EventCreateDTO, EventService } from './EventService.js';
+import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
 
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 const ajv = new Ajv({ useDefaults: true, strict: true });
@@ -271,6 +279,19 @@ export class GameServerService extends TakaroService<
     const installation = await this.repo.installModule(gameserverId, moduleId, installDto);
     await cronjobService.syncModuleCronjobs(installation);
 
+    const eventsService = new EventService(this.domainId);
+    await eventsService.create(
+      await new EventCreateDTO().construct({
+        eventName: EVENT_TYPES.MODULE_INSTALLED,
+        gameserverId,
+        moduleId: moduleId,
+        meta: await new TakaroEventModuleInstalled().construct({
+          systemConfig: installDto.systemConfig,
+          userConfig: installDto.userConfig,
+        }),
+      })
+    );
+
     return new ModuleInstallationOutputDTO().construct({
       gameserverId,
       moduleId,
@@ -286,6 +307,16 @@ export class GameServerService extends TakaroService<
     await cronjobService.uninstallCronJobs(installation);
 
     await this.repo.uninstallModule(gameserverId, moduleId);
+
+    const eventsService = new EventService(this.domainId);
+    await eventsService.create(
+      await new EventCreateDTO().construct({
+        eventName: EVENT_TYPES.MODULE_UNINSTALLED,
+        gameserverId,
+        moduleId: moduleId,
+        meta: await new TakaroEventModuleUninstalled().construct(),
+      })
+    );
 
     return new ModuleInstallationOutputDTO().construct({
       gameserverId,

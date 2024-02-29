@@ -65,6 +65,21 @@ const treeData: TreeNode[] = [
       {
         name: EventName.CommandExecuted,
       },
+      {
+        name: EventName.ModuleCreated,
+      },
+      {
+        name: EventName.ModuleDeleted,
+      },
+      {
+        name: EventName.ModuleUpdated,
+      },
+      {
+        name: EventName.ModuleInstalled,
+      },
+      {
+        name: EventName.ModuleUninstalled,
+      },
     ],
   },
   {
