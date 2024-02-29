@@ -11,13 +11,19 @@ import { getModules } from '@takaro/modules';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { CommandCreateDTO, CommandOutputDTO, CommandService, CommandUpdateDTO } from './CommandService.js';
-import { BuiltinModule } from '@takaro/modules';
+import {
+  BuiltinModule,
+  TakaroEventModuleCreated,
+  TakaroEventModuleUpdated,
+  TakaroEventModuleDeleted,
+} from '@takaro/modules';
 import { GameServerService } from './GameServerService.js';
 import { PermissionCreateDTO, PermissionOutputDTO } from './RoleService.js';
 
 // Curse you ESM... :(
 import _Ajv from 'ajv';
 import { getEmptyConfigSchema } from '../lib/systemConfig.js';
+import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
 
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 const ajv = new Ajv({ useDefaults: true, strict: true, allErrors: true });
@@ -162,6 +168,17 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
       throw new errors.BadRequestError('Invalid config schema');
     }
     const created = await this.repo.create(mod);
+
+    const eventsService = new EventService(this.domainId);
+
+    await eventsService.create(
+      await new EventCreateDTO().construct({
+        eventName: EVENT_TYPES.MODULE_CREATED,
+        moduleId: created.id,
+        meta: await new TakaroEventModuleCreated().construct(),
+      })
+    );
+
     return created;
   }
 
@@ -175,6 +192,17 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
         ajv.compile(JSON.parse(mod.configSchema));
       }
       const updated = await this.repo.update(id, mod);
+
+      const eventsService = new EventService(this.domainId);
+
+      await eventsService.create(
+        await new EventCreateDTO().construct({
+          eventName: EVENT_TYPES.MODULE_UPDATED,
+          moduleId: id,
+          meta: await new TakaroEventModuleUpdated().construct(),
+        })
+      );
+
       return updated;
     } catch (e) {
       throw new errors.BadRequestError('Invalid config schema');
@@ -188,6 +216,17 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     });
     await Promise.all(installations.map((i) => gameServerService.uninstallModule(i.gameserverId, i.moduleId)));
     await this.repo.delete(id);
+
+    const eventsService = new EventService(this.domainId);
+
+    await eventsService.create(
+      await new EventCreateDTO().construct({
+        eventName: EVENT_TYPES.MODULE_DELETED,
+        moduleId: id,
+        meta: await new TakaroEventModuleDeleted().construct(),
+      })
+    );
+
     return id;
   }
 
