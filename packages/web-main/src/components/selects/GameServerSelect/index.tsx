@@ -53,7 +53,6 @@ export const GameServerSelect: FC<CustomSelectProps> = ({
       name={selectName}
       required={required}
       loading={loading}
-      label="Game Server"
     />
   );
 };
