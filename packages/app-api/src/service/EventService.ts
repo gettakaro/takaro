@@ -1,7 +1,7 @@
 import { TakaroService } from './Base.js';
 
 import { IsEnum, IsObject, IsOptional, IsUUID, ValidateNested } from 'class-validator';
-import { TakaroDTO, TakaroModelDTO, errors, isTakaroDTO, traceableClass } from '@takaro/util';
+import { TakaroDTO, TakaroModelDTO, ctx, errors, isTakaroDTO, traceableClass } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { EventModel, EventRepo } from '../db/event.js';
@@ -17,7 +17,7 @@ import { HookService } from './HookService.js';
 
 export const EVENT_TYPES = {
   ...TakaroEvents,
-  // All game events except for LOG_LINE
+  // All game events except for LOG_LINE because it would get too spammy
   PLAYER_CONNECTED: 'player-connected',
   PLAYER_DISCONNECTED: 'player-disconnected',
   CHAT_MESSAGE: 'chat-message',
@@ -128,6 +128,9 @@ export class EventService extends TakaroService<EventModel, EventOutputDTO, Even
     if (!dto) throw new errors.BadRequestError(`Event ${data.eventName} is not supported`);
 
     let eventMeta = null;
+
+    // If no userId is provided, use the calling user
+    if (!data.userId && ctx.data.user) data.userId = ctx.data.user;
 
     if (isTakaroDTO(data.meta)) {
       eventMeta = await new dto().construct(data.meta.toJSON());
