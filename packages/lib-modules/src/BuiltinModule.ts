@@ -44,15 +44,17 @@ export abstract class BuiltinModule {
   public commands: Array<ICommand> = [];
   public hooks: Array<IHook> = [];
   public cronJobs: Array<ICronJob> = [];
+  public functions: Array<IModuleItem> = [];
   public permissions: PermissionCreateDTO[] = [];
 
   async construct() {
     await this.loadType('commands');
     await this.loadType('hooks');
     await this.loadType('cronJobs');
+    await this.loadType('functions');
   }
 
-  async loadType(type: 'commands' | 'hooks' | 'cronJobs') {
+  async loadType(type: 'commands' | 'hooks' | 'cronJobs' | 'functions') {
     const items = this[type] as IModuleItem[];
     if (!items.length) return;
 
