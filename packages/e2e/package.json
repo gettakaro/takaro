@@ -4,8 +4,7 @@
   "description": "e2e",
   "type": "module",
   "scripts": {
-    "pretest:e2e": "tsc --incremental --project ./tsconfig.json",
-    "test:e2e": "playwright test -c dist --reporter=list",
+    "test:e2e": "npx playwright test --reporter=list",
     "dev:ui": "npx playwright test --ui -c dist",
     "codegen": "npx playwright codegen 127.0.0.1:13001",
     "build": "echo not really anything to build here!"

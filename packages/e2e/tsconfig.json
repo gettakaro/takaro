@@ -1,12 +1,10 @@
 {
   "extends": "../../tsconfig.esm.json",
   "compilerOptions": {
-    "rootDir": ".",
+    "rootDir": "./src",
     "outDir": "dist"
   },
   "include": [
-    "src/**/*.ts",
-    "src/**/*.spec.ts",
-    "playwright.config.ts"
+    "src/**/*"
   ]
 }
