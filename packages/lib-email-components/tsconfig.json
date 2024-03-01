@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.react.json",
+  "exclude": [
+    "dist"
+  ],
+  "compilerOptions": {
+    "rootDir": "./emails",
+    "outDir": "dist",
+    "baseUrl": "src"
+  }
+}

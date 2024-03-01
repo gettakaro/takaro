@@ -1,0 +1,21 @@
+{
+  "name": "@takaro/email-components",
+  "version": "0.0.1",
+  "description": "",
+  "main": "dist/main.js",
+  "types": "dist/main.d.ts",
+  "type": "module",
+  "scripts": {
+    "start:dev": "email dev --port 13003",
+    "test": "npm run test:unit --if-present && npm run test:integration --if-present",
+    "test:unit": "echo 'No tests (yet :))'",
+    "test:integration": "echo 'No tests (yet :))'"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@react-email/components": "0.0.14",
+    "@react-email/render": "0.0.12",
+    "react-email": "2.0.0"
+  }
+}

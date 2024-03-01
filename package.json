@@ -94,7 +94,8 @@
   },
   "keywords": [],
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "packages/lib-email-components/.react-email"
   ],
   "mocha": {
     "recursive": true,

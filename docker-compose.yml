@@ -42,6 +42,7 @@ services:
       - ./packages/lib-apiclient:/app/packages/lib-apiclient
       - ./packages/lib-auth:/app/packages/lib-auth
       - ./packages/lib-email:/app/packages/lib-email
+      - ./packages/lib-email-components:/app/packages/lib-email-components
       - ./packages/lib-components:/app/packages/lib-components
       - ./packages/lib-config:/app/packages/lib-config
       - ./packages/lib-aws:/app/packages/lib-aws
@@ -88,11 +89,14 @@ services:
       - 13001:13001
       # lib-components storybook
       - 13002:13002
+      # email
+      - 13003:13003
       # mock server
       - 13006:3002
       - 12004:12004
       # connector
       - 12003:12003
+
       # Docs
       - 13005:13005
   takaro-migrator:
