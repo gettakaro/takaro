@@ -2,20 +2,21 @@
   "name": "@takaro/e2e",
   "version": "0.0.1",
   "description": "e2e",
-  "main": "",
-  "types": "",
   "type": "module",
   "scripts": {
-    "test:e2e": "npx playwright test --reporter=list",
-    "dev:ui": "npx playwright test --ui",
+    "pretest:e2e": "tsc --incremental --project ./tsconfig.json",
+    "test:e2e": "playwright test -c dist --reporter=list",
+    "dev:ui": "npx playwright test --ui -c dist",
     "codegen": "npx playwright codegen 127.0.0.1:13001",
-    "build": "echo not really anything to build here :)"
+    "build": "echo not really anything to build here!"
   },
   "keywords": [],
   "author": "Takaro Team",
   "license": "AGPL-3.0-or-later",
-  "devDependencies": {
-    "@playwright/test": "^1.35.1",
-    "@takaro/apiclient": "0.0.1"
-  }
+  "dependencies": {
+    "@playwright/test": "^1.37.1",
+    "@takaro/apiclient": "0.0.1",
+    "@takaro/test": "0.0.1"
+  },
+  "exports": {}
 }

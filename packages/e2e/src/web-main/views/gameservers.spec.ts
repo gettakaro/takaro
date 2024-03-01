@@ -101,7 +101,7 @@ test.describe('Dashboard', () => {
       const { GameServersPage } = takaro;
       await GameServersPage.gotoGameServerConsole();
 
-      await GameServersPage.page.getByPlaceholder('Type here to execute a command..').type('Command 1');
+      await GameServersPage.page.getByPlaceholder('Type here to execute a command..').fill('Command 1');
       await GameServersPage.page.keyboard.press('Enter');
 
       await expect(GameServersPage.page.getByPlaceholder('Type here to execute a command..')).toHaveValue('');
@@ -114,10 +114,10 @@ test.describe('Dashboard', () => {
       const { GameServersPage } = takaro;
 
       await GameServersPage.gotoGameServerConsole();
-      await GameServersPage.page.getByPlaceholder('Type here to execute a command..').type('Command 1');
+      await GameServersPage.page.getByPlaceholder('Type here to execute a command..').fill('Command 1');
       await GameServersPage.page.keyboard.press('Enter');
 
-      await GameServersPage.page.getByPlaceholder('Type here to execute a command..').type('Command 2');
+      await GameServersPage.page.getByPlaceholder('Type here to execute a command..').fill('Command 2');
       await GameServersPage.page.keyboard.press('Enter');
 
       await GameServersPage.page.getByPlaceholder('Type here to execute a command..').click();
@@ -131,7 +131,7 @@ test.describe('Dashboard', () => {
       const { GameServersPage } = takaro;
 
       await GameServersPage.gotoGameServerConsole();
-      await GameServersPage.page.getByPlaceholder('Type here to execute a command..').type('Command 1');
+      await GameServersPage.page.getByPlaceholder('Type here to execute a command..').fill('Command 1');
       await GameServersPage.page.keyboard.press('Enter');
 
       await GameServersPage.page.getByPlaceholder('Type here to execute a command..').click();
@@ -145,7 +145,7 @@ test.describe('Dashboard', () => {
       const { GameServersPage } = takaro;
 
       await GameServersPage.gotoGameServerConsole();
-      await GameServersPage.page.getByPlaceholder('Type here to execute a command..').type('Command 1');
+      await GameServersPage.page.getByPlaceholder('Type here to execute a command..').fill('Command 1');
       await GameServersPage.page.keyboard.press('Enter');
 
       await GameServersPage.page.getByPlaceholder('Type here to execute a command..').click();
@@ -171,7 +171,7 @@ test.describe('Dashboard', () => {
       await GameServersPage.gotoGameServerConsole();
 
       for (let i = 1; i <= 52; i++) {
-        await GameServersPage.page.getByPlaceholder('Type here to execute a command..').type(`Command ${i}`);
+        await GameServersPage.page.getByPlaceholder('Type here to execute a command..').fill(`Command ${i}`);
         await GameServersPage.page.keyboard.press('Enter');
       }
 

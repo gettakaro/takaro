@@ -1,6 +1,5 @@
 import playwright from '@playwright/test';
-import { test } from './fixtures/index.js';
-import { userTest } from './fixtures/index.js';
+import { test, userTest } from './fixtures/index.js';
 import { PERMISSIONS } from '@takaro/apiclient';
 import { login } from './helpers.js';
 import { TEST_IDS } from './testIds.js';

@@ -227,10 +227,10 @@ extendedTest.describe('Item configuration', () => {
       await studioPage.openFile('extendedTestCommand');
 
       await studioPage.page.getByRole('button', { name: 'New' }).click();
-      await studioPage.page.getByLabel('Name', { exact: true }).type('extendedTestArgument');
+      await studioPage.page.getByLabel('Name', { exact: true }).fill('extendedTestArgument');
       await studioPage.page.getByText('String', { exact: true }).click();
       await studioPage.page.getByRole('option', { name: 'String' }).click();
-      await studioPage.page.getByRole('textbox', { name: 'Help text' }).type('Some helpful text for the user');
+      await studioPage.page.getByRole('textbox', { name: 'Help text' }).fill('Some helpful text for the user');
 
       await studioPage.page.getByRole('button', { name: 'Save command config' }).click();
 
@@ -254,7 +254,7 @@ extendedTest.describe('Item configuration', () => {
       for (const [key, value] of Object.entries(['one', 'two', 'three'])) {
         i++;
         await studioPage.page.getByRole('button', { name: 'New' }).click();
-        await studioPage.page.locator(`input[name="arguments.${key}.name"]`).type(value);
+        await studioPage.page.locator(`input[name="arguments.${key}.name"]`).fill(value);
         await studioPage.page.getByText('String', { exact: true }).nth(i).click();
         await studioPage.page.getByRole('option', { name: 'String' }).click();
         const helpText = studioPage.page.locator(`input[name="arguments\\.${key}\\.helpText"]`);

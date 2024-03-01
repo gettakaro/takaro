@@ -1,12 +1,10 @@
-import playwright from '@playwright/test';
+import { expect, test as pwTest } from '@playwright/test';
 import { test } from './fixtures/index.js';
 import { integrationConfig } from '@takaro/test';
 import { randomUUID } from 'crypto';
 import he from 'he';
 import { sleep } from '@takaro/util';
 import { login } from './helpers.js';
-
-const { expect, test: pwTest } = playwright;
 
 test('can logout', async ({ page, takaro }) => {
   const user = (await takaro.rootClient.user.userControllerMe()).data.data;
@@ -43,7 +41,7 @@ test('Invite user - happy path', async ({ page, takaro }) => {
 
   await page.getByRole('link', { name: 'Users' }).click();
   await page.getByText('Invite user').click();
-  await page.getByPlaceholder('example@example.com').type(newUserEmail);
+  await page.getByPlaceholder('example@example.com').fill(newUserEmail);
   await page.getByRole('button', { name: 'Send invitation' }).click();
   await page.getByRole('button').filter({ hasText: takaro.rootUser.email }).click();
   await page.getByText('Logout').click();
@@ -66,7 +64,7 @@ test('Invite user - happy path', async ({ page, takaro }) => {
   await page.goto(inviteLink);
 
   const password = randomUUID();
-  await page.getByTestId('node/input/password').getByPlaceholder(' ').type(password);
+  await page.getByTestId('node/input/password').getByPlaceholder(' ').fill(password);
   await page.getByTestId('password-settings-card').getByRole('button', { name: 'Save' }).click();
   await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
   await page.waitForLoadState();
@@ -89,7 +87,7 @@ test.fixme('Recover account and reset password', async ({ page, takaro }) => {
 
   await expect(page.getByRole('heading')).toHaveText('Recovery');
 
-  await page.getByTestId('node/input/email').getByPlaceholder(' ').type(user.email);
+  await page.getByTestId('node/input/email').getByPlaceholder(' ').fill(user.email);
   await page.getByRole('button', { name: 'Submit' }).click();
   await expect(
     page.getByText('An email containing a recovery code has been sent to the email address you provided.')
@@ -111,7 +109,7 @@ test.fixme('Recover account and reset password', async ({ page, takaro }) => {
   const recoveryCode = recoveryCodeMatch[1];
 
   await page.getByTestId('node/input/code').getByPlaceholder(' ').clear();
-  await page.getByTestId('node/input/code').getByPlaceholder(' ').type(recoveryCode);
+  await page.getByTestId('node/input/code').getByPlaceholder(' ').fill(recoveryCode);
   await page.getByRole('button', { name: 'Submit' }).click();
 
   await expect(
@@ -120,7 +118,7 @@ test.fixme('Recover account and reset password', async ({ page, takaro }) => {
     )
   ).toBeVisible();
   const newPassword = randomUUID();
-  await page.getByTestId('node/input/password').getByPlaceholder(' ').type(newPassword);
+  await page.getByTestId('node/input/password').getByPlaceholder(' ').fill(newPassword);
   await page.getByTestId('password-settings-card').getByRole('button', { name: 'Save' }).click();
   await expect(page.getByText('Your changes have been saved!')).toBeVisible();
 

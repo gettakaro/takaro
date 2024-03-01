@@ -1,4 +1,4 @@
-import playwright from '@playwright/test';
+import { test as pwTest } from '@playwright/test';
 import { MailhogAPI, integrationConfig, EventsAwaiter } from '@takaro/test';
 import {
   AdminClient,
@@ -12,13 +12,14 @@ import {
   RoleOutputDTO,
   UserOutputDTO,
 } from '@takaro/apiclient';
-import humanId from 'human-id/dist/index.js';
+import { humanId } from 'human-id';
 import { ModuleDefinitionsPage, StudioPage, GameServersPage, UsersPage } from '../pages/index.js';
-import { HookEvents } from '@takaro/modules';
 import { getAdminClient, login } from '../helpers.js';
 import { PlayerProfilePage } from '../pages/PlayerProfile.js';
 
-const { test: pwTest } = playwright;
+global.afterEach = () => {};
+globalThis.afterEach = () => {};
+global.before = () => {};
 
 export interface IBaseFixtures {
   takaro: {
@@ -43,7 +44,7 @@ const main = pwTest.extend<IBaseFixtures>({
       const adminClient = getAdminClient();
       const domain = (
         await adminClient.domain.domainControllerCreate({
-          name: `e2e-${humanId.default()}`.slice(0, 49),
+          name: `e2e-${humanId()}`.slice(0, 49),
         })
       ).data.data;
 
@@ -63,7 +64,7 @@ const main = pwTest.extend<IBaseFixtures>({
         // User creation
         client.user.userControllerCreate({
           name: 'test',
-          email: `e2e-${humanId.default()}@example.com`.slice(0, 49),
+          email: `e2e-${humanId()}@example.com`.slice(0, 49),
           password: 'test',
         }),
 
@@ -152,7 +153,7 @@ export const extendedTest = main.extend<ExtendedFixture>({
       // required to add players to the gameserver
       const eventAwaiter = new EventsAwaiter();
       await eventAwaiter.connect(rootClient);
-      const connectedEvents = eventAwaiter.waitForEvents(HookEvents.PLAYER_CONNECTED);
+      const connectedEvents = eventAwaiter.waitForEvents('player-connected');
 
       // this creates a bunch of players
       await rootClient.gameserver.gameServerControllerExecuteCommand(gameServer.id, {
