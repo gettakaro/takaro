@@ -1,8 +1,14 @@
 {
   "extends": "../../tsconfig.esm.json",
   "compilerOptions": {
+    "baseUrl": ".",
     "rootDir": "./src",
     "outDir": "dist"
+  },
+  "paths": {
+    "@takaro/apiclient": [
+      "../packages/lib-apiclient"
+    ]
   },
   "include": [
     "src/**/*"

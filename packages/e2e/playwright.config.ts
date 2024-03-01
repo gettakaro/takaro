@@ -1,6 +1,8 @@
-import { devices, defineConfig } from '@playwright/test';
-import dotenv from 'dotenv';
+import playwright from '@playwright/test';
+import dotenv from 'dotenv/lib/main.js';
 dotenv.config();
+
+const { devices, defineConfig } = playwright;
 
 /* Playwright imports @takaro/test, because of this it loads all files in @takaro/test.
  * @takaro/test uses sinon which defines a global afterEach function.

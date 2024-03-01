@@ -2,6 +2,8 @@
   "name": "@takaro/e2e",
   "version": "0.0.1",
   "description": "e2e",
+  "main": "",
+  "types": "",
   "type": "module",
   "scripts": {
     "test:e2e": "npx playwright test --reporter=list",
@@ -12,10 +14,8 @@
   "keywords": [],
   "author": "Takaro Team",
   "license": "AGPL-3.0-or-later",
-  "dependencies": {
-    "@playwright/test": "^1.37.1",
-    "@takaro/apiclient": "0.0.1",
-    "@takaro/test": "0.0.1"
-  },
-  "exports": {}
+  "devDependencies": {
+    "@playwright/test": "^1.35.1",
+    "@takaro/apiclient": "0.0.1"
+  }
 }
