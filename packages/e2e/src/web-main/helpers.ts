@@ -10,11 +10,12 @@ export async function login(page: Page, username: string, password: string) {
     const emailInput = page.getByPlaceholder('hi cutie');
     await emailInput.click();
     await emailInput.fill(username);
-    await emailInput.press('Tab');
-    await emailInput.press('Tab');
     await page.getByLabel('PasswordRequired').fill(password);
     await page.getByRole('button', { name: 'Log in with Email' }).click();
-    await page.waitForLoadState('networkidle');
+    await page.waitForURL((url) => url.pathname !== '/login', {
+      waitUntil: 'domcontentloaded',
+    });
+    await page.waitForTimeout(1000); // wait 1 second to ensure context is loaded?
   });
 }
 
