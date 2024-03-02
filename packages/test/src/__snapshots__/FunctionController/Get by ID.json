@@ -1,18 +1,19 @@
 {
   "body": {
-    "meta": {
-      "serverTime": "2022-09-17T21:14:59.888Z"
-    },
+    "meta": {},
     "data": {
-      "createdAt": "2022-09-17T21:14:59.878Z",
-      "updatedAt": "2022-09-17T21:14:59.878Z",
-      "id": "cfb4d91d-1b0c-4bb2-855b-0091767688fc",
-      "code": "console.log(\"Hello world\")"
+      "id": "c54977f5-6a30-4b77-800f-8f5e2be271d7",
+      "createdAt": "2024-03-02T14:34:33.798Z",
+      "updatedAt": "2024-03-02T14:34:33.798Z",
+      "code": "console.log(\"Hello world\")",
+      "name": null,
+      "moduleId": null
     }
   },
   "status": 200,
   "test": {
     "group": "FunctionController",
+    "snapshot": true,
     "name": "Get by ID",
     "expectedStatus": 200,
     "filteredFields": [],

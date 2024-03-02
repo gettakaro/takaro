@@ -15,7 +15,9 @@
     "name": "discordChannelId is required when hook event-type is discord-message, throws validation error",
     "expectedStatus": 400,
     "filteredFields": [
-      "moduleId"
+      "moduleId",
+      "functionId",
+      "commandId"
     ],
     "standardEnvironment": true
   }

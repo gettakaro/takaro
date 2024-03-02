@@ -50,7 +50,7 @@ const tests = [
     snapshot: true,
     name: 'Install a built-in module',
     setup: defaultSetup,
-    filteredFields: ['gameserverId', 'moduleId'],
+    filteredFields: ['gameserverId', 'moduleId', 'functionId', 'commandId'],
     test: async function () {
       return this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
@@ -81,7 +81,7 @@ const tests = [
     snapshot: true,
     name: 'Update installation config',
     setup: defaultSetup,
-    filteredFields: ['gameserverId', 'moduleId'],
+    filteredFields: ['gameserverId', 'moduleId', 'functionId', 'commandId'],
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
@@ -131,7 +131,7 @@ const tests = [
       });
     },
     expectedStatus: 400,
-    filteredFields: ['moduleId'],
+    filteredFields: ['moduleId', 'functionId', 'commandId'],
   }),
   new IntegrationTest<ISetupData>({
     group,
@@ -161,7 +161,7 @@ const tests = [
         }),
       });
     },
-    filteredFields: ['moduleId', 'gameserverId'],
+    filteredFields: ['moduleId', 'gameserverId', 'functionId'],
   }),
 ];
 

@@ -206,7 +206,7 @@ const tests = [
         }
       );
     },
-    filteredFields: ['gameserverId', 'moduleId'],
+    filteredFields: ['gameserverId', 'moduleId', 'functionId'],
   }),
   new IntegrationTest<ISetupData>({
     group,
@@ -236,7 +236,7 @@ const tests = [
         }
       );
     },
-    filteredFields: ['gameserverId', 'moduleId'],
+    filteredFields: ['gameserverId', 'moduleId', 'functionId'],
   }),
   new IntegrationTest<ISetupData>({
     group,
@@ -257,7 +257,7 @@ const tests = [
 
       return installRes;
     },
-    filteredFields: ['gameserverId', 'moduleId'],
+    filteredFields: ['gameserverId', 'moduleId', 'functionId'],
   }),
 ];
 

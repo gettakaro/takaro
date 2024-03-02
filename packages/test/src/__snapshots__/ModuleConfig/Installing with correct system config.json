@@ -2,8 +2,42 @@
   "body": {
     "meta": {},
     "data": {
-      "gameserverId": "84ea6e76-9f92-4095-82b2-bdc83e588276",
-      "moduleId": "24dd4438-eed7-4d00-ab71-70f7ca847e24",
+      "gameserverId": "58f377dd-3b52-4c0a-a9a2-a1c14eea5e20",
+      "moduleId": "69ffb5ce-f7a7-4d8d-8a75-48ac7d8fd45f",
+      "module": {
+        "id": "69ffb5ce-f7a7-4d8d-8a75-48ac7d8fd45f",
+        "createdAt": "2024-03-02T14:58:02.818Z",
+        "updatedAt": "2024-03-02T14:58:02.818Z",
+        "name": "Test module cronjobs",
+        "description": "Test description",
+        "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{},\"required\":[],\"additionalProperties\":false}",
+        "uiSchema": "{}",
+        "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"cronJobs\":{\"type\":\"object\",\"properties\":{\"Test cron job\":{\"type\":\"string\",\"default\":\"1 * * * *\"}},\"required\":[],\"default\":{}}},\"required\":[\"cronJobs\"],\"additionalProperties\":false}",
+        "builtin": null,
+        "cronJobs": [
+          {
+            "id": "c36ed833-bbe6-4625-baab-e4b3869a52dc",
+            "createdAt": "2024-03-02T14:58:02.970Z",
+            "updatedAt": "2024-03-02T14:58:02.976Z",
+            "name": "Test cron job",
+            "temporalValue": "1 * * * *",
+            "functionId": "6d7301d9-0d56-4982-817c-d8bc9ef2bfdb",
+            "moduleId": "69ffb5ce-f7a7-4d8d-8a75-48ac7d8fd45f",
+            "function": {
+              "id": "6d7301d9-0d56-4982-817c-d8bc9ef2bfdb",
+              "createdAt": "2024-03-02T14:58:02.961Z",
+              "updatedAt": "2024-03-02T14:58:02.962Z",
+              "code": "test",
+              "name": null,
+              "moduleId": null
+            }
+          }
+        ],
+        "hooks": [],
+        "commands": [],
+        "functions": [],
+        "permissions": []
+      },
       "userConfig": {},
       "systemConfig": {
         "cronJobs": {
@@ -19,7 +53,8 @@
     "name": "Installing with correct system config",
     "filteredFields": [
       "gameserverId",
-      "moduleId"
+      "moduleId",
+      "functionId"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true

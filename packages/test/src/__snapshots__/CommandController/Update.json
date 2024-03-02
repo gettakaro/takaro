@@ -2,20 +2,22 @@
   "body": {
     "meta": {},
     "data": {
-      "id": "19d5fd8d-ef00-4957-905b-8f26ac6833f2",
-      "createdAt": "2023-07-23T04:56:49.252Z",
-      "updatedAt": "2023-07-23T04:56:49.263Z",
+      "id": "e92c4e19-e670-4b02-bff7-6d2af8ed2d34",
+      "createdAt": "2024-03-02T14:34:21.404Z",
+      "updatedAt": "2024-03-02T14:34:21.439Z",
       "name": "Updated command",
       "trigger": "test",
       "helpText": "No help text available",
       "function": {
-        "id": "31f70438-7921-452b-903b-d7cc73b98f88",
-        "createdAt": "2023-07-23T04:56:49.252Z",
-        "updatedAt": "2023-07-23T04:56:49.252Z",
-        "code": "import { getTakaro, getData } from '@takaro/helpers';\nasync function main() {\n    const data = await getData();\n    const takaro = await getTakaro(data);\n \n    // TODO: write my function...\n}\nawait main();"
+        "id": "f6f5302f-b43f-4a48-982d-e6adcfaaf22b",
+        "createdAt": "2024-03-02T14:34:21.402Z",
+        "updatedAt": "2024-03-02T14:34:21.403Z",
+        "code": "import { data, takaro } from '@takaro/helpers';\nasync function main() {\n    // TODO: write my function...\n}\nawait main();",
+        "name": null,
+        "moduleId": null
       },
-      "functionId": "31f70438-7921-452b-903b-d7cc73b98f88",
-      "moduleId": "be685667-3193-48b3-a6a0-07b39f36efb7"
+      "functionId": "f6f5302f-b43f-4a48-982d-e6adcfaaf22b",
+      "moduleId": "b1ba378c-2708-4e74-8c25-15291dad50c8"
     }
   },
   "status": 200,
