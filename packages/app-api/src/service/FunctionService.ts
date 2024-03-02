@@ -42,11 +42,8 @@ export class FunctionUpdateDTO extends TakaroDTO<FunctionUpdateDTO> {
   name: string;
 }
 
-const defaultFunctionCode = `import { getTakaro, getData } from '@takaro/helpers';
+const defaultFunctionCode = `import { data, takaro } from '@takaro/helpers';
 async function main() {
-    const data = await getData();
-    const takaro = await getTakaro(data);
- 
     // TODO: write my function...
 }
 await main();`;
