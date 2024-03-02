@@ -40,9 +40,7 @@ export class GameServersPage extends BasePage {
   }
 
   async nameCreateEdit(value: string) {
-    const gameServerNameInput = this.page.getByPlaceholder('My cool server');
-    await gameServerNameInput.focus();
-    await gameServerNameInput.fill(value);
+    await this.page.getByPlaceholder('My cool server').fill(value);
   }
 
   async selectGameServerType(value: string) {
