@@ -37,12 +37,15 @@ export const executeFunctionLocal: FunctionExecutor = async (
   });
 
   const toEval = new vm.SourceTextModule(fn, { context: contextifiedObject });
+
+  const { takaro, data: hydratedData } = getTakaro(data, patchedConsole);
+
   const monkeyPatchedGetData = () => {
-    return data;
+    return hydratedData;
   };
 
   const monkeyPatchedGetTakaro = function () {
-    return getTakaro(data, patchedConsole);
+    return takaro;
   };
 
   const userModules = data.module.module.functions
@@ -51,7 +54,18 @@ export const executeFunctionLocal: FunctionExecutor = async (
 
   await toEval.link(async (specifier: string, referencingModule) => {
     const takaroHelpersModule = new vm.SyntheticModule(
-      ['getTakaro', 'checkPermission', 'TakaroUserError', 'getData', 'axios', '_', 'lodash', 'nextCronJobRun'],
+      [
+        'getTakaro',
+        'checkPermission',
+        'TakaroUserError',
+        'getData',
+        'axios',
+        '_',
+        'lodash',
+        'nextCronJobRun',
+        'takaro',
+        'data',
+      ],
       function () {
         this.setExport('getTakaro', monkeyPatchedGetTakaro);
         this.setExport('checkPermission', checkPermission);
@@ -61,6 +75,8 @@ export const executeFunctionLocal: FunctionExecutor = async (
         this.setExport('_', _);
         this.setExport('lodash', _);
         this.setExport('nextCronJobRun', nextCronJobRun);
+        this.setExport('takaro', takaro);
+        this.setExport('data', hydratedData);
       },
       { context: referencingModule.context }
     );

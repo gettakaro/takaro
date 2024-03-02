@@ -1,11 +1,8 @@
-import { getTakaro, getData, TakaroUserError } from '@takaro/helpers';
+import { takaro, data, TakaroUserError } from '@takaro/helpers';
 
 const VARIABLE_KEY = 't_starterkit_lock';
 
 async function main() {
-  const data = await getData();
-  const takaro = await getTakaro(data);
-
   const items = data.module.userConfig.starterKitItems;
 
   if (!items || items.length === 0) {

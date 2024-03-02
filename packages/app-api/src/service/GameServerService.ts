@@ -408,6 +408,10 @@ export class GameServerService extends TakaroService<
   }
 
   async sendMessage(gameServerId: string, message: string, opts: IMessageOptsDTO) {
+    // Limit message length to 150 characters
+    // Longer than this and gameservers start acting _weird_
+    message = message.substring(0, 150);
+
     const gameInstance = await this.getGame(gameServerId);
     await gameInstance.sendMessage(message, opts);
 

@@ -16,6 +16,7 @@ function createModuleDTO(overrides: Partial<ModuleOutputDTO> = {}): ModuleOutput
     hooks: [],
     cronJobs: [],
     commands: [],
+    functions: [],
     permissions: [],
     uiSchema: '',
     systemConfigSchema: '',

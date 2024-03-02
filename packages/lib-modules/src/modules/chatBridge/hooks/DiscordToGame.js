@@ -1,10 +1,7 @@
-import { getTakaro, getData } from '@takaro/helpers';
+import { takaro, data } from '@takaro/helpers';
 
 async function main() {
   try {
-    const data = await getData();
-    const takaro = await getTakaro(data);
-
     if (data.eventData.author.isBot) return;
 
     await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {

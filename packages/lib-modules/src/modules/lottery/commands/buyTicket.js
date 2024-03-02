@@ -1,9 +1,6 @@
-import { getTakaro, getData, checkPermission, TakaroUserError } from '@takaro/helpers';
+import { takaro, data, checkPermission, TakaroUserError } from '@takaro/helpers';
 
 async function main() {
-  const data = await getData();
-  const takaro = await getTakaro();
-
   const { pog, gameServerId, arguments: args, module: mod } = data;
 
   const varKey = 'lottery_tickets_bought';

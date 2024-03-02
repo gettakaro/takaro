@@ -1,10 +1,6 @@
-import { getData } from '@takaro/helpers';
-import { getTakaro } from '@takaro/helpers';
+import { takaro, data } from '@takaro/helpers';
 
 async function main() {
-  const data = await getData();
-  const takaro = await getTakaro(data);
-
   const richest = (
     await takaro.playerOnGameserver.playerOnGameServerControllerSearch({
       limit: 10,

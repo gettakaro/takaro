@@ -1,9 +1,6 @@
-import { getTakaro, getData, checkPermission } from '@takaro/helpers';
+import { takaro, data, checkPermission } from '@takaro/helpers';
 
 async function main() {
-  const data = await getData();
-  const takaro = await getTakaro(data);
-
   const { gameServerId, player, pog } = data;
   const { country } = data.eventData;
   const { ban, banDuration, countries, message, mode } = data.module.userConfig;
