@@ -234,7 +234,7 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
               automaticLayout: true,
               links: true,
               lightbulb: {
-                enabled: true,
+                enabled: mon.editor.ShowLightbulbIconMode.On,
               },
               mouseWheelZoom: true,
               parameterHints: {
