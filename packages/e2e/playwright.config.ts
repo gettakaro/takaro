@@ -1,8 +1,6 @@
-import playwright from '@playwright/test';
-import dotenv from 'dotenv/lib/main.js';
+import { devices, defineConfig } from '@playwright/test';
+import dotenv from 'dotenv';
 dotenv.config();
-
-const { devices, defineConfig } = playwright;
 
 /* Playwright imports @takaro/test, because of this it loads all files in @takaro/test.
  * @takaro/test uses sinon which defines a global afterEach function.
@@ -32,6 +30,7 @@ if (!isPR || isMainBranch) {
 
 export default defineConfig({
   // Look for test files in the "tests" directory, relative to this configuration file.
+  testDir: './src',
 
   // Each test is given 60 seconds. (default 30 seconds)
   timeout: 90000,

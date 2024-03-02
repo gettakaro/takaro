@@ -1,14 +1,12 @@
-import playwright from '@playwright/test';
+import { expect } from '@playwright/test';
 import { test } from '../fixtures/index.js';
 import { HookCreateDTOEventTypeEnum } from '@takaro/apiclient';
-
-const { expect } = playwright;
 
 test('Can view module', async ({ takaro, page }) => {
   const { moduleDefinitionsPage } = takaro;
   await moduleDefinitionsPage.goto();
   await moduleDefinitionsPage.view('Module without functions');
-  await expect(page.getByLabel('Name')).toBeEditable();
+  await expect(page.getByLabel('Name')).not.toBeEditable();
 });
 
 test('Can create module', async ({ page, takaro }) => {

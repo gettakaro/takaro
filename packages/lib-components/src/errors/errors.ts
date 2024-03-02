@@ -13,14 +13,14 @@ export function getErrorUserMessage(
   apiError: AxiosError<any> | null,
   errorMessages: Partial<ErrorMessageMapping>
 ): string | string[] | null {
+  const defaultMesssage = 'An error occurred. Please try again later.';
+
   // If there is no error, return null
   if (apiError === null) {
     return null;
   }
 
   const err = transformError(apiError);
-
-  const defaultMesssage = 'An error occurred. Please try again later.';
 
   if (!err) {
     Sentry.captureException(apiError);

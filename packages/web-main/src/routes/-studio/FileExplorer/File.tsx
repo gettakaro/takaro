@@ -120,7 +120,7 @@ export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, o
   // TODO: create prop: IsDir() based on selectFile.
 
   const fileName = filePath.split('/').filter(Boolean).pop()!;
-  const { moduleData } = useModule();
+  const { moduleData, setModuleData } = useModule();
   const theme = useTheme();
   const { sandpack } = useSandpack();
   const [hover, setHover] = useState<boolean>(false);
@@ -206,6 +206,7 @@ export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, o
 
   const handleDelete = async () => {
     const toDelete = moduleData.fileMap[filePath];
+    console.log(moduleData.fileMap);
 
     try {
       switch (toDelete.type) {
@@ -234,38 +235,56 @@ export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, o
   const handleNewFile = async (newFileName: string) => {
     setShowNewFileField(false);
     const type = filePath.split('/').join('');
+    let functionId = '';
+    let itemId = '';
 
     try {
-      switch (filePath.split('/').join('')) {
+      switch (type) {
         case FunctionType.Hooks:
-          await createHook({
-            moduleId: moduleData.id!,
+          const hook = await createHook({
+            moduleId: moduleData.id,
             name: newFileName,
             eventType: 'log',
             regex: '\\w',
           });
+          functionId = hook.function.id;
+          itemId = hook.id;
           break;
         case FunctionType.Commands:
-          await createCommand({
-            moduleId: moduleData.id!,
+          const command = await createCommand({
+            moduleId: moduleData.id,
             name: newFileName,
             trigger: newFileName,
           });
+          functionId = command.function.id;
+          itemId = command.id;
           break;
         case FunctionType.CronJobs:
-          await createCronJob({
-            moduleId: moduleData.id!,
+          const cronjob = await createCronJob({
+            moduleId: moduleData.id,
             name: newFileName,
             temporalValue: '0 0 * * *',
           });
+          functionId = cronjob.function.id;
+          itemId = cronjob.id;
           break;
         default:
           throw new Error('Invalid type');
       }
       const newPath = `${type}/${newFileName}`;
 
+      moduleData.fileMap[`/${newPath}`] = {
+        type,
+        functionId,
+        code: '',
+        itemId,
+      };
+
+      setModuleData({ ...moduleData });
+
       sandpack.updateFile({ [newPath]: { code: '' } });
       sandpack.setActiveFile(newPath);
+
       setInternalFileName(newFileName);
     } catch (e) {
       console.log(e);
@@ -290,7 +309,7 @@ export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, o
     e.stopPropagation();
     setShowNewFileField(true);
     // we need a placeholder here to make sure the input field is rendered
-    sandpack.updateFile(`${filePath.slice(0, -1)}/new-file`);
+    sandpack.updateFile(`${filePath.slice(0, -1)} /new-file`);
   };
 
   const getIcon = (): JSX.Element => {

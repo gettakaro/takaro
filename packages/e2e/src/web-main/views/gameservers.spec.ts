@@ -1,7 +1,6 @@
-import playwright from '@playwright/test';
+import { expect } from '@playwright/test';
 import { integrationConfig } from '@takaro/test';
 import { test } from '../fixtures/index.js';
-const { expect } = playwright;
 
 test('Can create gameserver', async ({ page, takaro }) => {
   const { GameServersPage } = takaro;

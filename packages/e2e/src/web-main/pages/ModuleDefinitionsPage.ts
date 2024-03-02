@@ -1,8 +1,5 @@
-import type { Page } from '@playwright/test';
-import playwright from '@playwright/test';
+import { type Page, expect } from '@playwright/test';
 import { BasePage } from './BasePage.js';
-
-const { expect } = playwright;
 
 interface Permission {
   name: string;

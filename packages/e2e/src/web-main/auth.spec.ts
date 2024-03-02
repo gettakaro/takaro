@@ -32,7 +32,11 @@ test('Logging in with invalid credentials shows error message', async ({ page, t
   await page.waitForLoadState();
 
   await login(page, 'invalid+e2e@takaro.dev', 'invalid');
-  await expect(page.getByText('Incorrect email or password')).toBeVisible();
+  await expect(
+    page.getByText(
+      'The provided credentials are invalid, check for spelling mistakes in your password or username, email address, or phone number.'
+    )
+  ).toBeVisible();
 });
 
 test('Invite user - happy path', async ({ page, takaro }) => {

@@ -1,8 +1,6 @@
-import playwright from '@playwright/test';
+import { expect } from '@playwright/test';
 import { test } from '../fixtures/index.js';
 import { navigateTo } from '../helpers.js';
-
-const { expect } = playwright;
 
 test('Can view users', async ({ page, takaro }) => {
   await navigateTo(page, 'global-users');

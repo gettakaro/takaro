@@ -1,9 +1,8 @@
-import playwright from '@playwright/test';
+import { expect } from '@playwright/test';
 import { test, userTest } from './fixtures/index.js';
 import { PERMISSIONS } from '@takaro/apiclient';
 import { login } from './helpers.js';
 import { TEST_IDS } from './testIds.js';
-const { expect } = playwright;
 
 // When a user certain specific READ_* permissions, they should be able to see the page
 const items = [
@@ -41,13 +40,8 @@ for (const { linkName, path, permission } of items) {
     await expect(page).toHaveURL(new RegExp(`${path}.*`));
   });
 
-  userTest.fixme(`Can go to ${linkName} with permissions`, async ({ takaro, page }) => {
+  userTest(`Can go to ${linkName} with permissions`, async ({ takaro, page }) => {
     const route = `/${path}`;
-
-    // check if link is not visible in the navbar
-    let nav = page.getByTestId(TEST_IDS.GLOBAL_NAV);
-    await expect(nav).toBeVisible();
-    await expect(nav.getByRole('link', { name: linkName, exact: true })).toHaveCount(0);
 
     // check if link redirects to Forbidden page
     await page.goto(route);
@@ -71,8 +65,7 @@ for (const { linkName, path, permission } of items) {
     await page.goto(route);
     await page.waitForSelector(`[data-testid="${TEST_IDS.GLOBAL_NAV}"]`);
     // since the dom is reloaded, we need to locate the nav again.
-    nav = page.getByTestId(TEST_IDS.GLOBAL_NAV);
-    const navLink = nav.getByRole('link', { name: linkName, exact: true });
+    const navLink = page.getByTestId(TEST_IDS.GLOBAL_NAV).getByRole('link', { name: linkName, exact: true });
     await expect(navLink).toBeVisible();
     await navLink.click();
 

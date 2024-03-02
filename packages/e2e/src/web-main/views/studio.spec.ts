@@ -1,6 +1,5 @@
-import playwright from '@playwright/test';
+import { expect } from '@playwright/test';
 import { extendedTest } from '../fixtures/index.js';
-const { expect } = playwright;
 
 extendedTest.describe('smoke', () => {
   extendedTest('should open onboarding when new module with no functions is created', async ({ takaro, context }) => {
@@ -147,11 +146,9 @@ extendedTest.describe('filetree', () => {
     await takaro.studioPage.deleteFile(fileName);
     await expect(page.getByRole('button', { name: fileName })).toHaveCount(0);
   });
-
-  extendedTest.fixme('Can save command config', async ({}) => {});
 });
 
-extendedTest.fixme('Can copy module', async ({ page, takaro }) => {
+extendedTest('Can copy module', async ({ page, takaro }) => {
   const { studioPage, moduleDefinitionsPage } = takaro;
   const copyName = `${studioPage.mod.name}-copy`;
 
@@ -162,7 +159,8 @@ extendedTest.fixme('Can copy module', async ({ page, takaro }) => {
 
   await studioPage.page.getByTestId('snack-module-copied').getByRole('img').first().click();
   await studioPage.page.getByTestId('snack-module-copied').getByText('open new module').click();
-  await expect(page.getByText(copyName)).toBeVisible();
+
+  await expect(page.getByRole('banner').getByText(copyName)).toBeVisible();
 
   await moduleDefinitionsPage.goto();
   await expect(page.getByText(copyName)).toBeVisible();

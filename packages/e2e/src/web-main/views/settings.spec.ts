@@ -1,10 +1,8 @@
-import playwright from '@playwright/test';
+import { expect } from '@playwright/test';
 import { test } from '../fixtures/index.js';
 import { GameServerCreateDTOTypeEnum } from '@takaro/apiclient';
 import { integrationConfig } from '@takaro/test';
 import { navigateTo } from '../helpers.js';
-
-const { expect } = playwright;
 
 test('Can set global settings', async ({ page }) => {
   await navigateTo(page, 'global-settings');

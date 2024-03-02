@@ -1,8 +1,6 @@
-import playwright from '@playwright/test';
+import { expect } from '@playwright/test';
 import { extendedTest } from '../fixtures/index.js';
 import { navigateTo } from '../helpers.js';
-
-const { expect } = playwright;
 
 extendedTest('Can view variables', async ({ page, extended, takaro }) => {
   await takaro.rootClient.variable.variableControllerCreate({

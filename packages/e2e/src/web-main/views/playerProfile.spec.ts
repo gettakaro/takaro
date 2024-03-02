@@ -1,6 +1,5 @@
-import playwright from '@playwright/test';
+import { expect } from '@playwright/test';
 import { extendedTest } from '../fixtures/index.js';
-const { expect } = playwright;
 
 extendedTest('can view player info', async ({ page, extended }) => {
   const { PlayerProfilePage } = extended;

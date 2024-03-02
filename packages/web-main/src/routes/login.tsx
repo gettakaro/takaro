@@ -1,12 +1,12 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Button, TextField, styled, errors, Company, FormError } from '@takaro/lib-components';
+import { Button, TextField, styled, Company, FormError } from '@takaro/lib-components';
 import { AiFillMail as Mail } from 'react-icons/ai';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { LoginFlow } from '@ory/client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { AxiosError } from 'axios';
+import { isAxiosError } from 'axios';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { useOry } from 'hooks/useOry';
 import { getApiClient } from 'util/getApiClient';
@@ -135,19 +135,10 @@ function Component() {
       }
     } catch (error) {
       reset();
+      console.log(error);
 
-      if (error instanceof AxiosError) {
-        const err = errors.defineErrorType(error);
-
-        if (err instanceof errors.NotAuthorizedError) {
-          setError('Incorrect email or password.');
-          return;
-        }
-        if (err instanceof errors.ResponseClientError) {
-          setError('Something went wrong processing your request.');
-        }
-      } else {
-        setError('Incorrect email or password.');
+      if (isAxiosError(error)) {
+        setError(error.response?.data.ui.messages.map((message) => message.text));
       }
     } finally {
       setLoading(false);
