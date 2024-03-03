@@ -1,6 +1,6 @@
-import { Locator, Page } from '@playwright/test';
-import { ModuleOutputDTO } from '@takaro/apiclient';
+import type { Locator, Page } from '@playwright/test';
 import playwright from '@playwright/test';
+import { ModuleOutputDTO } from '@takaro/apiclient';
 import { BasePage } from './BasePage.js';
 const { expect } = playwright;
 

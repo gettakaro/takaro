@@ -22,20 +22,9 @@ interface handleParams {
   ref?: React.Ref<any>;
 }
 
-export const handle: FC<handleParams> = ({
-  value,
-  dragging,
-  index,
-  ...restProps
-}) => {
+export const handle: FC<handleParams> = ({ value, dragging, index, ...restProps }) => {
   return (
-    <SliderTooltip
-      key={index}
-      overlay={`${value}`}
-      placement="top"
-      prefixCls="rc-slider-tooltip"
-      visible={dragging}
-    >
+    <SliderTooltip key={index} overlay={`${value}`} placement="top" prefixCls="rc-slider-tooltip" visible={dragging}>
       <Handle value={value} {...restProps} />
     </SliderTooltip>
   );

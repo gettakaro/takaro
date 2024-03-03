@@ -13,14 +13,14 @@ export function getErrorUserMessage(
   apiError: AxiosError<any> | null,
   errorMessages: Partial<ErrorMessageMapping>
 ): string | string[] | null {
+  const defaultMesssage = 'An error occurred. Please try again later.';
+
   // If there is no error, return null
   if (apiError === null) {
     return null;
   }
 
   const err = transformError(apiError);
-
-  const defaultMesssage = 'An error occurred. Please try again later.';
 
   if (!err) {
     Sentry.captureException(apiError);
@@ -33,11 +33,15 @@ export function getErrorUserMessage(
   if (err instanceof ResponseValidationError) {
     return err.parseValidationError();
   }
-
-  const messageType = err.constructor.name as keyof ErrorMessageMapping;
-  const message = errorMessages[messageType];
-
-  return message || defaultMesssage;
+  if (err instanceof UniqueConstraintError) {
+    if (err.message === 'Unique constraint violation') {
+      const messageType = err.constructor.name as keyof ErrorMessageMapping;
+      return errorMessages[messageType] || defaultMesssage;
+    } else {
+      return err.message;
+    }
+  }
+  return defaultMesssage;
 }
 
 export function transformError(apiError: AxiosError<any>) {
@@ -51,7 +55,7 @@ export function transformError(apiError: AxiosError<any>) {
   }
 
   if (error.code === 'ConflictError') {
-    return new UniqueConstraintError('Unique constraint error');
+    return new UniqueConstraintError(error.message);
   }
 
   if (error.code === 'ValidationError') {

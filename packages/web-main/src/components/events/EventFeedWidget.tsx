@@ -1,7 +1,8 @@
 import { EventOutputDTO, EventSearchInputDTO } from '@takaro/apiclient';
 import { Skeleton } from '@takaro/lib-components';
+import { useQuery } from '@tanstack/react-query';
 import { EventFeed, EventItem } from 'components/events/EventFeed';
-import { useEvents } from 'queries/events';
+import { eventsQueryOptions } from 'queries/events';
 import { FC, useEffect, useState } from 'react';
 
 interface IProps {
@@ -11,20 +12,18 @@ interface IProps {
 export const EventFeedWidget: FC<IProps> = ({ query }) => {
   const [events, setEvents] = useState<EventOutputDTO[]>([]);
 
-  const {
-    data: rawEvents,
-    isLoading,
-    InfiniteScroll,
-  } = useEvents({
-    ...query,
-    extend: ['gameServer', 'module', 'player', 'user'],
-    sortBy: 'createdAt',
-    sortDirection: 'desc',
-  });
+  const { data: rawEvents, isLoading } = useQuery(
+    eventsQueryOptions({
+      ...query,
+      extend: ['gameServer', 'module', 'player', 'user'],
+      sortBy: 'createdAt',
+      sortDirection: 'desc',
+    })
+  );
 
   useEffect(() => {
     if (rawEvents) {
-      setEvents(rawEvents.pages.flatMap((page) => page.data));
+      setEvents(rawEvents.data);
     }
   }, [rawEvents]);
 
@@ -37,7 +36,8 @@ export const EventFeedWidget: FC<IProps> = ({ query }) => {
       {events.flatMap((event) => (
         <EventItem key={event.id} event={event} onDetailClick={() => {}} />
       ))}
-      {InfiniteScroll}
+      {/* TODO: set events*/}
+      {/*InfiniteScroll*/}
     </EventFeed>
   );
 };

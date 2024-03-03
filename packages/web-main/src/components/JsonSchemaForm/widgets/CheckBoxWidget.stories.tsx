@@ -1,7 +1,7 @@
 import { RJSFSchema } from '@rjsf/utils';
-import React from 'react';
 import { JsonSchemaForm } from '..';
 import { styled, Button } from '@takaro/lib-components';
+import { useState } from 'react';
 
 const Container = styled.div`
   width: 100%;
@@ -13,7 +13,7 @@ export default {
 };
 
 export const Default = () => {
-  const [result, setResult] = React.useState<boolean>(false);
+  const [result, setResult] = useState<boolean>(false);
 
   const schema: RJSFSchema = {
     $schema: 'http://json-schema.org/draft-07/schema#',
