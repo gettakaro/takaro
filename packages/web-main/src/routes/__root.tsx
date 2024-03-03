@@ -3,8 +3,7 @@ import { styled, Loading } from '@takaro/lib-components';
 import { Outlet } from '@tanstack/react-router';
 import { ErrorPage } from '@takaro/lib-components';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { TanStackRouterDevtools } from '@tanstack/router-devtools';
-
+import React, { Suspense } from 'react';
 import { RouterContext } from '../router';
 
 const LoadingContainer = styled.div`
@@ -21,11 +20,24 @@ export const Route = createRootRouteWithContext<RouterContext>()({
   component: Component,
 });
 
+const TanStackRouterDevtools =
+  process.env.NODE_ENV === 'production'
+    ? () => null
+    : React.lazy(() =>
+        import('@tanstack/router-devtools').then((res) => ({
+          default: res.TanStackRouterDevtools,
+        }))
+      );
+
 function Component() {
+  console.log(process.env.NODE_ENV);
+
   return (
     <>
       <Outlet />
-      <TanStackRouterDevtools position="bottom-right" initialIsOpen={false} />
+      <Suspense>
+        <TanStackRouterDevtools position="bottom-right" initialIsOpen={false} />
+      </Suspense>
     </>
   );
 }
