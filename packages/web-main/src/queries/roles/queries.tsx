@@ -11,12 +11,10 @@ import {
   PermissionOutputDTO,
   APIOutput,
 } from '@takaro/apiclient';
-import { InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { InfiniteData, infiniteQueryOptions, queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import { useApiClient } from 'hooks/useApiClient';
-import { hasNextPage, mutationWrapper } from 'queries/util';
-import { useMemo } from 'react';
-import { InfiniteScroll as InfiniteScrollComponent } from '@takaro/lib-components';
+import { getApiClient } from 'util/getApiClient';
+import { hasNextPage, mutationWrapper, queryParamsToArray } from 'queries/util';
 import { playerKeys } from 'queries/players/queries';
 import { userKeys } from 'queries/users';
 import { ErrorMessageMapping } from '@takaro/lib-components/src/errors';
@@ -32,59 +30,36 @@ const defaultRoleErrorMessages: Partial<ErrorMessageMapping> = {
   UniqueConstraintError: 'Role with this name already exists',
 };
 
-export const useRole = (id: string) => {
-  const apiClient = useApiClient();
+export const roleQueryOptions = (roleId: string) =>
+  queryOptions<RoleOutputDTO, AxiosError<RoleOutputDTOAPI>>({
+    queryKey: roleKeys.detail(roleId),
+    queryFn: async () => (await getApiClient().role.roleControllerGetOne(roleId)).data.data,
+  });
 
-  return useQuery<RoleOutputDTO, AxiosError<RoleOutputDTOAPI>>({
-    queryKey: roleKeys.detail(id),
-    queryFn: async () => {
-      const resp = (await apiClient.role.roleControllerGetOne(id)).data.data;
-      return resp;
-    },
-    enabled: Boolean(id),
+export const rolesOptions = (opts: RoleSearchInputDTO = {}) => {
+  return queryOptions<RoleOutputArrayDTOAPI, AxiosError<RoleOutputArrayDTOAPI>>({
+    queryKey: [...roleKeys.list(), ...queryParamsToArray(opts)],
+    queryFn: async () => (await getApiClient().role.roleControllerSearch(opts)).data,
   });
 };
 
-export const useRoles = ({ page = 0, limit, sortBy, sortDirection, filters, search }: RoleSearchInputDTO = {}) => {
-  const apiClient = useApiClient();
-
-  const queryKeys = [...roleKeys.list(), page, sortBy, sortDirection, filters, search].filter(Boolean);
-
-  const queryOpts = useInfiniteQuery<RoleOutputArrayDTOAPI, AxiosError<RoleOutputArrayDTOAPI>>({
-    queryKey: queryKeys,
-    queryFn: async ({ pageParam }) =>
-      (
-        await apiClient.role.roleControllerSearch({
-          limit,
-          sortBy,
-          sortDirection,
-          filters,
-          search,
-          page: pageParam as number,
-        })
-      ).data,
-    getNextPageParam: (lastPage, pages) => hasNextPage(lastPage.meta, pages.length),
-    initialPageParam: page,
+export const rolesInfiniteQueryOptions = (opts: RoleSearchInputDTO = {}) => {
+  return infiniteQueryOptions<RoleOutputArrayDTOAPI, AxiosError<RoleOutputArrayDTOAPI>>({
+    queryKey: [...roleKeys.list(), ...queryParamsToArray(opts)],
+    queryFn: async () => (await getApiClient().role.roleControllerSearch(opts)).data,
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => hasNextPage(lastPage.meta),
   });
-
-  const InfiniteScroll = useMemo(() => {
-    <InfiniteScrollComponent {...queryOpts} />;
-  }, [queryOpts]);
-
-  return { ...queryOpts, InfiniteScroll };
 };
 
-export const usePermissions = () => {
-  const apiClient = useApiClient();
-
-  return useQuery<PermissionOutputDTO[], AxiosError<PermissionOutputDTOAPI>>({
+export const permissionsQueryOptions = () =>
+  queryOptions<PermissionOutputDTO[], AxiosError<PermissionOutputDTOAPI>>({
     queryKey: roleKeys.permissions(),
-    queryFn: async () => (await apiClient.role.roleControllerGetPermissions()).data.data,
+    queryFn: async () => (await getApiClient().role.roleControllerGetPermissions()).data.data,
   });
-};
 
 export const useRoleCreate = () => {
-  const apiClient = useApiClient();
+  const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
   return mutationWrapper<RoleOutputDTO, RoleCreateInputDTO>(
@@ -132,7 +107,7 @@ interface RoleUpdate {
 }
 
 export const useRoleUpdate = () => {
-  const apiClient = useApiClient();
+  const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
   return mutationWrapper<RoleOutputDTO, RoleUpdate>(
@@ -160,7 +135,7 @@ export const useRoleUpdate = () => {
             })),
           };
         });
-        queryClient.invalidateQueries({ queryKey: roleKeys.detail(updatedRole.id) });
+        await queryClient.invalidateQueries({ queryKey: roleKeys.detail(updatedRole.id) });
       },
     }),
     defaultRoleErrorMessages
@@ -172,7 +147,7 @@ interface RoleRemove {
 }
 
 export const useRoleRemove = () => {
-  const apiClient = useApiClient();
+  const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
   return mutationWrapper<IdUuidDTO, RoleRemove>(
@@ -207,7 +182,7 @@ interface IPlayerRoleAssign {
 }
 
 export const usePlayerRoleAssign = () => {
-  const apiClient = useApiClient();
+  const apiClient = getApiClient();
   const queryClient = useQueryClient();
   return mutationWrapper<APIOutput, IPlayerRoleAssign>(
     useMutation<APIOutput, AxiosError<APIOutput>, IPlayerRoleAssign>({
@@ -225,8 +200,8 @@ export const usePlayerRoleAssign = () => {
   );
 };
 
-export const usePlayerRoleUnassign = () => {
-  const apiClient = useApiClient();
+export const usePlayerRoleUnassign = ({ playerId }: { playerId: string }) => {
+  const apiClient = getApiClient();
   const queryClient = useQueryClient();
   return mutationWrapper<APIOutput, IPlayerRoleAssign>(
     useMutation<APIOutput, AxiosError<APIOutput>, IPlayerRoleAssign>({
@@ -235,6 +210,9 @@ export const usePlayerRoleUnassign = () => {
         // TODO: Same cache issue as in useRoleAssign...
         queryClient.invalidateQueries({ queryKey: playerKeys.detail(id) });
         return res;
+      },
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: playerKeys.detail(playerId) });
       },
     }),
     {}
@@ -246,15 +224,17 @@ interface IUserRoleAssign {
   roleId: string;
 }
 
-export const useUserRoleAssign = () => {
-  const apiClient = useApiClient();
+export const useUserRoleAssign = ({ userId }: { userId: string }) => {
+  const apiClient = getApiClient();
   const queryClient = useQueryClient();
   return mutationWrapper<APIOutput, IUserRoleAssign>(
     useMutation<APIOutput, AxiosError<APIOutput>, IUserRoleAssign>({
       mutationFn: async ({ id, roleId }) => {
         const res = (await apiClient.user.userControllerAssignRole(id, roleId)).data;
-        queryClient.invalidateQueries({ queryKey: userKeys.detail(id) });
         return res;
+      },
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
       },
     }),
     {}
@@ -262,7 +242,7 @@ export const useUserRoleAssign = () => {
 };
 
 export const useUserRoleUnassign = () => {
-  const apiClient = useApiClient();
+  const apiClient = getApiClient();
   const queryClient = useQueryClient();
   return mutationWrapper<APIOutput, IUserRoleAssign>(
     useMutation<APIOutput, AxiosError<APIOutput>, IUserRoleAssign>({

@@ -1,5 +1,5 @@
-import { SelectField, Tooltip } from '@takaro/lib-components';
-import { useGameServers } from 'queries/gameservers';
+import { SelectField, Skeleton, Tooltip } from '@takaro/lib-components';
+import { gameServersOptions } from 'queries/gameservers';
 import { FC } from 'react';
 import { GameServerOutputDTO, GameServerOutputDTOTypeEnum } from '@takaro/apiclient';
 import { CustomSelectProps } from '..';
@@ -7,6 +7,7 @@ import icon7d2d from './7d2d-icon.png';
 import iconRust from './rust-icon.png';
 import { FaLeaf as TakaroIcon } from 'react-icons/fa';
 import { Inner, StatusDot } from './style';
+import { useQuery } from '@tanstack/react-query';
 
 const gameTypeMap = {
   [GameServerOutputDTOTypeEnum.Mock]: { icon: <TakaroIcon /> },
@@ -20,21 +21,19 @@ export const GameServerSelect: FC<CustomSelectProps> = ({
   name: selectName,
   size,
   loading,
+  label = 'Game server',
   control,
   disabled,
   inPortal,
   description,
   required,
 }) => {
-  const { data, isLoading: isLoadingData } = useGameServers({ sortBy: 'type' });
+  const { data, isLoading: isLoadingData } = useQuery(gameServersOptions({ sortBy: 'type' }));
+  const gameServers = data ?? [];
 
   if (isLoadingData) {
-    // TODO: better loading state
-    return <div>loading...</div>;
+    return <Skeleton variant="text" width="100%" height="35px" />;
   }
-
-  // flatten pages into a single array
-  const gameServers = data?.pages.flatMap((page) => page.data);
 
   if (!gameServers) {
     return <div>no game servers</div>;
@@ -53,7 +52,7 @@ export const GameServerSelect: FC<CustomSelectProps> = ({
       name={selectName}
       required={required}
       loading={loading}
-      label="Game Server"
+      label={label}
     />
   );
 };

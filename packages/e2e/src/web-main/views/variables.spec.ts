@@ -1,8 +1,6 @@
-import playwright from '@playwright/test';
+import { expect } from '@playwright/test';
 import { extendedTest } from '../fixtures/index.js';
 import { navigateTo } from '../helpers.js';
-
-const { expect } = playwright;
 
 extendedTest('Can view variables', async ({ page, extended, takaro }) => {
   await takaro.rootClient.variable.variableControllerCreate({
@@ -143,7 +141,7 @@ extendedTest('Can view value details', async ({ page, takaro }) => {
   // we consider there to be only one variable at this point.
   await page.getByText('View value').click();
 
-  expect(page.getByText(variableValue)).toBeVisible();
+  await expect(page.getByText(variableValue)).toBeVisible();
 });
 
 extendedTest('Can update variable', async ({ page, takaro }) => {

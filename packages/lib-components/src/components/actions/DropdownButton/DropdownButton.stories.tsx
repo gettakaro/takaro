@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
 import { Action } from '../../../components';
@@ -20,69 +20,69 @@ export default {
 } as Meta;
 
 export const Default: StoryFn<DropdownButtonProps> = () => {
+  const [message, setMessage] = useState<string>();
+
   return (
-    <DropdownButton>
-      <Action
-        onClick={() => console.log('save changes event fired')}
-        text="Save changes"
-      >
-        Save changes
-      </Action>
-      <Action
-        onClick={() => console.log('save and scheduled event fired')}
-        text="Save and schedule"
-      >
-        Save and schedule
-      </Action>
-      <Action
-        onClick={() => console.log('save and published event fired')}
-        text="Save and publish"
-      >
-        Save and publish
-      </Action>
-      <Action
-        onClick={() => console.log('Export PDF event fired')}
-        text="Export PDF"
-      >
-        Export PDF
-      </Action>
-    </DropdownButton>
+    <>
+      <DropdownButton>
+        <Action
+          onClick={() => {
+            setMessage('save changes event fired');
+          }}
+          text="Save changes"
+        >
+          Save changes
+        </Action>
+        <Action
+          onClick={() => {
+            setMessage('Save and schedule event fired');
+          }}
+          text="Save and schedule"
+        >
+          Save and schedule
+        </Action>
+        <Action
+          onClick={() => {
+            setMessage('save and published fired');
+          }}
+          text="Save and publish"
+        >
+          Save and publish
+        </Action>
+        <Action
+          onClick={() => {
+            setMessage('Export PDF event fired');
+          }}
+          text="Export PDF"
+        >
+          Export PDF
+        </Action>
+      </DropdownButton>
+      <p>{message}</p>
+    </>
   );
 };
 
 export const Description: StoryFn<DropdownButtonProps> = () => {
+  const [message, setMessage] = useState<string>();
+
   return (
-    <DropdownButton>
-      <Action
-        onClick={() => console.log('first is fired')}
-        text="Merge pull request"
-      >
-        <h4>merge pull request</h4>
-        <p>
-          All commits from this branch will be added to the base branchh via a
-          merge commit.
-        </p>
-      </Action>
-      <Action
-        onClick={() => console.log('second is fired')}
-        text="Squash and merge"
-      >
-        <h4>Squash and merge</h4>
-        <p>
-          The 4 commits from this branch will be combined into one commit in the
-          base branch.
-        </p>
-      </Action>
-      <Action
-        onClick={() => console.log('third option is fired.')}
-        text="Rebase and merge"
-      >
-        <h4>Rebase and merge</h4>
-        <p>
-          the 4 commits from this branch will be rebased and added to the base
-          branch.
-        </p>
-      </Action>
-    </DropdownButton>
+    <>
+      <DropdownButton>
+        <Action onClick={() => setMessage('Merge pull request is fired')} text="Merge pull request">
+          <h4>merge pull request</h4>
+          <p>All commits from this branch will be added to the base branchh via a merge commit.</p>
+        </Action>
+        <Action onClick={() => setMessage('Squash and merge is fired')} text="Squash and merge">
+          <h4>Squash and merge</h4>
+          <p>The 4 commits from this branch will be combined into one commit in the base branch.</p>
+        </Action>
+        <Action onClick={() => setMessage('Rebase and merge is fired.')} text="Rebase and merge">
+          <h4>Rebase and merge</h4>
+          <p>the 4 commits from this branch will be rebased and added to the base branch.</p>
+        </Action>
+      </DropdownButton>
+      <p>{message}</p>
+    </>
   );
 };

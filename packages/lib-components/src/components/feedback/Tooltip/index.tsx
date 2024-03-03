@@ -15,18 +15,11 @@ interface SubComponentTypes {
 }
 export type TooltipProps = PropsWithChildren<TooltipOptions>;
 
-export const Tooltip: FC<TooltipProps> & SubComponentTypes = ({
-  children,
-  ...options
-}) => {
+export const Tooltip: FC<TooltipProps> & SubComponentTypes = ({ children, ...options }) => {
   // This can accept any props as options, e.g. `placement`,
   // or other positioning options.
   const tooltip = useTooltip(options);
-  return (
-    <TooltipContext.Provider value={tooltip}>
-      {children}
-    </TooltipContext.Provider>
-  );
+  return <TooltipContext.Provider value={tooltip}>{children}</TooltipContext.Provider>;
 };
 
 Tooltip.Trigger = TooltipTrigger;

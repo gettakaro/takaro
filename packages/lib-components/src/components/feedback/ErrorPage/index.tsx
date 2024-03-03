@@ -2,7 +2,7 @@ import { FC, ReactElement, cloneElement } from 'react';
 import { Company } from '../../../components';
 import { useTheme } from '../../../hooks';
 import { styled } from '../../../styled';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 import {
   AiOutlineBook,
   AiOutlineMenu,
@@ -76,7 +76,7 @@ const Container = styled.div`
   }
   `;
 
-const HomeLink = styled(Link)`
+const HomeLink = styled((props) => <Link {...props} />)`
   display: flex;
   align-items: center;
   svg {
@@ -167,7 +167,7 @@ export const ErrorPage: FC<ErrorPageProps> = ({
           <ul>
             {listItems.map(({ icon, title, description, to }) => (
               <li key={`${title}-${to}`}>
-                <Link to={to}>
+                <a href={to}>
                   <ChevronRightIcon />
                   <IconContainer>
                     {cloneElement(icon, {
@@ -179,7 +179,7 @@ export const ErrorPage: FC<ErrorPageProps> = ({
                     <h5>{title}</h5>
                     <p>{description}</p>
                   </div>
-                </Link>
+                </a>
               </li>
             ))}
           </ul>

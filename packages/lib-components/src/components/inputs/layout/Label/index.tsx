@@ -20,7 +20,6 @@ export interface LabelProps {
   /// Visible text
   text: string;
 
-  /// TODO: hint
   hint?: string;
 
   /// The id of the element the label is bound to

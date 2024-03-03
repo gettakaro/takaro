@@ -1,45 +1,17 @@
-import { useGameServer } from 'queries/gameservers';
 import { useEffect } from 'react';
-import { useSelectedGameServer } from './useSelectedGameServerContext';
+import { GameServerOutputDTO } from '@takaro/apiclient';
 
 export function useDocumentTitle(title: string) {
   useEffect(() => {
-    // Store the original document title
     const originalTitle = document.title;
-
-    // Set the new title
     document.title = `${title} - Takaro`;
-
-    // Return the cleanup function to reset to the original title when the component unmounts or if the title prop changes
     return () => {
       document.title = originalTitle;
     };
-  }, [title]); // Re-run the effect when the title prop changes
+  }, [title]);
 }
 
 // alternative version that adds the currently selected gameServer name to the title
-export function useGameServerDocumentTitle(title: string) {
-  const { selectedGameServerId } = useSelectedGameServer();
-  const { data: gameServer, isLoading } = useGameServer(selectedGameServerId);
-
-  if (selectedGameServerId === null) {
-    throw new Error('useGameServerDocumentTitle must be used within a GameServerRoute');
-  }
-
-  useEffect(() => {
-    if (isLoading) {
-      const originalTitle = document.title;
-      document.title = `${title} - Takaro`;
-      return () => {
-        document.title = originalTitle;
-      };
-    }
-    if (gameServer) {
-      const originalTitle = document.title;
-      document.title = `${title} ${gameServer.name} - Takaro`;
-      return () => {
-        document.title = originalTitle;
-      };
-    }
-  }, [title, isLoading]);
+export function useGameServerDocumentTitle(title: string, gameServer: GameServerOutputDTO) {
+  document.title = `${title} ${gameServer.name} - Takaro`;
 }

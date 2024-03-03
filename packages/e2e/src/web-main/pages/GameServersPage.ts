@@ -1,8 +1,6 @@
-import { Page } from '@playwright/test';
 import { GameServerOutputDTO } from '@takaro/apiclient';
-import playwright from '@playwright/test';
+import { expect, type Page } from '@playwright/test';
 import { BasePage } from './BasePage.js';
-const { expect } = playwright;
 
 export class GameServersPage extends BasePage {
   constructor(public readonly page: Page, public gameServer: GameServerOutputDTO) {
@@ -10,19 +8,19 @@ export class GameServersPage extends BasePage {
   }
 
   async goto() {
-    await this.page.goto('/servers');
+    await this.page.goto('/gameservers');
   }
 
   async gotoGameServer() {
-    await this.page.goto(`/server/dashboard/${this.gameServer.id}`);
+    await this.page.goto(`/gameserver/${this.gameServer.id}/dashboard`);
   }
 
   async gotoGameServerConsole() {
-    await this.page.goto(`/server/dashboard/${this.gameServer.id}/console`);
+    await this.page.goto(`/gameserver/${this.gameServer.id}/dashboard/console`);
   }
 
   async create() {
-    await this.page.goto('/servers/create');
+    await this.page.goto('/gameservers/create');
   }
 
   async delete(name: string) {
@@ -42,9 +40,7 @@ export class GameServersPage extends BasePage {
   }
 
   async nameCreateEdit(value: string) {
-    const gameServerNameInput = this.page.getByPlaceholder('My cool server');
-    await gameServerNameInput.focus();
-    await gameServerNameInput.fill(value);
+    await this.page.getByPlaceholder('My cool server').fill(value);
   }
 
   async selectGameServerType(value: string) {
