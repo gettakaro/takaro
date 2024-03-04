@@ -25,7 +25,7 @@
   "test": {
     "group": "ModuleController",
     "snapshot": true,
-    "name": "Does not allow creating modules with \"builtin\" parameter set",
+    "name": "Does not allow creating modules with builtin parameter set",
     "expectedStatus": 400,
     "filteredFields": [],
     "standardEnvironment": true

@@ -147,7 +147,7 @@ const tests = [
   new IntegrationTest({
     group,
     snapshot: true,
-    name: 'Does not allow creating modules with "builtin" parameter set',
+    name: 'Does not allow creating modules with builtin parameter set',
     test: async function () {
       let res;
       try {
