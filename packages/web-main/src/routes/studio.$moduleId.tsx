@@ -148,7 +148,6 @@ function Component() {
             entry: Object.keys(files)[0],
           }}
           files={files}
-          prefix=""
         >
           <Flex>
             <Wrapper>
