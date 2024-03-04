@@ -105,21 +105,19 @@ const ButtonContainer = styled.div`
 `;
 
 export interface FileProps {
-  filePath: string;
-
-  // This is a wrapper function around sandpack.openFile()
-  // in case it is undefined it means that it is a directory
-  selectFile?: (path: string) => void;
+  path: string;
+  /// in case it is undefined it means that it is a directory
+  openFile?: (path: string) => void;
   active?: boolean;
   onClick?: (e: MouseEvent<HTMLButtonElement>) => void;
   depth: number;
   isDirOpen?: boolean;
 }
 
-export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, onClick, depth }) => {
+export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick, depth }) => {
   // TODO: create prop: IsDir() based on selectFile.
 
-  const fileName = filePath.split('/').filter(Boolean).pop()!;
+  const fileName = path.split('/').filter(Boolean).pop()!;
   const { moduleData, setModuleData } = useModule();
   const theme = useTheme();
   const { sandpack } = useSandpack();
@@ -157,8 +155,8 @@ export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, o
 
   // item is clicked in explorer
   const handleOnFileClick = (event: React.MouseEvent<HTMLButtonElement>): void => {
-    if (selectFile) {
-      selectFile(filePath);
+    if (openFile) {
+      openFile(path);
     }
 
     // handle directory
@@ -168,7 +166,7 @@ export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, o
   const handleRename = async (newFileName: string) => {
     setEditing(false);
 
-    const toRename = moduleData.fileMap[filePath];
+    const toRename = moduleData.fileMap[path];
 
     switch (toRename.type) {
       case FunctionType.Hooks:
@@ -195,17 +193,17 @@ export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, o
 
     // change path in moduleData
     // change path in sandpack
-    const newPath = getNewPath(filePath, newFileName);
-    const code = sandpack.files[filePath].code;
+    const newPath = getNewPath(path, newFileName);
+    const code = sandpack.files[path].code;
     sandpack.files[newPath] = { code: code };
     sandpack.setActiveFile(newPath);
-    sandpack.closeFile(filePath);
-    delete sandpack.files[filePath];
+    sandpack.closeFile(path);
+    delete sandpack.files[path];
     setInternalFileName(newFileName);
   };
 
   const handleDelete = async () => {
-    const toDelete = moduleData.fileMap[filePath];
+    const toDelete = moduleData.fileMap[path];
     console.log(moduleData.fileMap);
 
     try {
@@ -223,8 +221,8 @@ export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, o
           throw new Error('Invalid type');
       }
       // delete file from sandpack
-      sandpack.closeFile(filePath);
-      sandpack.deleteFile(filePath);
+      sandpack.closeFile(path);
+      sandpack.deleteFile(path);
     } catch (e) {
       // TODO: handle error
       // deleting file failed
@@ -234,7 +232,7 @@ export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, o
 
   const handleNewFile = async (newFileName: string) => {
     setShowNewFileField(false);
-    const type = filePath.split('/').join('');
+    const type = path.split('/').join('');
     let functionId = '';
     let itemId = '';
 
@@ -309,11 +307,11 @@ export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, o
     e.stopPropagation();
     setShowNewFileField(true);
     // we need a placeholder here to make sure the input field is rendered
-    sandpack.updateFile(`${filePath.slice(0, -1)} /new-file`);
+    sandpack.updateFile(`${path.slice(0, -1)} /new-file`);
   };
 
   const getIcon = (): JSX.Element => {
-    if (selectFile) return <JsIcon size={12} fill={theme.colors.secondary} />;
+    if (openFile) return <JsIcon size={12} fill={theme.colors.secondary} />;
 
     return isDirOpen ? (
       <DirOpenIcon fill={theme.colors.secondary} size={18} />
@@ -327,7 +325,7 @@ export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, o
       return <></>;
     }
 
-    if (selectFile) {
+    if (openFile) {
       return (
         <>
           <Tooltip placement="top">
@@ -361,7 +359,7 @@ export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, o
   return (
     <>
       {/* TODO: add context menu for directory */}
-      {selectFile && !readOnly && (
+      {openFile && !readOnly && (
         <ContextMenu targetRef={fileRef}>
           <ContextMenu.Group>
             <ContextMenu.Item label="Rename file" onClick={handleOnRenameClick} />
@@ -382,7 +380,7 @@ export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, o
       >
         <FileContainer>
           {getIcon()}
-          {isEditing || selectFile ? (
+          {isEditing || openFile ? (
             <EditableField
               name="file"
               isEditing={isEditing}

@@ -39,7 +39,7 @@ export const Directory: FC<DirectoryProps> = ({
   return (
     <>
       <DirectoryContainer key={prefixedPath} role="tree">
-        <File depth={depth} isDirOpen={isOpen} onClick={toggle} filePath={prefixedPath + '/'} />
+        <File depth={depth} isDirOpen={isOpen} onClick={toggle} path={prefixedPath + '/'} />
         {isOpen && (
           <ModuleList
             activeFile={activeFile}
