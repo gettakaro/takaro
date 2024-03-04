@@ -61,7 +61,7 @@ export function OryProvider({ children }: { children: React.ReactNode }) {
           }
           case 401: {
             console.warn('sdkError 401: Navigate to /login');
-            navigate({ to: '/login', replace: true });
+            navigate({ to: '/login', search: { redirect: '/' }, replace: true });
             return Promise.resolve();
           }
 

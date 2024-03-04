@@ -148,6 +148,8 @@ function Component() {
   // session == successfully logged in
   if (session) {
     // redirect is always defined
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     navigate({ to: search.redirect });
   }
 

@@ -4,9 +4,9 @@ import { createFileRoute, redirect } from '@tanstack/react-router';
 import { getUserPermissions, hasPermission } from 'hooks/useHasPermission';
 
 export const Route = createFileRoute('/_auth/_global/')({
-  beforeLoad: ({ context }) => {
+  beforeLoad: ({ context, location }) => {
     if (context.auth.isAuthenticated === false) {
-      throw redirect({ to: '/login' });
+      throw redirect({ to: '/login', search: { redirect: location.pathname } });
     }
 
     if (hasPermission(context.auth.session, [PERMISSIONS.ReadEvents])) {

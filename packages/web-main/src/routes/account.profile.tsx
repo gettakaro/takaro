@@ -70,14 +70,14 @@ function Component() {
   // submit any of the settings form data to Ory
   const onSubmit = (body: UpdateSettingsFlowBody) => {
     // something unexpected went wrong and the flow was not set
-    if (!flow) return navigate({ to: '/login', replace: true });
+    if (!flow) return navigate({ to: '/login', replace: true, search: { redirect: '/' } });
 
     oryClient
       // submit the form data the user provided to Ory
       .updateSettingsFlow({ flow: flow.id, updateSettingsFlowBody: body })
       .then(({ data: flow }) => {
         setFlow(flow);
-        navigate({ to: '/login' });
+        navigate({ to: '/login', search: { redirect: '/' } });
       })
       .catch(sdkErrorHandler);
   };

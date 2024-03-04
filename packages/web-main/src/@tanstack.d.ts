@@ -9,9 +9,3 @@ declare module '@tanstack/table-core' {
     dataType?: DataTypes;
   }
 }
-
-declare module '@tanstack/react-router' {
-  interface Register {
-    router: typeof router;
-  }
-}

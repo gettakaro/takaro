@@ -1,5 +1,4 @@
 import { FC, PropsWithChildren } from 'react';
-import { Link } from '@tanstack/react-router';
 import { Card, styled } from '@takaro/lib-components';
 import { useCommandCreate, useCronJobCreate, useHookCreate } from 'queries/modules';
 
@@ -116,14 +115,14 @@ export const InfoCard: FC<PropsWithChildren<InfoCardProps>> = ({ title, onClick,
       <Flex>
         <h2>{title}</h2>
         {children}
-        <Link
+        <a
           className="underline"
-          to={`https://docs.takaro.io/modules#${title.toLowerCase()}`}
+          href={`https://docs.takaro.io/modules#${title.toLowerCase()}`}
           target="_blank"
           onClick={handleClick}
         >
           Learn more
-        </Link>
+        </a>
       </Flex>
     </Card>
   );

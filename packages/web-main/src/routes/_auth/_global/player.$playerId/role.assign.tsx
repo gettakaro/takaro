@@ -58,7 +58,7 @@ function Component() {
 
   useEffect(() => {
     if (!open) {
-      navigate({ to: '/player/$playerId/global', params: { playerId } });
+      navigate({ to: '/player/$playerId/info', params: { playerId } });
     }
   }, [open, navigate]);
 
@@ -75,7 +75,7 @@ function Component() {
   const onSubmit: SubmitHandler<IFormInputs> = async ({ id, roleId, gameServerId, expiresAt }) => {
     if (gameServerId === 'null') gameServerId = undefined;
     await mutateAsync({ id, roleId, gameServerId, expiresAt });
-    navigate({ to: '/player/$playerId/global', params: { playerId } });
+    navigate({ to: '/player/$playerId/info', params: { playerId } });
   };
 
   return (

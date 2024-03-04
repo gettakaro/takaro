@@ -14,10 +14,10 @@ function LogOut() {
     const performLogout = async () => {
       try {
         await logOut();
-        navigate({ to: '/login' });
+        navigate({ to: '/login', search: { redirect: '/' } });
       } catch (error) {
         console.error('Logout failed:', error);
-        navigate({ to: '/login' });
+        navigate({ to: '/login', search: { redirect: '/' } });
       }
     };
     performLogout();

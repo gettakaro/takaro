@@ -80,7 +80,7 @@ function Component() {
   const submitFlow = async (body: UpdateRecoveryFlowBody) => {
     if (!flow) {
       enqueueSnackbar('Something went wrong, please try again', { type: 'error' });
-      return navigate({ to: '/login', replace: true });
+      return navigate({ to: '/login', replace: true, search: { redirect: '/' } });
     }
 
     try {
@@ -112,7 +112,7 @@ function Component() {
           additionalProps={
             {
               loginURL: {
-                handler: () => navigate({ to: '/login', replace: true }),
+                handler: () => navigate({ to: '/login', replace: true, search: { redirect: '/' } }),
                 href: '/login',
               },
             } as RecoverySectionAdditionalProps
