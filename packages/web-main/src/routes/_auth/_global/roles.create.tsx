@@ -26,7 +26,7 @@ function Component() {
     if (!open || isSuccess) {
       navigate({ to: '/roles' });
     }
-  }, [open, navigate, navigate]);
+  }, [open, navigate, isSuccess]);
 
   const onSubmit: SubmitHandler<IFormInputs> = ({ name, permissions: formPermissions }) => {
     const activePermissions = Object.entries(formPermissions)

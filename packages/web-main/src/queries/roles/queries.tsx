@@ -66,35 +66,8 @@ export const useRoleCreate = () => {
     useMutation<RoleOutputDTO, AxiosError<RoleOutputArrayDTOAPI>, RoleCreateInputDTO>({
       mutationFn: async (role) => (await apiClient.role.roleControllerCreate(role)).data.data,
       onSuccess: async (newRole) => {
-        queryClient.setQueryData<InfiniteData<RoleOutputArrayDTOAPI>>(roleKeys.list(), (prev) => {
-          // in case there are no roles yet
-          if (!prev) {
-            return {
-              pages: [
-                {
-                  data: [newRole],
-                  meta: {
-                    page: 0,
-                    total: 1,
-                    limit: 100,
-                    error: { code: '', message: '', details: '' },
-                    serverTime: '',
-                  },
-                },
-              ],
-              pageParams: [0],
-            };
-          }
-
-          const newData = {
-            ...prev,
-            pages: prev?.pages.map((page) => ({
-              ...page,
-              data: [...page.data, newRole],
-            })),
-          };
-          return newData;
-        });
+        await queryClient.invalidateQueries({ queryKey: roleKeys.list() });
+        queryClient.setQueryData(roleKeys.detail(newRole.id), newRole);
       },
     }),
     defaultRoleErrorMessages
@@ -135,7 +108,7 @@ export const useRoleUpdate = () => {
             })),
           };
         });
-        await queryClient.invalidateQueries({ queryKey: roleKeys.detail(updatedRole.id) });
+        await queryClient.setQueryData(roleKeys.detail(updatedRole.id), updatedRole);
       },
     }),
     defaultRoleErrorMessages
@@ -154,20 +127,8 @@ export const useRoleRemove = () => {
     useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, RoleRemove>({
       mutationFn: async ({ id }) => (await apiClient.role.roleControllerRemove(id)).data.data,
       onSuccess: (removedRole) => {
-        // update list that contain this role
-        queryClient.setQueryData<InfiniteData<RoleOutputArrayDTOAPI>>(roleKeys.list(), (prev) => {
-          if (!prev) {
-            throw new Error('Cannot remove role from list, because list does not exist');
-          }
-
-          return {
-            ...prev,
-            pages: prev.pages.map((page) => ({
-              ...page,
-              data: page.data.filter((role) => role.id !== removedRole.id),
-            })),
-          };
-        });
+        queryClient.invalidateQueries({ queryKey: roleKeys.list() });
+        queryClient.removeQueries({ queryKey: roleKeys.detail(removedRole.id) });
       },
     }),
     {}
