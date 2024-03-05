@@ -13,7 +13,7 @@ import {
   UserOutputDTO,
 } from '@takaro/apiclient';
 import { humanId } from 'human-id';
-import { ModuleDefinitionsPage, StudioPage, GameServersPage, UsersPage } from '../pages/index.js';
+import { ModuleDefinitionsPage, StudioPage, GameServersPage, UsersPage, RolesPage } from '../pages/index.js';
 import { getAdminClient, login } from '../helpers.js';
 import { PlayerProfilePage } from '../pages/PlayerProfile.js';
 
@@ -31,6 +31,7 @@ export interface IBaseFixtures {
     usersPage: UsersPage;
     builtinModule: ModuleOutputDTO;
     gameServer: GameServerOutputDTO;
+    rolesPage: RolesPage;
     mailhog: MailhogAPI;
     rootUser: UserOutputDTO;
     testUser: UserOutputDTO & { password: string; role: RoleOutputDTO };
@@ -70,7 +71,7 @@ const main = pwTest.extend<IBaseFixtures>({
 
         // Empty role creation
         client.role.roleControllerCreate({
-          name: 'test',
+          name: 'Test role',
           permissions: [],
         }),
 
@@ -106,6 +107,7 @@ const main = pwTest.extend<IBaseFixtures>({
         GameServersPage: new GameServersPage(page, gameServer.data.data),
         moduleDefinitionsPage: new ModuleDefinitionsPage(page),
         usersPage: new UsersPage(page),
+        rolesPage: new RolesPage(page),
         mailhog: new MailhogAPI({
           baseURL: 'http://127.0.0.1:8025',
         }),
