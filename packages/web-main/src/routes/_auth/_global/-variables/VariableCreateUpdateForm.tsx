@@ -15,8 +15,8 @@ export enum ExecutionType {
 }
 
 const validationSchema = z.object({
-  key: z.string().nonempty().max(25),
-  value: z.string().nonempty().max(255),
+  key: z.string().min(1).max(25),
+  value: z.string().min(1).max(255),
   playerId: z.string().uuid().optional(),
   gameServerId: z.string().uuid().optional(),
   moduleId: z.string().uuid().optional(),
@@ -33,7 +33,7 @@ interface CreateAndUpdateVariableformProps {
   variable?: VariableOutputDTO;
   isLoading: boolean;
   type: ExecutionType;
-  submit: (variable: IFormInputs) => Promise<void>;
+  submit: (variable: IFormInputs) => void;
   error?: string | string[] | null;
 }
 
@@ -60,8 +60,7 @@ export const VariablesForm: FC<CreateAndUpdateVariableformProps> = ({ variable, 
   });
 
   const onSubmit: SubmitHandler<IFormInputs> = async (variable) => {
-    await submit(variable);
-    setOpen(false);
+    submit(variable);
   };
 
   return (

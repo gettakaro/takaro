@@ -33,7 +33,7 @@ export const variableQueryOptions = (variableId: string) =>
 
 export const variablesQueryOptions = (queryParams: VariableSearchInputDTO) =>
   queryOptions<VariableOutputArrayDTOAPI, AxiosError<VariableOutputArrayDTOAPI>>({
-    queryKey: [variableKeys.list(), queryParams],
+    queryKey: [...variableKeys.list(), queryParams],
     queryFn: async () => (await getApiClient().variable.variableControllerSearch(queryParams)).data,
   });
 
@@ -45,10 +45,7 @@ export const useVariableCreate = () => {
     useMutation<VariableOutputDTO, AxiosError<VariableCreateDTO>, VariableCreateDTO>({
       mutationFn: async (variable) => (await apiClient.variable.variableControllerCreate(variable)).data.data,
       onSuccess: async (newVariable) => {
-        // update the list of variables to reflect the new variable
         await queryClient.invalidateQueries({ queryKey: variableKeys.list() });
-
-        // Create cache key for the new variable
         queryClient.setQueryData<VariableOutputDTO>(variableKeys.detail(newVariable.id), newVariable);
       },
     }),
@@ -70,10 +67,7 @@ export const useVariableUpdate = () => {
       mutationFn: async ({ variableId, variableDetails }) =>
         (await apiClient.variable.variableControllerUpdate(variableId, variableDetails)).data.data,
       onSuccess: async (updatedVar) => {
-        // renew the list of variables to reflect the new variable
         await queryClient.invalidateQueries({ queryKey: variableKeys.list() });
-
-        // update cache of updated variable
         queryClient.setQueryData<VariableOutputDTO>(variableKeys.detail(updatedVar.id), updatedVar);
       },
     }),
@@ -93,10 +87,7 @@ export const useVariableDelete = () => {
     useMutation<IdUuidDTO, AxiosError<VariableOutputDTO>, VariableDeleteInput>({
       mutationFn: async ({ variableId }) => (await apiClient.variable.variableControllerDelete(variableId)).data.data,
       onSuccess: async (removedVar) => {
-        // update the list of variables to reflect the new variable
         await queryClient.invalidateQueries({ queryKey: variableKeys.list() });
-
-        // Delete cache for the deleted variable
         queryClient.removeQueries({ queryKey: variableKeys.detail(removedVar.id) });
       },
     }),
