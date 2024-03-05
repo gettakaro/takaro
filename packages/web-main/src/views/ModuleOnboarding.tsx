@@ -119,6 +119,7 @@ export const InfoCard: FC<PropsWithChildren<InfoCardProps>> = ({ title, onClick,
           className="underline"
           href={`https://docs.takaro.io/modules#${title.toLowerCase()}`}
           target="_blank"
+          rel="noreferrer noopener"
           onClick={handleClick}
         >
           Learn more
