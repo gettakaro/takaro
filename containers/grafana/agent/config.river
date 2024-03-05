@@ -10,7 +10,7 @@ otelcol.receiver.otlp "otel_receiver" {
 
 otelcol.processor.batch "otel_batch" {
   output {
-    traces  = [otelcol.processor.tail_sampling.default.input]
+    traces  = [otelcol.exporter.otlp.otel_exporter.input]
   }
 }
 
@@ -21,7 +21,7 @@ otelcol.exporter.otlp "otel_exporter" {
   }
 }
 
-otelcol.processor.tail_sampling "default" {
+/* otelcol.processor.tail_sampling "default" {
   decision_wait               = "10s"
   num_traces                  = 100
   expected_new_traces_per_sec = 10
@@ -61,7 +61,7 @@ otelcol.processor.tail_sampling "default" {
   }  
 
 }
-
+ */
 otelcol.auth.basic "creds" {
   username = env("GRAFANA_CLOUD_API_USER")
   password = env("GRAFANA_CLOUD_API_KEY")
