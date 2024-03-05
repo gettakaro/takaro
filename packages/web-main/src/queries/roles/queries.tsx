@@ -15,7 +15,6 @@ import { infiniteQueryOptions, queryOptions, useMutation, useQueryClient } from 
 import { AxiosError } from 'axios';
 import { getApiClient } from 'util/getApiClient';
 import { hasNextPage, mutationWrapper, queryParamsToArray } from 'queries/util';
-import { playerKeys } from 'queries/players/queries';
 import { userKeys } from 'queries/users';
 import { ErrorMessageMapping } from '@takaro/lib-components/src/errors';
 
@@ -111,51 +110,6 @@ export const useRoleRemove = () => {
       onSuccess: (removedRole) => {
         queryClient.invalidateQueries({ queryKey: roleKeys.list() });
         queryClient.removeQueries({ queryKey: roleKeys.detail(removedRole.id) });
-      },
-    }),
-    {}
-  );
-};
-
-interface IPlayerRoleAssign {
-  id: string;
-  roleId: string;
-  gameServerId?: string;
-  expiresAt?: string;
-}
-
-export const usePlayerRoleAssign = () => {
-  const apiClient = getApiClient();
-  const queryClient = useQueryClient();
-  return mutationWrapper<APIOutput, IPlayerRoleAssign>(
-    useMutation<APIOutput, AxiosError<APIOutput>, IPlayerRoleAssign>({
-      mutationFn: async ({ id, roleId, gameServerId, expiresAt }) => {
-        const res = (await apiClient.player.playerControllerAssignRole(id, roleId, { gameServerId, expiresAt })).data;
-        // TODO: _should_ happen in the onSuccess below I guess
-        // But no access to the ID there
-        // At this point, we technically already know the req was successful
-        // because it would have thrown an error otherwise
-        queryClient.invalidateQueries({ queryKey: playerKeys.detail(id) });
-        return res;
-      },
-    }),
-    {}
-  );
-};
-
-export const usePlayerRoleUnassign = ({ playerId }: { playerId: string }) => {
-  const apiClient = getApiClient();
-  const queryClient = useQueryClient();
-  return mutationWrapper<APIOutput, IPlayerRoleAssign>(
-    useMutation<APIOutput, AxiosError<APIOutput>, IPlayerRoleAssign>({
-      mutationFn: async ({ id, roleId, gameServerId }) => {
-        const res = (await apiClient.player.playerControllerRemoveRole(id, roleId, { gameServerId })).data;
-        // TODO: Same cache issue as in useRoleAssign...
-        queryClient.invalidateQueries({ queryKey: playerKeys.detail(id) });
-        return res;
-      },
-      onSuccess: async () => {
-        await queryClient.invalidateQueries({ queryKey: playerKeys.detail(playerId) });
       },
     }),
     {}
