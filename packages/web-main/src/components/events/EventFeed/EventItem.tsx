@@ -195,14 +195,6 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
         </>
       );
       break;
-<<<<<<< HEAD
-    case EventOutputDTOEventNameEnum.PlayerCreated:
-      properties = (
-        <>
-          <EventProperty name="gameserver" value={event.gameServer?.name || 'Global'} />
-          <EventProperty name="player" value={event.player?.name} />
-        </>
-      );
 =======
 >>>>>>> origin/main
     case EventOutputDTOEventNameEnum.ModuleCreated:
