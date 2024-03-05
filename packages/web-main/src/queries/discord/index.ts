@@ -1,1 +1,8 @@
-export { useDiscordGuilds, useDiscordInvite, useDiscordGuildUpdate } from './queries';
+export {
+  // queries
+  discordGuildQueryOptions,
+  discordInviteQueryOptions,
+
+  // mutations
+  useDiscordGuildUpdate,
+} from './queries';

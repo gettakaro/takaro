@@ -1,24 +1,23 @@
 import { FC } from 'react';
-import { NavLink } from 'react-router-dom';
+import { Link, LinkProps } from '@tanstack/react-router';
 import { Block, NavBar, Underline } from './style';
 
 export type HorizontalNavVariant = 'underline' | 'block';
 
-export interface HorizontalNavLink {
-  to: string;
+export type HorizontalNavLink = Partial<LinkProps> & {
   text: string;
-}
+};
 
 export interface HorizontalNavProps {
-  items: HorizontalNavLink[];
+  links: HorizontalNavLink[];
   variant: HorizontalNavVariant;
 }
 
-export const HorizontalNav: FC<HorizontalNavProps> = ({ items, variant }) => {
+export const HorizontalNav: FC<HorizontalNavProps> = ({ links, variant }) => {
   return (
     <NavBar variant={variant}>
-      {items.map(({ to, text }) => (
-        <NavLink key={to} to={to}>
+      {links.map(({ text, ...rest }) => (
+        <Link key={`${rest.to}-${text}`} {...rest}>
           {({ isActive }) => (
             <>
               {isActive && variant === 'block' && <Block layoutId="block" />}
@@ -26,7 +25,7 @@ export const HorizontalNav: FC<HorizontalNavProps> = ({ items, variant }) => {
               <span>{text}</span>
             </>
           )}
-        </NavLink>
+        </Link>
       ))}
     </NavBar>
   );

@@ -5,7 +5,6 @@
     "node_modules",
     "src/**/*.stories.tsx",
     "src/**/*.stories.mdx",
-    "jest.config.js"
   ],
   "compilerOptions": {
     "rootDir": "./src",

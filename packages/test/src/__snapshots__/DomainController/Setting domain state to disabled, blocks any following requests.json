@@ -1,0 +1,22 @@
+{
+  "body": {
+    "meta": {
+      "error": {
+        "code": "BadRequestError",
+        "message": "Domain is disabled. Please contact support."
+      }
+    },
+    "data": {}
+  },
+  "status": 400,
+  "test": {
+    "group": "DomainController",
+    "snapshot": true,
+    "name": "Setting domain state to disabled, blocks any following requests",
+    "filteredFields": [
+      "name"
+    ],
+    "expectedStatus": 400,
+    "standardEnvironment": true
+  }
+}

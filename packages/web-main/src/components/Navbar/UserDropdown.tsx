@@ -5,8 +5,7 @@ import {
   AiOutlineLogout as LogoutIcon,
   AiOutlineDown as ArrowDownIcon,
 } from 'react-icons/ai';
-import { useNavigate } from 'react-router-dom';
-import { PATHS } from 'paths';
+import { useNavigate } from '@tanstack/react-router';
 
 const User = styled.div`
   display: grid;
@@ -54,18 +53,12 @@ const Name = styled.div`
 `;
 
 export const UserDropdown = () => {
-  const { isLoadingSession, session, isSessionError } = useAuth();
+  const { session } = useAuth();
   const { logOut } = useAuth();
   const navigate = useNavigate();
-
-  // TODO: handle error case
-  if (!session || isSessionError) return <></>;
-
-  // TODO: add a loading block
-  if (isLoadingSession) return <></>;
+  if (session === undefined) return <div>no session?</div>;
 
   const { name, email } = session;
-
   return (
     <Dropdown placement="top">
       <Dropdown.Trigger asChild>
@@ -79,7 +72,11 @@ export const UserDropdown = () => {
         </User>
       </Dropdown.Trigger>
       <Dropdown.Menu>
-        <Dropdown.Menu.Item onClick={() => navigate(PATHS.auth.profile())} label="Profile" icon={<ProfileIcon />} />
+        <Dropdown.Menu.Item
+          onClick={() => navigate({ to: '/account/profile', search: { flowId: '' } })}
+          label="Profile"
+          icon={<ProfileIcon />}
+        />
         <Dropdown.Menu.Item onClick={async () => await logOut()} label="Logout" icon={<LogoutIcon />} />
       </Dropdown.Menu>
     </Dropdown>

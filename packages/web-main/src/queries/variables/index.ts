@@ -1,1 +1,10 @@
-export { useVariables, useVariableCreate, useVariableDelete, useVariableUpdate, useInfiniteVariables } from './queries';
+export {
+  // queries
+  variableQueryOptions,
+  variablesQueryOptions,
+
+  // mutations
+  useVariableCreate,
+  useVariableDelete,
+  useVariableUpdate,
+} from './queries';

@@ -163,24 +163,24 @@ class Ory {
       xSessionToken: tokenFromAuthHeader,
     });
 
-    if (!sessionRes.data.identity.metadata_public) {
+    if (!sessionRes.data.identity!.metadata_public) {
       this.log.warn('Identity has no metadata_public', {
-        identity: sessionRes.data.identity.id,
+        identity: sessionRes.data.identity!.id,
       });
       throw new errors.ForbiddenError();
     }
 
-    if (!metadataTypeguard(sessionRes.data.identity.metadata_public)) {
+    if (!metadataTypeguard(sessionRes.data.identity!.metadata_public)) {
       this.log.warn('Identity metadata_public is not of type {domainId: string}', {
-        identity: sessionRes.data.identity.id,
+        identity: sessionRes.data.identity!.id,
       });
       throw new errors.ForbiddenError();
     }
 
     return {
-      id: sessionRes.data.identity.id,
-      email: sessionRes.data.identity.traits.email,
-      domainId: sessionRes.data.identity.metadata_public.domainId,
+      id: sessionRes.data.identity!.id,
+      email: sessionRes.data.identity!.traits.email,
+      domainId: sessionRes.data.identity!.metadata_public.domainId,
     };
   }
 

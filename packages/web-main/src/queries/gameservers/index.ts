@@ -1,19 +1,23 @@
 export {
   gameServerKeys,
-  // gameserver
-  useGameServers,
+
+  // queries
+  gameServerQueryOptions,
+  gameServersOptions,
+  gameServersInfiniteQueryOptions,
+  gameServerReachabilityOptions,
+  gameServerModuleInstallationOptions,
+  gameServerModuleInstallationsOptions,
+
+  // mutations
   useGameServerRemove,
-  useGameServerReachabilityById,
   useGameServerCreate,
   useGameServerCreateFromCSMMImport,
   useGameServerUpdate,
-  useGameServer,
   useGameServerSendMessage,
   // modules
   useGameServerModuleInstall,
   useGameServerModuleUninstall,
-  useGameServerModuleInstallation,
-  useGameServerModuleInstallations,
   useGameServerReachabilityByConfig,
   useBanPlayerOnGameServer,
   useUnbanPlayerOnGameServer,

@@ -48,7 +48,6 @@ export const Pagination: FC<PaginationProps> = ({
 }) => {
   const windowSize = 5;
   const pageWindow = getPageWindow(pageCount, windowSize, pageIndex + 1);
-
   const pages = range(pageWindow.start, pageWindow.end);
 
   const showButtons = useMemo(() => {
@@ -58,6 +57,10 @@ export const Pagination: FC<PaginationProps> = ({
   const showJumps = useMemo(() => {
     return showButtons && pageCount > windowSize;
   }, [showButtons, pageCount, windowSize]);
+
+  const handlePreviousPageClick = () => {
+    previousPage();
+  };
 
   return (
     <PaginationContainer border={false}>
@@ -73,7 +76,7 @@ export const Pagination: FC<PaginationProps> = ({
       {showButtons && (
         <IconButton
           size="tiny"
-          onClick={previousPage}
+          onClick={handlePreviousPageClick}
           icon={<PreviousIcon />}
           disabled={!hasPrevious}
           ariaLabel="Previous page"

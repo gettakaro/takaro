@@ -1,7 +1,7 @@
 import { forwardRef, useEffect } from 'react';
 import { useInView } from 'react-intersection-observer';
 import { useMergeRefs } from '@floating-ui/react';
-import { Spinner } from '../../../components';
+import { Button, Spinner } from '../../../components';
 
 export interface InfiniteScrollProps {
   isFetchingNextPage: boolean;
@@ -10,8 +10,8 @@ export interface InfiniteScrollProps {
   hasNextPage?: boolean;
 }
 
-export const InfiniteScroll = forwardRef<HTMLDivElement, InfiniteScrollProps>(
-  ({ hasNextPage = false, fetchNextPage }, propRef) => {
+export const InfiniteScroll = forwardRef<HTMLElement, InfiniteScrollProps>(
+  ({ hasNextPage = false, fetchNextPage, isFetching, isFetchingNextPage }, propRef) => {
     const { ref: viewRef, inView } = useInView();
     const ref = useMergeRefs([propRef, viewRef]);
 
@@ -21,9 +21,23 @@ export const InfiniteScroll = forwardRef<HTMLDivElement, InfiniteScrollProps>(
       }
     }, [inView]);
 
+    // Fallback: sometimes the inView event does not trigger automatically.
+    // the user will have to manually click the button to fetch the next page.
+    const handleOnClick = () => {
+      fetchNextPage();
+    };
+
     return (
       <>
-        {hasNextPage && (
+        {!isFetchingNextPage && hasNextPage && !isFetching && (
+          <div
+            ref={ref}
+            style={{ display: 'flex', height: '100%', width: '100%', justifyContent: 'center', alignItems: 'center' }}
+          >
+            <Button text="Load more" ref={ref} onClick={handleOnClick} />
+          </div>
+        )}
+        {hasNextPage && isFetchingNextPage && (
           <div
             ref={ref}
             style={{ display: 'flex', height: '100%', width: '100%', justifyContent: 'center', alignItems: 'center' }}

@@ -1,7 +1,4 @@
-import playwright from '@playwright/test';
-
-const { defineConfig, devices } = playwright;
-
+import { devices, defineConfig } from '@playwright/test';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -10,6 +7,7 @@ dotenv.config();
  * Since we don't use sinon in our tests, we need to define a dummy afterEach function.
  */
 global.afterEach = () => {};
+globalThis.afterEach = () => {};
 global.before = () => {};
 
 const isPR = process.env.GITHUB_HEAD_REF; // This is set for PRs
@@ -32,7 +30,7 @@ if (!isPR || isMainBranch) {
 
 export default defineConfig({
   // Look for test files in the "tests" directory, relative to this configuration file.
-  testDir: 'src',
+  testDir: './src',
 
   // Each test is given 60 seconds. (default 30 seconds)
   timeout: 90000,
@@ -54,14 +52,13 @@ export default defineConfig({
   maxFailures: process.env.CI ? 10 : undefined,
 
   // Opt out of parallel tests on CI.
-  workers: process.env.CI ? 1 : 10,
+  workers: process.env.CI ? 1 : 5,
 
   // Reporter to use
   reporter: [
     ['html', { outputFolder: '../../reports/playwright-html', open: 'never' }],
     [process.env.CI ? 'github' : 'list', {}],
   ],
-
   outputDir: '../../reports/playwright-results/',
 
   use: {

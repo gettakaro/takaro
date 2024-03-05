@@ -2,12 +2,13 @@ import { IsEnum, IsOptional, IsString, IsUUID, ValidateNested } from 'class-vali
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
-import { Body, Post, JsonController, UseBefore, Req, Res } from 'routing-controllers';
+import { Body, Post, JsonController, UseBefore, Req, Res, Get, Params } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 import { EVENT_TYPES, EventCreateDTO, EventOutputDTO, EventService } from '../service/EventService.js';
+import { ParamId } from '../lib/validators.js';
 
 class EventSearchInputAllowedFilters {
   @IsOptional()
@@ -67,6 +68,14 @@ export class EventController {
       req,
       res,
     });
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_EVENTS]))
+  @ResponseSchema(EventOutputDTO)
+  @Get('/event/:id')
+  async getOne(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
+    const service = new EventService(req.domainId);
+    return apiResponse(await service.findOne(params.id));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_EVENTS]))

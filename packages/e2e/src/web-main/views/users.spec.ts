@@ -1,8 +1,6 @@
-import playwright from '@playwright/test';
+import { expect } from '@playwright/test';
 import { test } from '../fixtures/index.js';
 import { navigateTo } from '../helpers.js';
-
-const { expect } = playwright;
 
 test('Can view users', async ({ page, takaro }) => {
   await navigateTo(page, 'global-users');
@@ -14,7 +12,7 @@ test('Can Delete a user', async ({ page, takaro }) => {
   await usersPage.goto();
   await usersPage.action({ action: 'delete', email: testUser.email });
   await page.getByRole('button', { name: 'delete user' }).click();
-  expect(page.getByRole('row', { name: testUser.email })).not.toBeVisible();
+  await expect(page.getByRole('row', { name: testUser.email })).not.toBeVisible();
 });
 test.fixme('Can delete an invited user that has not accepted their invitation', async ({}) => {});
 

@@ -28,7 +28,13 @@ export class HTTP {
     this.app = express();
     this.httpServer = createServer(this.app);
     this.app.use(Sentry.Handlers.requestHandler());
-    this.app.use(bodyParser.json());
+    this.app.use(
+      bodyParser.json({
+        verify: (req, res, buf) => {
+          (req as any).rawBody = buf.toString();
+        },
+      })
+    );
     this.app.use(LoggingMiddleware);
     this.app.use(metricsMiddleware);
     this.app.use(paginationMiddleware);

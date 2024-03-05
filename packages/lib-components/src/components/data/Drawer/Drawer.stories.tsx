@@ -2,16 +2,7 @@ import React, { useMemo } from 'react';
 import { useState } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 
-import {
-  Button,
-  TextField,
-  CollapseList,
-  Chip,
-  RadioGroup,
-  Switch,
-  Drawer,
-  DrawerSkeleton,
-} from '../../../components';
+import { Button, TextField, CollapseList, Chip, RadioGroup, Switch, Drawer, DrawerSkeleton } from '../../../components';
 import { styled } from '../../../styled';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -51,9 +42,7 @@ export const Default: StoryFn = () => {
     () =>
       z.object({
         name: z.string().nonempty('Name field cannot be empty'),
-        description: z
-          .string()
-          .min(20, 'description must be at least 20 characters'),
+        description: z.string().min(20, 'description must be at least 20 characters'),
         priceType: z.enum(['fixed', 'variable']),
       }),
     []
@@ -63,9 +52,7 @@ export const Default: StoryFn = () => {
     resolver: zodResolver(validationSchema),
   });
 
-  // this should be typed ofcourse
-  const onSubmit: SubmitHandler<FormFields> = async (data) => {
-    console.log(data);
+  const onSubmit: SubmitHandler<FormFields> = async () => {
     setOpen(false);
   };
 
@@ -146,17 +133,8 @@ export const Default: StoryFn = () => {
           </Drawer.Body>
           <Drawer.Footer>
             <ButtonContainer>
-              <Button
-                text="Cancel"
-                onClick={() => setOpen(false)}
-                color="background"
-              />
-              <Button
-                fullWidth
-                text="Save changes"
-                type="submit"
-                form="myform"
-              />
+              <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
+              <Button fullWidth text="Save changes" type="submit" form="myform" />
             </ButtonContainer>
           </Drawer.Footer>
         </Drawer.Content>

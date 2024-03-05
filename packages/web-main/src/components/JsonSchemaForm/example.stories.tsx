@@ -1,10 +1,10 @@
-import React, { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { StoryFn } from '@storybook/react';
 import { RJSFSchema } from '@rjsf/utils';
 import Form from '@rjsf/core';
 import { JsonSchemaForm } from './index';
 import { Button, styled } from '@takaro/lib-components';
-import { InputType } from 'pages/ModuleDefinitions/schemaConversion/inputTypes';
+import { InputType } from '../../routes/_auth/_global/-modules/schemaConversion/inputTypes';
 
 const Container = styled.div`
   width: 100%;

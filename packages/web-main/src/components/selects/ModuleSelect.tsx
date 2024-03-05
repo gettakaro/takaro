@@ -1,8 +1,9 @@
 import { SelectField, styled } from '@takaro/lib-components';
 import { FC } from 'react';
 import { CustomSelectProps } from '.';
-import { useModules } from 'queries/modules';
+import { modulesQueryOptions } from 'queries/modules';
 import { ModuleOutputDTO } from '@takaro/apiclient';
+import { useQuery } from '@tanstack/react-query';
 
 const Inner = styled.div`
   display: flex;
@@ -28,15 +29,14 @@ export const ModuleSelect: FC<CustomSelectProps> = ({
   required,
   label = 'Module',
 }) => {
-  const { data, isLoading: isLoadingData } = useModules();
+  const { data, isLoading: isLoadingData } = useQuery(modulesQueryOptions());
 
   if (isLoadingData) {
     // TODO: better loading state
     return <div>loading...</div>;
   }
 
-  // flatten pages into a single array
-  const modules = data?.pages.flatMap((page) => page.data);
+  const modules = data?.data ?? [];
 
   if (!modules?.length) {
     return <div>no modules found</div>;

@@ -33,14 +33,14 @@
       }
     ],
     "@typescript-eslint/explicit-function-return-type": "off",
-    "@typescript-eslint/no-explicit-any": 1,
+    "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/no-inferrable-types": [
       "warn",
       {
         "ignoreParameters": true
       }
     ],
-    "@typescript-eslint/triple-slash-reference": 0,
+    "@typescript-eslint/triple-slash-reference": "off",
     "@typescript-eslint/no-unused-vars": [
       "error",
       {

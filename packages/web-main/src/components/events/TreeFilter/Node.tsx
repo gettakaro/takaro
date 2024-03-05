@@ -1,5 +1,5 @@
 import { UnControlledCheckBox } from '@takaro/lib-components';
-import { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import { ListItem, ListItemHeader, ListItemName } from './style';
 
 type TreeNodeProps = {
@@ -7,23 +7,31 @@ type TreeNodeProps = {
   addFilters: (filters: string[]) => void;
   removeFilters: (filters: string[]) => void;
   isBranchEnabled?: boolean;
+  defaultEnabled?: boolean;
 };
 
-export const Node: FC<TreeNodeProps> = ({ name, addFilters, removeFilters, isBranchEnabled }) => {
-  const [isEnabled, setEnabled] = useState(isBranchEnabled ?? false);
+export const Node: FC<TreeNodeProps> = ({
+  name,
+  addFilters,
+  removeFilters,
+  isBranchEnabled,
+  defaultEnabled = false,
+}) => {
+  const [isEnabled, setEnabled] = useState<boolean>(defaultEnabled);
+  const isMounted = useRef(false);
 
   const handleCheckbox = () => {
-    if (isEnabled) {
-      removeFilters([name]);
-    } else {
-      addFilters([name]);
-    }
-
+    isEnabled ? removeFilters([name]) : addFilters([name]);
     setEnabled(!isEnabled);
   };
 
   useEffect(() => {
-    setEnabled(isBranchEnabled ?? false);
+    if (isMounted.current) {
+      // this does not run on the first render
+      setEnabled(isBranchEnabled ?? false);
+    } else {
+      isMounted.current = true;
+    }
   }, [isBranchEnabled]);
 
   return (

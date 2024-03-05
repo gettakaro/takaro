@@ -8,9 +8,10 @@ import {
   getInitials,
   Skeleton,
 } from '@takaro/lib-components';
-import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
-import { useGameServer } from 'queries/gameservers';
-import { useItems } from 'queries/items';
+import { useQuery } from '@tanstack/react-query';
+import { getRouteApi } from '@tanstack/react-router';
+import { gameServerQueryOptions } from 'queries/gameservers';
+import { itemsQueryOptions } from 'queries/items/queries';
 import { useState } from 'react';
 
 const gameServerTypeToIconFolderMap = {
@@ -50,29 +51,30 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
   value,
   onChange,
 }: WidgetProps<T, S, F>) {
-  const { selectedGameServerId: gameServerId } = useSelectedGameServer();
+  const { gameServerId } = getRouteApi('/_auth/gameserver/$gameServerId/modules/$moduleId/install').useParams();
   const [itemName, setItemName] = useState<string>('');
-
   const enabled = itemName !== '';
   const shouldPreviousItemsBeLoaded = shouldFilter(value, multiple as boolean);
 
-  const { data: gameServer, isLoading: isLoadingGameServer } = useGameServer(gameServerId);
-  const { data: previousItems, isLoading: isLoadingPreviousItems } = useItems(
-    {
+  const { data: gameServer, isLoading: isLoadingGameServer } = useQuery(gameServerQueryOptions(gameServerId));
+  const { data: prev, isLoading: isLoadingPreviousItems } = useQuery(
+    itemsQueryOptions({
       filters: { gameserverId: [gameServerId], ...(shouldPreviousItemsBeLoaded && { id: multiple ? value : [value] }) },
-    },
-    { enabled: shouldPreviousItemsBeLoaded }
+    })
   );
 
-  const { data, isLoading: isLoadingItems } = useItems(
-    { ...(itemName !== '' && { search: { name: [itemName] } }), filters: { gameserverId: [gameServerId] } },
-    { enabled }
-  );
+  const previousItems = prev?.data ?? [];
 
-  const searchedItems = data?.pages.flatMap((page) => page.data) ?? [];
+  const { data, isLoading: isLoadingItems } = useQuery(
+    itemsQueryOptions({
+      ...(itemName !== '' && { search: { name: [itemName] } }),
+      filters: { gameserverId: [gameServerId] },
+    })
+  );
+  const searchedItems = data?.data ?? [];
 
   // get rid of duplicates
-  const items = [...searchedItems, ...(previousItems?.pages.flatMap((page) => page.data) ?? [])].filter(
+  const items = [...searchedItems, ...previousItems].filter(
     (item, index, self) => self.findIndex((i) => i.id === item.id) === index
   );
 

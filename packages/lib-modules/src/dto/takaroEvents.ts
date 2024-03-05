@@ -4,6 +4,7 @@ import {
   IsEnum,
   IsIP,
   IsISO31661Alpha2,
+  IsJSON,
   IsNumber,
   IsObject,
   IsOptional,
@@ -29,7 +30,15 @@ export const TakaroEvents = {
   SETTINGS_SET: 'settings-set',
   PLAYER_NEW_IP_DETECTED: 'player-new-ip-detected',
   SERVER_STATUS_CHANGED: 'server-status-changed',
+<<<<<<< HEAD
   PLAYER_CREATED: 'player-created',
+=======
+  MODULE_CREATED: 'module-created',
+  MODULE_UPDATED: 'module-updated',
+  MODULE_DELETED: 'module-deleted',
+  MODULE_INSTALLED: 'module-installed',
+  MODULE_UNINSTALLED: 'module-uninstalled',
+>>>>>>> origin/main
 } as const;
 
 export class BaseTakaroEvent<T> extends BaseEvent<T> {
@@ -226,9 +235,41 @@ export class TakaroEventServerStatusChanged extends BaseEvent<TakaroEventServerS
   details?: Record<string, unknown> | string | null;
 }
 
+<<<<<<< HEAD
 export class TakaroEventPlayerCreated extends BaseEvent<TakaroEventPlayerCreated> {
   @IsString()
   type = TakaroEvents.PLAYER_CREATED;
+=======
+export class TakaroEventModuleCreated extends BaseEvent<TakaroEventModuleCreated> {
+  @IsString()
+  type = TakaroEvents.MODULE_CREATED;
+}
+
+export class TakaroEventModuleUpdated extends BaseEvent<TakaroEventModuleUpdated> {
+  @IsString()
+  type = TakaroEvents.MODULE_UPDATED;
+}
+
+export class TakaroEventModuleDeleted extends BaseEvent<TakaroEventModuleDeleted> {
+  @IsString()
+  type = TakaroEvents.MODULE_DELETED;
+}
+
+export class TakaroEventModuleInstalled extends BaseEvent<TakaroEventModuleInstalled> {
+  @IsString()
+  type = TakaroEvents.MODULE_INSTALLED;
+
+  @IsJSON()
+  userConfig: string;
+
+  @IsJSON()
+  systemConfig: string;
+}
+
+export class TakaroEventModuleUninstalled extends BaseEvent<TakaroEventModuleUninstalled> {
+  @IsString()
+  type = TakaroEvents.MODULE_UNINSTALLED;
+>>>>>>> origin/main
 }
 
 export const TakaroEventsMapping = {
@@ -245,5 +286,13 @@ export const TakaroEventsMapping = {
   [TakaroEvents.HOOK_EXECUTED]: TakaroEventHookExecuted,
   [TakaroEvents.CRONJOB_EXECUTED]: TakaroEventCronjobExecuted,
   [TakaroEvents.SERVER_STATUS_CHANGED]: TakaroEventServerStatusChanged,
+<<<<<<< HEAD
   [TakaroEvents.PLAYER_CREATED]: TakaroEventPlayerCreated,
+=======
+  [TakaroEvents.MODULE_CREATED]: TakaroEventModuleCreated,
+  [TakaroEvents.MODULE_UPDATED]: TakaroEventModuleUpdated,
+  [TakaroEvents.MODULE_DELETED]: TakaroEventModuleDeleted,
+  [TakaroEvents.MODULE_INSTALLED]: TakaroEventModuleInstalled,
+  [TakaroEvents.MODULE_UNINSTALLED]: TakaroEventModuleUninstalled,
+>>>>>>> origin/main
 } as const;

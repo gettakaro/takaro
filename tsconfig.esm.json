@@ -4,13 +4,17 @@
     "rootDir": "src",
     "outDir": "dist",
     "target": "ES2022",
-    "module": "ESNext",
-    "lib": ["ES2022"],
+    "lib": [
+      "ES2022"
+    ],
     "moduleResolution": "nodenext",
+    "module": "nodenext",
     "esModuleInterop": true,
     "resolveJsonModule": true
   },
-  "include": ["src/**/*.ts"],
+  "include": [
+    "src/**/*.ts"
+  ],
   "ts-node": {
     "esm": true,
     "compiler": "typescript"

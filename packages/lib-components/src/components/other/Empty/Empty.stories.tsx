@@ -9,8 +9,7 @@ export default {
   component: Empty,
   args: {
     header: 'Earn recurring revenue',
-    description:
-      'Subscriptions allow you to grow recurring revenue by charging subscribers on a regular basis',
+    description: 'Subscriptions allow you to grow recurring revenue by charging subscribers on a regular basis',
     actions: [<Button size="medium" icon={<AddIcon />} text="New project" />],
     size: 'medium',
   },

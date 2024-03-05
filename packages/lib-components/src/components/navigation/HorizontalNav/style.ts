@@ -62,7 +62,7 @@ export const Underline = styled(motion.div)`
   bottom: -${({ theme }) => theme.spacing['0_75']};
   left: 0px;
   display: block;
-  height: 1px;
+  height: 2px;
   background-color: ${({ theme }) => theme.colors.primary};
   content: '';
   width: 100%;

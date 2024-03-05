@@ -10,11 +10,12 @@ import {
   useCommandCreate,
   useCronJobCreate,
   useHookCreate,
+  moduleQueryOptions,
   useModuleCreate,
-  useModule,
   useModuleRemove,
 } from 'queries/modules';
-import { moduleNameShape } from 'pages/ModuleDefinitions/ModuleForm/validationSchema';
+import { moduleNameShape } from 'routes/_auth/_global/-modules/ModuleForm/validationSchema';
+import { useQuery } from '@tanstack/react-query';
 
 const validationSchema = z.object({
   name: moduleNameShape,
@@ -26,7 +27,7 @@ interface CopyModuleFormProps {
 }
 
 export const CopyModuleForm: FC<CopyModuleFormProps> = ({ moduleId, onSuccess }) => {
-  const { data: mod, isPending } = useModule(moduleId);
+  const { data: mod, isPending } = useQuery(moduleQueryOptions(moduleId));
   const { enqueueSnackbar } = useSnackbar();
 
   const { control, handleSubmit } = useForm<z.infer<typeof validationSchema>>({
@@ -83,7 +84,7 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ moduleId, onSuccess })
               })
             )
           ),
-          Promise.all(
+          await Promise.all(
             mod.commands.map((command) =>
               createCommand({
                 moduleId: createdModule.id,
@@ -100,7 +101,7 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ moduleId, onSuccess })
               })
             )
           ),
-          Promise.all(
+          await Promise.all(
             mod.cronJobs.map((cronJob) =>
               createCronJob({
                 moduleId: createdModule.id,
@@ -111,6 +112,7 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ moduleId, onSuccess })
             )
           ),
         ]);
+
         onSuccess && onSuccess(createdModule.id);
       }
     } catch (error) {

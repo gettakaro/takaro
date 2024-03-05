@@ -7,13 +7,10 @@ import {
   ItemsOutputDTO,
   ItemUpdateDTO,
 } from '@takaro/apiclient';
-import { useInfiniteQuery, useMutation, useQuery, keepPreviousData, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient, queryOptions } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import { useApiClient } from 'hooks/useApiClient';
-import { hasNextPage, mutationWrapper } from '../util';
-
-import { InfiniteScroll as InfiniteScrollComponent } from '@takaro/lib-components';
-import { useMemo } from 'react';
+import { getApiClient } from 'util/getApiClient';
+import { mutationWrapper } from '../util';
 
 export const itemKeys = {
   all: ['items'] as const,
@@ -21,45 +18,20 @@ export const itemKeys = {
   detail: (id: string) => [...itemKeys.all, id] as const,
 };
 
-export const useItems = (queryParams: ItemSearchInputDTO = { page: 0 }, opts?: any) => {
-  const apiClient = useApiClient();
-
-  const queryOpts = useInfiniteQuery<ItemOutputArrayDTOAPI, AxiosError<ItemOutputArrayDTOAPI>>({
+export const itemsQueryOptions = (queryParams: ItemSearchInputDTO) =>
+  queryOptions<ItemOutputArrayDTOAPI, AxiosError<ItemOutputArrayDTOAPI>>({
     queryKey: [...itemKeys.list(), { ...queryParams }],
-    queryFn: async ({ pageParam }) =>
-      (
-        await apiClient.item.itemControllerSearch({
-          ...queryParams,
-          page: pageParam as number,
-        })
-      ).data,
-    initialPageParam: queryParams.page,
-    placeholderData: keepPreviousData,
-    getNextPageParam: (lastPage, pages) => hasNextPage(lastPage.meta, pages.length),
-    ...opts,
+    queryFn: async () => (await getApiClient().item.itemControllerSearch(queryParams)).data,
   });
 
-  const InfiniteScroll = useMemo(() => {
-    return <InfiniteScrollComponent {...queryOpts} />;
-  }, [queryOpts]);
-
-  return { ...queryOpts, InfiniteScroll };
-};
-
-export const useItem = (id: string) => {
-  const apiClient = useApiClient();
-  return useQuery<ItemsOutputDTO, AxiosError<ItemOutputArrayDTOAPI>>({
-    queryKey: itemKeys.detail(id),
-    queryFn: async () => {
-      const resp = (await apiClient.item.itemControllerFindOne(id)).data.data;
-      return resp;
-    },
-    enabled: Boolean(id),
+export const itemQueryOptions = (itemId: string) =>
+  queryOptions<ItemsOutputDTO, AxiosError<ItemOutputArrayDTOAPI>>({
+    queryKey: itemKeys.detail(itemId),
+    queryFn: async () => (await getApiClient().item.itemControllerFindOne(itemId)).data.data,
   });
-};
 
 export const useItemCreate = () => {
-  const apiClient = useApiClient();
+  const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
   return mutationWrapper<ItemsOutputDTO, ItemCreateDTO>(
@@ -79,7 +51,7 @@ interface ItemDelete {
 }
 
 export const useGameServerRemove = () => {
-  const apiClient = useApiClient();
+  const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
   return mutationWrapper<IdUuidDTO, ItemDelete>(
@@ -103,7 +75,7 @@ interface ItemUpdate {
 }
 
 export const useGameServerUpdate = () => {
-  const apiClient = useApiClient();
+  const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
   return mutationWrapper<ItemsOutputDTO, ItemUpdate>(

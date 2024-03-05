@@ -11,6 +11,8 @@
   "compilerOptions": {
     "noEmit": true,
     "incremental": true,
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "allowJs": true,
+    "isolatedModules": true
   }
 }

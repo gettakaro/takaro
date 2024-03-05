@@ -13,14 +13,9 @@ type SubComponentTypes = {
   Footer: typeof DrawerFooter;
 };
 
-export const Drawer: FC<PropsWithChildren<DrawerOptions>> & SubComponentTypes =
-  ({ children, ...options }) => {
-    return (
-      <DrawerContext.Provider value={useDrawer(options)}>
-        {children}
-      </DrawerContext.Provider>
-    );
-  };
+export const Drawer: FC<PropsWithChildren<DrawerOptions>> & SubComponentTypes = ({ children, ...options }) => {
+  return <DrawerContext.Provider value={useDrawer(options)}>{children}</DrawerContext.Provider>;
+};
 
 Drawer.Content = DrawerContent;
 Drawer.Heading = DrawerHeading;

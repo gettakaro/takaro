@@ -1,8 +1,9 @@
 import { SelectField, styled } from '@takaro/lib-components';
 import { FC } from 'react';
 import { CustomSelectProps } from '.';
-import { useRoles } from 'queries/roles';
+import { rolesOptions } from 'queries/roles';
 import { RoleOutputDTO } from '@takaro/apiclient';
+import { useQuery } from '@tanstack/react-query';
 
 const Inner = styled.div`
   display: flex;
@@ -24,17 +25,14 @@ export const RoleSelect: FC<CustomSelectProps> = ({
   description,
   readOnly,
 }) => {
-  const { data, isLoading: isLoadingData } = useRoles({ sortBy: 'system', sortDirection: 'asc' });
+  const { data: roles, isLoading: isLoadingData } = useQuery(rolesOptions({ sortBy: 'system', sortDirection: 'asc' }));
 
   if (isLoadingData) {
     // TODO: better loading state
     return <div>loading...</div>;
   }
 
-  // flatten pages into a single array
-  const roles = data?.pages.flatMap((page) => page.data);
-
-  if (!roles) {
+  if (!roles || roles.data.length === 0) {
     return <div>no game servers</div>;
   }
 
@@ -42,7 +40,7 @@ export const RoleSelect: FC<CustomSelectProps> = ({
     <RoleSelectView
       control={control}
       name={name}
-      roles={roles}
+      roles={roles.data}
       readOnly={readOnly}
       description={description}
       size={size}

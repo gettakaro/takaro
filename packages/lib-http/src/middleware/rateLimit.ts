@@ -46,7 +46,8 @@ export async function createRateLimitMiddleware(opts: IRateLimitMiddlewareOption
     if (ctxData.user) {
       limitedKey = ctxData.user;
     } else {
-      limitedKey = req.ip;
+      // TODO: should handle case ip is undefined
+      limitedKey = req.ip!;
     }
 
     let rateLimiterRes: RateLimiterRes | null = null;

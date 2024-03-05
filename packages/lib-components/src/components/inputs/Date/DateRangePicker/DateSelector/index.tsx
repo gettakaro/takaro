@@ -29,7 +29,7 @@ export const DateSelector: FC<DateSelectorProps> = ({ isStart }) => {
   }
 
   return (
-    <Tabs defaultValue="absolute">
+    <Tabs defaultValue="relative">
       <Tabs.List>
         <Tabs.Trigger value="absolute">Absolute</Tabs.Trigger>
         <Tabs.Trigger value="relative">Relative</Tabs.Trigger>

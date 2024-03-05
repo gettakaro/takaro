@@ -1002,7 +1002,23 @@ export interface DomainCreateInputDTO {
    * @memberof DomainCreateInputDTO
    */
   id?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof DomainCreateInputDTO
+   */
+  state?: DomainCreateInputDTOStateEnum;
 }
+
+export const DomainCreateInputDTOStateEnum = {
+  Active: 'ACTIVE',
+  Disabled: 'DISABLED',
+  Maintenance: 'MAINTENANCE',
+} as const;
+
+export type DomainCreateInputDTOStateEnum =
+  (typeof DomainCreateInputDTOStateEnum)[keyof typeof DomainCreateInputDTOStateEnum];
+
 /**
  *
  * @export
@@ -1089,6 +1105,12 @@ export interface DomainOutputDTO {
    * @type {string}
    * @memberof DomainOutputDTO
    */
+  state: DomainOutputDTOStateEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof DomainOutputDTO
+   */
   id: string;
   /**
    *
@@ -1103,6 +1125,15 @@ export interface DomainOutputDTO {
    */
   updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
+
+export const DomainOutputDTOStateEnum = {
+  Active: 'ACTIVE',
+  Disabled: 'DISABLED',
+  Maintenance: 'MAINTENANCE',
+} as const;
+
+export type DomainOutputDTOStateEnum = (typeof DomainOutputDTOStateEnum)[keyof typeof DomainOutputDTOStateEnum];
+
 /**
  *
  * @export
@@ -1134,7 +1165,23 @@ export interface DomainSearchInputAllowedFilters {
    * @memberof DomainSearchInputAllowedFilters
    */
   name?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof DomainSearchInputAllowedFilters
+   */
+  state?: Array<DomainSearchInputAllowedFiltersStateEnum>;
 }
+
+export const DomainSearchInputAllowedFiltersStateEnum = {
+  Active: 'ACTIVE',
+  Disabled: 'DISABLED',
+  Maintenance: 'MAINTENANCE',
+} as const;
+
+export type DomainSearchInputAllowedFiltersStateEnum =
+  (typeof DomainSearchInputAllowedFiltersStateEnum)[keyof typeof DomainSearchInputAllowedFiltersStateEnum];
+
 /**
  *
  * @export
@@ -1216,8 +1263,24 @@ export interface DomainUpdateInputDTO {
    * @type {string}
    * @memberof DomainUpdateInputDTO
    */
-  name: string;
+  name?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof DomainUpdateInputDTO
+   */
+  state?: DomainUpdateInputDTOStateEnum;
 }
+
+export const DomainUpdateInputDTOStateEnum = {
+  Active: 'ACTIVE',
+  Disabled: 'DISABLED',
+  Maintenance: 'MAINTENANCE',
+} as const;
+
+export type DomainUpdateInputDTOStateEnum =
+  (typeof DomainUpdateInputDTOStateEnum)[keyof typeof DomainUpdateInputDTOStateEnum];
+
 /**
  *
  * @export
@@ -1326,7 +1389,15 @@ export const EventCreateDTOEventNameEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+<<<<<<< HEAD
   PlayerCreated: 'player-created',
+=======
+  ModuleCreated: 'module-created',
+  ModuleUpdated: 'module-updated',
+  ModuleDeleted: 'module-deleted',
+  ModuleInstalled: 'module-installed',
+  ModuleUninstalled: 'module-uninstalled',
+>>>>>>> origin/main
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
@@ -1568,7 +1639,15 @@ export const EventOutputDTOEventNameEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+<<<<<<< HEAD
   PlayerCreated: 'player-created',
+=======
+  ModuleCreated: 'module-created',
+  ModuleUpdated: 'module-updated',
+  ModuleDeleted: 'module-deleted',
+  ModuleInstalled: 'module-installed',
+  ModuleUninstalled: 'module-uninstalled',
+>>>>>>> origin/main
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
@@ -1596,7 +1675,15 @@ export type EventOutputDTOMeta =
   | TakaroEventCurrencyAdded
   | TakaroEventCurrencyDeducted
   | TakaroEventHookExecuted
+<<<<<<< HEAD
   | TakaroEventPlayerCreated
+=======
+  | TakaroEventModuleCreated
+  | TakaroEventModuleDeleted
+  | TakaroEventModuleInstalled
+  | TakaroEventModuleUninstalled
+  | TakaroEventModuleUpdated
+>>>>>>> origin/main
   | TakaroEventPlayerNewIpDetected
   | TakaroEventRoleAssigned
   | TakaroEventRoleCreated
@@ -1745,7 +1832,15 @@ export const EventSearchInputAllowedFiltersEventNameEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+<<<<<<< HEAD
   PlayerCreated: 'player-created',
+=======
+  ModuleCreated: 'module-created',
+  ModuleUpdated: 'module-updated',
+  ModuleDeleted: 'module-deleted',
+  ModuleInstalled: 'module-installed',
+  ModuleUninstalled: 'module-uninstalled',
+>>>>>>> origin/main
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
@@ -2763,7 +2858,15 @@ export const HookCreateDTOEventTypeEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+<<<<<<< HEAD
   PlayerCreated: 'player-created',
+=======
+  ModuleCreated: 'module-created',
+  ModuleUpdated: 'module-updated',
+  ModuleDeleted: 'module-deleted',
+  ModuleInstalled: 'module-installed',
+  ModuleUninstalled: 'module-uninstalled',
+>>>>>>> origin/main
 } as const;
 
 export type HookCreateDTOEventTypeEnum = (typeof HookCreateDTOEventTypeEnum)[keyof typeof HookCreateDTOEventTypeEnum];
@@ -2895,7 +2998,15 @@ export const HookOutputDTOEventTypeEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+<<<<<<< HEAD
   PlayerCreated: 'player-created',
+=======
+  ModuleCreated: 'module-created',
+  ModuleUpdated: 'module-updated',
+  ModuleDeleted: 'module-deleted',
+  ModuleInstalled: 'module-installed',
+  ModuleUninstalled: 'module-uninstalled',
+>>>>>>> origin/main
 } as const;
 
 export type HookOutputDTOEventTypeEnum = (typeof HookOutputDTOEventTypeEnum)[keyof typeof HookOutputDTOEventTypeEnum];
@@ -2972,7 +3083,15 @@ export const HookSearchInputAllowedFiltersEventTypeEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+<<<<<<< HEAD
   PlayerCreated: 'player-created',
+=======
+  ModuleCreated: 'module-created',
+  ModuleUpdated: 'module-updated',
+  ModuleDeleted: 'module-deleted',
+  ModuleInstalled: 'module-installed',
+  ModuleUninstalled: 'module-uninstalled',
+>>>>>>> origin/main
 } as const;
 
 export type HookSearchInputAllowedFiltersEventTypeEnum =
@@ -3107,7 +3226,15 @@ export const HookTriggerDTOEventTypeEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+<<<<<<< HEAD
   PlayerCreated: 'player-created',
+=======
+  ModuleCreated: 'module-created',
+  ModuleUpdated: 'module-updated',
+  ModuleDeleted: 'module-deleted',
+  ModuleInstalled: 'module-installed',
+  ModuleUninstalled: 'module-uninstalled',
+>>>>>>> origin/main
 } as const;
 
 export type HookTriggerDTOEventTypeEnum =
@@ -3172,7 +3299,15 @@ export const HookUpdateDTOEventTypeEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+<<<<<<< HEAD
   PlayerCreated: 'player-created',
+=======
+  ModuleCreated: 'module-created',
+  ModuleUpdated: 'module-updated',
+  ModuleDeleted: 'module-deleted',
+  ModuleInstalled: 'module-installed',
+  ModuleUninstalled: 'module-uninstalled',
+>>>>>>> origin/main
 } as const;
 
 export type HookUpdateDTOEventTypeEnum = (typeof HookUpdateDTOEventTypeEnum)[keyof typeof HookUpdateDTOEventTypeEnum];
@@ -3923,6 +4058,12 @@ export interface MockConnectionInfo {
    * @memberof MockConnectionInfo
    */
   host: string;
+  /**
+   *
+   * @type {string}
+   * @memberof MockConnectionInfo
+   */
+  name: string;
 }
 /**
  *
@@ -6330,6 +6471,7 @@ export interface TakaroEventHookExecuted {
 /**
  *
  * @export
+<<<<<<< HEAD
  * @interface TakaroEventPlayerCreated
  */
 export interface TakaroEventPlayerCreated {
@@ -6343,6 +6485,79 @@ export interface TakaroEventPlayerCreated {
    *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
    * @memberof TakaroEventPlayerCreated
+=======
+ * @interface TakaroEventModuleCreated
+ */
+export interface TakaroEventModuleCreated {
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventModuleCreated
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventModuleDeleted
+ */
+export interface TakaroEventModuleDeleted {
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventModuleDeleted
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventModuleInstalled
+ */
+export interface TakaroEventModuleInstalled {
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventModuleInstalled
+   */
+  userConfig: string;
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventModuleInstalled
+   */
+  systemConfig: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventModuleInstalled
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventModuleUninstalled
+ */
+export interface TakaroEventModuleUninstalled {
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventModuleUninstalled
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventModuleUpdated
+ */
+export interface TakaroEventModuleUpdated {
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventModuleUpdated
+>>>>>>> origin/main
    */
   timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
@@ -9780,6 +9995,39 @@ export const EventApiAxiosParamCreator = function (configuration?: Configuration
     },
     /**
      *  Required permissions: `READ_EVENTS`
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    eventControllerGetOne: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('eventControllerGetOne', 'id', id);
+      const localVarPath = `/event/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `READ_EVENTS`
      * @summary Search
      * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -9849,6 +10097,28 @@ export const EventApiFp = function (configuration?: Configuration) {
     },
     /**
      *  Required permissions: `READ_EVENTS`
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async eventControllerGetOne(
+      id: string,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventOutputDTO>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.eventControllerGetOne(id, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['EventApi.eventControllerGetOne']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `READ_EVENTS`
      * @summary Search
      * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -9891,6 +10161,16 @@ export const EventApiFactory = function (configuration?: Configuration, basePath
     },
     /**
      *  Required permissions: `READ_EVENTS`
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    eventControllerGetOne(id: string, options?: any): AxiosPromise<EventOutputDTO> {
+      return localVarFp.eventControllerGetOne(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `READ_EVENTS`
      * @summary Search
      * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -9923,6 +10203,20 @@ export class EventApi extends BaseAPI {
   public eventControllerCreate(eventCreateDTO?: EventCreateDTO, options?: RawAxiosRequestConfig) {
     return EventApiFp(this.configuration)
       .eventControllerCreate(eventCreateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `READ_EVENTS`
+   * @summary Get one
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof EventApi
+   */
+  public eventControllerGetOne(id: string, options?: RawAxiosRequestConfig) {
+    return EventApiFp(this.configuration)
+      .eventControllerGetOne(id, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -17402,7 +17696,7 @@ export const UserApiFp = function (configuration?: Configuration) {
     async userControllerInvite(
       inviteCreateDTO?: InviteCreateDTO,
       options?: RawAxiosRequestConfig
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserOutputDTOAPI>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.userControllerInvite(inviteCreateDTO, options);
       const index = configuration?.serverIndex ?? 0;
       const operationBasePath = operationServerMap['UserApi.userControllerInvite']?.[index]?.url;
@@ -17624,7 +17918,7 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    userControllerInvite(inviteCreateDTO?: InviteCreateDTO, options?: any): AxiosPromise<APIOutput> {
+    userControllerInvite(inviteCreateDTO?: InviteCreateDTO, options?: any): AxiosPromise<UserOutputDTOAPI> {
       return localVarFp.userControllerInvite(inviteCreateDTO, options).then((request) => request(axios, basePath));
     },
     /**

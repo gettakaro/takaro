@@ -8,10 +8,8 @@ import {
   InviteOutputDTO,
 } from '@takaro/apiclient';
 import { AxiosError } from 'axios';
-import { InfiniteScroll as InfiniteScrollComponent } from '@takaro/lib-components';
-import { useApiClient } from 'hooks/useApiClient';
-import { useMemo } from 'react';
-import { InfiniteData, useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { getApiClient } from 'util/getApiClient';
+import { InfiniteData, infiniteQueryOptions, queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
 import { hasNextPage, mutationWrapper } from '../util';
 
 export const discordKeys = {
@@ -19,50 +17,25 @@ export const discordKeys = {
   invite: ['discordInvite'] as const,
 };
 
-export const useDiscordGuilds = ({
-  page = 0,
-  sortDirection,
-  sortBy,
-  limit,
-  search,
-  filters,
-  extend,
-}: GuildSearchInputDTO = {}) => {
-  const apiClient = useApiClient();
-
-  const query = useInfiniteQuery<GuildOutputArrayDTOAPI, AxiosError<GuildOutputDTOAPI>>({
-    queryKey: [...discordKeys.guilds, page, sortBy, sortDirection, filters, search],
-    queryFn: async ({ pageParam }) =>
-      (
-        await apiClient.discord.discordControllerSearch({
-          limit,
-          sortBy,
-          sortDirection,
-          filters,
-          search,
-          extend,
-          page: pageParam as number,
-        })
-      ).data,
-    initialPageParam: page,
-    getNextPageParam: (lastPage, pages) => hasNextPage(lastPage.meta, pages.length),
+export const discordGuildQueryOptions = (opts: GuildSearchInputDTO) =>
+  queryOptions<GuildOutputArrayDTOAPI, AxiosError<GuildOutputDTOAPI>>({
+    queryKey: [...discordKeys.guilds, opts],
+    queryFn: async () => (await getApiClient().discord.discordControllerSearch(opts)).data,
   });
 
-  const InfiniteScroll = useMemo(() => {
-    return <InfiniteScrollComponent {...query} />;
-  }, [query]);
+export const discordGuildInfiniteQueryOptions = (opts: GuildSearchInputDTO) =>
+  infiniteQueryOptions<GuildOutputArrayDTOAPI, AxiosError<GuildOutputDTOAPI>>({
+    queryKey: [...discordKeys.guilds, opts],
+    queryFn: async () => (await getApiClient().discord.discordControllerSearch(opts)).data,
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => hasNextPage(lastPage.meta),
+  });
 
-  return { ...query, InfiniteScroll };
-};
-
-export const useDiscordInvite = () => {
-  const apiClient = useApiClient();
-
-  return useQuery<InviteOutputDTO, AxiosError<DiscordInviteOutputDTO>>({
+export const discordInviteQueryOptions = () =>
+  queryOptions<InviteOutputDTO, AxiosError<DiscordInviteOutputDTO>>({
     queryKey: discordKeys.invite,
-    queryFn: async () => (await apiClient.discord.discordControllerGetInvite()).data.data,
+    queryFn: async () => (await getApiClient().discord.discordControllerGetInvite()).data.data,
   });
-};
 
 interface GuildUpdateInput {
   id: string;
@@ -70,12 +43,12 @@ interface GuildUpdateInput {
 }
 
 export const useDiscordGuildUpdate = () => {
-  const apiClient = useApiClient();
   const queryClient = useQueryClient();
 
   return mutationWrapper<GuildOutputDTO, GuildUpdateInput>(
     useMutation<GuildOutputDTO, AxiosError<GuildOutputDTOAPI>, GuildUpdateInput>({
-      mutationFn: async ({ id, input }) => (await apiClient.discord.discordControllerUpdateGuild(id, input)).data.data,
+      mutationFn: async ({ id, input }) =>
+        (await getApiClient().discord.discordControllerUpdateGuild(id, input)).data.data,
       onSuccess: (updatedGuild) => {
         try {
           // update guild in list of guilds

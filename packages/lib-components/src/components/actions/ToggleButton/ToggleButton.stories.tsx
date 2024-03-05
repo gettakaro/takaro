@@ -74,13 +74,9 @@ export const Text: StoryFn<ToggleButtonGroupProps> = (args) => {
         fullWidth={args.fullWidth}
       >
         <ToggleButtonGroup.Button value="left">left</ToggleButtonGroup.Button>
-        <ToggleButtonGroup.Button value="center">
-          center
-        </ToggleButtonGroup.Button>
+        <ToggleButtonGroup.Button value="center">center</ToggleButtonGroup.Button>
         <ToggleButtonGroup.Button value="right">right</ToggleButtonGroup.Button>
-        <ToggleButtonGroup.Button value="justify">
-          justify
-        </ToggleButtonGroup.Button>
+        <ToggleButtonGroup.Button value="justify">justify</ToggleButtonGroup.Button>
       </ToggleButtonGroup>
       <pre>{value}</pre>
     </>

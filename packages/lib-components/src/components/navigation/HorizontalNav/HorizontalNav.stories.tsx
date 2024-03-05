@@ -21,7 +21,7 @@ export const Default: StoryFn<HorizontalNavProps> = ({ variant }) => {
     <Container>
       <HorizontalNav
         variant={variant}
-        items={[
+        links={[
           {
             text: 'overview',
             to: '/option1',

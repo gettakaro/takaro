@@ -1,8 +1,16 @@
 import { ModuleInstallationOutputDTO, ModuleOutputDTO, PERMISSIONS } from '@takaro/apiclient';
-import { Dialog, Button, IconButton, Card, useTheme, Dropdown, ValueConfirmationField } from '@takaro/lib-components';
+import {
+  Dialog,
+  Button,
+  IconButton,
+  Card,
+  useTheme,
+  Dropdown,
+  ValueConfirmationField,
+  Alert,
+} from '@takaro/lib-components';
 import { PermissionsGuard } from 'components/PermissionsGuard';
 
-import { PATHS } from 'paths';
 import { FC, useState, MouseEvent } from 'react';
 import {
   AiOutlineDelete as DeleteIcon,
@@ -12,28 +20,27 @@ import {
   AiOutlineEye as ViewIcon,
 } from 'react-icons/ai';
 
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 import { SpacedRow, ActionIconsContainer, CardBody } from '../style';
 import { useGameServerModuleUninstall } from 'queries/gameservers';
-import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 
 interface IModuleCardProps {
   mod: ModuleOutputDTO;
   installation?: ModuleInstallationOutputDTO;
   onClick?: () => void;
+  gameServerId: string;
 }
 
-export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation }) => {
+export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gameServerId }) => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [valid, setValid] = useState<boolean>(false);
   const { mutateAsync: uninstallModule, isPending: isDeleting } = useGameServerModuleUninstall();
   const navigate = useNavigate();
-  const { selectedGameServerId } = useSelectedGameServer();
   const theme = useTheme();
 
   const handleOnDeleteClick = (e: MouseEvent) => {
     e.stopPropagation();
-    setOpenDialog(true);
+    e.shiftKey ? handleUninstall(e) : setOpenDialog(true);
   };
 
   const handleUninstall = async (e: MouseEvent) => {
@@ -47,17 +54,23 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation }) =
   };
 
   const handleOnOpenClick = () => {
-    window.open(PATHS.studio.module(mod.id));
-  };
-
-  const handleConfigureClick = (e: MouseEvent) => {
-    e.stopPropagation();
-    navigate(PATHS.gameServer.moduleInstallations.install(selectedGameServerId, mod.id));
+    window.open(`/studio/${mod.id}`, '_blank');
   };
 
   const handleOnViewModuleConfigClick = (e: MouseEvent) => {
     e.stopPropagation();
-    navigate(PATHS.gameServer.moduleInstallations.view(selectedGameServerId, mod.id));
+    navigate({
+      to: '/gameserver/$gameServerId/modules/$moduleId/install/view',
+      params: { gameServerId, moduleId: mod.id },
+    });
+  };
+
+  const handleInstallConfigureClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    navigate({
+      to: '/gameserver/$gameServerId/modules/$moduleId/install',
+      params: { gameServerId, moduleId: mod.id },
+    });
   };
 
   return (
@@ -81,7 +94,7 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation }) =
                       />
                       <Dropdown.Menu.Item
                         icon={<ConfigIcon />}
-                        onClick={handleConfigureClick}
+                        onClick={handleInstallConfigureClick}
                         label="Configure module "
                       />
                       <Dropdown.Menu.Item
@@ -106,14 +119,7 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation }) =
               {mod.cronJobs.length > 0 && <p>Cronjobs: {mod.cronJobs.length}</p>}
             </span>
             <ActionIconsContainer>
-              {!installation && (
-                <Button
-                  text="Install"
-                  onClick={() => {
-                    navigate(PATHS.gameServer.moduleInstallations.install(selectedGameServerId, mod.id));
-                  }}
-                />
-              )}
+              {!installation && <Button text="Install" onClick={handleInstallConfigureClick} />}
             </ActionIconsContainer>
           </SpacedRow>
         </CardBody>
@@ -121,6 +127,7 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation }) =
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <Dialog.Content>
           <Dialog.Heading>Module uninstall</Dialog.Heading>
+
           <Dialog.Body>
             <p style={{ alignContent: 'center' }}>
               Are you sure you want to uninstall the module <strong>{mod.name}</strong>? To confirm, type the module
@@ -139,6 +146,10 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation }) =
               disabled={!valid}
               text="Uninstall module"
               color="error"
+            />
+            <Alert
+              variant="info"
+              text="You can hold down shift when uninstalling a module to bypass this confirmation entirely."
             />
           </Dialog.Body>
         </Dialog.Content>

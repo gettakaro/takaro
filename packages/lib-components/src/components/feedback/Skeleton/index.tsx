@@ -57,10 +57,6 @@ const StyledDiv = styled.div<{
   }};
 `;
 
-export const Skeleton: FC<SkeletonProps> = ({
-  width = '210px',
-  height = '20px',
-  variant,
-}) => {
+export const Skeleton: FC<SkeletonProps> = ({ width = '210px', height = '20px', variant }) => {
   return <StyledDiv s_height={height} s_width={width} variant={variant} />;
 };

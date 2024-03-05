@@ -1,9 +1,10 @@
 import { GameServerOutputDTO, GameServerOutputDTOTypeEnum, ItemsOutputDTO } from '@takaro/apiclient';
 import { Avatar, getInitials, SelectQueryField, Skeleton, styled } from '@takaro/lib-components';
-import { useGameServer } from '../../../queries/gameservers';
-import { useItems } from '../../../queries/items';
+import { gameServerQueryOptions } from 'queries/gameservers';
+import { itemsQueryOptions } from 'queries/items';
 import { FC, useState } from 'react';
 import { CustomQuerySelectProps } from '..';
+import { useQuery } from '@tanstack/react-query';
 
 export interface ItemSelectProps extends CustomQuerySelectProps {
   gameServerId: string;
@@ -45,12 +46,11 @@ export const ItemSelect: FC<ItemSelectProps> = ({
 }) => {
   const [itemName, setItemName] = useState<string>('');
 
-  const { data: gameServer, isLoading: isLoadingGameServer } = useGameServer(gameServerId);
-  const { data, isLoading: isLoadingItems } = useItems(
-    { search: { name: [itemName] }, filters: { gameserverId: [gameServerId] } },
-    { enabled: itemName !== '' }
+  const { data: gameServer, isLoading: isLoadingGameServer } = useQuery(gameServerQueryOptions(gameServerId));
+  const { data, isLoading: isLoadingItems } = useQuery(
+    itemsQueryOptions({ search: { name: [itemName] }, filters: { gameserverId: [gameServerId] } })
   );
-  const items = data?.pages.flatMap((page) => page.data) ?? [];
+  const items = data?.data ?? [];
 
   if (isLoadingGameServer || isLoadingItems) {
     return <Skeleton variant="rectangular" width="100%" height="40px" />;

@@ -41,7 +41,7 @@ export const ErrorFallback: FC = () => {
       <Container>
         <h1>Oops, that's our bad!</h1>
         <p>We are not exactly sure what happened, but something went wrong. </p>
-        <p>If you need immediate help, please let us know</p>
+        <p>If you need immediate help, please let us know.</p>
       </Container>
     </Wrapper>
   );

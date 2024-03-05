@@ -1,10 +1,14 @@
 export {
   settingKeys,
+
+  // queries
+  gameServerSettingQueryOptions,
+  gameServerSettingsQueryOptions,
+  globalGameServerSetingQueryOptions,
+  globalGameServerSettingsQueryOptions,
+
+  // mutations
   useSetGlobalSetting,
   useSetGameServerSetting,
-  useGlobalGameServerSetting,
-  useGlobalGameServerSettings,
-  useGameServerSetting,
-  useGameServerSettings,
   useDeleteGameServerSetting,
 } from './queries';

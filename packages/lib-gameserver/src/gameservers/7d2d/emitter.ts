@@ -15,6 +15,7 @@ import { SdtdConnectionInfo } from './connectionInfo.js';
 import { TakaroEmitter } from '../../TakaroEmitter.js';
 import { SevenDaysToDie } from './index.js';
 import ms from 'ms';
+import {} from 'timers/promises';
 
 interface I7DaysToDieEvent extends JsonObject {
   msg: string;
@@ -53,7 +54,7 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
   private sdtd: SevenDaysToDie;
 
   private recentMessages: Set<string> = new Set(); // To track recent messages
-  private checkInterval: NodeJS.Timer;
+  private checkInterval: NodeJS.Timeout;
   private lastMessageTimestamp = Date.now();
   private keepAliveTimeout = ms('30s');
 

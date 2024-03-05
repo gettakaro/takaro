@@ -1,1 +1,12 @@
-export { itemKeys, useItem, useItems, useItemCreate, useGameServerRemove, useGameServerUpdate } from './queries';
+export {
+  itemKeys,
+
+  // queries
+  itemQueryOptions,
+  itemsQueryOptions,
+
+  // mutations
+  useItemCreate,
+  useGameServerRemove,
+  useGameServerUpdate,
+} from './queries';

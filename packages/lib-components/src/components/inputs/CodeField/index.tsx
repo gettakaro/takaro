@@ -13,7 +13,6 @@ export type CodeFieldProps = Omit<ControlledInputProps, 'hasError'> & {
 
 const defaultsApplier = defaultInputPropsFactory<CodeFieldProps>(defaultInputProps);
 
-// TODO: implement readonly
 export const CodeField: FC<CodeFieldProps> = (props) => {
   const {
     loading,
@@ -27,6 +26,7 @@ export const CodeField: FC<CodeFieldProps> = (props) => {
     control,
     required,
     description,
+    readOnly,
     label,
   } = defaultsApplier(props);
 
@@ -156,6 +156,7 @@ export const CodeField: FC<CodeFieldProps> = (props) => {
             onBlur={handleOnBlur}
             onKeyDown={handleKeyDown}
             onPaste={handleOnPaste}
+            readOnly={readOnly}
             ref={(el) => {
               if (el) {
                 fieldRefs.current[i] = el;

@@ -19,6 +19,7 @@ export default {
     hasNextPage: true,
     isFetching: false,
     isFetchingNextPage: false,
+    fetchNextPage: () => {},
   },
 } as Meta<InfiniteScrollProps>;
 

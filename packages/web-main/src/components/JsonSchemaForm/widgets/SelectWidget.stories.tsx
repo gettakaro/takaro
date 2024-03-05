@@ -1,4 +1,3 @@
-import React from 'react';
 import { RJSFSchema } from '@rjsf/utils';
 import { JsonSchemaForm } from '..';
 import { styled, Button } from '@takaro/lib-components';
