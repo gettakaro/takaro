@@ -9,7 +9,8 @@ import {
   DrawerSkeleton,
   styled,
 } from '@takaro/lib-components';
-import { rolesOptions, usePlayerRoleAssign } from 'queries/roles';
+import { rolesOptions } from 'queries/roles';
+import { usePlayerRoleAssign } from 'queries/players';
 import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -43,7 +44,7 @@ export const Route = createFileRoute('/_auth/_global/player/$playerId/role/assig
       { name: 'Global - applies to all gameservers', id: 'null' } as GameServerOutputDTO,
       ...gameservers,
     ];
-    return { roles, gameServers: gameServerOptions };
+    return { roles: roles.data, gameServers: gameServerOptions };
   },
   component: Component,
   pendingComponent: DrawerSkeleton,

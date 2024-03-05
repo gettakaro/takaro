@@ -3,7 +3,7 @@ import { PlayerRoleAssignmentOutputDTO } from '@takaro/apiclient';
 import { createColumnHelper, CellContext } from '@tanstack/react-table';
 import { gameServersOptions } from 'queries/gameservers';
 import { AiOutlineDelete as DeleteIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
-import { usePlayerRoleUnassign } from 'queries/roles';
+import { usePlayerRoleUnassign } from 'queries/players';
 import { useNavigate } from '@tanstack/react-router';
 import { useTableActions, Table, Button, Dropdown, IconButton, Dialog, Skeleton, styled } from '@takaro/lib-components';
 import { DateTime } from 'luxon';
