@@ -195,6 +195,7 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
         </>
       );
       break;
+<<<<<<< HEAD
     case EventOutputDTOEventNameEnum.PlayerCreated:
       properties = (
         <>
@@ -202,6 +203,8 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
           <EventProperty name="player" value={event.player?.name} />
         </>
       );
+=======
+>>>>>>> origin/main
     case EventOutputDTOEventNameEnum.ModuleCreated:
     case EventOutputDTOEventNameEnum.ModuleUpdated:
     case EventOutputDTOEventNameEnum.ModuleDeleted:
