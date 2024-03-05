@@ -33,17 +33,12 @@ export const Route = createFileRoute('/_auth/_global/users')({
       throw redirect({ to: '/forbidden' });
     }
   },
-
-  loader: ({ context }) => {
-    return context.queryClient.ensureQueryData(usersQueryOptions({ page: 0 }));
-  },
   component: Component,
 });
 
 function Component() {
   useDocumentTitle('Users');
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<UserOutputWithRolesDTO>();
-  const loaderData = Route.useLoaderData();
 
   const { data, isLoading } = useSuspenseQuery({
     ...usersQueryOptions({
@@ -62,7 +57,6 @@ function Component() {
         discordId: columnSearch.columnSearchState.find((search) => search.id === 'discordId')?.value,
       },
     }),
-    initialData: loaderData,
   });
 
   const p =

@@ -8,7 +8,7 @@ import {
   VariableSearchInputDTO,
   VariableUpdateDTO,
 } from '@takaro/apiclient';
-import { queryParamsToArray, mutationWrapper } from '../util';
+import { mutationWrapper } from '../util';
 import { AxiosError } from 'axios';
 import { ErrorMessageMapping } from '@takaro/lib-components/src/errors';
 
@@ -33,7 +33,7 @@ export const variableQueryOptions = (variableId: string) =>
 
 export const variablesQueryOptions = (queryParams: VariableSearchInputDTO) =>
   queryOptions<VariableOutputArrayDTOAPI, AxiosError<VariableOutputArrayDTOAPI>>({
-    queryKey: [...variableKeys.list(), ...queryParamsToArray(queryParams)],
+    queryKey: [variableKeys.list(), queryParams],
     queryFn: async () => (await getApiClient().variable.variableControllerSearch(queryParams)).data,
   });
 
