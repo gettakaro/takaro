@@ -83,7 +83,8 @@ services:
       FUNCTIONS_EXECUTION_MODE: 'local'
       MOCK_GAMESERVER_HOST: 'http://takaro_mock_gameserver:3002'
       MOCHA_RETRIES: ${MOCHA_RETRIES}
-
+      TRACING_ENABLED: "true"
+      TRACING_ENDPOINT: "http://grafana_agent:4317"          
   takaro_api:
     image: ghcr.io/gettakaro/takaro-app-api:${DOCKER_TAG}
     restart: always
@@ -107,6 +108,8 @@ services:
       TAKARO_HOST: http://takaro_api:3000
       MOCK_GAMESERVER_HOST: http://takaro_mock_gameserver:3002
       CORS_ALLOWED_ORIGINS: http://127.0.0.1:13000,http://127.0.0.1:13001
+      TRACING_ENABLED: "true"
+      TRACING_ENDPOINT: "http://grafana_agent:4317"      
     ports:
       # api
       - 13000:3000
@@ -128,6 +131,8 @@ services:
     environment:
       LOGGING_LEVEL: debug
       REDIS_HOST: 'redis'
+      TRACING_ENABLED: "true"
+      TRACING_ENDPOINT: "http://grafana_agent:4317"          
     ports:
       - 3002:3002
   takaro_connector:
@@ -141,6 +146,8 @@ services:
       ADMIN_CLIENT_SECRET: ${ADMIN_CLIENT_SECRET}
       TAKARO_OAUTH_HOST: http://hydra:4444
       TAKARO_HOST: http://takaro_api:3000
+      TRACING_ENABLED: "true"
+      TRACING_ENDPOINT: "http://grafana_agent:4317"          
     ports:
       - 3003:3003
   mailhog:
@@ -155,3 +162,17 @@ services:
       - 8025:8025
     logging:
       driver: none
+  grafana_agent:
+    image: grafana/agent:v0.38.1  
+    command: ["run", "--server.http.listen-addr=0.0.0.0:12345", "/etc/agent/config.river"] 
+    volumes:
+      - ./containers/grafana/agent/config.river:/etc/agent/config.river
+      - /tmp/agent:/tmp/agent
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "4689:12345"
+    environment:
+      AGENT_MODE: "flow"
+      GRAFANA_CLOUD_TEMPO_URL: ${GRAFANA_CLOUD_TEMPO_URL}
+      GRAFANA_CLOUD_API_USER: ${GRAFANA_CLOUD_API_USER}
+      GRAFANA_CLOUD_API_KEY: ${GRAFANA_CLOUD_API_KEY}
