@@ -1,10 +1,9 @@
 import { styled, Popover, IconButton } from '@takaro/lib-components';
 import { CopyModuleForm } from 'components/CopyModuleForm';
-import { useModule } from 'hooks/useModule';
 import { useNavigate } from '@tanstack/react-router';
 import { AiOutlineCopy as CopyIcon, AiOutlineLink as LinkIcon } from 'react-icons/ai';
 import { useSnackbar } from 'notistack';
-import { useState } from 'react';
+import { FC, useState } from 'react';
 
 const PopoverBody = styled.div`
   max-width: 400px;
@@ -39,9 +38,12 @@ const CustomContent = styled.div`
   }
 `;
 
-export const CopyModulePopOver = () => {
+interface CopyModulePopOverProps {
+  moduleId: string;
+}
+
+export const CopyModulePopOver: FC<CopyModulePopOverProps> = ({ moduleId }) => {
   const [open, setOpen] = useState<boolean>(false);
-  const { moduleData } = useModule();
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
   const navigate = useNavigate();
 
@@ -80,7 +82,7 @@ export const CopyModulePopOver = () => {
           <PopoverHeading>
             <h2>Copy module</h2>
           </PopoverHeading>
-          <CopyModuleForm moduleId={moduleData.id} onSuccess={handleSuccess} />
+          <CopyModuleForm moduleId={moduleId} onSuccess={handleSuccess} />
         </PopoverBody>
       </Popover.Content>
     </Popover>

@@ -21,8 +21,6 @@ import { z } from 'zod';
 import { DiJsBadge as JsIcon } from 'react-icons/di';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { useSandpack } from '@codesandbox/sandpack-react';
-import { useModule, FunctionType } from 'hooks/useModule';
 import { getNewPath } from './utils';
 import {
   useCommandCreate,
@@ -35,6 +33,7 @@ import {
   useHookRemove,
   useHookUpdate,
 } from 'queries/modules';
+import { FileType, useStudioContext } from '../useStudioStore';
 
 const Button = styled.button<{ isActive: boolean; depth: number }>`
   display: flex;
@@ -115,15 +114,20 @@ export interface FileProps {
 }
 
 export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick, depth }) => {
-  // TODO: create prop: IsDir() based on selectFile.
-
   const fileName = path.split('/').filter(Boolean).pop()!;
-  const { moduleData, setModuleData } = useModule();
   const theme = useTheme();
-  const { sandpack } = useSandpack();
   const [hover, setHover] = useState<boolean>(false);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const fileRef = useRef<HTMLButtonElement>(null);
+
+  const moduleId = useStudioContext((s) => s.moduleId);
+  const fileMap = useStudioContext((s) => s.fileMap);
+  const updateFile = useStudioContext((s) => s.updateFile);
+  const addFile = useStudioContext((s) => s.addFile);
+  const closeFile = useStudioContext((s) => s.closeFile);
+  const deleteFile = useStudioContext((s) => s.deleteFile);
+  const readOnly = useStudioContext((s) => s.readOnly);
+  const renameFile = useStudioContext((s) => s.renameFile);
 
   const fileNameValidation = z
     .string()
@@ -139,15 +143,9 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
   const { mutateAsync: updateCommand } = useCommandUpdate();
   const { mutateAsync: updateCronJob } = useCronJobUpdate();
 
-  const { mutateAsync: removeHook } = useHookRemove({
-    moduleId: moduleData.id,
-  });
-  const { mutateAsync: removeCommand } = useCommandRemove({
-    moduleId: moduleData.id,
-  });
-  const { mutateAsync: removeCronJob } = useCronJobRemove({
-    moduleId: moduleData.id,
-  });
+  const { mutateAsync: removeHook } = useHookRemove({ moduleId });
+  const { mutateAsync: removeCommand } = useCommandRemove({ moduleId });
+  const { mutateAsync: removeCronJob } = useCronJobRemove({ moduleId });
 
   const { mutateAsync: createHook } = useHookCreate();
   const { mutateAsync: createCommand } = useCommandCreate();
@@ -166,22 +164,22 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
   const handleRename = async (newFileName: string) => {
     setEditing(false);
 
-    const toRename = moduleData.fileMap[path];
+    const toRename = fileMap[path];
 
     switch (toRename.type) {
-      case FunctionType.Hooks:
+      case FileType.Hooks:
         await updateHook({
           hookId: toRename.itemId,
           hook: { name: newFileName },
         });
         break;
-      case FunctionType.Commands:
+      case FileType.Commands:
         await updateCommand({
           commandId: toRename.itemId,
           command: { name: newFileName },
         });
         break;
-      case FunctionType.CronJobs:
+      case FileType.CronJobs:
         await updateCronJob({
           cronJobId: toRename.itemId,
           cronJob: { name: newFileName },
@@ -190,42 +188,32 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
       default:
         throw new Error('Invalid type');
     }
-
-    // change path in moduleData
-    // change path in sandpack
     const newPath = getNewPath(path, newFileName);
-    const code = sandpack.files[path].code;
-    sandpack.files[newPath] = { code: code };
-    sandpack.setActiveFile(newPath);
-    sandpack.closeFile(path);
-    delete sandpack.files[path];
+    renameFile(path, newPath);
+    deleteFile(path);
     setInternalFileName(newFileName);
   };
 
   const handleDelete = async () => {
-    const toDelete = moduleData.fileMap[path];
-    console.log(moduleData.fileMap);
+    const toDelete = fileMap[path];
 
     try {
       switch (toDelete.type) {
-        case FunctionType.Hooks:
+        case FileType.Hooks:
           await removeHook({ hookId: toDelete.itemId });
           break;
-        case FunctionType.Commands:
+        case FileType.Commands:
           await removeCommand({ commandId: toDelete.itemId });
           break;
-        case FunctionType.CronJobs:
+        case FileType.CronJobs:
           await removeCronJob({ cronJobId: toDelete.itemId });
           break;
         default:
           throw new Error('Invalid type');
       }
-      // delete file from sandpack
-      sandpack.closeFile(path);
-      sandpack.deleteFile(path);
+      closeFile(path);
+      deleteFile(path);
     } catch (e) {
-      // TODO: handle error
-      // deleting file failed
       console.log(e);
     }
   };
@@ -238,9 +226,9 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
 
     try {
       switch (type) {
-        case FunctionType.Hooks:
+        case FileType.Hooks:
           const hook = await createHook({
-            moduleId: moduleData.id,
+            moduleId,
             name: newFileName,
             eventType: 'log',
             regex: '\\w',
@@ -248,18 +236,18 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
           functionId = hook.function.id;
           itemId = hook.id;
           break;
-        case FunctionType.Commands:
+        case FileType.Commands:
           const command = await createCommand({
-            moduleId: moduleData.id,
+            moduleId,
             name: newFileName,
             trigger: newFileName,
           });
           functionId = command.function.id;
           itemId = command.id;
           break;
-        case FunctionType.CronJobs:
+        case FileType.CronJobs:
           const cronjob = await createCronJob({
-            moduleId: moduleData.id,
+            moduleId,
             name: newFileName,
             temporalValue: '0 0 * * *',
           });
@@ -271,18 +259,13 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
       }
       const newPath = `${type}/${newFileName}`;
 
-      moduleData.fileMap[`/${newPath}`] = {
+      addFile({
+        path: `/${newPath}`,
         type,
         functionId,
         code: '',
         itemId,
-      };
-
-      setModuleData({ ...moduleData });
-
-      sandpack.updateFile({ [newPath]: { code: '' } });
-      sandpack.setActiveFile(newPath);
-
+      });
       setInternalFileName(newFileName);
     } catch (e) {
       console.log(e);
@@ -307,7 +290,7 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
     e.stopPropagation();
     setShowNewFileField(true);
     // we need a placeholder here to make sure the input field is rendered
-    sandpack.updateFile(`${path.slice(0, -1)} /new-file`);
+    updateFile(`${path.slice(0, -1)} /new-file`, '');
   };
 
   const getIcon = (): JSX.Element => {
@@ -321,10 +304,6 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
   };
 
   const getActions = (): JSX.Element => {
-    if (moduleData.isBuiltIn) {
-      return <></>;
-    }
-
     if (openFile) {
       return (
         <>
@@ -353,8 +332,6 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
       );
     }
   };
-
-  const readOnly = moduleData.isBuiltIn;
 
   return (
     <>
@@ -386,7 +363,7 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
               isEditing={isEditing}
               onEdited={handleRename}
               editingChange={(edited) => setEditing(edited)}
-              disabled={moduleData.isBuiltIn}
+              disabled={readOnly}
               validationSchema={fileNameValidation}
               required
               value={internalFileName}
@@ -408,7 +385,7 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
         <NewFileContainer depth={depth}>
           <JsIcon size={12} fill={theme.colors.secondary} />
           <EditableField
-            disabled={moduleData.isBuiltIn}
+            disabled={readOnly}
             name="new-file"
             isEditing={true}
             editingChange={setShowNewFileField}

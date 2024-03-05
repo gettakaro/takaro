@@ -1,6 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SelectField, TextField, Button, Alert } from '@takaro/lib-components';
-import { ModuleItemProperties } from 'hooks/useModule';
 import { hookQueryOptions, useHookUpdate } from 'queries/modules';
 import { FC } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
@@ -16,11 +15,11 @@ const validationSchema = z.object({
 type FormInputs = z.infer<typeof validationSchema>;
 
 interface HookConfigProps {
-  moduleItem: ModuleItemProperties;
+  itemId: string;
   readOnly?: boolean;
 }
-export const HookConfig: FC<HookConfigProps> = ({ moduleItem, readOnly }) => {
-  const { data: hook, isPending, isError } = useQuery(hookQueryOptions(moduleItem.itemId));
+export const HookConfig: FC<HookConfigProps> = ({ itemId, readOnly }) => {
+  const { data: hook, isPending, isError } = useQuery(hookQueryOptions(itemId));
   if (isPending) return <ConfigLoading />;
   if (isError) return <Alert variant="error" text="Failed to load hook config" />;
   return <HookConfigForm hook={hook} readOnly={readOnly} />;

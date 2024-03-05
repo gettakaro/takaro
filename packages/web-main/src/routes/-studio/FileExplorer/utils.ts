@@ -1,4 +1,4 @@
-import type { SandpackBundlerFiles } from '@codesandbox/sandpack-client';
+import { StudioProps } from '../useStudioStore';
 
 export const fromPropsToModules = ({
   autoHiddenFiles,
@@ -8,17 +8,13 @@ export const fromPropsToModules = ({
   depth,
 }: {
   prefixedPath: string;
-  files: SandpackBundlerFiles;
+  files: StudioProps['fileMap'];
   autoHiddenFiles?: boolean;
   visibleFiles: string[];
   depth: number;
 }): { directories: string[]; modules: string[] } => {
   const hasVisibleFilesOption = visibleFiles.length > 0;
 
-  /**
-   * When visibleFiles or activeFile are set, the hidden and active flags on the files prop are ignored.
-   * @see: https://sandpack.codesandbox.io/docs/getting-started/custom-content#visiblefiles-and-activefile
-   */
   const filterByHiddenProperty = autoHiddenFiles && !hasVisibleFilesOption;
   const filterByVisibleFilesOption = autoHiddenFiles && !!hasVisibleFilesOption;
 
@@ -56,6 +52,6 @@ export function getNewPath(path: string, newFileName: string) {
 }
 
 // get filename from full path
-export function getFileName(path: string) {
+export function getFileName(path: string): string {
   return path.split('/').filter(Boolean).pop()!;
 }

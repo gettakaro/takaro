@@ -1,7 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CronJobOutputDTO } from '@takaro/apiclient';
 import { TextField, Button, Alert } from '@takaro/lib-components';
-import { ModuleItemProperties } from 'hooks/useModule';
 import { cronjobQueryOptions, useCronJobUpdate } from 'queries/modules';
 import { FC } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
@@ -15,12 +14,12 @@ const validationSchema = z.object({
 type FormInputs = z.infer<typeof validationSchema>;
 
 interface CronJobConfigProps {
-  moduleItem: ModuleItemProperties;
+  itemId: string;
   readOnly?: boolean;
 }
 
-export const CronJobConfig: FC<CronJobConfigProps> = ({ moduleItem, readOnly = false }) => {
-  const { data, isPending, isError } = useQuery(cronjobQueryOptions(moduleItem.itemId));
+export const CronJobConfig: FC<CronJobConfigProps> = ({ itemId, readOnly = false }) => {
+  const { data, isPending, isError } = useQuery(cronjobQueryOptions(itemId));
   if (isPending) return <ConfigLoading />;
   if (isError) return <Alert variant="error" text="Failed to load command config" />;
   return <CronJobConfigForm cronjob={data} readOnly={readOnly} />;

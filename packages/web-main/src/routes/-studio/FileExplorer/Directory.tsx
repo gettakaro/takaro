@@ -1,10 +1,9 @@
 import { FC, useState } from 'react';
 import { styled } from '@takaro/lib-components';
-import { SandpackOptions } from '@codesandbox/sandpack-react';
 import { File } from './File';
 import { ModuleList } from './ModuleList';
-import type { SandpackBundlerFiles } from '@codesandbox/sandpack-client';
 import { FileExplorerProps } from '.';
+import { StudioProps } from '../useStudioStore';
 
 const DirectoryContainer = styled.div`
   position: relative;
@@ -14,10 +13,10 @@ const DirectoryContainer = styled.div`
 export interface DirectoryProps extends FileExplorerProps {
   prefixedPath: string;
   selectFile: (path: string) => void;
-  activeFile: NonNullable<SandpackOptions['activeFile']>;
+  activeFile: StudioProps['activeFile'];
   depth: number;
-  files: SandpackBundlerFiles;
-  visibleFiles: NonNullable<SandpackOptions['visibleFiles']>;
+  files: StudioProps['fileMap'];
+  visibleFiles: NonNullable<StudioProps['visibleFiles']>;
 }
 
 export const Directory: FC<DirectoryProps> = ({

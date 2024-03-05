@@ -3,13 +3,12 @@ import { styled, CollapseList } from '@takaro/lib-components';
 import { Editor } from './Editor';
 import { Resizable } from 're-resizable';
 import { FileExplorer } from './FileExplorer';
-import { useSandpack } from '@codesandbox/sandpack-react';
-import { useModule, FunctionType } from 'hooks/useModule';
 import { CronJobConfig, CommandConfig, HookConfig } from './Editor/configs';
 import { Header } from './Header';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { EventFeedWidget } from 'components/events/EventFeedWidget';
 import { ErrorBoundary } from 'components/ErrorBoundary';
+import { FileType, useStudioContext } from './useStudioStore';
 
 const EventsWrapper = styled.div`
   padding-right: ${({ theme }) => theme.spacing[1]};
@@ -32,30 +31,29 @@ const StyledResizable = styled(Resizable)`
 
 export const StudioInner: FC = () => {
   useDocumentTitle('Studio');
-  const { sandpack } = useSandpack();
-  const { moduleData } = useModule();
+  const readOnly = useStudioContext((s) => s.readOnly);
+  const activeFilePath = useStudioContext((s) => s.activeFile);
+  const files = useStudioContext((s) => s.fileMap);
+  const moduleId = useStudioContext((s) => s.moduleId);
+  const activeFile = activeFilePath ? files[activeFilePath] : null;
 
-  const activeModule = moduleData.fileMap[sandpack.activeFile];
-
-  if (!activeModule) return null;
-
-  function getConfigComponent(type: FunctionType) {
+  function getConfigComponent(type: FileType, itemId: string) {
     switch (type) {
-      case FunctionType.Hooks:
-        return <HookConfig moduleItem={activeModule} readOnly={moduleData.isBuiltIn} />;
-      case FunctionType.Commands:
-        return <CommandConfig moduleItem={activeModule} readOnly={moduleData.isBuiltIn} />;
-      case FunctionType.CronJobs:
-        return <CronJobConfig moduleItem={activeModule} readOnly={moduleData.isBuiltIn} />;
+      case FileType.Hooks:
+        return <HookConfig itemId={itemId} readOnly={readOnly} />;
+      case FileType.Commands:
+        return <CommandConfig itemId={itemId} readOnly={readOnly} />;
+      case FileType.CronJobs:
+        return <CronJobConfig itemId={itemId} readOnly={readOnly} />;
       default:
         return null;
     }
   }
 
-  const configMap = {
-    [FunctionType.Hooks]: 'Hook Config',
-    [FunctionType.Commands]: 'Command Config',
-    [FunctionType.CronJobs]: 'CronJob Config',
+  const configTitleMap = {
+    [FileType.Hooks]: 'Hook Config',
+    [FileType.Commands]: 'Command Config',
+    [FileType.CronJobs]: 'CronJob Config',
   } as const;
 
   return (
@@ -84,22 +82,27 @@ export const StudioInner: FC = () => {
           <CollapseList>
             <CollapseList.Item title="File explorer">
               <ErrorBoundary>
-                <FileExplorer sandpack={sandpack} />
+                <FileExplorer />
               </ErrorBoundary>
             </CollapseList.Item>
-            <CollapseList.Item title={configMap[activeModule.type]}>
-              <ErrorBoundary>{getConfigComponent(activeModule.type)}</ErrorBoundary>
-            </CollapseList.Item>
-            <CollapseList.Item title={'Last executions'}>
-              <ErrorBoundary>
-                <EventsWrapper>
-                  <EventFeedWidget query={{ filters: { moduleId: [moduleData.id] } }} />
-                </EventsWrapper>
-              </ErrorBoundary>
-            </CollapseList.Item>
+            {activeFile && (
+              <>
+                <CollapseList.Item title={configTitleMap[activeFile.type]}>
+                  <ErrorBoundary>{getConfigComponent(activeFile.type, activeFile.itemId)}</ErrorBoundary>
+                </CollapseList.Item>
+                <CollapseList.Item title={'Last executions'}>
+                  <ErrorBoundary>
+                    <EventsWrapper>
+                      <EventFeedWidget query={{ filters: { moduleId: [moduleId] } }} />
+                    </EventsWrapper>
+                  </ErrorBoundary>
+                </CollapseList.Item>
+              </>
+            )}
           </CollapseList>
         </StyledResizable>
-        <Editor readOnly={moduleData.isBuiltIn} />
+        {/* TODO: provide placeholder */}
+        {activeFile && <Editor readOnly={readOnly} />}
       </Content>
     </Wrapper>
   );

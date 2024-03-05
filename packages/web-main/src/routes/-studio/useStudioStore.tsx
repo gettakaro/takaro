@@ -1,5 +1,4 @@
 import { CommandOutputDTO, CronJobOutputDTO, FunctionOutputDTO, HookOutputDTO } from '@takaro/apiclient';
-import { FunctionType } from 'hooks/useModule';
 import { PropsWithChildren, createContext, useContext, useRef } from 'react';
 import { createStore, useStore } from 'zustand';
 
@@ -7,41 +6,162 @@ interface FileActions {
   openFile: (path: string) => void;
   resetFile: (path: string) => void;
   setActiveFile: (path: string) => void;
+  renameFile: (oldPath: string, newPath: string) => void;
 
   updateFile: (path: string, code: string) => void;
-  addFile: (path: string, code?: string) => void;
+  addFile: (file: FileWithPath) => void;
   closeFile: (path: string) => void;
   deleteFile: (path: string) => void;
 }
 
-interface File {
-  functionId: FunctionOutputDTO['id'];
-  type: FunctionType;
-  itemId: CommandOutputDTO['id'] | CronJobOutputDTO['id'] | HookOutputDTO['id'];
-  code: string;
+const newfileContent = `
+
+  import { getTakaro } from '@takaro/helpers';
+
+  async function main() {
+    const data = await getData();
+    const takaro = await getTakaro(data);
+
+  }
+  await main()
+`;
+
+export enum FileType {
+  Commands = 'commands',
+  Hooks = 'hooks',
+  CronJobs = 'cronjobs',
+  Functions = 'functions',
 }
 
-type StudioProps = {
+export type FileMap = Record<string, File>;
+
+interface File {
+  functionId: FunctionOutputDTO['id'];
+  type: FileType;
+  itemId: CommandOutputDTO['id'] | CronJobOutputDTO['id'] | HookOutputDTO['id'];
+  code: string;
+  hidden?: boolean;
+}
+type FileWithPath = File & { path: string };
+
+export type StudioProps = {
   moduleId: string;
   moduleName: string;
   readOnly: boolean;
-  fileMap: Record<string, File>;
+  fileMap: FileMap;
+  /// File that is currently active in the editor
+  activeFile?: string;
+  /// List of files that are visible in the editor (tabs)
+  visibleFiles: string[];
 };
 type StudioActions = FileActions;
 type StudioState = StudioProps & StudioActions;
-
 type StudioStore = ReturnType<typeof createStudioStore>;
 
 const createStudioStore = (initProps: StudioProps) => {
   return createStore<StudioState>()((set) => ({
     ...initProps,
-    openFile: (path: string) => {},
-    resetFile: (path: string) => {},
-    setActiveFile: (path: string) => {},
-    updateFile: (path: string, code: string) => {},
-    addFile: (path: string, code?: string) => {},
-    closeFile: (path: string) => {},
-    deleteFile: (path: string) => {},
+
+    openFile: (path: string): void => {
+      set((state) => ({
+        activeFile: path,
+        visibleFiles: state.visibleFiles.includes(path) ? state.visibleFiles : [...state.visibleFiles, path],
+      }));
+    },
+
+    resetFile: (path: string): void => {
+      set((state) => {
+        const file = state.fileMap[path];
+        if (!file) return state;
+
+        return {
+          fileMap: {
+            ...state.fileMap,
+            [path]: {
+              ...file,
+              code: '',
+            },
+          },
+        };
+      });
+    },
+
+    renameFile: (oldPath: string, newPath: string): void => {
+      set((state) => {
+        const file = state.fileMap[oldPath];
+        if (!file) return state;
+
+        const newFileMap = { ...state.fileMap };
+        delete newFileMap[oldPath];
+        newFileMap[newPath] = file;
+
+        return {
+          fileMap: newFileMap,
+          visibleFiles: state.visibleFiles.map((file) => (file === oldPath ? newPath : file)),
+          activeFile: state.activeFile === oldPath ? newPath : state.activeFile,
+        };
+      });
+    },
+
+    setActiveFile: (path: string): void => set({ activeFile: path }),
+    updateFile: (path: string, code: string) => {
+      set((state) => {
+        const file = state.fileMap[path];
+        if (!file) return state;
+
+        return {
+          fileMap: {
+            ...state.fileMap,
+            [path]: {
+              ...file,
+              code,
+            },
+          },
+        };
+      });
+    },
+
+    addFile: (f: FileWithPath) => {
+      set((state) => {
+        const file = state.fileMap[f.path];
+        if (file) return state;
+
+        return {
+          ...state,
+          // add file to visible files.
+          visiblefiles: [...state.visibleFiles, f.path],
+          activeFile: f.path,
+          fileMap: {
+            ...state.fileMap,
+            [f.path]: {
+              functionId: f.functionId,
+              type: f.type,
+              itemId: f.itemId,
+              code: f.code || newfileContent,
+            },
+          },
+        };
+      });
+    },
+    closeFile: (path: string) => {
+      set((state) => {
+        // There should always be at least one file open.
+        if (state.visibleFiles.length === 1) return state;
+        const newVisibleFiles = state.visibleFiles.filter((file) => file !== path);
+        return {
+          visibleFiles: newVisibleFiles,
+          activeFile: newVisibleFiles[newVisibleFiles.length - 1] || '',
+        };
+      });
+    },
+
+    deleteFile: (path: string) => {
+      set((state) => {
+        const newFileMap = { ...state.fileMap };
+        delete newFileMap[path];
+        return { fileMap: newFileMap };
+      });
+    },
   }));
 };
 

@@ -1,4 +1,5 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { SandpackProvider, SandpackFiles } from '@codesandbox/sandpack-react';
 import { CommandOutputDTO, CronJobOutputDTO, HookOutputDTO } from '@takaro/apiclient';
 import { moduleQueryOptions } from 'queries/modules';
 import { styled, Skeleton } from '@takaro/lib-components';
@@ -7,8 +8,7 @@ import { ErrorBoundary } from 'components/ErrorBoundary';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { StudioInner } from './-studio/StudioInner';
 import { hasPermission } from 'hooks/useHasPermission';
-import { FileMap, FileType, StudioProvider } from './-studio/useStudioStore';
-import { z } from 'zod';
+import { FileType, StudioProvider } from './-studio/useStudioStore';
 
 const Flex = styled.div`
   display: flex;
@@ -26,6 +26,14 @@ const LoadingContainer = styled.div`
   gap: ${({ theme }) => theme.spacing['4']};
 `;
 
+/* TODO:
+ * - builtin module files should be in the correct folder
+ * - Add new files, rename files (=editable field)
+ * - Delete files
+ * - package.json (optional)
+ *
+ */
+
 export const Route = createFileRoute('/studio/$moduleId')({
   beforeLoad: ({ context }) => {
     if (context.auth.isAuthenticated === false) {
@@ -36,9 +44,6 @@ export const Route = createFileRoute('/studio/$moduleId')({
       throw redirect({ to: '/forbidden' });
     }
   },
-  validateSearch: z.object({
-    file: z.string().optional(),
-  }),
   loader: ({ params, context }) => context.queryClient.ensureQueryData(moduleQueryOptions(params.moduleId)),
   component: Component,
   pendingComponent: () => {
@@ -66,18 +71,21 @@ function Component() {
     };
   }, []);
 
-  const moduleItemPropertiesReducer =
-    (fileType: FileType) => (prev: FileMap, item: HookOutputDTO | CronJobOutputDTO | CommandOutputDTO) => {
-      prev[`/${fileType}/${item.name}`] = {
-        functionId: item.function.id,
-        type: fileType,
-        itemId: item.id,
-        code: item.function.code,
-      };
-      return prev;
-    };
+  const providerModuleData = useMemo(() => ({ moduleData, setModuleData }), [moduleData, setModuleData]);
 
-  const fileMap = useMemo(() => {
+  const moduleItemPropertiesReducer =
+    (fileType: FileType) =>
+      (prev: Record<string, ModuleItemProperties>, item: HookOutputDTO | CronJobOutputDTO | CommandOutputDTO) => {
+        prev[`/${fileType}/${item.name}`] = {
+          functionId: item.function.id,
+          type: fileType,
+          itemId: item.id,
+          code: item.function.code,
+        };
+        return prev;
+      };
+
+  useEffect(() => {
     if (mod) {
       // This first sorts
       const nameToId = mod.hooks
@@ -90,13 +98,39 @@ function Component() {
         .sort((a, b) => a.name.localeCompare(b.name))
         .reduce(moduleItemPropertiesReducer(FileType.Commands), nameToId);
 
-      return nameToId;
+
+
+      setModuleData((moduleData) => ({
+        ...moduleData,
+        id: mod.id,
+        fileMap: nameToId,
+        name: mod.name,
+        isBuiltIn: mod.builtin !== null ? true : false,
+      }));
     }
-    return {};
   }, [mod]);
 
+  const files = (() => {
+    const files = {} as SandpackFiles;
+
+    // Convert to sandpack file format
+    Object.keys(moduleData.fileMap).forEach((key) => {
+      const moduleItem = moduleData.fileMap[key];
+
+      files[key] = { code: moduleItem.code };
+    });
+
+    return files;
+  })();
+
   if (!mod.hooks.length && !mod.cronJobs.length && !mod.commands.length) {
-    return <ModuleOnboarding moduleId={mod.id} />;
+    return <ModuleOnboarding moduleId={moduleId} />;
+  }
+
+  // Prevents rendering of empty sandpack
+  // Because the moduleData is set asynchronously
+  if (!Object.keys(moduleData.fileMap).length) {
+    return <></>;
   }
 
   return (
@@ -104,16 +138,23 @@ function Component() {
       <StudioProvider
         moduleId={mod.id}
         moduleName={mod.name}
-        fileMap={fileMap}
-        readOnly={mod.builtin ? true : false}
-        visibleFiles={[]}
-        activeFile={undefined}
+
+
+
       >
-        <Flex>
-          <Wrapper>
-            <StudioInner />
-          </Wrapper>
-        </Flex>
+        <SandpackProvider
+          // TODO: eventually this should point to the module config file
+          customSetup={{
+            entry: Object.keys(files)[0],
+          }}
+          files={files}
+        >
+          <Flex>
+            <Wrapper>
+              <StudioInner />
+            </Wrapper>
+          </Flex>
+        </SandpackProvider>
       </StudioProvider>
     </ErrorBoundary>
   );
