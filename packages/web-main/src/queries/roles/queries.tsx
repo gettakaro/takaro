@@ -11,11 +11,10 @@ import {
   PermissionOutputDTO,
   APIOutput,
 } from '@takaro/apiclient';
-import { InfiniteData, infiniteQueryOptions, queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
+import { infiniteQueryOptions, queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { getApiClient } from 'util/getApiClient';
 import { hasNextPage, mutationWrapper, queryParamsToArray } from 'queries/util';
-import { playerKeys } from 'queries/players/queries';
 import { userKeys } from 'queries/users';
 import { ErrorMessageMapping } from '@takaro/lib-components/src/errors';
 
@@ -66,35 +65,8 @@ export const useRoleCreate = () => {
     useMutation<RoleOutputDTO, AxiosError<RoleOutputArrayDTOAPI>, RoleCreateInputDTO>({
       mutationFn: async (role) => (await apiClient.role.roleControllerCreate(role)).data.data,
       onSuccess: async (newRole) => {
-        queryClient.setQueryData<InfiniteData<RoleOutputArrayDTOAPI>>(roleKeys.list(), (prev) => {
-          // in case there are no roles yet
-          if (!prev) {
-            return {
-              pages: [
-                {
-                  data: [newRole],
-                  meta: {
-                    page: 0,
-                    total: 1,
-                    limit: 100,
-                    error: { code: '', message: '', details: '' },
-                    serverTime: '',
-                  },
-                },
-              ],
-              pageParams: [0],
-            };
-          }
-
-          const newData = {
-            ...prev,
-            pages: prev?.pages.map((page) => ({
-              ...page,
-              data: [...page.data, newRole],
-            })),
-          };
-          return newData;
-        });
+        await queryClient.invalidateQueries({ queryKey: roleKeys.list() });
+        queryClient.setQueryData(roleKeys.detail(newRole.id), newRole);
       },
     }),
     defaultRoleErrorMessages
@@ -116,26 +88,8 @@ export const useRoleUpdate = () => {
         return (await apiClient.role.roleControllerUpdate(roleId, roleDetails)).data.data;
       },
       onSuccess: async (updatedRole) => {
-        queryClient.setQueryData<InfiniteData<RoleOutputArrayDTOAPI>>(roleKeys.list(), (prev) => {
-          if (!prev) {
-            queryClient.invalidateQueries({ queryKey: roleKeys.list() });
-            throw new Error('Cannot update role list, because it does not exist');
-          }
-
-          return {
-            ...prev,
-            pages: prev.pages.map((page) => ({
-              ...page,
-              data: page.data.map((role) => {
-                if (role.id === updatedRole.id) {
-                  return updatedRole;
-                }
-                return role;
-              }),
-            })),
-          };
-        });
-        await queryClient.invalidateQueries({ queryKey: roleKeys.detail(updatedRole.id) });
+        queryClient.invalidateQueries({ queryKey: roleKeys.list() });
+        await queryClient.setQueryData(roleKeys.detail(updatedRole.id), updatedRole);
       },
     }),
     defaultRoleErrorMessages
@@ -154,65 +108,8 @@ export const useRoleRemove = () => {
     useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, RoleRemove>({
       mutationFn: async ({ id }) => (await apiClient.role.roleControllerRemove(id)).data.data,
       onSuccess: (removedRole) => {
-        // update list that contain this role
-        queryClient.setQueryData<InfiniteData<RoleOutputArrayDTOAPI>>(roleKeys.list(), (prev) => {
-          if (!prev) {
-            throw new Error('Cannot remove role from list, because list does not exist');
-          }
-
-          return {
-            ...prev,
-            pages: prev.pages.map((page) => ({
-              ...page,
-              data: page.data.filter((role) => role.id !== removedRole.id),
-            })),
-          };
-        });
-      },
-    }),
-    {}
-  );
-};
-
-interface IPlayerRoleAssign {
-  id: string;
-  roleId: string;
-  gameServerId?: string;
-  expiresAt?: string;
-}
-
-export const usePlayerRoleAssign = () => {
-  const apiClient = getApiClient();
-  const queryClient = useQueryClient();
-  return mutationWrapper<APIOutput, IPlayerRoleAssign>(
-    useMutation<APIOutput, AxiosError<APIOutput>, IPlayerRoleAssign>({
-      mutationFn: async ({ id, roleId, gameServerId, expiresAt }) => {
-        const res = (await apiClient.player.playerControllerAssignRole(id, roleId, { gameServerId, expiresAt })).data;
-        // TODO: _should_ happen in the onSuccess below I guess
-        // But no access to the ID there
-        // At this point, we technically already know the req was successful
-        // because it would have thrown an error otherwise
-        queryClient.invalidateQueries({ queryKey: playerKeys.detail(id) });
-        return res;
-      },
-    }),
-    {}
-  );
-};
-
-export const usePlayerRoleUnassign = ({ playerId }: { playerId: string }) => {
-  const apiClient = getApiClient();
-  const queryClient = useQueryClient();
-  return mutationWrapper<APIOutput, IPlayerRoleAssign>(
-    useMutation<APIOutput, AxiosError<APIOutput>, IPlayerRoleAssign>({
-      mutationFn: async ({ id, roleId, gameServerId }) => {
-        const res = (await apiClient.player.playerControllerRemoveRole(id, roleId, { gameServerId })).data;
-        // TODO: Same cache issue as in useRoleAssign...
-        queryClient.invalidateQueries({ queryKey: playerKeys.detail(id) });
-        return res;
-      },
-      onSuccess: async () => {
-        await queryClient.invalidateQueries({ queryKey: playerKeys.detail(playerId) });
+        queryClient.invalidateQueries({ queryKey: roleKeys.list() });
+        queryClient.removeQueries({ queryKey: roleKeys.detail(removedRole.id) });
       },
     }),
     {}

@@ -292,13 +292,13 @@ const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
           <Dropdown.Menu.Item
             label="Go to player profile"
             icon={<ProfileIcon />}
-            onClick={() => navigate({ to: '/_auth/player/$playerId/info', params: { playerId: player.id } })}
+            onClick={() => navigate({ to: '/player/$playerId/info', params: { playerId: player.id } })}
           />
 
           <Dropdown.Menu.Item
             label="Edit roles"
             icon={<EditIcon />}
-            onClick={() => navigate({ to: '/_auth/player/$playerId/role/assign', params: { playerId: player.id } })}
+            onClick={() => navigate({ to: '/player/$playerId/role/assign', params: { playerId: player.id } })}
             disabled={!hasManageRoles}
           />
 
