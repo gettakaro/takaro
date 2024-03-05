@@ -11,7 +11,7 @@ import {
   PermissionOutputDTO,
   APIOutput,
 } from '@takaro/apiclient';
-import { InfiniteData, infiniteQueryOptions, queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
+import { infiniteQueryOptions, queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { getApiClient } from 'util/getApiClient';
 import { hasNextPage, mutationWrapper, queryParamsToArray } from 'queries/util';
@@ -89,25 +89,7 @@ export const useRoleUpdate = () => {
         return (await apiClient.role.roleControllerUpdate(roleId, roleDetails)).data.data;
       },
       onSuccess: async (updatedRole) => {
-        queryClient.setQueryData<InfiniteData<RoleOutputArrayDTOAPI>>(roleKeys.list(), (prev) => {
-          if (!prev) {
-            queryClient.invalidateQueries({ queryKey: roleKeys.list() });
-            throw new Error('Cannot update role list, because it does not exist');
-          }
-
-          return {
-            ...prev,
-            pages: prev.pages.map((page) => ({
-              ...page,
-              data: page.data.map((role) => {
-                if (role.id === updatedRole.id) {
-                  return updatedRole;
-                }
-                return role;
-              }),
-            })),
-          };
-        });
+        queryClient.invalidateQueries({ queryKey: roleKeys.list() });
         await queryClient.setQueryData(roleKeys.detail(updatedRole.id), updatedRole);
       },
     }),
