@@ -35,6 +35,11 @@ export const IconNav: FC<IconNavProps> = ({ items }) => {
       {items.map(({ link, icon, title }, index) => (
         <Tooltip placement="right" key={`icon-${title}-${index}`}>
           <Tooltip.Trigger asChild>
+<<<<<<< HEAD
+=======
+            {/*eslint-disable-next-line @typescript-eslint/ban-ts-comment*/}
+            {/*@ts-ignore reusable link*/}
+>>>>>>> origin/main
             <Link key={`icon-nav-${title}`} {...link}>
               {cloneElement(icon, { size: 24 })}
             </Link>

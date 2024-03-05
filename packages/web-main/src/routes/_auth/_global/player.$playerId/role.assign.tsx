@@ -9,7 +9,12 @@ import {
   DrawerSkeleton,
   styled,
 } from '@takaro/lib-components';
+<<<<<<< HEAD
 import { rolesOptions, usePlayerRoleAssign } from 'queries/roles';
+=======
+import { rolesOptions } from 'queries/roles';
+import { usePlayerRoleAssign } from 'queries/players';
+>>>>>>> origin/main
 import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -43,7 +48,11 @@ export const Route = createFileRoute('/_auth/_global/player/$playerId/role/assig
       { name: 'Global - applies to all gameservers', id: 'null' } as GameServerOutputDTO,
       ...gameservers,
     ];
+<<<<<<< HEAD
     return { roles, gameServers: gameServerOptions };
+=======
+    return { roles: roles.data, gameServers: gameServerOptions };
+>>>>>>> origin/main
   },
   component: Component,
   pendingComponent: DrawerSkeleton,
@@ -58,7 +67,11 @@ function Component() {
 
   useEffect(() => {
     if (!open) {
+<<<<<<< HEAD
       navigate({ to: '/player/$playerId/global', params: { playerId } });
+=======
+      navigate({ to: '/player/$playerId/info', params: { playerId } });
+>>>>>>> origin/main
     }
   }, [open, navigate]);
 
@@ -75,7 +88,11 @@ function Component() {
   const onSubmit: SubmitHandler<IFormInputs> = async ({ id, roleId, gameServerId, expiresAt }) => {
     if (gameServerId === 'null') gameServerId = undefined;
     await mutateAsync({ id, roleId, gameServerId, expiresAt });
+<<<<<<< HEAD
     navigate({ to: '/player/$playerId/global', params: { playerId } });
+=======
+    navigate({ to: '/player/$playerId/info', params: { playerId } });
+>>>>>>> origin/main
   };
 
   return (

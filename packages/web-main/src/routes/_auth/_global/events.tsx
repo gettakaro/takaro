@@ -271,7 +271,11 @@ function Component() {
   const handleDateRangePicker = useCallback(
     (start: DateTime, end: DateTime) => {
       navigate({
+<<<<<<< HEAD
         search: (prev: EventSearch) => ({ ...prev, startDate: start.toISO(), endDate: end.toISO() }),
+=======
+        search: (prev: EventSearch) => ({ ...prev, startDate: start.toISO()!, endDate: end.toISO()! }),
+>>>>>>> origin/main
       });
     },
     [navigate]
@@ -349,7 +353,14 @@ function Component() {
             data={updatedTreeData}
             addFilters={(f) => {
               navigate({
+<<<<<<< HEAD
                 search: (prev: EventSearch) => ({ ...prev, eventNames: _.uniq([...prev.eventNames, ...f]) }),
+=======
+                search: (prev: EventSearch) => ({
+                  ...prev,
+                  eventNames: _.uniq([...prev.eventNames, ...f] as EventSearch['eventNames']),
+                }),
+>>>>>>> origin/main
               });
             }}
             removeFilters={(f) => {

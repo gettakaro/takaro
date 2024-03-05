@@ -16,6 +16,22 @@ export class PlayerProfilePage extends BasePage {
 
   async gotoInventory() {
     await this.page.goto(`/player/${this.player.id}/inventory`);
+<<<<<<< HEAD
+=======
+  }
+
+  async assignRole({ roleName }: { roleName: string }) {
+    await this.page.goto(`/player/${this.player.id}/role/assign`);
+    await this.page.locator('#roleId').click();
+
+    await this.page.getByRole('option', { name: roleName }).click();
+    await this.page.getByRole('button', { name: 'Save changes' }).click();
+  }
+  async unassignRole({ roleName }: { roleName: string }) {
+    await this.page.getByRole('row', { name: roleName }).getByRole('button', { name: 'player-actions' }).click();
+    await this.page.getByRole('menuitem', { name: 'Unassign role' }).click();
+    await this.page.getByRole('button', { name: 'Unassign role' }).click();
+>>>>>>> origin/main
   }
 
   async gotoEvents() {

@@ -34,16 +34,31 @@ function Component() {
           {
             text: 'Overview',
             to: '/gameserver/$gameServerId/dashboard/overview',
+<<<<<<< HEAD
+=======
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore reusable link
+>>>>>>> origin/main
             params: { gameServerId },
           },
           {
             text: 'Console',
             to: '/gameserver/$gameServerId/dashboard/console',
+<<<<<<< HEAD
+=======
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore reusable link
+>>>>>>> origin/main
             params: { gameServerId },
           },
           {
             text: 'Statistics',
             to: '/gameserver/$gameServerId/dashboard/statistics',
+<<<<<<< HEAD
+=======
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore reusable link
+>>>>>>> origin/main
             params: { gameServerId },
           },
         ]}
