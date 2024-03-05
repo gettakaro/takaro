@@ -7,6 +7,23 @@ extendedTest('can view player info', async ({ page, extended }) => {
   await PlayerProfilePage.goto();
   await expect(page.getByText('IP History')).toBeVisible();
   await expect(page.getByText(PlayerProfilePage.player.name)).toBeVisible();
+<<<<<<< HEAD
+=======
+});
+
+extendedTest('Can assign role to player', async ({ page, extended }) => {
+  const { PlayerProfilePage } = extended;
+  await PlayerProfilePage.assignRole({ roleName: 'Test role' });
+  await expect(page.getByText('Test role')).toBeVisible();
+});
+
+extendedTest('Can remove role from player', async ({ page, extended }) => {
+  const { PlayerProfilePage } = extended;
+  await PlayerProfilePage.goto();
+  await PlayerProfilePage.assignRole({ roleName: 'Test role' });
+  await PlayerProfilePage.unassignRole({ roleName: 'Test role' });
+  await expect(page.getByText('Test role')).not.toBeVisible();
+>>>>>>> origin/main
 });
 
 extendedTest('can view player events', async ({ extended }) => {

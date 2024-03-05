@@ -19,7 +19,11 @@ interface GameServerSelectNavProps {
 export const GlobalGameServerSelect: FC<GameServerSelectNavProps> = ({
   currentSelectedGameServerId: selectedGameServerId,
 }) => {
+<<<<<<< HEAD
   const routeMatch = useMatchRoute();
+=======
+  const matchRoute = useMatchRoute();
+>>>>>>> origin/main
   const navigate = useNavigate();
   const { control, watch } = useForm<FormFields>({
     mode: 'onChange',
@@ -27,6 +31,7 @@ export const GlobalGameServerSelect: FC<GameServerSelectNavProps> = ({
       gameServerId: selectedGameServerId,
     },
   });
+<<<<<<< HEAD
   installedModules: {
   }
 
@@ -38,6 +43,23 @@ export const GlobalGameServerSelect: FC<GameServerSelectNavProps> = ({
         navigate({
           to: `/gameserver/$gameServerId/${match['**']}`,
           params: { gameServerId },
+=======
+
+  useEffect(() => {
+    const subscription = watch(() => {
+      // a new gameserver was selected
+      const params = matchRoute({
+        to: '/gameserver/$gameServerId',
+        fuzzy: true,
+      }) as { gameServerId: string; '**': string } | false;
+
+      if (params !== false) {
+        navigate({
+          to: `/gameserver/$gameServerId/${params['**']}`,
+          params: {
+            gameServerId: params.gameServerId,
+          },
+>>>>>>> origin/main
           startTransition: true,
         });
       }

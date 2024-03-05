@@ -30,8 +30,11 @@ const TanStackRouterDevtools =
       );
 
 function Component() {
+<<<<<<< HEAD
   console.log(process.env.NODE_ENV);
 
+=======
+>>>>>>> origin/main
   return (
     <>
       <Outlet />

@@ -11,11 +11,18 @@ import {
   PermissionOutputDTO,
   APIOutput,
 } from '@takaro/apiclient';
+<<<<<<< HEAD
 import { InfiniteData, infiniteQueryOptions, queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { getApiClient } from 'util/getApiClient';
 import { hasNextPage, mutationWrapper, queryParamsToArray } from 'queries/util';
 import { playerKeys } from 'queries/players/queries';
+=======
+import { infiniteQueryOptions, queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
+import { getApiClient } from 'util/getApiClient';
+import { hasNextPage, mutationWrapper, queryParamsToArray } from 'queries/util';
+>>>>>>> origin/main
 import { userKeys } from 'queries/users';
 import { ErrorMessageMapping } from '@takaro/lib-components/src/errors';
 
@@ -66,35 +73,8 @@ export const useRoleCreate = () => {
     useMutation<RoleOutputDTO, AxiosError<RoleOutputArrayDTOAPI>, RoleCreateInputDTO>({
       mutationFn: async (role) => (await apiClient.role.roleControllerCreate(role)).data.data,
       onSuccess: async (newRole) => {
-        queryClient.setQueryData<InfiniteData<RoleOutputArrayDTOAPI>>(roleKeys.list(), (prev) => {
-          // in case there are no roles yet
-          if (!prev) {
-            return {
-              pages: [
-                {
-                  data: [newRole],
-                  meta: {
-                    page: 0,
-                    total: 1,
-                    limit: 100,
-                    error: { code: '', message: '', details: '' },
-                    serverTime: '',
-                  },
-                },
-              ],
-              pageParams: [0],
-            };
-          }
-
-          const newData = {
-            ...prev,
-            pages: prev?.pages.map((page) => ({
-              ...page,
-              data: [...page.data, newRole],
-            })),
-          };
-          return newData;
-        });
+        await queryClient.invalidateQueries({ queryKey: roleKeys.list() });
+        queryClient.setQueryData(roleKeys.detail(newRole.id), newRole);
       },
     }),
     defaultRoleErrorMessages
@@ -116,6 +96,7 @@ export const useRoleUpdate = () => {
         return (await apiClient.role.roleControllerUpdate(roleId, roleDetails)).data.data;
       },
       onSuccess: async (updatedRole) => {
+<<<<<<< HEAD
         queryClient.setQueryData<InfiniteData<RoleOutputArrayDTOAPI>>(roleKeys.list(), (prev) => {
           if (!prev) {
             queryClient.invalidateQueries({ queryKey: roleKeys.list() });
@@ -136,6 +117,10 @@ export const useRoleUpdate = () => {
           };
         });
         await queryClient.invalidateQueries({ queryKey: roleKeys.detail(updatedRole.id) });
+=======
+        queryClient.invalidateQueries({ queryKey: roleKeys.list() });
+        await queryClient.setQueryData(roleKeys.detail(updatedRole.id), updatedRole);
+>>>>>>> origin/main
       },
     }),
     defaultRoleErrorMessages
@@ -154,6 +139,7 @@ export const useRoleRemove = () => {
     useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, RoleRemove>({
       mutationFn: async ({ id }) => (await apiClient.role.roleControllerRemove(id)).data.data,
       onSuccess: (removedRole) => {
+<<<<<<< HEAD
         // update list that contain this role
         queryClient.setQueryData<InfiniteData<RoleOutputArrayDTOAPI>>(roleKeys.list(), (prev) => {
           if (!prev) {
@@ -210,6 +196,10 @@ export const usePlayerRoleUnassign = ({ playerId }: { playerId: string }) => {
         // TODO: Same cache issue as in useRoleAssign...
         queryClient.invalidateQueries({ queryKey: playerKeys.detail(id) });
         return res;
+=======
+        queryClient.invalidateQueries({ queryKey: roleKeys.list() });
+        queryClient.removeQueries({ queryKey: roleKeys.detail(removedRole.id) });
+>>>>>>> origin/main
       },
       onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: playerKeys.detail(playerId) });

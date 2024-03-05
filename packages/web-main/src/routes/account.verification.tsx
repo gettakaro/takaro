@@ -70,7 +70,11 @@ function Component() {
   // submit the verification form data to Ory
   const submitFlow = (body: UpdateVerificationFlowBody) => {
     // something unexpected went wrong and the flow was not set
+<<<<<<< HEAD
     if (!flow) return navigate({ to: '/auth/verification', replace: true, search: { flowId: '' } });
+=======
+    if (!flow) return navigate({ to: '/account/verification', replace: true, search: { flowId: '' } });
+>>>>>>> origin/main
 
     oryClient
       .updateVerificationFlow({

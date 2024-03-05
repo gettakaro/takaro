@@ -83,11 +83,21 @@ function Component() {
           {
             text: 'Info',
             to: '/player/$playerId/info',
+<<<<<<< HEAD
+=======
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore reusable link
+>>>>>>> origin/main
             params: { playerId },
           },
           {
             text: 'Events',
             to: '/player/$playerId/events',
+<<<<<<< HEAD
+=======
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore reusable link
+>>>>>>> origin/main
             params: { playerId },
           },
           /*
@@ -100,6 +110,11 @@ function Component() {
           {
             text: 'Economy',
             to: '/player/$playerId/economy',
+<<<<<<< HEAD
+=======
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore reusable link
+>>>>>>> origin/main
             params: { playerId },
           },
         ]}

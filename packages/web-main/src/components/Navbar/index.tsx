@@ -111,6 +111,11 @@ export interface NavbarLink {
 export const renderLink = ({ linkProps, icon, label, requiredPermissions }: NavbarLink) => (
   <PermissionsGuard key={`guard-${linkProps.to}`} requiredPermissions={requiredPermissions || []}>
     <div key={`wrapper-${linkProps.to}`}>
+<<<<<<< HEAD
+=======
+      {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment*/}
+      {/* @ts-ignore reusable link */}
+>>>>>>> origin/main
       <Link to={linkProps.to} key={`link-${linkProps.to}`}>
         <span key={`inner-${linkProps.to}`}>
           {cloneElement(icon, { size: 20, key: `icon-${linkProps.to}` })}

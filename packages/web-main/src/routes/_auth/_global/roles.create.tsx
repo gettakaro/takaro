@@ -19,6 +19,7 @@ export const Route = createFileRoute('/_auth/_global/roles/create')({
 
 function Component() {
   const navigate = useNavigate();
+<<<<<<< HEAD
   const { mutate, isPending: isCreatingRole, error } = useRoleCreate();
   const permissions = Route.useLoaderData();
 
@@ -42,6 +43,28 @@ function Component() {
       });
       navigate({ to: '/roles' });
     } catch (error) {}
+=======
+  const { mutate, isPending: isCreatingRole, error, isSuccess } = useRoleCreate();
+  const permissions = Route.useLoaderData();
+
+  useEffect(() => {
+    if (!open || isSuccess) {
+      navigate({ to: '/roles' });
+    }
+  }, [open, navigate, isSuccess]);
+
+  const onSubmit: SubmitHandler<IFormInputs> = ({ name, permissions: formPermissions }) => {
+    const activePermissions = Object.entries(formPermissions)
+      .filter(([_key, value]) => value.enabled === true)
+      .map(([key, value]) => ({
+        permissionId: key,
+        count: value.count,
+      }));
+    mutate({
+      name,
+      permissions: activePermissions,
+    });
+>>>>>>> origin/main
   };
 
   return <RoleForm onSubmit={onSubmit} isLoading={isCreatingRole} permissions={permissions} error={error} />;

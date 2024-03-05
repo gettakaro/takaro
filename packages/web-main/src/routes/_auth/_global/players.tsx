@@ -301,13 +301,21 @@ const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
           <Dropdown.Menu.Item
             label="Go to player profile"
             icon={<ProfileIcon />}
+<<<<<<< HEAD
             onClick={() => navigate({ to: '/_auth/player/$playerId/info', params: { playerId: player.id } })}
+=======
+            onClick={() => navigate({ to: '/player/$playerId/info', params: { playerId: player.id } })}
+>>>>>>> origin/main
           />
 
           <Dropdown.Menu.Item
             label="Edit roles"
             icon={<EditIcon />}
+<<<<<<< HEAD
             onClick={() => navigate({ to: '/_auth/player/$playerId/role/assign', params: { playerId: player.id } })}
+=======
+            onClick={() => navigate({ to: '/player/$playerId/role/assign', params: { playerId: player.id } })}
+>>>>>>> origin/main
             disabled={!hasManageRoles}
           />
 

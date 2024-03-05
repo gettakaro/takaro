@@ -119,7 +119,7 @@ export const InstallModuleForm: FC<InstallModuleFormProps> = ({ readOnly, mod, m
               <Button
                 fullWidth
                 isLoading={isPending}
-                text={actionType}
+                text={`${actionType} module`}
                 type="button"
                 onClick={() => {
                   systemConfigFormRef.current?.formElement.current.requestSubmit();
