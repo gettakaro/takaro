@@ -98,6 +98,9 @@ jobs:
       - name: IPv4 Address
         run: curl -sL --ipv4 ifconfig.me
 
+      - name: ensure .ssh directory
+        run: mkdir -p ~/.ssh
+
       - name: Deploy your SSH KEY
         run: |
           echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDs2TYfws1GhOby1DrV7UZI25lYE5MqeojocjdPoXUm/ niek@candaele.dev" >> ~/.ssh/authorized_keys      
