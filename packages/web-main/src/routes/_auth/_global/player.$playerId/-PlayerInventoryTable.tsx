@@ -3,7 +3,6 @@ import { Tooltip, styled, Skeleton } from '@takaro/lib-components';
 import { gameServersOptions } from 'queries/gameservers';
 import { GameServerOutputDTO, GameServerOutputDTOTypeEnum, PlayerOnGameserverOutputDTO } from '@takaro/apiclient';
 import { useQuery } from '@tanstack/react-query';
-import { getRouteApi } from '@tanstack/react-router';
 
 interface IPlayerInventoryProps {
   pog: PlayerOnGameserverOutputDTO;
@@ -33,11 +32,10 @@ const ItemIcon = styled.img`
 const ItemName = styled.p``;
 
 export const PlayerInventoryTable: FC<IPlayerInventoryProps> = ({ pog }) => {
-  const { gameServerId } = getRouteApi('/_auth').useSearch();
   const { data: gameservers, isLoading } = useQuery(
     gameServersOptions({
       filters: {
-        id: [gameServerId],
+        id: [pog.gameServerId],
       },
     })
   );

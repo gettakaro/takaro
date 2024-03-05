@@ -83,7 +83,6 @@ export class ModuleDefinitionsPage extends BasePage {
     await this.page.getByRole('menuitem', { name: 'Delete module' }).click();
     await this.page.getByPlaceholder(name).fill(name);
     await this.page.getByRole('button', { name: 'Delete module' }).click();
-
     await expect(this.page.getByText(name)).toHaveCount(0);
   }
 

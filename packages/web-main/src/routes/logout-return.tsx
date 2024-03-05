@@ -14,7 +14,7 @@ function Component() {
   useEffect(() => {
     queryClient.removeQueries({ queryKey: ['session'] });
     localStorage.removeItem('selectedGameServerId');
-    navigate({ to: '/login' });
+    navigate({ to: '/login', replace: true });
   });
 
   return <div>Logout success, you are being redirected.</div>;

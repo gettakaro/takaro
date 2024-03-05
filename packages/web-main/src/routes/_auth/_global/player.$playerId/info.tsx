@@ -7,6 +7,7 @@ import { Section, Container, Scrollable } from './-style';
 import { CountryCodeToEmoji } from 'components/CountryCodeToEmoji';
 import { DateTime } from 'luxon';
 import { playerQueryOptions } from 'queries/players';
+import { useSuspenseQuery } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/_global/player/$playerId/info')({
   component: Component,
@@ -14,8 +15,13 @@ export const Route = createFileRoute('/_auth/_global/player/$playerId/info')({
 });
 
 function Component() {
-  const player = Route.useLoaderData();
+  const loaderData = Route.useLoaderData();
   const { playerId } = Route.useParams();
+
+  const { data: player } = useSuspenseQuery({
+    ...playerQueryOptions(playerId),
+    initialData: loaderData,
+  });
 
   return (
     <Scrollable>

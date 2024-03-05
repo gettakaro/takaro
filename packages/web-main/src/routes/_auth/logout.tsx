@@ -14,10 +14,10 @@ function LogOut() {
     const performLogout = async () => {
       try {
         await logOut();
-        navigate({ to: '/login' });
       } catch (error) {
         console.error('Logout failed:', error);
-        navigate({ to: '/login' });
+      } finally {
+        navigate({ to: '/login', replace: true });
       }
     };
     performLogout();

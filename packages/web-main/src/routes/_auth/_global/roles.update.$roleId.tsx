@@ -2,8 +2,9 @@ import { DrawerSkeleton } from '@takaro/lib-components';
 import { useRoleUpdate, roleQueryOptions, permissionsQueryOptions } from 'queries/roles/queries';
 import { SubmitHandler } from 'react-hook-form';
 import { RoleForm, IFormInputs } from './-roles/RoleCreateUpdateForm';
-import { createFileRoute, redirect } from '@tanstack/react-router';
+import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
+import { useEffect } from 'react';
 
 export const Route = createFileRoute('/_auth/_global/roles/update/$roleId')({
   beforeLoad: ({ context }) => {
@@ -23,8 +24,9 @@ export const Route = createFileRoute('/_auth/_global/roles/update/$roleId')({
 
 function Component() {
   const { role, permissions } = Route.useLoaderData();
-  const { mutate, isPending: isUpdatingRole, error } = useRoleUpdate();
+  const { mutate, isPending: isUpdatingRole, error, isSuccess } = useRoleUpdate();
   const { roleId } = Route.useParams();
+  const navigate = useNavigate();
 
   const onSubmit: SubmitHandler<IFormInputs> = ({ permissions: formPermissions, name }) => {
     const activePermissions = Object.entries(formPermissions)
@@ -41,6 +43,12 @@ function Component() {
       },
     });
   };
+
+  useEffect(() => {
+    if (!open || isSuccess) {
+      navigate({ to: '/roles' });
+    }
+  }, [open, navigate, isSuccess]);
 
   return (
     <RoleForm

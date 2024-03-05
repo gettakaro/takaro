@@ -3,4 +3,7 @@ export {
   playerQueryOptions,
   playersOptions,
   playerOnGameServersQueryOptions,
+  playerKeys,
+  usePlayerRoleAssign,
+  usePlayerRoleUnassign,
 } from './queries';
