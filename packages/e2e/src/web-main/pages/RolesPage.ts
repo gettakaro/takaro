@@ -19,14 +19,14 @@ export class RolesPage extends BasePage {
     await this.page.getByRole('menuitem', { name: 'View role' }).click();
   }
 
-  async create({ name, permissions }: { name?: string; permissions?: string[] }) {
+  async create({ name, permissions = [] }: { name?: string; permissions?: string[] }) {
     await this.page.getByRole('link', { name: 'Role', exact: true }).click();
 
     if (name) {
       await this.fillName(name);
     }
 
-    for (const permission in permissions) {
+    for (const permission of permissions) {
       await this.togglePermission(permission);
     }
     await this.page.getByRole('button', { name: 'Save changes' }).click();
@@ -38,6 +38,29 @@ export class RolesPage extends BasePage {
     await this.page.getByPlaceholder(name).fill(name);
     await this.page.getByRole('button', { name: 'Delete role' }).click();
     await expect(this.page.getByText(name)).not.toBeVisible();
+  }
+
+  async edit(
+    oldName: string,
+    {
+      name,
+      permissions = [],
+    }: {
+      name?: string;
+      permissions?: string[];
+    }
+  ) {
+    await this.openSettings(oldName);
+    await this.page.getByRole('menuitem', { name: 'Edit role' }).click();
+
+    if (name) {
+      this.fillName(name);
+    }
+
+    for (const permission of permissions) {
+      await this.togglePermission(permission);
+    }
+    await this.page.getByRole('button', { name: 'Save changes' }).click();
   }
 
   private async togglePermission(permission: string) {
