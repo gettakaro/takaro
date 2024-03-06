@@ -105,6 +105,8 @@ function Component() {
     return fileMap[activeFileParam] ? activeFileParam : undefined;
   }, [fileMap, activeFileParam]);
 
+  console.log(mod);
+
   return (
     <ErrorBoundary>
       <StudioProvider

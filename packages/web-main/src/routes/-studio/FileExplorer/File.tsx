@@ -361,8 +361,8 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
         onClick={handleOnFileClick}
         type="button"
         role="handle"
-        onMouseEnter={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}
+        onMouseEnter={() => (readOnly ? null : setHover(true))}
+        onMouseLeave={() => (readOnly ? null : setHover(false))}
         ref={fileRef}
       >
         <FileContainer>
