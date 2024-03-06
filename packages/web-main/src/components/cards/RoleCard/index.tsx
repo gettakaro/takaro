@@ -51,7 +51,7 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
 
   return (
     <>
-      <Card>
+      <Card data-testid={`role-${name}`}>
         <CardBody>
           <Header>
             {system ? (
@@ -101,7 +101,7 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
           <Dialog.Body size="medium">
             <Alert
               variant="info"
-              text="You can hold down shift when deleting a gameserver to bypass this confirmation entirely."
+              text="You can hold down shift when deleting a role to bypass this confirmation entirely."
             />
             <p>
               Are you sure you want to delete the role? To confirm, type <strong>{name}</strong>.

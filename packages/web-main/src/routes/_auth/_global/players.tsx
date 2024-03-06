@@ -44,18 +44,10 @@ export const Route = createFileRoute('/_auth/_global/players')({
       throw redirect({ to: '/forbidden' });
     }
   },
-  loader: ({ context }) =>
-    context.queryClient.ensureQueryData(
-      playersOptions({
-        sortBy: 'createdAt',
-        sortDirection: 'desc',
-      })
-    ),
   component: Component,
 });
 function Component() {
   useDocumentTitle('Players');
-  const loaderData = Route.useLoaderData();
 
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<PlayerOutputDTO>();
   const { data, isLoading } = useSuspenseQuery({
@@ -81,7 +73,6 @@ function Component() {
         xboxLiveId: columnSearch.columnSearchState.find((search) => search.id === 'xboxLiveId')?.value,
       },
     }),
-    initialData: loaderData,
   });
 
   // IMPORTANT: id should be identical to data object key.
@@ -301,13 +292,13 @@ const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
           <Dropdown.Menu.Item
             label="Go to player profile"
             icon={<ProfileIcon />}
-            onClick={() => navigate({ to: '/_auth/player/$playerId/info', params: { playerId: player.id } })}
+            onClick={() => navigate({ to: '/player/$playerId/info', params: { playerId: player.id } })}
           />
 
           <Dropdown.Menu.Item
             label="Edit roles"
             icon={<EditIcon />}
-            onClick={() => navigate({ to: '/_auth/player/$playerId/role/assign', params: { playerId: player.id } })}
+            onClick={() => navigate({ to: '/player/$playerId/role/assign', params: { playerId: player.id } })}
             disabled={!hasManageRoles}
           />
 

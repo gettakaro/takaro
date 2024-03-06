@@ -27,9 +27,9 @@ const LoadingContainer = styled.div`
 `;
 
 export const Route = createFileRoute('/studio/$moduleId')({
-  beforeLoad: ({ context }) => {
+  beforeLoad: ({ context, location }) => {
     if (context.auth.isAuthenticated === false) {
-      throw redirect({ to: '/login', search: { redirect: location.href } });
+      throw redirect({ to: '/login', search: { redirect: location.pathname } });
     }
 
     if (!hasPermission(context.auth.session, ['MANAGE_MODULES'])) {

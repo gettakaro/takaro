@@ -14,7 +14,7 @@ import { useAuth } from 'hooks/useAuth';
 
 export const Route = createFileRoute('/login')({
   validateSearch: z.object({
-    redirect: z.string().catch('/'),
+    redirect: z.string().optional().catch('/'),
   }),
   component: Component,
 });
@@ -147,8 +147,13 @@ function Component() {
 
   // session == successfully logged in
   if (session) {
-    // redirect is always defined
-    navigate({ to: search.redirect });
+    if (search.redirect) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      navigate({ to: search.redirect });
+    } else {
+      navigate({ to: '/' });
+    }
   }
 
   return (

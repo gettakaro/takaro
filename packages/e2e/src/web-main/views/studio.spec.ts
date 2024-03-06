@@ -77,7 +77,7 @@ extendedTest.describe('filetab', () => {
     const fileName = 'my-hook';
     await studioPage.openFile(fileName);
     await studioPage.closeTab(fileName);
-    await expect(studioPage.page.getByRole('tab', { name: fileName })).not.toBeVisible();
+    await expect(studioPage.page.getByRole('tab', { name: fileName })).toHaveCount(0);
   });
 
   extendedTest.describe('context menu', () => {

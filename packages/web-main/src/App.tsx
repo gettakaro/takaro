@@ -14,6 +14,13 @@ import { AuthProvider, useAuth } from 'hooks/useAuth';
 import { router } from './router';
 import { getConfigVar } from 'util/getConfigVar';
 
+// Adds the typesafety to all @tanstack/react-router components.
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: typeof router;
+  }
+}
+
 function InnerApp() {
   const auth = useAuth();
   return <RouterProvider router={router} context={{ auth }} />;
