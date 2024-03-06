@@ -145,8 +145,6 @@ const createStudioStore = (initProps: StudioProps) => {
     },
     closeFile: (path: string) => {
       set((state) => {
-        // There should always be at least one file open.
-        if (state.visibleFiles.length === 1) return state;
         const newVisibleFiles = state.visibleFiles.filter((file) => file !== path);
         return {
           visibleFiles: newVisibleFiles,
