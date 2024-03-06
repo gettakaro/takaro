@@ -44,18 +44,10 @@ export const Route = createFileRoute('/_auth/_global/players')({
       throw redirect({ to: '/forbidden' });
     }
   },
-  loader: ({ context }) =>
-    context.queryClient.ensureQueryData(
-      playersOptions({
-        sortBy: 'createdAt',
-        sortDirection: 'desc',
-      })
-    ),
   component: Component,
 });
 function Component() {
   useDocumentTitle('Players');
-  const loaderData = Route.useLoaderData();
 
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<PlayerOutputDTO>();
   const { data, isLoading } = useSuspenseQuery({
@@ -81,7 +73,6 @@ function Component() {
         xboxLiveId: columnSearch.columnSearchState.find((search) => search.id === 'xboxLiveId')?.value,
       },
     }),
-    initialData: loaderData,
   });
 
   // IMPORTANT: id should be identical to data object key.

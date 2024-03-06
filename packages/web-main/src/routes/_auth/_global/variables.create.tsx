@@ -1,7 +1,8 @@
-import { createFileRoute, redirect } from '@tanstack/react-router';
+import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import { ExecutionType, IFormInputs, VariablesForm } from './-variables/VariableCreateUpdateForm';
 import { useVariableCreate } from 'queries/variables/queries.js';
 import { hasPermission } from 'hooks/useHasPermission';
+import { useEffect } from 'react';
 
 export const Route = createFileRoute('/_auth/_global/variables/create')({
   beforeLoad: ({ context }) => {
@@ -13,10 +14,11 @@ export const Route = createFileRoute('/_auth/_global/variables/create')({
 });
 
 function Component() {
-  const { mutateAsync, isPending, error } = useVariableCreate();
+  const { mutate, isPending, error, isSuccess } = useVariableCreate();
+  const navigate = useNavigate();
 
-  async function createVariable(variable: IFormInputs) {
-    await mutateAsync({
+  function createVariable(variable: IFormInputs) {
+    mutate({
       key: variable.key,
       value: variable.value,
       moduleId: variable.moduleId,
@@ -24,5 +26,14 @@ function Component() {
       gameServerId: variable.gameServerId,
     });
   }
+
+  console.log(isSuccess);
+
+  useEffect(() => {
+    if (isSuccess) {
+      navigate({ to: '/variables' });
+    }
+  }, [navigate, isSuccess]);
+
   return <VariablesForm isLoading={isPending} submit={createVariable} type={ExecutionType.CREATE} error={error} />;
 }

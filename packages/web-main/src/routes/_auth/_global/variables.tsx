@@ -18,19 +18,11 @@ export const Route = createFileRoute('/_auth/_global/variables')({
       throw redirect({ to: '/forbidden' });
     }
   },
-  loader: ({ context }) =>
-    context.queryClient.ensureQueryData(
-      variablesQueryOptions({
-        page: 0,
-        extend: ['module', 'player', 'gameServer'],
-      })
-    ),
   component: Component,
 });
 
 function Component() {
   useDocumentTitle('Variables');
-  const loaderData = Route.useLoaderData();
   const { pagination, columnFilters, sorting, columnSearch, rowSelection } = useTableActions<VariableOutputDTO>();
   const navigate = useNavigate();
   const [openVariablesDialog, setOpenVariablesDialog] = useState<boolean>(false);
@@ -41,9 +33,11 @@ function Component() {
       limit: pagination.paginationState.pageSize,
       sortBy: sorting.sortingState[0]?.id,
       extend: ['module', 'player', 'gameServer'],
-      sortDirection: sorting.sortingState[0]?.desc
-        ? VariableSearchInputDTOSortDirectionEnum.Desc
-        : VariableSearchInputDTOSortDirectionEnum.Asc,
+      sortDirection: sorting.sortingState[0]
+        ? sorting.sortingState[0]?.desc
+          ? VariableSearchInputDTOSortDirectionEnum.Desc
+          : VariableSearchInputDTOSortDirectionEnum.Asc
+        : undefined,
       filters: {
         key: columnFilters.columnFiltersState.find((filter) => filter.id === 'key')?.value,
         gameServerId: columnFilters.columnFiltersState.find((filter) => filter.id === 'gameServerId')?.value,
@@ -57,7 +51,6 @@ function Component() {
         moduleId: columnSearch.columnSearchState.find((search) => search.id === 'moduleId')?.value,
       },
     }),
-    initialData: loaderData,
   });
 
   const columnHelper = createColumnHelper<VariableOutputDTO>();
@@ -65,7 +58,7 @@ function Component() {
     columnHelper.accessor('key', {
       header: 'Key',
       id: 'key',
-      meta: { dataType: 'uuid' },
+      meta: { dataType: 'string' },
       cell: (info) => info.getValue(),
       enableColumnFilter: true,
       enableSorting: true,
