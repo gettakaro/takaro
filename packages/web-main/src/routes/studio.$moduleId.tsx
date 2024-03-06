@@ -37,8 +37,7 @@ export const Route = createFileRoute('/studio/$moduleId')({
     }
   },
   validateSearch: z.object({
-    visibleFiles: z.array(z.string()).optional(),
-    activeFile: z.string().optional(),
+    file: z.string().optional(),
   }),
   loader: ({ params, context }) => context.queryClient.ensureQueryData(moduleQueryOptions(params.moduleId)),
   component: Component,
@@ -54,7 +53,7 @@ export const Route = createFileRoute('/studio/$moduleId')({
 
 function Component() {
   const mod = Route.useLoaderData();
-  const { activeFile: activeFileParam, visibleFiles: visibleFilesParam } = Route.useSearch();
+  const { file: activeFileParam } = Route.useSearch();
 
   // Ideally, we should only block when there are unsaved changes but for that we should first get rid of sandpack.
   useEffect(() => {
@@ -106,11 +105,6 @@ function Component() {
     return fileMap[activeFileParam] ? activeFileParam : undefined;
   }, [fileMap, activeFileParam]);
 
-  const visibleFiles = useMemo(() => {
-    if (!visibleFilesParam) return [];
-    return visibleFilesParam.filter((file) => fileMap[file]);
-  }, [visibleFilesParam]);
-
   return (
     <ErrorBoundary>
       <StudioProvider
@@ -118,7 +112,7 @@ function Component() {
         moduleName={mod.name}
         fileMap={fileMap}
         readOnly={mod.builtin ? true : false}
-        visibleFiles={visibleFiles}
+        visibleFiles={activeFile ? [activeFile] : []}
         activeFile={activeFile}
       >
         <Flex>

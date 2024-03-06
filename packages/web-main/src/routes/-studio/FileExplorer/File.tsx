@@ -34,6 +34,7 @@ import {
   useHookUpdate,
 } from 'queries/modules';
 import { FileType, useStudioContext } from '../useStudioStore';
+import { useNavigate } from '@tanstack/react-router';
 
 const Button = styled.button<{ isActive: boolean; depth: number }>`
   display: flex;
@@ -143,6 +144,7 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
   const [isEditing, setEditing] = useState<boolean>(false);
   const [showNewFileField, setShowNewFileField] = useState<boolean>(false);
   const [loadingNewFile, setLoadingNewFile] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const { mutateAsync: updateHook } = useHookUpdate();
   const { mutateAsync: updateCommand } = useCommandUpdate();
@@ -160,6 +162,11 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
   const handleOnFileClick = (event: React.MouseEvent<HTMLButtonElement>): void => {
     if (openFile) {
       openFile(path);
+      navigate({
+        search: {
+          file: path,
+        },
+      });
     }
     onClick?.(event);
   };
