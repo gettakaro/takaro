@@ -1,7 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
-import { SandpackProvider, SandpackFiles } from '@codesandbox/sandpack-react';
+import { useEffect, useMemo } from 'react';
 import { CommandOutputDTO, CronJobOutputDTO, HookOutputDTO } from '@takaro/apiclient';
-import { FunctionType, ModuleContext, ModuleData, ModuleItemProperties } from 'hooks/useModule';
 import { moduleQueryOptions } from 'queries/modules';
 import { styled, Skeleton } from '@takaro/lib-components';
 import { ModuleOnboarding } from 'views/ModuleOnboarding';
@@ -9,6 +7,8 @@ import { ErrorBoundary } from 'components/ErrorBoundary';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { StudioInner } from './-studio/StudioInner';
 import { hasPermission } from 'hooks/useHasPermission';
+import { FileMap, FileType, StudioProvider } from './-studio/useStudioStore';
+import { z } from 'zod';
 
 const Flex = styled.div`
   display: flex;
@@ -26,14 +26,6 @@ const LoadingContainer = styled.div`
   gap: ${({ theme }) => theme.spacing['4']};
 `;
 
-/* TODO:
- * - builtin module files should be in the correct folder
- * - Add new files, rename files (=editable field)
- * - Delete files
- * - package.json (optional)
- *
- */
-
 export const Route = createFileRoute('/studio/$moduleId')({
   beforeLoad: ({ context, location }) => {
     if (context.auth.isAuthenticated === false) {
@@ -44,6 +36,9 @@ export const Route = createFileRoute('/studio/$moduleId')({
       throw redirect({ to: '/forbidden' });
     }
   },
+  validateSearch: z.object({
+    file: z.string().optional(),
+  }),
   loader: ({ params, context }) => context.queryClient.ensureQueryData(moduleQueryOptions(params.moduleId)),
   component: Component,
   pendingComponent: () => {
@@ -58,14 +53,7 @@ export const Route = createFileRoute('/studio/$moduleId')({
 
 function Component() {
   const mod = Route.useLoaderData();
-  const { moduleId } = Route.useParams();
-
-  const [moduleData, setModuleData] = useState<ModuleData>({
-    fileMap: {},
-    id: '',
-    name: '',
-    isBuiltIn: false,
-  });
+  const { file: activeFileParam } = Route.useSearch();
 
   // Ideally, we should only block when there are unsaved changes but for that we should first get rid of sandpack.
   useEffect(() => {
@@ -79,84 +67,60 @@ function Component() {
     };
   }, []);
 
-  const providerModuleData = useMemo(() => ({ moduleData, setModuleData }), [moduleData, setModuleData]);
-
   const moduleItemPropertiesReducer =
-    (functionType: FunctionType) =>
-    (prev: Record<string, ModuleItemProperties>, item: HookOutputDTO | CronJobOutputDTO | CommandOutputDTO) => {
-      prev[`/${functionType}/${item.name}`] = {
+    (fileType: FileType) => (prev: FileMap, item: HookOutputDTO | CronJobOutputDTO | CommandOutputDTO) => {
+      prev[`/${fileType}/${item.name}`] = {
         functionId: item.function.id,
-        type: functionType,
+        type: fileType,
         itemId: item.id,
         code: item.function.code,
       };
       return prev;
     };
 
-  useEffect(() => {
+  const fileMap = useMemo(() => {
     if (mod) {
       // This first sorts
       const nameToId = mod.hooks
         .sort((a, b) => a.name.localeCompare(b.name))
-        .reduce(moduleItemPropertiesReducer(FunctionType.Hooks), {});
+        .reduce(moduleItemPropertiesReducer(FileType.Hooks), {});
       mod.cronJobs
         .sort((a, b) => a.name.localeCompare(b.name))
-        .reduce(moduleItemPropertiesReducer(FunctionType.CronJobs), nameToId);
+        .reduce(moduleItemPropertiesReducer(FileType.CronJobs), nameToId);
       mod.commands
         .sort((a, b) => a.name.localeCompare(b.name))
-        .reduce(moduleItemPropertiesReducer(FunctionType.Commands), nameToId);
+        .reduce(moduleItemPropertiesReducer(FileType.Commands), nameToId);
 
-      setModuleData((moduleData) => ({
-        ...moduleData,
-        id: mod.id,
-        fileMap: nameToId,
-        name: mod.name,
-        isBuiltIn: mod.builtin !== null ? true : false,
-      }));
+      return nameToId;
     }
+    return {};
   }, [mod]);
 
-  const files = (() => {
-    const files = {} as SandpackFiles;
-
-    // Convert to sandpack file format
-    Object.keys(moduleData.fileMap).forEach((key) => {
-      const moduleItem = moduleData.fileMap[key];
-
-      files[key] = { code: moduleItem.code };
-    });
-
-    return files;
-  })();
-
   if (!mod.hooks.length && !mod.cronJobs.length && !mod.commands.length) {
-    return <ModuleOnboarding moduleId={moduleId} />;
+    return <ModuleOnboarding moduleId={mod.id} />;
   }
 
-  // Prevents rendering of empty sandpack
-  // Because the moduleData is set asynchronously
-  if (!Object.keys(moduleData.fileMap).length) {
-    return <></>;
-  }
+  const activeFile = useMemo(() => {
+    if (activeFileParam === undefined) return undefined;
+    return fileMap[activeFileParam] ? activeFileParam : undefined;
+  }, [fileMap, activeFileParam]);
 
   return (
     <ErrorBoundary>
-      <ModuleContext.Provider value={providerModuleData}>
-        <SandpackProvider
-          // TODO: eventually this should point to the module config file
-          customSetup={{
-            entry: Object.keys(files)[0],
-          }}
-          files={files}
-          prefix=""
-        >
-          <Flex>
-            <Wrapper>
-              <StudioInner />
-            </Wrapper>
-          </Flex>
-        </SandpackProvider>
-      </ModuleContext.Provider>
+      <StudioProvider
+        moduleId={mod.id}
+        moduleName={mod.name}
+        fileMap={fileMap}
+        readOnly={mod.builtin ? true : false}
+        visibleFiles={activeFile ? [activeFile] : []}
+        activeFile={activeFile}
+      >
+        <Flex>
+          <Wrapper>
+            <StudioInner />
+          </Wrapper>
+        </Flex>
+      </StudioProvider>
     </ErrorBoundary>
   );
 }

@@ -19,7 +19,6 @@ import {
 } from 'react-icons/ai';
 
 import { ArgumentCard, ArgumentList, Column, ContentContainer, Fields, Flex } from './style';
-import { ModuleItemProperties } from 'hooks/useModule';
 import { globalGameServerSetingQueryOptions } from 'queries/settings';
 import { commandQueryOptions, useCommandUpdate } from 'queries/modules';
 import { FC } from 'react';
@@ -70,12 +69,12 @@ const argumentTypeSelectOptions = [
 ];
 
 interface CommandConfigProps {
-  moduleItem: ModuleItemProperties;
+  itemId: string;
   readOnly?: boolean;
 }
 
-export const CommandConfig: FC<CommandConfigProps> = ({ moduleItem, readOnly }) => {
-  const { data: command, isPending: isLoadingCommand, isError } = useQuery(commandQueryOptions(moduleItem.itemId));
+export const CommandConfig: FC<CommandConfigProps> = ({ itemId, readOnly }) => {
+  const { data: command, isPending: isLoadingCommand, isError } = useQuery(commandQueryOptions(itemId));
   const { data: settings, isPending: isLoadingSetting } = useQuery(globalGameServerSetingQueryOptions('commandPrefix'));
 
   if (isLoadingCommand || isLoadingSetting) {

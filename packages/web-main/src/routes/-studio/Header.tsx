@@ -1,6 +1,6 @@
 import { styled } from '@takaro/lib-components';
-import { useModule } from 'hooks/useModule';
 import { CopyModulePopOver } from './CopyModulePopOver';
+import { useStudioContext } from './useStudioStore';
 
 const Flex = styled.div`
   display: flex;
@@ -14,16 +14,19 @@ const Container = styled.header`
   align-items: center;
   justify-content: center;
   text-transform: capitalize;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
+  height: ${({ theme }) => theme.spacing[4]};
 `;
 
 export const Header = () => {
-  const { moduleData } = useModule();
+  const moduleName = useStudioContext((s) => s.moduleName);
+  const moduleId = useStudioContext((s) => s.moduleId);
 
   return (
     <Container>
       <Flex>
-        <span>{moduleData.name}</span>
-        <CopyModulePopOver />
+        <span>{moduleName}</span>
+        <CopyModulePopOver moduleId={moduleId} />
       </Flex>
     </Container>
   );

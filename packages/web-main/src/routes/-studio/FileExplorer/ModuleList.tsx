@@ -1,24 +1,23 @@
 import { FC } from 'react';
-import type { SandpackBundlerFiles } from '@codesandbox/sandpack-client';
-import type { SandpackOptions } from '@codesandbox/sandpack-react';
 import { fromPropsToModules } from './utils';
 import { FileExplorerProps } from '.';
 import { Directory } from './Directory';
 import { File } from './File';
+import { StudioProps } from '../useStudioStore';
 
 export interface ModuleListProps extends FileExplorerProps {
   prefixedPath: string;
-  files: SandpackBundlerFiles;
-  selectFile: (path: string) => void;
+  files: StudioProps['fileMap'];
+  openFile: (path: string) => void;
   depth?: number;
-  visibleFiles: NonNullable<SandpackOptions['visibleFiles']>;
-  activeFile: NonNullable<SandpackOptions['activeFile']>;
+  visibleFiles: StudioProps['visibleFiles'];
+  activeFile: StudioProps['activeFile'];
 }
 
 export const ModuleList: FC<ModuleListProps> = ({
   depth = 0,
   activeFile,
-  selectFile,
+  openFile,
   prefixedPath,
   files,
   autoHiddenFiles,
@@ -42,13 +41,13 @@ export const ModuleList: FC<ModuleListProps> = ({
           depth={depth}
           files={files}
           prefixedPath={dir}
-          selectFile={selectFile}
-          visibleFiles={visibleFiles}
+          openFile={openFile}
+          visibleFiles={modules}
         />
       ))}
 
       {modules.map((file) => {
-        return <File key={file} active={activeFile === file} depth={depth} filePath={file} selectFile={selectFile} />;
+        return <File key={file} active={activeFile === file} depth={depth} path={file} openFile={openFile} />;
       })}
     </>
   );

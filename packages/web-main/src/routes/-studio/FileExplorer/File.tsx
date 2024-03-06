@@ -1,4 +1,4 @@
-import { FC, MouseEvent, useRef, useState } from 'react';
+import { FC, MouseEvent, useMemo, useRef, useState } from 'react';
 import {
   styled,
   Button as TakaroButton,
@@ -17,12 +17,10 @@ import {
   AiFillFileAdd as AddFileIcon,
 } from 'react-icons/ai';
 import { z } from 'zod';
-
+import * as Sentry from '@sentry/react';
 import { DiJsBadge as JsIcon } from 'react-icons/di';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { useSandpack } from '@codesandbox/sandpack-react';
-import { useModule, FunctionType } from 'hooks/useModule';
 import { getNewPath } from './utils';
 import {
   useCommandCreate,
@@ -35,6 +33,8 @@ import {
   useHookRemove,
   useHookUpdate,
 } from 'queries/modules';
+import { FileType, useStudioContext } from '../useStudioStore';
+import { useNavigate } from '@tanstack/react-router';
 
 const Button = styled.button<{ isActive: boolean; depth: number }>`
   display: flex;
@@ -105,51 +105,54 @@ const ButtonContainer = styled.div`
 `;
 
 export interface FileProps {
-  filePath: string;
-
-  // This is a wrapper function around sandpack.openFile()
-  // in case it is undefined it means that it is a directory
-  selectFile?: (path: string) => void;
+  path: string;
+  /// in case it is undefined it means that it is a directory
+  openFile?: (path: string) => void;
   active?: boolean;
   onClick?: (e: MouseEvent<HTMLButtonElement>) => void;
   depth: number;
   isDirOpen?: boolean;
 }
 
-export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, onClick, depth }) => {
-  // TODO: create prop: IsDir() based on selectFile.
-
-  const fileName = filePath.split('/').filter(Boolean).pop()!;
-  const { moduleData, setModuleData } = useModule();
+export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick, depth }) => {
+  const fileName = path.split('/').filter(Boolean).pop()!;
   const theme = useTheme();
-  const { sandpack } = useSandpack();
   const [hover, setHover] = useState<boolean>(false);
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const fileRef = useRef<HTMLButtonElement>(null);
 
-  const fileNameValidation = z
-    .string()
-    .min(1, { message: 'The field must not be empty.' })
-    .max(30, { message: 'The field must not be longer than 30 characters.' })
-    .refine((value) => !value.includes('/'), { message: 'The field must not contain slashes.' });
+  const moduleId = useStudioContext((s) => s.moduleId);
+  const fileMap = useStudioContext((s) => s.fileMap);
+  const updateFile = useStudioContext((s) => s.updateFile);
+  const addFile = useStudioContext((s) => s.addFile);
+  const closeFile = useStudioContext((s) => s.closeFile);
+  const deleteFile = useStudioContext((s) => s.deleteFile);
+  const readOnly = useStudioContext((s) => s.readOnly);
+  const renameFile = useStudioContext((s) => s.renameFile);
+
+  const fileNameValidation = useMemo(
+    () =>
+      z
+        .string()
+        .min(1, { message: 'The field must not be empty.' })
+        .max(30, { message: 'The field must not be longer than 30 characters.' })
+        .refine((value) => !value.includes('/'), { message: 'The field must not contain slashes.' }),
+    []
+  );
 
   const [internalFileName, setInternalFileName] = useState(fileName);
   const [isEditing, setEditing] = useState<boolean>(false);
   const [showNewFileField, setShowNewFileField] = useState<boolean>(false);
+  const [loadingNewFile, setLoadingNewFile] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const { mutateAsync: updateHook } = useHookUpdate();
   const { mutateAsync: updateCommand } = useCommandUpdate();
   const { mutateAsync: updateCronJob } = useCronJobUpdate();
 
-  const { mutateAsync: removeHook } = useHookRemove({
-    moduleId: moduleData.id,
-  });
-  const { mutateAsync: removeCommand } = useCommandRemove({
-    moduleId: moduleData.id,
-  });
-  const { mutateAsync: removeCronJob } = useCronJobRemove({
-    moduleId: moduleData.id,
-  });
+  const { mutateAsync: removeHook } = useHookRemove({ moduleId });
+  const { mutateAsync: removeCommand } = useCommandRemove({ moduleId });
+  const { mutateAsync: removeCronJob } = useCronJobRemove({ moduleId });
 
   const { mutateAsync: createHook } = useHookCreate();
   const { mutateAsync: createCommand } = useCommandCreate();
@@ -157,33 +160,36 @@ export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, o
 
   // item is clicked in explorer
   const handleOnFileClick = (event: React.MouseEvent<HTMLButtonElement>): void => {
-    if (selectFile) {
-      selectFile(filePath);
+    if (openFile) {
+      openFile(path);
+      navigate({
+        search: {
+          file: path,
+        },
+      });
     }
-
-    // handle directory
     onClick?.(event);
   };
 
   const handleRename = async (newFileName: string) => {
     setEditing(false);
 
-    const toRename = moduleData.fileMap[filePath];
+    const toRename = fileMap[path];
 
     switch (toRename.type) {
-      case FunctionType.Hooks:
+      case FileType.Hooks:
         await updateHook({
           hookId: toRename.itemId,
           hook: { name: newFileName },
         });
         break;
-      case FunctionType.Commands:
+      case FileType.Commands:
         await updateCommand({
           commandId: toRename.itemId,
           command: { name: newFileName },
         });
         break;
-      case FunctionType.CronJobs:
+      case FileType.CronJobs:
         await updateCronJob({
           cronJobId: toRename.itemId,
           cronJob: { name: newFileName },
@@ -192,57 +198,47 @@ export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, o
       default:
         throw new Error('Invalid type');
     }
-
-    // change path in moduleData
-    // change path in sandpack
-    const newPath = getNewPath(filePath, newFileName);
-    const code = sandpack.files[filePath].code;
-    sandpack.files[newPath] = { code: code };
-    sandpack.setActiveFile(newPath);
-    sandpack.closeFile(filePath);
-    delete sandpack.files[filePath];
+    const newPath = getNewPath(path, newFileName);
+    renameFile(path, newPath);
     setInternalFileName(newFileName);
   };
 
   const handleDelete = async () => {
-    const toDelete = moduleData.fileMap[filePath];
-    console.log(moduleData.fileMap);
+    const toDelete = fileMap[path];
 
     try {
       switch (toDelete.type) {
-        case FunctionType.Hooks:
+        case FileType.Hooks:
           await removeHook({ hookId: toDelete.itemId });
           break;
-        case FunctionType.Commands:
+        case FileType.Commands:
           await removeCommand({ commandId: toDelete.itemId });
           break;
-        case FunctionType.CronJobs:
+        case FileType.CronJobs:
           await removeCronJob({ cronJobId: toDelete.itemId });
           break;
         default:
           throw new Error('Invalid type');
       }
-      // delete file from sandpack
-      sandpack.closeFile(filePath);
-      sandpack.deleteFile(filePath);
+      closeFile(path);
+      deleteFile(path);
     } catch (e) {
-      // TODO: handle error
-      // deleting file failed
-      console.log(e);
+      Sentry.captureException(e);
     }
   };
 
   const handleNewFile = async (newFileName: string) => {
     setShowNewFileField(false);
-    const type = filePath.split('/').join('');
+    setLoadingNewFile(true);
+    const type = path.split('/').join('');
     let functionId = '';
     let itemId = '';
 
     try {
       switch (type) {
-        case FunctionType.Hooks:
+        case FileType.Hooks:
           const hook = await createHook({
-            moduleId: moduleData.id,
+            moduleId,
             name: newFileName,
             eventType: 'log',
             regex: '\\w',
@@ -250,18 +246,18 @@ export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, o
           functionId = hook.function.id;
           itemId = hook.id;
           break;
-        case FunctionType.Commands:
+        case FileType.Commands:
           const command = await createCommand({
-            moduleId: moduleData.id,
+            moduleId,
             name: newFileName,
             trigger: newFileName,
           });
           functionId = command.function.id;
           itemId = command.id;
           break;
-        case FunctionType.CronJobs:
+        case FileType.CronJobs:
           const cronjob = await createCronJob({
-            moduleId: moduleData.id,
+            moduleId,
             name: newFileName,
             temporalValue: '0 0 * * *',
           });
@@ -271,23 +267,18 @@ export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, o
         default:
           throw new Error('Invalid type');
       }
-      const newPath = `${type}/${newFileName}`;
-
-      moduleData.fileMap[`/${newPath}`] = {
+      const newPath = `/${type}/${newFileName}`;
+      addFile({
+        path: newPath,
         type,
         functionId,
-        code: '',
         itemId,
-      };
-
-      setModuleData({ ...moduleData });
-
-      sandpack.updateFile({ [newPath]: { code: '' } });
-      sandpack.setActiveFile(newPath);
-
+      });
       setInternalFileName(newFileName);
     } catch (e) {
-      console.log(e);
+      Sentry.captureException(e);
+    } finally {
+      setLoadingNewFile(false);
     }
   };
 
@@ -309,11 +300,11 @@ export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, o
     e.stopPropagation();
     setShowNewFileField(true);
     // we need a placeholder here to make sure the input field is rendered
-    sandpack.updateFile(`${filePath.slice(0, -1)} /new-file`);
+    updateFile(`${path.slice(0, -1)}/new-file`, '');
   };
 
   const getIcon = (): JSX.Element => {
-    if (selectFile) return <JsIcon size={12} fill={theme.colors.secondary} />;
+    if (openFile) return <JsIcon size={12} fill={theme.colors.secondary} />;
 
     return isDirOpen ? (
       <DirOpenIcon fill={theme.colors.secondary} size={18} />
@@ -323,11 +314,7 @@ export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, o
   };
 
   const getActions = (): JSX.Element => {
-    if (moduleData.isBuiltIn) {
-      return <></>;
-    }
-
-    if (selectFile) {
+    if (openFile) {
       return (
         <>
           <Tooltip placement="top">
@@ -356,12 +343,10 @@ export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, o
     }
   };
 
-  const readOnly = moduleData.isBuiltIn;
-
   return (
     <>
-      {/* TODO: add context menu for directory */}
-      {selectFile && !readOnly && (
+      {/* Context menu folder */}
+      {openFile && !readOnly && (
         <ContextMenu targetRef={fileRef}>
           <ContextMenu.Group>
             <ContextMenu.Item label="Rename file" onClick={handleOnRenameClick} />
@@ -376,21 +361,22 @@ export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, o
         onClick={handleOnFileClick}
         type="button"
         role="handle"
-        onMouseEnter={() => setHover(true)}
-        onMouseLeave={() => setHover(false)}
+        onMouseEnter={() => (readOnly ? null : setHover(true))}
+        onMouseLeave={() => (readOnly ? null : setHover(false))}
         ref={fileRef}
       >
         <FileContainer>
           {getIcon()}
-          {isEditing || selectFile ? (
+          {isEditing || openFile ? (
             <EditableField
               name="file"
               isEditing={isEditing}
               onEdited={handleRename}
               editingChange={(edited) => setEditing(edited)}
-              disabled={moduleData.isBuiltIn}
+              disabled={readOnly}
               validationSchema={fileNameValidation}
               required
+              loading={loadingNewFile}
               value={internalFileName}
             />
           ) : (
@@ -410,7 +396,7 @@ export const File: FC<FileProps> = ({ filePath, selectFile, isDirOpen, active, o
         <NewFileContainer depth={depth}>
           <JsIcon size={12} fill={theme.colors.secondary} />
           <EditableField
-            disabled={moduleData.isBuiltIn}
+            disabled={readOnly}
             name="new-file"
             isEditing={true}
             editingChange={setShowNewFileField}
