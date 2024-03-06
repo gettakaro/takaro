@@ -111,24 +111,22 @@ export async function processJob(job: Job<IGameServerQueueData>) {
     );
 
     promises.push(
-      ...onlinePlayers.map(async (player) => {
-        log.debug(`Syncing player ${player.gameId} on game server ${gameServerId}`);
-        await playerService.sync(player, gameServerId);
-        const resolvedPlayer = await playerService.resolveRef(player, gameServerId);
-        await gameServerService.getPlayerLocation(gameServerId, resolvedPlayer.id);
+      ...onlinePlayers.map(async (gamePlayer) => {
+        log.debug(`Syncing player ${gamePlayer.gameId} on game server ${gameServerId}`);
+        const { player, pog } = await playerService.resolveRef(gamePlayer, gameServerId);
+        await gameServerService.getPlayerLocation(gameServerId, player.id);
 
-        if (player.ip) {
-          await playerService.observeIp(resolvedPlayer.id, gameServerId, player.ip);
+        if (gamePlayer.ip) {
+          await playerService.observeIp(player.id, gameServerId, gamePlayer.ip);
         }
 
-        await playerOnGameServerService.addInfo(
-          player,
-          gameServerId,
+        await playerOnGameServerService.update(
+          pog.id,
           await new PlayerOnGameServerUpdateDTO().construct({
-            ping: player.ping,
+            ping: gamePlayer.ping,
           })
         );
-        await log.debug(`Synced player ${player.gameId} on game server ${gameServerId}`);
+        await log.debug(`Synced player ${gamePlayer.gameId} on game server ${gameServerId}`);
       })
     );
 

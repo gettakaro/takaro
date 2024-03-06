@@ -13,7 +13,7 @@ async function waitUntilHealthyHttp(url, maxRetries = 5) {
     if (stdout === '200') {
       return;
     }
-  } catch (err) {}
+  } catch (err) { }
 
   if (maxRetries > 0) {
     await sleep(1000);
@@ -23,9 +23,10 @@ async function waitUntilHealthyHttp(url, maxRetries = 5) {
   }
 }
 
+// Use env vars if set, otherwise generate random ones
 // These passwords are not super secure but it's better than hardcoding something like 'super_secret_password' here
-const POSTGRES_PASSWORD = randomUUID();
-const POSTGRES_ENCRYPTION_KEY = randomUUID();
+const POSTGRES_PASSWORD = process.env.POSTGRES_PASSWORD || randomUUID();
+const POSTGRES_ENCRYPTION_KEY = process.env.POSTGRES_ENCRYPTION_KEY || randomUUID();
 
 process.env = {
   ...process.env,
@@ -73,23 +74,21 @@ async function main() {
     waitUntilHealthyHttp('http://127.0.0.1:14444/health/ready', 60),
   ]);
 
-  // Check if ADMIN_CLIENT_ID and ADMIN_CLIENT_SECRET are set already
-  // If not set, create them
-  if (!composeOpts.env.ADMIN_CLIENT_ID || !composeOpts.env.ADMIN_CLIENT_SECRET) {
-    console.log('No OAuth admin client configured, creating one...');
-    const rawClientOutput = await exec(
-      'hydra',
-      'hydra -e http://localhost:4445  create client --grant-type client_credentials --audience t:api:admin --format json',
-      composeOpts
-    );
-    const parsedClientOutput = JSON.parse(rawClientOutput.out);
 
-    console.log('Created OAuth admin client', {
-      clientId: parsedClientOutput.client_id,
-    });
-    composeOpts.env.ADMIN_CLIENT_ID = parsedClientOutput.client_id;
-    composeOpts.env.ADMIN_CLIENT_SECRET = parsedClientOutput.client_secret;
-  }
+  console.log('Generating OAuth admin client config...');
+  const rawClientOutput = await exec(
+    'hydra',
+    'hydra -e http://localhost:4445  create client --grant-type client_credentials --audience t:api:admin --format json',
+    composeOpts
+  );
+  const parsedClientOutput = JSON.parse(rawClientOutput.out);
+
+  console.log('Created OAuth admin client', {
+    clientId: parsedClientOutput.client_id,
+  });
+  composeOpts.env.ADMIN_CLIENT_ID = parsedClientOutput.client_id;
+  composeOpts.env.ADMIN_CLIENT_SECRET = parsedClientOutput.client_secret;
+
 
   console.log('Pulling latest images...');
   await pullAll({ ...composeOpts, log: false });
@@ -131,7 +130,7 @@ async function main() {
 
       await $`npm run --workspace=./packages/e2e test:e2e`;
     } else {
-      await run('takaro', 'npm run test', composeOpts);
+      await run('takaro', 'npm run test', { ...composeOpts, NODE_ENV: 'test' });
     }
   } catch (error) {
     console.error('Tests failed');

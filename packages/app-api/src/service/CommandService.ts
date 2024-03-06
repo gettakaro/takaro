@@ -13,8 +13,8 @@ import { PaginatedOutput } from '../db/base.js';
 import { SettingsService, SETTINGS_KEYS } from './SettingsService.js';
 import { parseCommand } from '../lib/commandParser.js';
 import { GameServerService } from './GameServerService.js';
-import { PlayerOnGameServerService } from './PlayerOnGameserverService.js';
 import { PlayerService } from './PlayerService.js';
+import { PlayerOnGameServerService } from './PlayerOnGameserverService.js';
 
 export class CommandOutputDTO extends TakaroModelDTO<CommandOutputDTO> {
   @IsString()
@@ -161,6 +161,10 @@ export class CommandTriggerDTO extends TakaroDTO<CommandTriggerDTO> {
 
 @traceableClass('service:command')
 export class CommandService extends TakaroService<CommandModel, CommandOutputDTO, CommandCreateDTO, CommandUpdateDTO> {
+  private playerService = new PlayerService(this.domainId);
+  private gameServerService = new GameServerService(this.domainId);
+  private pogService = new PlayerOnGameServerService(this.domainId);
+
   get repo() {
     return new CommandRepo(this.domainId);
   }
@@ -271,11 +275,8 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
       }
 
       const gameServerService = new GameServerService(this.domainId);
-      const playerOnGameServerService = new PlayerOnGameServerService(this.domainId);
-      const playerService = new PlayerService(this.domainId);
 
-      const pog = await playerOnGameServerService.resolveRef(chatMessage.player, gameServerId);
-      const player = await playerService.findOne(pog.playerId);
+      const { player, pog } = await this.playerService.resolveRef(chatMessage.player, gameServerId);
 
       const parsedCommands = await Promise.all(
         triggeredCommands.map(async (c) => {
@@ -329,7 +330,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
             domainId: this.domainId,
             functionId: db.function.id,
             itemId: db.id,
-            pog: pog,
+            pog,
             arguments: data.arguments,
             module: data.module,
             gameServerId,
@@ -346,15 +347,13 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
   }
 
   async trigger(gameServerId: string, triggered: CommandTriggerDTO) {
-    const gameServerService = new GameServerService(this.domainId);
-    const playerService = new PlayerService(this.domainId);
-    const player = await playerService.getRef(triggered.playerId, gameServerId);
-    const playerOnGameserver = await gameServerService.getPlayer(gameServerId, player);
+    const pog = await this.pogService.getPog(triggered.playerId, gameServerId);
+    const gamePlayer = await this.gameServerService.getPlayer(gameServerId, pog);
 
-    if (!player || !playerOnGameserver) throw new errors.NotFoundError('Player not found');
+    if (!gamePlayer) throw new errors.NotFoundError('Player not found on gameserver... Make sure the player is online');
 
     const eventDto = await new EventChatMessage().construct({
-      player: playerOnGameserver,
+      player: gamePlayer,
       timestamp: new Date().toISOString(),
       msg: triggered.msg,
     });

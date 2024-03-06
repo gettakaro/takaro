@@ -1389,6 +1389,10 @@ export const EventCreateDTOEventNameEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+<<<<<<< HEAD
+  PlayerCreated: 'player-created',
+=======
+>>>>>>> origin/main
   ModuleCreated: 'module-created',
   ModuleUpdated: 'module-updated',
   ModuleDeleted: 'module-deleted',
@@ -1635,6 +1639,10 @@ export const EventOutputDTOEventNameEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+<<<<<<< HEAD
+  PlayerCreated: 'player-created',
+=======
+>>>>>>> origin/main
   ModuleCreated: 'module-created',
   ModuleUpdated: 'module-updated',
   ModuleDeleted: 'module-deleted',
@@ -1672,6 +1680,10 @@ export type EventOutputDTOMeta =
   | TakaroEventModuleInstalled
   | TakaroEventModuleUninstalled
   | TakaroEventModuleUpdated
+<<<<<<< HEAD
+  | TakaroEventPlayerCreated
+=======
+>>>>>>> origin/main
   | TakaroEventPlayerNewIpDetected
   | TakaroEventRoleAssigned
   | TakaroEventRoleCreated
@@ -1820,6 +1832,10 @@ export const EventSearchInputAllowedFiltersEventNameEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+<<<<<<< HEAD
+  PlayerCreated: 'player-created',
+=======
+>>>>>>> origin/main
   ModuleCreated: 'module-created',
   ModuleUpdated: 'module-updated',
   ModuleDeleted: 'module-deleted',
@@ -2842,6 +2858,10 @@ export const HookCreateDTOEventTypeEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+<<<<<<< HEAD
+  PlayerCreated: 'player-created',
+=======
+>>>>>>> origin/main
   ModuleCreated: 'module-created',
   ModuleUpdated: 'module-updated',
   ModuleDeleted: 'module-deleted',
@@ -2978,6 +2998,10 @@ export const HookOutputDTOEventTypeEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+<<<<<<< HEAD
+  PlayerCreated: 'player-created',
+=======
+>>>>>>> origin/main
   ModuleCreated: 'module-created',
   ModuleUpdated: 'module-updated',
   ModuleDeleted: 'module-deleted',
@@ -3059,6 +3083,10 @@ export const HookSearchInputAllowedFiltersEventTypeEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+<<<<<<< HEAD
+  PlayerCreated: 'player-created',
+=======
+>>>>>>> origin/main
   ModuleCreated: 'module-created',
   ModuleUpdated: 'module-updated',
   ModuleDeleted: 'module-deleted',
@@ -3198,6 +3226,10 @@ export const HookTriggerDTOEventTypeEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+<<<<<<< HEAD
+  PlayerCreated: 'player-created',
+=======
+>>>>>>> origin/main
   ModuleCreated: 'module-created',
   ModuleUpdated: 'module-updated',
   ModuleDeleted: 'module-deleted',
@@ -3267,6 +3299,10 @@ export const HookUpdateDTOEventTypeEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+<<<<<<< HEAD
+  PlayerCreated: 'player-created',
+=======
+>>>>>>> origin/main
   ModuleCreated: 'module-created',
   ModuleUpdated: 'module-updated',
   ModuleDeleted: 'module-deleted',
@@ -6512,6 +6548,22 @@ export interface TakaroEventModuleUpdated {
 /**
  *
  * @export
+<<<<<<< HEAD
+ * @interface TakaroEventPlayerCreated
+ */
+export interface TakaroEventPlayerCreated {
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventPlayerCreated
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+=======
+>>>>>>> origin/main
  * @interface TakaroEventPlayerNewIpDetected
  */
 export interface TakaroEventPlayerNewIpDetected {

@@ -85,4 +85,7 @@ services:
 networks:
   default:
     name: takaro
-    external: true
+    ipam:
+      driver: default
+      config:
+        - subnet: '172.16.238.0/24'

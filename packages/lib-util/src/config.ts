@@ -5,6 +5,7 @@ interface ILoggerConfig extends IBaseConfig {
     level: string;
     json: boolean;
     minimal: boolean;
+    testLoggingLevel: string;
   };
   sentry: {
     dsn: string;
@@ -30,6 +31,12 @@ const configSchema = {
       doc: 'Log minimal data, use for local development.',
       env: 'LOGGING_MINIMAL',
       format: Boolean,
+    },
+    testLoggingLevel: {
+      doc: 'The logging level to use during tests',
+      format: String,
+      default: 'error',
+      env: 'TEST_LOGGING_LEVEL',
     },
   },
   sentry: {

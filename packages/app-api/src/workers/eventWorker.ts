@@ -46,12 +46,10 @@ async function processJob(job: Job<IEventQueueData>) {
   if ('player' in event && event.player) {
     const playerService = new PlayerService(domainId);
     const gameServerService = new GameServerService(domainId);
-    await playerService.sync(event.player, gameServerId);
     const playerOnGameServerService = new PlayerOnGameServerService(domainId);
-    const resolvedPlayer = await playerService.resolveRef(event.player, gameServerId);
-    await gameServerService.getPlayerLocation(gameServerId, resolvedPlayer.id);
-    const pogs = await playerOnGameServerService.findAssociations(event.player.gameId, gameServerId);
-    const pog = pogs[0];
+    const { player, pog } = await playerService.resolveRef(event.player, gameServerId);
+
+    await gameServerService.getPlayerLocation(gameServerId, player.id);
 
     if (type === HookEvents.CHAT_MESSAGE) {
       const chatMessage = event as EventChatMessage;
@@ -62,7 +60,7 @@ async function processJob(job: Job<IEventQueueData>) {
         await new EventCreateDTO().construct({
           eventName: EVENT_TYPES.CHAT_MESSAGE,
           gameserverId: gameServerId,
-          playerId: resolvedPlayer.id,
+          playerId: player.id,
           meta: await new EventChatMessage().construct({
             msg: event.msg,
           }),
@@ -80,7 +78,7 @@ async function processJob(job: Job<IEventQueueData>) {
         await new EventCreateDTO().construct({
           eventName: EVENT_TYPES.PLAYER_CONNECTED,
           gameserverId: gameServerId,
-          playerId: resolvedPlayer.id,
+          playerId: player.id,
         })
       );
     }
@@ -95,7 +93,7 @@ async function processJob(job: Job<IEventQueueData>) {
         await new EventCreateDTO().construct({
           eventName: EVENT_TYPES.PLAYER_DISCONNECTED,
           gameserverId: gameServerId,
-          playerId: resolvedPlayer.id,
+          playerId: player.id,
         })
       );
     }
@@ -106,7 +104,7 @@ async function processJob(job: Job<IEventQueueData>) {
         await new EventCreateDTO().construct({
           eventName: EVENT_TYPES.PLAYER_DEATH,
           gameserverId: gameServerId,
-          playerId: resolvedPlayer.id,
+          playerId: player.id,
           meta: await new EventPlayerDeath().construct(playerDeath),
         })
       );
@@ -118,7 +116,7 @@ async function processJob(job: Job<IEventQueueData>) {
         await new EventCreateDTO().construct({
           eventName: EVENT_TYPES.ENTITY_KILLED,
           gameserverId: gameServerId,
-          playerId: resolvedPlayer.id,
+          playerId: player.id,
           meta: await new EventEntityKilled().construct(entityKilled),
         })
       );

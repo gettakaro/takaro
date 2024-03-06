@@ -25,6 +25,12 @@ export class Rust implements IGameServer {
     this.connectionInfo = config;
   }
 
+  async destroy(): Promise<void> {
+    if (this.client) {
+      this.client.close();
+    }
+  }
+
   private getRequestId(): number {
     return Math.floor(Math.random() * 100000000);
   }

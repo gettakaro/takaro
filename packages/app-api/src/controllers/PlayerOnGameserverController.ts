@@ -13,7 +13,6 @@ import {
   PlayerOnGameserverOutputWithRolesDTO,
 } from '../service/PlayerOnGameserverService.js';
 import { onlyIfEconomyEnabledMiddleware } from '../middlewares/onlyIfEconomyEnabled.js';
-import { PlayerService } from '../service/PlayerService.js';
 
 export class PlayerOnGameserverOutputDTOAPI extends APIOutput<PlayerOnGameserverOutputWithRolesDTO> {
   @Type(() => PlayerOnGameserverOutputWithRolesDTO)
@@ -103,8 +102,8 @@ export class PlayerOnGameServerController {
   @ResponseSchema(PlayerOnGameserverOutputDTOAPI)
   @Get('/gameserver/:gameServerId/player/:playerId')
   async getOne(@Req() req: AuthenticatedRequest, @Params() params: PogParam) {
-    const service = new PlayerService(req.domainId);
-    return apiResponse(await service.getRef(params.playerId, params.gameServerId));
+    const service = new PlayerOnGameServerService(req.domainId);
+    return apiResponse(await service.getPog(params.playerId, params.gameServerId));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_PLAYERS]), onlyIfEconomyEnabledMiddleware)
@@ -116,8 +115,7 @@ export class PlayerOnGameServerController {
     @Body() body: PlayerOnGameServerSetCurrencyInputDTO
   ) {
     const service = new PlayerOnGameServerService(req.domainId);
-    const playerService = new PlayerService(req.domainId);
-    const pog = await playerService.getRef(params.playerId, params.gameServerId);
+    const pog = await service.getPog(params.playerId, params.gameServerId);
     return apiResponse(await service.setCurrency(pog.id, body.currency));
   }
 
@@ -142,8 +140,7 @@ export class PlayerOnGameServerController {
     @Body() body: PlayerOnGameServerSetCurrencyInputDTO
   ) {
     const service = new PlayerOnGameServerService(req.domainId);
-    const playerService = new PlayerService(req.domainId);
-    const pog = await playerService.getRef(params.playerId, params.gameServerId);
+    const pog = await service.getPog(params.playerId, params.gameServerId);
     return apiResponse(await service.addCurrency(pog.id, body.currency));
   }
 
@@ -156,8 +153,7 @@ export class PlayerOnGameServerController {
     @Body() body: PlayerOnGameServerSetCurrencyInputDTO
   ) {
     const service = new PlayerOnGameServerService(req.domainId);
-    const playerService = new PlayerService(req.domainId);
-    const pog = await playerService.getRef(params.playerId, params.gameServerId);
+    const pog = await service.getPog(params.playerId, params.gameServerId);
     return apiResponse(await service.deductCurrency(pog.id, body.currency));
   }
 }

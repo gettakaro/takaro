@@ -19,6 +19,7 @@ interface IIntegrationTestConfig extends IBaseConfig {
   };
   overwriteSnapshots: boolean;
   waitForEventsTimeout: number;
+  testLoggingLevel: string;
   mocha: {
     retries: number;
     waitBetweenRetries: number;

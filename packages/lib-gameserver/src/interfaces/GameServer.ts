@@ -68,6 +68,7 @@ export class BanDTO extends TakaroDTO<BanDTO> {
 export interface IGameServer {
   connectionInfo: unknown;
   getEventEmitter(): TakaroEmitter;
+  destroy(): Promise<void>;
 
   getPlayer(player: IPlayerReferenceDTO): Promise<IGamePlayer | null>;
   getPlayers(): Promise<IGamePlayer[]>;

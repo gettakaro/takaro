@@ -2,7 +2,7 @@ import { ITakaroQuery, QueryBuilder, TakaroModel } from '@takaro/db';
 import { Model, transaction } from 'objection';
 import { errors, traceableClass } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
-import { IItemDTO, IPlayerReferenceDTO } from '@takaro/gameserver';
+import { IItemDTO } from '@takaro/gameserver';
 import { GameServerModel } from './gameserver.js';
 import { PlayerModel, RoleOnPlayerModel } from './player.js';
 import {
@@ -183,37 +183,7 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
     return this.findOne(res.id);
   }
 
-  async findGameAssociations(gameId: string, gameServerId: string) {
-    const { query } = await this.getModel();
-    const foundProfiles = await query.where({ gameId, gameServerId });
-    return foundProfiles;
-  }
-
-  async insertAssociation(gameId: string, playerId: string, gameServerId: string) {
-    const { query } = await this.getModel();
-    const foundProfiles = await query.insert({
-      gameId,
-      playerId,
-      gameServerId,
-      domain: this.domainId,
-    });
-    return foundProfiles;
-  }
-
-  async resolveRef(ref: IPlayerReferenceDTO, gameServerId: string): Promise<PlayerOnGameserverOutputWithRolesDTO> {
-    const { query } = await this.getModel();
-
-    const foundProfiles = await query.where({ gameId: ref.gameId, gameServerId });
-
-    if (foundProfiles.length === 0) {
-      throw new errors.NotFoundError();
-    }
-
-    const player = await this.findOne(foundProfiles[0].id);
-    return player;
-  }
-
-  async getRef(playerId: string, gameServerId: string): Promise<PlayerOnGameserverOutputDTO> {
+  async getPog(playerId: string, gameServerId: string): Promise<PlayerOnGameserverOutputDTO> {
     const { query } = await this.getModel();
 
     const foundProfiles = await query.where({ playerId, gameServerId });
@@ -223,6 +193,44 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
     }
 
     return this.findOne(foundProfiles[0].id);
+  }
+
+  async findGameAssociations(gameId: string, gameServerId: string): Promise<PlayerOnGameServerModel | null> {
+    const { query } = await this.getModel();
+    const foundProfiles = await query.where({ gameId, gameServerId });
+
+    if (foundProfiles.length === 0) {
+      return null;
+    }
+
+    if (foundProfiles.length > 1) {
+      throw new errors.BadRequestError('Player found on multiple game servers');
+    }
+
+    return foundProfiles[0];
+  }
+
+  async insertAssociation(gameId: string, playerId: string, gameServerId: string) {
+    const { query } = await this.getModel();
+
+    try {
+      const foundProfiles = await query.insert({
+        gameId,
+        playerId,
+        gameServerId,
+        domain: this.domainId,
+      });
+      return foundProfiles;
+    } catch (error) {
+      if (error instanceof Error && error.name === 'UniqueViolationError') {
+        // Already exists, just fetch and return
+        // We can do this 'as ...' safely because we know it exists
+        return this.findGameAssociations(gameId, gameServerId) as Promise<PlayerOnGameServerModel>;
+      }
+
+      // Any other error, rethrow
+      throw error;
+    }
   }
 
   async transact(senderId: string, receiverId: string, amount: number) {

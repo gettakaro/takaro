@@ -1,5 +1,5 @@
 import { IntegrationTest, expect } from '@takaro/test';
-import { IModuleTestsSetupData, modulesTestSetup } from './setupData.integration.test.js';
+import { IModuleTestsSetupData, modulesTestSetup } from '@takaro/test';
 import { GameEvents } from '../dto/index.js';
 
 const group = 'gimme suite';
@@ -49,7 +49,7 @@ const tests = [
         }
       );
 
-      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.LOG_LINE);
+      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/gimme',
@@ -57,7 +57,7 @@ const tests = [
       });
 
       expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.msg).to.match(/\[🗨️ Chat\] Server:  hello from test/);
+      expect((await events)[0].data.msg).to.eq('hello from test');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({

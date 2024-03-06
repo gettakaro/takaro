@@ -195,6 +195,8 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
         </>
       );
       break;
+=======
+>>>>>>> origin/main
     case EventOutputDTOEventNameEnum.ModuleCreated:
     case EventOutputDTOEventNameEnum.ModuleUpdated:
     case EventOutputDTOEventNameEnum.ModuleDeleted:

@@ -45,12 +45,12 @@ const simpleFormat = combine(
   myFormat
 );
 
-const jsonFormat = combine(addCtx(), json());
+const jsonFormat = combine(addCtx(), timestamp({ format: 'isoDateTime' }), json());
 
 let level = config.get('logging.level');
 
-if (config.get('mode') === 'test' && process.env.LOGGING_LEVEL === undefined) {
-  level = 'none';
+if (config.get('mode') === 'test') {
+  level = config.get('logging.testLoggingLevel');
 }
 
 const transports = [new winston.transports.Console()];
