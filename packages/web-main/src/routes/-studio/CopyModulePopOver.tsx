@@ -1,6 +1,5 @@
 import { styled, Popover, IconButton } from '@takaro/lib-components';
 import { CopyModuleForm } from 'components/CopyModuleForm';
-import { useNavigate } from '@tanstack/react-router';
 import { AiOutlineCopy as CopyIcon, AiOutlineLink as LinkIcon } from 'react-icons/ai';
 import { useSnackbar } from 'notistack';
 import { FC, useState } from 'react';
@@ -44,8 +43,7 @@ interface CopyModulePopOverProps {
 
 export const CopyModulePopOver: FC<CopyModulePopOverProps> = ({ moduleId }) => {
   const [open, setOpen] = useState<boolean>(false);
-  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-  const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
 
   const handleSuccess = (moduleId: string) => {
     enqueueSnackbar('Module copied', {
@@ -57,14 +55,11 @@ export const CopyModulePopOver: FC<CopyModulePopOverProps> = ({ moduleId }) => {
           <h4>Module copied</h4>
           <p>
             <LinkIcon />
-            <div
-              onClick={() => {
-                navigate({ to: '/studio/$moduleId', params: { moduleId } });
-                closeSnackbar('snack-module-copied');
-              }}
-            >
-              open new module
-            </div>
+
+            {/* NOTE: We cannot rely on router navigation since
+              the router is not available in the context of the snackbar.
+            */}
+            <a href={`/studio/${moduleId}`}>open new module</a>
           </p>
         </CustomContent>
       ),
