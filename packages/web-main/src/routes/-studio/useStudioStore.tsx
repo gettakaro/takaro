@@ -42,7 +42,9 @@ interface File {
   code: string;
   hidden?: boolean;
 }
-type FileWithPath = File & { path: string };
+
+// code is optional here
+type FileWithPath = Omit<File, 'code'> & { path: string; code?: string };
 
 export type StudioProps = {
   moduleId: string;
@@ -127,10 +129,8 @@ const createStudioStore = (initProps: StudioProps) => {
         if (file) return state;
 
         return {
-          ...state,
-          // add file to visible files.
-          visiblefiles: [...state.visibleFiles, f.path],
           activeFile: f.path,
+          visibleFiles: [...state.visibleFiles, f.path],
           fileMap: {
             ...state.fileMap,
             [f.path]: {
@@ -150,7 +150,7 @@ const createStudioStore = (initProps: StudioProps) => {
         const newVisibleFiles = state.visibleFiles.filter((file) => file !== path);
         return {
           visibleFiles: newVisibleFiles,
-          activeFile: newVisibleFiles[newVisibleFiles.length - 1] || '',
+          activeFile: newVisibleFiles[newVisibleFiles.length - 1] ?? undefined,
         };
       });
     },

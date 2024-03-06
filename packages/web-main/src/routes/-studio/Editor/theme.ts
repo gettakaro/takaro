@@ -1,18 +1,12 @@
 import { Monaco } from '@monaco-editor/react';
 import { darkTheme as theme } from '@takaro/lib-components';
 
-/* eventually all used colors should become part of editorTheme but for now playing around with default colors to define what key has impact on what.
-const editorTheme = {
-  highlightBackground: '#202229',
-  selectionBackground: theme.colors.primary
-};
-*/
-
 export function defineTheme(monaco: Monaco) {
   const t: Record<string, string> = {};
   for (const [key, value] of Object.entries(theme.colors)) {
     t[key] = value.substring(1);
   }
+  const darkYellow = 'BFD084';
 
   monaco.editor.defineTheme('takaro', {
     base: 'vs-dark',
@@ -126,7 +120,7 @@ export function defineTheme(monaco: Monaco) {
     },
 
     rules: [
-      { token: 'string', foreground: theme.colors.primary },
+      { token: 'string', foreground: darkYellow },
       {
         token: 'punctuation.definition.string',
         foreground: theme.colors.primary,
@@ -154,56 +148,58 @@ export function defineTheme(monaco: Monaco) {
         token: 'punctuation.definition.template-expression.end',
         foreground: '7AD9FB',
       },
+
+      { token: 'variable', foreground: 'ff0000' },
+      { token: 'variable.other', foreground: 'ffffff' },
+      { token: 'variable.parameter', foreground: 'ffffff' },
+      { token: 'variable.language', foreground: '00ff00' },
+
       { token: 'constant', foreground: '7AD9FB' },
       { token: 'keyword', foreground: theme.colors.primary },
       { token: 'modifier', foreground: theme.colors.primary },
       { token: 'storage', foreground: theme.colors.primary },
       { token: 'punctuation.definition.block', foreground: '86897A' },
       { token: 'punctuation.definition.parameters', foreground: '86897A' },
-      { token: 'meta.brace.round', foreground: '86897A' },
-      { token: 'meta.jsx.children', foreground: 'E5E5E5' },
       { token: 'punctuation.accessor', foreground: '86897A' },
-      { token: 'variable.other', foreground: 'ffffff' },
-      { token: 'variable.parameter', foreground: 'ffffff' },
-      { token: 'meta.embedded', foreground: 'E5E5E5' },
       { token: 'source.groovy.embedded', foreground: 'E5E5E5' },
-      { token: 'meta.template.expression', foreground: 'E5E5E5' },
       { token: 'comment', foreground: '6f6f6f' },
       { token: 'docblock', foreground: '6f6f6f' },
+
       { token: 'meta.function-call', foreground: 'CDF861' },
-      {
-        token: 'entity.name.type.class',
-        foreground: 'ffffff',
-        fontStyle: 'underline',
-      },
-      { token: 'entity.name.type.module', foreground: 'CABEFF' },
+      { token: 'meta.brace.round', foreground: '86897A' },
+      { token: 'meta.jsx.children', foreground: 'E5E5E5' },
+      { token: 'meta.embedded', foreground: 'E5E5E5' },
+      { token: 'meta.template.expression', foreground: 'E5E5E5' },
       { token: 'meta.type.annotation', foreground: theme.colors.primary },
       { token: 'meta.type.annotation entity.name.type', foreground: 'CABEFF' },
+      { token: 'meta.definition.variable', foreground: '00ff00' },
+
+      { token: 'entity.name.type.class', foreground: 'ffffff' },
+      { token: 'entity.name.type.module', foreground: 'CABEFF' },
+      { token: 'entity.name.function', foreground: 'ff0000' },
+      { token: 'entity.name.tag.css', foreground: 'CDF861' },
+      { token: 'entity.name.section', foreground: 'ffffff' },
+
+      { token: 'entity.other.attribute-name', foreground: 'CDF861' },
+      { token: 'entity.other.attribute-name.id', foreground: 'CDF861' },
+      { token: 'entity.other.attribute-name.class', foreground: 'CDF861' },
+      { token: 'entity.other.inherited-class', foreground: theme.colors.primary },
+
       { token: 'variable.object.property', foreground: 'ffffff' },
-      { token: 'entity.name.function', foreground: 'CDF861' },
-      { token: 'meta.definition.variable', foreground: 'ffffff' },
       { token: 'modifier', foreground: theme.colors.primary },
       { token: 'variable.language.this', foreground: theme.colors.primary },
       { token: 'support.type.object', foreground: theme.colors.primary },
       { token: 'support.module', foreground: '7AD9FB', fontStyle: 'italic' },
       { token: 'support.node', foreground: '7AD9FB', fontStyle: 'italic' },
       { token: 'support.type.ts', foreground: '7AD9FB' },
-      {
-        token: 'entity.other.inherited-class',
-        foreground: theme.colors.primary,
-      },
+      { token: 'support.function.css', foreground: theme.colors.primary },
+      { token: 'support.constant.css', foreground: theme.colors.primary },
       { token: 'keyword.operator', foreground: 'b3e8b4' },
       { token: 'storage.type.function.arrow', foreground: 'b3e8b4' },
       { token: 'variable.css', foreground: '7AD9FB' },
       { token: 'source.css', foreground: 'CDF861' },
-      { token: 'entity.other.attribute-name', foreground: 'CDF861' },
-      { token: 'entity.name.tag.css', foreground: 'CDF861' },
-      { token: 'entity.other.attribute-name.id', foreground: 'CDF861' },
-      { token: 'entity.other.attribute-name.class', foreground: 'CDF861' },
       { token: 'source.css meta.selector.css', foreground: 'CDF861' },
       { token: 'source.type.property-name.css', foreground: 'ffffff' },
-      { token: 'support.function.css', foreground: theme.colors.primary },
-      { token: 'support.constant.css', foreground: theme.colors.primary },
       { token: 'keyword.css', foreground: theme.colors.primary },
       { token: 'constant.numeric.css', foreground: theme.colors.primary },
       { token: 'constant.other.color.css', foreground: theme.colors.primary },
@@ -211,9 +207,9 @@ export function defineTheme(monaco: Monaco) {
       { token: 'punctuation.separator', foreground: '86897A' },
       { token: 'punctuation.definition.entity.css', foreground: '86897A' },
       { token: 'punctuation.terminator.rule.css', foreground: 'E5E5E5' },
+      { token: 'punctuation.definition.string.css', foreground: 'CABEFF' },
       { token: 'keyword.other.unit.css', foreground: 'CABEFF' },
       { token: 'string.css', foreground: 'CABEFF' },
-      { token: 'punctuation.definition.string.css', foreground: 'CABEFF' },
       { token: 'support.type.property-name', foreground: 'ffffff' },
       { token: 'string.html', foreground: 'CDF861' },
       { token: 'punctuation.definition.tag', foreground: '86897A' },
@@ -230,7 +226,6 @@ export function defineTheme(monaco: Monaco) {
       { token: 'punctuation.definition.raw.markdown', foreground: 'b3e8b4' },
       { token: 'meta.paragraph.markdown', foreground: 'E5E5E5' },
       { token: 'text.html.markdown meta.attribute', foreground: 'CABEFF' },
-      { token: 'entity.name.section', foreground: 'ffffff' },
       { token: 'string.other', foreground: 'ffffff' },
       { token: 'string.other.link', foreground: 'ffffff' },
       { token: 'punctuation.definition.markdown', foreground: 'b3e8b4' },

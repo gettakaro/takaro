@@ -8,7 +8,7 @@ import { StudioProps } from '../useStudioStore';
 export interface ModuleListProps extends FileExplorerProps {
   prefixedPath: string;
   files: StudioProps['fileMap'];
-  selectFile: (path: string) => void;
+  openFile: (path: string) => void;
   depth?: number;
   visibleFiles: StudioProps['visibleFiles'];
   activeFile: StudioProps['activeFile'];
@@ -17,7 +17,7 @@ export interface ModuleListProps extends FileExplorerProps {
 export const ModuleList: FC<ModuleListProps> = ({
   depth = 0,
   activeFile,
-  selectFile,
+  openFile,
   prefixedPath,
   files,
   autoHiddenFiles,
@@ -41,13 +41,13 @@ export const ModuleList: FC<ModuleListProps> = ({
           depth={depth}
           files={files}
           prefixedPath={dir}
-          selectFile={selectFile}
-          visibleFiles={visibleFiles}
+          openFile={openFile}
+          visibleFiles={modules}
         />
       ))}
 
       {modules.map((file) => {
-        return <File key={file} active={activeFile === file} depth={depth} path={file} openFile={selectFile} />;
+        return <File key={file} active={activeFile === file} depth={depth} path={file} openFile={openFile} />;
       })}
     </>
   );

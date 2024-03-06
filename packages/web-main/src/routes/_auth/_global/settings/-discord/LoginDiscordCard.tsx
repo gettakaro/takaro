@@ -14,10 +14,7 @@ const Body = styled.div`
 export const LoginDiscordCard: FC = () => {
   const { session } = useAuth();
   const { colors } = useTheme();
-
   const hasLinkedDiscord = !!session?.discordId;
-
-  console.log(getConfigVar('apiUrl'));
 
   return (
     <Card>

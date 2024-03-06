@@ -24,6 +24,11 @@ export type EditorProps = {
   readOnly?: boolean;
 };
 
+/* NOTE: Context menu paste is not supported due to security reasons.
+ * Paste is restricted so that contents of the clipboard cannot be viewed by a random website without a user's knowledge
+ * https://github.com/Automattic/simplenote-electron/issues/2994
+ */
+
 export const Editor: FC<EditorProps> = ({ readOnly }) => {
   const { code, updateCode } = useActiveCode();
   const [dirtyFiles, setDirtyFiles] = useState<Set<string>>(new Set());
@@ -255,7 +260,7 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
             },
             showFoldingControls: 'always',
             find: {
-              autoFindInSelection: 'always',
+              autoFindInSelection: 'never', // Search can be done in the selected area.
             },
             suggest: {
               insertMode: 'replace', // Other option is 'insert'.

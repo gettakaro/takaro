@@ -15,18 +15,28 @@ const EventsWrapper = styled.div`
 `;
 
 const Wrapper = styled.div`
-  padding: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[2]} ${theme.spacing[2]} 0`};
+  padding: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[2]} ${theme.spacing[0]} 0`};
 `;
 
 const Content = styled.div`
   display: flex;
-  /* calculates the remaining height of the screen minus the header and the padding */
-  height: calc(calc(100vh - 39px) - 1.2rem);
+  /* calculates the remaining height of the screen minus the header*/
+  height: calc(100vh - ${({ theme }) => theme.spacing[4]});
 `;
 
 const StyledResizable = styled(Resizable)`
   height: 100%;
-  padding: 0 ${({ theme }) => theme.spacing[1]};
+  padding: ${({ theme }) =>
+    `${theme.spacing['0_75']} ${theme.spacing['0_5']} ${theme.spacing['0_5']} ${theme.spacing[1]}`};
+  border-right: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
+`;
+
+const EditorPlaceholder = styled.div`
+  width: 100%;
+  height: calc(calc(100% - 1.2rem));
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 export const StudioInner: FC = () => {
@@ -72,37 +82,43 @@ export const StudioInner: FC = () => {
             topLeft: false,
           }}
           defaultSize={{
-            width: '300px',
+            width: '400px',
             height: '100%',
           }}
-          minWidth="500px"
+          minWidth="300px"
+          maxWidth="500px"
           maxHeight="100%"
           minHeight="0"
         >
-          <CollapseList>
-            <CollapseList.Item title="File explorer">
-              <ErrorBoundary>
-                <FileExplorer />
-              </ErrorBoundary>
-            </CollapseList.Item>
-            {activeFile && (
-              <>
-                <CollapseList.Item title={configTitleMap[activeFile.type]}>
-                  <ErrorBoundary>{getConfigComponent(activeFile.type, activeFile.itemId)}</ErrorBoundary>
-                </CollapseList.Item>
-                <CollapseList.Item title={'Last executions'}>
-                  <ErrorBoundary>
-                    <EventsWrapper>
-                      <EventFeedWidget query={{ filters: { moduleId: [moduleId] } }} />
-                    </EventsWrapper>
-                  </ErrorBoundary>
-                </CollapseList.Item>
-              </>
-            )}
-          </CollapseList>
+          <div style={{ height: '100%', overflowY: 'auto', paddingRight: '10px' }}>
+            <CollapseList>
+              <CollapseList.Item title="File explorer">
+                <ErrorBoundary>
+                  <FileExplorer />
+                </ErrorBoundary>
+              </CollapseList.Item>
+              {activeFile && (
+                <>
+                  <CollapseList.Item title={configTitleMap[activeFile.type]}>
+                    <ErrorBoundary>{getConfigComponent(activeFile.type, activeFile.itemId)}</ErrorBoundary>
+                  </CollapseList.Item>
+                  <CollapseList.Item title={'Last executions'}>
+                    <ErrorBoundary>
+                      <EventsWrapper>
+                        <EventFeedWidget query={{ filters: { moduleId: [moduleId] } }} />
+                      </EventsWrapper>
+                    </ErrorBoundary>
+                  </CollapseList.Item>
+                </>
+              )}
+            </CollapseList>
+          </div>
         </StyledResizable>
-        {/* TODO: provide placeholder */}
-        {activeFile && <Editor readOnly={readOnly} />}
+        {activeFile ? (
+          <Editor readOnly={readOnly} />
+        ) : (
+          <EditorPlaceholder>Hi cutie, select a file to start editing :)</EditorPlaceholder>
+        )}
       </Content>
     </Wrapper>
   );

@@ -18,7 +18,7 @@ export const FileExplorer: FC<FileExplorerProps> = ({ autoHiddenFiles = false })
       files={files}
       prefixedPath="/"
       autoHiddenFiles={autoHiddenFiles}
-      selectFile={openFile}
+      openFile={openFile}
       visibleFiles={visibleFiles}
     />
   );

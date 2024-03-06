@@ -12,7 +12,7 @@ const DirectoryContainer = styled.div`
 
 export interface DirectoryProps extends FileExplorerProps {
   prefixedPath: string;
-  selectFile: (path: string) => void;
+  openFile: (path: string) => void;
   activeFile: StudioProps['activeFile'];
   depth: number;
   files: StudioProps['fileMap'];
@@ -23,14 +23,14 @@ export const Directory: FC<DirectoryProps> = ({
   prefixedPath,
   depth,
   activeFile,
-  selectFile,
+  openFile,
   visibleFiles,
   files,
   autoHiddenFiles,
 }) => {
   const [isOpen, setOpen] = useState(
     // if top level folder or if dir has 0 or 1 file, open it by default.
-    visibleFiles.filter((path) => path.includes(prefixedPath)).length >= 1
+    Object.keys(files).filter((path) => path.includes(prefixedPath)).length >= 1
   );
 
   const toggle = (): void => setOpen((prev) => !prev);
@@ -46,7 +46,7 @@ export const Directory: FC<DirectoryProps> = ({
             depth={depth + 1}
             files={files}
             prefixedPath={prefixedPath}
-            selectFile={selectFile}
+            openFile={openFile}
             visibleFiles={visibleFiles}
           />
         )}

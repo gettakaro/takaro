@@ -1,4 +1,4 @@
-import { FC, MouseEvent, useRef, useState } from 'react';
+import { FC, MouseEvent, useMemo, useRef, useState } from 'react';
 import {
   styled,
   Button as TakaroButton,
@@ -17,7 +17,7 @@ import {
   AiFillFileAdd as AddFileIcon,
 } from 'react-icons/ai';
 import { z } from 'zod';
-
+import * as Sentry from '@sentry/react';
 import { DiJsBadge as JsIcon } from 'react-icons/di';
 
 import { motion, AnimatePresence } from 'framer-motion';
@@ -129,15 +129,20 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
   const readOnly = useStudioContext((s) => s.readOnly);
   const renameFile = useStudioContext((s) => s.renameFile);
 
-  const fileNameValidation = z
-    .string()
-    .min(1, { message: 'The field must not be empty.' })
-    .max(30, { message: 'The field must not be longer than 30 characters.' })
-    .refine((value) => !value.includes('/'), { message: 'The field must not contain slashes.' });
+  const fileNameValidation = useMemo(
+    () =>
+      z
+        .string()
+        .min(1, { message: 'The field must not be empty.' })
+        .max(30, { message: 'The field must not be longer than 30 characters.' })
+        .refine((value) => !value.includes('/'), { message: 'The field must not contain slashes.' }),
+    []
+  );
 
   const [internalFileName, setInternalFileName] = useState(fileName);
   const [isEditing, setEditing] = useState<boolean>(false);
   const [showNewFileField, setShowNewFileField] = useState<boolean>(false);
+  const [loadingNewFile, setLoadingNewFile] = useState<boolean>(false);
 
   const { mutateAsync: updateHook } = useHookUpdate();
   const { mutateAsync: updateCommand } = useCommandUpdate();
@@ -156,8 +161,6 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
     if (openFile) {
       openFile(path);
     }
-
-    // handle directory
     onClick?.(event);
   };
 
@@ -190,7 +193,6 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
     }
     const newPath = getNewPath(path, newFileName);
     renameFile(path, newPath);
-    deleteFile(path);
     setInternalFileName(newFileName);
   };
 
@@ -214,12 +216,13 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
       closeFile(path);
       deleteFile(path);
     } catch (e) {
-      console.log(e);
+      Sentry.captureException(e);
     }
   };
 
   const handleNewFile = async (newFileName: string) => {
     setShowNewFileField(false);
+    setLoadingNewFile(true);
     const type = path.split('/').join('');
     let functionId = '';
     let itemId = '';
@@ -257,18 +260,18 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
         default:
           throw new Error('Invalid type');
       }
-      const newPath = `${type}/${newFileName}`;
-
+      const newPath = `/${type}/${newFileName}`;
       addFile({
-        path: `/${newPath}`,
+        path: newPath,
         type,
         functionId,
-        code: '',
         itemId,
       });
       setInternalFileName(newFileName);
     } catch (e) {
-      console.log(e);
+      Sentry.captureException(e);
+    } finally {
+      setLoadingNewFile(false);
     }
   };
 
@@ -290,7 +293,7 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
     e.stopPropagation();
     setShowNewFileField(true);
     // we need a placeholder here to make sure the input field is rendered
-    updateFile(`${path.slice(0, -1)} /new-file`, '');
+    updateFile(`${path.slice(0, -1)}/new-file`, '');
   };
 
   const getIcon = (): JSX.Element => {
@@ -335,7 +338,7 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
 
   return (
     <>
-      {/* TODO: add context menu for directory */}
+      {/* Context menu folder */}
       {openFile && !readOnly && (
         <ContextMenu targetRef={fileRef}>
           <ContextMenu.Group>
@@ -366,6 +369,7 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
               disabled={readOnly}
               validationSchema={fileNameValidation}
               required
+              loading={loadingNewFile}
               value={internalFileName}
             />
           ) : (

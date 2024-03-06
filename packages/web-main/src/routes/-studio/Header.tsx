@@ -14,6 +14,8 @@ const Container = styled.header`
   align-items: center;
   justify-content: center;
   text-transform: capitalize;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
+  height: ${({ theme }) => theme.spacing[4]};
 `;
 
 export const Header = () => {
