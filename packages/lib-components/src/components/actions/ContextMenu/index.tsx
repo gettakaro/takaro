@@ -30,9 +30,10 @@ import { ContextMenuGroup } from './Group';
 import { styled } from '../../../styled';
 
 const Container = styled.div`
-  border: 1px solid ${({ theme }) => theme.colors.backgroundAlt};
+  border: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
   box-shadow: ${({ theme }) => theme.elevation[2]};
   background-color: ${({ theme }) => theme.colors.background};
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
   &:focus-visible {
     outline: none;
   }
