@@ -7,7 +7,7 @@ export default {
   args: {
     title: 'This is the notification banner title',
     description: 'This is the notification banner description',
-  }
+  },
 } as Meta<NotificationBannerProps>;
 
-export const Default: StoryFn<NotificationBannerProps> = (args) => (<NotificationBanner {...args} />);
+export const Default: StoryFn<NotificationBannerProps> = (args) => <NotificationBanner {...args} />;

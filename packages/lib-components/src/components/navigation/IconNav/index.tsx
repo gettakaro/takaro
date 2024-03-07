@@ -1,6 +1,6 @@
 import { FC, cloneElement } from 'react';
 import { styled } from '../../../styled';
-import { Link } from 'react-router-dom';
+import { Link, LinkProps } from '@tanstack/react-router';
 import { Tooltip } from '../../../components';
 
 const Container = styled.nav`
@@ -26,16 +26,18 @@ const Container = styled.nav`
 `;
 
 export interface IconNavProps {
-  items: { icon: JSX.Element; to: string; title: string }[];
+  items: { icon: JSX.Element; link: LinkProps; title: string }[];
 }
 
 export const IconNav: FC<IconNavProps> = ({ items }) => {
   return (
     <Container>
-      {items.map(({ to, icon, title }, index) => (
+      {items.map(({ link, icon, title }, index) => (
         <Tooltip placement="right" key={`icon-${title}-${index}`}>
           <Tooltip.Trigger asChild>
-            <Link key={`icon-nav-${title}`} to={to}>
+            {/*eslint-disable-next-line @typescript-eslint/ban-ts-comment*/}
+            {/*@ts-ignore reusable link*/}
+            <Link key={`icon-nav-${title}`} {...link}>
               {cloneElement(icon, { size: 24 })}
             </Link>
           </Tooltip.Trigger>

@@ -1,13 +1,11 @@
-import playwright from '@playwright/test';
+import { expect } from '@playwright/test';
 import { test } from '../fixtures/index.js';
 import { GameServerCreateDTOTypeEnum } from '@takaro/apiclient';
 import { integrationConfig } from '@takaro/test';
 import { navigateTo } from '../helpers.js';
 
-const { expect } = playwright;
-
 test('Can set global settings', async ({ page }) => {
-  navigateTo(page, 'global-settings');
+  await navigateTo(page, 'global-settings');
   const serverName = 'My cool server';
   await page.getByLabel('server chat name').fill(serverName);
   await page.getByRole('button', { name: 'Save' }).click();

@@ -14,7 +14,7 @@ describe('adminAuth', () => {
     http.expressInstance.use(
       '/test',
       adminAuthMiddleware,
-      (req: Request, res: Response) => {
+      (_req: Request, res: Response) => {
         res.json({ ok: true });
       },
       ErrorHandler
@@ -27,11 +27,15 @@ describe('adminAuth', () => {
   });
 
   it('Rejects requests with no credentials', async () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const response = await supertest(http.expressInstance).get('/test');
     expect(response.status).to.be.equal(401);
   });
 
   it('Rejects requests with invalid credentials', async () => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const response = await supertest(http.expressInstance).get('/test').set('Authorization', 'Bearer foobar');
     expect(response.status).to.be.equal(403);
   });
@@ -51,6 +55,8 @@ describe('adminAuth', () => {
     const token = await adminClient.getOidcToken();
 
     const response = await supertest(http.expressInstance)
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       .get('/test')
       .set('Authorization', `Bearer ${token.access_token}`);
 

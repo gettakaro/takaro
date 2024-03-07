@@ -26,12 +26,9 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "sort-package-json": "^1.53.1",
-    "storybook": "7.5.3",
-    "typescript": "^4.5.4"
+    "storybook": "7.5.3"
   },
   "peerDependencies": {
-    "@codesandbox/sandpack-client": "^2.0.29",
-    "@codesandbox/sandpack-react": "^2.0.29",
     "@floating-ui/react": "^0.24.0 || ^0.26.0",
     "@monaco-editor/react": "^4.4.6",
     "@rjsf/core": "^5.6.2",
@@ -39,6 +36,7 @@
     "@rjsf/validator-ajv8": "^5.6.2",
     "@tanstack/react-query": "^4.26.1",
     "@tanstack/react-table": "^8.7.9",
+    "@tanstack/react-router": "^1.15.22",
     "@types/luxon": "3.3.0",
     "framer-motion": "^10.16.12",
     "luxon": "3.3.0",
@@ -52,7 +50,6 @@
     "react-hook-form": "^7.50.1",
     "react-icons": "^4.11.0",
     "react-intersection-observer": "^9.5.1",
-    "react-router-dom": "^6.22.0",
     "react-virtualized-auto-sizer": "^1.0.9",
     "react-window": "^1.8.8",
     "simplebar-react": "^3.2.4",

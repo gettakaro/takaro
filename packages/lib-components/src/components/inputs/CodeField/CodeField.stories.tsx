@@ -29,11 +29,7 @@ export const onSubmit: StoryFn<CodeFieldProps> = (args) => {
   const validationSchema = useMemo(
     () =>
       z.object({
-        code: z
-          .string()
-          .min(args.fields)
-          .max(args.fields)
-          .nonempty('Code is a required field.'),
+        code: z.string().min(args.fields).max(args.fields).nonempty('Code is a required field.'),
       }),
     [args.fields]
   );
@@ -83,13 +79,7 @@ export const AutoSubmit: StoryFn<CodeFieldProps> = () => {
   return (
     <>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <CodeField
-          autoSubmit={handleSubmit(onSubmit)}
-          control={control}
-          fields={6}
-          loading={loading}
-          name="code"
-        />
+        <CodeField autoSubmit={handleSubmit(onSubmit)} control={control} fields={6} loading={loading} name="code" />
       </form>
       <div>Result: {result}</div>
     </>

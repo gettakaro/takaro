@@ -1,19 +1,7 @@
-import {
-  FC,
-  useEffect,
-  Children,
-  isValidElement,
-  PropsWithChildren,
-} from 'react';
+import { FC, useEffect, Children, isValidElement, PropsWithChildren } from 'react';
 import { Tooltip } from '../../../../components';
 import { useStepper } from '../context';
-import {
-  Container,
-  StepperBody,
-  StepperHeader,
-  StepperHeaderItem,
-  Dot,
-} from './style';
+import { Container, StepperBody, StepperHeader, StepperHeaderItem, Dot } from './style';
 import { StepStates } from '../stepStates';
 
 /* Dot behavior components */
@@ -23,12 +11,7 @@ const StepperSteps: FC<PropsWithChildren<void>> = ({ children }) => {
 
   useEffect(() => {
     const stepperSteps = Children.toArray(children)
-      .filter(
-        (step) =>
-          isValidElement(step) &&
-          typeof step.type !== 'string' &&
-          step.type.name === 'StepperStep'
-      )
+      .filter((step) => isValidElement(step) && typeof step.type !== 'string' && step.type.name === 'StepperStep')
       .map((step) => {
         if (isValidElement(step)) {
           return step.props;
@@ -43,11 +26,7 @@ const StepperSteps: FC<PropsWithChildren<void>> = ({ children }) => {
       {children &&
         Children.map(
           children,
-          (child) =>
-            steps.length !== 0 &&
-            isValidElement(child) &&
-            child.props.id === steps[currentStep].id &&
-            child
+          (child) => steps.length !== 0 && isValidElement(child) && child.props.id === steps[currentStep].id && child
         )}
     </div>
   );
@@ -86,10 +65,7 @@ export const SlimStepper: FC<PropsWithChildren<SlimStepperProps>> & {
   }
 
   function handleClick(index: number, currentStep: number) {
-    if (
-      getStepState(index, currentStep) === StepStates.COMPLETE &&
-      canStepBack
-    ) {
+    if (getStepState(index, currentStep) === StepStates.COMPLETE && canStepBack) {
       setCurrentStep(index);
     }
   }
@@ -105,8 +81,7 @@ export const SlimStepper: FC<PropsWithChildren<SlimStepperProps>> & {
               onClick={() => handleClick(index, currentStep)}
               stepState={getStepState(index, currentStep)}
             >
-              {StepStates.CURRENT === getStepState(index, currentStep) &&
-              showTooltip !== 'never' ? (
+              {StepStates.CURRENT === getStepState(index, currentStep) && showTooltip !== 'never' ? (
                 <Tooltip placement="bottom">
                   <Tooltip.Trigger asChild>
                     <Dot stepState={getStepState(index, currentStep)} />

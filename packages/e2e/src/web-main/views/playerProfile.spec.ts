@@ -1,20 +1,26 @@
-import playwright from '@playwright/test';
+import { expect } from '@playwright/test';
 import { extendedTest } from '../fixtures/index.js';
-const { expect } = playwright;
 
-extendedTest('can view global player info', async ({ page, extended }) => {
+extendedTest('can view player info', async ({ page, extended }) => {
   const { PlayerProfilePage } = extended;
 
   await PlayerProfilePage.goto();
-
+  await expect(page.getByText('IP History')).toBeVisible();
   await expect(page.getByText(PlayerProfilePage.player.name)).toBeVisible();
-  await expect(page.getByText(PlayerProfilePage.player.id)).toBeVisible();
 });
 
-extendedTest('can view player inventory', async ({ extended }) => {
+extendedTest('Can assign role to player', async ({ page, extended }) => {
   const { PlayerProfilePage } = extended;
+  await PlayerProfilePage.assignRole({ roleName: 'Test role' });
+  await expect(page.getByText('Test role')).toBeVisible();
+});
 
-  await PlayerProfilePage.gotoInventory();
+extendedTest('Can remove role from player', async ({ page, extended }) => {
+  const { PlayerProfilePage } = extended;
+  await PlayerProfilePage.goto();
+  await PlayerProfilePage.assignRole({ roleName: 'Test role' });
+  await PlayerProfilePage.unassignRole({ roleName: 'Test role' });
+  await expect(page.getByText('Test role')).not.toBeVisible();
 });
 
 extendedTest('can view player events', async ({ extended }) => {
@@ -25,8 +31,6 @@ extendedTest('can view player events', async ({ extended }) => {
 
 extendedTest('can view player economy', async ({ page, extended }) => {
   const { PlayerProfilePage } = extended;
-
   await PlayerProfilePage.gotoEconomy();
-
   await expect(page.getByText('Coming soon')).toBeVisible();
 });

@@ -20,10 +20,7 @@ type FormInputs = {
   analytical: boolean;
 };
 
-export const CookieConsentSnack = forwardRef<
-  HTMLDivElement,
-  CustomContentProps
->(({ id }, ref) => {
+export const CookieConsentSnack = forwardRef<HTMLDivElement, CustomContentProps>(({ id }, ref) => {
   const { closeSnackbar } = useSnackbar();
   const [showDetails, setShowDetails] = useState<boolean>(false);
 
@@ -56,8 +53,8 @@ export const CookieConsentSnack = forwardRef<
         Cookies <CookieBite size={24} />
       </h2>
       <p>
-        I know, I know, its annoying. But we need to get through this! We only
-        use cookies to guarantee you the best experience on our website.
+        I know, I know, its annoying. But we need to get through this! We only use cookies to guarantee you the best
+        experience on our website.
       </p>
 
       <ActionContainer
@@ -92,12 +89,7 @@ export const CookieConsentSnack = forwardRef<
         {' '}
         Read the{' '}
         <strong>
-          <a
-            className="underline"
-            href="https://takaro.io/cookie-policy"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
+          <a className="underline" href="https://takaro.io/cookie-policy" rel="noopener noreferrer" target="_blank">
             cookie policy.
           </a>
         </strong>
@@ -117,12 +109,7 @@ interface CookieTypeProps {
   value: boolean;
 }
 
-const CookieType: FC<CookieTypeProps> = ({
-  cookieType,
-  description,
-  control,
-  value,
-}) => {
+const CookieType: FC<CookieTypeProps> = ({ cookieType, description, control, value }) => {
   return (
     <CookieTypeContainer active={value}>
       <div>

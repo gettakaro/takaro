@@ -37,7 +37,7 @@ describe('rateLimit middleware', () => {
       }
 
       @Get('/authenticated')
-      @UseBefore((req: Request, res: Response, next: NextFunction) => {
+      @UseBefore((req: Request, _res: Response, next: NextFunction) => {
         ctx.addData({ user: req.query.user as string });
         next();
       }, await createRateLimitMiddleware({ max: 5, windowSeconds: 5, useInMemory: false }))
@@ -69,12 +69,17 @@ describe('rateLimit middleware', () => {
 
   it('should limit requests', async () => {
     const agent = supertest(http.expressInstance);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     agent.get('/low-limit').set('X-Forwarded-For', '127.0.0.2');
 
     for (let i = 0; i < 4; i++) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       await agent.get('/low-limit').expect(200);
     }
-
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     await agent.get('/low-limit').expect(429);
   });
 
@@ -82,15 +87,21 @@ describe('rateLimit middleware', () => {
     const agent = supertest(http.expressInstance);
 
     for (let i = 0; i < 4; i++) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       await agent.get('/authenticated?user=1').expect(200);
     }
-
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     await agent.get('/authenticated?user=1').expect(429);
 
     for (let i = 0; i < 4; i++) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       await agent.get('/authenticated?user=2').expect(200);
     }
-
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     await agent.get('/authenticated?user=2').expect(429);
   });
 
@@ -98,12 +109,15 @@ describe('rateLimit middleware', () => {
     const agent = supertest(http.expressInstance);
 
     for (let i = 1; i < 5; i++) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       const res = await agent.get('/low-limit').expect(200);
       expect(res.header['x-ratelimit-remaining']).to.equal((5 - i).toString());
       expect(res.header['x-ratelimit-limit']).to.equal('5');
       expect(res.header['x-ratelimit-reset']).to.be.a('string');
     }
-
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     const res = await agent.get('/low-limit').expect(429);
     expect(res.header['x-ratelimit-remaining']).to.equal('0');
     expect(res.header['x-ratelimit-limit']).to.equal('5');

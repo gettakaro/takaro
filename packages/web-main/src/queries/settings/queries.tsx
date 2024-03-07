@@ -5,8 +5,8 @@ import {
   SettingsOutputDTOAPI,
   SettingsOutputDTOKeyEnum,
 } from '@takaro/apiclient';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useApiClient } from 'hooks/useApiClient';
+import { useMutation, useQueryClient, queryOptions } from '@tanstack/react-query';
+import { getApiClient } from 'util/getApiClient';
 import { AxiosError } from 'axios';
 import { mutationWrapper } from 'queries/util';
 
@@ -18,35 +18,34 @@ export const settingKeys = {
   detail: (key: string, gameServerId: string) => [...settingKeys.all, 'detail', key, gameServerId] as const,
 };
 
-export const useGlobalGameServerSettings = (keys?: SettingsOutputDTOKeyEnum[]) => {
-  const apiClient = useApiClient();
-
-  return useQuery<SettingsOutputDTO[], AxiosError<SettingsOutputDTOAPI>>({
+export const globalGameServerSettingsQueryOptions = (keys?: SettingsOutputDTOKeyEnum[]) => {
+  const apiClient = getApiClient();
+  return queryOptions<SettingsOutputDTO[], AxiosError<SettingsOutputDTOAPI>>({
     queryKey: settingKeys.list(),
     queryFn: async () => (await apiClient.settings.settingsControllerGet(keys, undefined)).data.data,
   });
 };
 
-export const useGameServerSettings = (gameServerId: string, keys?: SettingsOutputDTOKeyEnum[]) => {
-  const apiClient = useApiClient();
+export const gameServerSettingsQueryOptions = (gameServerId: string, keys?: SettingsOutputDTOKeyEnum[]) => {
+  const apiClient = getApiClient();
 
-  return useQuery<SettingsOutputDTO[], AxiosError<SettingsOutputDTOAPI>>({
+  return queryOptions<SettingsOutputDTO[], AxiosError<SettingsOutputDTOAPI>>({
     queryKey: settingKeys.listGameServer(gameServerId),
     queryFn: async () => (await apiClient.settings.settingsControllerGet(keys, gameServerId)).data.data,
   });
 };
 
-export const useGlobalGameServerSetting = (key: SettingsOutputDTOKeyEnum) => {
-  const apiClient = useApiClient();
-  return useQuery<SettingsOutputDTO, AxiosError<SettingsOutputDTOAPI>>({
+export const globalGameServerSetingQueryOptions = (key: SettingsOutputDTOKeyEnum) => {
+  const apiClient = getApiClient();
+  return queryOptions<SettingsOutputDTO, AxiosError<SettingsOutputDTOAPI>>({
     queryKey: settingKeys.globalDetail(key),
     queryFn: async () => (await apiClient.settings.settingsControllerGetOne(key, undefined)).data.data,
   });
 };
 
-export const useGameServerSetting = (key: SettingsOutputDTOKeyEnum, gameServerId: string) => {
-  const apiClient = useApiClient();
-  return useQuery<SettingsOutputDTO, AxiosError<SettingsOutputDTOAPI>>({
+export const gameServerSettingQueryOptions = (key: SettingsOutputDTOKeyEnum, gameServerId: string) => {
+  const apiClient = getApiClient();
+  return queryOptions<SettingsOutputDTO, AxiosError<SettingsOutputDTOAPI>>({
     queryKey: settingKeys.detail(key, gameServerId),
     queryFn: async () => (await apiClient.settings.settingsControllerGetOne(key, gameServerId)).data.data,
   });
@@ -57,7 +56,7 @@ interface GameServerDeleteSettingInput {
   gameServerId: string;
 }
 export const useDeleteGameServerSetting = () => {
-  const apiClient = useApiClient();
+  const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
   let deletedSettingKey: string | undefined;
@@ -83,7 +82,7 @@ interface SetGlobalSettingInput {
 }
 
 export const useSetGlobalSetting = () => {
-  const apiClient = useApiClient();
+  const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
   return mutationWrapper<APIOutput, SetGlobalSettingInput>(
@@ -108,7 +107,7 @@ interface SetGameServerSettingInput {
 }
 
 export const useSetGameServerSetting = () => {
-  const apiClient = useApiClient();
+  const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
   let updatedGameServerId: string | undefined;

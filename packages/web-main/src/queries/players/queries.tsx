@@ -1,16 +1,15 @@
-import { useInfiniteQuery, useQuery, keepPreviousData } from '@tanstack/react-query';
-import { useApiClient } from 'hooks/useApiClient';
+import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
+import { getApiClient } from 'util/getApiClient';
 import {
+  APIOutput,
   PlayerOnGameServerSearchInputDTO,
   PlayerOnGameserverOutputArrayDTOAPI,
   PlayerOutputArrayDTOAPI,
   PlayerOutputWithRolesDTO,
   PlayerSearchInputDTO,
 } from '@takaro/apiclient';
-import { hasNextPage } from '../util';
 import { AxiosError } from 'axios';
-import { useMemo } from 'react';
-import { InfiniteScroll as InfiniteScrollComponent } from '@takaro/lib-components';
+import { mutationWrapper, queryParamsToArray } from 'queries/util';
 
 export const playerKeys = {
   all: ['players'] as const,
@@ -20,56 +19,65 @@ export const playerKeys = {
   pogsList: () => [...playerKeys.pogs, 'list'] as const,
 };
 
-export const useInfinitePlayers = ({ page, ...queryParams }: PlayerSearchInputDTO = { page: 0 }) => {
-  const apiClient = useApiClient();
-
-  const queryOpts = useInfiniteQuery<PlayerOutputArrayDTOAPI, AxiosError<PlayerOutputArrayDTOAPI>>({
-    queryKey: [...playerKeys.list(), { ...queryParams }],
-    queryFn: async ({ pageParam }) =>
-      (
-        await apiClient.player.playerControllerSearch({
-          ...queryParams,
-          page: pageParam as number,
-        })
-      ).data,
-    initialPageParam: page,
-    getNextPageParam: (lastPage, pages) => hasNextPage(lastPage.meta, pages.length),
+export const playersOptions = (queryParams: PlayerSearchInputDTO = {}) =>
+  queryOptions<PlayerOutputArrayDTOAPI, AxiosError<PlayerOutputArrayDTOAPI>>({
+    queryKey: [...playerKeys.list(), ...queryParamsToArray(queryParams)],
+    queryFn: async () => (await getApiClient().player.playerControllerSearch(queryParams)).data,
   });
 
-  const InfiniteScroll = useMemo(() => {
-    return <InfiniteScrollComponent {...queryOpts} />;
-  }, [queryOpts]);
-
-  return { ...queryOpts, InfiniteScroll };
-};
-
-export const usePlayers = (queryParams: PlayerSearchInputDTO = {}) => {
-  const apiClient = useApiClient();
-
-  const queryOpts = useQuery<PlayerOutputArrayDTOAPI, AxiosError<PlayerOutputArrayDTOAPI>>({
-    queryKey: [...playerKeys.list(), { queryParams }],
-    queryFn: async () => (await apiClient.player.playerControllerSearch(queryParams)).data,
-    placeholderData: keepPreviousData,
+export const playerQueryOptions = (playerId: string) =>
+  queryOptions<PlayerOutputWithRolesDTO, AxiosError<PlayerOutputWithRolesDTO>>({
+    queryKey: playerKeys.detail(playerId),
+    queryFn: async () => (await getApiClient().player.playerControllerGetOne(playerId)).data.data,
   });
-  return queryOpts;
-};
 
-export const usePlayer = (id: string) => {
-  const apiClient = useApiClient();
-
-  return useQuery<PlayerOutputWithRolesDTO, AxiosError<PlayerOutputWithRolesDTO>>({
-    queryKey: playerKeys.detail(id),
-    queryFn: async () => (await apiClient.player.playerControllerGetOne(id)).data.data,
-  });
-};
-
-export const usePlayerOnGameServers = (queryParams: PlayerOnGameServerSearchInputDTO = {}) => {
-  const apiClient = useApiClient();
-
-  const queryOpts = useQuery<PlayerOnGameserverOutputArrayDTOAPI, AxiosError<PlayerOnGameserverOutputArrayDTOAPI>>({
+export const playerOnGameServersQueryOptions = (queryParams: PlayerOnGameServerSearchInputDTO) =>
+  queryOptions<PlayerOnGameserverOutputArrayDTOAPI, AxiosError<PlayerOnGameserverOutputArrayDTOAPI>>({
     queryKey: [...playerKeys.pogsList(), { queryParams }],
-    queryFn: async () => (await apiClient.playerOnGameserver.playerOnGameServerControllerSearch(queryParams)).data,
-    placeholderData: keepPreviousData,
+    queryFn: async () => (await getApiClient().playerOnGameserver.playerOnGameServerControllerSearch(queryParams)).data,
   });
-  return queryOpts;
+
+interface IPlayerRoleAssign {
+  id: string;
+  roleId: string;
+  gameServerId?: string;
+  expiresAt?: string;
+}
+
+export const usePlayerRoleAssign = () => {
+  const apiClient = getApiClient();
+  const queryClient = useQueryClient();
+  return mutationWrapper<APIOutput, IPlayerRoleAssign>(
+    useMutation<APIOutput, AxiosError<APIOutput>, IPlayerRoleAssign>({
+      mutationFn: async ({ id, roleId, gameServerId, expiresAt }) => {
+        const res = (await apiClient.player.playerControllerAssignRole(id, roleId, { gameServerId, expiresAt })).data;
+        // TODO: _should_ happen in the onSuccess below I guess
+        // But no access to the ID there
+        // At this point, we technically already know the req was successful
+        // because it would have thrown an error otherwise
+        queryClient.invalidateQueries({ queryKey: playerKeys.detail(id) });
+        return res;
+      },
+    }),
+    {}
+  );
+};
+
+export const usePlayerRoleUnassign = ({ playerId }: { playerId: string }) => {
+  const apiClient = getApiClient();
+  const queryClient = useQueryClient();
+  return mutationWrapper<APIOutput, IPlayerRoleAssign>(
+    useMutation<APIOutput, AxiosError<APIOutput>, IPlayerRoleAssign>({
+      mutationFn: async ({ id, roleId, gameServerId }) => {
+        const res = (await apiClient.player.playerControllerRemoveRole(id, roleId, { gameServerId })).data;
+        // TODO: Same cache issue as in useRoleAssign...
+        queryClient.invalidateQueries({ queryKey: playerKeys.detail(id) });
+        return res;
+      },
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: playerKeys.detail(playerId) });
+      },
+    }),
+    {}
+  );
 };

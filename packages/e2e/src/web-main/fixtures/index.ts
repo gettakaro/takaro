@@ -1,4 +1,4 @@
-import playwright from '@playwright/test';
+import { test as pwTest } from '@playwright/test';
 import { MailhogAPI, integrationConfig, EventsAwaiter } from '@takaro/test';
 import {
   AdminClient,
@@ -12,41 +12,14 @@ import {
   RoleOutputDTO,
   UserOutputDTO,
 } from '@takaro/apiclient';
-import humanId from 'human-id/dist/index.js';
-import { ModuleDefinitionsPage, StudioPage, GameServersPage, UsersPage } from '../pages/index.js';
-import { HookEvents } from '@takaro/modules';
+import { humanId } from 'human-id';
+import { ModuleDefinitionsPage, StudioPage, GameServersPage, UsersPage, RolesPage } from '../pages/index.js';
 import { getAdminClient, login } from '../helpers.js';
 import { PlayerProfilePage } from '../pages/PlayerProfile.js';
 
-export enum PERMISSIONS {
-  'ROOT' = 'ROOT',
-  'MANAGE_USERS' = 'MANAGE_USERS',
-  'READ_USERS' = 'READ_USERS',
-  'MANAGE_ROLES' = 'MANAGE_ROLES',
-  'READ_ROLES' = 'READ_ROLES',
-  'MANAGE_GAMESERVERS' = 'MANAGE_GAMESERVERS',
-  'READ_GAMESERVERS' = 'READ_GAMESERVERS',
-  'READ_FUNCTIONS' = 'READ_FUNCTIONS',
-  'MANAGE_FUNCTIONS' = 'MANAGE_FUNCTIONS',
-  'READ_CRONJOBS' = 'READ_CRONJOBS',
-  'MANAGE_CRONJOBS' = 'MANAGE_CRONJOBS',
-  'READ_HOOKS' = 'READ_HOOKS',
-  'MANAGE_HOOKS' = 'MANAGE_HOOKS',
-  'READ_COMMANDS' = 'READ_COMMANDS',
-  'MANAGE_COMMANDS' = 'MANAGE_COMMANDS',
-  'READ_MODULES' = 'READ_MODULES',
-  'MANAGE_MODULES' = 'MANAGE_MODULES',
-  'READ_PLAYERS' = 'READ_PLAYERS',
-  'MANAGE_PLAYERS' = 'MANAGE_PLAYERS',
-  'MANAGE_SETTINGS' = 'MANAGE_SETTINGS',
-  'READ_SETTINGS' = 'READ_SETTINGS',
-  'READ_VARIABLES' = 'READ_VARIABLES',
-  'MANAGE_VARIABLES' = 'MANAGE_VARIABLES',
-  'READ_EVENTS' = 'READ_EVENTS',
-  'MANAGE_EVENTS' = 'MANAGE_EVENTS',
-}
-
-const { test: pwTest } = playwright;
+global.afterEach = () => {};
+globalThis.afterEach = () => {};
+global.before = () => {};
 
 export interface IBaseFixtures {
   takaro: {
@@ -58,6 +31,7 @@ export interface IBaseFixtures {
     usersPage: UsersPage;
     builtinModule: ModuleOutputDTO;
     gameServer: GameServerOutputDTO;
+    rolesPage: RolesPage;
     mailhog: MailhogAPI;
     rootUser: UserOutputDTO;
     testUser: UserOutputDTO & { password: string; role: RoleOutputDTO };
@@ -71,7 +45,7 @@ const main = pwTest.extend<IBaseFixtures>({
       const adminClient = getAdminClient();
       const domain = (
         await adminClient.domain.domainControllerCreate({
-          name: `e2e-${humanId.default()}`.slice(0, 49),
+          name: `e2e-${humanId()}`.slice(0, 49),
         })
       ).data.data;
 
@@ -91,13 +65,13 @@ const main = pwTest.extend<IBaseFixtures>({
         // User creation
         client.user.userControllerCreate({
           name: 'test',
-          email: `e2e-${humanId.default()}@example.com`.slice(0, 49),
+          email: `e2e-${humanId()}@example.com`.slice(0, 49),
           password: 'test',
         }),
 
         // Empty role creation
         client.role.roleControllerCreate({
-          name: 'test',
+          name: 'Test role',
           permissions: [],
         }),
 
@@ -133,6 +107,7 @@ const main = pwTest.extend<IBaseFixtures>({
         GameServersPage: new GameServersPage(page, gameServer.data.data),
         moduleDefinitionsPage: new ModuleDefinitionsPage(page),
         usersPage: new UsersPage(page),
+        rolesPage: new RolesPage(page),
         mailhog: new MailhogAPI({
           baseURL: 'http://127.0.0.1:8025',
         }),
@@ -180,7 +155,7 @@ export const extendedTest = main.extend<ExtendedFixture>({
       // required to add players to the gameserver
       const eventAwaiter = new EventsAwaiter();
       await eventAwaiter.connect(rootClient);
-      const connectedEvents = eventAwaiter.waitForEvents(HookEvents.PLAYER_CONNECTED);
+      const connectedEvents = eventAwaiter.waitForEvents('player-connected');
 
       // this creates a bunch of players
       await rootClient.gameserver.gameServerControllerExecuteCommand(gameServer.id, {
@@ -196,19 +171,19 @@ export const extendedTest = main.extend<ExtendedFixture>({
       });
 
       // create command, hook and cronjob
-      Promise.all([
-        await rootClient.command.commandControllerCreate({
+      await Promise.all([
+        rootClient.command.commandControllerCreate({
           moduleId: mod.data.data.id,
           name: 'my-command',
           trigger: 'test',
         }),
-        await rootClient.hook.hookControllerCreate({
+        rootClient.hook.hookControllerCreate({
           moduleId: mod.data.data.id,
           name: 'my-hook',
           regex: 'test',
           eventType: HookCreateDTOEventTypeEnum.Log,
         }),
-        await rootClient.cronjob.cronJobControllerCreate({
+        rootClient.cronjob.cronJobControllerCreate({
           moduleId: mod.data.data.id,
           name: 'my-cron',
           temporalValue: '* * * * *',
