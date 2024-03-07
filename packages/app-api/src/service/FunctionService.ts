@@ -35,7 +35,8 @@ export class FunctionCreateDTO extends TakaroDTO<FunctionCreateDTO> {
 
 export class FunctionUpdateDTO extends TakaroDTO<FunctionUpdateDTO> {
   @IsString()
-  code!: string;
+  @IsOptional()
+  code: string;
 
   @IsString()
   @IsOptional()
@@ -44,7 +45,7 @@ export class FunctionUpdateDTO extends TakaroDTO<FunctionUpdateDTO> {
 
 const defaultFunctionCode = `import { data, takaro } from '@takaro/helpers';
 async function main() {
-    // TODO: write my function...
+    const {} = data;
 }
 await main();`;
 

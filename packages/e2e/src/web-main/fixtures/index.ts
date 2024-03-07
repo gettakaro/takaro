@@ -170,7 +170,7 @@ export const extendedTest = main.extend<ExtendedFixture>({
         description: 'Module with functions',
       });
 
-      // create command, hook and cronjob
+      // create command, hook and cronjob and function
       await Promise.all([
         rootClient.command.commandControllerCreate({
           moduleId: mod.data.data.id,
@@ -187,6 +187,10 @@ export const extendedTest = main.extend<ExtendedFixture>({
           moduleId: mod.data.data.id,
           name: 'my-cron',
           temporalValue: '* * * * *',
+        }),
+        rootClient.function.functionControllerCreate({
+          name: 'my-function',
+          moduleId: mod.data.data.id,
         }),
       ]);
       takaro.studioPage.mod = mod.data.data;

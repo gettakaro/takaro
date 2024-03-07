@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react';
-import { CommandOutputDTO, CronJobOutputDTO, HookOutputDTO } from '@takaro/apiclient';
+import { CommandOutputDTO, CronJobOutputDTO, FunctionOutputDTO, HookOutputDTO } from '@takaro/apiclient';
 import { moduleQueryOptions } from 'queries/modules';
 import { styled, Skeleton } from '@takaro/lib-components';
 import { ModuleOnboarding } from 'views/ModuleOnboarding';
@@ -68,13 +68,25 @@ function Component() {
   }, []);
 
   const moduleItemPropertiesReducer =
-    (fileType: FileType) => (prev: FileMap, item: HookOutputDTO | CronJobOutputDTO | CommandOutputDTO) => {
-      prev[`/${fileType}/${item.name}`] = {
-        functionId: item.function.id,
-        type: fileType,
-        itemId: item.id,
-        code: item.function.code,
-      };
+    (fileType: FileType) =>
+    (prev: FileMap, item: HookOutputDTO | CronJobOutputDTO | CommandOutputDTO | FunctionOutputDTO) => {
+      const path = `/${fileType}/${item.name}`;
+
+      if (fileType === FileType.Functions) {
+        prev[path] = {
+          functionId: item.id,
+          type: fileType,
+          itemId: item.id,
+          code: (item as FunctionOutputDTO).code,
+        };
+      } else {
+        prev[path] = {
+          functionId: (item as CommandOutputDTO).function.id,
+          type: fileType,
+          itemId: item.id,
+          code: (item as CommandOutputDTO).function.code,
+        };
+      }
       return prev;
     };
 
@@ -90,6 +102,10 @@ function Component() {
       mod.commands
         .sort((a, b) => a.name.localeCompare(b.name))
         .reduce(moduleItemPropertiesReducer(FileType.Commands), nameToId);
+
+      mod.functions
+        .sort((a, b) => a.name!.localeCompare(b.name!))
+        .reduce(moduleItemPropertiesReducer(FileType.Functions), nameToId);
 
       return nameToId;
     }

@@ -33,6 +33,7 @@ import { ErrorMessageMapping } from '@takaro/lib-components/src/errors';
 
 export const moduleKeys = {
   all: ['modules'] as const,
+  detail: (id: string) => [...moduleKeys.all, 'detail', id] as const,
   list: () => [...moduleKeys.all, 'list'] as const,
 
   hooks: {
@@ -55,8 +56,6 @@ export const moduleKeys = {
     list: () => [...moduleKeys.functions.all, 'list'] as const,
     detail: (id: string) => [...moduleKeys.functions.all, 'detail', id] as const,
   },
-
-  detail: (id: string) => [...moduleKeys.all, 'detail', id] as const,
 };
 
 const defaultModuleErrorMessages: Partial<ErrorMessageMapping> = {
@@ -470,6 +469,19 @@ export const useFunctionCreate = () => {
       onSuccess: async (newFn: FunctionOutputDTO) => {
         // invalidate list of functions
         await queryClient.invalidateQueries({ queryKey: moduleKeys.functions.list() });
+
+        if (newFn.moduleId) {
+          queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(newFn.moduleId), (prev) => {
+            if (!prev) {
+              return prev;
+            }
+            return {
+              ...prev,
+              functions: [...prev.functions, newFn],
+            };
+          });
+        }
+
         // add cache entry for new function
         return queryClient.setQueryData<FunctionOutputDTO>(moduleKeys.functions.detail(newFn.id), newFn);
       },
@@ -505,7 +517,7 @@ interface FunctionRemove {
   functionId: string;
 }
 
-export const useFunctionRemove = () => {
+export const useFunctionRemove = ({ moduleId }: { moduleId: string }) => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
@@ -515,6 +527,16 @@ export const useFunctionRemove = () => {
       onSuccess: async (removedFn: IdUuidDTO) => {
         // invalidate list of functions
         await queryClient.invalidateQueries({ queryKey: moduleKeys.functions.list() });
+
+        queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(moduleId), (prev) => {
+          if (!prev) {
+            return prev;
+          }
+          return {
+            ...prev,
+            functions: prev.functions.filter((func) => func.id !== removedFn.id),
+          };
+        });
 
         // remove cache of specific function
         queryClient.removeQueries({ queryKey: moduleKeys.functions.detail(removedFn.id) });
