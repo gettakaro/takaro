@@ -1389,6 +1389,11 @@ export const EventCreateDTOEventNameEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+  ModuleCreated: 'module-created',
+  ModuleUpdated: 'module-updated',
+  ModuleDeleted: 'module-deleted',
+  ModuleInstalled: 'module-installed',
+  ModuleUninstalled: 'module-uninstalled',
   PlayerCreated: 'player-created',
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
@@ -1631,6 +1636,11 @@ export const EventOutputDTOEventNameEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+  ModuleCreated: 'module-created',
+  ModuleUpdated: 'module-updated',
+  ModuleDeleted: 'module-deleted',
+  ModuleInstalled: 'module-installed',
+  ModuleUninstalled: 'module-uninstalled',
   PlayerCreated: 'player-created',
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
@@ -1659,6 +1669,11 @@ export type EventOutputDTOMeta =
   | TakaroEventCurrencyAdded
   | TakaroEventCurrencyDeducted
   | TakaroEventHookExecuted
+  | TakaroEventModuleCreated
+  | TakaroEventModuleDeleted
+  | TakaroEventModuleInstalled
+  | TakaroEventModuleUninstalled
+  | TakaroEventModuleUpdated
   | TakaroEventPlayerCreated
   | TakaroEventPlayerNewIpDetected
   | TakaroEventRoleAssigned
@@ -1808,6 +1823,11 @@ export const EventSearchInputAllowedFiltersEventNameEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+  ModuleCreated: 'module-created',
+  ModuleUpdated: 'module-updated',
+  ModuleDeleted: 'module-deleted',
+  ModuleInstalled: 'module-installed',
+  ModuleUninstalled: 'module-uninstalled',
   PlayerCreated: 'player-created',
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
@@ -2826,6 +2846,11 @@ export const HookCreateDTOEventTypeEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+  ModuleCreated: 'module-created',
+  ModuleUpdated: 'module-updated',
+  ModuleDeleted: 'module-deleted',
+  ModuleInstalled: 'module-installed',
+  ModuleUninstalled: 'module-uninstalled',
   PlayerCreated: 'player-created',
 } as const;
 
@@ -2958,6 +2983,11 @@ export const HookOutputDTOEventTypeEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+  ModuleCreated: 'module-created',
+  ModuleUpdated: 'module-updated',
+  ModuleDeleted: 'module-deleted',
+  ModuleInstalled: 'module-installed',
+  ModuleUninstalled: 'module-uninstalled',
   PlayerCreated: 'player-created',
 } as const;
 
@@ -3035,6 +3065,11 @@ export const HookSearchInputAllowedFiltersEventTypeEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+  ModuleCreated: 'module-created',
+  ModuleUpdated: 'module-updated',
+  ModuleDeleted: 'module-deleted',
+  ModuleInstalled: 'module-installed',
+  ModuleUninstalled: 'module-uninstalled',
   PlayerCreated: 'player-created',
 } as const;
 
@@ -3170,6 +3205,11 @@ export const HookTriggerDTOEventTypeEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+  ModuleCreated: 'module-created',
+  ModuleUpdated: 'module-updated',
+  ModuleDeleted: 'module-deleted',
+  ModuleInstalled: 'module-installed',
+  ModuleUninstalled: 'module-uninstalled',
   PlayerCreated: 'player-created',
 } as const;
 
@@ -3235,6 +3275,11 @@ export const HookUpdateDTOEventTypeEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+  ModuleCreated: 'module-created',
+  ModuleUpdated: 'module-updated',
+  ModuleDeleted: 'module-deleted',
+  ModuleInstalled: 'module-installed',
+  ModuleUninstalled: 'module-uninstalled',
   PlayerCreated: 'player-created',
 } as const;
 
@@ -6399,15 +6444,86 @@ export interface TakaroEventHookExecuted {
 /**
  *
  * @export
- * @interface TakaroEventPlayerCreated
+ * @interface TakaroEventModuleCreated
  */
-export interface TakaroEventPlayerCreated {
+export interface TakaroEventModuleCreated {
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventModuleCreated
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventModuleDeleted
+ */
+export interface TakaroEventModuleDeleted {
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventModuleDeleted
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventModuleInstalled
+ */
+export interface TakaroEventModuleInstalled {
   /**
    *
    * @type {string}
-   * @memberof TakaroEventPlayerCreated
+   * @memberof TakaroEventModuleInstalled
    */
-  gameServerId?: string;
+  userConfig: string;
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventModuleInstalled
+   */
+  systemConfig: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventModuleInstalled
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventModuleUninstalled
+ */
+export interface TakaroEventModuleUninstalled {
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventModuleUninstalled
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventModuleUpdated
+ */
+export interface TakaroEventModuleUpdated {
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventModuleUpdated
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventPlayerCreated
+ */
+export interface TakaroEventPlayerCreated {
   /**
    *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
