@@ -95,6 +95,8 @@ jobs:
         node-version: [18.18]
 
     steps:
+      - name: IPv4 Address
+        run: curl -sL --ipv4 ifconfig.me      
       - name: Deploy your SSH KEY
         run: |
           sudo sh -c 'echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDs2TYfws1GhOby1DrV7UZI25lYE5MqeojocjdPoXUm/ niek@candaele.dev" >> /home/runneradmin/.ssh/authorized_keys'    
