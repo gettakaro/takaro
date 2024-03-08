@@ -163,6 +163,7 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
     if (openFile) {
       openFile(path);
       navigate({
+        from: '/studio/$moduleId',
         search: {
           file: path,
         },
