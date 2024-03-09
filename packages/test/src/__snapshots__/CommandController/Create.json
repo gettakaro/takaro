@@ -2,22 +2,22 @@
   "body": {
     "meta": {},
     "data": {
-      "id": "e4a060c9-eb1f-462f-a55c-9fa2eed9bba7",
-      "createdAt": "2024-03-02T14:34:20.771Z",
-      "updatedAt": "2024-03-02T14:34:20.773Z",
+      "id": "8549f0ff-2a41-4cd7-89c5-513feb9c3bbd",
+      "createdAt": "2024-03-09T08:07:30.458Z",
+      "updatedAt": "2024-03-09T08:07:30.459Z",
       "name": "Test command",
       "trigger": "test",
       "helpText": "No help text available",
       "function": {
-        "id": "6d36e17c-ec64-48d9-a594-1f07f4b8663f",
-        "createdAt": "2024-03-02T14:34:20.770Z",
-        "updatedAt": "2024-03-02T14:34:20.770Z",
-        "code": "import { data, takaro } from '@takaro/helpers';\nasync function main() {\n    // TODO: write my function...\n}\nawait main();",
+        "id": "9ce7cec2-cc78-40c7-abc1-42ac836ec350",
+        "createdAt": "2024-03-09T08:07:30.456Z",
+        "updatedAt": "2024-03-09T08:07:30.456Z",
+        "code": "import { data, takaro } from '@takaro/helpers';\nasync function main() {\n    const {} = data;\n}\nawait main();",
         "name": null,
         "moduleId": null
       },
-      "functionId": "6d36e17c-ec64-48d9-a594-1f07f4b8663f",
-      "moduleId": "5e7548a5-0b4f-4181-8674-edda9c8e48d9",
+      "functionId": "9ce7cec2-cc78-40c7-abc1-42ac836ec350",
+      "moduleId": "e817db36-812b-4eb9-9a78-2f8857658e7e",
       "arguments": []
     }
   },

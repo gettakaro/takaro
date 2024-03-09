@@ -2,22 +2,22 @@
   "body": {
     "meta": {},
     "data": {
-      "id": "e92c4e19-e670-4b02-bff7-6d2af8ed2d34",
-      "createdAt": "2024-03-02T14:34:21.404Z",
-      "updatedAt": "2024-03-02T14:34:21.439Z",
+      "id": "744de529-4dbe-4368-8f07-5f4b0677f305",
+      "createdAt": "2024-03-09T08:07:30.727Z",
+      "updatedAt": "2024-03-09T08:07:30.741Z",
       "name": "Updated command",
       "trigger": "test",
       "helpText": "No help text available",
       "function": {
-        "id": "f6f5302f-b43f-4a48-982d-e6adcfaaf22b",
-        "createdAt": "2024-03-02T14:34:21.402Z",
-        "updatedAt": "2024-03-02T14:34:21.403Z",
-        "code": "import { data, takaro } from '@takaro/helpers';\nasync function main() {\n    // TODO: write my function...\n}\nawait main();",
+        "id": "d92c5038-120c-410f-96ca-628e3ed6ad62",
+        "createdAt": "2024-03-09T08:07:30.726Z",
+        "updatedAt": "2024-03-09T08:07:30.726Z",
+        "code": "import { data, takaro } from '@takaro/helpers';\nasync function main() {\n    const {} = data;\n}\nawait main();",
         "name": null,
         "moduleId": null
       },
-      "functionId": "f6f5302f-b43f-4a48-982d-e6adcfaaf22b",
-      "moduleId": "b1ba378c-2708-4e74-8c25-15291dad50c8"
+      "functionId": "d92c5038-120c-410f-96ca-628e3ed6ad62",
+      "moduleId": "f1be9c23-2560-44e7-bdee-3d8e2ac062cd"
     }
   },
   "status": 200,

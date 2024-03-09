@@ -2,22 +2,22 @@
   "body": {
     "meta": {},
     "data": {
-      "id": "cb6a6cef-8292-4bb2-8c48-d322e4de4190",
-      "createdAt": "2024-03-02T14:34:41.727Z",
-      "updatedAt": "2024-03-02T14:34:41.729Z",
+      "id": "dbe83303-56ed-4646-b169-e37bb151914e",
+      "createdAt": "2024-03-09T08:07:38.753Z",
+      "updatedAt": "2024-03-09T08:07:38.754Z",
       "name": "Test hook",
       "regex": "/this (is) a [regex]/g",
       "function": {
-        "id": "9877fe96-c1cb-404e-aa7d-01a3647d01f5",
-        "createdAt": "2024-03-02T14:34:41.726Z",
-        "updatedAt": "2024-03-02T14:34:41.726Z",
-        "code": "import { data, takaro } from '@takaro/helpers';\nasync function main() {\n    // TODO: write my function...\n}\nawait main();",
+        "id": "bf13a754-ac75-4ad1-b1dd-769a918bd38f",
+        "createdAt": "2024-03-09T08:07:38.752Z",
+        "updatedAt": "2024-03-09T08:07:38.752Z",
+        "code": "import { data, takaro } from '@takaro/helpers';\nasync function main() {\n    const {} = data;\n}\nawait main();",
         "name": null,
         "moduleId": null
       },
       "eventType": "log",
-      "moduleId": "9bd452d8-de38-4131-94b2-0b69ffc79262",
-      "functionId": "9877fe96-c1cb-404e-aa7d-01a3647d01f5"
+      "moduleId": "0dc9f441-3f74-4939-a653-926c3eda0a4d",
+      "functionId": "bf13a754-ac75-4ad1-b1dd-769a918bd38f"
     }
   },
   "status": 200,
