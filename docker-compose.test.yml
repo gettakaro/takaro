@@ -3,6 +3,8 @@ version: '3.1'
 services:
   postgresql:
     image: postgres:15
+    networks:
+      - takaro
     ports:
       - '5432:5432'
     environment:
@@ -14,30 +16,44 @@ services:
     extends:
       file: docker-compose.yml
       service: redis
+    networks:
+      - takaro      
+
   kratos:
     environment:
       - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_kratos:5432/${POSTGRES_DB}
     extends:
       file: docker-compose.yml
       service: kratos
+    networks:
+      - takaro      
+
   kratos-migrate:
     environment:
       - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_kratos:5432/${POSTGRES_DB}
     extends:
       file: docker-compose.yml
       service: kratos-migrate
+    networks:
+      - takaro      
+
   postgresql_kratos:
     image: postgres:15
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
+    networks:
+      - takaro      
+
   hydra:
     environment:
       - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_hydra:5432/${POSTGRES_DB}
     extends:
       file: docker-compose.yml
       service: hydra
+    networks:
+      - takaro
 
   hydra-e2e:
     environment:
@@ -45,20 +61,26 @@ services:
     extends:
       file: docker-compose.yml
       service: hydra-e2e
+    networks:
+      - takaro
 
   hydra-migrate:
     environment:
       - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_hydra:5432/${POSTGRES_DB}
-
     extends:
       file: docker-compose.yml
       service: hydra-migrate
+    networks:
+      - takaro
+
   postgresql_hydra:
     image: postgres:15
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
+    networks:
+      - takaro
 
   takaro:
     container_name: takaro
@@ -84,7 +106,10 @@ services:
       MOCK_GAMESERVER_HOST: 'http://takaro_mock_gameserver:3002'
       MOCHA_RETRIES: ${MOCHA_RETRIES}
       TRACING_ENABLED: "true"
-      TRACING_ENDPOINT: "http://grafana_agent:4317"          
+      TRACING_ENDPOINT: "http://grafana_agent:4317"        
+    networks:
+      - takaro
+
   takaro_api:
     image: ghcr.io/gettakaro/takaro-app-api:${DOCKER_TAG}
     restart: always
@@ -114,6 +139,8 @@ services:
       # api
       - 13000:3000
       - 12001:12001
+    networks:
+      - takaro
 
   takaro_web_main:
     image: ghcr.io/gettakaro/takaro-web-main:${DOCKER_TAG}
@@ -124,6 +151,9 @@ services:
       VITE_ORY_URL: http://127.0.0.1:4433
     ports:
       - 13001:80
+    networks:
+      - takaro
+
   takaro_mock_gameserver:
     image: ghcr.io/gettakaro/takaro-app-mock-gameserver:${DOCKER_TAG}
     restart: always
@@ -135,6 +165,9 @@ services:
       TRACING_ENDPOINT: "http://grafana_agent:4317"          
     ports:
       - 3002:3002
+    networks:
+      - takaro
+
   takaro_connector:
     image: ghcr.io/gettakaro/takaro-app-connector:${DOCKER_TAG}
     restart: always
@@ -150,6 +183,9 @@ services:
       TRACING_ENDPOINT: "http://grafana_agent:4317"          
     ports:
       - 3003:3003
+    networks:
+      - takaro
+
   mailhog:
     image: mailhog/mailhog
     container_name: mailhog
@@ -162,6 +198,9 @@ services:
       - 8025:8025
     logging:
       driver: none
+    networks:
+      - takaro
+
   grafana_agent:
     image: grafana/agent:v0.38.1  
     command: ["run", "--server.http.listen-addr=0.0.0.0:12345", "/etc/agent/config.river"] 
@@ -176,3 +215,9 @@ services:
       GRAFANA_CLOUD_TEMPO_URL: ${GRAFANA_CLOUD_TEMPO_URL}
       GRAFANA_CLOUD_API_USER: ${GRAFANA_CLOUD_API_USER}
       GRAFANA_CLOUD_API_KEY: ${GRAFANA_CLOUD_API_KEY}
+    networks:
+      - takaro
+      
+networks:
+  takaro:
+    driver: bridge
