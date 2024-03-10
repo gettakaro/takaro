@@ -37,7 +37,11 @@ interface IFunctionResult {
   logs: TakaroEventFunctionLog[];
 }
 
-export type FunctionExecutor = (code: string, data: Record<string, unknown>, token: string) => Promise<IFunctionResult>;
+export type FunctionExecutor = (
+  code: string,
+  data: IHookJobData | ICommandJobData | ICronJobData,
+  token: string
+) => Promise<IFunctionResult>;
 
 async function getJobToken(domainId: string) {
   const tokenRes = await takaro.domain.domainControllerGetToken({

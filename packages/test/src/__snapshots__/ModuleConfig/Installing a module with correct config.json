@@ -2,8 +2,24 @@
   "body": {
     "meta": {},
     "data": {
-      "gameserverId": "55de2428-c6ff-4790-9656-64bd9aac3c32",
-      "moduleId": "11827288-62df-44d8-90a0-e4e48efb0bf8",
+      "gameserverId": "a9433419-2c5f-4522-8f6c-2e3255c5929e",
+      "moduleId": "22d3d2ef-6294-487b-9bc5-d9a2b1489be3",
+      "module": {
+        "id": "22d3d2ef-6294-487b-9bc5-d9a2b1489be3",
+        "createdAt": "2024-03-02T14:34:58.719Z",
+        "updatedAt": "2024-03-02T14:34:58.719Z",
+        "name": "Test module",
+        "description": "Test description",
+        "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"foo\":{\"type\":\"string\",\"minLength\":3,\"maxLength\":10}},\"required\":[\"foo\"],\"additionalProperties\":false}",
+        "uiSchema": "{}",
+        "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{},\"required\":[],\"additionalProperties\":false}",
+        "builtin": null,
+        "cronJobs": [],
+        "hooks": [],
+        "commands": [],
+        "functions": [],
+        "permissions": []
+      },
       "userConfig": {
         "foo": "bar"
       },

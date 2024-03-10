@@ -1,13 +1,7 @@
-import { getTakaro, getData, checkPermission, TakaroUserError } from '@takaro/helpers';
-
-function getVariableKey(tpName) {
-  return `tp_${tpName}`;
-}
+import { takaro, data, checkPermission, TakaroUserError } from '@takaro/helpers';
+import { getVariableKey, findTp } from './utils.js';
 
 async function main() {
-  const data = await getData();
-  const takaro = await getTakaro(data);
-
   const { pog, gameServerId, module: mod, arguments: args } = data;
 
   const hasPermission = checkPermission(pog, 'TELEPORTS_USE');
@@ -18,14 +12,7 @@ async function main() {
 
   const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data.value;
 
-  const existingVariable = await takaro.variable.variableControllerSearch({
-    filters: {
-      key: [getVariableKey(args.tp)],
-      gameServerId: [gameServerId],
-      playerId: [pog.playerId],
-      moduleId: [mod.moduleId],
-    },
-  });
+  const existingVariable = await findTp(args.tp);
 
   if (existingVariable.data.data.length > 0) {
     throw new TakaroUserError(`Teleport ${args.tp} already exists, use ${prefix}deletetp ${args.tp} to delete it.`);

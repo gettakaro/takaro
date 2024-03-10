@@ -1,9 +1,6 @@
-import { getTakaro, getData, checkPermission } from '@takaro/helpers';
+import { takaro, data, checkPermission } from '@takaro/helpers';
 
 async function main() {
-  const data = await getData();
-  const takaro = await getTakaro(data);
-
   const { pog, gameServerId } = data;
 
   async function ensureWaypointsModule() {

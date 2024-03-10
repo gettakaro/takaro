@@ -27,8 +27,6 @@ function Component() {
     });
   }
 
-  console.log(isSuccess);
-
   useEffect(() => {
     if (isSuccess) {
       navigate({ to: '/variables' });

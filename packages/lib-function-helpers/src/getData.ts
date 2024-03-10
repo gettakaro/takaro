@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-export async function getData() {
+export function getData() {
   const rawData = process.env.DATA;
 
   if (!rawData) {

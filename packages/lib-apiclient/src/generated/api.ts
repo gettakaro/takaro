@@ -1917,6 +1917,18 @@ export interface FunctionCreateDTO {
    * @memberof FunctionCreateDTO
    */
   code?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof FunctionCreateDTO
+   */
+  name?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof FunctionCreateDTO
+   */
+  moduleId?: string;
 }
 /**
  *
@@ -1949,6 +1961,18 @@ export interface FunctionOutputDTO {
    * @memberof FunctionOutputDTO
    */
   code: string;
+  /**
+   *
+   * @type {string}
+   * @memberof FunctionOutputDTO
+   */
+  name?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof FunctionOutputDTO
+   */
+  moduleId?: string;
   /**
    *
    * @type {string}
@@ -2081,7 +2105,13 @@ export interface FunctionUpdateDTO {
    * @type {string}
    * @memberof FunctionUpdateDTO
    */
-  code: string;
+  code?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof FunctionUpdateDTO
+   */
+  name?: string;
 }
 /**
  *
@@ -4167,6 +4197,12 @@ export interface ModuleInstallationOutputDTO {
   moduleId: string;
   /**
    *
+   * @type {ModuleOutputDTO}
+   * @memberof ModuleInstallationOutputDTO
+   */
+  module: ModuleOutputDTO;
+  /**
+   *
    * @type {object}
    * @memberof ModuleInstallationOutputDTO
    */
@@ -4294,6 +4330,12 @@ export interface ModuleOutputDTO {
    * @memberof ModuleOutputDTO
    */
   commands: Array<CommandOutputDTO>;
+  /**
+   *
+   * @type {Array<FunctionOutputDTO>}
+   * @memberof ModuleOutputDTO
+   */
+  functions: Array<FunctionOutputDTO>;
   /**
    *
    * @type {Array<PermissionOutputDTO>}

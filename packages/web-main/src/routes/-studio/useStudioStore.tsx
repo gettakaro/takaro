@@ -14,18 +14,6 @@ interface FileActions {
   deleteFile: (path: string) => void;
 }
 
-const newfileContent = `
-
-  import { getTakaro } from '@takaro/helpers';
-
-  async function main() {
-    const data = await getData();
-    const takaro = await getTakaro(data);
-
-  }
-  await main()
-`;
-
 export enum FileType {
   Commands = 'commands',
   Hooks = 'hooks',
@@ -137,7 +125,7 @@ const createStudioStore = (initProps: StudioProps) => {
               functionId: f.functionId,
               type: f.type,
               itemId: f.itemId,
-              code: f.code || newfileContent,
+              code: f.code || '',
             },
           },
         };

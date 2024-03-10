@@ -3,13 +3,14 @@ import vm from 'node:vm';
 import { FunctionExecutor } from './executeFunction.js';
 import { config } from '../config.js';
 import { TakaroEventFunctionLog } from '@takaro/modules';
+import { IHookJobData, ICommandJobData, ICronJobData } from '@takaro/queues';
 
 /**
  * !!!!!!!!!!!!!!!!!!!!! node:vm is not secure, don't use this in production !!!!!!!!!!!!!!!!!
  */
 export const executeFunctionLocal: FunctionExecutor = async (
   fn: string,
-  data: Record<string, unknown>,
+  data: IHookJobData | ICommandJobData | ICronJobData,
   token: string
 ) => {
   data.token = token;
@@ -36,17 +37,35 @@ export const executeFunctionLocal: FunctionExecutor = async (
   });
 
   const toEval = new vm.SourceTextModule(fn, { context: contextifiedObject });
+
+  const { takaro, data: hydratedData } = getTakaro(data, patchedConsole);
+
   const monkeyPatchedGetData = () => {
-    return data;
+    return hydratedData;
   };
 
   const monkeyPatchedGetTakaro = function () {
-    return getTakaro(data, patchedConsole);
+    return takaro;
   };
 
-  await toEval.link((specifier: string, referencingModule) => {
-    const syntheticHelpersModule = new vm.SyntheticModule(
-      ['getTakaro', 'checkPermission', 'TakaroUserError', 'getData', 'axios', '_', 'lodash', 'nextCronJobRun'],
+  const userModules = data.module.module.functions
+    .filter((f) => f.name)
+    .map((f) => ({ name: f.name, code: f.code })) as { name: string; code: string }[];
+
+  await toEval.link(async (specifier: string, referencingModule) => {
+    const takaroHelpersModule = new vm.SyntheticModule(
+      [
+        'getTakaro',
+        'checkPermission',
+        'TakaroUserError',
+        'getData',
+        'axios',
+        '_',
+        'lodash',
+        'nextCronJobRun',
+        'takaro',
+        'data',
+      ],
       function () {
         this.setExport('getTakaro', monkeyPatchedGetTakaro);
         this.setExport('checkPermission', checkPermission);
@@ -56,12 +75,24 @@ export const executeFunctionLocal: FunctionExecutor = async (
         this.setExport('_', _);
         this.setExport('lodash', _);
         this.setExport('nextCronJobRun', nextCronJobRun);
+        this.setExport('takaro', takaro);
+        this.setExport('data', hydratedData);
       },
       { context: referencingModule.context }
     );
 
     if (specifier === '@takaro/helpers') {
-      return syntheticHelpersModule;
+      return takaroHelpersModule;
+    } else {
+      const userModuleData = userModules.find((m) => `./${m.name}.js` === specifier);
+      if (userModuleData) {
+        const userModule = new vm.SourceTextModule(userModuleData.code, { context: referencingModule.context });
+        await userModule.link(() => {
+          return takaroHelpersModule;
+        });
+        await userModule.evaluate();
+        return userModule;
+      }
     }
 
     throw new Error(`Unable to resolve dependency: ${specifier}`);

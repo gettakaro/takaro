@@ -17,8 +17,10 @@ export function setExtraLibs(monaco: typeof mon, dataType: FunctionType) {
   const libSource = [
     // eslint-disable-next-line quotes
     "declare module '@takaro/helpers' {",
-    `    declare function getData(): Promise<${DataTypeMap[dataType]}>`, // : Promise<ICommandJobData | IHookJobData | ICronJobData>
-    `    declare function getTakaro(data: ${DataTypeMap[dataType]}): Promise<Client>;`,
+    `    declare const data: ${DataTypeMap[dataType]}`, // : Promise<ICommandJobData | IHookJobData | ICronJobData>
+    '    declare const takaro: Client;',
+    '    declare const checkPermission: (pog: PlayerOnGameserverOutputWithRolesDTO, permission: string) => boolean;',
+    '    declare const TakaroUserError: { new (message: string) => Error };',
     '    export const axios: Axios',
     '}',
   ].join('\n');

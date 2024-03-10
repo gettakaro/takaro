@@ -17,10 +17,10 @@ export class StudioPage extends BasePage {
   async getTreeFile(name: string): Promise<Locator> {
     return this.page.getByRole('button', { name });
   }
-  async getTreeDir(name: 'hooks' | 'commands' | 'cronjobs'): Promise<Locator> {
+  async getTreeDir(name: 'hooks' | 'commands' | 'cronjobs' | 'functions'): Promise<Locator> {
     return this.page.getByRole('button', { name });
   }
-  async createFile(name: string, type: 'hooks' | 'commands' | 'cronjobs'): Promise<void> {
+  async createFile(name: string, type: 'hooks' | 'commands' | 'cronjobs' | 'functions'): Promise<void> {
     const dir = await this.getTreeDir(type);
     await dir.hover();
     await dir.getByRole('button').click();

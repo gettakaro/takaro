@@ -1,6 +1,16 @@
 import { TakaroService } from './Base.js';
 import { GameServerModel, GameServerRepo } from '../db/gameserver.js';
-import { IsBoolean, IsEnum, IsJSON, IsObject, IsOptional, IsString, IsUUID, Length } from 'class-validator';
+import {
+  IsBoolean,
+  IsEnum,
+  IsJSON,
+  IsObject,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Length,
+  ValidateNested,
+} from 'class-validator';
 import {
   IMessageOptsDTO,
   IGameServer,
@@ -27,6 +37,8 @@ import {
 } from '@takaro/modules';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
+import type { ModuleOutputDTO as ModuleOutputDTOType } from './ModuleService.js';
+import { ModuleOutputDTO } from './ModuleService.js';
 import { ModuleService } from './ModuleService.js';
 
 // Curse you ESM... :(
@@ -37,6 +49,7 @@ import { PlayerOnGameServerService, PlayerOnGameServerUpdateDTO } from './Player
 import { ItemCreateDTO, ItemsService } from './ItemsService.js';
 import { randomUUID } from 'crypto';
 import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
+import { Type } from 'class-transformer';
 
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 const ajv = new Ajv({ useDefaults: true, strict: true });
@@ -108,6 +121,10 @@ export class ModuleInstallationOutputDTO extends TakaroModelDTO<ModuleInstallati
 
   @IsUUID()
   moduleId: string;
+
+  @ValidateNested()
+  @Type(() => ModuleOutputDTO)
+  module: ModuleOutputDTOType;
 
   @IsObject()
   userConfig: Record<string, any>;
@@ -225,7 +242,17 @@ export class GameServerService extends TakaroService<
   }
 
   async getModuleInstallation(gameserverId: string, moduleId: string) {
-    return this.repo.getModuleInstallation(gameserverId, moduleId);
+    const moduleService = new ModuleService(this.domainId);
+    const mod = await moduleService.findOne(moduleId);
+    const installation = await this.repo.getModuleInstallation(gameserverId, moduleId);
+
+    return new ModuleInstallationOutputDTO().construct({
+      gameserverId,
+      moduleId,
+      module: mod,
+      userConfig: installation.userConfig,
+      systemConfig: installation.systemConfig,
+    });
   }
 
   async installModule(gameserverId: string, moduleId: string, installDto?: ModuleInstallDTO) {
@@ -286,12 +313,7 @@ export class GameServerService extends TakaroService<
       })
     );
 
-    return new ModuleInstallationOutputDTO().construct({
-      gameserverId,
-      moduleId,
-      userConfig: installation.userConfig,
-      systemConfig: installation.systemConfig,
-    });
+    return this.getModuleInstallation(gameserverId, moduleId);
   }
 
   async uninstallModule(gameserverId: string, moduleId: string) {
@@ -386,6 +408,10 @@ export class GameServerService extends TakaroService<
   }
 
   async sendMessage(gameServerId: string, message: string, opts: IMessageOptsDTO) {
+    // Limit message length to 150 characters
+    // Longer than this and gameservers start acting _weird_
+    message = message.substring(0, 150);
+
     const gameInstance = await this.getGame(gameServerId);
     await gameInstance.sendMessage(message, opts);
 

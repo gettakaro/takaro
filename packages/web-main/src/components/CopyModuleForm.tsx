@@ -16,6 +16,7 @@ import {
 } from 'queries/modules';
 import { moduleNameShape } from 'routes/_auth/_global/-modules/ModuleForm/validationSchema';
 import { useQuery } from '@tanstack/react-query';
+import { useFunctionCreate } from 'queries/modules/queries';
 
 const validationSchema = z.object({
   name: moduleNameShape,
@@ -38,10 +39,21 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ moduleId, onSuccess })
   const { mutateAsync: createHook, isPending: hookCreateLoading, error: hookCreateError } = useHookCreate();
   const { mutateAsync: createCommand, isPending: commandCreateLoading, error: commandCreateError } = useCommandCreate();
   const { mutateAsync: createCronJob, isPending: cronJobCreateLoading, error: cronJobCreateError } = useCronJobCreate();
+  const {
+    mutateAsync: createFunction,
+    isPending: functionCreateLoading,
+    error: functionCreateError,
+  } = useFunctionCreate();
+
   const { mutateAsync: removeModule, isPending: moduleRemoveLoading } = useModuleRemove();
 
   const isLoading =
-    moduleCreateLoading || hookCreateLoading || commandCreateLoading || cronJobCreateLoading || moduleRemoveLoading;
+    moduleCreateLoading ||
+    hookCreateLoading ||
+    commandCreateLoading ||
+    cronJobCreateLoading ||
+    moduleRemoveLoading ||
+    functionCreateLoading;
 
   if (isPending) {
     return;
@@ -73,43 +85,44 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ moduleId, onSuccess })
     try {
       if (createdModule) {
         await Promise.all([
-          Promise.all(
-            mod.hooks.map((hook) =>
-              createHook({
-                moduleId: createdModule.id,
-                name: hook.name,
-                eventType: hook.eventType,
-                regex: hook.regex ?? '',
-                function: hook.function.code,
-              })
-            )
+          ...mod.hooks.map((hook) =>
+            createHook({
+              moduleId: createdModule.id,
+              name: hook.name,
+              eventType: hook.eventType,
+              regex: hook.regex ?? '',
+              function: hook.function.code,
+            })
           ),
-          await Promise.all(
-            mod.commands.map((command) =>
-              createCommand({
-                moduleId: createdModule.id,
-                name: command.name,
-                trigger: command.trigger,
-                helpText: command.helpText,
-                function: command.function.code,
-                arguments: command.arguments.map((arg) => ({
-                  name: arg.name,
-                  type: arg.type,
-                  helpText: arg.helpText,
-                  position: arg.position,
-                })),
-              })
-            )
+          ...mod.commands.map((command) =>
+            createCommand({
+              moduleId: createdModule.id,
+              name: command.name,
+              trigger: command.trigger,
+              helpText: command.helpText,
+              function: command.function.code,
+              arguments: command.arguments.map((arg) => ({
+                name: arg.name,
+                type: arg.type,
+                helpText: arg.helpText,
+                position: arg.position,
+              })),
+            })
           ),
-          await Promise.all(
-            mod.cronJobs.map((cronJob) =>
-              createCronJob({
-                moduleId: createdModule.id,
-                name: cronJob.name,
-                temporalValue: cronJob.temporalValue,
-                function: cronJob.function.code,
-              })
-            )
+          ...mod.functions.map((f) =>
+            createFunction({
+              moduleId: createdModule.id,
+              name: f.name,
+              code: f.code,
+            })
+          ),
+          ...mod.cronJobs.map((cronJob) =>
+            createCronJob({
+              moduleId: createdModule.id,
+              name: cronJob.name,
+              temporalValue: cronJob.temporalValue,
+              function: cronJob.function.code,
+            })
           ),
         ]);
 
@@ -146,6 +159,7 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ moduleId, onSuccess })
       {hookCreateError && <FormError error={hookCreateError} />}
       {commandCreateError && <FormError error={commandCreateError} />}
       {cronJobCreateError && <FormError error={cronJobCreateError} />}
+      {functionCreateError && <FormError error={functionCreateError} />}
     </>
   );
 };

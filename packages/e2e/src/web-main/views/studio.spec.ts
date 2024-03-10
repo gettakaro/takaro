@@ -133,6 +133,13 @@ extendedTest.describe('filetree', () => {
     await expect(page.getByRole('button', { name: fileName })).toHaveCount(0);
   });
 
+  extendedTest('Should Create and Delete function', async ({ page, takaro }) => {
+    const fileName = 'extendedTest-function';
+    await takaro.studioPage.createFile(fileName, 'functions');
+    await takaro.studioPage.deleteFile(fileName);
+    await expect(page.getByRole('button', { name: fileName })).toHaveCount(0);
+  });
+
   extendedTest('Should Create and Delete command', async ({ page, takaro }) => {
     const fileName = 'extendedTest-command';
     await takaro.studioPage.createFile(fileName, 'commands');

@@ -1,9 +1,7 @@
-import { getTakaro, getData, checkPermission, TakaroUserError } from '@takaro/helpers';
+import { takaro, data, checkPermission, TakaroUserError } from '@takaro/helpers';
+import { getVariableKey } from './utils.js';
 
 async function main() {
-  const data = await getData();
-  const takaro = await getTakaro(data);
-
   const { pog, gameServerId, module: mod, arguments: args } = data;
 
   const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data;
@@ -45,7 +43,7 @@ async function main() {
       gameServerId: [gameServerId],
       playerId: [pog.playerId],
       moduleId: [mod.moduleId],
-      key: [`tp_${args.tp}`],
+      key: [getVariableKey(args.tp)],
     },
     sortBy: 'key',
     sortDirection: 'asc',

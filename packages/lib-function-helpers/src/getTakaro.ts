@@ -1,9 +1,9 @@
 import { Client } from '@takaro/apiclient';
 
-export async function getTakaro(
+export function getTakaro(
   data: Record<string, any>,
   logger?: Pick<Console, 'log' | 'debug' | 'error' | 'warn' | 'info'>
-): Promise<Client> {
+): { takaro: Client; data: Record<string, any> } {
   const takaro = new Client({
     url: data.url,
     auth: {
@@ -31,5 +31,5 @@ export async function getTakaro(
     }
   }
 
-  return takaro;
+  return { takaro, data };
 }

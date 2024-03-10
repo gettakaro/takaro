@@ -13,13 +13,15 @@ export const FileExplorer: FC<FileExplorerProps> = ({ autoHiddenFiles = false })
   const files = useStudioContext((s) => s.fileMap);
 
   return (
-    <ModuleList
-      activeFile={activeFile}
-      files={files}
-      prefixedPath="/"
-      autoHiddenFiles={autoHiddenFiles}
-      openFile={openFile}
-      visibleFiles={visibleFiles}
-    />
+    <>
+      <ModuleList
+        activeFile={activeFile}
+        files={files}
+        prefixedPath="/"
+        autoHiddenFiles={autoHiddenFiles}
+        openFile={openFile}
+        visibleFiles={visibleFiles}
+      />
+    </>
   );
 };
