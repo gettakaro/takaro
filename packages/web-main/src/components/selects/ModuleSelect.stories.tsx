@@ -26,6 +26,7 @@ export const Default: StoryFn<ModuleSelectViewProps> = () => {
       hooks: [],
       commands: [],
       cronJobs: [],
+      functions: [],
       uiSchema: '',
       permissions: [],
       systemConfigSchema: '',

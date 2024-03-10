@@ -1,6 +1,6 @@
-import { PermissionOutputDTO } from '@takaro/apiclient';
+import { PermissionOutputDTO, PlayerOnGameserverOutputWithRolesDTO } from '@takaro/apiclient';
 
-export function checkPermission(player: any, permission: string) {
+export function checkPermission(player: PlayerOnGameserverOutputWithRolesDTO, permission: string) {
   const roles = player.roles.map((r: any) => r.role);
   const permissions = roles
     .map((r: any) => r.permissions)

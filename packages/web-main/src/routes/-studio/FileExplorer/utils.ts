@@ -39,7 +39,7 @@ export const fromPropsToModules = ({
     .map((file) => `${prefixedPath}${file}`);
 
   return {
-    directories: depth === 0 ? ['/hooks/', '/cronjobs/', '/commands/'] : [],
+    directories: depth === 0 ? ['/hooks/', '/cronjobs/', '/commands/', '/functions/'] : [],
     modules,
   };
 };

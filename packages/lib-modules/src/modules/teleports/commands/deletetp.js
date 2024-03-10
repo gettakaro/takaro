@@ -1,14 +1,12 @@
-import { getTakaro, getData, TakaroUserError } from '@takaro/helpers';
+import { takaro, data, TakaroUserError } from '@takaro/helpers';
+import { getVariableKey } from './utils.js';
 
 async function main() {
-  const data = await getData();
-  const takaro = await getTakaro(data);
-
   const { pog, gameServerId, arguments: args, module: mod } = data;
 
   const existingVariable = await takaro.variable.variableControllerSearch({
     filters: {
-      key: [`tp_${args.tp}`],
+      key: [getVariableKey(args.tp)],
       gameServerId: [gameServerId],
       playerId: [pog.playerId],
       moduleId: [mod.moduleId],

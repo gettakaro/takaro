@@ -1,8 +1,6 @@
-import { getTakaro, getData, checkPermission, TakaroUserError } from '@takaro/helpers';
+import { takaro, data, checkPermission, TakaroUserError } from '@takaro/helpers';
 
 async function main() {
-  const data = await getData();
-  const takaro = await getTakaro(data);
   const { pog: granter, arguments: args, gameServerId } = data;
 
   // args.receiver has an argument type of "player". Arguments of this type are automatically resolved to the player's id.

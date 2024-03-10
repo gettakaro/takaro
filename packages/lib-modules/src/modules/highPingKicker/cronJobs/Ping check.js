@@ -1,11 +1,8 @@
-import { getTakaro, getData } from '@takaro/helpers';
+import { takaro, data } from '@takaro/helpers';
 
 const VARIABLE_KEY = 'highPingKicker:warnings';
 
 async function main() {
-  const data = await getData();
-  const takaro = await getTakaro(data);
-
   const currentPlayers = await takaro.gameserver.gameServerControllerGetPlayers(data.gameServerId);
 
   await Promise.all(

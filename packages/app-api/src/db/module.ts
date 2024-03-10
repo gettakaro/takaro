@@ -12,6 +12,7 @@ import { CommandOutputDTO } from '../service/CommandService.js';
 import { FunctionOutputDTO } from '../service/FunctionService.js';
 import { getSystemConfigSchema } from '../lib/systemConfig.js';
 import { PERMISSION_TABLE_NAME, PermissionModel } from './role.js';
+import { FunctionModel } from './function.js';
 
 export const MODULE_TABLE_NAME = 'modules';
 export class ModuleModel extends TakaroModel {
@@ -26,6 +27,7 @@ export class ModuleModel extends TakaroModel {
   cronJobs: CronJobOutputDTO[];
   hooks: HookOutputDTO[];
   commands: CommandOutputDTO[];
+  functions: FunctionOutputDTO[];
 
   static get relationMappings() {
     return {
@@ -51,6 +53,14 @@ export class ModuleModel extends TakaroModel {
         join: {
           from: `${MODULE_TABLE_NAME}.id`,
           to: `${COMMANDS_TABLE_NAME}.moduleId`,
+        },
+      },
+      functions: {
+        relation: Model.HasManyRelation,
+        modelClass: FunctionModel,
+        join: {
+          from: `${MODULE_TABLE_NAME}.id`,
+          to: 'functions.moduleId',
         },
       },
 
@@ -89,6 +99,7 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
         'cronJobs',
         'hooks',
         'commands',
+        'functions',
         'cronJobs.function',
         'hooks.function',
         'commands.function',
@@ -126,6 +137,7 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
               })
             )
           ),
+          functions: await Promise.all(item.functions.map((func) => new FunctionOutputDTO().construct(func))),
         };
 
         return new ModuleOutputDTO().construct(parsed);
@@ -149,6 +161,7 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
       .withGraphJoined('hooks.function')
       .withGraphJoined('commands.function')
       .withGraphJoined('commands.arguments')
+      .withGraphJoined('functions')
       .withGraphJoined('permissions')
       .orderBy('commands.name', 'DESC');
 

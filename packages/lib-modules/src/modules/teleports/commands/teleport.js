@@ -1,38 +1,19 @@
-import { getTakaro, getData, checkPermission, TakaroUserError } from '@takaro/helpers';
+import { takaro, data, checkPermission, TakaroUserError } from '@takaro/helpers';
+import { findTp } from './utils.js';
 
 async function main() {
-  const data = await getData();
-  const takaro = await getTakaro(data);
-
   const { pog, gameServerId, arguments: args, module: mod } = data;
 
   if (!checkPermission(pog, 'TELEPORTS_USE')) {
     throw new TakaroUserError('You do not have permission to use teleports.');
   }
 
-  const ownedTeleportRes = await takaro.variable.variableControllerSearch({
-    filters: {
-      key: [`tp_${args.tp}`],
-      gameServerId: [gameServerId],
-      playerId: [pog.playerId],
-      moduleId: [mod.moduleId],
-    },
-    sortBy: 'key',
-    sortDirection: 'asc',
-  });
+  const ownedTeleportRes = await findTp(args.tp, pog.playerId);
 
   let teleports = ownedTeleportRes.data.data;
 
   if (mod.userConfig.allowPublicTeleports) {
-    const maybePublicTeleportRes = await takaro.variable.variableControllerSearch({
-      filters: {
-        key: [`tp_${args.tp}`],
-        gameServerId: [gameServerId],
-        moduleId: [mod.moduleId],
-      },
-      sortBy: 'key',
-      sortDirection: 'asc',
-    });
+    const maybePublicTeleportRes = await findTp(args.tp);
 
     const publicTeleports = maybePublicTeleportRes.data.data.filter((tele) => {
       const teleport = JSON.parse(tele.value);

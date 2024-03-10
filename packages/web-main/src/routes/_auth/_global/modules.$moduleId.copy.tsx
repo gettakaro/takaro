@@ -1,5 +1,5 @@
 import { Dialog } from '@takaro/lib-components';
-import { createFileRoute, redirect } from '@tanstack/react-router';
+import { createFileRoute, redirect, useRouter } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
 import { moduleQueryOptions } from 'queries/modules';
 import { useSnackbar } from 'notistack';
@@ -20,10 +20,12 @@ function Component() {
   const { enqueueSnackbar } = useSnackbar();
   const [openCopyDialog, setOpenCopyDialog] = useState<boolean>(true);
   const mod = Route.useLoaderData();
+  const { history } = useRouter();
 
   const handleOnCopySuccess = async (_moduleId: string) => {
     enqueueSnackbar('Module successfully copied. ', { variant: 'default', type: 'success' });
     setOpenCopyDialog(false);
+    history.go(-1);
   };
 
   return (

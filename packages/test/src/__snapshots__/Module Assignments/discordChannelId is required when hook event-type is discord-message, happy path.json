@@ -2,8 +2,43 @@
   "body": {
     "meta": {},
     "data": {
-      "gameserverId": "704cfc6a-2b92-4b78-b758-ef346f336191",
-      "moduleId": "c81d045f-8711-471b-9496-f6032a5664d3",
+      "gameserverId": "1b949ed1-7c93-47ed-b791-b1c1426f9102",
+      "moduleId": "6a3cd593-268b-4c1f-abcc-4d964db6b3f4",
+      "module": {
+        "id": "6a3cd593-268b-4c1f-abcc-4d964db6b3f4",
+        "createdAt": "2024-03-09T08:07:45.196Z",
+        "updatedAt": "2024-03-09T08:07:45.197Z",
+        "name": "Test module",
+        "description": "No description provided.",
+        "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{},\"required\":[],\"additionalProperties\":false}",
+        "uiSchema": "{}",
+        "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"hooks\":{\"type\":\"object\",\"properties\":{\"Test hook Discord channel ID\":{\"type\":\"string\",\"description\":\"Discord channel ID where Takaro will listen for messages.\"}},\"required\":[\"Test hook Discord channel ID\"],\"default\":{}}},\"required\":[\"hooks\"],\"additionalProperties\":false}",
+        "builtin": null,
+        "cronJobs": [],
+        "hooks": [
+          {
+            "id": "879738ae-abd6-42b5-a056-cccc0cbc1752",
+            "createdAt": "2024-03-09T08:07:45.288Z",
+            "updatedAt": "2024-03-09T08:07:45.290Z",
+            "name": "Test hook",
+            "regex": "/this (is) a [regex]/g",
+            "eventType": "discord-message",
+            "functionId": "49356dc3-3f9a-42c1-8f5b-b903fe492e67",
+            "moduleId": "6a3cd593-268b-4c1f-abcc-4d964db6b3f4",
+            "function": {
+              "id": "49356dc3-3f9a-42c1-8f5b-b903fe492e67",
+              "createdAt": "2024-03-09T08:07:45.284Z",
+              "updatedAt": "2024-03-09T08:07:45.284Z",
+              "code": "import { data, takaro } from '@takaro/helpers';\nasync function main() {\n    const {} = data;\n}\nawait main();",
+              "name": null,
+              "moduleId": null
+            }
+          }
+        ],
+        "commands": [],
+        "functions": [],
+        "permissions": []
+      },
       "userConfig": {},
       "systemConfig": {
         "hooks": {
@@ -19,7 +54,8 @@
     "name": "discordChannelId is required when hook event-type is discord-message, happy path",
     "filteredFields": [
       "moduleId",
-      "gameserverId"
+      "gameserverId",
+      "functionId"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true

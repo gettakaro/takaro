@@ -1,4 +1,4 @@
-import { getTakaro, getData } from '@takaro/helpers';
+import { takaro, data } from '@takaro/helpers';
 
 function getTotalPrize(tickets, ticketPrice, profitMargin) {
   const amount = tickets.reduce((acc, ticket) => {
@@ -62,9 +62,6 @@ async function cleanUp(takaro, tickets) {
 }
 
 async function main() {
-  const data = await getData();
-  const takaro = await getTakaro(data);
-
   const { gameServerId, module: mod } = data;
 
   let tickets = [];

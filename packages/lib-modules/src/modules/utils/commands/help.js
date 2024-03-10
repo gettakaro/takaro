@@ -1,9 +1,6 @@
-import { getTakaro, getData, TakaroUserError } from '@takaro/helpers';
+import { takaro, data, TakaroUserError } from '@takaro/helpers';
 
 async function main() {
-  const data = await getData();
-  const takaro = await getTakaro(data);
-
   const enabledModules = await takaro.gameserver.gameServerControllerGetInstalledModules(data.gameServerId);
 
   const moduleCommands = await Promise.all(

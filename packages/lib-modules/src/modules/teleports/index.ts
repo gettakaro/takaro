@@ -32,6 +32,13 @@ export class Teleports extends BuiltinModule {
       })
     );
 
+    this.functions = [
+      {
+        name: 'utils',
+        function: '',
+      },
+    ];
+
     this.permissions = [
       {
         permission: 'TELEPORTS_CREATE_PUBLIC',

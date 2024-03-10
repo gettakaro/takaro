@@ -24,6 +24,7 @@ import { PermissionCreateDTO, PermissionOutputDTO } from './RoleService.js';
 import _Ajv from 'ajv';
 import { getEmptyConfigSchema } from '../lib/systemConfig.js';
 import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
+import { FunctionCreateDTO, FunctionOutputDTO, FunctionService, FunctionUpdateDTO } from './FunctionService.js';
 
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 const ajv = new Ajv({ useDefaults: true, strict: true, allErrors: true });
@@ -63,6 +64,10 @@ export class ModuleOutputDTO extends TakaroModelDTO<ModuleOutputDTO> {
   @Type(() => CommandOutputDTO)
   @ValidateNested({ each: true })
   commands: CommandOutputDTO[];
+
+  @Type(() => FunctionOutputDTO)
+  @ValidateNested({ each: true })
+  functions: FunctionOutputDTO[];
 
   @ValidateNested({ each: true })
   @Type(() => PermissionOutputDTO)
@@ -239,6 +244,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     const commandService = new CommandService(this.domainId);
     const hookService = new HookService(this.domainId);
     const cronjobService = new CronJobService(this.domainId);
+    const functionService = new FunctionService(this.domainId);
     const existing = await this.repo.find({
       filters: { builtin: [builtin.name] },
     });
@@ -320,7 +326,30 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
       })
     );
 
-    return Promise.all([commands, hooks, cronjobs]);
+    const functions = Promise.all(
+      builtin.functions.map(async (f) => {
+        const existing = await functionService.find({
+          filters: { name: [f.name], moduleId: [mod.id] },
+        });
+
+        if (existing.results.length === 1) {
+          const data = await new FunctionUpdateDTO().construct({
+            name: f.name,
+            code: f.function,
+          });
+          return functionService.update(existing.results[0].id, data);
+        }
+
+        const data = await new FunctionCreateDTO().construct({
+          name: f.name,
+          code: f.function,
+          moduleId: mod.id,
+        });
+        return functionService.create(data);
+      })
+    );
+
+    return Promise.all([commands, hooks, cronjobs, functions]);
   }
 
   async findOneBy(itemType: string, itemId: string | undefined): Promise<ModuleOutputDTO | undefined> {

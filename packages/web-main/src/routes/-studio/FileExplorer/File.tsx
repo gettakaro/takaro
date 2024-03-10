@@ -35,6 +35,7 @@ import {
 } from 'queries/modules';
 import { FileType, useStudioContext } from '../useStudioStore';
 import { useNavigate } from '@tanstack/react-router';
+import { useFunctionCreate, useFunctionRemove, useFunctionUpdate } from 'queries/modules/queries';
 
 const Button = styled.button<{ isActive: boolean; depth: number }>`
   display: flex;
@@ -149,14 +150,17 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
   const { mutateAsync: updateHook } = useHookUpdate();
   const { mutateAsync: updateCommand } = useCommandUpdate();
   const { mutateAsync: updateCronJob } = useCronJobUpdate();
+  const { mutateAsync: updateFunction } = useFunctionUpdate();
 
   const { mutateAsync: removeHook } = useHookRemove({ moduleId });
   const { mutateAsync: removeCommand } = useCommandRemove({ moduleId });
   const { mutateAsync: removeCronJob } = useCronJobRemove({ moduleId });
+  const { mutateAsync: removeFunction } = useFunctionRemove({ moduleId });
 
   const { mutateAsync: createHook } = useHookCreate();
   const { mutateAsync: createCommand } = useCommandCreate();
   const { mutateAsync: createCronJob } = useCronJobCreate();
+  const { mutateAsync: createFunction } = useFunctionCreate();
 
   // item is clicked in explorer
   const handleOnFileClick = (event: React.MouseEvent<HTMLButtonElement>): void => {
@@ -196,6 +200,12 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
           cronJob: { name: newFileName },
         });
         break;
+      case FileType.Functions:
+        await updateFunction({
+          functionId: toRename.functionId,
+          fn: { name: newFileName },
+        });
+        break;
       default:
         throw new Error('Invalid type');
     }
@@ -218,6 +228,9 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
         case FileType.CronJobs:
           await removeCronJob({ cronJobId: toDelete.itemId });
           break;
+        case FileType.Functions:
+          await removeFunction({ functionId: toDelete.functionId });
+          break;
         default:
           throw new Error('Invalid type');
       }
@@ -233,7 +246,8 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
     setLoadingNewFile(true);
     const type = path.split('/').join('');
     let functionId = '';
-    let itemId = '';
+    let itemId: string | undefined = undefined;
+    let code = '';
 
     try {
       switch (type) {
@@ -246,6 +260,7 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
           });
           functionId = hook.function.id;
           itemId = hook.id;
+          code = hook.function.code;
           break;
         case FileType.Commands:
           const command = await createCommand({
@@ -255,6 +270,7 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
           });
           functionId = command.function.id;
           itemId = command.id;
+          code = command.function.code;
           break;
         case FileType.CronJobs:
           const cronjob = await createCronJob({
@@ -264,6 +280,15 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
           });
           functionId = cronjob.function.id;
           itemId = cronjob.id;
+          code = cronjob.function.code;
+          break;
+        case FileType.Functions:
+          const func = await createFunction({
+            moduleId,
+            name: newFileName,
+          });
+          functionId = func.id;
+          code = func.code;
           break;
         default:
           throw new Error('Invalid type');
@@ -273,7 +298,8 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
         path: newPath,
         type,
         functionId,
-        itemId,
+        itemId: itemId ?? '',
+        code,
       });
       setInternalFileName(newFileName);
     } catch (e) {
@@ -334,12 +360,14 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
       );
     } else {
       return (
-        <Tooltip placement="top">
-          <Tooltip.Trigger asChild>
-            <IconButton ariaLabel="New file" onClick={handleOnNewFileClick} icon={<AddFileIcon size={18} />} />
-          </Tooltip.Trigger>
-          <Tooltip.Content>New file</Tooltip.Content>
-        </Tooltip>
+        <>
+          <Tooltip placement="top">
+            <Tooltip.Trigger asChild>
+              <IconButton ariaLabel="New file" onClick={handleOnNewFileClick} icon={<AddFileIcon size={18} />} />
+            </Tooltip.Trigger>
+            <Tooltip.Content>New file</Tooltip.Content>
+          </Tooltip>
+        </>
       );
     }
   };

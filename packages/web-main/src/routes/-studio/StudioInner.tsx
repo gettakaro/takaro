@@ -97,7 +97,7 @@ export const StudioInner: FC = () => {
                   <FileExplorer />
                 </ErrorBoundary>
               </CollapseList.Item>
-              {activeFile && (
+              {activeFile && activeFile.type !== FileType.Functions && (
                 <>
                   <CollapseList.Item title={configTitleMap[activeFile.type]}>
                     <ErrorBoundary>{getConfigComponent(activeFile.type, activeFile.itemId)}</ErrorBoundary>

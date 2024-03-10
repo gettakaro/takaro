@@ -1,22 +1,27 @@
 {
   "body": {
-    "meta": {
-      "serverTime": "2022-09-22T13:03:36.327Z"
-    },
+    "meta": {},
     "data": {
+      "id": "4e2f1e4f-d36d-4702-b8c8-e8d338cdca43",
+      "createdAt": "2024-03-02T14:34:26.134Z",
+      "updatedAt": "2024-03-02T14:34:26.137Z",
       "name": "Test cronJob",
       "temporalValue": "0 * * * *",
-      "moduleId": "8ac4a1e8-efd0-4723-b87e-c544c979a3e0",
-      "createdAt": "2022-09-22T13:03:36.311Z",
-      "updatedAt": "2022-09-22T13:03:36.316Z",
-      "id": "bcd3d3a2-b418-44a2-b2a8-f01024728384",
       "function": {
-        "code": "console.log(\"test\")"
-      }
+        "id": "19e3de2c-7554-4761-ba14-bfc4b1cf43e1",
+        "createdAt": "2024-03-02T14:34:26.132Z",
+        "updatedAt": "2024-03-02T14:34:26.132Z",
+        "code": "console.log(\"test\")",
+        "name": null,
+        "moduleId": null
+      },
+      "moduleId": "4fd72b3b-0f00-4628-af47-dc6f0860989f",
+      "functionId": "19e3de2c-7554-4761-ba14-bfc4b1cf43e1"
     }
   },
   "status": 200,
   "test": {
+    "snapshot": true,
     "group": "CronJobController",
     "name": "Create",
     "filteredFields": [

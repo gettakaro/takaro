@@ -1,13 +1,10 @@
-import { getTakaro, getData, TakaroUserError, checkPermission } from '@takaro/helpers';
+import { takaro, data, TakaroUserError, checkPermission } from '@takaro/helpers';
 
 function getWaypointName(name) {
   return `waypoint ${name}`;
 }
 
 async function main() {
-  const data = await getData();
-  const takaro = await getTakaro(data);
-
   const { pog, gameServerId, trigger } = data;
 
   if (!checkPermission(pog, `WAYPOINTS_USE_${trigger.toUpperCase()}_${gameServerId}`)) {

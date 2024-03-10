@@ -37,7 +37,11 @@ interface IFunctionResult {
   logs: TakaroEventFunctionLog[];
 }
 
-export type FunctionExecutor = (code: string, data: Record<string, unknown>, token: string) => Promise<IFunctionResult>;
+export type FunctionExecutor = (
+  code: string,
+  data: IHookJobData | ICommandJobData | ICronJobData,
+  token: string
+) => Promise<IFunctionResult>;
 
 async function getJobToken(domainId: string) {
   const tokenRes = await takaro.domain.domainControllerGetToken({
@@ -193,6 +197,7 @@ export async function executeFunction(
       }
     }
 
+    if (!result.logs) result.logs = [];
     if (!meta.result.logs) meta.result.logs = [];
     // Ensure all logs are TakaroEventFunctionLog
     meta.result.logs = await Promise.all(
