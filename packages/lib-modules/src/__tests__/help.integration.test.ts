@@ -1,5 +1,5 @@
 import { IntegrationTest, expect } from '@takaro/test';
-import { IModuleTestsSetupData, modulesTestSetup, sorter } from './setupData.integration.test.js';
+import { IModuleTestsSetupData, modulesTestSetup, chatMessageSorter } from '@takaro/test';
 import { GameEvents } from '../dto/gameEvents.js';
 
 const group = 'Help command';
@@ -22,7 +22,7 @@ const tests = [
       });
 
       expect((await events).length).to.be.eq(3);
-      const sortedEvents = (await events).sort(sorter);
+      const sortedEvents = (await events).sort(chatMessageSorter);
 
       expect(sortedEvents[0].data.msg).to.be.eq('Available commands:');
       expect(sortedEvents[1].data.msg).to.be.eq(
@@ -51,7 +51,7 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      const sortedEvents = (await events).sort(sorter);
+      const sortedEvents = (await events).sort(chatMessageSorter);
 
       expect(sortedEvents[0].data.msg).to.be.eq('Available commands:');
       expect(sortedEvents[1].data.msg).to.be.eq('deletetp: Deletes a location.');
@@ -71,7 +71,7 @@ const tests = [
       expect(sortedEvents[9].data.msg).to.be.eq('setwaypoint: Creates a new waypoint.');
       expect(sortedEvents[10].data.msg).to.be.eq('teleport: Teleports to one of your set locations.');
       expect(sortedEvents[11].data.msg).to.be.eq(
-        'teleportwaypoint: Placeholder command, this will not be used directly. The module will install aliases for this command corresponding to the waypoint '
+        'teleportwaypoint: Placeholder command, this will not be used directly. The module will install aliases for this command corresponding to the waypoint names.'
       );
       expect(sortedEvents[12].data.msg).to.be.eq('tplist: Lists all your set locations.');
     },
@@ -95,7 +95,7 @@ const tests = [
       });
 
       expect((await events).length).to.be.eq(1);
-      const sortedEvents = (await events).sort(sorter);
+      const sortedEvents = (await events).sort(chatMessageSorter);
 
       expect(sortedEvents[0].data.msg).to.be.eq('ping: Replies with pong, useful for testing if the connection works.');
     },

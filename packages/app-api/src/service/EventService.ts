@@ -150,8 +150,12 @@ export class EventService extends TakaroService<EventModel, EventOutputDTO, Even
       playerId: created.playerId,
     });
 
-    const socketServer = await getSocketServer();
-    socketServer.emit(this.domainId, 'event', [created]);
+    try {
+      const socketServer = await getSocketServer();
+      socketServer.emit(this.domainId, 'event', [created]);
+    } catch (error) {
+      this.log.warn('Failed to emit event', error);
+    }
 
     return created;
   }

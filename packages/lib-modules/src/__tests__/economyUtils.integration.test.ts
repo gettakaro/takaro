@@ -1,5 +1,5 @@
 import { IntegrationTest, expect } from '@takaro/test';
-import { IModuleTestsSetupData, modulesTestSetup, sorter } from './setupData.integration.test.js';
+import { IModuleTestsSetupData, modulesTestSetup, chatMessageSorter } from '@takaro/test';
 import { GameEvents } from '../dto/index.js';
 
 const group = 'Economy utils suite';
@@ -150,7 +150,7 @@ const tests = [
         playerId: sender.id,
       });
 
-      const messages = (await events).sort(sorter).map((e) => e.data.msg as string);
+      const messages = (await events).sort(chatMessageSorter).map((e) => e.data.msg as string);
       expect((await events).length).to.be.eq(2);
 
       // check if balances are correct
@@ -192,7 +192,7 @@ const tests = [
         playerId: sender.id,
       });
 
-      const messages = (await events).sort(sorter).map((e) => e.data.msg as string);
+      const messages = (await events).sort(chatMessageSorter).map((e) => e.data.msg as string);
       expect((await events).length).to.be.eq(1);
       expect(messages[0]).to.be.eq(
         `Failed to transfer ${transferAmount} test coin to ${receiver.name}. Are you sure you have enough balance?`
@@ -245,7 +245,7 @@ const tests = [
         playerId: sender.id,
       });
 
-      let messages = (await events).sort(sorter).map((e) => e.data.msg as string);
+      let messages = (await events).sort(chatMessageSorter).map((e) => e.data.msg as string);
 
       // check if balances have not changed yet
       expect(
@@ -278,7 +278,7 @@ const tests = [
         playerId: sender.id,
       });
 
-      messages = (await events).sort(sorter).map((e) => e.data.msg as string);
+      messages = (await events).sort(chatMessageSorter).map((e) => e.data.msg as string);
       expect((await events).length).to.be.eq(2);
       expect(
         (
@@ -322,7 +322,7 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      const messages = (await events).sort(sorter).map((e) => e.data.msg as string);
+      const messages = (await events).sort(chatMessageSorter).map((e) => e.data.msg as string);
       expect(messages[0]).to.be.eq('You have no pending transfer.');
     },
   }),
@@ -363,7 +363,7 @@ const tests = [
         playerId: granter.id,
       });
 
-      const messages = (await events).sort(sorter).map((e) => e.data.msg as string);
+      const messages = (await events).sort(chatMessageSorter).map((e) => e.data.msg as string);
       expect(
         (
           await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
@@ -425,7 +425,7 @@ const tests = [
         playerId: revoker.id,
       });
 
-      const messages = (await events).sort(sorter).map((e) => e.data.msg as string);
+      const messages = (await events).sort(chatMessageSorter).map((e) => e.data.msg as string);
       expect(
         (
           await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
@@ -474,7 +474,7 @@ const tests = [
         playerId: sender.id,
       });
 
-      const messages = (await events).sort(sorter).map((e) => e.data.msg as string);
+      const messages = (await events).sort(chatMessageSorter).map((e) => e.data.msg as string);
       expect(messages[0]).to.be.eq('You do not have permission to use grant currency command.');
       expect(messages[1]).to.be.eq('You do not have permission to use revoke currency command.');
     },

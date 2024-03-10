@@ -1394,6 +1394,7 @@ export const EventCreateDTOEventNameEnum = {
   ModuleDeleted: 'module-deleted',
   ModuleInstalled: 'module-installed',
   ModuleUninstalled: 'module-uninstalled',
+  PlayerCreated: 'player-created',
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
@@ -1640,6 +1641,7 @@ export const EventOutputDTOEventNameEnum = {
   ModuleDeleted: 'module-deleted',
   ModuleInstalled: 'module-installed',
   ModuleUninstalled: 'module-uninstalled',
+  PlayerCreated: 'player-created',
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
@@ -1672,6 +1674,7 @@ export type EventOutputDTOMeta =
   | TakaroEventModuleInstalled
   | TakaroEventModuleUninstalled
   | TakaroEventModuleUpdated
+  | TakaroEventPlayerCreated
   | TakaroEventPlayerNewIpDetected
   | TakaroEventRoleAssigned
   | TakaroEventRoleCreated
@@ -1825,6 +1828,7 @@ export const EventSearchInputAllowedFiltersEventNameEnum = {
   ModuleDeleted: 'module-deleted',
   ModuleInstalled: 'module-installed',
   ModuleUninstalled: 'module-uninstalled',
+  PlayerCreated: 'player-created',
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
@@ -2877,6 +2881,7 @@ export const HookCreateDTOEventTypeEnum = {
   ModuleDeleted: 'module-deleted',
   ModuleInstalled: 'module-installed',
   ModuleUninstalled: 'module-uninstalled',
+  PlayerCreated: 'player-created',
 } as const;
 
 export type HookCreateDTOEventTypeEnum = (typeof HookCreateDTOEventTypeEnum)[keyof typeof HookCreateDTOEventTypeEnum];
@@ -3013,6 +3018,7 @@ export const HookOutputDTOEventTypeEnum = {
   ModuleDeleted: 'module-deleted',
   ModuleInstalled: 'module-installed',
   ModuleUninstalled: 'module-uninstalled',
+  PlayerCreated: 'player-created',
 } as const;
 
 export type HookOutputDTOEventTypeEnum = (typeof HookOutputDTOEventTypeEnum)[keyof typeof HookOutputDTOEventTypeEnum];
@@ -3094,6 +3100,7 @@ export const HookSearchInputAllowedFiltersEventTypeEnum = {
   ModuleDeleted: 'module-deleted',
   ModuleInstalled: 'module-installed',
   ModuleUninstalled: 'module-uninstalled',
+  PlayerCreated: 'player-created',
 } as const;
 
 export type HookSearchInputAllowedFiltersEventTypeEnum =
@@ -3233,6 +3240,7 @@ export const HookTriggerDTOEventTypeEnum = {
   ModuleDeleted: 'module-deleted',
   ModuleInstalled: 'module-installed',
   ModuleUninstalled: 'module-uninstalled',
+  PlayerCreated: 'player-created',
 } as const;
 
 export type HookTriggerDTOEventTypeEnum =
@@ -3302,6 +3310,7 @@ export const HookUpdateDTOEventTypeEnum = {
   ModuleDeleted: 'module-deleted',
   ModuleInstalled: 'module-installed',
   ModuleUninstalled: 'module-uninstalled',
+  PlayerCreated: 'player-created',
 } as const;
 
 export type HookUpdateDTOEventTypeEnum = (typeof HookUpdateDTOEventTypeEnum)[keyof typeof HookUpdateDTOEventTypeEnum];
@@ -6548,6 +6557,19 @@ export interface TakaroEventModuleUpdated {
    *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
    * @memberof TakaroEventModuleUpdated
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventPlayerCreated
+ */
+export interface TakaroEventPlayerCreated {
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventPlayerCreated
    */
   timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }

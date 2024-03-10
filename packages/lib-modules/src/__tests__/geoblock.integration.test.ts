@@ -1,5 +1,5 @@
 import { IntegrationTest, expect } from '@takaro/test';
-import { IModuleTestsSetupData, modulesTestSetup } from './setupData.integration.test.js';
+import { IModuleTestsSetupData, modulesTestSetup } from '@takaro/test';
 import { HookEvents } from '../dto/index.js';
 import { TakaroEventPlayerNewIpDetected } from '@takaro/modules';
 import { faker } from '@faker-js/faker';

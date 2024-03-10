@@ -114,59 +114,50 @@ async function process(job: Job<ICSMMImportData>) {
   const roles = await roleService.find({});
 
   // Sync the players
-  for (const player of data.players) {
-    if (!player.crossId) {
-      log.warn(`Player ${player.name} has no crossId, skipping player resolving`);
+  for (const csmmPlayer of data.players) {
+    if (!csmmPlayer.crossId) {
+      log.warn(`Player ${csmmPlayer.name} has no crossId, skipping player resolving`);
       continue;
     }
     const createData = await new IGamePlayer().construct({
-      name: player.name,
-      gameId: player.crossId.replace('EOS_', ''),
-      epicOnlineServicesId: player.crossId.replace('EOS_', ''),
+      name: csmmPlayer.name,
+      gameId: csmmPlayer.crossId.replace('EOS_', ''),
+      epicOnlineServicesId: csmmPlayer.crossId.replace('EOS_', ''),
     });
 
-    if (player.steamId.startsWith('XBL_')) {
-      createData.xboxLiveId = player.steamId.replace('XBL_', '');
+    if (csmmPlayer.steamId.startsWith('XBL_')) {
+      createData.xboxLiveId = csmmPlayer.steamId.replace('XBL_', '');
     } else {
-      createData.steamId = player.steamId;
+      createData.steamId = csmmPlayer.steamId;
     }
 
-    await playerService.sync(await new IGamePlayer().construct(createData), server.id);
-  }
+    const { player, pog } = await playerService.resolveRef(await new IGamePlayer().construct(createData), server.id);
 
-  // Sync the player data
-  for (const player of data.players) {
-    if (!player.crossId) {
-      log.warn(`Player ${player.name} has no crossId, skipping role assignment`);
-      continue;
-    }
-    const pog = await pogService.findAssociations(player.crossId.replace('EOS_', ''), server.id);
-
-    if (!pog.length) {
-      log.warn(`Player ${player.name} has no player on game server association, skipping role assignment`);
+    if (!csmmPlayer.crossId) {
+      log.warn(`Player ${csmmPlayer.name} has no crossId, skipping role assignment`);
       continue;
     }
 
-    const CSMMRole = data.roles.find((r) => r.id === player.role);
+    const CSMMRole = data.roles.find((r) => r.id === csmmPlayer.role);
     if (!CSMMRole) {
-      log.warn(`Player ${player.name} has no role with id ${player.role}, skipping role assignment`);
+      log.warn(`Player ${csmmPlayer.name} has no role with id ${csmmPlayer.role}, skipping role assignment`);
       continue;
     }
 
     const takaroRole = roles.results.find((r) => r.name === CSMMRole.name);
 
     if (!takaroRole) {
-      log.warn(`Player ${player.name} has no role with name ${CSMMRole.name}, skipping role assignment`);
+      log.warn(`Player ${csmmPlayer.name} has no role with name ${CSMMRole.name}, skipping role assignment`);
       continue;
     }
 
     if (!takaroRole.system) {
-      log.info(`Assigning role ${takaroRole.name} to player ${player.name}`);
-      await playerService.assignRole(takaroRole.id, pog[0].playerId, server.id);
+      log.info(`Assigning role ${takaroRole.name} to player ${csmmPlayer.name}`);
+      await playerService.assignRole(takaroRole.id, player.id, server.id);
     }
 
-    if (player.currency) {
-      await pogService.setCurrency(pog[0].id, Math.floor(player.currency));
+    if (csmmPlayer.currency) {
+      await pogService.setCurrency(pog.id, Math.floor(csmmPlayer.currency));
     }
   }
 
