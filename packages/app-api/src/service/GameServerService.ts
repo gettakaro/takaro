@@ -34,6 +34,7 @@ import {
   EventChatMessage,
   TakaroEventModuleInstalled,
   TakaroEventModuleUninstalled,
+  ChatChannel,
 } from '@takaro/modules';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
@@ -421,6 +422,7 @@ export class GameServerService extends TakaroService<
     const eventService = new EventService(this.domainId);
     const meta = await new EventChatMessage().construct({
       msg: message,
+      channel: ChatChannel.GLOBAL,
       timestamp: new Date().toISOString(),
     });
 

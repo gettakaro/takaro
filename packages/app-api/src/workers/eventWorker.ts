@@ -61,9 +61,7 @@ async function processJob(job: Job<IEventQueueData>) {
           eventName: EVENT_TYPES.CHAT_MESSAGE,
           gameserverId: gameServerId,
           playerId: player.id,
-          meta: await new EventChatMessage().construct({
-            msg: event.msg,
-          }),
+          meta: chatMessage,
         })
       );
     }

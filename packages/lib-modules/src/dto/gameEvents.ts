@@ -86,11 +86,20 @@ export class EventPlayerDisconnected extends BaseGameEvent<EventPlayerDisconnect
   player: IGamePlayer;
 }
 
+export enum ChatChannel {
+  GLOBAL = 'global',
+  TEAM = 'team',
+  WHISPER = 'whisper',
+}
+
 export class EventChatMessage extends BaseGameEvent<EventChatMessage> {
   type = GameEvents.CHAT_MESSAGE;
   @ValidateNested()
   @Type(() => IGamePlayer)
   player?: IGamePlayer;
+
+  @IsEnum(Object.values(ChatChannel))
+  channel: ChatChannel;
 
   declare msg: string;
 }

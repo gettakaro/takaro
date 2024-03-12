@@ -7,7 +7,7 @@ import { IMessageOptsDTO } from '@takaro/gameserver';
 import { IParsedCommand, queueService } from '@takaro/queues';
 import { Type } from 'class-transformer';
 import { TakaroDTO, errors, TakaroModelDTO, traceableClass } from '@takaro/util';
-import { ICommand, ICommandArgument, EventChatMessage } from '@takaro/modules';
+import { ICommand, ICommandArgument, EventChatMessage, ChatChannel } from '@takaro/modules';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { SettingsService, SETTINGS_KEYS } from './SettingsService.js';
@@ -355,6 +355,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
     const eventDto = await new EventChatMessage().construct({
       player: gamePlayer,
       timestamp: new Date().toISOString(),
+      channel: ChatChannel.GLOBAL,
       msg: triggered.msg,
     });
 

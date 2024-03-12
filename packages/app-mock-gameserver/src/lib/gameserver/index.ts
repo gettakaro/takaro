@@ -12,6 +12,7 @@ import {
   EventPlayerDisconnected,
   IPosition,
   HookEvents,
+  ChatChannel,
 } from '@takaro/modules';
 import { faker } from '@faker-js/faker';
 import { config } from '../../config.js';
@@ -164,6 +165,7 @@ class MockGameserver implements IMockGameServer {
       name: this.name,
       ...(await new EventChatMessage().construct({
         msg: message,
+        channel: ChatChannel.GLOBAL,
       })),
     });
     await this.sendLog(fullMessage);
