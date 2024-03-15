@@ -227,7 +227,10 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     const existingPlayers = await this.find(findOpts);
     if (!existingPlayers.results.length) {
       // Main player profile does not exist yet!
-      this.log.debug('No existing associations found, creating new global player');
+      this.log.debug('No existing associations found, creating new global player', {
+        gameId: gamePlayer.gameId,
+        gameServerId,
+      });
       player = await this.create(
         await new PlayerCreateDTO().construct({
           name: gamePlayer.name,
@@ -241,7 +244,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     }
 
     if (!pog) {
-      this.log.debug('Creating new player association', { player, gameServerId });
+      this.log.debug('Creating new player association', { player: player.id, gameServerId });
       pog = await playerOnGameServerService.insertAssociation(gamePlayer.gameId, player.id, gameServerId);
     }
 
@@ -260,7 +263,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
 
     const role = await roleService.findOne(roleId);
 
-    this.log.info('Assigning role to player');
+    this.log.info('Assigning role to player', { roleId, player: targetId, gameserverId, expiresAt });
     await this.repo.assignRole(targetId, roleId, gameserverId, expiresAt);
     await eventService.create(
       await new EventCreateDTO().construct({
@@ -273,7 +276,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
   }
 
   async removeRole(roleId: string, targetId: string, gameserverId?: string) {
-    this.log.info('Removing role from player');
+    this.log.info('Removing role from player', { roleId, player: targetId, gameserverId });
     const eventService = new EventService(this.domainId);
     const roleService = new RoleService(this.domainId);
 
