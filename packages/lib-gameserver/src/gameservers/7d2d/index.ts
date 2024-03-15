@@ -75,7 +75,7 @@ export class SevenDaysToDie implements IGameServer {
     if (id.startsWith('Steam_')) id = id.replace('Steam_', '');
     if (id.startsWith('XBL_')) id = id.replace('XBL_', '');
     const players = await this.getPlayers();
-    const player = players.find((p) => p.steamId === id || p.epicOnlineServicesId === id);
+    const player = players.find((p) => p.steamId === id || p.epicOnlineServicesId === id || p.xboxLiveId === id);
     return player;
   }
 
