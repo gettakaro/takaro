@@ -128,6 +128,15 @@ export class PlayerCreateDTO extends TakaroDTO<PlayerCreateDTO> {
 export class PlayerUpdateDTO extends TakaroDTO<PlayerUpdateDTO> {
   @IsString()
   name!: string;
+  @IsString()
+  @IsOptional()
+  steamId?: string;
+  @IsString()
+  @IsOptional()
+  xboxLiveId?: string;
+  @IsString()
+  @IsOptional()
+  epicOnlineServicesId?: string;
 }
 
 @traceableClass('service:player')
@@ -204,28 +213,19 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
 
     let player: PlayerOutputWithRolesDTO | null = null;
 
-    const findOpts: ITakaroQuery<PlayerOutputDTO> & { filters: Record<string, unknown> } = {
-      filters: {
-        steamId: [],
-        epicOnlineServicesId: [],
-        xboxLiveId: [],
-      },
-    };
+    const promises = [];
 
-    if (gamePlayer.steamId) {
-      findOpts.filters.steamId = [gamePlayer.steamId];
-    }
+    if (gamePlayer.steamId) promises.push(this.find({ filters: { steamId: [gamePlayer.steamId] } }));
+    if (gamePlayer.epicOnlineServicesId)
+      promises.push(this.find({ filters: { epicOnlineServicesId: [gamePlayer.epicOnlineServicesId] } }));
+    if (gamePlayer.xboxLiveId) promises.push(this.find({ filters: { xboxLiveId: [gamePlayer.xboxLiveId] } }));
 
-    if (gamePlayer.epicOnlineServicesId) {
-      findOpts.filters.epicOnlineServicesId = [gamePlayer.epicOnlineServicesId];
-    }
+    const promiseResults = await Promise.all(promises);
+    // Merge all results into one array
+    const foundPlayers = promiseResults.reduce((acc: PlayerOutputWithRolesDTO[], item) => acc.concat(item.results), []);
 
-    if (gamePlayer.xboxLiveId) {
-      findOpts.filters.xboxLiveId = [gamePlayer.xboxLiveId];
-    }
-
-    const existingPlayers = await this.find(findOpts);
-    if (!existingPlayers.results.length) {
+    // If NO players are found, create a new one
+    if (!foundPlayers.length) {
       // Main player profile does not exist yet!
       this.log.debug('No existing associations found, creating new global player', {
         gameId: gamePlayer.gameId,
@@ -240,7 +240,19 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
         })
       );
     } else {
-      player = existingPlayers.results[0];
+      // At least one player is found, use the first one
+      player = foundPlayers[0];
+
+      // Also, update any missing IDs and names
+      await this.update(
+        player.id,
+        await new PlayerUpdateDTO().construct({
+          name: player.name,
+          steamId: gamePlayer.steamId,
+          xboxLiveId: gamePlayer.xboxLiveId,
+          epicOnlineServicesId: gamePlayer.epicOnlineServicesId,
+        })
+      );
     }
 
     if (!pog) {
