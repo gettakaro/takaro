@@ -247,7 +247,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
       await this.update(
         player.id,
         await new PlayerUpdateDTO().construct({
-          name: player.name,
+          name: gamePlayer.name,
           steamId: gamePlayer.steamId,
           xboxLiveId: gamePlayer.xboxLiveId,
           epicOnlineServicesId: gamePlayer.epicOnlineServicesId,
