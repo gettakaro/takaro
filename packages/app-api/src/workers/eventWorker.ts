@@ -25,7 +25,7 @@ async function processJob(job: Job<IEventQueueData>) {
     gameServer: job.data.gameServerId,
     jobId: job.id,
   });
-  log.silly('Processing an event', job.data);
+  log.debug('Processing an event', { data: job.data });
 
   const { type, event, domainId, gameServerId } = job.data;
 
