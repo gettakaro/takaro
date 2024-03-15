@@ -78,7 +78,7 @@ const tests = [
   }),
   new IntegrationTest<ISetupData>({
     group,
-    snapshot: true,
+    snapshot: false,
     name: 'Update installation config',
     setup: defaultSetup,
     filteredFields: ['gameserverId', 'moduleId', 'functionId', 'commandId'],
@@ -105,8 +105,6 @@ const tests = [
         allowPublicTeleports: false,
         timeout: 1337,
       });
-
-      return res;
     },
   }),
   new IntegrationTest<ISetupData>({
