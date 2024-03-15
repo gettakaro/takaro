@@ -198,15 +198,16 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
       }
       const updated = await this.repo.update(id, mod);
 
-      const eventsService = new EventService(this.domainId);
-
-      await eventsService.create(
-        await new EventCreateDTO().construct({
-          eventName: EVENT_TYPES.MODULE_UPDATED,
-          moduleId: id,
-          meta: await new TakaroEventModuleUpdated().construct(),
-        })
-      );
+      if (!updated.builtin) {
+        const eventsService = new EventService(this.domainId);
+        await eventsService.create(
+          await new EventCreateDTO().construct({
+            eventName: EVENT_TYPES.MODULE_UPDATED,
+            moduleId: id,
+            meta: await new TakaroEventModuleUpdated().construct(),
+          })
+        );
+      }
 
       return updated;
     } catch (e) {
