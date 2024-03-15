@@ -1,6 +1,6 @@
 import { HookService } from '../HookService.js';
 import { queueService } from '@takaro/queues';
-import { EventPlayerConnected, EventChatMessage, HookEvents } from '@takaro/modules';
+import { EventPlayerConnected, EventChatMessage, HookEvents, ChatChannel } from '@takaro/modules';
 import { IntegrationTest, sandbox, expect, integrationConfig } from '@takaro/test';
 import { HookOutputDTO, GameServerOutputDTO, ModuleOutputDTO, ModuleInstallationOutputDTO } from '@takaro/apiclient';
 import { SinonStub } from 'sinon';
@@ -83,6 +83,7 @@ const tests = [
       await this.setupData.service.handleEvent({
         eventData: await new EventChatMessage().construct({
           msg: 'chat message',
+          channel: ChatChannel.GLOBAL,
         }),
         eventType: HookEvents.CHAT_MESSAGE,
         gameServerId: this.setupData.gameserver.id,

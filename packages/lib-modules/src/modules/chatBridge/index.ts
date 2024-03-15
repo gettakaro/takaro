@@ -22,6 +22,12 @@ export class ChatBridge extends BuiltinModule {
             description: 'Send a message when a player disconnects.',
             default: true,
           },
+          onlyGlobalChat: {
+            title: 'Only global chat',
+            type: 'boolean',
+            default: true,
+            description: 'Only relay messages from global chat. (no team chat or private messages)',
+          },
         },
         additionalProperties: false,
       })

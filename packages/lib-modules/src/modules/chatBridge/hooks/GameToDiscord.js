@@ -1,6 +1,10 @@
 import { takaro, data } from '@takaro/helpers';
 
 async function main() {
+  const onlyGlobal = data.module.userConfig.onlyGlobalChat;
+
+  if (onlyGlobal && data.eventData.channel !== 'global') return;
+
   const discordChannel = data.module.systemConfig.hooks['DiscordToGame Discord channel ID'];
 
   const sender = data.player ? data.player.name : 'Non-player';

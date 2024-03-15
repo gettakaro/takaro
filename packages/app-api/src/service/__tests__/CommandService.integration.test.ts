@@ -3,7 +3,7 @@ import { CommandOutputDTO, GameServerOutputDTO, ModuleOutputDTO, ModuleInstallat
 import { CommandService } from '../CommandService.js';
 import { queueService } from '@takaro/queues';
 import { Mock } from '@takaro/gameserver';
-import { IGamePlayer, EventChatMessage, HookEvents } from '@takaro/modules';
+import { IGamePlayer, EventChatMessage, HookEvents, ChatChannel } from '@takaro/modules';
 import Sinon from 'sinon';
 import { EventService } from '../EventService.js';
 
@@ -91,6 +91,7 @@ const tests = [
       await this.setupData.service.handleChatMessage(
         await new EventChatMessage().construct({
           msg: '/test',
+          channel: ChatChannel.GLOBAL,
           player: await getMockPlayer(),
         }),
         this.setupData.gameserver.id
@@ -115,6 +116,7 @@ const tests = [
       await this.setupData.service.handleChatMessage(
         await new EventChatMessage().construct({
           msg: 'test',
+          channel: ChatChannel.GLOBAL,
           player: await getMockPlayer(),
         }),
         this.setupData.gameserver.id
@@ -154,6 +156,7 @@ const tests = [
       await this.setupData.service.handleChatMessage(
         await new EventChatMessage().construct({
           msg: '/test',
+          channel: ChatChannel.GLOBAL,
           player: await getMockPlayer(),
         }),
 
@@ -170,6 +173,7 @@ const tests = [
       await this.setupData.service.handleChatMessage(
         await new EventChatMessage().construct({
           msg: '/test',
+          channel: ChatChannel.GLOBAL,
           player: await getMockPlayer(),
         }),
         this.setupData.gameserver.id
@@ -210,6 +214,7 @@ const tests = [
       await this.setupData.service.handleChatMessage(
         await new EventChatMessage().construct({
           msg: '/test',
+          channel: ChatChannel.GLOBAL,
           player: await getMockPlayer(),
         }),
         this.setupData.gameserver.id
@@ -247,6 +252,7 @@ const tests = [
       await this.setupData.service.handleChatMessage(
         await new EventChatMessage().construct({
           msg: '/test2',
+          channel: ChatChannel.GLOBAL,
           player: await getMockPlayer(),
         }),
         this.setupData.gameserver.id

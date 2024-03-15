@@ -2,6 +2,7 @@ import { logger } from '@takaro/util';
 import EventSource from 'eventsource';
 import { JsonObject } from 'type-fest';
 import {
+  ChatChannel,
   EventChatMessage,
   EventEntityKilled,
   EventLogLine,
@@ -217,7 +218,7 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
     const { groups } = match;
     if (!groups) throw new Error('Could not parse chat message');
 
-    const { platformId, name, message } = groups;
+    const { platformId, name, message, channel } = groups;
 
     if (platformId === '-non-player-' && name !== 'Server') {
       return;
@@ -237,9 +238,23 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
       const id = steamId || xboxLiveId || '';
       const player = await this.sdtd.steamIdOrXboxToGameId(id);
 
+      let detectedChannel: ChatChannel = ChatChannel.GLOBAL;
+
+      switch (channel) {
+        case 'Global':
+          detectedChannel = ChatChannel.GLOBAL;
+          break;
+        case 'Party':
+          detectedChannel = ChatChannel.TEAM;
+          break;
+        default:
+          break;
+      }
+
       if (player) {
         return new EventChatMessage().construct({
           player,
+          channel: detectedChannel,
           msg: trimmedMessage.trim(),
         });
       }
