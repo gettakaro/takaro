@@ -67,21 +67,15 @@ export function Filter<DataType extends object>({ table }: FilterProps<DataType>
           .discriminatedUnion('type', [
             z.object({
               type: z.literal(FilterInputType.string),
-              value: z.string().nonempty({
-                message: 'Value is required.',
-              }),
+              value: z.string().min(1),
             }),
             z.object({
               type: z.literal(FilterInputType.uuid),
-              value: z.string().uuid().nonempty({
-                message: 'Value is required.',
-              }),
+              value: z.string().uuid().min(1),
             }),
             z.object({
               type: z.literal(FilterInputType.datetime),
-              value: z.string().datetime().nonempty({
-                message: 'Value is required.',
-              }),
+              value: z.string().datetime().min(1),
             }),
           ])
           .and(basedShape)
