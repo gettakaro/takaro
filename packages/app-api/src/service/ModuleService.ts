@@ -177,7 +177,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     const eventsService = new EventService(this.domainId);
 
     await eventsService.create(
-      await new EventCreateDTO().construct({
+      new EventCreateDTO({
         eventName: EVENT_TYPES.MODULE_CREATED,
         moduleId: created.id,
         meta: await new TakaroEventModuleCreated(),
@@ -201,7 +201,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
       if (!updated.builtin) {
         const eventsService = new EventService(this.domainId);
         await eventsService.create(
-          await new EventCreateDTO().construct({
+          new EventCreateDTO({
             eventName: EVENT_TYPES.MODULE_UPDATED,
             moduleId: id,
             meta: await new TakaroEventModuleUpdated(),
@@ -226,7 +226,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     const eventsService = new EventService(this.domainId);
 
     await eventsService.create(
-      await new EventCreateDTO().construct({
+      new EventCreateDTO({
         eventName: EVENT_TYPES.MODULE_DELETED,
         moduleId: id,
         meta: await new TakaroEventModuleDeleted(),
@@ -254,18 +254,18 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
 
     if (existing.results.length !== 1) {
       mod = await this.create(
-        await new ModuleCreateInternalDTO().construct({
+        new ModuleCreateInternalDTO({
           ...builtin,
           builtin: builtin.name,
-          permissions: await Promise.all(builtin.permissions.map((p) => new PermissionOutputDTO().construct(p))),
+          permissions: await Promise.all(builtin.permissions.map((p) => new PermissionOutputDTO(p))),
         })
       );
     } else {
       mod = await this.update(
         mod.id,
-        await new ModuleUpdateDTO().construct({
+        new ModuleUpdateDTO({
           ...builtin,
-          permissions: await Promise.all(builtin.permissions.map((p) => new PermissionOutputDTO().construct(p))),
+          permissions: await Promise.all(builtin.permissions.map((p) => new PermissionOutputDTO(p))),
         })
       );
     }
@@ -277,11 +277,11 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
         });
 
         if (existing.results.length === 1) {
-          const data = await new CommandUpdateDTO().construct(c);
+          const data = new CommandUpdateDTO(c);
           return commandService.update(existing.results[0].id, data);
         }
 
-        const data = await new CommandCreateDTO().construct({
+        const data = new CommandCreateDTO({
           ...c,
           moduleId: mod.id,
         });
@@ -296,11 +296,11 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
         });
 
         if (existing.results.length === 1) {
-          const data = await new HookUpdateDTO().construct(h);
+          const data = new HookUpdateDTO(h);
           return hookService.update(existing.results[0].id, data);
         }
 
-        const data = await new HookCreateDTO().construct({
+        const data = new HookCreateDTO({
           ...h,
           eventType: h.eventType,
           moduleId: mod.id,
@@ -315,11 +315,11 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
         });
 
         if (existing.results.length === 1) {
-          const data = await new CronJobUpdateDTO().construct(c);
+          const data = new CronJobUpdateDTO(c);
           return cronjobService.update(existing.results[0].id, data);
         }
 
-        const data = await new CronJobCreateDTO().construct({
+        const data = new CronJobCreateDTO({
           ...c,
           moduleId: mod.id,
         });
@@ -334,14 +334,14 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
         });
 
         if (existing.results.length === 1) {
-          const data = await new FunctionUpdateDTO().construct({
+          const data = new FunctionUpdateDTO({
             name: f.name,
             code: f.function,
           });
           return functionService.update(existing.results[0].id, data);
         }
 
-        const data = await new FunctionCreateDTO().construct({
+        const data = new FunctionCreateDTO({
           name: f.name,
           code: f.function,
           moduleId: mod.id,

@@ -22,7 +22,7 @@ const _tests = [
         gameServerId: this.setupData.gameserver.id,
         playerId: this.setupData.players[0].id,
         eventType: GameEvents.PLAYER_CONNECTED,
-        eventMeta: await new EventPlayerConnected().construct({
+        eventMeta: new EventPlayerConnected({
           player: {
             gameId: '1',
           },

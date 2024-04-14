@@ -53,7 +53,7 @@ export class Rust implements IGameServer {
     const rustPlayers = JSON.parse(response.rawResult);
     return Promise.all(
       rustPlayers.map((player: any) => {
-        return new IGamePlayer().construct({
+        return new IGamePlayer({
           gameId: player.SteamID,
           steamId: player.SteamID,
           ip: player.Address.split(':')[0],
@@ -97,10 +97,10 @@ export class Rust implements IGameServer {
   async testReachability(): Promise<TestReachabilityOutputDTO> {
     try {
       await this.executeConsoleCommand('serverinfo');
-      return new TestReachabilityOutputDTO().construct({ connectable: true });
+      return new TestReachabilityOutputDTO({ connectable: true });
     } catch (error) {
       this.log.warn('testReachability', error);
-      return new TestReachabilityOutputDTO().construct({ connectable: false });
+      return new TestReachabilityOutputDTO({ connectable: false });
     }
   }
 
@@ -121,7 +121,7 @@ export class Rust implements IGameServer {
 
         const commandResult = parsed.Message;
         clearTimeout(timeout);
-        return resolve(new CommandOutput().construct({ rawResult: commandResult }));
+        return resolve(new CommandOutput({ rawResult: commandResult }));
       });
 
       this.log.debug('executeConsoleCommand - sending command', { command });
@@ -193,9 +193,9 @@ export class Rust implements IGameServer {
           expiresAt = new Date(parseInt(expiration) * 1000).toISOString();
         }
 
-        const ban = await new BanDTO().construct({
+        const ban = new BanDTO({
           reason: match.groups.reason,
-          player: await new IPlayerReferenceDTO().construct({
+          player: new IPlayerReferenceDTO({
             gameId,
           }),
           expiresAt,
@@ -211,7 +211,7 @@ export class Rust implements IGameServer {
   async listItems(): Promise<IItemDTO[]> {
     return Promise.all(
       Object.values(itemsJson).map((item) => {
-        return new IItemDTO().construct({
+        return new IItemDTO({
           code: item.shortname,
           name: item.Name,
           description: item.Description,
@@ -225,6 +225,6 @@ export class Rust implements IGameServer {
     const toParse = res.rawResult.replace('[ViewInventory] ', '');
     const parsed = JSON.parse(toParse);
     const items = JSON.parse(parsed.Inventory);
-    return await Promise.all(items.map((i: any) => new IItemDTO().construct({ code: i.itemName, amount: i.amount })));
+    return await Promise.all(items.map((i: any) => new IItemDTO({ code: i.itemName, amount: i.amount })));
   }
 }

@@ -183,7 +183,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
 
     if (item.function) {
       const newFn = await functionsService.create(
-        await new FunctionCreateDTO().construct({
+        new FunctionCreateDTO({
           code: item.function,
         })
       );
@@ -199,7 +199,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
     if (item.arguments) {
       await Promise.all(
         item.arguments.map(async (a) => {
-          return this.createArgument(created.id, await new CommandArgumentCreateDTO().construct(a));
+          return this.createArgument(created.id, new CommandArgumentCreateDTO(a));
         })
       );
     }
@@ -223,7 +223,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
 
       await functionsService.update(
         fn.id,
-        await new FunctionUpdateDTO().construct({
+        new FunctionUpdateDTO({
           code: item.function,
         })
       );
@@ -241,7 +241,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
       // Create new args
       await Promise.all(
         item.arguments.map(async (a) => {
-          return this.createArgument(id, await new CommandArgumentCreateDTO().construct(a));
+          return this.createArgument(id, new CommandArgumentCreateDTO(a));
         })
       );
     }
@@ -289,7 +289,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
             await gameServerService.sendMessage(
               gameServerId,
               error.message,
-              await new IMessageOptsDTO().construct({
+              new IMessageOptsDTO({
                 recipient: chatMessage.player,
               })
             );
@@ -319,7 +319,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
           await gameServerService.sendMessage(
             gameServerId,
             `Your command will be executed in ${delay / 1000} seconds.`,
-            await new IMessageOptsDTO().construct({
+            new IMessageOptsDTO({
               recipient: chatMessage.player,
             })
           );
@@ -353,7 +353,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
 
     if (!gamePlayer) throw new errors.NotFoundError('Player not found on gameserver... Make sure the player is online');
 
-    const eventDto = await new EventChatMessage().construct({
+    const eventDto = new EventChatMessage({
       player: gamePlayer,
       timestamp: new Date().toISOString(),
       channel: ChatChannel.GLOBAL,

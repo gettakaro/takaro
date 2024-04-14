@@ -153,7 +153,7 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
 
     await this.emit(
       GameEvents.LOG_LINE,
-      await new EventLogLine().construct({
+      new EventLogLine({
         msg: logLine.msg,
       })
     );
@@ -174,9 +174,9 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
 
     if (!gameId) throw new Error('Could not find gameId');
 
-    return new EventPlayerConnected().construct({
+    return new EventPlayerConnected({
       msg: logLine.msg,
-      player: await new IGamePlayer().construct({
+      player: new IGamePlayer({
         name,
         gameId,
         steamId,
@@ -200,9 +200,9 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
 
     if (!gameId) throw new Error('Could not find gameId');
 
-    return new EventPlayerDisconnected().construct({
+    return new EventPlayerDisconnected({
       msg: logLine.msg,
-      player: await new IGamePlayer().construct({
+      player: new IGamePlayer({
         name,
         gameId,
         steamId,
@@ -252,7 +252,7 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
       }
 
       if (player) {
-        return new EventChatMessage().construct({
+        return new EventChatMessage({
           player,
           channel: detectedChannel,
           msg: trimmedMessage.trim(),
@@ -274,7 +274,7 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
 
     const player = await this.sdtd.steamIdOrXboxToGameId(steamOrXboxId);
 
-    return new EventPlayerDeath().construct({
+    return new EventPlayerDeath({
       msg: logLine.msg,
       player,
       position: {
@@ -300,7 +300,7 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
     const player = await this.sdtd.steamIdOrXboxToGameId(steamOrXboxId);
 
     // Constructing the EventEntityKilled object with the parsed data
-    return new EventEntityKilled().construct({
+    return new EventEntityKilled({
       msg: logLine.msg,
       entity: entityName || entityName2,
       player,

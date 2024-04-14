@@ -53,7 +53,7 @@ export class HookRepo extends ITakaroRepo<HookModel, HookOutputDTO, HookCreateDT
     }).build(query);
     return {
       total: result.total,
-      results: await Promise.all(result.results.map((item) => new HookOutputDTO().construct(item))),
+      results: await Promise.all(result.results.map((item) => new HookOutputDTO(item))),
     };
   }
 
@@ -65,7 +65,7 @@ export class HookRepo extends ITakaroRepo<HookModel, HookOutputDTO, HookCreateDT
       throw new errors.NotFoundError(`Record with id ${id} not found`);
     }
 
-    return new HookOutputDTO().construct(data);
+    return new HookOutputDTO(data);
   }
 
   async create(item: HookCreateDTO): Promise<HookOutputDTO> {
@@ -93,7 +93,7 @@ export class HookRepo extends ITakaroRepo<HookModel, HookOutputDTO, HookCreateDT
     const { query } = await this.getModel();
     const item = await query.updateAndFetchById(id, data.toJSON()).withGraphFetched('function');
 
-    return new HookOutputDTO().construct(item);
+    return new HookOutputDTO(item);
   }
 
   async assign(id: string, functionId: string) {

@@ -13,7 +13,7 @@ import { SevenDaysToDieEmitter } from '../emitter.js';
 import { SevenDaysToDie } from '../index.js';
 
 const mockConnectionInfo = async (overrides?: Partial<SdtdConnectionInfo>) =>
-  new SdtdConnectionInfo().construct({
+  new SdtdConnectionInfo({
     adminToken: 'aaa',
     adminUser: 'aaa',
     useTls: false,
@@ -21,7 +21,7 @@ const mockConnectionInfo = async (overrides?: Partial<SdtdConnectionInfo>) =>
     ...overrides,
   });
 
-const mockGamePlayer = await new IGamePlayer().construct({
+const mockGamePlayer = new IGamePlayer({
   name: 'Catalysm',
   ping: undefined,
   gameId: '0002b5d970954287afdcb5dc35af0424',

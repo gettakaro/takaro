@@ -215,7 +215,7 @@ class Ory {
       token,
     });
 
-    const data = await new TakaroTokenDTO().construct({
+    const data = new TakaroTokenDTO({
       active: introspectRes.data.active,
       clientId: introspectRes.data.client_id,
       aud: introspectRes.data.aud,

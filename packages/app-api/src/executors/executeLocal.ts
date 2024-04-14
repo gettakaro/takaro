@@ -105,9 +105,7 @@ export const executeFunctionLocal: FunctionExecutor = async (
       success: true,
     };
   } catch (error) {
-    logs.push(
-      await new TakaroEventFunctionLog().construct({ msg: (error as Error).message, details: (error as Error).stack })
-    );
+    logs.push(new TakaroEventFunctionLog({ msg: (error as Error).message, details: (error as Error).stack }));
 
     return {
       logs,

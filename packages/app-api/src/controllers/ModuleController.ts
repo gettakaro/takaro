@@ -101,7 +101,7 @@ export class ModuleController {
     const mod = await service.findOne(params.id);
     if (!mod) throw new errors.NotFoundError('Module not found');
     await service.delete(params.id);
-    return apiResponse(await new IdUuidDTO().construct({ id: params.id }));
+    return apiResponse(new IdUuidDTO({ id: params.id }));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_MODULES]))
@@ -115,43 +115,47 @@ export class ModuleController {
     const output = new BuiltinModule(mod.name, mod.description, mod.configSchema, mod.uiSchema);
 
     output.commands = await Promise.all(
-      mod.commands.map((_) =>
-        new ICommand().construct({
-          function: _.function.code,
-          name: _.name,
-          trigger: _.trigger,
-          helpText: _.helpText,
-          arguments: _.arguments,
-        })
+      mod.commands.map(
+        (_) =>
+          new ICommand({
+            function: _.function.code,
+            name: _.name,
+            trigger: _.trigger,
+            helpText: _.helpText,
+            arguments: _.arguments,
+          })
       )
     );
 
     output.hooks = await Promise.all(
-      mod.hooks.map((_) =>
-        new IHook().construct({
-          function: _.function.code,
-          name: _.name,
-          eventType: _.eventType,
-        })
+      mod.hooks.map(
+        (_) =>
+          new IHook({
+            function: _.function.code,
+            name: _.name,
+            eventType: _.eventType,
+          })
       )
     );
 
     output.cronJobs = await Promise.all(
-      mod.cronJobs.map((_) =>
-        new ICronJob().construct({
-          function: _.function.code,
-          name: _.name,
-          temporalValue: _.temporalValue,
-        })
+      mod.cronJobs.map(
+        (_) =>
+          new ICronJob({
+            function: _.function.code,
+            name: _.name,
+            temporalValue: _.temporalValue,
+          })
       )
     );
 
     output.functions = await Promise.all(
-      mod.functions.map((_) =>
-        new IFunction().construct({
-          function: _.code,
-          name: _.name,
-        })
+      mod.functions.map(
+        (_) =>
+          new IFunction({
+            function: _.code,
+            name: _.name,
+          })
       )
     );
 
