@@ -334,7 +334,7 @@ export class GameServerService extends TakaroService<
         eventName: EVENT_TYPES.MODULE_UNINSTALLED,
         gameserverId,
         moduleId: moduleId,
-        meta: await new TakaroEventModuleUninstalled().construct(),
+        meta: await new TakaroEventModuleUninstalled(),
       })
     );
 

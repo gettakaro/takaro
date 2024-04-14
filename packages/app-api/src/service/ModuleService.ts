@@ -180,7 +180,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
       await new EventCreateDTO().construct({
         eventName: EVENT_TYPES.MODULE_CREATED,
         moduleId: created.id,
-        meta: await new TakaroEventModuleCreated().construct(),
+        meta: await new TakaroEventModuleCreated(),
       })
     );
 
@@ -204,7 +204,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
           await new EventCreateDTO().construct({
             eventName: EVENT_TYPES.MODULE_UPDATED,
             moduleId: id,
-            meta: await new TakaroEventModuleUpdated().construct(),
+            meta: await new TakaroEventModuleUpdated(),
           })
         );
       }
@@ -229,7 +229,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
       await new EventCreateDTO().construct({
         eventName: EVENT_TYPES.MODULE_DELETED,
         moduleId: id,
-        meta: await new TakaroEventModuleDeleted().construct(),
+        meta: await new TakaroEventModuleDeleted(),
       })
     );
 
@@ -241,7 +241,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     await Promise.all(modules.map((m) => this.seedModule(m)));
   }
 
-  private async seedModule(builtin: BuiltinModule) {
+  async seedModule(builtin: BuiltinModule<unknown>) {
     const commandService = new CommandService(this.domainId);
     const hookService = new HookService(this.domainId);
     const cronjobService = new CronJobService(this.domainId);

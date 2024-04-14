@@ -1,77 +1,105 @@
-import { readdir, readFile } from 'fs/promises';
+import { readFileSync, readdirSync } from 'fs';
 import path from 'path';
 import * as url from 'url';
-import { EventTypes } from './dto/index.js';
+import { IsString, IsOptional, IsNumber, IsArray, ValidateNested, IsEnum } from 'class-validator';
+import { Type } from 'class-transformer';
+import { EventTypes, HookEvents } from './dto/index.js';
 import { PermissionCreateDTO } from '@takaro/apiclient';
+import { TakaroDTO } from '@takaro/util';
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
-interface IModuleItem {
+export class ICommandArgument {
+  @IsString()
   name: string;
-  function: string;
-}
-
-export interface ICommandArgument {
-  name: string;
+  @IsString()
   type: string;
+  @IsString()
+  @IsOptional()
   helpText?: string;
+  @IsString()
+  @IsOptional()
   defaultValue?: string;
+  @IsNumber()
+  @IsOptional()
   position?: number;
 }
 
-export interface ICommand extends IModuleItem {
+export class ICommand extends TakaroDTO<ICommand> {
+  @IsString()
+  name: string;
+  @IsString()
+  function: string;
+  @IsString()
   trigger: string;
+  @IsString()
+  @IsOptional()
   helpText?: string;
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ICommandArgument)
+  @IsOptional()
   arguments?: ICommandArgument[];
 }
 
-export interface IHook extends IModuleItem {
+export class IHook extends TakaroDTO<IHook> {
+  @IsString()
+  name: string;
+  @IsString()
+  function: string;
+  @IsEnum(Object.values(HookEvents))
   eventType: EventTypes;
 }
 
-export interface ICronJob extends IModuleItem {
+export class ICronJob extends TakaroDTO<ICronJob> {
+  @IsString()
+  name: string;
+  @IsString()
+  function: string;
+  @IsString()
   temporalValue: string;
 }
 
-export abstract class BuiltinModule {
+export class IFunction extends TakaroDTO<IFunction> {
+  @IsString()
+  name: string;
+  @IsString()
+  function: string;
+}
+
+export class BuiltinModule<T> extends TakaroDTO<T> {
   constructor(
     public name: string,
     public description: string,
     public configSchema: string,
     public uiSchema: string = JSON.stringify({})
-  ) {}
-
-  public commands: Array<ICommand> = [];
-  public hooks: Array<IHook> = [];
-  public cronJobs: Array<ICronJob> = [];
-  public functions: Array<IModuleItem> = [];
-  public permissions: PermissionCreateDTO[] = [];
-
-  async construct() {
-    await this.loadType('commands');
-    await this.loadType('hooks');
-    await this.loadType('cronJobs');
-    await this.loadType('functions');
+  ) {
+    super();
   }
 
-  async loadType(type: 'commands' | 'hooks' | 'cronJobs' | 'functions') {
-    const items = this[type] as IModuleItem[];
-    if (!items.length) return;
+  @ValidateNested({ each: true })
+  @Type(() => ICommand)
+  public commands: Array<ICommand> = [];
+  @ValidateNested({ each: true })
+  @Type(() => IHook)
+  public hooks: Array<IHook> = [];
+  @ValidateNested({ each: true })
+  @Type(() => ICronJob)
+  public cronJobs: Array<ICronJob> = [];
+  @ValidateNested({ each: true })
+  @Type(() => IFunction)
+  public functions: Array<IFunction> = [];
+  @IsArray()
+  public permissions: PermissionCreateDTO[] = [];
 
+  protected loadFn(type: 'commands' | 'hooks' | 'cronJobs' | 'functions', name: string) {
     const folderPath = path.join(__dirname, 'modules', this.name, type);
-    const files = await readdir(folderPath);
-
-    for (const item of items) {
-      const file = files.find((file) => file.replace('.js', '') === item.name);
-      if (!file) {
-        throw new Error(
-          `Could not find ${item.name} in ${this.name}'s ${type}. Did you provide a function implementation?`
-        );
-      }
-
-      const fileContents = await readFile(path.join(folderPath, file), 'utf-8');
-
-      item.function = fileContents;
+    const files = readdirSync(folderPath);
+    const file = files.find((file) => file.replace('.js', '') === name);
+    if (!file) {
+      throw new Error(`Could not find ${name} in ${this.name}'s ${type}. Did you provide a function implementation?`);
     }
+
+    return readFileSync(path.join(folderPath, file), 'utf-8');
   }
 }

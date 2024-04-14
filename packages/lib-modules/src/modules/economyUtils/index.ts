@@ -1,6 +1,6 @@
-import { BuiltinModule } from '../../BuiltinModule.js';
+import { BuiltinModule, ICommand } from '../../BuiltinModule.js';
 
-export class EconomyUtils extends BuiltinModule {
+export class EconomyUtils extends BuiltinModule<EconomyUtils> {
   constructor() {
     super(
       'economyUtils',
@@ -32,22 +32,22 @@ export class EconomyUtils extends BuiltinModule {
     ];
 
     this.commands = [
-      {
-        function: '',
+      new ICommand({
+        function: this.loadFn('commands', 'balance'),
         name: 'balance',
         trigger: 'balance',
         helpText: 'Check your balance.',
         arguments: [],
-      },
-      {
-        function: '',
+      }),
+      new ICommand({
+        function: this.loadFn('commands', 'topCurrency'),
         name: 'topCurrency',
         trigger: 'topcurrency',
         helpText: 'List of the 10 players with the highest balance.',
         arguments: [],
-      },
-      {
-        function: '',
+      }),
+      new ICommand({
+        function: this.loadFn('commands', 'grantCurrency'),
         name: 'grantCurrency',
         trigger: 'grantcurrency',
         helpText: 'Grant money to a player. The money is not taken from your own balance but is new currency.',
@@ -65,9 +65,9 @@ export class EconomyUtils extends BuiltinModule {
             position: 1,
           },
         ],
-      },
-      {
-        function: '',
+      }),
+      new ICommand({
+        function: this.loadFn('commands', 'revokeCurrency'),
         name: 'revokeCurrency',
         trigger: 'revokecurrency',
         helpText: 'Grant money to a player. The money is not taken from your own balance but is new currency.',
@@ -85,15 +85,15 @@ export class EconomyUtils extends BuiltinModule {
             position: 1,
           },
         ],
-      },
-      {
-        function: '',
+      }),
+      new ICommand({
+        function: this.loadFn('commands', 'confirmTransfer'),
         name: 'confirmTransfer',
         trigger: 'confirmtransfer',
         helpText: 'Confirms a pending transfer.',
-      },
-      {
-        function: '',
+      }),
+      new ICommand({
+        function: this.loadFn('commands', 'transfer'),
         name: 'transfer',
         trigger: 'transfer',
         helpText: 'Transfer money to another player.',
@@ -111,7 +111,7 @@ export class EconomyUtils extends BuiltinModule {
             position: 1,
           },
         ],
-      },
+      }),
     ];
   }
 }

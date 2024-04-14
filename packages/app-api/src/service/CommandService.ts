@@ -193,7 +193,8 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
       fnIdToAdd = newFn.id;
     }
 
-    const created = await this.repo.create(await new CommandCreateDTO().construct({ ...item, function: fnIdToAdd }));
+    const toCreate = new CommandCreateDTO({ ...item, function: fnIdToAdd });
+    const created = await this.repo.create(toCreate);
 
     if (item.arguments) {
       await Promise.all(

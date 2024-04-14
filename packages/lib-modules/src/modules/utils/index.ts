@@ -1,6 +1,6 @@
-import { BuiltinModule } from '../../BuiltinModule.js';
+import { BuiltinModule, ICommand } from '../../BuiltinModule.js';
 
-export class Utils extends BuiltinModule {
+export class Utils extends BuiltinModule<Utils> {
   constructor() {
     super(
       'utils',
@@ -13,15 +13,15 @@ export class Utils extends BuiltinModule {
     );
 
     this.commands = [
-      {
-        function: '',
+      new ICommand({
+        function: this.loadFn('commands', 'ping'),
         name: 'ping',
         trigger: 'ping',
         helpText: 'Replies with pong, useful for testing if the connection works.',
         arguments: [],
-      },
-      {
-        function: '',
+      }),
+      new ICommand({
+        function: this.loadFn('commands', 'help'),
         name: 'help',
         trigger: 'help',
         helpText: 'The text you are reading right now, displays information about commands.',
@@ -34,7 +34,7 @@ export class Utils extends BuiltinModule {
             position: 0,
           },
         ],
-      },
+      }),
     ];
   }
 }

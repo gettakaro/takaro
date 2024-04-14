@@ -1,7 +1,7 @@
-import { BuiltinModule } from '../../BuiltinModule.js';
+import { BuiltinModule, ICommand, IFunction } from '../../BuiltinModule.js';
 import { Duration } from 'luxon';
 
-export class Teleports extends BuiltinModule {
+export class Teleports extends BuiltinModule<Teleports> {
   constructor() {
     super(
       'teleports',
@@ -33,10 +33,10 @@ export class Teleports extends BuiltinModule {
     );
 
     this.functions = [
-      {
+      new IFunction({
         name: 'utils',
-        function: '',
-      },
+        function: this.loadFn('functions', 'utils'),
+      }),
     ];
 
     this.permissions = [
@@ -61,8 +61,8 @@ export class Teleports extends BuiltinModule {
     ];
 
     this.commands = [
-      {
-        function: '',
+      new ICommand({
+        function: this.loadFn('commands', 'teleport'),
         name: 'teleport',
         trigger: 'tp',
         helpText: 'Teleports to one of your set locations.',
@@ -75,15 +75,15 @@ export class Teleports extends BuiltinModule {
             position: 0,
           },
         ],
-      },
-      {
-        function: '',
+      }),
+      new ICommand({
+        function: this.loadFn('commands', 'tplist'),
         name: 'tplist',
         trigger: 'tplist',
         helpText: 'Lists all your set locations.',
-      },
-      {
-        function: '',
+      }),
+      new ICommand({
+        function: this.loadFn('commands', 'settp'),
         name: 'settp',
         trigger: 'settp',
         helpText: 'Sets a location to teleport to.',
@@ -96,9 +96,9 @@ export class Teleports extends BuiltinModule {
             position: 0,
           },
         ],
-      },
-      {
-        function: '',
+      }),
+      new ICommand({
+        function: this.loadFn('commands', 'deletetp'),
         name: 'deletetp',
         trigger: 'deletetp',
         helpText: 'Deletes a location.',
@@ -111,9 +111,9 @@ export class Teleports extends BuiltinModule {
             position: 0,
           },
         ],
-      },
-      {
-        function: '',
+      }),
+      new ICommand({
+        function: this.loadFn('commands', 'setpublic'),
         name: 'setpublic',
         trigger: 'setpublic',
         helpText: 'Sets a teleport to be public, allowing other players to teleport to it.',
@@ -126,9 +126,9 @@ export class Teleports extends BuiltinModule {
             position: 0,
           },
         ],
-      },
-      {
-        function: '',
+      }),
+      new ICommand({
+        function: this.loadFn('commands', 'setprivate'),
         name: 'setprivate',
         trigger: 'setprivate',
         helpText: 'Sets a teleport to be private, only the teleport owner can teleport to it.',
@@ -141,9 +141,9 @@ export class Teleports extends BuiltinModule {
             position: 0,
           },
         ],
-      },
-      {
-        function: '',
+      }),
+      new ICommand({
+        function: this.loadFn('commands', 'setwaypoint'),
         name: 'setwaypoint',
         trigger: 'setwaypoint',
         helpText: 'Creates a new waypoint.',
@@ -156,9 +156,9 @@ export class Teleports extends BuiltinModule {
             position: 0,
           },
         ],
-      },
-      {
-        function: '',
+      }),
+      new ICommand({
+        function: this.loadFn('commands', 'deletewaypoint'),
         name: 'deletewaypoint',
         trigger: 'deletewaypoint',
         helpText: 'Deletes a waypoint.',
@@ -171,20 +171,20 @@ export class Teleports extends BuiltinModule {
             position: 0,
           },
         ],
-      },
-      {
-        function: '',
+      }),
+      new ICommand({
+        function: this.loadFn('commands', 'listwaypoints'),
         name: 'listwaypoints',
         trigger: 'waypoints',
         helpText: 'Lists all waypoints.',
-      },
-      {
-        function: '',
+      }),
+      new ICommand({
+        function: this.loadFn('commands', 'teleportwaypoint'),
         name: 'teleportwaypoint',
         trigger: 'teleportwaypoint',
         helpText:
           'Placeholder command, this will not be used directly. The module will install aliases for this command corresponding to the waypoint names.',
-      },
+      }),
     ];
   }
 }

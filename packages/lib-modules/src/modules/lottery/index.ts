@@ -1,6 +1,6 @@
-import { BuiltinModule } from '../../BuiltinModule.js';
+import { BuiltinModule, ICommand, ICronJob } from '../../BuiltinModule.js';
 
-export class Lottery extends BuiltinModule {
+export class Lottery extends BuiltinModule<Lottery> {
   constructor() {
     super(
       'lottery',
@@ -37,16 +37,16 @@ export class Lottery extends BuiltinModule {
     ];
 
     this.cronJobs = [
-      {
+      new ICronJob({
         name: 'drawLottery',
         temporalValue: '0 0 * * *',
-        function: '',
-      },
+        function: this.loadFn('cronJobs', 'drawLottery'),
+      }),
     ];
 
     this.commands = [
-      {
-        function: '',
+      new ICommand({
+        function: this.loadFn('commands', 'buyTicket'),
         name: 'buyTicket',
         trigger: 'buyTicket',
         helpText: 'Buy a lottery ticket.',
@@ -58,21 +58,21 @@ export class Lottery extends BuiltinModule {
             position: 0,
           },
         ],
-      },
-      {
-        function: '',
+      }),
+      new ICommand({
+        function: this.loadFn('commands', 'viewTickets'),
         name: 'viewTickets',
         trigger: 'viewTickets',
         helpText: 'View your lottery tickets.',
         arguments: [],
-      },
-      {
-        function: '',
+      }),
+      new ICommand({
+        function: this.loadFn('commands', 'nextDraw'),
         name: 'nextDraw',
         trigger: 'nextDraw',
         helpText: 'View when the next draw is.',
         arguments: [],
-      },
+      }),
     ];
   }
 }

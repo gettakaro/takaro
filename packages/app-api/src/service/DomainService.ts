@@ -95,7 +95,7 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
       const gameServerService = new GameServerService(id);
       const allGameServers = await gameServerService.find({});
       for (const gameServer of allGameServers.results) {
-        await gameServerService.update(gameServer.id, await new GameServerUpdateDTO().construct());
+        await gameServerService.update(gameServer.id, await new GameServerUpdateDTO());
       }
     }
 
