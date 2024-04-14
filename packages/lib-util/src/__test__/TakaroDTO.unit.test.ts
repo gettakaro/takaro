@@ -29,19 +29,6 @@ class NestedDTO extends TakaroDTO<NestedDTO> {
 
 describe('TakaroDTO', () => {
   it('Happy path, creates a data class', async () => {
-    const test = await new TestDTO().construct({
-      foo: 'foo',
-      bar: 11,
-      secretPassword: 'takaro_ftw!!',
-    });
-    await test.validate();
-    const json = test.toJSON();
-
-    expect(json.foo).to.equal('foo');
-    expect(json.bar).to.equal(11);
-  });
-
-  it('Allow simple initialization without async construct', () => {
     const test = new TestDTO({
       foo: 'foo',
       bar: 11,
@@ -51,7 +38,6 @@ describe('TakaroDTO', () => {
     expect(json.foo).to.equal('foo');
     expect(json.bar).to.equal(11);
   });
-
   it('Can validate without async construct', async () => {
     await expect(
       // @ts-expect-error - we are testing invalid data, TS accurately says it's not right but we need to test runtime as well
@@ -62,12 +48,12 @@ describe('TakaroDTO', () => {
   it('throws an error when passing invalid data', async () => {
     await expect(
       // @ts-expect-error - we are testing invalid data, TS accurately says it's not right but we need to test runtime as well
-      (await new TestDTO().construct({ foo: ['a', 'b'], bar: 2 })).validate()
+      new TestDTO({ foo: ['a', 'b'], bar: 2 }).validate()
     ).to.eventually.be.rejectedWith('property foo has failed the following constraints: isString');
   });
 
   it('.toJSON omits properties marked with exclude', async () => {
-    const test = await new TestDTO().construct({
+    const test = new TestDTO({
       foo: 'foo',
       bar: 11,
       secretPassword: 'takaro_ftw!!',

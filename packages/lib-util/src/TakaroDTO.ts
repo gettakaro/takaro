@@ -51,19 +51,6 @@ export class TakaroDTO<T> {
   toJSON() {
     return instanceToPlain(this, { enableImplicitConversion: true });
   }
-
-  async construct(data?: Nullable<DeepPartial<T>>) {
-    if (!data) {
-      return this;
-    }
-    Object.assign(this, data);
-
-    // TODO: enable this for much tighter validation of all DTOs
-    // Atm this breaks too much stuff 😮‍💨
-    //await this.validate();
-
-    return this;
-  }
 }
 
 export class NOT_DOMAIN_SCOPED_TakaroModelDTO<T> extends TakaroDTO<T> {
