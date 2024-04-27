@@ -1,15 +1,14 @@
 import { readFileSync, readdirSync } from 'fs';
 import path from 'path';
 import * as url from 'url';
-import { IsString, IsOptional, IsNumber, IsArray, ValidateNested, IsEnum } from 'class-validator';
+import { IsString, IsOptional, IsNumber, IsArray, ValidateNested, IsEnum, IsBoolean } from 'class-validator';
 import { Type } from 'class-transformer';
 import { EventTypes, HookEvents } from './dto/index.js';
-import { PermissionCreateDTO } from '@takaro/apiclient';
 import { TakaroDTO } from '@takaro/util';
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
-export class ICommandArgument {
+export class ICommandArgument extends TakaroDTO<ICommandArgument> {
   @IsString()
   name: string;
   @IsString()
@@ -19,7 +18,7 @@ export class ICommandArgument {
   helpText?: string;
   @IsString()
   @IsOptional()
-  defaultValue?: string;
+  defaultValue?: string | null;
   @IsNumber()
   @IsOptional()
   position?: number;
@@ -35,11 +34,10 @@ export class ICommand extends TakaroDTO<ICommand> {
   @IsString()
   @IsOptional()
   helpText?: string;
-  @IsArray()
   @ValidateNested({ each: true })
   @Type(() => ICommandArgument)
   @IsOptional()
-  arguments?: ICommandArgument[];
+  arguments: ICommandArgument[];
 }
 
 export class IHook extends TakaroDTO<IHook> {
@@ -67,15 +65,35 @@ export class IFunction extends TakaroDTO<IFunction> {
   function: string;
 }
 
+export class IPermission extends TakaroDTO<IPermission> {
+  @IsString()
+  permission: string;
+  @IsString()
+  description: string;
+  @IsString()
+  friendlyName: string;
+  @IsOptional()
+  @IsBoolean()
+  canHaveCount?: boolean = false;
+}
+
 export class BuiltinModule<T> extends TakaroDTO<T> {
-  constructor(
-    public name: string,
-    public description: string,
-    public configSchema: string,
-    public uiSchema: string = JSON.stringify({})
-  ) {
+  constructor(name: string, description: string, configSchema: string, uiSchema: string = JSON.stringify({})) {
     super();
+    this.name = name;
+    this.description = description;
+    this.configSchema = configSchema;
+    this.uiSchema = uiSchema;
   }
+
+  @IsString()
+  public name: string;
+  @IsString()
+  public description: string;
+  @IsString()
+  public configSchema: string;
+  @IsString()
+  public uiSchema: string;
 
   @ValidateNested({ each: true })
   @Type(() => ICommand)
@@ -90,7 +108,9 @@ export class BuiltinModule<T> extends TakaroDTO<T> {
   @Type(() => IFunction)
   public functions: Array<IFunction> = [];
   @IsArray()
-  public permissions: PermissionCreateDTO[] = [];
+  @Type(() => IPermission)
+  @ValidateNested({ each: true })
+  public permissions: IPermission[] = [];
 
   protected loadFn(type: 'commands' | 'hooks' | 'cronJobs' | 'functions', name: string) {
     const folderPath = path.join(__dirname, 'modules', this.name, type);

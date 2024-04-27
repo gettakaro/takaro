@@ -1,4 +1,4 @@
-import { BuiltinModule, IHook } from '../../BuiltinModule.js';
+import { BuiltinModule, IHook, IPermission } from '../../BuiltinModule.js';
 import { HookEvents } from '../../dto/index.js';
 import { Duration } from 'luxon';
 
@@ -311,11 +311,12 @@ export class GeoBlock extends BuiltinModule<GeoBlock> {
     );
 
     this.permissions = [
-      {
+      new IPermission({
         permission: 'GEOBLOCK_IMMUNITY',
         friendlyName: 'GeoBlock immunity',
         description: 'Players with this permission will not be kicked or banned by GeoBlock.',
-      },
+        canHaveCount: false,
+      }),
     ];
 
     this.commands = [];

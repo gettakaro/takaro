@@ -1,4 +1,4 @@
-import { BuiltinModule, ICommand } from '../../BuiltinModule.js';
+import { BuiltinModule, ICommand, IPermission } from '../../BuiltinModule.js';
 
 export class EconomyUtils extends BuiltinModule<EconomyUtils> {
   constructor() {
@@ -23,12 +23,13 @@ export class EconomyUtils extends BuiltinModule<EconomyUtils> {
     );
 
     this.permissions = [
-      {
+      new IPermission({
         permission: 'ECONOMY_UTILS_MANAGE_CURRENCY',
         friendlyName: 'Manage currency',
         description:
           'Allows players to manage currency of other players. This includes granting and revoking currency.',
-      },
+        canHaveCount: false,
+      }),
     ];
 
     this.commands = [
@@ -57,12 +58,14 @@ export class EconomyUtils extends BuiltinModule<EconomyUtils> {
             type: 'player',
             helpText: 'The player to grant currency to.',
             position: 0,
+            defaultValue: null,
           },
           {
             name: 'amount',
             type: 'number',
             helpText: 'The amount of money.',
             position: 1,
+            defaultValue: null,
           },
         ],
       }),
@@ -77,12 +80,14 @@ export class EconomyUtils extends BuiltinModule<EconomyUtils> {
             type: 'player',
             helpText: 'The player to revoke currency from.',
             position: 0,
+            defaultValue: null,
           },
           {
             name: 'amount',
             type: 'number',
             helpText: 'The amount of money.',
             position: 1,
+            defaultValue: null,
           },
         ],
       }),
@@ -91,6 +96,7 @@ export class EconomyUtils extends BuiltinModule<EconomyUtils> {
         name: 'confirmTransfer',
         trigger: 'confirmtransfer',
         helpText: 'Confirms a pending transfer.',
+        arguments: [],
       }),
       new ICommand({
         function: this.loadFn('commands', 'transfer'),
@@ -103,12 +109,14 @@ export class EconomyUtils extends BuiltinModule<EconomyUtils> {
             type: 'player',
             helpText: 'The player to transfer money to.',
             position: 0,
+            defaultValue: null,
           },
           {
             name: 'amount',
             type: 'number',
             helpText: 'The amount of money to transfer.',
             position: 1,
+            defaultValue: null,
           },
         ],
       }),

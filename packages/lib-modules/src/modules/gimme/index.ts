@@ -42,6 +42,7 @@ export class Gimme extends BuiltinModule<Gimme> {
         name: 'gimme',
         trigger: 'gimme',
         helpText: 'Randomly selects item from a list of items and entities.',
+        arguments: [],
       }),
     ];
   }

@@ -11,7 +11,8 @@ import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 import { errors } from '@takaro/util';
 import { builtinModuleModificationMiddleware } from '../middlewares/builtinModuleModification.js';
-import { BuiltinModule, ICommand, ICronJob, IHook, IFunction } from '@takaro/modules';
+import { BuiltinModule, ICommand, ICronJob, IHook, IFunction, ICommandArgument } from '@takaro/modules';
+import { PermissionCreateDTO } from '../service/RoleService.js';
 
 export class ModuleOutputDTOAPI extends APIOutput<ModuleOutputDTO> {
   @Type(() => ModuleOutputDTO)
@@ -33,6 +34,12 @@ class ModuleSearchInputAllowedFilters {
   @IsOptional()
   @IsString({ each: true })
   name!: string[];
+}
+
+class ModuleExportDTOAPI extends APIOutput<BuiltinModule<unknown>> {
+  @Type(() => BuiltinModule)
+  @ValidateNested()
+  declare data: BuiltinModule<unknown>;
 }
 
 class ModuleSearchInputDTO extends ITakaroQuery<ModuleSearchInputAllowedFilters> {
@@ -106,6 +113,7 @@ export class ModuleController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_MODULES]))
   @Post('/module/export/:id')
+  @ResponseSchema(ModuleExportDTOAPI)
   async export(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new ModuleService(req.domainId);
     const mod = await service.findOne(params.id);
@@ -122,7 +130,16 @@ export class ModuleController {
             name: _.name,
             trigger: _.trigger,
             helpText: _.helpText,
-            arguments: _.arguments,
+            arguments: _.arguments.map(
+              (arg) =>
+                new ICommandArgument({
+                  name: arg.name,
+                  type: arg.type,
+                  defaultValue: arg.defaultValue,
+                  helpText: arg.helpText,
+                  position: arg.position,
+                })
+            ),
           })
       )
     );
@@ -159,6 +176,18 @@ export class ModuleController {
       )
     );
 
+    output.permissions = await Promise.all(
+      mod.permissions.map(
+        (_) =>
+          new PermissionCreateDTO({
+            canHaveCount: _.canHaveCount,
+            description: _.description,
+            permission: _.permission,
+            friendlyName: _.friendlyName,
+          })
+      )
+    );
+
     return apiResponse(output);
   }
 
@@ -166,6 +195,6 @@ export class ModuleController {
   @Post('/module/import')
   async import(@Req() req: AuthenticatedRequest, @Body() data: BuiltinModule<unknown>) {
     const service = new ModuleService(req.domainId);
-    return apiResponse(await service.seedModule(data));
+    return apiResponse(await service.import(data));
   }
 }

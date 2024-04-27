@@ -1,4 +1,4 @@
-import { BuiltinModule, ICommand, IFunction } from '../../BuiltinModule.js';
+import { BuiltinModule, ICommand, IFunction, IPermission } from '../../BuiltinModule.js';
 import { Duration } from 'luxon';
 
 export class Teleports extends BuiltinModule<Teleports> {
@@ -40,24 +40,24 @@ export class Teleports extends BuiltinModule<Teleports> {
     ];
 
     this.permissions = [
-      {
+      new IPermission({
         permission: 'TELEPORTS_CREATE_PUBLIC',
         friendlyName: 'Create Public Teleports',
         description: 'Allows the player to create public teleports.',
         canHaveCount: true,
-      },
-      {
+      }),
+      new IPermission({
         permission: 'TELEPORTS_USE',
         friendlyName: 'Use Teleports',
         description: 'Allows the player to use teleports modules.',
         canHaveCount: true,
-      },
-      {
+      }),
+      new IPermission({
         permission: 'TELEPORTS_MANAGE_WAYPOINTS',
         friendlyName: 'Manage waypoints',
         description: 'Allows creating, deleting, and managing waypoints.',
         canHaveCount: false,
-      },
+      }),
     ];
 
     this.commands = [
@@ -70,7 +70,7 @@ export class Teleports extends BuiltinModule<Teleports> {
           {
             name: 'tp',
             type: 'string',
-            defaultValue: undefined,
+            defaultValue: null,
             helpText: 'The location to teleport to.',
             position: 0,
           },
@@ -81,6 +81,7 @@ export class Teleports extends BuiltinModule<Teleports> {
         name: 'tplist',
         trigger: 'tplist',
         helpText: 'Lists all your set locations.',
+        arguments: [],
       }),
       new ICommand({
         function: this.loadFn('commands', 'settp'),
@@ -91,7 +92,7 @@ export class Teleports extends BuiltinModule<Teleports> {
           {
             name: 'tp',
             type: 'string',
-            defaultValue: undefined,
+            defaultValue: null,
             helpText: 'The location name.',
             position: 0,
           },
@@ -106,7 +107,7 @@ export class Teleports extends BuiltinModule<Teleports> {
           {
             name: 'tp',
             type: 'string',
-            defaultValue: undefined,
+            defaultValue: null,
             helpText: 'The location name.',
             position: 0,
           },
@@ -121,7 +122,7 @@ export class Teleports extends BuiltinModule<Teleports> {
           {
             name: 'tp',
             type: 'string',
-            defaultValue: undefined,
+            defaultValue: null,
             helpText: 'The location name.',
             position: 0,
           },
@@ -136,7 +137,7 @@ export class Teleports extends BuiltinModule<Teleports> {
           {
             name: 'tp',
             type: 'string',
-            defaultValue: undefined,
+            defaultValue: null,
             helpText: 'The location name.',
             position: 0,
           },
@@ -151,7 +152,7 @@ export class Teleports extends BuiltinModule<Teleports> {
           {
             name: 'waypoint',
             type: 'string',
-            defaultValue: undefined,
+            defaultValue: null,
             helpText: 'The location name.',
             position: 0,
           },
@@ -166,7 +167,7 @@ export class Teleports extends BuiltinModule<Teleports> {
           {
             name: 'waypoint',
             type: 'string',
-            defaultValue: undefined,
+            defaultValue: null,
             helpText: 'The location name.',
             position: 0,
           },
@@ -177,11 +178,13 @@ export class Teleports extends BuiltinModule<Teleports> {
         name: 'listwaypoints',
         trigger: 'waypoints',
         helpText: 'Lists all waypoints.',
+        arguments: [],
       }),
       new ICommand({
         function: this.loadFn('commands', 'teleportwaypoint'),
         name: 'teleportwaypoint',
         trigger: 'teleportwaypoint',
+        arguments: [],
         helpText:
           'Placeholder command, this will not be used directly. The module will install aliases for this command corresponding to the waypoint names.',
       }),

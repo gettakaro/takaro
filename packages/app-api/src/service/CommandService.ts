@@ -81,7 +81,7 @@ export class CommandCreateDTO extends TakaroDTO<CommandCreateDTO> implements ICo
   @Type(() => CommandArgumentCreateDTO)
   @ValidateNested({ each: true })
   @IsOptional()
-  arguments?: ICommandArgument[];
+  arguments: ICommandArgument[];
 }
 
 export class CommandArgumentCreateDTO extends TakaroDTO<CommandArgumentCreateDTO> implements ICommandArgument {

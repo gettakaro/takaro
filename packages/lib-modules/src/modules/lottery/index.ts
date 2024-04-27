@@ -1,4 +1,4 @@
-import { BuiltinModule, ICommand, ICronJob } from '../../BuiltinModule.js';
+import { BuiltinModule, ICommand, ICronJob, IPermission } from '../../BuiltinModule.js';
 
 export class Lottery extends BuiltinModule<Lottery> {
   constructor() {
@@ -23,17 +23,18 @@ export class Lottery extends BuiltinModule<Lottery> {
     );
 
     this.permissions = [
-      {
+      new IPermission({
         permission: 'LOTTERY_BUY',
         friendlyName: 'Buy Lottery Tickets',
-        canHaveCount: true,
+        canHaveCount: false,
         description: 'Allows the player to buy lottery tickets.',
-      },
-      {
+      }),
+      new IPermission({
         permission: 'LOTTERY_VIEW_TICKETS',
         friendlyName: 'View Lottery Tickets',
         description: 'Allows the player to view his lottery tickets.',
-      },
+        canHaveCount: false,
+      }),
     ];
 
     this.cronJobs = [
@@ -56,6 +57,7 @@ export class Lottery extends BuiltinModule<Lottery> {
             type: 'number',
             helpText: 'The amount of tickets to buy.',
             position: 0,
+            defaultValue: null,
           },
         ],
       }),

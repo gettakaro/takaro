@@ -236,8 +236,20 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     return id;
   }
 
+  async import(mod: BuiltinModule<unknown>) {
+    const existing = await this.repo.find({
+      filters: { name: [mod.name] },
+    });
+
+    if (existing.results.length === 1) {
+      mod.name = `${mod.name}-imported`;
+    }
+
+    return this.seedModule(mod);
+  }
+
   async seedBuiltinModules() {
-    const modules = await getModules();
+    const modules = getModules();
     await Promise.all(modules.map((m) => this.seedModule(m)));
   }
 

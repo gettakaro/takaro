@@ -51,6 +51,7 @@ export class PlayerOnboarding extends BuiltinModule<PlayerOnboarding> {
         function: this.loadFn('commands', 'starterkit'),
         trigger: 'starterkit',
         helpText: 'Get a starter kit, you can only execute this once on a server!',
+        arguments: [],
       }),
     ];
   }

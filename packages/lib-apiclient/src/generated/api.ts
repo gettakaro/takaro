@@ -4379,6 +4379,25 @@ export interface ModuleCreateInternalDTO {
 /**
  *
  * @export
+ * @interface ModuleExportDTOAPI
+ */
+export interface ModuleExportDTOAPI {
+  /**
+   *
+   * @type {BuiltinModule}
+   * @memberof ModuleExportDTOAPI
+   */
+  data: BuiltinModule;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof ModuleExportDTOAPI
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
  * @interface ModuleInstallDTO
  */
 export interface ModuleInstallDTO {
@@ -7550,43 +7569,6 @@ export interface UserUpdateDTO {
    * @memberof UserUpdateDTO
    */
   name?: string;
-}
-/**
- *
- * @export
- * @interface Utils
- */
-export interface Utils {
-  /**
-   *
-   * @type {Array<ICommand>}
-   * @memberof Utils
-   */
-  commands: Array<ICommand>;
-  /**
-   *
-   * @type {Array<IHook>}
-   * @memberof Utils
-   */
-  hooks: Array<IHook>;
-  /**
-   *
-   * @type {Array<ICronJob>}
-   * @memberof Utils
-   */
-  cronJobs: Array<ICronJob>;
-  /**
-   *
-   * @type {Array<IFunction>}
-   * @memberof Utils
-   */
-  functions: Array<IFunction>;
-  /**
-   *
-   * @type {Array<any>}
-   * @memberof Utils
-   */
-  permissions: Array<any>;
 }
 /**
  *
@@ -15136,7 +15118,7 @@ export const ModuleApiFp = function (configuration?: Configuration) {
     async moduleControllerExport(
       id: string,
       options?: RawAxiosRequestConfig
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ModuleExportDTOAPI>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.moduleControllerExport(id, options);
       const index = configuration?.serverIndex ?? 0;
       const operationBasePath = operationServerMap['ModuleApi.moduleControllerExport']?.[index]?.url;
@@ -15287,7 +15269,7 @@ export const ModuleApiFactory = function (configuration?: Configuration, basePat
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    moduleControllerExport(id: string, options?: any): AxiosPromise<void> {
+    moduleControllerExport(id: string, options?: any): AxiosPromise<ModuleExportDTOAPI> {
       return localVarFp.moduleControllerExport(id, options).then((request) => request(axios, basePath));
     },
     /**
