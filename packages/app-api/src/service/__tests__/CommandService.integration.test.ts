@@ -14,7 +14,7 @@ export async function getMockPlayer(extra: Partial<IGamePlayer> = {}): Promise<I
     ...extra,
   };
 
-  return new IGamePlayer().construct(data);
+  return new IGamePlayer(data);
 }
 
 const group = 'CommandService';
@@ -89,7 +89,7 @@ const tests = [
       });
 
       await this.setupData.service.handleChatMessage(
-        await new EventChatMessage().construct({
+        new EventChatMessage({
           msg: '/test',
           channel: ChatChannel.GLOBAL,
           player: await getMockPlayer(),
@@ -114,7 +114,7 @@ const tests = [
       });
 
       await this.setupData.service.handleChatMessage(
-        await new EventChatMessage().construct({
+        new EventChatMessage({
           msg: 'test',
           channel: ChatChannel.GLOBAL,
           player: await getMockPlayer(),
@@ -125,7 +125,7 @@ const tests = [
       expect(addStub).to.not.have.been.calledOnce;
 
       await this.setupData.service.handleChatMessage(
-        await new EventChatMessage().construct({
+        new EventChatMessage({
           msg: '/test',
           player: await getMockPlayer(),
         }),
@@ -154,7 +154,7 @@ const tests = [
       );
 
       await this.setupData.service.handleChatMessage(
-        await new EventChatMessage().construct({
+        new EventChatMessage({
           msg: '/test',
           channel: ChatChannel.GLOBAL,
           player: await getMockPlayer(),
@@ -171,7 +171,7 @@ const tests = [
       );
 
       await this.setupData.service.handleChatMessage(
-        await new EventChatMessage().construct({
+        new EventChatMessage({
           msg: '/test',
           channel: ChatChannel.GLOBAL,
           player: await getMockPlayer(),
@@ -212,7 +212,7 @@ const tests = [
       });
 
       await this.setupData.service.handleChatMessage(
-        await new EventChatMessage().construct({
+        new EventChatMessage({
           msg: '/test',
           channel: ChatChannel.GLOBAL,
           player: await getMockPlayer(),
@@ -250,7 +250,7 @@ const tests = [
       });
 
       await this.setupData.service.handleChatMessage(
-        await new EventChatMessage().construct({
+        new EventChatMessage({
           msg: '/test2',
           channel: ChatChannel.GLOBAL,
           player: await getMockPlayer(),

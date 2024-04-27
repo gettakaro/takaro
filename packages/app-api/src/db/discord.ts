@@ -96,7 +96,7 @@ export class DiscordRepo extends ITakaroRepo<DiscordGuildModel, GuildOutputDTO, 
 
     return {
       total: result.total,
-      results: await Promise.all(result.results.map(async (guild) => new GuildOutputDTO().construct(guild))),
+      results: await Promise.all(result.results.map(async (guild) => new GuildOutputDTO(guild))),
     };
   }
 
@@ -108,7 +108,7 @@ export class DiscordRepo extends ITakaroRepo<DiscordGuildModel, GuildOutputDTO, 
       throw new errors.NotFoundError(`User with id ${id} not found`);
     }
 
-    return new GuildOutputDTO().construct(data);
+    return new GuildOutputDTO(data);
   }
 
   async create(data: GuildCreateInputDTO) {

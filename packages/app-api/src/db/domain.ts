@@ -35,7 +35,7 @@ export class DomainRepo extends NOT_DOMAIN_SCOPED_ITakaroRepo<
     const result = await new QueryBuilder<DomainModel, DomainOutputDTO>(filters).build(query);
     return {
       total: result.total,
-      results: await Promise.all(result.results.map((item) => new DomainOutputDTO().construct(item))),
+      results: await Promise.all(result.results.map((item) => new DomainOutputDTO(item))),
     };
   }
 
@@ -47,13 +47,13 @@ export class DomainRepo extends NOT_DOMAIN_SCOPED_ITakaroRepo<
       throw new errors.NotFoundError();
     }
 
-    return new DomainOutputDTO().construct(data);
+    return new DomainOutputDTO(data);
   }
 
   async create(item: DomainCreateInputDTO): Promise<DomainOutputDTO> {
     const { query } = await this.getModel();
     const domain = await query.insert(item.toJSON()).returning('*');
-    return new DomainOutputDTO().construct(domain);
+    return new DomainOutputDTO(domain);
   }
 
   async delete(id: string): Promise<boolean> {
@@ -70,7 +70,7 @@ export class DomainRepo extends NOT_DOMAIN_SCOPED_ITakaroRepo<
 
     const { query } = await this.getModel();
     const res = await query.updateAndFetchById(id, data.toJSON()).returning('*');
-    return new DomainOutputDTO().construct(res);
+    return new DomainOutputDTO(res);
   }
 
   async resolveDomain(email: string): Promise<string | null> {

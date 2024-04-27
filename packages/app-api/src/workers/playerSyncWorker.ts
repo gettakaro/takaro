@@ -122,7 +122,7 @@ export async function processJob(job: Job<IGameServerQueueData>) {
 
         await playerOnGameServerService.update(
           pog.id,
-          await new PlayerOnGameServerUpdateDTO().construct({
+          new PlayerOnGameServerUpdateDTO({
             ping: gamePlayer.ping,
           })
         );

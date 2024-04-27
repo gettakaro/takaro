@@ -13,7 +13,7 @@ const testData = {
     'Ban list entries:\n  Banned until - UserID (name) - Reason\n  2023-06-29 19:40:59 - EOS_00028a9b73bb45b2b74e8f22cda7d225 (testing display name) - Totally valid testing reason :)\n',
 };
 
-const mockSdtdConnectionInfo = new SdtdConnectionInfo().construct({
+const mockSdtdConnectionInfo = new SdtdConnectionInfo({
   adminToken: 'aaa',
   adminUser: 'aaa',
   useTls: false,
@@ -24,7 +24,7 @@ describe('7d2d Actions', () => {
   describe('listBans', () => {
     it('Can parse ban list with a single ban', async () => {
       sandbox.stub(SevenDaysToDie.prototype, 'executeConsoleCommand').resolves(
-        await new CommandOutput().construct({
+        new CommandOutput({
           rawResult: testData.oneBan,
           success: true,
         })
@@ -40,7 +40,7 @@ describe('7d2d Actions', () => {
 
     it('Can parse ban list with two bans', async () => {
       sandbox.stub(SevenDaysToDie.prototype, 'executeConsoleCommand').resolves(
-        await new CommandOutput().construct({
+        new CommandOutput({
           rawResult: testData.twoBans,
           success: true,
         })
@@ -60,7 +60,7 @@ describe('7d2d Actions', () => {
 
     it('Can parse ban list with no bans', async () => {
       sandbox.stub(SevenDaysToDie.prototype, 'executeConsoleCommand').resolves(
-        await new CommandOutput().construct({
+        new CommandOutput({
           rawResult: testData.noBans,
           success: true,
         })
@@ -74,7 +74,7 @@ describe('7d2d Actions', () => {
 
     it('Can parse ban list with a single ban with a display name', async () => {
       sandbox.stub(SevenDaysToDie.prototype, 'executeConsoleCommand').resolves(
-        await new CommandOutput().construct({
+        new CommandOutput({
           rawResult: testData.oneBanWithDisplayName,
           success: true,
         })

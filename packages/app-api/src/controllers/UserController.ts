@@ -160,7 +160,7 @@ export class UserController {
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new UserService(req.domainId);
     await service.delete(params.id);
-    return apiResponse(await new IdUuidDTO().construct({ id: params.id }));
+    return apiResponse(new IdUuidDTO({ id: params.id }));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_USERS, PERMISSIONS.MANAGE_ROLES], false))
@@ -182,7 +182,7 @@ export class UserController {
     const service = new UserService(req.domainId);
     await service.removeRole(params.roleId, params.id);
     return apiResponse(
-      await new IdUuidDTO().construct({
+      new IdUuidDTO({
         id: params.roleId,
       })
     );

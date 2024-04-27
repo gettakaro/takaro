@@ -1,6 +1,6 @@
-import { BuiltinModule } from '../../BuiltinModule.js';
+import { BuiltinModule, ICommand, IHook } from '../../BuiltinModule.js';
 import { HookEvents } from '../../dto/index.js';
-export class PlayerOnboarding extends BuiltinModule {
+export class PlayerOnboarding extends BuiltinModule<PlayerOnboarding> {
   constructor() {
     super(
       'playerOnboarding',
@@ -38,20 +38,21 @@ export class PlayerOnboarding extends BuiltinModule {
     );
 
     this.hooks = [
-      {
+      new IHook({
         eventType: HookEvents.PLAYER_CONNECTED,
         name: 'playerConnected',
-        function: '',
-      },
+        function: this.loadFn('hooks', 'playerConnected'),
+      }),
     ];
 
     this.commands = [
-      {
+      new ICommand({
         name: 'starterkit',
-        function: '',
+        function: this.loadFn('commands', 'starterkit'),
         trigger: 'starterkit',
         helpText: 'Get a starter kit, you can only execute this once on a server!',
-      },
+        arguments: [],
+      }),
     ];
   }
 }

@@ -64,7 +64,7 @@ const tests = [
     setup,
     test: async function () {
       await this.setupData.service.handleEvent({
-        eventData: await new EventPlayerConnected().construct({
+        eventData: new EventPlayerConnected({
           msg: 'foo connected',
         }),
         eventType: HookEvents.PLAYER_CONNECTED,
@@ -81,7 +81,7 @@ const tests = [
     setup,
     test: async function () {
       await this.setupData.service.handleEvent({
-        eventData: await new EventChatMessage().construct({
+        eventData: new EventChatMessage({
           msg: 'chat message',
           channel: ChatChannel.GLOBAL,
         }),
@@ -93,7 +93,7 @@ const tests = [
 
       // But a different event type should trigger
       await this.setupData.service.handleEvent({
-        eventData: await new EventPlayerConnected().construct({
+        eventData: new EventPlayerConnected({
           msg: 'foo connected',
         }),
         eventType: HookEvents.PLAYER_CONNECTED,
@@ -118,7 +118,7 @@ const tests = [
       });
 
       await this.setupData.service.handleEvent({
-        eventData: await new EventPlayerConnected().construct({
+        eventData: new EventPlayerConnected({
           msg: 'foo connected',
         }),
         eventType: HookEvents.PLAYER_CONNECTED,
@@ -128,7 +128,7 @@ const tests = [
       expect(this.setupData.queueAddStub).to.have.been.calledOnce;
 
       await this.setupData.service.handleEvent({
-        eventData: await new EventPlayerConnected().construct({
+        eventData: new EventPlayerConnected({
           msg: 'bar connected',
         }),
         eventType: HookEvents.PLAYER_CONNECTED,

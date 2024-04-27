@@ -25,7 +25,7 @@ const tests = [
     test: async function () {
       const playerService = new PlayerService(this.standardDomainId ?? '');
 
-      const MOCK_PLAYER = await new IGamePlayer().construct({
+      const MOCK_PLAYER = new IGamePlayer({
         ip: '169.169.169.80',
         name: 'brunkel',
         gameId: uuid(),
@@ -83,7 +83,7 @@ const tests = [
 
       const playerRes = await this.client.player.playerControllerGetOne(pog.playerId);
 
-      const MOCK_PLAYER = await new IGamePlayer().construct({
+      const MOCK_PLAYER = new IGamePlayer({
         ip: '169.169.169.80',
         name: 'jefke',
         gameId: pog.gameId,

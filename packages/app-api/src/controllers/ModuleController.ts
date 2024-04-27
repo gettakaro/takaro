@@ -11,6 +11,8 @@ import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 import { errors } from '@takaro/util';
 import { builtinModuleModificationMiddleware } from '../middlewares/builtinModuleModification.js';
+import { BuiltinModule, ICommand, ICronJob, IHook, IFunction, ICommandArgument } from '@takaro/modules';
+import { PermissionCreateDTO } from '../service/RoleService.js';
 
 export class ModuleOutputDTOAPI extends APIOutput<ModuleOutputDTO> {
   @Type(() => ModuleOutputDTO)
@@ -32,6 +34,12 @@ class ModuleSearchInputAllowedFilters {
   @IsOptional()
   @IsString({ each: true })
   name!: string[];
+}
+
+class ModuleExportDTOAPI extends APIOutput<BuiltinModule<unknown>> {
+  @Type(() => BuiltinModule)
+  @ValidateNested()
+  declare data: BuiltinModule<unknown>;
 }
 
 class ModuleSearchInputDTO extends ITakaroQuery<ModuleSearchInputAllowedFilters> {
@@ -100,6 +108,93 @@ export class ModuleController {
     const mod = await service.findOne(params.id);
     if (!mod) throw new errors.NotFoundError('Module not found');
     await service.delete(params.id);
-    return apiResponse(await new IdUuidDTO().construct({ id: params.id }));
+    return apiResponse(new IdUuidDTO({ id: params.id }));
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_MODULES]))
+  @Post('/module/export/:id')
+  @ResponseSchema(ModuleExportDTOAPI)
+  async export(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
+    const service = new ModuleService(req.domainId);
+    const mod = await service.findOne(params.id);
+
+    if (!mod) throw new errors.NotFoundError('Module not found');
+
+    const output = new BuiltinModule(mod.name, mod.description, mod.configSchema, mod.uiSchema);
+
+    output.commands = await Promise.all(
+      mod.commands.map(
+        (_) =>
+          new ICommand({
+            function: _.function.code,
+            name: _.name,
+            trigger: _.trigger,
+            helpText: _.helpText,
+            arguments: _.arguments.map(
+              (arg) =>
+                new ICommandArgument({
+                  name: arg.name,
+                  type: arg.type,
+                  defaultValue: arg.defaultValue,
+                  helpText: arg.helpText,
+                  position: arg.position,
+                })
+            ),
+          })
+      )
+    );
+
+    output.hooks = await Promise.all(
+      mod.hooks.map(
+        (_) =>
+          new IHook({
+            function: _.function.code,
+            name: _.name,
+            eventType: _.eventType,
+          })
+      )
+    );
+
+    output.cronJobs = await Promise.all(
+      mod.cronJobs.map(
+        (_) =>
+          new ICronJob({
+            function: _.function.code,
+            name: _.name,
+            temporalValue: _.temporalValue,
+          })
+      )
+    );
+
+    output.functions = await Promise.all(
+      mod.functions.map(
+        (_) =>
+          new IFunction({
+            function: _.code,
+            name: _.name,
+          })
+      )
+    );
+
+    output.permissions = await Promise.all(
+      mod.permissions.map(
+        (_) =>
+          new PermissionCreateDTO({
+            canHaveCount: _.canHaveCount,
+            description: _.description,
+            permission: _.permission,
+            friendlyName: _.friendlyName,
+          })
+      )
+    );
+
+    return apiResponse(output);
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]))
+  @Post('/module/import')
+  async import(@Req() req: AuthenticatedRequest, @Body() data: BuiltinModule<unknown>) {
+    const service = new ModuleService(req.domainId);
+    return apiResponse(await service.import(data));
   }
 }

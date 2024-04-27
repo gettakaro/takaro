@@ -1,6 +1,6 @@
-import { BuiltinModule } from '../../BuiltinModule.js';
+import { BuiltinModule, ICommand } from '../../BuiltinModule.js';
 
-export class Gimme extends BuiltinModule {
+export class Gimme extends BuiltinModule<Gimme> {
   constructor() {
     super(
       'gimme',
@@ -37,12 +37,13 @@ export class Gimme extends BuiltinModule {
     );
 
     this.commands = [
-      {
-        function: '',
+      new ICommand({
+        function: this.loadFn('commands', 'gimme'),
         name: 'gimme',
         trigger: 'gimme',
         helpText: 'Randomly selects item from a list of items and entities.',
-      },
+        arguments: [],
+      }),
     ];
   }
 }

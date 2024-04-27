@@ -1,77 +1,125 @@
-import { readdir, readFile } from 'fs/promises';
+import { readFileSync, readdirSync } from 'fs';
 import path from 'path';
 import * as url from 'url';
-import { EventTypes } from './dto/index.js';
-import { PermissionCreateDTO } from '@takaro/apiclient';
+import { IsString, IsOptional, IsNumber, IsArray, ValidateNested, IsEnum, IsBoolean } from 'class-validator';
+import { Type } from 'class-transformer';
+import { EventTypes, HookEvents } from './dto/index.js';
+import { TakaroDTO } from '@takaro/util';
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
-interface IModuleItem {
+export class ICommandArgument extends TakaroDTO<ICommandArgument> {
+  @IsString()
   name: string;
-  function: string;
-}
-
-export interface ICommandArgument {
-  name: string;
+  @IsString()
   type: string;
+  @IsString()
+  @IsOptional()
   helpText?: string;
-  defaultValue?: string;
+  @IsString()
+  @IsOptional()
+  defaultValue?: string | null;
+  @IsNumber()
+  @IsOptional()
   position?: number;
 }
 
-export interface ICommand extends IModuleItem {
+export class ICommand extends TakaroDTO<ICommand> {
+  @IsString()
+  name: string;
+  @IsString()
+  function: string;
+  @IsString()
   trigger: string;
+  @IsString()
+  @IsOptional()
   helpText?: string;
-  arguments?: ICommandArgument[];
+  @ValidateNested({ each: true })
+  @Type(() => ICommandArgument)
+  @IsOptional()
+  arguments: ICommandArgument[];
 }
 
-export interface IHook extends IModuleItem {
+export class IHook extends TakaroDTO<IHook> {
+  @IsString()
+  name: string;
+  @IsString()
+  function: string;
+  @IsEnum(Object.values(HookEvents))
   eventType: EventTypes;
 }
 
-export interface ICronJob extends IModuleItem {
+export class ICronJob extends TakaroDTO<ICronJob> {
+  @IsString()
+  name: string;
+  @IsString()
+  function: string;
+  @IsString()
   temporalValue: string;
 }
 
-export abstract class BuiltinModule {
-  constructor(
-    public name: string,
-    public description: string,
-    public configSchema: string,
-    public uiSchema: string = JSON.stringify({})
-  ) {}
+export class IFunction extends TakaroDTO<IFunction> {
+  @IsString()
+  name: string;
+  @IsString()
+  function: string;
+}
 
-  public commands: Array<ICommand> = [];
-  public hooks: Array<IHook> = [];
-  public cronJobs: Array<ICronJob> = [];
-  public functions: Array<IModuleItem> = [];
-  public permissions: PermissionCreateDTO[] = [];
+export class IPermission extends TakaroDTO<IPermission> {
+  @IsString()
+  permission: string;
+  @IsString()
+  description: string;
+  @IsString()
+  friendlyName: string;
+  @IsOptional()
+  @IsBoolean()
+  canHaveCount?: boolean = false;
+}
 
-  async construct() {
-    await this.loadType('commands');
-    await this.loadType('hooks');
-    await this.loadType('cronJobs');
-    await this.loadType('functions');
+export class BuiltinModule<T> extends TakaroDTO<T> {
+  constructor(name: string, description: string, configSchema: string, uiSchema: string = JSON.stringify({})) {
+    super();
+    this.name = name;
+    this.description = description;
+    this.configSchema = configSchema;
+    this.uiSchema = uiSchema;
   }
 
-  async loadType(type: 'commands' | 'hooks' | 'cronJobs' | 'functions') {
-    const items = this[type] as IModuleItem[];
-    if (!items.length) return;
+  @IsString()
+  public name: string;
+  @IsString()
+  public description: string;
+  @IsString()
+  public configSchema: string;
+  @IsString()
+  public uiSchema: string;
 
+  @ValidateNested({ each: true })
+  @Type(() => ICommand)
+  public commands: Array<ICommand> = [];
+  @ValidateNested({ each: true })
+  @Type(() => IHook)
+  public hooks: Array<IHook> = [];
+  @ValidateNested({ each: true })
+  @Type(() => ICronJob)
+  public cronJobs: Array<ICronJob> = [];
+  @ValidateNested({ each: true })
+  @Type(() => IFunction)
+  public functions: Array<IFunction> = [];
+  @IsArray()
+  @Type(() => IPermission)
+  @ValidateNested({ each: true })
+  public permissions: IPermission[] = [];
+
+  protected loadFn(type: 'commands' | 'hooks' | 'cronJobs' | 'functions', name: string) {
     const folderPath = path.join(__dirname, 'modules', this.name, type);
-    const files = await readdir(folderPath);
-
-    for (const item of items) {
-      const file = files.find((file) => file.replace('.js', '') === item.name);
-      if (!file) {
-        throw new Error(
-          `Could not find ${item.name} in ${this.name}'s ${type}. Did you provide a function implementation?`
-        );
-      }
-
-      const fileContents = await readFile(path.join(folderPath, file), 'utf-8');
-
-      item.function = fileContents;
+    const files = readdirSync(folderPath);
+    const file = files.find((file) => file.replace('.js', '') === name);
+    if (!file) {
+      throw new Error(`Could not find ${name} in ${this.name}'s ${type}. Did you provide a function implementation?`);
     }
+
+    return readFileSync(path.join(folderPath, file), 'utf-8');
   }
 }

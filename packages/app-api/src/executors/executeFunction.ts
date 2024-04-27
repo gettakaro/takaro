@@ -86,7 +86,7 @@ export async function executeFunction(
     data: dataForEvent,
   };
 
-  const eventData = await new EventCreateDTO().construct({
+  const eventData = new EventCreateDTO({
     moduleId: data.module.moduleId,
     gameserverId: data.gameServerId,
     meta: new BaseEvent(),
@@ -99,7 +99,7 @@ export async function executeFunction(
 
     eventData.eventName = EVENT_TYPES.COMMAND_EXECUTED;
 
-    meta.command = await new TakaroEventCommandDetails().construct({
+    meta.command = new TakaroEventCommandDetails({
       id: command.id,
       name: command.name,
       arguments: data.arguments,
@@ -140,11 +140,11 @@ export async function executeFunction(
     switch (config.get('functions.executionMode')) {
       case EXECUTION_MODE.LOCAL:
         result = await executeFunctionLocal(functionRes.data.data.code, data, token);
-        meta.result = await new TakaroEventFunctionResult().construct(result);
+        meta.result = new TakaroEventFunctionResult(result);
         break;
       case EXECUTION_MODE.LAMBDA:
         result = await executeLambda({ fn: functionRes.data.data.code, data, token, domainId });
-        meta.result = await new TakaroEventFunctionResult().construct(result);
+        meta.result = new TakaroEventFunctionResult(result);
         break;
       default:
         throw new errors.ConfigError(`Invalid execution mode: ${config.get('functions.executionMode')}`);
@@ -202,32 +202,32 @@ export async function executeFunction(
     // Ensure all logs are TakaroEventFunctionLog
     meta.result.logs = await Promise.all(
       result.logs.map(async (log) => {
-        return new TakaroEventFunctionLog().construct(log);
+        return new TakaroEventFunctionLog(log);
       })
     );
 
-    await eventService.create(await new EventCreateDTO().construct({ ...eventData, meta }));
+    await eventService.create(new EventCreateDTO({ ...eventData, meta }));
   } catch (err: any) {
     if (err instanceof RateLimiterRes) {
       log.warn('Function execution rate limited');
-      meta.result = await new TakaroEventFunctionResult().construct({
+      meta.result = new TakaroEventFunctionResult({
         success: false,
         reason: 'rate limited',
         tryAgainIn: err.msBeforeNext,
       });
-      await eventService.create(await new EventCreateDTO().construct({ ...eventData, meta }));
+      await eventService.create(new EventCreateDTO({ ...eventData, meta }));
       return null;
     }
 
     if ('message' in err) {
-      meta.result = await new TakaroEventFunctionResult().construct({
+      meta.result = new TakaroEventFunctionResult({
         success: false,
         reason: err.message,
       });
     }
 
     if (err.constructor.name === 'SyntaxError') {
-      meta.result = await new TakaroEventFunctionResult().construct({
+      meta.result = new TakaroEventFunctionResult({
         success: false,
         reason: `SyntaxError: ${err.message}. Your javascript code is invalid.`,
       });
@@ -235,7 +235,7 @@ export async function executeFunction(
 
     Sentry.captureException(err);
     log.error('executeFunction', err);
-    await eventService.create(await new EventCreateDTO().construct({ ...eventData, meta }));
+    await eventService.create(new EventCreateDTO({ ...eventData, meta }));
     return null;
   }
 }

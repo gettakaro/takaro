@@ -78,7 +78,7 @@ export class UserRepo extends ITakaroRepo<UserModel, UserOutputDTO, UserCreateIn
 
     return {
       total: result.total,
-      results: await Promise.all(result.results.map((item) => new UserOutputWithRolesDTO().construct(item))),
+      results: await Promise.all(result.results.map((item) => new UserOutputWithRolesDTO(item))),
     };
   }
 
@@ -90,7 +90,7 @@ export class UserRepo extends ITakaroRepo<UserModel, UserOutputDTO, UserCreateIn
       throw new errors.NotFoundError(`User with id ${id} not found`);
     }
 
-    return new UserOutputWithRolesDTO().construct(data);
+    return new UserOutputWithRolesDTO(data);
   }
 
   async create(data: UserCreateInputDTO): Promise<UserOutputWithRolesDTO> {

@@ -114,6 +114,6 @@ export class VariableController {
   async delete(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new VariablesService(req.domainId);
     await service.delete(params.id);
-    return apiResponse(await new IdUuidDTO().construct({ id: params.id }));
+    return apiResponse(new IdUuidDTO({ id: params.id }));
   }
 }

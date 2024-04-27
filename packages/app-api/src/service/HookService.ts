@@ -149,7 +149,7 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
 
     if (item.function) {
       const newFn = await functionsService.create(
-        await new FunctionCreateDTO().construct({
+        new FunctionCreateDTO({
           code: item.function,
         })
       );
@@ -159,7 +159,7 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
       fnIdToAdd = newFn.id;
     }
 
-    const created = await this.repo.create(await new HookCreateDTO().construct({ ...item, function: fnIdToAdd }));
+    const created = await this.repo.create(new HookCreateDTO({ ...item, function: fnIdToAdd }));
     return created;
   }
   async update(id: string, item: HookUpdateDTO) {
@@ -178,7 +178,7 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
 
       await functionsService.update(
         fn.id,
-        await new FunctionUpdateDTO().construct({
+        new FunctionUpdateDTO({
           code: item.function,
         })
       );
@@ -258,7 +258,7 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
       throw new errors.BadRequestError('Invalid event type');
     }
 
-    const eventData = await new dto().construct(data.eventMeta);
+    const eventData = new dto(data.eventMeta);
     await eventData.validate();
 
     return this.handleEvent({
