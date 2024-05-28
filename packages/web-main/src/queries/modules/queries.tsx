@@ -129,6 +129,7 @@ export const useModuleRemove = () => {
       onSuccess: async (removedModule: IdUuidDTO) => {
         await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.detail(removedModule.id) });
+        await queryClient.invalidateQueries({ queryKey: moduleKeys.export(removedModule.id) });
       },
     }),
     {}
@@ -166,6 +167,7 @@ export const useModuleUpdate = () => {
         (await apiClient.module.moduleControllerUpdate(id, moduleUpdate)).data.data,
       onSuccess: async (updatedModule: ModuleOutputDTO) => {
         await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
+        await queryClient.invalidateQueries({ queryKey: moduleKeys.export(updatedModule.id) });
         return queryClient.setQueryData(moduleKeys.detail(updatedModule.id), updatedModule);
       },
     }),
@@ -191,6 +193,7 @@ export const useHookCreate = () => {
       mutationFn: async (hook) => (await apiClient.hook.hookControllerCreate(hook)).data.data,
       onSuccess: async (newHook: HookOutputDTO) => {
         await queryClient.invalidateQueries({ queryKey: moduleKeys.hooks.list() });
+        await queryClient.invalidateQueries({ queryKey: moduleKeys.export(newHook.moduleId) });
         queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(newHook.moduleId), (prev) => {
           if (!prev) {
             // we are updating a module that does not have a cache entry
@@ -221,6 +224,7 @@ export const useHookRemove = ({ moduleId }) => {
       mutationFn: async ({ hookId }) => (await apiClient.hook.hookControllerRemove(hookId)).data.data,
       onSuccess: async (removedHook: IdUuidDTO) => {
         await queryClient.invalidateQueries({ queryKey: moduleKeys.hooks.list() });
+        await queryClient.invalidateQueries({ queryKey: moduleKeys.export(moduleId) });
         queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(moduleId), (prev) => {
           if (!prev) {
             return prev;
@@ -250,6 +254,7 @@ export const useHookUpdate = () => {
       mutationFn: async ({ hookId, hook }) => (await apiClient.hook.hookControllerUpdate(hookId, hook)).data.data,
       onSuccess: async (updatedHook: HookOutputDTO) => {
         await queryClient.invalidateQueries({ queryKey: moduleKeys.hooks.list() });
+        await queryClient.invalidateQueries({ queryKey: moduleKeys.export(updatedHook.moduleId) });
         queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(updatedHook.moduleId), (prev) => {
           if (!prev) {
             return prev;
@@ -285,6 +290,7 @@ export const useCommandCreate = () => {
       mutationFn: async (command) => (await apiClient.command.commandControllerCreate(command)).data.data,
       onSuccess: async (newCommand: CommandOutputDTO) => {
         await queryClient.invalidateQueries({ queryKey: moduleKeys.commands.list() });
+        await queryClient.invalidateQueries({ queryKey: moduleKeys.export(newCommand.moduleId) });
         queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(newCommand.moduleId), (prev) => {
           if (!prev) {
             return prev;
@@ -315,6 +321,7 @@ export const useCommandUpdate = () => {
         (await apiClient.command.commandControllerUpdate(commandId, command)).data.data,
       onSuccess: async (updatedCommand: CommandOutputDTO) => {
         await queryClient.invalidateQueries({ queryKey: moduleKeys.commands.list() });
+        await queryClient.invalidateQueries({ queryKey: moduleKeys.export(updatedCommand.moduleId) });
         queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(updatedCommand.id), (prev) => {
           if (!prev) {
             return prev;
@@ -348,6 +355,7 @@ export const useCommandRemove = ({ moduleId }) => {
       onSuccess: async (removedCommand: IdUuidDTO) => {
         // invalidate list of commands
         await queryClient.invalidateQueries({ queryKey: moduleKeys.commands.list() });
+        await queryClient.invalidateQueries({ queryKey: moduleKeys.export(moduleId) });
         queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(moduleId), (prev) => {
           if (!prev) {
             return prev;
@@ -384,6 +392,7 @@ export const useCronJobCreate = () => {
       onSuccess: async (newCronJob: CronJobOutputDTO) => {
         // invalidate list of cronjobs
         await queryClient.invalidateQueries({ queryKey: moduleKeys.cronJobs.list() });
+        await queryClient.invalidateQueries({ queryKey: moduleKeys.export(newCronJob.moduleId) });
         queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(newCronJob.moduleId), (prev) => {
           if (!prev) {
             return prev;
@@ -416,6 +425,7 @@ export const useCronJobUpdate = () => {
       onSuccess: async (updatedCronJob: CronJobOutputDTO) => {
         // invalidate list of cronjob
         await queryClient.invalidateQueries({ queryKey: moduleKeys.cronJobs.list() });
+        await queryClient.invalidateQueries({ queryKey: moduleKeys.export(updatedCronJob.moduleId) });
         queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(updatedCronJob.moduleId), (prev) => {
           if (!prev) {
             return prev;
@@ -449,6 +459,7 @@ export const useCronJobRemove = ({ moduleId }: { moduleId: string }) => {
         (await apiClient.cronjob.cronJobControllerRemove(cronJobId)).data.data,
       onSuccess: async (removedCronJob: IdUuidDTO) => {
         await queryClient.invalidateQueries({ queryKey: moduleKeys.cronJobs.list() });
+        await queryClient.invalidateQueries({ queryKey: moduleKeys.export(moduleId) });
 
         queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(moduleId), (prev) => {
           if (!prev) {
