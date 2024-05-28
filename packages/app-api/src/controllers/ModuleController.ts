@@ -112,7 +112,7 @@ export class ModuleController {
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_MODULES]))
-  @Post('/module/export/:id')
+  @Get('/module/:id/export')
   @ResponseSchema(ModuleExportDTOAPI)
   async export(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new ModuleService(req.domainId);

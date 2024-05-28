@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient, queryOptions, infiniteQueryOptions } from '@tanstack/react-query';
 import { getApiClient } from 'util/getApiClient';
 import {
+  BuiltinModule,
   CommandCreateDTO,
   CommandOutputDTO,
   CommandOutputDTOAPI,
@@ -20,6 +21,7 @@ import {
   IdUuidDTO,
   IdUuidDTOAPI,
   ModuleCreateDTO,
+  ModuleExportDTOAPI,
   ModuleOutputArrayDTOAPI,
   ModuleOutputDTO,
   ModuleOutputDTOAPI,
@@ -28,12 +30,13 @@ import {
 } from '@takaro/apiclient';
 
 import { queryParamsToArray, hasNextPage, mutationWrapper } from '../util';
-import { AxiosError } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 import { ErrorMessageMapping } from '@takaro/lib-components/src/errors';
 
 export const moduleKeys = {
   all: ['modules'] as const,
   detail: (id: string) => [...moduleKeys.all, 'detail', id] as const,
+  export: (id: string) => [...moduleKeys.all, 'export', id] as const,
   list: () => [...moduleKeys.all, 'list'] as const,
 
   hooks: {
@@ -127,6 +130,23 @@ export const useModuleRemove = () => {
         await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.detail(removedModule.id) });
       },
+    }),
+    {}
+  );
+};
+
+export const moduleExportOptions = (moduleId: string) =>
+  queryOptions<ModuleExportDTOAPI['data'], AxiosError<ModuleExportDTOAPI>>({
+    queryKey: moduleKeys.export(moduleId),
+    queryFn: async () => (await getApiClient().module.moduleControllerExport(moduleId)).data.data,
+  });
+
+export const useModuleImport = () => {
+  const apiClient = getApiClient();
+
+  return mutationWrapper<void, BuiltinModule>(
+    useMutation<AxiosResponse<void>, AxiosError<ModuleExportDTOAPI>, BuiltinModule>({
+      mutationFn: async (mod) => await apiClient.module.moduleControllerImport(mod),
     }),
     {}
   );

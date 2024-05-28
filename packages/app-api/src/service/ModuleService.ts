@@ -245,7 +245,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
       mod.name = `${mod.name}-imported`;
     }
 
-    return this.seedModule(mod);
+    return this.seedModule(mod, true);
   }
 
   async seedBuiltinModules() {
@@ -253,7 +253,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     await Promise.all(modules.map((m) => this.seedModule(m)));
   }
 
-  async seedModule(builtin: BuiltinModule<unknown>) {
+  async seedModule(builtin: BuiltinModule<unknown>, isImport = false) {
     const commandService = new CommandService(this.domainId);
     const hookService = new HookService(this.domainId);
     const cronjobService = new CronJobService(this.domainId);
@@ -268,7 +268,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
       mod = await this.create(
         new ModuleCreateInternalDTO({
           ...builtin,
-          builtin: builtin.name,
+          builtin: isImport ? null : builtin.name,
           permissions: await Promise.all(builtin.permissions.map((p) => new PermissionOutputDTO(p))),
         })
       );
