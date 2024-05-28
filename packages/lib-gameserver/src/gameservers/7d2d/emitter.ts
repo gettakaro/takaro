@@ -247,6 +247,9 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
         case 'Party':
           detectedChannel = ChatChannel.TEAM;
           break;
+        case 'Friends':
+          detectedChannel = ChatChannel.FRIENDS;
+          break;
         default:
           break;
       }

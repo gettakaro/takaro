@@ -89,6 +89,7 @@ export class EventPlayerDisconnected extends BaseGameEvent<EventPlayerDisconnect
 export enum ChatChannel {
   GLOBAL = 'global',
   TEAM = 'team',
+  FRIENDS = 'friends',
   WHISPER = 'whisper',
 }
 
