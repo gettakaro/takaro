@@ -47,3 +47,6 @@ _data/
 # Firecracker
 !firecracker/.gitkeep
 firecracker/*
+
+# ignore generated routetree
+routeTree.gen.ts
