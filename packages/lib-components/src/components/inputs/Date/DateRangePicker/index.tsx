@@ -12,10 +12,10 @@ import { DateSelector } from './DateSelector';
 import { DateRangePickerDispatchContext, DateRangePickerContext, reducer } from './Context';
 
 export interface DateRangePickerProps {
-  defaultValue?: { start: DateTime; end: DateTime };
+  defaultValue?: { start: DateTime<true>; end: DateTime<true> };
   readOnly?: boolean;
   id: string;
-  onChange: (start: DateTime, end: DateTime) => void;
+  onChange: (start: DateTime<true>, end: DateTime<true>) => void;
 }
 
 export const DateRangePicker: FC<DateRangePickerProps> = ({

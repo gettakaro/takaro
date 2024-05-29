@@ -7,7 +7,7 @@ import { TreeFilter, TreeNode } from 'components/events/TreeFilter';
 import { Filter } from 'components/events/types';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import _ from 'lodash';
-import { DateTime } from 'luxon';
+import { DateTime, Settings } from 'luxon';
 import { eventsInfiniteQueryOptions } from 'queries/events';
 import { HiStop as PauseIcon, HiPlay as PlayIcon, HiArrowPath as RefreshIcon } from 'react-icons/hi2';
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
@@ -16,6 +16,8 @@ import { hasPermission } from 'hooks/useHasPermission';
 import { useCallback, useMemo, useState } from 'react';
 import { useEventSubscription } from 'queries/events/queries';
 import { z } from 'zod';
+
+Settings.throwOnInvalid = true;
 
 const treeData: TreeNode[] = [
   {
@@ -269,7 +271,7 @@ function Component() {
   }, [rawEvents]);
 
   const handleDateRangePicker = useCallback(
-    (start: DateTime, end: DateTime) => {
+    (start: DateTime<true>, end: DateTime<true>) => {
       navigate({
         search: (prev: EventSearch) => ({ ...prev, startDate: start.toISO()!, endDate: end.toISO()! }),
       });
@@ -297,7 +299,12 @@ function Component() {
           id="event-daterange-picker"
           onChange={handleDateRangePicker}
           defaultValue={
-            startDate && endDate ? { start: DateTime.fromISO(startDate), end: DateTime.fromISO(endDate) } : undefined
+            startDate && endDate
+              ? {
+                  start: DateTime.fromISO(startDate) as DateTime<true>,
+                  end: DateTime.fromISO(endDate) as DateTime<true>,
+                }
+              : undefined
           }
         />
         <Button
