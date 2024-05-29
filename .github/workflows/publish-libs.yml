@@ -1,11 +1,8 @@
 name: Publish libs
 
-#on:
-#  release:
-#    types: [published]
 on:
   push:
-    branches:
+    tags:
       - '**'
 jobs:
   publish:
@@ -46,4 +43,4 @@ jobs:
       - name: Authenticate with NPM
         run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
 
-      - run: npm -w packages/${{ matrix.package.name }} publish --access public --verbose
+      - run: npm -w packages/${{ matrix.package.name }} publish --access public
