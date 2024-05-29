@@ -44,9 +44,5 @@ tsconfig.*.tsbuildinfo
 
 _data/
 
-# Firecracker
-!firecracker/.gitkeep
-firecracker/*
-
-# ignore generated routetree
+# Tanstack router
 routeTree.gen.ts
