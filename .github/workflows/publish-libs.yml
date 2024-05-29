@@ -53,6 +53,8 @@ jobs:
 
       - run: ./scripts/dev-init.sh
 
+      - run: cat /home/runner/work/_temp/.npmrc
+
       - run: npm -w packages/${{ matrix.package.name }} publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ steps.generate_token.outputs.token }}
