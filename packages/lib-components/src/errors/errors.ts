@@ -1,6 +1,6 @@
 import { AxiosError } from 'axios';
 import { BaseError } from './base';
-import Sentry from '@sentry/react';
+import * as Sentry from '@sentry/react';
 import { ValidationError } from 'class-validator';
 
 // Define a type for the error message mapping
