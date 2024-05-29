@@ -49,6 +49,7 @@ jobs:
           node-version: 18.18
           cache: 'npm'
           registry-url: 'https://npm.pkg.github.com'
+          scope: '@gettakaro'
 
       - run: ./scripts/dev-init.sh
 
