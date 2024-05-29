@@ -2,9 +2,9 @@
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import { App } from './App';
-import reportWebVitals from './reportWebVitals';
+import { registerWebVitalCallbacks } from './reportWebVitals';
 import * as Sentry from '@sentry/react';
-import * as SentryIntegration from '@sentry/integrations';
+import './luxon';
 
 // styles required for slider component we rely on
 import 'rc-slider/assets/index.css';
@@ -19,10 +19,10 @@ Sentry.init({
   // To prevent this from being exceeded, we should lower the sample to only send e.g. 20% of traces.
 
   integrations: [
-    new Sentry.Integrations.Breadcrumbs({
+    Sentry.breadcrumbsIntegration({
       console: false,
     }),
-    SentryIntegration.captureConsoleIntegration({
+    Sentry.captureConsoleIntegration({
       levels: ['error'],
     }),
 
@@ -45,7 +45,4 @@ Sentry.init({
 
 root.render(<App />);
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+registerWebVitalCallbacks();
