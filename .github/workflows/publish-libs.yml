@@ -52,6 +52,6 @@ jobs:
 
       - run: ./scripts/dev-init.sh
 
-      - run: npm -w ${{ matrix.package.name }} publish --provenance --access public
+      - run: npm -w packages/${{ matrix.package.name }} publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ steps.generate_token.outputs.token }}
