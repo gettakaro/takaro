@@ -4,7 +4,6 @@ import './index.css';
 import { App } from './App';
 import { registerWebVitalCallbacks } from './reportWebVitals';
 import * as Sentry from '@sentry/react';
-import './luxon';
 
 // styles required for slider component we rely on
 import 'rc-slider/assets/index.css';
