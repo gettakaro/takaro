@@ -25,6 +25,7 @@ import {
   AiOutlineLink as LinkIcon,
   AiOutlineEye as ViewIcon,
   AiOutlineCopy as CopyIcon,
+  AiOutlineExport as ExportIcon,
 } from 'react-icons/ai';
 
 interface IModuleCardProps {
@@ -68,6 +69,11 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
     e.stopPropagation();
     // TODO: should open in new tab
     window.open(`/studio/${mod.id}`, '_blank');
+  };
+
+  const handleOnExportClick = async (e: MouseEvent) => {
+    e.stopPropagation();
+    navigate({ to: '/modules/$moduleId/export', params: { moduleId: mod.id } });
   };
 
   return (
@@ -117,6 +123,7 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
                   <Dropdown.Menu.Group>
                     <Dropdown.Menu.Item icon={<CopyIcon />} onClick={handleOnCopyClick} label="Copy module" />
                     <Dropdown.Menu.Item icon={<LinkIcon />} onClick={handleOnOpenClick} label="Open in Studio" />
+                    <Dropdown.Menu.Item icon={<ExportIcon />} onClick={handleOnExportClick} label="Export (JSON)" />
                   </Dropdown.Menu.Group>
                 </Dropdown.Menu>
               </Dropdown>

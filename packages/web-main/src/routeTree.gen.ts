@@ -42,6 +42,7 @@ import { Route as AuthGlobalSettingsGameserversImport } from './routes/_auth/_gl
 import { Route as AuthGlobalSettingsDiscordImport } from './routes/_auth/_global/settings/discord';
 import { Route as AuthGlobalRolesCreateImport } from './routes/_auth/_global/roles.create';
 import { Route as AuthGlobalPlayerPlayerIdImport } from './routes/_auth/_global/player.$playerId';
+import { Route as AuthGlobalModulesImportImport } from './routes/_auth/_global/modules.import';
 import { Route as AuthGlobalModulesCreateImport } from './routes/_auth/_global/modules.create';
 import { Route as AuthGlobalPlayerPlayerIdIndexImport } from './routes/_auth/_global/player.$playerId/index';
 import { Route as AuthGlobalGameserversCreateIndexImport } from './routes/_auth/_global/gameservers.create.index';
@@ -57,6 +58,7 @@ import { Route as AuthGlobalPlayerPlayerIdEventsImport } from './routes/_auth/_g
 import { Route as AuthGlobalPlayerPlayerIdEconomyImport } from './routes/_auth/_global/player.$playerId/economy';
 import { Route as AuthGlobalModulesModuleIdViewImport } from './routes/_auth/_global/modules.$moduleId.view';
 import { Route as AuthGlobalModulesModuleIdUpdateImport } from './routes/_auth/_global/modules.$moduleId.update';
+import { Route as AuthGlobalModulesModuleIdExportImport } from './routes/_auth/_global/modules.$moduleId.export';
 import { Route as AuthGlobalModulesModuleIdCopyImport } from './routes/_auth/_global/modules.$moduleId.copy';
 import { Route as AuthGlobalGameserversUpdateGameServerIdImport } from './routes/_auth/_global/gameservers.update.$gameServerId';
 import { Route as AuthGlobalGameserversCreateImportImport } from './routes/_auth/_global/gameservers.create.import';
@@ -222,6 +224,11 @@ const AuthGlobalPlayerPlayerIdRoute = AuthGlobalPlayerPlayerIdImport.update({
   getParentRoute: () => AuthGlobalRoute,
 } as any);
 
+const AuthGlobalModulesImportRoute = AuthGlobalModulesImportImport.update({
+  path: '/import',
+  getParentRoute: () => AuthGlobalModulesRoute,
+} as any);
+
 const AuthGlobalModulesCreateRoute = AuthGlobalModulesCreateImport.update({
   path: '/create',
   getParentRoute: () => AuthGlobalModulesRoute,
@@ -294,6 +301,11 @@ const AuthGlobalModulesModuleIdViewRoute = AuthGlobalModulesModuleIdViewImport.u
 
 const AuthGlobalModulesModuleIdUpdateRoute = AuthGlobalModulesModuleIdUpdateImport.update({
   path: '/$moduleId/update',
+  getParentRoute: () => AuthGlobalModulesRoute,
+} as any);
+
+const AuthGlobalModulesModuleIdExportRoute = AuthGlobalModulesModuleIdExportImport.update({
+  path: '/$moduleId/export',
   getParentRoute: () => AuthGlobalModulesRoute,
 } as any);
 
@@ -426,6 +438,10 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthGlobalModulesCreateImport;
       parentRoute: typeof AuthGlobalModulesImport;
     };
+    '/_auth/_global/modules/import': {
+      preLoaderRoute: typeof AuthGlobalModulesImportImport;
+      parentRoute: typeof AuthGlobalModulesImport;
+    };
     '/_auth/_global/player/$playerId': {
       preLoaderRoute: typeof AuthGlobalPlayerPlayerIdImport;
       parentRoute: typeof AuthGlobalImport;
@@ -476,6 +492,10 @@ declare module '@tanstack/react-router' {
     };
     '/_auth/_global/modules/$moduleId/copy': {
       preLoaderRoute: typeof AuthGlobalModulesModuleIdCopyImport;
+      parentRoute: typeof AuthGlobalModulesImport;
+    };
+    '/_auth/_global/modules/$moduleId/export': {
+      preLoaderRoute: typeof AuthGlobalModulesModuleIdExportImport;
       parentRoute: typeof AuthGlobalModulesImport;
     };
     '/_auth/_global/modules/$moduleId/update': {
@@ -567,7 +587,9 @@ export const routeTree = rootRoute.addChildren([
       ]),
       AuthGlobalModulesRoute.addChildren([
         AuthGlobalModulesCreateRoute,
+        AuthGlobalModulesImportRoute,
         AuthGlobalModulesModuleIdCopyRoute,
+        AuthGlobalModulesModuleIdExportRoute,
         AuthGlobalModulesModuleIdUpdateRoute,
         AuthGlobalModulesModuleIdViewRoute,
       ]),

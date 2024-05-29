@@ -187,6 +187,30 @@ export interface BaseTakaroEvent {
 export interface BuiltinModule {
   /**
    *
+   * @type {string}
+   * @memberof BuiltinModule
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof BuiltinModule
+   */
+  description: string;
+  /**
+   *
+   * @type {string}
+   * @memberof BuiltinModule
+   */
+  configSchema: string;
+  /**
+   *
+   * @type {string}
+   * @memberof BuiltinModule
+   */
+  uiSchema: string;
+  /**
+   *
    * @type {Array<ICommand>}
    * @memberof BuiltinModule
    */
@@ -211,10 +235,10 @@ export interface BuiltinModule {
   functions: Array<IFunction>;
   /**
    *
-   * @type {Array<any>}
+   * @type {Array<IPermission>}
    * @memberof BuiltinModule
    */
-  permissions: Array<any>;
+  permissions: Array<IPermission>;
 }
 /**
  *
@@ -3641,6 +3665,37 @@ export interface IMessageOptsDTO {
    * @memberof IMessageOptsDTO
    */
   recipient: IPlayerReferenceDTO;
+}
+/**
+ *
+ * @export
+ * @interface IPermission
+ */
+export interface IPermission {
+  /**
+   *
+   * @type {string}
+   * @memberof IPermission
+   */
+  permission: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IPermission
+   */
+  description: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IPermission
+   */
+  friendlyName: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof IPermission
+   */
+  canHaveCount?: boolean;
 }
 /**
  *
@@ -14872,7 +14927,7 @@ export const ModuleApiAxiosParamCreator = function (configuration?: Configuratio
     moduleControllerExport: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
       // verify required parameter 'id' is not null or undefined
       assertParamExists('moduleControllerExport', 'id', id);
-      const localVarPath = `/module/export/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      const localVarPath = `/module/{id}/export`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -14880,7 +14935,7 @@ export const ModuleApiAxiosParamCreator = function (configuration?: Configuratio
         baseOptions = configuration.baseOptions;
       }
 
-      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
