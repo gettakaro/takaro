@@ -39,10 +39,11 @@ jobs:
         with:
           node-version: 18.18
           cache: 'npm'
-          scope: '@takaro'
+          registry-url: 'https://registry.npmjs.org'
 
       - run: ./scripts/dev-init.sh
 
-      - run: npm -w packages/${{ matrix.package.name }} publish --provenance --access public --verbose
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Authenticate with NPM
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+
+      - run: npm -w packages/${{ matrix.package.name }} publish --access public --verbose
