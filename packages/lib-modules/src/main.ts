@@ -8,15 +8,15 @@ import { Lottery } from './modules/lottery/index.js';
 import { PlayerOnboarding } from './modules/playerOnboarding/index.js';
 import { ServerMessages } from './modules/serverMessages/index.js';
 import { Teleports } from './modules/teleports/index.js';
-export { BuiltinModule, ICommand, ICommandArgument, ICronJob, IHook } from './BuiltinModule.js';
+export { BuiltinModule, ICommand, ICommandArgument, ICronJob, IHook, IFunction } from './BuiltinModule.js';
 
 export * from './dto/index.js';
 
 import { Utils } from './modules/utils/index.js';
 
-let cached: Array<BuiltinModule> | null = null;
+let cached: Array<BuiltinModule<unknown>> | null = null;
 
-export async function getModules(): Promise<Array<BuiltinModule>> {
+export function getModules(): Array<BuiltinModule<unknown>> {
   if (!cached) {
     cached = [
       new Utils(),
@@ -30,7 +30,6 @@ export async function getModules(): Promise<Array<BuiltinModule>> {
       new Lottery(),
       new GeoBlock(),
     ];
-    await Promise.all(cached.map((mod) => mod.construct()));
   }
 
   return cached;

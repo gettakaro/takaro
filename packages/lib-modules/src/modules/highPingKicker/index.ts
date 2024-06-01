@@ -1,6 +1,6 @@
-import { BuiltinModule } from '../../BuiltinModule.js';
+import { BuiltinModule, ICronJob } from '../../BuiltinModule.js';
 
-export class HighPingKicker extends BuiltinModule {
+export class HighPingKicker extends BuiltinModule<HighPingKicker> {
   constructor() {
     super(
       'highPingKicker',
@@ -29,11 +29,11 @@ export class HighPingKicker extends BuiltinModule {
     );
 
     this.cronJobs = [
-      {
+      new ICronJob({
         name: 'Ping check',
         temporalValue: '*/5 * * * *',
-        function: '',
-      },
+        function: this.loadFn('cronJobs', 'Ping check'),
+      }),
     ];
   }
 }

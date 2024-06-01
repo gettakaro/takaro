@@ -104,7 +104,7 @@ export class HookController {
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new HookService(req.domainId);
     await service.delete(params.id);
-    return apiResponse(await new IdUuidDTO().construct({ id: params.id }));
+    return apiResponse(new IdUuidDTO({ id: params.id }));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]))

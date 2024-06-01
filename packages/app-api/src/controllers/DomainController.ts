@@ -110,7 +110,7 @@ export class DomainController {
   async remove(@Param('id') id: string) {
     const service = new DomainService();
     await service.delete(id);
-    return apiResponse(await new IdUuidDTO().construct({ id }));
+    return apiResponse(new IdUuidDTO({ id }));
   }
 
   @Post('/token')

@@ -1,9 +1,6 @@
 import { IsISO8601, IsString, ValidatorOptions, validate } from 'class-validator';
-import { Exclude, instanceToPlain } from 'class-transformer';
-import { logger } from '../logger.js';
-import * as errors from '../errors.js';
-
-const log = logger('TakaroDTO');
+import { Exclude, instanceToPlain, plainToClass } from 'class-transformer';
+import * as errors from './errors.js';
 
 type Nullable<T> = {
   [P in keyof T]: T[P] | null | undefined;
@@ -18,13 +15,27 @@ type DeepPartial<T> = {
  * Allows validation of properties when instantiated and JSON (de)serialization
  */
 export class TakaroDTO<T> {
+  constructor(data?: Nullable<DeepPartial<T>>) {
+    Object.assign(this, data);
+  }
+
   /**
    * Validates the DTO instance
    * @throws {ValidationError} if validation fails
    * @returns {Promise<void>}
    */
   async validate(extraOpts: ValidatorOptions = {}) {
-    const validationErrors = await validate(this, {
+    const obj = plainToClass(
+      this.constructor as any,
+      instanceToPlain(this, { enableImplicitConversion: true, ignoreDecorators: true }),
+      {
+        ignoreDecorators: true,
+        excludePrefixes: ['_'],
+        enableCircularCheck: true,
+      }
+    );
+
+    const validationErrors = await validate(obj as object, {
       forbidNonWhitelisted: false,
       whitelist: true,
       forbidUnknownValues: false,
@@ -33,26 +44,12 @@ export class TakaroDTO<T> {
 
     if (validationErrors.length) {
       const msg = `${validationErrors[0]}`;
-      log.warn(msg, validationErrors);
       throw new errors.ValidationError(msg, validationErrors);
     }
   }
 
   toJSON() {
-    return instanceToPlain(this, {});
-  }
-
-  async construct(data?: Nullable<DeepPartial<T>>) {
-    if (!data) {
-      return this;
-    }
-    Object.assign(this, data);
-
-    // TODO: enable this for much tighter validation of all DTOs
-    // Atm this breaks too much stuff 😮‍💨
-    //await this.validate();
-
-    return this;
+    return instanceToPlain(this, { enableImplicitConversion: true });
   }
 }
 

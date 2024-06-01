@@ -11,7 +11,7 @@ import { Type } from 'class-transformer';
 import { GameServerOutputDTO } from './GameServerService.js';
 import { ModuleOutputDTO } from './ModuleService.js';
 import { UserOutputDTO } from './UserService.js';
-import { EventMapping, EventPayload, TakaroEvents } from '@takaro/modules';
+import { BaseEvent, EventMapping, EventPayload, TakaroEvents } from '@takaro/modules';
 import { ValueOf } from 'type-fest';
 import { HookService } from './HookService.js';
 
@@ -94,7 +94,7 @@ export class EventCreateDTO extends TakaroDTO<EventCreateDTO> {
 
   @IsOptional()
   @IsObject()
-  meta: TakaroDTO<any>;
+  meta: BaseEvent<any>;
 }
 
 export class EventUpdateDTO extends TakaroDTO<EventUpdateDTO> {}
@@ -127,15 +127,15 @@ export class EventService extends TakaroService<EventModel, EventOutputDTO, Even
     const dto = EventMapping[data.eventName];
     if (!dto) throw new errors.BadRequestError(`Event ${data.eventName} is not supported`);
 
-    let eventMeta = null;
+    let eventMeta: BaseEvent<any> | null = null;
 
     // If no userId is provided, use the calling user
     if (!data.userId && ctx.data.user) data.userId = ctx.data.user;
 
-    if (isTakaroDTO(data.meta)) {
-      eventMeta = await new dto().construct(data.meta.toJSON());
+    if (!isTakaroDTO(data.meta)) {
+      eventMeta = new dto(data.meta);
     } else {
-      eventMeta = await new dto().construct(data.meta);
+      eventMeta = data.meta;
     }
 
     await eventMeta.validate();

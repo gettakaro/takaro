@@ -5,7 +5,7 @@ import { CommandOutput } from '../../../interfaces/GameServer.js';
 import { Rust } from '../index.js';
 import { IGamePlayer } from '@takaro/modules';
 
-const MOCK_PLAYER = new IGamePlayer().construct({
+const MOCK_PLAYER = new IGamePlayer({
   ip: '169.169.169.80',
   name: 'brunkel',
   gameId: '76561198021481871',
@@ -19,7 +19,7 @@ const testData = {
   noBans: '',
 };
 
-const mockRustConnectionInfo = new RustConnectionInfo().construct({
+const mockRustConnectionInfo = new RustConnectionInfo({
   host: 'localhost',
   rconPassword: 'aaa',
   rconPort: '28016',
@@ -29,7 +29,7 @@ describe('rust actions', () => {
   describe('listBans', () => {
     it('Can parse ban list with a single ban', async () => {
       sandbox.stub(Rust.prototype, 'executeConsoleCommand').resolves(
-        await new CommandOutput().construct({
+        new CommandOutput({
           rawResult: testData.oneBan,
           success: true,
         })
@@ -45,7 +45,7 @@ describe('rust actions', () => {
 
     it('Can parse expiry time', async () => {
       sandbox.stub(Rust.prototype, 'executeConsoleCommand').resolves(
-        await new CommandOutput().construct({
+        new CommandOutput({
           rawResult: testData.oneBanWithTime,
           success: true,
         })
@@ -61,7 +61,7 @@ describe('rust actions', () => {
 
     it('Can parse ban list with two bans', async () => {
       sandbox.stub(Rust.prototype, 'executeConsoleCommand').resolves(
-        await new CommandOutput().construct({
+        new CommandOutput({
           rawResult: testData.twoBans,
           success: true,
         })
@@ -81,7 +81,7 @@ describe('rust actions', () => {
 
     it('Can parse ban list with no bans', async () => {
       sandbox.stub(Rust.prototype, 'executeConsoleCommand').resolves(
-        await new CommandOutput().construct({
+        new CommandOutput({
           rawResult: testData.noBans,
           success: true,
         })
@@ -96,11 +96,9 @@ describe('rust actions', () => {
 
   describe('[getPlayerLocation]', () => {
     it('Works for a single player', async () => {
-      const res = await new CommandOutput().construct({
+      const res = new CommandOutput({
         rawResult: `SteamID           DisplayName POS                    ROT               \n${
-          (
-            await MOCK_PLAYER
-          ).gameId
+          (await MOCK_PLAYER).gameId
         } Catalysm    (-770.0, 1.0, -1090.7) (1.0, -0.1, -0.1) \n`,
         success: undefined,
         errorMessage: undefined,
@@ -119,11 +117,9 @@ describe('rust actions', () => {
     });
 
     it('When output has multiple players', async () => {
-      const res = await new CommandOutput().construct({
+      const res = new CommandOutput({
         rawResult: `SteamID           DisplayName POS                    ROT               \nfake_steam_id Catalysm    (-123.0, 1.0, -1090.7) (1.0, -0.1, -0.1) \n${
-          (
-            await MOCK_PLAYER
-          ).gameId
+          (await MOCK_PLAYER).gameId
         } Player2    (-780.0, 2.0, -1100.7) (1.1, -0.2, -0.2) \n76561198028175943 Player3    (-790.0, 3.0, -1110.7) (1.2, -0.3, -0.3) \n`,
         success: undefined,
         errorMessage: undefined,

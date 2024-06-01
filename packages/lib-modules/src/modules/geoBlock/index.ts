@@ -1,4 +1,4 @@
-import { BuiltinModule } from '../../BuiltinModule.js';
+import { BuiltinModule, IHook, IPermission } from '../../BuiltinModule.js';
 import { HookEvents } from '../../dto/index.js';
 import { Duration } from 'luxon';
 
@@ -252,7 +252,7 @@ export const countryCodes = [
   { code: 'ZW', name: 'Zimbabwe' },
 ];
 
-export class GeoBlock extends BuiltinModule {
+export class GeoBlock extends BuiltinModule<GeoBlock> {
   constructor() {
     super(
       'geoBlock',
@@ -311,20 +311,21 @@ export class GeoBlock extends BuiltinModule {
     );
 
     this.permissions = [
-      {
+      new IPermission({
         permission: 'GEOBLOCK_IMMUNITY',
         friendlyName: 'GeoBlock immunity',
         description: 'Players with this permission will not be kicked or banned by GeoBlock.',
-      },
+        canHaveCount: false,
+      }),
     ];
 
     this.commands = [];
     this.hooks = [
-      {
+      new IHook({
         eventType: HookEvents.PLAYER_NEW_IP_DETECTED,
         name: 'IPDetected',
-        function: '',
-      },
+        function: this.loadFn('hooks', 'IPDetected'),
+      }),
     ];
   }
 }

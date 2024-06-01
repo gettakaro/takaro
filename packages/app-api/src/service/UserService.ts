@@ -74,7 +74,7 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
     await this.handleRoleExpiry(user);
 
     const oryIdentity = await ory.getIdentity(user.idpId);
-    const withOry = await new UserOutputWithRolesDTO().construct({
+    const withOry = new UserOutputWithRolesDTO({
       ...user,
       email: oryIdentity.email,
     });
@@ -82,7 +82,7 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
     const roleService = new RoleService(this.domainId);
     const roles = await roleService.find({ filters: { name: ['User'] } });
     const assignments = await Promise.all(
-      roles.results.map((role) => new UserAssignmentOutputDTO().construct({ role, roleId: role.id, userId: user.id }))
+      roles.results.map((role) => new UserAssignmentOutputDTO({ role, roleId: role.id, userId: user.id }))
     );
     withOry.roles.push(...assignments);
     return withOry;
@@ -141,10 +141,10 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
 
     await this.repo.assignRole(userId, roleId, expiresAt);
     await eventService.create(
-      await new EventCreateDTO().construct({
+      new EventCreateDTO({
         eventName: EVENT_TYPES.ROLE_ASSIGNED,
         userId,
-        meta: await new TakaroEventRoleAssigned().construct({ role: { id: role.id, name: role.name } }),
+        meta: new TakaroEventRoleAssigned({ role: { id: role.id, name: role.name } }),
       })
     );
   }
@@ -158,16 +158,16 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
     await this.repo.removeRole(userId, roleId);
 
     await eventService.create(
-      await new EventCreateDTO().construct({
+      new EventCreateDTO({
         eventName: EVENT_TYPES.ROLE_REMOVED,
         userId,
-        meta: await new TakaroEventRoleRemoved().construct({ role: { id: role.id, name: role.name } }),
+        meta: new TakaroEventRoleRemoved({ role: { id: role.id, name: role.name } }),
       })
     );
   }
 
   async inviteUser(email: string): Promise<UserOutputDTO> {
-    const user = await this.create(await new UserCreateInputDTO().construct({ email, name: email }));
+    const user = await this.create(new UserCreateInputDTO({ email, name: email }));
     const recoveryFlow = await ory.getRecoveryFlow(user.idpId);
 
     await send({

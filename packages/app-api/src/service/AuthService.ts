@@ -68,7 +68,7 @@ export class AuthService extends DomainScoped {
   static async login(name: string, password: string): Promise<LoginOutputDTO> {
     try {
       const loginRes = await ory.submitApiLogin(name, password);
-      return new LoginOutputDTO().construct({
+      return new LoginOutputDTO({
         token: loginRes.data.session_token,
       });
     } catch (error) {
@@ -101,7 +101,7 @@ export class AuthService extends DomainScoped {
 
     const token = await this.signJwt({ user: { id: rootUser.results[0].id } });
 
-    return new TokenOutputDTO().construct({ token });
+    return new TokenOutputDTO({ token });
   }
 
   async signJwt(payload: IJWTSignOptions): Promise<string> {
@@ -278,7 +278,7 @@ export class AuthService extends DomainScoped {
 
               await service.update(
                 user.id,
-                await new UserUpdateAuthDTO().construct({
+                new UserUpdateAuthDTO({
                   discordId: userInfo.id,
                 })
               );

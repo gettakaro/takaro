@@ -90,26 +90,26 @@ export class Mock implements IGameServer {
       assert(data === 'pong');
     } catch (error) {
       if (!error || !(error instanceof Error)) {
-        return new TestReachabilityOutputDTO().construct({
+        return new TestReachabilityOutputDTO({
           connectable: false,
           reason: 'Unknown error',
         });
       }
 
       if (error.name === 'AssertionError') {
-        return new TestReachabilityOutputDTO().construct({
+        return new TestReachabilityOutputDTO({
           connectable: false,
           reason: 'Server responded with invalid data',
         });
       }
 
-      return new TestReachabilityOutputDTO().construct({
+      return new TestReachabilityOutputDTO({
         connectable: false,
         reason: 'Unable to connect to server',
       });
     }
 
-    return new TestReachabilityOutputDTO().construct({
+    return new TestReachabilityOutputDTO({
       connectable: true,
     });
   }

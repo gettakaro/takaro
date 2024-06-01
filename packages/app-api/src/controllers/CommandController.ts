@@ -118,7 +118,7 @@ export class CommandController {
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new CommandService(req.domainId);
     await service.delete(params.id);
-    return apiResponse(await new IdUuidDTO().construct({ id: params.id }));
+    return apiResponse(new IdUuidDTO({ id: params.id }));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), builtinModuleModificationMiddleware)
@@ -147,7 +147,7 @@ export class CommandController {
   async removeArgument(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new CommandService(req.domainId);
     await service.deleteArgument(params.id);
-    return apiResponse(await new IdUuidDTO().construct({ id: params.id }));
+    return apiResponse(new IdUuidDTO({ id: params.id }));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]))

@@ -301,7 +301,7 @@ const tests = [
       ).data.data;
       expect(pog.currency).to.be.eq(playerStartBalance);
 
-      expectTicketAmountLengthToBe(this.client, this.setupData.gameserver.id, this.setupData.lotteryModule.id);
+      await expectTicketAmountLengthToBe(this.client, this.setupData.gameserver.id, this.setupData.lotteryModule.id);
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({

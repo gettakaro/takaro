@@ -66,7 +66,7 @@ export class SettingsRepo extends ITakaroRepo<SettingsModel, Settings, never, ne
     const gameServerSetting = await query2.where({ key }).andWhere({ gameServerId: this.gameServerId }).first();
 
     if (!domainSetting && !gameServerSetting) {
-      return await new SettingsOutputDTO().construct({
+      return new SettingsOutputDTO({
         key,
         value: DEFAULT_SETTINGS[key],
         type: SettingsMode.Default,
@@ -75,20 +75,20 @@ export class SettingsRepo extends ITakaroRepo<SettingsModel, Settings, never, ne
 
     if (this.gameServerId) {
       if (gameServerSetting?.value) {
-        return await new SettingsOutputDTO().construct({
+        return new SettingsOutputDTO({
           key,
           value: gameServerSetting?.value,
           type: SettingsMode.Override,
         });
       } else {
-        return await new SettingsOutputDTO().construct({
+        return new SettingsOutputDTO({
           key,
           value: domainSetting?.value,
           type: SettingsMode.Inherit,
         });
       }
     } else {
-      return await new SettingsOutputDTO().construct({
+      return new SettingsOutputDTO({
         key,
         value: domainSetting?.value,
         type: SettingsMode.Global,

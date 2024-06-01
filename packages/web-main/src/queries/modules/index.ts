@@ -26,4 +26,8 @@ export {
   useCommandCreate,
   useCommandRemove,
   useCommandUpdate,
+
+  // import/export
+  moduleExportOptions,
+  useModuleImport,
 } from './queries';

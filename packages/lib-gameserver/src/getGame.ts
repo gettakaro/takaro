@@ -21,11 +21,11 @@ export async function getGame(
 ): Promise<IGameServer> {
   switch (type) {
     case GAME_SERVER_TYPE.SEVENDAYSTODIE:
-      return new SevenDaysToDie(await new SdtdConnectionInfo().construct(connectionInfo), settings);
+      return new SevenDaysToDie(new SdtdConnectionInfo(connectionInfo), settings);
     case GAME_SERVER_TYPE.RUST:
-      return new Rust(await new RustConnectionInfo().construct(connectionInfo), settings);
+      return new Rust(new RustConnectionInfo(connectionInfo), settings);
     case GAME_SERVER_TYPE.MOCK:
-      return new Mock(await new MockConnectionInfo().construct(connectionInfo), settings);
+      return new Mock(new MockConnectionInfo(connectionInfo), settings);
     default:
       throw new errors.NotImplementedError();
   }

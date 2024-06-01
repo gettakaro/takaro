@@ -57,7 +57,7 @@ async function processJob(job: Job<IEventQueueData>) {
       await commandService.handleChatMessage(chatMessage, gameServerId);
 
       await eventService.create(
-        await new EventCreateDTO().construct({
+        new EventCreateDTO({
           eventName: EVENT_TYPES.CHAT_MESSAGE,
           gameserverId: gameServerId,
           playerId: player.id,
@@ -67,13 +67,10 @@ async function processJob(job: Job<IEventQueueData>) {
     }
 
     if (type === EVENT_TYPES.PLAYER_CONNECTED) {
-      await playerOnGameServerService.update(
-        pog.id,
-        await new PlayerOnGameServerUpdateDTO().construct({ online: true })
-      );
+      await playerOnGameServerService.update(pog.id, new PlayerOnGameServerUpdateDTO({ online: true }));
 
       await eventService.create(
-        await new EventCreateDTO().construct({
+        new EventCreateDTO({
           eventName: EVENT_TYPES.PLAYER_CONNECTED,
           gameserverId: gameServerId,
           playerId: player.id,
@@ -82,13 +79,10 @@ async function processJob(job: Job<IEventQueueData>) {
     }
 
     if (type === EVENT_TYPES.PLAYER_DISCONNECTED) {
-      await playerOnGameServerService.update(
-        pog.id,
-        await new PlayerOnGameServerUpdateDTO().construct({ online: false })
-      );
+      await playerOnGameServerService.update(pog.id, new PlayerOnGameServerUpdateDTO({ online: false }));
 
       await eventService.create(
-        await new EventCreateDTO().construct({
+        new EventCreateDTO({
           eventName: EVENT_TYPES.PLAYER_DISCONNECTED,
           gameserverId: gameServerId,
           playerId: player.id,
@@ -99,11 +93,11 @@ async function processJob(job: Job<IEventQueueData>) {
     if (type === EVENT_TYPES.PLAYER_DEATH) {
       const playerDeath = event as EventPlayerDeath;
       await eventService.create(
-        await new EventCreateDTO().construct({
+        new EventCreateDTO({
           eventName: EVENT_TYPES.PLAYER_DEATH,
           gameserverId: gameServerId,
           playerId: player.id,
-          meta: await new EventPlayerDeath().construct(playerDeath),
+          meta: new EventPlayerDeath(playerDeath),
         })
       );
     }
@@ -111,11 +105,11 @@ async function processJob(job: Job<IEventQueueData>) {
     if (type === EVENT_TYPES.ENTITY_KILLED) {
       const entityKilled = event as EventEntityKilled;
       await eventService.create(
-        await new EventCreateDTO().construct({
+        new EventCreateDTO({
           eventName: EVENT_TYPES.ENTITY_KILLED,
           gameserverId: gameServerId,
           playerId: player.id,
-          meta: await new EventEntityKilled().construct(entityKilled),
+          meta: new EventEntityKilled(entityKilled),
         })
       );
     }
