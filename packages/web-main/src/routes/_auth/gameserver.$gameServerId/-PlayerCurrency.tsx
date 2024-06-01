@@ -3,6 +3,7 @@ import { Card, Dropdown, Button, Dialog, TextField } from '@takaro/lib-component
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
+import { useAddCurrency, useDeductCurrency } from 'queries/pogs';
 
 interface CurrencyProps {
   playerId: string;
@@ -13,6 +14,9 @@ interface CurrencyProps {
 export const Currency: FC<CurrencyProps> = ({ currency }) => {
   const [openAddCurrencyDialog, setOpenAddCurrencyDialog] = useState<boolean>(false);
   const [openRemoveCurrencyDialog, setOpenRemoveCurrencyDialog] = useState<boolean>(false);
+
+  const {} = useAddCurrency();
+  const {} = useDeductCurrency();
 
   const handleAddCurrencyClick = (e: MouseEvent) => {
     e.stopPropagation();

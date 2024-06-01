@@ -1,8 +1,10 @@
 export {
   pogKeys,
+  playerOnGameServersQueryOptions,
+
+  // transactions / currency
   useAddCurrency,
   useSetCurrency,
   useDeductCurrency,
-  usePlayerOnGameServers,
   useTransactBetweenPlayers,
 } from './queries';

@@ -1,9 +1,1 @@
-export {
-  // queries
-  playerQueryOptions,
-  playersOptions,
-  playerOnGameServersQueryOptions,
-  playerKeys,
-  usePlayerRoleAssign,
-  usePlayerRoleUnassign,
-} from './queries';
+export { playerKeys, playerQueryOptions, playersOptions, usePlayerRoleAssign, usePlayerRoleUnassign } from './queries';

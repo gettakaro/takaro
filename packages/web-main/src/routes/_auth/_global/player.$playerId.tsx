@@ -1,7 +1,8 @@
 import { Stats, styled, Skeleton, useTheme, HorizontalNav, Avatar, getInitials } from '@takaro/lib-components';
 import { Outlet, redirect } from '@tanstack/react-router';
 import { DateTime } from 'luxon';
-import { playerQueryOptions, playerOnGameServersQueryOptions } from 'queries/players/queries';
+import { playerQueryOptions } from 'queries/players/queries';
+import { playerOnGameServersQueryOptions } from 'queries/pogs';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { ErrorBoundary } from 'components/ErrorBoundary';
 import { createFileRoute } from '@tanstack/react-router';

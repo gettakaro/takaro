@@ -20,7 +20,7 @@ interface PogInput {
   gameServerId: string;
 }
 
-export const usePlayerOnGameServers = (queryParams: PlayerOnGameServerSearchInputDTO = {}) => {
+export const playerOnGameServersQueryOptions = (queryParams: PlayerOnGameServerSearchInputDTO = {}) => {
   return queryOptions<PlayerOnGameserverOutputArrayDTOAPI, AxiosError<PlayerOnGameserverOutputArrayDTOAPI>>({
     queryKey: [...pogKeys.list(), { queryParams }],
     queryFn: async () => (await getApiClient().playerOnGameserver.playerOnGameServerControllerSearch(queryParams)).data,
