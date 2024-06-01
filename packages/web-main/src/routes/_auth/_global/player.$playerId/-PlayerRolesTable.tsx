@@ -79,7 +79,9 @@ export const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId, 
       header: 'Assigned at',
       id: 'createdAt',
       cell: (info) => {
-        const date = DateTime.fromISO(info.getValue());
+        const value = info.getValue();
+        if (!value) return 'unknown date';
+        const date = DateTime.fromISO(value);
         return date.toLocaleString(DateTime.DATETIME_FULL);
       },
       enableColumnFilter: true,
