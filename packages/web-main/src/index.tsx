@@ -2,7 +2,9 @@
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import { App } from './App';
-import { registerWebVitalCallbacks } from './reportWebVitals';
+
+// TODO: currently this results in web-main not loading at all.
+//import { registerWebVitalCallbacks } from './reportWebVitals';
 import * as Sentry from '@sentry/react';
 
 // styles required for slider component we rely on
@@ -44,4 +46,4 @@ Sentry.init({
 
 root.render(<App />);
 
-registerWebVitalCallbacks();
+// registerWebVitalCallbacks();
