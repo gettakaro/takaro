@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { Button, TextField, styled, Company, FormError } from '@takaro/lib-components';
 import { AiFillMail as Mail } from 'react-icons/ai';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, useNavigate, useRouter, useSearch } from '@tanstack/react-router';
 import { LoginFlow } from '@ory/client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -55,6 +55,10 @@ interface IFormInputs {
   csrf_token: string;
 }
 
+async function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 function Component() {
   useDocumentTitle('Log in');
 
@@ -64,9 +68,10 @@ function Component() {
   const [error, setError] = useState<string>();
   const { oryClient } = useOry();
   const apiClient = getApiClient();
-  const search = Route.useSearch();
-  const { setSession, session } = useAuth();
+  const search = useSearch({ from: '/login' });
+  const { login } = useAuth();
   const navigate = useNavigate();
+  const router = useRouter();
 
   const validationSchema = useMemo(
     () =>
@@ -99,7 +104,12 @@ function Component() {
         'Cache-Control': 'no-cache',
       },
     });
-    setSession(res.data.data);
+
+    login(res.data.data);
+    await router.invalidate();
+    // hack to wait for auth state to update???
+    await sleep(1);
+    navigate({ to: search.redirect || '/' });
   }
 
   useEffect(() => {
@@ -144,17 +154,6 @@ function Component() {
       setLoading(false);
     }
   };
-
-  // session == successfully logged in
-  if (session) {
-    if (search.redirect) {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      navigate({ to: search.redirect });
-    } else {
-      navigate({ to: '/' });
-    }
-  }
 
   return (
     <>

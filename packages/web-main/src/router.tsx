@@ -17,7 +17,7 @@ export const router = createRouter({
       isAuthenticated: false,
       logOut: async () => {},
       session: undefined!,
-      setSession: () => {},
+      login: () => {},
     },
     queryClient: queryClient,
   },
