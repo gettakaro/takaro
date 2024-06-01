@@ -85,12 +85,7 @@ export interface ProgressBarProps {
   showValue?: boolean;
 }
 
-export const ProgressBar: FC<ProgressBarProps> = ({
-  mode,
-  value = 0,
-  color = 'primary',
-  showValue = false,
-}) => {
+export const ProgressBar: FC<ProgressBarProps> = ({ mode, value = 0, color = 'primary', showValue = false }) => {
   if (mode === 'determinate') {
     return (
       <Container>

@@ -63,7 +63,7 @@ export class FunctionRepo extends ITakaroRepo<FunctionModel, FunctionOutputDTO, 
     const result = await new QueryBuilder<FunctionModel, FunctionOutputDTO>(filters).build(query);
     return {
       total: result.total,
-      results: await Promise.all(result.results.map((item) => new FunctionOutputDTO().construct(item))),
+      results: await Promise.all(result.results.map((item) => new FunctionOutputDTO(item))),
     };
   }
 
@@ -75,7 +75,7 @@ export class FunctionRepo extends ITakaroRepo<FunctionModel, FunctionOutputDTO, 
       throw new errors.NotFoundError(`Record with id ${id} not found`);
     }
 
-    return new FunctionOutputDTO().construct(data);
+    return new FunctionOutputDTO(data);
   }
 
   async create(item: FunctionCreateDTO): Promise<FunctionOutputDTO> {
@@ -86,7 +86,7 @@ export class FunctionRepo extends ITakaroRepo<FunctionModel, FunctionOutputDTO, 
         domain: this.domainId,
       })
       .returning('*');
-    return new FunctionOutputDTO().construct(data);
+    return new FunctionOutputDTO(data);
   }
 
   async delete(id: string): Promise<boolean> {
@@ -98,6 +98,6 @@ export class FunctionRepo extends ITakaroRepo<FunctionModel, FunctionOutputDTO, 
   async update(id: string, data: FunctionUpdateDTO): Promise<FunctionOutputDTO> {
     const { query } = await this.getModel();
     const result = await query.updateAndFetchById(id, data.toJSON()).returning('*');
-    return new FunctionOutputDTO().construct(result);
+    return new FunctionOutputDTO(result);
   }
 }

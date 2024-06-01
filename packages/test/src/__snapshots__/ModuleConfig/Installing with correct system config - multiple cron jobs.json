@@ -2,8 +2,59 @@
   "body": {
     "meta": {},
     "data": {
-      "gameserverId": "b136cc93-84fb-40b4-99f9-626c3821bf9c",
-      "moduleId": "5ac92c9d-9b3f-47ce-99e7-2feaaf5cddaf",
+      "gameserverId": "738354e0-b89e-4c8f-ac73-d82619a00856",
+      "moduleId": "42c029a8-ceba-49c6-a516-78f4906ee6e7",
+      "module": {
+        "id": "42c029a8-ceba-49c6-a516-78f4906ee6e7",
+        "createdAt": "2024-03-02T14:58:04.059Z",
+        "updatedAt": "2024-03-02T14:58:04.060Z",
+        "name": "Test module cronjobs",
+        "description": "Test description",
+        "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{},\"required\":[],\"additionalProperties\":false}",
+        "uiSchema": "{}",
+        "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"cronJobs\":{\"type\":\"object\",\"properties\":{\"Test cron job\":{\"type\":\"string\",\"default\":\"1 * * * *\"},\"Test cron job 2\":{\"type\":\"string\",\"default\":\"42 * * * *\"}},\"required\":[],\"default\":{}}},\"required\":[\"cronJobs\"],\"additionalProperties\":false}",
+        "builtin": null,
+        "cronJobs": [
+          {
+            "id": "c2bc57b1-2fb2-4a73-99a9-0d56bf2cf1a7",
+            "createdAt": "2024-03-02T14:58:04.228Z",
+            "updatedAt": "2024-03-02T14:58:04.238Z",
+            "name": "Test cron job",
+            "temporalValue": "1 * * * *",
+            "functionId": "9b2e7716-fe5f-4495-9703-9d0fa83188ed",
+            "moduleId": "42c029a8-ceba-49c6-a516-78f4906ee6e7",
+            "function": {
+              "id": "9b2e7716-fe5f-4495-9703-9d0fa83188ed",
+              "createdAt": "2024-03-02T14:58:04.218Z",
+              "updatedAt": "2024-03-02T14:58:04.219Z",
+              "code": "test",
+              "name": null,
+              "moduleId": null
+            }
+          },
+          {
+            "id": "d5b68f62-b96e-4d97-8e6a-4589297a9529",
+            "createdAt": "2024-03-02T14:58:04.425Z",
+            "updatedAt": "2024-03-02T14:58:04.426Z",
+            "name": "Test cron job 2",
+            "temporalValue": "42 * * * *",
+            "functionId": "15d0fa02-bb30-4696-8fe2-244d318e8db9",
+            "moduleId": "42c029a8-ceba-49c6-a516-78f4906ee6e7",
+            "function": {
+              "id": "15d0fa02-bb30-4696-8fe2-244d318e8db9",
+              "createdAt": "2024-03-02T14:58:04.424Z",
+              "updatedAt": "2024-03-02T14:58:04.424Z",
+              "code": "test",
+              "name": null,
+              "moduleId": null
+            }
+          }
+        ],
+        "hooks": [],
+        "commands": [],
+        "functions": [],
+        "permissions": []
+      },
       "userConfig": {},
       "systemConfig": {
         "cronJobs": {
@@ -20,7 +71,8 @@
     "name": "Installing with correct system config - multiple cron jobs",
     "filteredFields": [
       "gameserverId",
-      "moduleId"
+      "moduleId",
+      "functionId"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true

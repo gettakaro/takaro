@@ -80,7 +80,7 @@ export class EventRepo extends ITakaroRepo<EventModel, EventOutputDTO, EventCrea
     const result = await new QueryBuilder<EventModel, EventOutputDTO>(filters).build(query);
     return {
       total: result.total,
-      results: await Promise.all(result.results.map((item) => new EventOutputDTO().construct(item))),
+      results: await Promise.all(result.results.map((item) => new EventOutputDTO(item))),
     };
   }
 
@@ -92,7 +92,7 @@ export class EventRepo extends ITakaroRepo<EventModel, EventOutputDTO, EventCrea
       throw new errors.NotFoundError(`Record with id ${id} not found`);
     }
 
-    return new EventOutputDTO().construct(data);
+    return new EventOutputDTO(data);
   }
 
   async create(item: EventCreateDTO): Promise<EventOutputDTO> {
@@ -103,7 +103,7 @@ export class EventRepo extends ITakaroRepo<EventModel, EventOutputDTO, EventCrea
         domain: this.domainId,
       })
       .returning('*');
-    return new EventOutputDTO().construct(data);
+    return new EventOutputDTO(data);
   }
 
   async delete(): Promise<boolean> {

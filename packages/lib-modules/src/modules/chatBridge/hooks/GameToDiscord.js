@@ -1,8 +1,9 @@
-import { getTakaro, getData } from '@takaro/helpers';
+import { takaro, data } from '@takaro/helpers';
 
 async function main() {
-  const data = await getData();
-  const takaro = await getTakaro(data);
+  const onlyGlobal = data.module.userConfig.onlyGlobalChat;
+
+  if (onlyGlobal && data.eventData.channel !== 'global') return;
 
   const discordChannel = data.module.systemConfig.hooks['DiscordToGame Discord channel ID'];
 

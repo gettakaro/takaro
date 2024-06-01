@@ -1,23 +1,33 @@
 export {
-  useModule,
-  useModules,
+  // queries
+  hookQueryOptions,
+  moduleQueryOptions,
+  commandQueryOptions,
+  cronjobQueryOptions,
+  modulesQueryOptions,
+  functionQueryOptions,
+
+  // mutations
   useModuleCreate,
   useModuleRemove,
   useModuleUpdate,
-  useInfiniteModules,
+
   // cronjobs
-  useCronJob,
   useCronJobCreate,
   useCronJobRemove,
   useCronJobUpdate,
+
   // hooks
-  useHook,
   useHookCreate,
   useHookRemove,
   useHookUpdate,
+
   // commands
-  useCommand,
   useCommandCreate,
   useCommandRemove,
   useCommandUpdate,
+
+  // import/export
+  moduleExportOptions,
+  useModuleImport,
 } from './queries';

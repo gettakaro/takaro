@@ -2,6 +2,7 @@ import { logger } from '@takaro/util';
 import EventSource from 'eventsource';
 import { JsonObject } from 'type-fest';
 import {
+  ChatChannel,
   EventChatMessage,
   EventEntityKilled,
   EventLogLine,
@@ -15,6 +16,7 @@ import { SdtdConnectionInfo } from './connectionInfo.js';
 import { TakaroEmitter } from '../../TakaroEmitter.js';
 import { SevenDaysToDie } from './index.js';
 import ms from 'ms';
+import {} from 'timers/promises';
 
 interface I7DaysToDieEvent extends JsonObject {
   msg: string;
@@ -53,7 +55,7 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
   private sdtd: SevenDaysToDie;
 
   private recentMessages: Set<string> = new Set(); // To track recent messages
-  private checkInterval: NodeJS.Timer;
+  private checkInterval: NodeJS.Timeout;
   private lastMessageTimestamp = Date.now();
   private keepAliveTimeout = ms('30s');
 
@@ -151,7 +153,7 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
 
     await this.emit(
       GameEvents.LOG_LINE,
-      await new EventLogLine().construct({
+      new EventLogLine({
         msg: logLine.msg,
       })
     );
@@ -172,9 +174,9 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
 
     if (!gameId) throw new Error('Could not find gameId');
 
-    return new EventPlayerConnected().construct({
+    return new EventPlayerConnected({
       msg: logLine.msg,
-      player: await new IGamePlayer().construct({
+      player: new IGamePlayer({
         name,
         gameId,
         steamId,
@@ -198,9 +200,9 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
 
     if (!gameId) throw new Error('Could not find gameId');
 
-    return new EventPlayerDisconnected().construct({
+    return new EventPlayerDisconnected({
       msg: logLine.msg,
-      player: await new IGamePlayer().construct({
+      player: new IGamePlayer({
         name,
         gameId,
         steamId,
@@ -216,7 +218,7 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
     const { groups } = match;
     if (!groups) throw new Error('Could not parse chat message');
 
-    const { platformId, name, message } = groups;
+    const { platformId, name, message, channel } = groups;
 
     if (platformId === '-non-player-' && name !== 'Server') {
       return;
@@ -236,9 +238,26 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
       const id = steamId || xboxLiveId || '';
       const player = await this.sdtd.steamIdOrXboxToGameId(id);
 
+      let detectedChannel: ChatChannel = ChatChannel.GLOBAL;
+
+      switch (channel) {
+        case 'Global':
+          detectedChannel = ChatChannel.GLOBAL;
+          break;
+        case 'Party':
+          detectedChannel = ChatChannel.TEAM;
+          break;
+        case 'Friends':
+          detectedChannel = ChatChannel.FRIENDS;
+          break;
+        default:
+          break;
+      }
+
       if (player) {
-        return new EventChatMessage().construct({
+        return new EventChatMessage({
           player,
+          channel: detectedChannel,
           msg: trimmedMessage.trim(),
         });
       }
@@ -258,7 +277,7 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
 
     const player = await this.sdtd.steamIdOrXboxToGameId(steamOrXboxId);
 
-    return new EventPlayerDeath().construct({
+    return new EventPlayerDeath({
       msg: logLine.msg,
       player,
       position: {
@@ -284,7 +303,7 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
     const player = await this.sdtd.steamIdOrXboxToGameId(steamOrXboxId);
 
     // Constructing the EventEntityKilled object with the parsed data
-    return new EventEntityKilled().construct({
+    return new EventEntityKilled({
       msg: logLine.msg,
       entity: entityName || entityName2,
       player,

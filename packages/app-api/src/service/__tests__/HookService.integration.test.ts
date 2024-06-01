@@ -1,6 +1,6 @@
 import { HookService } from '../HookService.js';
 import { queueService } from '@takaro/queues';
-import { EventPlayerConnected, EventChatMessage, HookEvents } from '@takaro/modules';
+import { EventPlayerConnected, EventChatMessage, HookEvents, ChatChannel } from '@takaro/modules';
 import { IntegrationTest, sandbox, expect, integrationConfig } from '@takaro/test';
 import { HookOutputDTO, GameServerOutputDTO, ModuleOutputDTO, ModuleInstallationOutputDTO } from '@takaro/apiclient';
 import { SinonStub } from 'sinon';
@@ -64,7 +64,7 @@ const tests = [
     setup,
     test: async function () {
       await this.setupData.service.handleEvent({
-        eventData: await new EventPlayerConnected().construct({
+        eventData: new EventPlayerConnected({
           msg: 'foo connected',
         }),
         eventType: HookEvents.PLAYER_CONNECTED,
@@ -81,8 +81,9 @@ const tests = [
     setup,
     test: async function () {
       await this.setupData.service.handleEvent({
-        eventData: await new EventChatMessage().construct({
+        eventData: new EventChatMessage({
           msg: 'chat message',
+          channel: ChatChannel.GLOBAL,
         }),
         eventType: HookEvents.CHAT_MESSAGE,
         gameServerId: this.setupData.gameserver.id,
@@ -92,7 +93,7 @@ const tests = [
 
       // But a different event type should trigger
       await this.setupData.service.handleEvent({
-        eventData: await new EventPlayerConnected().construct({
+        eventData: new EventPlayerConnected({
           msg: 'foo connected',
         }),
         eventType: HookEvents.PLAYER_CONNECTED,
@@ -117,7 +118,7 @@ const tests = [
       });
 
       await this.setupData.service.handleEvent({
-        eventData: await new EventPlayerConnected().construct({
+        eventData: new EventPlayerConnected({
           msg: 'foo connected',
         }),
         eventType: HookEvents.PLAYER_CONNECTED,
@@ -127,7 +128,7 @@ const tests = [
       expect(this.setupData.queueAddStub).to.have.been.calledOnce;
 
       await this.setupData.service.handleEvent({
-        eventData: await new EventPlayerConnected().construct({
+        eventData: new EventPlayerConnected({
           msg: 'bar connected',
         }),
         eventType: HookEvents.PLAYER_CONNECTED,

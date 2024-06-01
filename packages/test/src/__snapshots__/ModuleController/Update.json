@@ -2,9 +2,9 @@
   "body": {
     "meta": {},
     "data": {
-      "id": "5f08876a-9442-47af-a2fe-d1e76156981d",
-      "createdAt": "2024-01-26T15:59:08.933Z",
-      "updatedAt": "2024-01-26T15:59:08.961Z",
+      "id": "89610257-3c2a-4c73-bf22-d3f87bd701b8",
+      "createdAt": "2024-03-02T14:35:14.202Z",
+      "updatedAt": "2024-03-02T14:35:14.232Z",
       "name": "Updated module",
       "description": "Updated description",
       "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{},\"required\":[],\"additionalProperties\":false}",
@@ -14,6 +14,7 @@
       "cronJobs": [],
       "hooks": [],
       "commands": [],
+      "functions": [],
       "permissions": []
     }
   },

@@ -7,14 +7,14 @@ import { IMessageOptsDTO } from '@takaro/gameserver';
 import { IParsedCommand, queueService } from '@takaro/queues';
 import { Type } from 'class-transformer';
 import { TakaroDTO, errors, TakaroModelDTO, traceableClass } from '@takaro/util';
-import { ICommand, ICommandArgument, EventChatMessage } from '@takaro/modules';
+import { ICommand, ICommandArgument, EventChatMessage, ChatChannel } from '@takaro/modules';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { SettingsService, SETTINGS_KEYS } from './SettingsService.js';
 import { parseCommand } from '../lib/commandParser.js';
 import { GameServerService } from './GameServerService.js';
-import { PlayerOnGameServerService } from './PlayerOnGameserverService.js';
 import { PlayerService } from './PlayerService.js';
+import { PlayerOnGameServerService } from './PlayerOnGameserverService.js';
 
 export class CommandOutputDTO extends TakaroModelDTO<CommandOutputDTO> {
   @IsString()
@@ -61,7 +61,7 @@ export class CommandArgumentOutputDTO extends TakaroModelDTO<CommandArgumentOutp
 
 export class CommandCreateDTO extends TakaroDTO<CommandCreateDTO> implements ICommand {
   @IsString()
-  @Length(3, 50)
+  @Length(3, 150)
   name: string;
 
   @IsString()
@@ -81,12 +81,12 @@ export class CommandCreateDTO extends TakaroDTO<CommandCreateDTO> implements ICo
   @Type(() => CommandArgumentCreateDTO)
   @ValidateNested({ each: true })
   @IsOptional()
-  arguments?: ICommandArgument[];
+  arguments: ICommandArgument[];
 }
 
 export class CommandArgumentCreateDTO extends TakaroDTO<CommandArgumentCreateDTO> implements ICommandArgument {
   @IsString()
-  @Length(2, 50)
+  @Length(2, 150)
   name: string;
 
   @IsString()
@@ -109,7 +109,7 @@ export class CommandArgumentCreateDTO extends TakaroDTO<CommandArgumentCreateDTO
 }
 
 export class CommandUpdateDTO extends TakaroDTO<CommandUpdateDTO> {
-  @Length(3, 50)
+  @Length(3, 150)
   @IsString()
   @IsOptional()
   name?: string;
@@ -134,7 +134,7 @@ export class CommandUpdateDTO extends TakaroDTO<CommandUpdateDTO> {
 
 export class CommandArgumentUpdateDTO extends TakaroDTO<CommandArgumentUpdateDTO> {
   @IsString()
-  @Length(3, 50)
+  @Length(3, 150)
   @IsOptional()
   name?: string;
 
@@ -161,6 +161,10 @@ export class CommandTriggerDTO extends TakaroDTO<CommandTriggerDTO> {
 
 @traceableClass('service:command')
 export class CommandService extends TakaroService<CommandModel, CommandOutputDTO, CommandCreateDTO, CommandUpdateDTO> {
+  private playerService = new PlayerService(this.domainId);
+  private gameServerService = new GameServerService(this.domainId);
+  private pogService = new PlayerOnGameServerService(this.domainId);
+
   get repo() {
     return new CommandRepo(this.domainId);
   }
@@ -179,7 +183,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
 
     if (item.function) {
       const newFn = await functionsService.create(
-        await new FunctionCreateDTO().construct({
+        new FunctionCreateDTO({
           code: item.function,
         })
       );
@@ -189,12 +193,13 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
       fnIdToAdd = newFn.id;
     }
 
-    const created = await this.repo.create(await new CommandCreateDTO().construct({ ...item, function: fnIdToAdd }));
+    const toCreate = new CommandCreateDTO({ ...item, function: fnIdToAdd });
+    const created = await this.repo.create(toCreate);
 
     if (item.arguments) {
       await Promise.all(
         item.arguments.map(async (a) => {
-          return this.createArgument(created.id, await new CommandArgumentCreateDTO().construct(a));
+          return this.createArgument(created.id, new CommandArgumentCreateDTO(a));
         })
       );
     }
@@ -218,7 +223,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
 
       await functionsService.update(
         fn.id,
-        await new FunctionUpdateDTO().construct({
+        new FunctionUpdateDTO({
           code: item.function,
         })
       );
@@ -236,7 +241,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
       // Create new args
       await Promise.all(
         item.arguments.map(async (a) => {
-          return this.createArgument(id, await new CommandArgumentCreateDTO().construct(a));
+          return this.createArgument(id, new CommandArgumentCreateDTO(a));
         })
       );
     }
@@ -271,11 +276,8 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
       }
 
       const gameServerService = new GameServerService(this.domainId);
-      const playerOnGameServerService = new PlayerOnGameServerService(this.domainId);
-      const playerService = new PlayerService(this.domainId);
 
-      const pog = await playerOnGameServerService.resolveRef(chatMessage.player, gameServerId);
-      const player = await playerService.findOne(pog.playerId);
+      const { player, pog } = await this.playerService.resolveRef(chatMessage.player, gameServerId);
 
       const parsedCommands = await Promise.all(
         triggeredCommands.map(async (c) => {
@@ -287,7 +289,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
             await gameServerService.sendMessage(
               gameServerId,
               error.message,
-              await new IMessageOptsDTO().construct({
+              new IMessageOptsDTO({
                 recipient: chatMessage.player,
               })
             );
@@ -317,7 +319,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
           await gameServerService.sendMessage(
             gameServerId,
             `Your command will be executed in ${delay / 1000} seconds.`,
-            await new IMessageOptsDTO().construct({
+            new IMessageOptsDTO({
               recipient: chatMessage.player,
             })
           );
@@ -329,11 +331,13 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
             domainId: this.domainId,
             functionId: db.function.id,
             itemId: db.id,
-            pog: pog,
+            pog,
             arguments: data.arguments,
             module: data.module,
             gameServerId,
             player,
+            chatMessage,
+            trigger: commandName,
           },
           { delay }
         );
@@ -344,16 +348,15 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
   }
 
   async trigger(gameServerId: string, triggered: CommandTriggerDTO) {
-    const gameServerService = new GameServerService(this.domainId);
-    const playerService = new PlayerService(this.domainId);
-    const player = await playerService.getRef(triggered.playerId, gameServerId);
-    const playerOnGameserver = await gameServerService.getPlayer(gameServerId, player);
+    const pog = await this.pogService.getPog(triggered.playerId, gameServerId);
+    const gamePlayer = await this.gameServerService.getPlayer(gameServerId, pog);
 
-    if (!player || !playerOnGameserver) throw new errors.NotFoundError('Player not found');
+    if (!gamePlayer) throw new errors.NotFoundError('Player not found on gameserver... Make sure the player is online');
 
-    const eventDto = await new EventChatMessage().construct({
-      player: playerOnGameserver,
+    const eventDto = new EventChatMessage({
+      player: gamePlayer,
       timestamp: new Date().toISOString(),
+      channel: ChatChannel.GLOBAL,
       msg: triggered.msg,
     });
 

@@ -24,7 +24,12 @@ export class Mock implements IGameServer {
 
   constructor(config: MockConnectionInfo, private settings: Partial<Settings> = {}) {
     this.connectionInfo = config;
-    this.io = io(this.connectionInfo.host);
+    if (!this.connectionInfo.name) this.connectionInfo.name = 'default';
+    this.io = io(this.connectionInfo.host, {
+      query: {
+        name: config.name,
+      },
+    });
     this.emitter = new MockEmitter(this.connectionInfo, this.io);
   }
 
@@ -64,7 +69,7 @@ export class Mock implements IGameServer {
 
   private async requestFromServer(event: string, ...args: any[]) {
     const client = await this.getClient();
-    return client.timeout(30000).emitWithAck(event, ...args);
+    return client.timeout(30000).emitWithAck(event, this.connectionInfo.name, ...args);
   }
 
   async getPlayer(player: IPlayerReferenceDTO): Promise<IGamePlayer | null> {
@@ -85,26 +90,26 @@ export class Mock implements IGameServer {
       assert(data === 'pong');
     } catch (error) {
       if (!error || !(error instanceof Error)) {
-        return new TestReachabilityOutputDTO().construct({
+        return new TestReachabilityOutputDTO({
           connectable: false,
           reason: 'Unknown error',
         });
       }
 
       if (error.name === 'AssertionError') {
-        return new TestReachabilityOutputDTO().construct({
+        return new TestReachabilityOutputDTO({
           connectable: false,
           reason: 'Server responded with invalid data',
         });
       }
 
-      return new TestReachabilityOutputDTO().construct({
+      return new TestReachabilityOutputDTO({
         connectable: false,
         reason: 'Unable to connect to server',
       });
     }
 
-    return new TestReachabilityOutputDTO().construct({
+    return new TestReachabilityOutputDTO({
       connectable: true,
     });
   }

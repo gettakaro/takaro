@@ -13,6 +13,7 @@ import { REST } from '@discordjs/rest';
 import { Routes, RESTGetAPICurrentUserGuildsResult } from 'discord-api-types/v10';
 import oauth from 'passport-oauth2';
 import { DiscordService } from './DiscordService.js';
+import { domainStateMiddleware } from '../middlewares/domainStateMiddleware.js';
 
 interface DiscordUserInfo {
   id: string;
@@ -67,7 +68,7 @@ export class AuthService extends DomainScoped {
   static async login(name: string, password: string): Promise<LoginOutputDTO> {
     try {
       const loginRes = await ory.submitApiLogin(name, password);
-      return new LoginOutputDTO().construct({
+      return new LoginOutputDTO({
         token: loginRes.data.session_token,
       });
     } catch (error) {
@@ -100,7 +101,7 @@ export class AuthService extends DomainScoped {
 
     const token = await this.signJwt({ user: { id: rootUser.results[0].id } });
 
-    return new TokenOutputDTO().construct({ token });
+    return new TokenOutputDTO({ token });
   }
 
   async signJwt(payload: IJWTSignOptions): Promise<string> {
@@ -184,7 +185,7 @@ export class AuthService extends DomainScoped {
     return user;
   }
 
-  static getAuthMiddleware(permissions: PERMISSIONS[]) {
+  static getAuthMiddleware(permissions: PERMISSIONS[], domainStateCheck = true) {
     const fn = async (req: AuthenticatedRequest, _res: Response, next: NextFunction) => {
       try {
         const user = await this.getUserFromReq(req);
@@ -210,7 +211,9 @@ export class AuthService extends DomainScoped {
 
         req.user = user;
         req.domainId = user.domain;
-        next();
+
+        if (domainStateCheck) return domainStateMiddleware(req, _res, next);
+        return next();
       } catch (error) {
         log.error('Unexpected error in auth middleware', error);
         return next(new errors.ForbiddenError());
@@ -275,7 +278,7 @@ export class AuthService extends DomainScoped {
 
               await service.update(
                 user.id,
-                await new UserUpdateAuthDTO().construct({
+                new UserUpdateAuthDTO({
                   discordId: userInfo.id,
                 })
               );

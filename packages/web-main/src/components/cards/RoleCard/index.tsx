@@ -1,10 +1,20 @@
 import { FC, MouseEvent, useState } from 'react';
-import { Button, Card, Chip, Dialog, Dropdown, IconButton, Tooltip, useTheme } from '@takaro/lib-components';
+import {
+  Alert,
+  Button,
+  Card,
+  Chip,
+  Dialog,
+  Dropdown,
+  IconButton,
+  Tooltip,
+  ValueConfirmationField,
+  useTheme,
+} from '@takaro/lib-components';
 import { Header, TitleContainer } from './style';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 
 import { AiOutlineMenu as MenuIcon } from 'react-icons/ai';
-import { PATHS } from 'paths';
 import { useRoleRemove } from 'queries/roles/queries';
 import { RoleOutputDTO } from '@takaro/apiclient';
 import { CardBody } from '../style';
@@ -13,6 +23,7 @@ import { AiOutlineEdit as EditIcon, AiOutlineDelete as DeleteIcon, AiOutlineEye 
 
 export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [valid, setValid] = useState<boolean>(false);
   const theme = useTheme();
   const navigate = useNavigate();
 
@@ -20,16 +31,16 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
 
   const handleOnEditClick = (e: MouseEvent): void => {
     e.stopPropagation();
-    navigate(PATHS.roles.update(id));
+    navigate({ to: '/roles/update/$roleId', params: { roleId: id } });
   };
   const handleOnDeleteClick = (e: MouseEvent) => {
     e.stopPropagation();
-    setOpenDialog(true);
+    e.shiftKey ? handleOnDelete(e) : setOpenDialog(true);
   };
 
   const handleOnViewClick = (e: MouseEvent) => {
     e.stopPropagation();
-    navigate(PATHS.roles.view(id));
+    navigate({ to: '/roles/view/$roleId', params: { roleId: id } });
   };
 
   const handleOnDelete = (e: MouseEvent) => {
@@ -40,7 +51,7 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
 
   return (
     <>
-      <Card>
+      <Card data-testid={`role-${name}`}>
         <CardBody>
           <Header>
             {system ? (
@@ -88,14 +99,25 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
         <Dialog.Content>
           <Dialog.Heading>Delete role</Dialog.Heading>
           <Dialog.Body size="medium">
+            <Alert
+              variant="info"
+              text="You can hold down shift when deleting a role to bypass this confirmation entirely."
+            />
             <p>
-              Are you sure you want to delete <strong>{name}</strong>?
+              Are you sure you want to delete the role? To confirm, type <strong>{name}</strong>.
             </p>
+            <ValueConfirmationField
+              value={name}
+              onValidChange={(v) => setValid(v)}
+              label="Role name"
+              id="deleteGameServerConfirmation"
+            />
             <Button
               isLoading={isDeleting}
-              onClick={(e) => handleOnDelete(e)}
+              onClick={handleOnDelete}
+              disabled={!valid}
               fullWidth
-              text={'Delete role'}
+              text="Delete role"
               color="error"
             />
           </Dialog.Body>

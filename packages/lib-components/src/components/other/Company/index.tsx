@@ -1,5 +1,5 @@
 import { forwardRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link } from '@tanstack/react-router';
 import { Container, Svg } from './style';
 import { Color, Size } from '../../../styled';
 
@@ -13,19 +13,12 @@ export interface CompanyProps {
 }
 
 export const Company = forwardRef<HTMLDivElement, CompanyProps>(
-  (
-    {
-      iconColor = 'primary',
-      iconVisible = true,
-      textVisible = true,
-      to,
-      size = 'medium',
-    },
-    ref
-  ) => {
+  ({ iconColor = 'primary', iconVisible = true, textVisible = true, to, size = 'medium' }, ref) => {
     if (to) {
       return (
         <Container size={size} textVisible={textVisible} ref={ref}>
+          {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
+          {/* @ts-ignore reusable link */}
           <Link to={to}>
             {iconVisible && (
               <Svg color={iconColor} size={size} viewBox="0 0 512 512">

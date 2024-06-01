@@ -99,11 +99,11 @@ export class SettingsService extends TakaroService<SettingsModel, Settings, neve
     const userId = ctx.data.user;
 
     await eventsService.create(
-      await new EventCreateDTO().construct({
+      new EventCreateDTO({
         eventName: EVENT_TYPES.SETTINGS_SET,
         gameserverId: this.gameServerId,
         userId,
-        meta: await new TakaroEventSettingsSet().construct({ key, value }),
+        meta: new TakaroEventSettingsSet({ key, value }),
       })
     );
 

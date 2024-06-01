@@ -5,14 +5,18 @@ import { IsBoolean, IsISO8601, IsNumber, IsOptional, IsString, ValidateNested } 
 import { TakaroDTO, TakaroModelDTO, errors, traceableClass } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
-import { PlayerOnGameServerService, PlayerOnGameserverOutputDTO } from './PlayerOnGameserverService.js';
+import {
+  PlayerOnGameServerService,
+  PlayerOnGameserverOutputDTO,
+  PlayerOnGameserverOutputWithRolesDTO,
+} from './PlayerOnGameserverService.js';
 import {
   IGamePlayer,
   TakaroEventRoleAssigned,
   TakaroEventRoleRemoved,
   TakaroEventPlayerNewIpDetected,
+  TakaroEvents,
 } from '@takaro/modules';
-import { IPlayerReferenceDTO } from '@takaro/gameserver';
 import { Type } from 'class-transformer';
 import { PlayerRoleAssignmentOutputDTO, RoleService } from './RoleService.js';
 import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
@@ -124,6 +128,15 @@ export class PlayerCreateDTO extends TakaroDTO<PlayerCreateDTO> {
 export class PlayerUpdateDTO extends TakaroDTO<PlayerUpdateDTO> {
   @IsString()
   name!: string;
+  @IsString()
+  @IsOptional()
+  steamId?: string;
+  @IsString()
+  @IsOptional()
+  xboxLiveId?: string;
+  @IsString()
+  @IsOptional()
+  epicOnlineServicesId?: string;
 }
 
 @traceableClass('service:player')
@@ -149,19 +162,17 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     const roles = await roleService.find({ filters: { name: ['Player'] } });
 
     player.roleAssignments.push(
-      await new PlayerRoleAssignmentOutputDTO().construct({
+      new PlayerRoleAssignmentOutputDTO({
         playerId: player.id,
         roleId: roles.results[0].id,
         role: roles.results[0],
       })
     );
 
-    await this.handleRoleExpiry(player);
-
-    return player;
+    return this.handleRoleExpiry(player);
   }
 
-  async find(filters: ITakaroQuery<PlayerOutputDTO>): Promise<PaginatedOutput<PlayerOutputDTO>> {
+  async find(filters: ITakaroQuery<PlayerOutputDTO>): Promise<PaginatedOutput<PlayerOutputWithRolesDTO>> {
     const players = await this.repo.find(filters);
     players.results = await Promise.all(players.results.map((item) => this.extend(item)));
     return players;
@@ -172,9 +183,13 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     return this.extend(player);
   }
 
-  async create(item: PlayerCreateDTO) {
+  async create(item: PlayerCreateDTO): Promise<PlayerOutputWithRolesDTO> {
     const created = await this.repo.create(item);
-    return created;
+
+    const eventsService = new EventService(this.domainId);
+    await eventsService.create(new EventCreateDTO({ eventName: TakaroEvents.PLAYER_CREATED, playerId: created.id }));
+
+    return this.findOne(created.id);
   }
 
   async update(id: string, item: PlayerUpdateDTO) {
@@ -187,62 +202,69 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     return id;
   }
 
-  async sync(playerData: IGamePlayer, gameServerId: string) {
+  async resolveRef(
+    gamePlayer: IGamePlayer,
+    gameServerId: string
+  ): Promise<{ player: PlayerOutputWithRolesDTO; pog: PlayerOnGameserverOutputWithRolesDTO }> {
     const playerOnGameServerService = new PlayerOnGameServerService(this.domainId);
-    const existingAssociations = await playerOnGameServerService.findAssociations(playerData.gameId, gameServerId);
-    let player: PlayerOutputDTO;
+    let pog = await playerOnGameServerService.findAssociations(gamePlayer.gameId, gameServerId);
 
-    if (!existingAssociations.length) {
-      const findOpts: ITakaroQuery<PlayerOutputDTO> & { filters: Record<string, unknown> } = {
-        filters: {
-          steamId: [],
-          epicOnlineServicesId: [],
-          xboxLiveId: [],
-        },
-      };
+    let player: PlayerOutputWithRolesDTO | null = null;
 
-      if (playerData.steamId) {
-        findOpts.filters.steamId = [playerData.steamId];
-      }
+    const promises = [];
 
-      if (playerData.epicOnlineServicesId) {
-        findOpts.filters.epicOnlineServicesId = [playerData.epicOnlineServicesId];
-      }
+    if (gamePlayer.steamId) promises.push(this.find({ filters: { steamId: [gamePlayer.steamId] } }));
+    if (gamePlayer.epicOnlineServicesId)
+      promises.push(this.find({ filters: { epicOnlineServicesId: [gamePlayer.epicOnlineServicesId] } }));
+    if (gamePlayer.xboxLiveId) promises.push(this.find({ filters: { xboxLiveId: [gamePlayer.xboxLiveId] } }));
 
-      if (playerData.xboxLiveId) {
-        findOpts.filters.xboxLiveId = [playerData.xboxLiveId];
-      }
+    const promiseResults = await Promise.all(promises);
+    // Merge all results into one array
+    const foundPlayers = promiseResults.reduce((acc: PlayerOutputWithRolesDTO[], item) => acc.concat(item.results), []);
 
-      const existingPlayers = await this.find(findOpts);
-      if (!existingPlayers.results.length) {
-        // Main player profile does not exist yet!
-        this.log.debug('No existing associations found, creating new global player');
-        player = await this.create(
-          await new PlayerCreateDTO().construct({
-            name: playerData.name,
-            steamId: playerData.steamId,
-            epicOnlineServicesId: playerData.epicOnlineServicesId,
-            xboxLiveId: playerData.xboxLiveId,
-          })
-        );
-      } else {
-        player = existingPlayers.results[0];
-      }
+    // If NO players are found, create a new one
+    if (!foundPlayers.length) {
+      // Main player profile does not exist yet!
+      this.log.debug('No existing associations found, creating new global player', {
+        gameId: gamePlayer.gameId,
+        gameServerId,
+      });
+      player = await this.create(
+        new PlayerCreateDTO({
+          name: gamePlayer.name,
+          steamId: gamePlayer.steamId,
+          epicOnlineServicesId: gamePlayer.epicOnlineServicesId,
+          xboxLiveId: gamePlayer.xboxLiveId,
+        })
+      );
+    } else {
+      // At least one player is found, use the first one
+      player = foundPlayers[0];
 
-      this.log.debug('Creating new player association', { player, gameServerId });
-      await playerOnGameServerService.insertAssociation(playerData.gameId, player.id, gameServerId);
+      // Also, update any missing IDs and names
+      await this.update(
+        player.id,
+        new PlayerUpdateDTO({
+          name: gamePlayer.name,
+          steamId: gamePlayer.steamId,
+          xboxLiveId: gamePlayer.xboxLiveId,
+          epicOnlineServicesId: gamePlayer.epicOnlineServicesId,
+        })
+      );
     }
-  }
 
-  async resolveRef(ref: IPlayerReferenceDTO, gameserverId: string): Promise<PlayerOutputDTO> {
-    const playerOnGameServerService = new PlayerOnGameServerService(this.domainId);
-    const playerOnGameServer = await playerOnGameServerService.resolveRef(ref, gameserverId);
-    return this.findOne(playerOnGameServer.playerId);
-  }
+    if (!pog) {
+      this.log.debug('Creating new player association', { player: player.id, gameServerId });
+      pog = await playerOnGameServerService.insertAssociation(gamePlayer.gameId, player.id, gameServerId);
+    }
 
-  async getRef(playerId: string, gameserverId: string): Promise<PlayerOnGameserverOutputDTO> {
-    const playerOnGameServerService = new PlayerOnGameServerService(this.domainId);
-    return playerOnGameServerService.getRef(playerId, gameserverId);
+    if (!pog) throw new errors.NotFoundError('PlayerOnGameServer not found');
+    if (!player) throw new errors.NotFoundError('Player not found');
+
+    return {
+      player,
+      pog,
+    };
   }
 
   async assignRole(roleId: string, targetId: string, gameserverId?: string, expiresAt?: string) {
@@ -251,20 +273,20 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
 
     const role = await roleService.findOne(roleId);
 
-    this.log.info('Assigning role to player');
+    this.log.info('Assigning role to player', { roleId, player: targetId, gameserverId, expiresAt });
     await this.repo.assignRole(targetId, roleId, gameserverId, expiresAt);
     await eventService.create(
-      await new EventCreateDTO().construct({
+      new EventCreateDTO({
         eventName: EVENT_TYPES.ROLE_ASSIGNED,
         gameserverId,
         playerId: targetId,
-        meta: await new TakaroEventRoleAssigned().construct({ role }),
+        meta: new TakaroEventRoleAssigned({ role }),
       })
     );
   }
 
   async removeRole(roleId: string, targetId: string, gameserverId?: string) {
-    this.log.info('Removing role from player');
+    this.log.info('Removing role from player', { roleId, player: targetId, gameserverId });
     const eventService = new EventService(this.domainId);
     const roleService = new RoleService(this.domainId);
 
@@ -272,11 +294,11 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     if (!role) throw new errors.NotFoundError(`Role ${roleId} not found`);
     await this.repo.removeRole(targetId, roleId, gameserverId);
     await eventService.create(
-      await new EventCreateDTO().construct({
+      new EventCreateDTO({
         eventName: EVENT_TYPES.ROLE_REMOVED,
         playerId: targetId,
         gameserverId,
-        meta: await new TakaroEventRoleRemoved().construct({ role: { id: role.id, name: role.name } }),
+        meta: new TakaroEventRoleRemoved({ role: { id: role.id, name: role.name } }),
       })
     );
   }
@@ -345,11 +367,11 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     if (newIpRecord) {
       const eventsService = new EventService(this.domainId);
       await eventsService.create(
-        await new EventCreateDTO().construct({
+        new EventCreateDTO({
           gameserverId: gameServerId,
           playerId: playerId,
           eventName: EVENT_TYPES.PLAYER_NEW_IP_DETECTED,
-          meta: await new TakaroEventPlayerNewIpDetected().construct({
+          meta: new TakaroEventPlayerNewIpDetected({
             ip: ip,
             city: newIpRecord.city,
             country: newIpRecord.country,

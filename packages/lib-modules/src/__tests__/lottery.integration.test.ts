@@ -1,5 +1,5 @@
 import { IntegrationTest, expect } from '@takaro/test';
-import { IModuleTestsSetupData, modulesTestSetup } from './setupData.integration.test.js';
+import { IModuleTestsSetupData, modulesTestSetup } from '@takaro/test';
 import { GameEvents } from '../dto/index.js';
 import { Client } from '@takaro/apiclient';
 
@@ -301,7 +301,7 @@ const tests = [
       ).data.data;
       expect(pog.currency).to.be.eq(playerStartBalance);
 
-      expectTicketAmountLengthToBe(this.client, this.setupData.gameserver.id, this.setupData.lotteryModule.id);
+      await expectTicketAmountLengthToBe(this.client, this.setupData.gameserver.id, this.setupData.lotteryModule.id);
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({

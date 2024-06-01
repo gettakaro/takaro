@@ -124,7 +124,7 @@ export class DiscordService extends TakaroService<
     await Promise.all(
       addedGuilds.map(async (guild) =>
         this.create(
-          await new GuildCreateInputDTO().construct({
+          new GuildCreateInputDTO({
             discordId: guild.id,
             name: guild.name,
             icon: guild.icon,
@@ -138,7 +138,7 @@ export class DiscordService extends TakaroService<
         if (!dbGuild) return;
         return this.update(
           dbGuild.id,
-          await new GuildUpdateDTO().construct({
+          new GuildUpdateDTO({
             name: guild.name,
             icon: guild.icon,
           })
@@ -183,12 +183,12 @@ export class DiscordService extends TakaroService<
   async handleMessage(message: Message<true>) {
     const { channel, author, member } = message;
 
-    const messageDTO = await new HookEventDiscordMessage().construct({
-      channel: await new EventDiscordChannel().construct({
+    const messageDTO = new HookEventDiscordMessage({
+      channel: new EventDiscordChannel({
         id: channel.id,
         name: channel.name,
       }),
-      author: await new EventDiscordUser().construct({
+      author: new EventDiscordUser({
         id: author.id,
         username: author.username,
         displayName: member?.displayName,

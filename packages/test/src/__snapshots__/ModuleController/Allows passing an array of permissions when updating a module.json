@@ -2,9 +2,9 @@
   "body": {
     "meta": {},
     "data": {
-      "id": "eccee413-70e7-462d-956a-0845eeb1711f",
-      "createdAt": "2024-01-26T15:59:11.876Z",
-      "updatedAt": "2024-01-26T15:59:11.903Z",
+      "id": "215ff20e-d44f-48da-af5c-7d9a7df847c9",
+      "createdAt": "2024-03-02T14:35:17.383Z",
+      "updatedAt": "2024-03-02T14:35:17.411Z",
       "name": "Test module",
       "description": "No description provided.",
       "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{},\"required\":[],\"additionalProperties\":false}",
@@ -14,12 +14,13 @@
       "cronJobs": [],
       "hooks": [],
       "commands": [],
+      "functions": [],
       "permissions": [
         {
-          "id": "32c6ff48-fee5-4fcb-a6d2-ed2963abd36b",
-          "createdAt": "2024-01-26T15:59:11.905Z",
-          "updatedAt": "2024-01-26T15:59:11.906Z",
-          "moduleId": "eccee413-70e7-462d-956a-0845eeb1711f",
+          "id": "e05c3082-9237-4a13-8958-228356454ee5",
+          "createdAt": "2024-03-02T14:35:17.414Z",
+          "updatedAt": "2024-03-02T14:35:17.414Z",
+          "moduleId": "215ff20e-d44f-48da-af5c-7d9a7df847c9",
           "permission": "test",
           "friendlyName": "test",
           "description": "test",

@@ -1,7 +1,7 @@
 import { TakaroService } from './Base.js';
 
 import { IsEnum, IsObject, IsOptional, IsUUID, ValidateNested } from 'class-validator';
-import { TakaroDTO, TakaroModelDTO, errors, isTakaroDTO, traceableClass } from '@takaro/util';
+import { TakaroDTO, TakaroModelDTO, ctx, errors, isTakaroDTO, traceableClass } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { EventModel, EventRepo } from '../db/event.js';
@@ -11,13 +11,13 @@ import { Type } from 'class-transformer';
 import { GameServerOutputDTO } from './GameServerService.js';
 import { ModuleOutputDTO } from './ModuleService.js';
 import { UserOutputDTO } from './UserService.js';
-import { EventMapping, EventPayload, TakaroEvents } from '@takaro/modules';
+import { BaseEvent, EventMapping, EventPayload, TakaroEvents } from '@takaro/modules';
 import { ValueOf } from 'type-fest';
 import { HookService } from './HookService.js';
 
 export const EVENT_TYPES = {
   ...TakaroEvents,
-  // All game events except for LOG_LINE
+  // All game events except for LOG_LINE because it would get too spammy
   PLAYER_CONNECTED: 'player-connected',
   PLAYER_DISCONNECTED: 'player-disconnected',
   CHAT_MESSAGE: 'chat-message',
@@ -94,7 +94,7 @@ export class EventCreateDTO extends TakaroDTO<EventCreateDTO> {
 
   @IsOptional()
   @IsObject()
-  meta: TakaroDTO<any>;
+  meta: BaseEvent<any>;
 }
 
 export class EventUpdateDTO extends TakaroDTO<EventUpdateDTO> {}
@@ -127,12 +127,15 @@ export class EventService extends TakaroService<EventModel, EventOutputDTO, Even
     const dto = EventMapping[data.eventName];
     if (!dto) throw new errors.BadRequestError(`Event ${data.eventName} is not supported`);
 
-    let eventMeta = null;
+    let eventMeta: BaseEvent<any> | null = null;
 
-    if (isTakaroDTO(data.meta)) {
-      eventMeta = await new dto().construct(data.meta.toJSON());
+    // If no userId is provided, use the calling user
+    if (!data.userId && ctx.data.user) data.userId = ctx.data.user;
+
+    if (!isTakaroDTO(data.meta)) {
+      eventMeta = new dto(data.meta);
     } else {
-      eventMeta = await new dto().construct(data.meta);
+      eventMeta = data.meta;
     }
 
     await eventMeta.validate();
@@ -147,8 +150,12 @@ export class EventService extends TakaroService<EventModel, EventOutputDTO, Even
       playerId: created.playerId,
     });
 
-    const socketServer = await getSocketServer();
-    socketServer.emit(this.domainId, 'event', [created]);
+    try {
+      const socketServer = await getSocketServer();
+      socketServer.emit(this.domainId, 'event', [created]);
+    } catch (error) {
+      this.log.warn('Failed to emit event', error);
+    }
 
     return created;
   }

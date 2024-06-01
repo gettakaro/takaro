@@ -1,0 +1,33 @@
+{
+  "body": {
+    "meta": {
+      "error": {
+        "code": "ValidationError",
+        "message": "Validation error",
+        "details": [
+          {
+            "target": {
+              "name": "Test module",
+              "builtin": "test"
+            },
+            "value": "test",
+            "property": "builtin",
+            "constraints": {
+              "whitelistValidation": "property builtin should not exist"
+            }
+          }
+        ]
+      }
+    },
+    "data": {}
+  },
+  "status": 400,
+  "test": {
+    "group": "ModuleController",
+    "snapshot": true,
+    "name": "Does not allow creating modules with builtin parameter set",
+    "expectedStatus": 400,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

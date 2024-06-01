@@ -11,13 +11,20 @@ import { getModules } from '@takaro/modules';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { CommandCreateDTO, CommandOutputDTO, CommandService, CommandUpdateDTO } from './CommandService.js';
-import { BuiltinModule } from '@takaro/modules';
+import {
+  BuiltinModule,
+  TakaroEventModuleCreated,
+  TakaroEventModuleUpdated,
+  TakaroEventModuleDeleted,
+} from '@takaro/modules';
 import { GameServerService } from './GameServerService.js';
 import { PermissionCreateDTO, PermissionOutputDTO } from './RoleService.js';
 
 // Curse you ESM... :(
 import _Ajv from 'ajv';
 import { getEmptyConfigSchema } from '../lib/systemConfig.js';
+import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
+import { FunctionCreateDTO, FunctionOutputDTO, FunctionService, FunctionUpdateDTO } from './FunctionService.js';
 
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 const ajv = new Ajv({ useDefaults: true, strict: true, allErrors: true });
@@ -57,6 +64,10 @@ export class ModuleOutputDTO extends TakaroModelDTO<ModuleOutputDTO> {
   @Type(() => CommandOutputDTO)
   @ValidateNested({ each: true })
   commands: CommandOutputDTO[];
+
+  @Type(() => FunctionOutputDTO)
+  @ValidateNested({ each: true })
+  functions: FunctionOutputDTO[];
 
   @ValidateNested({ each: true })
   @Type(() => PermissionOutputDTO)
@@ -162,6 +173,17 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
       throw new errors.BadRequestError('Invalid config schema');
     }
     const created = await this.repo.create(mod);
+
+    const eventsService = new EventService(this.domainId);
+
+    await eventsService.create(
+      new EventCreateDTO({
+        eventName: EVENT_TYPES.MODULE_CREATED,
+        moduleId: created.id,
+        meta: await new TakaroEventModuleCreated(),
+      })
+    );
+
     return created;
   }
 
@@ -175,6 +197,18 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
         ajv.compile(JSON.parse(mod.configSchema));
       }
       const updated = await this.repo.update(id, mod);
+
+      if (!updated.builtin) {
+        const eventsService = new EventService(this.domainId);
+        await eventsService.create(
+          new EventCreateDTO({
+            eventName: EVENT_TYPES.MODULE_UPDATED,
+            moduleId: id,
+            meta: await new TakaroEventModuleUpdated(),
+          })
+        );
+      }
+
       return updated;
     } catch (e) {
       throw new errors.BadRequestError('Invalid config schema');
@@ -188,18 +222,42 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     });
     await Promise.all(installations.map((i) => gameServerService.uninstallModule(i.gameserverId, i.moduleId)));
     await this.repo.delete(id);
+
+    const eventsService = new EventService(this.domainId);
+
+    await eventsService.create(
+      new EventCreateDTO({
+        eventName: EVENT_TYPES.MODULE_DELETED,
+        moduleId: id,
+        meta: await new TakaroEventModuleDeleted(),
+      })
+    );
+
     return id;
   }
 
+  async import(mod: BuiltinModule<unknown>) {
+    const existing = await this.repo.find({
+      filters: { name: [mod.name] },
+    });
+
+    if (existing.results.length === 1) {
+      mod.name = `${mod.name}-imported`;
+    }
+
+    return this.seedModule(mod, true);
+  }
+
   async seedBuiltinModules() {
-    const modules = await getModules();
+    const modules = getModules();
     await Promise.all(modules.map((m) => this.seedModule(m)));
   }
 
-  private async seedModule(builtin: BuiltinModule) {
+  async seedModule(builtin: BuiltinModule<unknown>, isImport = false) {
     const commandService = new CommandService(this.domainId);
     const hookService = new HookService(this.domainId);
     const cronjobService = new CronJobService(this.domainId);
+    const functionService = new FunctionService(this.domainId);
     const existing = await this.repo.find({
       filters: { builtin: [builtin.name] },
     });
@@ -208,18 +266,18 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
 
     if (existing.results.length !== 1) {
       mod = await this.create(
-        await new ModuleCreateInternalDTO().construct({
+        new ModuleCreateInternalDTO({
           ...builtin,
-          builtin: builtin.name,
-          permissions: await Promise.all(builtin.permissions.map((p) => new PermissionOutputDTO().construct(p))),
+          builtin: isImport ? null : builtin.name,
+          permissions: await Promise.all(builtin.permissions.map((p) => new PermissionOutputDTO(p))),
         })
       );
     } else {
       mod = await this.update(
         mod.id,
-        await new ModuleUpdateDTO().construct({
+        new ModuleUpdateDTO({
           ...builtin,
-          permissions: await Promise.all(builtin.permissions.map((p) => new PermissionOutputDTO().construct(p))),
+          permissions: await Promise.all(builtin.permissions.map((p) => new PermissionOutputDTO(p))),
         })
       );
     }
@@ -231,11 +289,11 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
         });
 
         if (existing.results.length === 1) {
-          const data = await new CommandUpdateDTO().construct(c);
+          const data = new CommandUpdateDTO(c);
           return commandService.update(existing.results[0].id, data);
         }
 
-        const data = await new CommandCreateDTO().construct({
+        const data = new CommandCreateDTO({
           ...c,
           moduleId: mod.id,
         });
@@ -250,11 +308,11 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
         });
 
         if (existing.results.length === 1) {
-          const data = await new HookUpdateDTO().construct(h);
+          const data = new HookUpdateDTO(h);
           return hookService.update(existing.results[0].id, data);
         }
 
-        const data = await new HookCreateDTO().construct({
+        const data = new HookCreateDTO({
           ...h,
           eventType: h.eventType,
           moduleId: mod.id,
@@ -269,11 +327,11 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
         });
 
         if (existing.results.length === 1) {
-          const data = await new CronJobUpdateDTO().construct(c);
+          const data = new CronJobUpdateDTO(c);
           return cronjobService.update(existing.results[0].id, data);
         }
 
-        const data = await new CronJobCreateDTO().construct({
+        const data = new CronJobCreateDTO({
           ...c,
           moduleId: mod.id,
         });
@@ -281,7 +339,30 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
       })
     );
 
-    return Promise.all([commands, hooks, cronjobs]);
+    const functions = Promise.all(
+      builtin.functions.map(async (f) => {
+        const existing = await functionService.find({
+          filters: { name: [f.name], moduleId: [mod.id] },
+        });
+
+        if (existing.results.length === 1) {
+          const data = new FunctionUpdateDTO({
+            name: f.name,
+            code: f.function,
+          });
+          return functionService.update(existing.results[0].id, data);
+        }
+
+        const data = new FunctionCreateDTO({
+          name: f.name,
+          code: f.function,
+          moduleId: mod.id,
+        });
+        return functionService.create(data);
+      })
+    );
+
+    return Promise.all([commands, hooks, cronjobs, functions]);
   }
 
   async findOneBy(itemType: string, itemId: string | undefined): Promise<ModuleOutputDTO | undefined> {

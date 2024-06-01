@@ -111,7 +111,7 @@ export class GameServerRepo extends ITakaroRepo<
     const result = await new QueryBuilder<GameServerModel, GameServerOutputDTO>(filters).build(query);
     return {
       total: result.total,
-      results: await Promise.all(result.results.map((item) => new GameServerOutputDTO().construct(item))),
+      results: await Promise.all(result.results.map((item) => new GameServerOutputDTO(item))),
     };
   }
 
@@ -125,7 +125,7 @@ export class GameServerRepo extends ITakaroRepo<
 
     const connectionInfo = JSON.parse(await decrypt(data.connectionInfo as unknown as string));
 
-    return new GameServerOutputDTO().construct({ ...data, connectionInfo });
+    return new GameServerOutputDTO({ ...data, connectionInfo });
   }
 
   async create(item: GameServerCreateDTO): Promise<GameServerOutputDTO> {
@@ -137,7 +137,7 @@ export class GameServerRepo extends ITakaroRepo<
       connectionInfo: Buffer.from(encryptedConnectionInfo, 'utf8'),
     } as unknown as Partial<GameServerModel>;
     const res = await query.insert(data).returning('*');
-    return new GameServerOutputDTO().construct({
+    return new GameServerOutputDTO({
       ...res,
       connectionInfo: JSON.parse(item.connectionInfo),
     });
@@ -175,7 +175,7 @@ export class GameServerRepo extends ITakaroRepo<
   async getModuleInstallation(gameserverId: string, moduleId: string) {
     const { query } = await this.getAssignmentsModel();
     const res = await query.modify('domainScoped', this.domainId).where({ gameserverId, moduleId });
-    return new ModuleInstallationOutputDTO().construct(res[0] as unknown as ModuleInstallationOutputDTO);
+    return new ModuleInstallationOutputDTO(res[0] as unknown as ModuleInstallationOutputDTO);
   }
 
   async getInstalledModules({ gameserverId, moduleId }: { gameserverId?: string; moduleId?: string }) {
@@ -193,7 +193,7 @@ export class GameServerRepo extends ITakaroRepo<
     const res = await qry;
 
     return Promise.all(
-      res.map((item) => new ModuleInstallationOutputDTO().construct(item as unknown as ModuleInstallationOutputDTO))
+      res.map((item) => new ModuleInstallationOutputDTO(item as unknown as ModuleInstallationOutputDTO))
     );
   }
 
@@ -216,7 +216,7 @@ export class GameServerRepo extends ITakaroRepo<
     }
 
     const res = await query.findOne({ gameserverId, moduleId });
-    return new ModuleInstallationOutputDTO().construct(res as unknown as ModuleInstallationOutputDTO);
+    return new ModuleInstallationOutputDTO(res as unknown as ModuleInstallationOutputDTO);
   }
 
   async uninstallModule(gameserverId: string, moduleId: string) {

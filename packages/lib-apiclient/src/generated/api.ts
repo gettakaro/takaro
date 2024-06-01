@@ -182,6 +182,67 @@ export interface BaseTakaroEvent {
 /**
  *
  * @export
+ * @interface BuiltinModule
+ */
+export interface BuiltinModule {
+  /**
+   *
+   * @type {string}
+   * @memberof BuiltinModule
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof BuiltinModule
+   */
+  description: string;
+  /**
+   *
+   * @type {string}
+   * @memberof BuiltinModule
+   */
+  configSchema: string;
+  /**
+   *
+   * @type {string}
+   * @memberof BuiltinModule
+   */
+  uiSchema: string;
+  /**
+   *
+   * @type {Array<ICommand>}
+   * @memberof BuiltinModule
+   */
+  commands: Array<ICommand>;
+  /**
+   *
+   * @type {Array<IHook>}
+   * @memberof BuiltinModule
+   */
+  hooks: Array<IHook>;
+  /**
+   *
+   * @type {Array<ICronJob>}
+   * @memberof BuiltinModule
+   */
+  cronJobs: Array<ICronJob>;
+  /**
+   *
+   * @type {Array<IFunction>}
+   * @memberof BuiltinModule
+   */
+  functions: Array<IFunction>;
+  /**
+   *
+   * @type {Array<IPermission>}
+   * @memberof BuiltinModule
+   */
+  permissions: Array<IPermission>;
+}
+/**
+ *
+ * @export
  * @interface CommandArgumentCreateDTO
  */
 export interface CommandArgumentCreateDTO {
@@ -1002,7 +1063,23 @@ export interface DomainCreateInputDTO {
    * @memberof DomainCreateInputDTO
    */
   id?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof DomainCreateInputDTO
+   */
+  state?: DomainCreateInputDTOStateEnum;
 }
+
+export const DomainCreateInputDTOStateEnum = {
+  Active: 'ACTIVE',
+  Disabled: 'DISABLED',
+  Maintenance: 'MAINTENANCE',
+} as const;
+
+export type DomainCreateInputDTOStateEnum =
+  (typeof DomainCreateInputDTOStateEnum)[keyof typeof DomainCreateInputDTOStateEnum];
+
 /**
  *
  * @export
@@ -1089,6 +1166,12 @@ export interface DomainOutputDTO {
    * @type {string}
    * @memberof DomainOutputDTO
    */
+  state: DomainOutputDTOStateEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof DomainOutputDTO
+   */
   id: string;
   /**
    *
@@ -1103,6 +1186,15 @@ export interface DomainOutputDTO {
    */
   updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
+
+export const DomainOutputDTOStateEnum = {
+  Active: 'ACTIVE',
+  Disabled: 'DISABLED',
+  Maintenance: 'MAINTENANCE',
+} as const;
+
+export type DomainOutputDTOStateEnum = (typeof DomainOutputDTOStateEnum)[keyof typeof DomainOutputDTOStateEnum];
+
 /**
  *
  * @export
@@ -1134,7 +1226,23 @@ export interface DomainSearchInputAllowedFilters {
    * @memberof DomainSearchInputAllowedFilters
    */
   name?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof DomainSearchInputAllowedFilters
+   */
+  state?: Array<DomainSearchInputAllowedFiltersStateEnum>;
 }
+
+export const DomainSearchInputAllowedFiltersStateEnum = {
+  Active: 'ACTIVE',
+  Disabled: 'DISABLED',
+  Maintenance: 'MAINTENANCE',
+} as const;
+
+export type DomainSearchInputAllowedFiltersStateEnum =
+  (typeof DomainSearchInputAllowedFiltersStateEnum)[keyof typeof DomainSearchInputAllowedFiltersStateEnum];
+
 /**
  *
  * @export
@@ -1216,8 +1324,24 @@ export interface DomainUpdateInputDTO {
    * @type {string}
    * @memberof DomainUpdateInputDTO
    */
-  name: string;
+  name?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof DomainUpdateInputDTO
+   */
+  state?: DomainUpdateInputDTOStateEnum;
 }
+
+export const DomainUpdateInputDTOStateEnum = {
+  Active: 'ACTIVE',
+  Disabled: 'DISABLED',
+  Maintenance: 'MAINTENANCE',
+} as const;
+
+export type DomainUpdateInputDTOStateEnum =
+  (typeof DomainUpdateInputDTOStateEnum)[keyof typeof DomainUpdateInputDTOStateEnum];
+
 /**
  *
  * @export
@@ -1257,6 +1381,12 @@ export interface EventChatMessage {
   player: IGamePlayer;
   /**
    *
+   * @type {string}
+   * @memberof EventChatMessage
+   */
+  channel: EventChatMessageChannelEnum;
+  /**
+   *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
    * @memberof EventChatMessage
    */
@@ -1268,6 +1398,16 @@ export interface EventChatMessage {
    */
   msg?: string;
 }
+
+export const EventChatMessageChannelEnum = {
+  Global: 'global',
+  Team: 'team',
+  Whisper: 'whisper',
+} as const;
+
+export type EventChatMessageChannelEnum =
+  (typeof EventChatMessageChannelEnum)[keyof typeof EventChatMessageChannelEnum];
+
 /**
  *
  * @export
@@ -1326,6 +1466,12 @@ export const EventCreateDTOEventNameEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+  ModuleCreated: 'module-created',
+  ModuleUpdated: 'module-updated',
+  ModuleDeleted: 'module-deleted',
+  ModuleInstalled: 'module-installed',
+  ModuleUninstalled: 'module-uninstalled',
+  PlayerCreated: 'player-created',
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
@@ -1567,6 +1713,12 @@ export const EventOutputDTOEventNameEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+  ModuleCreated: 'module-created',
+  ModuleUpdated: 'module-updated',
+  ModuleDeleted: 'module-deleted',
+  ModuleInstalled: 'module-installed',
+  ModuleUninstalled: 'module-uninstalled',
+  PlayerCreated: 'player-created',
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
@@ -1594,6 +1746,12 @@ export type EventOutputDTOMeta =
   | TakaroEventCurrencyAdded
   | TakaroEventCurrencyDeducted
   | TakaroEventHookExecuted
+  | TakaroEventModuleCreated
+  | TakaroEventModuleDeleted
+  | TakaroEventModuleInstalled
+  | TakaroEventModuleUninstalled
+  | TakaroEventModuleUpdated
+  | TakaroEventPlayerCreated
   | TakaroEventPlayerNewIpDetected
   | TakaroEventRoleAssigned
   | TakaroEventRoleCreated
@@ -1742,6 +1900,12 @@ export const EventSearchInputAllowedFiltersEventNameEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+  ModuleCreated: 'module-created',
+  ModuleUpdated: 'module-updated',
+  ModuleDeleted: 'module-deleted',
+  ModuleInstalled: 'module-installed',
+  ModuleUninstalled: 'module-uninstalled',
+  PlayerCreated: 'player-created',
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
@@ -1834,6 +1998,18 @@ export interface FunctionCreateDTO {
    * @memberof FunctionCreateDTO
    */
   code?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof FunctionCreateDTO
+   */
+  name?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof FunctionCreateDTO
+   */
+  moduleId?: string;
 }
 /**
  *
@@ -1866,6 +2042,18 @@ export interface FunctionOutputDTO {
    * @memberof FunctionOutputDTO
    */
   code: string;
+  /**
+   *
+   * @type {string}
+   * @memberof FunctionOutputDTO
+   */
+  name?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof FunctionOutputDTO
+   */
+  moduleId?: string;
   /**
    *
    * @type {string}
@@ -1998,7 +2186,13 @@ export interface FunctionUpdateDTO {
    * @type {string}
    * @memberof FunctionUpdateDTO
    */
-  code: string;
+  code?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof FunctionUpdateDTO
+   */
+  name?: string;
 }
 /**
  *
@@ -2759,6 +2953,12 @@ export const HookCreateDTOEventTypeEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+  ModuleCreated: 'module-created',
+  ModuleUpdated: 'module-updated',
+  ModuleDeleted: 'module-deleted',
+  ModuleInstalled: 'module-installed',
+  ModuleUninstalled: 'module-uninstalled',
+  PlayerCreated: 'player-created',
 } as const;
 
 export type HookCreateDTOEventTypeEnum = (typeof HookCreateDTOEventTypeEnum)[keyof typeof HookCreateDTOEventTypeEnum];
@@ -2890,6 +3090,12 @@ export const HookOutputDTOEventTypeEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+  ModuleCreated: 'module-created',
+  ModuleUpdated: 'module-updated',
+  ModuleDeleted: 'module-deleted',
+  ModuleInstalled: 'module-installed',
+  ModuleUninstalled: 'module-uninstalled',
+  PlayerCreated: 'player-created',
 } as const;
 
 export type HookOutputDTOEventTypeEnum = (typeof HookOutputDTOEventTypeEnum)[keyof typeof HookOutputDTOEventTypeEnum];
@@ -2966,6 +3172,12 @@ export const HookSearchInputAllowedFiltersEventTypeEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+  ModuleCreated: 'module-created',
+  ModuleUpdated: 'module-updated',
+  ModuleDeleted: 'module-deleted',
+  ModuleInstalled: 'module-installed',
+  ModuleUninstalled: 'module-uninstalled',
+  PlayerCreated: 'player-created',
 } as const;
 
 export type HookSearchInputAllowedFiltersEventTypeEnum =
@@ -3100,6 +3312,12 @@ export const HookTriggerDTOEventTypeEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+  ModuleCreated: 'module-created',
+  ModuleUpdated: 'module-updated',
+  ModuleDeleted: 'module-deleted',
+  ModuleInstalled: 'module-installed',
+  ModuleUninstalled: 'module-uninstalled',
+  PlayerCreated: 'player-created',
 } as const;
 
 export type HookTriggerDTOEventTypeEnum =
@@ -3164,10 +3382,134 @@ export const HookUpdateDTOEventTypeEnum = {
   SettingsSet: 'settings-set',
   PlayerNewIpDetected: 'player-new-ip-detected',
   ServerStatusChanged: 'server-status-changed',
+  ModuleCreated: 'module-created',
+  ModuleUpdated: 'module-updated',
+  ModuleDeleted: 'module-deleted',
+  ModuleInstalled: 'module-installed',
+  ModuleUninstalled: 'module-uninstalled',
+  PlayerCreated: 'player-created',
 } as const;
 
 export type HookUpdateDTOEventTypeEnum = (typeof HookUpdateDTOEventTypeEnum)[keyof typeof HookUpdateDTOEventTypeEnum];
 
+/**
+ *
+ * @export
+ * @interface ICommand
+ */
+export interface ICommand {
+  /**
+   *
+   * @type {string}
+   * @memberof ICommand
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ICommand
+   */
+  function: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ICommand
+   */
+  trigger: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ICommand
+   */
+  helpText?: string;
+  /**
+   *
+   * @type {Array<ICommandArgument>}
+   * @memberof ICommand
+   */
+  arguments?: Array<ICommandArgument>;
+}
+/**
+ *
+ * @export
+ * @interface ICommandArgument
+ */
+export interface ICommandArgument {
+  /**
+   *
+   * @type {string}
+   * @memberof ICommandArgument
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ICommandArgument
+   */
+  type: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ICommandArgument
+   */
+  helpText?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ICommandArgument
+   */
+  defaultValue?: string;
+  /**
+   *
+   * @type {number}
+   * @memberof ICommandArgument
+   */
+  position?: number;
+}
+/**
+ *
+ * @export
+ * @interface ICronJob
+ */
+export interface ICronJob {
+  /**
+   *
+   * @type {string}
+   * @memberof ICronJob
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ICronJob
+   */
+  function: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ICronJob
+   */
+  temporalValue: string;
+}
+/**
+ *
+ * @export
+ * @interface IFunction
+ */
+export interface IFunction {
+  /**
+   *
+   * @type {string}
+   * @memberof IFunction
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IFunction
+   */
+  function: string;
+}
 /**
  *
  * @export
@@ -3226,6 +3568,63 @@ export interface IGamePlayer {
 /**
  *
  * @export
+ * @interface IHook
+ */
+export interface IHook {
+  /**
+   *
+   * @type {string}
+   * @memberof IHook
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IHook
+   */
+  function: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IHook
+   */
+  eventType: IHookEventTypeEnum;
+}
+
+export const IHookEventTypeEnum = {
+  Log: 'log',
+  PlayerConnected: 'player-connected',
+  PlayerDisconnected: 'player-disconnected',
+  ChatMessage: 'chat-message',
+  PlayerDeath: 'player-death',
+  EntityKilled: 'entity-killed',
+  DiscordMessage: 'discord-message',
+  RoleAssigned: 'role-assigned',
+  RoleRemoved: 'role-removed',
+  RoleCreated: 'role-created',
+  RoleUpdated: 'role-updated',
+  RoleDeleted: 'role-deleted',
+  CommandExecuted: 'command-executed',
+  HookExecuted: 'hook-executed',
+  CronjobExecuted: 'cronjob-executed',
+  CurrencyAdded: 'currency-added',
+  CurrencyDeducted: 'currency-deducted',
+  SettingsSet: 'settings-set',
+  PlayerNewIpDetected: 'player-new-ip-detected',
+  ServerStatusChanged: 'server-status-changed',
+  ModuleCreated: 'module-created',
+  ModuleUpdated: 'module-updated',
+  ModuleDeleted: 'module-deleted',
+  ModuleInstalled: 'module-installed',
+  ModuleUninstalled: 'module-uninstalled',
+  PlayerCreated: 'player-created',
+} as const;
+
+export type IHookEventTypeEnum = (typeof IHookEventTypeEnum)[keyof typeof IHookEventTypeEnum];
+
+/**
+ *
+ * @export
  * @interface IItemDTO
  */
 export interface IItemDTO {
@@ -3266,6 +3665,37 @@ export interface IMessageOptsDTO {
    * @memberof IMessageOptsDTO
    */
   recipient: IPlayerReferenceDTO;
+}
+/**
+ *
+ * @export
+ * @interface IPermission
+ */
+export interface IPermission {
+  /**
+   *
+   * @type {string}
+   * @memberof IPermission
+   */
+  permission: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IPermission
+   */
+  description: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IPermission
+   */
+  friendlyName: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof IPermission
+   */
+  canHaveCount?: boolean;
 }
 /**
  *
@@ -3914,6 +4344,12 @@ export interface MockConnectionInfo {
    * @memberof MockConnectionInfo
    */
   host: string;
+  /**
+   *
+   * @type {string}
+   * @memberof MockConnectionInfo
+   */
+  name: string;
 }
 /**
  *
@@ -3998,6 +4434,25 @@ export interface ModuleCreateInternalDTO {
 /**
  *
  * @export
+ * @interface ModuleExportDTOAPI
+ */
+export interface ModuleExportDTOAPI {
+  /**
+   *
+   * @type {BuiltinModule}
+   * @memberof ModuleExportDTOAPI
+   */
+  data: BuiltinModule;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof ModuleExportDTOAPI
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
  * @interface ModuleInstallDTO
  */
 export interface ModuleInstallDTO {
@@ -4051,6 +4506,12 @@ export interface ModuleInstallationOutputDTO {
    * @memberof ModuleInstallationOutputDTO
    */
   moduleId: string;
+  /**
+   *
+   * @type {ModuleOutputDTO}
+   * @memberof ModuleInstallationOutputDTO
+   */
+  module: ModuleOutputDTO;
   /**
    *
    * @type {object}
@@ -4180,6 +4641,12 @@ export interface ModuleOutputDTO {
    * @memberof ModuleOutputDTO
    */
   commands: Array<CommandOutputDTO>;
+  /**
+   *
+   * @type {Array<FunctionOutputDTO>}
+   * @memberof ModuleOutputDTO
+   */
+  functions: Array<FunctionOutputDTO>;
   /**
    *
    * @type {Array<PermissionOutputDTO>}
@@ -5621,6 +6088,24 @@ export interface PlayerUpdateDTO {
    * @memberof PlayerUpdateDTO
    */
   name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerUpdateDTO
+   */
+  steamId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerUpdateDTO
+   */
+  xboxLiveId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerUpdateDTO
+   */
+  epicOnlineServicesId?: string;
 }
 /**
  *
@@ -6315,6 +6800,96 @@ export interface TakaroEventHookExecuted {
    *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
    * @memberof TakaroEventHookExecuted
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventModuleCreated
+ */
+export interface TakaroEventModuleCreated {
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventModuleCreated
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventModuleDeleted
+ */
+export interface TakaroEventModuleDeleted {
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventModuleDeleted
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventModuleInstalled
+ */
+export interface TakaroEventModuleInstalled {
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventModuleInstalled
+   */
+  userConfig: string;
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventModuleInstalled
+   */
+  systemConfig: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventModuleInstalled
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventModuleUninstalled
+ */
+export interface TakaroEventModuleUninstalled {
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventModuleUninstalled
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventModuleUpdated
+ */
+export interface TakaroEventModuleUpdated {
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventModuleUpdated
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventPlayerCreated
+ */
+export interface TakaroEventPlayerCreated {
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventPlayerCreated
    */
   timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
@@ -9752,6 +10327,39 @@ export const EventApiAxiosParamCreator = function (configuration?: Configuration
     },
     /**
      *  Required permissions: `READ_EVENTS`
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    eventControllerGetOne: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('eventControllerGetOne', 'id', id);
+      const localVarPath = `/event/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `READ_EVENTS`
      * @summary Search
      * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -9821,6 +10429,28 @@ export const EventApiFp = function (configuration?: Configuration) {
     },
     /**
      *  Required permissions: `READ_EVENTS`
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async eventControllerGetOne(
+      id: string,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventOutputDTO>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.eventControllerGetOne(id, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['EventApi.eventControllerGetOne']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `READ_EVENTS`
      * @summary Search
      * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -9863,6 +10493,16 @@ export const EventApiFactory = function (configuration?: Configuration, basePath
     },
     /**
      *  Required permissions: `READ_EVENTS`
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    eventControllerGetOne(id: string, options?: any): AxiosPromise<EventOutputDTO> {
+      return localVarFp.eventControllerGetOne(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `READ_EVENTS`
      * @summary Search
      * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -9895,6 +10535,20 @@ export class EventApi extends BaseAPI {
   public eventControllerCreate(eventCreateDTO?: EventCreateDTO, options?: RawAxiosRequestConfig) {
     return EventApiFp(this.configuration)
       .eventControllerCreate(eventCreateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `READ_EVENTS`
+   * @summary Get one
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof EventApi
+   */
+  public eventControllerGetOne(id: string, options?: RawAxiosRequestConfig) {
+    return EventApiFp(this.configuration)
+      .eventControllerGetOne(id, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -14265,6 +14919,39 @@ export const ModuleApiAxiosParamCreator = function (configuration?: Configuratio
     },
     /**
      *  Required permissions: `READ_MODULES`
+     * @summary Export
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    moduleControllerExport: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('moduleControllerExport', 'id', id);
+      const localVarPath = `/module/{id}/export`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `READ_MODULES`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -14290,6 +14977,43 @@ export const ModuleApiAxiosParamCreator = function (configuration?: Configuratio
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Import
+     * @param {BuiltinModule} [builtinModule] BuiltinModule
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    moduleControllerImport: async (
+      builtinModule?: BuiltinModule,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/module/import`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(builtinModule, localVarRequestOptions, configuration);
 
       return {
         url: toPathString(localVarUrlObj),
@@ -14441,6 +15165,28 @@ export const ModuleApiFp = function (configuration?: Configuration) {
     },
     /**
      *  Required permissions: `READ_MODULES`
+     * @summary Export
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async moduleControllerExport(
+      id: string,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ModuleExportDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.moduleControllerExport(id, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['ModuleApi.moduleControllerExport']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `READ_MODULES`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -14453,6 +15199,28 @@ export const ModuleApiFp = function (configuration?: Configuration) {
       const localVarAxiosArgs = await localVarAxiosParamCreator.moduleControllerGetOne(id, options);
       const index = configuration?.serverIndex ?? 0;
       const operationBasePath = operationServerMap['ModuleApi.moduleControllerGetOne']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Import
+     * @param {BuiltinModule} [builtinModule] BuiltinModule
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async moduleControllerImport(
+      builtinModule?: BuiltinModule,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.moduleControllerImport(builtinModule, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['ModuleApi.moduleControllerImport']?.[index]?.url;
       return (axios, basePath) =>
         createRequestFunction(
           localVarAxiosArgs,
@@ -14551,6 +15319,16 @@ export const ModuleApiFactory = function (configuration?: Configuration, basePat
     },
     /**
      *  Required permissions: `READ_MODULES`
+     * @summary Export
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    moduleControllerExport(id: string, options?: any): AxiosPromise<ModuleExportDTOAPI> {
+      return localVarFp.moduleControllerExport(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `READ_MODULES`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -14558,6 +15336,16 @@ export const ModuleApiFactory = function (configuration?: Configuration, basePat
      */
     moduleControllerGetOne(id: string, options?: any): AxiosPromise<ModuleOutputDTOAPI> {
       return localVarFp.moduleControllerGetOne(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Import
+     * @param {BuiltinModule} [builtinModule] BuiltinModule
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    moduleControllerImport(builtinModule?: BuiltinModule, options?: any): AxiosPromise<void> {
+      return localVarFp.moduleControllerImport(builtinModule, options).then((request) => request(axios, basePath));
     },
     /**
      *  Required permissions: `MANAGE_MODULES`
@@ -14627,6 +15415,20 @@ export class ModuleApi extends BaseAPI {
 
   /**
    *  Required permissions: `READ_MODULES`
+   * @summary Export
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ModuleApi
+   */
+  public moduleControllerExport(id: string, options?: RawAxiosRequestConfig) {
+    return ModuleApiFp(this.configuration)
+      .moduleControllerExport(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `READ_MODULES`
    * @summary Get one
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -14636,6 +15438,20 @@ export class ModuleApi extends BaseAPI {
   public moduleControllerGetOne(id: string, options?: RawAxiosRequestConfig) {
     return ModuleApiFp(this.configuration)
       .moduleControllerGetOne(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `MANAGE_MODULES`
+   * @summary Import
+   * @param {BuiltinModule} [builtinModule] BuiltinModule
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ModuleApi
+   */
+  public moduleControllerImport(builtinModule?: BuiltinModule, options?: RawAxiosRequestConfig) {
+    return ModuleApiFp(this.configuration)
+      .moduleControllerImport(builtinModule, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -17374,7 +18190,7 @@ export const UserApiFp = function (configuration?: Configuration) {
     async userControllerInvite(
       inviteCreateDTO?: InviteCreateDTO,
       options?: RawAxiosRequestConfig
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserOutputDTOAPI>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.userControllerInvite(inviteCreateDTO, options);
       const index = configuration?.serverIndex ?? 0;
       const operationBasePath = operationServerMap['UserApi.userControllerInvite']?.[index]?.url;
@@ -17596,7 +18412,7 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    userControllerInvite(inviteCreateDTO?: InviteCreateDTO, options?: any): AxiosPromise<APIOutput> {
+    userControllerInvite(inviteCreateDTO?: InviteCreateDTO, options?: any): AxiosPromise<UserOutputDTOAPI> {
       return localVarFp.userControllerInvite(inviteCreateDTO, options).then((request) => request(axios, basePath));
     },
     /**

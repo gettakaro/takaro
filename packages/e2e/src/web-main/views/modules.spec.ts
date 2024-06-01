@@ -1,14 +1,12 @@
-import playwright from '@playwright/test';
+import { expect } from '@playwright/test';
 import { test } from '../fixtures/index.js';
 import { HookCreateDTOEventTypeEnum } from '@takaro/apiclient';
-
-const { expect } = playwright;
 
 test('Can view module', async ({ takaro, page }) => {
   const { moduleDefinitionsPage } = takaro;
   await moduleDefinitionsPage.goto();
   await moduleDefinitionsPage.view('Module without functions');
-  expect(await page.getByLabel('Name').isEditable()).toBe(false);
+  await expect(page.getByLabel('Name')).not.toBeEditable();
 });
 
 test('Can create module', async ({ page, takaro }) => {
@@ -72,8 +70,7 @@ test('Creating module with config, saves the config', async ({ page, takaro }) =
   await page.getByRole('button', { name: 'Save changes' }).click();
 
   await expect(page.getByText(moduleName)).toBeVisible();
-  await page.getByRole('link', { name: moduleName }).getByRole('button', { name: 'Settings' }).click();
-  await page.getByRole('menuitem', { name: 'Edit module' }).click();
+  await moduleDefinitionsPage.view(moduleName);
   await expect(page.getByText('Cool string')).toBeVisible();
 });
 
@@ -104,7 +101,7 @@ test('Can edit module', async ({ page, takaro }) => {
     name: newModuleName,
     description: 'New description',
   });
-  await expect(page.getByRole('link', { name: newModuleName })).toBeVisible();
+  await expect(page.getByTestId(newModuleName)).toBeVisible();
 });
 
 test('Can delete module', async ({ page, takaro }) => {
@@ -140,10 +137,9 @@ test('Can install module with empty config', async ({ page, takaro }) => {
   // there is only 1 server
   // TODO: change to this when double slash issue is fixed
   //await navigateTo(page, 'server-modules');
-  await page.goto(`/server/${takaro.gameServer.id}/modules`);
+  await page.goto(`/gameserver/${takaro.gameServer.id}/modules`);
   await page.getByTestId(`module-${mod.id}`).getByRole('button', { name: 'Install' }).click();
-  await page.getByRole('button', { name: 'Install' }).click();
-
+  await page.getByRole('button', { name: 'Install module', exact: true }).click();
   await expect(page.getByTestId(`module-${mod.id}`).getByRole('button', { name: 'Settings' })).toBeVisible();
 });
 
@@ -170,8 +166,8 @@ test('Can install a module with a discord hook', async ({ page, takaro }) => {
     .click();
 
   await page.getByTestId(`module-${mod.data.data.id}`).getByRole('button', { name: 'Install' }).click();
-  await page.getByLabel('My hook Discord channel IDRequired').type('123');
-  await page.getByRole('button', { name: 'Install' }).click();
+  await page.getByLabel('My hook Discord channel IDRequired').fill('123');
+  await page.getByRole('button', { name: 'Install module' }).click();
 
   await expect(page.getByTestId(`module-${mod.data.data.id}`).getByRole('button', { name: 'Settings' })).toBeVisible();
 });

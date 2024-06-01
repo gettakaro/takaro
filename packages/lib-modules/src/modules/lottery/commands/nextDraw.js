@@ -1,4 +1,4 @@
-import { getData, nextCronJobRun, getTakaro } from '@takaro/helpers';
+import { nextCronJobRun, data } from '@takaro/helpers';
 
 function formatTimeToReach(cronJob) {
   const targetDate = nextCronJobRun(cronJob);
@@ -38,11 +38,7 @@ function formatTimeToReach(cronJob) {
 }
 
 async function main() {
-  const data = await getData();
-  const _ = await getTakaro();
-
   const { player, module: mod } = data;
-
   await player.pm(`The next lottery draw is in about ${formatTimeToReach(mod.systemConfig.cronJobs.drawLottery)}`);
 }
 

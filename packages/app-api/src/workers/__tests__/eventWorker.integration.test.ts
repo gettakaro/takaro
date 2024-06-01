@@ -25,14 +25,14 @@ const tests = [
     test: async function () {
       const playerService = new PlayerService(this.standardDomainId ?? '');
 
-      const MOCK_PLAYER = await new IGamePlayer().construct({
+      const MOCK_PLAYER = new IGamePlayer({
         ip: '169.169.169.80',
         name: 'brunkel',
         gameId: uuid(),
         steamId: '76561198021481871',
       });
 
-      await playerService.sync(MOCK_PLAYER, this.setupData.id);
+      await playerService.resolveRef(MOCK_PLAYER, this.setupData.id);
 
       const players = await this.client.player.playerControllerSearch();
 
@@ -83,15 +83,15 @@ const tests = [
 
       const playerRes = await this.client.player.playerControllerGetOne(pog.playerId);
 
-      const MOCK_PLAYER = await new IGamePlayer().construct({
+      const MOCK_PLAYER = new IGamePlayer({
         ip: '169.169.169.80',
         name: 'jefke',
         gameId: pog.gameId,
         steamId: playerRes.data.data.steamId,
       });
 
-      await playerService.sync(MOCK_PLAYER, this.setupData[0].id);
-      await playerService.sync(MOCK_PLAYER, this.setupData[1].id);
+      await playerService.resolveRef(MOCK_PLAYER, this.setupData[0].id);
+      await playerService.resolveRef(MOCK_PLAYER, this.setupData[1].id);
 
       const playersResAfter = await this.client.player.playerControllerSearch({
         filters: {

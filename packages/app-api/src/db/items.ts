@@ -45,7 +45,7 @@ export class ItemRepo extends ITakaroRepo<ItemsModel, ItemsOutputDTO, ItemCreate
     const result = await new QueryBuilder<ItemsModel, ItemsOutputDTO>(filters).build(query);
     return {
       total: result.total,
-      results: await Promise.all(result.results.map((item) => new ItemsOutputDTO().construct(item))),
+      results: await Promise.all(result.results.map((item) => new ItemsOutputDTO(item))),
     };
   }
 
@@ -57,7 +57,7 @@ export class ItemRepo extends ITakaroRepo<ItemsModel, ItemsOutputDTO, ItemCreate
       throw new errors.NotFoundError();
     }
 
-    return new ItemsOutputDTO().construct(data);
+    return new ItemsOutputDTO(data);
   }
 
   async create(item: ItemCreateDTO): Promise<ItemsOutputDTO> {
@@ -69,7 +69,7 @@ export class ItemRepo extends ITakaroRepo<ItemsModel, ItemsOutputDTO, ItemCreate
         domain: this.domainId,
       })
       .returning('*');
-    return new ItemsOutputDTO().construct(data);
+    return new ItemsOutputDTO(data);
   }
 
   async delete(id: string): Promise<boolean> {
@@ -87,7 +87,7 @@ export class ItemRepo extends ITakaroRepo<ItemsModel, ItemsOutputDTO, ItemCreate
 
     const { query } = await this.getModel();
     const res = await query.updateAndFetchById(id, data.toJSON()).returning('*');
-    return new ItemsOutputDTO().construct(res);
+    return new ItemsOutputDTO(res);
   }
 
   async upsertMany(items: ItemCreateDTO[]): Promise<void> {
@@ -147,6 +147,6 @@ export class ItemRepo extends ITakaroRepo<ItemsModel, ItemsOutputDTO, ItemCreate
       throw new errors.NotFoundError();
     }
 
-    return Promise.all(data.map((item) => new ItemsOutputDTO().construct(item)));
+    return Promise.all(data.map((item) => new ItemsOutputDTO(item)));
   }
 }

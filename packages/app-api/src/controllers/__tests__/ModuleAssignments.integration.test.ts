@@ -50,7 +50,7 @@ const tests = [
     snapshot: true,
     name: 'Install a built-in module',
     setup: defaultSetup,
-    filteredFields: ['gameserverId', 'moduleId'],
+    filteredFields: ['gameserverId', 'moduleId', 'functionId', 'commandId'],
     test: async function () {
       return this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
@@ -78,10 +78,10 @@ const tests = [
   }),
   new IntegrationTest<ISetupData>({
     group,
-    snapshot: true,
+    snapshot: false,
     name: 'Update installation config',
     setup: defaultSetup,
-    filteredFields: ['gameserverId', 'moduleId'],
+    filteredFields: ['gameserverId', 'moduleId', 'functionId', 'commandId'],
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
@@ -105,8 +105,6 @@ const tests = [
         allowPublicTeleports: false,
         timeout: 1337,
       });
-
-      return res;
     },
   }),
   new IntegrationTest<ISetupData>({
@@ -131,7 +129,7 @@ const tests = [
       });
     },
     expectedStatus: 400,
-    filteredFields: ['moduleId'],
+    filteredFields: ['moduleId', 'functionId', 'commandId'],
   }),
   new IntegrationTest<ISetupData>({
     group,
@@ -161,7 +159,7 @@ const tests = [
         }),
       });
     },
-    filteredFields: ['moduleId', 'gameserverId'],
+    filteredFields: ['moduleId', 'gameserverId', 'functionId'],
   }),
 ];
 

@@ -45,7 +45,7 @@ const simpleFormat = combine(
   myFormat
 );
 
-const jsonFormat = combine(addCtx(), json());
+const jsonFormat = combine(addCtx(), timestamp({ format: 'isoDateTime' }), json());
 
 let level = config.get('logging.level');
 

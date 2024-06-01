@@ -1,40 +1,52 @@
 import { FC, MouseEvent, useEffect, useState } from 'react';
-import { Button, Chip, Dialog, Dropdown, IconButton, Tooltip, Card, Skeleton, useTheme } from '@takaro/lib-components';
+import {
+  Button,
+  Chip,
+  Dialog,
+  Dropdown,
+  IconButton,
+  Tooltip,
+  Card,
+  Skeleton,
+  useTheme,
+  ValueConfirmationField,
+  Alert,
+} from '@takaro/lib-components';
 import { EventOutputDTO, GameServerOutputDTO, PERMISSIONS } from '@takaro/apiclient';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from '@tanstack/react-router';
 import {
   AiOutlineMenu as MenuIcon,
   AiOutlineDelete as DeleteIcon,
   AiOutlineEdit as EditIcon,
   AiOutlineLineChart as DashboardIcon,
 } from 'react-icons/ai';
-
-import { PATHS } from 'paths';
 import { Header, TitleContainer, DetailsContainer } from './style';
 import { useGameServerRemove } from 'queries/gameservers';
-import { useSelectedGameServer } from 'hooks/useSelectedGameServerContext';
 import { PermissionsGuard } from 'components/PermissionsGuard';
 import { CardBody } from '../style';
 import { useSocket } from 'hooks/useSocket';
-import { usePlayerOnGameServers } from 'queries/players/queries';
+import { playerOnGameServersQueryOptions } from 'queries/players';
+import { useQuery } from '@tanstack/react-query';
 
 export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reachable }) => {
-  const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
+  const [valid, setValid] = useState<boolean>(false);
   const navigate = useNavigate();
-  const { selectedGameServerId, setSelectedGameServerId } = useSelectedGameServer();
   const theme = useTheme();
-  const { mutateAsync, isPending: isDeleting } = useGameServerRemove();
+  const { mutate, isPending: isDeleting } = useGameServerRemove();
   const { socket } = useSocket();
   const {
     data: onlinePogs,
     isLoading: isLoadingPogs,
     refetch,
-  } = usePlayerOnGameServers({
-    filters: {
-      online: [true],
-      gameServerId: [id],
-    },
-  });
+  } = useQuery(
+    playerOnGameServersQueryOptions({
+      filters: {
+        online: [true],
+        gameServerId: [id],
+      },
+    })
+  );
 
   useEffect(() => {
     socket.on('event', (event: EventOutputDTO) => {
@@ -49,27 +61,28 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
 
   const handleOnEditClick = (e: MouseEvent): void => {
     e.stopPropagation();
-    navigate(PATHS.gameServers.update(id));
+    navigate({ to: '/gameservers/update/$gameServerId', params: { gameServerId: id } });
   };
   const handleOnDeleteClick = (e: MouseEvent) => {
     e.stopPropagation();
-    setOpenDialog(true);
+
+    e.shiftKey ? handleOnDelete() : setOpenDeleteDialog(true);
   };
 
-  const handleOnDelete = async () => {
-    await mutateAsync({ id });
-
-    // if the gameserver was selected, deselect it
-    if (selectedGameServerId === id) {
-      setSelectedGameServerId('');
-    }
+  const handleOnDelete = () => {
+    mutate({ id });
   };
 
   return (
     <>
       <Card
         role="link"
-        onClick={() => navigate(PATHS.gameServer.dashboard.overview(id))}
+        onClick={() =>
+          navigate({
+            to: '/gameserver/$gameServerId/dashboard/overview',
+            params: { gameServerId: id },
+          })
+        }
         data-testid={`gameserver-${id}-card`}
       >
         <CardBody>
@@ -92,8 +105,24 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
                   <Dropdown.Menu.Group>
                     <Dropdown.Menu.Item
                       icon={<DashboardIcon />}
-                      onClick={() => navigate(PATHS.gameServer.dashboard.overview(id))}
+                      onClick={() =>
+                        navigate({ to: '/gameserver/$gameServerId/dashboard/overview', params: { gameServerId: id } })
+                      }
                       label="go to dashboard"
+                    />
+                    <Dropdown.Menu.Item
+                      icon={<DashboardIcon />}
+                      onClick={() =>
+                        navigate({ to: '/gameserver/$gameServerId/modules', params: { gameServerId: id } })
+                      }
+                      label="go to modules"
+                    />
+                    <Dropdown.Menu.Item
+                      icon={<DashboardIcon />}
+                      onClick={() =>
+                        navigate({ to: '/gameserver/$gameServerId/settings', params: { gameServerId: id } })
+                      }
+                      label="go to settings"
                     />
                   </Dropdown.Menu.Group>
                 </Dropdown.Menu>
@@ -120,18 +149,30 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
           </DetailsContainer>
         </CardBody>
       </Card>
-      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+      <Dialog open={openDeleteDialog} onOpenChange={setOpenDeleteDialog}>
         <Dialog.Content>
           <Dialog.Heading>delete: gameserver</Dialog.Heading>
           <Dialog.Body size="medium">
+            <Alert
+              variant="info"
+              text="You can hold down shift when deleting a gameserver to bypass this confirmation entirely."
+            />
             <p>
-              Are you sure you want to delete <strong>{name}</strong>?
+              Are you sure you want to delete the gameserver? To confirm, type <strong>{name}</strong> in the field
+              below.
             </p>
+            <ValueConfirmationField
+              value={name}
+              onValidChange={(v) => setValid(v)}
+              label="Game server name"
+              id="deleteGameServerConfirmation"
+            />
             <Button
               isLoading={isDeleting}
               onClick={() => handleOnDelete()}
+              disabled={!valid}
               fullWidth
-              text={'Delete gameserver'}
+              text="Delete gameserver"
               color="error"
             />
           </Dialog.Body>

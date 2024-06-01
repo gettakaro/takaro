@@ -12,6 +12,7 @@ import { CommandOutputDTO } from '../service/CommandService.js';
 import { FunctionOutputDTO } from '../service/FunctionService.js';
 import { getSystemConfigSchema } from '../lib/systemConfig.js';
 import { PERMISSION_TABLE_NAME, PermissionModel } from './role.js';
+import { FunctionModel } from './function.js';
 
 export const MODULE_TABLE_NAME = 'modules';
 export class ModuleModel extends TakaroModel {
@@ -26,6 +27,7 @@ export class ModuleModel extends TakaroModel {
   cronJobs: CronJobOutputDTO[];
   hooks: HookOutputDTO[];
   commands: CommandOutputDTO[];
+  functions: FunctionOutputDTO[];
 
   static get relationMappings() {
     return {
@@ -51,6 +53,14 @@ export class ModuleModel extends TakaroModel {
         join: {
           from: `${MODULE_TABLE_NAME}.id`,
           to: `${COMMANDS_TABLE_NAME}.moduleId`,
+        },
+      },
+      functions: {
+        relation: Model.HasManyRelation,
+        modelClass: FunctionModel,
+        join: {
+          from: `${MODULE_TABLE_NAME}.id`,
+          to: 'functions.moduleId',
         },
       },
 
@@ -89,6 +99,7 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
         'cronJobs',
         'hooks',
         'commands',
+        'functions',
         'cronJobs.function',
         'hooks.function',
         'commands.function',
@@ -103,32 +114,36 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
         const parsed = {
           ...item,
           cronJobs: await Promise.all(
-            item.cronJobs.map(async (cronJob) =>
-              new CronJobOutputDTO().construct({
-                ...cronJob,
-                function: await new FunctionOutputDTO().construct(cronJob.function),
-              })
+            item.cronJobs.map(
+              async (cronJob) =>
+                new CronJobOutputDTO({
+                  ...cronJob,
+                  function: new FunctionOutputDTO(cronJob.function),
+                })
             )
           ),
           hooks: await Promise.all(
-            item.hooks.map(async (hook) =>
-              new HookOutputDTO().construct({
-                ...hook,
-                function: await new FunctionOutputDTO().construct(hook.function),
-              })
+            item.hooks.map(
+              async (hook) =>
+                new HookOutputDTO({
+                  ...hook,
+                  function: new FunctionOutputDTO(hook.function),
+                })
             )
           ),
           commands: await Promise.all(
-            item.commands.map(async (command) =>
-              new CommandOutputDTO().construct({
-                ...command,
-                function: await new FunctionOutputDTO().construct(command.function),
-              })
+            item.commands.map(
+              async (command) =>
+                new CommandOutputDTO({
+                  ...command,
+                  function: new FunctionOutputDTO(command.function),
+                })
             )
           ),
+          functions: await Promise.all(item.functions.map((func) => new FunctionOutputDTO(func))),
         };
 
-        return new ModuleOutputDTO().construct(parsed);
+        return new ModuleOutputDTO(parsed);
       })
     );
 
@@ -149,6 +164,7 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
       .withGraphJoined('hooks.function')
       .withGraphJoined('commands.function')
       .withGraphJoined('commands.arguments')
+      .withGraphJoined('functions')
       .withGraphJoined('permissions')
       .orderBy('commands.name', 'DESC');
 
@@ -156,7 +172,7 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
       throw new errors.NotFoundError(`Record with id ${id} not found`);
     }
 
-    const toSend = await new ModuleOutputDTO().construct(data);
+    const toSend = new ModuleOutputDTO(data);
     toSend.systemConfigSchema = getSystemConfigSchema(toSend);
     return toSend;
   }
@@ -259,21 +275,21 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
     const { query } = await this.getModel();
     const item = await query.withGraphJoined('commands').findOne('commands.id', commandId);
 
-    return new ModuleOutputDTO().construct(item);
+    return new ModuleOutputDTO(item);
   }
 
   async findByHook(hookId: string): Promise<ModuleOutputDTO> {
     const { query } = await this.getModel();
     const item = await query.withGraphJoined('hooks').findOne('hooks.id', hookId);
 
-    return new ModuleOutputDTO().construct(item);
+    return new ModuleOutputDTO(item);
   }
 
   async findByCronJob(cronJobId: string): Promise<ModuleOutputDTO> {
     const { query } = await this.getModel();
     const item = await query.withGraphJoined('cronJobs').findOne('cronJobs.id', cronJobId);
 
-    return new ModuleOutputDTO().construct(item);
+    return new ModuleOutputDTO(item);
   }
 
   async findByFunction(functionId: string): Promise<ModuleOutputDTO> {
@@ -286,6 +302,6 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
       .orWhere('commands.functionId', functionId)
       .orWhere('cronJobs.functionId', functionId);
 
-    return new ModuleOutputDTO().construct(item);
+    return new ModuleOutputDTO(item);
   }
 }

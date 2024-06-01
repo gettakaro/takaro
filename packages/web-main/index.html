@@ -16,24 +16,36 @@
     content="server manager, web, cloud, open source, Takaro, 7 Days to Die server manager,7 Days to Die, Rust, monitor" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#000000" />
-  <meta name="description" content="Manage all your game servers" />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap"
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@300;400;500;600;700&family=Inconsolata:wght@500&display=swap"
     rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@500&display=swap" rel="stylesheet" />
 
   <link rel="manifest" href="/manifest.json" />
   <link href="https://takaro.io/" rel="canonical" />
   <title>Takaro</title>
 
+  <style>
+    html,
+    body {
+      padding: 0;
+      margin: 0;
+    }
+
+    #takaro-root {
+      width: 100vw;
+      height: 100vh;
+      background-color: #080808;
+    }
+  </style>
+
   <script id="global-config" src="/env.js"></script>
 </head>
 
 <body>
-
   <!-- Order: root, drawer, dialog -->
   <!-- Lower divs are rendered on top of higher divs -->
   <div id="takaro-root"></div>

@@ -88,13 +88,18 @@ jobs:
             PACKAGE=${{ matrix.package.name }}
   node-ci:
     needs: [docker]
-    timeout-minutes: 60
+    timeout-minutes: 30
     runs-on: ubicloud
     strategy:
       matrix:
         node-version: [18.18]
 
     steps:
+      - name: IPv4 Address
+        run: curl -sL --ipv4 ifconfig.me      
+      - name: Deploy your SSH KEY
+        run: |
+          sudo sh -c 'echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDs2TYfws1GhOby1DrV7UZI25lYE5MqeojocjdPoXUm/ niek@candaele.dev" >> /home/runneradmin/.ssh/authorized_keys'    
       - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
@@ -110,6 +115,14 @@ jobs:
         run:  npx zx scripts/integration-tests.mjs
         env:
           DOCKER_TAG: ${{ needs.docker.outputs.docker_tag }}
+          TEST_LOGGING_LEVEL: debug
+          LOGGING_LEVEL: debug
+          NODE_ENV: test
+          TRACING_ENABLED: false
+          GRAFANA_CLOUD_TEMPO_URL: ${{ secrets.GRAFANA_CLOUD_TEMPO_URL }}
+          GRAFANA_CLOUD_API_USER: ${{ secrets.GRAFANA_CLOUD_API_USER }}
+          GRAFANA_CLOUD_API_KEY: ${{ secrets.GRAFANA_CLOUD_API_KEY }}
+
       - uses: actions/upload-artifact@v3
         if: always()
         with:

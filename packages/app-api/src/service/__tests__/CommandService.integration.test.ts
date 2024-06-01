@@ -3,7 +3,7 @@ import { CommandOutputDTO, GameServerOutputDTO, ModuleOutputDTO, ModuleInstallat
 import { CommandService } from '../CommandService.js';
 import { queueService } from '@takaro/queues';
 import { Mock } from '@takaro/gameserver';
-import { IGamePlayer, EventChatMessage, HookEvents } from '@takaro/modules';
+import { IGamePlayer, EventChatMessage, HookEvents, ChatChannel } from '@takaro/modules';
 import Sinon from 'sinon';
 import { EventService } from '../EventService.js';
 
@@ -14,7 +14,7 @@ export async function getMockPlayer(extra: Partial<IGamePlayer> = {}): Promise<I
     ...extra,
   };
 
-  return new IGamePlayer().construct(data);
+  return new IGamePlayer(data);
 }
 
 const group = 'CommandService';
@@ -89,8 +89,9 @@ const tests = [
       });
 
       await this.setupData.service.handleChatMessage(
-        await new EventChatMessage().construct({
+        new EventChatMessage({
           msg: '/test',
+          channel: ChatChannel.GLOBAL,
           player: await getMockPlayer(),
         }),
         this.setupData.gameserver.id
@@ -113,8 +114,9 @@ const tests = [
       });
 
       await this.setupData.service.handleChatMessage(
-        await new EventChatMessage().construct({
+        new EventChatMessage({
           msg: 'test',
+          channel: ChatChannel.GLOBAL,
           player: await getMockPlayer(),
         }),
         this.setupData.gameserver.id
@@ -123,7 +125,7 @@ const tests = [
       expect(addStub).to.not.have.been.calledOnce;
 
       await this.setupData.service.handleChatMessage(
-        await new EventChatMessage().construct({
+        new EventChatMessage({
           msg: '/test',
           player: await getMockPlayer(),
         }),
@@ -152,8 +154,9 @@ const tests = [
       );
 
       await this.setupData.service.handleChatMessage(
-        await new EventChatMessage().construct({
+        new EventChatMessage({
           msg: '/test',
+          channel: ChatChannel.GLOBAL,
           player: await getMockPlayer(),
         }),
 
@@ -168,8 +171,9 @@ const tests = [
       );
 
       await this.setupData.service.handleChatMessage(
-        await new EventChatMessage().construct({
+        new EventChatMessage({
           msg: '/test',
+          channel: ChatChannel.GLOBAL,
           player: await getMockPlayer(),
         }),
         this.setupData.gameserver.id
@@ -208,8 +212,9 @@ const tests = [
       });
 
       await this.setupData.service.handleChatMessage(
-        await new EventChatMessage().construct({
+        new EventChatMessage({
           msg: '/test',
+          channel: ChatChannel.GLOBAL,
           player: await getMockPlayer(),
         }),
         this.setupData.gameserver.id
@@ -245,8 +250,9 @@ const tests = [
       });
 
       await this.setupData.service.handleChatMessage(
-        await new EventChatMessage().construct({
+        new EventChatMessage({
           msg: '/test2',
+          channel: ChatChannel.GLOBAL,
           player: await getMockPlayer(),
         }),
         this.setupData.gameserver.id

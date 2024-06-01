@@ -12,13 +12,21 @@ import { DateSelector } from './DateSelector';
 import { DateRangePickerDispatchContext, DateRangePickerContext, reducer } from './Context';
 
 export interface DateRangePickerProps {
-  value?: string;
+  defaultValue?: { start: DateTime; end: DateTime };
   readOnly?: boolean;
   id: string;
   onChange: (start: DateTime, end: DateTime) => void;
 }
 
-export const DateRangePicker: FC<DateRangePickerProps> = ({ readOnly = false, id, onChange }) => {
+export const DateRangePicker: FC<DateRangePickerProps> = ({
+  readOnly = false,
+  id,
+  onChange,
+  defaultValue = {
+    start: DateTime.local().startOf('day'),
+    end: DateTime.local().endOf('day'),
+  },
+}) => {
   const [state, dispatch] = useReducer(reducer, {
     quickSelect: {
       show: false,
@@ -28,9 +36,9 @@ export const DateRangePicker: FC<DateRangePickerProps> = ({ readOnly = false, id
     },
     showStartDate: false,
     showEndDate: false,
-    start: DateTime.local().startOf('day'),
-    end: DateTime.local().endOf('day'),
-    friendlyRange: 'Today',
+    start: defaultValue.start,
+    end: defaultValue.end,
+    friendlyRange: undefined,
   });
 
   const [hasError, setHasError] = useState<boolean>(false);

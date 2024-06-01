@@ -173,7 +173,7 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
     }).build(query);
     return {
       total: result.total,
-      results: await Promise.all(result.results.map((item) => new PlayerOutputWithRolesDTO().construct(item))),
+      results: await Promise.all(result.results.map((item) => new PlayerOutputWithRolesDTO(item))),
     };
   }
 
@@ -186,10 +186,10 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
       throw new errors.NotFoundError();
     }
 
-    const data = await new PlayerOutputWithRolesDTO().construct(res);
+    const data = new PlayerOutputWithRolesDTO(res);
 
     const ipHistory = await ipQuery.where({ playerId: data.id }).orderBy('createdAt', 'desc').limit(10);
-    data.ipHistory = await Promise.all(ipHistory.map((ip) => new IpHistoryOutputDTO().construct(ip)));
+    data.ipHistory = await Promise.all(ipHistory.map((ip) => new IpHistoryOutputDTO(ip)));
 
     return data;
   }
@@ -202,7 +202,7 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
         domain: this.domainId,
       })
       .returning('*');
-    return new PlayerOutputDTO().construct(player);
+    return new PlayerOutputDTO(player);
   }
 
   async delete(id: string): Promise<boolean> {
@@ -220,7 +220,7 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
 
     const { query } = await this.getModel();
     const res = await query.updateAndFetchById(id, data.toJSON()).returning('*');
-    return new PlayerOutputDTO().construct(res);
+    return new PlayerOutputDTO(res);
   }
 
   async assignRole(playerId: string, roleId: string, gameServerId?: string, expiresAt?: string): Promise<void> {

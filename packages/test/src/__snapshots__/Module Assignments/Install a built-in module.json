@@ -2,8 +2,75 @@
   "body": {
     "meta": {},
     "data": {
-      "gameserverId": "ac07a539-f16d-4527-929c-cb4debebcfd0",
-      "moduleId": "af910065-9db3-4dc4-ab5b-a8a3893a37cc",
+      "gameserverId": "c01344ea-5fc3-432e-b4d1-5bf99fe87d86",
+      "moduleId": "f887b87d-60ee-41aa-a978-89fab04c1fe7",
+      "module": {
+        "id": "f887b87d-60ee-41aa-a978-89fab04c1fe7",
+        "createdAt": "2024-03-02T15:07:03.922Z",
+        "updatedAt": "2024-03-02T15:07:03.922Z",
+        "name": "utils",
+        "description": "A collection of useful commands",
+        "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"additionalProperties\":false}",
+        "uiSchema": "{}",
+        "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"commands\":{\"type\":\"object\",\"properties\":{\"ping\":{\"type\":\"object\",\"properties\":{\"delay\":{\"type\":\"number\",\"default\":0,\"minimum\":0,\"maximum\":86400,\"description\":\"How many seconds to wait before executing the command.\"},\"cost\":{\"type\":\"number\",\"default\":0,\"minimum\":0,\"description\":\"How much currency to deduct from the player before executing the command.\"},\"aliases\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"description\":\"Trigger the command with other names than the default\"}},\"required\":[],\"default\":{}},\"help\":{\"type\":\"object\",\"properties\":{\"delay\":{\"type\":\"number\",\"default\":0,\"minimum\":0,\"maximum\":86400,\"description\":\"How many seconds to wait before executing the command.\"},\"cost\":{\"type\":\"number\",\"default\":0,\"minimum\":0,\"description\":\"How much currency to deduct from the player before executing the command.\"},\"aliases\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"description\":\"Trigger the command with other names than the default\"}},\"required\":[],\"default\":{}}},\"required\":[],\"default\":{}}},\"required\":[\"commands\"],\"additionalProperties\":false}",
+        "builtin": "utils",
+        "cronJobs": [],
+        "hooks": [],
+        "commands": [
+          {
+            "id": "c125a7f0-d80d-44d3-815f-2a58c98c0082",
+            "createdAt": "2024-03-02T15:07:04.038Z",
+            "updatedAt": "2024-03-02T15:07:04.067Z",
+            "name": "ping",
+            "trigger": "ping",
+            "helpText": "Replies with pong, useful for testing if the connection works.",
+            "functionId": "83f8c1dc-e154-430e-bbc4-66739645a053",
+            "moduleId": "f887b87d-60ee-41aa-a978-89fab04c1fe7",
+            "function": {
+              "id": "83f8c1dc-e154-430e-bbc4-66739645a053",
+              "createdAt": "2024-03-02T15:07:04.015Z",
+              "updatedAt": "2024-03-02T15:07:04.029Z",
+              "code": "import { data } from '@takaro/helpers';\nasync function main() {\n    await data.player.pm('Pong!');\n}\nawait main();\n//# sourceMappingURL=ping.js.map",
+              "name": null,
+              "moduleId": null
+            },
+            "arguments": []
+          },
+          {
+            "id": "1f4479dc-0e3a-4952-855b-6d969765c7a9",
+            "createdAt": "2024-03-02T15:07:04.039Z",
+            "updatedAt": "2024-03-02T15:07:04.068Z",
+            "name": "help",
+            "trigger": "help",
+            "helpText": "The text you are reading right now, displays information about commands.",
+            "functionId": "f7e1bd5c-30de-4e51-8b59-7f612191c587",
+            "moduleId": "f887b87d-60ee-41aa-a978-89fab04c1fe7",
+            "function": {
+              "id": "f7e1bd5c-30de-4e51-8b59-7f612191c587",
+              "createdAt": "2024-03-02T15:07:04.015Z",
+              "updatedAt": "2024-03-02T15:07:04.030Z",
+              "code": "import { takaro, data, TakaroUserError } from '@takaro/helpers';\nasync function main() {\n    const enabledModules = await takaro.gameserver.gameServerControllerGetInstalledModules(data.gameServerId);\n    const moduleCommands = await Promise.all(enabledModules.data.data.map(async (mod) => {\n        return (await takaro.module.moduleControllerGetOne(mod.moduleId)).data.data.commands;\n    }));\n    if (data.arguments.command === 'all') {\n        await data.player.pm('Available commands:');\n        for (const mod of moduleCommands) {\n            await Promise.all(mod.map(async (command) => {\n                await data.player.pm(`${command.name}: ${command.helpText}`);\n            }));\n        }\n    }\n    else {\n        const allCommandsFlat = moduleCommands.flat();\n        const requestedCommand = allCommandsFlat.find((c) => {\n            return c.name === data.arguments.command;\n        });\n        if (!requestedCommand) {\n            throw new TakaroUserError(`Unknown command \"${data.arguments.command}\", use this command without arguments to see all available commands.`);\n        }\n        else {\n            await data.player.pm(`${requestedCommand.name}: ${requestedCommand.helpText}`);\n        }\n    }\n}\nawait main();\n//# sourceMappingURL=help.js.map",
+              "name": null,
+              "moduleId": null
+            },
+            "arguments": [
+              {
+                "id": "6ffb0f87-d329-4229-88b6-71df98f2201e",
+                "createdAt": "2024-03-02T15:07:04.150Z",
+                "updatedAt": "2024-03-02T15:07:04.173Z",
+                "name": "command",
+                "type": "string",
+                "helpText": "The command to get help for",
+                "defaultValue": "all",
+                "commandId": "1f4479dc-0e3a-4952-855b-6d969765c7a9",
+                "position": 0
+              }
+            ]
+          }
+        ],
+        "functions": [],
+        "permissions": []
+      },
       "userConfig": {},
       "systemConfig": {
         "commands": {
@@ -26,7 +93,9 @@
     "name": "Install a built-in module",
     "filteredFields": [
       "gameserverId",
-      "moduleId"
+      "moduleId",
+      "functionId",
+      "commandId"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true

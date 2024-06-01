@@ -53,8 +53,8 @@ export const Default = styled.button<{
 
   &:disabled {
     cursor: default;
-    background: ${({ theme }) => theme.colors.backgroundAlt};
-    border-color: white;
+    background: ${({ theme }) => theme.colors.disabled};
+    border-color: ${({ theme }) => theme.colors.disabled};
   }
 
   svg {

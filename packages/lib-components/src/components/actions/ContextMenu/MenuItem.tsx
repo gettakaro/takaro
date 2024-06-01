@@ -3,13 +3,22 @@ import { styled } from '../../../styled';
 
 const Container = styled.button`
   background-color: ${({ theme }) => theme.colors.background};
-  border-radius: 0;
   color: ${({ theme }) => theme.colors.text};
   width: 100%;
   text-align: left;
   gap: ${({ theme }) => theme.spacing[1]};
   font-size: ${({ theme }) => theme.fontSize.small};
   padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing['1_5']}`};
+
+  &:first-child {
+    border-top-left-radius: ${({ theme }) => theme.borderRadius.medium};
+    border-top-right-radius: ${({ theme }) => theme.borderRadius.medium};
+  }
+
+  &:last-child {
+    border-bottom-left-radius: ${({ theme }) => theme.borderRadius.medium};
+    border-bottom-right-radius: ${({ theme }) => theme.borderRadius.medium};
+  }
 
   display: grid;
   grid-template-columns: auto 50px auto;

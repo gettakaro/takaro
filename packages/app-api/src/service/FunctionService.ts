@@ -1,6 +1,6 @@
 import { TakaroService } from './Base.js';
 
-import { IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString, IsUUID } from 'class-validator';
 import { FunctionModel, FunctionRepo } from '../db/function.js';
 import { TakaroDTO, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
@@ -8,26 +8,44 @@ import { PaginatedOutput } from '../db/base.js';
 
 export class FunctionOutputDTO extends TakaroModelDTO<FunctionOutputDTO> {
   @IsString()
-  code!: string;
+  code: string;
+
+  @IsString()
+  @IsOptional()
+  name: string;
+
+  @IsUUID()
+  @IsOptional()
+  moduleId?: string;
 }
 
 export class FunctionCreateDTO extends TakaroDTO<FunctionCreateDTO> {
   @IsString()
   @IsOptional()
   code?: string;
+
+  @IsString()
+  @IsOptional()
+  name: string;
+
+  @IsUUID()
+  @IsOptional()
+  moduleId?: string;
 }
 
 export class FunctionUpdateDTO extends TakaroDTO<FunctionUpdateDTO> {
   @IsString()
-  code!: string;
+  @IsOptional()
+  code: string;
+
+  @IsString()
+  @IsOptional()
+  name: string;
 }
 
-const defaultFunctionCode = `import { getTakaro, getData } from '@takaro/helpers';
+const defaultFunctionCode = `import { data, takaro } from '@takaro/helpers';
 async function main() {
-    const data = await getData();
-    const takaro = await getTakaro(data);
- 
-    // TODO: write my function...
+    const {} = data;
 }
 await main();`;
 

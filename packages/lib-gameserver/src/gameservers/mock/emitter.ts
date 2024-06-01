@@ -21,11 +21,15 @@ export class MockEmitter extends TakaroEmitter {
   }
 
   private async listener(event: GameEventTypes, args: any) {
+    if (this.config.name !== args.name) {
+      // This event is not for us
+      return;
+    }
     log.debug(`Transmitting event ${event}`);
     const dto = EventMapping[event];
 
     if (dto) {
-      this.emit(event, await new dto().construct(args));
+      this.emit(event, new dto(args));
     } else {
       this.emit(event, args);
     }

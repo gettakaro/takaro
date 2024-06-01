@@ -1,6 +1,6 @@
-import { BuiltinModule } from '../../BuiltinModule.js';
+import { BuiltinModule, ICommand, IPermission } from '../../BuiltinModule.js';
 
-export class EconomyUtils extends BuiltinModule {
+export class EconomyUtils extends BuiltinModule<EconomyUtils> {
   constructor() {
     super(
       'economyUtils',
@@ -23,31 +23,32 @@ export class EconomyUtils extends BuiltinModule {
     );
 
     this.permissions = [
-      {
+      new IPermission({
         permission: 'ECONOMY_UTILS_MANAGE_CURRENCY',
         friendlyName: 'Manage currency',
         description:
           'Allows players to manage currency of other players. This includes granting and revoking currency.',
-      },
+        canHaveCount: false,
+      }),
     ];
 
     this.commands = [
-      {
-        function: '',
+      new ICommand({
+        function: this.loadFn('commands', 'balance'),
         name: 'balance',
         trigger: 'balance',
         helpText: 'Check your balance.',
         arguments: [],
-      },
-      {
-        function: '',
+      }),
+      new ICommand({
+        function: this.loadFn('commands', 'topCurrency'),
         name: 'topCurrency',
         trigger: 'topcurrency',
         helpText: 'List of the 10 players with the highest balance.',
         arguments: [],
-      },
-      {
-        function: '',
+      }),
+      new ICommand({
+        function: this.loadFn('commands', 'grantCurrency'),
         name: 'grantCurrency',
         trigger: 'grantcurrency',
         helpText: 'Grant money to a player. The money is not taken from your own balance but is new currency.',
@@ -57,17 +58,19 @@ export class EconomyUtils extends BuiltinModule {
             type: 'player',
             helpText: 'The player to grant currency to.',
             position: 0,
+            defaultValue: null,
           },
           {
             name: 'amount',
             type: 'number',
             helpText: 'The amount of money.',
             position: 1,
+            defaultValue: null,
           },
         ],
-      },
-      {
-        function: '',
+      }),
+      new ICommand({
+        function: this.loadFn('commands', 'revokeCurrency'),
         name: 'revokeCurrency',
         trigger: 'revokecurrency',
         helpText: 'Grant money to a player. The money is not taken from your own balance but is new currency.',
@@ -77,23 +80,26 @@ export class EconomyUtils extends BuiltinModule {
             type: 'player',
             helpText: 'The player to revoke currency from.',
             position: 0,
+            defaultValue: null,
           },
           {
             name: 'amount',
             type: 'number',
             helpText: 'The amount of money.',
             position: 1,
+            defaultValue: null,
           },
         ],
-      },
-      {
-        function: '',
+      }),
+      new ICommand({
+        function: this.loadFn('commands', 'confirmTransfer'),
         name: 'confirmTransfer',
         trigger: 'confirmtransfer',
         helpText: 'Confirms a pending transfer.',
-      },
-      {
-        function: '',
+        arguments: [],
+      }),
+      new ICommand({
+        function: this.loadFn('commands', 'transfer'),
         name: 'transfer',
         trigger: 'transfer',
         helpText: 'Transfer money to another player.',
@@ -103,15 +109,17 @@ export class EconomyUtils extends BuiltinModule {
             type: 'player',
             helpText: 'The player to transfer money to.',
             position: 0,
+            defaultValue: null,
           },
           {
             name: 'amount',
             type: 'number',
             helpText: 'The amount of money to transfer.',
             position: 1,
+            defaultValue: null,
           },
         ],
-      },
+      }),
     ];
   }
 }

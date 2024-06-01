@@ -61,7 +61,7 @@ export class VariableRepo extends ITakaroRepo<VariablesModel, VariableOutputDTO,
     const result = await new QueryBuilder<VariablesModel, VariableOutputDTO>(filters).build(query);
     return {
       total: result.total,
-      results: await Promise.all(result.results.map((item) => new VariableOutputDTO().construct(item))),
+      results: await Promise.all(result.results.map((item) => new VariableOutputDTO(item))),
     };
   }
 
@@ -73,7 +73,7 @@ export class VariableRepo extends ITakaroRepo<VariablesModel, VariableOutputDTO,
       throw new errors.NotFoundError();
     }
 
-    return new VariableOutputDTO().construct(data);
+    return new VariableOutputDTO(data);
   }
 
   async create(item: VariableCreateDTO): Promise<VariableOutputDTO> {
@@ -92,7 +92,7 @@ export class VariableRepo extends ITakaroRepo<VariablesModel, VariableOutputDTO,
         domain: this.domainId,
       })
       .returning('*');
-    return new VariableOutputDTO().construct(data);
+    return new VariableOutputDTO(data);
   }
 
   async delete(id: string): Promise<boolean> {
@@ -110,6 +110,6 @@ export class VariableRepo extends ITakaroRepo<VariablesModel, VariableOutputDTO,
 
     const { query } = await this.getModel();
     const res = await query.updateAndFetchById(id, data.toJSON()).returning('*');
-    return new VariableOutputDTO().construct(res);
+    return new VariableOutputDTO(res);
   }
 }

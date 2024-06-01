@@ -64,7 +64,7 @@ export class SevenDaysToDie implements IGameServer {
           data.steamId = p.steamid.replace('Steam_', '');
         }
 
-        return new IGamePlayer().construct(data);
+        return new IGamePlayer(data);
       })
     );
 
@@ -75,7 +75,7 @@ export class SevenDaysToDie implements IGameServer {
     if (id.startsWith('Steam_')) id = id.replace('Steam_', '');
     if (id.startsWith('XBL_')) id = id.replace('XBL_', '');
     const players = await this.getPlayers();
-    const player = players.find((p) => p.steamId === id || p.epicOnlineServicesId === id);
+    const player = players.find((p) => p.steamId === id || p.epicOnlineServicesId === id || p.xboxLiveId === id);
     return player;
   }
 
@@ -128,13 +128,13 @@ export class SevenDaysToDie implements IGameServer {
         reason = 'Request timed out, the server did not respond in the allocated time';
       }
 
-      return new TestReachabilityOutputDTO().construct({
+      return new TestReachabilityOutputDTO({
         connectable: false,
         reason,
       });
     }
 
-    return new TestReachabilityOutputDTO().construct({
+    return new TestReachabilityOutputDTO({
       connectable: true,
     });
   }
@@ -143,7 +143,7 @@ export class SevenDaysToDie implements IGameServer {
     const encodedCommand = encodeURIComponent(rawCommand);
     const result = await this.apiClient.executeConsoleCommand(encodedCommand);
 
-    return new CommandOutput().construct({
+    return new CommandOutput({
       rawResult: result.data.result,
       success: true,
     });
@@ -247,8 +247,8 @@ export class SevenDaysToDie implements IGameServer {
         const [, date, gameId, _displayName, reason] = match;
         const expiresAt = date.replace(' ', 'T') + '.000Z'; // Keep the time in its original form
         bans.push(
-          await new BanDTO().construct({
-            player: await new IPlayerReferenceDTO().construct({
+          new BanDTO({
+            player: new IPlayerReferenceDTO({
               gameId,
             }),
             reason,
@@ -295,7 +295,7 @@ export class SevenDaysToDie implements IGameServer {
 
     const mapSdtdItemToDto = async (item: InventoryItem | null) => {
       if (!item) return null;
-      return new IItemDTO().construct({ code: item.name, amount: item.count });
+      return new IItemDTO({ code: item.name, amount: item.count });
     };
 
     const dtos = await Promise.all([
@@ -309,7 +309,7 @@ export class SevenDaysToDie implements IGameServer {
     for (const slot in inventoryRes.data.equipment) {
       if (Object.prototype.hasOwnProperty.call(inventoryRes.data.equipment, slot)) {
         const element = inventoryRes.data.equipment[slot];
-        if (element) resp.push(await new IItemDTO().construct({ code: element.name, amount: element.count }));
+        if (element) resp.push(new IItemDTO({ code: element.name, amount: element.count }));
       }
     }
 

@@ -9,7 +9,7 @@ export const NetworkDetector: FC = () => {
     if (online) {
       enqueueSnackbar('Your network is back online!', {
         variant: 'networkDetectorOnline',
-        anchorOrigin: { horizontal: 'right', vertical: 'bottom' }
+        anchorOrigin: { horizontal: 'right', vertical: 'bottom' },
       });
     } else {
       // offline
@@ -17,7 +17,7 @@ export const NetworkDetector: FC = () => {
       enqueueSnackbar('You are currently offline.', {
         variant: 'networkDetectorOffline',
         anchorOrigin: { horizontal: 'right', vertical: 'bottom' },
-        persist: true
+        persist: true,
       });
     }
   }

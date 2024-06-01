@@ -1,22 +1,27 @@
 {
   "body": {
-    "meta": {
-      "serverTime": "2022-09-22T13:03:36.720Z"
-    },
+    "meta": {},
     "data": {
+      "id": "0dd3c5a1-423b-4231-9840-abe2de91371f",
+      "createdAt": "2024-03-02T14:34:26.758Z",
+      "updatedAt": "2024-03-02T14:34:26.792Z",
       "name": "Updated cronJob",
       "temporalValue": "0 * * * *",
-      "updatedAt": "2022-09-22T13:03:36.711Z",
-      "createdAt": "2022-09-22T13:03:36.690Z",
-      "id": "f7ff06bc-3f63-428d-a3d1-38943483dc98",
-      "moduleId": "ec28a3a2-9d13-477e-8108-fbc13f1a517e",
       "function": {
-        "code": "console.log(\"test\")"
-      }
+        "id": "7d0c20eb-0f15-49da-bacf-33807f2d8659",
+        "createdAt": "2024-03-02T14:34:26.756Z",
+        "updatedAt": "2024-03-02T14:34:26.757Z",
+        "code": "console.log(\"test\")",
+        "name": null,
+        "moduleId": null
+      },
+      "moduleId": "774b1a2b-c1ce-4606-9ca6-1d8edf93a680",
+      "functionId": "7d0c20eb-0f15-49da-bacf-33807f2d8659"
     }
   },
   "status": 200,
   "test": {
+    "snapshot": true,
     "group": "CronJobController",
     "name": "Update",
     "filteredFields": [

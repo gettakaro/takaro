@@ -2,13 +2,15 @@ import { errors, TakaroDTO, NOT_DOMAIN_SCOPED_TakaroModelDTO, traceableClass } f
 import { createLambda, deleteLambda } from '@takaro/aws';
 import { UserCreateInputDTO, UserOutputDTO, UserService } from './UserService.js';
 import { randomBytes } from 'crypto';
-import { PermissionInputDTO, RoleOutputDTO, RoleService, ServiceRoleCreateInputDTO } from './RoleService.js';
+import { PermissionInputDTO, RoleService, ServiceRoleCreateInputDTO, RoleOutputDTO } from './RoleService.js';
+import type { RoleOutputDTO as RoleOutputDTOType } from './RoleService.js';
 import { NOT_DOMAIN_SCOPED_TakaroService } from './Base.js';
-import { IsOptional, IsString, Length, ValidateNested } from 'class-validator';
-import { DomainModel, DomainRepo } from '../db/domain.js';
+import { IsEnum, IsOptional, IsString, Length, ValidateNested } from 'class-validator';
+import { DOMAIN_STATES, DomainModel, DomainRepo } from '../db/domain.js';
+export { DOMAIN_STATES } from '../db/domain.js';
 import { humanId } from 'human-id';
 import { Type } from 'class-transformer';
-import { GameServerService } from './GameServerService.js';
+import { GameServerService, GameServerUpdateDTO } from './GameServerService.js';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { ModuleService } from './ModuleService.js';
@@ -23,16 +25,28 @@ export class DomainCreateInputDTO extends TakaroDTO<DomainCreateInputDTO> {
   @Length(3, 200)
   @IsOptional()
   id: string;
+
+  @IsEnum(Object.values(DOMAIN_STATES))
+  @IsOptional()
+  state: DOMAIN_STATES;
 }
 
 export class DomainUpdateInputDTO extends TakaroDTO<DomainUpdateInputDTO> {
   @Length(3, 200)
+  @IsOptional()
   name: string;
+
+  @IsEnum(Object.values(DOMAIN_STATES))
+  @IsOptional()
+  state: DOMAIN_STATES;
 }
 
 export class DomainOutputDTO extends NOT_DOMAIN_SCOPED_TakaroModelDTO<DomainOutputDTO> {
   @IsString()
   name: string;
+
+  @IsEnum(Object.values(DOMAIN_STATES))
+  state: DOMAIN_STATES;
 }
 
 export class DomainCreateOutputDTO extends TakaroDTO<DomainCreateOutputDTO> {
@@ -46,7 +60,7 @@ export class DomainCreateOutputDTO extends TakaroDTO<DomainCreateOutputDTO> {
 
   @Type(() => RoleOutputDTO)
   @ValidateNested()
-  rootRole: RoleOutputDTO;
+  rootRole: RoleOutputDTOType;
 
   @IsString()
   password: string;
@@ -75,7 +89,16 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
     throw new Error('Method not implemented, use initDomain instead');
   }
 
-  update(id: string, item: DomainUpdateInputDTO): Promise<DomainOutputDTO> {
+  async update(id: string, item: DomainUpdateInputDTO): Promise<DomainOutputDTO> {
+    if (item.state) {
+      // If domain state changes, trigger an update for any gameservers too
+      const gameServerService = new GameServerService(id);
+      const allGameServers = await gameServerService.find({});
+      for (const gameServer of allGameServers.results) {
+        await gameServerService.update(gameServer.id, await new GameServerUpdateDTO());
+      }
+    }
+
     return this.repo.update(id, item);
   }
 
@@ -109,7 +132,9 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
       capitalize: false,
     });
 
-    const domain = await this.repo.create(await new DomainCreateInputDTO().construct({ id, name: input.name }));
+    const domain = await this.repo.create(
+      new DomainCreateInputDTO({ id, name: input.name, state: input.state ?? DOMAIN_STATES.ACTIVE })
+    );
 
     const userService = new UserService(domain.id);
     const roleService = new RoleService(domain.id);
@@ -119,34 +144,34 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
     const readPlayersPermission = await roleService.permissionCodeToRecord(PERMISSIONS.READ_PLAYERS);
     const readSettingsPermission = await roleService.permissionCodeToRecord(PERMISSIONS.READ_SETTINGS);
 
-    const rootPermissionDTO = await new PermissionInputDTO().construct({ permissionId: rootPermission.id });
-    const readPlayersPermissionDTO = await new PermissionInputDTO().construct({
+    const rootPermissionDTO = new PermissionInputDTO({ permissionId: rootPermission.id });
+    const readPlayersPermissionDTO = new PermissionInputDTO({
       permissionId: readPlayersPermission.id,
     });
-    const readSettingsPermissionDTO = await new PermissionInputDTO().construct({
+    const readSettingsPermissionDTO = new PermissionInputDTO({
       permissionId: readSettingsPermission.id,
     });
 
     const rootRole = await roleService.createWithPermissions(
-      await new ServiceRoleCreateInputDTO().construct({ name: 'root', system: true }),
+      new ServiceRoleCreateInputDTO({ name: 'root', system: true }),
       [rootPermissionDTO]
     );
 
-    const DEFAULT_ROLES: Promise<ServiceRoleCreateInputDTO>[] = [
-      new ServiceRoleCreateInputDTO().construct({
+    const DEFAULT_ROLES: ServiceRoleCreateInputDTO[] = [
+      new ServiceRoleCreateInputDTO({
         name: 'Admin',
         permissions: [rootPermissionDTO],
       }),
-      new ServiceRoleCreateInputDTO().construct({
+      new ServiceRoleCreateInputDTO({
         name: 'Moderator',
         permissions: [readPlayersPermissionDTO, readSettingsPermissionDTO],
       }),
-      new ServiceRoleCreateInputDTO().construct({
+      new ServiceRoleCreateInputDTO({
         name: 'Player',
         permissions: [],
         system: true,
       }),
-      new ServiceRoleCreateInputDTO().construct({
+      new ServiceRoleCreateInputDTO({
         name: 'User',
         permissions: [],
         system: true,
@@ -158,7 +183,7 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
 
     const password = randomBytes(20).toString('hex');
     const rootUser = await userService.create(
-      await new UserCreateInputDTO().construct({
+      new UserCreateInputDTO({
         name: 'root',
         password: password,
         email: `root@${domain.id}.com`,
@@ -173,7 +198,7 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
       await createLambda({ domainId: domain.id });
     }
 
-    return new DomainCreateOutputDTO().construct({
+    return new DomainCreateOutputDTO({
       createdDomain: domain,
       rootUser,
       rootRole,

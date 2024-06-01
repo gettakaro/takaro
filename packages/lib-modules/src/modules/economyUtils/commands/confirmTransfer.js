@@ -1,8 +1,6 @@
-import { getTakaro, getData, TakaroUserError } from '@takaro/helpers';
+import { takaro, data, TakaroUserError } from '@takaro/helpers';
 
 async function main() {
-  const data = await getData();
-  const takaro = await getTakaro(data);
   const { gameServerId, pog: sender, module: mod } = data;
 
   // try to find a variable with key "confirmTransfer"

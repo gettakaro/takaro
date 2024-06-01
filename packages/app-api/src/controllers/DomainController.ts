@@ -6,6 +6,7 @@ import {
   DomainOutputDTO,
   DomainService,
   DomainUpdateInputDTO,
+  DOMAIN_STATES,
 } from '../service/DomainService.js';
 import { apiResponse, APIOutput } from '@takaro/http';
 import { OpenAPI } from 'routing-controllers-openapi';
@@ -14,7 +15,7 @@ import { Param, Body, Get, Post, Put, Delete, JsonController, UseBefore, Req, Re
 
 import { ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Request, Response } from 'express';
 import { TokenOutputDTO, TokenInputDTO, AuthService } from '../service/AuthService.js';
 import { IdUuidDTO, IdUuidDTOAPI } from '../lib/validators.js';
@@ -41,6 +42,10 @@ export class DomainSearchInputAllowedFilters {
   @IsOptional()
   @IsString({ each: true })
   name!: string[];
+
+  @IsOptional()
+  @IsEnum(Object.values(DOMAIN_STATES), { each: true })
+  state!: DOMAIN_STATES[];
 }
 
 export class DomainSearchInputDTO extends ITakaroQuery<DomainOutputDTO> {
@@ -105,7 +110,7 @@ export class DomainController {
   async remove(@Param('id') id: string) {
     const service = new DomainService();
     await service.delete(id);
-    return apiResponse(await new IdUuidDTO().construct({ id }));
+    return apiResponse(new IdUuidDTO({ id }));
   }
 
   @Post('/token')

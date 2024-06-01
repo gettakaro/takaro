@@ -1,10 +1,13 @@
 export {
   userKeys,
+
+  // queries
+  userQueryOptions,
+  usersQueryOptions,
+
+  // mutations
   useUserAssignRole,
   useUserRemoveRole,
-  useUsers,
-  useInfiniteUsers,
-  useUser,
   useInviteUser,
   useUserRemove,
 } from './queries';

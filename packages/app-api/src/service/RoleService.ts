@@ -226,10 +226,10 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
     const userId = ctx.data.user;
 
     await eventsService.create(
-      await new EventCreateDTO().construct({
+      new EventCreateDTO({
         eventName: EVENT_TYPES.ROLE_UPDATED,
         userId,
-        meta: await new TakaroEventRoleUpdated().construct({ role: { id: res.id, name: res.name } }),
+        meta: new TakaroEventRoleUpdated({ role: { id: res.id, name: res.name } }),
       })
     );
 
@@ -249,10 +249,10 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
     const userId = ctx.data.user;
 
     await eventsService.create(
-      await new EventCreateDTO().construct({
+      new EventCreateDTO({
         eventName: EVENT_TYPES.ROLE_DELETED,
         userId,
-        meta: await new TakaroEventRoleDeleted().construct({ role: { id: toDelete.id, name: toDelete.name } }),
+        meta: new TakaroEventRoleDeleted({ role: { id: toDelete.id, name: toDelete.name } }),
       })
     );
 
@@ -269,10 +269,10 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
     const userId = ctx.data.user;
 
     await eventsService.create(
-      await new EventCreateDTO().construct({
+      new EventCreateDTO({
         eventName: EVENT_TYPES.ROLE_CREATED,
         userId,
-        meta: await new TakaroEventRoleCreated().construct({ role: { id: res.id, name: res.name } }),
+        meta: new TakaroEventRoleCreated({ role: { id: res.id, name: res.name } }),
       })
     );
 
@@ -344,6 +344,6 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
 
   async permissionCodeToRecord(permissionCode: string): Promise<PermissionOutputDTO> {
     const record = await this.repo.permissionCodeToRecord(permissionCode);
-    return await new PermissionOutputDTO().construct(record);
+    return new PermissionOutputDTO(record);
   }
 }

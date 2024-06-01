@@ -1,5 +1,5 @@
 import { IntegrationTest, expect } from '@takaro/test';
-import { IModuleTestsSetupData, modulesTestSetup } from './setupData.integration.test.js';
+import { IModuleTestsSetupData, modulesTestSetup } from '@takaro/test';
 import { HookEvents } from '../dto/index.js';
 import { TakaroEventPlayerNewIpDetected } from '@takaro/modules';
 import { faker } from '@faker-js/faker';
@@ -41,7 +41,7 @@ const tests = [
         gameServerId: this.setupData.gameserver.id,
         playerId: this.setupData.players[0].id,
         eventType: HookEvents.PLAYER_NEW_IP_DETECTED,
-        eventMeta: await new TakaroEventPlayerNewIpDetected().construct({
+        eventMeta: new TakaroEventPlayerNewIpDetected({
           city: 'nowhere',
           country: 'RU',
           latitude: '0',
@@ -78,7 +78,7 @@ const tests = [
         gameServerId: this.setupData.gameserver.id,
         playerId: this.setupData.players[0].id,
         eventType: HookEvents.PLAYER_NEW_IP_DETECTED,
-        eventMeta: await new TakaroEventPlayerNewIpDetected().construct({
+        eventMeta: new TakaroEventPlayerNewIpDetected({
           city: 'nowhere',
           country: 'BE',
           latitude: '0',
@@ -117,7 +117,7 @@ const tests = [
         gameServerId: this.setupData.gameserver.id,
         playerId: this.setupData.players[0].id,
         eventType: HookEvents.PLAYER_NEW_IP_DETECTED,
-        eventMeta: await new TakaroEventPlayerNewIpDetected().construct({
+        eventMeta: new TakaroEventPlayerNewIpDetected({
           city: 'nowhere',
           country: 'RU',
           latitude: '0',
@@ -156,7 +156,7 @@ const tests = [
         gameServerId: this.setupData.gameserver.id,
         playerId: this.setupData.players[0].id,
         eventType: HookEvents.PLAYER_NEW_IP_DETECTED,
-        eventMeta: await new TakaroEventPlayerNewIpDetected().construct({
+        eventMeta: new TakaroEventPlayerNewIpDetected({
           city: 'nowhere',
           country: 'BE',
           latitude: '0',
@@ -193,7 +193,7 @@ const tests = [
         gameServerId: this.setupData.gameserver.id,
         playerId: this.setupData.players[0].id,
         eventType: HookEvents.PLAYER_NEW_IP_DETECTED,
-        eventMeta: await new TakaroEventPlayerNewIpDetected().construct({
+        eventMeta: new TakaroEventPlayerNewIpDetected({
           city: 'nowhere',
           country: 'BE',
           latitude: '0',
@@ -231,7 +231,7 @@ const tests = [
         gameServerId: this.setupData.gameserver.id,
         playerId: this.setupData.players[0].id,
         eventType: HookEvents.PLAYER_NEW_IP_DETECTED,
-        eventMeta: await new TakaroEventPlayerNewIpDetected().construct({
+        eventMeta: new TakaroEventPlayerNewIpDetected({
           city: 'nowhere',
           country: 'BE',
           latitude: '0',
@@ -269,7 +269,7 @@ const tests = [
         gameServerId: this.setupData.gameserver.id,
         playerId: this.setupData.players[0].id,
         eventType: HookEvents.PLAYER_NEW_IP_DETECTED,
-        eventMeta: await new TakaroEventPlayerNewIpDetected().construct({
+        eventMeta: new TakaroEventPlayerNewIpDetected({
           city: 'nowhere',
           country: 'BE',
           latitude: '0',
@@ -315,7 +315,7 @@ const tests = [
         gameServerId: this.setupData.gameserver.id,
         playerId: this.setupData.players[0].id,
         eventType: HookEvents.PLAYER_NEW_IP_DETECTED,
-        eventMeta: await new TakaroEventPlayerNewIpDetected().construct({
+        eventMeta: new TakaroEventPlayerNewIpDetected({
           city: 'nowhere',
           country: 'RU',
           latitude: '0',
@@ -355,7 +355,7 @@ const tests = [
         gameServerId: this.setupData.gameserver.id,
         playerId: this.setupData.players[0].id,
         eventType: HookEvents.PLAYER_NEW_IP_DETECTED,
-        eventMeta: await new TakaroEventPlayerNewIpDetected().construct({
+        eventMeta: new TakaroEventPlayerNewIpDetected({
           city: 'nowhere',
           country: 'BE',
           latitude: '0',

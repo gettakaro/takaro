@@ -1,5 +1,6 @@
 import { IntegrationTest, expect } from '@takaro/test';
 import { isAxiosError, ModuleOutputDTO } from '@takaro/apiclient';
+import { getModules } from '@takaro/modules';
 
 const group = 'ModuleController';
 
@@ -147,7 +148,7 @@ const tests = [
   new IntegrationTest({
     group,
     snapshot: true,
-    name: 'Does not allow creating modules with "builtin" parameter set',
+    name: 'Does not allow creating modules with builtin parameter set',
     test: async function () {
       let res;
       try {
@@ -296,6 +297,53 @@ const tests = [
     },
     filteredFields: ['moduleId'],
   }),
+  ...getModules().map(
+    (builtin) =>
+      new IntegrationTest<ModuleOutputDTO>({
+        group,
+        snapshot: false,
+        name: `Can export builtin module ${builtin.name}`,
+        test: async function () {
+          const mod = (
+            await this.client.module.moduleControllerSearch({
+              filters: {
+                name: [builtin.name],
+              },
+            })
+          ).data.data[0];
+          const exportRes = await this.client.module.moduleControllerExport(mod.id);
+          expect(exportRes.data.data).to.deep.equalInAnyOrder(builtin);
+        },
+      })
+  ),
+  ...getModules().map(
+    (builtin) =>
+      new IntegrationTest<ModuleOutputDTO>({
+        group,
+        snapshot: false,
+        name: `Can import the exported builtin module ${builtin.name}`,
+        test: async function () {
+          const mods = (
+            await this.client.module.moduleControllerSearch({
+              filters: {
+                name: [builtin.name, `${builtin.name}-imported`],
+              },
+            })
+          ).data.data;
+          expect(mods).to.have.length(1);
+          const exportRes = await this.client.module.moduleControllerExport(mods[0].id);
+          await this.client.module.moduleControllerImport(exportRes.data.data);
+          const modsAfter = (
+            await this.client.module.moduleControllerSearch({
+              filters: {
+                name: [builtin.name, `${builtin.name}-imported`],
+              },
+            })
+          ).data.data;
+          expect(modsAfter).to.have.length(2);
+        },
+      })
+  ),
 ];
 
 describe(group, function () {

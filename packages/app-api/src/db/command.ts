@@ -92,7 +92,7 @@ export class CommandRepo extends ITakaroRepo<CommandModel, CommandOutputDTO, Com
     }).build(query);
     return {
       total: result.total,
-      results: await Promise.all(result.results.map((item) => new CommandOutputDTO().construct(item))),
+      results: await Promise.all(result.results.map((item) => new CommandOutputDTO(item))),
     };
   }
 
@@ -104,7 +104,7 @@ export class CommandRepo extends ITakaroRepo<CommandModel, CommandOutputDTO, Com
       throw new errors.NotFoundError(`Record with id ${id} not found`);
     }
 
-    return new CommandOutputDTO().construct(data);
+    return new CommandOutputDTO(data);
   }
 
   async create(item: CommandCreateDTO): Promise<CommandOutputDTO> {
@@ -131,7 +131,7 @@ export class CommandRepo extends ITakaroRepo<CommandModel, CommandOutputDTO, Com
     const { query } = await this.getModel();
     const item = await query.updateAndFetchById(id, data.toJSON()).withGraphFetched('function');
 
-    return new CommandOutputDTO().construct(item);
+    return new CommandOutputDTO(item);
   }
 
   async assign(id: string, functionId: string) {
@@ -173,7 +173,7 @@ export class CommandRepo extends ITakaroRepo<CommandModel, CommandOutputDTO, Com
   async getArgument(argumentId: string) {
     const { argumentQuery } = await this.getModel();
     const item = await argumentQuery.findById(argumentId);
-    return new CommandArgumentOutputDTO().construct(item);
+    return new CommandArgumentOutputDTO(item);
   }
 
   async createArgument(commandId: string, data: CommandArgumentCreateDTO) {
