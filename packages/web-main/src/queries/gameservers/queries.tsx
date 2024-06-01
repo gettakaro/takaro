@@ -22,7 +22,6 @@ import { useMutation, useQueryClient, queryOptions, infiniteQueryOptions } from 
 import { getApiClient } from 'util/getApiClient';
 import { hasNextPage, mutationWrapper, queryParamsToArray } from '../util';
 import { AxiosError } from 'axios';
-import { queryClient } from 'queryClient';
 import { ErrorMessageMapping } from '@takaro/lib-components/src/errors';
 
 export const gameServerKeys = {
@@ -71,9 +70,10 @@ interface CreateGameServerFromCSMMInput {
 }
 export const useGameServerCreateFromCSMMImport = () => {
   const apiClient = getApiClient();
+  const queryClient = useQueryClient();
 
   return mutationWrapper<ImportOutputDTO, CreateGameServerFromCSMMInput>(
-    useMutation<ImportOutputDTO, AxiosError<any>, CreateGameServerFromCSMMInput>({
+    useMutation<ImportOutputDTO, AxiosError<ImportOutputDTO>, CreateGameServerFromCSMMInput>({
       mutationFn: async (config) =>
         (
           await apiClient.gameserver.gameServerControllerImportFromCSMM({
