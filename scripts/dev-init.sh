@@ -18,9 +18,6 @@ fi
 printHeader "Initializing datastores"
 
 mkdir -p _data
-mkdir -p _data/db
-mkdir -p _data/kratos-db
-mkdir -p _data/hydra-db
 ls -la _data
 
 printHeader "Setup playwright reports directory"
@@ -40,6 +37,30 @@ if [ ! -d "./_data/grafana" ]; then
 	mkdir -p ./_data/grafana
 	if command -v sudo >/dev/null 2>&1; then
 		sudo chown -R 472:472 ./_data/grafana
+	fi
+fi
+
+# Same for Postgres
+if [ ! -d "./_data/db" ]; then
+	mkdir -p ./_data/db
+	if command -v sudo >/dev/null 2>&1; then
+		sudo chown -R 999:0 ./_data/db
+	fi
+fi
+
+# Same for Hydra 
+if [ ! -d "./_data/hydra-db" ]; then
+	mkdir -p ./_data/hydra-db
+	if command -v sudo >/dev/null 2>&1; then
+		sudo chown -R 999:0 ./_data/hydra-db
+	fi
+fi
+
+# Same for Kratos 
+if [ ! -d "./_data/kratos-db" ]; then
+	mkdir -p ./_data/kratos-db
+	if command -v sudo >/dev/null 2>&1; then
+		sudo chown -R 999:0 ./_data/kratos-db
 	fi
 fi
 

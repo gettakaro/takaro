@@ -56,7 +56,9 @@ export const UserDropdown = () => {
   const { session } = useAuth();
   const { logOut } = useAuth();
   const navigate = useNavigate();
-  if (session === undefined) return <div>no session?</div>;
+
+  // TODO: this should be a fallback component, to stil try to logout.
+  if (session === null) return <div>could not get session</div>;
 
   const { name, email } = session;
   return (
