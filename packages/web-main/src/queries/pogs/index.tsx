@@ -1,6 +1,7 @@
 export {
   pogKeys,
-  playerOnGameServersQueryOptions,
+  playersOnGameServersQueryOptions,
+  playerOnGameServerQueryOptions,
 
   // transactions / currency
   useAddCurrency,

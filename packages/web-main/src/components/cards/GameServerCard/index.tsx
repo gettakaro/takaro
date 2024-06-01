@@ -25,7 +25,7 @@ import { useGameServerRemove } from 'queries/gameservers';
 import { PermissionsGuard } from 'components/PermissionsGuard';
 import { CardBody } from '../style';
 import { useSocket } from 'hooks/useSocket';
-import { playerOnGameServersQueryOptions } from 'queries/pogs';
+import { playersOnGameServersQueryOptions } from 'queries/pogs';
 import { useQuery } from '@tanstack/react-query';
 
 export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reachable }) => {
@@ -40,7 +40,7 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
     isLoading: isLoadingPogs,
     refetch,
   } = useQuery(
-    playerOnGameServersQueryOptions({
+    playersOnGameServersQueryOptions({
       filters: {
         online: [true],
         gameServerId: [id],

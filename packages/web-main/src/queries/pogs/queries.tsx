@@ -20,10 +20,18 @@ interface PogInput {
   gameServerId: string;
 }
 
-export const playerOnGameServersQueryOptions = (queryParams: PlayerOnGameServerSearchInputDTO = {}) => {
+export const playersOnGameServersQueryOptions = (queryParams: PlayerOnGameServerSearchInputDTO = {}) => {
   return queryOptions<PlayerOnGameserverOutputArrayDTOAPI, AxiosError<PlayerOnGameserverOutputArrayDTOAPI>>({
     queryKey: [...pogKeys.list(), { queryParams }],
     queryFn: async () => (await getApiClient().playerOnGameserver.playerOnGameServerControllerSearch(queryParams)).data,
+  });
+};
+
+export const playerOnGameServerQueryOptions = (gameServerId: string, playerId: string) => {
+  return queryOptions<PlayerOnGameserverOutputDTO, AxiosError<PlayerOnGameserverOutputDTO>>({
+    queryKey: pogKeys.detail(playerId, gameServerId),
+    queryFn: async () =>
+      (await getApiClient().playerOnGameserver.playerOnGameServerControllerGetOne(gameServerId, playerId)).data.data,
   });
 };
 
