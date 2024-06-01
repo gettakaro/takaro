@@ -2,7 +2,7 @@ import { Stats, styled, Skeleton, useTheme, HorizontalNav, Avatar, getInitials }
 import { Outlet, redirect } from '@tanstack/react-router';
 import { DateTime } from 'luxon';
 import { playerQueryOptions } from 'queries/players/queries';
-import { playerOnGameServersQueryOptions } from 'queries/pogs';
+import { playersOnGameServersQueryOptions } from 'queries/pogs';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { ErrorBoundary } from 'components/ErrorBoundary';
 import { createFileRoute } from '@tanstack/react-router';
@@ -18,7 +18,7 @@ export const Route = createFileRoute('/_auth/_global/player/$playerId')({
     const [player, pogs] = await Promise.all([
       context.queryClient.ensureQueryData(playerQueryOptions(params.playerId)),
       context.queryClient.ensureQueryData(
-        playerOnGameServersQueryOptions({ filters: { playerId: [params.playerId] } })
+        playersOnGameServersQueryOptions({ filters: { playerId: [params.playerId] } })
       ),
     ]);
     return { player, pogs };
