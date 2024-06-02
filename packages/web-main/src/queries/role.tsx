@@ -15,7 +15,7 @@ import { infiniteQueryOptions, queryOptions, useMutation, useQueryClient } from 
 import { AxiosError } from 'axios';
 import { getApiClient } from 'util/getApiClient';
 import { hasNextPage, mutationWrapper, queryParamsToArray } from 'queries/util';
-import { userKeys } from 'queries/users';
+import { userKeys } from './user';
 import { ErrorMessageMapping } from '@takaro/lib-components/src/errors';
 
 export const roleKeys = {
@@ -35,7 +35,7 @@ export const roleQueryOptions = (roleId: string) =>
     queryFn: async () => (await getApiClient().role.roleControllerGetOne(roleId)).data.data,
   });
 
-export const rolesOptions = (opts: RoleSearchInputDTO = {}) => {
+export const rolesQueryOptions = (opts: RoleSearchInputDTO = {}) => {
   return queryOptions<RoleOutputArrayDTOAPI, AxiosError<RoleOutputArrayDTOAPI>>({
     queryKey: [...roleKeys.list(), ...queryParamsToArray(opts)],
     queryFn: async () => (await getApiClient().role.roleControllerSearch(opts)).data,

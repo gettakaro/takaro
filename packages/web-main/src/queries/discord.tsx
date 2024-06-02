@@ -10,7 +10,7 @@ import {
 import { AxiosError } from 'axios';
 import { getApiClient } from 'util/getApiClient';
 import { InfiniteData, infiniteQueryOptions, queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
-import { hasNextPage, mutationWrapper } from '../util';
+import { hasNextPage, mutationWrapper } from './util';
 
 export const discordKeys = {
   guilds: ['discordGuilds'] as const,

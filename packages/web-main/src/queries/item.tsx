@@ -10,7 +10,7 @@ import {
 import { useMutation, useQueryClient, queryOptions } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { getApiClient } from 'util/getApiClient';
-import { mutationWrapper } from '../util';
+import { mutationWrapper } from './util';
 
 export const itemKeys = {
   all: ['items'] as const,

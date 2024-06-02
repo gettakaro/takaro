@@ -10,8 +10,8 @@ import {
 } from '@takaro/lib-components';
 import { useQuery } from '@tanstack/react-query';
 import { getRouteApi } from '@tanstack/react-router';
-import { gameServerQueryOptions } from 'queries/gameservers';
-import { itemsQueryOptions } from 'queries/items/queries';
+import { gameServerQueryOptions } from 'queries/gameserver';
+import { itemsQueryOptions } from 'queries/item';
 import { useState } from 'react';
 
 const gameServerTypeToIconFolderMap = {

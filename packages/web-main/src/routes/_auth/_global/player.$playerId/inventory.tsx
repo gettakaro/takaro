@@ -2,7 +2,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { Section } from './-style';
 // import { PlayerInventoryTable } from './-PlayerInventoryTable';
 // import { PlayerOnGameserverOutputDTO } from '@takaro/apiclient';
-import { playerQueryOptions } from 'queries/players';
+import { playerQueryOptions } from 'queries/player';
 
 export const Route = createFileRoute('/_auth/_global/player/$playerId/inventory')({
   component: Component,

@@ -22,7 +22,7 @@ import {
 
 import { useNavigate } from '@tanstack/react-router';
 import { SpacedRow, ActionIconsContainer, CardBody } from '../style';
-import { useGameServerModuleUninstall } from 'queries/gameservers';
+import { useGameServerModuleUninstall } from 'queries/gameserver';
 
 interface IModuleCardProps {
   mod: ModuleOutputDTO;

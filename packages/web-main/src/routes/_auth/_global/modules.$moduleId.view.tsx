@@ -1,4 +1,4 @@
-import { moduleQueryOptions } from 'queries/modules';
+import { moduleQueryOptions } from 'queries/module';
 import { ModuleForm } from './-modules/ModuleForm';
 import { DrawerSkeleton } from '@takaro/lib-components';
 import { createFileRoute, redirect } from '@tanstack/react-router';

@@ -1,11 +1,10 @@
 import { Stats, styled, Skeleton, useTheme, HorizontalNav, Avatar, getInitials } from '@takaro/lib-components';
-import { Outlet, redirect } from '@tanstack/react-router';
+import { Outlet, redirect, createFileRoute } from '@tanstack/react-router';
 import { DateTime } from 'luxon';
-import { playerQueryOptions } from 'queries/players/queries';
-import { playersOnGameServersQueryOptions } from 'queries/pogs';
+import { playerQueryOptions } from 'queries/player';
+import { playersOnGameServersQueryOptions } from 'queries/pog';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { ErrorBoundary } from 'components/ErrorBoundary';
-import { createFileRoute } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
 
 export const Route = createFileRoute('/_auth/_global/player/$playerId')({

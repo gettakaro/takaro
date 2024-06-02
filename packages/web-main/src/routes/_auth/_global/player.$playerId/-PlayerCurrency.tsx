@@ -3,7 +3,7 @@ import { Card, Dropdown, Button, Dialog, TextField, IconButton } from '@takaro/l
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
-import { useAddCurrency, useDeductCurrency } from 'queries/pogs';
+import { useAddCurrency, useDeductCurrency } from 'queries/pog';
 import { AiOutlineMenu as MenuIcon } from 'react-icons/ai';
 
 interface CurrencyProps {

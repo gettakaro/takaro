@@ -14,12 +14,10 @@ import {
   CopyId,
   useTheme,
 } from '@takaro/lib-components';
-import { useUserRemove } from 'queries/users';
+import { useUserRemove, useInviteUser, usersQueryOptions } from 'queries/user';
 import { UserOutputWithRolesDTO, UserSearchInputDTOSortDirectionEnum, PERMISSIONS } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
-import { usersQueryOptions } from 'queries/users';
 import { AiOutlineUser as ProfileIcon, AiOutlineEdit as EditIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
-import { useInviteUser } from 'queries/users/queries';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';

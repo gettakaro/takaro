@@ -6,7 +6,7 @@ import { FC } from 'react';
 import { Section, Container, Scrollable } from './-style';
 import { CountryCodeToEmoji } from 'components/CountryCodeToEmoji';
 import { DateTime } from 'luxon';
-import { playerQueryOptions } from 'queries/players';
+import { playerQueryOptions } from 'queries/player';
 import { useSuspenseQuery } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/_global/player/$playerId/info')({

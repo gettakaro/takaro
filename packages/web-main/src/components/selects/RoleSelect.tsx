@@ -1,7 +1,7 @@
 import { SelectField, styled } from '@takaro/lib-components';
 import { FC } from 'react';
 import { CustomSelectProps } from '.';
-import { rolesOptions } from 'queries/roles';
+import { rolesQueryOptions } from 'queries/role';
 import { RoleOutputDTO } from '@takaro/apiclient';
 import { useQuery } from '@tanstack/react-query';
 
@@ -25,7 +25,9 @@ export const RoleSelect: FC<CustomSelectProps> = ({
   description,
   readOnly,
 }) => {
-  const { data: roles, isLoading: isLoadingData } = useQuery(rolesOptions({ sortBy: 'system', sortDirection: 'asc' }));
+  const { data: roles, isLoading: isLoadingData } = useQuery(
+    rolesQueryOptions({ sortBy: 'system', sortDirection: 'asc' })
+  );
 
   if (isLoadingData) {
     // TODO: better loading state

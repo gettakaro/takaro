@@ -1,6 +1,6 @@
 import { FC, PropsWithChildren } from 'react';
 import { Card, styled } from '@takaro/lib-components';
-import { useCommandCreate, useCronJobCreate, useHookCreate } from 'queries/modules';
+import { useCommandCreate, useCronJobCreate, useHookCreate } from 'queries/module';
 
 const Flex = styled.div<{ justifyContent?: string }>`
   display: flex;

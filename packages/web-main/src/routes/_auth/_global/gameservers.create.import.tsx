@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { getApiClient } from 'util/getApiClient';
 import { GameServerSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
-import { useGameServerCreateFromCSMMImport } from 'queries/gameservers';
+import { useGameServerCreateFromCSMMImport } from 'queries/gameserver';
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
 

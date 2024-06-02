@@ -10,16 +10,16 @@ export const playerKeys = {
   detail: (id: string) => [...playerKeys.all, 'detail', id] as const,
 };
 
-export const playersOptions = (queryParams: PlayerSearchInputDTO = {}) =>
-  queryOptions<PlayerOutputArrayDTOAPI, AxiosError<PlayerOutputArrayDTOAPI>>({
-    queryKey: [...playerKeys.list(), ...queryParamsToArray(queryParams)],
-    queryFn: async () => (await getApiClient().player.playerControllerSearch(queryParams)).data,
-  });
-
 export const playerQueryOptions = (playerId: string) =>
   queryOptions<PlayerOutputWithRolesDTO, AxiosError<PlayerOutputWithRolesDTO>>({
     queryKey: playerKeys.detail(playerId),
     queryFn: async () => (await getApiClient().player.playerControllerGetOne(playerId)).data.data,
+  });
+
+export const playersQueryOptions = (queryParams: PlayerSearchInputDTO = {}) =>
+  queryOptions<PlayerOutputArrayDTOAPI, AxiosError<PlayerOutputArrayDTOAPI>>({
+    queryKey: [...playerKeys.list(), ...queryParamsToArray(queryParams)],
+    queryFn: async () => (await getApiClient().player.playerControllerSearch(queryParams)).data,
   });
 
 interface IPlayerRoleAssign {

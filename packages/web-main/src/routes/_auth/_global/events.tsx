@@ -8,13 +8,12 @@ import { Filter } from 'components/events/types';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import _ from 'lodash';
 import { DateTime, Settings } from 'luxon';
-import { eventsInfiniteQueryOptions } from 'queries/events';
+import { eventsInfiniteQueryOptions, useEventSubscription } from 'queries/event';
 import { HiStop as PauseIcon, HiPlay as PlayIcon, HiArrowPath as RefreshIcon } from 'react-icons/hi2';
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { hasPermission } from 'hooks/useHasPermission';
 import { useCallback, useMemo, useState } from 'react';
-import { useEventSubscription } from 'queries/events/queries';
 import { z } from 'zod';
 
 Settings.throwOnInvalid = true;

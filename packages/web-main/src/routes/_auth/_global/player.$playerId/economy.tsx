@@ -1,11 +1,11 @@
+import { FC } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { Currency } from './-PlayerCurrency';
 import { GameServerSelect } from 'components/selects';
 import { useForm } from 'react-hook-form';
-import { playerQueryOptions } from 'queries/players';
-import { FC } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { playerOnGameServerQueryOptions } from 'queries/pogs';
+import { playerQueryOptions } from 'queries/player';
+import { playerOnGameServerQueryOptions } from 'queries/pog';
 
 export const Route = createFileRoute('/_auth/_global/player/$playerId/economy')({
   component: Component,

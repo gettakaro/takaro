@@ -7,7 +7,7 @@ import {
   UserOutputWithRolesDTO,
   UserSearchInputDTO,
 } from '@takaro/apiclient';
-import { queryParamsToArray, mutationWrapper } from '../util';
+import { queryParamsToArray, mutationWrapper } from './util';
 import { AxiosError } from 'axios';
 import { useSnackbar } from 'notistack';
 

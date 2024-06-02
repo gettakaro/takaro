@@ -1,8 +1,8 @@
 import { Skeleton, styled, useTheme } from '@takaro/lib-components';
 import { Outlet, redirect } from '@tanstack/react-router';
 import { ModuleInstallCard, CardList } from 'components/cards';
-import { gameServerModuleInstallationsOptions } from 'queries/gameservers';
-import { modulesQueryOptions } from 'queries/modules';
+import { gameServerModuleInstallationsOptions } from 'queries/gameserver';
+import { modulesQueryOptions } from 'queries/module';
 import { createFileRoute } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
 import { useSuspenseQuery } from '@tanstack/react-query';

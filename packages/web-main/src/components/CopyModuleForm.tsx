@@ -13,10 +13,10 @@ import {
   moduleQueryOptions,
   useModuleCreate,
   useModuleRemove,
-} from 'queries/modules';
+  useFunctionCreate,
+} from 'queries/module';
 import { moduleNameShape } from 'routes/_auth/_global/-modules/ModuleForm/validationSchema';
 import { useQuery } from '@tanstack/react-query';
-import { useFunctionCreate } from 'queries/modules/queries';
 
 const validationSchema = z.object({
   name: moduleNameShape,

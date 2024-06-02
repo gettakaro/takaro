@@ -1,8 +1,7 @@
 import { SubmitHandler } from 'react-hook-form';
 import { DrawerSkeleton } from '@takaro/lib-components';
 import { redirect, useNavigate } from '@tanstack/react-router';
-import { gameServerQueryOptions } from 'queries/gameservers';
-import { useGameServerUpdate } from 'queries/gameservers/queries';
+import { gameServerQueryOptions, useGameServerUpdate } from 'queries/gameserver';
 import { createFileRoute } from '@tanstack/react-router';
 import { CreateUpdateForm } from './-gameservers/CreateUpdateForm';
 import { IFormInputs } from './-gameservers/validationSchema';

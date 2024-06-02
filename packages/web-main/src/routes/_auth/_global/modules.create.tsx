@@ -1,4 +1,4 @@
-import { useModuleCreate } from 'queries/modules';
+import { useModuleCreate } from 'queries/module';
 import { ModuleForm, ModuleFormSubmitProps } from './-modules/ModuleForm';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';

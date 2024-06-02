@@ -1,9 +1,9 @@
 import { FC, useState } from 'react';
 import { PlayerRoleAssignmentOutputDTO } from '@takaro/apiclient';
 import { createColumnHelper, CellContext } from '@tanstack/react-table';
-import { gameServersOptions } from 'queries/gameservers';
+import { gameServersQueryOptions } from 'queries/gameserver';
 import { AiOutlineDelete as DeleteIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
-import { usePlayerRoleUnassign } from 'queries/players';
+import { usePlayerRoleUnassign } from 'queries/player';
 import { useNavigate } from '@tanstack/react-router';
 import { useTableActions, Table, Button, Dropdown, IconButton, Dialog, Skeleton, styled } from '@takaro/lib-components';
 import { DateTime } from 'luxon';
@@ -32,7 +32,7 @@ export const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId, 
   const filteredServerIds = roles.filter((role) => role.gameServerId).map((role) => role.gameServerId);
 
   const { data: gameServers, isLoading } = useQuery(
-    gameServersOptions({
+    gameServersQueryOptions({
       filters: {
         id: filteredServerIds as string[],
       },

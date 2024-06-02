@@ -1,7 +1,7 @@
 import { ErrorPage } from '@takaro/lib-components';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
-import { gameServerQueryOptions } from 'queries/gameservers';
+import { gameServerQueryOptions } from 'queries/gameserver';
 import { BaseLayout } from 'components/BaseLayout';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId')({

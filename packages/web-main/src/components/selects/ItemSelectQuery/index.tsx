@@ -1,7 +1,7 @@
 import { GameServerOutputDTO, GameServerOutputDTOTypeEnum, ItemsOutputDTO } from '@takaro/apiclient';
 import { Avatar, getInitials, SelectQueryField, Skeleton, styled } from '@takaro/lib-components';
-import { gameServerQueryOptions } from 'queries/gameservers';
-import { itemsQueryOptions } from 'queries/items';
+import { gameServerQueryOptions } from 'queries/gameserver';
+import { itemsQueryOptions } from 'queries/item';
 import { FC, useState } from 'react';
 import { CustomQuerySelectProps } from '..';
 import { useQuery } from '@tanstack/react-query';

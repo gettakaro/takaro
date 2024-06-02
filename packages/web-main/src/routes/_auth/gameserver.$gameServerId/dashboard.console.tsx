@@ -1,7 +1,7 @@
 import { Console, Message, Skeleton, styled, useLocalStorage } from '@takaro/lib-components';
 import { getApiClient } from 'util/getApiClient';
 import { useSocket } from 'hooks/useSocket';
-import { gameServerQueryOptions } from 'queries/gameservers';
+import { gameServerQueryOptions } from 'queries/gameserver';
 import { useGameServerDocumentTitle } from 'hooks/useDocumentTitle';
 import { useSnackbar } from 'notistack';
 import { createFileRoute } from '@tanstack/react-router';

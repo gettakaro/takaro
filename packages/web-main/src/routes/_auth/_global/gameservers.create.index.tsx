@@ -1,6 +1,6 @@
 import { SubmitHandler } from 'react-hook-form';
 import { redirect, useNavigate } from '@tanstack/react-router';
-import { useGameServerCreate } from 'queries/gameservers';
+import { useGameServerCreate } from 'queries/gameserver';
 import { createFileRoute } from '@tanstack/react-router';
 import { CreateUpdateForm } from './-gameservers/CreateUpdateForm';
 import { IFormInputs } from './-gameservers/validationSchema';

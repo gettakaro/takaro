@@ -8,11 +8,11 @@ import {
   DrawerSkeleton,
   styled,
 } from '@takaro/lib-components';
-import { rolesOptions } from 'queries/roles';
+import { rolesQueryOptions } from 'queries/role';
+import { useUserAssignRole } from 'queries/user';
 import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { useUserAssignRole } from 'queries/users';
 import { DateTime } from 'luxon';
 import { RoleSelect } from 'components/selects';
 import { createFileRoute, notFound, redirect, useNavigate } from '@tanstack/react-router';
@@ -40,7 +40,7 @@ export const Route = createFileRoute('/_auth/_global/user/$userId/role/assign')(
     }
   },
   loader: async ({ context }) => {
-    const data = await context.queryClient.ensureQueryData(rolesOptions());
+    const data = await context.queryClient.ensureQueryData(rolesQueryOptions());
     if (data.data.length === 0) {
       throw notFound();
     }

@@ -12,7 +12,7 @@ import {
   Alert,
 } from '@takaro/lib-components';
 import { PERMISSIONS } from '@takaro/apiclient';
-import { useModuleRemove } from 'queries/modules';
+import { useModuleRemove } from 'queries/module';
 import { FC, useState, MouseEvent } from 'react';
 import { AiOutlineMenu as MenuIcon } from 'react-icons/ai';
 import { useNavigate } from '@tanstack/react-router';

@@ -1,5 +1,5 @@
 import { Button, Dialog, FormError } from '@takaro/lib-components';
-import { useVariableDelete } from 'queries/variables';
+import { useVariableDelete } from 'queries/variable';
 import { FC } from 'react';
 
 interface VariablesDeleteProps {

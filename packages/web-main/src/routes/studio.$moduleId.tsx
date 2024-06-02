@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react';
 import { CommandOutputDTO, CronJobOutputDTO, FunctionOutputDTO, HookOutputDTO } from '@takaro/apiclient';
-import { moduleQueryOptions } from 'queries/modules';
+import { moduleQueryOptions } from 'queries/module';
 import { styled, Skeleton } from '@takaro/lib-components';
 import { ModuleOnboarding } from 'views/ModuleOnboarding';
 import { ErrorBoundary } from 'components/ErrorBoundary';

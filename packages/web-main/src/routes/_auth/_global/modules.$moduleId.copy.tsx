@@ -1,7 +1,7 @@
 import { Dialog } from '@takaro/lib-components';
 import { createFileRoute, redirect, useRouter } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
-import { moduleQueryOptions } from 'queries/modules';
+import { moduleQueryOptions } from 'queries/module';
 import { useSnackbar } from 'notistack';
 import { useState } from 'react';
 import { CopyModuleForm } from 'components/CopyModuleForm';

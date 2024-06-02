@@ -1,7 +1,7 @@
 import { Avatar, getInitials, SelectField, styled } from '@takaro/lib-components';
 import { FC } from 'react';
 import { CustomSelectProps } from '.';
-import { playersOptions } from 'queries/players';
+import { playersQueryOptions } from 'queries/player';
 import { useQuery } from '@tanstack/react-query';
 
 const Inner = styled.div`
@@ -28,7 +28,7 @@ export const PlayerSelect: FC<CustomSelectProps> = ({
   required,
   hint,
 }) => {
-  const { data, isLoading: isLoadingData } = useQuery(playersOptions());
+  const { data, isLoading: isLoadingData } = useQuery(playersQueryOptions());
 
   if (isLoadingData) {
     // TODO: better loading state

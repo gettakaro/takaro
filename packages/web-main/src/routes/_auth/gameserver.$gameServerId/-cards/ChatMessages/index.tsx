@@ -4,7 +4,7 @@ import {
   EventSearchInputDTOSortDirectionEnum,
 } from '@takaro/apiclient';
 import { useSocket } from 'hooks/useSocket';
-import { eventsQueryOptions } from 'queries/events';
+import { eventsQueryOptions } from 'queries/event';
 import { getApiClient } from 'util/getApiClient';
 import { EventOutputDTOEventNameEnum as EventName } from '@takaro/apiclient';
 import { FC, useEffect } from 'react';

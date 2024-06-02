@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { Tooltip, styled, Skeleton } from '@takaro/lib-components';
-import { gameServersOptions } from 'queries/gameservers';
+import { gameServersQueryOptions } from 'queries/gameserver';
 import { GameServerOutputDTO, GameServerOutputDTOTypeEnum, PlayerOnGameserverOutputDTO } from '@takaro/apiclient';
 import { useQuery } from '@tanstack/react-query';
 
@@ -33,7 +33,7 @@ const ItemName = styled.p``;
 
 export const PlayerInventoryTable: FC<IPlayerInventoryProps> = ({ pog }) => {
   const { data: gameservers, isLoading } = useQuery(
-    gameServersOptions({
+    gameServersQueryOptions({
       filters: {
         id: [pog.gameServerId],
       },

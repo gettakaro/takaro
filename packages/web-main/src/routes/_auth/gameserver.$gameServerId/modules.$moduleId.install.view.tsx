@@ -1,5 +1,5 @@
-import { gameServerModuleInstallationOptions } from 'queries/gameservers';
-import { moduleQueryOptions } from 'queries/modules';
+import { gameServerModuleInstallationOptions } from 'queries/gameserver';
+import { moduleQueryOptions } from 'queries/module';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { InstallModuleForm } from './-InstallModuleForm';
 import { hasPermission } from 'hooks/useHasPermission';

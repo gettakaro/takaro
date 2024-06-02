@@ -1,9 +1,10 @@
 import { useEffect } from 'react';
-import { SubmitHandler } from 'react-hook-form';
-import { DrawerSkeleton } from '@takaro/lib-components';
-import { permissionsQueryOptions, useRoleCreate } from 'queries/roles';
-import { RoleForm, IFormInputs } from './-roles/RoleCreateUpdateForm';
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
+import { SubmitHandler } from 'react-hook-form';
+
+import { DrawerSkeleton } from '@takaro/lib-components';
+import { permissionsQueryOptions, useRoleCreate } from 'queries/role';
+import { RoleForm, IFormInputs } from './-roles/RoleCreateUpdateForm';
 import { hasPermission } from 'hooks/useHasPermission';
 
 export const Route = createFileRoute('/_auth/_global/roles/create')({

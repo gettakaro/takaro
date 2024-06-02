@@ -8,7 +8,7 @@ import {
   VariableSearchInputDTO,
   VariableUpdateDTO,
 } from '@takaro/apiclient';
-import { mutationWrapper } from '../util';
+import { mutationWrapper } from './util';
 import { AxiosError } from 'axios';
 import { ErrorMessageMapping } from '@takaro/lib-components/src/errors';
 

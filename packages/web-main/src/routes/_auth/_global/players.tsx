@@ -22,7 +22,8 @@ import {
 } from 'react-icons/ai';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { hasPermission, useHasPermission } from 'hooks/useHasPermission';
-import { useBanPlayerOnGameServer, useUnbanPlayerOnGameServer } from 'queries/gameservers';
+import { useBanPlayerOnGameServer, useUnbanPlayerOnGameServer } from 'queries/gameserver';
+import { playersQueryOptions } from 'queries/player';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -30,7 +31,6 @@ import { useSnackbar } from 'notistack';
 import { FaBan as BanIcon } from 'react-icons/fa';
 import { Player } from 'components/Player';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { playersOptions } from 'queries/players';
 import { getApiClient } from 'util/getApiClient';
 
 export const StyledDialogBody = styled(Dialog.Body)`
@@ -51,7 +51,7 @@ function Component() {
 
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<PlayerOutputDTO>();
   const { data, isLoading } = useSuspenseQuery({
-    ...playersOptions({
+    ...playersQueryOptions({
       page: pagination.paginationState.pageIndex,
       limit: pagination.paginationState.pageSize,
       sortBy: sorting.sortingState[0]?.id,

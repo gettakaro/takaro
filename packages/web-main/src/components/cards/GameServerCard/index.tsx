@@ -21,11 +21,11 @@ import {
   AiOutlineLineChart as DashboardIcon,
 } from 'react-icons/ai';
 import { Header, TitleContainer, DetailsContainer } from './style';
-import { useGameServerRemove } from 'queries/gameservers';
+import { useGameServerRemove } from 'queries/gameserver';
 import { PermissionsGuard } from 'components/PermissionsGuard';
 import { CardBody } from '../style';
 import { useSocket } from 'hooks/useSocket';
-import { playersOnGameServersQueryOptions } from 'queries/pogs';
+import { playersOnGameServersQueryOptions } from 'queries/pog';
 import { useQuery } from '@tanstack/react-query';
 
 export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reachable }) => {

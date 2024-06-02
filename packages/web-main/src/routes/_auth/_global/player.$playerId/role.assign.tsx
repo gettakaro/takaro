@@ -9,17 +9,17 @@ import {
   DrawerSkeleton,
   styled,
 } from '@takaro/lib-components';
-import { rolesOptions } from 'queries/roles';
-import { usePlayerRoleAssign } from 'queries/players';
+import { rolesQueryOptions } from 'queries/role';
+import { usePlayerRoleAssign } from 'queries/player';
 import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { gameServersOptions } from 'queries/gameservers';
 import { GameServerOutputDTO } from '@takaro/apiclient';
 import { DateTime } from 'luxon';
 import { RoleSelect } from 'components/selects';
 import { z } from 'zod';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { gameServersQueryOptions } from 'queries/gameserver';
 
 const ButtonContainer = styled.div`
   display: flex;
@@ -37,8 +37,8 @@ type IFormInputs = z.infer<typeof roleAssignValidationSchema>;
 
 export const Route = createFileRoute('/_auth/_global/player/$playerId/role/assign')({
   loader: async ({ context }) => {
-    const p1 = context.queryClient.ensureQueryData(rolesOptions());
-    const p2 = context.queryClient.ensureQueryData(gameServersOptions());
+    const p1 = context.queryClient.ensureQueryData(rolesQueryOptions());
+    const p2 = context.queryClient.ensureQueryData(gameServersQueryOptions());
     const [roles, gameservers] = await Promise.all([p1, p2]);
     const gameServerOptions = [
       { name: 'Global - applies to all gameservers', id: 'null' } as GameServerOutputDTO,

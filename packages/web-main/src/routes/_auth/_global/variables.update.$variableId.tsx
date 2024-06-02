@@ -1,7 +1,7 @@
 import { DrawerSkeleton } from '@takaro/lib-components';
 import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
 import { useNavigate } from '@tanstack/react-router';
-import { useVariableUpdate, variableQueryOptions } from 'queries/variables/queries';
+import { useVariableUpdate, variableQueryOptions } from 'queries/variable';
 import { VariablesForm, ExecutionType, IFormInputs } from './-variables/VariableCreateUpdateForm';
 import { useSnackbar } from 'notistack';
 import { queryClient } from 'queryClient';

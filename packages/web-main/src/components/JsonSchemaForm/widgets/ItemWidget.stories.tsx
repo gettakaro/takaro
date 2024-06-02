@@ -2,7 +2,7 @@ import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import { useEffect } from 'react';
 import { JsonSchemaForm } from '..';
 import { Button } from '@takaro/lib-components';
-import { gameServersOptions } from 'queries/gameservers';
+import { gameServersQueryOptions } from 'queries/gameserver';
 import { useQuery } from '@tanstack/react-query';
 
 export default {
@@ -12,7 +12,7 @@ export default {
 export const Default = () => {
   const fieldId = 'item';
 
-  const { data, isLoading } = useQuery(gameServersOptions({}));
+  const { data, isLoading } = useQuery(gameServersQueryOptions({}));
 
   useEffect(() => {
     if (data) {

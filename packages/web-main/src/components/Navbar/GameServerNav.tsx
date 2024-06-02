@@ -10,7 +10,7 @@ import {
   AiOutlineFunction as ModulesIcon,
   AiOutlinePlus as AddServerIcon,
 } from 'react-icons/ai';
-import { gameServersOptions } from 'queries/gameservers';
+import { gameServersQueryOptions } from 'queries/gameserver';
 import { Nav, NoServersCallToAction } from './style';
 import { useQuery } from '@tanstack/react-query';
 
@@ -18,7 +18,7 @@ const route = getRouteApi('/_auth/gameserver/$gameServerId');
 
 export const GameServerNav: FC = () => {
   const navigate = useNavigate();
-  const { data: gameservers, isPending } = useQuery(gameServersOptions());
+  const { data: gameservers, isPending } = useQuery(gameServersQueryOptions());
   const { gameServerId } = route.useParams();
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment

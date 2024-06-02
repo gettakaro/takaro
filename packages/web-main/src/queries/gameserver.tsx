@@ -20,7 +20,7 @@ import {
 } from '@takaro/apiclient';
 import { useMutation, useQueryClient, queryOptions, infiniteQueryOptions } from '@tanstack/react-query';
 import { getApiClient } from 'util/getApiClient';
-import { hasNextPage, mutationWrapper, queryParamsToArray } from '../util';
+import { hasNextPage, mutationWrapper, queryParamsToArray } from './util';
 import { AxiosError } from 'axios';
 import { ErrorMessageMapping } from '@takaro/lib-components/src/errors';
 
@@ -42,7 +42,7 @@ const defaultGameServerErrorMessages: Partial<ErrorMessageMapping> = {
   UniqueConstraintError: 'Game server with this name already exists.',
 };
 
-export const gameServersOptions = (queryParams: GameServerSearchInputDTO = {}) => {
+export const gameServersQueryOptions = (queryParams: GameServerSearchInputDTO = {}) => {
   return queryOptions<GameServerOutputDTO[], AxiosError<GameServerOutputArrayDTOAPI>>({
     queryKey: [...gameServerKeys.list(), ...queryParamsToArray(queryParams)],
     queryFn: async () => (await getApiClient().gameserver.gameServerControllerSearch(queryParams)).data.data,

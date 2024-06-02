@@ -32,10 +32,12 @@ import {
   useHookCreate,
   useHookRemove,
   useHookUpdate,
-} from 'queries/modules';
+  useFunctionCreate,
+  useFunctionRemove,
+  useFunctionUpdate,
+} from 'queries/module';
 import { FileType, useStudioContext } from '../useStudioStore';
 import { useNavigate } from '@tanstack/react-router';
-import { useFunctionCreate, useFunctionRemove, useFunctionUpdate } from 'queries/modules/queries';
 
 const Button = styled.button<{ isActive: boolean; depth: number }>`
   display: flex;

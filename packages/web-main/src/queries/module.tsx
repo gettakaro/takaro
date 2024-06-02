@@ -29,7 +29,7 @@ import {
   ModuleUpdateDTO,
 } from '@takaro/apiclient';
 
-import { queryParamsToArray, hasNextPage, mutationWrapper } from '../util';
+import { queryParamsToArray, hasNextPage, mutationWrapper } from './util';
 import { AxiosError, AxiosResponse } from 'axios';
 import { ErrorMessageMapping } from '@takaro/lib-components/src/errors';
 

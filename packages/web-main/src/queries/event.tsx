@@ -1,5 +1,4 @@
 import { EventOutputArrayDTOAPI, EventOutputDTO, EventSearchInputDTO } from '@takaro/apiclient';
-import {} from '@takaro/apiclient';
 import {
   InfiniteData,
   infiniteQueryOptions,
@@ -10,7 +9,7 @@ import {
 import { AxiosError } from 'axios';
 import { getApiClient } from 'util/getApiClient';
 import _ from 'lodash';
-import { hasNextPage, queryParamsToArray } from 'queries/util';
+import { hasNextPage, queryParamsToArray } from './util';
 import { useSocket } from 'hooks/useSocket';
 import { useEffect } from 'react';
 import { ShouldIncludeEvent } from 'components/events/shouldIncludeEvent';

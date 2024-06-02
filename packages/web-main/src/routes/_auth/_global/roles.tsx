@@ -1,6 +1,6 @@
 import { Outlet, redirect, useNavigate } from '@tanstack/react-router';
 import { EmptyPage, Skeleton, Empty, Button } from '@takaro/lib-components';
-import { rolesInfiniteQueryOptions } from 'queries/roles';
+import { rolesInfiniteQueryOptions } from 'queries/role';
 import { RoleCard, AddCard, CardList } from 'components/cards';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { createFileRoute } from '@tanstack/react-router';

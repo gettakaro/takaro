@@ -1,7 +1,7 @@
 import { SelectField, styled } from '@takaro/lib-components';
 import { FC } from 'react';
 import { CustomSelectProps } from '.';
-import { gameServerModuleInstallationsOptions } from 'queries/gameservers';
+import { gameServerModuleInstallationsOptions } from 'queries/gameserver';
 import { ModuleInstallationOutputDTO } from '@takaro/apiclient';
 import { useQuery } from '@tanstack/react-query';
 

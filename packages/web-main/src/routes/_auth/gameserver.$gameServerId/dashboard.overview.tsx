@@ -1,5 +1,5 @@
 import { Card, styled, useTheme } from '@takaro/lib-components';
-import { gameServerQueryOptions } from 'queries/gameservers';
+import { gameServerQueryOptions } from 'queries/gameserver';
 import { useGameServerDocumentTitle } from 'hooks/useDocumentTitle';
 import { OnlinePlayersCard } from './-cards/OnlinePlayers';
 import { ChatMessagesCard } from './-cards/ChatMessages';

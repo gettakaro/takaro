@@ -1,10 +1,9 @@
 import { FC, useEffect, useState } from 'react';
-import { Button, SelectField, TextField, Drawer, CollapseList, FormError } from '@takaro/lib-components';
+import { Button, SelectField, TextField, Drawer, CollapseList, FormError, styled } from '@takaro/lib-components';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { IFormInputs, validationSchema } from './validationSchema';
 import { GameServerOutputDTO, GameServerTestReachabilityInputDTOTypeEnum } from '@takaro/apiclient';
-import { useGameServerReachabilityByConfig } from 'queries/gameservers';
-import { styled } from '@takaro/lib-components';
+import { useGameServerReachabilityByConfig } from 'queries/gameserver';
 import { connectionInfoFieldsMap } from './connectionInfoFieldsMap';
 import { useNavigate } from '@tanstack/react-router';
 import { useSnackbar } from 'notistack';

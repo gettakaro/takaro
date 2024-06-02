@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Button, Stats, styled } from '@takaro/lib-components';
 import { useSocket } from 'hooks/useSocket';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { eventsQueryOptions } from 'queries/events';
+import { eventsQueryOptions } from 'queries/event';
 import { DateTime } from 'luxon';
 import { useForm, useWatch } from 'react-hook-form';
 import { TimePeriodSelect } from 'components/selects';

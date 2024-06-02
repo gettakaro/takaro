@@ -1,6 +1,6 @@
-import { useModuleImport } from 'queries/modules';
-import { ModuleImportForm, IFormInputs } from './-modules/ModuleImportForm';
 import { createFileRoute, redirect } from '@tanstack/react-router';
+import { useModuleImport } from 'queries/module';
+import { ModuleImportForm, IFormInputs } from './-modules/ModuleImportForm';
 import { hasPermission } from 'hooks/useHasPermission';
 
 export const Route = createFileRoute('/_auth/_global/modules/import')({

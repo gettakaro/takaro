@@ -1,5 +1,5 @@
 import { SelectField, Skeleton, Tooltip } from '@takaro/lib-components';
-import { gameServersOptions } from 'queries/gameservers';
+import { gameServersQueryOptions } from 'queries/gameserver';
 import { FC } from 'react';
 import { GameServerOutputDTO, GameServerOutputDTOTypeEnum } from '@takaro/apiclient';
 import { CustomSelectProps } from '..';
@@ -28,7 +28,7 @@ export const GameServerSelect: FC<CustomSelectProps> = ({
   description,
   required,
 }) => {
-  const { data, isLoading: isLoadingData } = useQuery(gameServersOptions({ sortBy: 'type' }));
+  const { data, isLoading: isLoadingData } = useQuery(gameServersQueryOptions({ sortBy: 'type' }));
   const gameServers = data ?? [];
 
   if (isLoadingData) {

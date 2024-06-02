@@ -1,7 +1,7 @@
 import { Chip, Dialog } from '@takaro/lib-components';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
-import { moduleExportOptions, moduleQueryOptions } from 'queries/modules';
+import { moduleExportOptions, moduleQueryOptions } from 'queries/module';
 import { useSnackbar } from 'notistack';
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';

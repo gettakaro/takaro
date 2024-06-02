@@ -1,10 +1,10 @@
+import { useEffect } from 'react';
 import { DrawerSkeleton } from '@takaro/lib-components';
-import { useRoleUpdate, roleQueryOptions, permissionsQueryOptions } from 'queries/roles/queries';
+import { useRoleUpdate, roleQueryOptions, permissionsQueryOptions } from 'queries/role';
 import { SubmitHandler } from 'react-hook-form';
 import { RoleForm, IFormInputs } from './-roles/RoleCreateUpdateForm';
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
-import { useEffect } from 'react';
 
 export const Route = createFileRoute('/_auth/_global/roles/update/$roleId')({
   beforeLoad: ({ context }) => {

@@ -4,7 +4,7 @@ import {
   gameServerSettingsQueryOptions,
   globalGameServerSettingsQueryOptions,
   useSetGameServerSetting,
-} from 'queries/settings';
+} from 'queries/setting';
 import { ReactElement, useMemo } from 'react';
 import { useForm, SubmitHandler, useFieldArray } from 'react-hook-form';
 import { Switch, TextField, Button, SelectField, styled, Skeleton, camelCaseToSpaces } from '@takaro/lib-components';

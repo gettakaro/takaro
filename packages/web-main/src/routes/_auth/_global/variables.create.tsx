@@ -1,6 +1,6 @@
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import { ExecutionType, IFormInputs, VariablesForm } from './-variables/VariableCreateUpdateForm';
-import { useVariableCreate } from 'queries/variables/queries.js';
+import { useVariableCreate } from 'queries/variable';
 import { hasPermission } from 'hooks/useHasPermission';
 import { useEffect } from 'react';
 

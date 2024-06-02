@@ -1,7 +1,7 @@
 import { SelectField, styled } from '@takaro/lib-components';
 import { FC } from 'react';
 import { CustomSelectProps } from '.';
-import { modulesQueryOptions } from 'queries/modules';
+import { modulesQueryOptions } from 'queries/module';
 import { ModuleOutputDTO } from '@takaro/apiclient';
 import { useQuery } from '@tanstack/react-query';
 

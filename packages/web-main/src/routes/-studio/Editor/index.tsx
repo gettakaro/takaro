@@ -4,12 +4,11 @@ import * as mon from 'monaco-editor';
 import { FileTabs } from './FileTabs';
 import { FunctionType, setExtraLibs } from './customTypes';
 import { defineTheme } from './theme';
-import { useFunctionUpdate } from 'queries/modules/queries';
+import { useFunctionUpdate } from 'queries/module';
 import { useSnackbar } from 'notistack';
-import { Button, Tooltip } from '@takaro/lib-components';
+import { Button, Tooltip, styled } from '@takaro/lib-components';
 import { AiFillSave as SaveIcon } from 'react-icons/ai';
 import { useStudioContext } from '../useStudioStore';
-import { styled } from '@takaro/lib-components';
 import { useActiveCode } from '../useActiveCode';
 
 const Stack = styled.div`

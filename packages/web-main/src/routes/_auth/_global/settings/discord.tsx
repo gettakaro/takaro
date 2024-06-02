@@ -1,12 +1,11 @@
 import { Fragment } from 'react';
-import { Button, Card, Empty, Skeleton, styled, useTheme } from '@takaro/lib-components';
+import { createFileRoute } from '@tanstack/react-router';
+import { useSuspenseInfiniteQuery } from '@tanstack/react-query';
+import { Button, Card, Empty, Skeleton, styled, useTheme, InfiniteScroll } from '@takaro/lib-components';
 import { LoginDiscordCard } from './-discord/LoginDiscordCard';
 import { GuildCard } from './-discord/GuildCard';
 import { CardList } from 'components/cards';
-import { createFileRoute } from '@tanstack/react-router';
-import { discordGuildInfiniteQueryOptions, discordInviteQueryOptions } from 'queries/discord/queries';
-import { InfiniteScroll } from '@takaro/lib-components';
-import { useSuspenseInfiniteQuery } from '@tanstack/react-query';
+import { discordGuildInfiniteQueryOptions, discordInviteQueryOptions } from 'queries/discord';
 
 export const Route = createFileRoute('/_auth/_global/settings/discord')({
   loader: async ({ context }) => {

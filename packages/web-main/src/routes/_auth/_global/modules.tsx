@@ -6,7 +6,7 @@ import { AddCard, CardList, ModuleDefinitionCard } from 'components/cards';
 import { useNavigate, Outlet, redirect } from '@tanstack/react-router';
 import { createFileRoute } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
-import { modulesInfiniteQueryOptions } from 'queries/modules/queries';
+import { modulesInfiniteQueryOptions } from 'queries/module';
 import { useSuspenseInfiniteQuery } from '@tanstack/react-query';
 import { InfiniteScroll } from '@takaro/lib-components';
 

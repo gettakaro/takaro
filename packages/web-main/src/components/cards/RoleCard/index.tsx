@@ -15,7 +15,7 @@ import { Header, TitleContainer } from './style';
 import { useNavigate } from '@tanstack/react-router';
 
 import { AiOutlineMenu as MenuIcon } from 'react-icons/ai';
-import { useRoleRemove } from 'queries/roles/queries';
+import { useRoleRemove } from 'queries/role';
 import { RoleOutputDTO } from '@takaro/apiclient';
 import { CardBody } from '../style';
 

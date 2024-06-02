@@ -2,7 +2,7 @@ import { FC, Fragment, useMemo, useState } from 'react';
 import { Table, useTableActions, IconButton, Dropdown, Button, Divider, DateFormatter } from '@takaro/lib-components';
 import { VariableOutputDTO, VariableSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
-import { variablesQueryOptions } from 'queries/variables';
+import { variablesQueryOptions } from 'queries/variable';
 import { AiOutlineEdit as EditIcon, AiOutlineDelete as DeleteIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { VariableValueDetail } from './-variables/VariableValueDetail';

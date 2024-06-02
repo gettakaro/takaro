@@ -1,12 +1,11 @@
 import { UserAssignmentOutputDTO, UserOutputWithRolesDTO } from '@takaro/apiclient';
 import { Button, Divider, Dropdown, IconButton, Skeleton, Table, useTableActions } from '@takaro/lib-components';
-import { useUserRemoveRole, userQueryOptions } from 'queries/users';
+import { useUserRemoveRole, userQueryOptions } from 'queries/user';
 import { createColumnHelper } from '@tanstack/react-table';
 import { FC } from 'react';
-import { Outlet, redirect, useNavigate } from '@tanstack/react-router';
+import { Outlet, redirect, useNavigate, createFileRoute } from '@tanstack/react-router';
 import { DateTime } from 'luxon';
 import { AiOutlineDelete as DeleteIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
-import { createFileRoute } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
 import { useSuspenseQuery } from '@tanstack/react-query';
 

@@ -2,7 +2,7 @@ import { Fragment, useMemo, ReactElement } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { Button, Switch, TextField, camelCaseToSpaces } from '@takaro/lib-components';
 import { Settings, PERMISSIONS } from '@takaro/apiclient';
-import { useSetGlobalSetting, globalGameServerSettingsQueryOptions } from 'queries/settings';
+import { useSetGlobalSetting, globalGameServerSettingsQueryOptions } from 'queries/setting';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
