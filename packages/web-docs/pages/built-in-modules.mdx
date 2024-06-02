@@ -1,5 +1,6 @@
 import React from 'react';
 import modules from './modules.json';
+import comunityModules from './community-modules.json';
 
 export function Commands({commands}) {
   if(!commands.length) return null;
@@ -47,17 +48,42 @@ export function CronJobs({cronJobs}) {
   );
 }
 
-export function ModulesList() {
+export function Config({configSchema}) {
+    // configSchema is a jsonSchema object
+    // Parse it and display pretty:
+    const schema = JSON.parse(configSchema);
+    const properties = schema.properties;
+
+    if(!properties) return null;
+
+    return (
+      <>
+        <h4>Config variables</h4>
+        <ul>
+          {Object.keys(properties).map((key, index) => (
+            <li key={index}>
+              <b>{key}</b> <small>{properties[key].type} </small> - {properties[key].description}
+            </li>
+          ))}
+        </ul>
+      </>
+    );
+
+}
+
+export function ModulesList({type}) {
+  const mods = type === 'builtin' ? modules : comunityModules;
+
   return (
     <div>
-      {modules.map((mod, index) => (
+      {mods.map((mod, index) => (
         <div key={index}>
           <h3><u>{mod.name}</u></h3>
           <p>{mod.description}</p>
           <Commands commands={mod.commands} />
           <CronJobs cronJobs={mod.cronJobs} />
           <Hooks hooks={mod.hooks} />
-
+          <Config configSchema={mod.configSchema} />
         </div>
       ))}
     </div>
@@ -71,6 +97,15 @@ Takaro provides a set of built-in modules. These are created and maintained by t
 
 You can install modules by browsing to a gameserver and clicking the "Modules" link. From there you can configure and install modules.
 
-## Available modules
+## Core modules
 
-<ModulesList />
+<ModulesList type="builtin" />
+
+## Community modules
+
+This directory contains modules that are not part of the core suite of built in modules, but are contributed by the community.
+They are not officially supported, but are provided as-is for the community to use and improve.
+
+We welcome contributions to this directory. If you have a module that you would like to contribute, please open a pull request.
+
+<ModulesList type="community" />
