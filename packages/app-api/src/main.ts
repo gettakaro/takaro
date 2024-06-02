@@ -37,6 +37,7 @@ import { PlayerSyncWorker } from './workers/playerSyncWorker.js';
 import { CSMMImportWorker } from './workers/csmmImportWorker.js';
 import { kpi } from './lib/kpi.js';
 import { SteamSyncWorker } from './workers/steamSyncWorker.js';
+import { AxiosError } from 'axios';
 
 export const server = new HTTP(
   {
@@ -154,7 +155,16 @@ async function domainInit(domain: DomainOutputDTO) {
 }
 
 process.on('unhandledRejection', (reason) => {
-  log.error('Unhandled Rejection at:', { reason: String(reason) });
+  if (reason instanceof AxiosError) {
+    log.error('Unhandled HTTP client error', {
+      url: reason.config?.url,
+      status: reason.response?.status,
+      statusText: reason.response?.statusText,
+      data: JSON.stringify(reason.response?.data),
+    });
+  } else {
+    log.error('Unhandled Rejection at:', { reason: String(reason) });
+  }
 });
 
 process.on('uncaughtException', (error: Error) => {
