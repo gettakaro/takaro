@@ -75,7 +75,7 @@ async function process(job: Job<ICSMMImportData>) {
   }
 
   const server = await gameserverService.create(
-    await new GameServerCreateDTO().construct({
+    new GameServerCreateDTO({
       name: data.server.name,
       type: GAME_SERVER_TYPE.SEVENDAYSTODIE,
       connectionInfo: JSON.stringify({
@@ -104,7 +104,7 @@ async function process(job: Job<ICSMMImportData>) {
     }
 
     await roleService.create(
-      await new RoleCreateInputDTO().construct({
+      new RoleCreateInputDTO({
         name: role.name,
         permissions: [],
       })
@@ -119,7 +119,7 @@ async function process(job: Job<ICSMMImportData>) {
       log.warn(`Player ${csmmPlayer.name} has no crossId, skipping player resolving`);
       continue;
     }
-    const createData = await new IGamePlayer().construct({
+    const createData = new IGamePlayer({
       name: csmmPlayer.name,
       gameId: csmmPlayer.crossId.replace('EOS_', ''),
       epicOnlineServicesId: csmmPlayer.crossId.replace('EOS_', ''),
@@ -131,7 +131,7 @@ async function process(job: Job<ICSMMImportData>) {
       createData.steamId = csmmPlayer.steamId;
     }
 
-    const { player, pog } = await playerService.resolveRef(await new IGamePlayer().construct(createData), server.id);
+    const { player, pog } = await playerService.resolveRef(new IGamePlayer(createData), server.id);
 
     if (!csmmPlayer.crossId) {
       log.warn(`Player ${csmmPlayer.name} has no crossId, skipping role assignment`);
@@ -165,7 +165,7 @@ async function process(job: Job<ICSMMImportData>) {
   if (res.rawResult.includes('1CSMM_Patrons')) {
     await gameserverService.update(
       server.id,
-      await new GameServerUpdateDTO().construct({
+      new GameServerUpdateDTO({
         connectionInfo: JSON.stringify({
           host: `${data.server.ip}:${data.server.webPort}`,
           adminUser: data.server.authName,

@@ -29,7 +29,7 @@ export class MockEmitter extends TakaroEmitter {
     const dto = EventMapping[event];
 
     if (dto) {
-      this.emit(event, await new dto().construct(args));
+      this.emit(event, new dto(args));
     } else {
       this.emit(event, args);
     }

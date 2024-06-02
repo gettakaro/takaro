@@ -125,7 +125,7 @@ export class PlayerOnGameServerService extends TakaroService<
 
     for (const player of players) {
       player.roles.push(
-        await new PlayerRoleAssignmentOutputDTO().construct({
+        new PlayerRoleAssignmentOutputDTO({
           roleId: roles.results[0].id,
           role: roles.results[0],
         })
@@ -197,7 +197,7 @@ export class PlayerOnGameServerService extends TakaroService<
 
     const eventsService = new EventService(this.domainId);
     await eventsService.create(
-      await new EventCreateDTO().construct({
+      new EventCreateDTO({
         eventName: TakaroEvents.PLAYER_CREATED,
         playerId: playerId,
         gameserverId: gameServerId,
@@ -209,7 +209,7 @@ export class PlayerOnGameServerService extends TakaroService<
 
   async setCurrency(id: string, currency: number) {
     try {
-      const res = await this.repo.update(id, await new PlayerOnGameServerUpdateDTO().construct({ currency }));
+      const res = await this.repo.update(id, new PlayerOnGameServerUpdateDTO({ currency }));
       return res;
     } catch (error) {
       if (error instanceof Error) {
@@ -229,24 +229,24 @@ export class PlayerOnGameServerService extends TakaroService<
     const receiverRecord = await this.findOne(receiverId);
     const userId = ctx.data.user;
     await eventsService.create(
-      await new EventCreateDTO().construct({
+      new EventCreateDTO({
         eventName: EVENT_TYPES.CURRENCY_DEDUCTED,
         playerId: senderRecord.playerId,
         gameserverId: senderRecord.gameServerId,
         userId,
-        meta: await new TakaroEventCurrencyDeducted().construct({
+        meta: new TakaroEventCurrencyDeducted({
           amount,
         }),
       })
     );
 
     await eventsService.create(
-      await new EventCreateDTO().construct({
+      new EventCreateDTO({
         eventName: EVENT_TYPES.CURRENCY_ADDED,
         playerId: receiverRecord.playerId,
         gameserverId: receiverRecord.gameServerId,
         userId,
-        meta: await new TakaroEventCurrencyAdded().construct({
+        meta: new TakaroEventCurrencyAdded({
           amount,
         }),
       })
@@ -254,41 +254,44 @@ export class PlayerOnGameServerService extends TakaroService<
   }
 
   async deductCurrency(id: string, amount: number) {
-    await this.repo.deductCurrency(id, amount);
+    const updatedPlayerOnGameServer = await this.repo.deductCurrency(id, amount);
     const eventsService = new EventService(this.domainId);
     const record = await this.findOne(id);
     const userId = ctx.data.user;
 
     await eventsService.create(
-      await new EventCreateDTO().construct({
+      new EventCreateDTO({
         eventName: EVENT_TYPES.CURRENCY_DEDUCTED,
         playerId: record.playerId,
         gameserverId: record.gameServerId,
         userId,
-        meta: await new TakaroEventCurrencyDeducted().construct({
+        meta: new TakaroEventCurrencyDeducted({
           amount,
         }),
       })
     );
+    return updatedPlayerOnGameServer;
   }
 
-  async addCurrency(id: string, amount: number) {
-    await this.repo.addCurrency(id, amount);
+  async addCurrency(id: string, amount: number): Promise<PlayerOnGameserverOutputDTO> {
+    const updatedPlayerOnGameServer = await this.repo.addCurrency(id, amount);
     const eventsService = new EventService(this.domainId);
     const record = await this.findOne(id);
     const userId = ctx.data.user;
 
     await eventsService.create(
-      await new EventCreateDTO().construct({
+      new EventCreateDTO({
         eventName: EVENT_TYPES.CURRENCY_ADDED,
         playerId: record.playerId,
         gameserverId: record.gameServerId,
         userId,
-        meta: await new TakaroEventCurrencyAdded().construct({
+        meta: new TakaroEventCurrencyAdded({
           amount,
         }),
       })
     );
+
+    return updatedPlayerOnGameServer;
   }
   async setOnlinePlayers(gameServerId: string, players: IGamePlayer[]) {
     await this.repo.setOnlinePlayers(gameServerId, players);

@@ -69,7 +69,7 @@ class MockGameserver implements IMockGameServer {
       return null;
     }
 
-    return new IGamePlayer().construct({
+    return new IGamePlayer({
       gameId: player.gameId.toString(),
       name: player.name,
       ip: player.ip,
@@ -86,13 +86,14 @@ class MockGameserver implements IMockGameServer {
     );
 
     return await Promise.all(
-      playerData.map((player) =>
-        new IGamePlayer().construct({
-          gameId: player.gameId.toString(),
-          name: player.name,
-          ip: player.ip,
-          steamId: player.steamId,
-        })
+      playerData.map(
+        (player) =>
+          new IGamePlayer({
+            gameId: player.gameId.toString(),
+            name: player.name,
+            ip: player.ip,
+            steamId: player.steamId,
+          })
       )
     );
   }
@@ -111,7 +112,7 @@ class MockGameserver implements IMockGameServer {
   }
 
   async executeConsoleCommand(rawCommand: string) {
-    const output = await new CommandOutput().construct({
+    const output = new CommandOutput({
       rawResult: 'Unknown command (Command not implemented yet in mock game server 👼)',
       success: false,
     });
@@ -125,7 +126,7 @@ class MockGameserver implements IMockGameServer {
       const players = await this.getPlayers();
       await Promise.all(
         players.map(async (p) => {
-          const event = await new EventPlayerConnected().construct({
+          const event = new EventPlayerConnected({
             player: p,
             msg: `${p.name} connected`,
           });
@@ -147,7 +148,7 @@ class MockGameserver implements IMockGameServer {
 
     if (rawCommand.startsWith('say')) {
       const message = rawCommand.replace('say ', '');
-      await this.sendMessage(message, await new IMessageOptsDTO().construct({}));
+      await this.sendMessage(message, new IMessageOptsDTO({}));
       output.rawResult = `Sent message: ${message}`;
       output.success = true;
     }
@@ -163,10 +164,10 @@ class MockGameserver implements IMockGameServer {
 
     this.socketServer.io.emit(GameEvents.CHAT_MESSAGE, {
       name: this.name,
-      ...(await new EventChatMessage().construct({
+      ...new EventChatMessage({
         msg: message,
         channel: ChatChannel.GLOBAL,
-      })),
+      }),
     });
     await this.sendLog(fullMessage);
   }
@@ -196,10 +197,10 @@ class MockGameserver implements IMockGameServer {
 
     this.socketServer.io.emit(GameEvents.PLAYER_DISCONNECTED, {
       name: this.name,
-      ...(await new EventPlayerDisconnected().construct({
+      ...new EventPlayerDisconnected({
         player,
         msg: `${player.name} disconnected: Kicked ${reason}`,
-      })),
+      }),
     });
   }
 
@@ -210,7 +211,7 @@ class MockGameserver implements IMockGameServer {
       throw new errors.NotFoundError('Player not found');
     }
 
-    const banDto = await new BanDTO().construct({
+    const banDto = new BanDTO({
       player: options.player,
       reason: options.reason,
       expiresAt: options.expiresAt,
@@ -218,10 +219,10 @@ class MockGameserver implements IMockGameServer {
 
     this.socketServer.io.emit(GameEvents.PLAYER_DISCONNECTED, {
       name: this.name,
-      ...(await new EventPlayerDisconnected().construct({
+      ...new EventPlayerDisconnected({
         player,
         msg: `${player.name} disconnected: Banned ${options.reason} until ${options.expiresAt}`,
-      })),
+      }),
     });
 
     if (options.expiresAt) {
@@ -257,7 +258,7 @@ class MockGameserver implements IMockGameServer {
         const banDto = JSON.parse(ban) as BanDTO;
         const player = await this.getPlayer(banDto.player);
         if (!player) return null;
-        return new BanDTO().construct({
+        return new BanDTO({
           ...banDto,
           player,
         });
@@ -269,12 +270,12 @@ class MockGameserver implements IMockGameServer {
 
   async listItems(): Promise<IItemDTO[]> {
     return [
-      await new IItemDTO().construct({
+      new IItemDTO({
         code: 'wood',
         name: 'Wood',
         description: 'Wood is good',
       }),
-      await new IItemDTO().construct({
+      new IItemDTO({
         code: 'stone',
         name: 'Stone',
         description: 'Stone can get you stoned',
@@ -283,7 +284,7 @@ class MockGameserver implements IMockGameServer {
   }
 
   private async sendLog(msg: string) {
-    const logLine = await new EventLogLine().construct({
+    const logLine = new EventLogLine({
       msg,
     });
     this.socketServer.io.emit(GameEvents.LOG_LINE, { name: this.name, ...logLine });
@@ -291,11 +292,11 @@ class MockGameserver implements IMockGameServer {
 
   async getPlayerInventory(/* playerRef: IPlayerReferenceDTO */): Promise<IItemDTO[]> {
     return [
-      await new IItemDTO().construct({
+      new IItemDTO({
         code: 'wood',
         amount: parseInt(faker.random.numeric(2), 10),
       }),
-      await new IItemDTO().construct({
+      new IItemDTO({
         code: 'stone',
         amount: parseInt(faker.random.numeric(2), 10),
       }),

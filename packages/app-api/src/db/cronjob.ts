@@ -52,7 +52,7 @@ export class CronJobRepo extends ITakaroRepo<CronJobModel, CronJobOutputDTO, Cro
 
     return {
       total: result.total,
-      results: await Promise.all(result.results.map((item) => new CronJobOutputDTO().construct(item))),
+      results: await Promise.all(result.results.map((item) => new CronJobOutputDTO(item))),
     };
   }
 
@@ -64,7 +64,7 @@ export class CronJobRepo extends ITakaroRepo<CronJobModel, CronJobOutputDTO, Cro
       throw new errors.NotFoundError(`Record with id ${id} not found`);
     }
 
-    return new CronJobOutputDTO().construct(data);
+    return new CronJobOutputDTO(data);
   }
 
   async create(item: CronJobCreateDTO): Promise<CronJobOutputDTO> {
@@ -93,7 +93,7 @@ export class CronJobRepo extends ITakaroRepo<CronJobModel, CronJobOutputDTO, Cro
     const { query } = await this.getModel();
     const item = await query.updateAndFetchById(id, data.toJSON()).withGraphFetched('function');
 
-    return new CronJobOutputDTO().construct(item);
+    return new CronJobOutputDTO(item);
   }
 
   async assign(id: string, functionId: string) {

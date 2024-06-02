@@ -182,6 +182,67 @@ export interface BaseTakaroEvent {
 /**
  *
  * @export
+ * @interface BuiltinModule
+ */
+export interface BuiltinModule {
+  /**
+   *
+   * @type {string}
+   * @memberof BuiltinModule
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof BuiltinModule
+   */
+  description: string;
+  /**
+   *
+   * @type {string}
+   * @memberof BuiltinModule
+   */
+  configSchema: string;
+  /**
+   *
+   * @type {string}
+   * @memberof BuiltinModule
+   */
+  uiSchema: string;
+  /**
+   *
+   * @type {Array<ICommand>}
+   * @memberof BuiltinModule
+   */
+  commands: Array<ICommand>;
+  /**
+   *
+   * @type {Array<IHook>}
+   * @memberof BuiltinModule
+   */
+  hooks: Array<IHook>;
+  /**
+   *
+   * @type {Array<ICronJob>}
+   * @memberof BuiltinModule
+   */
+  cronJobs: Array<ICronJob>;
+  /**
+   *
+   * @type {Array<IFunction>}
+   * @memberof BuiltinModule
+   */
+  functions: Array<IFunction>;
+  /**
+   *
+   * @type {Array<IPermission>}
+   * @memberof BuiltinModule
+   */
+  permissions: Array<IPermission>;
+}
+/**
+ *
+ * @export
  * @interface CommandArgumentCreateDTO
  */
 export interface CommandArgumentCreateDTO {
@@ -1320,6 +1381,12 @@ export interface EventChatMessage {
   player: IGamePlayer;
   /**
    *
+   * @type {string}
+   * @memberof EventChatMessage
+   */
+  channel: EventChatMessageChannelEnum;
+  /**
+   *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
    * @memberof EventChatMessage
    */
@@ -1331,6 +1398,16 @@ export interface EventChatMessage {
    */
   msg?: string;
 }
+
+export const EventChatMessageChannelEnum = {
+  Global: 'global',
+  Team: 'team',
+  Whisper: 'whisper',
+} as const;
+
+export type EventChatMessageChannelEnum =
+  (typeof EventChatMessageChannelEnum)[keyof typeof EventChatMessageChannelEnum];
+
 /**
  *
  * @export
@@ -3318,6 +3395,124 @@ export type HookUpdateDTOEventTypeEnum = (typeof HookUpdateDTOEventTypeEnum)[key
 /**
  *
  * @export
+ * @interface ICommand
+ */
+export interface ICommand {
+  /**
+   *
+   * @type {string}
+   * @memberof ICommand
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ICommand
+   */
+  function: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ICommand
+   */
+  trigger: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ICommand
+   */
+  helpText?: string;
+  /**
+   *
+   * @type {Array<ICommandArgument>}
+   * @memberof ICommand
+   */
+  arguments?: Array<ICommandArgument>;
+}
+/**
+ *
+ * @export
+ * @interface ICommandArgument
+ */
+export interface ICommandArgument {
+  /**
+   *
+   * @type {string}
+   * @memberof ICommandArgument
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ICommandArgument
+   */
+  type: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ICommandArgument
+   */
+  helpText?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ICommandArgument
+   */
+  defaultValue?: string;
+  /**
+   *
+   * @type {number}
+   * @memberof ICommandArgument
+   */
+  position?: number;
+}
+/**
+ *
+ * @export
+ * @interface ICronJob
+ */
+export interface ICronJob {
+  /**
+   *
+   * @type {string}
+   * @memberof ICronJob
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ICronJob
+   */
+  function: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ICronJob
+   */
+  temporalValue: string;
+}
+/**
+ *
+ * @export
+ * @interface IFunction
+ */
+export interface IFunction {
+  /**
+   *
+   * @type {string}
+   * @memberof IFunction
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IFunction
+   */
+  function: string;
+}
+/**
+ *
+ * @export
  * @interface IGamePlayer
  */
 export interface IGamePlayer {
@@ -3373,6 +3568,63 @@ export interface IGamePlayer {
 /**
  *
  * @export
+ * @interface IHook
+ */
+export interface IHook {
+  /**
+   *
+   * @type {string}
+   * @memberof IHook
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IHook
+   */
+  function: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IHook
+   */
+  eventType: IHookEventTypeEnum;
+}
+
+export const IHookEventTypeEnum = {
+  Log: 'log',
+  PlayerConnected: 'player-connected',
+  PlayerDisconnected: 'player-disconnected',
+  ChatMessage: 'chat-message',
+  PlayerDeath: 'player-death',
+  EntityKilled: 'entity-killed',
+  DiscordMessage: 'discord-message',
+  RoleAssigned: 'role-assigned',
+  RoleRemoved: 'role-removed',
+  RoleCreated: 'role-created',
+  RoleUpdated: 'role-updated',
+  RoleDeleted: 'role-deleted',
+  CommandExecuted: 'command-executed',
+  HookExecuted: 'hook-executed',
+  CronjobExecuted: 'cronjob-executed',
+  CurrencyAdded: 'currency-added',
+  CurrencyDeducted: 'currency-deducted',
+  SettingsSet: 'settings-set',
+  PlayerNewIpDetected: 'player-new-ip-detected',
+  ServerStatusChanged: 'server-status-changed',
+  ModuleCreated: 'module-created',
+  ModuleUpdated: 'module-updated',
+  ModuleDeleted: 'module-deleted',
+  ModuleInstalled: 'module-installed',
+  ModuleUninstalled: 'module-uninstalled',
+  PlayerCreated: 'player-created',
+} as const;
+
+export type IHookEventTypeEnum = (typeof IHookEventTypeEnum)[keyof typeof IHookEventTypeEnum];
+
+/**
+ *
+ * @export
  * @interface IItemDTO
  */
 export interface IItemDTO {
@@ -3413,6 +3665,37 @@ export interface IMessageOptsDTO {
    * @memberof IMessageOptsDTO
    */
   recipient: IPlayerReferenceDTO;
+}
+/**
+ *
+ * @export
+ * @interface IPermission
+ */
+export interface IPermission {
+  /**
+   *
+   * @type {string}
+   * @memberof IPermission
+   */
+  permission: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IPermission
+   */
+  description: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IPermission
+   */
+  friendlyName: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof IPermission
+   */
+  canHaveCount?: boolean;
 }
 /**
  *
@@ -4147,6 +4430,25 @@ export interface ModuleCreateInternalDTO {
    * @memberof ModuleCreateInternalDTO
    */
   permissions?: Array<PermissionCreateDTO>;
+}
+/**
+ *
+ * @export
+ * @interface ModuleExportDTOAPI
+ */
+export interface ModuleExportDTOAPI {
+  /**
+   *
+   * @type {BuiltinModule}
+   * @memberof ModuleExportDTOAPI
+   */
+  data: BuiltinModule;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof ModuleExportDTOAPI
+   */
+  meta: MetadataOutput;
 }
 /**
  *
@@ -5786,6 +6088,24 @@ export interface PlayerUpdateDTO {
    * @memberof PlayerUpdateDTO
    */
   name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerUpdateDTO
+   */
+  steamId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerUpdateDTO
+   */
+  xboxLiveId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerUpdateDTO
+   */
+  epicOnlineServicesId?: string;
 }
 /**
  *
@@ -14599,6 +14919,39 @@ export const ModuleApiAxiosParamCreator = function (configuration?: Configuratio
     },
     /**
      *  Required permissions: `READ_MODULES`
+     * @summary Export
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    moduleControllerExport: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('moduleControllerExport', 'id', id);
+      const localVarPath = `/module/{id}/export`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `READ_MODULES`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -14624,6 +14977,43 @@ export const ModuleApiAxiosParamCreator = function (configuration?: Configuratio
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Import
+     * @param {BuiltinModule} [builtinModule] BuiltinModule
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    moduleControllerImport: async (
+      builtinModule?: BuiltinModule,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/module/import`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(builtinModule, localVarRequestOptions, configuration);
 
       return {
         url: toPathString(localVarUrlObj),
@@ -14775,6 +15165,28 @@ export const ModuleApiFp = function (configuration?: Configuration) {
     },
     /**
      *  Required permissions: `READ_MODULES`
+     * @summary Export
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async moduleControllerExport(
+      id: string,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ModuleExportDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.moduleControllerExport(id, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['ModuleApi.moduleControllerExport']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `READ_MODULES`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -14787,6 +15199,28 @@ export const ModuleApiFp = function (configuration?: Configuration) {
       const localVarAxiosArgs = await localVarAxiosParamCreator.moduleControllerGetOne(id, options);
       const index = configuration?.serverIndex ?? 0;
       const operationBasePath = operationServerMap['ModuleApi.moduleControllerGetOne']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Import
+     * @param {BuiltinModule} [builtinModule] BuiltinModule
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async moduleControllerImport(
+      builtinModule?: BuiltinModule,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.moduleControllerImport(builtinModule, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['ModuleApi.moduleControllerImport']?.[index]?.url;
       return (axios, basePath) =>
         createRequestFunction(
           localVarAxiosArgs,
@@ -14885,6 +15319,16 @@ export const ModuleApiFactory = function (configuration?: Configuration, basePat
     },
     /**
      *  Required permissions: `READ_MODULES`
+     * @summary Export
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    moduleControllerExport(id: string, options?: any): AxiosPromise<ModuleExportDTOAPI> {
+      return localVarFp.moduleControllerExport(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `READ_MODULES`
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -14892,6 +15336,16 @@ export const ModuleApiFactory = function (configuration?: Configuration, basePat
      */
     moduleControllerGetOne(id: string, options?: any): AxiosPromise<ModuleOutputDTOAPI> {
       return localVarFp.moduleControllerGetOne(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `MANAGE_MODULES`
+     * @summary Import
+     * @param {BuiltinModule} [builtinModule] BuiltinModule
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    moduleControllerImport(builtinModule?: BuiltinModule, options?: any): AxiosPromise<void> {
+      return localVarFp.moduleControllerImport(builtinModule, options).then((request) => request(axios, basePath));
     },
     /**
      *  Required permissions: `MANAGE_MODULES`
@@ -14961,6 +15415,20 @@ export class ModuleApi extends BaseAPI {
 
   /**
    *  Required permissions: `READ_MODULES`
+   * @summary Export
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ModuleApi
+   */
+  public moduleControllerExport(id: string, options?: RawAxiosRequestConfig) {
+    return ModuleApiFp(this.configuration)
+      .moduleControllerExport(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `READ_MODULES`
    * @summary Get one
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -14970,6 +15438,20 @@ export class ModuleApi extends BaseAPI {
   public moduleControllerGetOne(id: string, options?: RawAxiosRequestConfig) {
     return ModuleApiFp(this.configuration)
       .moduleControllerGetOne(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `MANAGE_MODULES`
+   * @summary Import
+   * @param {BuiltinModule} [builtinModule] BuiltinModule
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ModuleApi
+   */
+  public moduleControllerImport(builtinModule?: BuiltinModule, options?: RawAxiosRequestConfig) {
+    return ModuleApiFp(this.configuration)
+      .moduleControllerImport(builtinModule, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

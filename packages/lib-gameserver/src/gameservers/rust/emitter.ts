@@ -133,14 +133,14 @@ export class RustEmitter extends TakaroEmitter {
 
     this.emit(
       GameEvents.LOG_LINE,
-      await new EventLogLine().construct({
+      new EventLogLine({
         msg: e.Message,
       })
     );
   }
 
   private async handlePlayerConnected(data: Record<string, unknown>): Promise<EventPlayerConnected> {
-    const event = await new EventPlayerConnected().construct(data);
+    const event = new EventPlayerConnected(data);
     if (event.player.steamId) {
       event.player.gameId = event.player.steamId;
     }
@@ -148,7 +148,7 @@ export class RustEmitter extends TakaroEmitter {
   }
 
   private async handlePlayerDisconnected(data: Record<string, unknown>): Promise<EventPlayerDisconnected> {
-    const event = await new EventPlayerDisconnected().construct(data);
+    const event = new EventPlayerDisconnected(data);
     if (event.player.steamId) {
       event.player.gameId = event.player.steamId;
     }
@@ -157,7 +157,7 @@ export class RustEmitter extends TakaroEmitter {
 
   private async handleChatMessage(data: Record<string, unknown>): Promise<EventChatMessage> {
     delete data.channel;
-    const event = await new EventChatMessage().construct(data);
+    const event = new EventChatMessage(data);
     if (event.player) {
       if (event.player.steamId) {
         event.player.gameId = event.player.steamId;
@@ -168,7 +168,7 @@ export class RustEmitter extends TakaroEmitter {
   }
 
   private async handlePlayerDeath(data: Record<string, unknown>): Promise<EventPlayerDeath> {
-    const event = await new EventPlayerDeath().construct(data);
+    const event = new EventPlayerDeath(data);
     if (event.player.steamId) {
       event.player.gameId = event.player.steamId;
     }
@@ -179,7 +179,7 @@ export class RustEmitter extends TakaroEmitter {
   }
 
   private async handleEntityKilled(data: Record<string, unknown>): Promise<EventEntityKilled> {
-    const event = await new EventEntityKilled().construct(data);
+    const event = new EventEntityKilled(data);
     if (event.player.steamId) {
       event.player.gameId = event.player.steamId;
     }

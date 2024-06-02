@@ -1,6 +1,6 @@
-import { BuiltinModule } from '../../BuiltinModule.js';
+import { BuiltinModule, ICronJob } from '../../BuiltinModule.js';
 
-export class ServerMessages extends BuiltinModule {
+export class ServerMessages extends BuiltinModule<ServerMessages> {
   constructor() {
     super(
       'serverMessages',
@@ -30,11 +30,11 @@ export class ServerMessages extends BuiltinModule {
     );
 
     this.cronJobs = [
-      {
+      new ICronJob({
         name: 'Automated message',
         temporalValue: '*/30 * * * *',
-        function: '',
-      },
+        function: this.loadFn('cronJobs', 'Automated message'),
+      }),
     ];
   }
 }

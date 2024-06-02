@@ -162,7 +162,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     const roles = await roleService.find({ filters: { name: ['Player'] } });
 
     player.roleAssignments.push(
-      await new PlayerRoleAssignmentOutputDTO().construct({
+      new PlayerRoleAssignmentOutputDTO({
         playerId: player.id,
         roleId: roles.results[0].id,
         role: roles.results[0],
@@ -187,9 +187,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     const created = await this.repo.create(item);
 
     const eventsService = new EventService(this.domainId);
-    await eventsService.create(
-      await new EventCreateDTO().construct({ eventName: TakaroEvents.PLAYER_CREATED, playerId: created.id })
-    );
+    await eventsService.create(new EventCreateDTO({ eventName: TakaroEvents.PLAYER_CREATED, playerId: created.id }));
 
     return this.findOne(created.id);
   }
@@ -232,7 +230,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
         gameServerId,
       });
       player = await this.create(
-        await new PlayerCreateDTO().construct({
+        new PlayerCreateDTO({
           name: gamePlayer.name,
           steamId: gamePlayer.steamId,
           epicOnlineServicesId: gamePlayer.epicOnlineServicesId,
@@ -246,7 +244,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
       // Also, update any missing IDs and names
       await this.update(
         player.id,
-        await new PlayerUpdateDTO().construct({
+        new PlayerUpdateDTO({
           name: gamePlayer.name,
           steamId: gamePlayer.steamId,
           xboxLiveId: gamePlayer.xboxLiveId,
@@ -278,11 +276,11 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     this.log.info('Assigning role to player', { roleId, player: targetId, gameserverId, expiresAt });
     await this.repo.assignRole(targetId, roleId, gameserverId, expiresAt);
     await eventService.create(
-      await new EventCreateDTO().construct({
+      new EventCreateDTO({
         eventName: EVENT_TYPES.ROLE_ASSIGNED,
         gameserverId,
         playerId: targetId,
-        meta: await new TakaroEventRoleAssigned().construct({ role }),
+        meta: new TakaroEventRoleAssigned({ role }),
       })
     );
   }
@@ -296,11 +294,11 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     if (!role) throw new errors.NotFoundError(`Role ${roleId} not found`);
     await this.repo.removeRole(targetId, roleId, gameserverId);
     await eventService.create(
-      await new EventCreateDTO().construct({
+      new EventCreateDTO({
         eventName: EVENT_TYPES.ROLE_REMOVED,
         playerId: targetId,
         gameserverId,
-        meta: await new TakaroEventRoleRemoved().construct({ role: { id: role.id, name: role.name } }),
+        meta: new TakaroEventRoleRemoved({ role: { id: role.id, name: role.name } }),
       })
     );
   }
@@ -369,11 +367,11 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     if (newIpRecord) {
       const eventsService = new EventService(this.domainId);
       await eventsService.create(
-        await new EventCreateDTO().construct({
+        new EventCreateDTO({
           gameserverId: gameServerId,
           playerId: playerId,
           eventName: EVENT_TYPES.PLAYER_NEW_IP_DETECTED,
-          meta: await new TakaroEventPlayerNewIpDetected().construct({
+          meta: new TakaroEventPlayerNewIpDetected({
             ip: ip,
             city: newIpRecord.city,
             country: newIpRecord.country,

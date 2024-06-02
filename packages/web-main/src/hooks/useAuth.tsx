@@ -1,50 +1,63 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { UserOutputWithRolesDTO } from '@takaro/apiclient';
-import { createContext, useCallback, useContext, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useOry } from './useOry';
 import * as Sentry from '@sentry/react';
-import { flushSync } from 'react-dom';
 
 export interface IAuthContext {
   logOut: () => Promise<void>;
   isAuthenticated: boolean;
   session: UserOutputWithRolesDTO;
-  setSession: (session: UserOutputWithRolesDTO) => void;
+  login: (user: UserOutputWithRolesDTO) => void;
 }
 export const AuthContext = createContext<IAuthContext | null>(null);
+
+function getStoredSession(): UserOutputWithRolesDTO | null {
+  const session = localStorage.getItem('session');
+  return session ? JSON.parse(session) : null;
+}
+
+function setStoredSession(session: UserOutputWithRolesDTO | null) {
+  if (session) {
+    localStorage.setItem('session', JSON.stringify(session));
+  } else {
+    localStorage.removeItem('session');
+  }
+}
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
   const { oryClient } = useOry();
-  const [user, setUser] = useState<UserOutputWithRolesDTO>(() => {
-    const savedSession = sessionStorage.getItem('userSession');
-    return savedSession ? JSON.parse(savedSession) : undefined;
-  });
+  const [user, setUser] = useState<UserOutputWithRolesDTO | null>(getStoredSession());
+
   const isAuthenticated = !!user;
 
   const logOut = useCallback(async () => {
     const logoutFlowRes = await oryClient.createBrowserLogoutFlow();
-    localStorage.removeItem('gameServerId');
-    sessionStorage.removeItem('userSession');
+    setStoredSession(null);
+    setUser(null);
     queryClient.clear();
     window.location.href = logoutFlowRes.data.logout_url;
+    // Extra clean up is done in /logout-return
     return Promise.resolve();
   }, []);
 
   // Set session in both state and localStorage
-  const setSession = useCallback((session: UserOutputWithRolesDTO) => {
-    flushSync(() => {
-      sessionStorage.setItem('userSession', JSON.stringify(session));
-      Sentry.setUser({ id: session.id, email: session.email, username: session.name });
-      setUser(session);
-    });
+  const login = useCallback((session: UserOutputWithRolesDTO) => {
+    setStoredSession(session);
+    Sentry.setUser({ id: session.id, email: session.email, username: session.name });
+    setUser(session);
+  }, []);
+
+  useEffect(() => {
+    setUser(getStoredSession());
   }, []);
 
   return (
     <AuthContext.Provider
       value={{
-        session: user,
-        setSession: setSession,
+        session: user as UserOutputWithRolesDTO,
+        login: login,
         logOut,
         isAuthenticated,
       }}

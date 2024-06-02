@@ -222,13 +222,13 @@ export class GameServerService extends TakaroService<
 
       if (currentServer.reachable !== reachability.connectable) {
         this.log.info(`Updating reachability for ${id} to ${reachability.connectable}`);
-        await this.update(id, await new GameServerUpdateDTO().construct({ reachable: reachability.connectable }));
+        await this.update(id, new GameServerUpdateDTO({ reachable: reachability.connectable }));
         const eventService = new EventService(this.domainId);
         await eventService.create(
-          await new EventCreateDTO().construct({
+          new EventCreateDTO({
             eventName: HookEvents.SERVER_STATUS_CHANGED,
             gameserverId: id,
-            meta: await new TakaroEventServerStatusChanged().construct({
+            meta: new TakaroEventServerStatusChanged({
               status: reachability.connectable ? 'online' : 'offline',
               details: reachability.reason,
             }),
@@ -250,7 +250,7 @@ export class GameServerService extends TakaroService<
     const mod = await moduleService.findOne(moduleId);
     const installation = await this.repo.getModuleInstallation(gameserverId, moduleId);
 
-    return new ModuleInstallationOutputDTO().construct({
+    return new ModuleInstallationOutputDTO({
       gameserverId,
       moduleId,
       module: mod,
@@ -269,7 +269,7 @@ export class GameServerService extends TakaroService<
     }
 
     if (!installDto) {
-      installDto = await new ModuleInstallDTO().construct({
+      installDto = new ModuleInstallDTO({
         userConfig: JSON.stringify({}),
         systemConfig: JSON.stringify({}),
       });
@@ -306,11 +306,11 @@ export class GameServerService extends TakaroService<
 
     const eventsService = new EventService(this.domainId);
     await eventsService.create(
-      await new EventCreateDTO().construct({
+      new EventCreateDTO({
         eventName: EVENT_TYPES.MODULE_INSTALLED,
         gameserverId,
         moduleId: moduleId,
-        meta: await new TakaroEventModuleInstalled().construct({
+        meta: new TakaroEventModuleInstalled({
           systemConfig: installDto.systemConfig,
           userConfig: installDto.userConfig,
         }),
@@ -330,15 +330,15 @@ export class GameServerService extends TakaroService<
 
     const eventsService = new EventService(this.domainId);
     await eventsService.create(
-      await new EventCreateDTO().construct({
+      new EventCreateDTO({
         eventName: EVENT_TYPES.MODULE_UNINSTALLED,
         gameserverId,
         moduleId: moduleId,
-        meta: await new TakaroEventModuleUninstalled().construct(),
+        meta: await new TakaroEventModuleUninstalled(),
       })
     );
 
-    return new ModuleInstallationOutputDTO().construct({
+    return new ModuleInstallationOutputDTO({
       gameserverId,
       moduleId,
     });
@@ -393,7 +393,7 @@ export class GameServerService extends TakaroService<
             throw new errors.NotImplementedError();
         }
 
-        return new GameServerTypesOutputDTO().construct({
+        return new GameServerTypesOutputDTO({
           type: t,
           connectionInfoSchema: JSON.stringify(schema),
         });
@@ -420,14 +420,14 @@ export class GameServerService extends TakaroService<
     await gameInstance.sendMessage(message, opts);
 
     const eventService = new EventService(this.domainId);
-    const meta = await new EventChatMessage().construct({
+    const meta = new EventChatMessage({
       msg: message,
       channel: ChatChannel.GLOBAL,
       timestamp: new Date().toISOString(),
     });
 
     await eventService.create(
-      await new EventCreateDTO().construct({
+      new EventCreateDTO({
         eventName: GameEvents.CHAT_MESSAGE,
         gameserverId: gameServerId,
         meta,
@@ -450,7 +450,7 @@ export class GameServerService extends TakaroService<
     const player = await this.pogService.getPog(playerId, gameServerId);
     const gameInstance = await this.getGame(gameServerId);
     return gameInstance.banPlayer(
-      await new BanDTO().construct({
+      new BanDTO({
         player,
         reason,
         expiresAt,
@@ -497,7 +497,7 @@ export class GameServerService extends TakaroService<
 
     await playerOnGameServerService.update(
       pog.id,
-      await new PlayerOnGameServerUpdateDTO().construct({
+      new PlayerOnGameServerUpdateDTO({
         positionX: location.x,
         positionY: location.y,
         positionZ: location.z,
@@ -515,7 +515,7 @@ export class GameServerService extends TakaroService<
     const toInsert = await Promise.all(
       items.map((item) => {
         delete item.amount;
-        return new ItemCreateDTO().construct({
+        return new ItemCreateDTO({
           ...item,
           gameserverId: gameServerId,
         });

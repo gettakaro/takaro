@@ -1,7 +1,7 @@
-import { BuiltinModule } from '../../BuiltinModule.js';
+import { BuiltinModule, IHook } from '../../BuiltinModule.js';
 import { HookEvents } from '../../dto/index.js';
 
-export class ChatBridge extends BuiltinModule {
+export class ChatBridge extends BuiltinModule<ChatBridge> {
   constructor() {
     super(
       'chatBridge',
@@ -34,26 +34,26 @@ export class ChatBridge extends BuiltinModule {
     );
 
     this.hooks = [
-      {
+      new IHook({
         eventType: HookEvents.DISCORD_MESSAGE,
         name: 'DiscordToGame',
-        function: '',
-      },
-      {
+        function: this.loadFn('hooks', 'DiscordToGame'),
+      }),
+      new IHook({
         eventType: HookEvents.CHAT_MESSAGE,
         name: 'GameToDiscord',
-        function: '',
-      },
-      {
+        function: this.loadFn('hooks', 'GameToDiscord'),
+      }),
+      new IHook({
         eventType: HookEvents.PLAYER_CONNECTED,
         name: 'PlayerConnected',
-        function: '',
-      },
-      {
+        function: this.loadFn('hooks', 'PlayerConnected'),
+      }),
+      new IHook({
         eventType: HookEvents.PLAYER_DISCONNECTED,
         name: 'PlayerDisconnected',
-        function: '',
-      },
+        function: this.loadFn('hooks', 'PlayerDisconnected'),
+      }),
     ];
   }
 }

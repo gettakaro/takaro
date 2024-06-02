@@ -3,7 +3,7 @@ import { randomUUID } from 'crypto';
 import { CommandArgumentOutputDTO, CommandOutputDTO } from '../../service/CommandService.js';
 import { parseCommand } from '../commandParser.js';
 
-const MockArgument_name = await new CommandArgumentOutputDTO().construct({
+const MockArgument_name = new CommandArgumentOutputDTO({
   name: 'name',
   position: 0,
   type: 'string',
@@ -14,7 +14,7 @@ const MockArgument_name = await new CommandArgumentOutputDTO().construct({
   domain: 'mock domain',
 });
 
-const MockArgument_public = await new CommandArgumentOutputDTO().construct({
+const MockArgument_public = new CommandArgumentOutputDTO({
   name: 'public',
   defaultValue: 'false',
   position: 1,
@@ -26,7 +26,7 @@ const MockArgument_public = await new CommandArgumentOutputDTO().construct({
   domain: 'mock domain',
 });
 
-const MockArgument_number = await new CommandArgumentOutputDTO().construct({
+const MockArgument_number = new CommandArgumentOutputDTO({
   name: 'number',
   defaultValue: '42',
   position: 2,
@@ -38,7 +38,7 @@ const MockArgument_number = await new CommandArgumentOutputDTO().construct({
   domain: 'mock domain',
 });
 
-const MockTeleportCommand = await new CommandOutputDTO().construct({
+const MockTeleportCommand = new CommandOutputDTO({
   id: randomUUID(),
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),

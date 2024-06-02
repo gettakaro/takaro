@@ -2,7 +2,8 @@ import { EventOutputDTO } from '@takaro/apiclient';
 import { Skeleton, styled } from '@takaro/lib-components';
 import { Player } from 'components/Player';
 import { useSocket } from 'hooks/useSocket';
-import { playerOnGameServersQueryOptions, playersOptions } from 'queries/players/queries';
+import { playersOptions } from 'queries/players';
+import { playersOnGameServersQueryOptions } from 'queries/pogs';
 import { FC, useEffect } from 'react';
 import { StyledCard } from './style';
 import { useQuery } from '@tanstack/react-query';
@@ -27,7 +28,7 @@ export const OnlinePlayersCard: FC = () => {
   const { socket } = useSocket();
 
   const { data, isLoading, refetch } = useQuery(
-    playerOnGameServersQueryOptions({
+    playersOnGameServersQueryOptions({
       filters: {
         online: [true],
         gameServerId: [gameServerId],

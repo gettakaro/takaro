@@ -110,9 +110,7 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
     return {
       total: result.total,
       results: await Promise.all(
-        result.results.map(async (item) =>
-          new PlayerOnGameserverOutputWithRolesDTO().construct(await this.findOne(item.id))
-        )
+        result.results.map(async (item) => new PlayerOnGameserverOutputWithRolesDTO(await this.findOne(item.id)))
       ),
     };
   }
@@ -137,13 +135,13 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
     const uniqueRoles = filteredRoles.filter(
       (role, index, self) => self.findIndex((r) => r.roleId === role.roleId) === index
     );
-    const roleDTOs = await Promise.all(uniqueRoles.map((role) => new PlayerRoleAssignmentOutputDTO().construct(role)));
+    const roleDTOs = await Promise.all(uniqueRoles.map((role) => new PlayerRoleAssignmentOutputDTO(role)));
 
     data.roles = roleDTOs;
 
     data.inventory = await this.getInventory(data.id);
 
-    return new PlayerOnGameserverOutputWithRolesDTO().construct(data);
+    return new PlayerOnGameserverOutputWithRolesDTO(data);
   }
 
   async create(item: PlayerOnGameServerCreateDTO): Promise<PlayerOnGameserverOutputDTO> {
@@ -154,7 +152,7 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
         domain: this.domainId,
       })
       .returning('*');
-    return new PlayerOnGameserverOutputDTO().construct(player);
+    return new PlayerOnGameserverOutputDTO(player);
   }
 
   async delete(id: string): Promise<boolean> {
@@ -276,7 +274,7 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
     });
   }
 
-  async deductCurrency(playerId: string, amount: number) {
+  async deductCurrency(playerId: string, amount: number): Promise<PlayerOnGameserverOutputDTO> {
     const { model } = await this.getModel();
 
     await model.transaction(async (trx) => {
@@ -294,9 +292,10 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
         throw new errors.BadRequestError('Player not found');
       }
     });
+    return this.findOne(playerId);
   }
 
-  async addCurrency(playerId: string, amount: number) {
+  async addCurrency(playerId: string, amount: number): Promise<PlayerOnGameserverOutputDTO> {
     const { model } = await this.getModel();
 
     await model.transaction(async (trx) => {
@@ -314,6 +313,7 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
         throw new errors.BadRequestError('Player not found');
       }
     });
+    return this.findOne(playerId);
   }
 
   async getInventory(playerId: string): Promise<IItemDTO[]> {
@@ -324,7 +324,7 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
       .join('items', 'items.id', '=', 'playerInventory.itemId')
       .where('playerInventory.playerId', playerId);
 
-    return Promise.all(items.map((item) => new IItemDTO().construct({ ...item, amount: item.quantity })));
+    return Promise.all(items.map((item) => new IItemDTO({ ...item, amount: item.quantity })));
   }
 
   async syncInventory(playerId: string, gameServerId: string, items: IItemDTO[]) {

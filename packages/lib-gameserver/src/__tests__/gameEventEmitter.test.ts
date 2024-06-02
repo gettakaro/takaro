@@ -10,7 +10,7 @@ describe('GameEventEmitter', () => {
    * We use @ts-expect-error so that if the compiler fails to mark these as errors, we'll know instantly
    */
   it('Has a typed event emitter', async () => {
-    const gameServer = new Mock(await new MockConnectionInfo().construct({}));
+    const gameServer = new Mock(new MockConnectionInfo({}));
     const emitter = await gameServer.getEventEmitter();
 
     const listenerSpy = sandbox.spy();

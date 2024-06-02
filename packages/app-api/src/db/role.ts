@@ -87,7 +87,7 @@ export class RoleRepo extends ITakaroRepo<RoleModel, RoleOutputDTO, ServiceRoleC
 
     if (!data.permissions) data.permissions = [];
 
-    return new RoleOutputDTO().construct({
+    return new RoleOutputDTO({
       ...data,
       permissions: await Promise.all(
         data.permissions
@@ -96,12 +96,13 @@ export class RoleRepo extends ITakaroRepo<RoleModel, RoleOutputDTO, ServiceRoleC
             if (a.permission.permission > b.permission.permission) return 1;
             return 0;
           })
-          .map(async (c) =>
-            new PermissionOnRoleDTO().construct({
-              ...c,
-              permission: await new PermissionOutputDTO().construct(c.permission),
-              count: c.count || 0,
-            })
+          .map(
+            async (c) =>
+              new PermissionOnRoleDTO({
+                ...c,
+                permission: new PermissionOutputDTO(c.permission),
+                count: c.count || 0,
+              })
           )
       ),
     });
@@ -218,6 +219,6 @@ export class RoleRepo extends ITakaroRepo<RoleModel, RoleOutputDTO, ServiceRoleC
 
     const res = await permissionModel.query().where({ moduleId: null });
 
-    return await Promise.all(res.map((c) => new PermissionOutputDTO().construct(c)));
+    return await Promise.all(res.map((c) => new PermissionOutputDTO(c)));
   }
 }
