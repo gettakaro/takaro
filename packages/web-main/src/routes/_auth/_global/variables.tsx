@@ -70,10 +70,10 @@ function Component() {
       enableSorting: true,
     }),
     columnHelper.accessor('gameServerId', {
-      header: 'Game Server',
-      id: 'gameServerName',
+      header: 'Game Server ID',
+      id: 'gameServerId',
       meta: { dataType: 'uuid' },
-      cell: (info) => info.row.original.gameServer?.name,
+      cell: (info) => info.row.original.gameServer?.id,
       enableColumnFilter: true,
       enableSorting: true,
     }),
