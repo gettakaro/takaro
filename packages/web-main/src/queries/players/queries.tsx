@@ -1,13 +1,6 @@
 import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getApiClient } from 'util/getApiClient';
-import {
-  APIOutput,
-  PlayerOnGameServerSearchInputDTO,
-  PlayerOnGameserverOutputArrayDTOAPI,
-  PlayerOutputArrayDTOAPI,
-  PlayerOutputWithRolesDTO,
-  PlayerSearchInputDTO,
-} from '@takaro/apiclient';
+import { APIOutput, PlayerOutputArrayDTOAPI, PlayerOutputWithRolesDTO, PlayerSearchInputDTO } from '@takaro/apiclient';
 import { AxiosError } from 'axios';
 import { mutationWrapper, queryParamsToArray } from 'queries/util';
 
@@ -15,8 +8,6 @@ export const playerKeys = {
   all: ['players'] as const,
   list: () => [...playerKeys.all, 'list'] as const,
   detail: (id: string) => [...playerKeys.all, 'detail', id] as const,
-  pogs: ['playerOnGameServers'] as const,
-  pogsList: () => [...playerKeys.pogs, 'list'] as const,
 };
 
 export const playersOptions = (queryParams: PlayerSearchInputDTO = {}) =>
@@ -29,12 +20,6 @@ export const playerQueryOptions = (playerId: string) =>
   queryOptions<PlayerOutputWithRolesDTO, AxiosError<PlayerOutputWithRolesDTO>>({
     queryKey: playerKeys.detail(playerId),
     queryFn: async () => (await getApiClient().player.playerControllerGetOne(playerId)).data.data,
-  });
-
-export const playerOnGameServersQueryOptions = (queryParams: PlayerOnGameServerSearchInputDTO) =>
-  queryOptions<PlayerOnGameserverOutputArrayDTOAPI, AxiosError<PlayerOnGameserverOutputArrayDTOAPI>>({
-    queryKey: [...playerKeys.pogsList(), { queryParams }],
-    queryFn: async () => (await getApiClient().playerOnGameserver.playerOnGameServerControllerSearch(queryParams)).data,
   });
 
 interface IPlayerRoleAssign {

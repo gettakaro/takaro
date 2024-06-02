@@ -274,7 +274,7 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
     });
   }
 
-  async deductCurrency(playerId: string, amount: number) {
+  async deductCurrency(playerId: string, amount: number): Promise<PlayerOnGameserverOutputDTO> {
     const { model } = await this.getModel();
 
     await model.transaction(async (trx) => {
@@ -292,9 +292,10 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
         throw new errors.BadRequestError('Player not found');
       }
     });
+    return this.findOne(playerId);
   }
 
-  async addCurrency(playerId: string, amount: number) {
+  async addCurrency(playerId: string, amount: number): Promise<PlayerOnGameserverOutputDTO> {
     const { model } = await this.getModel();
 
     await model.transaction(async (trx) => {
@@ -312,6 +313,7 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
         throw new errors.BadRequestError('Player not found');
       }
     });
+    return this.findOne(playerId);
   }
 
   async getInventory(playerId: string): Promise<IItemDTO[]> {

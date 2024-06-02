@@ -254,7 +254,7 @@ export class PlayerOnGameServerService extends TakaroService<
   }
 
   async deductCurrency(id: string, amount: number) {
-    await this.repo.deductCurrency(id, amount);
+    const updatedPlayerOnGameServer = await this.repo.deductCurrency(id, amount);
     const eventsService = new EventService(this.domainId);
     const record = await this.findOne(id);
     const userId = ctx.data.user;
@@ -270,10 +270,11 @@ export class PlayerOnGameServerService extends TakaroService<
         }),
       })
     );
+    return updatedPlayerOnGameServer;
   }
 
-  async addCurrency(id: string, amount: number) {
-    await this.repo.addCurrency(id, amount);
+  async addCurrency(id: string, amount: number): Promise<PlayerOnGameserverOutputDTO> {
+    const updatedPlayerOnGameServer = await this.repo.addCurrency(id, amount);
     const eventsService = new EventService(this.domainId);
     const record = await this.findOne(id);
     const userId = ctx.data.user;
@@ -289,6 +290,8 @@ export class PlayerOnGameServerService extends TakaroService<
         }),
       })
     );
+
+    return updatedPlayerOnGameServer;
   }
   async setOnlinePlayers(gameServerId: string, players: IGamePlayer[]) {
     await this.repo.setOnlinePlayers(gameServerId, players);
