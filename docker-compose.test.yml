@@ -184,3 +184,7 @@ services:
       GRAFANA_CLOUD_API_USER: ${GRAFANA_CLOUD_API_USER}
       GRAFANA_CLOUD_API_KEY: ${GRAFANA_CLOUD_API_KEY}
       
+networks:
+  takaro:
+    external:
+      name: takaro
