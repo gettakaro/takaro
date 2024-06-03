@@ -292,7 +292,7 @@ async giveItem(player: IPlayerReferenceDTO, item: string, amount: number = 1, qu
 
     const mapSdtdItemToDto = async (item: InventoryItem | null) => {
       if (!item) return null;
-      return new IItemDTO({ code: item.name, amount: item.count });
+      return item.quality ? new IItemDTO({ code: item.name, amount: item.count, quality: item.quality }) : new IItemDTO({ code: item.name, amount: item.count });
     };
 
     const dtos = await Promise.all([
