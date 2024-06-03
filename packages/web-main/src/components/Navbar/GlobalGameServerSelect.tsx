@@ -29,7 +29,8 @@ export const GlobalGameServerSelect: FC<GameServerSelectNavProps> = ({
   });
 
   useEffect(() => {
-    const subscription = watch(() => {
+    const subscription = watch((value) => {
+      console.log('watching', value);
       // a new gameserver was selected
       const params = matchRoute({
         to: '/gameserver/$gameServerId',
@@ -40,14 +41,14 @@ export const GlobalGameServerSelect: FC<GameServerSelectNavProps> = ({
         navigate({
           to: `/gameserver/$gameServerId/${params['**']}`,
           params: {
-            gameServerId: params.gameServerId,
+            gameServerId: value.gameServerId,
           },
           startTransition: true,
         });
       }
     });
     return () => subscription.unsubscribe();
-  }, [watch('gameServerId')]);
+  }, [watch('gameServerId'), matchRoute]);
 
   return <GameServerSelect control={control} name="gameServerId" label="" />;
 };
