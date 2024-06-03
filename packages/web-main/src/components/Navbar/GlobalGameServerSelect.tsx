@@ -30,8 +30,6 @@ export const GlobalGameServerSelect: FC<GameServerSelectNavProps> = ({
 
   useEffect(() => {
     const subscription = watch((value) => {
-      console.log('watching', value);
-      // a new gameserver was selected
       const params = matchRoute({
         to: '/gameserver/$gameServerId',
         fuzzy: true,
