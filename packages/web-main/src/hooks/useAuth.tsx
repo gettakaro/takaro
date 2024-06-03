@@ -3,6 +3,14 @@ import { UserOutputWithRolesDTO } from '@takaro/apiclient';
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { useOry } from './useOry';
 import * as Sentry from '@sentry/react';
+import { DateTime } from 'luxon';
+import { getApiClient } from 'util/getApiClient';
+import { redirect } from '@tanstack/react-router';
+
+interface ExpirableSession {
+  session: UserOutputWithRolesDTO;
+  expiresAt: string;
+}
 
 export interface IAuthContext {
   logOut: () => Promise<void>;
@@ -13,13 +21,27 @@ export interface IAuthContext {
 export const AuthContext = createContext<IAuthContext | null>(null);
 
 function getStoredSession(): UserOutputWithRolesDTO | null {
-  const session = localStorage.getItem('session');
-  return session ? JSON.parse(session) : null;
+  const expirableSessionString = localStorage.getItem('session');
+
+  if (!expirableSessionString) {
+    return null;
+  }
+
+  const expirableSession: ExpirableSession = JSON.parse(expirableSessionString);
+  if (DateTime.fromISO(expirableSession.expiresAt ?? DateTime.now()).diffNow().milliseconds < 0) {
+    localStorage.removeItem('session');
+    return null;
+  }
+  return expirableSession.session;
 }
 
 function setStoredSession(session: UserOutputWithRolesDTO | null) {
   if (session) {
-    localStorage.setItem('session', JSON.stringify(session));
+    const expirableSession: ExpirableSession = {
+      session,
+      expiresAt: DateTime.now().plus({ minutes: 5 }).toISO(),
+    };
+    localStorage.setItem('session', JSON.stringify(expirableSession));
   } else {
     localStorage.removeItem('session');
   }
@@ -49,9 +71,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(session);
   }, []);
 
+  const refreshSession = useCallback(async () => {
+    try {
+      const response = await getApiClient().user.userControllerMe({
+        headers: {
+          'Cache-Control': 'no-cache',
+        },
+      });
+      const newSession = response.data.data;
+      login(newSession);
+    } catch (error) {
+      setStoredSession(null);
+      setUser(null);
+      queryClient.clear();
+      redirect({ to: '/login' });
+    }
+  }, [login, queryClient]);
+
   useEffect(() => {
-    setUser(getStoredSession());
-  }, []);
+    const storedSession = getStoredSession();
+    if (!storedSession) {
+      refreshSession();
+    } else {
+      setUser(storedSession);
+    }
+  }, [refreshSession]);
 
   return (
     <AuthContext.Provider
