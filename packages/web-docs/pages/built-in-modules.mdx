@@ -79,6 +79,7 @@ export function ModulesList({type}) {
       {mods.map((mod, index) => (
         <div key={index}>
           <h3><u>{mod.name}</u></h3>
+          {type === 'community' && <a href={`https://raw.githubusercontent.com/gettakaro/takaro/main/packages/lib-modules/src/community-modules/modules/${mod.name.toLowerCase()}.json`}><small>Download</small></a>}
           <p>{mod.description}</p>
           <Commands commands={mod.commands} />
           <CronJobs cronJobs={mod.cronJobs} />
