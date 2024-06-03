@@ -7,6 +7,8 @@ import { DateTime } from 'luxon';
 import { getApiClient } from 'util/getApiClient';
 import { redirect } from '@tanstack/react-router';
 
+const SESSION_EXPIRES_AFTER_MINUTES = 5;
+
 interface ExpirableSession {
   session: UserOutputWithRolesDTO;
   expiresAt: string;
@@ -39,7 +41,7 @@ function setStoredSession(session: UserOutputWithRolesDTO | null) {
   if (session) {
     const expirableSession: ExpirableSession = {
       session,
-      expiresAt: DateTime.now().plus({ minutes: 5 }).toISO(),
+      expiresAt: DateTime.now().plus({ minutes: SESSION_EXPIRES_AFTER_MINUTES }).toISO(),
     };
     localStorage.setItem('session', JSON.stringify(expirableSession));
   } else {
