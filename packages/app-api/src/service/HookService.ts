@@ -211,7 +211,6 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
 
     if (hooksAfterFilters.length) {
       this.log.info(`Found ${hooksAfterFilters.length} hooks that match the event`);
-
       const hookData: Partial<IHookJobData> = {
         eventData: eventData,
         domainId: this.domainId,
@@ -234,6 +233,9 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
 
       await Promise.all(
         hooksAfterFilters.map(async (hook) => {
+          // This is to solve a pass-by-reference issue
+          const copiedHookData = { ...hookData };
+
           const moduleInstallation = await gameServerService.getModuleInstallation(gameServerId, hook.moduleId);
 
           if (isDiscordMessageEvent(eventData)) {
@@ -241,11 +243,11 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
             if (eventData.channel.id !== configuredChannel) return;
           }
 
-          hookData.functionId = hook.function.id;
-          hookData.itemId = hook.id;
-          hookData.module = await gameServerService.getModuleInstallation(gameServerId, hook.moduleId);
+          copiedHookData.functionId = hook.function.id;
+          copiedHookData.itemId = hook.id;
+          copiedHookData.module = await gameServerService.getModuleInstallation(gameServerId, hook.moduleId);
 
-          return queueService.queues.hooks.queue.add(hookData as IHookJobData);
+          return queueService.queues.hooks.queue.add(copiedHookData as IHookJobData);
         })
       );
     }
