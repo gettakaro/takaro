@@ -168,7 +168,7 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
           <Dialog.Body size="medium">
             <Alert
               variant="info"
-              text="You can hold down shift when deleting a gameserver to bypass this confirmation entirely."
+              text="You can hold down shift when deleting a module to bypass this confirmation entirely."
             />
             <p>
               Are you sure you want to delete the module <strong>{mod.name}</strong>? To confirm, type the module name
