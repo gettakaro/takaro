@@ -136,10 +136,11 @@ export const useModuleRemove = () => {
   );
 };
 
-export const moduleExportOptions = (moduleId: string) =>
+export const moduleExportOptions = (moduleId: string, enabled: boolean = true) =>
   queryOptions<ModuleExportDTOAPI['data'], AxiosError<ModuleExportDTOAPI>>({
     queryKey: moduleKeys.export(moduleId),
     queryFn: async () => (await getApiClient().module.moduleControllerExport(moduleId)).data.data,
+    enabled: enabled,
   });
 
 export const useModuleImport = () => {
