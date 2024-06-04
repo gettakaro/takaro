@@ -5,6 +5,7 @@ import { gameServerQueryOptions } from 'queries/gameserver';
 import { useGameServerDocumentTitle } from 'hooks/useDocumentTitle';
 import { useSnackbar } from 'notistack';
 import { createFileRoute } from '@tanstack/react-router';
+import { useSuspenseQuery } from '@tanstack/react-query';
 
 const Container = styled.div`
   height: 100%;
@@ -27,7 +28,13 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/dashboard/
 });
 
 function Component() {
-  const gameServer = Route.useLoaderData();
+  const loaderData = Route.useLoaderData();
+  const { gameServerId } = Route.useParams();
+
+  const { data: gameServer } = useSuspenseQuery({
+    ...gameServerQueryOptions(gameServerId),
+    initialData: loaderData,
+  });
 
   useGameServerDocumentTitle('dashboard', gameServer);
   const apiClient = getApiClient();

@@ -7,6 +7,7 @@ import { Scrollable } from './-cards/style';
 import { EventFeedWidget } from 'components/events/EventFeedWidget';
 import { EventOutputDTOEventNameEnum as EventName } from '@takaro/apiclient';
 import { createFileRoute } from '@tanstack/react-router';
+import { useSuspenseQuery } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/dashboard/overview')({
   loader: ({ params, context }) => context.queryClient.ensureQueryData(gameServerQueryOptions(params.gameServerId)),
@@ -34,9 +35,15 @@ const SpanCell = styled.div`
 `;
 
 function Component() {
-  const gameServer = Route.useLoaderData();
-  useGameServerDocumentTitle('dashboard', gameServer);
+  const loaderData = Route.useLoaderData();
+  const { gameServerId } = Route.useParams();
   const theme = useTheme();
+
+  const { data: gameServer } = useSuspenseQuery({
+    ...gameServerQueryOptions(gameServerId),
+    initialData: loaderData,
+  });
+  useGameServerDocumentTitle('dashboard', gameServer);
 
   const subscribedEvents = [
     // Roles

@@ -35,7 +35,7 @@ export const GameServerSelect: FC<CustomSelectProps> = ({
     return <Skeleton variant="text" width="100%" height="35px" />;
   }
 
-  if (!gameServers) {
+  if (gameServers.length === 0) {
     return <div>no game servers</div>;
   }
 
@@ -132,7 +132,7 @@ export const GameServerSelectView: FC<GameServerSelectViewProps> = ({
         );
       }}
     >
-      {/* IMPORTANT: make sure the types is ordered alphabetically
+      {/* IMPORTANT: make sure the types are ordered alphabetically
       otherwise the selected index will be wrong * since it uses the original array to select.
       */}
       {renderOptionGroup('Mock', GameServerOutputDTOTypeEnum.Mock)}

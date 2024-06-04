@@ -15,7 +15,7 @@ const searchSchema = z.object({
   flowId: z.string().catch(''),
 });
 
-export const Route = createFileRoute('/account/recovery')({
+export const Route = createFileRoute('/_single-page/account/recovery')({
   component: Component,
   validateSearch: (search) => searchSchema.parse(search),
 });
