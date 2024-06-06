@@ -43,6 +43,9 @@ export class IItemDTO extends TakaroDTO<IItemDTO> {
   @IsNumber()
   @IsOptional()
   amount?: number;
+  @IsString()
+  @IsOptional()
+  quality?: string;
 }
 
 export class IMessageOptsDTO extends TakaroDTO<IMessageOptsDTO> {

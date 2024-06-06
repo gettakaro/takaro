@@ -85,7 +85,7 @@ export interface InventoryItem {
   name: string;
   icon: string;
   iconcolor: string;
-  quality: number;
+  quality: string;
 }
 
 export interface PlayerEquipment extends Record<string, InventoryItem> {
