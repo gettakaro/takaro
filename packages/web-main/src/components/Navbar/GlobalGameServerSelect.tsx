@@ -33,7 +33,7 @@ export const GlobalGameServerSelect: FC<GameServerSelectNavProps> = ({
       const params = matchRoute({
         to: '/gameserver/$gameServerId',
         fuzzy: true,
-      }) as { gameServerId: string; '**': string } | false;
+      });
 
       if (params !== false) {
         navigate({
