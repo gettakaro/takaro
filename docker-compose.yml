@@ -239,5 +239,5 @@ services:
       - takaro
 networks:
   takaro:
-    external:
-      name: takaro
+    name: takaro
+    external: true
