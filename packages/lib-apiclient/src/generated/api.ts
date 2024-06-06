@@ -1402,6 +1402,7 @@ export interface EventChatMessage {
 export const EventChatMessageChannelEnum = {
   Global: 'global',
   Team: 'team',
+  Friends: 'friends',
   Whisper: 'whisper',
 } as const;
 
@@ -3652,6 +3653,12 @@ export interface IItemDTO {
    * @memberof IItemDTO
    */
   amount?: number;
+  /**
+   *
+   * @type {string}
+   * @memberof IItemDTO
+   */
+  quality?: string;
 }
 /**
  *

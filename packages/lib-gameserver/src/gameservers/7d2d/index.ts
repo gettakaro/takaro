@@ -94,14 +94,11 @@ export class SevenDaysToDie implements IGameServer {
     };
   }
 
-  async giveItem(player: IPlayerReferenceDTO, item: string, amount: number): Promise<void> {
-    if (this.connectionInfo.useCPM) {
-      const command = `giveplus EOS_${player.gameId} ${item} ${amount}`;
-      await this.executeConsoleCommand(command);
-    } else {
-      const command = `give EOS_${player.gameId} ${item} ${amount}`;
-      await this.executeConsoleCommand(command);
-    }
+  async giveItem(player: IPlayerReferenceDTO, item: string, amount: number = 1, quality?: number): Promise<void> {
+    const command = this.connectionInfo.useCPM
+      ? `giveplus EOS_${player.gameId} ${item} ${amount} ${quality ?? ''}`
+      : `give EOS_${player.gameId} ${item} ${amount} ${quality ?? ''}`;
+    await this.executeConsoleCommand(command);
   }
 
   async testReachability(): Promise<TestReachabilityOutputDTO> {
@@ -295,7 +292,9 @@ export class SevenDaysToDie implements IGameServer {
 
     const mapSdtdItemToDto = async (item: InventoryItem | null) => {
       if (!item) return null;
-      return new IItemDTO({ code: item.name, amount: item.count });
+      return item.quality
+        ? new IItemDTO({ code: item.name, amount: item.count, quality: item.quality })
+        : new IItemDTO({ code: item.name, amount: item.count });
     };
 
     const dtos = await Promise.all([
