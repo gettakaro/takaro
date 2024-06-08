@@ -6,7 +6,7 @@ import { GameServerService } from '../service/GameServerService.js';
 import { PlayerService } from '../service/PlayerService.js';
 import { DomainRepo } from '../db/domain.js';
 import { UserService } from '../service/UserService.js';
-import { gateway, metrics } from '../lib/metrics.js';
+import { kpiGateway, metrics } from '../lib/metrics.js';
 
 const log = logger('worker:kpi');
 
@@ -91,5 +91,5 @@ export async function processJob(_job: Job<unknown>) {
   metrics.users.set(totals.users);
   metrics.installedModules.set(totals.installedModules);
 
-  await gateway.pushAdd({ jobName: 'playerSync' });
+  await kpiGateway.pushAdd({ jobName: 'kpi' });
 }

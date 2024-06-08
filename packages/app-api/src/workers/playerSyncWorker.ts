@@ -7,7 +7,7 @@ import { GameServerService } from '../service/GameServerService.js';
 import { ctx } from '@takaro/util';
 import { PlayerService } from '../service/PlayerService.js';
 import { PlayerOnGameServerService, PlayerOnGameServerUpdateDTO } from '../service/PlayerOnGameserverService.js';
-import { gateway, metrics } from '../lib/metrics.js';
+import { playerSyncGateway, metrics } from '../lib/metrics.js';
 
 const log = logger('worker:playerSync');
 
@@ -139,7 +139,7 @@ export async function processJob(job: Job<IGameServerQueueData>) {
     );
 
     const res = await Promise.allSettled(promises);
-    await gateway.pushAdd({ jobName: 'playerSync' });
+    await playerSyncGateway.pushAdd({ jobName: gameServerId });
 
     for (const r of res) {
       if (r.status === 'rejected') {
