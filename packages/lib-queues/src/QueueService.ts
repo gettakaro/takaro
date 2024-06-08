@@ -48,6 +48,9 @@ class QueuesService {
     csmmImport: {
       queue: new TakaroQueue<ICSMMImportData>(config.get('queues.csmmImport.name')),
     },
+    kpi: {
+      queue: new TakaroQueue<Record<string, unknown>>(config.get('queues.kpi.name')),
+    },
   };
 
   get queues() {
