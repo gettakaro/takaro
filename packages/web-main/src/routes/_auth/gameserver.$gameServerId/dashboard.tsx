@@ -1,5 +1,5 @@
 import { HorizontalNav, useTheme } from '@takaro/lib-components';
-import { createFileRoute, redirect } from '@tanstack/react-router';
+import { Link, createFileRoute, redirect } from '@tanstack/react-router';
 import { ErrorBoundary } from 'components/ErrorBoundary';
 import { Outlet } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
@@ -29,26 +29,18 @@ function Component() {
         gap: theme.spacing[2],
       }}
     >
-      <HorizontalNav
-        variant={'block'}
-        links={[
-          {
-            text: 'Overview',
-            to: '/gameserver/$gameServerId/dashboard/overview',
-            params: { gameServerId },
-          },
-          {
-            text: 'Console',
-            to: '/gameserver/$gameServerId/dashboard/console',
-            params: { gameServerId },
-          },
-          {
-            text: 'Statistics',
-            to: '/gameserver/$gameServerId/dashboard/statistics',
-            params: { gameServerId },
-          },
-        ]}
-      />
+      <HorizontalNav variant={'block'}>
+        <Link to="/gameserver/$gameServerId/dashboard/overview" params={{ gameServerId }}>
+          Overview
+        </Link>
+        <Link to="/gameserver/$gameServerId/dashboard/console" params={{ gameServerId }}>
+          Console
+        </Link>
+        <Link to="/gameserver/$gameServerId/dashboard/statistics" params={{ gameServerId }}>
+          Statistics
+        </Link>
+      </HorizontalNav>
+
       <ErrorBoundary>
         <Outlet />
       </ErrorBoundary>
