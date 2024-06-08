@@ -1,6 +1,6 @@
-import { FC } from 'react';
+import { FC, Fragment } from 'react';
 import { Link, LinkProps } from '@tanstack/react-router';
-import { Block, NavBar, Underline } from './style';
+import { NavBar } from './style';
 
 export type HorizontalNavVariant = 'underline' | 'block';
 
@@ -19,15 +19,18 @@ export const HorizontalNav: FC<HorizontalNavProps> = ({ links, variant }) => {
   return (
     <NavBar variant={variant}>
       {links.map(({ text, to, params }) => {
+        const baseKey = JSON.stringify(to + params);
         return (
-          <Link to={to} params={{ params }}>
-            {({ isActive }) => (
-              <>
-                {isActive && variant === 'block' && <Block layoutId="block" />}
-                {isActive && variant === 'underline' && <Underline layoutId="underline" />}
-                <span>{text}</span>
-              </>
-            )}
+          <Link
+            key={`${baseKey}-link`}
+            to={to}
+            params={{ params }}
+            activeOptions={{ exact: true }}
+            activeProps={{ className: 'active' }}
+          >
+            <Fragment key={`${baseKey}-container`}>
+              <span key={`${baseKey}-text`}>{text}</span>
+            </Fragment>
           </Link>
         );
       })}

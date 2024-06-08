@@ -53,6 +53,16 @@ export const NavBar = styled.nav<{ variant: HorizontalNavVariant }>`
 
     &.active {
       color: ${({ theme }) => theme.colors.text};
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: -${({ theme }) => theme.spacing['0_75']};
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background-color: ${({ theme }) => theme.colors.primary};
+      }
     }
   }
 `;
