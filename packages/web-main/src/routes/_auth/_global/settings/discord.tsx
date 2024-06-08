@@ -79,10 +79,7 @@ function Component() {
         <Card>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '50px' }}>
             <a href={loaderData.invites?.botInvite} target="_blank" rel="noreferrer">
-              <Button text="Invite bot" />
-            </a>
-            <a href={loaderData.invites?.devServer} target="_blank" rel="noreferrer">
-              <Button text="Join discord support server" />
+              <Button text="Invite Discord bot" />
             </a>
           </div>
         </Card>
