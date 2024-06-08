@@ -7,6 +7,7 @@ import { GameServerService } from '../service/GameServerService.js';
 import { ctx } from '@takaro/util';
 import { PlayerService } from '../service/PlayerService.js';
 import { PlayerOnGameServerService, PlayerOnGameServerUpdateDTO } from '../service/PlayerOnGameserverService.js';
+import { gateway, metrics } from '../lib/metrics.js';
 
 const log = logger('worker:playerSync');
 
@@ -120,6 +121,13 @@ export async function processJob(job: Job<IGameServerQueueData>) {
           await playerService.observeIp(player.id, gameServerId, gamePlayer.ip);
         }
 
+        metrics.player_ping.set(
+          { player: player.id, gameserver: gameServerId, domain: domainId },
+          gamePlayer.ping ?? 0
+        );
+
+        metrics.player_currency.set({ player: player.id, gameserver: gameServerId, domain: domainId }, pog.currency);
+
         await playerOnGameServerService.update(
           pog.id,
           new PlayerOnGameServerUpdateDTO({
@@ -131,6 +139,7 @@ export async function processJob(job: Job<IGameServerQueueData>) {
     );
 
     const res = await Promise.allSettled(promises);
+    await gateway.push({ jobName: 'playerSync' });
 
     for (const r of res) {
       if (r.status === 'rejected') {

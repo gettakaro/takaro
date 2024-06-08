@@ -14,6 +14,7 @@ import {
   EventApi,
   PlayerOnGameServerApi,
   ItemApi,
+  StatsApi,
 } from '../generated/api.js';
 import { BaseApiClient, IBaseApiClientConfig } from './baseClient.js';
 
@@ -221,6 +222,16 @@ export class Client extends BaseApiClient<IApiClientConfig> {
 
   get playerOnGameserver() {
     return new PlayerOnGameServerApi(
+      {
+        isJsonMime: this.isJsonMime,
+      },
+      '',
+      this.axios
+    );
+  }
+
+  get stats() {
+    return new StatsApi(
       {
         isJsonMime: this.isJsonMime,
       },

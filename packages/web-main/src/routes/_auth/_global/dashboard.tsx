@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { useEffect, useMemo, useState } from 'react';
-import { Button, Stats, styled } from '@takaro/lib-components';
+import { Button, Stats, styled, LineChart } from '@takaro/lib-components';
 import { useSocket } from 'hooks/useSocket';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { eventsQueryOptions } from 'queries/event';
@@ -9,6 +9,7 @@ import { useForm, useWatch } from 'react-hook-form';
 import { TimePeriodSelect } from 'components/selects';
 import { useQuery } from '@tanstack/react-query';
 import { hasPermission } from 'hooks/useHasPermission';
+import { usePlayersOnlineStats } from 'queries/stats';
 
 export const Route = createFileRoute('/_auth/_global/dashboard')({
   beforeLoad: async ({ context }) => {
@@ -39,6 +40,8 @@ function Component() {
   const { socket, isConnected } = useSocket();
   const [lastPong, setLastPong] = useState<string | null>(null);
   const [lastEvent, setLastEvent] = useState<string | null>(null);
+
+  const { data } = usePlayersOnlineStats();
 
   const { control } = useForm({
     defaultValues: {
@@ -163,6 +166,16 @@ function Component() {
             value={`${HooksExecuted?.meta.total} Hooks`}
           />
         </Stats>
+
+        <div style={{ height: '400px', width: '100%', paddingTop: '100px' }}>
+          <LineChart
+            name="Players online"
+            data={data?.values || []}
+            xAccessor={(d) => new Date(d[0] * 1000)}
+            yAccessor={(d) => d[1]}
+            curveType="curveBasis"
+          />
+        </div>
 
         {/* Manual increase of spacing */}
         <Flex style={{ marginTop: '30px' }}>

@@ -45,6 +45,10 @@ interface IHttpConfig extends IBaseConfig {
     refreshOlderThanMs: number;
     refreshBatchSize: number;
   };
+  metrics: {
+    prometheusUrl: string;
+    pushgatewayUrl: string;
+  };
 }
 
 const configSchema = {
@@ -198,6 +202,20 @@ const configSchema = {
       format: Number,
       default: 100,
       env: 'STEAM_REFRESH_BATCH_SIZE',
+    },
+  },
+  metrics: {
+    prometheusUrl: {
+      doc: 'The URL of the Prometheus server',
+      format: String,
+      default: 'http://prometheus:9090',
+      env: 'PROMETHEUS_URL',
+    },
+    pushgatewayUrl: {
+      doc: 'The URL of the Prometheus pushgateway',
+      format: String,
+      default: 'http://pushgateway:9091',
+      env: 'PUSHGATEWAY_URL',
     },
   },
 };

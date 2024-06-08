@@ -168,21 +168,6 @@ services:
       - 8025:8025
     logging:
       driver: none
-
-  grafana_agent:
-    image: grafana/agent:v0.38.1  
-    command: ["run", "--server.http.listen-addr=0.0.0.0:12345", "/etc/agent/config.river"] 
-    volumes:
-      - ./containers/grafana/agent/config.river:/etc/agent/config.river
-      - /tmp/agent:/tmp/agent
-      - /var/run/docker.sock:/var/run/docker.sock
-    ports:
-      - "4689:12345"
-    environment:
-      AGENT_MODE: "flow"
-      GRAFANA_CLOUD_TEMPO_URL: ${GRAFANA_CLOUD_TEMPO_URL}
-      GRAFANA_CLOUD_API_USER: ${GRAFANA_CLOUD_API_USER}
-      GRAFANA_CLOUD_API_KEY: ${GRAFANA_CLOUD_API_KEY}
       
 networks:
   takaro:

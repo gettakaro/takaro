@@ -16,5 +16,8 @@ export type { RadarChartProps } from './RadarChart';
 export { RadialLineChart } from './RadialLineChart';
 export type { RadialLineChartProps } from './RadialLineChart';
 
+export { LineChart } from './LineChart';
+export type { LineChartProps } from './LineChart';
+
 export { RadialBarChart } from './RadialBarChart';
 export type { RadialBarChartProps } from './RadialBarChart';
