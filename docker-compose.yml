@@ -237,6 +237,57 @@ services:
       driver: none
     networks:
       - takaro
+
+  prometheus:
+    image: prom/prometheus:v2.52.0
+    networks:
+      - takaro    
+    container_name: prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    ports:
+      - 9090:9090
+    volumes:
+      - ./containers/prometheus:/etc/prometheus
+      - ./_data/prometheus:/prometheus      
+  pushgateway:
+    image: prom/pushgateway
+    container_name: pushgateway
+    ports:
+      - "9091:9091"
+    networks:
+      - takaro      
+
+  grafana:
+    image: grafana/grafana:9.3.6
+    networks:
+      - takaro     
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+      - GF_FEATURE_TOGGLES_ENABLE=traceqlEditor
+    volumes:
+      - ./_data/grafana:/var/lib/grafana
+    ports:
+      - '13007:3000'
+
+  tempo:
+    image: grafana/tempo:latest
+    command: ['-config.file=/etc/tempo.yaml']
+    volumes:
+      - ./containers/tempo/tempo.yaml:/etc/tempo.yaml
+      - ./_data/tempo:/tmp/tempo
+    networks:
+      - takaro 
+    ports:
+      #      - "14268:14268"  # jaeger ingest
+      - '3200:3200' # tempo
+      - '4317:4317' # otlp grpc
+#      - "4318:4318"  # otlp http
+#      - "9411:9411"   # zipkin
+
 networks:
   takaro:
     external:

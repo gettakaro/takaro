@@ -74,6 +74,7 @@ class MockGameserver implements IMockGameServer {
       name: player.name,
       ip: player.ip,
       steamId: player.steamId,
+      ping: parseInt(faker.random.numeric(2), 10),
     });
   }
 
@@ -93,6 +94,7 @@ class MockGameserver implements IMockGameServer {
             name: player.name,
             ip: player.ip,
             steamId: player.steamId,
+            ping: parseInt(faker.random.numeric(2), 10),
           })
       )
     );

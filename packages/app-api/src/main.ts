@@ -38,6 +38,7 @@ import { CSMMImportWorker } from './workers/csmmImportWorker.js';
 import { kpi } from './lib/kpi.js';
 import { SteamSyncWorker } from './workers/steamSyncWorker.js';
 import { AxiosError } from 'axios';
+import { StatsController } from './controllers/StatsController.js';
 
 export const server = new HTTP(
   {
@@ -59,6 +60,7 @@ export const server = new HTTP(
       EventController,
       PlayerOnGameServerController,
       ItemController,
+      StatsController,
     ],
   },
   {
