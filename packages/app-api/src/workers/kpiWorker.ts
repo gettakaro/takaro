@@ -91,5 +91,5 @@ export async function processJob(_job: Job<unknown>) {
   metrics.users.set(totals.users);
   metrics.installedModules.set(totals.installedModules);
 
-  await gateway.push({ jobName: 'playerSync' });
+  await gateway.pushAdd({ jobName: 'playerSync' });
 }
