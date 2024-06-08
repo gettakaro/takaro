@@ -8,6 +8,42 @@ export const gateway = new Pushgateway(config.get('metrics.pushgatewayUrl'), {},
 const metricsPrefix = 'takaro_';
 
 export const metrics = {
+  // KPIs
+  domains: new Gauge({
+    name: `${metricsPrefix}domains`,
+    help: 'Number of domains',
+    registers: [pushRegistry],
+  }),
+
+  gameServers: new Gauge({
+    name: `${metricsPrefix}gameServers`,
+    help: 'Number of gameServers',
+    labelNames: ['domain'],
+    registers: [pushRegistry],
+  }),
+
+  players: new Gauge({
+    name: `${metricsPrefix}players`,
+    help: 'Number of players',
+    labelNames: ['domain'],
+    registers: [pushRegistry],
+  }),
+
+  users: new Gauge({
+    name: `${metricsPrefix}users`,
+    help: 'Number of users',
+    labelNames: ['domain'],
+    registers: [pushRegistry],
+  }),
+
+  installedModules: new Gauge({
+    name: `${metricsPrefix}installedModules`,
+    help: 'Number of installedModules',
+    labelNames: ['domain', 'gameServer'],
+    registers: [pushRegistry],
+  }),
+
+  // Domain metrics
   player_ping: new Gauge({
     name: `${metricsPrefix}player_ping`,
     help: 'Player ping',
