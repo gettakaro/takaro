@@ -19,7 +19,11 @@ import {
   AiOutlineDelete as DeleteIcon,
   AiOutlineEdit as EditIcon,
   AiOutlineLineChart as DashboardIcon,
+  AiOutlineCopy as CopyIcon,
+  AiOutlineFunction as ModulesIcon,
+  AiOutlineSetting as SettingsIcon,
 } from 'react-icons/ai';
+
 import { Header, TitleContainer, DetailsContainer } from './style';
 import { useGameServerRemove } from 'queries/gameserver';
 import { PermissionsGuard } from 'components/PermissionsGuard';
@@ -73,6 +77,11 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
     mutate({ id });
   };
 
+  const handleOnCopyClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(id);
+  };
+
   return (
     <>
       <Card
@@ -95,6 +104,7 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
                 </Dropdown.Trigger>
                 <Dropdown.Menu>
                   <Dropdown.Menu.Group label="Actions">
+                    <Dropdown.Menu.Item icon={<CopyIcon />} onClick={handleOnCopyClick} label="Copy ID" />
                     <Dropdown.Menu.Item icon={<EditIcon />} onClick={handleOnEditClick} label="Edit gameserver" />
                     <Dropdown.Menu.Item
                       icon={<DeleteIcon fill={theme.colors.error} />}
@@ -102,7 +112,7 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
                       label="Delete gameserver"
                     />
                   </Dropdown.Menu.Group>
-                  <Dropdown.Menu.Group>
+                  <Dropdown.Menu.Group label="Navigation">
                     <Dropdown.Menu.Item
                       icon={<DashboardIcon />}
                       onClick={() =>
@@ -111,14 +121,14 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
                       label="go to dashboard"
                     />
                     <Dropdown.Menu.Item
-                      icon={<DashboardIcon />}
+                      icon={<ModulesIcon />}
                       onClick={() =>
                         navigate({ to: '/gameserver/$gameServerId/modules', params: { gameServerId: id } })
                       }
                       label="go to modules"
                     />
                     <Dropdown.Menu.Item
-                      icon={<DashboardIcon />}
+                      icon={<SettingsIcon />}
                       onClick={() =>
                         navigate({ to: '/gameserver/$gameServerId/settings', params: { gameServerId: id } })
                       }
