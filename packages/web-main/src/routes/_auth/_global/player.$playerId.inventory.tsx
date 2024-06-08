@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { Section } from './-style';
+import { Section } from './-player/style';
 // import { PlayerInventoryTable } from './-PlayerInventoryTable';
 // import { PlayerOnGameserverOutputDTO } from '@takaro/apiclient';
 import { playerQueryOptions } from 'queries/player';
@@ -10,10 +10,6 @@ export const Route = createFileRoute('/_auth/_global/player/$playerId/inventory'
 });
 
 function Component() {
-  // TODO: should get pog here somehow
-  // const { pog } = useOutletContext<{ pog: PlayerOnGameserverOutputDTO }>();
-  //const pog = {} as PlayerOnGameserverOutputDTO;
-
   return (
     <Section style={{ minHeight: '250px' }}>
       Temporarily disabled
