@@ -1,5 +1,6 @@
 import { styled } from '../../../styled';
 import { ChipColor, ShowIcon } from '.';
+import { shade } from 'polished';
 
 export const Container = styled.div<{
   disabled: boolean;
@@ -62,14 +63,14 @@ export const Container = styled.div<{
         case 'secondary':
           return `color: ${theme.colors.text};`;
         default:
-          return `color: ${theme.colors[color]};`;
+          return `color: ${theme.colors['white']};`;
       }
     }}
   }
 
   ${({ theme, color, outline }): string => {
     if (outline) {
-      return 'background-color: transparent;';
+      return `background-color: ${shade('0.8', theme.colors[color])};`;
     }
     return `background-color: ${theme.colors[color]};`;
   }}
