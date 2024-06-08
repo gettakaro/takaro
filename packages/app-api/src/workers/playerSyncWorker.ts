@@ -139,7 +139,7 @@ export async function processJob(job: Job<IGameServerQueueData>) {
     );
 
     const res = await Promise.allSettled(promises);
-    await playerSyncGateway.pushAdd({ jobName: gameServerId });
+    await playerSyncGateway.push({ jobName: 'playerSync' });
 
     for (const r of res) {
       if (r.status === 'rejected') {
