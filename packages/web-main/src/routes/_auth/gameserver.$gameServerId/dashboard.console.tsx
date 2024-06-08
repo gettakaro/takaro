@@ -5,7 +5,7 @@ import { gameServerQueryOptions } from 'queries/gameserver';
 import { useGameServerDocumentTitle } from 'hooks/useDocumentTitle';
 import { useSnackbar } from 'notistack';
 import { createFileRoute } from '@tanstack/react-router';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 const Container = styled.div`
   height: 100%;
@@ -31,7 +31,7 @@ function Component() {
   const loaderData = Route.useLoaderData();
   const { gameServerId } = Route.useParams();
 
-  const { data: gameServer } = useSuspenseQuery({
+  const { data: gameServer } = useQuery({
     ...gameServerQueryOptions(gameServerId),
     initialData: loaderData,
   });
