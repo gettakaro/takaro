@@ -4,7 +4,7 @@ import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { hasPermission } from 'hooks/useHasPermission';
 import { PermissionsGuard } from 'components/PermissionsGuard';
 import { AddCard, CardList, GameServerCard } from 'components/cards';
-import { useSuspenseInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { ErrorBoundary } from '@sentry/react';
 import { Button, Empty, EmptyPage, InfiniteScroll, Skeleton } from '@takaro/lib-components';
 import { Fragment } from 'react';
@@ -46,7 +46,7 @@ function Component() {
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
-  } = useSuspenseInfiniteQuery({
+  } = useInfiniteQuery({
     ...gameServersInfiniteQueryOptions(),
     initialData: loaderData,
   });

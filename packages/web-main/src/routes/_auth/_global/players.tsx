@@ -30,7 +30,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useSnackbar } from 'notistack';
 import { FaBan as BanIcon } from 'react-icons/fa';
 import { Player } from 'components/Player';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { getApiClient } from 'util/getApiClient';
 
 export const StyledDialogBody = styled(Dialog.Body)`
@@ -50,7 +50,7 @@ function Component() {
   useDocumentTitle('Players');
 
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<PlayerOutputDTO>();
-  const { data, isLoading } = useSuspenseQuery({
+  const { data, isLoading } = useQuery({
     ...playersQueryOptions({
       page: pagination.paginationState.pageIndex,
       limit: pagination.paginationState.pageSize,
