@@ -82,23 +82,17 @@ function Component() {
           {
             text: 'Info',
             to: '/player/$playerId/info',
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore reusable link
             params: { playerId },
           },
           {
             text: 'Events',
             to: '/player/$playerId/events',
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore reusable link
             params: { playerId },
           },
 
           {
             text: 'Economy',
             to: '/player/$playerId/economy',
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore reusable link
             params: { playerId },
           },
         ]}

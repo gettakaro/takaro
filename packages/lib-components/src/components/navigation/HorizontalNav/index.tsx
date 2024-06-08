@@ -18,21 +18,17 @@ export interface HorizontalNavProps {
 export const HorizontalNav: FC<HorizontalNavProps> = ({ links, variant }) => {
   return (
     <NavBar variant={variant}>
-      {links.map(({ text, ...rest }) => {
+      {links.map(({ text, to, params }) => {
         return (
-          <>
-            {/*eslint-disable-next-line @typescript-eslint/ban-ts-comment*/}
-            {/*@ts-ignore reusable link*/}
-            <Link key={`${rest.to}-${text}`} {...rest}>
-              {({ isActive }) => (
-                <>
-                  {isActive && variant === 'block' && <Block layoutId="block" />}
-                  {isActive && variant === 'underline' && <Underline layoutId="underline" />}
-                  <span>{text}</span>
-                </>
-              )}
-            </Link>
-          </>
+          <Link to={to} params={{ params }}>
+            {({ isActive }) => (
+              <>
+                {isActive && variant === 'block' && <Block layoutId="block" />}
+                {isActive && variant === 'underline' && <Underline layoutId="underline" />}
+                <span>{text}</span>
+              </>
+            )}
+          </Link>
         );
       })}
     </NavBar>
