@@ -1,5 +1,5 @@
-import { Stats, styled, Skeleton, useTheme, Avatar, getInitials } from '@takaro/lib-components';
-import { Outlet, redirect, createFileRoute, Link } from '@tanstack/react-router';
+import { Stats, styled, Skeleton, useTheme, Avatar, getInitials, HorizontalNav } from '@takaro/lib-components';
+import { Outlet, redirect, createFileRoute } from '@tanstack/react-router';
 import { DateTime } from 'luxon';
 import { playerQueryOptions } from 'queries/player';
 import { playersOnGameServersQueryOptions } from 'queries/pog';
@@ -78,40 +78,30 @@ function Component() {
         </div>
       </Header>
 
-      <div>
-        <Link to="/player/$playerId/info" params={{ playerId }}>
-          info
-        </Link>
-        <Link to="/player/$playerId/events" params={{ playerId }}>
-          events
-        </Link>
-        <Link to="/player/$playerId/economy" params={{ playerId }}>
-          economy
-        </Link>
-      </div>
-      {/*
       <HorizontalNav
         links={[
           {
             text: 'Info',
             to: '/player/$playerId/info',
+            from: Route.id,
             params: { playerId },
           },
           {
             text: 'Events',
             to: '/player/$playerId/events',
+            from: Route.id,
             params: { playerId },
           },
 
           {
             text: 'Economy',
             to: '/player/$playerId/economy',
+            from: Route.id,
             params: { playerId },
           },
         ]}
         variant="underline"
       />
-      */}
       <ErrorBoundary>
         <Outlet />
       </ErrorBoundary>

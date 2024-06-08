@@ -18,9 +18,9 @@ export interface HorizontalNavProps {
 export const HorizontalNav: FC<HorizontalNavProps> = ({ links, variant }) => {
   return (
     <NavBar variant={variant}>
-      {links.map(({ text, to, params }) => {
+      {links.map(({ text, to, params, from }) => {
         return (
-          <Link to={to} params={{ params }}>
+          <Link from={from} to={to} params={{ params }}>
             {({ isActive }) => (
               <>
                 {isActive && variant === 'block' && <Block layoutId="block" />}
