@@ -20,39 +20,13 @@ export interface IAuthContext {
   session: UserOutputWithRolesDTO;
   login: (user: UserOutputWithRolesDTO) => void;
 }
+
 export const AuthContext = createContext<IAuthContext | null>(null);
-
-function getStoredSession(): UserOutputWithRolesDTO | null {
-  const expirableSessionString = localStorage.getItem('session');
-
-  if (!expirableSessionString) {
-    return null;
-  }
-
-  const expirableSession: ExpirableSession = JSON.parse(expirableSessionString);
-  if (DateTime.fromISO(expirableSession.expiresAt ?? DateTime.now()).diffNow().milliseconds < 0) {
-    localStorage.removeItem('session');
-    return null;
-  }
-  return expirableSession.session;
-}
-
-function setStoredSession(session: UserOutputWithRolesDTO | null) {
-  if (session) {
-    const expirableSession: ExpirableSession = {
-      session,
-      expiresAt: DateTime.now().plus({ minutes: SESSION_EXPIRES_AFTER_MINUTES }).toISO(),
-    };
-    localStorage.setItem('session', JSON.stringify(expirableSession));
-  } else {
-    localStorage.removeItem('session');
-  }
-}
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
   const { oryClient } = useOry();
-  const [user, setUser] = useState<UserOutputWithRolesDTO | null>(getStoredSession());
+  const [user, setUser] = useState<UserOutputWithRolesDTO | null>(null);
 
   const isAuthenticated = !!user;
 
@@ -64,9 +38,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     window.location.href = logoutFlowRes.data.logout_url;
     // Extra clean up is done in /logout-return
     return Promise.resolve();
-  }, []);
+  }, [oryClient, queryClient]);
 
-  // Set session in both state and localStorage
   const login = useCallback((session: UserOutputWithRolesDTO) => {
     setStoredSession(session);
     Sentry.setUser({ id: session.id, email: session.email, username: session.name });
@@ -90,20 +63,56 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [login, queryClient]);
 
-  useEffect(() => {
-    const storedSession = getStoredSession();
-    if (!storedSession) {
-      refreshSession();
-    } else {
-      setUser(storedSession);
+  const getStoredSession = useCallback(async (): Promise<UserOutputWithRolesDTO | null> => {
+    const expirableSessionString = localStorage.getItem('session');
+
+    if (!expirableSessionString) {
+      return null;
     }
+
+    const expirableSession: ExpirableSession = JSON.parse(expirableSessionString);
+    if (DateTime.fromISO(expirableSession.expiresAt ?? DateTime.now().toISO()).diffNow().seconds < 0) {
+      // Attempt to refresh session if expired
+      try {
+        await refreshSession();
+        return JSON.parse(localStorage.getItem('session')!).session;
+      } catch (error) {
+        localStorage.removeItem('session');
+        return null;
+      }
+    }
+    return expirableSession.session;
   }, [refreshSession]);
+
+  useEffect(() => {
+    async function fetchSession() {
+      const storedSession = await getStoredSession();
+      if (!storedSession) {
+        refreshSession();
+      } else {
+        setUser(storedSession);
+      }
+    }
+    fetchSession();
+  }, [getStoredSession, refreshSession]);
+
+  function setStoredSession(session: UserOutputWithRolesDTO | null) {
+    if (session) {
+      const expirableSession: ExpirableSession = {
+        session,
+        expiresAt: DateTime.now().plus({ minutes: SESSION_EXPIRES_AFTER_MINUTES }).toISO(),
+      };
+      localStorage.setItem('session', JSON.stringify(expirableSession));
+    } else {
+      localStorage.removeItem('session');
+    }
+  }
 
   return (
     <AuthContext.Provider
       value={{
         session: user as UserOutputWithRolesDTO,
-        login: login,
+        login,
         logOut,
         isAuthenticated,
       }}
