@@ -27,12 +27,7 @@ export default defineConfig({
   css: {
     transformer: 'lightningcss',
   },
-  plugins: [
-    react(),
-    TanStackRouterVite({ experimental: { enableCodeSplitting: true } }),
-    checker({ typescript: true }),
-    tsconfigPaths(),
-  ],
+  plugins: [react(), TanStackRouterVite(), checker({ typescript: true }), tsconfigPaths()],
 
   envDir: '../../',
 });
