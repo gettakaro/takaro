@@ -1,63 +1,48 @@
-import { FC } from 'react';
 import { IpHistoryOutputDTO, PlayerOutputDTO } from '@takaro/apiclient';
 import { Card, CopyId, Tooltip, styled } from '@takaro/lib-components';
 import { createFileRoute } from '@tanstack/react-router';
-import { PlayerRolesTable } from './-player/PlayerRolesTable';
-import { Section, Container, Scrollable } from './-player/style';
+import { PlayerRolesTable } from './-PlayerRolesTable';
+import { FC } from 'react';
+import { Section, Container, Scrollable } from './-style';
 import { CountryCodeToEmoji } from 'components/CountryCodeToEmoji';
 import { DateTime } from 'luxon';
 import { playerQueryOptions } from 'queries/player';
-import { useQueries } from '@tanstack/react-query';
-import { playersOnGameServersQueryOptions } from 'queries/pog';
-import { PlayerDetails } from './-player/PlayerDetails';
+import { useQuery } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/_global/player/$playerId/info')({
   component: Component,
-  loader: async ({ params, context }) => {
-    const [player, pogs] = await Promise.all([
-      context.queryClient.ensureQueryData(playerQueryOptions(params.playerId)),
-      context.queryClient.ensureQueryData(
-        playersOnGameServersQueryOptions({ filters: { playerId: [params.playerId] } })
-      ),
-    ]);
-    return { player, pogs };
-  },
+  loader: async ({ context, params }) => context.queryClient.ensureQueryData(playerQueryOptions(params.playerId)),
 });
 
 function Component() {
+  const loadedPLayer = Route.useLoaderData();
   const { playerId } = Route.useParams();
-  const loaderData = Route.useLoaderData();
 
-  const [{ data: player }, { data: pogs }] = useQueries({
-    queries: [
-      { ...playerQueryOptions(playerId), initialData: loaderData.player },
-      { ...playersOnGameServersQueryOptions({ filters: { playerId: [playerId] } }), initialData: loaderData.pogs },
-    ],
+  const { data: player } = useQuery({
+    ...playerQueryOptions(playerId),
+    initialData: loadedPLayer,
   });
 
   return (
-    <>
-      <PlayerDetails player={player} pogs={pogs} />
-      <Scrollable>
-        <Container>
-          <Section>
-            <h2>Info</h2>
-            <CardContainer>
-              <PlayerInfoCard player={player} />
-              <SteamInfoCard player={player} />
-            </CardContainer>
-          </Section>
-          <Section>
-            <h2>IP History</h2>
-            <IpInfo ipInfo={player.ipHistory} />
-          </Section>
+    <Scrollable>
+      <Container>
+        <Section>
+          <h2>Info</h2>
+          <CardContainer>
+            <PlayerInfoCard player={player} />
+            <SteamInfoCard player={player} />
+          </CardContainer>
+        </Section>
+        <Section>
+          <h2>IP History</h2>
+          <IpInfo ipInfo={player.ipHistory} />
+        </Section>
 
-          <Section>
-            <PlayerRolesTable roles={player?.roleAssignments} playerId={playerId} playerName={player?.name} />
-          </Section>
-        </Container>
-      </Scrollable>
-    </>
+        <Section>
+          <PlayerRolesTable roles={player?.roleAssignments} playerId={playerId} playerName={player?.name} />
+        </Section>
+      </Container>
+    </Scrollable>
   );
 }
 

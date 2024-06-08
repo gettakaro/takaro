@@ -27,7 +27,7 @@ import { useQuery } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/_global/users')({
   beforeLoad: ({ context }) => {
-    if (!hasPermission(context.auth.session, [PERMISSIONS.ReadUsers])) {
+    if (!hasPermission(context.auth.session, ['READ_USERS'])) {
       throw redirect({ to: '/forbidden' });
     }
   },

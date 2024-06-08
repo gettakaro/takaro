@@ -1,14 +1,37 @@
-import { Stats, styled, useTheme, Avatar, getInitials, HorizontalNav } from '@takaro/lib-components';
+import { Stats, styled, Skeleton, useTheme, Avatar, getInitials, HorizontalNav } from '@takaro/lib-components';
+import { Outlet, redirect, createFileRoute } from '@tanstack/react-router';
 import { DateTime } from 'luxon';
+import { playerQueryOptions } from 'queries/player';
+import { playersOnGameServersQueryOptions } from 'queries/pog';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { PlayerOnGameserverOutputArrayDTOAPI, PlayerOutputDTO } from '@takaro/apiclient';
-import { FC } from 'react';
+import { ErrorBoundary } from 'components/ErrorBoundary';
+import { hasPermission } from 'hooks/useHasPermission';
+
+export const Route = createFileRoute('/_auth/_global/player/$playerId')({
+  beforeLoad: ({ context }) => {
+    if (!hasPermission(context.auth.session, ['READ_PLAYERS'])) {
+      throw redirect({ to: '/forbidden' });
+    }
+  },
+  loader: async ({ params, context }) => {
+    const [player, pogs] = await Promise.all([
+      context.queryClient.ensureQueryData(playerQueryOptions(params.playerId)),
+      context.queryClient.ensureQueryData(
+        playersOnGameServersQueryOptions({ filters: { playerId: [params.playerId] } })
+      ),
+    ]);
+    return { player, pogs };
+  },
+  component: Component,
+  pendingComponent: () => <Skeleton variant="rectangular" width="100%" height="100%" />,
+});
 
 const Container = styled.div`
+  height: 100%;
+
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing['4']};
-  margin-bottom: ${({ theme }) => theme.spacing['2']};
 `;
 
 const Header = styled.div`
@@ -16,12 +39,11 @@ const Header = styled.div`
   gap: ${({ theme }) => theme.spacing['1']};
 `;
 
-export const PlayerDetails: FC<{ player: PlayerOutputDTO; pogs: PlayerOnGameserverOutputArrayDTOAPI }> = ({
-  player,
-  pogs,
-}) => {
-  const theme = useTheme();
+function Component() {
+  const { playerId } = Route.useParams();
+  const { player, pogs } = Route.useLoaderData();
   useDocumentTitle(player.name || 'Player Profile');
+  const theme = useTheme();
 
   return (
     <Container>
@@ -60,22 +82,38 @@ export const PlayerDetails: FC<{ player: PlayerOutputDTO; pogs: PlayerOnGameserv
           {
             text: 'Info',
             to: '/player/$playerId/info',
-            params: { playerId: player.id },
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore reusable link
+            params: { playerId },
           },
           {
             text: 'Events',
             to: '/player/$playerId/events',
-            params: { playerId: player.id },
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore reusable link
+            params: { playerId },
           },
 
           {
             text: 'Economy',
             to: '/player/$playerId/economy',
-            params: { playerId: player.id },
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore reusable link
+            params: { playerId },
           },
         ]}
         variant="underline"
       />
+      {/*
+          text: 'Inventory',
+          to: '/player/$playerId/inventory',
+          params: { playerId },
+
+        */}
+      ,
+      <ErrorBoundary>
+        <Outlet />
+      </ErrorBoundary>
     </Container>
   );
-};
+}
