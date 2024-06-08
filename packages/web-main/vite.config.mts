@@ -1,5 +1,4 @@
 /// <reference types="vitest" />
-
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import tsconfigPaths from 'vite-tsconfig-paths';
@@ -28,6 +27,12 @@ export default defineConfig({
   css: {
     transformer: 'lightningcss',
   },
-  plugins: [react(), TanStackRouterVite(), tsconfigPaths(), checker({ typescript: true })],
+  plugins: [
+    react(),
+    TanStackRouterVite({ experimental: { enableCodeSplitting: true } }),
+    checker({ typescript: true }),
+    tsconfigPaths(),
+  ],
+
   envDir: '../../',
 });
