@@ -1,8 +1,9 @@
 import { Gauge, Counter, Pushgateway, Registry } from 'prom-client';
+import { config } from '../config.js';
 
 const pushRegistry = new Registry();
 
-export const gateway = new Pushgateway('http://pushgateway:9091', {}, pushRegistry);
+export const gateway = new Pushgateway(config.get('metrics.pushgatewayUrl'), {}, pushRegistry);
 
 const metricsPrefix = 'takaro_';
 

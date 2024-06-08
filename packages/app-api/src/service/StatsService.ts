@@ -5,6 +5,7 @@ import { TakaroModel } from '@takaro/db';
 import { ITakaroRepo, PaginatedOutput } from '../db/base.js';
 import { Axios } from 'axios';
 import { IsObject } from 'class-validator';
+import { config } from '../config.js';
 
 export class StatsOutputDTO extends TakaroDTO<StatsOutputDTO> {
   @IsObject()
@@ -14,7 +15,7 @@ export class StatsOutputDTO extends TakaroDTO<StatsOutputDTO> {
 @traceableClass('service:stats')
 export class StatsService extends TakaroService<TakaroModel, TakaroDTO<void>, TakaroDTO<void>, TakaroDTO<void>> {
   private promClient = new Axios({
-    baseURL: 'http://prometheus:9090',
+    baseURL: config.get('metrics.prometheusUrl'),
   });
   get repo(): ITakaroRepo<TakaroModel, TakaroDTO<void>, TakaroDTO<void>, TakaroDTO<void>> {
     // Dummy since we're not talking to our DB here
