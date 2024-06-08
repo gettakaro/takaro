@@ -7,7 +7,7 @@ import { DateTime } from 'luxon';
 import { getApiClient } from 'util/getApiClient';
 import { redirect } from '@tanstack/react-router';
 
-const SESSION_EXPIRES_AFTER_MINUTES = 5;
+const SESSION_EXPIRES_AFTER_MINUTES = 20;
 
 interface ExpirableSession {
   session: UserOutputWithRolesDTO;
@@ -21,12 +21,26 @@ export interface IAuthContext {
   login: (user: UserOutputWithRolesDTO) => void;
 }
 
+function getLocalSession() {
+  const expirableSessionString = localStorage.getItem('session');
+
+  if (!expirableSessionString) {
+    return null;
+  }
+
+  const expirableSession: ExpirableSession = JSON.parse(expirableSessionString);
+  if (DateTime.fromISO(expirableSession.expiresAt ?? DateTime.now().toISO()).diffNow().seconds < 0) {
+    return null;
+  }
+  return expirableSession.session;
+}
+
 export const AuthContext = createContext<IAuthContext | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
   const { oryClient } = useOry();
-  const [user, setUser] = useState<UserOutputWithRolesDTO | null>(null);
+  const [user, setUser] = useState<UserOutputWithRolesDTO | null>(getLocalSession());
 
   const isAuthenticated = !!user;
 
@@ -63,30 +77,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [login, queryClient]);
 
-  const getStoredSession = useCallback(async (): Promise<UserOutputWithRolesDTO | null> => {
-    const expirableSessionString = localStorage.getItem('session');
+  const getSession = useCallback(async (): Promise<UserOutputWithRolesDTO | null> => {
+    const session = getLocalSession();
 
-    if (!expirableSessionString) {
+    if (session) {
+      return session;
+    }
+
+    try {
+      await refreshSession();
+      return JSON.parse(localStorage.getItem('session')!).session;
+    } catch (error) {
+      localStorage.removeItem('session');
       return null;
     }
-
-    const expirableSession: ExpirableSession = JSON.parse(expirableSessionString);
-    if (DateTime.fromISO(expirableSession.expiresAt ?? DateTime.now().toISO()).diffNow().seconds < 0) {
-      // Attempt to refresh session if expired
-      try {
-        await refreshSession();
-        return JSON.parse(localStorage.getItem('session')!).session;
-      } catch (error) {
-        localStorage.removeItem('session');
-        return null;
-      }
-    }
-    return expirableSession.session;
   }, [refreshSession]);
 
   useEffect(() => {
     async function fetchSession() {
-      const storedSession = await getStoredSession();
+      const storedSession = await getSession();
       if (!storedSession) {
         refreshSession();
       } else {
@@ -94,7 +103,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }
     fetchSession();
-  }, [getStoredSession, refreshSession]);
+  }, [getSession, refreshSession]);
 
   function setStoredSession(session: UserOutputWithRolesDTO | null) {
     if (session) {
