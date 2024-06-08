@@ -7,7 +7,7 @@ import { Scrollable } from './-cards/style';
 import { EventFeedWidget } from 'components/events/EventFeedWidget';
 import { EventOutputDTOEventNameEnum as EventName } from '@takaro/apiclient';
 import { createFileRoute } from '@tanstack/react-router';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/dashboard/overview')({
   loader: ({ params, context }) => context.queryClient.ensureQueryData(gameServerQueryOptions(params.gameServerId)),
@@ -39,7 +39,7 @@ function Component() {
   const { gameServerId } = Route.useParams();
   const theme = useTheme();
 
-  const { data: gameServer } = useSuspenseQuery({
+  const { data: gameServer } = useQuery({
     ...gameServerQueryOptions(gameServerId),
     initialData: loaderData,
   });

@@ -5,7 +5,7 @@ import { RoleCard, AddCard, CardList } from 'components/cards';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { createFileRoute } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
-import { useSuspenseInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { InfiniteScroll } from '@takaro/lib-components';
 
 export const Route = createFileRoute('/_auth/_global/roles')({
@@ -57,7 +57,7 @@ function Component() {
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
-  } = useSuspenseInfiniteQuery({
+  } = useInfiniteQuery({
     ...rolesInfiniteQueryOptions({ sortBy: 'system', sortDirection: 'desc' }),
     initialData: loaderData,
   });

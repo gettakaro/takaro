@@ -7,7 +7,7 @@ import { useNavigate, Outlet, redirect } from '@tanstack/react-router';
 import { createFileRoute } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
 import { modulesInfiniteQueryOptions } from 'queries/module';
-import { useSuspenseInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { InfiniteScroll } from '@takaro/lib-components';
 
 const SubHeader = styled.h2<{ withMargin?: boolean }>`
@@ -52,7 +52,7 @@ function Component() {
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
-  } = useSuspenseInfiniteQuery({
+  } = useInfiniteQuery({
     ...modulesInfiniteQueryOptions(),
     initialData: loader,
   });

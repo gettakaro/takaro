@@ -1,11 +1,10 @@
 import { Skeleton, styled, useTheme } from '@takaro/lib-components';
-import { Outlet, redirect } from '@tanstack/react-router';
+import { Outlet, redirect, createFileRoute } from '@tanstack/react-router';
+import { useQuery } from '@tanstack/react-query';
 import { ModuleInstallCard, CardList } from 'components/cards';
 import { gameServerModuleInstallationsOptions } from 'queries/gameserver';
 import { modulesQueryOptions } from 'queries/module';
-import { createFileRoute } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
-import { useSuspenseQuery } from '@tanstack/react-query';
 
 const SubHeader = styled.h2`
   font-size: ${({ theme }) => theme.fontSize.mediumLarge};
@@ -41,11 +40,11 @@ export function Component() {
   const { gameServerId } = Route.useParams();
   //useGameServerDocumentTitle('Modules');
 
-  const { data: installations } = useSuspenseQuery({
+  const { data: installations } = useQuery({
     ...gameServerModuleInstallationsOptions(gameServerId),
     initialData: loaderData.installations,
   });
-  const { data: modules } = useSuspenseQuery({
+  const { data: modules } = useQuery({
     ...modulesQueryOptions(),
     initialData: loaderData.modules,
   });
