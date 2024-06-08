@@ -44,7 +44,7 @@ export const rolesQueryOptions = (opts: RoleSearchInputDTO = {}) => {
 
 export const rolesInfiniteQueryOptions = (opts: RoleSearchInputDTO = {}) => {
   return infiniteQueryOptions<RoleOutputArrayDTOAPI, AxiosError<RoleOutputArrayDTOAPI>>({
-    queryKey: [...roleKeys.list(), ...queryParamsToArray(opts)],
+    queryKey: [...roleKeys.list(), 'infinite', ...queryParamsToArray(opts)],
     queryFn: async () => (await getApiClient().role.roleControllerSearch(opts)).data,
     initialPageParam: 0,
     getNextPageParam: (lastPage) => hasNextPage(lastPage.meta),
