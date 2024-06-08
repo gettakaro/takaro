@@ -3,10 +3,11 @@ import { createFileRoute, redirect } from '@tanstack/react-router';
 import { ErrorBoundary } from 'components/ErrorBoundary';
 import { Outlet } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
+import { PERMISSIONS } from '@takaro/apiclient';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/dashboard')({
   beforeLoad: ({ context }) => {
-    if (!hasPermission(context.auth.session, ['READ_GAMESERVERS'])) {
+    if (!hasPermission(context.auth.session, [PERMISSIONS.ReadGameservers])) {
       throw redirect({ to: '/forbidden' });
     }
   },

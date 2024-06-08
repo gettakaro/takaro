@@ -21,7 +21,7 @@ const SubText = styled.p`
 
 export const Route = createFileRoute('/_auth/_global/modules')({
   beforeLoad: ({ context }) => {
-    if (!hasPermission(context.auth.session, ['READ_MODULES'])) {
+    if (!hasPermission(context.auth.session, [PERMISSIONS.ReadModules])) {
       throw redirect({ to: '/forbidden' });
     }
   },
@@ -43,7 +43,7 @@ function Component() {
   useDocumentTitle('Modules');
   const navigate = useNavigate();
   const theme = useTheme();
-  const loader = Route.useLoaderData();
+  const loaderModules = Route.useLoaderData();
 
   const {
     data: modules,
@@ -54,7 +54,7 @@ function Component() {
     isFetchingNextPage,
   } = useInfiniteQuery({
     ...modulesInfiniteQueryOptions(),
-    initialData: loader,
+    initialData: loaderModules,
   });
 
   if (!modules || isLoading) {

@@ -85,7 +85,7 @@ export const modulesQueryOptions = (queryParams: ModuleSearchInputDTO = {}) =>
 
 export const modulesInfiniteQueryOptions = (queryParams: ModuleSearchInputDTO = {}) =>
   infiniteQueryOptions<ModuleOutputArrayDTOAPI, AxiosError<ModuleOutputArrayDTOAPI>>({
-    queryKey: [...moduleKeys.list(), ...queryParamsToArray(queryParams)],
+    queryKey: [...moduleKeys.list(), 'infinite', ...queryParamsToArray(queryParams)],
     queryFn: async () => (await getApiClient().module.moduleControllerSearch(queryParams)).data,
     initialPageParam: 0,
     getNextPageParam: (lastPage) => hasNextPage(lastPage.meta),

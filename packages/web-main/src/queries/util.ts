@@ -3,11 +3,11 @@ import { ErrorMessageMapping, getErrorUserMessage } from '@takaro/lib-components
 import { UseMutationResult } from '@tanstack/react-query';
 
 export function hasNextPage(pageInfo: MetadataOutput) {
-  if (pageInfo.total === undefined || pageInfo.limit === undefined) {
+  if (pageInfo.total === undefined || pageInfo.limit === undefined || pageInfo.page === undefined) {
     throw new Error('Expected query to have paginated metadata');
   }
-  if (pageInfo.page! < Math.floor(pageInfo.total! / pageInfo.limit!)) {
-    return pageInfo.page! + 1;
+  if (pageInfo.page < Math.floor(pageInfo.total / pageInfo.limit)) {
+    return pageInfo.page + 1;
   }
   return undefined;
 }
