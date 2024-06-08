@@ -1,4 +1,4 @@
-import { Stats, styled, Skeleton, useTheme, HorizontalNav, Avatar, getInitials } from '@takaro/lib-components';
+import { Stats, styled, Skeleton, useTheme, Avatar, getInitials } from '@takaro/lib-components';
 import { Outlet, redirect, createFileRoute } from '@tanstack/react-router';
 import { DateTime } from 'luxon';
 import { playerQueryOptions } from 'queries/player';
@@ -40,7 +40,7 @@ const Header = styled.div`
 `;
 
 function Component() {
-  const { playerId } = Route.useParams();
+  //const { playerId } = Route.useParams();
   const { player, pogs } = Route.useLoaderData();
   useDocumentTitle(player.name || 'Player Profile');
   const theme = useTheme();
@@ -77,7 +77,7 @@ function Component() {
           </div>
         </div>
       </Header>
-
+      {/*
       <HorizontalNav
         links={[
           {
@@ -94,13 +94,7 @@ function Component() {
             // @ts-ignore reusable link
             params: { playerId },
           },
-          /*
-          {
-            text: 'Inventory',
-            to: '/player/$playerId/inventory',
-            params: { playerId },
-          },
-          */
+
           {
             text: 'Economy',
             to: '/player/$playerId/economy',
@@ -112,6 +106,15 @@ function Component() {
         variant="underline"
       />
 
+
+      */}
+      {/*
+          text: 'Inventory',
+          to: '/player/$playerId/inventory',
+          params: { playerId },
+
+        */}
+      ,
       <ErrorBoundary>
         <Outlet />
       </ErrorBoundary>
