@@ -15,7 +15,12 @@ const gameTypeMap = {
   [GameServerOutputDTOTypeEnum.Sevendaystodie]: { icon: <img width="20px" height="20px" src={icon7d2d} /> },
 };
 
-export const GameServerSelect: FC<CustomSelectProps> = ({
+interface GameServerSelectProps {
+  data?: GameServerOutputDTO[];
+  filter?: (server: GameServerOutputDTO) => boolean;
+}
+
+export const GameServerSelect: FC<CustomSelectProps & GameServerSelectProps> = ({
   readOnly = false,
   hint,
   name: selectName,
@@ -27,9 +32,14 @@ export const GameServerSelect: FC<CustomSelectProps> = ({
   inPortal,
   description,
   required,
+  filter,
+  data: providedData,
 }) => {
-  const { data, isLoading: isLoadingData } = useQuery(gameServersQueryOptions({ sortBy: 'type' }));
-  const gameServers = data ?? [];
+  const { data: fetchedData, isLoading: isLoadingData } = useQuery({
+    ...gameServersQueryOptions({ sortBy: 'type' }),
+    enabled: !providedData,
+  });
+  let gameServers = providedData ?? fetchedData ?? [];
 
   if (isLoadingData) {
     return <Skeleton variant="text" width="100%" height="35px" />;
@@ -37,6 +47,10 @@ export const GameServerSelect: FC<CustomSelectProps> = ({
 
   if (gameServers.length === 0) {
     return <div>no game servers</div>;
+  }
+
+  if (filter) {
+    gameServers = gameServers.filter(filter);
   }
 
   return (
