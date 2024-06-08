@@ -5,9 +5,10 @@ import { AiFillCopy as CopyIcon, AiOutlineCheck as CheckmarkIcon } from 'react-i
 export interface CopyIdProps {
   id?: string;
   placeholder?: string;
+  copyText?: string;
 }
 
-export const CopyId: FC<CopyIdProps> = ({ id, placeholder }) => {
+export const CopyId: FC<CopyIdProps> = ({ id, placeholder, copyText = 'copied' }) => {
   const [copied, setCopied] = useState<boolean>(false);
 
   function handleCopy(text: string) {
@@ -31,7 +32,7 @@ export const CopyId: FC<CopyIdProps> = ({ id, placeholder }) => {
       icon={copied ? <CheckmarkIcon /> : <CopyIcon />}
       onClick={() => handleCopy(id)}
       variant="outline"
-      label={copied ? 'copied' : placeholder ? placeholder : id}
+      label={copied ? copyText : placeholder ? placeholder : id}
       color="backgroundAccent"
     />
   );
