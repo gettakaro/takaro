@@ -23,13 +23,13 @@ export const Route = createFileRoute('/_auth/_global/gameservers/create/import')
 });
 
 const MAX_FILE_SIZE = 5000000; // 50MB
-const ACCEPTED_IMAGE_TYPES = ['application/json'];
+const ACCEPTED_FILE_TYPES = ['application/json'];
 const validationSchema = z.object({
   importData: z
     .any()
     .refine((files) => files?.length == 1, 'Import data is required')
     .refine((files) => files?.[0]?.size <= MAX_FILE_SIZE, 'Max file size is 50MB.')
-    .refine((files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type), 'Only .json files are accepted.'),
+    .refine((files) => ACCEPTED_FILE_TYPES.includes(files?.[0]?.type), 'Only .json files are accepted.'),
 });
 function Component() {
   const [open, setOpen] = useState(true);

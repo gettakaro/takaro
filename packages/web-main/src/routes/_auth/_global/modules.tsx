@@ -82,7 +82,7 @@ function Component() {
         <CardList>
           <PermissionsGuard requiredPermissions={[PERMISSIONS.ManageModules]}>
             <AddCard title="Module" onClick={() => navigate({ to: '/modules/create' })} />
-            <AddCard title="Import" onClick={() => navigate({ to: '/modules/import' })} />
+            <AddCard title="Import" onClick={() => navigate({ to: '/modules/create/import' })} />
           </PermissionsGuard>
           {customModules.map((mod) => (
             <ModuleDefinitionCard key={mod.id} mod={mod} />
