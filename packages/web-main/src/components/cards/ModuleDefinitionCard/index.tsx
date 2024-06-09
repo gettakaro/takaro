@@ -10,10 +10,12 @@ import {
   useTheme,
   ValueConfirmationField,
   Alert,
+  styled,
+  Spinner,
 } from '@takaro/lib-components';
 import { PERMISSIONS } from '@takaro/apiclient';
-import { useModuleRemove } from 'queries/module';
-import { FC, useState, MouseEvent } from 'react';
+import { moduleExportOptions, useModuleRemove } from 'queries/module';
+import { FC, useState, MouseEvent, useEffect } from 'react';
 import { AiOutlineMenu as MenuIcon } from 'react-icons/ai';
 import { useNavigate } from '@tanstack/react-router';
 import { SpacedRow, ActionIconsContainer } from '../style';
@@ -27,6 +29,13 @@ import {
   AiOutlineCopy as CopyIcon,
   AiOutlineExport as ExportIcon,
 } from 'react-icons/ai';
+import { useQuery } from '@tanstack/react-query';
+
+const DownloadLink = styled.a`
+  display: block;
+  text-decoration: underline;
+  text-decoration-color: ${({ theme }) => theme.colors.primary};
+`;
 
 interface IModuleCardProps {
   mod: ModuleOutputDTO;
@@ -34,8 +43,12 @@ interface IModuleCardProps {
 
 export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
+  const [openExportDialog, setOpenExportDialog] = useState<boolean>(false);
   const [isValid, setIsValid] = useState<boolean>(false);
+  const [downloadLink, setDownloadLink] = useState<string | null>(null);
   const { mutateAsync, isPending: isDeleting } = useModuleRemove();
+  const { data: exported, isPending: isExporting } = useQuery(moduleExportOptions(mod.id, openExportDialog));
+
   const theme = useTheme();
   const navigate = useNavigate();
 
@@ -44,6 +57,15 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
     await mutateAsync({ id: mod.id });
     setOpenDeleteDialog(false);
   };
+
+  useEffect(() => {
+    if (!isExporting && exported) {
+      const blob = new Blob([JSON.stringify(exported)], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      setDownloadLink(url);
+      return () => URL.revokeObjectURL(url);
+    }
+  }, [isExporting, exported]);
 
   const handleOnEditClick = (e: MouseEvent) => {
     e.stopPropagation();
@@ -73,7 +95,7 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
 
   const handleOnExportClick = async (e: MouseEvent) => {
     e.stopPropagation();
-    navigate({ to: '/modules/$moduleId/export', params: { moduleId: mod.id } });
+    setOpenExportDialog(true);
   };
 
   return (
@@ -123,7 +145,7 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
                   <Dropdown.Menu.Group>
                     <Dropdown.Menu.Item icon={<CopyIcon />} onClick={handleOnCopyClick} label="Copy module" />
                     <Dropdown.Menu.Item icon={<LinkIcon />} onClick={handleOnOpenClick} label="Open in Studio" />
-                    <Dropdown.Menu.Item icon={<ExportIcon />} onClick={handleOnExportClick} label="Export (JSON)" />
+                    <Dropdown.Menu.Item icon={<ExportIcon />} onClick={handleOnExportClick} label="Export to file" />
                   </Dropdown.Menu.Group>
                 </Dropdown.Menu>
               </Dropdown>
@@ -146,7 +168,7 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
           <Dialog.Body size="medium">
             <Alert
               variant="info"
-              text="You can hold down shift when deleting a gameserver to bypass this confirmation entirely."
+              text="You can hold down shift when deleting a module to bypass this confirmation entirely."
             />
             <p>
               Are you sure you want to delete the module <strong>{mod.name}</strong>? To confirm, type the module name
@@ -166,6 +188,27 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
               text="Delete module"
               color="error"
             />
+          </Dialog.Body>
+        </Dialog.Content>
+      </Dialog>
+      <Dialog open={openExportDialog} onOpenChange={setOpenExportDialog}>
+        <Dialog.Content>
+          <Dialog.Heading size={4}>
+            Module: <span style={{ textTransform: 'capitalize' }}>{mod.name}</span>
+          </Dialog.Heading>
+          <Dialog.Body>
+            {isExporting && (
+              <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <p>preparing {mod.name}.json</p>
+                <Spinner size="tiny" />
+              </div>
+            )}
+
+            {!isExporting && downloadLink && (
+              <DownloadLink href={downloadLink} download={`${mod.name}.json`}>
+                Download {mod.name}.json
+              </DownloadLink>
+            )}
           </Dialog.Body>
         </Dialog.Content>
       </Dialog>

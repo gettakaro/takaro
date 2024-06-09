@@ -7,7 +7,7 @@ import { GameServerService } from '../service/GameServerService.js';
 import { ctx } from '@takaro/util';
 import { PlayerService } from '../service/PlayerService.js';
 import { PlayerOnGameServerService, PlayerOnGameServerUpdateDTO } from '../service/PlayerOnGameserverService.js';
-import { playerSyncGateway, metrics } from '../lib/metrics.js';
+import { getWorkerMetrics } from '../lib/metrics.js';
 
 const log = logger('worker:playerSync');
 
@@ -90,6 +90,8 @@ export async function processJob(job: Job<IGameServerQueueData>) {
   }
 
   if (job.data.gameServerId) {
+    const workerMetrics = getWorkerMetrics(job.data.gameServerId);
+
     const { domainId, gameServerId } = job.data;
     log.debug(`Processing playerSync job for domain: ${domainId} and game server: ${gameServerId}`);
     const gameServerService = new GameServerService(domainId);
@@ -99,6 +101,8 @@ export async function processJob(job: Job<IGameServerQueueData>) {
     const onlinePlayers = await gameServerService.getPlayers(gameServerId);
 
     const promises = [];
+
+    workerMetrics.metrics.players_online.set({ gameserver: gameServerId, domain: domainId }, onlinePlayers.length);
 
     promises.push(
       playerOnGameServerService
@@ -121,12 +125,15 @@ export async function processJob(job: Job<IGameServerQueueData>) {
           await playerService.observeIp(player.id, gameServerId, gamePlayer.ip);
         }
 
-        metrics.player_ping.set(
+        workerMetrics.metrics.player_ping.set(
           { player: player.id, gameserver: gameServerId, domain: domainId },
           gamePlayer.ping ?? 0
         );
 
-        metrics.player_currency.set({ player: player.id, gameserver: gameServerId, domain: domainId }, pog.currency);
+        workerMetrics.metrics.player_currency.set(
+          { player: player.id, gameserver: gameServerId, domain: domainId },
+          pog.currency
+        );
 
         await playerOnGameServerService.update(
           pog.id,
@@ -139,7 +146,7 @@ export async function processJob(job: Job<IGameServerQueueData>) {
     );
 
     const res = await Promise.allSettled(promises);
-    await playerSyncGateway.pushAdd({ jobName: gameServerId });
+    await workerMetrics.finalize();
 
     for (const r of res) {
       if (r.status === 'rejected') {
