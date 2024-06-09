@@ -1,10 +1,11 @@
 import { FC, MouseEvent, useState } from 'react';
-import { Card, Dropdown, Button, Dialog, TextField, IconButton } from '@takaro/lib-components';
+import { Card, Dropdown, Button, Dialog, TextField, IconButton, LineChart } from '@takaro/lib-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
 import { useAddCurrency, useDeductCurrency } from 'queries/pog';
 import { AiOutlineMenu as MenuIcon } from 'react-icons/ai';
+import { useCurrencyStats } from 'queries/stats';
 
 interface CurrencyProps {
   playerId: string;
@@ -15,6 +16,8 @@ interface CurrencyProps {
 export const Currency: FC<CurrencyProps> = ({ currency, gameServerId, playerId }) => {
   const [openAddCurrencyDialog, setOpenAddCurrencyDialog] = useState<boolean>(false);
   const [openDeductCurrencyDialog, setOpenDeductCurrencyDialog] = useState<boolean>(false);
+
+  const { data } = useCurrencyStats(playerId, gameServerId);
 
   const { mutate: addCurrency, isPending: isAddingCurrency } = useAddCurrency();
   const { mutate: deductCurrency, isPending: isDeductingCurrency } = useDeductCurrency();
@@ -67,7 +70,17 @@ export const Currency: FC<CurrencyProps> = ({ currency, gameServerId, playerId }
             </Dropdown.Menu>
           </Dropdown>
         </div>
-        <Card variant="default">Currency Graph placeholder</Card>
+        <Card>
+          <div style={{ height: '500px' }}>
+            <LineChart
+              name="Currency"
+              data={data?.values || []}
+              xAccessor={(d) => new Date(d[0] * 1000)}
+              yAccessor={(d) => d[1]}
+              curveType="curveBasis"
+            />
+          </div>
+        </Card>
       </Card>
       <CurrencyDialog
         variant="add"

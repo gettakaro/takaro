@@ -1,12 +1,13 @@
 import { HorizontalNav, useTheme } from '@takaro/lib-components';
-import { createFileRoute, redirect } from '@tanstack/react-router';
+import { Link, createFileRoute, redirect } from '@tanstack/react-router';
 import { ErrorBoundary } from 'components/ErrorBoundary';
 import { Outlet } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
+import { PERMISSIONS } from '@takaro/apiclient';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/dashboard')({
   beforeLoad: ({ context }) => {
-    if (!hasPermission(context.auth.session, ['READ_GAMESERVERS'])) {
+    if (!hasPermission(context.auth.session, [PERMISSIONS.ReadGameservers])) {
       throw redirect({ to: '/forbidden' });
     }
   },
@@ -28,32 +29,18 @@ function Component() {
         gap: theme.spacing[2],
       }}
     >
-      <HorizontalNav
-        variant={'block'}
-        links={[
-          {
-            text: 'Overview',
-            to: '/gameserver/$gameServerId/dashboard/overview',
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore reusable link
-            params: { gameServerId },
-          },
-          {
-            text: 'Console',
-            to: '/gameserver/$gameServerId/dashboard/console',
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore reusable link
-            params: { gameServerId },
-          },
-          {
-            text: 'Statistics',
-            to: '/gameserver/$gameServerId/dashboard/statistics',
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore reusable link
-            params: { gameServerId },
-          },
-        ]}
-      />
+      <HorizontalNav variant={'block'}>
+        <Link to="/gameserver/$gameServerId/dashboard/overview" params={{ gameServerId }}>
+          Overview
+        </Link>
+        <Link to="/gameserver/$gameServerId/dashboard/console" params={{ gameServerId }}>
+          Console
+        </Link>
+        <Link to="/gameserver/$gameServerId/dashboard/statistics" params={{ gameServerId }}>
+          Statistics
+        </Link>
+      </HorizontalNav>
+
       <ErrorBoundary>
         <Outlet />
       </ErrorBoundary>

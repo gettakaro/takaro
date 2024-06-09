@@ -23,7 +23,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { hasPermission, useHasPermission } from 'hooks/useHasPermission';
 import { createFileRoute, useNavigate, Link, redirect } from '@tanstack/react-router';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/_global/users')({
   beforeLoad: ({ context }) => {
@@ -38,7 +38,7 @@ function Component() {
   useDocumentTitle('Users');
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<UserOutputWithRolesDTO>();
 
-  const { data, isLoading } = useSuspenseQuery({
+  const { data, isLoading } = useQuery({
     ...usersQueryOptions({
       page: pagination.paginationState.pageIndex,
       limit: pagination.paginationState.pageSize,

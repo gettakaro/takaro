@@ -1,4 +1,4 @@
-import { Outlet, createFileRoute, redirect } from '@tanstack/react-router';
+import { Link, Outlet, createFileRoute, redirect } from '@tanstack/react-router';
 import { styled, HorizontalNav } from '@takaro/lib-components';
 import { ErrorBoundary } from 'components/ErrorBoundary';
 import { hasPermission } from 'hooks/useHasPermission';
@@ -22,20 +22,10 @@ const ContentContainer = styled.div`
 function Component() {
   return (
     <Container>
-      <HorizontalNav
-        links={[
-          {
-            text: 'Global Game Server Settings',
-            // If serverId is not valid it will be directed by the failed requests.
-            to: '/settings/gameservers',
-          },
-          {
-            text: 'Discord',
-            to: '/settings/discord',
-          },
-        ]}
-        variant="underline"
-      />
+      <HorizontalNav variant="underline">
+        <Link to="/settings/gameservers">Global Game Server Settings</Link>
+        <Link to="/settings/discord">Discord</Link>
+      </HorizontalNav>
       <ContentContainer>
         <ErrorBoundary>
           <Outlet />

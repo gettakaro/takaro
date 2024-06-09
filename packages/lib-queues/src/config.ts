@@ -35,6 +35,11 @@ export interface IQueuesConfig extends IBaseConfig {
       interval: number;
       concurrency: number;
     };
+    kpi: {
+      name: string;
+      interval: number;
+      concurrency: number;
+    };
     csmmImport: {
       name: string;
     };
@@ -185,6 +190,26 @@ export const queuesConfigSchema = {
         format: Number,
         default: 5,
         env: 'PLAYER_SYNC_QUEUE_CONCURRENCY',
+      },
+    },
+    kpi: {
+      name: {
+        doc: 'The name of the queue',
+        format: String,
+        default: 'kpi',
+        env: 'KPI_QUEUE_NAME',
+      },
+      interval: {
+        doc: 'The interval to run',
+        format: Number,
+        default: ms('60m'),
+        env: 'KPI_QUEUE_INTERVAL',
+      },
+      concurrency: {
+        doc: 'Job concurrency',
+        format: Number,
+        default: 5,
+        env: 'KPI_QUEUE_CONCURRENCY',
       },
     },
     csmmImport: {

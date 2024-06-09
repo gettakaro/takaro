@@ -1,11 +1,11 @@
 import { Skeleton, styled, useTheme } from '@takaro/lib-components';
-import { Outlet, redirect } from '@tanstack/react-router';
+import { Outlet, redirect, createFileRoute } from '@tanstack/react-router';
+import { useQueries } from '@tanstack/react-query';
 import { ModuleInstallCard, CardList } from 'components/cards';
 import { gameServerModuleInstallationsOptions } from 'queries/gameserver';
 import { modulesQueryOptions } from 'queries/module';
-import { createFileRoute } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { PERMISSIONS } from '@takaro/apiclient';
 
 const SubHeader = styled.h2`
   font-size: ${({ theme }) => theme.fontSize.mediumLarge};
@@ -14,7 +14,7 @@ const SubHeader = styled.h2`
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/modules')({
   beforeLoad: ({ context }) => {
-    if (!hasPermission(context.auth.session, ['READ_MODULES'])) {
+    if (!hasPermission(context.auth.session, [PERMISSIONS.ReadModules])) {
       throw redirect({ to: '/forbidden' });
     }
   },
@@ -41,13 +41,17 @@ export function Component() {
   const { gameServerId } = Route.useParams();
   //useGameServerDocumentTitle('Modules');
 
-  const { data: installations } = useSuspenseQuery({
-    ...gameServerModuleInstallationsOptions(gameServerId),
-    initialData: loaderData.installations,
-  });
-  const { data: modules } = useSuspenseQuery({
-    ...modulesQueryOptions(),
-    initialData: loaderData.modules,
+  const [{ data: modules }, { data: installations }] = useQueries({
+    queries: [
+      {
+        ...modulesQueryOptions(),
+        initialData: loaderData.modules,
+      },
+      {
+        ...gameServerModuleInstallationsOptions(gameServerId),
+        initialData: loaderData.installations,
+      },
+    ],
   });
 
   const mappedModules = modules.data.map((mod) => {

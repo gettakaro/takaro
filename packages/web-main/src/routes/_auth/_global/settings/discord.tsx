@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
-import { useSuspenseInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { Button, Card, Empty, Skeleton, styled, useTheme, InfiniteScroll } from '@takaro/lib-components';
 import { LoginDiscordCard } from './-discord/LoginDiscordCard';
 import { GuildCard } from './-discord/GuildCard';
@@ -67,7 +67,7 @@ function Component() {
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
-  } = useSuspenseInfiniteQuery({
+  } = useInfiniteQuery({
     ...discordGuildInfiniteQueryOptions({}),
     initialData: loaderData.guilds,
   });

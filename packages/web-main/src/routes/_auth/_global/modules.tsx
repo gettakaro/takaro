@@ -7,7 +7,7 @@ import { useNavigate, Outlet, redirect } from '@tanstack/react-router';
 import { createFileRoute } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
 import { modulesInfiniteQueryOptions } from 'queries/module';
-import { useSuspenseInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { InfiniteScroll } from '@takaro/lib-components';
 
 const SubHeader = styled.h2<{ withMargin?: boolean }>`
@@ -21,7 +21,7 @@ const SubText = styled.p`
 
 export const Route = createFileRoute('/_auth/_global/modules')({
   beforeLoad: ({ context }) => {
-    if (!hasPermission(context.auth.session, ['READ_MODULES'])) {
+    if (!hasPermission(context.auth.session, [PERMISSIONS.ReadModules])) {
       throw redirect({ to: '/forbidden' });
     }
   },
@@ -43,7 +43,7 @@ function Component() {
   useDocumentTitle('Modules');
   const navigate = useNavigate();
   const theme = useTheme();
-  const loader = Route.useLoaderData();
+  const loaderModules = Route.useLoaderData();
 
   const {
     data: modules,
@@ -52,9 +52,9 @@ function Component() {
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
-  } = useSuspenseInfiniteQuery({
+  } = useInfiniteQuery({
     ...modulesInfiniteQueryOptions(),
-    initialData: loader,
+    initialData: loaderModules,
   });
 
   if (!modules || isLoading) {

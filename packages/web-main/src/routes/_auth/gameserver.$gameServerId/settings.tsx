@@ -12,7 +12,7 @@ import { useSnackbar } from 'notistack';
 import { PERMISSIONS, SettingsOutputDTOTypeEnum } from '@takaro/apiclient';
 import { hasPermission, useHasPermission } from 'hooks/useHasPermission';
 import { createFileRoute, redirect } from '@tanstack/react-router';
-import { useSuspenseQueries } from '@tanstack/react-query';
+import { useQueries } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/settings')({
   beforeLoad: ({ context }) => {
@@ -80,7 +80,7 @@ function Component() {
   const { enqueueSnackbar } = useSnackbar();
   const loaderData = Route.useLoaderData();
 
-  const [{ data: gameServerSettings }, { data: globalGameServerSettings }] = useSuspenseQueries({
+  const [{ data: gameServerSettings }, { data: globalGameServerSettings }] = useQueries({
     queries: [
       { ...gameServerSettingsQueryOptions(gameServerId), initialData: loaderData.gameServerSettings },
       { ...globalGameServerSettingsQueryOptions(), initialData: loaderData.globalGameServerSettings },

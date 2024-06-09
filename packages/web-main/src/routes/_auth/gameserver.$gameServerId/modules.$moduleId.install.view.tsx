@@ -3,10 +3,11 @@ import { moduleQueryOptions } from 'queries/module';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { InstallModuleForm } from './-InstallModuleForm';
 import { hasPermission } from 'hooks/useHasPermission';
+import { PERMISSIONS } from '@takaro/apiclient';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/modules/$moduleId/install/view')({
   beforeLoad: ({ context }) => {
-    if (!hasPermission(context.auth.session, ['READ_MODULES'])) {
+    if (!hasPermission(context.auth.session, [PERMISSIONS.ReadModules])) {
       throw redirect({ to: '/forbidden' });
     }
   },

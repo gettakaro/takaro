@@ -7,7 +7,7 @@ import { Outlet, redirect, useNavigate, createFileRoute } from '@tanstack/react-
 import { DateTime } from 'luxon';
 import { AiOutlineDelete as DeleteIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
 import { hasPermission } from 'hooks/useHasPermission';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/_global/user/$userId')({
   beforeLoad: ({ context }) => {
@@ -23,7 +23,7 @@ export const Route = createFileRoute('/_auth/_global/user/$userId')({
 function Component() {
   const loaderData = Route.useLoaderData();
   const { userId } = Route.useParams();
-  const { data: user } = useSuspenseQuery({
+  const { data: user } = useQuery({
     ...userQueryOptions(userId),
     initialData: loaderData,
   });

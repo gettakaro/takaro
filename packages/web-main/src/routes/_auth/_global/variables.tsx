@@ -9,7 +9,7 @@ import { VariableValueDetail } from './-variables/VariableValueDetail';
 import { VariableDeleteDialog } from './-variables/VariableDeleteDialog';
 import { VariablesDeleteDialog } from './-variables/VariablesDeleteDialog';
 import { Outlet, createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
-import { useSuspenseQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { hasPermission } from 'hooks/useHasPermission';
 
 export const Route = createFileRoute('/_auth/_global/variables')({
@@ -27,7 +27,7 @@ function Component() {
   const navigate = useNavigate();
   const [openVariablesDialog, setOpenVariablesDialog] = useState<boolean>(false);
 
-  const { data, isLoading } = useSuspenseQuery({
+  const { data, isLoading } = useQuery({
     ...variablesQueryOptions({
       page: pagination.paginationState.pageIndex,
       limit: pagination.paginationState.pageSize,

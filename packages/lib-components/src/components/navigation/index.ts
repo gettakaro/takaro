@@ -10,7 +10,7 @@ export { IconNav } from './IconNav';
 export type { IconNavProps } from './IconNav';
 
 export { HorizontalNav } from './HorizontalNav';
-export type { HorizontalNavProps, HorizontalNavLink } from './HorizontalNav';
+export type { HorizontalNavProps } from './HorizontalNav';
 
 export { Tabs } from './Tabs';
 export type { TabsProps } from './Tabs';

@@ -163,6 +163,25 @@ export interface BaseGameEvent {
 /**
  *
  * @export
+ * @interface BaseStatsInputDTO
+ */
+export interface BaseStatsInputDTO {
+  /**
+   *
+   * @type {StatsControllerGetPingStatsStartDateParameter}
+   * @memberof BaseStatsInputDTO
+   */
+  startDate?: StatsControllerGetPingStatsStartDateParameter;
+  /**
+   *
+   * @type {StatsControllerGetPingStatsStartDateParameter}
+   * @memberof BaseStatsInputDTO
+   */
+  endDate?: StatsControllerGetPingStatsStartDateParameter;
+}
+/**
+ *
+ * @export
  * @interface BaseTakaroEvent
  */
 export interface BaseTakaroEvent {
@@ -1402,6 +1421,7 @@ export interface EventChatMessage {
 export const EventChatMessageChannelEnum = {
   Global: 'global',
   Team: 'team',
+  Friends: 'friends',
   Whisper: 'whisper',
 } as const;
 
@@ -3652,6 +3672,12 @@ export interface IItemDTO {
    * @memberof IItemDTO
    */
   amount?: number;
+  /**
+   *
+   * @type {string}
+   * @memberof IItemDTO
+   */
+  quality?: string;
 }
 /**
  *
@@ -6110,6 +6136,31 @@ export interface PlayerUpdateDTO {
 /**
  *
  * @export
+ * @interface PlayersOnlineInputDTO
+ */
+export interface PlayersOnlineInputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof PlayersOnlineInputDTO
+   */
+  gameServerId?: string;
+  /**
+   *
+   * @type {StatsControllerGetPingStatsStartDateParameter}
+   * @memberof PlayersOnlineInputDTO
+   */
+  startDate?: StatsControllerGetPingStatsStartDateParameter;
+  /**
+   *
+   * @type {StatsControllerGetPingStatsStartDateParameter}
+   * @memberof PlayersOnlineInputDTO
+   */
+  endDate?: StatsControllerGetPingStatsStartDateParameter;
+}
+/**
+ *
+ * @export
  * @interface PogParam
  */
 export interface PogParam {
@@ -6125,6 +6176,37 @@ export interface PogParam {
    * @memberof PogParam
    */
   playerId: string;
+}
+/**
+ *
+ * @export
+ * @interface PogStatsInputDTO
+ */
+export interface PogStatsInputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof PogStatsInputDTO
+   */
+  gameServerId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PogStatsInputDTO
+   */
+  playerId: string;
+  /**
+   *
+   * @type {StatsControllerGetPingStatsStartDateParameter}
+   * @memberof PogStatsInputDTO
+   */
+  startDate?: StatsControllerGetPingStatsStartDateParameter;
+  /**
+   *
+   * @type {StatsControllerGetPingStatsStartDateParameter}
+   * @memberof PogStatsInputDTO
+   */
+  endDate?: StatsControllerGetPingStatsStartDateParameter;
 }
 /**
  *
@@ -6608,6 +6690,44 @@ export interface SettingsSetDTO {
    * @memberof SettingsSetDTO
    */
   value: any;
+}
+/**
+ * @type StatsControllerGetPingStatsStartDateParameter
+ * @export
+ */
+export type StatsControllerGetPingStatsStartDateParameter = string;
+
+/**
+ *
+ * @export
+ * @interface StatsOutputDTO
+ */
+export interface StatsOutputDTO {
+  /**
+   *
+   * @type {object}
+   * @memberof StatsOutputDTO
+   */
+  values: object;
+}
+/**
+ *
+ * @export
+ * @interface StatsOutputDTOAPI
+ */
+export interface StatsOutputDTOAPI {
+  /**
+   *
+   * @type {StatsOutputDTO}
+   * @memberof StatsOutputDTOAPI
+   */
+  data: StatsOutputDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof StatsOutputDTOAPI
+   */
+  meta: MetadataOutput;
 }
 /**
  *
@@ -17683,6 +17803,440 @@ export const SettingsControllerGetKeysEnum = {
 } as const;
 export type SettingsControllerGetKeysEnum =
   (typeof SettingsControllerGetKeysEnum)[keyof typeof SettingsControllerGetKeysEnum];
+
+/**
+ * StatsApi - axios parameter creator
+ * @export
+ */
+export const StatsApiAxiosParamCreator = function (configuration?: Configuration) {
+  return {
+    /**
+     *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+     * @summary Get currency stats
+     * @param {string} gameServerId
+     * @param {string} playerId
+     * @param {StatsControllerGetPingStatsStartDateParameter} [startDate]
+     * @param {StatsControllerGetPingStatsStartDateParameter} [endDate]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    statsControllerGetCurrencyStats: async (
+      gameServerId: string,
+      playerId: string,
+      startDate?: StatsControllerGetPingStatsStartDateParameter,
+      endDate?: StatsControllerGetPingStatsStartDateParameter,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'gameServerId' is not null or undefined
+      assertParamExists('statsControllerGetCurrencyStats', 'gameServerId', gameServerId);
+      // verify required parameter 'playerId' is not null or undefined
+      assertParamExists('statsControllerGetCurrencyStats', 'playerId', playerId);
+      const localVarPath = `/stats/currency`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      if (gameServerId !== undefined) {
+        localVarQueryParameter['gameServerId'] = gameServerId;
+      }
+
+      if (playerId !== undefined) {
+        localVarQueryParameter['playerId'] = playerId;
+      }
+
+      if (startDate !== undefined) {
+        localVarQueryParameter['startDate'] = startDate;
+      }
+
+      if (endDate !== undefined) {
+        localVarQueryParameter['endDate'] = endDate;
+      }
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+     * @summary Get ping stats
+     * @param {string} gameServerId
+     * @param {string} playerId
+     * @param {StatsControllerGetPingStatsStartDateParameter} [startDate]
+     * @param {StatsControllerGetPingStatsStartDateParameter} [endDate]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    statsControllerGetPingStats: async (
+      gameServerId: string,
+      playerId: string,
+      startDate?: StatsControllerGetPingStatsStartDateParameter,
+      endDate?: StatsControllerGetPingStatsStartDateParameter,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'gameServerId' is not null or undefined
+      assertParamExists('statsControllerGetPingStats', 'gameServerId', gameServerId);
+      // verify required parameter 'playerId' is not null or undefined
+      assertParamExists('statsControllerGetPingStats', 'playerId', playerId);
+      const localVarPath = `/stats/ping`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      if (gameServerId !== undefined) {
+        localVarQueryParameter['gameServerId'] = gameServerId;
+      }
+
+      if (playerId !== undefined) {
+        localVarQueryParameter['playerId'] = playerId;
+      }
+
+      if (startDate !== undefined) {
+        localVarQueryParameter['startDate'] = startDate;
+      }
+
+      if (endDate !== undefined) {
+        localVarQueryParameter['endDate'] = endDate;
+      }
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+     * @summary Get player online stats
+     * @param {string} [gameServerId]
+     * @param {StatsControllerGetPingStatsStartDateParameter} [startDate]
+     * @param {StatsControllerGetPingStatsStartDateParameter} [endDate]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    statsControllerGetPlayerOnlineStats: async (
+      gameServerId?: string,
+      startDate?: StatsControllerGetPingStatsStartDateParameter,
+      endDate?: StatsControllerGetPingStatsStartDateParameter,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/stats/players-online`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      if (gameServerId !== undefined) {
+        localVarQueryParameter['gameServerId'] = gameServerId;
+      }
+
+      if (startDate !== undefined) {
+        localVarQueryParameter['startDate'] = startDate;
+      }
+
+      if (endDate !== undefined) {
+        localVarQueryParameter['endDate'] = endDate;
+      }
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+  };
+};
+
+/**
+ * StatsApi - functional programming interface
+ * @export
+ */
+export const StatsApiFp = function (configuration?: Configuration) {
+  const localVarAxiosParamCreator = StatsApiAxiosParamCreator(configuration);
+  return {
+    /**
+     *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+     * @summary Get currency stats
+     * @param {string} gameServerId
+     * @param {string} playerId
+     * @param {StatsControllerGetPingStatsStartDateParameter} [startDate]
+     * @param {StatsControllerGetPingStatsStartDateParameter} [endDate]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async statsControllerGetCurrencyStats(
+      gameServerId: string,
+      playerId: string,
+      startDate?: StatsControllerGetPingStatsStartDateParameter,
+      endDate?: StatsControllerGetPingStatsStartDateParameter,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<StatsOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.statsControllerGetCurrencyStats(
+        gameServerId,
+        playerId,
+        startDate,
+        endDate,
+        options
+      );
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['StatsApi.statsControllerGetCurrencyStats']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+     * @summary Get ping stats
+     * @param {string} gameServerId
+     * @param {string} playerId
+     * @param {StatsControllerGetPingStatsStartDateParameter} [startDate]
+     * @param {StatsControllerGetPingStatsStartDateParameter} [endDate]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async statsControllerGetPingStats(
+      gameServerId: string,
+      playerId: string,
+      startDate?: StatsControllerGetPingStatsStartDateParameter,
+      endDate?: StatsControllerGetPingStatsStartDateParameter,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<StatsOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.statsControllerGetPingStats(
+        gameServerId,
+        playerId,
+        startDate,
+        endDate,
+        options
+      );
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['StatsApi.statsControllerGetPingStats']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+     * @summary Get player online stats
+     * @param {string} [gameServerId]
+     * @param {StatsControllerGetPingStatsStartDateParameter} [startDate]
+     * @param {StatsControllerGetPingStatsStartDateParameter} [endDate]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async statsControllerGetPlayerOnlineStats(
+      gameServerId?: string,
+      startDate?: StatsControllerGetPingStatsStartDateParameter,
+      endDate?: StatsControllerGetPingStatsStartDateParameter,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<StatsOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.statsControllerGetPlayerOnlineStats(
+        gameServerId,
+        startDate,
+        endDate,
+        options
+      );
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['StatsApi.statsControllerGetPlayerOnlineStats']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+  };
+};
+
+/**
+ * StatsApi - factory interface
+ * @export
+ */
+export const StatsApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+  const localVarFp = StatsApiFp(configuration);
+  return {
+    /**
+     *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+     * @summary Get currency stats
+     * @param {string} gameServerId
+     * @param {string} playerId
+     * @param {StatsControllerGetPingStatsStartDateParameter} [startDate]
+     * @param {StatsControllerGetPingStatsStartDateParameter} [endDate]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    statsControllerGetCurrencyStats(
+      gameServerId: string,
+      playerId: string,
+      startDate?: StatsControllerGetPingStatsStartDateParameter,
+      endDate?: StatsControllerGetPingStatsStartDateParameter,
+      options?: any
+    ): AxiosPromise<StatsOutputDTOAPI> {
+      return localVarFp
+        .statsControllerGetCurrencyStats(gameServerId, playerId, startDate, endDate, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+     * @summary Get ping stats
+     * @param {string} gameServerId
+     * @param {string} playerId
+     * @param {StatsControllerGetPingStatsStartDateParameter} [startDate]
+     * @param {StatsControllerGetPingStatsStartDateParameter} [endDate]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    statsControllerGetPingStats(
+      gameServerId: string,
+      playerId: string,
+      startDate?: StatsControllerGetPingStatsStartDateParameter,
+      endDate?: StatsControllerGetPingStatsStartDateParameter,
+      options?: any
+    ): AxiosPromise<StatsOutputDTOAPI> {
+      return localVarFp
+        .statsControllerGetPingStats(gameServerId, playerId, startDate, endDate, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+     * @summary Get player online stats
+     * @param {string} [gameServerId]
+     * @param {StatsControllerGetPingStatsStartDateParameter} [startDate]
+     * @param {StatsControllerGetPingStatsStartDateParameter} [endDate]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    statsControllerGetPlayerOnlineStats(
+      gameServerId?: string,
+      startDate?: StatsControllerGetPingStatsStartDateParameter,
+      endDate?: StatsControllerGetPingStatsStartDateParameter,
+      options?: any
+    ): AxiosPromise<StatsOutputDTOAPI> {
+      return localVarFp
+        .statsControllerGetPlayerOnlineStats(gameServerId, startDate, endDate, options)
+        .then((request) => request(axios, basePath));
+    },
+  };
+};
+
+/**
+ * StatsApi - object-oriented interface
+ * @export
+ * @class StatsApi
+ * @extends {BaseAPI}
+ */
+export class StatsApi extends BaseAPI {
+  /**
+   *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+   * @summary Get currency stats
+   * @param {string} gameServerId
+   * @param {string} playerId
+   * @param {StatsControllerGetPingStatsStartDateParameter} [startDate]
+   * @param {StatsControllerGetPingStatsStartDateParameter} [endDate]
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof StatsApi
+   */
+  public statsControllerGetCurrencyStats(
+    gameServerId: string,
+    playerId: string,
+    startDate?: StatsControllerGetPingStatsStartDateParameter,
+    endDate?: StatsControllerGetPingStatsStartDateParameter,
+    options?: RawAxiosRequestConfig
+  ) {
+    return StatsApiFp(this.configuration)
+      .statsControllerGetCurrencyStats(gameServerId, playerId, startDate, endDate, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+   * @summary Get ping stats
+   * @param {string} gameServerId
+   * @param {string} playerId
+   * @param {StatsControllerGetPingStatsStartDateParameter} [startDate]
+   * @param {StatsControllerGetPingStatsStartDateParameter} [endDate]
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof StatsApi
+   */
+  public statsControllerGetPingStats(
+    gameServerId: string,
+    playerId: string,
+    startDate?: StatsControllerGetPingStatsStartDateParameter,
+    endDate?: StatsControllerGetPingStatsStartDateParameter,
+    options?: RawAxiosRequestConfig
+  ) {
+    return StatsApiFp(this.configuration)
+      .statsControllerGetPingStats(gameServerId, playerId, startDate, endDate, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+   * @summary Get player online stats
+   * @param {string} [gameServerId]
+   * @param {StatsControllerGetPingStatsStartDateParameter} [startDate]
+   * @param {StatsControllerGetPingStatsStartDateParameter} [endDate]
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof StatsApi
+   */
+  public statsControllerGetPlayerOnlineStats(
+    gameServerId?: string,
+    startDate?: StatsControllerGetPingStatsStartDateParameter,
+    endDate?: StatsControllerGetPingStatsStartDateParameter,
+    options?: RawAxiosRequestConfig
+  ) {
+    return StatsApiFp(this.configuration)
+      .statsControllerGetPlayerOnlineStats(gameServerId, startDate, endDate, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+}
 
 /**
  * UserApi - axios parameter creator

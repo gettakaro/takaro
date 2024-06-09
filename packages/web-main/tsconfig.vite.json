@@ -11,5 +11,10 @@
   },
   "include": [
     "vite.config.ts"
-  ]
+  ],
+  "paths": {
+    "vite": [
+      "node_modules/vite"
+    ]
+  }
 }

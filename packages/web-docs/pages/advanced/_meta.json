@@ -2,5 +2,6 @@
   "modules": "Modules",
   "variables": "Variables",
   "functions": "Writing custom modules",
-  "api": "API"
+  "api": "API",
+  "self-hosting": "Self hosting"
 }

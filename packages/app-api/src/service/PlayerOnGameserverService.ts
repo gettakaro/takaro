@@ -270,6 +270,7 @@ export class PlayerOnGameServerService extends TakaroService<
         }),
       })
     );
+
     return updatedPlayerOnGameServer;
   }
 

@@ -1,5 +1,4 @@
 import { styled } from '../../../styled';
-import { motion } from 'framer-motion';
 import { HorizontalNavVariant } from '.';
 
 export const NavBar = styled.nav<{ variant: HorizontalNavVariant }>`
@@ -53,31 +52,17 @@ export const NavBar = styled.nav<{ variant: HorizontalNavVariant }>`
 
     &.active {
       color: ${({ theme }) => theme.colors.text};
+
+      &:after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        right: 0;
+        height: 1px;
+        width: 100%;
+        background-color: ${({ theme }) => theme.colors.primary};
+      }
     }
   }
-`;
-
-export const Underline = styled(motion.div)`
-  position: absolute;
-  bottom: -${({ theme }) => theme.spacing['0_75']};
-  left: 0px;
-  display: block;
-  height: 2px;
-  background-color: ${({ theme }) => theme.colors.primary};
-  content: '';
-  width: 100%;
-`;
-
-export const Block = styled(motion.div)`
-  position: absolute;
-  top: 0;
-  left: 0px;
-  z-index: 1;
-  display: block;
-  height: 100%;
-  border: 1px solid ${({ theme }) => theme.colors.primary};
-  background-color: ${({ theme }) => theme.colors.primaryShade};
-  border-radius: ${({ theme }) => theme.borderRadius.medium};
-  content: '';
-  width: 100%;
 `;

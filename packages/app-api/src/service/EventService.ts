@@ -14,6 +14,7 @@ import { UserOutputDTO } from './UserService.js';
 import { BaseEvent, EventMapping, EventPayload, TakaroEvents } from '@takaro/modules';
 import { ValueOf } from 'type-fest';
 import { HookService } from './HookService.js';
+import { eventsMetric } from '../lib/metrics.js';
 
 export const EVENT_TYPES = {
   ...TakaroEvents,
@@ -141,6 +142,14 @@ export class EventService extends TakaroService<EventModel, EventOutputDTO, Even
     await eventMeta.validate();
 
     const created = await this.repo.create(data);
+
+    eventsMetric.inc({
+      event: created.eventName,
+      player: created.playerId || 'none',
+      gameserver: created.gameserverId || 'none',
+      module: created.moduleId || 'none',
+      domain: this.domainId,
+    });
 
     const hookService = new HookService(this.domainId);
     await hookService.handleEvent({

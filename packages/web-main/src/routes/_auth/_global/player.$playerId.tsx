@@ -1,5 +1,5 @@
-import { Stats, styled, Skeleton, useTheme, HorizontalNav, Avatar, getInitials } from '@takaro/lib-components';
-import { Outlet, redirect, createFileRoute } from '@tanstack/react-router';
+import { Stats, styled, Skeleton, useTheme, Avatar, getInitials, HorizontalNav } from '@takaro/lib-components';
+import { Outlet, redirect, createFileRoute, Link } from '@tanstack/react-router';
 import { DateTime } from 'luxon';
 import { playerQueryOptions } from 'queries/player';
 import { playersOnGameServersQueryOptions } from 'queries/pog';
@@ -78,40 +78,17 @@ function Component() {
         </div>
       </Header>
 
-      <HorizontalNav
-        links={[
-          {
-            text: 'Info',
-            to: '/player/$playerId/info',
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore reusable link
-            params: { playerId },
-          },
-          {
-            text: 'Events',
-            to: '/player/$playerId/events',
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore reusable link
-            params: { playerId },
-          },
-          /*
-          {
-            text: 'Inventory',
-            to: '/player/$playerId/inventory',
-            params: { playerId },
-          },
-          */
-          {
-            text: 'Economy',
-            to: '/player/$playerId/economy',
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore reusable link
-            params: { playerId },
-          },
-        ]}
-        variant="underline"
-      />
-
+      <HorizontalNav variant="underline">
+        <Link to="/player/$playerId/info" params={{ playerId }}>
+          Info
+        </Link>
+        <Link to="/player/$playerId/events" params={{ playerId }}>
+          Events
+        </Link>
+        <Link to="/player/$playerId/economy" params={{ playerId }}>
+          Economy
+        </Link>
+      </HorizontalNav>
       <ErrorBoundary>
         <Outlet />
       </ErrorBoundary>
