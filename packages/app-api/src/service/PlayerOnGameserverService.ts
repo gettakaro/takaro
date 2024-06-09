@@ -11,7 +11,6 @@ import { PlayerRoleAssignmentOutputDTO, RoleService } from './RoleService.js';
 import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
 import { IGamePlayer, TakaroEventCurrencyAdded, TakaroEventCurrencyDeducted, TakaroEvents } from '@takaro/modules';
 import { PlayerService } from './PlayerService.js';
-import { metrics } from '../lib/metrics.js';
 
 export class PlayerOnGameserverOutputDTO extends TakaroModelDTO<PlayerOnGameserverOutputDTO> {
   @IsString()
@@ -211,10 +210,6 @@ export class PlayerOnGameServerService extends TakaroService<
   async setCurrency(id: string, currency: number) {
     try {
       const res = await this.repo.update(id, new PlayerOnGameServerUpdateDTO({ currency }));
-      metrics.player_currency.set(
-        { player: res.playerId, gameserver: res.gameServerId, domain: this.domainId },
-        res.currency
-      );
       return res;
     } catch (error) {
       if (error instanceof Error) {
@@ -256,16 +251,6 @@ export class PlayerOnGameServerService extends TakaroService<
         }),
       })
     );
-
-    metrics.player_currency.set(
-      { player: senderRecord.playerId, gameserver: senderRecord.gameServerId, domain: this.domainId },
-      senderRecord.currency
-    );
-
-    metrics.player_currency.set(
-      { player: receiverRecord.playerId, gameserver: receiverRecord.gameServerId, domain: this.domainId },
-      receiverRecord.currency
-    );
   }
 
   async deductCurrency(id: string, amount: number) {
@@ -284,11 +269,6 @@ export class PlayerOnGameServerService extends TakaroService<
           amount,
         }),
       })
-    );
-
-    metrics.player_currency.set(
-      { player: record.playerId, gameserver: record.gameServerId, domain: this.domainId },
-      updatedPlayerOnGameServer.currency
     );
 
     return updatedPlayerOnGameServer;
@@ -312,15 +292,9 @@ export class PlayerOnGameServerService extends TakaroService<
       })
     );
 
-    metrics.player_currency.set(
-      { player: record.playerId, gameserver: record.gameServerId, domain: this.domainId },
-      updatedPlayerOnGameServer.currency
-    );
-
     return updatedPlayerOnGameServer;
   }
   async setOnlinePlayers(gameServerId: string, players: IGamePlayer[]) {
     await this.repo.setOnlinePlayers(gameServerId, players);
-    metrics.players_online.set({ gameserver: gameServerId, domain: this.domainId }, players.length);
   }
 }
