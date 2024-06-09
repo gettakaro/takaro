@@ -12,5 +12,6 @@ scrape_configs:
       - targets: ['takaro:3000']
 
   - job_name: 'pushgateway'
+    honor_labels: true
     static_configs:
       - targets: ['pushgateway:9091']
