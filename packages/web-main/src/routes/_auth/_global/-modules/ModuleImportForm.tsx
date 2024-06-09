@@ -82,7 +82,7 @@ export const ModuleImportForm: FC<ModuleFormProps> = ({ isSuccess = false, onSub
                   control={control}
                   label="module json file"
                   description="Upload your module.json file here"
-                  placeholder="teleport.json"
+                  placeholder="your_module.json"
                   loading={isLoading}
                   name="importData"
                   required

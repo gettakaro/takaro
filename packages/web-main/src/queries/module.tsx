@@ -32,6 +32,7 @@ import {
 import { queryParamsToArray, hasNextPage, mutationWrapper } from './util';
 import { AxiosError, AxiosResponse } from 'axios';
 import { ErrorMessageMapping } from '@takaro/lib-components/src/errors';
+import { queryClient } from 'queryClient';
 
 export const moduleKeys = {
   all: ['modules'] as const,
@@ -149,6 +150,9 @@ export const useModuleImport = () => {
   return mutationWrapper<void, BuiltinModule>(
     useMutation<AxiosResponse<void>, AxiosError<ModuleExportDTOAPI>, BuiltinModule>({
       mutationFn: async (mod) => await apiClient.module.moduleControllerImport(mod),
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
+      },
     }),
     {}
   );

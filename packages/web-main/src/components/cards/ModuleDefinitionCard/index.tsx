@@ -60,7 +60,7 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
 
   useEffect(() => {
     if (!isExporting && exported) {
-      const blob = new Blob([JSON.stringify(exported)], { type: 'text/plain' });
+      const blob = new Blob([JSON.stringify(exported)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       setDownloadLink(url);
       return () => URL.revokeObjectURL(url);
