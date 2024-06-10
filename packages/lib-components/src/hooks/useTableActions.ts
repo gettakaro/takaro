@@ -23,7 +23,7 @@ export interface ColumnFilter {
   value: string[];
 }
 
-export function useTableActions<T>({ pageIndex, pageSize }: TableActionOptions = { pageIndex: 0, pageSize: 9 }) {
+export function useTableActions<T>({ pageIndex, pageSize }: TableActionOptions = { pageIndex: 0, pageSize: 10 }) {
   const [paginationState, setPaginationState] = useState<PaginationState>({
     pageIndex,
     pageSize,

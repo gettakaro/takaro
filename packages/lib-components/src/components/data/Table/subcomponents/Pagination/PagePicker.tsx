@@ -1,6 +1,6 @@
 import { FC, useMemo } from 'react';
 import { Button, IconButton } from '../../../../../components';
-import { PaginationContainer } from './style';
+import { PagePickerContainer } from './style';
 import {
   FaAngleRight as NextIcon,
   FaAnglesRight as LastIcon,
@@ -27,7 +27,7 @@ const getPageWindow = (pageCount: number, windowSize: number, currentPage: numbe
   }
 };
 
-export interface PaginationProps {
+export interface PagePickerProps {
   setPageIndex: (index: number) => void;
   pageIndex: number;
   hasPrevious: boolean;
@@ -37,7 +37,7 @@ export interface PaginationProps {
   pageCount: number;
 }
 
-export const Pagination: FC<PaginationProps> = ({
+export const PagePicker: FC<PagePickerProps> = ({
   setPageIndex,
   hasPrevious,
   pageIndex,
@@ -63,7 +63,7 @@ export const Pagination: FC<PaginationProps> = ({
   };
 
   return (
-    <PaginationContainer border={false}>
+    <PagePickerContainer border={false}>
       {showJumps && (
         <IconButton
           size="tiny"
@@ -103,6 +103,6 @@ export const Pagination: FC<PaginationProps> = ({
           ariaLabel="Last page"
         />
       )}
-    </PaginationContainer>
+    </PagePickerContainer>
   );
 };
