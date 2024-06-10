@@ -36,7 +36,7 @@ export const Container = styled.div<{
     if (!outline) {
       return 'border: 0.1rem solid transparent;';
     }
-    return `border: 0.1rem solid ${theme.colors[color]};`;
+    return `border: 0.1rem solid ${shade(0.5, theme.colors[color])};`;
   }}
 
   &:hover {
@@ -63,7 +63,7 @@ export const Container = styled.div<{
         case 'secondary':
           return `color: ${theme.colors.text};`;
         default:
-          return `color: ${theme.colors['white']};`;
+          return `color: ${theme.colors[color]};`;
       }
     }}
   }
