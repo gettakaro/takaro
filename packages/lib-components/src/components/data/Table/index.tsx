@@ -186,15 +186,6 @@ export function Table<DataType extends object>({
     },
   });
 
-  // table size
-  useEffect(() => {
-    if (density === 'tight') {
-      table.setPageSize(19);
-    } else {
-      table.resetPageSize(true);
-    }
-  }, [density]);
-
   // rowSelection.rowSelectionState has the following shape: { [rowId: string]: boolean }
   const hasRowSelection = useMemo(() => {
     return (
@@ -335,7 +326,7 @@ export function Table<DataType extends object>({
                   {ROW_SELECTION_COL_SPAN ? <td colSpan={1} /> : null}
                   {pagination && (
                     <>
-                      <td colSpan={1}>
+                      <td colSpan={2}>
                         <span>
                           showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}-
                           {table.getState().pagination.pageIndex * table.getState().pagination.pageSize +
@@ -343,7 +334,7 @@ export function Table<DataType extends object>({
                           of {pagination.pageOptions.total} entries
                         </span>
                       </td>
-                      <td colSpan={table.getVisibleLeafColumns().length - ROW_SELECTION_COL_SPAN - 3}>
+                      <td colSpan={table.getVisibleLeafColumns().length - ROW_SELECTION_COL_SPAN - 5}>
                         <PagePicker
                           pageCount={table.getPageCount()}
                           hasNext={table.getCanNextPage()}
@@ -354,7 +345,7 @@ export function Table<DataType extends object>({
                           setPageIndex={table.setPageIndex}
                         />
                       </td>
-                      <td colSpan={1}>
+                      <td colSpan={2}>
                         <PageSizeSelect
                           onPageSizeChange={(pageSize) => table.setPageSize(Number(pageSize))}
                           pageSize={table.getState().pagination.pageSize.toString()}
