@@ -24,7 +24,7 @@ export const PageSizeSelect: FC<PageSizeSelectProps> = ({ onPageSizeChange, page
       }}
     >
       <UnControlledSelectField.OptionGroup label="Options">
-        {[5, 10, 20, 30, 40, 50].map((val: number) => (
+        {[5, 10, 20, 30, 40, 50, 100].map((val: number) => (
           <UnControlledSelectField.Option key={`${val}-table`} value={val.toString(10)} label={val.toString(10)}>
             <div>
               <span>{val} items</span>
