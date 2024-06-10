@@ -28,6 +28,7 @@ export const ModuleSelect: FC<CustomSelectProps> = ({
   hint,
   required,
   label = 'Module',
+  canClear,
 }) => {
   const { data, isLoading: isLoadingData } = useQuery(modulesQueryOptions());
 
@@ -56,6 +57,7 @@ export const ModuleSelect: FC<CustomSelectProps> = ({
       name={selectName}
       label={label}
       modules={modules}
+      canClear={canClear}
     />
   );
 };
@@ -74,6 +76,7 @@ export const ModuleSelectView: FC<ModuleSelectViewProps> = ({
   required,
   loading,
   label,
+  canClear,
 }) => {
   return (
     <SelectField
@@ -88,6 +91,7 @@ export const ModuleSelectView: FC<ModuleSelectViewProps> = ({
       inPortal={inPortal}
       required={required}
       loading={loading}
+      canClear={canClear}
       render={(selectedItems) => {
         if (selectedItems.length === 0) {
           return <div>Select...</div>;

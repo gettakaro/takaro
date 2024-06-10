@@ -24,6 +24,7 @@ export const RoleSelect: FC<CustomSelectProps> = ({
   inPortal,
   description,
   readOnly,
+  canClear,
 }) => {
   const { data: roles, isLoading: isLoadingData } = useQuery(
     rolesQueryOptions({ sortBy: 'system', sortDirection: 'asc' })
@@ -52,6 +53,7 @@ export const RoleSelect: FC<CustomSelectProps> = ({
       required={required}
       loading={loading}
       label={label}
+      canClear={canClear}
     />
   );
 };
@@ -68,6 +70,7 @@ export const RoleSelectView: FC<RoleSelectViewProps> = ({
   inPortal,
   hint,
   required,
+  canClear,
   loading,
   label,
 }) => {
@@ -85,6 +88,7 @@ export const RoleSelectView: FC<RoleSelectViewProps> = ({
       required={required}
       enableFilter={roles.length > 10}
       loading={loading}
+      canClear={canClear}
       render={(selectedItems) => {
         if (selectedItems.length === 0) {
           return <div>Select...</div>;

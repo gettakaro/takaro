@@ -34,6 +34,7 @@ export const GameServerSelect: FC<CustomSelectProps & GameServerSelectProps> = (
   required,
   filter,
   data: providedData,
+  canClear,
 }) => {
   const { data: fetchedData, isLoading: isLoadingData } = useQuery({
     ...gameServersQueryOptions({ sortBy: 'type' }),
@@ -67,6 +68,7 @@ export const GameServerSelect: FC<CustomSelectProps & GameServerSelectProps> = (
       required={required}
       loading={loading}
       label={label}
+      canClear={canClear}
     />
   );
 };
@@ -85,6 +87,7 @@ export const GameServerSelectView: FC<GameServerSelectViewProps> = ({
   required,
   loading,
   label,
+  canClear,
 }) => {
   const renderOptionGroup = (groupLabel: string, typeEnum: GameServerOutputDTOTypeEnum) => {
     return (
@@ -127,6 +130,7 @@ export const GameServerSelectView: FC<GameServerSelectViewProps> = ({
       required={required}
       loading={loading}
       hasMargin={false}
+      canClear={canClear}
       render={(selectedItems) => {
         if (selectedItems.length === 0) {
           return <p>Select...</p>;

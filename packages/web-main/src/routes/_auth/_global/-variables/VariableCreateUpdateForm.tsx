@@ -94,14 +94,16 @@ export const VariablesForm: FC<CreateAndUpdateVariableformProps> = ({ variable, 
               description="Value is a string. However the most common use case is to store stringified JSON. You can e.g. use https://jsonformatter.org/json-stringify-online to stringify JSON."
               required
             />
-            <PlayerSelect control={control} loading={isLoading} name="playerId" />
+            <PlayerSelect canClear={true} control={control} loading={isLoading} name="playerId" />
             <GameServerSelect
+              canClear={true}
               control={control}
               loading={isLoading}
               name="gameServerId"
               description="If a different value needs to be stored for each game server, select the game server here."
             />
             <ModuleSelect
+              canClear={true}
               control={control}
               name="moduleId"
               loading={isLoading}
