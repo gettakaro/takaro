@@ -68,7 +68,7 @@ export class StatsService extends TakaroService<TakaroModel, TakaroDTO<void>, Ta
 
   async getPing(playerId: string, gameserverId: string, startTime?: string, endTime?: string) {
     const data = await this.prometheusQuery(
-      `takaro_player_ping{domain="${this.domainId}", player="${playerId}", gameserver="${gameserverId}"}`,
+      `takaro_player_ping{job="worker", domain="${this.domainId}", player="${playerId}", gameserver="${gameserverId}"}`,
       startTime,
       endTime
     );
@@ -77,7 +77,7 @@ export class StatsService extends TakaroService<TakaroModel, TakaroDTO<void>, Ta
 
   async getCurrency(playerId: string, gameserverId: string, startTime?: string, endTime?: string) {
     const data = await this.prometheusQuery(
-      `takaro_player_currency{domain="${this.domainId}", player="${playerId}", gameserver="${gameserverId}"}`,
+      `takaro_player_currency{job="worker", domain="${this.domainId}", player="${playerId}", gameserver="${gameserverId}"}`,
       startTime,
       endTime
     );
@@ -87,14 +87,14 @@ export class StatsService extends TakaroService<TakaroModel, TakaroDTO<void>, Ta
   async getPlayersOnline(gameserverId?: string, startTime?: string, endTime?: string) {
     if (gameserverId) {
       const data = await this.prometheusQuery(
-        `takaro_players_online{domain="${this.domainId}", gameserver="${gameserverId}"}`,
+        `takaro_players_online{job="worker", domain="${this.domainId}", gameserver="${gameserverId}"}`,
         startTime,
         endTime
       );
       return { values: data };
     } else {
       const data = await this.prometheusQuery(
-        `sum by(domain) (takaro_players_online{domain="${this.domainId}"})`,
+        `sum by(domain) (takaro_players_online{job="worker", domain="${this.domainId}"})`,
         startTime,
         endTime
       );
