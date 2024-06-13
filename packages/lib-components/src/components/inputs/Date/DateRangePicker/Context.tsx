@@ -16,9 +16,18 @@ export interface DateRangePickerState {
   friendlyStartDate?: string;
   friendlyEndDate?: string;
   friendlyRange?: string;
+  readOnly: boolean;
+  disabled: boolean;
 }
 
 export function reducer(state: DateRangePickerState, action: Action): DateRangePickerState {
+  if (state.readOnly || state.disabled) {
+    return {
+      ...state,
+      quickSelect: { ...state.quickSelect, show: false },
+    };
+  }
+
   switch (action.type) {
     case 'toggle_quick_select_popover':
       return {

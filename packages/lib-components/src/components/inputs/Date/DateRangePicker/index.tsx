@@ -10,16 +10,19 @@ import { QuickSelect, Tense, Unit } from './QuickSelect';
 import { Container, QuickSelectContainer, ItemContainer } from './style';
 import { DateSelector } from './DateSelector';
 import { DateRangePickerDispatchContext, DateRangePickerContext, reducer } from './Context';
+import { useTheme } from '../../../../hooks';
 
 export interface DateRangePickerProps {
   defaultValue?: { start: DateTime<true>; end: DateTime<true> };
   readOnly?: boolean;
+  disabled?: boolean;
   id: string;
   onChange: (start: DateTime<true>, end: DateTime<true>) => void;
 }
 
 export const DateRangePicker: FC<DateRangePickerProps> = ({
   readOnly = false,
+  disabled = false,
   id,
   onChange,
   defaultValue = {
@@ -39,9 +42,13 @@ export const DateRangePicker: FC<DateRangePickerProps> = ({
     start: defaultValue.start,
     end: defaultValue.end,
     friendlyRange: undefined,
+    readOnly,
+    disabled,
   });
 
+  const theme = useTheme();
   const [hasError, setHasError] = useState<boolean>(false);
+  const iconColor = disabled ? theme.colors.backgroundAccent : theme.colors.white;
 
   useEffect(() => {
     if (state.start > state.end) {
@@ -66,6 +73,8 @@ export const DateRangePicker: FC<DateRangePickerProps> = ({
             <Popover.Trigger asChild>
               <QuickSelectContainer
                 readOnly={readOnly}
+                disabled={disabled}
+                aria-disabled={disabled}
                 onClick={() =>
                   dispatch({
                     type: 'toggle_quick_select_popover',
@@ -73,8 +82,8 @@ export const DateRangePicker: FC<DateRangePickerProps> = ({
                   })
                 }
               >
-                <CalendarIcon size={18} />
-                <DownIcon size={18} />
+                <CalendarIcon fill={iconColor} size={18} />
+                <DownIcon fill={iconColor} size={18} />
               </QuickSelectContainer>
             </Popover.Trigger>
             <Popover.Content>
@@ -83,13 +92,17 @@ export const DateRangePicker: FC<DateRangePickerProps> = ({
           </Popover>
           <Popover
             open={state.showStartDate}
-            onOpenChange={(open) => dispatch({ type: 'toggle_start_date_popover', payload: { toggleStartDate: open } })}
+            onOpenChange={(open) => {
+              !readOnly && dispatch({ type: 'toggle_start_date_popover', payload: { toggleStartDate: open } });
+            }}
           >
             <Popover.Trigger asChild>
               <ItemContainer
+                disabled={disabled}
                 readOnly={readOnly}
                 onClick={() => {
-                  dispatch({ type: 'toggle_start_date_popover', payload: { toggleStartDate: !state.showStartDate } });
+                  !readOnly &&
+                    dispatch({ type: 'toggle_start_date_popover', payload: { toggleStartDate: !state.showStartDate } });
                 }}
               >
                 {state.friendlyStartDate ??
@@ -104,18 +117,20 @@ export const DateRangePicker: FC<DateRangePickerProps> = ({
           </Popover>
           {!state.friendlyRange && (
             <>
-              <ArrowRightIcon size={18} style={{ marginLeft: '10px', marginRight: '10px' }} />
+              <ArrowRightIcon fill={iconColor} size={18} style={{ marginLeft: '10px', marginRight: '10px' }} />
               <Popover
                 open={state.showEndDate}
                 onOpenChange={(open) => {
-                  dispatch({ type: 'toggle_end_date_popover', payload: { toggleEndDate: open } });
+                  !readOnly && dispatch({ type: 'toggle_end_date_popover', payload: { toggleEndDate: open } });
                 }}
               >
                 <Popover.Trigger asChild>
                   <ItemContainer
+                    disabled={disabled}
                     readOnly={readOnly}
                     onClick={() => {
-                      dispatch({ type: 'toggle_end_date_popover', payload: { toggleEndDate: !state.showEndDate } });
+                      !readOnly &&
+                        dispatch({ type: 'toggle_end_date_popover', payload: { toggleEndDate: !state.showEndDate } });
                     }}
                   >
                     {state.friendlyEndDate ?? state.end.toFormat('LLL d, yyyy @ HH:mm:ss.SSS')}

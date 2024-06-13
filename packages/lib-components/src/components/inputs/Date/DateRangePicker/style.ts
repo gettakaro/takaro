@@ -31,15 +31,24 @@ export const Container = styled.div<{
   flex-shrink: 0;
 `;
 
-export const ItemContainer = styled.div<{ readOnly: boolean }>`
-  cursor: ${({ readOnly }) => (readOnly ? 'default' : 'pointer')};
+export const ItemContainer = styled.div<{ readOnly: boolean; disabled: boolean }>`
+  cursor: ${({ readOnly, disabled }) => {
+    if (disabled) return 'not-allowed';
+    if (readOnly) return 'default';
+    return 'pointer';
+  }};
   padding: ${({ theme }) => `${theme.spacing['0_75']}`};
+  color: ${({ theme, disabled }) => (disabled ? theme.colors.backgroundAccent : theme.colors.text)};
 `;
 
-export const QuickSelectContainer = styled.div<{ readOnly: boolean }>`
+export const QuickSelectContainer = styled.div<{ readOnly: boolean; disabled: boolean }>`
   border-radius: ${({ theme }) => `${theme.borderRadius.medium} 0 0 ${theme.borderRadius.medium};`};
   height: 100%;
-  cursor: ${({ readOnly }) => (readOnly ? 'default' : 'pointer')};
+  cursor: ${({ readOnly, disabled }) => {
+    if (disabled) return 'not-allowed';
+    if (readOnly) return 'default';
+    return 'pointer';
+  }};
   gap: ${({ theme }) => theme.spacing['0_25']};
   display: flex;
   align-items: center;
