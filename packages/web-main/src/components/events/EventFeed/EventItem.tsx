@@ -108,11 +108,20 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
       );
       break;
     case EventOutputDTOEventNameEnum.HookExecuted:
+      properties = (
+        <>
+          <EventProperty name="module" value={event?.module?.name} />
+          <EventProperty name="success" value={`${meta.result?.success}`} />
+          <EventProperty name="hook" value={meta.hook?.name} />
+        </>
+      );
+      break;
     case EventOutputDTOEventNameEnum.CronjobExecuted:
       properties = (
         <>
           <EventProperty name="module" value={event?.module?.name} />
           <EventProperty name="success" value={`${meta.result?.success}`} />
+          <EventProperty name="cronjob" value={meta.cronjob?.name} />
         </>
       );
       break;
