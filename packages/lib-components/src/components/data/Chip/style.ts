@@ -1,5 +1,6 @@
 import { styled } from '../../../styled';
 import { ChipColor, ShowIcon } from '.';
+import { shade } from 'polished';
 
 export const Container = styled.div<{
   disabled: boolean;
@@ -35,7 +36,7 @@ export const Container = styled.div<{
     if (!outline) {
       return 'border: 0.1rem solid transparent;';
     }
-    return `border: 0.1rem solid ${theme.colors[color]};`;
+    return `border: 0.1rem solid ${shade(0.5, theme.colors[color])};`;
   }}
 
   &:hover {
@@ -69,7 +70,7 @@ export const Container = styled.div<{
 
   ${({ theme, color, outline }): string => {
     if (outline) {
-      return 'background-color: transparent;';
+      return `background-color: ${shade('0.8', theme.colors[color])};`;
     }
     return `background-color: ${theme.colors[color]};`;
   }}

@@ -3,17 +3,46 @@ import { Card, Dropdown, Button, Dialog, TextField, IconButton, LineChart } from
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
-import { useAddCurrency, useDeductCurrency } from 'queries/pog';
+import { playerOnGameServerQueryOptions, useAddCurrency, useDeductCurrency } from 'queries/pog';
 import { AiOutlineMenu as MenuIcon } from 'react-icons/ai';
 import { useCurrencyStats } from 'queries/stats';
+import { useQuery } from '@tanstack/react-query';
 
 interface CurrencyProps {
+  economyEnabled: boolean;
+  playerId: string;
+  gameServerId: string;
+}
+
+export const Currency: FC<CurrencyProps> = ({ playerId, gameServerId, economyEnabled }) => {
+  const { data: pog, isPending: isPendingPog } = useQuery(playerOnGameServerQueryOptions(gameServerId, playerId));
+
+  if (isPendingPog) {
+    return <div>Loading currency data</div>;
+  }
+
+  if (!pog) {
+    return <div>Player has not played on this gameserver</div>;
+  }
+
+  return (
+    <CurrencyView
+      playerId={playerId}
+      gameServerId={gameServerId}
+      currency={pog.currency}
+      economyEnabled={economyEnabled}
+    />
+  );
+};
+
+interface CurrencyViewProps {
   playerId: string;
   gameServerId: string;
   currency: number;
+  economyEnabled: boolean;
 }
 
-export const Currency: FC<CurrencyProps> = ({ currency, gameServerId, playerId }) => {
+export const CurrencyView: FC<CurrencyViewProps> = ({ currency, gameServerId, playerId, economyEnabled }) => {
   const [openAddCurrencyDialog, setOpenAddCurrencyDialog] = useState<boolean>(false);
   const [openDeductCurrencyDialog, setOpenDeductCurrencyDialog] = useState<boolean>(false);
 
@@ -65,8 +94,12 @@ export const Currency: FC<CurrencyProps> = ({ currency, gameServerId, playerId }
               <IconButton icon={<MenuIcon />} ariaLabel="Currency actions" />
             </Dropdown.Trigger>
             <Dropdown.Menu>
-              <Dropdown.Menu.Item onClick={handleAddCurrencyClick} label="Add currency" />
-              <Dropdown.Menu.Item onClick={handleDeductCurrencyClick} label="Deduct currency" />
+              <Dropdown.Menu.Item disabled={!economyEnabled} onClick={handleAddCurrencyClick} label="Add currency" />
+              <Dropdown.Menu.Item
+                disabled={!economyEnabled}
+                onClick={handleDeductCurrencyClick}
+                label="Deduct currency"
+              />
             </Dropdown.Menu>
           </Dropdown>
         </div>

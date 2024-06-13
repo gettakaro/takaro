@@ -19,10 +19,9 @@ export const LoginDiscordCard: FC = () => {
   return (
     <Card>
       <Body>
-        <DiscordIcon size={48} color={hasLinkedDiscord ? colors.primary : colors.background} />
-        <span>{hasLinkedDiscord ? '' : 'Not connected yet'}</span>
+        <DiscordIcon size={48} color={hasLinkedDiscord ? colors.primary : colors.backgroundAccent} />
         <a href={`${getConfigVar('apiUrl')}/auth/discord?redirect=${window.location.href}`}>
-          <Button text={hasLinkedDiscord ? 'Update connection' : 'Connect'} />
+          <Button text={hasLinkedDiscord ? 'Update connection' : 'Connect Discord'} />
         </a>
       </Body>
     </Card>

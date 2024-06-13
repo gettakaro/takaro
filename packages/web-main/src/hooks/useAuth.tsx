@@ -7,7 +7,7 @@ import { DateTime } from 'luxon';
 import { getApiClient } from 'util/getApiClient';
 import { redirect } from '@tanstack/react-router';
 
-const SESSION_EXPIRES_AFTER_MINUTES = 5;
+const SESSION_EXPIRES_AFTER_MINUTES = 20;
 
 interface ExpirableSession {
   session: UserOutputWithRolesDTO;
@@ -20,9 +20,8 @@ export interface IAuthContext {
   session: UserOutputWithRolesDTO;
   login: (user: UserOutputWithRolesDTO) => void;
 }
-export const AuthContext = createContext<IAuthContext | null>(null);
 
-function getStoredSession(): UserOutputWithRolesDTO | null {
+function getLocalSession() {
   const expirableSessionString = localStorage.getItem('session');
 
   if (!expirableSessionString) {
@@ -30,29 +29,18 @@ function getStoredSession(): UserOutputWithRolesDTO | null {
   }
 
   const expirableSession: ExpirableSession = JSON.parse(expirableSessionString);
-  if (DateTime.fromISO(expirableSession.expiresAt ?? DateTime.now()).diffNow().milliseconds < 0) {
-    localStorage.removeItem('session');
+  if (DateTime.fromISO(expirableSession.expiresAt ?? DateTime.now().toISO()).diffNow().seconds < 0) {
     return null;
   }
   return expirableSession.session;
 }
 
-function setStoredSession(session: UserOutputWithRolesDTO | null) {
-  if (session) {
-    const expirableSession: ExpirableSession = {
-      session,
-      expiresAt: DateTime.now().plus({ minutes: SESSION_EXPIRES_AFTER_MINUTES }).toISO(),
-    };
-    localStorage.setItem('session', JSON.stringify(expirableSession));
-  } else {
-    localStorage.removeItem('session');
-  }
-}
+export const AuthContext = createContext<IAuthContext | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
   const { oryClient } = useOry();
-  const [user, setUser] = useState<UserOutputWithRolesDTO | null>(getStoredSession());
+  const [user, setUser] = useState<UserOutputWithRolesDTO | null>(getLocalSession());
 
   const isAuthenticated = !!user;
 
@@ -64,9 +52,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     window.location.href = logoutFlowRes.data.logout_url;
     // Extra clean up is done in /logout-return
     return Promise.resolve();
-  }, []);
+  }, [oryClient, queryClient]);
 
-  // Set session in both state and localStorage
   const login = useCallback((session: UserOutputWithRolesDTO) => {
     setStoredSession(session);
     Sentry.setUser({ id: session.id, email: session.email, username: session.name });
@@ -90,20 +77,51 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [login, queryClient]);
 
-  useEffect(() => {
-    const storedSession = getStoredSession();
-    if (!storedSession) {
-      refreshSession();
-    } else {
-      setUser(storedSession);
+  const getSession = useCallback(async (): Promise<UserOutputWithRolesDTO | null> => {
+    const session = getLocalSession();
+
+    if (session) {
+      return session;
+    }
+
+    try {
+      await refreshSession();
+      return JSON.parse(localStorage.getItem('session')!).session;
+    } catch (error) {
+      localStorage.removeItem('session');
+      return null;
     }
   }, [refreshSession]);
+
+  useEffect(() => {
+    async function fetchSession() {
+      const storedSession = await getSession();
+      if (!storedSession) {
+        refreshSession();
+      } else {
+        setUser(storedSession);
+      }
+    }
+    fetchSession();
+  }, [getSession, refreshSession]);
+
+  function setStoredSession(session: UserOutputWithRolesDTO | null) {
+    if (session) {
+      const expirableSession: ExpirableSession = {
+        session,
+        expiresAt: DateTime.now().plus({ minutes: SESSION_EXPIRES_AFTER_MINUTES }).toISO(),
+      };
+      localStorage.setItem('session', JSON.stringify(expirableSession));
+    } else {
+      localStorage.removeItem('session');
+    }
+  }
 
   return (
     <AuthContext.Provider
       value={{
         session: user as UserOutputWithRolesDTO,
-        login: login,
+        login,
         logOut,
         isAuthenticated,
       }}

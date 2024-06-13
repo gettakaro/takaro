@@ -1,6 +1,6 @@
 import { styled } from '../../../../../styled';
 
-export const PaginationContainer = styled.div<{ border?: boolean }>`
+export const PagePickerContainer = styled.div<{ border?: boolean }>`
   display: flex;
   justify-content: flex-end;
 

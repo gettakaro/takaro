@@ -45,7 +45,7 @@ export function FilterRow<DataType extends object>({
     }
 
     const meta = column?.columnDef?.meta as Record<string, unknown> | undefined;
-    switch (meta?.type) {
+    switch (meta?.dataType) {
       case 'uuid':
       case 'datetime':
         return [Operators.is];

@@ -159,6 +159,8 @@ export function Filter<DataType extends object>({ table }: FilterProps<DataType>
 
     table.setColumnFilters(columnFiltersArray);
     table.setGlobalFilter(globalFiltersArray);
+    table.resetPagination();
+
     setOpen(false);
   };
 

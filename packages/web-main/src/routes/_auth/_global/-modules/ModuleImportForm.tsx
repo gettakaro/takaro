@@ -1,7 +1,7 @@
-import { styled } from '@takaro/lib-components';
+import { FileField, styled } from '@takaro/lib-components';
 import { FC, useEffect, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { Button, TextField, Drawer, CollapseList, TextAreaField, FormError } from '@takaro/lib-components';
+import { Button, TextField, Drawer, CollapseList, FormError } from '@takaro/lib-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from '@tanstack/react-router';
 import { z } from 'zod';
@@ -14,20 +14,22 @@ export const ButtonContainer = styled.div`
 
 export interface IFormInputs {
   name: string;
-  data: string;
+  importData: FileList;
 }
 
 interface ModuleFormProps {
   isLoading?: boolean;
   isSuccess?: boolean;
-  onSubmit?: (data: IFormInputs) => void;
+  onSubmit: (data: IFormInputs) => void;
   error: string | string[] | null;
 }
+
+const MAX_FILE_SIZE = 5_000_000; // 50MB
+const ACCEPTED_FILE_TYPES = ['application/json'];
 
 export const ModuleImportForm: FC<ModuleFormProps> = ({ isSuccess = false, onSubmit, isLoading = false, error }) => {
   const [open, setOpen] = useState(true);
   const navigate = useNavigate();
-  const readOnly = !onSubmit;
 
   useEffect(() => {
     if (!open) {
@@ -38,7 +40,16 @@ export const ModuleImportForm: FC<ModuleFormProps> = ({ isSuccess = false, onSub
   const { handleSubmit, control } = useForm<IFormInputs>({
     mode: 'onChange',
     defaultValues: {},
-    resolver: zodResolver(z.object({ data: z.string(), name: z.string() })),
+    resolver: zodResolver(
+      z.object({
+        importData: z
+          .any()
+          .refine((files) => files?.length == 1, 'Import data is required')
+          .refine((files) => files?.[0]?.size <= MAX_FILE_SIZE, 'Max file size is 50MB.')
+          .refine((files) => ACCEPTED_FILE_TYPES.includes(files?.[0]?.type), 'Only .json files are accepted.'),
+        name: z.string(),
+      })
+    ),
   });
 
   useEffect(() => {
@@ -47,8 +58,8 @@ export const ModuleImportForm: FC<ModuleFormProps> = ({ isSuccess = false, onSub
     }
   }, [isSuccess]);
 
-  const submitHandler: SubmitHandler<IFormInputs> = ({ data, name }) => {
-    onSubmit!({ data, name });
+  const submitHandler: SubmitHandler<IFormInputs> = ({ importData, name }) => {
+    onSubmit({ importData: importData, name });
   };
 
   return (
@@ -66,15 +77,15 @@ export const ModuleImportForm: FC<ModuleFormProps> = ({ isSuccess = false, onSub
                   name="name"
                   placeholder="My cool module"
                   required
-                  readOnly={readOnly}
                 />
-                <TextAreaField
+                <FileField
                   control={control}
-                  label="Data"
-                  placeholder="JSON data"
+                  label="module json file"
+                  description="Upload your module.json file here"
+                  placeholder="your_module.json"
                   loading={isLoading}
-                  name="data"
-                  readOnly={readOnly}
+                  name="importData"
+                  required
                 />
               </CollapseList.Item>
             </CollapseList>
@@ -82,14 +93,10 @@ export const ModuleImportForm: FC<ModuleFormProps> = ({ isSuccess = false, onSub
           </form>
         </Drawer.Body>
         <Drawer.Footer>
-          {!readOnly ? (
-            <ButtonContainer>
-              <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
-              <Button type="submit" form="module-definition" fullWidth text="Save changes" />
-            </ButtonContainer>
-          ) : (
-            <Button text="Close view" fullWidth onClick={() => setOpen(false)} color="primary" />
-          )}
+          <ButtonContainer>
+            <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
+            <Button type="submit" form="module-definition" fullWidth text="Save changes" />
+          </ButtonContainer>
         </Drawer.Footer>
       </Drawer.Content>
     </Drawer>

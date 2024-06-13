@@ -1,15 +1,16 @@
-import { FC } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { Currency } from './-PlayerCurrency';
 import { GameServerSelect } from 'components/selects';
 import { useForm } from 'react-hook-form';
-import { playerQueryOptions } from 'queries/player';
-import { playerOnGameServerQueryOptions } from 'queries/pog';
+import { playersOnGameServersQueryOptions } from 'queries/pog';
+import { gameServerSettingQueryOptions } from 'queries/setting';
+import { Alert } from '@takaro/lib-components';
 
 export const Route = createFileRoute('/_auth/_global/player/$playerId/economy')({
   component: Component,
-  loader: async ({ context, params }) => context.queryClient.ensureQueryData(playerQueryOptions(params.playerId)),
+  loader: async ({ context, params }) =>
+    context.queryClient.ensureQueryData(playersOnGameServersQueryOptions({ filters: { playerId: [params.playerId] } })),
 });
 
 type FormFields = {
@@ -18,30 +19,46 @@ type FormFields = {
 
 function Component() {
   const { playerId } = Route.useParams();
+  const loadedPogs = Route.useLoaderData();
+
+  const { data } = useQuery({
+    ...playersOnGameServersQueryOptions({ filters: { playerId: [playerId] } }),
+    initialData: loadedPogs,
+  });
 
   const { control, watch } = useForm<FormFields>({
     mode: 'onChange',
   });
   const gameServerId = watch('gameServerId');
 
+  const { data: economyEnabledSetting } = useQuery({
+    ...gameServerSettingQueryOptions('economyEnabled', gameServerId!),
+    enabled: !!gameServerId,
+  });
+  const economyEnabled = economyEnabledSetting?.value === 'true' ? true : false;
+
+  const gameServerIds = data.data?.map((pog) => pog.gameServerId) ?? [];
+
+  if (gameServerIds.length === 0) {
+    return <div>This player has not played on any existing game servers.</div>;
+  }
+
   return (
     <>
-      <GameServerSelect control={control} name="gameServerId" />
-      {gameServerId && <CurrencyWrapper playerId={playerId} gameServerId={gameServerId} />}
+      {!economyEnabled && gameServerId && (
+        <Alert
+          variant="info"
+          text="Economy is disabled for this server, some actions will be unavailable. To enable economy, go to the game server settings."
+          dismiss
+        />
+      )}
+      <GameServerSelect
+        control={control}
+        name="gameServerId"
+        filter={(gameServer) => gameServerIds.includes(gameServer.id)}
+      />
+
+      {gameServerId && <Currency playerId={playerId} gameServerId={gameServerId} economyEnabled={economyEnabled} />}
     </>
   );
 }
-
-const CurrencyWrapper: FC<{ playerId: string; gameServerId: string }> = ({ playerId, gameServerId }) => {
-  const { data, isPending } = useQuery(playerOnGameServerQueryOptions(gameServerId, playerId));
-
-  if (isPending) {
-    return <div>Loading currency data</div>;
-  }
-
-  if (!data) {
-    return <div>could not load data</div>;
-  }
-
-  return <Currency playerId={playerId} gameServerId={gameServerId} currency={data.currency} />;
-};

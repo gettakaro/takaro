@@ -1,6 +1,6 @@
 import { FC, useLayoutEffect, useMemo, useState } from 'react';
 import { Button, Popover } from '../../../../components';
-import { DateTime, DateTimeFormatOptions } from 'luxon';
+import { DateTime, DateTimeFormatOptions, Settings } from 'luxon';
 import { dateFormats, timeFormats } from './formats';
 import { GenericInputProps } from '../../InputProps';
 import { ResultContainer, ContentContainer, InnerContainer, ButtonContainer } from './style';
@@ -21,6 +21,8 @@ interface RelativePickerOptions {
   timeDirection?: timeDirection;
   showFriendlyName?: boolean;
 }
+
+Settings.throwOnInvalid = true;
 
 export interface DatePickerProps {
   /// Determines if the date picker is in absolute or relative mode

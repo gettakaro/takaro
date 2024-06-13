@@ -90,6 +90,7 @@ function Component() {
                 <TextField readOnly control={control} name="id" label="Player" />
                 <RoleSelect control={control} name="roleId" />
                 <SelectField
+                  canClear={true}
                   control={control}
                   name="gameServerId"
                   label="Gameserver"

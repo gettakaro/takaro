@@ -18,19 +18,23 @@ import {
   ColumnPinningState,
   RowSelectionState,
 } from '@tanstack/react-table';
-import { Wrapper, StyledTable, Toolbar, PaginationContainer, Flex, TableWrapper } from './style';
+import { Wrapper, StyledTable, Toolbar, Flex, TableWrapper } from './style';
 import { Empty, Spinner, ToggleButtonGroup } from '../../../components';
 import { AiOutlinePicCenter as RelaxedDensityIcon, AiOutlinePicRight as TightDensityIcon } from 'react-icons/ai';
-import { ColumnHeader, ColumnVisibility, Filter, Pagination } from './subcomponents';
+
+import { ColumnHeader } from './subcomponents/ColumnHeader';
+import { ColumnVisibility } from './subcomponents/ColumnVisibility';
+import { Filter } from './subcomponents/Filter';
+import { PagePicker } from './subcomponents/Pagination/PagePicker';
+import { PageSizeSelect } from './subcomponents/Pagination/PageSizeSelect';
+
 import { ColumnFilter, PageOptions } from '../../../hooks/useTableActions';
 import { GenericCheckBox as CheckBox } from '../../inputs/CheckBox/Generic';
 import { useLocalStorage } from '../../../hooks';
 
 export interface TableProps<DataType extends object> {
   id: string;
-
   data: DataType[];
-
   isLoading?: boolean;
 
   // currently not possible to type this properly: https://github.com/TanStack/table/issues/4241
@@ -108,15 +112,6 @@ export function Table<DataType extends object>({
 
   const ROW_SELECTION_COL_SPAN = rowSelection ? 1 : 0;
 
-  // table size
-  useEffect(() => {
-    if (density === 'tight') {
-      table.setPageSize(19);
-    } else {
-      table.resetPageSize(true);
-    }
-  }, [density]);
-
   // handles the column visibility tooltip (shows tooltip when the first column is hidden)
   useEffect(() => {
     if (
@@ -170,7 +165,8 @@ export function Table<DataType extends object>({
     onRowSelectionChange: rowSelection ? rowSelection?.setRowSelectionState : undefined,
 
     initialState: {
-      columnVisibility: columnVisibility,
+      columnVisibility,
+      columnOrder,
       sorting: sorting.sortingState,
       columnFilters: columnFiltering.columnFiltersState,
       globalFilter: columnSearch.columnSearchState,
@@ -181,9 +177,9 @@ export function Table<DataType extends object>({
     state: {
       columnVisibility,
       columnOrder,
-      sorting: sorting?.sortingState,
-      columnFilters: columnFiltering?.columnFiltersState,
-      globalFilter: columnSearch?.columnSearchState,
+      sorting: sorting.sortingState,
+      columnFilters: columnFiltering.columnFiltersState,
+      globalFilter: columnSearch.columnSearchState,
       pagination: pagination?.paginationState,
       rowSelection: rowSelection ? rowSelection.rowSelectionState : undefined,
       columnPinning,
@@ -326,23 +322,20 @@ export function Table<DataType extends object>({
             {!isLoading && table.getRowModel().rows.length > 1 && (
               <tfoot>
                 <tr>
-                  <td colSpan={1} />
+                  {/* This is the row selection */}
+                  {ROW_SELECTION_COL_SPAN ? <td colSpan={1} /> : null}
                   {pagination && (
-                    <td
-                      colSpan={
-                        columns.length +
-                        ROW_SELECTION_COL_SPAN /* +1 here is because we have an extra column for the selection */ -
-                        2 /* We use 2 columns for padding (1 start one at end) */
-                      }
-                    >
-                      <PaginationContainer>
+                    <>
+                      <td colSpan={2}>
                         <span>
                           showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}-
                           {table.getState().pagination.pageIndex * table.getState().pagination.pageSize +
                             table.getRowModel().rows.length}{' '}
                           of {pagination.pageOptions.total} entries
                         </span>
-                        <Pagination
+                      </td>
+                      <td colSpan={table.getVisibleLeafColumns().length - ROW_SELECTION_COL_SPAN - 5}>
+                        <PagePicker
                           pageCount={table.getPageCount()}
                           hasNext={table.getCanNextPage()}
                           hasPrevious={table.getCanPreviousPage()}
@@ -351,8 +344,14 @@ export function Table<DataType extends object>({
                           pageIndex={table.getState().pagination.pageIndex}
                           setPageIndex={table.setPageIndex}
                         />
-                      </PaginationContainer>
-                    </td>
+                      </td>
+                      <td colSpan={2}>
+                        <PageSizeSelect
+                          onPageSizeChange={(pageSize) => table.setPageSize(Number(pageSize))}
+                          pageSize={table.getState().pagination.pageSize.toString()}
+                        />
+                      </td>
+                    </>
                   )}
                 </tr>
               </tfoot>

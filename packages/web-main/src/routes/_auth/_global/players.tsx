@@ -32,6 +32,7 @@ import { FaBan as BanIcon } from 'react-icons/fa';
 import { Player } from 'components/Player';
 import { useQuery } from '@tanstack/react-query';
 import { getApiClient } from 'util/getApiClient';
+import { Boolean } from 'components/Boolean';
 
 export const StyledDialogBody = styled(Dialog.Body)`
   h2 {
@@ -131,25 +132,25 @@ function Component() {
     columnHelper.accessor('steamEconomyBan', {
       header: 'Economy Ban',
       id: 'steamEconomyBan',
-      cell: (info) => info.getValue(),
+      cell: (info) => (info.getValue() ? 'Yes' : 'No'),
       enableColumnFilter: true,
     }),
     columnHelper.accessor('steamVacBanned', {
       header: 'VAC Banned',
       id: 'steamVacBanned',
-      cell: (info) => (info.getValue() ? 'Yes' : 'No'),
+      cell: (info) => <Boolean truePositive={false} value={info.getValue() ? 'yes' : 'no'} />,
       enableColumnFilter: true,
-    }),
-    columnHelper.accessor('steamsDaysSinceLastBan', {
-      header: 'Days Since Last Ban',
-      id: 'steamsDaysSinceLastBan',
-      cell: (info) => info.getValue(),
-      enableSorting: true,
     }),
     columnHelper.accessor('steamNumberOfVACBans', {
       header: 'Number of VAC Bans',
       id: 'steamNumberOfVACBans',
-      cell: (info) => info.getValue(),
+      cell: (info) => `${info.getValue() ?? 0} bans`,
+      enableSorting: true,
+    }),
+    columnHelper.accessor('steamsDaysSinceLastBan', {
+      header: 'Days Since Last Ban',
+      id: 'steamsDaysSinceLastBan',
+      cell: (info) => info.getValue() ?? 'N/A',
       enableSorting: true,
     }),
     columnHelper.accessor('createdAt', {

@@ -1,5 +1,14 @@
 import { FC, Fragment, useMemo, useState } from 'react';
-import { Table, useTableActions, IconButton, Dropdown, Button, Divider, DateFormatter } from '@takaro/lib-components';
+import {
+  Table,
+  useTableActions,
+  IconButton,
+  Dropdown,
+  Button,
+  Divider,
+  DateFormatter,
+  CopyId,
+} from '@takaro/lib-components';
 import { VariableOutputDTO, VariableSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
 import { variablesQueryOptions } from 'queries/variable';
@@ -70,10 +79,16 @@ function Component() {
       enableSorting: true,
     }),
     columnHelper.accessor('gameServerId', {
-      header: 'Game Server ID',
+      header: 'Game Server',
       id: 'gameServerId',
       meta: { dataType: 'uuid' },
-      cell: (info) => info.row.original.gameServer?.id,
+      cell: (info) => (
+        <CopyId
+          id={info.row.original.gameServer?.id}
+          placeholder={info.row.original.gameServer?.name}
+          copyText="copied gameServerId"
+        />
+      ),
       enableColumnFilter: true,
       enableSorting: true,
     }),
@@ -81,7 +96,13 @@ function Component() {
       header: 'Player',
       id: 'playerId',
       meta: { dataType: 'uuid' },
-      cell: (info) => info.row.original.player?.name,
+      cell: (info) => (
+        <CopyId
+          id={info.row.original.player?.id}
+          placeholder={info.row.original.player?.name}
+          copyText="copied playerId"
+        />
+      ),
       enableColumnFilter: true,
       enableSorting: true,
     }),
@@ -89,23 +110,29 @@ function Component() {
       header: 'Module',
       id: 'moduleId',
       meta: { dataType: 'uuid' },
-      cell: (info) => info.row.original.module?.name,
+      cell: (info) => (
+        <CopyId
+          id={info.row.original.module?.id}
+          placeholder={info.row.original.module?.name}
+          copyText="copied moduleId"
+        />
+      ),
       enableColumnFilter: true,
       enableSorting: true,
     }),
     columnHelper.accessor('createdAt', {
       header: 'Created at',
       id: 'createdAt',
-      meta: { dataType: 'datetime' },
+      meta: { dataType: 'datetime', hiddenColumn: true },
       cell: (info) => <DateFormatter ISODate={info.getValue()} />,
       enableSorting: true,
     }),
     columnHelper.accessor('updatedAt', {
       header: 'Updated at',
       id: 'updatedAt',
-      meta: { dataType: 'datetime' },
+      meta: { dataType: 'datetime', hiddenColumn: true },
       cell: (info) => <DateFormatter ISODate={info.getValue()} />,
-      enableSorting: true,
+      enableSorting: false,
     }),
     columnHelper.display({
       header: 'Actions',

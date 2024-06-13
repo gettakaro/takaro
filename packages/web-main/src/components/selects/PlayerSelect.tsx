@@ -27,6 +27,7 @@ export const PlayerSelect: FC<CustomSelectProps> = ({
   size,
   required,
   hint,
+  canClear,
 }) => {
   const { data, isLoading: isLoadingData } = useQuery(playersQueryOptions());
 
@@ -55,6 +56,7 @@ export const PlayerSelect: FC<CustomSelectProps> = ({
       inPortal={inPortal}
       enableFilter
       loading={loading}
+      canClear={canClear}
       render={(selectedItems) => {
         if (selectedItems.length === 0) {
           return <div>Select...</div>;
