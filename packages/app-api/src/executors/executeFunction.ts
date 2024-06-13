@@ -16,7 +16,13 @@ import {
   TakaroEventFunctionLog,
   TakaroEventFunctionResult,
   BaseEvent,
+  TakaroEventHookExecuted,
+  TakaroEventCronjobExecuted,
+  TakaroEventHookDetails,
+  TakaroEventCronjobDetails,
 } from '@takaro/modules';
+import { HookService } from '../service/HookService.js';
+import { CronJobService } from '../service/CronJobService.js';
 
 let rateLimiter: RateLimiterRedis | null = null;
 
@@ -82,7 +88,7 @@ export async function executeFunction(
   const dataForEvent = { ...data };
   delete dataForEvent.token;
   delete dataForEvent.url;
-  const meta: Partial<TakaroEventCommandExecuted> = {
+  const meta: Partial<TakaroEventCommandExecuted | TakaroEventHookExecuted | TakaroEventCronjobExecuted> = {
     data: dataForEvent,
   };
 
@@ -99,7 +105,7 @@ export async function executeFunction(
 
     eventData.eventName = EVENT_TYPES.COMMAND_EXECUTED;
 
-    meta.command = new TakaroEventCommandDetails({
+    (meta as TakaroEventCommandExecuted).command = new TakaroEventCommandDetails({
       id: command.id,
       name: command.name,
       arguments: data.arguments,
@@ -127,10 +133,26 @@ export async function executeFunction(
 
   if (isHookData(data)) {
     eventData.eventName = EVENT_TYPES.HOOK_EXECUTED;
+    const hookService = new HookService(domainId);
+    const hook = await hookService.findOne(data.itemId);
+    if (!hook) throw new errors.InternalServerError();
+
+    (meta as TakaroEventHookExecuted).hook = new TakaroEventHookDetails({
+      id: hook.id,
+      name: hook.name,
+    });
   }
 
   if (isCronData(data)) {
     eventData.eventName = EVENT_TYPES.CRONJOB_EXECUTED;
+    const cronService = new CronJobService(domainId);
+    const cron = await cronService.findOne(data.itemId);
+    if (!cron) throw new errors.InternalServerError();
+
+    (meta as TakaroEventCronjobExecuted).cronjob = new TakaroEventCronjobDetails({
+      id: cron.id,
+      name: cron.name,
+    });
   }
 
   try {

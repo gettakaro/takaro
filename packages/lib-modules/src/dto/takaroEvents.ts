@@ -116,6 +116,20 @@ export class TakaroEventCommandDetails extends TakaroDTO<TakaroEventCommandDetai
   arguments: Record<string, unknown>;
 }
 
+export class TakaroEventHookDetails extends TakaroDTO<TakaroEventHookDetails> {
+  @IsString()
+  id: string;
+  @IsString()
+  name: string;
+}
+
+export class TakaroEventCronjobDetails extends TakaroDTO<TakaroEventCronjobDetails> {
+  @IsString()
+  id: string;
+  @IsString()
+  name: string;
+}
+
 export class TakaroEventCommandExecuted extends BaseEvent<TakaroEventCommandExecuted> {
   @IsString()
   type = TakaroEvents.COMMAND_EXECUTED;
@@ -143,6 +157,11 @@ export class TakaroEventHookExecuted extends BaseEvent<TakaroEventHookExecuted> 
   @ValidateNested({ each: true })
   @Type(() => TakaroEventFunctionResult)
   result: TakaroEventFunctionResult;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => TakaroEventHookDetails)
+  hook: TakaroEventHookDetails;
 }
 
 export class TakaroEventCronjobExecuted extends BaseEvent<TakaroEventCronjobExecuted> {
@@ -155,6 +174,11 @@ export class TakaroEventCronjobExecuted extends BaseEvent<TakaroEventCronjobExec
   @ValidateNested({ each: true })
   @Type(() => TakaroEventFunctionResult)
   result: TakaroEventFunctionResult;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => TakaroEventCronjobDetails)
+  cronjob: TakaroEventCronjobDetails;
 }
 
 export class TakaroEventRoleMeta extends TakaroDTO<TakaroEventRoleMeta> {
