@@ -45,6 +45,18 @@ Let's replace the placeholder domain with your domain, we'll be using `sed` to d
 sed -i 's/takaro.example.com/takaro.your-domain.com/g' docker-compose.yaml
 ```
 
+The containers use a network called `takaro`, we need to create this network:
+
+```bash
+docker network create takaro
+```
+
+The compose file will store a bunch of persistent data. Different containers need different permissions on these folders
+
+```bash
+./scripts/setup-data-folders.sh
+```
+
 The compose file is set up to provision TLS certificates via Cloudflare. You will need to add an env var `CF_DNS_API_TOKEN` with your Cloudflare API token. You can get this token from the Cloudflare dashboard.
 There are other providers supported, see the [Traefik docs](https://doc.traefik.io/traefik/https/acme/#providers) for more info.
 
