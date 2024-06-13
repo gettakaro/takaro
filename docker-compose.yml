@@ -39,6 +39,7 @@ services:
       - ./packages/app-mock-gameserver:/app/packages/app-mock-gameserver
 
       - ./packages/web-main:/app/packages/web-main
+      - ./packages/web-shop:/app/packages/web-shop
       - ./packages/web-docs:/app/packages/web-docs
 
       - ./packages/lib-apiclient:/app/packages/lib-apiclient
@@ -87,15 +88,18 @@ services:
       - 12001:12001
       # web-main
       - 13001:13001
-      # lib-components storybook
+      # web-shop
       - 13002:13002
+      # lib-components storybook
+      - 13004:13004
+      # web-docs
+      - 13005:13005
       # mock server
       - 13006:3002
       - 12004:12004
       # connector
       - 12003:12003
-      # Docs
-      - 13005:13005
+
   takaro-migrator:
     build:
       context: .

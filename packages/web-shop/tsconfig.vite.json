@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "baseUrl": "src",
+    "allowSyntheticDefaultImports": true,
+    "types": [
+      "vite/client"
+    ]
+  },
+  "include": [
+    "vite.config.ts"
+  ],
+  "paths": {
+    "vite": [
+      "node_modules/vite"
+    ]
+  }
+}

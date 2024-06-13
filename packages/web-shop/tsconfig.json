@@ -1,0 +1,24 @@
+{
+  "extends": "../../tsconfig.react.json",
+  "compilerOptions": {
+    "baseUrl": "src",
+    "composite": true,
+    "moduleResolution": "node",
+    "noImplicitAny": false,
+    "jsx": "react-jsx",
+    "paths": {
+      "test-utils": [
+        "./test-utils.tsx" // <-- based on baseUrl
+      ]
+    }
+  },
+  "include": [
+    "src/**/*",
+    "src/**/*.json"
+  ],
+  "references": [
+    {
+      "path": "./tsconfig.vite.json"
+    }
+  ]
+}
