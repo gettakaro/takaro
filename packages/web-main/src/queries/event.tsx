@@ -53,12 +53,12 @@ export const useEventSubscription = ({ enabled = true, ...queryParams }: EventSu
       queryClient.setQueryData<InfiniteData<EventOutputArrayDTOAPI>>(eventKeys.list(), (prev) => {
         // The socket returns all new events, we need to filter it based on the queryParams
         if (
-          !ShouldIncludeEvent(newEvent, {
+          ShouldIncludeEvent(newEvent, {
             startDate: queryParams.startDate ? DateTime.fromISO(queryParams.startDate) : null,
             endDate: queryParams.endDate ? DateTime.fromISO(queryParams.endDate) : null,
             eventTypes: queryParams.search?.eventName ?? [],
             filters: [], // TODO: implement filters
-          })
+          }) === false
         ) {
           return prev;
         }
@@ -81,9 +81,6 @@ export const useEventSubscription = ({ enabled = true, ...queryParams }: EventSu
           };
         }
 
-        // TODO: this is not perfect. We just extend the first page with the new event.
-        // Ideally we should add it to the first page, if < limit, otherwise create a new page (before the first one)
-        // and increase the pageIndex of all other pages
         return addEventToData(prev, newEvent);
       });
     });

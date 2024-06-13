@@ -13,11 +13,13 @@ import { useUserAssignRole } from 'queries/user';
 import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { DateTime } from 'luxon';
+import { DateTime, Settings } from 'luxon';
 import { RoleSelect } from 'components/selects';
 import { createFileRoute, notFound, redirect, useNavigate } from '@tanstack/react-router';
 import { z } from 'zod';
 import { hasPermission } from 'hooks/useHasPermission';
+
+Settings.throwOnInvalid = true;
 
 const ButtonContainer = styled.div`
   display: flex;

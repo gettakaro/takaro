@@ -15,11 +15,13 @@ import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { GameServerOutputDTO } from '@takaro/apiclient';
-import { DateTime } from 'luxon';
+import { DateTime, Settings } from 'luxon';
 import { RoleSelect } from 'components/selects';
 import { z } from 'zod';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { gameServersQueryOptions } from 'queries/gameserver';
+
+Settings.throwOnInvalid = true;
 
 const ButtonContainer = styled.div`
   display: flex;

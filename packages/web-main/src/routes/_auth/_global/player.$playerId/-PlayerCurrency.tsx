@@ -5,8 +5,9 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
 import { playerOnGameServerQueryOptions, useAddCurrency, useDeductCurrency } from 'queries/pog';
 import { AiOutlineMenu as MenuIcon } from 'react-icons/ai';
-import { useCurrencyStats } from 'queries/stats';
+import { CurrencyStatsQueryOptions } from 'queries/stats';
 import { useQuery } from '@tanstack/react-query';
+import { StatsOutputDTO } from '@takaro/apiclient';
 
 interface CurrencyProps {
   economyEnabled: boolean;
@@ -16,12 +17,15 @@ interface CurrencyProps {
 
 export const Currency: FC<CurrencyProps> = ({ playerId, gameServerId, economyEnabled }) => {
   const { data: pog, isPending: isPendingPog } = useQuery(playerOnGameServerQueryOptions(gameServerId, playerId));
+  const { data: currencyStats, isPending: isPendingCurrencyStats } = useQuery(
+    CurrencyStatsQueryOptions(playerId, gameServerId)
+  );
 
-  if (isPendingPog) {
+  if (isPendingPog || isPendingCurrencyStats) {
     return <div>Loading currency data</div>;
   }
 
-  if (!pog) {
+  if (!pog || !currencyStats) {
     return <div>Player has not played on this gameserver</div>;
   }
 
@@ -30,6 +34,7 @@ export const Currency: FC<CurrencyProps> = ({ playerId, gameServerId, economyEna
       playerId={playerId}
       gameServerId={gameServerId}
       currency={pog.currency}
+      currencyStats={currencyStats}
       economyEnabled={economyEnabled}
     />
   );
@@ -39,14 +44,19 @@ interface CurrencyViewProps {
   playerId: string;
   gameServerId: string;
   currency: number;
+  currencyStats: StatsOutputDTO;
   economyEnabled: boolean;
 }
 
-export const CurrencyView: FC<CurrencyViewProps> = ({ currency, gameServerId, playerId, economyEnabled }) => {
+export const CurrencyView: FC<CurrencyViewProps> = ({
+  currency,
+  currencyStats,
+  gameServerId,
+  playerId,
+  economyEnabled,
+}) => {
   const [openAddCurrencyDialog, setOpenAddCurrencyDialog] = useState<boolean>(false);
   const [openDeductCurrencyDialog, setOpenDeductCurrencyDialog] = useState<boolean>(false);
-
-  const { data } = useCurrencyStats(playerId, gameServerId);
 
   const { mutate: addCurrency, isPending: isAddingCurrency } = useAddCurrency();
   const { mutate: deductCurrency, isPending: isDeductingCurrency } = useDeductCurrency();
@@ -104,10 +114,10 @@ export const CurrencyView: FC<CurrencyViewProps> = ({ currency, gameServerId, pl
           </Dropdown>
         </div>
         <Card>
-          <div style={{ height: '500px' }}>
+          <div style={{ height: '500px', position: 'relative' }}>
             <LineChart
               name="Currency"
-              data={data?.values || []}
+              data={currencyStats.values as [number, number][]}
               xAccessor={(d) => new Date(d[0] * 1000)}
               yAccessor={(d) => d[1]}
               curveType="curveBasis"

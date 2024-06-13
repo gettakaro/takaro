@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { useEffect, useMemo, useState } from 'react';
-import { Button, Stats, styled, LineChart } from '@takaro/lib-components';
+import { Button, Stats, styled, LineChart, Card } from '@takaro/lib-components';
 import { useSocket } from 'hooks/useSocket';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { eventsQueryOptions } from 'queries/event';
@@ -9,13 +9,16 @@ import { useForm, useWatch } from 'react-hook-form';
 import { TimePeriodSelect } from 'components/selects';
 import { useQuery } from '@tanstack/react-query';
 import { hasPermission } from 'hooks/useHasPermission';
-import { usePlayersOnlineStats } from 'queries/stats';
+import { PlayersOnlineStatsQueryOptions } from 'queries/stats';
 
 export const Route = createFileRoute('/_auth/_global/dashboard')({
   beforeLoad: async ({ context }) => {
     if (!hasPermission(context.auth.session, ['READ_EVENTS'])) {
       throw redirect({ to: '/forbidden' });
     }
+  },
+  loader: async ({ context }) => {
+    return context.queryClient.ensureQueryData(PlayersOnlineStatsQueryOptions());
   },
   component: Component,
 });
@@ -37,11 +40,13 @@ const Flex = styled.div`
 function Component() {
   useDocumentTitle('Dashboard');
 
-  const { socket, isConnected } = useSocket();
-  const [lastPong, setLastPong] = useState<string | null>(null);
-  const [lastEvent, setLastEvent] = useState<string | null>(null);
+  const loaderData = Route.useLoaderData();
 
-  const { data } = usePlayersOnlineStats();
+  const { socket, isConnected } = useSocket();
+  const [lastPong, setLastPong] = useState<string>('-');
+  const [lastEvent, setLastEvent] = useState<string>('-');
+
+  const { data } = useQuery({ ...PlayersOnlineStatsQueryOptions(), initialData: loaderData });
 
   const { control } = useForm({
     defaultValues: {
@@ -167,25 +172,29 @@ function Component() {
           />
         </Stats>
 
-        <div style={{ height: '400px', width: '100%', paddingTop: '100px' }}>
-          <LineChart
-            name="Players online"
-            data={data?.values || []}
-            xAccessor={(d) => new Date(d[0] * 1000)}
-            yAccessor={(d) => d[1]}
-            curveType="curveBasis"
-          />
-        </div>
+        <div style={{ display: 'flex', flexFlow: 'flex-wrap', gap: '2rem', marginTop: '40px' }}>
+          <Card style={{ height: '400px', width: '800px', position: 'relative' }} variant="outline">
+            <h2>Players online</h2>
+            <LineChart
+              name="Players online"
+              data={data.values}
+              xAccessor={(d) => new Date(d[0] * 1000)}
+              yAccessor={(d) => d[1]}
+              curveType="curveBasis"
+            />
+          </Card>
 
-        {/* Manual increase of spacing */}
-        <Flex style={{ marginTop: '30px' }}>
-          <span>
-            <p>Connected: {'' + isConnected}</p>
-            <p>Last pong: {lastPong || '-'}</p>
-            <p>Last event: {lastEvent || '-'}</p>
-          </span>
-          <Button text={'Send ping'} onClick={sendPing} />
-        </Flex>
+          <Card>
+            <Flex>
+              <span>
+                <p>Connected: {'' + isConnected}</p>
+                <p>Last pong: {lastPong || '-'}</p>
+                <p>Last event: {lastEvent || '-'}</p>
+              </span>
+              <Button text={'Send ping'} onClick={sendPing} />
+            </Flex>
+          </Card>
+        </div>
       </Container>
     </>
   );

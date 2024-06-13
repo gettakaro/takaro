@@ -1,8 +1,6 @@
 import { DateRangePicker, Button, styled, InfiniteScroll } from '@takaro/lib-components';
 import { EventOutputDTOEventNameEnum as EventName } from '@takaro/apiclient';
 import { EventFeed, EventItem } from 'components/events/EventFeed';
-import { EventFilterTag } from 'components/events/EventFilter/Tag';
-import { EventFilterTagList } from 'components/events/EventFilter/TagList';
 import { TreeFilter, TreeNode } from 'components/events/TreeFilter';
 import { Filter } from 'components/events/types';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
@@ -218,20 +216,16 @@ const ScrollableContainer = styled.div`
   height: 80vh;
 `;
 
-const allFields = ['moduleId', 'gameserverId', 'playerId'];
-
 function Component() {
   useDocumentTitle('Events');
   const loaderData = Route.useLoaderData();
 
   const navigate = useNavigate({ from: Route.fullPath });
   const { startDate, endDate, eventNames } = Route.useSearch();
-  const [live, setLive] = useState<boolean>(false);
+  const [live, setLive] = useState<boolean>(true);
   const updatedTreeData = useMemo(() => updateTreeDataWithDefaultEnabled(treeData, eventNames), [eventNames]);
 
-  const [tagFilters, setTagFilters] = useState<Filter[]>([]);
-
-  const filters = [...tagFilters];
+  const filters: Filter[] = [];
   const filterFields = filters.reduce((acc, f) => {
     acc[f.field] = [f.value];
     return acc;
@@ -258,8 +252,8 @@ function Component() {
       filters: filterFields,
       sortBy: 'createdAt',
       sortDirection: 'desc',
-      startDate: startDate,
-      endDate: endDate,
+      startDate: live ? undefined : startDate,
+      endDate: live ? undefined : endDate,
       extend: ['gameServer', 'module', 'player', 'user'],
     }),
     initialData: loaderData,
@@ -272,7 +266,7 @@ function Component() {
   const handleDateRangePicker = useCallback(
     (start: DateTime<true>, end: DateTime<true>) => {
       navigate({
-        search: (prev: EventSearch) => ({ ...prev, startDate: start.toISO()!, endDate: end.toISO()! }),
+        search: (prev: EventSearch) => ({ ...prev, startDate: start.toISO(), endDate: end.toISO() }),
       });
     },
     [navigate]
@@ -282,53 +276,35 @@ function Component() {
     <>
       <Header>
         <Flex>
-          {/* temporarily disable tag filters
-          <EventFilter
-            mode="add"
-            fields={allFields}
-            addFilter={(filter: Filter) => {
-              if (!tagFilters.some((f) => f.field === filter.field && f.operator === filter.operator)) {
-                setTagFilters((prev) => [...prev, filter]);
-              }
-            }}
+          <DateRangePicker
+            id="event-daterange-picker"
+            onChange={handleDateRangePicker}
+            disabled={live}
+            defaultValue={
+              startDate && endDate
+                ? {
+                    start: DateTime.fromISO(startDate) as DateTime<true>,
+                    end: DateTime.fromISO(endDate) as DateTime<true>,
+                  }
+                : undefined
+            }
           />
-          */}
+          <Button
+            text={live ? 'Pause' : 'Go Live'}
+            icon={live ? <PauseIcon /> : <PlayIcon />}
+            onClick={() => setLive(!live)}
+            color={live ? 'primary' : 'secondary'}
+          />
+          <Button
+            isLoading={isFetching}
+            disabled={live || isFetching}
+            text="Refresh feed"
+            icon={<RefreshIcon />}
+            onClick={() => refetch()}
+            color={'secondary'}
+          />
         </Flex>
-        <DateRangePicker
-          id="event-daterange-picker"
-          onChange={handleDateRangePicker}
-          defaultValue={
-            startDate && endDate
-              ? {
-                  start: DateTime.fromISO(startDate) as DateTime<true>,
-                  end: DateTime.fromISO(endDate) as DateTime<true>,
-                }
-              : undefined
-          }
-        />
-        <Button
-          text="Live"
-          icon={live ? <PauseIcon /> : <PlayIcon />}
-          onClick={() => setLive(!live)}
-          color={live ? 'primary' : 'secondary'}
-        />
-        <Button text="Refresh" icon={<RefreshIcon />} onClick={() => refetch()} color={'secondary'} />
       </Header>
-      <EventFilterTagList>
-        {tagFilters.map((filter) => (
-          <EventFilterTag
-            fields={allFields}
-            key={`${filter.field}-${filter.operator}-${filter.value}`}
-            editFilter={(f) => {
-              setTagFilters((prev) => prev.map((filter) => (filter.field === f.field ? f : filter)));
-            }}
-            onClear={() => {
-              setTagFilters((prev) => prev.filter((f) => f !== filter));
-            }}
-            filter={filter}
-          />
-        ))}
-      </EventFilterTagList>
       <ContentContainer>
         {events?.length === 0 ? (
           <div style={{ width: '100%', textAlign: 'center', marginTop: '4rem' }}>No events found</div>

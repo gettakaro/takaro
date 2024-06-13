@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { queryOptions } from '@tanstack/react-query';
 import { getApiClient } from 'util/getApiClient';
 import { StatsOutputDTO } from '@takaro/apiclient';
 import { AxiosError } from 'axios';
@@ -11,22 +11,22 @@ export const statsKeys = {
   playersOnline: (gameServerId?: string) => ['players-online', gameServerId] as const,
 };
 
-export const usePingStats = (playerId: string, gameServerId: string) => {
-  return useQuery<StatsOutputDTO, AxiosError<StatsOutputDTO>, StatsOutput>({
+export const PingStatsQueryOptions = (playerId: string, gameServerId: string) => {
+  return queryOptions<StatsOutputDTO, AxiosError<StatsOutputDTO>, StatsOutput>({
     queryKey: statsKeys.ping(playerId, gameServerId),
     queryFn: async () => (await getApiClient().stats.statsControllerGetPingStats(gameServerId, playerId)).data.data,
   });
 };
 
-export const useCurrencyStats = (playerId: string, gameServerId: string) => {
-  return useQuery<StatsOutputDTO, AxiosError<StatsOutputDTO>, StatsOutput>({
+export const CurrencyStatsQueryOptions = (playerId: string, gameServerId: string) => {
+  return queryOptions<StatsOutputDTO, AxiosError<StatsOutputDTO>, StatsOutput>({
     queryKey: statsKeys.currency(playerId, gameServerId),
     queryFn: async () => (await getApiClient().stats.statsControllerGetCurrencyStats(gameServerId, playerId)).data.data,
   });
 };
 
-export const usePlayersOnlineStats = (gameServerId?: string) => {
-  return useQuery<StatsOutputDTO, AxiosError<StatsOutputDTO>, StatsOutput>({
+export const PlayersOnlineStatsQueryOptions = (gameServerId?: string) => {
+  return queryOptions<StatsOutputDTO, AxiosError<StatsOutputDTO>, StatsOutput>({
     queryKey: statsKeys.playersOnline(gameServerId),
     queryFn: async () => (await getApiClient().stats.statsControllerGetPlayerOnlineStats(gameServerId)).data.data,
   });
