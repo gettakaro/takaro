@@ -37,8 +37,8 @@ export const StyledTable = styled.table<{ density: Density }>`
   width: 100%;
   text-align: left;
   background-color: ${({ theme }) => theme.colors.background};
-  overflow: hidden;
   border-collapse: collapse;
+  position: relative;
 
   tr:last-child td {
     border-bottom: none;

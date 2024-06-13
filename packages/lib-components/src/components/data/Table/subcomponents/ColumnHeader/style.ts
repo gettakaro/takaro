@@ -8,10 +8,11 @@ export const Th = styled.th<{
   canDrag: boolean;
   isRowSelection: boolean;
 }>`
-  position: relative;
+  top: 0;
   width: ${({ width }) => width}px;
   padding: ${({ theme }) => `${theme.spacing['0_75']} 0`};
   border-bottom: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
+  box-shadow: 0 2px 2px -1px rgba(0, 0, 0, 0.4);
 
   &:first-child {
     padding-left: ${({ theme, isRowSelection }) => (isRowSelection ? 0 : theme.spacing['1'])};
