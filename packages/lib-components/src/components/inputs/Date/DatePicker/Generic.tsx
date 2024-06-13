@@ -241,7 +241,7 @@ export const GenericDatePicker: FC<GenericDatePickerProps> = ({
               <Button
                 fullWidth
                 onClick={() => {
-                  handleOnChange(selectedDateTime!);
+                  handleOnChange(selectedDateTime);
                   setOpen(false);
                 }}
                 text="Select"
