@@ -7,6 +7,7 @@ import { PlayerService } from '../service/PlayerService.js';
 import { DomainRepo } from '../db/domain.js';
 import { UserService } from '../service/UserService.js';
 import { kpiGateway, metrics } from '../lib/metrics.js';
+import { PlayerOnGameServerService } from '../service/PlayerOnGameserverService.js';
 
 const log = logger('worker:kpi');
 
@@ -33,12 +34,17 @@ export async function processJob(_job: Job<unknown>) {
   const domains = await domainRepo.find({});
   metrics.domains.set(domains.total);
 
+  const oneDayAgo = new Date(new Date().valueOf() - 1000 * 60 * 60 * 24).toISOString();
+  const oneWeekAgo = new Date(new Date().valueOf() - 1000 * 60 * 60 * 24 * 7).toISOString();
+  const oneMonthAgo = new Date(new Date().valueOf() - 1000 * 60 * 60 * 24 * 30).toISOString();
+
   // For each domain, expose the underlying metrics
   const results = await Promise.all(
     domains.results.map(async (domain) => {
       const domainId = domain.id;
       const gameServerService = new GameServerService(domainId);
       const playerService = new PlayerService(domainId);
+      const pogService = new PlayerOnGameServerService(domainId);
       const userService = new UserService(domainId);
 
       const gameServers = await gameServerService.find({});
@@ -47,8 +53,52 @@ export async function processJob(_job: Job<unknown>) {
       const players = await playerService.find({});
       metrics.players.set({ domain: domainId }, players.total);
 
+      await Promise.all(
+        gameServers.results.map(async (gameserver) => {
+          const dailyActivePlayers = await pogService.find({
+            greaterThan: { lastSeen: oneDayAgo },
+            filters: { gameServerId: [gameserver.id] },
+          });
+          metrics.dap.set({ domain: domainId, gameServer: gameserver.id }, dailyActivePlayers.total);
+
+          const weeklyActivePlayers = await pogService.find({
+            greaterThan: { lastSeen: oneWeekAgo },
+            filters: { gameServerId: [gameserver.id] },
+          });
+          metrics.wap.set({ domain: domainId, gameServer: gameserver.id }, weeklyActivePlayers.total);
+
+          const monthlyActivePlayers = await pogService.find({
+            greaterThan: { lastSeen: oneMonthAgo },
+            filters: { gameServerId: [gameserver.id] },
+          });
+          metrics.map.set({ domain: domainId, gameServer: gameserver.id }, monthlyActivePlayers.total);
+
+          return {
+            gameServer: gameserver.id,
+            dailyActivePlayers: dailyActivePlayers.total,
+            weeklyActivePlayers: weeklyActivePlayers.total,
+            monthlyActivePlayers: monthlyActivePlayers.total,
+          };
+        })
+      );
+
+      const playerActivityMetrics = await playerService.calculatePlayerActivityMetrics();
+
+      metrics.dap.set({ domain: domainId }, playerActivityMetrics.dau);
+      metrics.wap.set({ domain: domainId }, playerActivityMetrics.wau);
+      metrics.map.set({ domain: domainId }, playerActivityMetrics.mau);
+
       const users = await userService.find({});
       metrics.users.set({ domain: domainId }, users.total);
+
+      const dailyActiveUsers = await userService.find({ greaterThan: { lastSeen: oneDayAgo } });
+      metrics.dau.set({ domain: domainId }, dailyActiveUsers.total);
+
+      const weeklyActiveUsers = await userService.find({ greaterThan: { lastSeen: oneWeekAgo } });
+      metrics.wau.set({ domain: domainId }, weeklyActiveUsers.total);
+
+      const monthlyActiveUsers = await userService.find({ greaterThan: { lastSeen: oneMonthAgo } });
+      metrics.mau.set({ domain: domainId }, monthlyActiveUsers.total);
 
       let domainInstalledModules = 0;
 

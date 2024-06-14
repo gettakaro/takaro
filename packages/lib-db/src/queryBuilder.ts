@@ -1,5 +1,12 @@
-import { IsDateString, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
-import { QueryBuilder as ObjectionQueryBuilder, Model as ObjectionModel, Page, AnyQueryBuilder } from 'objection';
+import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  QueryBuilder as ObjectionQueryBuilder,
+  Model as ObjectionModel,
+  Page,
+  AnyQueryBuilder,
+  Expression,
+  PrimitiveValue,
+} from 'objection';
 
 export class ITakaroQuery<T> {
   @IsOptional()
@@ -10,6 +17,16 @@ export class ITakaroQuery<T> {
   @IsOptional()
   search?: {
     [key in keyof T]?: unknown[] | unknown;
+  };
+
+  @IsOptional()
+  greaterThan?: {
+    [key in keyof T]?: unknown;
+  };
+
+  @IsOptional()
+  lessThan?: {
+    [key in keyof T]?: unknown;
   };
 
   @IsOptional()
@@ -28,14 +45,6 @@ export class ITakaroQuery<T> {
   @IsString()
   @IsEnum(['asc', 'desc'])
   sortDirection?: SortDirection;
-
-  @IsOptional()
-  @IsDateString()
-  startDate?: string;
-
-  @IsOptional()
-  @IsDateString()
-  endDate?: string;
 
   @IsOptional()
   @IsString({ each: true })
@@ -58,14 +67,9 @@ export class QueryBuilder<Model extends ObjectionModel, OutputDTO> {
 
     let qry = query.page(pagination.page, pagination.limit).orderBy(sorting.sortBy, sorting.sortDirection);
 
-    if (this.query.startDate) {
-      qry = qry.where(`${tableName}.createdAt`, '>=', this.query.startDate);
-    }
-    if (this.query.endDate) {
-      qry = qry.where(`${tableName}.createdAt`, '<=', this.query.endDate);
-    }
-
     qry = this.filters(tableName, qry);
+    qry = this.greaterThan(tableName, qry);
+    qry = this.lessThan(tableName, qry);
 
     if (this.query.search) {
       qry.where((builder) => {
@@ -104,6 +108,38 @@ export class QueryBuilder<Model extends ObjectionModel, OutputDTO> {
           if (filtered.length) {
             query.whereIn(`${tableName}.${filter}`, searchVal.filter(Boolean) as unknown as AnyQueryBuilder);
           }
+        }
+      }
+    }
+
+    return query;
+  }
+
+  private greaterThan(
+    tableName: string,
+    query: ObjectionQueryBuilder<Model, Page<Model>>
+  ): ObjectionQueryBuilder<Model, Page<Model>> {
+    for (const filter in this.query.greaterThan) {
+      if (Object.prototype.hasOwnProperty.call(this.query.greaterThan, filter)) {
+        const searchVal = this.query.greaterThan[filter];
+        if (searchVal) {
+          query.where(`${tableName}.${filter}`, '>=', searchVal as unknown as Expression<PrimitiveValue>);
+        }
+      }
+    }
+
+    return query;
+  }
+
+  private lessThan(
+    tableName: string,
+    query: ObjectionQueryBuilder<Model, Page<Model>>
+  ): ObjectionQueryBuilder<Model, Page<Model>> {
+    for (const filter in this.query.lessThan) {
+      if (Object.prototype.hasOwnProperty.call(this.query.lessThan, filter)) {
+        const searchVal = this.query.lessThan[filter];
+        if (searchVal) {
+          query.where(`${tableName}.${filter}`, '<=', searchVal as unknown as Expression<PrimitiveValue>);
         }
       }
     }

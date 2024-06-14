@@ -101,4 +101,33 @@ export class StatsService extends TakaroService<TakaroModel, TakaroDTO<void>, Ta
       return { values: data };
     }
   }
+
+  async getActivityStats(
+    dataType: 'users' | 'players',
+    timeType: 'daily' | 'weekly' | 'monthly',
+    gameserverId?: string,
+    startTime?: string,
+    endTime?: string
+  ) {
+    const metricName = `takaro_${timeType}_active_${dataType}`;
+
+    if (dataType === 'users' && gameserverId)
+      throw new errors.BadRequestError('Cannot get user activity for a specific gameserver');
+
+    if (gameserverId) {
+      const data = await this.prometheusQuery(
+        `${metricName}{job="kpi", domain="${this.domainId}", gameServer="${gameserverId}"}`,
+        startTime,
+        endTime
+      );
+      return { values: data };
+    } else {
+      const data = await this.prometheusQuery(
+        `sum by(domain) (${metricName}{job="kpi", domain="${this.domainId}"})`,
+        startTime,
+        endTime
+      );
+      return { values: data };
+    }
+  }
 }

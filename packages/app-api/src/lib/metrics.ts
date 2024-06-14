@@ -31,9 +31,57 @@ export const metrics: Record<string, Gauge> = {
     registers: [kpiRegistry],
   }),
 
+  // Daily active players
+  dap: new Gauge({
+    name: `${metricsPrefix}daily_active_players`,
+    help: 'Daily active players',
+    labelNames: ['domain', 'gameServer'],
+    registers: [kpiRegistry],
+  }),
+
+  // Weekly active players
+  wap: new Gauge({
+    name: `${metricsPrefix}weekly_active_players`,
+    help: 'Weekly active players',
+    labelNames: ['domain', 'gameServer'],
+    registers: [kpiRegistry],
+  }),
+
+  // Monthly active players
+  map: new Gauge({
+    name: `${metricsPrefix}monthly_active_players`,
+    help: 'Monthly active players',
+    labelNames: ['domain', 'gameServer'],
+    registers: [kpiRegistry],
+  }),
+
   users: new Gauge({
     name: `${metricsPrefix}users`,
     help: 'Number of users',
+    labelNames: ['domain'],
+    registers: [kpiRegistry],
+  }),
+
+  // Daily active users
+  dau: new Gauge({
+    name: `${metricsPrefix}daily_active_users`,
+    help: 'Daily active users',
+    labelNames: ['domain'],
+    registers: [kpiRegistry],
+  }),
+
+  // Weekly active users
+  wau: new Gauge({
+    name: `${metricsPrefix}weekly_active_users`,
+    help: 'Weekly active users',
+    labelNames: ['domain'],
+    registers: [kpiRegistry],
+  }),
+
+  // Monthly active users
+  mau: new Gauge({
+    name: `${metricsPrefix}monthly_active_users`,
+    help: 'Monthly active users',
     labelNames: ['domain'],
     registers: [kpiRegistry],
   }),

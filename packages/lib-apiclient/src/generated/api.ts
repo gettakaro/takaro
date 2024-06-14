@@ -663,6 +663,18 @@ export interface CommandSearchInputDTO {
   search?: CommandSearchInputAllowedFilters;
   /**
    *
+   * @type {any}
+   * @memberof CommandSearchInputDTO
+   */
+  greaterThan?: any;
+  /**
+   *
+   * @type {any}
+   * @memberof CommandSearchInputDTO
+   */
+  lessThan?: any;
+  /**
+   *
    * @type {number}
    * @memberof CommandSearchInputDTO
    */
@@ -685,18 +697,6 @@ export interface CommandSearchInputDTO {
    * @memberof CommandSearchInputDTO
    */
   sortDirection?: CommandSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {string}
-   * @memberof CommandSearchInputDTO
-   */
-  startDate?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CommandSearchInputDTO
-   */
-  endDate?: string;
   /**
    *
    * @type {Array<string>}
@@ -932,6 +932,18 @@ export interface CronJobSearchInputDTO {
   search?: CronJobSearchInputAllowedFilters;
   /**
    *
+   * @type {any}
+   * @memberof CronJobSearchInputDTO
+   */
+  greaterThan?: any;
+  /**
+   *
+   * @type {any}
+   * @memberof CronJobSearchInputDTO
+   */
+  lessThan?: any;
+  /**
+   *
    * @type {number}
    * @memberof CronJobSearchInputDTO
    */
@@ -954,18 +966,6 @@ export interface CronJobSearchInputDTO {
    * @memberof CronJobSearchInputDTO
    */
   sortDirection?: CronJobSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {string}
-   * @memberof CronJobSearchInputDTO
-   */
-  startDate?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof CronJobSearchInputDTO
-   */
-  endDate?: string;
   /**
    *
    * @type {Array<string>}
@@ -1282,6 +1282,18 @@ export interface DomainSearchInputDTO {
   search?: DomainSearchInputAllowedFilters;
   /**
    *
+   * @type {any}
+   * @memberof DomainSearchInputDTO
+   */
+  greaterThan?: any;
+  /**
+   *
+   * @type {any}
+   * @memberof DomainSearchInputDTO
+   */
+  lessThan?: any;
+  /**
+   *
    * @type {number}
    * @memberof DomainSearchInputDTO
    */
@@ -1304,18 +1316,6 @@ export interface DomainSearchInputDTO {
    * @memberof DomainSearchInputDTO
    */
   sortDirection?: DomainSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {string}
-   * @memberof DomainSearchInputDTO
-   */
-  startDate?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof DomainSearchInputDTO
-   */
-  endDate?: string;
   /**
    *
    * @type {Array<string>}
@@ -1956,6 +1956,18 @@ export interface EventSearchInputDTO {
   search?: EventSearchInputAllowedFilters;
   /**
    *
+   * @type {any}
+   * @memberof EventSearchInputDTO
+   */
+  greaterThan?: any;
+  /**
+   *
+   * @type {any}
+   * @memberof EventSearchInputDTO
+   */
+  lessThan?: any;
+  /**
+   *
    * @type {number}
    * @memberof EventSearchInputDTO
    */
@@ -1978,18 +1990,6 @@ export interface EventSearchInputDTO {
    * @memberof EventSearchInputDTO
    */
   sortDirection?: EventSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {string}
-   * @memberof EventSearchInputDTO
-   */
-  startDate?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof EventSearchInputDTO
-   */
-  endDate?: string;
   /**
    *
    * @type {Array<string>}
@@ -2145,6 +2145,18 @@ export interface FunctionSearchInputDTO {
   search?: FunctionSearchInputAllowedFilters;
   /**
    *
+   * @type {any}
+   * @memberof FunctionSearchInputDTO
+   */
+  greaterThan?: any;
+  /**
+   *
+   * @type {any}
+   * @memberof FunctionSearchInputDTO
+   */
+  lessThan?: any;
+  /**
+   *
    * @type {number}
    * @memberof FunctionSearchInputDTO
    */
@@ -2167,18 +2179,6 @@ export interface FunctionSearchInputDTO {
    * @memberof FunctionSearchInputDTO
    */
   sortDirection?: FunctionSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {string}
-   * @memberof FunctionSearchInputDTO
-   */
-  startDate?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof FunctionSearchInputDTO
-   */
-  endDate?: string;
   /**
    *
    * @type {Array<string>}
@@ -2401,6 +2401,18 @@ export interface GameServerSearchInputDTO {
   search?: GameServerSearchInputAllowedFilters;
   /**
    *
+   * @type {any}
+   * @memberof GameServerSearchInputDTO
+   */
+  greaterThan?: any;
+  /**
+   *
+   * @type {any}
+   * @memberof GameServerSearchInputDTO
+   */
+  lessThan?: any;
+  /**
+   *
    * @type {number}
    * @memberof GameServerSearchInputDTO
    */
@@ -2423,18 +2435,6 @@ export interface GameServerSearchInputDTO {
    * @memberof GameServerSearchInputDTO
    */
   sortDirection?: GameServerSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {string}
-   * @memberof GameServerSearchInputDTO
-   */
-  startDate?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof GameServerSearchInputDTO
-   */
-  endDate?: string;
   /**
    *
    * @type {Array<string>}
@@ -2820,6 +2820,18 @@ export interface GuildSearchInputDTO {
   search?: GuildSearchInputAllowedFilters;
   /**
    *
+   * @type {any}
+   * @memberof GuildSearchInputDTO
+   */
+  greaterThan?: any;
+  /**
+   *
+   * @type {any}
+   * @memberof GuildSearchInputDTO
+   */
+  lessThan?: any;
+  /**
+   *
    * @type {number}
    * @memberof GuildSearchInputDTO
    */
@@ -2842,18 +2854,6 @@ export interface GuildSearchInputDTO {
    * @memberof GuildSearchInputDTO
    */
   sortDirection?: GuildSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {string}
-   * @memberof GuildSearchInputDTO
-   */
-  startDate?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof GuildSearchInputDTO
-   */
-  endDate?: string;
   /**
    *
    * @type {Array<string>}
@@ -3223,6 +3223,18 @@ export interface HookSearchInputDTO {
   search?: HookSearchInputAllowedFilters;
   /**
    *
+   * @type {any}
+   * @memberof HookSearchInputDTO
+   */
+  greaterThan?: any;
+  /**
+   *
+   * @type {any}
+   * @memberof HookSearchInputDTO
+   */
+  lessThan?: any;
+  /**
+   *
    * @type {number}
    * @memberof HookSearchInputDTO
    */
@@ -3245,18 +3257,6 @@ export interface HookSearchInputDTO {
    * @memberof HookSearchInputDTO
    */
   sortDirection?: HookSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {string}
-   * @memberof HookSearchInputDTO
-   */
-  startDate?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof HookSearchInputDTO
-   */
-  endDate?: string;
   /**
    *
    * @type {Array<string>}
@@ -3781,6 +3781,18 @@ export interface ITakaroQuery {
   search?: any;
   /**
    *
+   * @type {any}
+   * @memberof ITakaroQuery
+   */
+  greaterThan?: any;
+  /**
+   *
+   * @type {any}
+   * @memberof ITakaroQuery
+   */
+  lessThan?: any;
+  /**
+   *
    * @type {number}
    * @memberof ITakaroQuery
    */
@@ -3803,18 +3815,6 @@ export interface ITakaroQuery {
    * @memberof ITakaroQuery
    */
   sortDirection?: ITakaroQuerySortDirectionEnum;
-  /**
-   *
-   * @type {string}
-   * @memberof ITakaroQuery
-   */
-  startDate?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ITakaroQuery
-   */
-  endDate?: string;
   /**
    *
    * @type {Array<string>}
@@ -4096,6 +4096,18 @@ export interface ItemSearchInputDTO {
   search?: ItemSearchInputAllowedFilters;
   /**
    *
+   * @type {any}
+   * @memberof ItemSearchInputDTO
+   */
+  greaterThan?: any;
+  /**
+   *
+   * @type {any}
+   * @memberof ItemSearchInputDTO
+   */
+  lessThan?: any;
+  /**
+   *
    * @type {number}
    * @memberof ItemSearchInputDTO
    */
@@ -4118,18 +4130,6 @@ export interface ItemSearchInputDTO {
    * @memberof ItemSearchInputDTO
    */
   sortDirection?: ItemSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {string}
-   * @memberof ItemSearchInputDTO
-   */
-  startDate?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ItemSearchInputDTO
-   */
-  endDate?: string;
   /**
    *
    * @type {Array<string>}
@@ -4756,6 +4756,18 @@ export interface ModuleSearchInputDTO {
   search?: ModuleSearchInputAllowedFilters;
   /**
    *
+   * @type {any}
+   * @memberof ModuleSearchInputDTO
+   */
+  greaterThan?: any;
+  /**
+   *
+   * @type {any}
+   * @memberof ModuleSearchInputDTO
+   */
+  lessThan?: any;
+  /**
+   *
    * @type {number}
    * @memberof ModuleSearchInputDTO
    */
@@ -4778,18 +4790,6 @@ export interface ModuleSearchInputDTO {
    * @memberof ModuleSearchInputDTO
    */
   sortDirection?: ModuleSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {string}
-   * @memberof ModuleSearchInputDTO
-   */
-  startDate?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ModuleSearchInputDTO
-   */
-  endDate?: string;
   /**
    *
    * @type {Array<string>}
@@ -5285,6 +5285,31 @@ export interface PlayerOnGameServerSearchInputAllowedFilters {
 /**
  *
  * @export
+ * @interface PlayerOnGameServerSearchInputAllowedRangeFilter
+ */
+export interface PlayerOnGameServerSearchInputAllowedRangeFilter {
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PlayerOnGameServerSearchInputAllowedRangeFilter
+   */
+  lastSeen?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PlayerOnGameServerSearchInputAllowedRangeFilter
+   */
+  createdAt?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PlayerOnGameServerSearchInputAllowedRangeFilter
+   */
+  updatedAt?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
  * @interface PlayerOnGameServerSearchInputDTO
  */
 export interface PlayerOnGameServerSearchInputDTO {
@@ -5300,6 +5325,18 @@ export interface PlayerOnGameServerSearchInputDTO {
    * @memberof PlayerOnGameServerSearchInputDTO
    */
   search?: PlayerOnGameServerSearchInputAllowedFilters;
+  /**
+   *
+   * @type {PlayerOnGameServerSearchInputAllowedRangeFilter}
+   * @memberof PlayerOnGameServerSearchInputDTO
+   */
+  greaterThan?: PlayerOnGameServerSearchInputAllowedRangeFilter;
+  /**
+   *
+   * @type {PlayerOnGameServerSearchInputAllowedRangeFilter}
+   * @memberof PlayerOnGameServerSearchInputDTO
+   */
+  lessThan?: PlayerOnGameServerSearchInputAllowedRangeFilter;
   /**
    *
    * @type {number}
@@ -5324,18 +5361,6 @@ export interface PlayerOnGameServerSearchInputDTO {
    * @memberof PlayerOnGameServerSearchInputDTO
    */
   sortDirection?: PlayerOnGameServerSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {string}
-   * @memberof PlayerOnGameServerSearchInputDTO
-   */
-  startDate?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof PlayerOnGameServerSearchInputDTO
-   */
-  endDate?: string;
   /**
    *
    * @type {Array<string>}
@@ -5507,6 +5532,12 @@ export interface PlayerOnGameserverOutputDTO {
   inventory: Array<IItemDTO>;
   /**
    *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  lastSeen: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
    * @type {string}
    * @memberof PlayerOnGameserverOutputDTO
    */
@@ -5639,6 +5670,12 @@ export interface PlayerOnGameserverOutputWithRolesDTO {
    * @memberof PlayerOnGameserverOutputWithRolesDTO
    */
   inventory: Array<IItemDTO>;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PlayerOnGameserverOutputWithRolesDTO
+   */
+  lastSeen: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -6052,6 +6089,18 @@ export interface PlayerSearchInputDTO {
   search?: PlayerSearchInputAllowedFilters;
   /**
    *
+   * @type {any}
+   * @memberof PlayerSearchInputDTO
+   */
+  greaterThan?: any;
+  /**
+   *
+   * @type {any}
+   * @memberof PlayerSearchInputDTO
+   */
+  lessThan?: any;
+  /**
+   *
    * @type {number}
    * @memberof PlayerSearchInputDTO
    */
@@ -6074,18 +6123,6 @@ export interface PlayerSearchInputDTO {
    * @memberof PlayerSearchInputDTO
    */
   sortDirection?: PlayerSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {string}
-   * @memberof PlayerSearchInputDTO
-   */
-  startDate?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof PlayerSearchInputDTO
-   */
-  endDate?: string;
   /**
    *
    * @type {Array<string>}
@@ -6207,6 +6244,25 @@ export interface PogStatsInputDTO {
    * @memberof PogStatsInputDTO
    */
   endDate?: StatsControllerGetPingStatsStartDateParameter;
+}
+/**
+ *
+ * @export
+ * @interface RangeFilterCreatedAndUpdatedAt
+ */
+export interface RangeFilterCreatedAndUpdatedAt {
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof RangeFilterCreatedAndUpdatedAt
+   */
+  createdAt?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof RangeFilterCreatedAndUpdatedAt
+   */
+  updatedAt?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -6354,6 +6410,18 @@ export interface RoleSearchInputDTO {
   search?: RoleSearchInputAllowedFilters;
   /**
    *
+   * @type {any}
+   * @memberof RoleSearchInputDTO
+   */
+  greaterThan?: any;
+  /**
+   *
+   * @type {any}
+   * @memberof RoleSearchInputDTO
+   */
+  lessThan?: any;
+  /**
+   *
    * @type {number}
    * @memberof RoleSearchInputDTO
    */
@@ -6376,18 +6444,6 @@ export interface RoleSearchInputDTO {
    * @memberof RoleSearchInputDTO
    */
   sortDirection?: RoleSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {string}
-   * @memberof RoleSearchInputDTO
-   */
-  startDate?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof RoleSearchInputDTO
-   */
-  endDate?: string;
   /**
    *
    * @type {Array<string>}
@@ -6788,6 +6844,25 @@ export interface TakaroEventCommandExecuted {
 /**
  *
  * @export
+ * @interface TakaroEventCronjobDetails
+ */
+export interface TakaroEventCronjobDetails {
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventCronjobDetails
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventCronjobDetails
+   */
+  name: string;
+}
+/**
+ *
+ * @export
  * @interface TakaroEventCronjobExecuted
  */
 export interface TakaroEventCronjobExecuted {
@@ -6803,6 +6878,12 @@ export interface TakaroEventCronjobExecuted {
    * @memberof TakaroEventCronjobExecuted
    */
   result: Array<TakaroEventFunctionResult>;
+  /**
+   *
+   * @type {TakaroEventCronjobDetails}
+   * @memberof TakaroEventCronjobExecuted
+   */
+  cronjob?: TakaroEventCronjobDetails;
   /**
    *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
@@ -6901,6 +6982,25 @@ export interface TakaroEventFunctionResult {
 /**
  *
  * @export
+ * @interface TakaroEventHookDetails
+ */
+export interface TakaroEventHookDetails {
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventHookDetails
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventHookDetails
+   */
+  name: string;
+}
+/**
+ *
+ * @export
  * @interface TakaroEventHookExecuted
  */
 export interface TakaroEventHookExecuted {
@@ -6916,6 +7016,12 @@ export interface TakaroEventHookExecuted {
    * @memberof TakaroEventHookExecuted
    */
   result: Array<TakaroEventFunctionResult>;
+  /**
+   *
+   * @type {TakaroEventHookDetails}
+   * @memberof TakaroEventHookExecuted
+   */
+  hook?: TakaroEventHookDetails;
   /**
    *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
@@ -7520,6 +7626,12 @@ export interface UserOutputDTO {
   discordId?: string;
   /**
    *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof UserOutputDTO
+   */
+  lastSeen: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
    * @type {string}
    * @memberof UserOutputDTO
    */
@@ -7610,6 +7722,12 @@ export interface UserOutputWithRolesDTO {
    * @memberof UserOutputWithRolesDTO
    */
   discordId?: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof UserOutputWithRolesDTO
+   */
+  lastSeen: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -7652,6 +7770,31 @@ export interface UserSearchInputAllowedFilters {
 /**
  *
  * @export
+ * @interface UserSearchInputAllowedRangeFilter
+ */
+export interface UserSearchInputAllowedRangeFilter {
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof UserSearchInputAllowedRangeFilter
+   */
+  lastSeen?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof UserSearchInputAllowedRangeFilter
+   */
+  createdAt?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof UserSearchInputAllowedRangeFilter
+   */
+  updatedAt?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
  * @interface UserSearchInputDTO
  */
 export interface UserSearchInputDTO {
@@ -7667,6 +7810,18 @@ export interface UserSearchInputDTO {
    * @memberof UserSearchInputDTO
    */
   search?: UserSearchInputAllowedFilters;
+  /**
+   *
+   * @type {UserSearchInputAllowedRangeFilter}
+   * @memberof UserSearchInputDTO
+   */
+  greaterThan?: UserSearchInputAllowedRangeFilter;
+  /**
+   *
+   * @type {UserSearchInputAllowedRangeFilter}
+   * @memberof UserSearchInputDTO
+   */
+  lessThan?: UserSearchInputAllowedRangeFilter;
   /**
    *
    * @type {number}
@@ -7691,18 +7846,6 @@ export interface UserSearchInputDTO {
    * @memberof UserSearchInputDTO
    */
   sortDirection?: UserSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {string}
-   * @memberof UserSearchInputDTO
-   */
-  startDate?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof UserSearchInputDTO
-   */
-  endDate?: string;
   /**
    *
    * @type {Array<string>}
@@ -7731,6 +7874,12 @@ export interface UserUpdateAuthDTO {
    * @memberof UserUpdateAuthDTO
    */
   discordId?: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof UserUpdateAuthDTO
+   */
+  lastSeen?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -7950,6 +8099,18 @@ export interface VariableSearchInputDTO {
   search?: VariableSearchInputAllowedFilters;
   /**
    *
+   * @type {any}
+   * @memberof VariableSearchInputDTO
+   */
+  greaterThan?: any;
+  /**
+   *
+   * @type {any}
+   * @memberof VariableSearchInputDTO
+   */
+  lessThan?: any;
+  /**
+   *
    * @type {number}
    * @memberof VariableSearchInputDTO
    */
@@ -7972,18 +8133,6 @@ export interface VariableSearchInputDTO {
    * @memberof VariableSearchInputDTO
    */
   sortDirection?: VariableSearchInputDTOSortDirectionEnum;
-  /**
-   *
-   * @type {string}
-   * @memberof VariableSearchInputDTO
-   */
-  startDate?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof VariableSearchInputDTO
-   */
-  endDate?: string;
   /**
    *
    * @type {Array<string>}

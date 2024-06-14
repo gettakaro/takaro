@@ -183,18 +183,21 @@ describe('QueryBuilder', () => {
     const start = new Date();
     await TestUserModel.query().insert({ name: 'test1' });
     await TestUserModel.query().insert({ name: 'test2' });
-
     const end = new Date();
 
     // Quick hack to make the test pass
     // Relying on times like this with an external DB is troublesome...
     await sleep(250);
 
-    await TestUserModel.query().insert({ name: 'test3', createdAt: end.toISOString() });
+    await TestUserModel.query().insert({ name: 'test3' });
 
     const res = await new QueryBuilder<TestUserModel, TestUserModel>({
-      startDate: start.toISOString(),
-      endDate: end.toISOString(),
+      greaterThan: {
+        createdAt: start.toISOString(),
+      },
+      lessThan: {
+        createdAt: end.toISOString(),
+      },
     }).build(TestUserModel.query());
 
     expect(res.results).to.have.lengthOf(2);
