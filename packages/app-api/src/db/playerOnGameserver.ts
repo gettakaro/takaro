@@ -32,6 +32,8 @@ export class PlayerOnGameServerModel extends TakaroModel {
   positionY: number;
   positionZ: number;
 
+  lastSeen: string;
+
   currency: number;
 
   online: boolean;
@@ -379,7 +381,10 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
     await Promise.all([
       query1.whereNotIn('gameId', gameIds).andWhere({ gameServerId }).update({ online: false }),
 
-      query2.whereIn('gameId', gameIds).andWhere({ gameServerId }).update({ online: true }),
+      query2
+        .whereIn('gameId', gameIds)
+        .andWhere({ gameServerId })
+        .update({ online: true, lastSeen: new Date().toISOString() }),
     ]);
   }
 }

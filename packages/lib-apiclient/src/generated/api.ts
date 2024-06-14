@@ -663,6 +663,18 @@ export interface CommandSearchInputDTO {
   search?: CommandSearchInputAllowedFilters;
   /**
    *
+   * @type {any}
+   * @memberof CommandSearchInputDTO
+   */
+  greaterThan?: any;
+  /**
+   *
+   * @type {any}
+   * @memberof CommandSearchInputDTO
+   */
+  lessThan?: any;
+  /**
+   *
    * @type {number}
    * @memberof CommandSearchInputDTO
    */
@@ -930,6 +942,18 @@ export interface CronJobSearchInputDTO {
    * @memberof CronJobSearchInputDTO
    */
   search?: CronJobSearchInputAllowedFilters;
+  /**
+   *
+   * @type {any}
+   * @memberof CronJobSearchInputDTO
+   */
+  greaterThan?: any;
+  /**
+   *
+   * @type {any}
+   * @memberof CronJobSearchInputDTO
+   */
+  lessThan?: any;
   /**
    *
    * @type {number}
@@ -1280,6 +1304,18 @@ export interface DomainSearchInputDTO {
    * @memberof DomainSearchInputDTO
    */
   search?: DomainSearchInputAllowedFilters;
+  /**
+   *
+   * @type {any}
+   * @memberof DomainSearchInputDTO
+   */
+  greaterThan?: any;
+  /**
+   *
+   * @type {any}
+   * @memberof DomainSearchInputDTO
+   */
+  lessThan?: any;
   /**
    *
    * @type {number}
@@ -1956,6 +1992,18 @@ export interface EventSearchInputDTO {
   search?: EventSearchInputAllowedFilters;
   /**
    *
+   * @type {any}
+   * @memberof EventSearchInputDTO
+   */
+  greaterThan?: any;
+  /**
+   *
+   * @type {any}
+   * @memberof EventSearchInputDTO
+   */
+  lessThan?: any;
+  /**
+   *
    * @type {number}
    * @memberof EventSearchInputDTO
    */
@@ -2143,6 +2191,18 @@ export interface FunctionSearchInputDTO {
    * @memberof FunctionSearchInputDTO
    */
   search?: FunctionSearchInputAllowedFilters;
+  /**
+   *
+   * @type {any}
+   * @memberof FunctionSearchInputDTO
+   */
+  greaterThan?: any;
+  /**
+   *
+   * @type {any}
+   * @memberof FunctionSearchInputDTO
+   */
+  lessThan?: any;
   /**
    *
    * @type {number}
@@ -2399,6 +2459,18 @@ export interface GameServerSearchInputDTO {
    * @memberof GameServerSearchInputDTO
    */
   search?: GameServerSearchInputAllowedFilters;
+  /**
+   *
+   * @type {any}
+   * @memberof GameServerSearchInputDTO
+   */
+  greaterThan?: any;
+  /**
+   *
+   * @type {any}
+   * @memberof GameServerSearchInputDTO
+   */
+  lessThan?: any;
   /**
    *
    * @type {number}
@@ -2820,6 +2892,18 @@ export interface GuildSearchInputDTO {
   search?: GuildSearchInputAllowedFilters;
   /**
    *
+   * @type {any}
+   * @memberof GuildSearchInputDTO
+   */
+  greaterThan?: any;
+  /**
+   *
+   * @type {any}
+   * @memberof GuildSearchInputDTO
+   */
+  lessThan?: any;
+  /**
+   *
    * @type {number}
    * @memberof GuildSearchInputDTO
    */
@@ -3221,6 +3305,18 @@ export interface HookSearchInputDTO {
    * @memberof HookSearchInputDTO
    */
   search?: HookSearchInputAllowedFilters;
+  /**
+   *
+   * @type {any}
+   * @memberof HookSearchInputDTO
+   */
+  greaterThan?: any;
+  /**
+   *
+   * @type {any}
+   * @memberof HookSearchInputDTO
+   */
+  lessThan?: any;
   /**
    *
    * @type {number}
@@ -3781,6 +3877,18 @@ export interface ITakaroQuery {
   search?: any;
   /**
    *
+   * @type {any}
+   * @memberof ITakaroQuery
+   */
+  greaterThan?: any;
+  /**
+   *
+   * @type {any}
+   * @memberof ITakaroQuery
+   */
+  lessThan?: any;
+  /**
+   *
    * @type {number}
    * @memberof ITakaroQuery
    */
@@ -4094,6 +4202,18 @@ export interface ItemSearchInputDTO {
    * @memberof ItemSearchInputDTO
    */
   search?: ItemSearchInputAllowedFilters;
+  /**
+   *
+   * @type {any}
+   * @memberof ItemSearchInputDTO
+   */
+  greaterThan?: any;
+  /**
+   *
+   * @type {any}
+   * @memberof ItemSearchInputDTO
+   */
+  lessThan?: any;
   /**
    *
    * @type {number}
@@ -4756,6 +4876,18 @@ export interface ModuleSearchInputDTO {
   search?: ModuleSearchInputAllowedFilters;
   /**
    *
+   * @type {any}
+   * @memberof ModuleSearchInputDTO
+   */
+  greaterThan?: any;
+  /**
+   *
+   * @type {any}
+   * @memberof ModuleSearchInputDTO
+   */
+  lessThan?: any;
+  /**
+   *
    * @type {number}
    * @memberof ModuleSearchInputDTO
    */
@@ -5285,6 +5417,31 @@ export interface PlayerOnGameServerSearchInputAllowedFilters {
 /**
  *
  * @export
+ * @interface PlayerOnGameServerSearchInputAllowedRangeFilter
+ */
+export interface PlayerOnGameServerSearchInputAllowedRangeFilter {
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PlayerOnGameServerSearchInputAllowedRangeFilter
+   */
+  lastSeen?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PlayerOnGameServerSearchInputAllowedRangeFilter
+   */
+  createdAt?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PlayerOnGameServerSearchInputAllowedRangeFilter
+   */
+  updatedAt?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
  * @interface PlayerOnGameServerSearchInputDTO
  */
 export interface PlayerOnGameServerSearchInputDTO {
@@ -5300,6 +5457,18 @@ export interface PlayerOnGameServerSearchInputDTO {
    * @memberof PlayerOnGameServerSearchInputDTO
    */
   search?: PlayerOnGameServerSearchInputAllowedFilters;
+  /**
+   *
+   * @type {PlayerOnGameServerSearchInputAllowedRangeFilter}
+   * @memberof PlayerOnGameServerSearchInputDTO
+   */
+  greaterThan?: PlayerOnGameServerSearchInputAllowedRangeFilter;
+  /**
+   *
+   * @type {PlayerOnGameServerSearchInputAllowedRangeFilter}
+   * @memberof PlayerOnGameServerSearchInputDTO
+   */
+  lessThan?: PlayerOnGameServerSearchInputAllowedRangeFilter;
   /**
    *
    * @type {number}
@@ -5507,6 +5676,12 @@ export interface PlayerOnGameserverOutputDTO {
   inventory: Array<IItemDTO>;
   /**
    *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PlayerOnGameserverOutputDTO
+   */
+  lastSeen: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
    * @type {string}
    * @memberof PlayerOnGameserverOutputDTO
    */
@@ -5639,6 +5814,12 @@ export interface PlayerOnGameserverOutputWithRolesDTO {
    * @memberof PlayerOnGameserverOutputWithRolesDTO
    */
   inventory: Array<IItemDTO>;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof PlayerOnGameserverOutputWithRolesDTO
+   */
+  lastSeen: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -6052,6 +6233,18 @@ export interface PlayerSearchInputDTO {
   search?: PlayerSearchInputAllowedFilters;
   /**
    *
+   * @type {any}
+   * @memberof PlayerSearchInputDTO
+   */
+  greaterThan?: any;
+  /**
+   *
+   * @type {any}
+   * @memberof PlayerSearchInputDTO
+   */
+  lessThan?: any;
+  /**
+   *
    * @type {number}
    * @memberof PlayerSearchInputDTO
    */
@@ -6211,6 +6404,25 @@ export interface PogStatsInputDTO {
 /**
  *
  * @export
+ * @interface RangeFilterCreatedAndUpdatedAt
+ */
+export interface RangeFilterCreatedAndUpdatedAt {
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof RangeFilterCreatedAndUpdatedAt
+   */
+  createdAt?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof RangeFilterCreatedAndUpdatedAt
+   */
+  updatedAt?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
  * @interface RedirectQs
  */
 export interface RedirectQs {
@@ -6352,6 +6564,18 @@ export interface RoleSearchInputDTO {
    * @memberof RoleSearchInputDTO
    */
   search?: RoleSearchInputAllowedFilters;
+  /**
+   *
+   * @type {any}
+   * @memberof RoleSearchInputDTO
+   */
+  greaterThan?: any;
+  /**
+   *
+   * @type {any}
+   * @memberof RoleSearchInputDTO
+   */
+  lessThan?: any;
   /**
    *
    * @type {number}
@@ -6788,6 +7012,25 @@ export interface TakaroEventCommandExecuted {
 /**
  *
  * @export
+ * @interface TakaroEventCronjobDetails
+ */
+export interface TakaroEventCronjobDetails {
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventCronjobDetails
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventCronjobDetails
+   */
+  name: string;
+}
+/**
+ *
+ * @export
  * @interface TakaroEventCronjobExecuted
  */
 export interface TakaroEventCronjobExecuted {
@@ -6803,6 +7046,12 @@ export interface TakaroEventCronjobExecuted {
    * @memberof TakaroEventCronjobExecuted
    */
   result: Array<TakaroEventFunctionResult>;
+  /**
+   *
+   * @type {TakaroEventCronjobDetails}
+   * @memberof TakaroEventCronjobExecuted
+   */
+  cronjob?: TakaroEventCronjobDetails;
   /**
    *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
@@ -6901,6 +7150,25 @@ export interface TakaroEventFunctionResult {
 /**
  *
  * @export
+ * @interface TakaroEventHookDetails
+ */
+export interface TakaroEventHookDetails {
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventHookDetails
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventHookDetails
+   */
+  name: string;
+}
+/**
+ *
+ * @export
  * @interface TakaroEventHookExecuted
  */
 export interface TakaroEventHookExecuted {
@@ -6916,6 +7184,12 @@ export interface TakaroEventHookExecuted {
    * @memberof TakaroEventHookExecuted
    */
   result: Array<TakaroEventFunctionResult>;
+  /**
+   *
+   * @type {TakaroEventHookDetails}
+   * @memberof TakaroEventHookExecuted
+   */
+  hook?: TakaroEventHookDetails;
   /**
    *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
@@ -7520,6 +7794,12 @@ export interface UserOutputDTO {
   discordId?: string;
   /**
    *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof UserOutputDTO
+   */
+  lastSeen: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
    * @type {string}
    * @memberof UserOutputDTO
    */
@@ -7610,6 +7890,12 @@ export interface UserOutputWithRolesDTO {
    * @memberof UserOutputWithRolesDTO
    */
   discordId?: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof UserOutputWithRolesDTO
+   */
+  lastSeen: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -7652,6 +7938,31 @@ export interface UserSearchInputAllowedFilters {
 /**
  *
  * @export
+ * @interface UserSearchInputAllowedRangeFilter
+ */
+export interface UserSearchInputAllowedRangeFilter {
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof UserSearchInputAllowedRangeFilter
+   */
+  lastSeen?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof UserSearchInputAllowedRangeFilter
+   */
+  createdAt?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof UserSearchInputAllowedRangeFilter
+   */
+  updatedAt?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
  * @interface UserSearchInputDTO
  */
 export interface UserSearchInputDTO {
@@ -7667,6 +7978,18 @@ export interface UserSearchInputDTO {
    * @memberof UserSearchInputDTO
    */
   search?: UserSearchInputAllowedFilters;
+  /**
+   *
+   * @type {UserSearchInputAllowedRangeFilter}
+   * @memberof UserSearchInputDTO
+   */
+  greaterThan?: UserSearchInputAllowedRangeFilter;
+  /**
+   *
+   * @type {UserSearchInputAllowedRangeFilter}
+   * @memberof UserSearchInputDTO
+   */
+  lessThan?: UserSearchInputAllowedRangeFilter;
   /**
    *
    * @type {number}
@@ -7731,6 +8054,12 @@ export interface UserUpdateAuthDTO {
    * @memberof UserUpdateAuthDTO
    */
   discordId?: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof UserUpdateAuthDTO
+   */
+  lastSeen?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -7948,6 +8277,18 @@ export interface VariableSearchInputDTO {
    * @memberof VariableSearchInputDTO
    */
   search?: VariableSearchInputAllowedFilters;
+  /**
+   *
+   * @type {any}
+   * @memberof VariableSearchInputDTO
+   */
+  greaterThan?: any;
+  /**
+   *
+   * @type {any}
+   * @memberof VariableSearchInputDTO
+   */
+  lessThan?: any;
   /**
    *
    * @type {number}

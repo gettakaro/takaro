@@ -1,6 +1,6 @@
 import { TakaroService } from './Base.js';
 
-import { IsBoolean, IsIP, IsNumber, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
+import { IsBoolean, IsIP, IsISO8601, IsNumber, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
 import { TakaroDTO, TakaroModelDTO, ctx, errors, traceableClass } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
@@ -51,6 +51,9 @@ export class PlayerOnGameserverOutputDTO extends TakaroModelDTO<PlayerOnGameserv
   @ValidateNested({ each: true })
   @Type(() => IItemDTO)
   inventory: IItemDTO[];
+
+  @IsISO8601()
+  lastSeen!: string;
 }
 
 export class PlayerOnGameserverOutputWithRolesDTO extends PlayerOnGameserverOutputDTO {

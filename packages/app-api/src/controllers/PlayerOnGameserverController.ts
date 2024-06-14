@@ -1,4 +1,4 @@
-import { IsBoolean, IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsBoolean, IsISO8601, IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
@@ -10,9 +10,11 @@ import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 import {
   PlayerOnGameServerService,
+  PlayerOnGameserverOutputDTO,
   PlayerOnGameserverOutputWithRolesDTO,
 } from '../service/PlayerOnGameserverService.js';
 import { onlyIfEconomyEnabledMiddleware } from '../middlewares/onlyIfEconomyEnabled.js';
+import { RangeFilterCreatedAndUpdatedAt } from './shared.js';
 
 export class PlayerOnGameserverOutputDTOAPI extends APIOutput<PlayerOnGameserverOutputWithRolesDTO> {
   @Type(() => PlayerOnGameserverOutputWithRolesDTO)
@@ -48,7 +50,13 @@ class PlayerOnGameServerSearchInputAllowedFilters {
   online!: boolean;
 }
 
-class PlayerOnGameServerSearchInputDTO extends ITakaroQuery<PlayerOnGameServerSearchInputAllowedFilters> {
+class PlayerOnGameServerSearchInputAllowedRangeFilter extends RangeFilterCreatedAndUpdatedAt {
+  @IsOptional()
+  @IsISO8601()
+  lastSeen!: string;
+}
+
+class PlayerOnGameServerSearchInputDTO extends ITakaroQuery<PlayerOnGameserverOutputDTO> {
   @ValidateNested()
   @Type(() => PlayerOnGameServerSearchInputAllowedFilters)
   declare filters: PlayerOnGameServerSearchInputAllowedFilters;
@@ -56,6 +64,14 @@ class PlayerOnGameServerSearchInputDTO extends ITakaroQuery<PlayerOnGameServerSe
   @ValidateNested()
   @Type(() => PlayerOnGameServerSearchInputAllowedFilters)
   declare search: PlayerOnGameServerSearchInputAllowedFilters;
+
+  @ValidateNested()
+  @Type(() => PlayerOnGameServerSearchInputAllowedRangeFilter)
+  declare greaterThan: PlayerOnGameServerSearchInputAllowedRangeFilter;
+
+  @ValidateNested()
+  @Type(() => PlayerOnGameServerSearchInputAllowedRangeFilter)
+  declare lessThan: PlayerOnGameServerSearchInputAllowedRangeFilter;
 }
 
 class PlayerOnGameServerSetCurrencyInputDTO {

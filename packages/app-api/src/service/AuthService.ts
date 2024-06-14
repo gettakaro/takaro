@@ -162,6 +162,7 @@ export class AuthService extends DomainScoped {
       const users = await service.find({ filters: { id: [payload.sub] } });
       if (!users.results.length) return null;
       user = users.results[0];
+      await service.update(user.id, new UserUpdateAuthDTO({ lastSeen: new Date().toISOString() }));
     }
 
     // If we don't have a user yet, try to get it from the IDP
@@ -174,6 +175,7 @@ export class AuthService extends DomainScoped {
           if (!users.results.length) return null;
 
           user = users.results[0];
+          await service.update(user.id, new UserUpdateAuthDTO({ lastSeen: new Date().toISOString() }));
         }
       } catch (error) {
         // Not an ory session, throw a sanitized error

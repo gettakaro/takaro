@@ -334,4 +334,35 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
 
     return await query2.findById(res.id);
   }
+
+  async calculatePlayerActivityMetrics() {
+    const oneDayAgo = new Date(new Date().valueOf() - 1000 * 60 * 60 * 24).toISOString();
+    const oneWeekAgo = new Date(new Date().valueOf() - 1000 * 60 * 60 * 24 * 7).toISOString();
+    const oneMonthAgo = new Date(new Date().valueOf() - 1000 * 60 * 60 * 24 * 30).toISOString();
+
+    const { query } = await this.getModel();
+
+    const dauRes = await query
+      .joinRelated('playerOnGameServers')
+      .where('playerOnGameServers.lastSeen', '>', oneDayAgo)
+      .countDistinct('players.id');
+    const wauRes = await query
+      .joinRelated('playerOnGameServers')
+      .where('playerOnGameServers.lastSeen', '>', oneWeekAgo)
+      .countDistinct('players.id');
+    const mauRes = await query
+      .joinRelated('playerOnGameServers')
+      .where('playerOnGameServers.lastSeen', '>', oneMonthAgo)
+      .countDistinct('players.id');
+
+    const dau = parseInt((dauRes[0] as unknown as { count: string }).count, 10);
+    const wau = parseInt((wauRes[0] as unknown as { count: string }).count, 10);
+    const mau = parseInt((mauRes[0] as unknown as { count: string }).count, 10);
+
+    return {
+      dau,
+      wau,
+      mau,
+    };
+  }
 }
