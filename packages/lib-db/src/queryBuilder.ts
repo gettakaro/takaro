@@ -1,4 +1,4 @@
-import { IsDateString, IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 import {
   QueryBuilder as ObjectionQueryBuilder,
   Model as ObjectionModel,
@@ -47,14 +47,6 @@ export class ITakaroQuery<T> {
   sortDirection?: SortDirection;
 
   @IsOptional()
-  @IsDateString()
-  startDate?: string;
-
-  @IsOptional()
-  @IsDateString()
-  endDate?: string;
-
-  @IsOptional()
   @IsString({ each: true })
   extend?: string[];
 }
@@ -74,13 +66,6 @@ export class QueryBuilder<Model extends ObjectionModel, OutputDTO> {
     const sorting = this.sorting();
 
     let qry = query.page(pagination.page, pagination.limit).orderBy(sorting.sortBy, sorting.sortDirection);
-
-    if (this.query.startDate) {
-      qry = qry.where(`${tableName}.createdAt`, '>=', this.query.startDate);
-    }
-    if (this.query.endDate) {
-      qry = qry.where(`${tableName}.createdAt`, '<=', this.query.endDate);
-    }
 
     qry = this.filters(tableName, qry);
     qry = this.greaterThan(tableName, qry);
