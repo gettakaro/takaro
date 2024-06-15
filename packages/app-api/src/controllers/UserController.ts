@@ -1,4 +1,4 @@
-import { IsEmail, IsISO8601, IsOptional, IsString, IsUUID, Length, ValidateNested } from 'class-validator';
+import { IsEmail, IsISO8601, IsOptional, IsString, Length, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import {
@@ -12,7 +12,7 @@ import { AuthenticatedRequest, AuthService, LoginOutputDTO } from '../service/Au
 import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Put, Params, Res } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
+import { IdUuidDTO, IdUuidDTOAPI, ParamId, ParamIdAndRoleId } from '../lib/validators.js';
 import { Request, Response } from 'express';
 import { PERMISSIONS } from '@takaro/auth';
 import { RangeFilterCreatedAndUpdatedAt } from './shared.js';
@@ -28,11 +28,6 @@ export class LoginDTO {
 
   @Length(8, 50)
   password!: string;
-}
-
-export class ParamIdAndRoleId extends ParamId {
-  @IsUUID('4')
-  roleId!: string;
 }
 
 export class InviteCreateDTO {

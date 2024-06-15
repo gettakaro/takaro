@@ -49,6 +49,60 @@ export interface APIOutput {
 /**
  *
  * @export
+ * @interface ActivityInputDTO
+ */
+export interface ActivityInputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof ActivityInputDTO
+   */
+  gameServerId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ActivityInputDTO
+   */
+  timeType: ActivityInputDTOTimeTypeEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof ActivityInputDTO
+   */
+  dataType: ActivityInputDTODataTypeEnum;
+  /**
+   *
+   * @type {StatsControllerGetPingStatsStartDateParameter}
+   * @memberof ActivityInputDTO
+   */
+  startDate?: StatsControllerGetPingStatsStartDateParameter;
+  /**
+   *
+   * @type {StatsControllerGetPingStatsStartDateParameter}
+   * @memberof ActivityInputDTO
+   */
+  endDate?: StatsControllerGetPingStatsStartDateParameter;
+}
+
+export const ActivityInputDTOTimeTypeEnum = {
+  Daily: 'daily',
+  Weekly: 'weekly',
+  Monthly: 'monthly',
+} as const;
+
+export type ActivityInputDTOTimeTypeEnum =
+  (typeof ActivityInputDTOTimeTypeEnum)[keyof typeof ActivityInputDTOTimeTypeEnum];
+export const ActivityInputDTODataTypeEnum = {
+  Users: 'users',
+  Players: 'players',
+} as const;
+
+export type ActivityInputDTODataTypeEnum =
+  (typeof ActivityInputDTODataTypeEnum)[keyof typeof ActivityInputDTODataTypeEnum];
+
+/**
+ *
+ * @export
  * @interface BanDTO
  */
 export interface BanDTO {
@@ -4900,6 +4954,7 @@ export const PERMISSIONS = {
   ManageEvents: 'MANAGE_EVENTS',
   ReadItems: 'READ_ITEMS',
   ManageItems: 'MANAGE_ITEMS',
+  ManageShopListings: 'MANAGE_SHOP_LISTINGS',
 } as const;
 
 export type PERMISSIONS = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
@@ -6746,6 +6801,311 @@ export interface SettingsSetDTO {
    * @memberof SettingsSetDTO
    */
   value: any;
+}
+/**
+ *
+ * @export
+ * @interface ShopListingCreateDTO
+ */
+export interface ShopListingCreateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof ShopListingCreateDTO
+   */
+  gameServerId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ShopListingCreateDTO
+   */
+  itemId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ShopListingCreateDTO
+   */
+  functionId?: string;
+  /**
+   *
+   * @type {number}
+   * @memberof ShopListingCreateDTO
+   */
+  price: number;
+  /**
+   *
+   * @type {string}
+   * @memberof ShopListingCreateDTO
+   */
+  name?: string;
+}
+/**
+ *
+ * @export
+ * @interface ShopListingOutputArrayDTOAPI
+ */
+export interface ShopListingOutputArrayDTOAPI {
+  /**
+   *
+   * @type {Array<ShopListingOutputDTO>}
+   * @memberof ShopListingOutputArrayDTOAPI
+   */
+  data: Array<ShopListingOutputDTO>;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof ShopListingOutputArrayDTOAPI
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface ShopListingOutputDTO
+ */
+export interface ShopListingOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof ShopListingOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ShopListingOutputDTO
+   */
+  gameServerId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ShopListingOutputDTO
+   */
+  itemId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ShopListingOutputDTO
+   */
+  functionId?: string;
+  /**
+   *
+   * @type {number}
+   * @memberof ShopListingOutputDTO
+   */
+  price: number;
+  /**
+   *
+   * @type {string}
+   * @memberof ShopListingOutputDTO
+   */
+  name?: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof ShopListingOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof ShopListingOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface ShopListingOutputDTOAPI
+ */
+export interface ShopListingOutputDTOAPI {
+  /**
+   *
+   * @type {ShopListingOutputDTO}
+   * @memberof ShopListingOutputDTOAPI
+   */
+  data: ShopListingOutputDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof ShopListingOutputDTOAPI
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface ShopListingSearchInputAllowedFilters
+ */
+export interface ShopListingSearchInputAllowedFilters {
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ShopListingSearchInputAllowedFilters
+   */
+  id?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ShopListingSearchInputAllowedFilters
+   */
+  gameServerId?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ShopListingSearchInputAllowedFilters
+   */
+  itemId?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ShopListingSearchInputAllowedFilters
+   */
+  functionId?: Array<string>;
+  /**
+   *
+   * @type {Array<number>}
+   * @memberof ShopListingSearchInputAllowedFilters
+   */
+  price?: Array<number>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ShopListingSearchInputAllowedFilters
+   */
+  name?: Array<string>;
+}
+/**
+ *
+ * @export
+ * @interface ShopListingSearchInputDTO
+ */
+export interface ShopListingSearchInputDTO {
+  /**
+   *
+   * @type {ShopListingSearchInputAllowedFilters}
+   * @memberof ShopListingSearchInputDTO
+   */
+  filters?: ShopListingSearchInputAllowedFilters;
+  /**
+   *
+   * @type {ShopListingSearchInputAllowedFilters}
+   * @memberof ShopListingSearchInputDTO
+   */
+  search?: ShopListingSearchInputAllowedFilters;
+  /**
+   *
+   * @type {ShopSearchInputAllowedRangeFilter}
+   * @memberof ShopListingSearchInputDTO
+   */
+  greaterThan?: ShopSearchInputAllowedRangeFilter;
+  /**
+   *
+   * @type {ShopSearchInputAllowedRangeFilter}
+   * @memberof ShopListingSearchInputDTO
+   */
+  lessThan?: ShopSearchInputAllowedRangeFilter;
+  /**
+   *
+   * @type {number}
+   * @memberof ShopListingSearchInputDTO
+   */
+  page?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof ShopListingSearchInputDTO
+   */
+  limit?: number;
+  /**
+   *
+   * @type {string}
+   * @memberof ShopListingSearchInputDTO
+   */
+  sortBy?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ShopListingSearchInputDTO
+   */
+  sortDirection?: ShopListingSearchInputDTOSortDirectionEnum;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ShopListingSearchInputDTO
+   */
+  extend?: Array<string>;
+}
+
+export const ShopListingSearchInputDTOSortDirectionEnum = {
+  Asc: 'asc',
+  Desc: 'desc',
+} as const;
+
+export type ShopListingSearchInputDTOSortDirectionEnum =
+  (typeof ShopListingSearchInputDTOSortDirectionEnum)[keyof typeof ShopListingSearchInputDTOSortDirectionEnum];
+
+/**
+ *
+ * @export
+ * @interface ShopListingUpdateDTO
+ */
+export interface ShopListingUpdateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof ShopListingUpdateDTO
+   */
+  gameServerId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ShopListingUpdateDTO
+   */
+  itemId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ShopListingUpdateDTO
+   */
+  functionId?: string;
+  /**
+   *
+   * @type {number}
+   * @memberof ShopListingUpdateDTO
+   */
+  price: number;
+  /**
+   *
+   * @type {string}
+   * @memberof ShopListingUpdateDTO
+   */
+  name: string;
+}
+/**
+ *
+ * @export
+ * @interface ShopSearchInputAllowedRangeFilter
+ */
+export interface ShopSearchInputAllowedRangeFilter {
+  /**
+   *
+   * @type {number}
+   * @memberof ShopSearchInputAllowedRangeFilter
+   */
+  price?: number;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof ShopSearchInputAllowedRangeFilter
+   */
+  createdAt?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof ShopSearchInputAllowedRangeFilter
+   */
+  updatedAt?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  * @type StatsControllerGetPingStatsStartDateParameter
@@ -17954,11 +18314,554 @@ export type SettingsControllerGetKeysEnum =
   (typeof SettingsControllerGetKeysEnum)[keyof typeof SettingsControllerGetKeysEnum];
 
 /**
+ * ShopApi - axios parameter creator
+ * @export
+ */
+export const ShopApiAxiosParamCreator = function (configuration?: Configuration) {
+  return {
+    /**
+     *  Required permissions: `MANAGE_SHOP_LISTINGS`
+     * @summary Create
+     * @param {ShopListingCreateDTO} [shopListingCreateDTO] ShopListingCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopControllerCreate: async (
+      shopListingCreateDTO?: ShopListingCreateDTO,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/shopListing`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(shopListingCreateDTO, localVarRequestOptions, configuration);
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `MANAGE_SHOP_LISTINGS`
+     * @summary Delete
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopControllerDelete: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('shopControllerDelete', 'id', id);
+      const localVarPath = `/shopListing/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopControllerGetOne: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('shopControllerGetOne', 'id', id);
+      const localVarPath = `/shopListing/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Search
+     * @param {ShopListingSearchInputDTO} [shopListingSearchInputDTO] ShopListingSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopControllerSearch: async (
+      shopListingSearchInputDTO?: ShopListingSearchInputDTO,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/shopListing/search`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        shopListingSearchInputDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *  Required permissions: `MANAGE_SHOP_LISTINGS`
+     * @summary Update
+     * @param {string} id
+     * @param {ShopListingUpdateDTO} [shopListingUpdateDTO] ShopListingUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopControllerUpdate: async (
+      id: string,
+      shopListingUpdateDTO?: ShopListingUpdateDTO,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('shopControllerUpdate', 'id', id);
+      const localVarPath = `/shopListing/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(shopListingUpdateDTO, localVarRequestOptions, configuration);
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+  };
+};
+
+/**
+ * ShopApi - functional programming interface
+ * @export
+ */
+export const ShopApiFp = function (configuration?: Configuration) {
+  const localVarAxiosParamCreator = ShopApiAxiosParamCreator(configuration);
+  return {
+    /**
+     *  Required permissions: `MANAGE_SHOP_LISTINGS`
+     * @summary Create
+     * @param {ShopListingCreateDTO} [shopListingCreateDTO] ShopListingCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async shopControllerCreate(
+      shopListingCreateDTO?: ShopListingCreateDTO,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopListingOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.shopControllerCreate(shopListingCreateDTO, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['ShopApi.shopControllerCreate']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `MANAGE_SHOP_LISTINGS`
+     * @summary Delete
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async shopControllerDelete(
+      id: string,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.shopControllerDelete(id, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['ShopApi.shopControllerDelete']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async shopControllerGetOne(
+      id: string,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopListingOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.shopControllerGetOne(id, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['ShopApi.shopControllerGetOne']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *
+     * @summary Search
+     * @param {ShopListingSearchInputDTO} [shopListingSearchInputDTO] ShopListingSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async shopControllerSearch(
+      shopListingSearchInputDTO?: ShopListingSearchInputDTO,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopListingOutputArrayDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.shopControllerSearch(
+        shopListingSearchInputDTO,
+        options
+      );
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['ShopApi.shopControllerSearch']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `MANAGE_SHOP_LISTINGS`
+     * @summary Update
+     * @param {string} id
+     * @param {ShopListingUpdateDTO} [shopListingUpdateDTO] ShopListingUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async shopControllerUpdate(
+      id: string,
+      shopListingUpdateDTO?: ShopListingUpdateDTO,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopListingOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.shopControllerUpdate(id, shopListingUpdateDTO, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['ShopApi.shopControllerUpdate']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+  };
+};
+
+/**
+ * ShopApi - factory interface
+ * @export
+ */
+export const ShopApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+  const localVarFp = ShopApiFp(configuration);
+  return {
+    /**
+     *  Required permissions: `MANAGE_SHOP_LISTINGS`
+     * @summary Create
+     * @param {ShopListingCreateDTO} [shopListingCreateDTO] ShopListingCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopControllerCreate(
+      shopListingCreateDTO?: ShopListingCreateDTO,
+      options?: any
+    ): AxiosPromise<ShopListingOutputDTOAPI> {
+      return localVarFp.shopControllerCreate(shopListingCreateDTO, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `MANAGE_SHOP_LISTINGS`
+     * @summary Delete
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopControllerDelete(id: string, options?: any): AxiosPromise<APIOutput> {
+      return localVarFp.shopControllerDelete(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Get one
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopControllerGetOne(id: string, options?: any): AxiosPromise<ShopListingOutputDTOAPI> {
+      return localVarFp.shopControllerGetOne(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Search
+     * @param {ShopListingSearchInputDTO} [shopListingSearchInputDTO] ShopListingSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopControllerSearch(
+      shopListingSearchInputDTO?: ShopListingSearchInputDTO,
+      options?: any
+    ): AxiosPromise<ShopListingOutputArrayDTOAPI> {
+      return localVarFp
+        .shopControllerSearch(shopListingSearchInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `MANAGE_SHOP_LISTINGS`
+     * @summary Update
+     * @param {string} id
+     * @param {ShopListingUpdateDTO} [shopListingUpdateDTO] ShopListingUpdateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopControllerUpdate(
+      id: string,
+      shopListingUpdateDTO?: ShopListingUpdateDTO,
+      options?: any
+    ): AxiosPromise<ShopListingOutputDTOAPI> {
+      return localVarFp
+        .shopControllerUpdate(id, shopListingUpdateDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+  };
+};
+
+/**
+ * ShopApi - object-oriented interface
+ * @export
+ * @class ShopApi
+ * @extends {BaseAPI}
+ */
+export class ShopApi extends BaseAPI {
+  /**
+   *  Required permissions: `MANAGE_SHOP_LISTINGS`
+   * @summary Create
+   * @param {ShopListingCreateDTO} [shopListingCreateDTO] ShopListingCreateDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ShopApi
+   */
+  public shopControllerCreate(shopListingCreateDTO?: ShopListingCreateDTO, options?: RawAxiosRequestConfig) {
+    return ShopApiFp(this.configuration)
+      .shopControllerCreate(shopListingCreateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `MANAGE_SHOP_LISTINGS`
+   * @summary Delete
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ShopApi
+   */
+  public shopControllerDelete(id: string, options?: RawAxiosRequestConfig) {
+    return ShopApiFp(this.configuration)
+      .shopControllerDelete(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Get one
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ShopApi
+   */
+  public shopControllerGetOne(id: string, options?: RawAxiosRequestConfig) {
+    return ShopApiFp(this.configuration)
+      .shopControllerGetOne(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Search
+   * @param {ShopListingSearchInputDTO} [shopListingSearchInputDTO] ShopListingSearchInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ShopApi
+   */
+  public shopControllerSearch(shopListingSearchInputDTO?: ShopListingSearchInputDTO, options?: RawAxiosRequestConfig) {
+    return ShopApiFp(this.configuration)
+      .shopControllerSearch(shopListingSearchInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `MANAGE_SHOP_LISTINGS`
+   * @summary Update
+   * @param {string} id
+   * @param {ShopListingUpdateDTO} [shopListingUpdateDTO] ShopListingUpdateDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ShopApi
+   */
+  public shopControllerUpdate(
+    id: string,
+    shopListingUpdateDTO?: ShopListingUpdateDTO,
+    options?: RawAxiosRequestConfig
+  ) {
+    return ShopApiFp(this.configuration)
+      .shopControllerUpdate(id, shopListingUpdateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+}
+
+/**
  * StatsApi - axios parameter creator
  * @export
  */
 export const StatsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
+    /**
+     *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+     * @summary Get activity stats
+     * @param {StatsControllerGetActivityStatsTimeTypeEnum} timeType
+     * @param {StatsControllerGetActivityStatsDataTypeEnum} dataType
+     * @param {string} [gameServerId]
+     * @param {StatsControllerGetPingStatsStartDateParameter} [startDate]
+     * @param {StatsControllerGetPingStatsStartDateParameter} [endDate]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    statsControllerGetActivityStats: async (
+      timeType: StatsControllerGetActivityStatsTimeTypeEnum,
+      dataType: StatsControllerGetActivityStatsDataTypeEnum,
+      gameServerId?: string,
+      startDate?: StatsControllerGetPingStatsStartDateParameter,
+      endDate?: StatsControllerGetPingStatsStartDateParameter,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'timeType' is not null or undefined
+      assertParamExists('statsControllerGetActivityStats', 'timeType', timeType);
+      // verify required parameter 'dataType' is not null or undefined
+      assertParamExists('statsControllerGetActivityStats', 'dataType', dataType);
+      const localVarPath = `/stats/activity`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      if (gameServerId !== undefined) {
+        localVarQueryParameter['gameServerId'] = gameServerId;
+      }
+
+      if (timeType !== undefined) {
+        localVarQueryParameter['timeType'] = timeType;
+      }
+
+      if (dataType !== undefined) {
+        localVarQueryParameter['dataType'] = dataType;
+      }
+
+      if (startDate !== undefined) {
+        localVarQueryParameter['startDate'] = startDate;
+      }
+
+      if (endDate !== undefined) {
+        localVarQueryParameter['endDate'] = endDate;
+      }
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
     /**
      *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
      * @summary Get currency stats
@@ -18141,6 +19044,43 @@ export const StatsApiFp = function (configuration?: Configuration) {
   return {
     /**
      *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+     * @summary Get activity stats
+     * @param {StatsControllerGetActivityStatsTimeTypeEnum} timeType
+     * @param {StatsControllerGetActivityStatsDataTypeEnum} dataType
+     * @param {string} [gameServerId]
+     * @param {StatsControllerGetPingStatsStartDateParameter} [startDate]
+     * @param {StatsControllerGetPingStatsStartDateParameter} [endDate]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async statsControllerGetActivityStats(
+      timeType: StatsControllerGetActivityStatsTimeTypeEnum,
+      dataType: StatsControllerGetActivityStatsDataTypeEnum,
+      gameServerId?: string,
+      startDate?: StatsControllerGetPingStatsStartDateParameter,
+      endDate?: StatsControllerGetPingStatsStartDateParameter,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<StatsOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.statsControllerGetActivityStats(
+        timeType,
+        dataType,
+        gameServerId,
+        startDate,
+        endDate,
+        options
+      );
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['StatsApi.statsControllerGetActivityStats']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
      * @summary Get currency stats
      * @param {string} gameServerId
      * @param {string} playerId
@@ -18250,6 +19190,29 @@ export const StatsApiFactory = function (configuration?: Configuration, basePath
   return {
     /**
      *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+     * @summary Get activity stats
+     * @param {StatsControllerGetActivityStatsTimeTypeEnum} timeType
+     * @param {StatsControllerGetActivityStatsDataTypeEnum} dataType
+     * @param {string} [gameServerId]
+     * @param {StatsControllerGetPingStatsStartDateParameter} [startDate]
+     * @param {StatsControllerGetPingStatsStartDateParameter} [endDate]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    statsControllerGetActivityStats(
+      timeType: StatsControllerGetActivityStatsTimeTypeEnum,
+      dataType: StatsControllerGetActivityStatsDataTypeEnum,
+      gameServerId?: string,
+      startDate?: StatsControllerGetPingStatsStartDateParameter,
+      endDate?: StatsControllerGetPingStatsStartDateParameter,
+      options?: any
+    ): AxiosPromise<StatsOutputDTOAPI> {
+      return localVarFp
+        .statsControllerGetActivityStats(timeType, dataType, gameServerId, startDate, endDate, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
      * @summary Get currency stats
      * @param {string} gameServerId
      * @param {string} playerId
@@ -18321,6 +19284,31 @@ export const StatsApiFactory = function (configuration?: Configuration, basePath
 export class StatsApi extends BaseAPI {
   /**
    *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+   * @summary Get activity stats
+   * @param {StatsControllerGetActivityStatsTimeTypeEnum} timeType
+   * @param {StatsControllerGetActivityStatsDataTypeEnum} dataType
+   * @param {string} [gameServerId]
+   * @param {StatsControllerGetPingStatsStartDateParameter} [startDate]
+   * @param {StatsControllerGetPingStatsStartDateParameter} [endDate]
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof StatsApi
+   */
+  public statsControllerGetActivityStats(
+    timeType: StatsControllerGetActivityStatsTimeTypeEnum,
+    dataType: StatsControllerGetActivityStatsDataTypeEnum,
+    gameServerId?: string,
+    startDate?: StatsControllerGetPingStatsStartDateParameter,
+    endDate?: StatsControllerGetPingStatsStartDateParameter,
+    options?: RawAxiosRequestConfig
+  ) {
+    return StatsApiFp(this.configuration)
+      .statsControllerGetActivityStats(timeType, dataType, gameServerId, startDate, endDate, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
    * @summary Get currency stats
    * @param {string} gameServerId
    * @param {string} playerId
@@ -18386,6 +19374,26 @@ export class StatsApi extends BaseAPI {
       .then((request) => request(this.axios, this.basePath));
   }
 }
+
+/**
+ * @export
+ */
+export const StatsControllerGetActivityStatsTimeTypeEnum = {
+  Daily: 'daily',
+  Weekly: 'weekly',
+  Monthly: 'monthly',
+} as const;
+export type StatsControllerGetActivityStatsTimeTypeEnum =
+  (typeof StatsControllerGetActivityStatsTimeTypeEnum)[keyof typeof StatsControllerGetActivityStatsTimeTypeEnum];
+/**
+ * @export
+ */
+export const StatsControllerGetActivityStatsDataTypeEnum = {
+  Users: 'users',
+  Players: 'players',
+} as const;
+export type StatsControllerGetActivityStatsDataTypeEnum =
+  (typeof StatsControllerGetActivityStatsDataTypeEnum)[keyof typeof StatsControllerGetActivityStatsDataTypeEnum];
 
 /**
  * UserApi - axios parameter creator

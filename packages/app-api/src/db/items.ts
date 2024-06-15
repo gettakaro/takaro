@@ -101,7 +101,9 @@ export class ItemRepo extends ITakaroRepo<ItemsModel, ItemsOutputDTO, ItemCreate
     // Transform items into a format suitable for bulk insert
     const dataToInsert = items.map((item) => {
       return {
-        ...item.toJSON(),
+        name: item.name,
+        code: item.code,
+        gameserverId: item.gameserverId,
         description: item.description || null,
         icon: item.icon || null,
         domain: this.domainId,
@@ -116,7 +118,7 @@ export class ItemRepo extends ITakaroRepo<ItemsModel, ItemsOutputDTO, ItemCreate
     }
 
     const promises = chunks.map(async (chunk) => {
-      const values = chunk.flatMap(Object.values);
+      const values = chunk.flatMap((c) => [c.name, c.code, c.description, c.icon, c.gameserverId, c.domain]);
       // Perform the bulk upsert operation
       try {
         await knex.raw(

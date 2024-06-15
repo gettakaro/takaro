@@ -18,6 +18,7 @@ export enum PERMISSIONS {
   'MANAGE_EVENTS' = 'MANAGE_EVENTS',
   'READ_ITEMS' = 'READ_ITEMS',
   'MANAGE_ITEMS' = 'MANAGE_ITEMS',
+  'MANAGE_SHOP_LISTINGS' = 'MANAGE_SHOP_LISTINGS',
 }
 
 export interface IPermissionDetails {
@@ -121,5 +122,10 @@ export const PERMISSION_DETAILS: Record<PERMISSIONS, IPermissionDetails> = {
     permission: PERMISSIONS.MANAGE_ITEMS,
     friendlyName: 'Manage Items',
     description: 'Can create, update, and delete items',
+  },
+  [PERMISSIONS.MANAGE_SHOP_LISTINGS]: {
+    permission: PERMISSIONS.MANAGE_SHOP_LISTINGS,
+    friendlyName: 'Manage Shop Listings',
+    description: 'Can create, update, and delete shop listings',
   },
 };
