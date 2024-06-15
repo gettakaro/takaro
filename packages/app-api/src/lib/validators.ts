@@ -16,6 +16,11 @@ export class ParamId {
   id!: string;
 }
 
+export class ParamIdAndRoleId extends ParamId {
+  @IsUUID('4')
+  roleId!: string;
+}
+
 export class PogParam {
   @IsUUID('4')
   gameServerId!: string;

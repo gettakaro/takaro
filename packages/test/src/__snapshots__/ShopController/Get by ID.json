@@ -1,0 +1,29 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "createdAt": "2024-06-15T11:14:22.033Z",
+      "updatedAt": "2024-06-15T11:14:22.034Z",
+      "id": "42f12660-4ad0-4328-b3cb-2c81caf45aa5",
+      "gameServerId": "b67390a6-0aee-4db5-8d31-b7bf33f61341",
+      "itemId": "2b608714-d470-43a1-8076-38d20295f705",
+      "functionId": null,
+      "price": 100,
+      "name": "Test item",
+      "roles": []
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "ShopController",
+    "snapshot": true,
+    "name": "Get by ID",
+    "filteredFields": [
+      "itemId",
+      "functionId",
+      "gameServerId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}
