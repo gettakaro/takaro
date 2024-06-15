@@ -1,6 +1,5 @@
 /// <reference path="./@tanstack.d.ts" />
 import { createRoot } from 'react-dom/client';
-import './index.css';
 import { App } from './App';
 
 // TODO: currently this results in web-main not loading at all.
