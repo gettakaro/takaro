@@ -106,7 +106,7 @@ class GameServerManager {
     });
 
     emitter.on(GameEvents.LOG_LINE, async (logLine) => {
-      this.log.debug('Received a logline event', logLine);
+      this.log.verbose('Received a logline event', logLine);
       await this.eventsQueue.add({
         type: GameEvents.LOG_LINE,
         event: logLine,

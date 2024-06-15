@@ -15,6 +15,7 @@ import { Type } from 'class-transformer';
 import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
 import { Request, Response } from 'express';
 import { PERMISSIONS } from '@takaro/auth';
+import { RangeFilterCreatedAndUpdatedAt } from './shared.js';
 
 export class GetUserDTO {
   @Length(3, 50)
@@ -78,6 +79,12 @@ class UserSearchInputAllowedFilters {
   discordId!: string[];
 }
 
+class UserSearchInputAllowedRangeFilter extends RangeFilterCreatedAndUpdatedAt {
+  @IsOptional()
+  @IsISO8601()
+  lastSeen!: string;
+}
+
 class UserSearchInputDTO extends ITakaroQuery<UserOutputDTO> {
   @ValidateNested()
   @Type(() => UserSearchInputAllowedFilters)
@@ -86,6 +93,14 @@ class UserSearchInputDTO extends ITakaroQuery<UserOutputDTO> {
   @ValidateNested()
   @Type(() => UserSearchInputAllowedFilters)
   declare search: UserSearchInputAllowedFilters;
+
+  @ValidateNested()
+  @Type(() => UserSearchInputAllowedRangeFilter)
+  declare greaterThan: UserSearchInputAllowedRangeFilter;
+
+  @ValidateNested()
+  @Type(() => UserSearchInputAllowedRangeFilter)
+  declare lessThan: UserSearchInputAllowedRangeFilter;
 }
 
 @OpenAPI({

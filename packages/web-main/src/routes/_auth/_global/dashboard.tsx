@@ -92,32 +92,32 @@ function Component() {
   const { data: playersConnected, isLoading: isLoadingPlayerConnected } = useQuery(
     eventsQueryOptions({
       search: { eventName: ['player-connected'] },
-      startDate,
-      endDate: now,
+      greaterThan: { createdAt: startDate },
+      lessThan: { createdAt: now },
     })
   );
 
   const { data: cronjobsExecuted, isLoading: isLoadingCronJobsExecuted } = useQuery(
     eventsQueryOptions({
       search: { eventName: ['cronjob-executed'] },
-      startDate,
-      endDate: now,
+      greaterThan: { createdAt: startDate },
+      lessThan: { createdAt: now },
     })
   );
 
   const { data: commandsExecuted, isLoading: isLoadingCommandsExecuted } = useQuery(
     eventsQueryOptions({
       search: { eventName: ['command-executed'] },
-      startDate,
-      endDate: now,
+      greaterThan: { createdAt: startDate },
+      lessThan: { createdAt: now },
     })
   );
 
   const { data: HooksExecuted, isLoading: isLoadingHooksExecuted } = useQuery(
     eventsQueryOptions({
       search: { eventName: ['hook-executed'] },
-      startDate,
-      endDate: now,
+      greaterThan: { createdAt: startDate },
+      lessThan: { createdAt: now },
     })
   );
 

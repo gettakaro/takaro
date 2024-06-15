@@ -54,8 +54,8 @@ export const useEventSubscription = ({ enabled = true, ...queryParams }: EventSu
         // The socket returns all new events, we need to filter it based on the queryParams
         if (
           ShouldIncludeEvent(newEvent, {
-            startDate: queryParams.startDate ? DateTime.fromISO(queryParams.startDate) : null,
-            endDate: queryParams.endDate ? DateTime.fromISO(queryParams.endDate) : null,
+            startDate: queryParams.greaterThan.createdAt ? DateTime.fromISO(queryParams.greaterThan.createdAt) : null,
+            endDate: queryParams.lessThan.createdAt ? DateTime.fromISO(queryParams.lessThan.createdAt) : null,
             eventTypes: queryParams.search?.eventName ?? [],
             filters: [], // TODO: implement filters
           }) === false

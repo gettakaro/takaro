@@ -1,4 +1,4 @@
-import { IsDateString, IsISO8601, IsOptional, IsUUID, ValidateNested } from 'class-validator';
+import { IsDateString, IsEnum, IsISO8601, IsOptional, IsUUID, ValidateNested } from 'class-validator';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
 import { Get, JsonController, UseBefore, Req, QueryParams } from 'routing-controllers';
@@ -38,6 +38,18 @@ class PlayersOnlineInputDTO extends BaseStatsInputDTO {
   gameServerId?: string;
 }
 
+class ActivityInputDTO extends BaseStatsInputDTO {
+  @IsOptional()
+  @IsUUID('4')
+  gameServerId!: string;
+
+  @IsEnum(['daily', 'weekly', 'monthly'])
+  timeType: 'daily' | 'weekly' | 'monthly';
+
+  @IsEnum(['users', 'players'])
+  dataType: 'users' | 'players';
+}
+
 @OpenAPI({
   security: [{ domainAuth: [] }],
 })
@@ -65,5 +77,15 @@ export class StatsController {
   async getPlayerOnlineStats(@Req() req: AuthenticatedRequest, @QueryParams() query: PlayersOnlineInputDTO) {
     const service = new StatsService(req.domainId);
     return apiResponse(await service.getPlayersOnline(query.gameServerId, query.startDate, query.endDate));
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS, PERMISSIONS.READ_PLAYERS]))
+  @ResponseSchema(StatsOutputDTOAPI)
+  @Get('/stats/activity')
+  async getActivityStats(@Req() req: AuthenticatedRequest, @QueryParams() query: ActivityInputDTO) {
+    const service = new StatsService(req.domainId);
+    return apiResponse(
+      await service.getActivityStats(query.dataType, query.timeType, query.gameServerId, query.startDate, query.endDate)
+    );
   }
 }

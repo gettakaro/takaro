@@ -154,8 +154,8 @@ export const Route = createFileRoute('/_auth/_global/events')({
       search: { eventName: deps.eventNames.length > 0 ? deps.eventNames : undefined },
       sortDirection: 'desc',
       extend: ['gameServer', 'module', 'player', 'user'],
-      startDate: deps.startDate,
-      endDate: deps.endDate,
+      greaterThan: { createdAt: deps.startDate },
+      lessThan: { createdAt: deps.endDate },
     });
     const data =
       context.queryClient.getQueryData(opts.queryKey) ?? (await context.queryClient.fetchInfiniteQuery(opts));
@@ -235,8 +235,8 @@ function Component() {
     enabled: live,
     search: { eventName: eventNames.length > 0 ? eventNames : undefined },
     filters: filterFields,
-    startDate: startDate,
-    endDate: endDate,
+    greaterThan: { createdAt: startDate },
+    lessThan: { createdAt: endDate },
   });
 
   const {
@@ -252,8 +252,8 @@ function Component() {
       filters: filterFields,
       sortBy: 'createdAt',
       sortDirection: 'desc',
-      startDate: live ? undefined : startDate,
-      endDate: live ? undefined : endDate,
+      greaterThan: { createdAt: live ? undefined : startDate },
+      lessThan: { createdAt: live ? undefined : endDate },
       extend: ['gameServer', 'module', 'player', 'user'],
     }),
     initialData: loaderData,

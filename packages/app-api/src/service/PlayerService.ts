@@ -382,4 +382,8 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
       );
     }
   }
+
+  async calculatePlayerActivityMetrics() {
+    return this.repo.calculatePlayerActivityMetrics();
+  }
 }
