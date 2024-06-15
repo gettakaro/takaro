@@ -110,7 +110,7 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
               value={name}
               onValidChange={(v) => setValid(v)}
               label="Role name"
-              id="deleteGameServerConfirmation"
+              id="deleteRoleConfirmation"
             />
             <Button
               isLoading={isDeleting}

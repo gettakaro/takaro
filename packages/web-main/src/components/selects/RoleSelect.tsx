@@ -25,6 +25,7 @@ export const RoleSelect: FC<CustomSelectProps> = ({
   description,
   readOnly,
   canClear,
+  multiple,
 }) => {
   const { data: roles, isLoading: isLoadingData } = useQuery(
     rolesQueryOptions({ sortBy: 'system', sortDirection: 'asc' })
@@ -54,6 +55,7 @@ export const RoleSelect: FC<CustomSelectProps> = ({
       loading={loading}
       label={label}
       canClear={canClear}
+      multiple={multiple}
     />
   );
 };
@@ -73,6 +75,7 @@ export const RoleSelectView: FC<RoleSelectViewProps> = ({
   canClear,
   loading,
   label,
+  multiple,
 }) => {
   return (
     <SelectField
@@ -89,10 +92,19 @@ export const RoleSelectView: FC<RoleSelectViewProps> = ({
       enableFilter={roles.length > 10}
       loading={loading}
       canClear={canClear}
+      multiple={multiple}
       render={(selectedItems) => {
         if (selectedItems.length === 0) {
           return <div>Select...</div>;
         }
+
+        if (multiple) {
+          const selectedItemValues = selectedItems.map((item) => item.value);
+          const selectedRoles = roles.filter((role) => selectedItemValues.includes(role.id));
+          const selectedRoleNames = selectedRoles.map((role) => role.name);
+          return <div>{selectedRoleNames.join(', ')}</div>;
+        }
+
         const selectedRole = roles.find((role) => role.id === selectedItems[0]?.value)!;
         return <div>{selectedRole.name}</div>;
       }}

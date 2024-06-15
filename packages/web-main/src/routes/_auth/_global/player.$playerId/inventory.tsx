@@ -1,23 +1,31 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { Section } from './-style';
-// import { PlayerInventoryTable } from './-PlayerInventoryTable';
-// import { PlayerOnGameserverOutputDTO } from '@takaro/apiclient';
-import { playerQueryOptions } from 'queries/player';
+import { GameServerSelect } from 'components/selects';
+import { useForm } from 'react-hook-form';
+import { useQuery } from '@tanstack/react-query';
+import { playerOnGameServerQueryOptions } from 'queries/pog';
+import { PlayerInventoryTable } from './-PlayerInventoryTable';
 
 export const Route = createFileRoute('/_auth/_global/player/$playerId/inventory')({
   component: Component,
-  loader: async ({ context, params }) => context.queryClient.ensureQueryData(playerQueryOptions(params.playerId)),
 });
 
 function Component() {
-  // TODO: should get pog here somehow
-  // const { pog } = useOutletContext<{ pog: PlayerOnGameserverOutputDTO }>();
-  //const pog = {} as PlayerOnGameserverOutputDTO;
+  const { playerId } = Route.useParams();
+  const { control, watch } = useForm<{ gameServerId: string | undefined }>({
+    mode: 'onChange',
+  });
+  const gameServerId = watch('gameServerId');
+
+  const { data: pog } = useQuery({
+    ...playerOnGameServerQueryOptions(gameServerId!, playerId),
+    enabled: !!gameServerId && !!playerId,
+  });
 
   return (
     <Section style={{ minHeight: '250px' }}>
-      Temporarily disabled
-      {/*<PlayerInventoryTable pog={pog} /> */}
+      <GameServerSelect name="gameServerId" control={control} />
+      {pog && <PlayerInventoryTable pog={pog} />}
     </Section>
   );
 }
