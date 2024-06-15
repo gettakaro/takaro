@@ -1,0 +1,28 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "price": 200,
+      "itemId": "278de841-54d0-4311-a02c-a06a6eac7249",
+      "gameServerId": "bd5e3570-c76d-4ebe-a53d-44ef0aa62d2c",
+      "name": "Updated item",
+      "updatedAt": "2024-06-15T11:14:26.766Z",
+      "createdAt": "2024-06-15T11:14:26.726Z",
+      "id": "ba14d448-bff8-4307-9bb0-956c953b3d89",
+      "functionId": null
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "ShopController",
+    "snapshot": true,
+    "name": "Update",
+    "filteredFields": [
+      "itemId",
+      "functionId",
+      "gameServerId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

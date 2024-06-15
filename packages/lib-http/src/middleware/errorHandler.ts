@@ -39,6 +39,11 @@ export async function ErrorHandler(
     parsedError = new errors.BadRequestError('Missing required field');
   }
 
+  if (originalError.name === 'CheckViolationError') {
+    status = 400;
+    parsedError = new errors.BadRequestError('Invalid data provided');
+  }
+
   if (originalError instanceof errors.TakaroError) {
     status = originalError.http;
     parsedError = originalError;

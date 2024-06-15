@@ -9,7 +9,7 @@ import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
-import { ParamIdAndRoleId } from './UserController.js';
+import { ParamIdAndRoleId } from '../lib/validators.js';
 import { errors } from '@takaro/util';
 
 export class PlayerOutputDTOAPI extends APIOutput<PlayerOutputWithRolesDTO> {
