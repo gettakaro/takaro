@@ -58,7 +58,6 @@ export const StyledTable = styled.table<{ density: Density }>`
 
   tfoot {
     border-top: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
-    padding: ${({ theme }) => theme.spacing[2]};
     tr {
       td {
         border-bottom: none;
