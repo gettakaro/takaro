@@ -12,7 +12,7 @@ import { PlayersOnlineStatsQueryOptions } from 'queries/stats';
 
 export const Route = createFileRoute('/_auth/_global/dashboard')({
   beforeLoad: async ({ context }) => {
-    if (!hasPermission(context.auth.session, ['READ_EVENTS'])) {
+    if (!hasPermission(context.auth.session, ['READ_EVENTS', 'READ_GAMESERVERS', 'READ_PLAYERS'])) {
       throw redirect({ to: '/forbidden' });
     }
   },
