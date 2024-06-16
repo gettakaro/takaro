@@ -10,6 +10,7 @@ import {
   TextField,
   DateFormatter,
   CopyId,
+  Chip,
 } from '@takaro/lib-components';
 import { PlayerOutputDTO, PERMISSIONS, PlayerSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
@@ -32,7 +33,6 @@ import { FaBan as BanIcon } from 'react-icons/fa';
 import { Player } from 'components/Player';
 import { useQuery } from '@tanstack/react-query';
 import { getApiClient } from 'util/getApiClient';
-import { Boolean } from 'components/Boolean';
 
 export const StyledDialogBody = styled(Dialog.Body)`
   h2 {
@@ -50,7 +50,7 @@ export const Route = createFileRoute('/_auth/_global/players')({
 function Component() {
   useDocumentTitle('Players');
 
-  const { pagination, columnFilters, sorting, columnSearch } = useTableActions<PlayerOutputDTO>();
+  const { pagination, columnFilters, sorting, columnSearch } = useTableActions<PlayerOutputDTO>({ pageSize: 25 });
   const { data, isLoading } = useQuery({
     ...playersQueryOptions({
       page: pagination.paginationState.pageIndex,
@@ -126,25 +126,30 @@ function Component() {
     columnHelper.accessor('steamCommunityBanned', {
       header: 'Community Banned',
       id: 'steamCommunityBanned',
-      cell: (info) => (info.getValue() ? 'Yes' : 'No'),
+      cell: (info) => (info.getValue() ? <Chip variant="outline" color="error" label="yes" /> : 'no'),
       enableColumnFilter: true,
     }),
     columnHelper.accessor('steamEconomyBan', {
       header: 'Economy Ban',
       id: 'steamEconomyBan',
-      cell: (info) => (info.getValue() ? 'Yes' : 'No'),
+      cell: (info) =>
+        info.getValue() && info.getValue() !== 'none' ? (
+          <Chip variant="outline" color="error" label={info.getValue() as string} />
+        ) : (
+          'none'
+        ),
       enableColumnFilter: true,
     }),
     columnHelper.accessor('steamVacBanned', {
       header: 'VAC Banned',
       id: 'steamVacBanned',
-      cell: (info) => <Boolean truePositive={false} value={info.getValue() ? 'yes' : 'no'} />,
+      cell: (info) => (info.getValue() ? <Chip variant="outline" color="error" label="yes" /> : 'no'),
       enableColumnFilter: true,
     }),
     columnHelper.accessor('steamNumberOfVACBans', {
       header: 'Number of VAC Bans',
       id: 'steamNumberOfVACBans',
-      cell: (info) => `${info.getValue() ?? 0} bans`,
+      cell: (info) => `${info.getValue() ?? 0} ban${info.getValue() === 1 ? '' : 's'}`,
       enableSorting: true,
     }),
     columnHelper.accessor('steamsDaysSinceLastBan', {
