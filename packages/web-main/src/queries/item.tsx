@@ -50,7 +50,7 @@ interface ItemDelete {
   id: string;
 }
 
-export const useGameServerRemove = () => {
+export const useItemRemove = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
@@ -74,7 +74,7 @@ interface ItemUpdate {
   itemDetails: ItemUpdateDTO;
 }
 
-export const useGameServerUpdate = () => {
+export const useItemUpdate = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
@@ -83,12 +83,9 @@ export const useGameServerUpdate = () => {
       mutationFn: async ({ itemId, itemDetails }: ItemUpdate) => {
         return (await apiClient.item.itemControllerUpdate(itemId, itemDetails)).data.data;
       },
-      onSuccess: async (updatedGameServer) => {
-        // remove cache of gameserver list
+      onSuccess: async (updatedItem) => {
         await queryClient.invalidateQueries({ queryKey: itemKeys.list() });
-
-        // update cache of gameserver
-        queryClient.setQueryData(itemKeys.detail(updatedGameServer.id), updatedGameServer);
+        queryClient.setQueryData(itemKeys.detail(updatedItem.id), updatedItem);
       },
     }),
     {}
