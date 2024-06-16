@@ -24,8 +24,7 @@ export class ShopListingOutputDTO extends TakaroModelDTO<ShopListingOutputDTO> {
   price!: number;
 
   @IsString()
-  @IsOptional()
-  name?: string;
+  name: string;
 }
 
 export class ShopListingCreateDTO extends TakaroDTO<ShopListingCreateDTO> {
@@ -44,8 +43,7 @@ export class ShopListingCreateDTO extends TakaroDTO<ShopListingCreateDTO> {
   price!: number;
 
   @IsString()
-  @IsOptional()
-  name?: string;
+  name: string;
 }
 
 export class ShopListingUpdateDTO extends TakaroDTO<ShopListingUpdateDTO> {
@@ -60,7 +58,7 @@ export class ShopListingUpdateDTO extends TakaroDTO<ShopListingUpdateDTO> {
   @IsNumber()
   price!: number;
   @IsString()
-  name?: string;
+  name: string;
 }
 
 @traceableClass('service:shopListing')
