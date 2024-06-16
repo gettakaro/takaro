@@ -4,7 +4,7 @@ import { createFileRoute, redirect } from '@tanstack/react-router';
 import { InstallModuleForm } from './-InstallModuleForm';
 import { hasPermission } from 'hooks/useHasPermission';
 
-export const Route = createFileRoute('/_auth/gameserver/$gameServerId/modules/$moduleId/install')({
+export const Route = createFileRoute('/_auth/gameserver/$gameServerId/modules/$moduleId/install/')({
   beforeLoad: ({ context }) => {
     if (!hasPermission(context.auth.session, ['MANAGE_MODULES'])) {
       throw redirect({ to: '/forbidden' });
@@ -24,5 +24,5 @@ export function Component() {
   const { gameServerId } = Route.useParams();
   const { mod, modInstallation } = Route.useLoaderData();
 
-  return <InstallModuleForm gameServerId={gameServerId} modInstallation={modInstallation} mod={mod} readOnly={false} />;
+  return <InstallModuleForm gameServerId={gameServerId} modInstallation={modInstallation} mod={mod} readOnly={true} />;
 }
