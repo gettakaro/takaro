@@ -42,9 +42,16 @@ export const DateRangePicker: FC<DateRangePickerProps> = ({
     start: defaultValue.start,
     end: defaultValue.end,
     friendlyRange: undefined,
-    readOnly,
-    disabled,
+    disabledOrReadOnly: disabled || readOnly,
   });
+
+  useEffect(() => {
+    if (disabled || readOnly) {
+      dispatch({ type: 'toggle_disable_or_readonly', payload: { disabledOrReadOnly: true } });
+    } else {
+      dispatch({ type: 'toggle_disable_or_readonly', payload: { disabledOrReadOnly: false } });
+    }
+  }, [disabled, readOnly]);
 
   const theme = useTheme();
   const [hasError, setHasError] = useState<boolean>(false);
@@ -74,7 +81,6 @@ export const DateRangePicker: FC<DateRangePickerProps> = ({
               <QuickSelectContainer
                 readOnly={readOnly}
                 disabled={disabled}
-                aria-disabled={disabled}
                 onClick={() =>
                   dispatch({
                     type: 'toggle_quick_select_popover',
@@ -93,7 +99,7 @@ export const DateRangePicker: FC<DateRangePickerProps> = ({
           <Popover
             open={state.showStartDate}
             onOpenChange={(open) => {
-              !readOnly && dispatch({ type: 'toggle_start_date_popover', payload: { toggleStartDate: open } });
+              dispatch({ type: 'toggle_start_date_popover', payload: { toggleStartDate: open } });
             }}
           >
             <Popover.Trigger asChild>
@@ -101,8 +107,7 @@ export const DateRangePicker: FC<DateRangePickerProps> = ({
                 disabled={disabled}
                 readOnly={readOnly}
                 onClick={() => {
-                  !readOnly &&
-                    dispatch({ type: 'toggle_start_date_popover', payload: { toggleStartDate: !state.showStartDate } });
+                  dispatch({ type: 'toggle_start_date_popover', payload: { toggleStartDate: !state.showStartDate } });
                 }}
               >
                 {state.friendlyStartDate ??
@@ -121,7 +126,7 @@ export const DateRangePicker: FC<DateRangePickerProps> = ({
               <Popover
                 open={state.showEndDate}
                 onOpenChange={(open) => {
-                  !readOnly && dispatch({ type: 'toggle_end_date_popover', payload: { toggleEndDate: open } });
+                  dispatch({ type: 'toggle_end_date_popover', payload: { toggleEndDate: open } });
                 }}
               >
                 <Popover.Trigger asChild>
@@ -129,8 +134,7 @@ export const DateRangePicker: FC<DateRangePickerProps> = ({
                     disabled={disabled}
                     readOnly={readOnly}
                     onClick={() => {
-                      !readOnly &&
-                        dispatch({ type: 'toggle_end_date_popover', payload: { toggleEndDate: !state.showEndDate } });
+                      dispatch({ type: 'toggle_end_date_popover', payload: { toggleEndDate: !state.showEndDate } });
                     }}
                   >
                     {state.friendlyEndDate ?? state.end.toFormat('LLL d, yyyy @ HH:mm:ss.SSS')}
