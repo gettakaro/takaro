@@ -1,7 +1,6 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
-import { useEffect, useMemo, useState } from 'react';
-import { Button, Stats, styled, LineChart, Card } from '@takaro/lib-components';
-import { useSocket } from 'hooks/useSocket';
+import { useMemo } from 'react';
+import { Stats, styled, LineChart, Card } from '@takaro/lib-components';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { eventsQueryOptions } from 'queries/event';
 import { DateTime } from 'luxon';
@@ -30,22 +29,10 @@ const Container = styled.div`
   }
 `;
 
-const Flex = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: ${({ theme }) => theme.spacing[4]};
-`;
-
 function Component() {
   useDocumentTitle('Dashboard');
 
   const loaderData = Route.useLoaderData();
-
-  const { socket, isConnected } = useSocket();
-  const [lastPong, setLastPong] = useState<string>('-');
-  const [lastEvent, setLastEvent] = useState<string>('-');
-
   const { data } = useQuery({ ...PlayersOnlineStatsQueryOptions(), initialData: loaderData });
 
   const { control } = useForm({
@@ -121,28 +108,6 @@ function Component() {
     })
   );
 
-  const sendPing = () => {
-    socket.emit('ping');
-  };
-
-  useEffect(() => {
-    socket.emit('ping');
-  }, [socket, isConnected]);
-
-  useEffect(() => {
-    socket.on('pong', () => {
-      setLastPong(new Date().toISOString());
-    });
-
-    socket.on('gameEvent', (gameserverId, type, data) => {
-      setLastEvent(`${gameserverId} - ${type} - ${JSON.stringify(data)}`);
-    });
-
-    return () => {
-      socket.off('pong');
-    };
-  });
-
   return (
     <>
       <Container>
@@ -182,17 +147,6 @@ function Component() {
               yAccessor={(d) => d[1]}
               curveType="curveBasis"
             />
-          </Card>
-
-          <Card>
-            <Flex>
-              <span>
-                <p>Connected: {'' + isConnected}</p>
-                <p>Last pong: {lastPong || '-'}</p>
-                <p>Last event: {lastEvent || '-'}</p>
-              </span>
-              <Button text={'Send ping'} onClick={sendPing} />
-            </Flex>
           </Card>
         </div>
       </Container>
