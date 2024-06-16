@@ -2,29 +2,32 @@ import { createFileRoute, redirect } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
 import { ShopListingCreateUpdateForm } from './-components/-ShopListingCreateUpdateForm';
 import { gameServerSettingQueryOptions } from 'queries/setting';
-import { useQuery } from '@tanstack/react-query';
+import { shopListingQueryOptions } from 'queries/shopListing';
 
-export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/listing/create')({
+export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/listing/$shopListingId/update')({
   beforeLoad: ({ context }) => {
     if (!hasPermission(context.auth.session, ['MANAGE_SHOP_LISTINGS'])) {
       throw redirect({ to: '/forbidden' });
     }
   },
   loader: async ({ context, params }) => {
-    return context.queryClient.ensureQueryData(gameServerSettingQueryOptions('currencyName', params.gameServerId));
+    const [currencyNameOutput, shopListing] = await Promise.all([
+      context.queryClient.ensureQueryData(gameServerSettingQueryOptions('currencyName', params.gameServerId)),
+      context.queryClient.ensureQueryData(shopListingQueryOptions(params.shopListingId)),
+    ]);
+
+    return {
+      currencyName: currencyNameOutput.value,
+      shopListing,
+    };
   },
   component: Component,
 });
 
 function Component() {
   const { gameServerId } = Route.useParams();
-  const loaderCurrencyName = Route.useLoaderData();
+  const { currencyName, shopListing } = Route.useLoaderData();
   const navigate = Route.useNavigate();
-
-  const { data: currencyName } = useQuery({
-    ...gameServerSettingQueryOptions('currencyName', gameServerId),
-    initialData: loaderCurrencyName,
-  });
 
   const onSubmit = () => {
     navigate({ to: '/gameserver/$gameServerId/shop', params: { gameServerId } });
@@ -35,8 +38,9 @@ function Component() {
       onSubmit={onSubmit}
       isLoading={false}
       error={null}
+      initialData={shopListing}
       gameServerId={gameServerId}
-      currencyName={currencyName.value}
+      currencyName={currencyName}
     />
   );
 }

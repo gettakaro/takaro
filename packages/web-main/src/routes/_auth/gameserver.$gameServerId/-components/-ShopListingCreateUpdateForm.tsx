@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { ShopListingOutputDTO } from '@takaro/apiclient';
 import { Button, Drawer, TextField, styled } from '@takaro/lib-components';
 import { useNavigate } from '@tanstack/react-router';
 import { RoleSelect } from 'components/selects';
@@ -14,7 +15,7 @@ const ButtonContainer = styled.div`
 `;
 
 interface ShopListingCreateUpdateFormProps {
-  initialData?: any;
+  initialData?: ShopListingOutputDTO;
   currencyName: string;
   isLoading?: boolean;
   onSubmit: SubmitHandler<any>;
@@ -23,7 +24,7 @@ interface ShopListingCreateUpdateFormProps {
 }
 
 const validationSchema = z.object({
-  friendlyName: z.string().min(1),
+  name: z.string().min(1),
   price: z.number().min(0),
   items: z
     .array(
@@ -32,7 +33,7 @@ const validationSchema = z.object({
       })
     )
     .min(1, 'At least one item is required'),
-  roles: z.array(z.string()),
+  roleIds: z.array(z.string()),
 });
 
 export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> = ({
@@ -49,12 +50,15 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
   const { control, handleSubmit } = useForm<z.infer<typeof validationSchema>>({
     mode: 'onSubmit',
     resolver: zodResolver(validationSchema),
-    values: {
-      friendlyName: initialData?.friendlyName,
-      price: initialData?.price,
-      items: initialData?.items,
-      roles: initialData?.roles,
-    },
+
+    ...(initialData && {
+      values: {
+        name: initialData.name,
+        price: initialData.price,
+        items: [],
+        roleIds: [],
+      },
+    }),
   });
 
   useEffect(() => {
@@ -85,7 +89,7 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
             <RoleSelect
               multiple
               control={control}
-              name="roles"
+              name="roleIds"
               label="Roles"
               description="The roles that can buy this item. If empty, everyone can buy it"
               loading={isLoading}
