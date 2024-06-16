@@ -61,7 +61,7 @@ export class StatsService extends TakaroService<TakaroModel, TakaroDTO<void>, Ta
     const parsed = JSON.parse(response.data);
 
     if (parsed.status !== 'success') throw new errors.InternalServerError();
-    if (parsed.data.result.length === 0) throw new errors.NotFoundError();
+    if (parsed.data.result.length === 0) return [];
 
     return parsed.data.result[0].values;
   }
@@ -123,7 +123,7 @@ export class StatsService extends TakaroService<TakaroModel, TakaroDTO<void>, Ta
       return { values: data };
     } else {
       const data = await this.prometheusQuery(
-        `sum by(domain) (${metricName}{job="kpi", domain="${this.domainId}"})`,
+        `sum by(domain) (${metricName}{job="kpi", domain="${this.domainId}", gameServer=""})`,
         startTime,
         endTime
       );
