@@ -334,7 +334,7 @@ export function Table<DataType extends object>({
                           of {pagination.pageOptions.total} entries
                         </span>
                       </td>
-                      <td colSpan={table.getVisibleLeafColumns().length - ROW_SELECTION_COL_SPAN - 5}>
+                      <td colSpan={table.getVisibleLeafColumns().length - ROW_SELECTION_COL_SPAN - 4}>
                         <PagePicker
                           pageCount={table.getPageCount()}
                           hasNext={table.getCanNextPage()}
@@ -345,7 +345,7 @@ export function Table<DataType extends object>({
                           setPageIndex={table.setPageIndex}
                         />
                       </td>
-                      <td colSpan={2}>
+                      <td colSpan={1}>
                         <PageSizeSelect
                           onPageSizeChange={(pageSize) => table.setPageSize(Number(pageSize))}
                           pageSize={table.getState().pagination.pageSize.toString()}
