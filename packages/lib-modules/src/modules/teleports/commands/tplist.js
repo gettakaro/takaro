@@ -3,8 +3,8 @@ import { takaro, data } from '@takaro/helpers';
 async function main() {
   const { pog, gameServerId, module: mod } = data;
 
-  const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data;
-
+  const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data.value; 
+  
   const ownedTeleports = (
     await takaro.variable.variableControllerSearch({
       filters: {
