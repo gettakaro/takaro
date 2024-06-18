@@ -155,6 +155,7 @@ class GiveItemInputDTO extends TakaroDTO<GiveItemInputDTO> {
 
   @IsNumber({ allowNaN: false, allowInfinity: false })
   amount: number;
+  @IsNumber({ allowNaN: false, allowInfinity: false })
   quality: number;
 }
 
@@ -465,7 +466,7 @@ export class GameServerController {
   })
   async giveItem(@Req() req: AuthenticatedRequest, @Params() params: PogParam, @Body() data: GiveItemInputDTO) {
     const service = new GameServerService(req.domainId);
-    const result = await service.giveItem(params.gameServerId, params.playerId, data.name, data.amount);
+    const result = await service.giveItem(params.gameServerId, params.playerId, data.name, data.amount, data.quality);
     return apiResponse(result);
   }
 
