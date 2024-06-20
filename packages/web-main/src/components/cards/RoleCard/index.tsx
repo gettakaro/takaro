@@ -45,7 +45,7 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
 
   const handleOnDelete = (e: MouseEvent) => {
     e.stopPropagation();
-    mutate({ id });
+    mutate({ roleId: id });
     setOpenDialog(false);
   };
 

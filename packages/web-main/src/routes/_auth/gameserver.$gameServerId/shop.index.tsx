@@ -1,4 +1,4 @@
-import { Button, EmptyPage, InfiniteScroll } from '@takaro/lib-components';
+import { Button, Empty, EmptyPage, InfiniteScroll } from '@takaro/lib-components';
 import { createFileRoute } from '@tanstack/react-router';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { CardList } from 'components/cards';
@@ -9,14 +9,12 @@ import { Fragment } from 'react/jsx-runtime';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/')({
   loader: async ({ context, params }) => {
-    const [currencyName, shopListings] = await Promise.all([
+    const [currencyName] = await Promise.all([
       context.queryClient.ensureQueryData(gameServerSettingQueryOptions('currencyName', params.gameServerId)),
-      context.queryClient.ensureQueryData(shopListingInfiniteQueryOptions()),
     ]);
 
     return {
       currencyName: currencyName.value,
-      shopListings,
     };
   },
   component: Component,
@@ -39,11 +37,23 @@ function Component() {
     isFetchingNextPage,
   } = useInfiniteQuery({
     ...shopListingInfiniteQueryOptions(),
-    initialData: loaderData.shopListings,
   });
 
-  if (!shopListings || shopListings.pages.length === 0) {
-    return <EmptyPage>no shop listings</EmptyPage>;
+  if (
+    !shopListings ||
+    !shopListings.pages ||
+    shopListings.pages.length === 0 ||
+    shopListings.pages[0].data.length === 0
+  ) {
+    return (
+      <EmptyPage>
+        <Empty
+          header="No shop listings"
+          description="Create a shop listing to start selling items."
+          actions={[<Button onClick={onCreateItemClicked} text="Create shop listing" />]}
+        />
+      </EmptyPage>
+    );
   }
 
   return (
@@ -55,19 +65,22 @@ function Component() {
             <ShopListingCard
               key={shopListing.id}
               currencyName={loaderData.currencyName}
+              shopListingId={shopListing.id}
+              gameServerId={gameServerId}
               name={shopListing.name}
               price={shopListing.price}
             />
           ))
         )}
-        <ShopListingCard name="Test Item" price={100} currencyName={loaderData.currencyName} />
       </CardList>
-      <InfiniteScroll
-        isFetching={isFetching}
-        hasNextPage={hasNextPage}
-        fetchNextPage={fetchNextPage}
-        isFetchingNextPage={isFetchingNextPage}
-      />
+      {shopListings && shopListings.pages && (
+        <InfiniteScroll
+          isFetching={isFetching}
+          hasNextPage={hasNextPage}
+          fetchNextPage={fetchNextPage}
+          isFetchingNextPage={isFetchingNextPage}
+        />
+      )}
     </Fragment>
   );
 }

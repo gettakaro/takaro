@@ -22,22 +22,26 @@ import {
   AiOutlineEye as ViewIcon,
 } from 'react-icons/ai';
 import { z } from 'zod';
+import { useNavigate } from '@tanstack/react-router';
 
 interface ShopListingCard {
+  shopListingId: string;
   price: number;
   name: string;
   currencyName: string;
+  gameServerId: string;
 }
 
 const validationSchema = z.object({
   amount: z.number().int().positive().min(1),
 });
 
-export const ShopListingCard: FC<ShopListingCard> = ({ price, name, currencyName }) => {
+export const ShopListingCard: FC<ShopListingCard> = ({ price, name, currencyName, gameServerId, shopListingId }) => {
   const friendlyName = 'Listing';
   const theme = useTheme();
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [valid, setValid] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const { handleSubmit, control, watch } = useForm<z.infer<typeof validationSchema>>({
     mode: 'onSubmit',
@@ -52,6 +56,10 @@ export const ShopListingCard: FC<ShopListingCard> = ({ price, name, currencyName
 
   const handleOnEditClick = (e: MouseEvent) => {
     e.stopPropagation();
+    navigate({
+      to: '/gameserver/$gameServerId/shop/listing/$shopListingId/update',
+      params: { gameServerId, shopListingId },
+    });
   };
 
   const handleOnViewClick = (e: MouseEvent) => {
@@ -80,8 +88,8 @@ export const ShopListingCard: FC<ShopListingCard> = ({ price, name, currencyName
                 <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
               </Dropdown.Trigger>
               <Dropdown.Menu>
-                <Dropdown.Menu.Item onClick={handleOnViewClick} icon={<ViewIcon />} label="View item" />
-                <Dropdown.Menu.Item onClick={handleOnEditClick} icon={<EditIcon />} label="Update item" />
+                <Dropdown.Menu.Item onClick={handleOnViewClick} icon={<ViewIcon />} label="View listing" />
+                <Dropdown.Menu.Item onClick={handleOnEditClick} icon={<EditIcon />} label="Update listing" />
                 <Dropdown.Menu.Item
                   onClick={handleOnDeleteClick}
                   icon={<DeleteIcon fill={theme.colors.error} />}
