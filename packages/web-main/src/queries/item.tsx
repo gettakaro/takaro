@@ -7,10 +7,10 @@ import {
   ItemsOutputDTO,
   ItemUpdateDTO,
 } from '@takaro/apiclient';
-import { useMutation, useQueryClient, queryOptions } from '@tanstack/react-query';
+import { useMutation, useQueryClient, queryOptions, infiniteQueryOptions } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { getApiClient } from 'util/getApiClient';
-import { mutationWrapper } from './util';
+import { hasNextPage, mutationWrapper, queryParamsToArray } from './util';
 
 export const itemKeys = {
   all: ['items'] as const,
@@ -23,6 +23,15 @@ export const itemsQueryOptions = (queryParams: ItemSearchInputDTO) =>
     queryKey: [...itemKeys.list(), { ...queryParams }],
     queryFn: async () => (await getApiClient().item.itemControllerSearch(queryParams)).data,
   });
+
+export const ItemsInfiniteQueryOptions = (queryParams: ItemSearchInputDTO = {}) => {
+  return infiniteQueryOptions<ItemOutputArrayDTOAPI, AxiosError<ItemOutputArrayDTOAPI>>({
+    queryKey: [...itemKeys.list(), 'infinite', ...queryParamsToArray(queryParams)],
+    queryFn: async () => (await getApiClient().item.itemControllerSearch(queryParams)).data,
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => hasNextPage(lastPage.meta),
+  });
+};
 
 export const itemQueryOptions = (itemId: string) =>
   queryOptions<ItemsOutputDTO, AxiosError<ItemOutputArrayDTOAPI>>({
