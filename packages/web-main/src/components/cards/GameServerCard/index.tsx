@@ -104,7 +104,7 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
                 </Dropdown.Trigger>
                 <Dropdown.Menu>
                   <Dropdown.Menu.Group label="Actions">
-                    <Dropdown.Menu.Item icon={<CopyIcon />} onClick={handleOnCopyClick} label="Copy ID" />
+                    <Dropdown.Menu.Item icon={<CopyIcon />} onClick={handleOnCopyClick} label="Copy gameserverID" />
                     <Dropdown.Menu.Item icon={<EditIcon />} onClick={handleOnEditClick} label="Edit gameserver" />
                     <Dropdown.Menu.Item
                       icon={<DeleteIcon fill={theme.colors.error} />}
@@ -126,6 +126,11 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
                         navigate({ to: '/gameserver/$gameServerId/modules', params: { gameServerId: id } })
                       }
                       label="go to modules"
+                    />
+                    <Dropdown.Menu.Item
+                      icon={<ModulesIcon />}
+                      onClick={() => navigate({ to: '/gameserver/$gameServerId/shop', params: { gameServerId: id } })}
+                      label="go to shop"
                     />
                     <Dropdown.Menu.Item
                       icon={<SettingsIcon />}
