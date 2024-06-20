@@ -105,7 +105,7 @@ function Component() {
       },
     });
 
-    login(res.data.data);
+    login(res.data.data.user);
     await router.invalidate();
     // hack to wait for auth state to update???
     await sleep(500);

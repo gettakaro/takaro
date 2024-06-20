@@ -16,6 +16,8 @@ import { IdUuidDTO, IdUuidDTOAPI, ParamId, ParamIdAndRoleId } from '../lib/valid
 import { Request, Response } from 'express';
 import { PERMISSIONS } from '@takaro/auth';
 import { RangeFilterCreatedAndUpdatedAt } from './shared.js';
+import { DomainOutputDTO, DomainService } from '../service/DomainService.js';
+import { TakaroDTO } from '@takaro/util';
 
 export class GetUserDTO {
   @Length(3, 50)
@@ -46,6 +48,22 @@ class LoginOutputDTOAPI extends APIOutput<LoginOutputDTO> {
   @Type(() => LoginOutputDTO)
   @ValidateNested()
   declare data: LoginOutputDTO;
+}
+
+class MeOutoutDTO extends TakaroDTO<MeOutoutDTO> {
+  @Type(() => UserOutputWithRolesDTO)
+  @ValidateNested()
+  user: UserOutputWithRolesDTO;
+
+  @Type(() => DomainOutputDTO)
+  @ValidateNested()
+  domains: DomainOutputDTO[];
+}
+
+class MeOutoutDTOAPI extends APIOutput<MeOutoutDTO> {
+  @Type(() => MeOutoutDTO)
+  @ValidateNested()
+  declare data: MeOutoutDTO;
 }
 
 class UserOutputDTOAPI extends APIOutput<UserOutputWithRolesDTO> {
@@ -117,10 +135,12 @@ export class UserController {
 
   @Get('/me')
   @UseBefore(AuthService.getAuthMiddleware([]))
-  @ResponseSchema(UserOutputDTOAPI)
+  @ResponseSchema(MeOutoutDTOAPI)
   async me(@Req() req: AuthenticatedRequest) {
     const user = await new UserService(req.domainId).findOne(req.user.id);
-    return apiResponse(user);
+    const domainService = new DomainService();
+    const domains = await domainService.resolveDomainByIdpId(user.idpId);
+    return apiResponse({ user, domains });
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_USERS], false))

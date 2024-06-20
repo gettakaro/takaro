@@ -122,7 +122,7 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
   }
 
   async create(user: UserCreateInputDTO): Promise<UserOutputDTO> {
-    const idpUser = await ory.createIdentity(user.email, this.domainId, user.password);
+    const idpUser = await ory.createIdentity(user.email, user.password);
     user.idpId = idpUser.id;
     const createdUser = await this.repo.create(user);
     return this.extend.bind(this)(createdUser);

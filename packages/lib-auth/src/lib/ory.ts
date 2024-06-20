@@ -18,7 +18,6 @@ export enum AUDIENCES {
 export interface ITakaroIdentity {
   id: string;
   email: string;
-  domainId: string;
 }
 
 export class TakaroTokenDTO extends TakaroDTO<TakaroTokenDTO> {
@@ -113,18 +112,32 @@ class Ory {
     return {
       id: res.data.id,
       email: res.data.traits.email,
-      domainId: res.data.metadata_public.domainId,
     };
   }
 
-  async createIdentity(email: string, domainId: string, password?: string): Promise<ITakaroIdentity> {
+  async getIdentityByEmail(email: string): Promise<ITakaroIdentity | null> {
+    const identity = await this.identityClient.listIdentities({ credentialsIdentifier: email });
+    return {
+      id: identity.data[0].id,
+      email: identity.data[0].traits.email,
+    };
+  }
+
+  async createIdentity(email: string, password?: string): Promise<ITakaroIdentity> {
+    const existing = await this.identityClient.listIdentities({ credentialsIdentifier: email });
+
+    if (existing.data.length) {
+      this.log.warn('Identity already exists, returning existing one.', { email });
+      return {
+        id: existing.data[0].id,
+        email: existing.data[0].traits.email,
+      };
+    }
+
     const body: CreateIdentityBody = {
       schema_id: IDENTITY_SCHEMA.USER,
       traits: {
         email,
-      },
-      metadata_public: {
-        domainId,
       },
     };
 
@@ -145,7 +158,6 @@ class Ory {
     return {
       id: res.data.id,
       email: res.data.traits.email,
-      domainId,
     };
   }
 
@@ -180,7 +192,6 @@ class Ory {
     return {
       id: sessionRes.data.identity!.id,
       email: sessionRes.data.identity!.traits.email,
-      domainId: sessionRes.data.identity!.metadata_public.domainId,
     };
   }
 
