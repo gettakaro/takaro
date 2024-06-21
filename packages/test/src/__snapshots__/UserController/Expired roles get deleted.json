@@ -2,27 +2,29 @@
   "body": {
     "meta": {},
     "data": {
-      "id": "8f59127a-6aed-4623-bca0-2626fec55483",
-      "createdAt": "2023-11-19T15:05:45.513Z",
-      "updatedAt": "2023-11-19T15:05:45.513Z",
+      "createdAt": "2024-06-21T19:10:31.059Z",
+      "updatedAt": "2024-06-21T19:10:31.059Z",
+      "id": "beaa174d-5dea-4cf3-9355-09953e15cb6d",
       "name": "Test user",
-      "email": "testUser@example.com",
-      "idpId": "0bfd1c14-b3f1-4cd0-9f36-8c96af13bc0b",
+      "idpId": "50261fde-03d3-46cf-94a0-157488606de6",
       "discordId": null,
+      "lastSeen": "2024-06-21T19:10:31.059Z",
+      "playerId": null,
       "roles": [
         {
-          "userId": "8f59127a-6aed-4623-bca0-2626fec55483",
-          "roleId": "dbf4aabe-da4a-402c-a8d6-1290bc8f20f1",
           "role": {
-            "id": "dbf4aabe-da4a-402c-a8d6-1290bc8f20f1",
-            "createdAt": "2023-11-19T15:05:45.229Z",
-            "updatedAt": "2023-11-19T15:05:45.233Z",
+            "createdAt": "2024-06-21T19:10:30.845Z",
+            "updatedAt": "2024-06-21T19:10:30.845Z",
+            "id": "bda9e28a-4b4a-4ca5-bfb8-ae3d33cb79c3",
             "name": "User",
-            "permissions": [],
-            "system": true
-          }
+            "system": true,
+            "permissions": []
+          },
+          "roleId": "bda9e28a-4b4a-4ca5-bfb8-ae3d33cb79c3",
+          "userId": "beaa174d-5dea-4cf3-9355-09953e15cb6d"
         }
-      ]
+      ],
+      "email": "testUser@example.com"
     }
   },
   "status": 200,
@@ -33,7 +35,8 @@
     "filteredFields": [
       "idpId",
       "roleId",
-      "userId"
+      "userId",
+      "lastSeen"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true
