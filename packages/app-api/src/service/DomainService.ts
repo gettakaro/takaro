@@ -206,12 +206,12 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
     });
   }
 
-  async resolveDomain(email: string): Promise<string> {
-    const domain = await this.repo.resolveDomain(email);
-    if (!domain) {
-      this.log.warn(`Tried to lookup an email that is not in any domain: ${email}`);
-      throw new errors.UnauthorizedError();
+  async resolveDomainByIdpId(idpId: string): Promise<DomainOutputDTO[]> {
+    const domains = await this.repo.resolveDomain(idpId);
+    if (!domains.length) {
+      this.log.warn(`Tried to lookup an identity that is not in any domain: ${idpId}`);
+      throw new errors.NotFoundError();
     }
-    return domain;
+    return domains;
   }
 }

@@ -67,7 +67,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           'Cache-Control': 'no-cache',
         },
       });
-      const newSession = response.data.data;
+      const newSession = response.data.data.user;
       login(newSession);
     } catch (error) {
       setStoredSession(null);

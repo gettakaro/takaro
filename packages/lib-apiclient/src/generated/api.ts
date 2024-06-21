@@ -4359,6 +4359,44 @@ export interface LoginOutputDTOAPI {
 /**
  *
  * @export
+ * @interface MeOutoutDTO
+ */
+export interface MeOutoutDTO {
+  /**
+   *
+   * @type {UserOutputWithRolesDTO}
+   * @memberof MeOutoutDTO
+   */
+  user: UserOutputWithRolesDTO;
+  /**
+   *
+   * @type {DomainOutputDTO}
+   * @memberof MeOutoutDTO
+   */
+  domains: DomainOutputDTO;
+}
+/**
+ *
+ * @export
+ * @interface MeOutoutDTOAPI
+ */
+export interface MeOutoutDTOAPI {
+  /**
+   *
+   * @type {MeOutoutDTO}
+   * @memberof MeOutoutDTOAPI
+   */
+  data: MeOutoutDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof MeOutoutDTOAPI
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
  * @interface MessageSendInputDTO
  */
 export interface MessageSendInputDTO {
@@ -19969,7 +20007,7 @@ export const UserApiFp = function (configuration?: Configuration) {
      */
     async userControllerMe(
       options?: RawAxiosRequestConfig
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserOutputDTOAPI>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MeOutoutDTOAPI>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.userControllerMe(options);
       const index = configuration?.serverIndex ?? 0;
       const operationBasePath = operationServerMap['UserApi.userControllerMe']?.[index]?.url;
@@ -20157,7 +20195,7 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    userControllerMe(options?: any): AxiosPromise<UserOutputDTOAPI> {
+    userControllerMe(options?: any): AxiosPromise<MeOutoutDTOAPI> {
       return localVarFp.userControllerMe(options).then((request) => request(axios, basePath));
     },
     /**

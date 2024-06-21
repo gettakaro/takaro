@@ -7,9 +7,7 @@ describe('Ory', () => {
     // First, create a bunch of identities
     const totalIdentities = 150;
     const identities = await Promise.all(
-      Array.from({ length: totalIdentities }).map(() =>
-        ory.createIdentity(faker.internet.email(), 'password', 'domainId')
-      )
+      Array.from({ length: totalIdentities }).map(() => ory.createIdentity(faker.internet.email(), 'password'))
     );
 
     // Fetch the first one by ID

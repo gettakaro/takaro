@@ -73,9 +73,9 @@ export class DomainRepo extends NOT_DOMAIN_SCOPED_ITakaroRepo<
     return new DomainOutputDTO(res);
   }
 
-  async resolveDomain(email: string): Promise<string | null> {
+  async resolveDomain(email: string): Promise<DomainOutputDTO[]> {
     const userRepo = new UserRepo('fake_domain_id');
-    const domainId = await userRepo.NOT_DOMAIN_SCOPED_resolveDomainByEmail(email);
-    return domainId;
+    const domainIds = await userRepo.NOT_DOMAIN_SCOPED_resolveDomainByIdpId(email);
+    return Promise.all(domainIds.map((id) => this.findOne(id)));
   }
 }
