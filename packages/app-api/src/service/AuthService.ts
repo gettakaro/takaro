@@ -184,7 +184,12 @@ export class AuthService extends DomainScoped {
           domainId = domains[0].id;
 
           // Set the domain cookie
-          if (req.res?.cookie) req.res?.cookie('takaro-domain', domainId, {});
+          if (req.res?.cookie)
+            req.res?.cookie('takaro-domain', domainId, {
+              sameSite: config.get('http.domainCookie.sameSite') as boolean | 'strict' | 'lax' | 'none' | undefined,
+              secure: config.get('http.domainCookie.secure'),
+              domain: config.get('http.domainCookie.domain'),
+            });
         }
 
         if (identity) {

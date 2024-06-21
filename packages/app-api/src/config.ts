@@ -16,6 +16,11 @@ interface IHttpConfig extends IBaseConfig {
     allowedOrigins: string[];
     baseUrl: string;
     frontendHost: string;
+    domainCookie: {
+      secure: boolean;
+      sameSite: string;
+      domain: string;
+    };
   };
   auth: {
     jwtSecret: string;
@@ -94,6 +99,26 @@ const configSchema = {
       format: String,
       default: 'http://127.0.0.1:13001',
       env: 'TAKARO_FRONTEND_HOST',
+    },
+    domainCookie: {
+      secure: {
+        doc: 'Whether the domain cookie is secure',
+        format: Boolean,
+        default: false,
+        env: 'DOMAIN_COOKIE_SECURE',
+      },
+      sameSite: {
+        doc: 'The SameSite attribute of the domain cookie',
+        format: String,
+        default: 'strict',
+        env: 'DOMAIN_COOKIE_SAME_SITE',
+      },
+      domain: {
+        doc: 'The domain of the domain cookie',
+        format: String,
+        default: '127.0.0.1',
+        env: 'DOMAIN_COOKIE_DOMAIN',
+      },
     },
   },
   auth: {
