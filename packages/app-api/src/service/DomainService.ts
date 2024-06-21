@@ -14,7 +14,7 @@ import { GameServerService, GameServerUpdateDTO } from './GameServerService.js';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { ModuleService } from './ModuleService.js';
-import { ory, PERMISSIONS } from '@takaro/auth';
+import { PERMISSIONS } from '@takaro/auth';
 import { config } from '../config.js';
 import { EXECUTION_MODE } from '@takaro/config';
 
@@ -114,8 +114,6 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
     for (const gameServer of allGameServers.results) {
       await gameServerService.delete(gameServer.id);
     }
-
-    await ory.deleteIdentitiesForDomain(id);
 
     if (config.get('functions.executionMode') == EXECUTION_MODE.LAMBDA) {
       await deleteLambda({ domainId: existing.id });

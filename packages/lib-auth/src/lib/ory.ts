@@ -2,7 +2,6 @@ import { Configuration, CreateIdentityBody, FrontendApi, IdentityApi, OAuth2Api 
 import { config } from '../config.js';
 import { errors, logger, TakaroDTO } from '@takaro/util';
 import { createAxiosClient } from './oryAxiosClient.js';
-import { paginateIdentities } from './paginationHelpers.js';
 import { Request } from 'express';
 import { IsBoolean, IsNumber, IsString } from 'class-validator';
 
@@ -35,10 +34,6 @@ export class TakaroTokenDTO extends TakaroDTO<TakaroTokenDTO> {
   sub: string;
   @IsString({ each: true })
   aud: string[];
-}
-
-function metadataTypeguard(metadata: unknown): metadata is { domainId: string } {
-  return typeof metadata === 'object' && metadata !== null && 'domainId' in metadata;
 }
 
 class Ory {
@@ -78,36 +73,10 @@ class Ory {
     return config.get('hydra.publicUrl');
   }
 
-  async deleteIdentitiesForDomain(domainId: string) {
-    for await (const identities of paginateIdentities(this.identityClient)) {
-      for (const identity of identities) {
-        if (
-          identity.metadata_public &&
-          metadataTypeguard(identity.metadata_public) &&
-          identity.metadata_public.domainId === domainId
-        ) {
-          await this.deleteIdentity(identity.id);
-        }
-      }
-    }
-  }
-
   async getIdentity(id: string): Promise<ITakaroIdentity> {
     const res = await this.identityClient.getIdentity({
       id,
     });
-
-    if (!res.data.metadata_public) {
-      this.log.warn('Identity has no metadata_public', {
-        identity: res.data.id,
-      });
-      throw new errors.ForbiddenError();
-    }
-
-    if (!metadataTypeguard(res.data.metadata_public)) {
-      this.log.warn('Identity metadata_public is not of type {domainId: string}', { identity: res.data.id });
-      throw new errors.ForbiddenError();
-    }
 
     return {
       id: res.data.id,
@@ -174,20 +143,6 @@ class Ory {
       cookie: req.headers.cookie,
       xSessionToken: tokenFromAuthHeader,
     });
-
-    if (!sessionRes.data.identity!.metadata_public) {
-      this.log.warn('Identity has no metadata_public', {
-        identity: sessionRes.data.identity!.id,
-      });
-      throw new errors.ForbiddenError();
-    }
-
-    if (!metadataTypeguard(sessionRes.data.identity!.metadata_public)) {
-      this.log.warn('Identity metadata_public is not of type {domainId: string}', {
-        identity: sessionRes.data.identity!.id,
-      });
-      throw new errors.ForbiddenError();
-    }
 
     return {
       id: sessionRes.data.identity!.id,
