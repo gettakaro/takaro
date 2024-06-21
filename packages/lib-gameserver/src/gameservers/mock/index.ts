@@ -85,6 +85,7 @@ export class Mock implements IGameServer {
   }
 
   async testReachability(): Promise<TestReachabilityOutputDTO> {
+    const start = Date.now();
     try {
       const data = await this.requestFromServer('ping');
       assert(data === 'pong');
@@ -109,8 +110,10 @@ export class Mock implements IGameServer {
       });
     }
 
+    const end = Date.now();
     return new TestReachabilityOutputDTO({
       connectable: true,
+      latency: end - start,
     });
   }
 

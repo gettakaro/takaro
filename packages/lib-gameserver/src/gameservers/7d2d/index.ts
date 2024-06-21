@@ -102,11 +102,14 @@ export class SevenDaysToDie implements IGameServer {
   }
 
   async testReachability(): Promise<TestReachabilityOutputDTO> {
+    const start = Date.now();
     try {
       const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('Request timed out')), 10000));
 
-      await Promise.race([this.apiClient.getStats(), timeout]);
-      await Promise.race([this.executeConsoleCommand('version'), timeout]);
+      await Promise.all([
+        Promise.race([this.apiClient.getStats(), timeout]),
+        Promise.race([this.executeConsoleCommand('version'), timeout]),
+      ]);
     } catch (error) {
       let reason = 'Unexpected error, this might be a bug';
       this.logger.warn('Reachability test requests failed', error);
@@ -131,8 +134,10 @@ export class SevenDaysToDie implements IGameServer {
       });
     }
 
+    const end = Date.now();
     return new TestReachabilityOutputDTO({
       connectable: true,
+      latency: end - start,
     });
   }
 

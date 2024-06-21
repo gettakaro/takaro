@@ -20,6 +20,10 @@ export class TestReachabilityOutputDTO extends TakaroDTO<TestReachabilityOutputD
   @IsString()
   @IsOptional()
   reason?: string;
+
+  @IsOptional()
+  @IsNumber()
+  latency?: number;
 }
 
 /**

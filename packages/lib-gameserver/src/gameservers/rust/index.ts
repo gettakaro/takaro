@@ -95,9 +95,11 @@ export class Rust implements IGameServer {
   }
 
   async testReachability(): Promise<TestReachabilityOutputDTO> {
+    const start = Date.now();
     try {
       await this.executeConsoleCommand('serverinfo');
-      return new TestReachabilityOutputDTO({ connectable: true });
+      const end = Date.now();
+      return new TestReachabilityOutputDTO({ connectable: true, latency: end - start });
     } catch (error) {
       this.log.warn('testReachability', error);
       return new TestReachabilityOutputDTO({ connectable: false });
