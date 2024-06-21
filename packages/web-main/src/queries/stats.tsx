@@ -1,6 +1,6 @@
 import { queryOptions } from '@tanstack/react-query';
 import { getApiClient } from 'util/getApiClient';
-import { StatsOutputDTO } from '@takaro/apiclient';
+import { ActivityInputDTO, StatsOutputDTO } from '@takaro/apiclient';
 import { AxiosError } from 'axios';
 
 type StatsOutput = { values: Array<[number, number]> };
@@ -29,5 +29,21 @@ export const PlayersOnlineStatsQueryOptions = (gameServerId?: string) => {
   return queryOptions<StatsOutputDTO, AxiosError<StatsOutputDTO>, StatsOutput>({
     queryKey: statsKeys.playersOnline(gameServerId),
     queryFn: async () => (await getApiClient().stats.statsControllerGetPlayerOnlineStats(gameServerId)).data.data,
+  });
+};
+
+export const ActivityStatsQueryOptions = (options: ActivityInputDTO) => {
+  return queryOptions<StatsOutputDTO, AxiosError<StatsOutputDTO>, StatsOutput>({
+    queryKey: ['activity', options],
+    queryFn: async () =>
+      (
+        await getApiClient().stats.statsControllerGetActivityStats(
+          options.timeType,
+          options.dataType,
+          options.gameServerId,
+          options.startDate,
+          options.endDate
+        )
+      ).data.data,
   });
 };

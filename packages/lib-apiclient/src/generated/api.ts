@@ -2715,6 +2715,12 @@ export interface GiveItemInputDTO {
    * @memberof GiveItemInputDTO
    */
   amount: number;
+  /**
+   *
+   * @type {number}
+   * @memberof GiveItemInputDTO
+   */
+  quality: number;
 }
 /**
  *
