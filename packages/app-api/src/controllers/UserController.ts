@@ -244,4 +244,21 @@ export class UserController {
 
     return apiResponse();
   }
+
+  @UseBefore(AuthService.getAuthMiddleware([], false))
+  @Delete('/user/selected-domain')
+  @OpenAPI({
+    summary: 'Unset the selected domain for the user',
+    description:
+      'Unset the selected domain for the user, this will clear the domain cookie. On the next request, the backend will set this again.',
+  })
+  async deleteSelectedDomainCookie(@Req() req: AuthenticatedRequest) {
+    req.res?.clearCookie('takaro-domain', {
+      sameSite: config.get('http.domainCookie.sameSite') as boolean | 'strict' | 'lax' | 'none' | undefined,
+      secure: config.get('http.domainCookie.secure'),
+      domain: config.get('http.domainCookie.domain'),
+    });
+
+    return apiResponse();
+  }
 }
