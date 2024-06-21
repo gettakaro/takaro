@@ -39,6 +39,19 @@ export const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId, 
     })
   );
 
+  const handleOnDelete = async () => {
+    if (deletingInfo) {
+      setIsDeleting(true);
+      mutate({
+        id: playerId,
+        roleId: deletingInfo.row.original.role.id,
+        gameServerId: deletingInfo.row.original.gameServerId,
+      });
+      setIsDeleting(false);
+      setOpenDialog(false);
+    }
+  };
+
   if (isLoading || !gameServers) {
     return <Skeleton variant="rectangular" width="100%" height="100%" />;
   }
@@ -132,19 +145,6 @@ export const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId, 
     }),
   ];
 
-  const handleOnDelete = async () => {
-    if (deletingInfo) {
-      setIsDeleting(true);
-      mutate({
-        id: playerId,
-        roleId: deletingInfo.row.original.role.id,
-        gameServerId: deletingInfo.row.original.gameServerId,
-      });
-      setIsDeleting(false);
-      setOpenDialog(false);
-    }
-  };
-
   return (
     <>
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
@@ -168,9 +168,8 @@ export const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId, 
           </StyledDialogBody>
         </Dialog.Content>
       </Dialog>
-
       <Table
-        title="Roles Management"
+        title="Player roles Management"
         id="roles"
         columns={columnDefs}
         data={roles}
