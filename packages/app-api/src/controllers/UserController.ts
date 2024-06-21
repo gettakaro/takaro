@@ -9,7 +9,7 @@ import {
   UserUpdateDTO,
 } from '../service/UserService.js';
 import { AuthenticatedRequest, AuthService, LoginOutputDTO } from '../service/AuthService.js';
-import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Put, Params, Res } from 'routing-controllers';
+import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Put, Params, Res, Param } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { IdUuidDTO, IdUuidDTOAPI, ParamId, ParamIdAndRoleId } from '../lib/validators.js';
@@ -18,6 +18,7 @@ import { PERMISSIONS } from '@takaro/auth';
 import { RangeFilterCreatedAndUpdatedAt } from './shared.js';
 import { DomainOutputDTO, DomainService } from '../service/DomainService.js';
 import { TakaroDTO } from '@takaro/util';
+import { config } from '../config.js';
 
 export class GetUserDTO {
   @Length(3, 50)
@@ -225,5 +226,22 @@ export class UserController {
     const service = new UserService(req.domainId);
     const user = await service.inviteUser(data.email);
     return apiResponse(user);
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([], false))
+  @Post('/user/selected-domain/:domainId')
+  @OpenAPI({
+    summary: 'Set the selected domain for the user',
+    description:
+      'One user can have multiple domains, this endpoint is a helper to set the selected domain for the user',
+  })
+  async setSelectedDomain(@Req() req: AuthenticatedRequest, @Param('domainId') domainId: string) {
+    req.res?.cookie('takaro-domain', domainId, {
+      sameSite: config.get('http.domainCookie.sameSite') as boolean | 'strict' | 'lax' | 'none' | undefined,
+      secure: config.get('http.domainCookie.secure'),
+      domain: config.get('http.domainCookie.domain'),
+    });
+
+    return apiResponse();
   }
 }
