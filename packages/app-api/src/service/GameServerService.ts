@@ -51,6 +51,7 @@ import { ItemCreateDTO, ItemsService } from './ItemsService.js';
 import { randomUUID } from 'crypto';
 import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
 import { Type } from 'class-transformer';
+import { gameServerLatency } from '../lib/metrics.js';
 
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 const ajv = new Ajv({ useDefaults: true, strict: true });
@@ -217,6 +218,7 @@ export class GameServerService extends TakaroService<
     if (id) {
       const instance = await this.getGame(id);
       const reachability = await instance.testReachability();
+      gameServerLatency.set({ gameserver: id }, reachability.latency ?? 0);
 
       const currentServer = await this.findOne(id);
 
