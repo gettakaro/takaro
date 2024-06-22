@@ -33,8 +33,10 @@ import { useQuery } from '@tanstack/react-query';
 
 const DownloadLink = styled.a`
   display: block;
-  text-decoration: underline;
-  text-decoration-color: ${({ theme }) => theme.colors.primary};
+  padding: ${({ theme }) => theme.spacing['0_75']};
+  background-color: ${({ theme }) => theme.colors.primary};
+  color: ${({ theme }) => theme.colors.white};
+  border-radius: ${({ theme }) => theme.borderRadius.small};
 `;
 
 interface IModuleCardProps {
