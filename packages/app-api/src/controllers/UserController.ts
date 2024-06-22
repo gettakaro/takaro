@@ -57,7 +57,7 @@ class MeOutoutDTO extends TakaroDTO<MeOutoutDTO> {
   user: UserOutputWithRolesDTO;
 
   @Type(() => DomainOutputDTO)
-  @ValidateNested()
+  @ValidateNested({ each: true })
   domains: DomainOutputDTO[];
 }
 
@@ -137,6 +137,11 @@ export class UserController {
   @Get('/me')
   @UseBefore(AuthService.getAuthMiddleware([]))
   @ResponseSchema(MeOutoutDTOAPI)
+  @OpenAPI({
+    summary: 'Get the current logged in user',
+    description:
+      'Get the current user and the domains that the user has access to. Note that you can only make requests in the scope of a single domain. In order to switch the domain, you need to use the domain selection endpoints',
+  })
   async me(@Req() req: AuthenticatedRequest) {
     const user = await new UserService(req.domainId).findOne(req.user.id);
     const domainService = new DomainService();
