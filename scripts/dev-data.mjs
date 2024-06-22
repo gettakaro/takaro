@@ -84,26 +84,35 @@ async function resolveCustomModuleConfig(mod) {
 }
 
 async function main() {
-  const userEmail = `${process.env.TAKARO_DEV_USER_NAME}@${process.env.TAKARO_DEV_DOMAIN_NAME}`;
-
-  const domainRes = await adminClient.domain.domainControllerCreate({
+  const domain1Result = await adminClient.domain.domainControllerCreate({
     name: process.env.TAKARO_DEV_DOMAIN_NAME,
   });
 
-  console.log(`Created a domain with id ${domainRes.data.data.createdDomain.id}`);
-  console.log(`Root user: ${domainRes.data.data.rootUser.email} / ${domainRes.data.data.password}`);
+  const domain2Result = await adminClient.domain.domainControllerCreate({
+    name: `${process.env.TAKARO_DEV_DOMAIN_NAME}2`,
+  });
 
+  console.log(`Created domain1 with id ${domain1Result.data.data.createdDomain.id}`);
+  await addDataToDomain(domain1Result.data.data);
+
+  console.log(`Created domain2 with id ${domain2Result.data.data.createdDomain.id}`);
+  await addDataToDomain(domain2Result.data.data);
+
+  console.log(`Root user: ${domain1Result.data.data.rootUser.email} / ${domain1Result.data.data.password}`);
+}
+
+async function addDataToDomain(domain) {
   const client = new Client({
     url: process.env.TAKARO_HOST,
     auth: {
-      username: domainRes.data.data.rootUser.email,
-      password: domainRes.data.data.password,
+      username: domain.rootUser.email,
+      password: domain.password,
     },
     log: false,
   });
-
   await client.login();
 
+  const userEmail = `${process.env.TAKARO_DEV_USER_NAME}@${process.env.TAKARO_DEV_DOMAIN_NAME}`;
   const userRes = await client.user.userControllerCreate({
     email: userEmail,
     password: process.env.TAKARO_DEV_USER_PASSWORD,
@@ -111,13 +120,8 @@ async function main() {
   });
 
   console.log(`Created a user: ${userRes.data.data.email} / ${process.env.TAKARO_DEV_USER_PASSWORD}`);
+  await client.user.userControllerAssignRole(userRes.data.data.id, domain.rootRole.id);
 
-  await client.user.userControllerAssignRole(userRes.data.data.id, domainRes.data.data.rootRole.id);
-  /* 
-    await client.settings.settingsControllerSet('commandPrefix', {
-      value: '&'
-    });
-   */
   const gameserver = (
     await client.gameserver.gameServerControllerCreate({
       name: 'Test server',
@@ -127,7 +131,6 @@ async function main() {
       }),
     })
   ).data.data;
-
   console.log(`Created a mock gameserver with id ${gameserver.id}`);
 
   const modules = (await client.module.moduleControllerSearch()).data.data;
