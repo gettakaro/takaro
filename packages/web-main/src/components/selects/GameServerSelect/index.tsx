@@ -129,7 +129,6 @@ export const GameServerSelectView: FC<GameServerSelectViewProps> = ({
       label={label}
       required={required}
       loading={loading}
-      hasMargin={false}
       canClear={canClear}
       render={(selectedItems) => {
         if (selectedItems.length === 0) {

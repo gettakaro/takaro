@@ -55,8 +55,9 @@ export { ErrorMessage } from './layout/ErrorMessage';
 export { InputWrapper } from './layout/InputWrapper';
 export { Description } from './layout/Description';
 
-export { DateRangePicker } from './Date/DateRangePicker';
-export type { DateRangePickerProps } from './Date/DateRangePicker';
+export { ControlledDateRangePicker as DateRangePicker } from './Date/DateRangePicker/Controlled';
+export type { DateRangePickerProps } from './Date/DateRangePicker/Generic';
+export { GenericDateRangePicker as UnControlledDateRangePicker } from './Date/DateRangePicker/Generic';
 
 export { ControlledDurationField as DurationField } from './DurationField/Controlled';
 export type { ControlledDurationFieldProps as DurationFieldProps } from './DurationField/Controlled';
