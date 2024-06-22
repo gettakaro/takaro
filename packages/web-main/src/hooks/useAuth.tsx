@@ -7,7 +7,7 @@ import { DateTime } from 'luxon';
 import { getApiClient } from 'util/getApiClient';
 import { redirect } from '@tanstack/react-router';
 
-const SESSION_EXPIRES_AFTER_MINUTES = 20;
+const SESSION_EXPIRES_AFTER_MINUTES = 5;
 
 interface ExpirableSession {
   session: UserOutputWithRolesDTO;
