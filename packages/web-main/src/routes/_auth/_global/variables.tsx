@@ -124,14 +124,14 @@ function Component() {
     columnHelper.accessor('createdAt', {
       header: 'Created at',
       id: 'createdAt',
-      meta: { dataType: 'datetime', hiddenColumn: true },
+      meta: { dataType: 'datetime' },
       cell: (info) => <DateFormatter ISODate={info.getValue()} />,
       enableSorting: true,
     }),
     columnHelper.accessor('updatedAt', {
       header: 'Updated at',
       id: 'updatedAt',
-      meta: { dataType: 'datetime', hiddenColumn: true },
+      meta: { dataType: 'datetime' },
       cell: (info) => <DateFormatter ISODate={info.getValue()} />,
       enableSorting: false,
     }),
