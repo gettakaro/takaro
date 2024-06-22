@@ -1,6 +1,11 @@
 import { styled } from '../../../../styled';
 
-export const Container = styled.div<{
+export const Container = styled.div`
+  width: 100%;
+  position: relative;
+`;
+
+export const DateRangePickerContainer = styled.div<{
   isOpen: boolean;
   hasError: boolean;
 }>`
