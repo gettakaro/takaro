@@ -3,6 +3,7 @@ import { getApiClient } from 'util/getApiClient';
 import {
   APIOutput,
   IdUuidDTO,
+  MeOutoutDTO,
   UserOutputArrayDTOAPI,
   UserOutputWithRolesDTO,
   UserSearchInputDTO,
@@ -15,6 +16,7 @@ export const userKeys = {
   all: ['users'] as const,
   list: () => [...userKeys.all, 'list'] as const,
   detail: (id: string) => [...userKeys.all, 'detail', id] as const,
+  me: () => [...userKeys.all, 'me'] as const,
 };
 
 interface RoleInput {
@@ -34,6 +36,12 @@ export const userQueryOptions = (userId: string) =>
     queryFn: async () => (await getApiClient().user.userControllerGetOne(userId)).data.data,
   });
 
+export const userMeQueryOptions = () =>
+  queryOptions<MeOutoutDTO, AxiosError<MeOutoutDTO>>({
+    queryKey: userKeys.me(),
+    queryFn: async () => (await getApiClient().user.userControllerMe()).data.data,
+  });
+
 interface IUserRoleAssign {
   userId: string;
   roleId: string;
@@ -51,6 +59,24 @@ export const useUserAssignRole = ({ userId }: { userId: string }) => {
       onSuccess: async () => {
         // invalidate user because new role assignment
         queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
+      },
+    }),
+    {}
+  );
+};
+
+interface IUserSetSelectedDomain {
+  domainId: string;
+}
+export const useUserSetSelectedDomain = () => {
+  const apiClient = getApiClient();
+  const queryClient = useQueryClient();
+
+  return mutationWrapper<void, IUserSetSelectedDomain>(
+    useMutation<void, AxiosError<APIOutput>, IUserSetSelectedDomain>({
+      mutationFn: async ({ domainId }) => (await apiClient.user.userControllerSetSelectedDomain(domainId)).data,
+      onSuccess: async () => {
+        queryClient.clear();
       },
     }),
     {}
