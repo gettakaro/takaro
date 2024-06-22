@@ -7,20 +7,23 @@ import {
 } from 'react-icons/ai';
 import { Popover } from '../../../../components';
 import { QuickSelect, Tense, Unit } from './QuickSelect';
-import { Container, QuickSelectContainer, ItemContainer } from './style';
+import { DateRangePickerContainer, QuickSelectContainer, ItemContainer } from './style';
 import { DateSelector } from './DateSelector';
 import { DateRangePickerDispatchContext, DateRangePickerContext, reducer } from './Context';
 import { useTheme } from '../../../../hooks';
+import { GenericInputProps } from '../../InputProps';
+
+export type DateRange = { start: DateTime<true>; end: DateTime<true> };
 
 export interface DateRangePickerProps {
-  defaultValue?: { start: DateTime<true>; end: DateTime<true> };
+  defaultValue?: DateRange;
   readOnly?: boolean;
   disabled?: boolean;
   id: string;
-  onChange: (start: DateTime<true>, end: DateTime<true>) => void;
 }
 
-export const DateRangePicker: FC<DateRangePickerProps> = ({
+export type GenericDateRangePickerProps = GenericInputProps<string, HTMLInputElement> & DateRangePickerProps;
+export const GenericDateRangePicker: FC<GenericDateRangePickerProps> = ({
   readOnly = false,
   disabled = false,
   id,
@@ -64,13 +67,23 @@ export const DateRangePicker: FC<DateRangePickerProps> = ({
       setHasError(false);
     }
 
-    onChange(state.start, state.end);
+    if (onChange) {
+      const event = {
+        target: { value: { start: state.start.toISO(), end: state.end.toISO() }, name },
+        preventDefault: () => {},
+        stopPropagation: () => {},
+      } as unknown as React.ChangeEvent<HTMLInputElement>;
+      onChange(event);
+    }
   }, [state.start, state.end]);
 
   return (
     <DateRangePickerContext.Provider value={state}>
       <DateRangePickerDispatchContext.Provider value={dispatch}>
-        <Container hasError={hasError} isOpen={state.quickSelect.show || state.showStartDate || state.showEndDate}>
+        <DateRangePickerContainer
+          hasError={hasError}
+          isOpen={state.quickSelect.show || state.showStartDate || state.showEndDate}
+        >
           <Popover
             open={state.quickSelect.show}
             onOpenChange={(open) =>
@@ -146,7 +159,7 @@ export const DateRangePicker: FC<DateRangePickerProps> = ({
               </Popover>
             </>
           )}
-        </Container>
+        </DateRangePickerContainer>
       </DateRangePickerDispatchContext.Provider>
     </DateRangePickerContext.Provider>
   );

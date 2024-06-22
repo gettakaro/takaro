@@ -86,8 +86,8 @@ export const Container = styled.div<{ size: Size; variant?: AvatarVariant }>`
     switch (size) {
       case 'tiny':
         return `
-          width: 2rem;
-          height: 2rem;
+          width: 1rem;
+          height: 1rem;
           font-size: .8rem;
           line-height: .8rem;
         `;

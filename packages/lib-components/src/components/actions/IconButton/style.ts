@@ -11,7 +11,7 @@ export const Default = styled.button<{ color: Color }>`
   background-clip: padding-box;
   cursor: pointer;
   background-color: transparent;
-  padding: ${({ theme }) => theme.spacing['0_5']};
+  padding: ${({ theme }) => theme.spacing['0_25']};
   line-height: 1.6rem;
 
   &:hover {
