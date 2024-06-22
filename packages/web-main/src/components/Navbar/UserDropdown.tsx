@@ -7,7 +7,6 @@ import {
 } from 'react-icons/ai';
 import { IoSwapHorizontal as SwitchDomainIcon } from 'react-icons/io5';
 import { useNavigate } from '@tanstack/react-router';
-import { DomainOutputDTO } from '@takaro/apiclient';
 import { useQuery } from '@tanstack/react-query';
 import { userMeQueryOptions } from 'queries/user';
 
@@ -63,10 +62,7 @@ export const UserDropdown = () => {
 
   const { data, isPending } = useQuery(userMeQueryOptions());
 
-  const hasMultipleDomains =
-    isPending === false && data && data.domains && (data.domains as unknown as DomainOutputDTO[]).length > 1
-      ? true
-      : false;
+  const hasMultipleDomains = isPending === false && data && data.domains && data.domains.length > 1 ? true : false;
 
   // TODO: this should be a fallback component, to stil try to logout.
   if (session === null) return <div>could not get session</div>;

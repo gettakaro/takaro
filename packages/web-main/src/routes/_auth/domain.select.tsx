@@ -40,15 +40,10 @@ export const Route = createFileRoute('/_auth/domain/select')({
 
 function Component() {
   const me = Route.useLoaderData();
-
   const currentDomain = document.cookie.replace(TAKARO_DOMAIN_COOKIE_REGEX, '$1');
-  console.log(currentDomain);
-
-  // FIXME: type of domains is currently a single domain, not an array.
-  const domains = me.domains as unknown as DomainOutputDTO[];
 
   // Keep current domain at the top
-  domains.sort((a, b) => {
+  me.domains.sort((a, b) => {
     if (a.id === currentDomain) {
       return -1;
     }
@@ -63,7 +58,7 @@ function Component() {
       <Company />
       <DomainCardList>
         <h2>Select a domain:</h2>
-        {domains.map((domain) => (
+        {me.domains.map((domain) => (
           <>
             <DomainCard domain={domain} isCurrentDomain={currentDomain === domain.id} />
           </>
