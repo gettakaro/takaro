@@ -1,5 +1,5 @@
 import { EventsAwaiter } from '../test/waitForEvents.js';
-import { GameServerOutputDTO, ModuleOutputDTO, PlayerOutputDTO } from '@takaro/apiclient';
+import { GameServerOutputDTO, ModuleOutputDTO, PlayerOnGameserverOutputDTO, PlayerOutputDTO } from '@takaro/apiclient';
 import { HookEvents } from '@takaro/modules';
 import { IntegrationTest } from '../integrationTest.js';
 import { integrationConfig } from '../test/integrationConfig.js';
@@ -8,7 +8,10 @@ export interface ISetupData {
   gameServer1: GameServerOutputDTO;
   gameServer2: GameServerOutputDTO;
   players: PlayerOutputDTO[];
+  pogs1: PlayerOnGameserverOutputDTO[];
+  pogs2: PlayerOnGameserverOutputDTO[];
   mod: ModuleOutputDTO;
+  eventsAwaiter: EventsAwaiter;
 }
 
 export const setup = async function (this: IntegrationTest<ISetupData>): Promise<ISetupData> {
@@ -49,11 +52,24 @@ export const setup = async function (this: IntegrationTest<ISetupData>): Promise
   await connectedEvents;
 
   const players = (await this.client.player.playerControllerSearch()).data.data;
+  const pogs1 = (
+    await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
+      filters: { gameServerId: [gameServer1.data.data.id] },
+    })
+  ).data.data;
+  const pogs2 = (
+    await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
+      filters: { gameServerId: [gameServer2.data.data.id] },
+    })
+  ).data.data;
 
   return {
     gameServer1: gameServer1.data.data,
     gameServer2: gameServer2.data.data,
     players,
+    pogs1,
+    pogs2,
     mod,
+    eventsAwaiter,
   };
 };

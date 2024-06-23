@@ -70,6 +70,7 @@ services:
       TAKARO_HOST: http://takaro:3000
 
       TEST_HTTP_TARGET: http://takaro:3000
+      MAILHOG_URL: http://mailhog:8025
       TAKARO_OAUTH_HOST: http://hydra:4444
 
       VITE_API: http://127.0.0.1:13000

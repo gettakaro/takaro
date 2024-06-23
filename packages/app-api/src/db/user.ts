@@ -35,6 +35,7 @@ export class UserModel extends TakaroModel {
 
   idpId: string;
   discordId?: string;
+  playerId?: string;
 
   static get relationMappings() {
     return {
@@ -95,6 +96,14 @@ export class UserRepo extends ITakaroRepo<UserModel, UserOutputDTO, UserCreateIn
 
   async create(data: UserCreateInputDTO): Promise<UserOutputWithRolesDTO> {
     const { query } = await this.getModel();
+
+    if (data.idpId) {
+      const existing = await query.where('idpId', data.idpId).first();
+      if (existing) {
+        return this.findOne(existing.id);
+      }
+    }
+
     const item = await query
       .insert({
         idpId: data.idpId,
@@ -143,5 +152,10 @@ export class UserRepo extends ITakaroRepo<UserModel, UserOutputDTO, UserCreateIn
     }
 
     return data.map((item) => item.domain);
+  }
+
+  async linkPlayer(userId: string, playerId: string) {
+    const { query } = await this.getModel();
+    await query.update({ playerId }).where('id', userId);
   }
 }

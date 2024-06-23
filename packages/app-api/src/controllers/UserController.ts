@@ -117,6 +117,20 @@ class UserSearchInputDTO extends ITakaroQuery<UserOutputDTO> {
   declare lessThan: UserSearchInputAllowedRangeFilter;
 }
 
+class LinkPlayerUnauthedInputDTO extends TakaroDTO<LinkPlayerUnauthedInputDTO> {
+  @IsEmail()
+  email: string;
+  @IsString()
+  code: string;
+}
+
+class LinkPlayerAuthedInputDTO extends TakaroDTO<LinkPlayerAuthedInputDTO> {
+  @IsString()
+  playerId: string;
+  @IsEmail()
+  email: string;
+}
+
 @OpenAPI({
   security: [{ domainAuth: [] }],
 })
@@ -265,5 +279,30 @@ export class UserController {
     });
 
     return apiResponse();
+  }
+
+  @Post('/user/player')
+  @OpenAPI({
+    summary: 'Link player profile',
+    description:
+      'Link your player profile to Takaro, allowing web access for things like shop and stats. To get the code, use the /link command in the game.',
+  })
+  async linkPlayerProfile(@Body() data: LinkPlayerUnauthedInputDTO) {
+    const userService = new UserService('dummy-domain-id');
+    const user = await userService.NOT_DOMAIN_SCOPED_linkPlayerProfile(data.email, data.code);
+    return apiResponse(user);
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_PLAYERS, PERMISSIONS.MANAGE_USERS]))
+  @Post('/user/player/authed')
+  @OpenAPI({
+    summary: 'Link player profile (authed)',
+    description:
+      'Link your player profile to Takaro. This endpoint is for high privileged users only. If you are a regular user, use the /link command in the game.',
+  })
+  async linkPlayerProfileAuthed(@Req() req: AuthenticatedRequest, @Body() data: LinkPlayerAuthedInputDTO) {
+    const userService = new UserService(req.domainId);
+    const user = await userService.linkPlayerProfileAuthed(data.email, data.playerId);
+    return apiResponse(user);
   }
 }

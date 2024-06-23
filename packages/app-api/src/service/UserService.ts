@@ -1,5 +1,5 @@
 import { TakaroService } from './Base.js';
-import { ITakaroQuery } from '@takaro/db';
+import { ITakaroQuery, Redis } from '@takaro/db';
 import { send } from '@takaro/email';
 
 import { UserModel, UserRepo } from '../db/user.js';
@@ -135,7 +135,6 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
 
   async delete(id: string) {
     await this.repo.delete(id);
-    await ory.deleteIdentity(id);
     return id;
   }
 
@@ -185,6 +184,39 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
       },
     });
 
+    return user;
+  }
+
+  async NOT_DOMAIN_SCOPED_linkPlayerProfile(email: string, code: string): Promise<UserOutputDTO> {
+    const redis = await Redis.getClient('playerLink');
+    const resolvedPlayerId = await redis.get(code);
+    const resolvedDomainId = await redis.get(`${code}-domain`);
+
+    if (!resolvedPlayerId) {
+      this.log.warn('Player link code not found', { code });
+      throw new errors.ForbiddenError();
+    }
+
+    if (!resolvedDomainId) {
+      this.log.warn('Player link code domain mismatch', { code, domainId: resolvedDomainId });
+      throw new errors.ForbiddenError();
+    }
+
+    // WE drop the un-domain-scope here and create a new service with the resolved domainId
+    const userService = new UserService(resolvedDomainId);
+
+    const user = await userService.inviteUser(email);
+
+    await userService.repo.linkPlayer(user.id, resolvedPlayerId);
+
+    await redis.del(code);
+
+    return user;
+  }
+
+  async linkPlayerProfileAuthed(email: string, playerId: string): Promise<UserOutputDTO> {
+    const user = await this.inviteUser(email);
+    await this.repo.linkPlayer(user.id, playerId);
     return user;
   }
 }
