@@ -234,7 +234,7 @@ export class UserController {
   }
 
   @UseBefore(AuthService.getAuthMiddleware([], false))
-  @Post('/user/selected-domain/:domainId')
+  @Post('/selected-domain/:domainId')
   @OpenAPI({
     summary: 'Set the selected domain for the user',
     description:
@@ -250,8 +250,7 @@ export class UserController {
     return apiResponse();
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([], false))
-  @Delete('/user/selected-domain')
+  @Delete('/selected-domain')
   @OpenAPI({
     summary: 'Unset the selected domain for the user',
     description:
