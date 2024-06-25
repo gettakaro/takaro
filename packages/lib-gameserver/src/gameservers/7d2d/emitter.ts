@@ -65,6 +65,9 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
   }
 
   get url() {
+    if (this.config.useV1) {
+      return `${this.config.useTls ? 'https' : 'http'}://${this.config.host}/sse/?events=log`;
+    }
     return `${this.config.useTls ? 'https' : 'http'}://${this.config.host}/sse/log`;
   }
 
