@@ -99,12 +99,12 @@ function Component() {
         method: 'password',
       },
     });
+    await apiClient.user.userControllerDeleteSelectedDomainCookie();
     const res = await apiClient.user.userControllerMe({
       headers: {
         'Cache-Control': 'no-cache',
       },
     });
-
     login(res.data.data.user);
     await router.invalidate();
     // hack to wait for auth state to update???

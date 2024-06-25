@@ -19565,7 +19565,7 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
      * @throws {RequiredError}
      */
     userControllerDeleteSelectedDomainCookie: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-      const localVarPath = `/user/selected-domain`;
+      const localVarPath = `/selected-domain`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -19918,7 +19918,7 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
     ): Promise<RequestArgs> => {
       // verify required parameter 'domainId' is not null or undefined
       assertParamExists('userControllerSetSelectedDomain', 'domainId', domainId);
-      const localVarPath = `/user/selected-domain/{domainId}`.replace(
+      const localVarPath = `/selected-domain/{domainId}`.replace(
         `{${'domainId'}}`,
         encodeURIComponent(String(domainId))
       );
