@@ -258,7 +258,7 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
             moduleId,
             name: newFileName,
             eventType: 'log',
-            regex: '\\w',
+            regex: 'takaro-hook-regex-placeholder',
           });
           functionId = hook.function.id;
           itemId = hook.id;
