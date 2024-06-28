@@ -27,7 +27,7 @@ function getLocalSession() {
   }
 
   const expirableSession: ExpirableSession = JSON.parse(expirableSessionString);
-  if (DateTime.fromISO(expirableSession.expiresAt).diffNow().seconds < 0) {
+  if (DateTime.fromISO(expirableSession.expiresAt) < DateTime.now()) {
     return null;
   }
   return expirableSession.session;
