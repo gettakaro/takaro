@@ -85,6 +85,7 @@ export class Mock implements IGameServer {
   }
 
   async testReachability(): Promise<TestReachabilityOutputDTO> {
+    const start = Date.now();
     try {
       const data = await this.requestFromServer('ping');
       assert(data === 'pong');
@@ -109,8 +110,10 @@ export class Mock implements IGameServer {
       });
     }
 
+    const end = Date.now();
     return new TestReachabilityOutputDTO({
       connectable: true,
+      latency: end - start,
     });
   }
 
@@ -142,8 +145,8 @@ export class Mock implements IGameServer {
     return this.requestFromServer('listBans');
   }
 
-  async giveItem(player: IPlayerReferenceDTO, item: string, amount: number): Promise<void> {
-    return this.requestFromServer('giveItem', player, item, amount);
+  async giveItem(player: IPlayerReferenceDTO, item: string, amount: number, quality: number): Promise<void> {
+    return this.requestFromServer('giveItem', player, item, amount, quality);
   }
 
   async listItems(): Promise<IItemDTO[]> {

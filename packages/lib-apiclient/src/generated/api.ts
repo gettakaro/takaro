@@ -2715,6 +2715,12 @@ export interface GiveItemInputDTO {
    * @memberof GiveItemInputDTO
    */
   amount: number;
+  /**
+   *
+   * @type {number}
+   * @memberof GiveItemInputDTO
+   */
+  quality: number;
 }
 /**
  *
@@ -4347,6 +4353,44 @@ export interface LoginOutputDTOAPI {
    *
    * @type {MetadataOutput}
    * @memberof LoginOutputDTOAPI
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface MeOutoutDTO
+ */
+export interface MeOutoutDTO {
+  /**
+   *
+   * @type {UserOutputWithRolesDTO}
+   * @memberof MeOutoutDTO
+   */
+  user: UserOutputWithRolesDTO;
+  /**
+   *
+   * @type {Array<DomainOutputDTO>}
+   * @memberof MeOutoutDTO
+   */
+  domains: Array<DomainOutputDTO>;
+}
+/**
+ *
+ * @export
+ * @interface MeOutoutDTOAPI
+ */
+export interface MeOutoutDTOAPI {
+  /**
+   *
+   * @type {MeOutoutDTO}
+   * @memberof MeOutoutDTOAPI
+   */
+  data: MeOutoutDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof MeOutoutDTOAPI
    */
   meta: MetadataOutput;
 }
@@ -7803,6 +7847,12 @@ export interface TestReachabilityOutputDTO {
    * @memberof TestReachabilityOutputDTO
    */
   reason?: string;
+  /**
+   *
+   * @type {number}
+   * @memberof TestReachabilityOutputDTO
+   */
+  latency?: number;
 }
 /**
  *
@@ -19490,6 +19540,36 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
       };
     },
     /**
+     * Unset the selected domain for the user, this will clear the domain cookie. On the next request, the backend will set this again.
+     * @summary Unset the selected domain for the user
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    userControllerDeleteSelectedDomainCookie: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      const localVarPath = `/selected-domain`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      *  Required permissions: `READ_USERS`
      * @summary Get one
      * @param {string} id
@@ -19624,8 +19704,8 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
       };
     },
     /**
-     *
-     * @summary Me
+     * Get the current user and the domains that the user has access to. Note that you can only make requests in the scope of a single domain. In order to switch the domain, you need to use the domain selection endpoints
+     * @summary Get the current logged in user
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -19766,6 +19846,45 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
       };
     },
     /**
+     * One user can have multiple domains, this endpoint is a helper to set the selected domain for the user
+     * @summary Set the selected domain for the user
+     * @param {string} domainId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    userControllerSetSelectedDomain: async (
+      domainId: string,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'domainId' is not null or undefined
+      assertParamExists('userControllerSetSelectedDomain', 'domainId', domainId);
+      const localVarPath = `/selected-domain/{domainId}`.replace(
+        `{${'domainId'}}`,
+        encodeURIComponent(String(domainId))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      *  Required permissions: `MANAGE_USERS`
      * @summary Update
      * @param {string} id
@@ -19870,6 +19989,26 @@ export const UserApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
+     * Unset the selected domain for the user, this will clear the domain cookie. On the next request, the backend will set this again.
+     * @summary Unset the selected domain for the user
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async userControllerDeleteSelectedDomainCookie(
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.userControllerDeleteSelectedDomainCookie(options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['UserApi.userControllerDeleteSelectedDomainCookie']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
      *  Required permissions: `READ_USERS`
      * @summary Get one
      * @param {string} id
@@ -19956,14 +20095,14 @@ export const UserApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
-     * @summary Me
+     * Get the current user and the domains that the user has access to. Note that you can only make requests in the scope of a single domain. In order to switch the domain, you need to use the domain selection endpoints
+     * @summary Get the current logged in user
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async userControllerMe(
       options?: RawAxiosRequestConfig
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserOutputDTOAPI>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MeOutoutDTOAPI>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.userControllerMe(options);
       const index = configuration?.serverIndex ?? 0;
       const operationBasePath = operationServerMap['UserApi.userControllerMe']?.[index]?.url;
@@ -20044,6 +20183,28 @@ export const UserApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
+     * One user can have multiple domains, this endpoint is a helper to set the selected domain for the user
+     * @summary Set the selected domain for the user
+     * @param {string} domainId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async userControllerSetSelectedDomain(
+      domainId: string,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.userControllerSetSelectedDomain(domainId, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['UserApi.userControllerSetSelectedDomain']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
      *  Required permissions: `MANAGE_USERS`
      * @summary Update
      * @param {string} id
@@ -20107,6 +20268,15 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
       return localVarFp.userControllerCreate(userCreateInputDTO, options).then((request) => request(axios, basePath));
     },
     /**
+     * Unset the selected domain for the user, this will clear the domain cookie. On the next request, the backend will set this again.
+     * @summary Unset the selected domain for the user
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    userControllerDeleteSelectedDomainCookie(options?: any): AxiosPromise<void> {
+      return localVarFp.userControllerDeleteSelectedDomainCookie(options).then((request) => request(axios, basePath));
+    },
+    /**
      *  Required permissions: `READ_USERS`
      * @summary Get one
      * @param {string} id
@@ -20146,12 +20316,12 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
       return localVarFp.userControllerLogout(options).then((request) => request(axios, basePath));
     },
     /**
-     *
-     * @summary Me
+     * Get the current user and the domains that the user has access to. Note that you can only make requests in the scope of a single domain. In order to switch the domain, you need to use the domain selection endpoints
+     * @summary Get the current logged in user
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    userControllerMe(options?: any): AxiosPromise<UserOutputDTOAPI> {
+    userControllerMe(options?: any): AxiosPromise<MeOutoutDTOAPI> {
       return localVarFp.userControllerMe(options).then((request) => request(axios, basePath));
     },
     /**
@@ -20184,6 +20354,16 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
      */
     userControllerSearch(userSearchInputDTO?: UserSearchInputDTO, options?: any): AxiosPromise<UserOutputArrayDTOAPI> {
       return localVarFp.userControllerSearch(userSearchInputDTO, options).then((request) => request(axios, basePath));
+    },
+    /**
+     * One user can have multiple domains, this endpoint is a helper to set the selected domain for the user
+     * @summary Set the selected domain for the user
+     * @param {string} domainId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    userControllerSetSelectedDomain(domainId: string, options?: any): AxiosPromise<void> {
+      return localVarFp.userControllerSetSelectedDomain(domainId, options).then((request) => request(axios, basePath));
     },
     /**
      *  Required permissions: `MANAGE_USERS`
@@ -20238,6 +20418,19 @@ export class UserApi extends BaseAPI {
   public userControllerCreate(userCreateInputDTO?: UserCreateInputDTO, options?: RawAxiosRequestConfig) {
     return UserApiFp(this.configuration)
       .userControllerCreate(userCreateInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Unset the selected domain for the user, this will clear the domain cookie. On the next request, the backend will set this again.
+   * @summary Unset the selected domain for the user
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof UserApi
+   */
+  public userControllerDeleteSelectedDomainCookie(options?: RawAxiosRequestConfig) {
+    return UserApiFp(this.configuration)
+      .userControllerDeleteSelectedDomainCookie(options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -20297,8 +20490,8 @@ export class UserApi extends BaseAPI {
   }
 
   /**
-   *
-   * @summary Me
+   * Get the current user and the domains that the user has access to. Note that you can only make requests in the scope of a single domain. In order to switch the domain, you need to use the domain selection endpoints
+   * @summary Get the current logged in user
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof UserApi
@@ -20349,6 +20542,20 @@ export class UserApi extends BaseAPI {
   public userControllerSearch(userSearchInputDTO?: UserSearchInputDTO, options?: RawAxiosRequestConfig) {
     return UserApiFp(this.configuration)
       .userControllerSearch(userSearchInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * One user can have multiple domains, this endpoint is a helper to set the selected domain for the user
+   * @summary Set the selected domain for the user
+   * @param {string} domainId
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof UserApi
+   */
+  public userControllerSetSelectedDomain(domainId: string, options?: RawAxiosRequestConfig) {
+    return UserApiFp(this.configuration)
+      .userControllerSetSelectedDomain(domainId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

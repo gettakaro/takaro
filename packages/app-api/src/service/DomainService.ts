@@ -14,7 +14,7 @@ import { GameServerService, GameServerUpdateDTO } from './GameServerService.js';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { ModuleService } from './ModuleService.js';
-import { ory, PERMISSIONS } from '@takaro/auth';
+import { PERMISSIONS } from '@takaro/auth';
 import { config } from '../config.js';
 import { EXECUTION_MODE } from '@takaro/config';
 
@@ -115,8 +115,6 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
       await gameServerService.delete(gameServer.id);
     }
 
-    await ory.deleteIdentitiesForDomain(id);
-
     if (config.get('functions.executionMode') == EXECUTION_MODE.LAMBDA) {
       await deleteLambda({ domainId: existing.id });
     }
@@ -206,12 +204,12 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
     });
   }
 
-  async resolveDomain(email: string): Promise<string> {
-    const domain = await this.repo.resolveDomain(email);
-    if (!domain) {
-      this.log.warn(`Tried to lookup an email that is not in any domain: ${email}`);
-      throw new errors.UnauthorizedError();
+  async resolveDomainByIdpId(idpId: string): Promise<DomainOutputDTO[]> {
+    const domains = await this.repo.resolveDomain(idpId);
+    if (!domains.length) {
+      this.log.warn(`Tried to lookup an identity that is not in any domain: ${idpId}`);
+      throw new errors.NotFoundError();
     }
-    return domain;
+    return domains;
   }
 }

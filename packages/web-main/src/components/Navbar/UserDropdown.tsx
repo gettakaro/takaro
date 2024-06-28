@@ -5,7 +5,10 @@ import {
   AiOutlineLogout as LogoutIcon,
   AiOutlineDown as ArrowDownIcon,
 } from 'react-icons/ai';
+import { IoSwapHorizontal as SwitchDomainIcon } from 'react-icons/io5';
 import { useNavigate } from '@tanstack/react-router';
+import { useQuery } from '@tanstack/react-query';
+import { userMeQueryOptions } from 'queries/user';
 
 const User = styled.div`
   display: grid;
@@ -57,6 +60,10 @@ export const UserDropdown = () => {
   const { logOut } = useAuth();
   const navigate = useNavigate();
 
+  const { data, isPending } = useQuery(userMeQueryOptions());
+
+  const hasMultipleDomains = isPending === false && data && data.domains && data.domains.length > 1 ? true : false;
+
   // TODO: this should be a fallback component, to stil try to logout.
   if (session === null) return <div>could not get session</div>;
 
@@ -78,6 +85,12 @@ export const UserDropdown = () => {
           onClick={() => navigate({ to: '/account/profile', search: { flowId: '' } })}
           label="Profile"
           icon={<ProfileIcon />}
+        />
+        <Dropdown.Menu.Item
+          onClick={() => navigate({ to: '/domain/select' })}
+          label="Switch domain"
+          disabled={!hasMultipleDomains}
+          icon={<SwitchDomainIcon />}
         />
         <Dropdown.Menu.Item onClick={async () => await logOut()} label="Logout" icon={<LogoutIcon />} />
       </Dropdown.Menu>

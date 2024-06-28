@@ -62,7 +62,7 @@ const tests = [
 
       return userRes;
     },
-    filteredFields: ['idpId', 'roleId', 'userId'],
+    filteredFields: ['idpId', 'roleId', 'userId', 'lastSeen'],
   }),
 ];
 

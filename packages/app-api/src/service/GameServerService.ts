@@ -51,6 +51,7 @@ import { ItemCreateDTO, ItemsService } from './ItemsService.js';
 import { randomUUID } from 'crypto';
 import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
 import { Type } from 'class-transformer';
+import { gameServerLatency } from '../lib/metrics.js';
 
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 const ajv = new Ajv({ useDefaults: true, strict: true });
@@ -217,6 +218,7 @@ export class GameServerService extends TakaroService<
     if (id) {
       const instance = await this.getGame(id);
       const reachability = await instance.testReachability();
+      gameServerLatency.set({ gameserver: id }, reachability.latency ?? 0);
 
       const currentServer = await this.findOne(id);
 
@@ -412,9 +414,9 @@ export class GameServerService extends TakaroService<
   }
 
   async sendMessage(gameServerId: string, message: string, opts: IMessageOptsDTO) {
-    // Limit message length to 150 characters
+    // Limit message length to 300 characters
     // Longer than this and gameservers start acting _weird_
-    message = message.substring(0, 150);
+    message = message.substring(0, 300);
 
     const gameInstance = await this.getGame(gameServerId);
     await gameInstance.sendMessage(message, opts);
@@ -474,10 +476,10 @@ export class GameServerService extends TakaroService<
     const gameInstance = await this.getGame(gameServerId);
     return gameInstance.listBans();
   }
-  async giveItem(gameServerId: string, playerId: string, item: string, amount: number) {
+  async giveItem(gameServerId: string, playerId: string, item: string, amount: number, quality: number) {
     const gameInstance = await this.getGame(gameServerId);
     const pog = await this.pogService.getPog(playerId, gameServerId);
-    return gameInstance.giveItem(pog, item, amount);
+    return gameInstance.giveItem(pog, item, amount, quality);
   }
 
   async getPlayers(gameServerId: string) {

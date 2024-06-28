@@ -133,15 +133,15 @@ export class UserRepo extends ITakaroRepo<UserModel, UserOutputDTO, UserCreateIn
     await roleOnPlayerModel.query().delete().where({ userId, roleId });
   }
 
-  async NOT_DOMAIN_SCOPED_resolveDomainByEmail(email: string): Promise<string> {
+  async NOT_DOMAIN_SCOPED_resolveDomainByIdpId(idpId: string): Promise<string[]> {
     const { model } = await this.getModel();
 
-    const data = await model.query().select('domain').where('email', email).first();
+    const data = await model.query().select('domain').where('idpId', idpId);
 
-    if (!data) {
-      throw new errors.NotFoundError(`User with email ${email} not found`);
+    if (!data || !data.length) {
+      throw new errors.NotFoundError(`User with ID ${idpId} not found`);
     }
 
-    return data.domain;
+    return data.map((item) => item.domain);
   }
 }
