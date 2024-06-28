@@ -4,7 +4,9 @@ import { SessionContext } from 'hooks/useSession';
 export const Route = createFileRoute('/_auth')({
   beforeLoad: async ({ context }) => {
     const session = await context.auth.getSession();
+    console.log('session:', session);
     if (!session) {
+      console.log('redirecting to login');
       const redirectPath = location.pathname === '/login' ? '/' : location.pathname;
       throw redirect({ to: '/login', search: { redirect: redirectPath } });
     }
