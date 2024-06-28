@@ -1,7 +1,7 @@
 import { PERMISSIONS } from '@takaro/apiclient';
 import { PermissionsGuard as Guard } from '@takaro/lib-components';
 import { RequiredPermissions } from '@takaro/lib-components';
-import { useAuth } from 'hooks/useAuth';
+import { useSession } from 'hooks/useSession';
 import { FC, PropsWithChildren, ReactElement, useMemo } from 'react';
 
 interface PermissionsGuardProps {
@@ -14,7 +14,7 @@ export const PermissionsGuard: FC<PropsWithChildren<PermissionsGuardProps>> = ({
   children,
   fallback,
 }) => {
-  const { session } = useAuth();
+  const { session } = useSession();
 
   const userPermissions = useMemo(() => {
     if (!session) {

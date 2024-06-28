@@ -53,7 +53,7 @@ const domainLinks: NavbarLink[] = [
   {
     label: 'Players',
     linkProps: {
-      to: '/players' as any,
+      to: '/players',
     },
     icon: <PlayersIcon />,
     requiredPermissions: [PERMISSIONS.ReadPlayers],
@@ -61,7 +61,7 @@ const domainLinks: NavbarLink[] = [
   {
     label: 'Users',
     linkProps: {
-      to: '/users' as any,
+      to: '/users',
     },
     icon: <UsersIcon />,
     requiredPermissions: [PERMISSIONS.ReadUsers],
@@ -112,8 +112,6 @@ export interface NavbarLink {
 export const renderLink = ({ linkProps, icon, label, requiredPermissions }: NavbarLink) => (
   <PermissionsGuard key={`guard-${linkProps.to}`} requiredPermissions={requiredPermissions || []}>
     <div key={`wrapper-${linkProps.to}`}>
-      {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment*/}
-      {/* @ts-ignore reusable link */}
       <Link to={linkProps.to} key={`link-${linkProps.to}`}>
         <span key={`inner-${linkProps.to}`}>
           {cloneElement(icon, { size: 20, key: `icon-${linkProps.to}` })}

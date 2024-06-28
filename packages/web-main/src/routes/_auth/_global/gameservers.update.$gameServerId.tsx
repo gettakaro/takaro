@@ -8,8 +8,9 @@ import { IFormInputs } from './-gameservers/validationSchema';
 import { hasPermission } from 'hooks/useHasPermission';
 
 export const Route = createFileRoute('/_auth/_global/gameservers/update/$gameServerId')({
-  beforeLoad: ({ context }) => {
-    if (!hasPermission(context.auth.session, ['MANAGE_GAMESERVERS'])) {
+  beforeLoad: async ({ context }) => {
+    const session = await context.auth.getSession();
+    if (!hasPermission(session, ['MANAGE_GAMESERVERS'])) {
       throw redirect({ to: '/forbidden' });
     }
   },

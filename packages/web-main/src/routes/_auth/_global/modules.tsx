@@ -20,8 +20,9 @@ const SubText = styled.p`
 `;
 
 export const Route = createFileRoute('/_auth/_global/modules')({
-  beforeLoad: ({ context }) => {
-    if (!hasPermission(context.auth.session, [PERMISSIONS.ReadModules])) {
+  beforeLoad: async ({ context }) => {
+    const session = await context.auth.getSession();
+    if (!hasPermission(session, [PERMISSIONS.ReadModules])) {
       throw redirect({ to: '/forbidden' });
     }
   },

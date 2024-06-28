@@ -7,8 +7,9 @@ import { useState } from 'react';
 import { CopyModuleForm } from 'components/CopyModuleForm';
 
 export const Route = createFileRoute('/_auth/_global/modules/$moduleId/copy')({
-  beforeLoad: ({ context }) => {
-    if (!hasPermission(context.auth.session, ['MANAGE_MODULES'])) {
+  beforeLoad: async ({ context }) => {
+    const session = await context.auth.getSession();
+    if (!hasPermission(session, ['MANAGE_MODULES'])) {
       throw redirect({ to: '/forbidden' });
     }
   },

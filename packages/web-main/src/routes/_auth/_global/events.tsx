@@ -143,7 +143,8 @@ type EventSearch = z.infer<typeof eventSearchSchema>;
 export const Route = createFileRoute('/_auth/_global/events')({
   validateSearch: eventSearchSchema,
   beforeLoad: async ({ context }) => {
-    if (!hasPermission(context.auth.session, ['READ_EVENTS', 'READ_GAMESERVERS', 'READ_PLAYERS', 'READ_USERS'])) {
+    const session = await context.auth.getSession();
+    if (!hasPermission(session, ['READ_EVENTS', 'READ_GAMESERVERS', 'READ_PLAYERS', 'READ_USERS'])) {
       throw redirect({ to: '/forbidden' });
     }
   },

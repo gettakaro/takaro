@@ -4,8 +4,9 @@ import { ErrorBoundary } from 'components/ErrorBoundary';
 import { hasPermission } from 'hooks/useHasPermission';
 
 export const Route = createFileRoute('/_auth/_global/settings')({
-  beforeLoad: ({ context }) => {
-    if (!hasPermission(context.auth.session, ['READ_SETTINGS'])) {
+  beforeLoad: async ({ context }) => {
+    const session = await context.auth.getSession();
+    if (!hasPermission(session, ['READ_SETTINGS'])) {
       throw redirect({ to: '/forbidden' });
     }
   },
