@@ -29,7 +29,7 @@ async function main() {
 
   const timeout = mod.userConfig.timeout;
 
-  if (timeout !== 0) {
+  if (timeout > 0) {
     const lastExecuted = await takaro.variable.variableControllerSearch({
       filters: {
         key: ['lastExecuted'],
