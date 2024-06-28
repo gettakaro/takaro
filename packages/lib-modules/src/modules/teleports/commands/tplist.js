@@ -3,22 +3,7 @@ import { takaro, data } from '@takaro/helpers';
 async function main() {
   const { pog, gameServerId, module: mod } = data;
 
-  const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data.value; 
-  
-  const ownedTeleports = (
-    await takaro.variable.variableControllerSearch({
-      filters: {
-        gameServerId: [gameServerId],
-        playerId: [pog.playerId],
-        moduleId: [mod.moduleId],
-      },
-      search: {
-        key: 'tp',
-      },
-      sortBy: 'key',
-      sortDirection: 'asc',
-    })
-  ).data.data;
+  const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data.value;
 
   const maybePublicTeleports = (
     await takaro.variable.variableControllerSearch({
@@ -38,7 +23,7 @@ async function main() {
     const teleport = JSON.parse(tele.value);
 
     const isPublic = teleport.public && teleport.playerId !== pog.playerId;
-    const isOwned = ownedTeleports.find((t) => t.playerId === pog.playerId);
+    const isOwned = tele.playerId === pog.playerId;
 
     return isPublic || isOwned;
   });
