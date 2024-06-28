@@ -85,7 +85,24 @@ const tests = [
     setup: SetupGameServerPlayers.setup,
     test: async function () {
       const userEmail = `test_${faker.internet.email()}`;
-      await triggerLinkAndCheck(this.client, this.client, this.setupData, userEmail);
+
+      const chatEventWaiter = this.setupData.eventsAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
+      await this.client.command.commandControllerTrigger(this.setupData.gameServer1.id, {
+        msg: '/link',
+        playerId: this.setupData.pogs1[0].playerId,
+      });
+
+      const chatEvents = await chatEventWaiter;
+      expect(chatEvents).to.have.length(1);
+
+      const unAuthedClient = new Client({ url: integrationConfig.get('host'), auth: {} });
+
+      await unAuthedClient.user.userControllerLinkPlayerProfile({
+        email: userEmail,
+        code: chatEvents[0].data.msg.match(/code=(\w+-\w+-\w+)/)[1],
+      });
+
+      await checkIfInviteLinkReceived(userEmail);
     },
   }),
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
@@ -104,7 +121,7 @@ const tests = [
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
     snapshot: false,
-    name: 'Link with invalid code',
+    name: 'Error path: Link with invalid code',
     setup: SetupGameServerPlayers.setup,
     test: async function () {
       const userEmail = `test_${faker.internet.email()}`;
@@ -132,9 +149,74 @@ const tests = [
       }
     },
   }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Error path: fill in the email of userA when logged in as userB',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      const userA = await createUser(this.client);
+      const userB = await createUser(this.client);
+      const userBClient = await getClient(userB.user.email, userB.password);
+
+      const chatEventWaiter = this.setupData.eventsAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
+      await this.client.command.commandControllerTrigger(this.setupData.gameServer1.id, {
+        msg: '/link',
+        playerId: this.setupData.pogs1[0].playerId,
+      });
+
+      const chatEvents = await chatEventWaiter;
+      expect(chatEvents).to.have.length(1);
+
+      try {
+        await userBClient.user.userControllerLinkPlayerProfile({
+          email: userA.user.email,
+          code: chatEvents[0].data.msg.match(/code=(\w+-\w+-\w+)/)[1],
+        });
+        throw new Error('Should not be able to link with existing email');
+      } catch (error) {
+        if (!isAxiosError(error)) throw error;
+        expect(error.response?.data.meta.error.code).to.be.equal('BadRequestError');
+        expect(error.response?.data.meta.error.message).to.be.equal(
+          'Email already in use, please login with the correct user first'
+        );
+      }
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Error path: fill in email of userA when not logged in',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      const userA = await createUser(this.client);
+
+      const chatEventWaiter = this.setupData.eventsAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
+      await this.client.command.commandControllerTrigger(this.setupData.gameServer1.id, {
+        msg: '/link',
+        playerId: this.setupData.pogs1[0].playerId,
+      });
+
+      const chatEvents = await chatEventWaiter;
+      expect(chatEvents).to.have.length(1);
+
+      const unAuthedClient = new Client({ url: integrationConfig.get('host'), auth: {} });
+
+      try {
+        await unAuthedClient.user.userControllerLinkPlayerProfile({
+          email: userA.user.email,
+          code: chatEvents[0].data.msg.match(/code=(\w+-\w+-\w+)/)[1],
+        });
+        throw new Error('Should not be able to link with existing email');
+      } catch (error) {
+        if (!isAxiosError(error)) throw error;
+        expect(error.response?.data.meta.error.code).to.be.equal('BadRequestError');
+        expect(error.response?.data.meta.error.message).to.be.equal('Email already in use, please login first');
+      }
+    },
+  }),
 
   // TODO: Link 2 players to 2 different domains
-  // TODO: attack vector: fill in somebody elses existing email
 ];
 
 describe(group, function () {

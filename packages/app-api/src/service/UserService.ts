@@ -212,9 +212,14 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
 
     if (existingIdpProfile && loggedInUser) {
       if (existingIdpProfile.id !== loggedInUser.id) {
-        this.log.warn('Email already in use', { email });
-        throw new errors.BadRequestError('Email already in use');
+        this.log.warn('Tried to link with a different user than what is authed now', { email });
+        throw new errors.BadRequestError('Email already in use, please login with the correct user first');
       }
+    }
+
+    if (!loggedInUser && existingIdpProfile) {
+      this.log.warn('Tried to link an existing user but not logged in', { email });
+      throw new errors.BadRequestError('Email already in use, please login first');
     }
 
     // WE drop the un-domain-scope here and create a new service with the resolved domainId
