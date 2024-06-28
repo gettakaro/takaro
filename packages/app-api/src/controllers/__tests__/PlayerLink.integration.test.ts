@@ -29,7 +29,12 @@ async function checkIfInviteLinkReceived(userEmail: string) {
   expect(inviteLinkMatch).to.have.length(2);
 }
 
-async function triggerLinkAndCheck(client: Client, setupData: SetupGameServerPlayers.ISetupData, email: string) {
+async function triggerLinkAndCheck(
+  client: Client,
+  userClient: Client,
+  setupData: SetupGameServerPlayers.ISetupData,
+  email: string
+) {
   const chatEventWaiter = setupData.eventsAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
   await client.command.commandControllerTrigger(setupData.gameServer1.id, {
     msg: '/link',
@@ -38,7 +43,7 @@ async function triggerLinkAndCheck(client: Client, setupData: SetupGameServerPla
   const chatEvents = await chatEventWaiter;
   expect(chatEvents).to.have.length(1);
   const code = chatEvents[0].data.msg.match(/code=(\w+-\w+-\w+)/)[1];
-  await client.user.userControllerLinkPlayerProfile({ email, code });
+  await userClient.user.userControllerLinkPlayerProfile({ email, code });
   await checkIfInviteLinkReceived(email);
 }
 
@@ -80,7 +85,7 @@ const tests = [
     setup: SetupGameServerPlayers.setup,
     test: async function () {
       const userEmail = `test_${faker.internet.email()}`;
-      await triggerLinkAndCheck(this.client, this.setupData, userEmail);
+      await triggerLinkAndCheck(this.client, this.client, this.setupData, userEmail);
     },
   }),
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
@@ -90,8 +95,8 @@ const tests = [
     setup: SetupGameServerPlayers.setup,
     test: async function () {
       const existingUser = await createUser(this.client);
-      await triggerLinkAndCheck(this.client, this.setupData, existingUser.user.email);
       const userClient = await getClient(existingUser.user.email, existingUser.password);
+      await triggerLinkAndCheck(this.client, userClient, this.setupData, existingUser.user.email);
       await checkRoleAndPermissions(this.client, userClient, existingUser.user.id);
     },
   }),

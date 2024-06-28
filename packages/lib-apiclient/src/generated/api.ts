@@ -4308,25 +4308,6 @@ export interface KickPlayerInputDTO {
 /**
  *
  * @export
- * @interface LinkPlayerAuthedInputDTO
- */
-export interface LinkPlayerAuthedInputDTO {
-  /**
-   *
-   * @type {string}
-   * @memberof LinkPlayerAuthedInputDTO
-   */
-  playerId: string;
-  /**
-   *
-   * @type {string}
-   * @memberof LinkPlayerAuthedInputDTO
-   */
-  email: string;
-}
-/**
- *
- * @export
  * @interface LinkPlayerUnauthedInputDTO
  */
 export interface LinkPlayerUnauthedInputDTO {
@@ -19719,47 +19700,6 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
       };
     },
     /**
-     * Link your player profile to Takaro. This endpoint is for high privileged users only. If you are a regular user, use the /link command in the game. Required permissions: `MANAGE_PLAYERS`, `MANAGE_USERS`
-     * @summary Link player profile (authed)
-     * @param {LinkPlayerAuthedInputDTO} [linkPlayerAuthedInputDTO] LinkPlayerAuthedInputDTO
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    userControllerLinkPlayerProfileAuthed: async (
-      linkPlayerAuthedInputDTO?: LinkPlayerAuthedInputDTO,
-      options: RawAxiosRequestConfig = {}
-    ): Promise<RequestArgs> => {
-      const localVarPath = `/user/player/authed`;
-      // use dummy base URL string because the URL constructor only accepts absolute URLs.
-      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-      let baseOptions;
-      if (configuration) {
-        baseOptions = configuration.baseOptions;
-      }
-
-      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
-      const localVarHeaderParameter = {} as any;
-      const localVarQueryParameter = {} as any;
-
-      // authentication domainAuth required
-
-      localVarHeaderParameter['Content-Type'] = 'application/json';
-
-      setSearchParams(localVarUrlObj, localVarQueryParameter);
-      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
-      localVarRequestOptions.data = serializeDataIfNeeded(
-        linkPlayerAuthedInputDTO,
-        localVarRequestOptions,
-        configuration
-      );
-
-      return {
-        url: toPathString(localVarUrlObj),
-        options: localVarRequestOptions,
-      };
-    },
-    /**
      *
      * @summary Login
      * @param {LoginDTO} [loginDTO] LoginDTO
@@ -20198,31 +20138,6 @@ export const UserApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     * Link your player profile to Takaro. This endpoint is for high privileged users only. If you are a regular user, use the /link command in the game. Required permissions: `MANAGE_PLAYERS`, `MANAGE_USERS`
-     * @summary Link player profile (authed)
-     * @param {LinkPlayerAuthedInputDTO} [linkPlayerAuthedInputDTO] LinkPlayerAuthedInputDTO
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    async userControllerLinkPlayerProfileAuthed(
-      linkPlayerAuthedInputDTO?: LinkPlayerAuthedInputDTO,
-      options?: RawAxiosRequestConfig
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.userControllerLinkPlayerProfileAuthed(
-        linkPlayerAuthedInputDTO,
-        options
-      );
-      const index = configuration?.serverIndex ?? 0;
-      const operationBasePath = operationServerMap['UserApi.userControllerLinkPlayerProfileAuthed']?.[index]?.url;
-      return (axios, basePath) =>
-        createRequestFunction(
-          localVarAxiosArgs,
-          globalAxios,
-          BASE_PATH,
-          configuration
-        )(axios, operationBasePath || basePath);
-    },
-    /**
      *
      * @summary Login
      * @param {LoginDTO} [loginDTO] LoginDTO
@@ -20482,21 +20397,6 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
         .then((request) => request(axios, basePath));
     },
     /**
-     * Link your player profile to Takaro. This endpoint is for high privileged users only. If you are a regular user, use the /link command in the game. Required permissions: `MANAGE_PLAYERS`, `MANAGE_USERS`
-     * @summary Link player profile (authed)
-     * @param {LinkPlayerAuthedInputDTO} [linkPlayerAuthedInputDTO] LinkPlayerAuthedInputDTO
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     */
-    userControllerLinkPlayerProfileAuthed(
-      linkPlayerAuthedInputDTO?: LinkPlayerAuthedInputDTO,
-      options?: any
-    ): AxiosPromise<void> {
-      return localVarFp
-        .userControllerLinkPlayerProfileAuthed(linkPlayerAuthedInputDTO, options)
-        .then((request) => request(axios, basePath));
-    },
-    /**
      *
      * @summary Login
      * @param {LoginDTO} [loginDTO] LoginDTO
@@ -20676,23 +20576,6 @@ export class UserApi extends BaseAPI {
   ) {
     return UserApiFp(this.configuration)
       .userControllerLinkPlayerProfile(linkPlayerUnauthedInputDTO, options)
-      .then((request) => request(this.axios, this.basePath));
-  }
-
-  /**
-   * Link your player profile to Takaro. This endpoint is for high privileged users only. If you are a regular user, use the /link command in the game. Required permissions: `MANAGE_PLAYERS`, `MANAGE_USERS`
-   * @summary Link player profile (authed)
-   * @param {LinkPlayerAuthedInputDTO} [linkPlayerAuthedInputDTO] LinkPlayerAuthedInputDTO
-   * @param {*} [options] Override http request option.
-   * @throws {RequiredError}
-   * @memberof UserApi
-   */
-  public userControllerLinkPlayerProfileAuthed(
-    linkPlayerAuthedInputDTO?: LinkPlayerAuthedInputDTO,
-    options?: RawAxiosRequestConfig
-  ) {
-    return UserApiFp(this.configuration)
-      .userControllerLinkPlayerProfileAuthed(linkPlayerAuthedInputDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

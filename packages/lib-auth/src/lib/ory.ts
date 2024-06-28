@@ -86,6 +86,9 @@ class Ory {
 
   async getIdentityByEmail(email: string): Promise<ITakaroIdentity | null> {
     const identity = await this.identityClient.listIdentities({ credentialsIdentifier: email });
+
+    if (!identity.data.length) return null;
+
     return {
       id: identity.data[0].id,
       email: identity.data[0].traits.email,

@@ -10,6 +10,7 @@ import { Type } from 'class-transformer';
 import { ory } from '@takaro/auth';
 import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
 import { TakaroEventRoleAssigned, TakaroEventRoleRemoved } from '@takaro/modules';
+import { AuthenticatedRequest } from './AuthService.js';
 
 export class UserOutputDTO extends TakaroModelDTO<UserOutputDTO> {
   @IsString()
@@ -187,7 +188,11 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
     return user;
   }
 
-  async NOT_DOMAIN_SCOPED_linkPlayerProfile(email: string, code: string): Promise<UserOutputDTO> {
+  async NOT_DOMAIN_SCOPED_linkPlayerProfile(
+    req: AuthenticatedRequest,
+    email: string,
+    code: string
+  ): Promise<UserOutputDTO> {
     const redis = await Redis.getClient('playerLink');
     const resolvedPlayerId = await redis.get(code);
     const resolvedDomainId = await redis.get(`${code}-domain`);
@@ -202,6 +207,16 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
       throw new errors.ForbiddenError();
     }
 
+    const existingIdpProfile = await ory.getIdentityByEmail(email);
+    const loggedInUser = await ory.getIdentityFromReq(req);
+
+    if (existingIdpProfile && loggedInUser) {
+      if (existingIdpProfile.id !== loggedInUser.id) {
+        this.log.warn('Email already in use', { email });
+        throw new errors.BadRequestError('Email already in use');
+      }
+    }
+
     // WE drop the un-domain-scope here and create a new service with the resolved domainId
     const userService = new UserService(resolvedDomainId);
 
@@ -211,12 +226,6 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
 
     await redis.del(code);
 
-    return user;
-  }
-
-  async linkPlayerProfileAuthed(email: string, playerId: string): Promise<UserOutputDTO> {
-    const user = await this.inviteUser(email);
-    await this.repo.linkPlayer(user.id, playerId);
     return user;
   }
 }
