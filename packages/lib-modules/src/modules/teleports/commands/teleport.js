@@ -23,7 +23,7 @@ async function main() {
     teleports = teleports.concat(publicTeleports);
   }
 
-  if (teleports.length === 0) {
+  if (teleports.length > 0) {
     throw new TakaroUserError(`Teleport ${args.tp} does not exist.`);
   }
 
