@@ -5,8 +5,9 @@ import { createFileRoute, redirect } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
 
 export const Route = createFileRoute('/_auth/_global/modules/$moduleId/view')({
-  beforeLoad: ({ context }) => {
-    if (!hasPermission(context.auth.session, ['READ_MODULES'])) {
+  beforeLoad: async ({ context }) => {
+    const session = await context.auth.getSession();
+    if (!hasPermission(session, ['READ_MODULES'])) {
       throw redirect({ to: '/forbidden' });
     }
   },

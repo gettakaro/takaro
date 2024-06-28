@@ -56,9 +56,9 @@ const Name = styled.div`
 `;
 
 export const UserDropdown = () => {
-  const { session } = useAuth();
   const { logOut } = useAuth();
   const navigate = useNavigate();
+  const { data, isPending } = useQuery(userMeQueryOptions());
 
   const { data, isPending } = useQuery(userMeQueryOptions());
 
@@ -67,7 +67,9 @@ export const UserDropdown = () => {
   // TODO: this should be a fallback component, to stil try to logout.
   if (session === null) return <div>could not get session</div>;
 
-  const { name, email } = session;
+  if (!data) return <div>could not get user information</div>;
+
+  const { name, email } = data.user;
   return (
     <Dropdown placement="top">
       <Dropdown.Trigger asChild>

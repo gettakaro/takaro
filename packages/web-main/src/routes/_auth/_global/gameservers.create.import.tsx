@@ -14,8 +14,9 @@ export interface IFormInputs {
 }
 
 export const Route = createFileRoute('/_auth/_global/gameservers/create/import')({
-  beforeLoad: ({ context }) => {
-    if (!hasPermission(context.auth.session, ['MANAGE_GAMESERVERS'])) {
+  beforeLoad: async ({ context }) => {
+    const session = await context.auth.getSession();
+    if (!hasPermission(session, ['MANAGE_GAMESERVERS'])) {
       throw redirect({ to: '/forbidden' });
     }
   },

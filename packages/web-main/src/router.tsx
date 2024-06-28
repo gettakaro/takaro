@@ -2,8 +2,9 @@ import { queryClient } from './queryClient';
 import { routeTree } from './routeTree.gen';
 import { createRouter } from '@tanstack/react-router';
 import { QueryClient } from '@tanstack/react-query';
-import { IAuthContext } from 'hooks/useAuth';
 import { DefaultErrorComponent } from 'components/ErrorComponent';
+import { IAuthContext } from 'hooks/useAuth';
+import { UserOutputWithRolesDTO } from '@takaro/apiclient';
 
 export interface RouterContext {
   queryClient: QueryClient;
@@ -14,10 +15,9 @@ export const router = createRouter({
   routeTree,
   context: {
     auth: {
-      isAuthenticated: false,
       logOut: async () => {},
-      session: undefined!,
       login: () => {},
+      getSession: async () => ({} as Promise<UserOutputWithRolesDTO>),
     },
     queryClient: queryClient,
   },

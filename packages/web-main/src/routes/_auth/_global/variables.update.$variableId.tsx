@@ -9,8 +9,9 @@ import { hasPermission } from 'hooks/useHasPermission';
 import { useEffect } from 'react';
 
 export const Route = createFileRoute('/_auth/_global/variables/update/$variableId')({
-  beforeLoad: ({ context }) => {
-    if (!hasPermission(context.auth.session, ['READ_VARIABLES', 'MANAGE_VARIABLES'])) {
+  beforeLoad: async ({ context }) => {
+    const session = await context.auth.getSession();
+    if (!hasPermission(session, ['READ_VARIABLES', 'MANAGE_VARIABLES'])) {
       throw redirect({ to: '/forbidden' });
     }
   },

@@ -4,17 +4,14 @@ import { createFileRoute, redirect } from '@tanstack/react-router';
 import { getUserPermissions, hasPermission } from 'hooks/useHasPermission';
 
 export const Route = createFileRoute('/_auth/_global/')({
-  beforeLoad: ({ context, location }) => {
-    if (context.auth.isAuthenticated === false) {
-      throw redirect({ to: '/login', search: { redirect: location.pathname } });
-    }
-
-    if (hasPermission(context.auth.session, [PERMISSIONS.ReadEvents])) {
+  beforeLoad: async ({ context }) => {
+    const session = await context.auth.getSession();
+    if (hasPermission(session, [PERMISSIONS.ReadEvents])) {
       throw redirect({ to: '/dashboard' });
     }
 
     /* if user has no permissions at all, so can't see any page, redirect to forbidden */
-    if (getUserPermissions(context.auth.session).length === 0) {
+    if (getUserPermissions(session).length === 0) {
       throw redirect({ to: '/forbidden' });
     }
   },

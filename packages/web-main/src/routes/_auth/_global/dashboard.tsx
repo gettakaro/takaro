@@ -13,7 +13,8 @@ import { PlayersOnlineStatsQueryOptions, ActivityStatsQueryOptions } from 'queri
 
 export const Route = createFileRoute('/_auth/_global/dashboard')({
   beforeLoad: async ({ context }) => {
-    if (!hasPermission(context.auth.session, ['READ_EVENTS'])) {
+    const session = await context.auth.getSession();
+    if (!hasPermission(session, ['READ_EVENTS'])) {
       throw redirect({ to: '/forbidden' });
     }
   },
