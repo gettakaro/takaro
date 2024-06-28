@@ -36,8 +36,9 @@ const roleAssignValidationSchema = z.object({
 type IFormInputs = z.infer<typeof roleAssignValidationSchema>;
 
 export const Route = createFileRoute('/_auth/_global/user/$userId/role/assign')({
-  beforeLoad: ({ context }) => {
-    if (!hasPermission(context.auth.session, ['READ_ROLES', 'MANAGE_ROLES', 'READ_USERS', 'MANAGE_USERS'])) {
+  beforeLoad: async ({ context }) => {
+    const session = await context.auth.getSession();
+    if (!hasPermission(session, ['READ_ROLES', 'MANAGE_ROLES', 'READ_USERS', 'MANAGE_USERS'])) {
       throw redirect({ to: '/forbidden' });
     }
   },

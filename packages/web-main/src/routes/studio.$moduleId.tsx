@@ -9,6 +9,7 @@ import { StudioInner } from './-studio/StudioInner';
 import { hasPermission } from 'hooks/useHasPermission';
 import { FileMap, FileType, StudioProvider } from './-studio/useStudioStore';
 import { z } from 'zod';
+import { getApiClient } from 'util/getApiClient';
 
 const Flex = styled.div`
   display: flex;
@@ -27,12 +28,13 @@ const LoadingContainer = styled.div`
 `;
 
 export const Route = createFileRoute('/studio/$moduleId')({
-  beforeLoad: ({ context, location }) => {
-    if (context.auth.isAuthenticated === false) {
-      throw redirect({ to: '/login', search: { redirect: location.pathname } });
-    }
-
-    if (!hasPermission(context.auth.session, ['MANAGE_MODULES'])) {
+  beforeLoad: async ({}) => {
+    try {
+      const me = (await getApiClient().user.userControllerMe()).data.data;
+      if (!hasPermission(me.user, ['MANAGE_MODULES'])) {
+        throw redirect({ to: '/forbidden' });
+      }
+    } catch {
       throw redirect({ to: '/forbidden' });
     }
   },

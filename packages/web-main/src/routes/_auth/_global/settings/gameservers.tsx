@@ -11,8 +11,9 @@ import { hasPermission, useHasPermission } from 'hooks/useHasPermission';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/_auth/_global/settings/gameservers')({
-  beforeLoad: ({ context }) => {
-    if (!hasPermission(context.auth.session, ['READ_SETTINGS'])) {
+  beforeLoad: async ({ context }) => {
+    const session = await context.auth.getSession();
+    if (!hasPermission(session, ['READ_SETTINGS'])) {
       throw redirect({ to: '/forbidden' });
     }
   },

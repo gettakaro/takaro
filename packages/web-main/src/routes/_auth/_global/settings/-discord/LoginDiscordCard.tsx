@@ -1,8 +1,8 @@
 import { FC } from 'react';
-import { useAuth } from 'hooks/useAuth';
 import { Card, Button, styled, useTheme } from '@takaro/lib-components';
 import { FaDiscord as DiscordIcon } from 'react-icons/fa';
 import { getConfigVar } from 'util/getConfigVar';
+import { useSession } from 'hooks/useSession';
 
 const Body = styled.div`
   display: flex;
@@ -12,10 +12,10 @@ const Body = styled.div`
 `;
 
 export const LoginDiscordCard: FC = () => {
-  const { session } = useAuth();
+  const { session } = useSession();
   const { colors } = useTheme();
-  const hasLinkedDiscord = !!session?.discordId;
 
+  const hasLinkedDiscord = !!session.discordId;
   return (
     <Card>
       <Body>

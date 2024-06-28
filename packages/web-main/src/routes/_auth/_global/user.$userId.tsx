@@ -10,8 +10,9 @@ import { hasPermission } from 'hooks/useHasPermission';
 import { useQuery } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/_global/user/$userId')({
-  beforeLoad: ({ context }) => {
-    if (!hasPermission(context.auth.session, ['READ_USERS'])) {
+  beforeLoad: async ({ context }) => {
+    const session = await context.auth.getSession();
+    if (!hasPermission(session, ['READ_USERS'])) {
       throw redirect({ to: '/forbidden' });
     }
   },

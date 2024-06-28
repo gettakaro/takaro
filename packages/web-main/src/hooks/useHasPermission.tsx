@@ -2,10 +2,10 @@ import { useMemo } from 'react';
 import { RequiredPermissions } from '@takaro/lib-components';
 import { hasPermissionHelper } from '@takaro/lib-components/src/components/other/PermissionsGuard';
 import { PERMISSIONS, UserOutputWithRolesDTO } from '@takaro/apiclient';
-import { useAuth } from 'hooks/useAuth';
+import { useSession } from './useSession';
 
 export const useHasPermission = (requiredPermissions: RequiredPermissions) => {
-  const { session } = useAuth();
+  const { session } = useSession();
 
   const userPermissions = useMemo(() => {
     if (!session) {

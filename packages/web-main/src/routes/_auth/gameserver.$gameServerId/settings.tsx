@@ -15,8 +15,9 @@ import { createFileRoute, redirect } from '@tanstack/react-router';
 import { useQueries } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/settings')({
-  beforeLoad: ({ context }) => {
-    if (!hasPermission(context.auth.session, [PERMISSIONS.ReadSettings])) {
+  beforeLoad: async ({ context }) => {
+    const session = await context.auth.getSession();
+    if (!hasPermission(session, [PERMISSIONS.ReadSettings])) {
       throw redirect({ to: '/forbidden' });
     }
   },

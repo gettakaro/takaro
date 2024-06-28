@@ -6,8 +6,9 @@ import { hasPermission } from 'hooks/useHasPermission';
 import { PERMISSIONS } from '@takaro/apiclient';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/modules/$moduleId/install/view')({
-  beforeLoad: ({ context }) => {
-    if (!hasPermission(context.auth.session, [PERMISSIONS.ReadModules])) {
+  beforeLoad: async ({ context }) => {
+    const session = await context.auth.getSession();
+    if (!hasPermission(session, [PERMISSIONS.ReadModules])) {
       throw redirect({ to: '/forbidden' });
     }
   },
