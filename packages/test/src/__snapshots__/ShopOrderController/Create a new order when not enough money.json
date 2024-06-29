@@ -1,0 +1,23 @@
+{
+  "body": {
+    "meta": {
+      "error": {
+        "code": "BadRequestError",
+        "message": "Not enough currency"
+      }
+    },
+    "data": {}
+  },
+  "status": 400,
+  "test": {
+    "group": "ShopOrderController",
+    "snapshot": true,
+    "name": "Create a new order when not enough money",
+    "filteredFields": [
+      "listingId",
+      "userId"
+    ],
+    "expectedStatus": 400,
+    "standardEnvironment": true
+  }
+}
