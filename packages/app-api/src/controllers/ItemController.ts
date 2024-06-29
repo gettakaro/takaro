@@ -2,10 +2,10 @@ import { Type } from 'class-transformer';
 import { ValidateNested, IsOptional, IsString, IsUUID } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
-import { ItemCreateDTO, ItemsOutputDTO, ItemsService, ItemUpdateDTO } from '../service/ItemsService.js';
-import { Body, Delete, Get, JsonController, Params, Post, Put, Req, Res, UseBefore } from 'routing-controllers';
+import { ItemsOutputDTO, ItemsService } from '../service/ItemsService.js';
+import { Body, Get, JsonController, Params, Post, Req, Res, UseBefore } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
-import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
+import { ParamId } from '../lib/validators.js';
 import { AuthService, AuthenticatedRequest } from '../service/AuthService.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
@@ -79,32 +79,5 @@ export class ItemController {
     const service = new ItemsService(req.domainId);
     const Item = await service.findOne(params.id);
     return apiResponse(Item);
-  }
-
-  @Put('/items/:id')
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_ITEMS]))
-  @ResponseSchema(ItemOutputDTOAPI)
-  async update(@Req() req: AuthenticatedRequest, @Params() params: ParamId, @Body() body: ItemUpdateDTO) {
-    const service = new ItemsService(req.domainId);
-    const Item = await service.update(params.id, body);
-    return apiResponse(Item);
-  }
-
-  @Post('/items')
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_ITEMS]))
-  @ResponseSchema(ItemOutputDTOAPI)
-  async create(@Req() req: AuthenticatedRequest, @Body() body: ItemCreateDTO) {
-    const service = new ItemsService(req.domainId);
-    const Item = await service.create(body);
-    return apiResponse(Item);
-  }
-
-  @Delete('/items/:id')
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_ITEMS]))
-  @ResponseSchema(IdUuidDTOAPI)
-  async delete(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
-    const service = new ItemsService(req.domainId);
-    await service.delete(params.id);
-    return apiResponse(new IdUuidDTO({ id: params.id }));
   }
 }
