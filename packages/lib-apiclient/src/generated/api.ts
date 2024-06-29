@@ -1527,6 +1527,11 @@ export const EventCreateDTOEventNameEnum = {
     ModuleInstalled: 'module-installed',
     ModuleUninstalled: 'module-uninstalled',
     PlayerCreated: 'player-created',
+    ShopListingCreated: 'shop-listing-created',
+    ShopListingUpdated: 'shop-listing-updated',
+    ShopListingDeleted: 'shop-listing-deleted',
+    ShopOrderCreated: 'shop-order-created',
+    ShopOrderStatusChanged: 'shop-order-status-changed',
     PlayerConnected: 'player-connected',
     PlayerDisconnected: 'player-disconnected',
     ChatMessage: 'chat-message',
@@ -1773,6 +1778,11 @@ export const EventOutputDTOEventNameEnum = {
     ModuleInstalled: 'module-installed',
     ModuleUninstalled: 'module-uninstalled',
     PlayerCreated: 'player-created',
+    ShopListingCreated: 'shop-listing-created',
+    ShopListingUpdated: 'shop-listing-updated',
+    ShopListingDeleted: 'shop-listing-deleted',
+    ShopOrderCreated: 'shop-order-created',
+    ShopOrderStatusChanged: 'shop-order-status-changed',
     PlayerConnected: 'player-connected',
     PlayerDisconnected: 'player-disconnected',
     ChatMessage: 'chat-message',
@@ -1786,7 +1796,7 @@ export type EventOutputDTOEventNameEnum = typeof EventOutputDTOEventNameEnum[key
  * @type EventOutputDTOMeta
  * @export
  */
-export type EventOutputDTOMeta = EventChatMessage | EventEntityKilled | EventLogLine | EventPlayerConnected | EventPlayerDeath | EventPlayerDisconnected | HookEventDiscordMessage | TakaroEventCommandExecuted | TakaroEventCronjobExecuted | TakaroEventCurrencyAdded | TakaroEventCurrencyDeducted | TakaroEventHookExecuted | TakaroEventModuleCreated | TakaroEventModuleDeleted | TakaroEventModuleInstalled | TakaroEventModuleUninstalled | TakaroEventModuleUpdated | TakaroEventPlayerCreated | TakaroEventPlayerNewIpDetected | TakaroEventRoleAssigned | TakaroEventRoleCreated | TakaroEventRoleDeleted | TakaroEventRoleRemoved | TakaroEventRoleUpdated | TakaroEventServerStatusChanged | TakaroEventSettingsSet;
+export type EventOutputDTOMeta = EventChatMessage | EventEntityKilled | EventLogLine | EventPlayerConnected | EventPlayerDeath | EventPlayerDisconnected | HookEventDiscordMessage | TakaroEventCommandExecuted | TakaroEventCronjobExecuted | TakaroEventCurrencyAdded | TakaroEventCurrencyDeducted | TakaroEventHookExecuted | TakaroEventModuleCreated | TakaroEventModuleDeleted | TakaroEventModuleInstalled | TakaroEventModuleUninstalled | TakaroEventModuleUpdated | TakaroEventPlayerCreated | TakaroEventPlayerNewIpDetected | TakaroEventRoleAssigned | TakaroEventRoleCreated | TakaroEventRoleDeleted | TakaroEventRoleRemoved | TakaroEventRoleUpdated | TakaroEventServerStatusChanged | TakaroEventSettingsSet | TakaroEventShopListingCreated | TakaroEventShopListingDeleted | TakaroEventShopListingUpdated | TakaroEventShopOrderCreated | TakaroEventShopOrderStatusChanged;
 
 /**
  * 
@@ -1933,6 +1943,11 @@ export const EventSearchInputAllowedFiltersEventNameEnum = {
     ModuleInstalled: 'module-installed',
     ModuleUninstalled: 'module-uninstalled',
     PlayerCreated: 'player-created',
+    ShopListingCreated: 'shop-listing-created',
+    ShopListingUpdated: 'shop-listing-updated',
+    ShopListingDeleted: 'shop-listing-deleted',
+    ShopOrderCreated: 'shop-order-created',
+    ShopOrderStatusChanged: 'shop-order-status-changed',
     PlayerConnected: 'player-connected',
     PlayerDisconnected: 'player-disconnected',
     ChatMessage: 'chat-message',
@@ -2980,7 +2995,12 @@ export const HookCreateDTOEventTypeEnum = {
     ModuleDeleted: 'module-deleted',
     ModuleInstalled: 'module-installed',
     ModuleUninstalled: 'module-uninstalled',
-    PlayerCreated: 'player-created'
+    PlayerCreated: 'player-created',
+    ShopListingCreated: 'shop-listing-created',
+    ShopListingUpdated: 'shop-listing-updated',
+    ShopListingDeleted: 'shop-listing-deleted',
+    ShopOrderCreated: 'shop-order-created',
+    ShopOrderStatusChanged: 'shop-order-status-changed'
 } as const;
 
 export type HookCreateDTOEventTypeEnum = typeof HookCreateDTOEventTypeEnum[keyof typeof HookCreateDTOEventTypeEnum];
@@ -3117,7 +3137,12 @@ export const HookOutputDTOEventTypeEnum = {
     ModuleDeleted: 'module-deleted',
     ModuleInstalled: 'module-installed',
     ModuleUninstalled: 'module-uninstalled',
-    PlayerCreated: 'player-created'
+    PlayerCreated: 'player-created',
+    ShopListingCreated: 'shop-listing-created',
+    ShopListingUpdated: 'shop-listing-updated',
+    ShopListingDeleted: 'shop-listing-deleted',
+    ShopOrderCreated: 'shop-order-created',
+    ShopOrderStatusChanged: 'shop-order-status-changed'
 } as const;
 
 export type HookOutputDTOEventTypeEnum = typeof HookOutputDTOEventTypeEnum[keyof typeof HookOutputDTOEventTypeEnum];
@@ -3199,7 +3224,12 @@ export const HookSearchInputAllowedFiltersEventTypeEnum = {
     ModuleDeleted: 'module-deleted',
     ModuleInstalled: 'module-installed',
     ModuleUninstalled: 'module-uninstalled',
-    PlayerCreated: 'player-created'
+    PlayerCreated: 'player-created',
+    ShopListingCreated: 'shop-listing-created',
+    ShopListingUpdated: 'shop-listing-updated',
+    ShopListingDeleted: 'shop-listing-deleted',
+    ShopOrderCreated: 'shop-order-created',
+    ShopOrderStatusChanged: 'shop-order-status-changed'
 } as const;
 
 export type HookSearchInputAllowedFiltersEventTypeEnum = typeof HookSearchInputAllowedFiltersEventTypeEnum[keyof typeof HookSearchInputAllowedFiltersEventTypeEnum];
@@ -3337,7 +3367,12 @@ export const HookTriggerDTOEventTypeEnum = {
     ModuleDeleted: 'module-deleted',
     ModuleInstalled: 'module-installed',
     ModuleUninstalled: 'module-uninstalled',
-    PlayerCreated: 'player-created'
+    PlayerCreated: 'player-created',
+    ShopListingCreated: 'shop-listing-created',
+    ShopListingUpdated: 'shop-listing-updated',
+    ShopListingDeleted: 'shop-listing-deleted',
+    ShopOrderCreated: 'shop-order-created',
+    ShopOrderStatusChanged: 'shop-order-status-changed'
 } as const;
 
 export type HookTriggerDTOEventTypeEnum = typeof HookTriggerDTOEventTypeEnum[keyof typeof HookTriggerDTOEventTypeEnum];
@@ -3406,7 +3441,12 @@ export const HookUpdateDTOEventTypeEnum = {
     ModuleDeleted: 'module-deleted',
     ModuleInstalled: 'module-installed',
     ModuleUninstalled: 'module-uninstalled',
-    PlayerCreated: 'player-created'
+    PlayerCreated: 'player-created',
+    ShopListingCreated: 'shop-listing-created',
+    ShopListingUpdated: 'shop-listing-updated',
+    ShopListingDeleted: 'shop-listing-deleted',
+    ShopOrderCreated: 'shop-order-created',
+    ShopOrderStatusChanged: 'shop-order-status-changed'
 } as const;
 
 export type HookUpdateDTOEventTypeEnum = typeof HookUpdateDTOEventTypeEnum[keyof typeof HookUpdateDTOEventTypeEnum];
@@ -3636,7 +3676,12 @@ export const IHookEventTypeEnum = {
     ModuleDeleted: 'module-deleted',
     ModuleInstalled: 'module-installed',
     ModuleUninstalled: 'module-uninstalled',
-    PlayerCreated: 'player-created'
+    PlayerCreated: 'player-created',
+    ShopListingCreated: 'shop-listing-created',
+    ShopListingUpdated: 'shop-listing-updated',
+    ShopListingDeleted: 'shop-listing-deleted',
+    ShopOrderCreated: 'shop-order-created',
+    ShopOrderStatusChanged: 'shop-order-status-changed'
 } as const;
 
 export type IHookEventTypeEnum = typeof IHookEventTypeEnum[keyof typeof IHookEventTypeEnum];
@@ -6906,6 +6951,12 @@ export interface ShopListingOutputDTO {
     'name'?: string;
     /**
      * 
+     * @type {ItemsOutputDTO}
+     * @memberof ShopListingOutputDTO
+     */
+    'item': ItemsOutputDTO;
+    /**
+     * 
      * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
      * @memberof ShopListingOutputDTO
      */
@@ -7979,6 +8030,107 @@ export interface TakaroEventSettingsSet {
      * 
      * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
      * @memberof TakaroEventSettingsSet
+     */
+    'timestamp': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ * 
+ * @export
+ * @interface TakaroEventShopListingCreated
+ */
+export interface TakaroEventShopListingCreated {
+    /**
+     * 
+     * @type {string}
+     * @memberof TakaroEventShopListingCreated
+     */
+    'id': string;
+    /**
+     * 
+     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+     * @memberof TakaroEventShopListingCreated
+     */
+    'timestamp': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ * 
+ * @export
+ * @interface TakaroEventShopListingDeleted
+ */
+export interface TakaroEventShopListingDeleted {
+    /**
+     * 
+     * @type {string}
+     * @memberof TakaroEventShopListingDeleted
+     */
+    'id': string;
+    /**
+     * 
+     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+     * @memberof TakaroEventShopListingDeleted
+     */
+    'timestamp': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ * 
+ * @export
+ * @interface TakaroEventShopListingUpdated
+ */
+export interface TakaroEventShopListingUpdated {
+    /**
+     * 
+     * @type {string}
+     * @memberof TakaroEventShopListingUpdated
+     */
+    'id': string;
+    /**
+     * 
+     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+     * @memberof TakaroEventShopListingUpdated
+     */
+    'timestamp': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ * 
+ * @export
+ * @interface TakaroEventShopOrderCreated
+ */
+export interface TakaroEventShopOrderCreated {
+    /**
+     * 
+     * @type {string}
+     * @memberof TakaroEventShopOrderCreated
+     */
+    'id': string;
+    /**
+     * 
+     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+     * @memberof TakaroEventShopOrderCreated
+     */
+    'timestamp': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ * 
+ * @export
+ * @interface TakaroEventShopOrderStatusChanged
+ */
+export interface TakaroEventShopOrderStatusChanged {
+    /**
+     * 
+     * @type {string}
+     * @memberof TakaroEventShopOrderStatusChanged
+     */
+    'id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof TakaroEventShopOrderStatusChanged
+     */
+    'status': string;
+    /**
+     * 
+     * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+     * @memberof TakaroEventShopOrderStatusChanged
      */
     'timestamp': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
@@ -13917,78 +14069,6 @@ export class HookApi extends BaseAPI {
 export const ItemApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
-         *  Required permissions: `MANAGE_ITEMS`
-         * @summary Create
-         * @param {ItemCreateDTO} [itemCreateDTO] ItemCreateDTO
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        itemControllerCreate: async (itemCreateDTO?: ItemCreateDTO, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/items`;
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication domainAuth required
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(itemCreateDTO, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         *  Required permissions: `MANAGE_ITEMS`
-         * @summary Delete
-         * @param {string} id 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        itemControllerDelete: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('itemControllerDelete', 'id', id)
-            const localVarPath = `/items/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication domainAuth required
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
          *  Required permissions: `READ_ITEMS`
          * @summary Find one
          * @param {string} id 
@@ -14060,46 +14140,6 @@ export const ItemApiAxiosParamCreator = function (configuration?: Configuration)
                 options: localVarRequestOptions,
             };
         },
-        /**
-         *  Required permissions: `MANAGE_ITEMS`
-         * @summary Update
-         * @param {string} id 
-         * @param {ItemUpdateDTO} [itemUpdateDTO] ItemUpdateDTO
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        itemControllerUpdate: async (id: string, itemUpdateDTO?: ItemUpdateDTO, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('itemControllerUpdate', 'id', id)
-            const localVarPath = `/items/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication domainAuth required
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(itemUpdateDTO, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
     }
 };
 
@@ -14110,32 +14150,6 @@ export const ItemApiAxiosParamCreator = function (configuration?: Configuration)
 export const ItemApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = ItemApiAxiosParamCreator(configuration)
     return {
-        /**
-         *  Required permissions: `MANAGE_ITEMS`
-         * @summary Create
-         * @param {ItemCreateDTO} [itemCreateDTO] ItemCreateDTO
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async itemControllerCreate(itemCreateDTO?: ItemCreateDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ItemOutputDTOAPI>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.itemControllerCreate(itemCreateDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['ItemApi.itemControllerCreate']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
-        },
-        /**
-         *  Required permissions: `MANAGE_ITEMS`
-         * @summary Delete
-         * @param {string} id 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async itemControllerDelete(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<IdUuidDTOAPI>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.itemControllerDelete(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['ItemApi.itemControllerDelete']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
-        },
         /**
          *  Required permissions: `READ_ITEMS`
          * @summary Find one
@@ -14162,20 +14176,6 @@ export const ItemApiFp = function(configuration?: Configuration) {
             const operationBasePath = operationServerMap['ItemApi.itemControllerSearch']?.[index]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
         },
-        /**
-         *  Required permissions: `MANAGE_ITEMS`
-         * @summary Update
-         * @param {string} id 
-         * @param {ItemUpdateDTO} [itemUpdateDTO] ItemUpdateDTO
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async itemControllerUpdate(id: string, itemUpdateDTO?: ItemUpdateDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ItemOutputDTOAPI>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.itemControllerUpdate(id, itemUpdateDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['ItemApi.itemControllerUpdate']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
-        },
     }
 };
 
@@ -14186,26 +14186,6 @@ export const ItemApiFp = function(configuration?: Configuration) {
 export const ItemApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
     const localVarFp = ItemApiFp(configuration)
     return {
-        /**
-         *  Required permissions: `MANAGE_ITEMS`
-         * @summary Create
-         * @param {ItemCreateDTO} [itemCreateDTO] ItemCreateDTO
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        itemControllerCreate(itemCreateDTO?: ItemCreateDTO, options?: any): AxiosPromise<ItemOutputDTOAPI> {
-            return localVarFp.itemControllerCreate(itemCreateDTO, options).then((request) => request(axios, basePath));
-        },
-        /**
-         *  Required permissions: `MANAGE_ITEMS`
-         * @summary Delete
-         * @param {string} id 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        itemControllerDelete(id: string, options?: any): AxiosPromise<IdUuidDTOAPI> {
-            return localVarFp.itemControllerDelete(id, options).then((request) => request(axios, basePath));
-        },
         /**
          *  Required permissions: `READ_ITEMS`
          * @summary Find one
@@ -14226,17 +14206,6 @@ export const ItemApiFactory = function (configuration?: Configuration, basePath?
         itemControllerSearch(itemSearchInputDTO?: ItemSearchInputDTO, options?: any): AxiosPromise<ItemOutputArrayDTOAPI> {
             return localVarFp.itemControllerSearch(itemSearchInputDTO, options).then((request) => request(axios, basePath));
         },
-        /**
-         *  Required permissions: `MANAGE_ITEMS`
-         * @summary Update
-         * @param {string} id 
-         * @param {ItemUpdateDTO} [itemUpdateDTO] ItemUpdateDTO
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        itemControllerUpdate(id: string, itemUpdateDTO?: ItemUpdateDTO, options?: any): AxiosPromise<ItemOutputDTOAPI> {
-            return localVarFp.itemControllerUpdate(id, itemUpdateDTO, options).then((request) => request(axios, basePath));
-        },
     };
 };
 
@@ -14247,30 +14216,6 @@ export const ItemApiFactory = function (configuration?: Configuration, basePath?
  * @extends {BaseAPI}
  */
 export class ItemApi extends BaseAPI {
-    /**
-     *  Required permissions: `MANAGE_ITEMS`
-     * @summary Create
-     * @param {ItemCreateDTO} [itemCreateDTO] ItemCreateDTO
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof ItemApi
-     */
-    public itemControllerCreate(itemCreateDTO?: ItemCreateDTO, options?: RawAxiosRequestConfig) {
-        return ItemApiFp(this.configuration).itemControllerCreate(itemCreateDTO, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     *  Required permissions: `MANAGE_ITEMS`
-     * @summary Delete
-     * @param {string} id 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof ItemApi
-     */
-    public itemControllerDelete(id: string, options?: RawAxiosRequestConfig) {
-        return ItemApiFp(this.configuration).itemControllerDelete(id, options).then((request) => request(this.axios, this.basePath));
-    }
-
     /**
      *  Required permissions: `READ_ITEMS`
      * @summary Find one
@@ -14293,19 +14238,6 @@ export class ItemApi extends BaseAPI {
      */
     public itemControllerSearch(itemSearchInputDTO?: ItemSearchInputDTO, options?: RawAxiosRequestConfig) {
         return ItemApiFp(this.configuration).itemControllerSearch(itemSearchInputDTO, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     *  Required permissions: `MANAGE_ITEMS`
-     * @summary Update
-     * @param {string} id 
-     * @param {ItemUpdateDTO} [itemUpdateDTO] ItemUpdateDTO
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof ItemApi
-     */
-    public itemControllerUpdate(id: string, itemUpdateDTO?: ItemUpdateDTO, options?: RawAxiosRequestConfig) {
-        return ItemApiFp(this.configuration).itemControllerUpdate(id, itemUpdateDTO, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

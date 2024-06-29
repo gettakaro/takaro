@@ -1,5 +1,7 @@
-import { IsUUID, IsOptional, IsNumber, IsString, IsEnum } from 'class-validator';
+import { IsUUID, IsOptional, IsNumber, IsString, IsEnum, ValidateNested } from 'class-validator';
 import { TakaroModelDTO, TakaroDTO } from '@takaro/util';
+import { Type } from 'class-transformer';
+import { ItemsOutputDTO } from '../ItemsService.js';
 
 export class ShopListingOutputDTO extends TakaroModelDTO<ShopListingOutputDTO> {
   @IsUUID()
@@ -17,6 +19,9 @@ export class ShopListingOutputDTO extends TakaroModelDTO<ShopListingOutputDTO> {
   @IsString()
   @IsOptional()
   name?: string;
+  @ValidateNested()
+  @Type(() => ItemsOutputDTO)
+  item?: ItemsOutputDTO;
 }
 
 export class ShopListingCreateDTO<T = void> extends TakaroDTO<T> {
