@@ -19,6 +19,14 @@ import { PERMISSIONS } from '@takaro/auth';
 import { PlayerService } from '../PlayerService.js';
 import { PlayerOnGameServerService } from '../PlayerOnGameserverService.js';
 import { GameServerService } from '../GameServerService.js';
+import { EVENT_TYPES, EventCreateDTO, EventService } from '../EventService.js';
+import {
+  TakaroEventShopOrderCreated,
+  TakaroEventShopListingCreated,
+  TakaroEventShopListingDeleted,
+  TakaroEventShopListingUpdated,
+  TakaroEventShopOrderStatusChanged,
+} from '@takaro/modules';
 
 @traceableClass('service:shopListing')
 export class ShopListingService extends TakaroService<
@@ -27,6 +35,7 @@ export class ShopListingService extends TakaroService<
   ShopListingCreateDTO,
   ShopListingUpdateDTO
 > {
+  private eventService = new EventService(this.domainId);
   get repo() {
     return new ShopListingRepo(this.domainId);
   }
@@ -69,16 +78,49 @@ export class ShopListingService extends TakaroService<
 
   async create(item: ShopListingCreateDTO): Promise<ShopListingOutputDTO> {
     const created = await this.repo.create(item);
+
+    await this.eventService.create(
+      new EventCreateDTO({
+        eventName: EVENT_TYPES.SHOP_LISTING_CREATED,
+        gameserverId: created.gameServerId,
+        meta: new TakaroEventShopListingCreated({
+          id: created.id,
+        }),
+      })
+    );
+
     return created;
   }
 
   async update(id: string, item: ShopListingUpdateDTO): Promise<ShopListingOutputDTO> {
     const updated = await this.repo.update(id, item);
+
+    await this.eventService.create(
+      new EventCreateDTO({
+        eventName: EVENT_TYPES.SHOP_LISTING_UPDATED,
+        gameserverId: updated.gameServerId,
+        meta: new TakaroEventShopListingUpdated({
+          id: updated.id,
+        }),
+      })
+    );
+
     return updated;
   }
 
   async delete(id: string): Promise<string> {
     await this.repo.delete(id);
+
+    await this.eventService.create(
+      new EventCreateDTO({
+        eventName: EVENT_TYPES.SHOP_LISTING_DELETED,
+        gameserverId: id,
+        meta: new TakaroEventShopListingDeleted({
+          id,
+        }),
+      })
+    );
+
     return id;
   }
 
@@ -129,6 +171,17 @@ export class ShopListingService extends TakaroService<
     await playerOnGameServerService.deductCurrency(pog.id, listing.price * amount);
 
     const order = await this.orderRepo.create(new ShopOrderCreateInternalDTO({ listingId, userId, amount }));
+
+    await this.eventService.create(
+      new EventCreateDTO({
+        eventName: EVENT_TYPES.SHOP_ORDER_CREATED,
+        gameserverId: gameServerId,
+        meta: new TakaroEventShopOrderCreated({
+          id: order.id,
+        }),
+      })
+    );
+
     return order;
   }
 
@@ -167,7 +220,23 @@ export class ShopListingService extends TakaroService<
       await gameServerService.giveItem(gameServerId, pog.playerId, listing.item.code, order.amount, 0);
     }
 
-    return this.orderRepo.update(orderId, new ShopOrderUpdateDTO({ status: ShopOrderStatus.COMPLETED }));
+    const updatedOrder = await this.orderRepo.update(
+      orderId,
+      new ShopOrderUpdateDTO({ status: ShopOrderStatus.COMPLETED })
+    );
+
+    await this.eventService.create(
+      new EventCreateDTO({
+        eventName: EVENT_TYPES.SHOP_ORDER_STATUS_CHANGED,
+        gameserverId: gameServerId,
+        meta: new TakaroEventShopOrderStatusChanged({
+          id: updatedOrder.id,
+          status: ShopOrderStatus.COMPLETED,
+        }),
+      })
+    );
+
+    return updatedOrder;
   }
 
   async cancelOrder(orderId: string): Promise<ShopOrderOutputDTO> {
@@ -178,6 +247,25 @@ export class ShopListingService extends TakaroService<
       throw new errors.BadRequestError(
         `Can only cancel paid orders that weren't claimed yet. Current status: ${order.status}`
       );
-    return this.orderRepo.update(orderId, new ShopOrderUpdateDTO({ status: ShopOrderStatus.CANCELED }));
+    const updatedOrder = await this.orderRepo.update(
+      orderId,
+      new ShopOrderUpdateDTO({ status: ShopOrderStatus.CANCELED })
+    );
+
+    const listing = await this.findOne(order.listingId);
+    const gameServerId = listing.gameServerId;
+
+    await this.eventService.create(
+      new EventCreateDTO({
+        eventName: EVENT_TYPES.SHOP_ORDER_STATUS_CHANGED,
+        gameserverId: gameServerId,
+        meta: new TakaroEventShopOrderStatusChanged({
+          id: updatedOrder.id,
+          status: ShopOrderStatus.CANCELED,
+        }),
+      })
+    );
+
+    return updatedOrder;
   }
 }

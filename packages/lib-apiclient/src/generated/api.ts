@@ -1546,6 +1546,11 @@ export const EventCreateDTOEventNameEnum = {
   ModuleInstalled: 'module-installed',
   ModuleUninstalled: 'module-uninstalled',
   PlayerCreated: 'player-created',
+  ShopListingCreated: 'shop-listing-created',
+  ShopListingUpdated: 'shop-listing-updated',
+  ShopListingDeleted: 'shop-listing-deleted',
+  ShopOrderCreated: 'shop-order-created',
+  ShopOrderStatusChanged: 'shop-order-status-changed',
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
@@ -1793,6 +1798,11 @@ export const EventOutputDTOEventNameEnum = {
   ModuleInstalled: 'module-installed',
   ModuleUninstalled: 'module-uninstalled',
   PlayerCreated: 'player-created',
+  ShopListingCreated: 'shop-listing-created',
+  ShopListingUpdated: 'shop-listing-updated',
+  ShopListingDeleted: 'shop-listing-deleted',
+  ShopOrderCreated: 'shop-order-created',
+  ShopOrderStatusChanged: 'shop-order-status-changed',
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
@@ -1833,7 +1843,12 @@ export type EventOutputDTOMeta =
   | TakaroEventRoleRemoved
   | TakaroEventRoleUpdated
   | TakaroEventServerStatusChanged
-  | TakaroEventSettingsSet;
+  | TakaroEventSettingsSet
+  | TakaroEventShopListingCreated
+  | TakaroEventShopListingDeleted
+  | TakaroEventShopListingUpdated
+  | TakaroEventShopOrderCreated
+  | TakaroEventShopOrderStatusChanged;
 
 /**
  *
@@ -1980,6 +1995,11 @@ export const EventSearchInputAllowedFiltersEventNameEnum = {
   ModuleInstalled: 'module-installed',
   ModuleUninstalled: 'module-uninstalled',
   PlayerCreated: 'player-created',
+  ShopListingCreated: 'shop-listing-created',
+  ShopListingUpdated: 'shop-listing-updated',
+  ShopListingDeleted: 'shop-listing-deleted',
+  ShopOrderCreated: 'shop-order-created',
+  ShopOrderStatusChanged: 'shop-order-status-changed',
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
@@ -3039,6 +3059,11 @@ export const HookCreateDTOEventTypeEnum = {
   ModuleInstalled: 'module-installed',
   ModuleUninstalled: 'module-uninstalled',
   PlayerCreated: 'player-created',
+  ShopListingCreated: 'shop-listing-created',
+  ShopListingUpdated: 'shop-listing-updated',
+  ShopListingDeleted: 'shop-listing-deleted',
+  ShopOrderCreated: 'shop-order-created',
+  ShopOrderStatusChanged: 'shop-order-status-changed',
 } as const;
 
 export type HookCreateDTOEventTypeEnum = (typeof HookCreateDTOEventTypeEnum)[keyof typeof HookCreateDTOEventTypeEnum];
@@ -3176,6 +3201,11 @@ export const HookOutputDTOEventTypeEnum = {
   ModuleInstalled: 'module-installed',
   ModuleUninstalled: 'module-uninstalled',
   PlayerCreated: 'player-created',
+  ShopListingCreated: 'shop-listing-created',
+  ShopListingUpdated: 'shop-listing-updated',
+  ShopListingDeleted: 'shop-listing-deleted',
+  ShopOrderCreated: 'shop-order-created',
+  ShopOrderStatusChanged: 'shop-order-status-changed',
 } as const;
 
 export type HookOutputDTOEventTypeEnum = (typeof HookOutputDTOEventTypeEnum)[keyof typeof HookOutputDTOEventTypeEnum];
@@ -3258,6 +3288,11 @@ export const HookSearchInputAllowedFiltersEventTypeEnum = {
   ModuleInstalled: 'module-installed',
   ModuleUninstalled: 'module-uninstalled',
   PlayerCreated: 'player-created',
+  ShopListingCreated: 'shop-listing-created',
+  ShopListingUpdated: 'shop-listing-updated',
+  ShopListingDeleted: 'shop-listing-deleted',
+  ShopOrderCreated: 'shop-order-created',
+  ShopOrderStatusChanged: 'shop-order-status-changed',
 } as const;
 
 export type HookSearchInputAllowedFiltersEventTypeEnum =
@@ -3398,6 +3433,11 @@ export const HookTriggerDTOEventTypeEnum = {
   ModuleInstalled: 'module-installed',
   ModuleUninstalled: 'module-uninstalled',
   PlayerCreated: 'player-created',
+  ShopListingCreated: 'shop-listing-created',
+  ShopListingUpdated: 'shop-listing-updated',
+  ShopListingDeleted: 'shop-listing-deleted',
+  ShopOrderCreated: 'shop-order-created',
+  ShopOrderStatusChanged: 'shop-order-status-changed',
 } as const;
 
 export type HookTriggerDTOEventTypeEnum =
@@ -3468,6 +3508,11 @@ export const HookUpdateDTOEventTypeEnum = {
   ModuleInstalled: 'module-installed',
   ModuleUninstalled: 'module-uninstalled',
   PlayerCreated: 'player-created',
+  ShopListingCreated: 'shop-listing-created',
+  ShopListingUpdated: 'shop-listing-updated',
+  ShopListingDeleted: 'shop-listing-deleted',
+  ShopOrderCreated: 'shop-order-created',
+  ShopOrderStatusChanged: 'shop-order-status-changed',
 } as const;
 
 export type HookUpdateDTOEventTypeEnum = (typeof HookUpdateDTOEventTypeEnum)[keyof typeof HookUpdateDTOEventTypeEnum];
@@ -3698,6 +3743,11 @@ export const IHookEventTypeEnum = {
   ModuleInstalled: 'module-installed',
   ModuleUninstalled: 'module-uninstalled',
   PlayerCreated: 'player-created',
+  ShopListingCreated: 'shop-listing-created',
+  ShopListingUpdated: 'shop-listing-updated',
+  ShopListingDeleted: 'shop-listing-deleted',
+  ShopOrderCreated: 'shop-order-created',
+  ShopOrderStatusChanged: 'shop-order-status-changed',
 } as const;
 
 export type IHookEventTypeEnum = (typeof IHookEventTypeEnum)[keyof typeof IHookEventTypeEnum];
@@ -6972,6 +7022,12 @@ export interface ShopListingOutputDTO {
   name?: string;
   /**
    *
+   * @type {ItemsOutputDTO}
+   * @memberof ShopListingOutputDTO
+   */
+  item: ItemsOutputDTO;
+  /**
+   *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
    * @memberof ShopListingOutputDTO
    */
@@ -8049,6 +8105,107 @@ export interface TakaroEventSettingsSet {
    *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
    * @memberof TakaroEventSettingsSet
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventShopListingCreated
+ */
+export interface TakaroEventShopListingCreated {
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventShopListingCreated
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventShopListingCreated
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventShopListingDeleted
+ */
+export interface TakaroEventShopListingDeleted {
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventShopListingDeleted
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventShopListingDeleted
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventShopListingUpdated
+ */
+export interface TakaroEventShopListingUpdated {
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventShopListingUpdated
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventShopListingUpdated
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventShopOrderCreated
+ */
+export interface TakaroEventShopOrderCreated {
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventShopOrderCreated
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventShopOrderCreated
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventShopOrderStatusChanged
+ */
+export interface TakaroEventShopOrderStatusChanged {
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventShopOrderStatusChanged
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof TakaroEventShopOrderStatusChanged
+   */
+  status: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventShopOrderStatusChanged
    */
   timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
