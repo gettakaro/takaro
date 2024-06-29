@@ -141,6 +141,7 @@ const tests = [
     group,
     snapshot: false,
     setup: modulesTestSetup,
+    // @eslint-ignore-next-line
     name: "bug repro /tplist: Player A and B have teleports set but B cannot see A's teleports",
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
