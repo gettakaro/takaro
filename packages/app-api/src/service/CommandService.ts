@@ -263,17 +263,22 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
       return;
     }
 
+    if (!chatMessage.player) {
+      this.log.error('Chat message does not have a player attached to it');
+      throw new errors.InternalServerError();
+    }
+
     const commandName = chatMessage.msg.slice(prefix.value.length).split(' ')[0];
+
+    if (commandName === 'link') {
+      const { player, pog } = await this.playerService.resolveRef(chatMessage.player, gameServerId);
+      await this.playerService.handlePlayerLink(player, pog);
+    }
 
     const triggeredCommands = await this.repo.getTriggeredCommands(commandName, gameServerId);
 
     if (triggeredCommands.length) {
       this.log.debug(`Found ${triggeredCommands.length} commands that match the event`);
-
-      if (!chatMessage.player) {
-        this.log.error('Chat message does not have a player attached to it');
-        throw new errors.InternalServerError();
-      }
 
       const gameServerService = new GameServerService(this.domainId);
 

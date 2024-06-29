@@ -117,6 +117,13 @@ class UserSearchInputDTO extends ITakaroQuery<UserOutputDTO> {
   declare lessThan: UserSearchInputAllowedRangeFilter;
 }
 
+class LinkPlayerUnauthedInputDTO extends TakaroDTO<LinkPlayerUnauthedInputDTO> {
+  @IsEmail()
+  email: string;
+  @IsString()
+  code: string;
+}
+
 @OpenAPI({
   security: [{ domainAuth: [] }],
 })
@@ -264,5 +271,17 @@ export class UserController {
     });
 
     return apiResponse();
+  }
+
+  @Post('/user/player')
+  @OpenAPI({
+    summary: 'Link player profile',
+    description:
+      'Link your player profile to Takaro, allowing web access for things like shop and stats. To get the code, use the /link command in the game.',
+  })
+  async linkPlayerProfile(@Req() req: AuthenticatedRequest, @Body() data: LinkPlayerUnauthedInputDTO) {
+    const userService = new UserService('dummy-domain-id');
+    const user = await userService.NOT_DOMAIN_SCOPED_linkPlayerProfile(req, data.email, data.code);
+    return apiResponse(user);
   }
 }

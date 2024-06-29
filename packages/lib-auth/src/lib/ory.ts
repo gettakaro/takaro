@@ -86,6 +86,9 @@ class Ory {
 
   async getIdentityByEmail(email: string): Promise<ITakaroIdentity | null> {
     const identity = await this.identityClient.listIdentities({ credentialsIdentifier: email });
+
+    if (!identity.data.length) return null;
+
     return {
       id: identity.data[0].id,
       email: identity.data[0].traits.email,
@@ -136,18 +139,23 @@ class Ory {
     });
   }
 
-  async getIdentityFromReq(req: Request): Promise<ITakaroIdentity> {
+  async getIdentityFromReq(req: Request): Promise<ITakaroIdentity | null> {
     const tokenFromAuthHeader = req.headers['authorization']?.replace('Bearer ', '');
 
-    const sessionRes = await this.frontendClient.toSession({
-      cookie: req.headers.cookie,
-      xSessionToken: tokenFromAuthHeader,
-    });
+    try {
+      const sessionRes = await this.frontendClient.toSession({
+        cookie: req.headers.cookie,
+        xSessionToken: tokenFromAuthHeader,
+      });
 
-    return {
-      id: sessionRes.data.identity!.id,
-      email: sessionRes.data.identity!.traits.email,
-    };
+      return {
+        id: sessionRes.data.identity!.id,
+        email: sessionRes.data.identity!.traits.email,
+      };
+    } catch (error) {
+      this.log.warn('Could not get identity from request', { error });
+      return null;
+    }
   }
 
   async submitApiLogin(username: string, password: string) {
