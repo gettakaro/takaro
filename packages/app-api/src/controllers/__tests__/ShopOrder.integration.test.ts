@@ -105,6 +105,12 @@ const shopSetup = async function (this: IntegrationTest<IShopSetup>): Promise<IS
     { currency: 250 }
   );
 
+  await this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(
+    setupData.gameServer1.id,
+    setupData.pogs1[1].playerId,
+    { currency: 250 }
+  );
+
   const { client: user1Client, user: user1 } = await createUserForPlayer(
     this.client,
     setupData.eventsAwaiter,
@@ -139,7 +145,7 @@ const tests = [
     setup: shopSetup,
     filteredFields: ['listingId', 'userId'],
     test: async function () {
-      const res = await this.client.shopOrder.shopOrderControllerCreate({
+      const res = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
         listingId: this.setupData.listing100.id,
         amount: 1,
       });
@@ -155,9 +161,10 @@ const tests = [
     name: 'Create a new order when not enough money',
     setup: shopSetup,
     filteredFields: ['listingId', 'userId'],
+    expectedStatus: 400,
     test: async function () {
       try {
-        await this.client.shopOrder.shopOrderControllerCreate({
+        await this.setupData.client1.shopOrder.shopOrderControllerCreate({
           listingId: this.setupData.listing100.id,
           amount: 5,
         });
@@ -165,7 +172,8 @@ const tests = [
       } catch (error) {
         if (!isAxiosError(error)) throw error;
         if (!error.response) throw error;
-        expect(error.response.data.error).to.be.eq('Not enough currency');
+        expect(error.response.data.meta.error.code).to.be.eq('BadRequestError');
+        expect(error.response.data.meta.error.message).to.be.eq('Not enough currency');
         return error.response;
       }
     },
@@ -306,6 +314,7 @@ const tests = [
  * Claim an order happy path
  * Claim an order that is not yours -> error
  * Claim an order that is already claimed -> error
+ * Claim an order that is canceled -> error
  *
  * Cancel an order happy path
  * Cancel an order that is not yours -> error

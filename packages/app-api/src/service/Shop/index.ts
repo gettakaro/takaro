@@ -17,6 +17,7 @@ import { UserService } from '../UserService.js';
 import { checkPermissions } from '../AuthService.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { PlayerService } from '../PlayerService.js';
+import { PlayerOnGameServerService } from '../PlayerOnGameserverService.js';
 
 @traceableClass('service:shopListing')
 export class ShopListingService extends TakaroService<
@@ -106,6 +107,26 @@ export class ShopListingService extends TakaroService<
   async createOrder(listingId: string, amount: number): Promise<ShopOrderOutputDTO> {
     const userId = ctx.data.user;
     if (!userId) throw new errors.UnauthorizedError();
+
+    const userService = new UserService(this.domainId);
+    const user = await userService.findOne(userId);
+
+    if (!user.playerId)
+      throw new errors.BadRequestError(
+        'You have not linked your account to a player yet. Please link your account to a player first.'
+      );
+
+    const listing = await this.findOne(listingId);
+    const gameServerId = listing.gameServerId;
+
+    const playerService = new PlayerService(this.domainId);
+    const { pogs } = await playerService.resolveFromId(user.playerId, gameServerId);
+    const pog = pogs.find((pog) => pog.gameServerId === gameServerId);
+    if (!pog) throw new errors.BadRequestError('You have not logged in to the game server yet.');
+
+    const playerOnGameServerService = new PlayerOnGameServerService(this.domainId);
+    await playerOnGameServerService.deductCurrency(pog.id, listing.price * amount);
+
     const order = await this.orderRepo.create(new ShopOrderCreateInternalDTO({ listingId, userId, amount }));
     return order;
   }
