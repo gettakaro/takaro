@@ -141,7 +141,7 @@ export class ShopListingRepo extends ITakaroRepo<
 
   async findOne(id: string): Promise<ShopListingOutputDTO> {
     const { query } = await this.getModel();
-    const res = await query.findById(id).withGraphFetched('roles');
+    const res = await query.findById(id).withGraphFetched('item');
     if (!res) {
       throw new errors.NotFoundError();
     }

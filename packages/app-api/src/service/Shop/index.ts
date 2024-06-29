@@ -18,6 +18,7 @@ import { checkPermissions } from '../AuthService.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { PlayerService } from '../PlayerService.js';
 import { PlayerOnGameServerService } from '../PlayerOnGameserverService.js';
+import { GameServerService } from '../GameServerService.js';
 
 @traceableClass('service:shopListing')
 export class ShopListingService extends TakaroService<
@@ -137,6 +138,9 @@ export class ShopListingService extends TakaroService<
 
     const order = await this.orderRepo.findOne(orderId);
     if (!order) throw new errors.NotFoundError(`Shop order with id ${orderId} not found`);
+    await this.checkIfOrderBelongsToUser(order);
+    if (order.status !== ShopOrderStatus.PAID)
+      throw new errors.BadRequestError(`Can only claim paid, unclaimed orders. Current status: ${order.status}`);
 
     const userService = new UserService(this.domainId);
     const user = await userService.findOne(userId);
@@ -158,13 +162,22 @@ export class ShopListingService extends TakaroService<
         'You must be online in the game server to claim the order. If you have just logged in, please wait a few seconds and try again.'
       );
 
-    throw new Error('implement item giving...');
+    const gameServerService = new GameServerService(this.domainId);
+    if (listing.item) {
+      await gameServerService.giveItem(gameServerId, pog.playerId, listing.item.code, order.amount, 0);
+    }
+
     return this.orderRepo.update(orderId, new ShopOrderUpdateDTO({ status: ShopOrderStatus.COMPLETED }));
   }
 
   async cancelOrder(orderId: string): Promise<ShopOrderOutputDTO> {
     const order = await this.orderRepo.findOne(orderId);
     if (!order) throw new errors.NotFoundError(`Shop order with id ${orderId} not found`);
+    await this.checkIfOrderBelongsToUser(order);
+    if (order.status !== ShopOrderStatus.PAID)
+      throw new errors.BadRequestError(
+        `Can only cancel paid orders that weren't claimed yet. Current status: ${order.status}`
+      );
     return this.orderRepo.update(orderId, new ShopOrderUpdateDTO({ status: ShopOrderStatus.CANCELED }));
   }
 }

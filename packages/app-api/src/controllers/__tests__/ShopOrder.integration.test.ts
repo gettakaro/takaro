@@ -308,19 +308,193 @@ const tests = [
       return res;
     },
   }),
-];
+  new IntegrationTest<IShopSetup>({
+    group,
+    snapshot: true,
+    name: 'Claim order',
+    setup: shopSetup,
+    filteredFields: ['listingId', 'userId'],
+    test: async function () {
+      const order = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
+        listingId: this.setupData.listing100.id,
+        amount: 1,
+      });
 
-/** TODO:
- * Claim an order happy path
- * Claim an order that is not yours -> error
- * Claim an order that is already claimed -> error
- * Claim an order that is canceled -> error
- *
- * Cancel an order happy path
- * Cancel an order that is not yours -> error
- * High priv user cancel an order that is not yours -> success
- * Cancel an order that is already canceled -> error
- */
+      const res = await this.setupData.client1.shopOrder.shopOrderControllerClaim(order.data.data.id);
+      expect(res.data.data.status).to.be.eq(ShopOrderOutputDTOStatusEnum.Completed);
+      return res;
+    },
+  }),
+  new IntegrationTest<IShopSetup>({
+    group,
+    snapshot: true,
+    name: 'Claim order that is not yours -> error',
+    setup: shopSetup,
+    filteredFields: ['listingId', 'userId'],
+    expectedStatus: 404,
+    test: async function () {
+      const order = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
+        listingId: this.setupData.listing100.id,
+        amount: 1,
+      });
+
+      try {
+        await this.setupData.client2.shopOrder.shopOrderControllerClaim(order.data.data.id);
+        throw new Error('Should not be able to claim order');
+      } catch (error) {
+        if (!isAxiosError(error)) throw error;
+        if (!error.response) throw error;
+        expect(error.response.data.meta.error.code).to.be.eq('NotFoundError');
+        return error.response;
+      }
+    },
+  }),
+  new IntegrationTest<IShopSetup>({
+    group,
+    snapshot: true,
+    name: 'Claim order that is already claimed -> error',
+    setup: shopSetup,
+    filteredFields: ['listingId', 'userId'],
+    expectedStatus: 400,
+    test: async function () {
+      const order = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
+        listingId: this.setupData.listing100.id,
+        amount: 1,
+      });
+
+      await this.setupData.client1.shopOrder.shopOrderControllerClaim(order.data.data.id);
+
+      try {
+        await this.setupData.client1.shopOrder.shopOrderControllerClaim(order.data.data.id);
+        throw new Error('Should not be able to claim order');
+      } catch (error) {
+        if (!isAxiosError(error)) throw error;
+        if (!error.response) throw error;
+        expect(error.response.data.meta.error.code).to.be.eq('BadRequestError');
+        expect(error.response.data.meta.error.message).to.be.eq(
+          'Can only claim paid, unclaimed orders. Current status: COMPLETED'
+        );
+        return error.response;
+      }
+    },
+  }),
+  new IntegrationTest<IShopSetup>({
+    group,
+    snapshot: true,
+    name: 'Claim order that is canceled -> error',
+    setup: shopSetup,
+    filteredFields: ['listingId', 'userId'],
+    expectedStatus: 400,
+    test: async function () {
+      const order = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
+        listingId: this.setupData.listing100.id,
+        amount: 1,
+      });
+
+      await this.setupData.client1.shopOrder.shopOrderControllerCancel(order.data.data.id);
+
+      try {
+        await this.setupData.client1.shopOrder.shopOrderControllerClaim(order.data.data.id);
+        throw new Error('Should not be able to claim order');
+      } catch (error) {
+        if (!isAxiosError(error)) throw error;
+        if (!error.response) throw error;
+        expect(error.response.data.meta.error.code).to.be.eq('BadRequestError');
+        expect(error.response.data.meta.error.message).to.be.eq(
+          'Can only claim paid, unclaimed orders. Current status: CANCELED'
+        );
+        return error.response;
+      }
+    },
+  }),
+  new IntegrationTest<IShopSetup>({
+    group,
+    snapshot: true,
+    name: 'Cancel order',
+    setup: shopSetup,
+    filteredFields: ['listingId', 'userId'],
+    test: async function () {
+      const order = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
+        listingId: this.setupData.listing100.id,
+        amount: 1,
+      });
+
+      const res = await this.setupData.client1.shopOrder.shopOrderControllerCancel(order.data.data.id);
+      expect(res.data.data.status).to.be.eq(ShopOrderOutputDTOStatusEnum.Canceled);
+      return res;
+    },
+  }),
+  new IntegrationTest<IShopSetup>({
+    group,
+    snapshot: true,
+    name: 'Cancel order that is not yours -> error',
+    setup: shopSetup,
+    filteredFields: ['listingId', 'userId'],
+    expectedStatus: 404,
+    test: async function () {
+      const order = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
+        listingId: this.setupData.listing100.id,
+        amount: 1,
+      });
+
+      try {
+        await this.setupData.client2.shopOrder.shopOrderControllerCancel(order.data.data.id);
+        throw new Error('Should not be able to cancel order');
+      } catch (error) {
+        if (!isAxiosError(error)) throw error;
+        if (!error.response) throw error;
+        expect(error.response.data.meta.error.code).to.be.eq('NotFoundError');
+        return error.response;
+      }
+    },
+  }),
+  new IntegrationTest<IShopSetup>({
+    group,
+    snapshot: true,
+    name: 'High priv user cancel order that is not yours -> success',
+    setup: shopSetup,
+    filteredFields: ['listingId', 'userId'],
+    test: async function () {
+      const order = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
+        listingId: this.setupData.listing100.id,
+        amount: 1,
+      });
+
+      const res = await this.client.shopOrder.shopOrderControllerCancel(order.data.data.id);
+      expect(res.data.data.status).to.be.eq(ShopOrderOutputDTOStatusEnum.Canceled);
+      return res;
+    },
+  }),
+  new IntegrationTest<IShopSetup>({
+    group,
+    snapshot: true,
+    name: 'Cancel order that is already canceled -> error',
+    setup: shopSetup,
+    filteredFields: ['listingId', 'userId'],
+    expectedStatus: 400,
+    test: async function () {
+      const order = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
+        listingId: this.setupData.listing100.id,
+        amount: 1,
+      });
+
+      await this.setupData.client1.shopOrder.shopOrderControllerCancel(order.data.data.id);
+
+      try {
+        await this.setupData.client1.shopOrder.shopOrderControllerCancel(order.data.data.id);
+        throw new Error('Should not be able to cancel order');
+      } catch (error) {
+        if (!isAxiosError(error)) throw error;
+        if (!error.response) throw error;
+        expect(error.response.data.meta.error.code).to.be.eq('BadRequestError');
+        expect(error.response.data.meta.error.message).to.be.eq(
+          "Can only cancel paid orders that weren't claimed yet. Current status: CANCELED"
+        );
+        return error.response;
+      }
+    },
+  }),
+];
 
 describe(group, function () {
   tests.forEach((test) => {

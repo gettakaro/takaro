@@ -1,0 +1,23 @@
+{
+  "body": {
+    "meta": {
+      "error": {
+        "code": "NotFoundError",
+        "message": "Shop order not found"
+      }
+    },
+    "data": {}
+  },
+  "status": 404,
+  "test": {
+    "group": "ShopOrderController",
+    "snapshot": true,
+    "name": "Claim order that is not yours -> error",
+    "filteredFields": [
+      "listingId",
+      "userId"
+    ],
+    "expectedStatus": 404,
+    "standardEnvironment": true
+  }
+}
