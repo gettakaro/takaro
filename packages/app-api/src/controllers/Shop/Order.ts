@@ -9,6 +9,7 @@ import { Type } from 'class-transformer';
 import { ParamId } from '../../lib/validators.js';
 import { Response } from 'express';
 import { ShopOrderOutputDTO, ShopOrderCreateDTO } from '../../service/Shop/dto.js';
+import { RangeFilterCreatedAndUpdatedAt } from '../shared.js';
 
 class ShopOrderOutputDTOAPI extends APIOutput<ShopOrderOutputDTO> {
   @Type(() => ShopOrderOutputDTO)
@@ -40,6 +41,30 @@ class ShopOrderSearchInputAllowedFilters {
   status: string[];
 }
 
+class ShopOrderSearchInputAllowedRangeFilter extends RangeFilterCreatedAndUpdatedAt {
+  @IsOptional()
+  @IsNumber()
+  amount: number;
+}
+
+class ShopOrderSearchInputDTO extends ITakaroQuery<ShopOrderSearchInputAllowedFilters> {
+  @ValidateNested()
+  @Type(() => ShopOrderSearchInputAllowedFilters)
+  declare filters: ShopOrderSearchInputAllowedFilters;
+
+  @ValidateNested()
+  @Type(() => ShopOrderSearchInputAllowedFilters)
+  declare search: ShopOrderSearchInputAllowedFilters;
+
+  @ValidateNested()
+  @Type(() => ShopOrderSearchInputAllowedRangeFilter)
+  declare greaterThan: ShopOrderSearchInputAllowedRangeFilter;
+
+  @ValidateNested()
+  @Type(() => ShopOrderSearchInputAllowedRangeFilter)
+  declare lessThan: ShopOrderSearchInputAllowedRangeFilter;
+}
+
 @OpenAPI({
   security: [{ domainAuth: [] }],
 })
@@ -48,28 +73,34 @@ export class ShopOrderController {
   @UseBefore(AuthService.getAuthMiddleware([]))
   @Post('/')
   @ResponseSchema(ShopOrderOutputDTOAPI)
-  async createOrder(@Req() req: AuthenticatedRequest, @Body() item: ShopOrderCreateDTO) {
+  async create(@Req() req: AuthenticatedRequest, @Body() item: ShopOrderCreateDTO) {
     const service = new ShopListingService(req.domainId);
-    await service.createOrder(item.listingId, item.amount);
-    return apiResponse();
+    const order = await service.createOrder(item.listingId, item.amount);
+    return apiResponse(order);
   }
 
   @UseBefore(AuthService.getAuthMiddleware([]))
   @ResponseSchema(ShopOrderOutputDTOAPI)
   @Get('/:id')
-  async getOrder(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
+  @OpenAPI({
+    summary: 'Get order by ID',
+    description:
+      'Get an order by its ID. This endpoint only returns orders that belong to the caller. When the caller has permission to view all orders, they can get any order.',
+  })
+  async getOne(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new ShopListingService(req.domainId);
-    return apiResponse(await service.orderRepo.findOne(params.id));
+    return apiResponse(await service.findOneOrder(params.id));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([]))
   @ResponseSchema(ShopOrderOutputArrayDTOAPI)
   @Post('/search')
-  async searchOrder(
-    @Req() req: AuthenticatedRequest,
-    @Res() res: Response,
-    @Body() query: ITakaroQuery<ShopOrderSearchInputAllowedFilters>
-  ) {
+  @OpenAPI({
+    summary: 'Search orders',
+    description:
+      'Search for orders. By default, this endpoint only returns your own orders. When the caller has permission to view all orders, they can search for all orders.',
+  })
+  async search(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: ShopOrderSearchInputDTO) {
     const service = new ShopListingService(req.domainId);
     const result = await service.findOrders({
       ...query,
@@ -100,7 +131,7 @@ export class ShopOrderController {
   @Delete('/:id')
   async cancel(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new ShopListingService(req.domainId);
-    await service.cancelOrder(params.id);
-    return apiResponse();
+    const order = await service.cancelOrder(params.id);
+    return apiResponse(order);
   }
 }
