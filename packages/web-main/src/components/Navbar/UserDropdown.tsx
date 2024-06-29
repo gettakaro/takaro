@@ -60,12 +60,7 @@ export const UserDropdown = () => {
   const navigate = useNavigate();
   const { data, isPending } = useQuery(userMeQueryOptions());
 
-  const { data, isPending } = useQuery(userMeQueryOptions());
-
   const hasMultipleDomains = isPending === false && data && data.domains && data.domains.length > 1 ? true : false;
-
-  // TODO: this should be a fallback component, to stil try to logout.
-  if (session === null) return <div>could not get session</div>;
 
   if (!data) return <div>could not get user information</div>;
 
