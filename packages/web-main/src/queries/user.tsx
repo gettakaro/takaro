@@ -3,6 +3,7 @@ import { getApiClient } from 'util/getApiClient';
 import {
   APIOutput,
   IdUuidDTO,
+  LinkPlayerUnauthedInputDTO,
   MeOutoutDTO,
   UserOutputArrayDTOAPI,
   UserOutputWithRolesDTO,
@@ -75,6 +76,22 @@ export const useUserSetSelectedDomain = () => {
   return mutationWrapper<void, IUserSetSelectedDomain>(
     useMutation<void, AxiosError<APIOutput>, IUserSetSelectedDomain>({
       mutationFn: async ({ domainId }) => (await apiClient.user.userControllerSetSelectedDomain(domainId)).data,
+      onSuccess: async () => {
+        queryClient.clear();
+      },
+    }),
+    {}
+  );
+};
+
+export const useUserLinkPlayerProfile = () => {
+  const apiClient = getApiClient();
+  const queryClient = useQueryClient();
+
+  return mutationWrapper<void, LinkPlayerUnauthedInputDTO>(
+    useMutation<void, AxiosError<APIOutput>, LinkPlayerUnauthedInputDTO>({
+      mutationFn: async (link_player_details) =>
+        (await apiClient.user.userControllerLinkPlayerProfile(link_player_details)).data,
       onSuccess: async () => {
         queryClient.clear();
       },

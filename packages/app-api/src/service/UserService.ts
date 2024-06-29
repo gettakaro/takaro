@@ -199,7 +199,7 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
 
     if (!resolvedPlayerId) {
       this.log.warn('Player link code not found', { code });
-      throw new errors.ForbiddenError();
+      throw new errors.BadRequestError('Invalid player link code. Please verify the code and try again.');
     }
 
     if (!resolvedDomainId) {
@@ -222,15 +222,22 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
       throw new errors.BadRequestError('Email already in use, please login first');
     }
 
-    // WE drop the un-domain-scope here and create a new service with the resolved domainId
+    // We drop the un-domain-scope here and create a new service with the resolved domainId
     const userService = new UserService(resolvedDomainId);
+    let user: UserOutputDTO;
 
-    const user = await userService.inviteUser(email);
+    if (existingIdpProfile) {
+      const maybeUser = await userService.find({ filters: { idpId: [existingIdpProfile.id] } });
+      if (maybeUser.results.length === 0) {
+        throw new errors.InternalServerError();
+      }
+      user = maybeUser.results[0];
+    } else {
+      user = await userService.inviteUser(email);
+    }
 
     await userService.repo.linkPlayer(user.id, resolvedPlayerId);
-
     await redis.del(code);
-
     return user;
   }
 }

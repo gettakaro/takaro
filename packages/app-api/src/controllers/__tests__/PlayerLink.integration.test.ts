@@ -145,7 +145,10 @@ const tests = [
         throw new Error('Should not be able to link with invalid code');
       } catch (error) {
         if (!isAxiosError(error)) throw error;
-        expect(error.response?.data.meta.error.code).to.be.equal('ForbiddenError');
+        expect(error.response?.data.meta.error.code).to.be.equal('BadRequestError');
+        expect(error.response?.data.meta.error.message).to.be.equal(
+          'Invalid player link code. Please verify the code and try again.'
+        );
       }
     },
   }),

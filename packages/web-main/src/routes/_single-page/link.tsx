@@ -1,0 +1,113 @@
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Alert, Button, Company, FormError, TextField, styled } from '@takaro/lib-components';
+import { Navigate, createFileRoute } from '@tanstack/react-router';
+import { useUserLinkPlayerProfile, userMeQueryOptions } from 'queries/user';
+import { useForm, SubmitHandler } from 'react-hook-form';
+import { z } from 'zod';
+import { useSnackbar } from 'notistack';
+
+const Container = styled.div`
+  max-width: 800px;
+  width: 100%;
+  margin-top: -300px;
+`;
+
+export const Route = createFileRoute('/_single-page/link')({
+  validateSearch: z.object({
+    code: z.string().optional().catch(undefined),
+  }),
+  component: Component,
+  loader: async ({ context }) => {
+    try {
+      const session = await context.queryClient.fetchQuery(userMeQueryOptions());
+      if (session) {
+        return session.user;
+      }
+    } catch (e) {
+      return undefined;
+    }
+  },
+});
+
+const validationSchema = z.object({
+  code: z
+    .string()
+    .regex(new RegExp('^[a-z0-9]+(?:-[a-z0-9]+){2}$'), 'Expected code with pattern word-word-word')
+    .min(1),
+  email: z.string().email().min(1),
+});
+
+function Component() {
+  const { code } = Route.useSearch();
+  const user = Route.useLoaderData();
+  const { mutate, isPending, error, isSuccess } = useUserLinkPlayerProfile();
+  const { enqueueSnackbar } = useSnackbar();
+
+  const { control, handleSubmit, watch } = useForm<z.infer<typeof validationSchema>>({
+    mode: 'onChange',
+    resolver: zodResolver(validationSchema),
+    values: {
+      code: code ? code : '',
+      email: user ? user.email : '',
+    },
+  });
+
+  const onSubmit: SubmitHandler<z.infer<typeof validationSchema>> = async ({ email, code }) => {
+    mutate({ email, code });
+  };
+
+  if (isSuccess && user?.email === watch('email')) {
+    enqueueSnackbar('Player linked successfully!', { variant: 'default', type: 'success' });
+    return <Navigate to="/dashboard" />;
+  }
+
+  if (isSuccess) {
+    return (
+      <Container>
+        <Company />
+        <Alert
+          variant="info"
+          text="Player linked successfully! Please check your email to verify your account. You can close this page!"
+        />
+      </Container>
+    );
+  }
+
+  return (
+    <Container>
+      <Company />
+
+      <Alert
+        variant="info"
+        text="Connect your player profile to Takaro to access gameserver shops and view your stats!"
+      />
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <TextField
+          loading={isPending}
+          control={control}
+          name="code"
+          label="Code"
+          required
+          placeholder="takaro-is-cool"
+        />
+        <TextField
+          readOnly={user && !!user.email}
+          description={
+            user && !!user.email
+              ? 'If you want to link a player to a different email, please log out first.'
+              : undefined
+          }
+          loading={isPending}
+          control={control}
+          name="email"
+          label="Email"
+          required
+          type="email"
+          placeholder="email@takaro.io"
+        />
+        {error && <FormError error={error} />}
+        <Button isLoading={isPending} fullWidth type="submit" text="Link Player to Account" />
+      </form>
+    </Container>
+  );
+}
