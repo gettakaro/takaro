@@ -3,7 +3,7 @@ import { ITakaroQuery, Redis } from '@takaro/db';
 import { send } from '@takaro/email';
 
 import { UserModel, UserRepo } from '../db/user.js';
-import { IsEmail, IsISO8601, IsOptional, IsString, Length, ValidateNested } from 'class-validator';
+import { IsEmail, IsISO8601, IsOptional, IsString, IsUUID, Length, ValidateNested } from 'class-validator';
 import { TakaroDTO, TakaroModelDTO, errors, traceableClass } from '@takaro/util';
 import { RoleService, UserAssignmentOutputDTO } from './RoleService.js';
 import { Type } from 'class-transformer';
@@ -15,19 +15,18 @@ import { AuthenticatedRequest } from './AuthService.js';
 export class UserOutputDTO extends TakaroModelDTO<UserOutputDTO> {
   @IsString()
   name: string;
-
   @IsString()
   email: string;
-
   @IsString()
   idpId: string;
-
   @IsString()
   @IsOptional()
   discordId?: string;
-
   @IsISO8601()
   lastSeen: string;
+  @IsUUID()
+  @IsOptional()
+  playerId?: string;
 }
 
 export class UserOutputWithRolesDTO extends UserOutputDTO {
