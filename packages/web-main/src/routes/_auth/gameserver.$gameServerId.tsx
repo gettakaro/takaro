@@ -5,8 +5,9 @@ import { gameServerQueryOptions } from 'queries/gameserver';
 import { BaseLayout } from 'components/BaseLayout';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId')({
-  beforeLoad: ({ context }) => {
-    if (!hasPermission(context.auth.session, ['READ_GAMESERVERS'])) {
+  beforeLoad: async ({ context }) => {
+    const session = await context.auth.getSession();
+    if (!hasPermission(session, ['READ_GAMESERVERS'])) {
       throw redirect({ to: '/forbidden' });
     }
   },

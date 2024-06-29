@@ -106,6 +106,81 @@ const tests = [
       expect((await tpEvent)[1].data.msg).to.match(/ - test: [-\d]+, [-\d]+, [-\d]+ \(public\)/);
     },
   }),
+  new IntegrationTest<IModuleTestsSetupData>({
+    group,
+    snapshot: false,
+    setup: modulesTestSetup,
+    name: 'Teleports set by player A cannot be seen by player B with /tplist',
+    test: async function () {
+      await this.client.gameserver.gameServerControllerInstallModule(
+        this.setupData.gameserver.id,
+        this.setupData.teleportsModule.id
+      );
+
+      const setTpEvent = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/settp test',
+        playerId: this.setupData.players[0].id,
+      });
+
+      expect((await setTpEvent).length).to.be.eq(1);
+      expect((await setTpEvent)[0].data.msg).to.be.eq('Teleport test set.');
+
+      const tpEvent = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/tplist',
+        playerId: this.setupData.players[1].id,
+      });
+
+      expect((await tpEvent).length).to.be.eq(1);
+      expect((await tpEvent)[0].data.msg).to.be.eq('You have no teleports set, use /settp <name> to set one.');
+    },
+  }),
+  new IntegrationTest<IModuleTestsSetupData>({
+    group,
+    snapshot: false,
+    setup: modulesTestSetup,
+    name: "bug repro /tplist: Player A and B have teleports set but B cannot see A's teleports",
+    test: async function () {
+      await this.client.gameserver.gameServerControllerInstallModule(
+        this.setupData.gameserver.id,
+        this.setupData.teleportsModule.id
+      );
+
+      const setTpEvent = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/settp test',
+        playerId: this.setupData.players[0].id,
+      });
+
+      expect((await setTpEvent).length).to.be.eq(1);
+      expect((await setTpEvent)[0].data.msg).to.be.eq('Teleport test set.');
+
+      const setTpEvent2 = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/settp test2',
+        playerId: this.setupData.players[1].id,
+      });
+
+      expect((await setTpEvent2).length).to.be.eq(1);
+      expect((await setTpEvent2)[0].data.msg).to.be.eq('Teleport test2 set.');
+
+      const tpEvent = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 2);
+
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/tplist',
+        playerId: this.setupData.players[1].id,
+      });
+
+      expect((await tpEvent).length).to.be.eq(2);
+      expect((await tpEvent)[0].data.msg).to.be.eq('You have 1 teleport available');
+      expect((await tpEvent)[1].data.msg).to.match(/ - test2: [-\d]+, [-\d]+, [-\d]+/);
+    },
+  }),
 ];
 
 describe(group, function () {

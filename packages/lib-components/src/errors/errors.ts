@@ -33,6 +33,10 @@ export function getErrorUserMessage(
   if (err instanceof ResponseValidationError) {
     return err.parseValidationError();
   }
+  if (err instanceof BadRequestError) {
+    return err.message;
+  }
+
   if (err instanceof UniqueConstraintError) {
     if (err.message === 'Unique constraint violation') {
       const messageType = err.constructor.name as keyof ErrorMessageMapping;
@@ -56,6 +60,10 @@ export function transformError(apiError: AxiosError<any>) {
 
   if (error.code === 'ConflictError') {
     return new UniqueConstraintError(error.message);
+  }
+
+  if (error.code === 'BadRequestError') {
+    return new BadRequestError(error.message);
   }
 
   if (error.code === 'ValidationError') {
@@ -99,6 +107,12 @@ export class InternalServerError extends BaseError {
 }
 
 export class UniqueConstraintError extends BaseError {
+  constructor(message: string) {
+    super(message);
+  }
+}
+
+export class BadRequestError extends BaseError {
   constructor(message: string) {
     super(message);
   }

@@ -12,7 +12,7 @@ async function main() {
 
   const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data.value;
 
-  const existingVariable = await findTp(args.tp);
+  const existingVariable = await findTp(args.tp, pog.playerId);
 
   if (existingVariable.data.data.length > 0) {
     throw new TakaroUserError(`Teleport ${args.tp} already exists, use ${prefix}deletetp ${args.tp} to delete it.`);

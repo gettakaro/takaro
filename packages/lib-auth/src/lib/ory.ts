@@ -2,7 +2,6 @@ import { Configuration, CreateIdentityBody, FrontendApi, IdentityApi, OAuth2Api 
 import { config } from '../config.js';
 import { errors, logger, TakaroDTO } from '@takaro/util';
 import { createAxiosClient } from './oryAxiosClient.js';
-import { paginateIdentities } from './paginationHelpers.js';
 import { Request } from 'express';
 import { IsBoolean, IsNumber, IsString } from 'class-validator';
 
@@ -18,7 +17,6 @@ export enum AUDIENCES {
 export interface ITakaroIdentity {
   id: string;
   email: string;
-  domainId: string;
 }
 
 export class TakaroTokenDTO extends TakaroDTO<TakaroTokenDTO> {
@@ -36,10 +34,6 @@ export class TakaroTokenDTO extends TakaroDTO<TakaroTokenDTO> {
   sub: string;
   @IsString({ each: true })
   aud: string[];
-}
-
-function metadataTypeguard(metadata: unknown): metadata is { domainId: string } {
-  return typeof metadata === 'object' && metadata !== null && 'domainId' in metadata;
 }
 
 class Ory {
@@ -79,52 +73,43 @@ class Ory {
     return config.get('hydra.publicUrl');
   }
 
-  async deleteIdentitiesForDomain(domainId: string) {
-    for await (const identities of paginateIdentities(this.identityClient)) {
-      for (const identity of identities) {
-        if (
-          identity.metadata_public &&
-          metadataTypeguard(identity.metadata_public) &&
-          identity.metadata_public.domainId === domainId
-        ) {
-          await this.deleteIdentity(identity.id);
-        }
-      }
-    }
-  }
-
   async getIdentity(id: string): Promise<ITakaroIdentity> {
     const res = await this.identityClient.getIdentity({
       id,
     });
 
-    if (!res.data.metadata_public) {
-      this.log.warn('Identity has no metadata_public', {
-        identity: res.data.id,
-      });
-      throw new errors.ForbiddenError();
-    }
-
-    if (!metadataTypeguard(res.data.metadata_public)) {
-      this.log.warn('Identity metadata_public is not of type {domainId: string}', { identity: res.data.id });
-      throw new errors.ForbiddenError();
-    }
-
     return {
       id: res.data.id,
       email: res.data.traits.email,
-      domainId: res.data.metadata_public.domainId,
     };
   }
 
-  async createIdentity(email: string, domainId: string, password?: string): Promise<ITakaroIdentity> {
+  async getIdentityByEmail(email: string): Promise<ITakaroIdentity | null> {
+    const identity = await this.identityClient.listIdentities({ credentialsIdentifier: email });
+
+    if (!identity.data.length) return null;
+
+    return {
+      id: identity.data[0].id,
+      email: identity.data[0].traits.email,
+    };
+  }
+
+  async createIdentity(email: string, password?: string): Promise<ITakaroIdentity> {
+    const existing = await this.identityClient.listIdentities({ credentialsIdentifier: email });
+
+    if (existing.data.length) {
+      this.log.warn('Identity already exists, returning existing one.', { email });
+      return {
+        id: existing.data[0].id,
+        email: existing.data[0].traits.email,
+      };
+    }
+
     const body: CreateIdentityBody = {
       schema_id: IDENTITY_SCHEMA.USER,
       traits: {
         email,
-      },
-      metadata_public: {
-        domainId,
       },
     };
 
@@ -145,7 +130,6 @@ class Ory {
     return {
       id: res.data.id,
       email: res.data.traits.email,
-      domainId,
     };
   }
 
@@ -155,33 +139,23 @@ class Ory {
     });
   }
 
-  async getIdentityFromReq(req: Request): Promise<ITakaroIdentity> {
+  async getIdentityFromReq(req: Request): Promise<ITakaroIdentity | null> {
     const tokenFromAuthHeader = req.headers['authorization']?.replace('Bearer ', '');
 
-    const sessionRes = await this.frontendClient.toSession({
-      cookie: req.headers.cookie,
-      xSessionToken: tokenFromAuthHeader,
-    });
-
-    if (!sessionRes.data.identity!.metadata_public) {
-      this.log.warn('Identity has no metadata_public', {
-        identity: sessionRes.data.identity!.id,
+    try {
+      const sessionRes = await this.frontendClient.toSession({
+        cookie: req.headers.cookie,
+        xSessionToken: tokenFromAuthHeader,
       });
-      throw new errors.ForbiddenError();
-    }
 
-    if (!metadataTypeguard(sessionRes.data.identity!.metadata_public)) {
-      this.log.warn('Identity metadata_public is not of type {domainId: string}', {
-        identity: sessionRes.data.identity!.id,
-      });
-      throw new errors.ForbiddenError();
+      return {
+        id: sessionRes.data.identity!.id,
+        email: sessionRes.data.identity!.traits.email,
+      };
+    } catch (error) {
+      this.log.warn('Could not get identity from request', { error });
+      return null;
     }
-
-    return {
-      id: sessionRes.data.identity!.id,
-      email: sessionRes.data.identity!.traits.email,
-      domainId: sessionRes.data.identity!.metadata_public.domainId,
-    };
   }
 
   async submitApiLogin(username: string, password: string) {

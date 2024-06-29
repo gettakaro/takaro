@@ -2715,6 +2715,12 @@ export interface GiveItemInputDTO {
    * @memberof GiveItemInputDTO
    */
   amount: number;
+  /**
+   *
+   * @type {number}
+   * @memberof GiveItemInputDTO
+   */
+  quality: number;
 }
 /**
  *
@@ -4302,6 +4308,25 @@ export interface KickPlayerInputDTO {
 /**
  *
  * @export
+ * @interface LinkPlayerUnauthedInputDTO
+ */
+export interface LinkPlayerUnauthedInputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof LinkPlayerUnauthedInputDTO
+   */
+  email: string;
+  /**
+   *
+   * @type {string}
+   * @memberof LinkPlayerUnauthedInputDTO
+   */
+  code: string;
+}
+/**
+ *
+ * @export
  * @interface LoginDTO
  */
 export interface LoginDTO {
@@ -4347,6 +4372,44 @@ export interface LoginOutputDTOAPI {
    *
    * @type {MetadataOutput}
    * @memberof LoginOutputDTOAPI
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface MeOutoutDTO
+ */
+export interface MeOutoutDTO {
+  /**
+   *
+   * @type {UserOutputWithRolesDTO}
+   * @memberof MeOutoutDTO
+   */
+  user: UserOutputWithRolesDTO;
+  /**
+   *
+   * @type {Array<DomainOutputDTO>}
+   * @memberof MeOutoutDTO
+   */
+  domains: Array<DomainOutputDTO>;
+}
+/**
+ *
+ * @export
+ * @interface MeOutoutDTOAPI
+ */
+export interface MeOutoutDTOAPI {
+  /**
+   *
+   * @type {MeOutoutDTO}
+   * @memberof MeOutoutDTOAPI
+   */
+  data: MeOutoutDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof MeOutoutDTOAPI
    */
   meta: MetadataOutput;
 }
@@ -6601,6 +6664,12 @@ export interface SdtdConnectionInfo {
    * @memberof SdtdConnectionInfo
    */
   useCPM: boolean;
+  /**
+   *
+   * @type {boolean}
+   * @memberof SdtdConnectionInfo
+   */
+  useV1: boolean;
 }
 /**
  *
@@ -7082,6 +7151,207 @@ export interface ShopListingUpdateDTO {
    */
   name: string;
 }
+/**
+ *
+ * @export
+ * @interface ShopOrderCreateDTO
+ */
+export interface ShopOrderCreateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof ShopOrderCreateDTO
+   */
+  listingId: string;
+  /**
+   *
+   * @type {number}
+   * @memberof ShopOrderCreateDTO
+   */
+  amount: number;
+}
+/**
+ *
+ * @export
+ * @interface ShopOrderCreateInternalDTO
+ */
+export interface ShopOrderCreateInternalDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof ShopOrderCreateInternalDTO
+   */
+  userId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ShopOrderCreateInternalDTO
+   */
+  listingId: string;
+  /**
+   *
+   * @type {number}
+   * @memberof ShopOrderCreateInternalDTO
+   */
+  amount: number;
+}
+/**
+ *
+ * @export
+ * @interface ShopOrderOutputArrayDTOAPI
+ */
+export interface ShopOrderOutputArrayDTOAPI {
+  /**
+   *
+   * @type {Array<ShopOrderOutputDTO>}
+   * @memberof ShopOrderOutputArrayDTOAPI
+   */
+  data: Array<ShopOrderOutputDTO>;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof ShopOrderOutputArrayDTOAPI
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface ShopOrderOutputDTO
+ */
+export interface ShopOrderOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof ShopOrderOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ShopOrderOutputDTO
+   */
+  listingId: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ShopOrderOutputDTO
+   */
+  userId: string;
+  /**
+   *
+   * @type {number}
+   * @memberof ShopOrderOutputDTO
+   */
+  amount: number;
+  /**
+   *
+   * @type {string}
+   * @memberof ShopOrderOutputDTO
+   */
+  status: ShopOrderOutputDTOStatusEnum;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof ShopOrderOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof ShopOrderOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+
+export const ShopOrderOutputDTOStatusEnum = {
+  Completed: 'COMPLETED',
+  Paid: 'PAID',
+  Canceled: 'CANCELED',
+} as const;
+
+export type ShopOrderOutputDTOStatusEnum =
+  (typeof ShopOrderOutputDTOStatusEnum)[keyof typeof ShopOrderOutputDTOStatusEnum];
+
+/**
+ *
+ * @export
+ * @interface ShopOrderOutputDTOAPI
+ */
+export interface ShopOrderOutputDTOAPI {
+  /**
+   *
+   * @type {ShopOrderOutputDTO}
+   * @memberof ShopOrderOutputDTOAPI
+   */
+  data: ShopOrderOutputDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof ShopOrderOutputDTOAPI
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface ShopOrderSearchInputAllowedFilters
+ */
+export interface ShopOrderSearchInputAllowedFilters {
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ShopOrderSearchInputAllowedFilters
+   */
+  id?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ShopOrderSearchInputAllowedFilters
+   */
+  listingId?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ShopOrderSearchInputAllowedFilters
+   */
+  userId?: Array<string>;
+  /**
+   *
+   * @type {Array<number>}
+   * @memberof ShopOrderSearchInputAllowedFilters
+   */
+  amount?: Array<number>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ShopOrderSearchInputAllowedFilters
+   */
+  status?: Array<string>;
+}
+/**
+ *
+ * @export
+ * @interface ShopOrderUpdateDTO
+ */
+export interface ShopOrderUpdateDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof ShopOrderUpdateDTO
+   */
+  status: ShopOrderUpdateDTOStatusEnum;
+}
+
+export const ShopOrderUpdateDTOStatusEnum = {
+  Completed: 'COMPLETED',
+  Paid: 'PAID',
+  Canceled: 'CANCELED',
+} as const;
+
+export type ShopOrderUpdateDTOStatusEnum =
+  (typeof ShopOrderUpdateDTOStatusEnum)[keyof typeof ShopOrderUpdateDTOStatusEnum];
+
 /**
  *
  * @export
@@ -7803,6 +8073,12 @@ export interface TestReachabilityOutputDTO {
    * @memberof TestReachabilityOutputDTO
    */
   reason?: string;
+  /**
+   *
+   * @type {number}
+   * @memberof TestReachabilityOutputDTO
+   */
+  latency?: number;
 }
 /**
  *
@@ -18314,10 +18590,10 @@ export type SettingsControllerGetKeysEnum =
   (typeof SettingsControllerGetKeysEnum)[keyof typeof SettingsControllerGetKeysEnum];
 
 /**
- * ShopApi - axios parameter creator
+ * ShopListingApi - axios parameter creator
  * @export
  */
-export const ShopApiAxiosParamCreator = function (configuration?: Configuration) {
+export const ShopListingApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
      *  Required permissions: `MANAGE_SHOP_LISTINGS`
@@ -18326,11 +18602,11 @@ export const ShopApiAxiosParamCreator = function (configuration?: Configuration)
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    shopControllerCreate: async (
+    shopListingControllerCreate: async (
       shopListingCreateDTO?: ShopListingCreateDTO,
       options: RawAxiosRequestConfig = {}
     ): Promise<RequestArgs> => {
-      const localVarPath = `/shopListing`;
+      const localVarPath = `/shop/listing/`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -18363,10 +18639,10 @@ export const ShopApiAxiosParamCreator = function (configuration?: Configuration)
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    shopControllerDelete: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+    shopListingControllerDelete: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
       // verify required parameter 'id' is not null or undefined
-      assertParamExists('shopControllerDelete', 'id', id);
-      const localVarPath = `/shopListing/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      assertParamExists('shopListingControllerDelete', 'id', id);
+      const localVarPath = `/shop/listing/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -18396,10 +18672,10 @@ export const ShopApiAxiosParamCreator = function (configuration?: Configuration)
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    shopControllerGetOne: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+    shopListingControllerGetOne: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
       // verify required parameter 'id' is not null or undefined
-      assertParamExists('shopControllerGetOne', 'id', id);
-      const localVarPath = `/shopListing/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      assertParamExists('shopListingControllerGetOne', 'id', id);
+      const localVarPath = `/shop/listing/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -18429,11 +18705,11 @@ export const ShopApiAxiosParamCreator = function (configuration?: Configuration)
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    shopControllerSearch: async (
+    shopListingControllerSearch: async (
       shopListingSearchInputDTO?: ShopListingSearchInputDTO,
       options: RawAxiosRequestConfig = {}
     ): Promise<RequestArgs> => {
-      const localVarPath = `/shopListing/search`;
+      const localVarPath = `/shop/listing/search`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -18471,14 +18747,14 @@ export const ShopApiAxiosParamCreator = function (configuration?: Configuration)
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    shopControllerUpdate: async (
+    shopListingControllerUpdate: async (
       id: string,
       shopListingUpdateDTO?: ShopListingUpdateDTO,
       options: RawAxiosRequestConfig = {}
     ): Promise<RequestArgs> => {
       // verify required parameter 'id' is not null or undefined
-      assertParamExists('shopControllerUpdate', 'id', id);
-      const localVarPath = `/shopListing/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      assertParamExists('shopListingControllerUpdate', 'id', id);
+      const localVarPath = `/shop/listing/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -18508,11 +18784,11 @@ export const ShopApiAxiosParamCreator = function (configuration?: Configuration)
 };
 
 /**
- * ShopApi - functional programming interface
+ * ShopListingApi - functional programming interface
  * @export
  */
-export const ShopApiFp = function (configuration?: Configuration) {
-  const localVarAxiosParamCreator = ShopApiAxiosParamCreator(configuration);
+export const ShopListingApiFp = function (configuration?: Configuration) {
+  const localVarAxiosParamCreator = ShopListingApiAxiosParamCreator(configuration);
   return {
     /**
      *  Required permissions: `MANAGE_SHOP_LISTINGS`
@@ -18521,13 +18797,16 @@ export const ShopApiFp = function (configuration?: Configuration) {
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async shopControllerCreate(
+    async shopListingControllerCreate(
       shopListingCreateDTO?: ShopListingCreateDTO,
       options?: RawAxiosRequestConfig
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopListingOutputDTOAPI>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.shopControllerCreate(shopListingCreateDTO, options);
+      const localVarAxiosArgs = await localVarAxiosParamCreator.shopListingControllerCreate(
+        shopListingCreateDTO,
+        options
+      );
       const index = configuration?.serverIndex ?? 0;
-      const operationBasePath = operationServerMap['ShopApi.shopControllerCreate']?.[index]?.url;
+      const operationBasePath = operationServerMap['ShopListingApi.shopListingControllerCreate']?.[index]?.url;
       return (axios, basePath) =>
         createRequestFunction(
           localVarAxiosArgs,
@@ -18543,13 +18822,13 @@ export const ShopApiFp = function (configuration?: Configuration) {
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async shopControllerDelete(
+    async shopListingControllerDelete(
       id: string,
       options?: RawAxiosRequestConfig
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.shopControllerDelete(id, options);
+      const localVarAxiosArgs = await localVarAxiosParamCreator.shopListingControllerDelete(id, options);
       const index = configuration?.serverIndex ?? 0;
-      const operationBasePath = operationServerMap['ShopApi.shopControllerDelete']?.[index]?.url;
+      const operationBasePath = operationServerMap['ShopListingApi.shopListingControllerDelete']?.[index]?.url;
       return (axios, basePath) =>
         createRequestFunction(
           localVarAxiosArgs,
@@ -18565,13 +18844,13 @@ export const ShopApiFp = function (configuration?: Configuration) {
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async shopControllerGetOne(
+    async shopListingControllerGetOne(
       id: string,
       options?: RawAxiosRequestConfig
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopListingOutputDTOAPI>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.shopControllerGetOne(id, options);
+      const localVarAxiosArgs = await localVarAxiosParamCreator.shopListingControllerGetOne(id, options);
       const index = configuration?.serverIndex ?? 0;
-      const operationBasePath = operationServerMap['ShopApi.shopControllerGetOne']?.[index]?.url;
+      const operationBasePath = operationServerMap['ShopListingApi.shopListingControllerGetOne']?.[index]?.url;
       return (axios, basePath) =>
         createRequestFunction(
           localVarAxiosArgs,
@@ -18587,16 +18866,16 @@ export const ShopApiFp = function (configuration?: Configuration) {
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async shopControllerSearch(
+    async shopListingControllerSearch(
       shopListingSearchInputDTO?: ShopListingSearchInputDTO,
       options?: RawAxiosRequestConfig
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopListingOutputArrayDTOAPI>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.shopControllerSearch(
+      const localVarAxiosArgs = await localVarAxiosParamCreator.shopListingControllerSearch(
         shopListingSearchInputDTO,
         options
       );
       const index = configuration?.serverIndex ?? 0;
-      const operationBasePath = operationServerMap['ShopApi.shopControllerSearch']?.[index]?.url;
+      const operationBasePath = operationServerMap['ShopListingApi.shopListingControllerSearch']?.[index]?.url;
       return (axios, basePath) =>
         createRequestFunction(
           localVarAxiosArgs,
@@ -18613,14 +18892,18 @@ export const ShopApiFp = function (configuration?: Configuration) {
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    async shopControllerUpdate(
+    async shopListingControllerUpdate(
       id: string,
       shopListingUpdateDTO?: ShopListingUpdateDTO,
       options?: RawAxiosRequestConfig
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopListingOutputDTOAPI>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.shopControllerUpdate(id, shopListingUpdateDTO, options);
+      const localVarAxiosArgs = await localVarAxiosParamCreator.shopListingControllerUpdate(
+        id,
+        shopListingUpdateDTO,
+        options
+      );
       const index = configuration?.serverIndex ?? 0;
-      const operationBasePath = operationServerMap['ShopApi.shopControllerUpdate']?.[index]?.url;
+      const operationBasePath = operationServerMap['ShopListingApi.shopListingControllerUpdate']?.[index]?.url;
       return (axios, basePath) =>
         createRequestFunction(
           localVarAxiosArgs,
@@ -18633,11 +18916,15 @@ export const ShopApiFp = function (configuration?: Configuration) {
 };
 
 /**
- * ShopApi - factory interface
+ * ShopListingApi - factory interface
  * @export
  */
-export const ShopApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
-  const localVarFp = ShopApiFp(configuration);
+export const ShopListingApiFactory = function (
+  configuration?: Configuration,
+  basePath?: string,
+  axios?: AxiosInstance
+) {
+  const localVarFp = ShopListingApiFp(configuration);
   return {
     /**
      *  Required permissions: `MANAGE_SHOP_LISTINGS`
@@ -18646,11 +18933,13 @@ export const ShopApiFactory = function (configuration?: Configuration, basePath?
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    shopControllerCreate(
+    shopListingControllerCreate(
       shopListingCreateDTO?: ShopListingCreateDTO,
       options?: any
     ): AxiosPromise<ShopListingOutputDTOAPI> {
-      return localVarFp.shopControllerCreate(shopListingCreateDTO, options).then((request) => request(axios, basePath));
+      return localVarFp
+        .shopListingControllerCreate(shopListingCreateDTO, options)
+        .then((request) => request(axios, basePath));
     },
     /**
      *  Required permissions: `MANAGE_SHOP_LISTINGS`
@@ -18659,8 +18948,8 @@ export const ShopApiFactory = function (configuration?: Configuration, basePath?
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    shopControllerDelete(id: string, options?: any): AxiosPromise<APIOutput> {
-      return localVarFp.shopControllerDelete(id, options).then((request) => request(axios, basePath));
+    shopListingControllerDelete(id: string, options?: any): AxiosPromise<APIOutput> {
+      return localVarFp.shopListingControllerDelete(id, options).then((request) => request(axios, basePath));
     },
     /**
      *
@@ -18669,8 +18958,8 @@ export const ShopApiFactory = function (configuration?: Configuration, basePath?
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    shopControllerGetOne(id: string, options?: any): AxiosPromise<ShopListingOutputDTOAPI> {
-      return localVarFp.shopControllerGetOne(id, options).then((request) => request(axios, basePath));
+    shopListingControllerGetOne(id: string, options?: any): AxiosPromise<ShopListingOutputDTOAPI> {
+      return localVarFp.shopListingControllerGetOne(id, options).then((request) => request(axios, basePath));
     },
     /**
      *
@@ -18679,12 +18968,12 @@ export const ShopApiFactory = function (configuration?: Configuration, basePath?
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    shopControllerSearch(
+    shopListingControllerSearch(
       shopListingSearchInputDTO?: ShopListingSearchInputDTO,
       options?: any
     ): AxiosPromise<ShopListingOutputArrayDTOAPI> {
       return localVarFp
-        .shopControllerSearch(shopListingSearchInputDTO, options)
+        .shopListingControllerSearch(shopListingSearchInputDTO, options)
         .then((request) => request(axios, basePath));
     },
     /**
@@ -18695,36 +18984,36 @@ export const ShopApiFactory = function (configuration?: Configuration, basePath?
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    shopControllerUpdate(
+    shopListingControllerUpdate(
       id: string,
       shopListingUpdateDTO?: ShopListingUpdateDTO,
       options?: any
     ): AxiosPromise<ShopListingOutputDTOAPI> {
       return localVarFp
-        .shopControllerUpdate(id, shopListingUpdateDTO, options)
+        .shopListingControllerUpdate(id, shopListingUpdateDTO, options)
         .then((request) => request(axios, basePath));
     },
   };
 };
 
 /**
- * ShopApi - object-oriented interface
+ * ShopListingApi - object-oriented interface
  * @export
- * @class ShopApi
+ * @class ShopListingApi
  * @extends {BaseAPI}
  */
-export class ShopApi extends BaseAPI {
+export class ShopListingApi extends BaseAPI {
   /**
    *  Required permissions: `MANAGE_SHOP_LISTINGS`
    * @summary Create
    * @param {ShopListingCreateDTO} [shopListingCreateDTO] ShopListingCreateDTO
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ShopApi
+   * @memberof ShopListingApi
    */
-  public shopControllerCreate(shopListingCreateDTO?: ShopListingCreateDTO, options?: RawAxiosRequestConfig) {
-    return ShopApiFp(this.configuration)
-      .shopControllerCreate(shopListingCreateDTO, options)
+  public shopListingControllerCreate(shopListingCreateDTO?: ShopListingCreateDTO, options?: RawAxiosRequestConfig) {
+    return ShopListingApiFp(this.configuration)
+      .shopListingControllerCreate(shopListingCreateDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -18734,11 +19023,11 @@ export class ShopApi extends BaseAPI {
    * @param {string} id
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ShopApi
+   * @memberof ShopListingApi
    */
-  public shopControllerDelete(id: string, options?: RawAxiosRequestConfig) {
-    return ShopApiFp(this.configuration)
-      .shopControllerDelete(id, options)
+  public shopListingControllerDelete(id: string, options?: RawAxiosRequestConfig) {
+    return ShopListingApiFp(this.configuration)
+      .shopListingControllerDelete(id, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -18748,11 +19037,11 @@ export class ShopApi extends BaseAPI {
    * @param {string} id
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ShopApi
+   * @memberof ShopListingApi
    */
-  public shopControllerGetOne(id: string, options?: RawAxiosRequestConfig) {
-    return ShopApiFp(this.configuration)
-      .shopControllerGetOne(id, options)
+  public shopListingControllerGetOne(id: string, options?: RawAxiosRequestConfig) {
+    return ShopListingApiFp(this.configuration)
+      .shopListingControllerGetOne(id, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -18762,11 +19051,14 @@ export class ShopApi extends BaseAPI {
    * @param {ShopListingSearchInputDTO} [shopListingSearchInputDTO] ShopListingSearchInputDTO
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ShopApi
+   * @memberof ShopListingApi
    */
-  public shopControllerSearch(shopListingSearchInputDTO?: ShopListingSearchInputDTO, options?: RawAxiosRequestConfig) {
-    return ShopApiFp(this.configuration)
-      .shopControllerSearch(shopListingSearchInputDTO, options)
+  public shopListingControllerSearch(
+    shopListingSearchInputDTO?: ShopListingSearchInputDTO,
+    options?: RawAxiosRequestConfig
+  ) {
+    return ShopListingApiFp(this.configuration)
+      .shopListingControllerSearch(shopListingSearchInputDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -18777,15 +19069,468 @@ export class ShopApi extends BaseAPI {
    * @param {ShopListingUpdateDTO} [shopListingUpdateDTO] ShopListingUpdateDTO
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
-   * @memberof ShopApi
+   * @memberof ShopListingApi
    */
-  public shopControllerUpdate(
+  public shopListingControllerUpdate(
     id: string,
     shopListingUpdateDTO?: ShopListingUpdateDTO,
     options?: RawAxiosRequestConfig
   ) {
-    return ShopApiFp(this.configuration)
-      .shopControllerUpdate(id, shopListingUpdateDTO, options)
+    return ShopListingApiFp(this.configuration)
+      .shopListingControllerUpdate(id, shopListingUpdateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+}
+
+/**
+ * ShopOrderApi - axios parameter creator
+ * @export
+ */
+export const ShopOrderApiAxiosParamCreator = function (configuration?: Configuration) {
+  return {
+    /**
+     *
+     * @summary Cancel
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopOrderControllerCancel: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('shopOrderControllerCancel', 'id', id);
+      const localVarPath = `/shop/order/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Claiming an order will mark it as completed and give the user the item in-game
+     * @summary Claim an order
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopOrderControllerClaim: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('shopOrderControllerClaim', 'id', id);
+      const localVarPath = `/shop/order/{id}/claim`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Create order
+     * @param {ShopOrderCreateDTO} [shopOrderCreateDTO] ShopOrderCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopOrderControllerCreateOrder: async (
+      shopOrderCreateDTO?: ShopOrderCreateDTO,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/shop/order/`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(shopOrderCreateDTO, localVarRequestOptions, configuration);
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Get order
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopOrderControllerGetOrder: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('shopOrderControllerGetOrder', 'id', id);
+      const localVarPath = `/shop/order/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     *
+     * @summary Search order
+     * @param {ITakaroQuery} [iTakaroQuery] ITakaroQuery
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopOrderControllerSearchOrder: async (
+      iTakaroQuery?: ITakaroQuery,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/shop/order/search`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(iTakaroQuery, localVarRequestOptions, configuration);
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+  };
+};
+
+/**
+ * ShopOrderApi - functional programming interface
+ * @export
+ */
+export const ShopOrderApiFp = function (configuration?: Configuration) {
+  const localVarAxiosParamCreator = ShopOrderApiAxiosParamCreator(configuration);
+  return {
+    /**
+     *
+     * @summary Cancel
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async shopOrderControllerCancel(
+      id: string,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopOrderOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.shopOrderControllerCancel(id, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['ShopOrderApi.shopOrderControllerCancel']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     * Claiming an order will mark it as completed and give the user the item in-game
+     * @summary Claim an order
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async shopOrderControllerClaim(
+      id: string,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopOrderOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.shopOrderControllerClaim(id, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['ShopOrderApi.shopOrderControllerClaim']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *
+     * @summary Create order
+     * @param {ShopOrderCreateDTO} [shopOrderCreateDTO] ShopOrderCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async shopOrderControllerCreateOrder(
+      shopOrderCreateDTO?: ShopOrderCreateDTO,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopOrderOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.shopOrderControllerCreateOrder(
+        shopOrderCreateDTO,
+        options
+      );
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['ShopOrderApi.shopOrderControllerCreateOrder']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *
+     * @summary Get order
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async shopOrderControllerGetOrder(
+      id: string,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopOrderOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.shopOrderControllerGetOrder(id, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['ShopOrderApi.shopOrderControllerGetOrder']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     *
+     * @summary Search order
+     * @param {ITakaroQuery} [iTakaroQuery] ITakaroQuery
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async shopOrderControllerSearchOrder(
+      iTakaroQuery?: ITakaroQuery,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopOrderOutputArrayDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.shopOrderControllerSearchOrder(iTakaroQuery, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['ShopOrderApi.shopOrderControllerSearchOrder']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+  };
+};
+
+/**
+ * ShopOrderApi - factory interface
+ * @export
+ */
+export const ShopOrderApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+  const localVarFp = ShopOrderApiFp(configuration);
+  return {
+    /**
+     *
+     * @summary Cancel
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopOrderControllerCancel(id: string, options?: any): AxiosPromise<ShopOrderOutputDTOAPI> {
+      return localVarFp.shopOrderControllerCancel(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     * Claiming an order will mark it as completed and give the user the item in-game
+     * @summary Claim an order
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopOrderControllerClaim(id: string, options?: any): AxiosPromise<ShopOrderOutputDTOAPI> {
+      return localVarFp.shopOrderControllerClaim(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Create order
+     * @param {ShopOrderCreateDTO} [shopOrderCreateDTO] ShopOrderCreateDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopOrderControllerCreateOrder(
+      shopOrderCreateDTO?: ShopOrderCreateDTO,
+      options?: any
+    ): AxiosPromise<ShopOrderOutputDTOAPI> {
+      return localVarFp
+        .shopOrderControllerCreateOrder(shopOrderCreateDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Get order
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopOrderControllerGetOrder(id: string, options?: any): AxiosPromise<ShopOrderOutputDTOAPI> {
+      return localVarFp.shopOrderControllerGetOrder(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     *
+     * @summary Search order
+     * @param {ITakaroQuery} [iTakaroQuery] ITakaroQuery
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    shopOrderControllerSearchOrder(
+      iTakaroQuery?: ITakaroQuery,
+      options?: any
+    ): AxiosPromise<ShopOrderOutputArrayDTOAPI> {
+      return localVarFp
+        .shopOrderControllerSearchOrder(iTakaroQuery, options)
+        .then((request) => request(axios, basePath));
+    },
+  };
+};
+
+/**
+ * ShopOrderApi - object-oriented interface
+ * @export
+ * @class ShopOrderApi
+ * @extends {BaseAPI}
+ */
+export class ShopOrderApi extends BaseAPI {
+  /**
+   *
+   * @summary Cancel
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ShopOrderApi
+   */
+  public shopOrderControllerCancel(id: string, options?: RawAxiosRequestConfig) {
+    return ShopOrderApiFp(this.configuration)
+      .shopOrderControllerCancel(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Claiming an order will mark it as completed and give the user the item in-game
+   * @summary Claim an order
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ShopOrderApi
+   */
+  public shopOrderControllerClaim(id: string, options?: RawAxiosRequestConfig) {
+    return ShopOrderApiFp(this.configuration)
+      .shopOrderControllerClaim(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Create order
+   * @param {ShopOrderCreateDTO} [shopOrderCreateDTO] ShopOrderCreateDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ShopOrderApi
+   */
+  public shopOrderControllerCreateOrder(shopOrderCreateDTO?: ShopOrderCreateDTO, options?: RawAxiosRequestConfig) {
+    return ShopOrderApiFp(this.configuration)
+      .shopOrderControllerCreateOrder(shopOrderCreateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Get order
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ShopOrderApi
+   */
+  public shopOrderControllerGetOrder(id: string, options?: RawAxiosRequestConfig) {
+    return ShopOrderApiFp(this.configuration)
+      .shopOrderControllerGetOrder(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *
+   * @summary Search order
+   * @param {ITakaroQuery} [iTakaroQuery] ITakaroQuery
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof ShopOrderApi
+   */
+  public shopOrderControllerSearchOrder(iTakaroQuery?: ITakaroQuery, options?: RawAxiosRequestConfig) {
+    return ShopOrderApiFp(this.configuration)
+      .shopOrderControllerSearchOrder(iTakaroQuery, options)
       .then((request) => request(this.axios, this.basePath));
   }
 }
@@ -19490,6 +20235,36 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
       };
     },
     /**
+     * Unset the selected domain for the user, this will clear the domain cookie. On the next request, the backend will set this again.
+     * @summary Unset the selected domain for the user
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    userControllerDeleteSelectedDomainCookie: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      const localVarPath = `/selected-domain`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      *  Required permissions: `READ_USERS`
      * @summary Get one
      * @param {string} id
@@ -19553,6 +20328,47 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
       localVarRequestOptions.data = serializeDataIfNeeded(inviteCreateDTO, localVarRequestOptions, configuration);
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Link your player profile to Takaro, allowing web access for things like shop and stats. To get the code, use the /link command in the game.
+     * @summary Link player profile
+     * @param {LinkPlayerUnauthedInputDTO} [linkPlayerUnauthedInputDTO] LinkPlayerUnauthedInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    userControllerLinkPlayerProfile: async (
+      linkPlayerUnauthedInputDTO?: LinkPlayerUnauthedInputDTO,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/user/player`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        linkPlayerUnauthedInputDTO,
+        localVarRequestOptions,
+        configuration
+      );
 
       return {
         url: toPathString(localVarUrlObj),
@@ -19624,8 +20440,8 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
       };
     },
     /**
-     *
-     * @summary Me
+     * Get the current user and the domains that the user has access to. Note that you can only make requests in the scope of a single domain. In order to switch the domain, you need to use the domain selection endpoints
+     * @summary Get the current logged in user
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
@@ -19766,6 +20582,45 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
       };
     },
     /**
+     * One user can have multiple domains, this endpoint is a helper to set the selected domain for the user
+     * @summary Set the selected domain for the user
+     * @param {string} domainId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    userControllerSetSelectedDomain: async (
+      domainId: string,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'domainId' is not null or undefined
+      assertParamExists('userControllerSetSelectedDomain', 'domainId', domainId);
+      const localVarPath = `/selected-domain/{domainId}`.replace(
+        `{${'domainId'}}`,
+        encodeURIComponent(String(domainId))
+      );
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      *  Required permissions: `MANAGE_USERS`
      * @summary Update
      * @param {string} id
@@ -19870,6 +20725,26 @@ export const UserApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
+     * Unset the selected domain for the user, this will clear the domain cookie. On the next request, the backend will set this again.
+     * @summary Unset the selected domain for the user
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async userControllerDeleteSelectedDomainCookie(
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.userControllerDeleteSelectedDomainCookie(options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['UserApi.userControllerDeleteSelectedDomainCookie']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
      *  Required permissions: `READ_USERS`
      * @summary Get one
      * @param {string} id
@@ -19905,6 +20780,31 @@ export const UserApiFp = function (configuration?: Configuration) {
       const localVarAxiosArgs = await localVarAxiosParamCreator.userControllerInvite(inviteCreateDTO, options);
       const index = configuration?.serverIndex ?? 0;
       const operationBasePath = operationServerMap['UserApi.userControllerInvite']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     * Link your player profile to Takaro, allowing web access for things like shop and stats. To get the code, use the /link command in the game.
+     * @summary Link player profile
+     * @param {LinkPlayerUnauthedInputDTO} [linkPlayerUnauthedInputDTO] LinkPlayerUnauthedInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async userControllerLinkPlayerProfile(
+      linkPlayerUnauthedInputDTO?: LinkPlayerUnauthedInputDTO,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.userControllerLinkPlayerProfile(
+        linkPlayerUnauthedInputDTO,
+        options
+      );
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['UserApi.userControllerLinkPlayerProfile']?.[index]?.url;
       return (axios, basePath) =>
         createRequestFunction(
           localVarAxiosArgs,
@@ -19956,14 +20856,14 @@ export const UserApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *
-     * @summary Me
+     * Get the current user and the domains that the user has access to. Note that you can only make requests in the scope of a single domain. In order to switch the domain, you need to use the domain selection endpoints
+     * @summary Get the current logged in user
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async userControllerMe(
       options?: RawAxiosRequestConfig
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserOutputDTOAPI>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MeOutoutDTOAPI>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.userControllerMe(options);
       const index = configuration?.serverIndex ?? 0;
       const operationBasePath = operationServerMap['UserApi.userControllerMe']?.[index]?.url;
@@ -20044,6 +20944,28 @@ export const UserApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
+     * One user can have multiple domains, this endpoint is a helper to set the selected domain for the user
+     * @summary Set the selected domain for the user
+     * @param {string} domainId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async userControllerSetSelectedDomain(
+      domainId: string,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.userControllerSetSelectedDomain(domainId, options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['UserApi.userControllerSetSelectedDomain']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
      *  Required permissions: `MANAGE_USERS`
      * @summary Update
      * @param {string} id
@@ -20107,6 +21029,15 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
       return localVarFp.userControllerCreate(userCreateInputDTO, options).then((request) => request(axios, basePath));
     },
     /**
+     * Unset the selected domain for the user, this will clear the domain cookie. On the next request, the backend will set this again.
+     * @summary Unset the selected domain for the user
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    userControllerDeleteSelectedDomainCookie(options?: any): AxiosPromise<void> {
+      return localVarFp.userControllerDeleteSelectedDomainCookie(options).then((request) => request(axios, basePath));
+    },
+    /**
      *  Required permissions: `READ_USERS`
      * @summary Get one
      * @param {string} id
@@ -20125,6 +21056,21 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
      */
     userControllerInvite(inviteCreateDTO?: InviteCreateDTO, options?: any): AxiosPromise<UserOutputDTOAPI> {
       return localVarFp.userControllerInvite(inviteCreateDTO, options).then((request) => request(axios, basePath));
+    },
+    /**
+     * Link your player profile to Takaro, allowing web access for things like shop and stats. To get the code, use the /link command in the game.
+     * @summary Link player profile
+     * @param {LinkPlayerUnauthedInputDTO} [linkPlayerUnauthedInputDTO] LinkPlayerUnauthedInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    userControllerLinkPlayerProfile(
+      linkPlayerUnauthedInputDTO?: LinkPlayerUnauthedInputDTO,
+      options?: any
+    ): AxiosPromise<void> {
+      return localVarFp
+        .userControllerLinkPlayerProfile(linkPlayerUnauthedInputDTO, options)
+        .then((request) => request(axios, basePath));
     },
     /**
      *
@@ -20146,12 +21092,12 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
       return localVarFp.userControllerLogout(options).then((request) => request(axios, basePath));
     },
     /**
-     *
-     * @summary Me
+     * Get the current user and the domains that the user has access to. Note that you can only make requests in the scope of a single domain. In order to switch the domain, you need to use the domain selection endpoints
+     * @summary Get the current logged in user
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    userControllerMe(options?: any): AxiosPromise<UserOutputDTOAPI> {
+    userControllerMe(options?: any): AxiosPromise<MeOutoutDTOAPI> {
       return localVarFp.userControllerMe(options).then((request) => request(axios, basePath));
     },
     /**
@@ -20184,6 +21130,16 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
      */
     userControllerSearch(userSearchInputDTO?: UserSearchInputDTO, options?: any): AxiosPromise<UserOutputArrayDTOAPI> {
       return localVarFp.userControllerSearch(userSearchInputDTO, options).then((request) => request(axios, basePath));
+    },
+    /**
+     * One user can have multiple domains, this endpoint is a helper to set the selected domain for the user
+     * @summary Set the selected domain for the user
+     * @param {string} domainId
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    userControllerSetSelectedDomain(domainId: string, options?: any): AxiosPromise<void> {
+      return localVarFp.userControllerSetSelectedDomain(domainId, options).then((request) => request(axios, basePath));
     },
     /**
      *  Required permissions: `MANAGE_USERS`
@@ -20242,6 +21198,19 @@ export class UserApi extends BaseAPI {
   }
 
   /**
+   * Unset the selected domain for the user, this will clear the domain cookie. On the next request, the backend will set this again.
+   * @summary Unset the selected domain for the user
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof UserApi
+   */
+  public userControllerDeleteSelectedDomainCookie(options?: RawAxiosRequestConfig) {
+    return UserApiFp(this.configuration)
+      .userControllerDeleteSelectedDomainCookie(options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
    *  Required permissions: `READ_USERS`
    * @summary Get one
    * @param {string} id
@@ -20266,6 +21235,23 @@ export class UserApi extends BaseAPI {
   public userControllerInvite(inviteCreateDTO?: InviteCreateDTO, options?: RawAxiosRequestConfig) {
     return UserApiFp(this.configuration)
       .userControllerInvite(inviteCreateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Link your player profile to Takaro, allowing web access for things like shop and stats. To get the code, use the /link command in the game.
+   * @summary Link player profile
+   * @param {LinkPlayerUnauthedInputDTO} [linkPlayerUnauthedInputDTO] LinkPlayerUnauthedInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof UserApi
+   */
+  public userControllerLinkPlayerProfile(
+    linkPlayerUnauthedInputDTO?: LinkPlayerUnauthedInputDTO,
+    options?: RawAxiosRequestConfig
+  ) {
+    return UserApiFp(this.configuration)
+      .userControllerLinkPlayerProfile(linkPlayerUnauthedInputDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -20297,8 +21283,8 @@ export class UserApi extends BaseAPI {
   }
 
   /**
-   *
-   * @summary Me
+   * Get the current user and the domains that the user has access to. Note that you can only make requests in the scope of a single domain. In order to switch the domain, you need to use the domain selection endpoints
+   * @summary Get the current logged in user
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof UserApi
@@ -20349,6 +21335,20 @@ export class UserApi extends BaseAPI {
   public userControllerSearch(userSearchInputDTO?: UserSearchInputDTO, options?: RawAxiosRequestConfig) {
     return UserApiFp(this.configuration)
       .userControllerSearch(userSearchInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * One user can have multiple domains, this endpoint is a helper to set the selected domain for the user
+   * @summary Set the selected domain for the user
+   * @param {string} domainId
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof UserApi
+   */
+  public userControllerSetSelectedDomain(domainId: string, options?: RawAxiosRequestConfig) {
+    return UserApiFp(this.configuration)
+      .userControllerSetSelectedDomain(domainId, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

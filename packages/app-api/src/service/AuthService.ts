@@ -14,6 +14,7 @@ import { Routes, RESTGetAPICurrentUserGuildsResult } from 'discord-api-types/v10
 import oauth from 'passport-oauth2';
 import { DiscordService } from './DiscordService.js';
 import { domainStateMiddleware } from '../middlewares/domainStateMiddleware.js';
+import { DomainService } from './DomainService.js';
 
 interface DiscordUserInfo {
   id: string;
@@ -148,6 +149,7 @@ export class AuthService extends DomainScoped {
 
   static async getUserFromReq(req: AuthenticatedRequest): Promise<UserOutputWithRolesDTO | null> {
     let user: UserOutputWithRolesDTO | null = null;
+    const domainService = new DomainService();
 
     // Either the user is authenticated via the IDP or via a JWT (api client)
     // The token check is 'cheaper' than a request to the IDP so we do it first
@@ -168,9 +170,31 @@ export class AuthService extends DomainScoped {
     // If we don't have a user yet, try to get it from the IDP
     if (!user) {
       try {
+        let domainId = req.cookies ? req.cookies['takaro-domain'] : null;
+
         const identity = await ory.getIdentityFromReq(req);
+        if (!identity) return null;
+
+        // If the client didn't provide a domain hint, we assume the first one.
+        if (!domainId) {
+          const domains = await domainService.resolveDomainByIdpId(identity.id);
+          if (!domains) {
+            log.warn(`No domain found for identity ${identity.id}`);
+            throw new errors.UnauthorizedError();
+          }
+          domainId = domains[0].id;
+
+          // Set the domain cookie
+          if (req.res?.cookie)
+            req.res?.cookie('takaro-domain', domainId, {
+              sameSite: config.get('http.domainCookie.sameSite') as boolean | 'strict' | 'lax' | 'none' | undefined,
+              secure: config.get('http.domainCookie.secure'),
+              domain: config.get('http.domainCookie.domain'),
+            });
+        }
+
         if (identity) {
-          const service = new UserService(identity.domainId);
+          const service = new UserService(domainId);
           const users = await service.find({ filters: { idpId: [identity.id] } });
           if (!users.results.length) return null;
 

@@ -8,8 +8,9 @@ import { ErrorBoundary } from 'components/ErrorBoundary';
 import { hasPermission } from 'hooks/useHasPermission';
 
 export const Route = createFileRoute('/_auth/_global/player/$playerId')({
-  beforeLoad: ({ context }) => {
-    if (!hasPermission(context.auth.session, ['READ_PLAYERS'])) {
+  beforeLoad: async ({ context }) => {
+    const session = await context.auth.getSession();
+    if (!hasPermission(session, ['READ_PLAYERS'])) {
       throw redirect({ to: '/forbidden' });
     }
   },

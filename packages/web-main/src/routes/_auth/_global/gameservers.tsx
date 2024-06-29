@@ -11,8 +11,9 @@ import { Fragment } from 'react';
 import { PERMISSIONS } from '@takaro/apiclient';
 
 export const Route = createFileRoute('/_auth/_global/gameservers')({
-  beforeLoad: ({ context }) => {
-    if (!hasPermission(context.auth.session, ['READ_GAMESERVERS'])) {
+  beforeLoad: async ({ context }) => {
+    const session = await context.auth.getSession();
+    if (!hasPermission(session, ['READ_GAMESERVERS'])) {
       throw redirect({ to: '/forbidden' });
     }
   },

@@ -8,8 +8,9 @@ import { GameServerCreateDTOTypeEnum } from '@takaro/apiclient';
 import { hasPermission } from 'hooks/useHasPermission';
 
 export const Route = createFileRoute('/_auth/_global/gameservers/create/')({
-  beforeLoad: ({ context }) => {
-    if (!hasPermission(context.auth.session, ['MANAGE_GAMESERVERS'])) {
+  beforeLoad: async ({ context }) => {
+    const session = await context.auth.getSession();
+    if (!hasPermission(session, ['MANAGE_GAMESERVERS'])) {
       throw redirect({ to: '/forbidden' });
     }
   },

@@ -14,7 +14,6 @@ const options = {
             Sentry.setTag('traceId', traceId);
           }
         }
-
         Sentry.captureException(error);
         return true;
       }

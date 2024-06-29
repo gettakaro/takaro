@@ -74,7 +74,7 @@ export class IPermission extends TakaroDTO<IPermission> {
   friendlyName: string;
   @IsOptional()
   @IsBoolean()
-  canHaveCount?: boolean = false;
+  canHaveCount?: boolean;
 }
 
 export class BuiltinModule<T> extends TakaroDTO<T> {

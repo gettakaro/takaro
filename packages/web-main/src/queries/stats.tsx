@@ -1,11 +1,8 @@
 import { queryOptions } from '@tanstack/react-query';
 import { getApiClient } from 'util/getApiClient';
-import {
-  StatsControllerGetActivityStatsDataTypeEnum,
-  StatsControllerGetActivityStatsTimeTypeEnum,
-  StatsOutputDTO,
-} from '@takaro/apiclient';
+import { StatsOutputDTO, ActivityInputDTO } from '@takaro/apiclient';
 import { AxiosError } from 'axios';
+import { queryParamsToArray } from './util';
 
 type StatsOutput = { values: Array<[number, number]> };
 
@@ -37,14 +34,18 @@ export const PlayersOnlineStatsQueryOptions = (gameServerId?: string) => {
   });
 };
 
-export const ActivityStatsQueryOptions = (
-  gameServerId: string,
-  timeType: StatsControllerGetActivityStatsTimeTypeEnum,
-  dateType: StatsControllerGetActivityStatsDataTypeEnum
-) => {
+export const ActivityStatsQueryOptions = (options: ActivityInputDTO) => {
   return queryOptions<StatsOutputDTO, AxiosError<StatsOutputDTO>, StatsOutput>({
-    queryKey: statsKeys.activity(gameServerId),
+    queryKey: [statsKeys.activity(options.gameServerId), queryParamsToArray(options)],
     queryFn: async () =>
-      (await getApiClient().stats.statsControllerGetActivityStats(timeType, dateType, gameServerId)).data.data,
+      (
+        await getApiClient().stats.statsControllerGetActivityStats(
+          options.timeType,
+          options.dataType,
+          options.gameServerId,
+          options.startDate,
+          options.endDate
+        )
+      ).data.data,
   });
 };

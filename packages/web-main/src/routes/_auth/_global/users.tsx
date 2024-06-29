@@ -26,8 +26,9 @@ import { createFileRoute, useNavigate, Link, redirect } from '@tanstack/react-ro
 import { useQuery } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/_global/users')({
-  beforeLoad: ({ context }) => {
-    if (!hasPermission(context.auth.session, ['READ_USERS'])) {
+  beforeLoad: async ({ context }) => {
+    const session = await context.auth.getSession();
+    if (!hasPermission(session, ['READ_USERS'])) {
       throw redirect({ to: '/forbidden' });
     }
   },
@@ -84,6 +85,9 @@ function Component() {
       header: 'Email',
       id: 'email',
       enableSorting: true,
+      meta: {
+        hiddenColumn: true,
+      },
     }),
     columnHelper.accessor('discordId', {
       header: 'Discord ID',

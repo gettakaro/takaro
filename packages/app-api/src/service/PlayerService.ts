@@ -3,7 +3,7 @@ import { TakaroService } from './Base.js';
 import { ISteamData, PlayerModel, PlayerRepo } from '../db/player.js';
 import { IsBoolean, IsISO8601, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { TakaroDTO, TakaroModelDTO, errors, traceableClass } from '@takaro/util';
-import { ITakaroQuery } from '@takaro/db';
+import { ITakaroQuery, Redis } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import {
   PlayerOnGameServerService,
@@ -25,6 +25,9 @@ import { config } from '../config.js';
 
 import { GeoIpDbName, open } from 'geolite2-redist';
 import maxmind, { CityResponse } from 'maxmind';
+import { humanId } from 'human-id';
+import { GameServerService } from './GameServerService.js';
+import { IMessageOptsDTO } from '@takaro/gameserver';
 
 const ipLookup = await open(GeoIpDbName.City, (path) => maxmind.open<CityResponse>(path));
 
@@ -385,5 +388,25 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
 
   async calculatePlayerActivityMetrics() {
     return this.repo.calculatePlayerActivityMetrics();
+  }
+
+  async handlePlayerLink(player: PlayerOutputDTO, pog: PlayerOnGameserverOutputDTO) {
+    const secretCode = humanId({ separator: '-', capitalize: false });
+    const redis = await Redis.getClient('playerLink');
+    await redis.set(secretCode, player.id, {
+      EX: 60 * 30,
+    });
+    await redis.set(`${secretCode}-domain`, this.domainId, {
+      EX: 60 * 30,
+    });
+
+    const gameServerService = new GameServerService(this.domainId);
+    await gameServerService.sendMessage(
+      pog.gameServerId,
+      `Browse to ${config.get('http.frontendHost')}/link?code=${secretCode} to complete the linking process.`,
+      new IMessageOptsDTO({
+        recipient: pog,
+      })
+    );
   }
 }

@@ -136,3 +136,9 @@ export const eventsMetric = new Counter({
   help: 'Counter for the different event types',
   labelNames: ['domain', 'event', 'player', 'gameserver', 'module', 'user'],
 });
+
+export const gameServerLatency = new Gauge({
+  name: `${metricsPrefix}gameServer_latency`,
+  help: 'Game server latency in ms',
+  labelNames: ['gameserver'],
+});

@@ -9,13 +9,16 @@ import {
   UserUpdateDTO,
 } from '../service/UserService.js';
 import { AuthenticatedRequest, AuthService, LoginOutputDTO } from '../service/AuthService.js';
-import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Put, Params, Res } from 'routing-controllers';
+import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Put, Params, Res, Param } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { IdUuidDTO, IdUuidDTOAPI, ParamId, ParamIdAndRoleId } from '../lib/validators.js';
 import { Request, Response } from 'express';
 import { PERMISSIONS } from '@takaro/auth';
 import { RangeFilterCreatedAndUpdatedAt } from './shared.js';
+import { DomainOutputDTO, DomainService } from '../service/DomainService.js';
+import { TakaroDTO } from '@takaro/util';
+import { config } from '../config.js';
 
 export class GetUserDTO {
   @Length(3, 50)
@@ -46,6 +49,22 @@ class LoginOutputDTOAPI extends APIOutput<LoginOutputDTO> {
   @Type(() => LoginOutputDTO)
   @ValidateNested()
   declare data: LoginOutputDTO;
+}
+
+class MeOutoutDTO extends TakaroDTO<MeOutoutDTO> {
+  @Type(() => UserOutputWithRolesDTO)
+  @ValidateNested()
+  user: UserOutputWithRolesDTO;
+
+  @Type(() => DomainOutputDTO)
+  @ValidateNested({ each: true })
+  domains: DomainOutputDTO[];
+}
+
+class MeOutoutDTOAPI extends APIOutput<MeOutoutDTO> {
+  @Type(() => MeOutoutDTO)
+  @ValidateNested()
+  declare data: MeOutoutDTO;
 }
 
 class UserOutputDTOAPI extends APIOutput<UserOutputWithRolesDTO> {
@@ -98,6 +117,13 @@ class UserSearchInputDTO extends ITakaroQuery<UserOutputDTO> {
   declare lessThan: UserSearchInputAllowedRangeFilter;
 }
 
+class LinkPlayerUnauthedInputDTO extends TakaroDTO<LinkPlayerUnauthedInputDTO> {
+  @IsEmail()
+  email: string;
+  @IsString()
+  code: string;
+}
+
 @OpenAPI({
   security: [{ domainAuth: [] }],
 })
@@ -117,10 +143,17 @@ export class UserController {
 
   @Get('/me')
   @UseBefore(AuthService.getAuthMiddleware([]))
-  @ResponseSchema(UserOutputDTOAPI)
+  @ResponseSchema(MeOutoutDTOAPI)
+  @OpenAPI({
+    summary: 'Get the current logged in user',
+    description:
+      'Get the current user and the domains that the user has access to. Note that you can only make requests in the scope of a single domain. In order to switch the domain, you need to use the domain selection endpoints',
+  })
   async me(@Req() req: AuthenticatedRequest) {
     const user = await new UserService(req.domainId).findOne(req.user.id);
-    return apiResponse(user);
+    const domainService = new DomainService();
+    const domains = await domainService.resolveDomainByIdpId(user.idpId);
+    return apiResponse({ user, domains });
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_USERS], false))
@@ -204,6 +237,51 @@ export class UserController {
   async invite(@Req() req: AuthenticatedRequest, @Body() data: InviteCreateDTO) {
     const service = new UserService(req.domainId);
     const user = await service.inviteUser(data.email);
+    return apiResponse(user);
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([], false))
+  @Post('/selected-domain/:domainId')
+  @OpenAPI({
+    summary: 'Set the selected domain for the user',
+    description:
+      'One user can have multiple domains, this endpoint is a helper to set the selected domain for the user',
+  })
+  async setSelectedDomain(@Req() req: AuthenticatedRequest, @Param('domainId') domainId: string) {
+    req.res?.cookie('takaro-domain', domainId, {
+      sameSite: config.get('http.domainCookie.sameSite') as boolean | 'strict' | 'lax' | 'none' | undefined,
+      secure: config.get('http.domainCookie.secure'),
+      domain: config.get('http.domainCookie.domain'),
+    });
+
+    return apiResponse();
+  }
+
+  @Delete('/selected-domain')
+  @OpenAPI({
+    summary: 'Unset the selected domain for the user',
+    description:
+      'Unset the selected domain for the user, this will clear the domain cookie. On the next request, the backend will set this again.',
+  })
+  async deleteSelectedDomainCookie(@Req() req: AuthenticatedRequest) {
+    req.res?.clearCookie('takaro-domain', {
+      sameSite: config.get('http.domainCookie.sameSite') as boolean | 'strict' | 'lax' | 'none' | undefined,
+      secure: config.get('http.domainCookie.secure'),
+      domain: config.get('http.domainCookie.domain'),
+    });
+
+    return apiResponse();
+  }
+
+  @Post('/user/player')
+  @OpenAPI({
+    summary: 'Link player profile',
+    description:
+      'Link your player profile to Takaro, allowing web access for things like shop and stats. To get the code, use the /link command in the game.',
+  })
+  async linkPlayerProfile(@Req() req: AuthenticatedRequest, @Body() data: LinkPlayerUnauthedInputDTO) {
+    const userService = new UserService('dummy-domain-id');
+    const user = await userService.NOT_DOMAIN_SCOPED_linkPlayerProfile(req, data.email, data.code);
     return apiResponse(user);
   }
 }

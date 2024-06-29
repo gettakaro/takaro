@@ -8,11 +8,12 @@ import { useForm, useWatch } from 'react-hook-form';
 import { TimePeriodSelect } from 'components/selects';
 import { useQuery } from '@tanstack/react-query';
 import { hasPermission } from 'hooks/useHasPermission';
-import { PlayersOnlineStatsQueryOptions } from 'queries/stats';
+import { PlayersOnlineStatsQueryOptions, ActivityStatsQueryOptions } from 'queries/stats';
 
 export const Route = createFileRoute('/_auth/_global/dashboard')({
   beforeLoad: async ({ context }) => {
-    if (!hasPermission(context.auth.session, ['READ_EVENTS', 'READ_GAMESERVERS', 'READ_PLAYERS'])) {
+    const session = await context.auth.getSession();
+    if (!hasPermission(session, ['READ_EVENTS', 'READ_GAMESERVERS', 'READ_PLAYERS'])) {
       throw redirect({ to: '/forbidden' });
     }
   },
@@ -34,6 +35,10 @@ function Component() {
 
   const loaderData = Route.useLoaderData();
   const { data } = useQuery({ ...PlayersOnlineStatsQueryOptions(), initialData: loaderData });
+
+  const { data: dailyActiveUsers, isLoading: isLoadingDailyActiveUsers } = useQuery(
+    ActivityStatsQueryOptions({ timeType: 'daily', dataType: 'players' })
+  );
 
   const { control } = useForm({
     defaultValues: {
@@ -74,16 +79,6 @@ function Component() {
     return { startDate, now };
   }, [selectedPeriod]);
 
-  // players online last 24 hours
-  // We have total records in metadata
-  const { data: playersConnected, isLoading: isLoadingPlayerConnected } = useQuery(
-    eventsQueryOptions({
-      search: { eventName: ['player-connected'] },
-      greaterThan: { createdAt: startDate },
-      lessThan: { createdAt: now },
-    })
-  );
-
   const { data: cronjobsExecuted, isLoading: isLoadingCronJobsExecuted } = useQuery(
     eventsQueryOptions({
       search: { eventName: ['cronjob-executed'] },
@@ -116,9 +111,13 @@ function Component() {
         </div>
         <Stats border={false} direction="horizontal">
           <Stats.Stat
-            isLoading={isLoadingPlayerConnected}
-            description="Players connected"
-            value={`${playersConnected?.meta.total} players`}
+            isLoading={isLoadingDailyActiveUsers}
+            description="Daily active players"
+            value={
+              dailyActiveUsers && dailyActiveUsers.values && dailyActiveUsers.values.length > 0
+                ? `${dailyActiveUsers.values[dailyActiveUsers?.values.length - 1][1]} players`
+                : 'No data available'
+            }
           />
           <Stats.Stat
             isLoading={isLoadingCronJobsExecuted}

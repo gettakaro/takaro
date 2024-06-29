@@ -1,6 +1,6 @@
 import { FC, cloneElement, ReactElement } from 'react';
 import { Link, LinkProps } from '@tanstack/react-router';
-import { RequiredPermissions, Tooltip } from '@takaro/lib-components';
+import { Chip, RequiredPermissions, Tooltip, useTheme } from '@takaro/lib-components';
 import { UserDropdown } from './UserDropdown';
 import { Nav, IconNav, Container, IconNavContainer } from './style';
 import { PERMISSIONS } from '@takaro/apiclient';
@@ -24,6 +24,7 @@ import { FaDiscord as DiscordIcon } from 'react-icons/fa';
 import { PermissionsGuard } from 'components/PermissionsGuard';
 import { useHasPermission } from 'hooks/useHasPermission';
 import { GameServerNav } from './GameServerNav';
+import { TAKARO_DOMAIN_COOKIE_REGEX } from 'routes/_auth/domain.select';
 
 const domainLinks: NavbarLink[] = [
   {
@@ -52,7 +53,7 @@ const domainLinks: NavbarLink[] = [
   {
     label: 'Players',
     linkProps: {
-      to: '/players' as any,
+      to: '/players',
     },
     icon: <PlayersIcon />,
     requiredPermissions: [PERMISSIONS.ReadPlayers],
@@ -60,7 +61,7 @@ const domainLinks: NavbarLink[] = [
   {
     label: 'Users',
     linkProps: {
-      to: '/users' as any,
+      to: '/users',
     },
     icon: <UsersIcon />,
     requiredPermissions: [PERMISSIONS.ReadUsers],
@@ -111,8 +112,6 @@ export interface NavbarLink {
 export const renderLink = ({ linkProps, icon, label, requiredPermissions }: NavbarLink) => (
   <PermissionsGuard key={`guard-${linkProps.to}`} requiredPermissions={requiredPermissions || []}>
     <div key={`wrapper-${linkProps.to}`}>
-      {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment*/}
-      {/* @ts-ignore reusable link */}
       <Link to={linkProps.to} key={`link-${linkProps.to}`}>
         <span key={`inner-${linkProps.to}`}>
           {cloneElement(icon, { size: 20, key: `icon-${linkProps.to}` })}
@@ -129,6 +128,7 @@ interface NavbarProps {
 
 export const Navbar: FC<NavbarProps> = ({ showGameServerNav }) => {
   const { hasPermission } = useHasPermission([PERMISSIONS.ReadGameservers]);
+  const theme = useTheme();
 
   return (
     <Container animate={{ width: 325 }} transition={{ duration: 1, type: 'spring', bounce: 0.5 }}>
@@ -141,6 +141,16 @@ export const Navbar: FC<NavbarProps> = ({ showGameServerNav }) => {
       </IconNavContainer>
       <div style={{ width: '100%' }}>
         <UserDropdown />
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: theme.spacing['1'], alignItems: 'center' }}>
+          <span style={{ marginRight: theme.spacing['0_5'] }}>Domain: </span>
+          <Chip
+            showIcon="hover"
+            color="secondary"
+            variant="outline"
+            label={`${document.cookie.replace(TAKARO_DOMAIN_COOKIE_REGEX, '$1')}`}
+          />
+        </div>
+
         <IconNav>
           <Tooltip>
             <Tooltip.Trigger asChild>

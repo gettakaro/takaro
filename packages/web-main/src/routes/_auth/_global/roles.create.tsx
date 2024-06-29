@@ -8,8 +8,9 @@ import { RoleForm, IFormInputs } from './-roles/RoleCreateUpdateForm';
 import { hasPermission } from 'hooks/useHasPermission';
 
 export const Route = createFileRoute('/_auth/_global/roles/create')({
-  beforeLoad: ({ context }) => {
-    if (!hasPermission(context.auth.session, ['MANAGE_ROLES'])) {
+  beforeLoad: async ({ context }) => {
+    const session = await context.auth.getSession();
+    if (!hasPermission(session, ['MANAGE_ROLES'])) {
       throw redirect({ to: '/forbidden' });
     }
   },

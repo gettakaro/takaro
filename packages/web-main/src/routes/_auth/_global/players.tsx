@@ -40,8 +40,9 @@ export const StyledDialogBody = styled(Dialog.Body)`
   }
 `;
 export const Route = createFileRoute('/_auth/_global/players')({
-  beforeLoad: ({ context }) => {
-    if (!hasPermission(context.auth.session, ['READ_PLAYERS'])) {
+  beforeLoad: async ({ context }) => {
+    const session = await context.auth.getSession();
+    if (!hasPermission(session, ['READ_PLAYERS'])) {
       throw redirect({ to: '/forbidden' });
     }
   },
