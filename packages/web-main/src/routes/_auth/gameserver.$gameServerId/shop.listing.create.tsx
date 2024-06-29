@@ -5,8 +5,8 @@ import { gameServerSettingQueryOptions } from 'queries/setting';
 import { useQuery } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/listing/create')({
-  beforeLoad: ({ context }) => {
-    if (!hasPermission(context.auth.session, ['MANAGE_SHOP_LISTINGS'])) {
+  beforeLoad: async ({ context }) => {
+    if (!hasPermission(await context.auth.getSession(), ['MANAGE_SHOP_LISTINGS'])) {
       throw redirect({ to: '/forbidden' });
     }
   },

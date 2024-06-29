@@ -20,13 +20,13 @@ export const shopListingKeys = {
 export const shopListingQueryOptions = (shopListingId: string) =>
   queryOptions<ShopListingOutputDTO, AxiosError<ShopListingOutputDTO>>({
     queryKey: shopListingKeys.detail(shopListingId),
-    queryFn: async () => (await getApiClient().shop.shopControllerGetOne(shopListingId)).data.data,
+    queryFn: async () => (await getApiClient().shopListing.shopListingControllerGetOne(shopListingId)).data.data,
   });
 
 export const shopListingInfiniteQueryOptions = (queryParams: ShopListingSearchInputDTO = {}) => {
   return infiniteQueryOptions<ShopListingOutputArrayDTOAPI, AxiosError<ShopListingOutputArrayDTOAPI>>({
     queryKey: [...shopListingKeys.list(), 'infinite', ...queryParamsToArray(queryParams)],
-    queryFn: async () => (await getApiClient().shop.shopControllerSearch(queryParams)).data,
+    queryFn: async () => (await getApiClient().shopListing.shopListingControllerSearch(queryParams)).data,
     initialPageParam: 0,
     getNextPageParam: (lastPage) => hasNextPage(lastPage.meta),
   });
@@ -37,7 +37,8 @@ export const useShopListingCreate = () => {
 
   return mutationWrapper<ShopListingOutputDTO, ShopListingCreateDTO>(
     useMutation<ShopListingOutputDTO, AxiosError<ShopListingOutputDTO>, ShopListingCreateDTO>({
-      mutationFn: async (shopListing) => (await getApiClient().shop.shopControllerCreate(shopListing)).data.data,
+      mutationFn: async (shopListing) =>
+        (await getApiClient().shopListing.shopListingControllerCreate(shopListing)).data.data,
       onSuccess: (newShopListing) => {
         queryClient.invalidateQueries({ queryKey: shopListingKeys.list() });
         queryClient.setQueryData(shopListingKeys.detail(newShopListing.id), newShopListing);
@@ -54,7 +55,7 @@ interface ShopListingDelete {
 export const useShopListingRemove = () => {
   return mutationWrapper<APIOutput, ShopListingOutputDTO>(
     useMutation<APIOutput, AxiosError<APIOutput>, ShopListingDelete>({
-      mutationFn: async ({ id }) => (await getApiClient().shop.shopControllerDelete(id)).data,
+      mutationFn: async ({ id }) => (await getApiClient().shopListing.shopListingControllerDelete(id)).data,
       onSuccess: async () => {
         // await queryClient.invalidateQueries({ queryKey: shopListingKeys.list() });
         //await queryClient.invalidateQueries({
@@ -78,7 +79,7 @@ export const useShopListingUpdate = () => {
   return mutationWrapper<ShopListingOutputDTO, ShopListingUpdate>(
     useMutation<ShopListingOutputDTO, AxiosError<ShopListingOutputDTO>, ShopListingUpdate>({
       mutationFn: async ({ shopListingId, shopListingDetails }: ShopListingUpdate) => {
-        return (await apiClient.shop.shopControllerUpdate(shopListingId, shopListingDetails)).data.data;
+        return (await apiClient.shopListing.shopListingControllerUpdate(shopListingId, shopListingDetails)).data.data;
       },
       onSuccess: async (updatedShopListing) => {
         await queryClient.invalidateQueries({ queryKey: shopListingKeys.list() });

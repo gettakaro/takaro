@@ -6,8 +6,8 @@ import { SubmitHandler } from 'react-hook-form';
 import { useQuery } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/item/$itemId/update')({
-  beforeLoad: ({ context }) => {
-    if (!hasPermission(context.auth.session, ['READ_ITEMS', 'MANAGE_ITEMS'])) {
+  beforeLoad: async ({ context }) => {
+    if (!hasPermission(await context.auth.getSession(), ['READ_ITEMS', 'MANAGE_ITEMS'])) {
       throw redirect({ to: '/forbidden' });
     }
   },

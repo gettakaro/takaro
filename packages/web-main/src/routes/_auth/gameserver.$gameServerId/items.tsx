@@ -111,13 +111,13 @@ export function Component() {
     <Table
       title="List of items"
       id="items"
-      data={data?.data as ItemsOutputDTO[]}
-      pagination={p}
-      columnSearch={columnSearch}
-      sorting={sorting}
       columns={columnDefs}
-      columnFilters={columnFilters}
+      pagination={p}
+      sorting={sorting}
       isLoading={isLoading}
+      columnFiltering={columnFilters}
+      columnSearch={columnSearch}
+      data={data?.data as ItemsOutputDTO[]}
     />
   );
 }
