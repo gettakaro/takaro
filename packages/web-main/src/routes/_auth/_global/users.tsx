@@ -85,6 +85,9 @@ function Component() {
       header: 'Email',
       id: 'email',
       enableSorting: true,
+      meta: {
+        hiddenColumn: true,
+      },
     }),
     columnHelper.accessor('discordId', {
       header: 'Discord ID',

@@ -173,6 +173,7 @@ export class AuthService extends DomainScoped {
         let domainId = req.cookies ? req.cookies['takaro-domain'] : null;
 
         const identity = await ory.getIdentityFromReq(req);
+        if (!identity) return null;
 
         // If the client didn't provide a domain hint, we assume the first one.
         if (!domainId) {

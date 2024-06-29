@@ -4308,6 +4308,25 @@ export interface KickPlayerInputDTO {
 /**
  *
  * @export
+ * @interface LinkPlayerUnauthedInputDTO
+ */
+export interface LinkPlayerUnauthedInputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof LinkPlayerUnauthedInputDTO
+   */
+  email: string;
+  /**
+   *
+   * @type {string}
+   * @memberof LinkPlayerUnauthedInputDTO
+   */
+  code: string;
+}
+/**
+ *
+ * @export
  * @interface LoginDTO
  */
 export interface LoginDTO {
@@ -19640,6 +19659,47 @@ export const UserApiAxiosParamCreator = function (configuration?: Configuration)
       };
     },
     /**
+     * Link your player profile to Takaro, allowing web access for things like shop and stats. To get the code, use the /link command in the game.
+     * @summary Link player profile
+     * @param {LinkPlayerUnauthedInputDTO} [linkPlayerUnauthedInputDTO] LinkPlayerUnauthedInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    userControllerLinkPlayerProfile: async (
+      linkPlayerUnauthedInputDTO?: LinkPlayerUnauthedInputDTO,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/user/player`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        linkPlayerUnauthedInputDTO,
+        localVarRequestOptions,
+        configuration
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      *
      * @summary Login
      * @param {LoginDTO} [loginDTO] LoginDTO
@@ -20053,6 +20113,31 @@ export const UserApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
+     * Link your player profile to Takaro, allowing web access for things like shop and stats. To get the code, use the /link command in the game.
+     * @summary Link player profile
+     * @param {LinkPlayerUnauthedInputDTO} [linkPlayerUnauthedInputDTO] LinkPlayerUnauthedInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async userControllerLinkPlayerProfile(
+      linkPlayerUnauthedInputDTO?: LinkPlayerUnauthedInputDTO,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.userControllerLinkPlayerProfile(
+        linkPlayerUnauthedInputDTO,
+        options
+      );
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['UserApi.userControllerLinkPlayerProfile']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
      *
      * @summary Login
      * @param {LoginDTO} [loginDTO] LoginDTO
@@ -20297,6 +20382,21 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
       return localVarFp.userControllerInvite(inviteCreateDTO, options).then((request) => request(axios, basePath));
     },
     /**
+     * Link your player profile to Takaro, allowing web access for things like shop and stats. To get the code, use the /link command in the game.
+     * @summary Link player profile
+     * @param {LinkPlayerUnauthedInputDTO} [linkPlayerUnauthedInputDTO] LinkPlayerUnauthedInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    userControllerLinkPlayerProfile(
+      linkPlayerUnauthedInputDTO?: LinkPlayerUnauthedInputDTO,
+      options?: any
+    ): AxiosPromise<void> {
+      return localVarFp
+        .userControllerLinkPlayerProfile(linkPlayerUnauthedInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
      *
      * @summary Login
      * @param {LoginDTO} [loginDTO] LoginDTO
@@ -20459,6 +20559,23 @@ export class UserApi extends BaseAPI {
   public userControllerInvite(inviteCreateDTO?: InviteCreateDTO, options?: RawAxiosRequestConfig) {
     return UserApiFp(this.configuration)
       .userControllerInvite(inviteCreateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Link your player profile to Takaro, allowing web access for things like shop and stats. To get the code, use the /link command in the game.
+   * @summary Link player profile
+   * @param {LinkPlayerUnauthedInputDTO} [linkPlayerUnauthedInputDTO] LinkPlayerUnauthedInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof UserApi
+   */
+  public userControllerLinkPlayerProfile(
+    linkPlayerUnauthedInputDTO?: LinkPlayerUnauthedInputDTO,
+    options?: RawAxiosRequestConfig
+  ) {
+    return UserApiFp(this.configuration)
+      .userControllerLinkPlayerProfile(linkPlayerUnauthedInputDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
