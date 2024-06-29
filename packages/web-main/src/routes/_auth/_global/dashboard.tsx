@@ -49,9 +49,9 @@ function Component() {
 
   const { data } = useQuery({ ...PlayersOnlineStatsQueryOptions(), initialData: loaderData });
 
-  const { data: dailyActiveUsers, isLoading: isLoadingDau } = useQuery({
-    ...ActivityStatsQueryOptions({ timeType: 'daily', dataType: 'players' }),
-  });
+  const { data: dailyActiveUsers, isLoading: isLoadingDailyActiveUsers } = useQuery(
+    ActivityStatsQueryOptions({ timeType: 'daily', dataType: 'players' })
+  );
 
   const { control } = useForm({
     defaultValues: {
@@ -146,9 +146,13 @@ function Component() {
         </div>
         <Stats border={false} direction="horizontal">
           <Stats.Stat
-            isLoading={isLoadingDau}
+            isLoading={isLoadingDailyActiveUsers}
             description="Daily active players"
-            value={`${dailyActiveUsers?.values[dailyActiveUsers?.values.length - 1][1]} players`}
+            value={
+              dailyActiveUsers && dailyActiveUsers.values && dailyActiveUsers.values.length > 0
+                ? `${dailyActiveUsers.values[dailyActiveUsers?.values.length - 1][1]} players`
+                : 'No data available'
+            }
           />
           <Stats.Stat
             isLoading={isLoadingCronJobsExecuted}
