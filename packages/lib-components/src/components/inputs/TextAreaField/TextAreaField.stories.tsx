@@ -31,7 +31,7 @@ export default {
 } as Meta<TextAreaFieldProps>;
 
 const validationSchema = z.object({
-  name: z.string().min(6).nonempty('Name is a required field.'),
+  name: z.string().min(6),
 });
 
 type FormFields = { name: string };

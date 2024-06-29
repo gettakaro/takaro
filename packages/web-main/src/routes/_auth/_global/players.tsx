@@ -233,7 +233,7 @@ const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
   const navigate = useNavigate({ from: Route.fullPath });
 
   const validationSchema = z.object({
-    reason: z.string().min(1).max(100).nonempty(),
+    reason: z.string().min(1).max(100),
   });
 
   const { handleSubmit, control } = useForm<FormInputs>({

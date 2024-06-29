@@ -18,7 +18,7 @@ type FormFields = { item: string };
 export const Default: StoryFn<ItemSelectQueryViewProps> = (args) => {
   const [selectItem, setSelectedItem] = useState<string>('');
   const validationSchema = z.object({
-    item: z.string().min(6).nonempty('Item is a required field.'),
+    item: z.string().min(6, 'Item must atleast have 6 characters'),
   });
 
   const gameServer: GameServerOutputDTO = {
