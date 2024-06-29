@@ -20,7 +20,7 @@ async function main() {
 
   const allPlayerTeleports = await takaro.variable.variableControllerSearch({
     search: {
-      key: getVariableKey('tp_'),
+      key: getVariableKey(''),
     },
     filters: {
       gameServerId: [gameServerId],
