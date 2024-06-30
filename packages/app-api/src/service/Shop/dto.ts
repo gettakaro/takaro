@@ -52,6 +52,7 @@ export class ShopListingUpdateDTO extends TakaroDTO<ShopListingUpdateDTO> {
   @IsNumber()
   price!: number;
   @IsString()
+  @IsOptional()
   name?: string;
 }
 

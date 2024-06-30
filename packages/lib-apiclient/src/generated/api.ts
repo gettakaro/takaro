@@ -7134,7 +7134,7 @@ export interface ShopListingUpdateDTO {
      * @type {string}
      * @memberof ShopListingUpdateDTO
      */
-    'name': string;
+    'name'?: string;
 }
 /**
  * 
