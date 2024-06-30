@@ -238,6 +238,11 @@ export class GameServerService extends TakaroService<
         );
       }
 
+      // When a user is trying to fix their connection info, it's important we don't cache stale/wrong connection info
+      if (!reachability.connectable) {
+        gameClassCache.delete(id);
+      }
+
       return reachability;
     } else if (connectionInfo && type) {
       const instance = await getGame(type, connectionInfo, {});
