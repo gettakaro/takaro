@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto';
-import { upMany, logs, exec, upAll, down, run, pullAll } from 'docker-compose';
+import { upMany, logs, exec, upAll, down, run, pullAll } from 'docker-compose/dist/v2';
 import { $ } from 'zx';
 import { writeFile, mkdir } from 'fs/promises';
 
@@ -56,6 +56,8 @@ async function cleanUp() {
 async function main() {
   await cleanUp();
   await mkdir('./reports/integrationTests', { recursive: true });
+
+  await exec('docker', ['network', 'create', 'takaro'], composeOpts);
 
   console.log('Bringing up datastores');
   await upMany(['postgresql', 'redis', 'postgresql_kratos', 'postgresql_hydra'], composeOpts);
