@@ -6,7 +6,7 @@ import { AuthenticatedRequest, AuthService } from '../../service/AuthService.js'
 import { Body, Get, Post, JsonController, UseBefore, Req, Params, Res, Delete, Put } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { ParamId } from '../../lib/validators.js';
+import { IdUuidDTO, ParamId } from '../../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 import { RangeFilterCreatedAndUpdatedAt } from '../shared.js';
@@ -119,10 +119,10 @@ export class ShopListingController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_SHOP_LISTINGS]))
   @Delete('/:id')
-  @ResponseSchema(APIOutput)
+  @ResponseSchema(IdUuidDTO)
   async delete(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new ShopListingService(req.domainId);
     await service.delete(params.id);
-    return apiResponse();
+    return apiResponse({ id: params.id });
   }
 }

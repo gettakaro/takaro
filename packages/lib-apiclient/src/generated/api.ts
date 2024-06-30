@@ -17071,7 +17071,7 @@ export const ShopListingApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async shopListingControllerDelete(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
+        async shopListingControllerDelete(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<IdUuidDTO>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.shopListingControllerDelete(id, options);
             const index = configuration?.serverIndex ?? 0;
             const operationBasePath = operationServerMap['ShopListingApi.shopListingControllerDelete']?.[index]?.url;
@@ -17144,7 +17144,7 @@ export const ShopListingApiFactory = function (configuration?: Configuration, ba
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        shopListingControllerDelete(id: string, options?: any): AxiosPromise<APIOutput> {
+        shopListingControllerDelete(id: string, options?: any): AxiosPromise<IdUuidDTO> {
             return localVarFp.shopListingControllerDelete(id, options).then((request) => request(axios, basePath));
         },
         /**
