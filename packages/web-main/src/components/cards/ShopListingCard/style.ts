@@ -14,7 +14,16 @@ export const CardBody = styled.div`
   justify-content: flex-start;
   align-items: center;
   width: 200px;
-  height: 400px;
+  height: 370px;
+
+  h2 {
+    max-width: 200px;
+    margin-bottom: ${({ theme }) => theme.spacing['1']};
+    margin-top: ${({ theme }) => theme.spacing['1']};
+    text-transform: capitalize;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
 `;
 
 export const Image = styled.img`

@@ -4,6 +4,7 @@ import { ShopListingCreateUpdateForm, FormValues } from './-components/-ShopList
 import { gameServerSettingQueryOptions } from 'queries/setting';
 import { shopListingQueryOptions, useShopListingUpdate } from 'queries/shopListing';
 import { SubmitHandler } from 'react-hook-form';
+import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/listing/$shopListingId/update')({
   beforeLoad: async ({ context }) => {
@@ -26,6 +27,7 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/listi
 });
 
 function Component() {
+  useDocumentTitle('Update Listing');
   const { gameServerId, shopListingId } = Route.useParams();
   const { currencyName, shopListing } = Route.useLoaderData();
   const navigate = Route.useNavigate();

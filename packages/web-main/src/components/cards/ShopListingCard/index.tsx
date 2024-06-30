@@ -1,16 +1,16 @@
 import {
-  Alert,
+  Avatar,
   Button,
   Card,
   Dialog,
   Dropdown,
   IconButton,
   TextField,
-  ValueConfirmationField,
+  getInitials,
   useTheme,
 } from '@takaro/lib-components';
 import { FC, MouseEvent, useState } from 'react';
-import { Header, CardBody, Image } from './style';
+import { Header, CardBody } from './style';
 import { useForm, SubmitHandler } from 'react-hook-form';
 
 import {
@@ -37,19 +37,25 @@ interface ShopListingCard {
   currencyName: string;
   gameServerId: string;
   gameServerType: GameServerOutputDTOTypeEnum;
+  currency: number;
 }
 
 const validationSchema = z.object({
   amount: z.number().int().positive().min(1),
 });
 
-export const ShopListingCard: FC<ShopListingCard> = ({ currencyName, gameServerId, shopListing, gameServerType }) => {
-  const friendlyName = 'Listing';
+export const ShopListingCard: FC<ShopListingCard> = ({
+  currencyName,
+  gameServerId,
+  shopListing,
+  gameServerType,
+  currency,
+}) => {
   const theme = useTheme();
-  const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
-  const [valid, setValid] = useState<boolean>(false);
+  const [openDeleteConfirmationDialog, setOpenDeleteConfirmationDialog] = useState<boolean>(false);
+
   const navigate = useNavigate();
-  const { mutate: createShopOrderMutate, isPending: isPendingShopOrderCreate } = useShopOrderCreate();
+  const { mutateAsync: createShopOrderMutate, isPending: isPendingShopOrderCreate } = useShopOrderCreate();
   const { mutate: deleteShopListing } = useShopListingDelete();
   const { handleSubmit, control, watch } = useForm<z.infer<typeof validationSchema>>({
     mode: 'onSubmit',
@@ -58,8 +64,9 @@ export const ShopListingCard: FC<ShopListingCard> = ({ currencyName, gameServerI
     },
   });
 
-  const name = shopListing.name || shopListing.item.name;
+  const shopListingName = shopListing.name || shopListing.item.name;
   const hasPermission = useHasPermission(['MANAGE_SHOP_LISTINGS']);
+  const price = watch('amount') == 0 ? shopListing.price * 1 : shopListing.price * watch('amount');
 
   const handleOnEditClick = (e: MouseEvent) => {
     e.stopPropagation();
@@ -78,13 +85,13 @@ export const ShopListingCard: FC<ShopListingCard> = ({ currencyName, gameServerI
   };
 
   const handleOnDeleteClick = () => {
-    deleteShopListing({ id: shopListing.id });
-    setOpenDeleteDialog(true);
+    setOpenDeleteConfirmationDialog(true);
   };
 
-  const handleOnDelete = (e: MouseEvent) => {
+  const handleOnDeleteConfirmationClick = (e: MouseEvent) => {
     e.stopPropagation();
-    setOpenDeleteDialog(false);
+    deleteShopListing({ id: shopListing.id });
+    setOpenDeleteConfirmationDialog(false);
   };
 
   const handleOnBuyClick: SubmitHandler<z.infer<typeof validationSchema>> = ({ amount }) => {
@@ -117,18 +124,20 @@ export const ShopListingCard: FC<ShopListingCard> = ({ currencyName, gameServerI
               </Dropdown>
             )}
           </Header>
-          {/* TODO: add default fallback icon */}
-          <Image
-            src={`/icons/${gameServerTypeToIconFolderMap[gameServerType]}/${shopListing.item.code}.png`}
-            alt={`Item icon of ${shopListing.item.name}`}
-            width="100%"
-          />
-          <h2>{name}</h2>
+          <Avatar size="huge">
+            <Avatar.Image
+              src={`/icons/${gameServerTypeToIconFolderMap[gameServerType]}/${shopListing.item.code}.png`}
+              alt={`Item icon of ${shopListing.item.name}`}
+            />
+            <Avatar.FallBack>{getInitials(shopListingName)}</Avatar.FallBack>
+          </Avatar>
+          <h2>{shopListingName}</h2>
           <form onSubmit={handleSubmit(handleOnBuyClick)}>
             <TextField
               loading={isPendingShopOrderCreate}
               control={control}
               name="amount"
+              label="Amount"
               type="number"
               placeholder="Enter amount"
               hasMargin={false}
@@ -136,32 +145,20 @@ export const ShopListingCard: FC<ShopListingCard> = ({ currencyName, gameServerI
             <Button
               isLoading={isPendingShopOrderCreate}
               fullWidth
-              text={`${
-                watch('amount') == 0 ? shopListing.price * 1 : shopListing.price * watch('amount')
-              } ${currencyName}`}
+              type="submit"
+              disabled={currency < price}
+              text={`${price} ${currencyName}`}
             />
           </form>
         </CardBody>
       </Card>
 
-      <Dialog open={openDeleteDialog} onOpenChange={setOpenDeleteDialog}>
+      <Dialog open={openDeleteConfirmationDialog} onOpenChange={setOpenDeleteConfirmationDialog}>
         <Dialog.Content>
           <Dialog.Heading>Delete shop listing</Dialog.Heading>
           <Dialog.Body size="medium">
-            <Alert
-              variant="info"
-              text="You can hold down shift when deleting a shop listing to bypass this confirmation entirely."
-            />
-            <p>
-              Are you sure you want to delete the shop listing? To confirm, type <strong>{friendlyName}</strong>.
-            </p>
-            <ValueConfirmationField
-              value={friendlyName}
-              onValidChange={(v) => setValid(v)}
-              label="Shop listing"
-              id="deleteShopListingConfirmation"
-            />
-            <Button onClick={handleOnDelete} disabled={!valid} fullWidth text="Delete shop listing" color="error" />
+            <p>Are you sure you want to delete '{shopListingName}' from the shop?</p>
+            <Button onClick={handleOnDeleteConfirmationClick} fullWidth text="Delete from shop" color="error" />
           </Dialog.Body>
         </Dialog.Content>
       </Dialog>

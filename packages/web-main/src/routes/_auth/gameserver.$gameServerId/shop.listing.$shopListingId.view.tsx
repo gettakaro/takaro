@@ -3,6 +3,7 @@ import { hasPermission } from 'hooks/useHasPermission';
 import { ShopListingCreateUpdateForm } from './-components/-ShopListingCreateUpdateForm';
 import { gameServerSettingQueryOptions } from 'queries/setting';
 import { shopListingQueryOptions } from 'queries/shopListing';
+import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/listing/$shopListingId/view')({
   beforeLoad: async ({ context }) => {
@@ -25,6 +26,7 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/listi
 });
 
 function Component() {
+  useDocumentTitle('View Listing');
   const { gameServerId } = Route.useParams();
   const { currencyName, shopListing } = Route.useLoaderData();
 
@@ -34,7 +36,6 @@ function Component() {
       initialData={shopListing}
       currencyName={currencyName}
       gameServerId={gameServerId}
-      onSubmit={() => {}}
     />
   );
 }

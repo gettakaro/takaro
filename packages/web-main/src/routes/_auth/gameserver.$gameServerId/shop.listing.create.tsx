@@ -5,6 +5,7 @@ import { gameServerSettingQueryOptions } from 'queries/setting';
 import { useQuery } from '@tanstack/react-query';
 import { SubmitHandler } from 'react-hook-form';
 import { useShopListingCreate } from 'queries/shopListing';
+import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/listing/create')({
   beforeLoad: async ({ context }) => {
@@ -13,12 +14,15 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/listi
     }
   },
   loader: async ({ context, params }) => {
-    return context.queryClient.ensureQueryData(gameServerSettingQueryOptions('currencyName', params.gameServerId));
+    return await context.queryClient.ensureQueryData(
+      gameServerSettingQueryOptions('currencyName', params.gameServerId)
+    );
   },
   component: Component,
 });
 
 function Component() {
+  useDocumentTitle('Create Listing');
   const { gameServerId } = Route.useParams();
   const loaderCurrencyName = Route.useLoaderData();
   const navigate = Route.useNavigate();

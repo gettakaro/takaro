@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ShopListingOutputDTO } from '@takaro/apiclient';
 import { Button, Drawer, TextField, styled } from '@takaro/lib-components';
-import { useNavigate } from '@tanstack/react-router';
+import { useRouter } from '@tanstack/react-router';
 import { ItemSelect } from 'components/selects/ItemSelectQuery';
 import { FC, useEffect, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
@@ -41,8 +41,8 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
 }) => {
   const formId = 'shopitem-form';
   const [open, setOpen] = useState(true);
-  const navigate = useNavigate();
   const readOnly = onSubmit === undefined;
+  const { history } = useRouter();
 
   const { control, handleSubmit } = useForm<FormValues>({
     mode: 'onSubmit',
@@ -60,17 +60,14 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
 
   useEffect(() => {
     if (!open) {
-      navigate({
-        to: '/gameserver/$gameServerId/shop',
-        params: { gameServerId },
-      });
+      history.go(-1);
     }
   }, [open]);
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <Drawer.Content>
-        <Drawer.Heading>{initialData ? 'Update' : 'Create'} Shop item</Drawer.Heading>
+        <Drawer.Heading>{initialData ? (readOnly ? 'View' : 'Update') : 'Create'} Shop item</Drawer.Heading>
         <Drawer.Body>
           <form onSubmit={onSubmit && handleSubmit(onSubmit)} id={formId}>
             <ItemSelect
@@ -102,14 +99,25 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
               canClear
             />
               */}
-            <TextField readOnly={readOnly} control={control} name="name" label="Name" loading={isLoading} />
+            <TextField
+              readOnly={readOnly}
+              control={control}
+              name="name"
+              label="Name"
+              loading={isLoading}
+              description="If no name is provided, the name of the item will be used."
+            />
           </form>
         </Drawer.Body>
         <Drawer.Footer>
-          <ButtonContainer>
-            <Button text="Cancel" onClick={() => setOpen(false)} color="background" type="button" />
-            <Button type="submit" fullWidth text="Save changes" form={formId} />
-          </ButtonContainer>
+          {readOnly ? (
+            <Button fullWidth text="Close view" />
+          ) : (
+            <ButtonContainer>
+              <Button text="Cancel" onClick={() => setOpen(false)} color="background" type="button" />
+              <Button type="submit" fullWidth text="Save changes" form={formId} />
+            </ButtonContainer>
+          )}
         </Drawer.Footer>
       </Drawer.Content>
     </Drawer>
