@@ -1,11 +1,10 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
-import { ShopListingCreateUpdateForm, FormValues } from './-components/-ShopListingCreateUpdateForm';
+import { ShopListingCreateUpdateForm } from './-components/-ShopListingCreateUpdateForm';
 import { gameServerSettingQueryOptions } from 'queries/setting';
-import { shopListingQueryOptions, useShopListingUpdate } from 'queries/shopListing';
-import { SubmitHandler } from 'react-hook-form';
+import { shopListingQueryOptions } from 'queries/shopListing';
 
-export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/listing/$shopListingId/update')({
+export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/listing/$shopListingId/view')({
   beforeLoad: async ({ context }) => {
     if (!hasPermission(await context.auth.getSession(), ['MANAGE_SHOP_LISTINGS'])) {
       throw redirect({ to: '/forbidden' });
@@ -26,33 +25,16 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/listi
 });
 
 function Component() {
-  const { gameServerId, shopListingId } = Route.useParams();
+  const { gameServerId } = Route.useParams();
   const { currencyName, shopListing } = Route.useLoaderData();
-  const navigate = Route.useNavigate();
-  const { mutate, error } = useShopListingUpdate();
-
-  const onSubmit: SubmitHandler<FormValues> = ({ itemId, price, name }) => {
-    mutate({
-      shopListingId,
-      shopListingDetails: {
-        itemId,
-        price,
-        gameServerId,
-        name,
-      },
-    });
-
-    navigate({ to: '/gameserver/$gameServerId/shop', params: { gameServerId } });
-  };
 
   return (
     <ShopListingCreateUpdateForm
-      onSubmit={onSubmit}
-      isLoading={false}
-      error={error}
+      error={null}
       initialData={shopListing}
-      gameServerId={gameServerId}
       currencyName={currencyName}
+      gameServerId={gameServerId}
+      onSubmit={() => {}}
     />
   );
 }

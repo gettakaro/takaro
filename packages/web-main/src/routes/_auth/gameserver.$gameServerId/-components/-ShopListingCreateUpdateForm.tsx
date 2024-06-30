@@ -2,7 +2,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { ShopListingOutputDTO } from '@takaro/apiclient';
 import { Button, Drawer, TextField, styled } from '@takaro/lib-components';
 import { useNavigate } from '@tanstack/react-router';
-import { RoleSelect } from 'components/selects';
 import { ItemSelect } from 'components/selects/ItemSelectQuery';
 import { FC, useEffect, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
@@ -18,23 +17,20 @@ interface ShopListingCreateUpdateFormProps {
   initialData?: ShopListingOutputDTO;
   currencyName: string;
   isLoading?: boolean;
-  onSubmit: SubmitHandler<any>;
+  onSubmit?: SubmitHandler<FormValues>;
   error: string | string[] | null;
   gameServerId: string;
 }
 
 const validationSchema = z.object({
-  name: z.string().min(1),
+  name: z.string().optional(),
   price: z.number().min(0),
-  items: z
-    .array(
-      z.object({
-        itemId: z.string().min(1),
-      })
-    )
-    .min(1, 'At least one item is required'),
-  roleIds: z.array(z.string()),
+  itemId: z.string().min(1),
+  //items: z.array(z.string()).min(1, 'At least one item is required'),
+  //roleIds: z.array(z.string()).optional(),
 });
+
+export type FormValues = z.infer<typeof validationSchema>;
 
 export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> = ({
   gameServerId,
@@ -46,8 +42,9 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
   const formId = 'shopitem-form';
   const [open, setOpen] = useState(true);
   const navigate = useNavigate();
+  const readOnly = onSubmit === undefined;
 
-  const { control, handleSubmit } = useForm<z.infer<typeof validationSchema>>({
+  const { control, handleSubmit } = useForm<FormValues>({
     mode: 'onSubmit',
     resolver: zodResolver(validationSchema),
 
@@ -55,8 +52,8 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
       values: {
         name: initialData.name,
         price: initialData.price,
-        items: [],
-        roleIds: [],
+        itemId: initialData.itemId!,
+        //roleIds: [],
       },
     }),
   });
@@ -75,17 +72,26 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
       <Drawer.Content>
         <Drawer.Heading>{initialData ? 'Update' : 'Create'} Shop item</Drawer.Heading>
         <Drawer.Body>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <TextField control={control} name="friendlyName" label="Name" loading={isLoading} required />
+          <form onSubmit={onSubmit && handleSubmit(onSubmit)} id={formId}>
+            <ItemSelect
+              gameServerId={gameServerId}
+              control={control}
+              name="itemId"
+              label="Item"
+              description="The items that will be given to the player when they buy this item"
+              readOnly={readOnly}
+            />
             <TextField
               control={control}
               type="number"
               name="price"
               label="Price"
+              readOnly={readOnly}
               loading={isLoading}
               suffix={currencyName}
               required
             />
+            {/*
             <RoleSelect
               multiple
               control={control}
@@ -95,14 +101,8 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
               loading={isLoading}
               canClear
             />
-            <ItemSelect
-              gameServerId={gameServerId}
-              multiple
-              control={control}
-              name="items"
-              label="Items"
-              description="The items that will be given to the player when they buy this item"
-            />
+              */}
+            <TextField readOnly={readOnly} control={control} name="name" label="Name" loading={isLoading} />
           </form>
         </Drawer.Body>
         <Drawer.Footer>

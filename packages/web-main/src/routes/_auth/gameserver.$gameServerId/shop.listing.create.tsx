@@ -1,8 +1,10 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
-import { ShopListingCreateUpdateForm } from './-components/-ShopListingCreateUpdateForm';
+import { ShopListingCreateUpdateForm, FormValues } from './-components/-ShopListingCreateUpdateForm';
 import { gameServerSettingQueryOptions } from 'queries/setting';
 import { useQuery } from '@tanstack/react-query';
+import { SubmitHandler } from 'react-hook-form';
+import { useShopListingCreate } from 'queries/shopListing';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/listing/create')({
   beforeLoad: async ({ context }) => {
@@ -21,12 +23,20 @@ function Component() {
   const loaderCurrencyName = Route.useLoaderData();
   const navigate = Route.useNavigate();
 
+  const { mutate } = useShopListingCreate();
+
   const { data: currencyName } = useQuery({
     ...gameServerSettingQueryOptions('currencyName', gameServerId),
     initialData: loaderCurrencyName,
   });
 
-  const onSubmit = () => {
+  const onSubmit: SubmitHandler<FormValues> = ({ name, itemId, price }) => {
+    mutate({
+      name,
+      price,
+      gameServerId,
+      itemId,
+    });
     navigate({ to: '/gameserver/$gameServerId/shop', params: { gameServerId } });
   };
 

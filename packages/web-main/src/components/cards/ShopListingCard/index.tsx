@@ -2,7 +2,6 @@ import {
   Alert,
   Button,
   Card,
-  Chip,
   Dialog,
   Dropdown,
   IconButton,
@@ -12,7 +11,6 @@ import {
 } from '@takaro/lib-components';
 import { FC, MouseEvent, useState } from 'react';
 import { Header, CardBody, Image } from './style';
-import bullets from './bullets.png';
 import { useForm, SubmitHandler } from 'react-hook-form';
 
 import {
@@ -23,26 +21,36 @@ import {
 } from 'react-icons/ai';
 import { z } from 'zod';
 import { useNavigate } from '@tanstack/react-router';
+import { useShopOrderCreate } from 'queries/shopOrder';
+import { GameServerOutputDTOTypeEnum, ShopListingOutputDTO } from '@takaro/apiclient';
+import { useHasPermission } from 'hooks/useHasPermission';
+import { useShopListingDelete } from 'queries/shopListing';
+
+const gameServerTypeToIconFolderMap = {
+  [GameServerOutputDTOTypeEnum.Mock]: 'rust',
+  [GameServerOutputDTOTypeEnum.Rust]: 'rust',
+  [GameServerOutputDTOTypeEnum.Sevendaystodie]: '7d2d',
+};
 
 interface ShopListingCard {
-  shopListingId: string;
-  price: number;
-  name: string;
+  shopListing: ShopListingOutputDTO;
   currencyName: string;
   gameServerId: string;
+  gameServerType: GameServerOutputDTOTypeEnum;
 }
 
 const validationSchema = z.object({
   amount: z.number().int().positive().min(1),
 });
 
-export const ShopListingCard: FC<ShopListingCard> = ({ price, name, currencyName, gameServerId, shopListingId }) => {
+export const ShopListingCard: FC<ShopListingCard> = ({ currencyName, gameServerId, shopListing, gameServerType }) => {
   const friendlyName = 'Listing';
   const theme = useTheme();
-  const [openDialog, setOpenDialog] = useState<boolean>(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const [valid, setValid] = useState<boolean>(false);
   const navigate = useNavigate();
-
+  const { mutate: createShopOrderMutate, isPending: isPendingShopOrderCreate } = useShopOrderCreate();
+  const { mutate: deleteShopListing } = useShopListingDelete();
   const { handleSubmit, control, watch } = useForm<z.infer<typeof validationSchema>>({
     mode: 'onSubmit',
     defaultValues: {
@@ -50,31 +58,40 @@ export const ShopListingCard: FC<ShopListingCard> = ({ price, name, currencyName
     },
   });
 
-  const handleOnBuyClick = (e: MouseEvent) => {
-    e.stopPropagation();
-  };
+  const name = shopListing.name || shopListing.item.name;
+  const hasPermission = useHasPermission(['MANAGE_SHOP_LISTINGS']);
 
   const handleOnEditClick = (e: MouseEvent) => {
     e.stopPropagation();
     navigate({
       to: '/gameserver/$gameServerId/shop/listing/$shopListingId/update',
-      params: { gameServerId, shopListingId },
+      params: { gameServerId, shopListingId: shopListing.id },
     });
   };
 
   const handleOnViewClick = (e: MouseEvent) => {
     e.stopPropagation();
+    navigate({
+      to: '/gameserver/$gameServerId/shop/listing/$shopListingId/view',
+      params: { gameServerId, shopListingId: shopListing.id },
+    });
   };
 
-  const handleOnDeleteClick = () => {};
+  const handleOnDeleteClick = () => {
+    deleteShopListing({ id: shopListing.id });
+    setOpenDeleteDialog(true);
+  };
 
   const handleOnDelete = (e: MouseEvent) => {
     e.stopPropagation();
-    setOpenDialog(false);
+    setOpenDeleteDialog(false);
   };
 
-  const onSubmit: SubmitHandler<z.infer<typeof validationSchema>> = ({}) => {
-    // todo buy item
+  const handleOnBuyClick: SubmitHandler<z.infer<typeof validationSchema>> = ({ amount }) => {
+    createShopOrderMutate({
+      amount,
+      listingId: shopListing.id,
+    });
   };
 
   return (
@@ -82,36 +99,52 @@ export const ShopListingCard: FC<ShopListingCard> = ({ price, name, currencyName
       <Card>
         <CardBody>
           <Header>
-            <Chip variant="outline" color="primary" label="most popular" />
-            <Dropdown>
-              <Dropdown.Trigger asChild>
-                <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
-              </Dropdown.Trigger>
-              <Dropdown.Menu>
-                <Dropdown.Menu.Item onClick={handleOnViewClick} icon={<ViewIcon />} label="View listing" />
-                <Dropdown.Menu.Item onClick={handleOnEditClick} icon={<EditIcon />} label="Update listing" />
-                <Dropdown.Menu.Item
-                  onClick={handleOnDeleteClick}
-                  icon={<DeleteIcon fill={theme.colors.error} />}
-                  label="Delete listing"
-                />
-              </Dropdown.Menu>
-            </Dropdown>
+            {/*<Chip variant="outline" color="primary" label="most popular" />*/}
+            {hasPermission && (
+              <Dropdown>
+                <Dropdown.Trigger asChild>
+                  <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
+                </Dropdown.Trigger>
+                <Dropdown.Menu>
+                  <Dropdown.Menu.Item onClick={handleOnViewClick} icon={<ViewIcon />} label="View listing" />
+                  <Dropdown.Menu.Item onClick={handleOnEditClick} icon={<EditIcon />} label="Update listing" />
+                  <Dropdown.Menu.Item
+                    onClick={handleOnDeleteClick}
+                    icon={<DeleteIcon fill={theme.colors.error} />}
+                    label="Delete listing"
+                  />
+                </Dropdown.Menu>
+              </Dropdown>
+            )}
           </Header>
-          <Image src={bullets} alt="bullets" width="100%" />
+          {/* TODO: add default fallback icon */}
+          <Image
+            src={`/icons/${gameServerTypeToIconFolderMap[gameServerType]}/${shopListing.item.code}.png`}
+            alt={`Item icon of ${shopListing.item.name}`}
+            width="100%"
+          />
           <h2>{name}</h2>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <TextField control={control} name="amount" type="number" placeholder="Enter amount" hasMargin={false} />
+          <form onSubmit={handleSubmit(handleOnBuyClick)}>
+            <TextField
+              loading={isPendingShopOrderCreate}
+              control={control}
+              name="amount"
+              type="number"
+              placeholder="Enter amount"
+              hasMargin={false}
+            />
             <Button
+              isLoading={isPendingShopOrderCreate}
               fullWidth
-              text={`Buy for ${watch('amount') == 0 ? price * 1 : price * watch('amount')} ${currencyName}`}
-              onClick={handleOnBuyClick}
+              text={`${
+                watch('amount') == 0 ? shopListing.price * 1 : shopListing.price * watch('amount')
+              } ${currencyName}`}
             />
           </form>
         </CardBody>
       </Card>
 
-      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+      <Dialog open={openDeleteDialog} onOpenChange={setOpenDeleteDialog}>
         <Dialog.Content>
           <Dialog.Heading>Delete shop listing</Dialog.Heading>
           <Dialog.Body size="medium">

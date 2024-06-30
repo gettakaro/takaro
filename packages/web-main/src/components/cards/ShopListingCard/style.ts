@@ -3,7 +3,7 @@ import { styled } from '@takaro/lib-components';
 export const Header = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   width: 100%;
   margin-bottom: ${({ theme }) => theme.spacing['2']};
 `;

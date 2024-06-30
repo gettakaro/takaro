@@ -52,8 +52,8 @@ interface ShopListingDelete {
   id: string;
 }
 
-export const useShopListingRemove = () => {
-  return mutationWrapper<APIOutput, ShopListingOutputDTO>(
+export const useShopListingDelete = () => {
+  return mutationWrapper<APIOutput, ShopListingDelete>(
     useMutation<APIOutput, AxiosError<APIOutput>, ShopListingDelete>({
       mutationFn: async ({ id }) => (await getApiClient().shopListing.shopListingControllerDelete(id)).data,
       onSuccess: async () => {

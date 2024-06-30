@@ -5,7 +5,7 @@ import {
   ShopOrderCreateDTO,
   ShopOrderOutputArrayDTOAPI,
   ShopOrderOutputDTO,
-  ShopOrderSearchInputAllowedFilters,
+  ShopOrderSearchInputDTO,
 } from '@takaro/apiclient';
 import { AxiosError } from 'axios';
 import { getApiClient } from 'util/getApiClient';
@@ -18,15 +18,19 @@ export const shopOrderKeys = {
 export const shopOrderQueryOptions = (shopOrderId: string) =>
   queryOptions<ShopOrderOutputDTO, AxiosError<ShopOrderOutputDTO>>({
     queryKey: shopOrderKeys.detail(shopOrderId),
-    queryFn: async () => (await getApiClient().shopOrder.shopOrderControllerGetOrder(shopOrderId)).data.data,
+    queryFn: async () => (await getApiClient().shopOrder.shopOrderControllerGetOne(shopOrderId)).data.data,
   });
 
-export const shopListingInfiniteQueryOptions = (queryParams: ShopOrderSearchInputAllowedFilters = {}) => {
+export const shopOrdersQueryOptions = (queryParams: ShopOrderSearchInputDTO) =>
+  queryOptions<ShopOrderOutputArrayDTOAPI, AxiosError<ShopOrderOutputArrayDTOAPI>>({
+    queryKey: [...shopOrderKeys.list(), ...queryParamsToArray(queryParams)],
+    queryFn: async () => (await getApiClient().shopOrder.shopOrderControllerSearch(queryParams)).data,
+  });
+
+export const shopOrderInfiniteQueryOptions = (queryParams: ShopOrderSearchInputDTO = {}) => {
   return infiniteQueryOptions<ShopOrderOutputArrayDTOAPI, AxiosError<ShopOrderOutputArrayDTOAPI>>({
     queryKey: [...shopOrderKeys.list(), 'infinite', ...queryParamsToArray(queryParams)],
-
-    // TODO; pass queryParams
-    queryFn: async () => (await getApiClient().shopOrder.shopOrderControllerSearchOrder()).data,
+    queryFn: async () => (await getApiClient().shopOrder.shopOrderControllerSearch(queryParams)).data,
     initialPageParam: 0,
     getNextPageParam: (lastPage) => hasNextPage(lastPage.meta),
   });
@@ -37,8 +41,7 @@ export const useShopOrderCreate = () => {
 
   return mutationWrapper<ShopOrderOutputDTO, ShopOrderCreateDTO>(
     useMutation<ShopOrderOutputDTO, AxiosError<ShopOrderOutputDTO>, ShopOrderCreateDTO>({
-      mutationFn: async (shopOrder) =>
-        (await getApiClient().shopOrder.shopOrderControllerCreateOrder(shopOrder)).data.data,
+      mutationFn: async (shopOrder) => (await getApiClient().shopOrder.shopOrderControllerCreate(shopOrder)).data.data,
       onSuccess: (newShopOrder) => {
         queryClient.invalidateQueries({ queryKey: shopOrderKeys.list() });
         queryClient.setQueryData(shopOrderKeys.detail(newShopOrder.id), newShopOrder);
@@ -48,12 +51,12 @@ export const useShopOrderCreate = () => {
   );
 };
 
-interface ShopOrderDelete {
+interface ShopOrderCancel {
   shopOrderId: string;
 }
 export const useShopOrderCancel = () => {
-  return mutationWrapper<APIOutput, ShopOrderOutputDTO>(
-    useMutation<APIOutput, AxiosError<APIOutput>, ShopOrderDelete>({
+  return mutationWrapper<APIOutput, ShopOrderCancel>(
+    useMutation<APIOutput, AxiosError<APIOutput>, ShopOrderCancel>({
       mutationFn: async ({ shopOrderId }) =>
         (await getApiClient().shopOrder.shopOrderControllerCancel(shopOrderId)).data,
     }),

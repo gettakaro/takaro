@@ -6,15 +6,18 @@ import { ShopListingCard } from 'components/cards/ShopListingCard';
 import { gameServerSettingQueryOptions } from 'queries/setting';
 import { shopListingInfiniteQueryOptions } from 'queries/shopListing';
 import { Fragment } from 'react/jsx-runtime';
+import { gameServerQueryOptions } from 'queries/gameserver';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/')({
   loader: async ({ context, params }) => {
-    const [currencyName] = await Promise.all([
+    const [currencyName, gameServer] = await Promise.all([
       context.queryClient.ensureQueryData(gameServerSettingQueryOptions('currencyName', params.gameServerId)),
+      context.queryClient.ensureQueryData(gameServerQueryOptions(params.gameServerId)),
     ]);
 
     return {
       currencyName: currencyName.value,
+      gameServer: gameServer,
     };
   },
   component: Component,
@@ -25,7 +28,7 @@ function Component() {
   const loaderData = Route.useLoaderData();
   const navigate = Route.useNavigate();
 
-  const onCreateItemClicked = () => {
+  const onCreateShopListingClicked = () => {
     navigate({ to: '/gameserver/$gameServerId/shop/listing/create', params: { gameServerId } });
   };
 
@@ -50,7 +53,7 @@ function Component() {
         <Empty
           header="No shop listings"
           description="Create a shop listing to start selling items."
-          actions={[<Button onClick={onCreateItemClicked} text="Create shop listing" />]}
+          actions={[<Button onClick={onCreateShopListingClicked} text="Create shop listing" />]}
         />
       </EmptyPage>
     );
@@ -58,17 +61,16 @@ function Component() {
 
   return (
     <Fragment>
-      <Button onClick={onCreateItemClicked} text="Create shop listing" />
+      <Button onClick={onCreateShopListingClicked} text="Create shop listing" />
       <CardList>
         {shopListings.pages.map((page) =>
           page.data.map((shopListing) => (
             <ShopListingCard
               key={shopListing.id}
               currencyName={loaderData.currencyName}
-              shopListingId={shopListing.id}
+              shopListing={shopListing}
               gameServerId={gameServerId}
-              name={shopListing.name}
-              price={shopListing.price}
+              gameServerType={loaderData.gameServer.type}
             />
           ))
         )}
