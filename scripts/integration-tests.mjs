@@ -57,7 +57,7 @@ async function main() {
   await cleanUp();
   await mkdir('./reports/integrationTests', { recursive: true });
 
-  await exec('docker', ['network', 'create', 'takaro'], composeOpts);
+  await exec('docker', ['network', 'create', 'takaro']);
 
   console.log('Bringing up datastores');
   await upMany(['postgresql', 'redis', 'postgresql_kratos', 'postgresql_hydra'], composeOpts);
