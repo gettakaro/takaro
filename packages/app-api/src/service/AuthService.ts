@@ -63,6 +63,18 @@ export class TokenOutputDTO extends TakaroDTO<TokenOutputDTO> {
   token!: string;
 }
 
+export function checkPermissions(requiredPermissions: PERMISSIONS[], user: UserOutputWithRolesDTO): boolean {
+  const allUserPermissions = user.roles.reduce((acc, role) => {
+    return [...acc, ...role.role.permissions.map((c) => c.permission.permission)];
+  }, [] as string[]);
+
+  const hasAllPermissions = requiredPermissions.every((permission) => allUserPermissions.includes(permission));
+
+  const userHasRootPermission = allUserPermissions.includes(PERMISSIONS.ROOT);
+
+  return hasAllPermissions || userHasRootPermission;
+}
+
 const log = logger('AuthService');
 @traceableClass('service:auth')
 export class AuthService extends DomainScoped {
@@ -222,15 +234,9 @@ export class AuthService extends DomainScoped {
 
         ctx.addData({ user: user.id, domain: user.domain });
 
-        const allUserPermissions = user.roles.reduce((acc, role) => {
-          return [...acc, ...role.role.permissions.map((c) => c.permission.permission)];
-        }, [] as string[]);
+        const hasAllPermissions = checkPermissions(permissions, user);
 
-        const hasAllPermissions = permissions.every((permission) => allUserPermissions.includes(permission));
-
-        const userHasRootPermission = allUserPermissions.includes(PERMISSIONS.ROOT);
-
-        if (!hasAllPermissions && !userHasRootPermission) {
+        if (!hasAllPermissions) {
           log.warn(`User ${user.id} does not have all permissions`);
           return next(new errors.ForbiddenError());
         }

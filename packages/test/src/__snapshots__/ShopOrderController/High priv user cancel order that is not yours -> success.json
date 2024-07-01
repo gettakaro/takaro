@@ -1,0 +1,26 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "createdAt": "2024-06-29T19:06:34.021Z",
+      "updatedAt": "2024-06-29T19:06:34.080Z",
+      "id": "80362182-36b3-4331-b09d-cfd375b524fa",
+      "listingId": "cc970229-c1b5-439e-bae2-1a4a364bbc5b",
+      "userId": "c94a1ac7-fabf-4a5a-b5d1-ad208519ae8c",
+      "amount": 1,
+      "status": "CANCELED"
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "ShopOrderController",
+    "snapshot": true,
+    "name": "High priv user cancel order that is not yours -> success",
+    "filteredFields": [
+      "listingId",
+      "userId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

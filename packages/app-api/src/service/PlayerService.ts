@@ -205,6 +205,21 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     return id;
   }
 
+  async resolveFromId(
+    playerId: string,
+    gameServerId?: string
+  ): Promise<{ player: PlayerOutputWithRolesDTO; pogs: PlayerOnGameserverOutputWithRolesDTO[] }> {
+    const playerOnGameServerService = new PlayerOnGameServerService(this.domainId);
+    const player = await this.findOne(playerId);
+
+    const pogs = await playerOnGameServerService.find({ filters: { playerId: [playerId] } });
+
+    return {
+      player,
+      pogs: pogs.results.filter((item) => !gameServerId || item.gameServerId === gameServerId),
+    };
+  }
+
   async resolveRef(
     gamePlayer: IGamePlayer,
     gameServerId: string

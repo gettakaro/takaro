@@ -9,6 +9,7 @@ import {
   IsObject,
   IsOptional,
   IsString,
+  IsUUID,
   ValidateNested,
 } from 'class-validator';
 import { BaseEvent } from './base.js';
@@ -36,6 +37,11 @@ export const TakaroEvents = {
   MODULE_INSTALLED: 'module-installed',
   MODULE_UNINSTALLED: 'module-uninstalled',
   PLAYER_CREATED: 'player-created',
+  SHOP_LISTING_CREATED: 'shop-listing-created',
+  SHOP_LISTING_UPDATED: 'shop-listing-updated',
+  SHOP_LISTING_DELETED: 'shop-listing-deleted',
+  SHOP_ORDER_CREATED: 'shop-order-created',
+  SHOP_ORDER_STATUS_CHANGED: 'shop-order-status-changed',
 } as const;
 
 export class BaseTakaroEvent<T> extends BaseEvent<T> {
@@ -291,6 +297,43 @@ export class TakaroEventPlayerCreated extends BaseEvent<TakaroEventPlayerCreated
   type = TakaroEvents.PLAYER_CREATED;
 }
 
+export class TakaroEventShopListingCreated extends BaseEvent<TakaroEventShopListingCreated> {
+  @IsString()
+  type = TakaroEvents.SHOP_LISTING_CREATED;
+  @IsUUID()
+  id: string;
+}
+
+export class TakaroEventShopListingUpdated extends BaseEvent<TakaroEventShopListingUpdated> {
+  @IsString()
+  type = TakaroEvents.SHOP_LISTING_UPDATED;
+  @IsUUID()
+  id: string;
+}
+
+export class TakaroEventShopListingDeleted extends BaseEvent<TakaroEventShopListingDeleted> {
+  @IsString()
+  type = TakaroEvents.SHOP_LISTING_DELETED;
+  @IsUUID()
+  id: string;
+}
+
+export class TakaroEventShopOrderCreated extends BaseEvent<TakaroEventShopOrderCreated> {
+  @IsString()
+  type = TakaroEvents.SHOP_ORDER_CREATED;
+  @IsUUID()
+  id: string;
+}
+
+export class TakaroEventShopOrderStatusChanged extends BaseEvent<TakaroEventShopOrderStatusChanged> {
+  @IsString()
+  type = TakaroEvents.SHOP_ORDER_STATUS_CHANGED;
+  @IsUUID()
+  id: string;
+  @IsString()
+  status: string;
+}
+
 export const TakaroEventsMapping = {
   [TakaroEvents.ROLE_ASSIGNED]: TakaroEventRoleAssigned,
   [TakaroEvents.PLAYER_NEW_IP_DETECTED]: TakaroEventPlayerNewIpDetected,
@@ -311,4 +354,9 @@ export const TakaroEventsMapping = {
   [TakaroEvents.MODULE_INSTALLED]: TakaroEventModuleInstalled,
   [TakaroEvents.MODULE_UNINSTALLED]: TakaroEventModuleUninstalled,
   [TakaroEvents.PLAYER_CREATED]: TakaroEventPlayerCreated,
+  [TakaroEvents.SHOP_LISTING_CREATED]: TakaroEventShopListingCreated,
+  [TakaroEvents.SHOP_LISTING_UPDATED]: TakaroEventShopListingUpdated,
+  [TakaroEvents.SHOP_LISTING_DELETED]: TakaroEventShopListingDeleted,
+  [TakaroEvents.SHOP_ORDER_CREATED]: TakaroEventShopOrderCreated,
+  [TakaroEvents.SHOP_ORDER_STATUS_CHANGED]: TakaroEventShopOrderStatusChanged,
 } as const;

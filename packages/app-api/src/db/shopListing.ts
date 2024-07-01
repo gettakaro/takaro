@@ -6,7 +6,7 @@ import { ItemsModel } from './items.js';
 import { FunctionModel } from './function.js';
 import { RoleModel } from './role.js';
 import { ITakaroRepo } from './base.js';
-import { ShopListingCreateDTO, ShopListingOutputDTO, ShopListingUpdateDTO } from '../service/ShopService.js';
+import { ShopListingOutputDTO, ShopListingUpdateDTO, ShopListingCreateDTO } from '../service/Shop/dto.js';
 
 export const SHOP_LISTING_TABLE_NAME = 'shopListing';
 export const SHOP_LISTING_ROLE_TABLE_NAME = 'shopListingRole';
@@ -141,7 +141,7 @@ export class ShopListingRepo extends ITakaroRepo<
 
   async findOne(id: string): Promise<ShopListingOutputDTO> {
     const { query } = await this.getModel();
-    const res = await query.findById(id).withGraphFetched('roles');
+    const res = await query.findById(id).withGraphFetched('item');
     if (!res) {
       throw new errors.NotFoundError();
     }
