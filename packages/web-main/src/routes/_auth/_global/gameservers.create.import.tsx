@@ -23,7 +23,7 @@ export const Route = createFileRoute('/_auth/_global/gameservers/create/import')
   component: Component,
 });
 
-const MAX_FILE_SIZE = 5000000; // 50MB
+const MAX_FILE_SIZE = 50000000; // 50MB
 const ACCEPTED_FILE_TYPES = ['application/json'];
 const validationSchema = z.object({
   importData: z
@@ -100,7 +100,7 @@ function Component() {
   const onSubmit: SubmitHandler<IFormInputs> = async ({ importData }) => {
     const formData = new FormData();
     formData.append('import.json', importData[0]);
-    const job = await mutateAsync({ config: formData });
+    const job = await mutateAsync(formData);
     setJobId(job.id);
   };
 
@@ -135,7 +135,7 @@ function Component() {
           {jobStatus && <pre>{JSON.stringify(jobStatus, null, 2)}</pre>}
         </Drawer.Body>
         <Drawer.Footer>
-          <Button fullWidth text="Submit" form="import-game-server-form" />
+          <Button fullWidth text="Submit" form="import-game-server-form" type="submit" />
         </Drawer.Footer>
       </Drawer.Content>
     </Drawer>
