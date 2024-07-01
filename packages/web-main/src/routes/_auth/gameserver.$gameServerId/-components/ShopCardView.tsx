@@ -30,14 +30,14 @@ const AddCardBody = styled(CardBody)`
   gap: ${({ theme }) => theme.spacing[1]};
 `;
 
-interface ShopViewProps {
+interface ShopCardViewProps {
   gameServerId: string;
   gameServerType: GameServerOutputDTOTypeEnum;
   currencyName: string;
   currency?: number;
 }
 
-export const ShopView: FC<ShopViewProps> = ({ gameServerId, currency, currencyName, gameServerType }) => {
+export const ShopCardView: FC<ShopCardViewProps> = ({ gameServerId, currency, currencyName, gameServerType }) => {
   const hasPermission = useHasPermission(['MANAGE_SHOP_LISTINGS']);
   const navigate = useNavigate();
 

@@ -23,6 +23,12 @@ export const shopListingQueryOptions = (shopListingId: string) =>
     queryFn: async () => (await getApiClient().shopListing.shopListingControllerGetOne(shopListingId)).data.data,
   });
 
+export const shopListingsQueryOptions = (queryParams: ShopListingSearchInputDTO) =>
+  queryOptions<ShopListingOutputArrayDTOAPI, AxiosError<ShopListingOutputArrayDTOAPI>>({
+    queryKey: [...shopListingKeys.list(), 'table', ...queryParamsToArray(queryParams)],
+    queryFn: async () => (await getApiClient().shopListing.shopListingControllerSearch(queryParams)).data,
+  });
+
 export const shopListingInfiniteQueryOptions = (queryParams: ShopListingSearchInputDTO = {}) => {
   return infiniteQueryOptions<ShopListingOutputArrayDTOAPI, AxiosError<ShopListingOutputArrayDTOAPI>>({
     queryKey: [...shopListingKeys.list(), 'infinite', ...queryParamsToArray(queryParams)],

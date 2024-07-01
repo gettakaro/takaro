@@ -53,6 +53,7 @@ export const ShopListingCard: FC<ShopListingCard> = ({
 }) => {
   const theme = useTheme();
   const [openDeleteConfirmationDialog, setOpenDeleteConfirmationDialog] = useState<boolean>(false);
+  const [openBuyConfirmationDialog, setOpenBuyConfirmationDialog] = useState<boolean>(false);
 
   const navigate = useNavigate();
   const { mutateAsync: createShopOrderMutate, isPending: isPendingShopOrderCreate } = useShopOrderCreate();
@@ -94,9 +95,13 @@ export const ShopListingCard: FC<ShopListingCard> = ({
     setOpenDeleteConfirmationDialog(false);
   };
 
-  const handleOnBuyClick: SubmitHandler<z.infer<typeof validationSchema>> = ({ amount }) => {
+  const handleOnBuyClick: SubmitHandler<z.infer<typeof validationSchema>> = () => {
+    setOpenBuyConfirmationDialog(true);
+  };
+
+  const handleOnBuyConfirmationClick = () => {
     createShopOrderMutate({
-      amount,
+      amount: watch('amount'),
       listingId: shopListing.id,
     });
   };
@@ -152,6 +157,17 @@ export const ShopListingCard: FC<ShopListingCard> = ({
           </form>
         </CardBody>
       </Card>
+      <Dialog open={openBuyConfirmationDialog} onOpenChange={setOpenBuyConfirmationDialog}>
+        <Dialog.Content>
+          <Dialog.Heading>Confirm buy shop listing</Dialog.Heading>
+          <Dialog.Body size="medium">
+            <p>
+              Are you sure you want to buy {shopListingName} for {price}
+            </p>
+            <Button onClick={handleOnBuyConfirmationClick} fullWidth text="Buy item" color="primary" />
+          </Dialog.Body>
+        </Dialog.Content>
+      </Dialog>
 
       <Dialog open={openDeleteConfirmationDialog} onOpenChange={setOpenDeleteConfirmationDialog}>
         <Dialog.Content>

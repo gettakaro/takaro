@@ -5,6 +5,7 @@ import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop')({
   component: Component,
+  pendingComponent: () => <div>Loading...</div>,
 });
 
 const Container = styled.div`

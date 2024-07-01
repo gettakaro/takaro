@@ -52,8 +52,8 @@ function Component() {
   useDocumentTitle('Players');
 
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<PlayerOutputDTO>({ pageSize: 25 });
-  const { data, isLoading } = useQuery({
-    ...playersQueryOptions({
+  const { data, isLoading } = useQuery(
+    playersQueryOptions({
       page: pagination.paginationState.pageIndex,
       limit: pagination.paginationState.pageSize,
       sortBy: sorting.sortingState[0]?.id,
@@ -74,8 +74,8 @@ function Component() {
           ?.value,
         xboxLiveId: columnSearch.columnSearchState.find((search) => search.id === 'xboxLiveId')?.value,
       },
-    }),
-  });
+    })
+  );
 
   // IMPORTANT: id should be identical to data object key.
   const columnHelper = createColumnHelper<PlayerOutputDTO>();
