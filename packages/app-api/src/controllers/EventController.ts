@@ -9,37 +9,39 @@ import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 import { EVENT_TYPES, EventCreateDTO, EventOutputDTO, EventService } from '../service/EventService.js';
 import { ParamId } from '../lib/validators.js';
+import { RangeFilterCreatedAndUpdatedAt } from './shared.js';
 
 class EventSearchInputAllowedFilters {
   @IsOptional()
   @IsUUID('4', { each: true })
   id!: string[];
-
   @IsOptional()
   @IsEnum(EVENT_TYPES, { each: true })
   eventName!: string[];
-
   @IsOptional()
   @IsString({ each: true })
   moduleId!: string[];
-
   @IsOptional()
   @IsString({ each: true })
   playerId!: string[];
-
   @IsOptional()
   @IsString({ each: true })
   gameserverId!: string[];
 }
 
-class EventSearchInputDTO extends ITakaroQuery<EventSearchInputAllowedFilters> {
+class EventSearchInputDTO extends ITakaroQuery<EventOutputDTO> {
   @ValidateNested()
   @Type(() => EventSearchInputAllowedFilters)
   declare filters: EventSearchInputAllowedFilters;
-
   @ValidateNested()
   @Type(() => EventSearchInputAllowedFilters)
   declare search: EventSearchInputAllowedFilters;
+  @ValidateNested()
+  @Type(() => RangeFilterCreatedAndUpdatedAt)
+  declare greaterThan: RangeFilterCreatedAndUpdatedAt;
+  @ValidateNested()
+  @Type(() => RangeFilterCreatedAndUpdatedAt)
+  declare lessThan: RangeFilterCreatedAndUpdatedAt;
 }
 
 export class EventOutputArrayDTOAPI extends APIOutput<EventOutputDTO[]> {
@@ -70,19 +72,48 @@ export class EventController {
     });
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_EVENTS]))
-  @ResponseSchema(EventOutputDTO)
-  @Get('/event/:id')
-  async getOne(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
-    const service = new EventService(req.domainId);
-    return apiResponse(await service.findOne(params.id));
-  }
-
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_EVENTS]))
   @ResponseSchema(EventOutputDTO)
   @Post('/event')
   async create(@Req() req: AuthenticatedRequest, @Body() data: EventCreateDTO) {
     const service = new EventService(req.domainId);
     return apiResponse(await service.create(data));
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_MODULES, PERMISSIONS.READ_EVENTS]))
+  @ResponseSchema(EventOutputArrayDTOAPI)
+  @OpenAPI({
+    summary: 'Get failed functions',
+    description: 'Fetches events where cronjob, hook and command failed. Supports all the common query parameters',
+  })
+  @Post('/event/filter/failed-functions')
+  async getFailedFunctions(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: EventSearchInputDTO) {
+    const service = new EventService(req.domainId);
+    const result = await service.metadataSearch(
+      {
+        ...query,
+        filters: { eventName: [EVENT_TYPES.COMMAND_EXECUTED, EVENT_TYPES.CRONJOB_EXECUTED, EVENT_TYPES.HOOK_EXECUTED] },
+      },
+      [
+        {
+          logicalOperator: 'AND',
+          filters: [{ field: 'result.success', operator: '=', value: false }],
+        },
+      ]
+    );
+
+    return apiResponse(result.results, {
+      meta: { total: result.total },
+      req,
+      res,
+    });
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_EVENTS]))
+  @ResponseSchema(EventOutputDTO)
+  @Get('/event/:id')
+  async getOne(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
+    const service = new EventService(req.domainId);
+    return apiResponse(await service.findOne(params.id));
   }
 }

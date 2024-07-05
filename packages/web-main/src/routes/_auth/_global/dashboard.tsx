@@ -1,15 +1,15 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
-import { useEffect, useMemo, useState } from 'react';
-import { Button, Stats, styled, LineChart, Card } from '@takaro/lib-components';
-import { useSocket } from 'hooks/useSocket';
+import { useMemo } from 'react';
+import { Stats, styled, LineChart, Card } from '@takaro/lib-components';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { eventsQueryOptions } from 'queries/event';
+import { eventsFailedFunctionsQueryOptions, eventsQueryOptions } from 'queries/event';
 import { DateTime } from 'luxon';
 import { useForm, useWatch } from 'react-hook-form';
 import { TimePeriodSelect } from 'components/selects';
 import { useQuery } from '@tanstack/react-query';
 import { hasPermission } from 'hooks/useHasPermission';
 import { PlayersOnlineStatsQueryOptions, ActivityStatsQueryOptions } from 'queries/stats';
+import { EventFeed, EventItem } from 'components/events/EventFeed';
 
 export const Route = createFileRoute('/_auth/_global/dashboard')({
   beforeLoad: async ({ context }) => {
@@ -31,22 +31,9 @@ const Container = styled.div`
   }
 `;
 
-const Flex = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: ${({ theme }) => theme.spacing[4]};
-`;
-
 function Component() {
   useDocumentTitle('Dashboard');
-
   const loaderData = Route.useLoaderData();
-
-  const { socket, isConnected } = useSocket();
-  const [lastPong, setLastPong] = useState<string>('-');
-  const [lastEvent, setLastEvent] = useState<string>('-');
-
   const { data } = useQuery({ ...PlayersOnlineStatsQueryOptions(), initialData: loaderData });
 
   const { data: dailyActiveUsers, isLoading: isLoadingDailyActiveUsers } = useQuery(
@@ -116,27 +103,16 @@ function Component() {
     })
   );
 
-  const sendPing = () => {
-    socket.emit('ping');
-  };
-
-  useEffect(() => {
-    socket.emit('ping');
-  }, [socket, isConnected]);
-
-  useEffect(() => {
-    socket.on('pong', () => {
-      setLastPong(new Date().toISOString());
-    });
-
-    socket.on('gameEvent', (gameserverId, type, data) => {
-      setLastEvent(`${gameserverId} - ${type} - ${JSON.stringify(data)}`);
-    });
-
-    return () => {
-      socket.off('pong');
-    };
-  });
+  const { data: failedFunctions } = useQuery(
+    eventsFailedFunctionsQueryOptions({
+      greaterThan: { createdAt: startDate },
+      lessThan: { createdAt: now },
+      limit: 10,
+      extend: ['gameServer', 'module', 'player', 'user'],
+      sortBy: 'createdAt',
+      sortDirection: 'desc',
+    })
+  );
 
   return (
     <>
@@ -184,14 +160,12 @@ function Component() {
           </Card>
 
           <Card>
-            <Flex>
-              <span>
-                <p>Connected: {'' + isConnected}</p>
-                <p>Last pong: {lastPong || '-'}</p>
-                <p>Last event: {lastEvent || '-'}</p>
-              </span>
-              <Button text={'Send ping'} onClick={sendPing} />
-            </Flex>
+            <h2>Module errors</h2>
+            <EventFeed>
+              {failedFunctions?.data.flatMap((event) => (
+                <EventItem key={event.id} event={event} onDetailClick={() => {}} />
+              ))}
+            </EventFeed>
           </Card>
         </div>
       </Container>
