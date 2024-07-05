@@ -7,6 +7,7 @@ import { GlobalStyle, SnackbarProvider, darkTheme } from '@takaro/lib-components
 import { oryThemeOverrides } from './OryThemeOverrides';
 import '@ory/elements/style.css';
 import { queryClient } from './queryClient';
+import { PostHogProvider } from 'posthog-js/react';
 
 import { RouterProvider } from '@tanstack/react-router';
 import { OryProvider } from 'hooks/useOry';
@@ -48,20 +49,28 @@ export function App() {
   }
 
   return (
-    <OryThemeProvider themeOverrides={oryThemeOverrides}>
-      <ThemeProvider theme={darkTheme}>
-        <SnackbarProvider>
-          <QueryClientProvider client={queryClient}>
-            <OryProvider>
-              <AuthProvider>
-                <GlobalStyle />
-                <InnerApp />
-                <ReactQueryDevtools initialIsOpen={false} position="bottom" buttonPosition="bottom-left" />
-              </AuthProvider>
-            </OryProvider>
-          </QueryClientProvider>
-        </SnackbarProvider>
-      </ThemeProvider>
-    </OryThemeProvider>
+    <PostHogProvider
+      apiKey={getConfigVar('posthogPublicApiKey')}
+      options={{
+        api_host: getConfigVar('posthogApiUrl'),
+        person_profiles: 'always',
+      }}
+    >
+      <OryThemeProvider themeOverrides={oryThemeOverrides}>
+        <ThemeProvider theme={darkTheme}>
+          <SnackbarProvider>
+            <QueryClientProvider client={queryClient}>
+              <OryProvider>
+                <AuthProvider>
+                  <GlobalStyle />
+                  <InnerApp />
+                  <ReactQueryDevtools initialIsOpen={false} position="bottom" buttonPosition="bottom-left" />
+                </AuthProvider>
+              </OryProvider>
+            </QueryClientProvider>
+          </SnackbarProvider>
+        </ThemeProvider>
+      </OryThemeProvider>
+    </PostHogProvider>
   );
 }

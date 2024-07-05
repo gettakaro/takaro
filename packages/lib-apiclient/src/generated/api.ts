@@ -4393,6 +4393,12 @@ export interface MeOutoutDTO {
    * @memberof MeOutoutDTO
    */
   domains: Array<DomainOutputDTO>;
+  /**
+   *
+   * @type {string}
+   * @memberof MeOutoutDTO
+   */
+  domain: string;
 }
 /**
  *
