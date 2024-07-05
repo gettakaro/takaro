@@ -10,7 +10,7 @@ async function main() {
     filters: {
       gameServerId: [gameServerId],
       playerId: [pog.playerId],
-      key: [getVariableKey(args.tp)],
+      key: [getVariableKey(args.tp, true)],
       moduleId: [mod.moduleId],
     },
     sortBy: 'key',
@@ -20,17 +20,17 @@ async function main() {
   const teleports = teleportRes.data.data;
 
   if (teleports.length === 0) {
-    throw new TakaroUserError(`No teleport with name ${args.tp} found, use ${prefix}settp <name> to set one first.`);
+    throw new TakaroUserError(
+      `No public teleport with name ${args.tp} found, use ${prefix}settp <name> to set one first.`
+    );
   }
 
   const teleportRecord = teleports[0];
   const teleport = JSON.parse(teleportRecord.value);
 
   await takaro.variable.variableControllerUpdate(teleportRecord.id, {
-    value: JSON.stringify({
-      ...teleport,
-      public: false,
-    }),
+    key: getVariableKey(args.tp),
+    value: JSON.stringify(teleport),
   });
 
   await data.player.pm(`Teleport ${args.tp} is now private.`);
