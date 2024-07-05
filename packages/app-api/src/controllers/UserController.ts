@@ -55,10 +55,11 @@ class MeOutoutDTO extends TakaroDTO<MeOutoutDTO> {
   @Type(() => UserOutputWithRolesDTO)
   @ValidateNested()
   user: UserOutputWithRolesDTO;
-
   @Type(() => DomainOutputDTO)
   @ValidateNested({ each: true })
   domains: DomainOutputDTO[];
+  @IsString()
+  domain: string;
 }
 
 class MeOutoutDTOAPI extends APIOutput<MeOutoutDTO> {
@@ -157,7 +158,7 @@ export class UserController {
     const user = await new UserService(req.domainId).findOne(req.user.id);
     const domainService = new DomainService();
     const domains = await domainService.resolveDomainByIdpId(user.idpId);
-    return apiResponse({ user, domains });
+    return apiResponse({ user, domains, domain: req.domainId });
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_USERS], false))
