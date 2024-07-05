@@ -1,11 +1,15 @@
 const envMap: Record<keyof TakaroConfig, string> = {
   apiUrl: 'VITE_API',
   oryUrl: 'VITE_ORY_URL',
+  posthogApiUrl: 'VITE_POSTHOG_API_URL',
+  posthogPublicApiKey: 'VITE_POSTHOG_PUBLIC_API_KEY',
 } as const;
 
 export interface TakaroConfig {
   apiUrl: string;
   oryUrl: string;
+  posthogApiUrl: string;
+  posthogPublicApiKey: string;
 }
 
 declare global {

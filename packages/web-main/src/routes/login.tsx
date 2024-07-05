@@ -105,7 +105,7 @@ function Component() {
         'Cache-Control': 'no-cache',
       },
     });
-    login(res.data.data.user);
+    login(res.data.data);
     await router.invalidate();
     // hack to wait for auth state to update???
     await sleep(500);

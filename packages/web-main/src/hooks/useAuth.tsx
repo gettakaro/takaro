@@ -1,10 +1,11 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { UserOutputWithRolesDTO } from '@takaro/apiclient';
+import { MeOutoutDTO, UserOutputWithRolesDTO } from '@takaro/apiclient';
 import { createContext, useCallback, useContext } from 'react';
 import { useOry } from './useOry';
 import * as Sentry from '@sentry/react';
 import { DateTime } from 'luxon';
 import { getApiClient } from 'util/getApiClient';
+import { usePostHog } from 'posthog-js/react';
 
 const SESSION_EXPIRES_AFTER_MINUTES = 5;
 
@@ -16,7 +17,7 @@ interface ExpirableSession {
 export interface IAuthContext {
   logOut: () => Promise<void>;
   getSession: () => Promise<UserOutputWithRolesDTO>;
-  login: (user: UserOutputWithRolesDTO) => void;
+  login: (user: MeOutoutDTO) => void;
 }
 
 function getLocalSession() {
@@ -50,6 +51,7 @@ export const AuthContext = createContext<IAuthContext | null>(null);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
   const { oryClient } = useOry();
+  const posthog = usePostHog();
 
   const logOut = useCallback(async () => {
     const logoutFlowRes = await oryClient.createBrowserLogoutFlow();
@@ -60,9 +62,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return Promise.resolve();
   }, [oryClient, queryClient]);
 
-  const login = useCallback((session: UserOutputWithRolesDTO) => {
-    setLocalSession(session);
-    Sentry.setUser({ id: session.id, email: session.email, username: session.name });
+  const login = useCallback((session: MeOutoutDTO) => {
+    setLocalSession(session.user);
+    Sentry.setUser({ id: session.user.id, email: session.user.email, username: session.user.name });
+    posthog.identify(session.user.idpId, {
+      email: session.user.email,
+      domain: session.domain,
+    });
   }, []);
 
   const getSession = async function (): Promise<UserOutputWithRolesDTO> {
