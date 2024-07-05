@@ -18,12 +18,19 @@ import { DateTime } from 'luxon';
 const eventKeys = {
   all: ['events'] as const,
   list: () => [...eventKeys.all, 'list'] as const,
+  failedFunctions: () => [...eventKeys.all, 'failedFunctions'] as const,
 };
 
 export const eventsQueryOptions = (queryParams: EventSearchInputDTO) =>
   queryOptions<EventOutputArrayDTOAPI, AxiosError<EventOutputArrayDTOAPI>>({
     queryKey: [...eventKeys.list(), queryParamsToArray(queryParams)],
     queryFn: async () => (await getApiClient().event.eventControllerSearch(queryParams)).data,
+  });
+
+export const eventsFailedFunctionsQueryOptions = (queryParams: EventSearchInputDTO) =>
+  queryOptions<EventOutputArrayDTOAPI, AxiosError<EventOutputArrayDTOAPI>>({
+    queryKey: [...eventKeys.failedFunctions(), queryParamsToArray(queryParams)],
+    queryFn: async () => (await getApiClient().event.eventControllerGetFailedFunctions(queryParams)).data,
   });
 
 export const eventsInfiniteQueryOptions = (queryParams: EventSearchInputDTO) =>
@@ -54,8 +61,8 @@ export const useEventSubscription = ({ enabled = true, ...queryParams }: EventSu
         // The socket returns all new events, we need to filter it based on the queryParams
         if (
           ShouldIncludeEvent(newEvent, {
-            startDate: queryParams.greaterThan.createdAt ? DateTime.fromISO(queryParams.greaterThan.createdAt) : null,
-            endDate: queryParams.lessThan.createdAt ? DateTime.fromISO(queryParams.lessThan.createdAt) : null,
+            startDate: queryParams.greaterThan?.createdAt ? DateTime.fromISO(queryParams.greaterThan.createdAt) : null,
+            endDate: queryParams.lessThan?.createdAt ? DateTime.fromISO(queryParams.lessThan.createdAt) : null,
             eventTypes: queryParams.search?.eventName ?? [],
             filters: [], // TODO: implement filters
           }) === false
