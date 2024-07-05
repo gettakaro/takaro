@@ -5,7 +5,18 @@ function getWaypointName(name) {
 }
 
 async function main() {
-  const { pog, gameServerId, trigger } = data;
+  const { pog, gameServerId, trigger, module, itemId } = data;
+
+  const triggeredCommand = module.module.commands.find((command) => command.id === itemId);
+
+  if (!triggeredCommand) {
+    throw new Error('Waypoint not found.');
+  }
+
+  if (!triggeredCommand.name.includes(`server ${gameServerId}`)) {
+    console.log(`Waypoint ${trigger} is not for this server.`);
+    return;
+  }
 
   if (!checkPermission(pog, `WAYPOINTS_USE_${trigger.toUpperCase()}_${gameServerId}`)) {
     throw new TakaroUserError(`You are not allowed to use the waypoint ${trigger}.`);
