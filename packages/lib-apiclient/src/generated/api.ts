@@ -2030,16 +2030,16 @@ export interface EventSearchInputDTO {
   search?: EventSearchInputAllowedFilters;
   /**
    *
-   * @type {any}
+   * @type {RangeFilterCreatedAndUpdatedAt}
    * @memberof EventSearchInputDTO
    */
-  greaterThan?: any;
+  greaterThan?: RangeFilterCreatedAndUpdatedAt;
   /**
    *
-   * @type {any}
+   * @type {RangeFilterCreatedAndUpdatedAt}
    * @memberof EventSearchInputDTO
    */
-  lessThan?: any;
+  lessThan?: RangeFilterCreatedAndUpdatedAt;
   /**
    *
    * @type {number}
@@ -11522,6 +11522,43 @@ export const EventApiAxiosParamCreator = function (configuration?: Configuration
       };
     },
     /**
+     * Fetches events where cronjob, hook and command failed. Supports all the common query parameters Required permissions: `READ_MODULES`, `READ_EVENTS`
+     * @summary Get failed functions
+     * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    eventControllerGetFailedFunctions: async (
+      eventSearchInputDTO?: EventSearchInputDTO,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/event/filter/failed-functions`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(eventSearchInputDTO, localVarRequestOptions, configuration);
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      *  Required permissions: `READ_EVENTS`
      * @summary Get one
      * @param {string} id
@@ -11624,6 +11661,31 @@ export const EventApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
+     * Fetches events where cronjob, hook and command failed. Supports all the common query parameters Required permissions: `READ_MODULES`, `READ_EVENTS`
+     * @summary Get failed functions
+     * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async eventControllerGetFailedFunctions(
+      eventSearchInputDTO?: EventSearchInputDTO,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventOutputArrayDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.eventControllerGetFailedFunctions(
+        eventSearchInputDTO,
+        options
+      );
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['EventApi.eventControllerGetFailedFunctions']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
      *  Required permissions: `READ_EVENTS`
      * @summary Get one
      * @param {string} id
@@ -11688,6 +11750,21 @@ export const EventApiFactory = function (configuration?: Configuration, basePath
       return localVarFp.eventControllerCreate(eventCreateDTO, options).then((request) => request(axios, basePath));
     },
     /**
+     * Fetches events where cronjob, hook and command failed. Supports all the common query parameters Required permissions: `READ_MODULES`, `READ_EVENTS`
+     * @summary Get failed functions
+     * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    eventControllerGetFailedFunctions(
+      eventSearchInputDTO?: EventSearchInputDTO,
+      options?: any
+    ): AxiosPromise<EventOutputArrayDTOAPI> {
+      return localVarFp
+        .eventControllerGetFailedFunctions(eventSearchInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
      *  Required permissions: `READ_EVENTS`
      * @summary Get one
      * @param {string} id
@@ -11731,6 +11808,20 @@ export class EventApi extends BaseAPI {
   public eventControllerCreate(eventCreateDTO?: EventCreateDTO, options?: RawAxiosRequestConfig) {
     return EventApiFp(this.configuration)
       .eventControllerCreate(eventCreateDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Fetches events where cronjob, hook and command failed. Supports all the common query parameters Required permissions: `READ_MODULES`, `READ_EVENTS`
+   * @summary Get failed functions
+   * @param {EventSearchInputDTO} [eventSearchInputDTO] EventSearchInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof EventApi
+   */
+  public eventControllerGetFailedFunctions(eventSearchInputDTO?: EventSearchInputDTO, options?: RawAxiosRequestConfig) {
+    return EventApiFp(this.configuration)
+      .eventControllerGetFailedFunctions(eventSearchInputDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

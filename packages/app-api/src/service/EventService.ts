@@ -4,7 +4,7 @@ import { IsEnum, IsObject, IsOptional, IsUUID, ValidateNested } from 'class-vali
 import { TakaroDTO, TakaroModelDTO, ctx, errors, isTakaroDTO, traceableClass } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
-import { EventModel, EventRepo } from '../db/event.js';
+import { EventModel, EventRepo, Filter, FilterGroup } from '../db/event.js';
 import { getSocketServer } from '../lib/socketServer.js';
 import { PlayerOutputDTO } from './PlayerService.js';
 import { Type } from 'class-transformer';
@@ -175,5 +175,9 @@ export class EventService extends TakaroService<EventModel, EventOutputDTO, Even
 
   async delete(): Promise<string> {
     throw new errors.BadRequestError('Events cannot be deleted');
+  }
+
+  async metadataSearch(filters: ITakaroQuery<EventOutputDTO>, metaFilters: (Filter | FilterGroup)[]): Promise<any> {
+    return this.repo.metadataSearch(filters, metaFilters);
   }
 }
