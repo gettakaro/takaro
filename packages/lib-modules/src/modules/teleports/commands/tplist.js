@@ -1,35 +1,49 @@
 import { takaro, data } from '@takaro/helpers';
+import { getVariableKey } from './utils.js';
 
 async function main() {
   const { pog, gameServerId, module: mod } = data;
 
   const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data.value;
 
-  const maybePublicTeleports = (
+  const ownedTeleports = (
     await takaro.variable.variableControllerSearch({
       filters: {
         gameServerId: [gameServerId],
+        playerId: [pog.playerId],
         moduleId: [mod.moduleId],
       },
       search: {
-        key: ['tp'],
+        key: [getVariableKey(undefined, false)],
       },
       sortBy: 'key',
       sortDirection: 'asc',
     })
   ).data.data;
 
-  const teleports = maybePublicTeleports.filter((tele) => {
-    const teleport = JSON.parse(tele.value);
+  const publicTeleports = (
+    await takaro.variable.variableControllerSearch({
+      filters: {
+        gameServerId: [gameServerId],
+        moduleId: [mod.moduleId],
+      },
+      search: {
+        key: [getVariableKey(undefined, true)],
+      },
+      sortBy: 'key',
+      sortDirection: 'asc',
+    })
+  ).data.data
+    // Filter out public teleports that are owned by the player
+    // Since we'll be showing them in the owned teleports list
+    .filter((teleport) => {
+      return teleport.playerId !== pog.playerId;
+    });
 
-    const isPublic = teleport.public && teleport.playerId !== pog.playerId;
-    const isOwned = tele.playerId === pog.playerId;
-
-    return isPublic || isOwned;
-  });
+  const teleports = [...ownedTeleports, ...publicTeleports];
 
   if (teleports.length === 0) {
-    await data.player.pm(`You have no teleports set, use ${prefix}settp <name> to set one.`);
+    await data.player.pm(`You have no teleports available, use ${prefix}settp <name> to set one.`);
     return;
   }
 
@@ -38,7 +52,9 @@ async function main() {
   for (const rawTeleport of teleports) {
     const teleport = JSON.parse(rawTeleport.value);
     await data.player.pm(
-      ` - ${teleport.name}: ${teleport.x}, ${teleport.y}, ${teleport.z} ${teleport.public ? '(public)' : ''}`
+      `${teleport.name}: (${teleport.x},${teleport.y},${teleport.z}) ${
+        rawTeleport.key.startsWith('pub') ? '(public)' : ''
+      }`
     );
   }
 }
