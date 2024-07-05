@@ -42,10 +42,9 @@ const tests = [
 
       expect((await events).length).to.be.eq(4);
       expect((await events)[0].data.msg).to.be.eq('You have 3 teleports available');
-      //  - test0: 61, -262, -52
-      expect((await events)[1].data.msg).to.match(/ - test0: [-\d]+, [-\d]+, [-\d]+/);
-      expect((await events)[2].data.msg).to.match(/ - test1: [-\d]+, [-\d]+, [-\d]+/);
-      expect((await events)[3].data.msg).to.match(/ - test2: [-\d]+, [-\d]+, [-\d]+/);
+      expect((await events)[1].data.msg).to.match(/test0: \([-\d]+,[-\d]+,[-\d]+\)/);
+      expect((await events)[2].data.msg).to.match(/test1: \([-\d]+,[-\d]+,[-\d]+\)/);
+      expect((await events)[3].data.msg).to.match(/test2: \([-\d]+,[-\d]+,[-\d]+\)/);
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -103,7 +102,7 @@ const tests = [
 
       expect((await tpEvent).length).to.be.eq(2);
       expect((await tpEvent)[0].data.msg).to.be.eq('You have 1 teleport available');
-      expect((await tpEvent)[1].data.msg).to.match(/ - test: [-\d]+, [-\d]+, [-\d]+ \(public\)/);
+      expect((await tpEvent)[1].data.msg).to.match(/test: \([-\d]+,[-\d]+,[-\d]+\) \(public\)/);
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -135,7 +134,7 @@ const tests = [
       });
 
       expect((await tpEvent).length).to.be.eq(1);
-      expect((await tpEvent)[0].data.msg).to.be.eq('You have no teleports set, use /settp <name> to set one.');
+      expect((await tpEvent)[0].data.msg).to.be.eq('You have no teleports available, use /settp <name> to set one.');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -178,7 +177,7 @@ const tests = [
 
       expect((await tpEvent).length).to.be.eq(2);
       expect((await tpEvent)[0].data.msg).to.be.eq('You have 1 teleport available');
-      expect((await tpEvent)[1].data.msg).to.match(/ - test2: [-\d]+, [-\d]+, [-\d]+/);
+      expect((await tpEvent)[1].data.msg).to.match(/test2: \([-\d]+,[-\d]+,[-\d]+\)/);
     },
   }),
 ];
