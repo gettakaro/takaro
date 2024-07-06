@@ -2083,6 +2083,103 @@ export type EventSearchInputDTOSortDirectionEnum =
 /**
  *
  * @export
+ * @interface EventsCountInputDTO
+ */
+export interface EventsCountInputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof EventsCountInputDTO
+   */
+  eventName: EventsCountInputDTOEventNameEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof EventsCountInputDTO
+   */
+  gameServerId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof EventsCountInputDTO
+   */
+  moduleId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof EventsCountInputDTO
+   */
+  playerId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof EventsCountInputDTO
+   */
+  userId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof EventsCountInputDTO
+   */
+  bucketStep: EventsCountInputDTOBucketStepEnum;
+  /**
+   *
+   * @type {StatsControllerGetPingStatsStartDateParameter}
+   * @memberof EventsCountInputDTO
+   */
+  startDate?: StatsControllerGetPingStatsStartDateParameter;
+  /**
+   *
+   * @type {StatsControllerGetPingStatsStartDateParameter}
+   * @memberof EventsCountInputDTO
+   */
+  endDate?: StatsControllerGetPingStatsStartDateParameter;
+}
+
+export const EventsCountInputDTOEventNameEnum = {
+  RoleAssigned: 'role-assigned',
+  RoleRemoved: 'role-removed',
+  RoleCreated: 'role-created',
+  RoleUpdated: 'role-updated',
+  RoleDeleted: 'role-deleted',
+  CommandExecuted: 'command-executed',
+  HookExecuted: 'hook-executed',
+  CronjobExecuted: 'cronjob-executed',
+  CurrencyAdded: 'currency-added',
+  CurrencyDeducted: 'currency-deducted',
+  SettingsSet: 'settings-set',
+  PlayerNewIpDetected: 'player-new-ip-detected',
+  ServerStatusChanged: 'server-status-changed',
+  ModuleCreated: 'module-created',
+  ModuleUpdated: 'module-updated',
+  ModuleDeleted: 'module-deleted',
+  ModuleInstalled: 'module-installed',
+  ModuleUninstalled: 'module-uninstalled',
+  PlayerCreated: 'player-created',
+  PlayerConnected: 'player-connected',
+  PlayerDisconnected: 'player-disconnected',
+  ChatMessage: 'chat-message',
+  PlayerDeath: 'player-death',
+  EntityKilled: 'entity-killed',
+} as const;
+
+export type EventsCountInputDTOEventNameEnum =
+  (typeof EventsCountInputDTOEventNameEnum)[keyof typeof EventsCountInputDTOEventNameEnum];
+export const EventsCountInputDTOBucketStepEnum = {
+  _5m: '5m',
+  _30m: '30m',
+  _1h: '1h',
+  _6h: '6h',
+  _12h: '12h',
+  _24h: '24h',
+} as const;
+
+export type EventsCountInputDTOBucketStepEnum =
+  (typeof EventsCountInputDTOBucketStepEnum)[keyof typeof EventsCountInputDTOBucketStepEnum];
+
+/**
+ *
+ * @export
  * @interface FunctionCreateDTO
  */
 export interface FunctionCreateDTO {
@@ -4354,6 +4451,31 @@ export interface KickPlayerInputDTO {
    * @memberof KickPlayerInputDTO
    */
   reason: string;
+}
+/**
+ *
+ * @export
+ * @interface LatencyInputDTO
+ */
+export interface LatencyInputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof LatencyInputDTO
+   */
+  gameServerId: string;
+  /**
+   *
+   * @type {StatsControllerGetPingStatsStartDateParameter}
+   * @memberof LatencyInputDTO
+   */
+  startDate?: StatsControllerGetPingStatsStartDateParameter;
+  /**
+   *
+   * @type {StatsControllerGetPingStatsStartDateParameter}
+   * @memberof LatencyInputDTO
+   */
+  endDate?: StatsControllerGetPingStatsStartDateParameter;
 }
 /**
  *
@@ -19807,6 +19929,142 @@ export const StatsApiAxiosParamCreator = function (configuration?: Configuration
       };
     },
     /**
+     * Calculates how many times an event type has occured over `bucketStep` time. Supports different filters and can return multiple series at a time. Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+     * @summary Get event count over time
+     * @param {StatsControllerGetEventsCountEventNameEnum} eventName
+     * @param {StatsControllerGetEventsCountBucketStepEnum} bucketStep
+     * @param {string} [gameServerId]
+     * @param {string} [moduleId]
+     * @param {string} [playerId]
+     * @param {string} [userId]
+     * @param {StatsControllerGetPingStatsStartDateParameter} [startDate]
+     * @param {StatsControllerGetPingStatsStartDateParameter} [endDate]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    statsControllerGetEventsCount: async (
+      eventName: StatsControllerGetEventsCountEventNameEnum,
+      bucketStep: StatsControllerGetEventsCountBucketStepEnum,
+      gameServerId?: string,
+      moduleId?: string,
+      playerId?: string,
+      userId?: string,
+      startDate?: StatsControllerGetPingStatsStartDateParameter,
+      endDate?: StatsControllerGetPingStatsStartDateParameter,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'eventName' is not null or undefined
+      assertParamExists('statsControllerGetEventsCount', 'eventName', eventName);
+      // verify required parameter 'bucketStep' is not null or undefined
+      assertParamExists('statsControllerGetEventsCount', 'bucketStep', bucketStep);
+      const localVarPath = `/stats/events-count`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      if (eventName !== undefined) {
+        localVarQueryParameter['eventName'] = eventName;
+      }
+
+      if (gameServerId !== undefined) {
+        localVarQueryParameter['gameServerId'] = gameServerId;
+      }
+
+      if (moduleId !== undefined) {
+        localVarQueryParameter['moduleId'] = moduleId;
+      }
+
+      if (playerId !== undefined) {
+        localVarQueryParameter['playerId'] = playerId;
+      }
+
+      if (userId !== undefined) {
+        localVarQueryParameter['userId'] = userId;
+      }
+
+      if (bucketStep !== undefined) {
+        localVarQueryParameter['bucketStep'] = bucketStep;
+      }
+
+      if (startDate !== undefined) {
+        localVarQueryParameter['startDate'] = startDate;
+      }
+
+      if (endDate !== undefined) {
+        localVarQueryParameter['endDate'] = endDate;
+      }
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * The roundtrip time for reachability tests between Takaro and the game server Required permissions: `READ_GAMESERVERS`
+     * @summary Get latency stats
+     * @param {string} gameServerId
+     * @param {StatsControllerGetPingStatsStartDateParameter} [startDate]
+     * @param {StatsControllerGetPingStatsStartDateParameter} [endDate]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    statsControllerGetLatencyStats: async (
+      gameServerId: string,
+      startDate?: StatsControllerGetPingStatsStartDateParameter,
+      endDate?: StatsControllerGetPingStatsStartDateParameter,
+      options: RawAxiosRequestConfig = {}
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'gameServerId' is not null or undefined
+      assertParamExists('statsControllerGetLatencyStats', 'gameServerId', gameServerId);
+      const localVarPath = `/stats/latency`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      if (gameServerId !== undefined) {
+        localVarQueryParameter['gameServerId'] = gameServerId;
+      }
+
+      if (startDate !== undefined) {
+        localVarQueryParameter['startDate'] = startDate;
+      }
+
+      if (endDate !== undefined) {
+        localVarQueryParameter['endDate'] = endDate;
+      }
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
      * @summary Get ping stats
      * @param {string} gameServerId
@@ -19998,6 +20256,83 @@ export const StatsApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
+     * Calculates how many times an event type has occured over `bucketStep` time. Supports different filters and can return multiple series at a time. Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+     * @summary Get event count over time
+     * @param {StatsControllerGetEventsCountEventNameEnum} eventName
+     * @param {StatsControllerGetEventsCountBucketStepEnum} bucketStep
+     * @param {string} [gameServerId]
+     * @param {string} [moduleId]
+     * @param {string} [playerId]
+     * @param {string} [userId]
+     * @param {StatsControllerGetPingStatsStartDateParameter} [startDate]
+     * @param {StatsControllerGetPingStatsStartDateParameter} [endDate]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async statsControllerGetEventsCount(
+      eventName: StatsControllerGetEventsCountEventNameEnum,
+      bucketStep: StatsControllerGetEventsCountBucketStepEnum,
+      gameServerId?: string,
+      moduleId?: string,
+      playerId?: string,
+      userId?: string,
+      startDate?: StatsControllerGetPingStatsStartDateParameter,
+      endDate?: StatsControllerGetPingStatsStartDateParameter,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<StatsOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.statsControllerGetEventsCount(
+        eventName,
+        bucketStep,
+        gameServerId,
+        moduleId,
+        playerId,
+        userId,
+        startDate,
+        endDate,
+        options
+      );
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['StatsApi.statsControllerGetEventsCount']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
+     * The roundtrip time for reachability tests between Takaro and the game server Required permissions: `READ_GAMESERVERS`
+     * @summary Get latency stats
+     * @param {string} gameServerId
+     * @param {StatsControllerGetPingStatsStartDateParameter} [startDate]
+     * @param {StatsControllerGetPingStatsStartDateParameter} [endDate]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async statsControllerGetLatencyStats(
+      gameServerId: string,
+      startDate?: StatsControllerGetPingStatsStartDateParameter,
+      endDate?: StatsControllerGetPingStatsStartDateParameter,
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<StatsOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.statsControllerGetLatencyStats(
+        gameServerId,
+        startDate,
+        endDate,
+        options
+      );
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['StatsApi.statsControllerGetLatencyStats']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
      *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
      * @summary Get ping stats
      * @param {string} gameServerId
@@ -20117,6 +20452,64 @@ export const StatsApiFactory = function (configuration?: Configuration, basePath
         .then((request) => request(axios, basePath));
     },
     /**
+     * Calculates how many times an event type has occured over `bucketStep` time. Supports different filters and can return multiple series at a time. Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+     * @summary Get event count over time
+     * @param {StatsControllerGetEventsCountEventNameEnum} eventName
+     * @param {StatsControllerGetEventsCountBucketStepEnum} bucketStep
+     * @param {string} [gameServerId]
+     * @param {string} [moduleId]
+     * @param {string} [playerId]
+     * @param {string} [userId]
+     * @param {StatsControllerGetPingStatsStartDateParameter} [startDate]
+     * @param {StatsControllerGetPingStatsStartDateParameter} [endDate]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    statsControllerGetEventsCount(
+      eventName: StatsControllerGetEventsCountEventNameEnum,
+      bucketStep: StatsControllerGetEventsCountBucketStepEnum,
+      gameServerId?: string,
+      moduleId?: string,
+      playerId?: string,
+      userId?: string,
+      startDate?: StatsControllerGetPingStatsStartDateParameter,
+      endDate?: StatsControllerGetPingStatsStartDateParameter,
+      options?: any
+    ): AxiosPromise<StatsOutputDTOAPI> {
+      return localVarFp
+        .statsControllerGetEventsCount(
+          eventName,
+          bucketStep,
+          gameServerId,
+          moduleId,
+          playerId,
+          userId,
+          startDate,
+          endDate,
+          options
+        )
+        .then((request) => request(axios, basePath));
+    },
+    /**
+     * The roundtrip time for reachability tests between Takaro and the game server Required permissions: `READ_GAMESERVERS`
+     * @summary Get latency stats
+     * @param {string} gameServerId
+     * @param {StatsControllerGetPingStatsStartDateParameter} [startDate]
+     * @param {StatsControllerGetPingStatsStartDateParameter} [endDate]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    statsControllerGetLatencyStats(
+      gameServerId: string,
+      startDate?: StatsControllerGetPingStatsStartDateParameter,
+      endDate?: StatsControllerGetPingStatsStartDateParameter,
+      options?: any
+    ): AxiosPromise<StatsOutputDTOAPI> {
+      return localVarFp
+        .statsControllerGetLatencyStats(gameServerId, startDate, endDate, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
      *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
      * @summary Get ping stats
      * @param {string} gameServerId
@@ -20215,6 +20608,68 @@ export class StatsApi extends BaseAPI {
   }
 
   /**
+   * Calculates how many times an event type has occured over `bucketStep` time. Supports different filters and can return multiple series at a time. Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+   * @summary Get event count over time
+   * @param {StatsControllerGetEventsCountEventNameEnum} eventName
+   * @param {StatsControllerGetEventsCountBucketStepEnum} bucketStep
+   * @param {string} [gameServerId]
+   * @param {string} [moduleId]
+   * @param {string} [playerId]
+   * @param {string} [userId]
+   * @param {StatsControllerGetPingStatsStartDateParameter} [startDate]
+   * @param {StatsControllerGetPingStatsStartDateParameter} [endDate]
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof StatsApi
+   */
+  public statsControllerGetEventsCount(
+    eventName: StatsControllerGetEventsCountEventNameEnum,
+    bucketStep: StatsControllerGetEventsCountBucketStepEnum,
+    gameServerId?: string,
+    moduleId?: string,
+    playerId?: string,
+    userId?: string,
+    startDate?: StatsControllerGetPingStatsStartDateParameter,
+    endDate?: StatsControllerGetPingStatsStartDateParameter,
+    options?: RawAxiosRequestConfig
+  ) {
+    return StatsApiFp(this.configuration)
+      .statsControllerGetEventsCount(
+        eventName,
+        bucketStep,
+        gameServerId,
+        moduleId,
+        playerId,
+        userId,
+        startDate,
+        endDate,
+        options
+      )
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * The roundtrip time for reachability tests between Takaro and the game server Required permissions: `READ_GAMESERVERS`
+   * @summary Get latency stats
+   * @param {string} gameServerId
+   * @param {StatsControllerGetPingStatsStartDateParameter} [startDate]
+   * @param {StatsControllerGetPingStatsStartDateParameter} [endDate]
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof StatsApi
+   */
+  public statsControllerGetLatencyStats(
+    gameServerId: string,
+    startDate?: StatsControllerGetPingStatsStartDateParameter,
+    endDate?: StatsControllerGetPingStatsStartDateParameter,
+    options?: RawAxiosRequestConfig
+  ) {
+    return StatsApiFp(this.configuration)
+      .statsControllerGetLatencyStats(gameServerId, startDate, endDate, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
    *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
    * @summary Get ping stats
    * @param {string} gameServerId
@@ -20278,6 +20733,50 @@ export const StatsControllerGetActivityStatsDataTypeEnum = {
 } as const;
 export type StatsControllerGetActivityStatsDataTypeEnum =
   (typeof StatsControllerGetActivityStatsDataTypeEnum)[keyof typeof StatsControllerGetActivityStatsDataTypeEnum];
+/**
+ * @export
+ */
+export const StatsControllerGetEventsCountEventNameEnum = {
+  RoleAssigned: 'role-assigned',
+  RoleRemoved: 'role-removed',
+  RoleCreated: 'role-created',
+  RoleUpdated: 'role-updated',
+  RoleDeleted: 'role-deleted',
+  CommandExecuted: 'command-executed',
+  HookExecuted: 'hook-executed',
+  CronjobExecuted: 'cronjob-executed',
+  CurrencyAdded: 'currency-added',
+  CurrencyDeducted: 'currency-deducted',
+  SettingsSet: 'settings-set',
+  PlayerNewIpDetected: 'player-new-ip-detected',
+  ServerStatusChanged: 'server-status-changed',
+  ModuleCreated: 'module-created',
+  ModuleUpdated: 'module-updated',
+  ModuleDeleted: 'module-deleted',
+  ModuleInstalled: 'module-installed',
+  ModuleUninstalled: 'module-uninstalled',
+  PlayerCreated: 'player-created',
+  PlayerConnected: 'player-connected',
+  PlayerDisconnected: 'player-disconnected',
+  ChatMessage: 'chat-message',
+  PlayerDeath: 'player-death',
+  EntityKilled: 'entity-killed',
+} as const;
+export type StatsControllerGetEventsCountEventNameEnum =
+  (typeof StatsControllerGetEventsCountEventNameEnum)[keyof typeof StatsControllerGetEventsCountEventNameEnum];
+/**
+ * @export
+ */
+export const StatsControllerGetEventsCountBucketStepEnum = {
+  _5m: '5m',
+  _30m: '30m',
+  _1h: '1h',
+  _6h: '6h',
+  _12h: '12h',
+  _24h: '24h',
+} as const;
+export type StatsControllerGetEventsCountBucketStepEnum =
+  (typeof StatsControllerGetEventsCountBucketStepEnum)[keyof typeof StatsControllerGetEventsCountBucketStepEnum];
 
 /**
  * UserApi - axios parameter creator

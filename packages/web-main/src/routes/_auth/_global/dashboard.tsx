@@ -36,10 +36,6 @@ function Component() {
   const loaderData = Route.useLoaderData();
   const { data } = useQuery({ ...PlayersOnlineStatsQueryOptions(), initialData: loaderData });
 
-  const { data: dailyActiveUsers, isLoading: isLoadingDailyActiveUsers } = useQuery(
-    ActivityStatsQueryOptions({ timeType: 'daily', dataType: 'players' })
-  );
-
   const { control } = useForm({
     defaultValues: {
       period: 'last24Hours',
@@ -78,6 +74,10 @@ function Component() {
 
     return { startDate, now };
   }, [selectedPeriod]);
+
+  const { data: dailyActiveUsers, isLoading: isLoadingDailyActiveUsers } = useQuery(
+    ActivityStatsQueryOptions({ timeType: 'daily', dataType: 'players', startDate, endDate: now })
+  );
 
   const { data: cronjobsExecuted, isLoading: isLoadingCronJobsExecuted } = useQuery(
     eventsQueryOptions({
@@ -148,7 +148,7 @@ function Component() {
         </Stats>
 
         <div style={{ display: 'flex', flexFlow: 'flex-wrap', gap: '2rem', marginTop: '40px' }}>
-          <Card style={{ height: '400px', width: '800px', position: 'relative' }} variant="outline">
+          <Card style={{ height: '400px', width: '60%', position: 'relative' }} variant="outline">
             <h2>Players online</h2>
             <LineChart
               name="Players online"
@@ -159,7 +159,7 @@ function Component() {
             />
           </Card>
 
-          <Card>
+          <Card style={{ height: '100%', width: '40%', position: 'relative' }}>
             <h2>Module errors</h2>
             <EventFeed>
               {failedFunctions?.data.flatMap((event) => (

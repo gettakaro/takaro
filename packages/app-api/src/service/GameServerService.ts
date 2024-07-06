@@ -218,7 +218,7 @@ export class GameServerService extends TakaroService<
     if (id) {
       const instance = await this.getGame(id);
       const reachability = await instance.testReachability();
-      gameServerLatency.set({ gameserver: id }, reachability.latency ?? 0);
+      gameServerLatency.set({ gameserver: id, domain: this.domainId }, reachability.latency ?? 0);
 
       const currentServer = await this.findOne(id);
 
