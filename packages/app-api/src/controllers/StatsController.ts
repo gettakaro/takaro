@@ -7,6 +7,7 @@ import { Type } from 'class-transformer';
 import { PERMISSIONS } from '@takaro/auth';
 import { StatsOutputDTO, StatsService } from '../service/StatsService.js';
 import { TakaroDTO } from '@takaro/util';
+import { EVENT_TYPES } from '../service/EventService.js';
 
 class StatsOutputDTOAPI extends APIOutput<StatsOutputDTO> {
   @ValidateNested()
@@ -38,6 +39,11 @@ class PlayersOnlineInputDTO extends BaseStatsInputDTO {
   gameServerId?: string;
 }
 
+class LatencyInputDTO extends BaseStatsInputDTO {
+  @IsUUID('4')
+  gameServerId: string;
+}
+
 class ActivityInputDTO extends BaseStatsInputDTO {
   @IsOptional()
   @IsUUID('4')
@@ -48,6 +54,25 @@ class ActivityInputDTO extends BaseStatsInputDTO {
 
   @IsEnum(['users', 'players'])
   dataType: 'users' | 'players';
+}
+
+export class EventsCountInputDTO extends BaseStatsInputDTO {
+  @IsEnum(Object.values(EVENT_TYPES))
+  eventName: string;
+  @IsOptional()
+  @IsUUID('4')
+  gameServerId: string;
+  @IsOptional()
+  @IsUUID('4')
+  moduleId: string;
+  @IsOptional()
+  @IsUUID('4')
+  playerId: string;
+  @IsOptional()
+  @IsUUID('4')
+  userId: string;
+  @IsEnum(['5m', '30m', '1h', '6h', '12h', '24h'])
+  bucketStep: string;
 }
 
 @OpenAPI({
@@ -71,6 +96,17 @@ export class StatsController {
     return apiResponse(await service.getCurrency(query.playerId, query.gameServerId, query.startDate, query.endDate));
   }
 
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS]))
+  @ResponseSchema(StatsOutputDTOAPI)
+  @OpenAPI({
+    description: 'The roundtrip time for reachability tests between Takaro and the game server',
+  })
+  @Get('/stats/latency')
+  async getLatencyStats(@Req() req: AuthenticatedRequest, @QueryParams() query: LatencyInputDTO) {
+    const service = new StatsService(req.domainId);
+    return apiResponse(await service.getLatency(query.gameServerId, query.startDate, query.endDate));
+  }
+
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS, PERMISSIONS.READ_PLAYERS]))
   @ResponseSchema(StatsOutputDTOAPI)
   @Get('/stats/players-online')
@@ -87,5 +123,18 @@ export class StatsController {
     return apiResponse(
       await service.getActivityStats(query.dataType, query.timeType, query.gameServerId, query.startDate, query.endDate)
     );
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS, PERMISSIONS.READ_PLAYERS]))
+  @ResponseSchema(StatsOutputDTOAPI)
+  @OpenAPI({
+    summary: 'Get event count over time',
+    description:
+      'Calculates how many times an event type has occured over `bucketStep` time. Supports different filters and can return multiple series at a time.',
+  })
+  @Get('/stats/events-count')
+  async getEventsCount(@Req() req: AuthenticatedRequest, @QueryParams() query: EventsCountInputDTO) {
+    const service = new StatsService(req.domainId);
+    return apiResponse(await service.getEventsCountOverTime(query));
   }
 }
