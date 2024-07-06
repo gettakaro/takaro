@@ -340,17 +340,19 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
     const oneWeekAgo = new Date(new Date().valueOf() - 1000 * 60 * 60 * 24 * 7).toISOString();
     const oneMonthAgo = new Date(new Date().valueOf() - 1000 * 60 * 60 * 24 * 30).toISOString();
 
-    const { query } = await this.getModel();
+    const { query: dauQuery } = await this.getModel();
+    const { query: wauQuery } = await this.getModel();
+    const { query: mauQuery } = await this.getModel();
 
-    const dauRes = await query
+    const dauRes = await dauQuery
       .joinRelated('playerOnGameServers')
       .where('playerOnGameServers.lastSeen', '>', oneDayAgo)
       .countDistinct('players.id');
-    const wauRes = await query
+    const wauRes = await wauQuery
       .joinRelated('playerOnGameServers')
       .where('playerOnGameServers.lastSeen', '>', oneWeekAgo)
       .countDistinct('players.id');
-    const mauRes = await query
+    const mauRes = await mauQuery
       .joinRelated('playerOnGameServers')
       .where('playerOnGameServers.lastSeen', '>', oneMonthAgo)
       .countDistinct('players.id');
