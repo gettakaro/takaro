@@ -59,8 +59,7 @@ export const validationSchema = baseShape.and(
       type: z.literal(GameServerCreateDTOTypeEnum.Mock.valueOf()),
       connectionInfo: z.object({
         host: z.string().min(1, { message: 'Host cannot be empty' }).optional(),
-        eventInterval: z.number().min(500).optional(),
-        playerPoolSize: z.number().max(200).nonnegative('Player pool size cannot be negative').optional(),
+        name: z.string().min(1, { message: 'Name cannot be empty' }).optional(),
       }),
     }),
   ])
