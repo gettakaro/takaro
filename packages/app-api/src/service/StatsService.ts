@@ -148,20 +148,20 @@ export class StatsService extends TakaroService<TakaroModel, TakaroDTO<void>, Ta
 
     if (filters.gameServerId) {
       labelSelectors += `, gameserver="${filters.gameServerId}"`;
-      sumByFields.push('gameserver');
     }
     if (filters.moduleId) {
       labelSelectors += `, module="${filters.moduleId}"`;
-      sumByFields.push('module');
     }
     if (filters.playerId) {
       labelSelectors += `, player="${filters.playerId}"`;
-      sumByFields.push('player');
     }
 
     if (filters.userId) {
       labelSelectors += `, user="${filters.userId}"`;
-      sumByFields.push('user');
+    }
+
+    if (filters.sumBy && filters.sumBy.length > 0) {
+      sumByFields.push(...filters.sumBy);
     }
 
     const sumByClause = sumByFields.length > 0 ? `sum by(${sumByFields.join(', ')})` : '';

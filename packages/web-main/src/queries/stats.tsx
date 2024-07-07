@@ -62,6 +62,7 @@ export const EventsCountQueryOptions = (options: EventsCountInputDTO) => {
         await getApiClient().stats.statsControllerGetEventsCount(
           options.eventName,
           options.bucketStep,
+          options.sumBy,
           options.gameServerId,
           options.moduleId,
           options.playerId,
