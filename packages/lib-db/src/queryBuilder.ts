@@ -104,8 +104,12 @@ export class QueryBuilder<Model extends ObjectionModel, OutputDTO> {
         const searchVal = this.query.filters[filter];
 
         if (searchVal && Array.isArray(searchVal)) {
-          const filtered = searchVal.filter(Boolean);
-          if (filtered.length) {
+          if (searchVal.includes(null) || searchVal.includes('null')) {
+            query.whereNull(`${tableName}.${filter}`);
+            continue;
+          }
+
+          if (searchVal.length) {
             query.whereIn(`${tableName}.${filter}`, searchVal.filter(Boolean) as unknown as AnyQueryBuilder);
           }
         }

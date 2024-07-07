@@ -2094,6 +2094,12 @@ export interface EventsCountInputDTO {
   eventName: EventsCountInputDTOEventNameEnum;
   /**
    *
+   * @type {Array<string>}
+   * @memberof EventsCountInputDTO
+   */
+  sumBy?: Array<EventsCountInputDTOSumByEnum>;
+  /**
+   *
    * @type {string}
    * @memberof EventsCountInputDTO
    */
@@ -2165,6 +2171,15 @@ export const EventsCountInputDTOEventNameEnum = {
 
 export type EventsCountInputDTOEventNameEnum =
   (typeof EventsCountInputDTOEventNameEnum)[keyof typeof EventsCountInputDTOEventNameEnum];
+export const EventsCountInputDTOSumByEnum = {
+  Player: 'player',
+  Module: 'module',
+  User: 'user',
+  Gameserver: 'gameserver',
+} as const;
+
+export type EventsCountInputDTOSumByEnum =
+  (typeof EventsCountInputDTOSumByEnum)[keyof typeof EventsCountInputDTOSumByEnum];
 export const EventsCountInputDTOBucketStepEnum = {
   _5m: '5m',
   _30m: '30m',
@@ -19933,6 +19948,7 @@ export const StatsApiAxiosParamCreator = function (configuration?: Configuration
      * @summary Get event count over time
      * @param {StatsControllerGetEventsCountEventNameEnum} eventName
      * @param {StatsControllerGetEventsCountBucketStepEnum} bucketStep
+     * @param {Array<StatsControllerGetEventsCountSumByEnum>} [sumBy]
      * @param {string} [gameServerId]
      * @param {string} [moduleId]
      * @param {string} [playerId]
@@ -19945,6 +19961,7 @@ export const StatsApiAxiosParamCreator = function (configuration?: Configuration
     statsControllerGetEventsCount: async (
       eventName: StatsControllerGetEventsCountEventNameEnum,
       bucketStep: StatsControllerGetEventsCountBucketStepEnum,
+      sumBy?: Array<StatsControllerGetEventsCountSumByEnum>,
       gameServerId?: string,
       moduleId?: string,
       playerId?: string,
@@ -19973,6 +19990,10 @@ export const StatsApiAxiosParamCreator = function (configuration?: Configuration
 
       if (eventName !== undefined) {
         localVarQueryParameter['eventName'] = eventName;
+      }
+
+      if (sumBy) {
+        localVarQueryParameter['sumBy'] = sumBy;
       }
 
       if (gameServerId !== undefined) {
@@ -20260,6 +20281,7 @@ export const StatsApiFp = function (configuration?: Configuration) {
      * @summary Get event count over time
      * @param {StatsControllerGetEventsCountEventNameEnum} eventName
      * @param {StatsControllerGetEventsCountBucketStepEnum} bucketStep
+     * @param {Array<StatsControllerGetEventsCountSumByEnum>} [sumBy]
      * @param {string} [gameServerId]
      * @param {string} [moduleId]
      * @param {string} [playerId]
@@ -20272,6 +20294,7 @@ export const StatsApiFp = function (configuration?: Configuration) {
     async statsControllerGetEventsCount(
       eventName: StatsControllerGetEventsCountEventNameEnum,
       bucketStep: StatsControllerGetEventsCountBucketStepEnum,
+      sumBy?: Array<StatsControllerGetEventsCountSumByEnum>,
       gameServerId?: string,
       moduleId?: string,
       playerId?: string,
@@ -20283,6 +20306,7 @@ export const StatsApiFp = function (configuration?: Configuration) {
       const localVarAxiosArgs = await localVarAxiosParamCreator.statsControllerGetEventsCount(
         eventName,
         bucketStep,
+        sumBy,
         gameServerId,
         moduleId,
         playerId,
@@ -20456,6 +20480,7 @@ export const StatsApiFactory = function (configuration?: Configuration, basePath
      * @summary Get event count over time
      * @param {StatsControllerGetEventsCountEventNameEnum} eventName
      * @param {StatsControllerGetEventsCountBucketStepEnum} bucketStep
+     * @param {Array<StatsControllerGetEventsCountSumByEnum>} [sumBy]
      * @param {string} [gameServerId]
      * @param {string} [moduleId]
      * @param {string} [playerId]
@@ -20468,6 +20493,7 @@ export const StatsApiFactory = function (configuration?: Configuration, basePath
     statsControllerGetEventsCount(
       eventName: StatsControllerGetEventsCountEventNameEnum,
       bucketStep: StatsControllerGetEventsCountBucketStepEnum,
+      sumBy?: Array<StatsControllerGetEventsCountSumByEnum>,
       gameServerId?: string,
       moduleId?: string,
       playerId?: string,
@@ -20480,6 +20506,7 @@ export const StatsApiFactory = function (configuration?: Configuration, basePath
         .statsControllerGetEventsCount(
           eventName,
           bucketStep,
+          sumBy,
           gameServerId,
           moduleId,
           playerId,
@@ -20612,6 +20639,7 @@ export class StatsApi extends BaseAPI {
    * @summary Get event count over time
    * @param {StatsControllerGetEventsCountEventNameEnum} eventName
    * @param {StatsControllerGetEventsCountBucketStepEnum} bucketStep
+   * @param {Array<StatsControllerGetEventsCountSumByEnum>} [sumBy]
    * @param {string} [gameServerId]
    * @param {string} [moduleId]
    * @param {string} [playerId]
@@ -20625,6 +20653,7 @@ export class StatsApi extends BaseAPI {
   public statsControllerGetEventsCount(
     eventName: StatsControllerGetEventsCountEventNameEnum,
     bucketStep: StatsControllerGetEventsCountBucketStepEnum,
+    sumBy?: Array<StatsControllerGetEventsCountSumByEnum>,
     gameServerId?: string,
     moduleId?: string,
     playerId?: string,
@@ -20637,6 +20666,7 @@ export class StatsApi extends BaseAPI {
       .statsControllerGetEventsCount(
         eventName,
         bucketStep,
+        sumBy,
         gameServerId,
         moduleId,
         playerId,
@@ -20777,6 +20807,17 @@ export const StatsControllerGetEventsCountBucketStepEnum = {
 } as const;
 export type StatsControllerGetEventsCountBucketStepEnum =
   (typeof StatsControllerGetEventsCountBucketStepEnum)[keyof typeof StatsControllerGetEventsCountBucketStepEnum];
+/**
+ * @export
+ */
+export const StatsControllerGetEventsCountSumByEnum = {
+  Player: 'player',
+  Module: 'module',
+  User: 'user',
+  Gameserver: 'gameserver',
+} as const;
+export type StatsControllerGetEventsCountSumByEnum =
+  (typeof StatsControllerGetEventsCountSumByEnum)[keyof typeof StatsControllerGetEventsCountSumByEnum];
 
 /**
  * UserApi - axios parameter creator

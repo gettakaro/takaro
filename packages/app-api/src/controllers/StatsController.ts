@@ -1,4 +1,4 @@
-import { IsDateString, IsEnum, IsISO8601, IsOptional, IsUUID, ValidateNested } from 'class-validator';
+import { IsDateString, IsEnum, IsISO8601, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
 import { Get, JsonController, UseBefore, Req, QueryParams } from 'routing-controllers';
@@ -59,17 +59,20 @@ class ActivityInputDTO extends BaseStatsInputDTO {
 export class EventsCountInputDTO extends BaseStatsInputDTO {
   @IsEnum(Object.values(EVENT_TYPES))
   eventName: string;
+  @IsEnum(['player', 'module', 'user', 'gameserver'], { each: true })
   @IsOptional()
-  @IsUUID('4')
+  sumBy?: string[];
+  @IsOptional()
+  @IsString()
   gameServerId: string;
   @IsOptional()
-  @IsUUID('4')
+  @IsString()
   moduleId: string;
   @IsOptional()
-  @IsUUID('4')
+  @IsString()
   playerId: string;
   @IsOptional()
-  @IsUUID('4')
+  @IsString()
   userId: string;
   @IsEnum(['5m', '30m', '1h', '6h', '12h', '24h'])
   bucketStep: string;

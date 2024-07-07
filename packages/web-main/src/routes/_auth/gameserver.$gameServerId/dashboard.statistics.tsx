@@ -72,23 +72,15 @@ function Component() {
   const { data: chatMessagesData } = useQuery(
     EventsCountQueryOptions({
       gameServerId,
+      sumBy: ['gameserver'],
       startDate,
       endDate: now,
       eventName: EventsCountInputDTOEventNameEnum.ChatMessage,
       bucketStep: '1h',
     })
   );
-  const { data: newPlayersData } = useQuery(
-    EventsCountQueryOptions({
-      gameServerId,
-      startDate,
-      endDate: now,
-      eventName: EventsCountInputDTOEventNameEnum.PlayerCreated,
-      bucketStep: '24h',
-    })
-  );
 
-  if (!playersOnlineData || !latencyData || !chatMessagesData || !newPlayersData) {
+  if (!playersOnlineData || !latencyData || !chatMessagesData) {
     // TODO: add better loading state, with each card separate?
     return <Loading />;
   }
@@ -129,18 +121,6 @@ function Component() {
           <LineChart
             name="Chat Messages"
             data={chatMessagesData.values}
-            xAccessor={(d) => new Date(d[0] * 1000)}
-            yAccessor={(d) => d[1]}
-            curveType="curveBasis"
-          />
-        </StatCard>
-
-        <StatCard variant="outline">
-          <h2>New Players</h2>
-          <small>How many new players joined the server per day</small>
-          <LineChart
-            name="New Players"
-            data={newPlayersData.values}
             xAccessor={(d) => new Date(d[0] * 1000)}
             yAccessor={(d) => d[1]}
             curveType="curveBasis"
