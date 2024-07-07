@@ -3,7 +3,19 @@ import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { HookCreateDTO, HookOutputDTO, HookService, HookTriggerDTO, HookUpdateDTO } from '../service/HookService.js';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
-import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Put, Params, Res } from 'routing-controllers';
+import {
+  Body,
+  Get,
+  Post,
+  Delete,
+  JsonController,
+  UseBefore,
+  Req,
+  Put,
+  Params,
+  Res,
+  QueryParam,
+} from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
@@ -11,6 +23,8 @@ import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 import { EventTypes, HookEvents } from '@takaro/modules';
 import { builtinModuleModificationMiddleware } from '../middlewares/builtinModuleModification.js';
+import { EventOutputArrayDTOAPI, EventSearchInputDTO } from './EventController.js';
+import { EVENT_TYPES, EventService } from '../service/EventService.js';
 
 export class HookOutputDTOAPI extends APIOutput<HookOutputDTO> {
   @Type(() => HookOutputDTO)
@@ -117,5 +131,39 @@ export class HookController {
     const service = new HookService(req.domainId);
     await service.trigger(data);
     return apiResponse();
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_MODULES]))
+  @ResponseSchema(EventOutputArrayDTOAPI)
+  @Post('/hook/:id/executions')
+  async getExecutions(
+    @Params() params: ParamId,
+    @Req() req: AuthenticatedRequest,
+    @Res() res: Response,
+    @Body() query: EventSearchInputDTO,
+    @QueryParam('success') success = false
+  ) {
+    const service = new EventService(req.domainId);
+    const result = await service.metadataSearch(
+      {
+        ...query,
+        filters: { ...query.filters, eventName: [EVENT_TYPES.HOOK_EXECUTED] },
+      },
+      [
+        {
+          logicalOperator: 'AND',
+          filters: [
+            { field: 'hook.id', operator: '=', value: params.id },
+            { field: 'result.success', operator: '=', value: success },
+          ],
+        },
+      ]
+    );
+
+    return apiResponse(result.results, {
+      meta: { total: result.total },
+      req,
+      res,
+    });
   }
 }
