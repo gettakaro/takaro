@@ -52,6 +52,8 @@ import { randomUUID } from 'crypto';
 import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
 import { Type } from 'class-transformer';
 import { gameServerLatency } from '../lib/metrics.js';
+import { Pushgateway } from 'prom-client';
+import { config } from '../config.js';
 
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 const ajv = new Ajv({ useDefaults: true, strict: true });
@@ -192,6 +194,10 @@ export class GameServerService extends TakaroService<
     await Promise.all(installedModules.map((mod) => this.uninstallModule(id, mod.moduleId)));
 
     gameClassCache.delete(id);
+
+    const gateway = new Pushgateway(config.get('metrics.pushgatewayUrl'), {});
+    gateway.delete({ jobName: 'worker', groupings: { gameserver: id } });
+
     await queueService.queues.connector.queue.add({
       domainId: this.domainId,
       gameServerId: id,
