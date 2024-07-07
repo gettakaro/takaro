@@ -29,7 +29,7 @@ class EventSearchInputAllowedFilters {
   gameserverId!: string[];
 }
 
-class EventSearchInputDTO extends ITakaroQuery<EventOutputDTO> {
+export class EventSearchInputDTO extends ITakaroQuery<EventOutputDTO> {
   @ValidateNested()
   @Type(() => EventSearchInputAllowedFilters)
   declare filters: EventSearchInputAllowedFilters;
@@ -92,7 +92,10 @@ export class EventController {
     const result = await service.metadataSearch(
       {
         ...query,
-        filters: { eventName: [EVENT_TYPES.COMMAND_EXECUTED, EVENT_TYPES.CRONJOB_EXECUTED, EVENT_TYPES.HOOK_EXECUTED] },
+        filters: {
+          ...query.filters,
+          eventName: [EVENT_TYPES.COMMAND_EXECUTED, EVENT_TYPES.CRONJOB_EXECUTED, EVENT_TYPES.HOOK_EXECUTED],
+        },
       },
       [
         {

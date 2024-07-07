@@ -12,13 +12,27 @@ import {
   CommandUpdateDTO,
 } from '../service/CommandService.js';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
-import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Put, Params, Res } from 'routing-controllers';
+import {
+  Body,
+  Get,
+  Post,
+  Delete,
+  JsonController,
+  UseBefore,
+  Req,
+  Put,
+  Params,
+  Res,
+  QueryParam,
+} from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 import { builtinModuleModificationMiddleware } from '../middlewares/builtinModuleModification.js';
+import { EventService, EVENT_TYPES } from '../service/EventService.js';
+import { EventOutputArrayDTOAPI, EventSearchInputDTO } from './EventController.js';
 
 export class CommandOutputDTOAPI extends APIOutput<CommandOutputDTO> {
   @Type(() => CommandOutputDTO)
@@ -156,5 +170,39 @@ export class CommandController {
     const service = new CommandService(req.domainId);
     await service.trigger(params.id, data);
     return apiResponse();
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_MODULES]))
+  @ResponseSchema(EventOutputArrayDTOAPI)
+  @Post('/command/:id/executions')
+  async getExecutions(
+    @Params() params: ParamId,
+    @Req() req: AuthenticatedRequest,
+    @Res() res: Response,
+    @Body() query: EventSearchInputDTO,
+    @QueryParam('success') success = false
+  ) {
+    const service = new EventService(req.domainId);
+    const result = await service.metadataSearch(
+      {
+        ...query,
+        filters: { ...query.filters, eventName: [EVENT_TYPES.COMMAND_EXECUTED] },
+      },
+      [
+        {
+          logicalOperator: 'AND',
+          filters: [
+            { field: 'command.id', operator: '=', value: params.id },
+            { field: 'result.success', operator: '=', value: success },
+          ],
+        },
+      ]
+    );
+
+    return apiResponse(result.results, {
+      meta: { total: result.total },
+      req,
+      res,
+    });
   }
 }
