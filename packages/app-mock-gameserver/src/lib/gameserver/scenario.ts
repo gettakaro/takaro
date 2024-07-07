@@ -1,42 +1,28 @@
 import { logger } from '@takaro/util';
-import fs from 'fs/promises';
-import { createReadStream } from 'fs';
-import path from 'path';
-import readline from 'node:readline/promises';
 import { IPlayerReferenceDTO } from '@takaro/gameserver';
 
 import { GameEventTypes } from '@takaro/modules';
 import { MockGameserver } from './index.js';
 import { MockServerSocketServer } from '../socket/socketTypes.js';
+import { Basic } from '../../scenarios/basic.js';
 
 const log = logger('scenarioHandler');
 
-const __dirname = path.resolve(path.dirname(''));
-
-interface IScenarioEvent {
+export interface IScenarioEvent {
   time: number;
   event: GameEventTypes;
   data: Record<string, unknown>;
 }
 
 export async function playScenario(socketServer: MockServerSocketServer, gameInstance: MockGameserver) {
-  const scenarios = await fs.readdir(path.join(__dirname, './src/scenarios'));
+  const scenarios = [Basic];
 
   const randomScenario = scenarios[Math.floor(Math.random() * scenarios.length)];
   log.info(`Playing scenario ${randomScenario}`);
 
-  // Read file line by line and log
-  const fileStream = createReadStream(`./src/scenarios/${randomScenario}`);
-  const rl = await readline.createInterface({
-    input: fileStream,
-    crlfDelay: Infinity,
-  });
-
   const eventPromises: Promise<unknown>[] = [];
 
-  for await (const line of rl) {
-    const event = JSON.parse(line) as IScenarioEvent;
-
+  for await (const event of randomScenario) {
     const promise = new Promise<void>((resolve) => {
       setTimeout(async () => {
         try {
