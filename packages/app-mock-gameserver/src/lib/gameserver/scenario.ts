@@ -22,7 +22,7 @@ export async function playScenario(socketServer: MockServerSocketServer, gameIns
 
   const eventPromises: Promise<unknown>[] = [];
 
-  for await (const event of randomScenario) {
+  for await (const event of JSON.parse(JSON.stringify(randomScenario))) {
     const promise = new Promise<void>((resolve) => {
       setTimeout(async () => {
         try {
