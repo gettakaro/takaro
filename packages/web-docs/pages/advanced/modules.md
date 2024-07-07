@@ -66,7 +66,7 @@ import { getTakaro } from '@takaro/helpers';
 
 async function main() {
     await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
-      message: `Welcome to the server, ${data.player.name}. ${data.config.extraMessage}`,
+      message: `Welcome to the server, ${data.player.name}. ${data.module.userConfig.extraMessage}`,
   });
 }
 
