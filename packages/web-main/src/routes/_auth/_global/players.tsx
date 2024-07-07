@@ -33,6 +33,7 @@ import { Player } from 'components/Player';
 import { useQuery } from '@tanstack/react-query';
 import { getApiClient } from 'util/getApiClient';
 import { Boolean } from 'components/Boolean';
+import { PlayerStats } from './-players/playerStats';
 
 export const StyledDialogBody = styled(Dialog.Body)`
   h2 {
@@ -195,6 +196,7 @@ function Component() {
 
   return (
     <Fragment>
+      <PlayerStats />
       <Table
         title="List of players"
         id="players"
