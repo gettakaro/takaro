@@ -1,6 +1,7 @@
 import { logger } from '@takaro/util';
 import fs from 'fs/promises';
 import { createReadStream } from 'fs';
+import path from 'path';
 import readline from 'node:readline/promises';
 import { IPlayerReferenceDTO } from '@takaro/gameserver';
 
@@ -10,6 +11,8 @@ import { MockServerSocketServer } from '../socket/socketTypes.js';
 
 const log = logger('scenarioHandler');
 
+const __dirname = path.resolve(path.dirname(''));
+
 interface IScenarioEvent {
   time: number;
   event: GameEventTypes;
@@ -17,7 +20,7 @@ interface IScenarioEvent {
 }
 
 export async function playScenario(socketServer: MockServerSocketServer, gameInstance: MockGameserver) {
-  const scenarios = await fs.readdir('./src/scenarios');
+  const scenarios = await fs.readdir(path.join(__dirname, './src/scenarios'));
 
   const randomScenario = scenarios[Math.floor(Math.random() * scenarios.length)];
   log.info(`Playing scenario ${randomScenario}`);
