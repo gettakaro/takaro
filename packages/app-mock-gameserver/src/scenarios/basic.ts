@@ -3,6 +3,8 @@ import { IScenarioEvent } from '../lib/gameserver/scenario.js';
 export const Basic: IScenarioEvent[] = [
   { time: 0, event: 'player-connected', data: { player: '1' } },
   { time: 473, event: 'player-connected', data: { player: '2' } },
+  { time: 752, event: 'entity-killed', data: { player: '2', entity: 'zombieBusinessMan01', weapon: 'ak47' } },
+  { time: 900, event: 'player-death', data: { player: '1' } },
   { time: 1555, event: 'player-connected', data: { player: '3' } },
   { time: 1955, event: 'chat-message', data: { player: '2', msg: '/ping', channel: 'global' } },
   { time: 2092, event: 'chat-message', data: { player: '3', msg: '/ping', channel: 'global' } },
