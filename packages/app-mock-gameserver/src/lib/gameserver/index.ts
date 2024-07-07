@@ -22,15 +22,57 @@ export type IMockGameServer = Omit<IGameServer, 'getEventEmitter' | 'connectionI
 
 const REDIS_PREFIX = `mock-game:${config.get('mockserver.name')}:`;
 
-class MockGameserver implements IMockGameServer {
+export class MockGameserver implements IMockGameServer {
   private log = logger('Mock');
   private socketServer = getSocketServer();
   private redis = Redis.getClient('mockgameserver');
 
-  constructor(private name: string) {}
+  constructor(public name: string) {}
 
   private getRedisKey(key: string) {
     return `${REDIS_PREFIX}${this.name}:${key}`;
+  }
+
+  // eslint-disable-next-line
+  emitEvent(
+    type:
+      | 'log'
+      | 'chat-message'
+      | 'player-connected'
+      | 'player-disconnected'
+      | 'player-death'
+      | 'entity-killed'
+      | 'gameEvent'
+      | 'pong',
+    data: any
+  ) {
+    this.socketServer.io.emit(type, { name: this.name, ...data });
+  }
+
+  async setPlayerOnlineStatus(playerRef: IPlayerReferenceDTO, online: boolean) {
+    const player = await (await this.redis).hGetAll(this.getRedisKey(`player:${playerRef.gameId}`));
+
+    if (!player) {
+      throw new errors.NotFoundError('Player not found');
+    }
+
+    player.online = online.toString();
+
+    await (await this.redis).hSet(this.getRedisKey(`player:${playerRef.gameId}`), player);
+
+    if (online) {
+      const event = new EventPlayerConnected({
+        player: new IGamePlayer(player),
+        msg: `${player.name} connected`,
+      });
+      this.emitEvent(HookEvents.PLAYER_CONNECTED, event);
+    } else {
+      const event = new EventPlayerDisconnected({
+        player: new IGamePlayer(player),
+        msg: `${player.name} disconnected`,
+      });
+      this.emitEvent(HookEvents.PLAYER_DISCONNECTED, event);
+    }
   }
 
   async ensurePlayersPersisted() {
@@ -49,6 +91,7 @@ class MockGameserver implements IMockGameServer {
       positionX: 500 - parseInt(faker.random.numeric(3), 10),
       positionY: 500 - parseInt(faker.random.numeric(3), 10),
       positionZ: 500 - parseInt(faker.random.numeric(3), 10),
+      online: 'true',
     }));
 
     await Promise.all(
@@ -62,12 +105,11 @@ class MockGameserver implements IMockGameServer {
     this.sendLog(`Giving ${player.gameId} ${amount}x${item}`);
   }
 
-  async getPlayer(playerRef: IPlayerReferenceDTO): Promise<IGamePlayer | null> {
+  async getPlayer(playerRef: IPlayerReferenceDTO, onlyOnline = true): Promise<IGamePlayer | null> {
     const player = await (await this.redis).hGetAll(this.getRedisKey(`player:${playerRef.gameId}`));
 
-    if (!player) {
-      return null;
-    }
+    if (!player) return null;
+    if (player.online === 'false' && onlyOnline) return null;
 
     return new IGamePlayer({
       gameId: player.gameId.toString(),
@@ -78,13 +120,15 @@ class MockGameserver implements IMockGameServer {
     });
   }
 
-  async getPlayers(): Promise<IGamePlayer[]> {
+  async getPlayers(onlyOnline = true): Promise<IGamePlayer[]> {
     const players = await (await this.redis).keys(this.getRedisKey('player:*'));
-    const playerData = await Promise.all(
+    let playerData = await Promise.all(
       players.map(async (p) => {
         return (await this.redis).hGetAll(p);
       })
     );
+
+    if (onlyOnline) playerData = playerData.filter((p) => p.online === 'true');
 
     return await Promise.all(
       playerData.map(
@@ -125,22 +169,29 @@ class MockGameserver implements IMockGameServer {
     }
 
     if (rawCommand === 'connectAll') {
-      const players = await this.getPlayers();
+      const players = await this.getPlayers(false);
       await Promise.all(
         players.map(async (p) => {
-          const event = new EventPlayerConnected({
-            player: p,
-            msg: `${p.name} connected`,
-          });
-          this.socketServer.io.emit(HookEvents.PLAYER_CONNECTED, { name: this.name, ...event });
+          await this.setPlayerOnlineStatus(p, true);
         })
       );
       output.rawResult = 'Connected all players';
       output.success = true;
     }
 
+    if (rawCommand === 'disconnectAll') {
+      const players = await this.getPlayers(true);
+      await Promise.all(
+        players.map(async (p) => {
+          await this.setPlayerOnlineStatus(p, false);
+        })
+      );
+      output.rawResult = 'Disconnected all players';
+      output.success = true;
+    }
+
     if (rawCommand === 'scenario') {
-      playScenario(this.socketServer.io).catch((err) => {
+      playScenario(this.socketServer.io, this).catch((err) => {
         this.log.error(err);
       });
 
@@ -164,13 +215,13 @@ class MockGameserver implements IMockGameServer {
     const options = { ...opts };
     const fullMessage = `[🗨️ Chat] Server: ${options.recipient ? '[DM]' : ''} ${message}`;
 
-    this.socketServer.io.emit(GameEvents.CHAT_MESSAGE, {
-      name: this.name,
-      ...new EventChatMessage({
+    this.emitEvent(
+      GameEvents.CHAT_MESSAGE,
+      new EventChatMessage({
         msg: message,
         channel: ChatChannel.GLOBAL,
-      }),
-    });
+      })
+    );
     await this.sendLog(fullMessage);
   }
 
@@ -197,13 +248,13 @@ class MockGameserver implements IMockGameServer {
       throw new errors.NotFoundError('Player not found');
     }
 
-    this.socketServer.io.emit(GameEvents.PLAYER_DISCONNECTED, {
-      name: this.name,
-      ...new EventPlayerDisconnected({
+    this.emitEvent(
+      GameEvents.PLAYER_DISCONNECTED,
+      new EventPlayerDisconnected({
         player,
         msg: `${player.name} disconnected: Kicked ${reason}`,
-      }),
-    });
+      })
+    );
   }
 
   async banPlayer(options: BanDTO): Promise<void> {
@@ -219,13 +270,13 @@ class MockGameserver implements IMockGameServer {
       expiresAt: options.expiresAt,
     });
 
-    this.socketServer.io.emit(GameEvents.PLAYER_DISCONNECTED, {
-      name: this.name,
-      ...new EventPlayerDisconnected({
+    this.emitEvent(
+      GameEvents.PLAYER_DISCONNECTED,
+      new EventPlayerDisconnected({
         player,
         msg: `${player.name} disconnected: Banned ${options.reason} until ${options.expiresAt}`,
-      }),
-    });
+      })
+    );
 
     if (options.expiresAt) {
       const expireTimestamp = new Date(options.expiresAt).valueOf();
@@ -289,7 +340,7 @@ class MockGameserver implements IMockGameServer {
     const logLine = new EventLogLine({
       msg,
     });
-    this.socketServer.io.emit(GameEvents.LOG_LINE, { name: this.name, ...logLine });
+    this.emitEvent(HookEvents.LOG_LINE, logLine);
   }
 
   async getPlayerInventory(/* playerRef: IPlayerReferenceDTO */): Promise<IItemDTO[]> {
