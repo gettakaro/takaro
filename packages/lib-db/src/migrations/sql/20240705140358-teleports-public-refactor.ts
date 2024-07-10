@@ -6,8 +6,14 @@ export async function up(knex: Knex): Promise<void> {
 
   // Reduce the list to only public teleports
   const publicTeleports = variables.filter((variable) => {
-    const value = JSON.parse(variable.value);
-    return value.public;
+    try {
+      const value = JSON.parse(variable.value);
+      return value.public;
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.warn(`Error parsing JSON for variable ${variable.key}: ${error}. Skipping.`);
+      return false;
+    }
   });
 
   // Change the key for all public teleports from tp_xxx to pubtp_xxx
