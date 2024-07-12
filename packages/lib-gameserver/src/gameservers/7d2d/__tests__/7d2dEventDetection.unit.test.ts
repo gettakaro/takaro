@@ -141,12 +141,12 @@ describe('7d2d event detection', () => {
   });
 
   it('[ChatMessage] Can detect chat message', async () => {
-    // Chat handled by mod 'CSMM Patrons': Chat (from 'Steam_76561198028175941', entity id '549', to 'Global'): 'Catalysm': /ping
+    // Chat handled by mod 'CSMM Patrons': Chat (from 'Steam_76561198028175941', entity id '549', to 'Global'): /ping
     const emitter = new SevenDaysToDieEmitter(await mockConnectionInfo());
 
     await emitter.parseMessage({
       // eslint-disable-next-line quotes
-      msg: `Chat handled by mod 'CSMM Patrons': Chat (from 'Steam_76561198028175941', entity id '549', to 'Global'): 'Catalysm': fsafsafasf`,
+      msg: `Chat handled by mod 'CSMM Patrons': Chat (from 'Steam_76561198028175941', entity id '549', to 'Global'): fsafsafasf`,
     });
 
     expect(emitStub).to.have.been.calledTwice;
@@ -176,7 +176,7 @@ describe('7d2d event detection', () => {
 
     await emitter.parseMessage({
       // eslint-disable-next-line quotes
-      msg: `Chat handled by mod '1CSMM_Patrons': Chat (from 'Steam_76561198028175941', entity id '546', to 'Global'): 'Catalysm': &ping`,
+      msg: `Chat handled by mod '1CSMM_Patrons': Chat (from 'Steam_76561198028175941', entity id '546', to 'Global'): &ping`,
     });
 
     expect(emitStub).to.have.been.calledThrice;
@@ -204,10 +204,10 @@ describe('7d2d event detection', () => {
       .map((message) => {
         return [
           {
-            msg: `Chat handled by mod 'ServerTools': Chat (from 'Steam_76561198028175941', entity id '2196446', to 'Global'): 'Catalysm': ${message}`,
+            msg: `Chat handled by mod 'ServerTools': Chat (from 'Steam_76561198028175941', entity id '2196446', to 'Global'): ${message}`,
           },
           {
-            msg: `Chat (from 'Steam_76561198028175941', entity id '-1', to 'Global'): 'Catalysm': ${message}`,
+            msg: `Chat (from 'Steam_76561198028175941', entity id '-1', to 'Global'): ${message}`,
           },
         ];
       })
