@@ -32,12 +32,6 @@ class ShopListingSearchInputAllowedFilters {
   @IsUUID(4, { each: true })
   gameServerId: string[];
   @IsOptional()
-  @IsUUID(4, { each: true })
-  itemId: string[];
-  @IsOptional()
-  @IsUUID(4, { each: true })
-  functionId: string[];
-  @IsOptional()
   @IsNumber({}, { each: true })
   price: number[];
   @IsOptional()

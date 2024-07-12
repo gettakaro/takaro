@@ -6936,16 +6936,10 @@ export interface ShopListingCreateDTO {
   gameServerId: string;
   /**
    *
-   * @type {string}
+   * @type {Array<ShopListingItemMetaInputDTO>}
    * @memberof ShopListingCreateDTO
    */
-  itemId?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ShopListingCreateDTO
-   */
-  functionId?: string;
+  items: Array<ShopListingItemMetaInputDTO>;
   /**
    *
    * @type {number}
@@ -6958,6 +6952,62 @@ export interface ShopListingCreateDTO {
    * @memberof ShopListingCreateDTO
    */
   name?: string;
+}
+/**
+ *
+ * @export
+ * @interface ShopListingItemMetaInputDTO
+ */
+export interface ShopListingItemMetaInputDTO {
+  /**
+   *
+   * @type {number}
+   * @memberof ShopListingItemMetaInputDTO
+   */
+  amount: number;
+  /**
+   *
+   * @type {string}
+   * @memberof ShopListingItemMetaInputDTO
+   */
+  itemId: string;
+}
+/**
+ *
+ * @export
+ * @interface ShopListingItemMetaOutputDTO
+ */
+export interface ShopListingItemMetaOutputDTO {
+  /**
+   *
+   * @type {number}
+   * @memberof ShopListingItemMetaOutputDTO
+   */
+  amount: number;
+  /**
+   *
+   * @type {ItemsOutputDTO}
+   * @memberof ShopListingItemMetaOutputDTO
+   */
+  item: ItemsOutputDTO;
+  /**
+   *
+   * @type {string}
+   * @memberof ShopListingItemMetaOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof ShopListingItemMetaOutputDTO
+   */
+  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof ShopListingItemMetaOutputDTO
+   */
+  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 /**
  *
@@ -6998,16 +7048,10 @@ export interface ShopListingOutputDTO {
   gameServerId: string;
   /**
    *
-   * @type {string}
+   * @type {Array<ShopListingItemMetaOutputDTO>}
    * @memberof ShopListingOutputDTO
    */
-  itemId?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ShopListingOutputDTO
-   */
-  functionId?: string;
+  items: Array<ShopListingItemMetaOutputDTO>;
   /**
    *
    * @type {number}
@@ -7020,12 +7064,6 @@ export interface ShopListingOutputDTO {
    * @memberof ShopListingOutputDTO
    */
   name?: string;
-  /**
-   *
-   * @type {ItemsOutputDTO}
-   * @memberof ShopListingOutputDTO
-   */
-  item: ItemsOutputDTO;
   /**
    *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
@@ -7076,18 +7114,6 @@ export interface ShopListingSearchInputAllowedFilters {
    * @memberof ShopListingSearchInputAllowedFilters
    */
   gameServerId?: Array<string>;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof ShopListingSearchInputAllowedFilters
-   */
-  itemId?: Array<string>;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof ShopListingSearchInputAllowedFilters
-   */
-  functionId?: Array<string>;
   /**
    *
    * @type {Array<number>}
@@ -7185,16 +7211,10 @@ export interface ShopListingUpdateDTO {
   gameServerId: string;
   /**
    *
-   * @type {string}
+   * @type {Array<ShopListingItemMetaInputDTO>}
    * @memberof ShopListingUpdateDTO
    */
-  itemId?: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ShopListingUpdateDTO
-   */
-  functionId?: string;
+  items: Array<ShopListingItemMetaInputDTO>;
   /**
    *
    * @type {number}
