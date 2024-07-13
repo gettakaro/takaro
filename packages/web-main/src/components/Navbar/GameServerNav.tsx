@@ -36,7 +36,7 @@ export const GameServerNav: FC = () => {
         requiredPermissions: [PERMISSIONS.ReadGameservers],
       },
       {
-        label: 'Shop',
+        label: 'Shop & Orders',
         linkProps: {
           to: '/gameserver/$gameServerId/shop',
           params: { gameServerId: gameServerId },
