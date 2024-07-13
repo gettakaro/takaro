@@ -1,9 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router';
+import { useDocumentTitle } from 'hooks/useDocumentTitle';
+import { ShopView } from 'routes/_auth/gameserver.$gameServerId/-components/shop/ShopView';
 import { gameServerSettingQueryOptions } from 'queries/setting';
-import { playerOnGameServerQueryOptions } from 'queries/pog';
 import { gameServerQueryOptions } from 'queries/gameserver';
-import { ShopView } from './-components/shop/ShopView';
-export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/')({
+import { playerOnGameServerQueryOptions } from 'queries/pog';
+
+export const Route = createFileRoute('/_auth/_player/shop/$gameServerId/')({
   loader: async ({ context, params }) => {
     const session = await context.auth.getSession();
 
@@ -26,13 +28,14 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/')({
 function Component() {
   const { currencyName, gameServer, currency } = Route.useLoaderData();
   const { gameServerId } = Route.useParams();
+  useDocumentTitle('shop');
 
   return (
     <ShopView
       gameServerType={gameServer.type}
-      gameServerId={gameServerId}
-      currencyName={currencyName}
       currency={currency}
+      currencyName={currencyName}
+      gameServerId={gameServerId}
     />
   );
 }

@@ -8,8 +8,8 @@ import { ShopListingCard } from 'components/cards/ShopListingCard';
 import { AiOutlinePlus as PlusIcon } from 'react-icons/ai';
 import { Card, Chip, Button, Empty, EmptyPage, InfiniteScroll, styled } from '@takaro/lib-components';
 import { useNavigate } from '@tanstack/react-router';
-import { GameServerOutputDTOTypeEnum } from '@takaro/apiclient';
 import { CardBody } from 'components/cards/ShopListingCard/style';
+import { ShopViewProps } from './ShopView';
 
 const Header = styled.div`
   display: flex;
@@ -30,14 +30,7 @@ const AddCardBody = styled(CardBody)`
   gap: ${({ theme }) => theme.spacing[1]};
 `;
 
-interface ShopCardViewProps {
-  gameServerId: string;
-  gameServerType: GameServerOutputDTOTypeEnum;
-  currencyName: string;
-  currency?: number;
-}
-
-export const ShopCardView: FC<ShopCardViewProps> = ({ gameServerId, currency, currencyName, gameServerType }) => {
+export const ShopCardView: FC<ShopViewProps> = ({ gameServerId, currency, currencyName, gameServerType }) => {
   const hasPermission = useHasPermission(['MANAGE_SHOP_LISTINGS']);
   const navigate = useNavigate();
 
@@ -61,15 +54,23 @@ export const ShopCardView: FC<ShopCardViewProps> = ({ gameServerId, currency, cu
     shopListings.pages.length === 0 ||
     shopListings.pages[0].data.length === 0
   ) {
-    return (
-      <EmptyPage>
-        <Empty
-          header="No shop listings"
-          description="Create a shop listing to start selling items."
-          actions={[<Button onClick={onCreateShopListingClicked} text="Create shop listing" />]}
-        />
-      </EmptyPage>
-    );
+    if (hasPermission) {
+      return (
+        <EmptyPage>
+          <Empty
+            header="No shop listings"
+            description="Create a shop listing to start selling items."
+            actions={[<Button onClick={onCreateShopListingClicked} text="Create shop listing" />]}
+          />
+        </EmptyPage>
+      );
+    } else {
+      return (
+        <EmptyPage>
+          <Empty header="No items in shop" description="" actions={[]} />
+        </EmptyPage>
+      );
+    }
   }
 
   return (

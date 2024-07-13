@@ -10,13 +10,7 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { shopListingsQueryOptions } from 'queries/shopListing';
 import { useNavigate } from '@tanstack/react-router';
 import { useHasPermission } from 'hooks/useHasPermission';
-
-export interface ShopTableViewProps {
-  gameServerId: string;
-  gameServerType: GameServerOutputDTOTypeEnum;
-  currencyName: string;
-  currency?: number;
-}
+import { ShopViewProps } from './ShopView';
 
 const gameServerTypeToIconFolderMap = {
   [GameServerOutputDTOTypeEnum.Mock]: 'rust',
@@ -24,7 +18,7 @@ const gameServerTypeToIconFolderMap = {
   [GameServerOutputDTOTypeEnum.Sevendaystodie]: '7d2d',
 };
 
-export const ShopTableView: FC<ShopTableViewProps> = ({ gameServerId, currencyName, gameServerType }) => {
+export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, gameServerType }) => {
   const navigate = useNavigate();
   const hasPermission = useHasPermission(['MANAGE_SHOP_LISTINGS']);
 
