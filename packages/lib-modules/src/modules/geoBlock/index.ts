@@ -271,7 +271,7 @@ export class GeoBlock extends BuiltinModule<GeoBlock> {
           },
           countries: {
             title: 'Countries',
-            description: 'List of country',
+            description: 'List of countries',
             type: 'array',
             uniqueItems: true,
             'x-component': 'country',
