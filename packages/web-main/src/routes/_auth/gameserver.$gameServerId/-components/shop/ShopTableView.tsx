@@ -37,7 +37,6 @@ export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, g
         gameServerId: [gameServerId],
       },
       search: {},
-      extend: ['item'],
     })
   );
 
@@ -58,13 +57,13 @@ export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, g
       header: 'Icon',
       id: 'icon',
       cell: (info) => {
-        const shopListingName = info.row.original.name || info.row.original.item.name;
+        const shopListingName = info.row.original.name || info.row.original.items[0].item.name;
 
         return (
-          <Avatar size="medium">
+          <Avatar size="small">
             <Avatar.Image
-              src={`/icons/${gameServerTypeToIconFolderMap[gameServerType]}/${info.row.original.item.code}.png`}
-              alt={`Item icon of ${info.row.original.item.name}`}
+              src={`/icons/${gameServerTypeToIconFolderMap[gameServerType]}/${info.row.original.items[0].item.code}.png`}
+              alt={`Item icon of ${info.row.original.items[0].item.name}`}
             />
             <Avatar.FallBack>{getInitials(shopListingName)}</Avatar.FallBack>
           </Avatar>
@@ -74,7 +73,16 @@ export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, g
     columnHelper.accessor('name', {
       header: 'Name',
       id: 'name',
-      cell: (info) => info.getValue() || info.row.original.item.name,
+      cell: (info) => info.getValue() ?? 'None',
+    }),
+    columnHelper.accessor('items', {
+      header: 'Items',
+      id: 'items',
+      cell: (info) =>
+        info
+          .getValue()
+          .map((shoplistingMeta) => `${shoplistingMeta.amount}x ${shoplistingMeta.item.name}`)
+          .join(', '),
     }),
     columnHelper.accessor('price', {
       header: 'Price',

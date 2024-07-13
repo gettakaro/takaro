@@ -44,9 +44,7 @@ export const ShopCardView: FC<ShopViewProps> = ({ gameServerId, currency, curren
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
-  } = useInfiniteQuery(
-    shopListingInfiniteQueryOptions({ extend: ['item'], filters: { gameServerId: [gameServerId] } })
-  );
+  } = useInfiniteQuery(shopListingInfiniteQueryOptions({ filters: { gameServerId: [gameServerId] } }));
 
   if (
     !shopListings ||
@@ -88,7 +86,7 @@ export const ShopCardView: FC<ShopViewProps> = ({ gameServerId, currency, curren
             <ShopListingCard
               key={shopListing.id}
               currencyName={currencyName}
-              currency={currency || 0}
+              playerCurrencyAmount={currency || 0}
               shopListing={shopListing}
               gameServerId={gameServerId}
               gameServerType={gameServerType}

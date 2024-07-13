@@ -37,7 +37,7 @@ interface ShopListingCard {
   currencyName: string;
   gameServerId: string;
   gameServerType: GameServerOutputDTOTypeEnum;
-  currency: number;
+  playerCurrencyAmount: number;
 }
 
 const validationSchema = z.object({
@@ -49,7 +49,7 @@ export const ShopListingCard: FC<ShopListingCard> = ({
   gameServerId,
   shopListing,
   gameServerType,
-  currency,
+  playerCurrencyAmount,
 }) => {
   const theme = useTheme();
   const [openDeleteConfirmationDialog, setOpenDeleteConfirmationDialog] = useState<boolean>(false);
@@ -65,7 +65,7 @@ export const ShopListingCard: FC<ShopListingCard> = ({
     },
   });
 
-  const shopListingName = shopListing.name || shopListing.item.name;
+  const shopListingName = shopListing.name || shopListing.items[0].item.name;
   const hasPermission = useHasPermission(['MANAGE_SHOP_LISTINGS']);
   const price = watch('amount') == 0 ? shopListing.price * 1 : shopListing.price * watch('amount');
 
@@ -111,33 +111,49 @@ export const ShopListingCard: FC<ShopListingCard> = ({
     <>
       <Card>
         <CardBody>
-          <Header>
-            {/*<Chip variant="outline" color="primary" label="most popular" />*/}
-            {hasPermission && (
-              <Dropdown>
-                <Dropdown.Trigger asChild>
-                  <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
-                </Dropdown.Trigger>
-                <Dropdown.Menu>
-                  <Dropdown.Menu.Item onClick={handleOnViewClick} icon={<ViewIcon />} label="View listing" />
-                  <Dropdown.Menu.Item onClick={handleOnEditClick} icon={<EditIcon />} label="Update listing" />
-                  <Dropdown.Menu.Item
-                    onClick={handleOnDeleteClick}
-                    icon={<DeleteIcon fill={theme.colors.error} />}
-                    label="Delete listing"
-                  />
-                </Dropdown.Menu>
-              </Dropdown>
-            )}
-          </Header>
-          <Avatar size="huge">
-            <Avatar.Image
-              src={`/icons/${gameServerTypeToIconFolderMap[gameServerType]}/${shopListing.item.code}.png`}
-              alt={`Item icon of ${shopListing.item.name}`}
-            />
-            <Avatar.FallBack>{getInitials(shopListingName)}</Avatar.FallBack>
-          </Avatar>
-          <h2>{shopListingName}</h2>
+          <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Header>
+              {hasPermission && (
+                <Dropdown>
+                  <Dropdown.Trigger asChild>
+                    <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
+                  </Dropdown.Trigger>
+                  <Dropdown.Menu>
+                    <Dropdown.Menu.Item onClick={handleOnViewClick} icon={<ViewIcon />} label="View listing" />
+                    <Dropdown.Menu.Item onClick={handleOnEditClick} icon={<EditIcon />} label="Update listing" />
+                    <Dropdown.Menu.Item
+                      onClick={handleOnDeleteClick}
+                      icon={<DeleteIcon fill={theme.colors.error} />}
+                      label="Delete listing"
+                    />
+                  </Dropdown.Menu>
+                </Dropdown>
+              )}
+            </Header>
+            <Avatar size="huge">
+              <Avatar.Image
+                src={`/icons/${gameServerTypeToIconFolderMap[gameServerType]}/${shopListing.items[0].item.code}.png`}
+                alt={`Item icon of ${shopListing.items[0].item.name}`}
+              />
+              <Avatar.FallBack>{getInitials(shopListingName)}</Avatar.FallBack>
+            </Avatar>
+            <h2>{shopListingName}</h2>
+            <div style={{ textAlign: 'left', width: '100%', marginBottom: '1.5rem' }}>
+              {' '}
+              {shopListing.items.map((itemMeta, index) => {
+                return (
+                  <>
+                    <strong style={{ whiteSpace: 'nowrap', display: 'inline-block', marginBottom: '.5rem' }}>
+                      {itemMeta.item.name}: {itemMeta.amount}
+                      {itemMeta.quality ? `, quality: ${itemMeta.quality}` : ''}
+                    </strong>
+                    {shopListing.items.length > 1 && index < shopListing.items.length - 1 && ', '}
+                  </>
+                );
+              })}
+            </div>
+          </div>
+
           <form onSubmit={handleSubmit(handleOnBuyClick)}>
             <TextField
               loading={isPendingShopOrderCreate}
@@ -152,7 +168,7 @@ export const ShopListingCard: FC<ShopListingCard> = ({
               isLoading={isPendingShopOrderCreate}
               fullWidth
               type="submit"
-              disabled={currency < price}
+              disabled={playerCurrencyAmount < price}
               text={`${price} ${currencyName}`}
             />
           </form>

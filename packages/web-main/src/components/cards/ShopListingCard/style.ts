@@ -11,10 +11,10 @@ export const Header = styled.div`
 export const CardBody = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
   align-items: center;
+  justify-content: space-between;
   width: 200px;
-  height: 370px;
+  height: 100%;
 
   h2 {
     max-width: 200px;
@@ -23,6 +23,7 @@ export const CardBody = styled.div`
     text-transform: capitalize;
     text-overflow: ellipsis;
     overflow: hidden;
+    text-align: center;
   }
 `;
 
