@@ -85,7 +85,6 @@ export const Default: StoryFn<ItemSelectQueryViewProps> = (args) => {
           size={args.size}
           setItemName={setSelectedItem}
           gameServer={gameServer}
-          isLoading={args.isLoading}
           items={items}
         />
         <Button type="submit" text="submit" />
