@@ -187,6 +187,8 @@ export function Table<DataType extends object>({
     },
   });
 
+  const tableHasNoData = isLoading === false && table.getRowModel().rows.length === 0;
+
   // rowSelection.rowSelectionState has the following shape: { [rowId: string]: boolean }
   const hasRowSelection = useMemo(() => {
     return (
@@ -219,10 +221,10 @@ export function Table<DataType extends object>({
             orientation="horizontal"
             defaultValue={density}
           >
-            <ToggleButtonGroup.Button value="relaxed" tooltip="Relaxed layout">
+            <ToggleButtonGroup.Button value="relaxed" tooltip="Relaxed layout" disabled={tableHasNoData}>
               <RelaxedDensityIcon size={20} />
             </ToggleButtonGroup.Button>
-            <ToggleButtonGroup.Button value="tight" tooltip="Tight layout">
+            <ToggleButtonGroup.Button value="tight" tooltip="Tight layout" disabled={tableHasNoData}>
               <TightDensityIcon size={20} />
             </ToggleButtonGroup.Button>
           </ToggleButtonGroup>
@@ -282,7 +284,7 @@ export function Table<DataType extends object>({
               )}
 
               {/* empty state */}
-              {!isLoading && table.getRowModel().rows.length === 0 && (
+              {tableHasNoData && (
                 <tr>
                   <td colSpan={table.getAllColumns().length + ROW_SELECTION_COL_SPAN}>
                     <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
