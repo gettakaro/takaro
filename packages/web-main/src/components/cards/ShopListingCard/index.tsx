@@ -104,6 +104,7 @@ export const ShopListingCard: FC<ShopListingCard> = ({
       amount: watch('amount'),
       listingId: shopListing.id,
     });
+    setOpenBuyConfirmationDialog(false);
   };
 
   return (
@@ -159,12 +160,16 @@ export const ShopListingCard: FC<ShopListingCard> = ({
       </Card>
       <Dialog open={openBuyConfirmationDialog} onOpenChange={setOpenBuyConfirmationDialog}>
         <Dialog.Content>
-          <Dialog.Heading>Confirm buy shop listing</Dialog.Heading>
+          <Dialog.Heading>Confirm purchase: {shopListingName}</Dialog.Heading>
           <Dialog.Body size="medium">
             <p>
-              Are you sure you want to buy {shopListingName} for {price}
+              Are you sure you want to purchase <strong>{shopListingName}</strong> for{' '}
+              <strong>
+                {price} {currencyName}
+              </strong>
+              ?
             </p>
-            <Button onClick={handleOnBuyConfirmationClick} fullWidth text="Buy item" color="primary" />
+            <Button onClick={handleOnBuyConfirmationClick} fullWidth text="confirm purchase" color="primary" />
           </Dialog.Body>
         </Dialog.Content>
       </Dialog>
