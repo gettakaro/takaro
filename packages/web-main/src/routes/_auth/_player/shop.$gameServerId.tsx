@@ -1,10 +1,7 @@
 import { ErrorBoundary } from '@sentry/react';
 import { HorizontalNav, styled } from '@takaro/lib-components';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { useForm } from 'react-hook-form';
-import { useEffect, FC } from 'react';
-import { Link, Outlet, createFileRoute, useMatchRoute, useNavigate } from '@tanstack/react-router';
-import { GameServerSelect } from 'components/selects';
+import { Link, Outlet, createFileRoute } from '@tanstack/react-router';
 
 const Container = styled.div`
   display: flex;
@@ -32,7 +29,6 @@ function Component() {
             Orders
           </Link>
         </HorizontalNav>
-        <UrlGameServerSelect currentSelectedGameServerId={gameServerId} />
       </Container>
       <ErrorBoundary>
         <div style={{ padding: '10px' }}>
@@ -42,40 +38,3 @@ function Component() {
     </>
   );
 }
-
-const UrlGameServerSelect: FC<{ currentSelectedGameServerId: string }> = ({
-  currentSelectedGameServerId: selectedGameServerId,
-}) => {
-  const matchRoute = useMatchRoute();
-  const navigate = useNavigate();
-  const { control, watch } = useForm<{ gameServerId: string }>({
-    mode: 'onChange',
-    defaultValues: {
-      gameServerId: selectedGameServerId,
-    },
-  });
-
-  useEffect(() => {
-    const subscription = watch((value) => {
-      const params = matchRoute({
-        to: '/shop/$gameServerId',
-        fuzzy: true,
-      });
-
-      console.log(params);
-
-      if (params !== false) {
-        navigate({
-          to: `/shop/$gameServerId/${params['**']}`,
-          params: {
-            gameServerId: value.gameServerId,
-          },
-          startTransition: true,
-        });
-      }
-    });
-    return () => subscription.unsubscribe();
-  }, [watch('gameServerId'), matchRoute]);
-
-  return <GameServerSelect control={control} name="gameServerId" label="" />;
-};
