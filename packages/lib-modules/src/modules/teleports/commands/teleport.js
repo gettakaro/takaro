@@ -13,14 +13,8 @@ async function main() {
   let teleports = ownedTeleportRes.data.data;
 
   if (mod.userConfig.allowPublicTeleports) {
-    const maybePublicTeleportRes = await findTp(args.tp);
-
-    const publicTeleports = maybePublicTeleportRes.data.data.filter((tele) => {
-      const teleport = JSON.parse(tele.value);
-      return teleport.public;
-    });
-
-    teleports = teleports.concat(publicTeleports);
+    const publicTeleportRes = await findTp(args.tp, null, true);
+    teleports = teleports.concat(publicTeleportRes.data.data);
   }
 
   if (teleports.length === 0) {
@@ -48,7 +42,6 @@ async function main() {
         moduleId: mod.moduleId,
         value: new Date().toISOString(),
       });
-      console.log(createRes);
       lastExecutedRecord = createRes.data.data;
     } else {
       const lastExecutedTime = new Date(lastExecutedRecord.value);

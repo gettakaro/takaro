@@ -1,4 +1,4 @@
-import { logger, traceableClass } from '@takaro/util';
+import { errors, logger, traceableClass } from '@takaro/util';
 import { IGamePlayer, IPosition } from '@takaro/modules';
 import {
   BanDTO,
@@ -98,7 +98,11 @@ export class SevenDaysToDie implements IGameServer {
     const command = this.connectionInfo.useCPM
       ? `giveplus EOS_${player.gameId} ${item} ${amount} ${quality ?? ''}`
       : `give EOS_${player.gameId} ${item} ${amount} ${quality ?? ''}`;
-    await this.executeConsoleCommand(command);
+    const res = await this.executeConsoleCommand(command);
+
+    if (this.connectionInfo.useCPM && !res.rawResult.includes('Item(s) given')) {
+      throw new errors.GameServerError('Failed to give item');
+    }
   }
 
   async testReachability(): Promise<TestReachabilityOutputDTO> {

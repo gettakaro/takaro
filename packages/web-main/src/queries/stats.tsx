@@ -1,36 +1,78 @@
 import { queryOptions } from '@tanstack/react-query';
 import { getApiClient } from 'util/getApiClient';
-import { StatsOutputDTO, ActivityInputDTO } from '@takaro/apiclient';
+import { ActivityInputDTO, EventsCountInputDTO, StatsOutputDTO } from '@takaro/apiclient';
 import { AxiosError } from 'axios';
 import { queryParamsToArray } from './util';
 
 type StatsOutput = { values: Array<[number, number]> };
 
 export const statsKeys = {
-  ping: (playerId: string, gameServerId: string) => ['ping', playerId, gameServerId] as const,
-  currency: (playerId: string, gameServerId: string) => ['currency', playerId, gameServerId] as const,
-  playersOnline: (gameServerId?: string) => ['players-online', gameServerId] as const,
+  ping: (playerId: string, gameServerId: string, startDate?: string, endDate?: string) =>
+    ['ping', playerId, gameServerId, startDate, endDate] as const,
+  currency: (playerId: string, gameServerId: string, startDate?: string, endDate?: string) =>
+    ['currency', playerId, gameServerId, startDate, endDate] as const,
+  latency: (gameServerId: string, startDate?: string, endDate?: string) =>
+    ['latency', gameServerId, startDate, endDate] as const,
+  playersOnline: (gameServerId?: string, startDate?: string, endDate?: string) =>
+    ['players-online', gameServerId, startDate, endDate] as const,
   activity: (gameServerId?: string) => ['activity', gameServerId] as const,
 };
 
-export const PingStatsQueryOptions = (playerId: string, gameServerId: string) => {
+export const PingStatsQueryOptions = (playerId: string, gameServerId: string, startDate?: string, endDate?: string) => {
   return queryOptions<StatsOutputDTO, AxiosError<StatsOutputDTO>, StatsOutput>({
-    queryKey: statsKeys.ping(playerId, gameServerId),
-    queryFn: async () => (await getApiClient().stats.statsControllerGetPingStats(gameServerId, playerId)).data.data,
+    queryKey: statsKeys.ping(playerId, gameServerId, startDate, endDate),
+    queryFn: async () =>
+      (await getApiClient().stats.statsControllerGetPingStats(gameServerId, playerId, startDate, endDate)).data.data,
   });
 };
 
-export const CurrencyStatsQueryOptions = (playerId: string, gameServerId: string) => {
+export const CurrencyStatsQueryOptions = (
+  playerId: string,
+  gameServerId: string,
+  startDate?: string,
+  endDate?: string
+) => {
   return queryOptions<StatsOutputDTO, AxiosError<StatsOutputDTO>, StatsOutput>({
-    queryKey: statsKeys.currency(playerId, gameServerId),
-    queryFn: async () => (await getApiClient().stats.statsControllerGetCurrencyStats(gameServerId, playerId)).data.data,
+    queryKey: statsKeys.currency(playerId, gameServerId, startDate, endDate),
+    queryFn: async () =>
+      (await getApiClient().stats.statsControllerGetCurrencyStats(gameServerId, playerId, startDate, endDate)).data
+        .data,
   });
 };
 
-export const PlayersOnlineStatsQueryOptions = (gameServerId?: string) => {
+export const LatencyStatsQueryOptions = (gameServerId: string, startDate?: string, endDate?: string) => {
   return queryOptions<StatsOutputDTO, AxiosError<StatsOutputDTO>, StatsOutput>({
-    queryKey: statsKeys.playersOnline(gameServerId),
-    queryFn: async () => (await getApiClient().stats.statsControllerGetPlayerOnlineStats(gameServerId)).data.data,
+    queryKey: statsKeys.latency(gameServerId, startDate, endDate),
+    queryFn: async () =>
+      (await getApiClient().stats.statsControllerGetLatencyStats(gameServerId, startDate, endDate)).data.data,
+  });
+};
+
+export const PlayersOnlineStatsQueryOptions = (gameServerId?: string, startDate?: string, endDate?: string) => {
+  return queryOptions<StatsOutputDTO, AxiosError<StatsOutputDTO>, StatsOutput>({
+    queryKey: statsKeys.playersOnline(gameServerId, startDate, endDate),
+    queryFn: async () =>
+      (await getApiClient().stats.statsControllerGetPlayerOnlineStats(gameServerId, startDate, endDate)).data.data,
+  });
+};
+
+export const EventsCountQueryOptions = (options: EventsCountInputDTO) => {
+  return queryOptions<StatsOutputDTO, AxiosError<StatsOutputDTO>, StatsOutput>({
+    queryKey: ['events', options],
+    queryFn: async () =>
+      (
+        await getApiClient().stats.statsControllerGetEventsCount(
+          options.eventName,
+          options.bucketStep,
+          options.sumBy,
+          options.gameServerId,
+          options.moduleId,
+          options.playerId,
+          options.userId,
+          options.startDate,
+          options.endDate
+        )
+      ).data.data,
   });
 };
 

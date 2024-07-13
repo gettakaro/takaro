@@ -87,14 +87,14 @@ const shopSetup = async function (this: IntegrationTest<IShopSetup>): Promise<IS
 
   const listing100Res = await this.client.shopListing.shopListingControllerCreate({
     gameServerId: setupData.gameServer1.id,
-    itemId: items[0].id,
+    items: [{ itemId: items[0].id, amount: 1 }],
     price: 100,
     name: 'Test item',
   });
 
   const listing33Res = await this.client.shopListing.shopListingControllerCreate({
     gameServerId: setupData.gameServer1.id,
-    itemId: items[1].id,
+    items: [{ itemId: items[1].id, amount: 1 }],
     price: 33,
     name: 'Test item 2',
   });

@@ -1,65 +1,54 @@
 import { logger } from '@takaro/util';
-import fs from 'fs/promises';
-import { createReadStream } from 'fs';
-import readline from 'node:readline/promises';
 import { IPlayerReferenceDTO } from '@takaro/gameserver';
 
-import { EventLogLine, GameEventTypes } from '@takaro/modules';
-import { getMockServer } from './index.js';
+import { GameEventTypes } from '@takaro/modules';
+import { MockGameserver } from './index.js';
 import { MockServerSocketServer } from '../socket/socketTypes.js';
+import { Basic } from '../../scenarios/basic.js';
 
 const log = logger('scenarioHandler');
 
-let isScenarioPlaying = false;
-
-interface IScenarioEvent {
+export interface IScenarioEvent {
   time: number;
   event: GameEventTypes;
   data: Record<string, unknown>;
 }
 
-export async function playScenario(socketServer: MockServerSocketServer) {
-  if (isScenarioPlaying) {
-    log.info('Scenario already playing, skipping');
-    return;
-  }
-
-  const scenarios = await fs.readdir('./src/scenarios');
-  const gameInstance = await getMockServer();
+export async function playScenario(socketServer: MockServerSocketServer, gameInstance: MockGameserver) {
+  const scenarios = [Basic];
 
   const randomScenario = scenarios[Math.floor(Math.random() * scenarios.length)];
   log.info(`Playing scenario ${randomScenario}`);
 
-  isScenarioPlaying = true;
-
-  // Read file line by line and log
-  const fileStream = createReadStream(`./src/scenarios/${randomScenario}`);
-  const rl = await readline.createInterface({
-    input: fileStream,
-    crlfDelay: Infinity,
-  });
-
   const eventPromises: Promise<unknown>[] = [];
 
-  for await (const line of rl) {
-    const event = JSON.parse(line) as IScenarioEvent;
-
+  for await (const event of JSON.parse(JSON.stringify(randomScenario))) {
     const promise = new Promise<void>((resolve) => {
       setTimeout(async () => {
         try {
           const eventData = event.data;
 
           if (eventData.player) {
-            eventData.player = await gameInstance.getPlayer({
-              gameId: eventData.player,
-            } as IPlayerReferenceDTO);
+            eventData.player = await gameInstance.getPlayer(
+              {
+                gameId: eventData.player,
+              } as IPlayerReferenceDTO,
+              false
+            );
           }
 
           eventData.type = event.event;
           eventData.timestamp = new Date().toISOString();
 
           log.info(`Emitting event ${event.event} with data ${JSON.stringify(eventData)}`);
-          socketServer.emit(event.event, { name: this.name, ...(eventData as unknown as EventLogLine) });
+
+          if (event.event === 'player-connected') {
+            await gameInstance.setPlayerOnlineStatus(event.data.player as IPlayerReferenceDTO, true);
+          } else if (event.event === 'player-disconnected') {
+            await gameInstance.setPlayerOnlineStatus(event.data.player as IPlayerReferenceDTO, false);
+          } else {
+            gameInstance.emitEvent(event.event, eventData);
+          }
 
           resolve();
         } catch (error) {
@@ -76,5 +65,4 @@ export async function playScenario(socketServer: MockServerSocketServer) {
   } catch (error) {
     log.warn('Error while playing scenario, ignoring and continuing', error);
   }
-  isScenarioPlaying = false;
 }

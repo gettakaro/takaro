@@ -33,6 +33,7 @@ import { FaBan as BanIcon } from 'react-icons/fa';
 import { Player } from 'components/Player';
 import { useQuery } from '@tanstack/react-query';
 import { getApiClient } from 'util/getApiClient';
+import { PlayerStats } from './-players/playerStats';
 
 export const StyledDialogBody = styled(Dialog.Body)`
   h2 {
@@ -200,6 +201,7 @@ function Component() {
 
   return (
     <Fragment>
+      <PlayerStats />
       <Table
         title="List of players"
         id="players"

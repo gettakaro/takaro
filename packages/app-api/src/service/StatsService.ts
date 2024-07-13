@@ -6,6 +6,7 @@ import { ITakaroRepo, PaginatedOutput } from '../db/base.js';
 import { Axios } from 'axios';
 import { IsObject } from 'class-validator';
 import { config } from '../config.js';
+import { EventsCountInputDTO } from '../controllers/StatsController.js';
 
 export class StatsOutputDTO extends TakaroDTO<StatsOutputDTO> {
   @IsObject()
@@ -84,6 +85,15 @@ export class StatsService extends TakaroService<TakaroModel, TakaroDTO<void>, Ta
     return { values: data };
   }
 
+  async getLatency(gameserverId: string, startTime?: string, endTime?: string) {
+    const data = await this.prometheusQuery(
+      `avg by(gameserver) (takaro_gameServer_latency{domain="${this.domainId}", gameserver="${gameserverId}"})`,
+      startTime,
+      endTime
+    );
+    return { values: data };
+  }
+
   async getPlayersOnline(gameserverId?: string, startTime?: string, endTime?: string) {
     if (gameserverId) {
       const data = await this.prometheusQuery(
@@ -129,5 +139,35 @@ export class StatsService extends TakaroService<TakaroModel, TakaroDTO<void>, Ta
       );
       return { values: data };
     }
+  }
+
+  async getEventsCountOverTime(filters: EventsCountInputDTO) {
+    //let query = floor(sum by(player, gameserver) (increase(takaro_events{event="entity-killed", domain="bumpy-mangos-kick"}[24h])))
+    let labelSelectors = `event="${filters.eventName}", domain="${this.domainId}"`;
+    const sumByFields = [];
+
+    if (filters.gameServerId) {
+      labelSelectors += `, gameserver="${filters.gameServerId}"`;
+    }
+    if (filters.moduleId) {
+      labelSelectors += `, module="${filters.moduleId}"`;
+    }
+    if (filters.playerId) {
+      labelSelectors += `, player="${filters.playerId}"`;
+    }
+
+    if (filters.userId) {
+      labelSelectors += `, user="${filters.userId}"`;
+    }
+
+    if (filters.sumBy && filters.sumBy.length > 0) {
+      sumByFields.push(...filters.sumBy);
+    }
+
+    const sumByClause = sumByFields.length > 0 ? `sum by(${sumByFields.join(', ')})` : '';
+    const query = `${sumByClause} (increase(takaro_events{${labelSelectors}}[${filters.bucketStep}]))`;
+
+    const data = await this.prometheusQuery(query, filters.startDate, filters.endDate);
+    return { values: data };
   }
 }

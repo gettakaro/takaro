@@ -27,6 +27,7 @@ import {
   TakaroEventShopListingUpdated,
   TakaroEventShopOrderStatusChanged,
 } from '@takaro/modules';
+import { IMessageOptsDTO, IPlayerReferenceDTO } from '@takaro/gameserver';
 
 @traceableClass('service:shopListing')
 export class ShopListingService extends TakaroService<
@@ -216,8 +217,26 @@ export class ShopListingService extends TakaroService<
       );
 
     const gameServerService = new GameServerService(this.domainId);
-    if (listing.item) {
-      await gameServerService.giveItem(gameServerId, pog.playerId, listing.item.code, order.amount, 0);
+    if (listing.items.length) {
+      await Promise.allSettled(
+        listing.items.map((item) => gameServerService.giveItem(gameServerId, pog.playerId, item.item.code, item.amount))
+      );
+      await gameServerService.sendMessage(
+        gameServerId,
+        'You have received items from a shop order.',
+        new IMessageOptsDTO({
+          recipient: new IPlayerReferenceDTO({ gameId: pog.gameId }),
+        })
+      );
+      for (const item of listing.items) {
+        await gameServerService.sendMessage(
+          gameServerId,
+          `${item.amount}x ${item.item.name}`,
+          new IMessageOptsDTO({
+            recipient: new IPlayerReferenceDTO({ gameId: pog.gameId }),
+          })
+        );
+      }
     }
 
     const updatedOrder = await this.orderRepo.update(

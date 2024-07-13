@@ -4,7 +4,7 @@ import { getVariableKey } from './utils.js';
 async function main() {
   const { pog, gameServerId, module: mod, arguments: args } = data;
 
-  const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data;
+  const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data.value;
 
   if (!mod.userConfig.allowPublicTeleports) {
     throw new TakaroUserError('Public teleports are disabled.');
@@ -16,9 +16,9 @@ async function main() {
     throw new TakaroUserError('You do not have permission to create public teleports.');
   }
 
-  const existingTeleportsForPlayerRes = await takaro.variable.variableControllerSearch({
+  const existingPublicTeleportsForPlayerRes = await takaro.variable.variableControllerSearch({
     search: {
-      key: 'tp_',
+      key: ['pubtp_'],
     },
     filters: {
       gameServerId: [gameServerId],
@@ -27,29 +27,24 @@ async function main() {
     },
   });
 
-  const existingPublicTeleportsForPlayer = existingTeleportsForPlayerRes.data.data.filter((tp) => {
-    const teleport = JSON.parse(tp.value);
-    return teleport.public;
-  });
-
-  if (existingPublicTeleportsForPlayer.length >= hasPermission.count) {
+  if (existingPublicTeleportsForPlayerRes.data.data.length >= hasPermission.count) {
     throw new TakaroUserError(
       `You have reached the maximum number of public teleports for your role, maximum allowed is ${hasPermission.count}`
     );
   }
 
-  const teleportRes = await takaro.variable.variableControllerSearch({
-    filters: {
-      gameServerId: [gameServerId],
-      playerId: [pog.playerId],
-      moduleId: [mod.moduleId],
-      key: [getVariableKey(args.tp)],
-    },
-    sortBy: 'key',
-    sortDirection: 'asc',
-  });
-
-  const teleports = teleportRes.data.data;
+  const teleports = (
+    await takaro.variable.variableControllerSearch({
+      filters: {
+        gameServerId: [gameServerId],
+        playerId: [pog.playerId],
+        moduleId: [mod.moduleId],
+        key: [getVariableKey(args.tp)],
+      },
+      sortBy: 'key',
+      sortDirection: 'asc',
+    })
+  ).data.data;
 
   if (teleports.length === 0) {
     throw new TakaroUserError(`No teleport with name ${args.tp} found, use ${prefix}settp <name> to set one first.`);
@@ -59,10 +54,8 @@ async function main() {
   const teleport = JSON.parse(teleportRecord.value);
 
   await takaro.variable.variableControllerUpdate(teleportRecord.id, {
-    value: JSON.stringify({
-      ...teleport,
-      public: true,
-    }),
+    key: getVariableKey(args.tp, true),
+    value: JSON.stringify(teleport),
   });
 
   await data.player.pm(`Teleport ${args.tp} is now public.`);

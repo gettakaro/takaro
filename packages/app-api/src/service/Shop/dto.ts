@@ -1,38 +1,50 @@
-import { IsUUID, IsOptional, IsNumber, IsString, IsEnum, ValidateNested } from 'class-validator';
+import { IsUUID, IsOptional, IsNumber, IsString, IsEnum, ValidateNested, Min } from 'class-validator';
 import { TakaroModelDTO, TakaroDTO } from '@takaro/util';
 import { Type } from 'class-transformer';
 import { ItemsOutputDTO } from '../ItemsService.js';
+
+class ShopListingItemMetaOutputDTO extends TakaroModelDTO<ShopListingItemMetaOutputDTO> {
+  @IsNumber()
+  amount: number;
+  @IsString()
+  @IsOptional()
+  quality?: string;
+  @ValidateNested()
+  @Type(() => ItemsOutputDTO)
+  item: ItemsOutputDTO;
+}
+
+class ShopListingItemMetaInputDTO extends TakaroDTO<ShopListingItemMetaOutputDTO> {
+  @IsNumber()
+  amount: number;
+  @IsString()
+  @IsOptional()
+  quality?: string;
+  @IsUUID('4')
+  itemId: string;
+}
 
 export class ShopListingOutputDTO extends TakaroModelDTO<ShopListingOutputDTO> {
   @IsUUID()
   id!: string;
   @IsUUID()
   gameServerId!: string;
-  @IsUUID()
-  @IsOptional()
-  itemId?: string;
-  @IsUUID()
-  @IsOptional()
-  functionId?: string;
+  @ValidateNested({ each: true })
+  @Type(() => ShopListingItemMetaOutputDTO)
+  items: ShopListingItemMetaOutputDTO[];
   @IsNumber()
   price!: number;
   @IsString()
   @IsOptional()
   name?: string;
-  @ValidateNested()
-  @Type(() => ItemsOutputDTO)
-  item?: ItemsOutputDTO;
 }
 
 export class ShopListingCreateDTO<T = void> extends TakaroDTO<T> {
   @IsUUID()
   gameServerId!: string;
-  @IsUUID()
-  @IsOptional()
-  itemId?: string;
-  @IsUUID()
-  @IsOptional()
-  functionId?: string;
+  @ValidateNested({ each: true })
+  @Type(() => ShopListingItemMetaInputDTO)
+  items: ShopListingItemMetaInputDTO[];
   @IsNumber()
   price!: number;
   @IsString()
@@ -43,12 +55,9 @@ export class ShopListingCreateDTO<T = void> extends TakaroDTO<T> {
 export class ShopListingUpdateDTO extends TakaroDTO<ShopListingUpdateDTO> {
   @IsUUID()
   gameServerId!: string;
-  @IsUUID()
-  @IsOptional()
-  itemId?: string;
-  @IsUUID()
-  @IsOptional()
-  functionId?: string;
+  @ValidateNested({ each: true })
+  @Type(() => ShopListingItemMetaInputDTO)
+  items: ShopListingItemMetaInputDTO[];
   @IsNumber()
   price!: number;
   @IsString()
@@ -78,7 +87,7 @@ export class ShopOrderOutputDTO extends TakaroModelDTO<ShopOrderOutputDTO> {
 export class ShopOrderCreateDTO<T = void> extends TakaroDTO<T> {
   @IsUUID()
   listingId: string;
-  @IsNumber()
+  @Min(1)
   amount: number;
 }
 

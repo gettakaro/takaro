@@ -16,9 +16,11 @@ describe('Ory', () => {
     expect(firstIdentity.email).to.be.eq(identities[0].email);
 
     // Delete them all
-    await ory.deleteIdentitiesForDomain('domainId');
+    await Promise.all(identities.map((i) => ory.deleteIdentity(i.id)));
 
     // Make sure they're gone
-    expect(ory.getIdentity(identities[0].id)).to.eventually.be.rejectedWith('Not Found');
+    await expect(ory.getIdentity(identities[0].id)).to.eventually.be.rejectedWith(
+      'Request failed with status code 404'
+    );
   });
 });

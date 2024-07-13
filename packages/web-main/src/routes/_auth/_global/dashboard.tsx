@@ -2,13 +2,14 @@ import { createFileRoute, redirect } from '@tanstack/react-router';
 import { useMemo } from 'react';
 import { Stats, styled, LineChart, Card } from '@takaro/lib-components';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { eventsQueryOptions } from 'queries/event';
+import { eventsFailedFunctionsQueryOptions, eventsQueryOptions } from 'queries/event';
 import { DateTime } from 'luxon';
 import { useForm, useWatch } from 'react-hook-form';
 import { TimePeriodSelect } from 'components/selects';
 import { useQuery } from '@tanstack/react-query';
 import { hasPermission } from 'hooks/useHasPermission';
 import { PlayersOnlineStatsQueryOptions, ActivityStatsQueryOptions } from 'queries/stats';
+import { EventFeed, EventItem } from 'components/events/EventFeed';
 
 export const Route = createFileRoute('/_auth/_global/dashboard')({
   beforeLoad: async ({ context }) => {
@@ -32,13 +33,8 @@ const Container = styled.div`
 
 function Component() {
   useDocumentTitle('Dashboard');
-
   const loaderData = Route.useLoaderData();
   const { data } = useQuery({ ...PlayersOnlineStatsQueryOptions(), initialData: loaderData });
-
-  const { data: dailyActiveUsers, isLoading: isLoadingDailyActiveUsers } = useQuery(
-    ActivityStatsQueryOptions({ timeType: 'daily', dataType: 'players' })
-  );
 
   const { control } = useForm({
     defaultValues: {
@@ -79,6 +75,10 @@ function Component() {
     return { startDate, now };
   }, [selectedPeriod]);
 
+  const { data: dailyActiveUsers, isLoading: isLoadingDailyActiveUsers } = useQuery(
+    ActivityStatsQueryOptions({ timeType: 'daily', dataType: 'players', startDate, endDate: now })
+  );
+
   const { data: cronjobsExecuted, isLoading: isLoadingCronJobsExecuted } = useQuery(
     eventsQueryOptions({
       search: { eventName: ['cronjob-executed'] },
@@ -100,6 +100,17 @@ function Component() {
       search: { eventName: ['hook-executed'] },
       greaterThan: { createdAt: startDate },
       lessThan: { createdAt: now },
+    })
+  );
+
+  const { data: failedFunctions } = useQuery(
+    eventsFailedFunctionsQueryOptions({
+      greaterThan: { createdAt: startDate },
+      lessThan: { createdAt: now },
+      limit: 10,
+      extend: ['gameServer', 'module', 'player', 'user'],
+      sortBy: 'createdAt',
+      sortDirection: 'desc',
     })
   );
 
@@ -137,7 +148,7 @@ function Component() {
         </Stats>
 
         <div style={{ display: 'flex', flexFlow: 'flex-wrap', gap: '2rem', marginTop: '40px' }}>
-          <Card style={{ height: '400px', width: '800px', position: 'relative' }} variant="outline">
+          <Card style={{ height: '400px', width: '60%', position: 'relative' }} variant="outline">
             <h2>Players online</h2>
             <LineChart
               name="Players online"
@@ -146,6 +157,14 @@ function Component() {
               yAccessor={(d) => d[1]}
               curveType="curveBasis"
             />
+          </Card>
+          <Card style={{ height: '100%', width: '40%', position: 'relative' }}>
+            <h2>Module errors</h2>
+            <EventFeed>
+              {failedFunctions?.data.flatMap((event) => (
+                <EventItem key={event.id} event={event} onDetailClick={() => {}} />
+              ))}
+            </EventFeed>
           </Card>
         </div>
       </Container>

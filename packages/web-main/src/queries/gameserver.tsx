@@ -65,15 +65,12 @@ export const gameServerQueryOptions = (gameServerId: string) => {
   });
 };
 
-interface CreateGameServerFromCSMMInput {
-  config: FormData;
-}
 export const useGameServerCreateFromCSMMImport = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
-  return mutationWrapper<ImportOutputDTO, CreateGameServerFromCSMMInput>(
-    useMutation<ImportOutputDTO, AxiosError<ImportOutputDTO>, CreateGameServerFromCSMMInput>({
+  return mutationWrapper<ImportOutputDTO, any>(
+    useMutation<ImportOutputDTO, AxiosError<ImportOutputDTO>, any>({
       mutationFn: async (config) =>
         (
           await apiClient.gameserver.gameServerControllerImportFromCSMM({

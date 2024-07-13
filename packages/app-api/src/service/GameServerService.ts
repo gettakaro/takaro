@@ -52,6 +52,8 @@ import { randomUUID } from 'crypto';
 import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
 import { Type } from 'class-transformer';
 import { gameServerLatency } from '../lib/metrics.js';
+import { Pushgateway } from 'prom-client';
+import { config } from '../config.js';
 
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 const ajv = new Ajv({ useDefaults: true, strict: true });
@@ -192,6 +194,10 @@ export class GameServerService extends TakaroService<
     await Promise.all(installedModules.map((mod) => this.uninstallModule(id, mod.moduleId)));
 
     gameClassCache.delete(id);
+
+    const gateway = new Pushgateway(config.get('metrics.pushgatewayUrl'), {});
+    gateway.delete({ jobName: 'worker', groupings: { gameserver: id } });
+
     await queueService.queues.connector.queue.add({
       domainId: this.domainId,
       gameServerId: id,
@@ -218,7 +224,7 @@ export class GameServerService extends TakaroService<
     if (id) {
       const instance = await this.getGame(id);
       const reachability = await instance.testReachability();
-      gameServerLatency.set({ gameserver: id }, reachability.latency ?? 0);
+      gameServerLatency.set({ gameserver: id, domain: this.domainId }, reachability.latency ?? 0);
 
       const currentServer = await this.findOne(id);
 
@@ -236,6 +242,11 @@ export class GameServerService extends TakaroService<
             }),
           })
         );
+      }
+
+      // When a user is trying to fix their connection info, it's important we don't cache stale/wrong connection info
+      if (!reachability.connectable) {
+        gameClassCache.delete(id);
       }
 
       return reachability;
@@ -476,7 +487,7 @@ export class GameServerService extends TakaroService<
     const gameInstance = await this.getGame(gameServerId);
     return gameInstance.listBans();
   }
-  async giveItem(gameServerId: string, playerId: string, item: string, amount: number, quality: number) {
+  async giveItem(gameServerId: string, playerId: string, item: string, amount: number, quality?: number) {
     const gameInstance = await this.getGame(gameServerId);
     const pog = await this.pogService.getPog(playerId, gameServerId);
     return gameInstance.giveItem(pog, item, amount, quality);
