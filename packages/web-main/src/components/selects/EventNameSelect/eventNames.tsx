@@ -31,7 +31,15 @@ export const categorizedEventNames = [
   },
   {
     category: 'Economy',
-    events: [e.CurrencyAdded, e.CurrencyDeducted],
+    events: [
+      e.CurrencyAdded,
+      e.CurrencyDeducted,
+      e.ShopOrderCreated,
+      e.ShopOrderStatusChanged,
+      e.ShopListingCreated,
+      e.ShopListingUpdated,
+      e.ShopListingDeleted,
+    ],
   },
   {
     category: 'Role',
