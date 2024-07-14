@@ -72,7 +72,7 @@ function Component() {
           .flatMap((page) => page.data)
           .map((gameServer) => (
             <GameServerCard key={gameServer.id} {...gameServer} />
-          ))}{' '}
+          ))}
         <PermissionsGuard requiredPermissions={[PERMISSIONS.ManageGameservers]}>
           <AddCard title="Gameserver" onClick={() => navigate({ to: '/gameservers/create' })} />
         </PermissionsGuard>
@@ -86,7 +86,6 @@ function Component() {
         fetchNextPage={fetchNextPage}
         isFetchingNextPage={isFetchingNextPage}
       />
-      {/* show editGameServer and newGameServer drawers above this listView*/}
       <Outlet />
     </Fragment>
   );

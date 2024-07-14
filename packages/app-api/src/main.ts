@@ -39,7 +39,8 @@ import { SteamSyncWorker } from './workers/steamSyncWorker.js';
 import { AxiosError } from 'axios';
 import { StatsController } from './controllers/StatsController.js';
 import { KPIWorker } from './workers/kpiWorker.js';
-import { ShopController } from './controllers/ShopController.js';
+import { ShopOrderController } from './controllers/Shop/Order.js';
+import { ShopListingController } from './controllers/Shop/Listing.js';
 import { SystemWorker } from './workers/systemWorker.js';
 
 export const server = new HTTP(
@@ -63,7 +64,8 @@ export const server = new HTTP(
       PlayerOnGameServerController,
       ItemController,
       StatsController,
-      ShopController,
+      ShopListingController,
+      ShopOrderController,
     ],
   },
   {

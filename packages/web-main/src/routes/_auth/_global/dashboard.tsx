@@ -14,7 +14,7 @@ import { EventFeed, EventItem } from 'components/events/EventFeed';
 export const Route = createFileRoute('/_auth/_global/dashboard')({
   beforeLoad: async ({ context }) => {
     const session = await context.auth.getSession();
-    if (!hasPermission(session, ['READ_EVENTS'])) {
+    if (!hasPermission(session, ['READ_EVENTS', 'READ_GAMESERVERS', 'READ_PLAYERS'])) {
       throw redirect({ to: '/forbidden' });
     }
   },
@@ -158,7 +158,6 @@ function Component() {
               curveType="curveBasis"
             />
           </Card>
-
           <Card style={{ height: '100%', width: '40%', position: 'relative' }}>
             <h2>Module errors</h2>
             <EventFeed>

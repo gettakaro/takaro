@@ -94,7 +94,7 @@ export const Default = styled.button<{
       case 'huge':
         return `
           span {
-            font-size: 105%;
+            font-size: 125%;
           }
           padding: ${theme.spacing[1]} ${theme.spacing[2]}
         `;

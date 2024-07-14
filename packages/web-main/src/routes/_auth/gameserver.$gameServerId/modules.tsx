@@ -6,6 +6,7 @@ import { gameServerModuleInstallationsOptions } from 'queries/gameserver';
 import { modulesQueryOptions } from 'queries/module';
 import { hasPermission } from 'hooks/useHasPermission';
 import { PERMISSIONS } from '@takaro/apiclient';
+import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
 const SubHeader = styled.h2`
   font-size: ${({ theme }) => theme.fontSize.mediumLarge};
@@ -40,7 +41,7 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/modules')(
 export function Component() {
   const loaderData = Route.useLoaderData();
   const { gameServerId } = Route.useParams();
-  //useGameServerDocumentTitle('Modules');
+  useDocumentTitle('Modules');
 
   const [{ data: modules }, { data: installations }] = useQueries({
     queries: [

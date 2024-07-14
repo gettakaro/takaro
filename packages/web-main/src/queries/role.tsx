@@ -97,7 +97,7 @@ export const useRoleUpdate = () => {
 };
 
 interface RoleRemove {
-  id: string;
+  roleId: string;
 }
 
 export const useRoleRemove = () => {
@@ -106,7 +106,7 @@ export const useRoleRemove = () => {
 
   return mutationWrapper<IdUuidDTO, RoleRemove>(
     useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, RoleRemove>({
-      mutationFn: async ({ id }) => (await apiClient.role.roleControllerRemove(id)).data.data,
+      mutationFn: async ({ roleId: id }) => (await apiClient.role.roleControllerRemove(id)).data.data,
       onSuccess: (removedRole) => {
         queryClient.invalidateQueries({ queryKey: roleKeys.list() });
         queryClient.removeQueries({ queryKey: roleKeys.detail(removedRole.id) });

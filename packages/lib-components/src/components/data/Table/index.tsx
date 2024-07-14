@@ -111,6 +111,7 @@ export function Table<DataType extends object>({
   );
 
   const ROW_SELECTION_COL_SPAN = rowSelection ? 1 : 0;
+  const MINIMUM_ROW_COUNT_FOR_PAGINATION = 5;
 
   // handles the column visibility tooltip (shows tooltip when the first column is hidden)
   useEffect(() => {
@@ -186,6 +187,8 @@ export function Table<DataType extends object>({
     },
   });
 
+  const tableHasNoData = isLoading === false && table.getRowModel().rows.length === 0;
+
   // rowSelection.rowSelectionState has the following shape: { [rowId: string]: boolean }
   const hasRowSelection = useMemo(() => {
     return (
@@ -218,10 +221,10 @@ export function Table<DataType extends object>({
             orientation="horizontal"
             defaultValue={density}
           >
-            <ToggleButtonGroup.Button value="relaxed" tooltip="Relaxed layout">
+            <ToggleButtonGroup.Button value="relaxed" tooltip="Relaxed layout" disabled={tableHasNoData}>
               <RelaxedDensityIcon size={20} />
             </ToggleButtonGroup.Button>
-            <ToggleButtonGroup.Button value="tight" tooltip="Tight layout">
+            <ToggleButtonGroup.Button value="tight" tooltip="Tight layout" disabled={tableHasNoData}>
               <TightDensityIcon size={20} />
             </ToggleButtonGroup.Button>
           </ToggleButtonGroup>
@@ -281,7 +284,7 @@ export function Table<DataType extends object>({
               )}
 
               {/* empty state */}
-              {!isLoading && table.getRowModel().rows.length === 0 && (
+              {tableHasNoData && (
                 <tr>
                   <td colSpan={table.getAllColumns().length + ROW_SELECTION_COL_SPAN}>
                     <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -319,14 +322,16 @@ export function Table<DataType extends object>({
                   </tr>
                 ))}
             </tbody>
-            {!isLoading && table.getRowModel().rows.length > 1 && (
+
+            {!isLoading && table.getPageCount() * table.getRowCount() > MINIMUM_ROW_COUNT_FOR_PAGINATION && (
               <tfoot>
                 <tr>
                   {/* This is the row selection */}
                   {ROW_SELECTION_COL_SPAN ? <td colSpan={1} /> : null}
                   {pagination && (
                     <>
-                      <td colSpan={2}>
+                      <td colSpan={table.getVisibleLeafColumns().length - 3 - ROW_SELECTION_COL_SPAN} />
+                      <td colSpan={1}>
                         <span>
                           showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}-
                           {table.getState().pagination.pageIndex * table.getState().pagination.pageSize +
@@ -334,7 +339,7 @@ export function Table<DataType extends object>({
                           of {pagination.pageOptions.total} entries
                         </span>
                       </td>
-                      <td colSpan={table.getVisibleLeafColumns().length - ROW_SELECTION_COL_SPAN - 5}>
+                      <td colSpan={1}>
                         <PagePicker
                           pageCount={table.getPageCount()}
                           hasNext={table.getCanNextPage()}
@@ -345,7 +350,7 @@ export function Table<DataType extends object>({
                           setPageIndex={table.setPageIndex}
                         />
                       </td>
-                      <td colSpan={2}>
+                      <td colSpan={1} style={{ paddingRight: '10px' }}>
                         <PageSizeSelect
                           onPageSizeChange={(pageSize) => table.setPageSize(Number(pageSize))}
                           pageSize={table.getState().pagination.pageSize.toString()}

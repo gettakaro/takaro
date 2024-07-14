@@ -13,6 +13,7 @@ import { PERMISSIONS, SettingsOutputDTOTypeEnum } from '@takaro/apiclient';
 import { hasPermission, useHasPermission } from 'hooks/useHasPermission';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { useQueries } from '@tanstack/react-query';
+import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/settings')({
   beforeLoad: async ({ context }) => {
@@ -74,6 +75,7 @@ interface IFormInputs {
 const typeOptions = [SettingsOutputDTOTypeEnum.Inherit, SettingsOutputDTOTypeEnum.Override];
 
 function Component() {
+  useDocumentTitle('Settings');
   const { mutate: deleteGameServerSetting } = useDeleteGameServerSetting();
   const { mutate: setGameServerSetting } = useSetGameServerSetting();
   const { gameServerId } = Route.useParams();

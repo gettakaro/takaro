@@ -57,7 +57,6 @@ function Component() {
         name="gameServerId"
         filter={(gameServer) => gameServerIds.includes(gameServer.id)}
       />
-
       {gameServerId && <Currency playerId={playerId} gameServerId={gameServerId} economyEnabled={economyEnabled} />}
     </>
   );

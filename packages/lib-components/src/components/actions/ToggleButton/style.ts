@@ -67,7 +67,7 @@ export const Item = styled.button<{ isSelected: boolean; isDisabled: boolean }>`
   font-weight: 400;
   border-left: none;
   background-color: ${({ theme, isSelected, isDisabled }) =>
-    isSelected ? theme.colors.primary : isDisabled ? theme.colors.disabled : theme.colors.background};
+    isDisabled ? theme.colors.disabled : isSelected ? theme.colors.primary : theme.colors.background};
   cursor: ${({ isDisabled }) => (isDisabled ? 'default' : 'pointer')};
 
   svg {

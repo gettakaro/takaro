@@ -5,6 +5,8 @@ import { useUserLinkPlayerProfile, userMeQueryOptions } from 'queries/user';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
 import { useSnackbar } from 'notistack';
+import { AiOutlineLogout as LogoutIcon } from 'react-icons/ai';
+import { useAuth } from 'hooks/useAuth';
 
 const Container = styled.div`
   max-width: 800px;
@@ -42,6 +44,7 @@ function Component() {
   const user = Route.useLoaderData();
   const { mutate, isPending, error, isSuccess } = useUserLinkPlayerProfile();
   const { enqueueSnackbar } = useSnackbar();
+  const { logOut } = useAuth();
 
   const { control, handleSubmit, watch } = useForm<z.infer<typeof validationSchema>>({
     mode: 'onChange',
@@ -79,7 +82,7 @@ function Component() {
 
       <Alert
         variant="info"
-        text="Connect your player profile to Takaro to access gameserver shops and view your stats!"
+        text="Connect your player profile to Takaro to purchase items in gameshops and to view stats!"
       />
       <form onSubmit={handleSubmit(onSubmit)}>
         <TextField
@@ -106,7 +109,22 @@ function Component() {
           placeholder="email@takaro.io"
         />
         {error && <FormError error={error} />}
-        <Button isLoading={isPending} fullWidth type="submit" text="Link Player to Account" />
+        {user && user.email ? (
+          <div style={{ display: 'grid', gridTemplateColumns: '3fr 1fr', gap: '1rem' }}>
+            <Button fullWidth isLoading={isPending} type="submit" text="Link Player to Account" />
+            <Button
+              onClick={async () => await logOut()}
+              variant="outline"
+              color="primary"
+              fullWidth
+              icon={<LogoutIcon />}
+              type="button"
+              text="log out"
+            />
+          </div>
+        ) : (
+          <Button fullWidth isLoading={isPending} type="submit" text="Link Player to Account" />
+        )}
       </form>
     </Container>
   );

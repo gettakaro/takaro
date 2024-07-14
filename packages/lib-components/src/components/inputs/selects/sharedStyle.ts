@@ -4,6 +4,7 @@ import { AiOutlineDown as ArrowIcon } from 'react-icons/ai';
 
 export const Container = styled.div`
   position: relative;
+  width: 100%;
 `;
 
 export const SelectContainer = styled.div`

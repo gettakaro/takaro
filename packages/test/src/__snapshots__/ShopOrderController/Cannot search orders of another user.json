@@ -1,0 +1,22 @@
+{
+  "body": {
+    "meta": {
+      "page": 0,
+      "limit": 100,
+      "total": 0
+    },
+    "data": []
+  },
+  "status": 200,
+  "test": {
+    "group": "ShopOrderController",
+    "snapshot": true,
+    "name": "Cannot search orders of another user",
+    "filteredFields": [
+      "listingId",
+      "userId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

@@ -84,6 +84,7 @@ export const Option: FC<OptionProps> = ({ children, index = 0, value, onChange, 
       tabIndex={activeIndex === index ? 0 : 1}
       isMultiSelect={multiple}
       isActive={activeIndex === index}
+      disabled={disabled}
       aria-disabled={disabled}
       isGrouped={false}
       aria-selected={activeIndex === index}

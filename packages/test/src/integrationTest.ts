@@ -129,7 +129,9 @@ export class IntegrationTest<SetupData> {
             }
 
             console.error(error.response?.data);
-            throw new Error(`Setup failed: ${JSON.stringify(error.response?.data)}}`);
+            throw new Error(
+              `Setup failed: ${error.config?.method} ${error.config?.url} ${JSON.stringify(error.response?.data)}}`
+            );
           }
         }
       }

@@ -9,6 +9,7 @@ import {
   AiOutlineSetting as SettingsIcon,
   AiOutlineFunction as ModulesIcon,
   AiOutlinePlus as AddServerIcon,
+  AiOutlineShopping as ShopIcon,
 } from 'react-icons/ai';
 import { gameServersQueryOptions } from 'queries/gameserver';
 import { Nav, NoServersCallToAction } from './style';
@@ -32,6 +33,15 @@ export const GameServerNav: FC = () => {
           params: { gameServerId: gameServerId },
         },
         icon: <DashboardIcon />,
+        requiredPermissions: [PERMISSIONS.ReadGameservers],
+      },
+      {
+        label: 'Shop & Orders',
+        linkProps: {
+          to: '/gameserver/$gameServerId/shop',
+          params: { gameServerId: gameServerId },
+        },
+        icon: <ShopIcon />,
         requiredPermissions: [PERMISSIONS.ReadGameservers],
       },
       {

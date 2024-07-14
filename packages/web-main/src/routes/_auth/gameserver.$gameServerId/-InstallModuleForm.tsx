@@ -7,10 +7,10 @@ import { JsonSchemaForm } from 'components/JsonSchemaForm';
 import { ModuleInstallationOutputDTO, ModuleOutputDTO } from '@takaro/apiclient';
 
 interface InstallModuleFormProps {
-  readOnly?: boolean;
   gameServerId: string;
   mod: ModuleOutputDTO;
   modInstallation: ModuleInstallationOutputDTO;
+  readOnly?: boolean;
 }
 
 const ButtonContainer = styled.div`
@@ -19,13 +19,17 @@ const ButtonContainer = styled.div`
   gap: ${({ theme }) => theme.spacing[2]};
 `;
 
-export const InstallModuleForm: FC<InstallModuleFormProps> = ({ readOnly, mod, modInstallation, gameServerId }) => {
+export const InstallModuleForm: FC<InstallModuleFormProps> = ({
+  readOnly = false,
+  mod,
+  modInstallation,
+  gameServerId,
+}) => {
   const [open, setOpen] = useState<boolean>(true);
   const [userConfigSubmitted, setUserConfigSubmitted] = useState<boolean>(false);
   const [systemConfigSubmitted, setSystemConfigSubmitted] = useState<boolean>(false);
   const navigate = useNavigate();
   const { mutate, isPending, error, isSuccess } = useGameServerModuleInstall();
-  //  );*/
 
   const [userConfig, setUserConfig] = useState<Record<string, unknown>>({});
   const [systemConfig, setSystemConfig] = useState<Record<string, unknown>>({});

@@ -15,7 +15,8 @@ import {
   PlayerOnGameServerApi,
   ItemApi,
   StatsApi,
-  ShopApi,
+  ShopOrderApi,
+  ShopListingApi,
 } from '../generated/api.js';
 import { BaseApiClient, IBaseApiClientConfig } from './baseClient.js';
 
@@ -241,8 +242,18 @@ export class Client extends BaseApiClient<IApiClientConfig> {
     );
   }
 
-  get shop() {
-    return new ShopApi(
+  get shopListing() {
+    return new ShopListingApi(
+      {
+        isJsonMime: this.isJsonMime,
+      },
+      '',
+      this.axios
+    );
+  }
+
+  get shopOrder() {
+    return new ShopOrderApi(
       {
         isJsonMime: this.isJsonMime,
       },

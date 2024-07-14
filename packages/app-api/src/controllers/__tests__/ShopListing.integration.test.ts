@@ -23,11 +23,11 @@ const shopSetup = async function (this: IntegrationTest<IShopSetup>): Promise<IS
     value: 'test coin',
   });
 
-  const items = (await this.client.item.itemControllerSearch()).data.data;
+  const items = (await this.client.item.itemControllerSearch({ sortBy: 'name' })).data.data;
 
-  const listingRes = await this.client.shop.shopControllerCreate({
+  const listingRes = await this.client.shopListing.shopListingControllerCreate({
     gameServerId: setupData.gameServer1.id,
-    itemId: items[0].id,
+    items: [{ itemId: items[0].id, amount: 1 }],
     price: 100,
     name: 'Test item',
   });
@@ -45,9 +45,9 @@ const tests = [
     snapshot: true,
     name: 'Get by ID',
     setup: shopSetup,
-    filteredFields: ['itemId', 'functionId', 'gameServerId'],
+    filteredFields: ['itemId', 'gameServerId', 'gameserverId', 'listingId'],
     test: async function () {
-      return this.client.shop.shopControllerGetOne(this.setupData.listing.id);
+      return this.client.shopListing.shopListingControllerGetOne(this.setupData.listing.id);
     },
   }),
   new IntegrationTest<IShopSetup>({
@@ -55,17 +55,17 @@ const tests = [
     snapshot: true,
     name: 'Create',
     setup: shopSetup,
-    filteredFields: ['itemId', 'functionId', 'gameServerId'],
+    filteredFields: ['itemId', 'gameServerId', 'gameserverId', 'listingId'],
     test: async function () {
-      const items = (await this.client.item.itemControllerSearch()).data.data;
-      const res = await this.client.shop.shopControllerCreate({
+      const items = (await this.client.item.itemControllerSearch({ filters: { name: ['Stone'] } })).data.data;
+      const res = await this.client.shopListing.shopListingControllerCreate({
         gameServerId: this.setupData.gameServer1.id,
-        itemId: items[0].id,
+        items: [{ itemId: items[0].id, amount: 1 }],
         price: 150,
         name: 'Test item',
       });
 
-      const findRes = await this.client.shop.shopControllerGetOne(res.data.data.id);
+      const findRes = await this.client.shopListing.shopListingControllerGetOne(res.data.data.id);
       expect(findRes.data.data.price).to.be.equal(150);
 
       return res;
@@ -76,18 +76,19 @@ const tests = [
     snapshot: true,
     name: 'Update',
     setup: shopSetup,
-    filteredFields: ['itemId', 'functionId', 'gameServerId'],
+    filteredFields: ['itemId', 'gameServerId', 'gameserverId', 'listingId'],
     test: async function () {
-      const res = await this.client.shop.shopControllerUpdate(this.setupData.listing.id, {
+      const res = await this.client.shopListing.shopListingControllerUpdate(this.setupData.listing.id, {
         price: 200,
-        itemId: this.setupData.items[1].id,
+        items: [{ itemId: this.setupData.items[1].id, amount: 5 }],
         gameServerId: this.setupData.gameServer1.id,
         name: 'Updated item',
       });
 
-      const findRes = await this.client.shop.shopControllerGetOne(res.data.data.id);
+      const findRes = await this.client.shopListing.shopListingControllerGetOne(res.data.data.id);
       expect(findRes.data.data.price).to.be.equal(200);
-      expect(findRes.data.data.itemId).to.be.equal(this.setupData.items[1].id);
+      expect(findRes.data.data.items[0].item.id).to.be.equal(this.setupData.items[1].id);
+      expect(findRes.data.data.items[0].amount).to.be.equal(5);
       expect(findRes.data.data.name).to.be.equal('Updated item');
 
       return res;
@@ -100,22 +101,23 @@ const tests = [
     setup: shopSetup,
     expectedStatus: 404,
     test: async function () {
-      await this.client.shop.shopControllerDelete(this.setupData.listing.id);
-      return this.client.shop.shopControllerGetOne(this.setupData.listing.id);
+      await this.client.shopListing.shopListingControllerDelete(this.setupData.listing.id);
+      return this.client.shopListing.shopListingControllerGetOne(this.setupData.listing.id);
     },
   }),
-  // Creating a listing with no item or function should fail
+  // Creating a listing with no item should fail
   new IntegrationTest<IShopSetup>({
     group,
     snapshot: true,
-    name: 'Create without item or function',
+    name: 'Create without item',
     setup: shopSetup,
     expectedStatus: 400,
     test: async function () {
-      return this.client.shop.shopControllerCreate({
+      return this.client.shopListing.shopListingControllerCreate({
         gameServerId: this.setupData.gameServer1.id,
         price: 150,
         name: 'Test item',
+        items: [],
       });
     },
   }),
@@ -127,9 +129,9 @@ const tests = [
     setup: shopSetup,
     expectedStatus: 400,
     test: async function () {
-      return this.client.shop.shopControllerCreate({
+      return this.client.shopListing.shopListingControllerCreate({
         gameServerId: this.setupData.gameServer1.id,
-        itemId: this.setupData.items[0].id,
+        items: [{ itemId: this.setupData.items[0].id, amount: 1 }],
         price: -100,
         name: 'Test item',
       });
@@ -143,9 +145,9 @@ const tests = [
     setup: shopSetup,
     expectedStatus: 400,
     test: async function () {
-      return this.client.shop.shopControllerCreate({
+      return this.client.shopListing.shopListingControllerCreate({
         gameServerId: this.setupData.gameServer1.id,
-        itemId: this.setupData.items[0].id,
+        items: [{ itemId: this.setupData.items[0].id, amount: 1 }],
         price: 0,
         name: 'Test item',
       });
