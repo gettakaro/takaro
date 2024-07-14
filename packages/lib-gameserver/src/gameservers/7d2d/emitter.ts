@@ -41,7 +41,7 @@ const EventRegexMap = {
     /PlayerSpawnedInWorld \(reason: (JoinMultiplayer|EnterMultiplayer), position: [-\d]+, [-\d]+, [-\d]+\): EntityID=(?<entityId>[-\d]+), PltfmId='(Steam|XBL)_[\w\d]+', CrossId='EOS_[\w\d]+', OwnerID='(Steam|XBL)_\d+', PlayerName='(?<name>.+)'/,
   [GameEvents.PLAYER_DISCONNECTED]: /(Player disconnected: )/,
   [GameEvents.CHAT_MESSAGE]:
-    /Chat \(from '(?<platformId>[\w\d-]+)', entity id '(?<entityId>[-\d]+)', to '(?<channel>\w+)'\): '(?<name>.+)':(?<message>.+)/,
+    /Chat \(from '(?<platformId>[\w\d-]+)', entity id '(?<entityId>[-\d]+)', to '(?<channel>\w+)'\): ('(?<playerName>.+)':)?(?<message>.+)/,
   [GameEvents.PLAYER_DEATH]:
     /GMSG: Player '(?<name1>.+)' died|\[CSMM_Patrons\]playerDied: (?<name2>.+) \((?<steamOrXboxId>.+)\) died @ (?<xCoord>[-\d]+) (?<yCoord>[-\d]+) (?<zCoord>[-\d]+)/,
   [GameEvents.ENTITY_KILLED]:

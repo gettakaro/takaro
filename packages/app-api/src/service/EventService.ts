@@ -180,4 +180,8 @@ export class EventService extends TakaroService<EventModel, EventOutputDTO, Even
   async metadataSearch(filters: ITakaroQuery<EventOutputDTO>, metaFilters: (Filter | FilterGroup)[]): Promise<any> {
     return this.repo.metadataSearch(filters, metaFilters);
   }
+
+  async deleteOldEvents(olderThan: string) {
+    return this.repo.deleteOldEvents(olderThan);
+  }
 }

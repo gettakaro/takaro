@@ -41,6 +41,7 @@ import { StatsController } from './controllers/StatsController.js';
 import { KPIWorker } from './workers/kpiWorker.js';
 import { ShopOrderController } from './controllers/Shop/Order.js';
 import { ShopListingController } from './controllers/Shop/Listing.js';
+import { SystemWorker } from './workers/systemWorker.js';
 
 export const server = new HTTP(
   {
@@ -119,6 +120,9 @@ async function main() {
 
     new KPIWorker();
     log.info('👷 kpi worker started');
+
+    new SystemWorker();
+    log.info('👷 system worker started');
   }
 
   await getSocketServer(server.server as HttpServer);
