@@ -10,8 +10,7 @@ export const Container = styled(motion.div)`
   align-items: flex-start;
   flex-direction: column;
   justify-content: space-between;
-  padding: ${({ theme }) => `${theme.spacing[5]} ${theme.spacing[1]} ${theme.spacing['1_5']} ${theme.spacing[1]}`};
-
+  padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[1]} ${theme.spacing['1_5']} ${theme.spacing[1]}`};
   gap: ${({ theme }) => theme.spacing[2]};
 
   .company-icon {
