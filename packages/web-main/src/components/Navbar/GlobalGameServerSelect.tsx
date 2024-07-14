@@ -4,7 +4,7 @@ import { styled } from '@takaro/lib-components';
 import { GameServerSelect } from 'components/selects';
 import { useMatchRoute, useNavigate } from '@tanstack/react-router';
 
-export const StyledForm = styled.form`
+const Container = styled.div`
   div {
     margin-bottom: 0;
   }
@@ -48,5 +48,9 @@ export const GlobalGameServerSelect: FC<GameServerSelectNavProps> = ({
     return () => subscription.unsubscribe();
   }, [watch('gameServerId'), matchRoute]);
 
-  return <GameServerSelect control={control} name="gameServerId" label="" />;
+  return (
+    <Container>
+      <GameServerSelect control={control} name="gameServerId" label="" />
+    </Container>
+  );
 };
