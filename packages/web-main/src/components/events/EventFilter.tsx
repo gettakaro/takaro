@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { useForm } from 'react-hook-form';
 import { EventOutputDTOEventNameEnum as EventName } from '@takaro/apiclient';
 import { EventNameSelect } from 'components/selects/EventNameSelect';
-import { GameServerSelect, PlayerSelect } from 'components/selects';
+import { GameServerSelect, PlayerSelectQuery } from 'components/selects';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { DateRangePicker, Button, styled } from '@takaro/lib-components';
@@ -22,6 +22,7 @@ interface EventFilterProps {
     dateRange?: { start?: string; end?: string };
   };
   onSubmit: (data: EventFilterInputs) => void;
+  isLoading: boolean;
   isLive?: boolean;
 }
 
@@ -39,7 +40,7 @@ export const eventFilterSchema = z.object({
 });
 export type EventFilterInputs = z.infer<typeof eventFilterSchema>;
 
-export const EventFilter: FC<EventFilterProps> = ({ defaultValues, onSubmit, isLive }) => {
+export const EventFilter: FC<EventFilterProps> = ({ defaultValues, onSubmit, isLoading, isLive }) => {
   const { control, handleSubmit, formState } = useForm<EventFilterInputs>({
     mode: 'onSubmit',
     resolver: zodResolver(eventFilterSchema),
@@ -53,7 +54,14 @@ export const EventFilter: FC<EventFilterProps> = ({ defaultValues, onSubmit, isL
 
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
-      <PlayerSelect multiple={true} name="playerIds" canClear={true} control={control} label="Players" />
+      <PlayerSelectQuery
+        multiple={true}
+        loading={isLoading}
+        name="playerIds"
+        canClear={true}
+        control={control}
+        label="Players"
+      />
       <GameServerSelect
         multiple={true}
         name="gameServerIds"
@@ -61,6 +69,7 @@ export const EventFilter: FC<EventFilterProps> = ({ defaultValues, onSubmit, isL
         control={control}
         hasMargin
         label="Gameservers"
+        loading={isLoading}
       />
       <EventNameSelect multiple={true} name="eventNames" canClear={true} control={control} label="Event names" />
       <DateRangePicker
@@ -68,7 +77,8 @@ export const EventFilter: FC<EventFilterProps> = ({ defaultValues, onSubmit, isL
         name="dateRange"
         id="event-daterange-picker"
         disabled={isLive}
-        label="Select date range"
+        loading={isLoading}
+        label="Interval"
       />
       <Button disabled={!formState.isDirty} text="Apply filters" type="submit" fullWidth />
     </Form>
