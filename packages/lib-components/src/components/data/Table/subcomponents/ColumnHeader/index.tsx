@@ -134,7 +134,7 @@ export function ColumnHeader<DataType extends object>({ header, table, isLoading
       isRowSelection={false}
     >
       <InnerTh>
-        <Target ref={ref} isDragging={isDragging} role="DraggableBox" draggable={true} aria-dropeffect="move">
+        <Target ref={ref} isDragging={isDragging} role="DraggableBox" draggable={true}>
           <CustomDragLayer />
           <Content canDrag={canDrag}>
             {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
