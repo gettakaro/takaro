@@ -199,4 +199,9 @@ export class EventRepo extends ITakaroRepo<EventModel, EventOutputDTO, EventCrea
       }
     }
   }
+
+  async deleteOldEvents(olderThan: string) {
+    const { query } = await this.getModel();
+    return query.where('createdAt', '<', olderThan).delete();
+  }
 }

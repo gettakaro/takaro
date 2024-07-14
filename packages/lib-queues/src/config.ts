@@ -43,6 +43,9 @@ export interface IQueuesConfig extends IBaseConfig {
     csmmImport: {
       name: string;
     };
+    system: {
+      name: string;
+    };
   };
   redis: {
     host: string;
@@ -218,6 +221,14 @@ export const queuesConfigSchema = {
         format: String,
         default: 'csmmImport',
         env: 'CSMM_IMPORT_QUEUE_NAME',
+      },
+    },
+    system: {
+      name: {
+        doc: 'The name of the queue to use for system',
+        format: String,
+        default: 'system',
+        env: 'SYSTEM_QUEUE_NAME',
       },
     },
   },
