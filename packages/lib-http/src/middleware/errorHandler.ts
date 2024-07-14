@@ -44,6 +44,11 @@ export async function ErrorHandler(
     parsedError = new errors.BadRequestError('Invalid data provided');
   }
 
+  if ('constraint' in originalError && originalError['constraint'] === 'currency_positive') {
+    status = 400;
+    parsedError = new errors.BadRequestError('Not enough currency');
+  }
+
   if (originalError instanceof errors.TakaroError) {
     status = originalError.http;
     parsedError = originalError;

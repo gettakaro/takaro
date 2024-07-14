@@ -16,19 +16,20 @@ export interface DateRangePickerState {
   friendlyStartDate?: string;
   friendlyEndDate?: string;
   friendlyRange?: string;
-  readOnly: boolean;
-  disabled: boolean;
+  disabledOrReadOnly: boolean;
 }
 
 export function reducer(state: DateRangePickerState, action: Action): DateRangePickerState {
-  if (state.readOnly || state.disabled) {
-    return {
-      ...state,
-      quickSelect: { ...state.quickSelect, show: false },
-    };
+  if (state.disabledOrReadOnly && action.type !== 'toggle_disable_or_readonly') {
+    return state;
   }
 
   switch (action.type) {
+    case 'toggle_disable_or_readonly':
+      return {
+        ...state,
+        disabledOrReadOnly: action.payload.disabledOrReadOnly,
+      };
     case 'toggle_quick_select_popover':
       return {
         ...state,
@@ -107,7 +108,8 @@ export type Action =
   | { type: 'set_absolute_start_date'; payload: { startDate: DateTime } }
   | { type: 'set_relative_end_date'; payload: { endDate: DateTime; friendlyEndDate?: string } }
   | { type: 'set_absolute_end_date'; payload: { endDate: DateTime } }
-  | { type: 'set_range'; payload: { startDate: DateTime; endDate: DateTime; friendlyRange?: string } };
+  | { type: 'set_range'; payload: { startDate: DateTime; endDate: DateTime; friendlyRange?: string } }
+  | { type: 'toggle_disable_or_readonly'; payload: { disabledOrReadOnly: boolean } };
 
 export const DateRangePickerContext = createContext<DateRangePickerState | null>(null);
 export const DateRangePickerDispatchContext = createContext<Dispatch<Action> | null>(null);

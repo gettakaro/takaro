@@ -1,9 +1,9 @@
 import { Card, styled, useTheme } from '@takaro/lib-components';
 import { gameServerQueryOptions } from 'queries/gameserver';
 import { useGameServerDocumentTitle } from 'hooks/useDocumentTitle';
-import { OnlinePlayersCard } from './-cards/OnlinePlayers';
-import { ChatMessagesCard } from './-cards/ChatMessages';
-import { Scrollable } from './-cards/style';
+import { OnlinePlayersCard } from './-components/OnlinePlayers';
+import { ChatMessagesCard } from './-components/ChatMessages';
+import { Scrollable } from './-components/style';
 import { EventFeedWidget } from 'components/events/EventFeedWidget';
 import { EventOutputDTOEventNameEnum as EventName } from '@takaro/apiclient';
 import { createFileRoute } from '@tanstack/react-router';

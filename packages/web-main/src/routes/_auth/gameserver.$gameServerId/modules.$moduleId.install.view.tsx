@@ -22,9 +22,9 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/modules/$m
   component: Component,
 });
 
-export function Component() {
+function Component() {
   const { gameServerId } = Route.useParams();
   const { mod, modInstallation } = Route.useLoaderData();
 
-  return <InstallModuleForm gameServerId={gameServerId} modInstallation={modInstallation} mod={mod} readOnly={true} />;
+  return <InstallModuleForm readOnly={true} gameServerId={gameServerId} modInstallation={modInstallation} mod={mod} />;
 }

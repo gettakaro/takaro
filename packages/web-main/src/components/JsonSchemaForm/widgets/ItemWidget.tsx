@@ -51,7 +51,7 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
   value,
   onChange,
 }: WidgetProps<T, S, F>) {
-  const { gameServerId } = getRouteApi('/_auth/gameserver/$gameServerId/modules/$moduleId/install').useParams();
+  const { gameServerId } = getRouteApi('/_auth/gameserver/$gameServerId/modules/$moduleId/install/').useParams();
   const [itemName, setItemName] = useState<string>('');
   const enabled = itemName !== '';
   const shouldPreviousItemsBeLoaded = shouldFilter(value, multiple as boolean);

@@ -45,7 +45,7 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
 
   const handleOnDelete = (e: MouseEvent) => {
     e.stopPropagation();
-    mutate({ id });
+    mutate({ roleId: id });
     setOpenDialog(false);
   };
 
@@ -110,7 +110,7 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
               value={name}
               onValidChange={(v) => setValid(v)}
               label="Role name"
-              id="deleteGameServerConfirmation"
+              id="deleteRoleConfirmation"
             />
             <Button
               isLoading={isDeleting}

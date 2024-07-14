@@ -1,4 +1,4 @@
-import { IsEmail, IsISO8601, IsOptional, IsString, Length, ValidateNested } from 'class-validator';
+import { IsEmail, IsISO8601, IsOptional, IsString, IsUUID, Length, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import {
@@ -92,6 +92,10 @@ class UserSearchInputAllowedFilters {
   @IsOptional()
   @IsString({ each: true })
   discordId!: string[];
+
+  @IsOptional()
+  @IsUUID(4, { each: true })
+  playerId!: string[];
 }
 
 class UserSearchInputAllowedRangeFilter extends RangeFilterCreatedAndUpdatedAt {

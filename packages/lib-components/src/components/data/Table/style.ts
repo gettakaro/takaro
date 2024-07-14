@@ -30,6 +30,7 @@ export const TableWrapper = styled.div`
   padding-bottom: ${({ theme }) => theme.spacing['0_5']};
   border-bottom-left-radius: ${({ theme }) => theme.borderRadius.large};
   border-bottom-right-radius: ${({ theme }) => theme.borderRadius.large};
+  overflow: hidden;
 `;
 
 export const StyledTable = styled.table<{ density: Density }>`
@@ -57,7 +58,6 @@ export const StyledTable = styled.table<{ density: Density }>`
 
   tfoot {
     border-top: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
-    padding: ${({ theme }) => theme.spacing[2]};
     tr {
       td {
         border-bottom: none;

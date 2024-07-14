@@ -2,6 +2,7 @@ import { queryOptions } from '@tanstack/react-query';
 import { getApiClient } from 'util/getApiClient';
 import { ActivityInputDTO, EventsCountInputDTO, StatsOutputDTO } from '@takaro/apiclient';
 import { AxiosError } from 'axios';
+import { queryParamsToArray } from './util';
 
 type StatsOutput = { values: Array<[number, number]> };
 
@@ -14,6 +15,7 @@ export const statsKeys = {
     ['latency', gameServerId, startDate, endDate] as const,
   playersOnline: (gameServerId?: string, startDate?: string, endDate?: string) =>
     ['players-online', gameServerId, startDate, endDate] as const,
+  activity: (gameServerId?: string) => ['activity', gameServerId] as const,
 };
 
 export const PingStatsQueryOptions = (playerId: string, gameServerId: string, startDate?: string, endDate?: string) => {
@@ -76,7 +78,7 @@ export const EventsCountQueryOptions = (options: EventsCountInputDTO) => {
 
 export const ActivityStatsQueryOptions = (options: ActivityInputDTO) => {
   return queryOptions<StatsOutputDTO, AxiosError<StatsOutputDTO>, StatsOutput>({
-    queryKey: ['activity', options],
+    queryKey: [statsKeys.activity(options.gameServerId), queryParamsToArray(options)],
     queryFn: async () =>
       (
         await getApiClient().stats.statsControllerGetActivityStats(

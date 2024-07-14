@@ -1,6 +1,7 @@
 import { FC, PropsWithChildren } from 'react';
 import { Card, styled } from '@takaro/lib-components';
 import { useCommandCreate, useCronJobCreate, useHookCreate } from 'queries/module';
+import { useNavigate } from '@tanstack/react-router';
 
 const Flex = styled.div<{ justifyContent?: string }>`
   display: flex;
@@ -40,9 +41,10 @@ export type ModuleOnboardingProps = {
 };
 
 export const ModuleOnboarding: FC<ModuleOnboardingProps> = ({ moduleId }) => {
-  const { mutateAsync: createHook } = useHookCreate();
-  const { mutateAsync: createCommand } = useCommandCreate();
-  const { mutateAsync: createCronJob } = useCronJobCreate();
+  const { mutateAsync: createHook, isSuccess: createHookIsSuccess } = useHookCreate();
+  const { mutateAsync: createCommand, isSuccess: createCommandIsSuccess } = useCommandCreate();
+  const { mutateAsync: createCronJob, isSuccess: createCronJobIsSuccess } = useCronJobCreate();
+  const navigate = useNavigate();
 
   const createComponent = async (componentType: 'hook' | 'cronjob' | 'command') => {
     try {
@@ -74,6 +76,10 @@ export const ModuleOnboarding: FC<ModuleOnboardingProps> = ({ moduleId }) => {
       console.error(e);
     }
   };
+
+  if (createHookIsSuccess || createCommandIsSuccess || createCronJobIsSuccess) {
+    navigate({ to: '/studio/$moduleId', params: { moduleId } });
+  }
 
   return (
     <Wrapper>

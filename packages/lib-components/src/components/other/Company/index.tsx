@@ -17,8 +17,6 @@ export const Company = forwardRef<HTMLDivElement, CompanyProps>(
     if (to) {
       return (
         <Container size={size} textVisible={textVisible} ref={ref}>
-          {/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */}
-          {/* @ts-ignore reusable link */}
           <Link to={to}>
             {iconVisible && (
               <Svg color={iconColor} size={size} viewBox="0 0 512 512">

@@ -14,8 +14,8 @@ export interface PageOptions {
 }
 
 interface TableActionOptions {
-  pageIndex: number;
-  pageSize: number;
+  pageIndex?: number;
+  pageSize?: number;
 }
 
 export interface ColumnFilter {
@@ -23,10 +23,15 @@ export interface ColumnFilter {
   value: string[];
 }
 
-export function useTableActions<T>({ pageIndex, pageSize }: TableActionOptions = { pageIndex: 0, pageSize: 10 }) {
+const DEFAULT_PAGE_SIZE = 10;
+const DEFAULT_PAGE_INDEX = 0;
+
+export function useTableActions<T>(
+  { pageIndex, pageSize }: TableActionOptions = { pageIndex: DEFAULT_PAGE_INDEX, pageSize: DEFAULT_PAGE_SIZE }
+) {
   const [paginationState, setPaginationState] = useState<PaginationState>({
-    pageIndex,
-    pageSize,
+    pageIndex: pageIndex ?? DEFAULT_PAGE_INDEX,
+    pageSize: pageSize ?? DEFAULT_PAGE_SIZE,
   });
   const [columnFiltersState, setColumnFiltersState] = useState<ColumnFilter[]>([]);
   const [columnSearchState, setColumnSearchState] = useState<ColumnFilter[]>([]);

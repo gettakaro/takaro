@@ -2,7 +2,7 @@ import { GameServerOutputDTO, GameServerOutputDTOTypeEnum, ItemsOutputDTO } from
 import { Avatar, getInitials, SelectQueryField, Skeleton, styled } from '@takaro/lib-components';
 import { gameServerQueryOptions } from 'queries/gameserver';
 import { itemsQueryOptions } from 'queries/item';
-import { FC, useState } from 'react';
+import { FC, useState, useCallback } from 'react';
 import { CustomQuerySelectProps } from '..';
 import { useQuery } from '@tanstack/react-query';
 
@@ -16,7 +16,7 @@ const Inner = styled.div`
   justify-content: flex-start;
   width: 100%;
 
-  span {
+  & > span {
     margin-left: ${({ theme }) => theme.spacing['1']};
   }
 `;
@@ -52,7 +52,7 @@ export const ItemSelect: FC<ItemSelectProps> = ({
   );
   const items = data?.data ?? [];
 
-  if (isLoadingGameServer || isLoadingItems) {
+  if (isLoadingGameServer) {
     return <Skeleton variant="rectangular" width="100%" height="40px" />;
   }
 
@@ -79,7 +79,7 @@ export const ItemSelect: FC<ItemSelectProps> = ({
       label={label}
       gameServer={gameServer}
       setItemName={setItemName}
-      isLoading={isLoadingGameServer || isLoadingItems}
+      isLoadingData={isLoadingItems}
     />
   );
 };
@@ -87,7 +87,7 @@ export const ItemSelect: FC<ItemSelectProps> = ({
 export type ItemSelectQueryViewProps = CustomQuerySelectProps & {
   items: ItemsOutputDTO[];
   gameServer: GameServerOutputDTO;
-  isLoading: boolean;
+  isLoadingData?: boolean;
   setItemName: (value: string) => void;
 };
 export const ItemSelectQueryView: FC<ItemSelectQueryViewProps> = ({
@@ -106,11 +106,11 @@ export const ItemSelectQueryView: FC<ItemSelectQueryViewProps> = ({
   required,
   gameServer,
   loading,
-  isLoading,
+  isLoadingData = false,
   setItemName,
   label,
 }) => {
-  const renderIcon = (gameServer: GameServerOutputDTO, item: ItemsOutputDTO) => {
+  const renderIcon = useCallback((gameServer: GameServerOutputDTO, item: ItemsOutputDTO) => {
     if (item.code && gameServer && gameServerTypeToIconFolderMap[gameServer.type] !== 'Mock') {
       return (
         <Avatar size="tiny">
@@ -122,15 +122,17 @@ export const ItemSelectQueryView: FC<ItemSelectQueryViewProps> = ({
         </Avatar>
       );
     }
-  };
+  }, []);
 
   return (
     <SelectQueryField
       name={selectName}
+      debounce={500}
       hint={hint}
       label={label}
       size={size}
       loading={loading}
+      isLoadingData={isLoadingData}
       disabled={disabled}
       inPortal={inPortal}
       readOnly={readOnly}
@@ -157,11 +159,10 @@ export const ItemSelectQueryView: FC<ItemSelectQueryViewProps> = ({
           );
         }
 
-        return <div>{selectedItems.map((item) => item.label).join(',')}</div>;
+        return <div>{selectedItems.map((item) => item.label).join(', ')}</div>;
       }}
       placeholder={placeholder}
       handleInputValueChange={(value) => setItemName(value)}
-      isLoadingData={isLoading}
       control={control}
     >
       <SelectQueryField.OptionGroup label="options">

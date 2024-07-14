@@ -28,6 +28,7 @@ export const PlayerSelect: FC<CustomSelectProps> = ({
   required,
   hint,
   canClear,
+  multiple,
 }) => {
   const { data, isLoading: isLoadingData } = useQuery(playersQueryOptions());
 
@@ -57,6 +58,7 @@ export const PlayerSelect: FC<CustomSelectProps> = ({
       enableFilter
       loading={loading}
       canClear={canClear}
+      multiple={multiple}
       render={(selectedItems) => {
         if (selectedItems.length === 0) {
           return <div>Select...</div>;
