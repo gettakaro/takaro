@@ -1,6 +1,6 @@
+import { FC } from 'react';
 import { GameServerOutputDTOTypeEnum } from '@takaro/apiclient';
-import { FC, useState } from 'react';
-import { Chip, ToggleButtonGroup, styled } from '@takaro/lib-components';
+import { Chip, ToggleButtonGroup, styled, useLocalStorage } from '@takaro/lib-components';
 import { AiOutlineTable as TableViewIcon, AiOutlineUnorderedList as ListViewIcon } from 'react-icons/ai';
 import { ShopTableView } from './ShopTableView';
 import { ShopCardView } from './ShopCardView';
@@ -27,7 +27,7 @@ export interface ShopViewProps {
 type ViewType = 'list' | 'table';
 
 export const ShopView: FC<ShopViewProps> = ({ gameServerId, currency, currencyName, gameServerType }) => {
-  const [view, setView] = useState<ViewType>('list');
+  const { setValue: setView, storedValue: view } = useLocalStorage<ViewType>('shopview', 'list');
 
   return (
     <>
@@ -54,10 +54,10 @@ export const ShopView: FC<ShopViewProps> = ({ gameServerId, currency, currencyNa
           defaultValue={view}
         >
           <ToggleButtonGroup.Button value="list" tooltip="List view">
-            <ListViewIcon size={24} />
+            <ListViewIcon size={20} />
           </ToggleButtonGroup.Button>
           <ToggleButtonGroup.Button value="table" tooltip="Table view">
-            <TableViewIcon size={24} />
+            <TableViewIcon size={20} />
           </ToggleButtonGroup.Button>
         </ToggleButtonGroup>
       </div>
