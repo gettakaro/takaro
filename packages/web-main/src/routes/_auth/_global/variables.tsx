@@ -71,13 +71,11 @@ function Component() {
       meta: { dataType: 'string' },
       cell: (info) => info.getValue(),
       enableColumnFilter: true,
-      enableSorting: true,
     }),
     columnHelper.accessor('value', {
       header: 'Value',
       id: 'value',
       cell: (info) => (info.getValue().length > 10 ? <VariableValueDetail value={info.getValue()} /> : info.getValue()),
-      enableSorting: true,
     }),
     columnHelper.accessor('gameServerId', {
       header: 'Game Server',
@@ -91,7 +89,6 @@ function Component() {
         />
       ),
       enableColumnFilter: true,
-      enableSorting: true,
     }),
     columnHelper.accessor('playerId', {
       header: 'Player',
@@ -105,7 +102,6 @@ function Component() {
         />
       ),
       enableColumnFilter: true,
-      enableSorting: true,
     }),
     columnHelper.accessor('moduleId', {
       header: 'Module',
@@ -119,14 +115,12 @@ function Component() {
         />
       ),
       enableColumnFilter: true,
-      enableSorting: true,
     }),
     columnHelper.accessor('createdAt', {
       header: 'Created at',
       id: 'createdAt',
       meta: { dataType: 'datetime' },
       cell: (info) => <DateFormatter ISODate={info.getValue()} />,
-      enableSorting: true,
     }),
     columnHelper.accessor('updatedAt', {
       header: 'Updated at',
