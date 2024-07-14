@@ -88,21 +88,6 @@ services:
       - "traefik.http.routers.takaro_web.service=takaro_web"
       - "traefik.http.services.takaro_web.loadbalancer.server.port=80"
 
-  takaro_shop:
-    image: ghcr.io/gettakaro/takaro-web-shop:latest
-    networks:
-      - traefik
-    environment:
-      VITE_API: https://api.takaro.example.com
-    restart: unless-stopped
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.takaro_shop.rule=Host(`takaro.example.com`)"
-      - "traefik.http.routers.takaro_shop.entrypoints=websecure"
-      - "traefik.http.routers.takaro_shop.service=takaro_shop"
-      - "traefik.http.services.takaro_shop.loadbalancer.server.port=80"
-
-
   postgresql:
     image: postgres:15
     networks:
