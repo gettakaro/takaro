@@ -143,6 +143,7 @@ function Component() {
     <>
       <Header>
         <EventFilter
+          isLoading={false}
           defaultValues={{
             playerIds: search.playerIds ?? [],
             gameServerIds: search.gameServerIds ?? [],

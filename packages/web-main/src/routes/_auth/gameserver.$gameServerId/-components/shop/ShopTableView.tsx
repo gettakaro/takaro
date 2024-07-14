@@ -3,7 +3,7 @@ import {
   ShopListingOutputDTO,
   ShopListingSearchInputDTOSortDirectionEnum,
 } from '@takaro/apiclient';
-import { Avatar, Button, DateFormatter, Table, getInitials, useTableActions } from '@takaro/lib-components';
+import { Avatar, Button, DateFormatter, Table, getInitials, styled, useTableActions } from '@takaro/lib-components';
 import { useQuery } from '@tanstack/react-query';
 import { FC } from 'react';
 import { createColumnHelper } from '@tanstack/react-table';
@@ -11,6 +11,8 @@ import { shopListingsQueryOptions } from 'queries/shopListing';
 import { useNavigate } from '@tanstack/react-router';
 import { useHasPermission } from 'hooks/useHasPermission';
 import { ShopViewProps } from './ShopView';
+import { ShopListingActions } from './ShopListingActions';
+import { ShopListingBuyForm } from './ShopListingBuyForm';
 
 const gameServerTypeToIconFolderMap = {
   [GameServerOutputDTOTypeEnum.Mock]: 'rust',
@@ -18,7 +20,20 @@ const gameServerTypeToIconFolderMap = {
   [GameServerOutputDTOTypeEnum.Sevendaystodie]: '7d2d',
 };
 
-export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, gameServerType }) => {
+const ShopListingBuyFormContainer = styled.div`
+  form {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  button {
+    max-height: 35px;
+    margin-left: ${({ theme }) => theme.spacing['0_5']};
+  }
+`;
+
+export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, gameServerType, currency }) => {
   const navigate = useNavigate();
   const hasPermission = useHasPermission(['MANAGE_SHOP_LISTINGS']);
 
@@ -60,7 +75,7 @@ export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, g
         const shopListingName = info.row.original.name || info.row.original.items[0].item.name;
 
         return (
-          <Avatar size="small">
+          <Avatar size="medium">
             <Avatar.Image
               src={`/icons/${gameServerTypeToIconFolderMap[gameServerType]}/${info.row.original.items[0].item.code}.png`}
               alt={`Item icon of ${info.row.original.items[0].item.name}`}
@@ -69,6 +84,10 @@ export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, g
           </Avatar>
         );
       },
+      maxSize: 30,
+      enableColumnFilter: false,
+      enableGlobalFilter: false,
+      enableMultiSort: false,
     }),
     columnHelper.accessor('name', {
       header: 'Name',
@@ -84,17 +103,7 @@ export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, g
           .map((shoplistingMeta) => `${shoplistingMeta.amount}x ${shoplistingMeta.item.name}`)
           .join(', '),
     }),
-    columnHelper.accessor('price', {
-      header: 'Price',
-      id: 'price',
-      meta: { dataType: 'number' },
-      enableSorting: true,
-      cell: (info) => (
-        <>
-          {info.getValue()} {currencyName}
-        </>
-      ),
-    }),
+
     columnHelper.accessor('createdAt', {
       header: 'Created at',
       id: 'createdAt',
@@ -109,6 +118,46 @@ export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, g
       cell: (info) => <DateFormatter ISODate={info.getValue()} />,
       enableSorting: true,
     }),
+    columnHelper.display({
+      header: '',
+      id: 'buy',
+      maxSize: 30,
+      enableSorting: false,
+      enableColumnFilter: false,
+      enableHiding: false,
+      enablePinning: false,
+      enableGlobalFilter: false,
+      enableResizing: false,
+      cell: (info) => (
+        <ShopListingBuyFormContainer>
+          <ShopListingBuyForm
+            currencyName={currencyName}
+            price={info.row.original.price}
+            playerCurrencyAmount={currency || 0}
+            shopListingId={info.row.original.id}
+          />
+        </ShopListingBuyFormContainer>
+      ),
+    }),
+    hasPermission &&
+      columnHelper.display({
+        header: 'Other actions',
+        id: 'actions',
+        enableSorting: false,
+        enableColumnFilter: false,
+        enableHiding: true,
+        enablePinning: false,
+        enableGlobalFilter: false,
+        enableResizing: false,
+        maxSize: 50,
+        cell: (info) => (
+          <ShopListingActions
+            shopListingId={info.row.original.id}
+            shopListingName={info.row.original.name || ''}
+            gameServerId={gameServerId}
+          />
+        ),
+      }),
   ];
 
   const p =
@@ -121,19 +170,21 @@ export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, g
       : undefined;
 
   return (
-    <Table
-      title="Shop"
-      id="shop-table"
-      {...(hasPermission && {
-        renderToolbar: () => <Button onClick={handleOnCreateShopListingClicked} text="Create shop listing" />,
-      })}
-      columns={columnDefs}
-      data={data?.data as ShopListingOutputDTO[]}
-      pagination={p}
-      columnFiltering={columnFilters}
-      columnSearch={columnSearch}
-      sorting={sorting}
-      isLoading={isLoading}
-    />
+    <>
+      <Table
+        title="Shop"
+        id="shop-table"
+        {...(hasPermission && {
+          renderToolbar: () => <Button onClick={handleOnCreateShopListingClicked} text="Create shop listing" />,
+        })}
+        columns={columnDefs}
+        data={data?.data as ShopListingOutputDTO[]}
+        pagination={p}
+        columnFiltering={columnFilters}
+        columnSearch={columnSearch}
+        sorting={sorting}
+        isLoading={isLoading}
+      />
+    </>
   );
 };
