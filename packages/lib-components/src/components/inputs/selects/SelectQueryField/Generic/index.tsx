@@ -116,7 +116,8 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
   const listItemsRef = useRef<Array<HTMLLIElement | null>>([]);
 
   useEffect(() => {
-    if (debouncedValue && inputValue.shouldUpdate) handleInputValueChange(debouncedValue);
+    if ((inputValue.shouldUpdate && debouncedValue) || (inputValue && debouncedValue === ''))
+      handleInputValueChange(debouncedValue);
   }, [debouncedValue]);
 
   const { refs, strategy, x, y, context } = useFloating<HTMLInputElement>({
