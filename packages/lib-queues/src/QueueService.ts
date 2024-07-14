@@ -51,6 +51,9 @@ class QueuesService {
     kpi: {
       queue: new TakaroQueue<Record<string, unknown>>(config.get('queues.kpi.name')),
     },
+    system: {
+      queue: new TakaroQueue<Record<string, unknown>>(config.get('queues.system.name')),
+    },
   };
 
   get queues() {
