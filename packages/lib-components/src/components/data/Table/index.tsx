@@ -151,6 +151,7 @@ export function Table<DataType extends object>({
     enableSorting: !!sorting,
     enableSortingRemoval: false,
     enableColumnResizing: true,
+    enablePinning: true,
     enableHiding: !!columnVisibility,
     enableRowSelection: !!rowSelection,
     autoResetPageIndex: false,
