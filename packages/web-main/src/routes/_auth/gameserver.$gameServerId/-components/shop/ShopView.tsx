@@ -1,9 +1,21 @@
 import { GameServerOutputDTOTypeEnum } from '@takaro/apiclient';
 import { FC, useState } from 'react';
-import { ToggleButtonGroup } from '@takaro/lib-components';
+import { Chip, ToggleButtonGroup, styled } from '@takaro/lib-components';
 import { AiOutlineTable as TableViewIcon, AiOutlineUnorderedList as ListViewIcon } from 'react-icons/ai';
 import { ShopTableView } from './ShopTableView';
 import { ShopCardView } from './ShopCardView';
+
+const Header = styled.div`
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: ${({ theme }) => theme.spacing['2']};
+  gap: ${({ theme }) => theme.spacing['2']};
+
+  strong {
+    font-size: ${({ theme }) => theme.fontSize['medium']};
+    margin-right: ${({ theme }) => theme.spacing['0_5']};
+  }
+`;
 
 export interface ShopViewProps {
   gameServerId: string;
@@ -24,10 +36,17 @@ export const ShopView: FC<ShopViewProps> = ({ gameServerId, currency, currencyNa
           width: '100%',
           marginBottom: '10px',
           display: 'flex',
-          justifyContent: 'flex-end',
+          justifyContent: currency ? 'space-between' : 'flex-end',
           alignItems: 'center',
         }}
       >
+        <Header>
+          {currency !== undefined && (
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <Chip variant="outline" color="primary" label={`${currency} ${currencyName}`} />
+            </div>
+          )}
+        </Header>
         <ToggleButtonGroup
           onChange={(val) => setView(val as ViewType)}
           exclusive={true}

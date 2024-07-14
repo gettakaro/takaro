@@ -6,22 +6,10 @@ import { CardList } from 'components/cards';
 import { ShopListingCard } from 'components/cards/ShopListingCard';
 
 import { AiOutlinePlus as PlusIcon } from 'react-icons/ai';
-import { Card, Chip, Button, Empty, EmptyPage, InfiniteScroll, styled } from '@takaro/lib-components';
+import { Card, Button, Empty, EmptyPage, InfiniteScroll, styled } from '@takaro/lib-components';
 import { useNavigate } from '@tanstack/react-router';
 import { CardBody } from 'components/cards/ShopListingCard/style';
 import { ShopViewProps } from './ShopView';
-
-const Header = styled.div`
-  display: flex;
-  justify-content: flex-start;
-  margin-bottom: ${({ theme }) => theme.spacing['2']};
-  gap: ${({ theme }) => theme.spacing['2']};
-
-  strong {
-    font-size: ${({ theme }) => theme.fontSize['medium']};
-    margin-right: ${({ theme }) => theme.spacing['0_5']};
-  }
-`;
 
 const AddCardBody = styled(CardBody)`
   flex-direction: row;
@@ -73,13 +61,6 @@ export const ShopCardView: FC<ShopViewProps> = ({ gameServerId, currency, curren
 
   return (
     <Fragment>
-      <Header>
-        {currency !== undefined && (
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <Chip variant="outline" color="primary" label={`${currency} ${currencyName}`} />
-          </div>
-        )}
-      </Header>
       <CardList>
         {shopListings.pages.map((page) =>
           page.data.map((shopListing) => (
