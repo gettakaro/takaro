@@ -59,7 +59,7 @@ export const ChatMessagesCard: FC = () => {
     <StyledCard variant={'outline'}>
       <CardBody>
         <Scrollable>
-          {events?.map((event) => (
+          {events?.reverse().map((event) => (
             <ChatMessage key={event.id} event={event} />
           ))}
         </Scrollable>

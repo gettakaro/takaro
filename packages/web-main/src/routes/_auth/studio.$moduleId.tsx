@@ -1,14 +1,14 @@
 import { useEffect, useMemo } from 'react';
 import { CommandOutputDTO, CronJobOutputDTO, FunctionOutputDTO, HookOutputDTO } from '@takaro/apiclient';
+import { z } from 'zod';
 import { moduleQueryOptions } from 'queries/module';
 import { styled, Skeleton } from '@takaro/lib-components';
-import { ModuleOnboarding } from 'views/ModuleOnboarding';
 import { ErrorBoundary } from 'components/ErrorBoundary';
 import { createFileRoute, redirect } from '@tanstack/react-router';
-import { StudioInner } from './-studio/StudioInner';
 import { hasPermission } from 'hooks/useHasPermission';
+import { StudioInner } from './-studio/StudioInner';
+import { ModuleOnboarding } from './-studio/ModuleOnboarding';
 import { FileMap, FileType, StudioProvider } from './-studio/useStudioStore';
-import { z } from 'zod';
 import { getApiClient } from 'util/getApiClient';
 
 const Flex = styled.div`
@@ -27,7 +27,7 @@ const LoadingContainer = styled.div`
   gap: ${({ theme }) => theme.spacing['4']};
 `;
 
-export const Route = createFileRoute('/studio/$moduleId')({
+export const Route = createFileRoute('/_auth/studio/$moduleId')({
   beforeLoad: async ({}) => {
     try {
       const me = (await getApiClient().user.userControllerMe()).data.data;
@@ -114,14 +114,14 @@ function Component() {
     return {};
   }, [mod]);
 
-  if (!mod.hooks.length && !mod.cronJobs.length && !mod.commands.length) {
-    return <ModuleOnboarding moduleId={mod.id} />;
-  }
-
   const activeFile = useMemo(() => {
     if (activeFileParam === undefined) return undefined;
     return fileMap[activeFileParam] ? activeFileParam : undefined;
   }, [fileMap, activeFileParam]);
+
+  if (!mod.hooks.length && !mod.cronJobs.length && !mod.commands.length) {
+    return <ModuleOnboarding moduleId={mod.id} />;
+  }
 
   return (
     <ErrorBoundary>

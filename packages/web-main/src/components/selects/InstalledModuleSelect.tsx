@@ -30,6 +30,7 @@ export const InstalledModuleSelect: FC<InstalledModuleSelectProps> = ({
   required,
   hint,
   gameServerId,
+  multiple,
 }) => {
   if (gameServerId === undefined) {
     throw new Error('InstalledModuleSelect: gameServerId is undefined');
@@ -60,6 +61,7 @@ export const InstalledModuleSelect: FC<InstalledModuleSelectProps> = ({
       size={size}
       hint={hint}
       modules={modules}
+      multiple={multiple}
     />
   );
 };
@@ -79,6 +81,7 @@ export const InstalledModuleSelectView: FC<InstalledModuleSelectViewProps> = ({
   inPortal,
   required,
   modules,
+  multiple,
 }) => {
   return (
     <SelectField
@@ -93,6 +96,7 @@ export const InstalledModuleSelectView: FC<InstalledModuleSelectViewProps> = ({
       required={required}
       inPortal={inPortal}
       loading={loading}
+      multiple={multiple}
       render={(selectedItems) => {
         if (selectedItems.length === 0) {
           return <div>Select...</div>;

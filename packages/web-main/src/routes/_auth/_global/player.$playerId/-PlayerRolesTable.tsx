@@ -2,9 +2,9 @@ import { FC, useState } from 'react';
 import { PlayerRoleAssignmentOutputDTO } from '@takaro/apiclient';
 import { createColumnHelper, CellContext } from '@tanstack/react-table';
 import { gameServersQueryOptions } from 'queries/gameserver';
-import { AiOutlineDelete as DeleteIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
+import { AiOutlineDelete as DeleteIcon, AiOutlineRight as ActionIcon, AiOutlineEye as ViewIcon } from 'react-icons/ai';
 import { usePlayerRoleUnassign } from 'queries/player';
-import { useNavigate } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
 import { useTableActions, Table, Button, Dropdown, IconButton, Dialog, Skeleton, styled } from '@takaro/lib-components';
 import { DateTime } from 'luxon';
 import { useQuery } from '@tanstack/react-query';
@@ -39,6 +39,19 @@ export const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId, 
     })
   );
 
+  const handleOnDelete = async () => {
+    if (deletingInfo) {
+      setIsDeleting(true);
+      mutate({
+        id: playerId,
+        roleId: deletingInfo.row.original.role.id,
+        gameServerId: deletingInfo.row.original.gameServerId,
+      });
+      setIsDeleting(false);
+      setOpenDialog(false);
+    }
+  };
+
   if (isLoading || !gameServers) {
     return <Skeleton variant="rectangular" width="100%" height="100%" />;
   }
@@ -49,7 +62,11 @@ export const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId, 
     columnHelper.accessor('role.name', {
       header: 'Name',
       id: 'name',
-      cell: (info) => info.getValue(),
+      cell: (info) => (
+        <Link to="/roles/view/$roleId" params={{ roleId: info.row.original.roleId }}>
+          {info.getValue()}
+        </Link>
+      ),
       enableColumnFilter: true,
       enableSorting: true,
     }),
@@ -105,6 +122,16 @@ export const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId, 
           </Dropdown.Trigger>
           <Dropdown.Menu>
             <Dropdown.Menu.Item
+              label="View role"
+              icon={<ViewIcon />}
+              onClick={() =>
+                navigate({
+                  to: '/roles/view/$roleId',
+                  params: { roleId: info.row.original.roleId },
+                })
+              }
+            />
+            <Dropdown.Menu.Item
               label="Unassign role"
               icon={<DeleteIcon />}
               onClick={() => {
@@ -117,19 +144,6 @@ export const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId, 
       ),
     }),
   ];
-
-  const handleOnDelete = async () => {
-    if (deletingInfo) {
-      setIsDeleting(true);
-      mutate({
-        id: playerId,
-        roleId: deletingInfo.row.original.role.id,
-        gameServerId: deletingInfo.row.original.gameServerId,
-      });
-      setIsDeleting(false);
-      setOpenDialog(false);
-    }
-  };
 
   return (
     <>
@@ -154,9 +168,8 @@ export const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId, 
           </StyledDialogBody>
         </Dialog.Content>
       </Dialog>
-
       <Table
-        title="Roles Management"
+        title="Player roles Management"
         id="roles"
         columns={columnDefs}
         data={roles}

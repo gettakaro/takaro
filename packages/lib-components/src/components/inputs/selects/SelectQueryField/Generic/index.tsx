@@ -42,7 +42,7 @@ interface SharedSelectQueryFieldProps {
   placeholder?: string;
   /// Debounce time in milliseconds (when clientside data it should be 0)
   debounce?: number;
-  /// Triggered whenever the input value changes, debounced by 0.5 seconds.
+  /// Triggered whenever the input value changes.
   /// This is used to trigger the API call to get the new options
   handleInputValueChange: (value: string) => void;
   /// render inPortal

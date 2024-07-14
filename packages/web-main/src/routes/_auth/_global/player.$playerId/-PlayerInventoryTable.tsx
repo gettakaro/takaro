@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { Tooltip, styled, Skeleton } from '@takaro/lib-components';
-import { gameServersQueryOptions } from 'queries/gameserver';
+import { gameServerQueryOptions } from 'queries/gameserver';
 import { GameServerOutputDTO, GameServerOutputDTOTypeEnum, PlayerOnGameserverOutputDTO } from '@takaro/apiclient';
 import { useQuery } from '@tanstack/react-query';
 
@@ -29,17 +29,8 @@ const ItemIcon = styled.img`
   margin-bottom: ${(props) => props.theme.spacing[1]};
 `;
 
-const ItemName = styled.p``;
-
 export const PlayerInventoryTable: FC<IPlayerInventoryProps> = ({ pog }) => {
-  const { data: gameservers, isLoading } = useQuery(
-    gameServersQueryOptions({
-      filters: {
-        id: [pog.gameServerId],
-      },
-    })
-  );
-
+  const { data: gameServer, isLoading } = useQuery(gameServerQueryOptions(pog.gameServerId));
   if (isLoading) return <Skeleton variant="rectangular" width="100%" height="100%" />;
 
   if (pog.inventory.length === 0) return <p>No inventory data</p>;
@@ -58,13 +49,12 @@ export const PlayerInventoryTable: FC<IPlayerInventoryProps> = ({ pog }) => {
   }
 
   const placeholderIcon = '/favicon.ico';
-  const server = gameservers && gameservers[0];
-  const serverType = getServerType(server);
+  const serverType = getServerType(gameServer);
 
   return (
     <Grid>
       {pog.inventory.map((item, index) => (
-        <Tooltip placement={'top'}>
+        <Tooltip placement="top">
           <Tooltip.Trigger asChild>
             <GridItem key={index}>
               <ItemIcon
@@ -72,7 +62,7 @@ export const PlayerInventoryTable: FC<IPlayerInventoryProps> = ({ pog }) => {
                 alt={item.name}
                 onError={(e) => (e.currentTarget.src = placeholderIcon)}
               />
-              <ItemName>{item.amount}</ItemName>
+              <p>{item.amount}</p>
             </GridItem>
           </Tooltip.Trigger>
           <Tooltip.Content>{item.name}</Tooltip.Content>

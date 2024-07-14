@@ -4,6 +4,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useUserSetSelectedDomain, userMeQueryOptions } from 'queries/user';
 import { MdDomain as DomainIcon } from 'react-icons/md';
 import { AiOutlineArrowRight as ArrowRightIcon } from 'react-icons/ai';
+import { useQueryClient } from '@tanstack/react-query';
 
 export const TAKARO_DOMAIN_COOKIE_REGEX = /(?:(?:^|.*;\s*)takaro-domain\s*\=\s*([^;]*).*$)|^.*$/;
 
@@ -75,17 +76,22 @@ interface DomainCardProps {
 
 function DomainCard({ domain, isCurrentDomain }: DomainCardProps) {
   const navigate = useNavigate();
-  const { mutate } = useUserSetSelectedDomain();
+  const { mutate, isSuccess } = useUserSetSelectedDomain();
+  const queryClient = useQueryClient();
 
-  const handleClick = () => {
+  const handleDomainSelectedClick = () => {
     if (isCurrentDomain === false) {
       mutate({ domainId: domain.id });
     }
-    navigate({ to: '/dashboard' });
   };
 
+  if (isSuccess) {
+    queryClient.clear();
+    navigate({ to: '/dashboard' });
+  }
+
   return (
-    <Card role="link" onClick={handleClick}>
+    <Card role="link" onClick={handleDomainSelectedClick}>
       <CardBody>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <DomainIcon size={30} />

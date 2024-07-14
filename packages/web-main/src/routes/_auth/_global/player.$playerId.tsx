@@ -86,6 +86,9 @@ function Component() {
         <Link to="/player/$playerId/events" params={{ playerId }}>
           Events
         </Link>
+        <Link to="/player/$playerId/inventory" params={{ playerId }}>
+          Inventory
+        </Link>
         <Link to="/player/$playerId/economy" params={{ playerId }}>
           Economy
         </Link>

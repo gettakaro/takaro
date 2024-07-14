@@ -98,7 +98,7 @@ export const RoleForm: FC<CreateUpdateRoleFormProps> = ({
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <Drawer.Content>
-        <Drawer.Heading>Create role</Drawer.Heading>
+        <Drawer.Heading>{initialData ? (readOnly ? 'View' : 'Update') : 'Create'} role</Drawer.Heading>
         <Drawer.Body>
           <CollapseList>
             <form onSubmit={onSubmit && handleSubmit(onSubmit)} id="create-role-form">

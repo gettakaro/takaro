@@ -148,7 +148,7 @@ const InviteUser: FC = () => {
   const validationSchema = useMemo(
     () =>
       z.object({
-        userEmail: z.string().email('Email is not valid.').nonempty(),
+        userEmail: z.string().email('Email is not valid.').min(1),
       }),
     []
   );

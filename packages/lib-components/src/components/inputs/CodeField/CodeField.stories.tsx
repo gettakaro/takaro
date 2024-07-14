@@ -29,7 +29,7 @@ export const onSubmit: StoryFn<CodeFieldProps> = (args) => {
   const validationSchema = useMemo(
     () =>
       z.object({
-        code: z.string().min(args.fields).max(args.fields).nonempty('Code is a required field.'),
+        code: z.string().min(args.fields).max(args.fields),
       }),
     [args.fields]
   );

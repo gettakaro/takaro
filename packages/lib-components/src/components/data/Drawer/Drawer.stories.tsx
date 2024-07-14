@@ -41,7 +41,7 @@ export const Default: StoryFn = () => {
   const validationSchema = useMemo(
     () =>
       z.object({
-        name: z.string().nonempty('Name field cannot be empty'),
+        name: z.string().min(1, 'Name field is required'),
         description: z.string().min(20, 'description must be at least 20 characters'),
         priceType: z.enum(['fixed', 'variable']),
       }),
