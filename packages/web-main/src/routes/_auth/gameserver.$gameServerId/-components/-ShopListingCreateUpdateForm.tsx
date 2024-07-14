@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ShopListingOutputDTO } from '@takaro/apiclient';
-import { Button, CollapseList, Drawer, FormError, IconButton, TextField, styled } from '@takaro/lib-components';
+import { Alert, Button, CollapseList, Drawer, FormError, IconButton, TextField, styled } from '@takaro/lib-components';
 import { useRouter } from '@tanstack/react-router';
 import { ItemSelect } from 'components/selects/ItemSelectQuery';
 import { FC, useEffect, useState } from 'react';
@@ -122,6 +122,11 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
             />
             <CollapseList>
               <CollapseList.Item title="Items">
+                <Alert
+                  variant="info"
+                  text="Uploading a custom image is not supported yet. For now, the icon of the first item will be used."
+                  elevation={3}
+                />
                 {fields.length > 0 &&
                   fields.map((_field, index) => (
                     <Field key={'shoplistingfield-' + index}>
