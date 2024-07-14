@@ -10,6 +10,7 @@ export type CustomQuerySelectProps = Omit<
 export { GameServerSelect } from './GameServerSelect';
 export { RoleSelect } from './RoleSelect';
 export { PlayerSelect } from './PlayerSelect';
+export { PlayerSelectQuery } from './PlayerSelectQuery';
 export { ModuleSelect } from './ModuleSelect';
 export { TimePeriodSelect } from './TimePeriodSelect';
 export { CountrySelect } from './CountrySelect';

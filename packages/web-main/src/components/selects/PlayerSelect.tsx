@@ -10,7 +10,7 @@ const Inner = styled.div`
   justify-content: flex-start;
   width: 100%;
 
-  span {
+  & > span {
     margin-left: ${({ theme }) => theme.spacing['1']};
   }
 `;
