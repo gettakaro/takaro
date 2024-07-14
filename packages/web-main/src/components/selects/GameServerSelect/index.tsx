@@ -34,6 +34,7 @@ export const GameServerSelect: FC<CustomSelectProps & GameServerSelectProps> = (
   required,
   filter,
   data: providedData,
+  multiple,
   canClear,
 }) => {
   const { data: fetchedData, isLoading: isLoadingData } = useQuery({
@@ -69,6 +70,7 @@ export const GameServerSelect: FC<CustomSelectProps & GameServerSelectProps> = (
       loading={loading}
       label={label}
       canClear={canClear}
+      multiple={multiple}
     />
   );
 };
@@ -88,6 +90,7 @@ export const GameServerSelectView: FC<GameServerSelectViewProps> = ({
   loading,
   label,
   canClear,
+  multiple,
 }) => {
   const renderOptionGroup = (groupLabel: string, typeEnum: GameServerOutputDTOTypeEnum) => {
     return (
@@ -130,23 +133,28 @@ export const GameServerSelectView: FC<GameServerSelectViewProps> = ({
       required={required}
       loading={loading}
       canClear={canClear}
-      render={(selectedItems) => {
-        if (selectedItems.length === 0) {
+      multiple={multiple}
+      render={(selectedGameservers) => {
+        if (selectedGameservers.length === 0) {
           return <p>Select...</p>;
         }
-        let selected = gameServers.find((server) => server.id === selectedItems[0].value);
 
-        // Couldn't find the selected server, select the first one
-        if (!selected) {
-          selected = gameServers[0];
+        if (selectedGameservers.length === 1) {
+          let selected = gameServers.find((server) => server.id === selectedGameservers[0].value);
+
+          // Couldn't find the selected server, select the first one
+          if (!selected) {
+            selected = gameServers[0];
+          }
+
+          return (
+            <Inner>
+              {gameTypeMap[selected.type].icon}
+              {selected.name}
+            </Inner>
+          );
         }
-
-        return (
-          <Inner>
-            {gameTypeMap[selected.type].icon}
-            {selected.name}
-          </Inner>
-        );
+        return selectedGameservers.map((gameServer) => gameServer.label).join(', ');
       }}
     >
       {/* IMPORTANT: make sure the types are ordered alphabetically
