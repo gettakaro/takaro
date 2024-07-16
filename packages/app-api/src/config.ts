@@ -54,6 +54,11 @@ interface IHttpConfig extends IBaseConfig {
     prometheusUrl: string;
     pushgatewayUrl: string;
   };
+  posthog: {
+    enabled: boolean;
+    apiKey: string;
+    host: string;
+  };
 }
 
 const configSchema = {
@@ -241,6 +246,26 @@ const configSchema = {
       format: String,
       default: 'http://pushgateway:9091',
       env: 'PUSHGATEWAY_URL',
+    },
+  },
+  posthog: {
+    enabled: {
+      doc: 'Whether to enable Posthog analytics',
+      format: Boolean,
+      default: false,
+      env: 'POSTHOG_ENABLED',
+    },
+    apiKey: {
+      doc: 'The API key for Posthog',
+      format: String,
+      default: '',
+      env: 'POSTHOG_API_KEY',
+    },
+    host: {
+      doc: 'The host for Posthog',
+      format: String,
+      default: 'https://eu.i.posthog.com',
+      env: 'POSTHOG_HOST',
     },
   },
 };

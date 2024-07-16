@@ -15,6 +15,7 @@ import { BaseEvent, EventMapping, EventPayload, TakaroEvents } from '@takaro/mod
 import { ValueOf } from 'type-fest';
 import { HookService } from './HookService.js';
 import { eventsMetric } from '../lib/metrics.js';
+import { PostHog } from '../lib/posthog.js';
 
 export const EVENT_TYPES = {
   ...TakaroEvents,
@@ -165,6 +166,14 @@ export class EventService extends TakaroService<EventModel, EventOutputDTO, Even
     } catch (error) {
       this.log.warn('Failed to emit event', error);
     }
+
+    const posthog = new PostHog(this.domainId);
+    await posthog.trackEvent(created.eventName, {
+      player: created.playerId,
+      gameserver: created.gameserverId,
+      module: created.moduleId,
+      user: created.userId,
+    });
 
     return created;
   }
