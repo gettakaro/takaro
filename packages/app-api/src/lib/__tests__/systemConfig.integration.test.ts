@@ -52,7 +52,13 @@ const tests = [
       // Should be a valid schema which compiles
       ajv.compile(systemConfig);
 
-      expect(systemConfig.properties).to.be.eql({});
+      expect(systemConfig.properties).to.be.eql({
+        enabled: {
+          default: true,
+          description: 'Enable/disable the module without having to uninstall it.',
+          type: 'boolean',
+        },
+      });
     },
   }),
   new IntegrationTest<ModuleOutputDTO>({
@@ -143,7 +149,7 @@ const tests = [
       ajv.compile(systemConfig);
 
       expect(systemConfig.properties.hooks).to.not.be.undefined;
-      expect(systemConfig.properties.hooks.properties['Test hook Discord channel ID']).to.not.be.undefined;
+      expect(systemConfig.properties.hooks.properties['Test hook'].properties.discordChannelId).to.not.be.undefined;
     },
   }),
   new IntegrationTest<ModuleOutputDTO>({
@@ -171,8 +177,8 @@ const tests = [
 
       ajv.compile(systemConfig);
 
-      expect(systemConfig.properties.hooks.properties).to.have.property('Test hook 1 Discord channel ID');
-      expect(systemConfig.properties.hooks.properties).to.have.property('Test hook 2 Discord channel ID');
+      expect(systemConfig.properties.hooks.properties['Test hook 1'].properties).to.have.property('discordChannelId');
+      expect(systemConfig.properties.hooks.properties['Test hook 2'].properties).to.have.property('discordChannelId');
     },
   }),
   new IntegrationTest<ModuleOutputDTO>({
@@ -194,7 +200,8 @@ const tests = [
 
       ajv.compile(systemConfig);
 
-      expect(systemConfig.properties.hooks).to.be.undefined;
+      expect(systemConfig.properties.hooks.properties['Test non-discord hook'].properties.discordChannelId).to.be
+        .undefined;
     },
   }),
 ];

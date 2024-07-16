@@ -5,7 +5,7 @@ async function main() {
 
   if (onlyGlobal && data.eventData.channel !== 'global') return;
 
-  const discordChannel = data.module.systemConfig.hooks['DiscordToGame Discord channel ID'];
+  const discordChannel = data.module.systemConfig.hooks['DiscordToGame'].discordChannelId;
 
   const sender = data.player ? data.player.name : 'Non-player';
   const message = `**${sender}**: ${data.eventData.msg}`;
