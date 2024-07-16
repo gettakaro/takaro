@@ -1,4 +1,4 @@
-import { DomainScoped } from '../lib/DomainScoped.js';
+import { DomainScoped } from '@takaro/util';
 import { ctx, errors, logger, traceableClass } from '@takaro/util';
 import { UserOutputWithRolesDTO, UserService, UserUpdateAuthDTO } from '../service/UserService.js';
 import jwt from 'jsonwebtoken';
