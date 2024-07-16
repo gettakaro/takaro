@@ -40,7 +40,7 @@ function Component() {
         items,
         price,
         gameServerId,
-        name,
+        name: name ? name : undefined,
       },
     });
 

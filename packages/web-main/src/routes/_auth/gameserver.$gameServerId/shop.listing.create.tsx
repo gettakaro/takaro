@@ -36,7 +36,7 @@ function Component() {
 
   const onSubmit: SubmitHandler<FormValues> = ({ name, items, price }) => {
     mutate({
-      name,
+      name: name ? name : undefined,
       price,
       gameServerId,
       items,
