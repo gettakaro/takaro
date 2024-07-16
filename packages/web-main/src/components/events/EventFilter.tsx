@@ -2,14 +2,14 @@ import { FC } from 'react';
 import { useForm } from 'react-hook-form';
 import { EventOutputDTOEventNameEnum as EventName } from '@takaro/apiclient';
 import { EventNameSelect } from 'components/selects/EventNameSelect';
-import { GameServerSelect, PlayerSelectQuery } from 'components/selects';
+import { GameServerSelect, ModuleSelect, PlayerSelectQuery } from 'components/selects';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { DateRangePicker, Button, styled } from '@takaro/lib-components';
 
 const Form = styled.form`
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr auto 0.5fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr auto 0.5fr;
   align-items: center;
   gap: ${({ theme }) => theme.spacing['1']};
 `;
@@ -36,6 +36,7 @@ export const eventFilterSchema = z.object({
     .catch(undefined),
   playerIds: z.array(z.string()).optional().default([]),
   gameServerIds: z.array(z.string()).optional().default([]),
+  moduleIds: z.array(z.string()).optional().default([]),
   eventNames: z.array(z.nativeEnum(EventName)).optional().default([]),
 });
 export type EventFilterInputs = z.infer<typeof eventFilterSchema>;
@@ -67,10 +68,10 @@ export const EventFilter: FC<EventFilterProps> = ({ defaultValues, onSubmit, isL
         name="gameServerIds"
         canClear={true}
         control={control}
-        hasMargin
         label="Gameservers"
         loading={isLoading}
       />
+      <ModuleSelect multiple={true} name="moduleIds" canClear={true} control={control} loading={isLoading} />
       <EventNameSelect multiple={true} name="eventNames" canClear={true} control={control} label="Event names" />
       <DateRangePicker
         control={control}

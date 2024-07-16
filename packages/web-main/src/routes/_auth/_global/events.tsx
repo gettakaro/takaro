@@ -1,6 +1,5 @@
 import { Button, styled, InfiniteScroll } from '@takaro/lib-components';
 import { EventFeed, EventItem } from 'components/events/EventFeed';
-import { Filter } from 'components/events/types';
 import { Settings } from 'luxon';
 import { eventsInfiniteQueryOptions, useEventSubscription } from 'queries/event';
 import { HiStop as PauseIcon, HiPlay as PlayIcon, HiArrowPath as RefreshIcon } from 'react-icons/hi2';
@@ -21,19 +20,21 @@ export const Route = createFileRoute('/_auth/_global/events')({
       throw redirect({ to: '/forbidden' });
     }
   },
-  loaderDeps: ({ search: { dateRange, eventNames, playerIds, gameServerIds } }) => ({
+  loaderDeps: ({ search: { dateRange, eventNames, playerIds, gameServerIds, moduleIds } }) => ({
     dateRange,
     eventNames,
     playerIds,
     gameServerIds,
+    moduleIds,
   }),
   loader: async ({ context, deps }) => {
     const opts = eventsInfiniteQueryOptions({
       sortBy: 'createdAt',
-      search: {
+      filters: {
         eventName: deps.eventNames.length > 0 ? deps.eventNames : undefined,
         playerId: deps.playerIds.length > 0 ? deps.playerIds : undefined,
         gameserverId: deps.gameServerIds.length > 0 ? deps.gameServerIds : undefined,
+        moduleId: deps.moduleIds.length > 0 ? deps.moduleIds : undefined,
       },
       sortDirection: 'desc',
       extend: ['gameServer', 'module', 'player', 'user'],
@@ -89,16 +90,9 @@ function Component() {
   const search = Route.useSearch();
   const [live, setLive] = useState<boolean>(true);
 
-  const filters: Filter[] = [];
-  const filterFields = filters.reduce((acc, f) => {
-    acc[f.field] = [f.value];
-    return acc;
-  }, {});
-
   useEventSubscription({
     enabled: live,
     search: { eventName: search.eventNames.length > 0 ? search.eventNames : undefined },
-    filters: filterFields,
     greaterThan: { createdAt: search.dateRange?.start },
     lessThan: { createdAt: search.dateRange?.end },
   });
@@ -112,8 +106,11 @@ function Component() {
     isFetchingNextPage,
   } = useInfiniteQuery({
     ...eventsInfiniteQueryOptions({
-      search: { eventName: search.eventNames.length > 0 ? search.eventNames : undefined },
-      filters: filterFields,
+      filters: {
+        playerId: search.playerIds.length > 0 ? search.playerIds : undefined,
+        gameserverId: search.gameServerIds.length > 0 ? search.gameServerIds : undefined,
+        eventName: search.eventNames.length > 0 ? search.eventNames : undefined,
+      },
       sortBy: 'createdAt',
       sortDirection: 'desc',
       greaterThan: { createdAt: live ? undefined : search.dateRange?.start },
@@ -130,11 +127,12 @@ function Component() {
   const onFilterChangeSubmit = (filter: EventFilterInputs) => {
     navigate({
       search: () => ({
-        gameServerIds: filter.gameServerIds.length > 0 ? (filter.gameServerIds as any) : undefined,
-        playerIds: filter.playerIds.length > 0 ? (filter.playerIds as any) : undefined,
-        eventNames: filter.eventNames.length > 0 ? (filter.eventNames as any) : undefined,
-        startDate: filter.dateRange?.start ?? undefined,
-        endDate: filter.dateRange?.end ?? undefined,
+        gameServerIds: filter.gameServerIds.length > 0 ? filter.gameServerIds : [],
+        playerIds: filter.playerIds.length > 0 ? filter.playerIds : [],
+        eventNames: filter.eventNames.length > 0 ? filter.eventNames : [],
+        moduleIds: filter.moduleIds.length > 0 ? filter.moduleIds : [],
+        startDate: filter.dateRange?.start ?? [],
+        endDate: filter.dateRange?.end ?? [],
       }),
     });
   };
