@@ -15,7 +15,7 @@ import { BaseEvent, EventMapping, EventPayload, TakaroEvents } from '@takaro/mod
 import { ValueOf } from 'type-fest';
 import { HookService } from './HookService.js';
 import { eventsMetric } from '../lib/metrics.js';
-import { PostHog } from '../lib/posthog.js';
+import { PostHog } from '@takaro/util';
 
 export const EVENT_TYPES = {
   ...TakaroEvents,
