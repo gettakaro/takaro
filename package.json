@@ -130,6 +130,7 @@
     "node-fetch": "^3.3.0",
     "openid-client": "^5.4.0",
     "posthog-js": "^1.144.1",
+    "posthog-node": "^4.0.1",
     "prom-client": "^14.2.0",
     "re-resizable": "^6.9.9",
     "react": "^18.2.0",
