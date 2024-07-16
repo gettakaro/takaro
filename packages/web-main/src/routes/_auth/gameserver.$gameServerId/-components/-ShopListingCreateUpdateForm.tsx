@@ -33,7 +33,7 @@ interface ShopListingCreateUpdateFormProps {
 }
 
 const validationSchema = z.object({
-  name: z.string().optional(),
+  name: z.string().optional().nullable(),
   price: z.number().min(0, 'Price is required.'),
   items: z
     .array(
@@ -66,7 +66,7 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
     resolver: zodResolver(validationSchema),
     ...(initialData && {
       values: {
-        name: initialData.name,
+        name: initialData.name ? initialData.name : undefined,
         price: initialData.price,
         items: initialData.items.map((shopListingItemMeta) => {
           return {
@@ -98,7 +98,7 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <Drawer.Content>
-        <Drawer.Heading>{initialData ? (readOnly ? 'View' : 'Update') : 'Create'} Shop item</Drawer.Heading>
+        <Drawer.Heading>{initialData ? (readOnly ? 'View' : 'Update') : 'Create'} Shop listing</Drawer.Heading>
         <Drawer.Body>
           <form onSubmit={onSubmit && handleSubmit(onSubmit)} id={formId}>
             <TextField
@@ -107,7 +107,7 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
               name="name"
               label="Friendly name"
               loading={isLoading}
-              description="If no friendly name is provided, the name of the first item will be used."
+              description="This is the name shown shown on the item in the shop. If no friendly name is provided, the name of the first item will be used."
             />
             <TextField
               control={control}
