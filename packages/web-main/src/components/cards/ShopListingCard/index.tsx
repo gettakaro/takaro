@@ -65,7 +65,7 @@ export const ShopListingCard: FC<ShopListingCard> = ({
                         marginBottom: '.5rem',
                       }}
                     >
-                      {itemMeta.amount}x{itemMeta.item.name}
+                      {itemMeta.amount}x {itemMeta.item.name}
                       {itemMeta.quality ? `, quality: ${itemMeta.quality}` : ''}
                     </strong>
                     {shopListing.items.length > 1 && index < shopListing.items.length - 1 && ', '}
