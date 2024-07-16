@@ -1,4 +1,4 @@
-import { logger } from '@takaro/util';
+import { logger } from './logger.js';
 
 export class DomainScoped {
   protected log;
