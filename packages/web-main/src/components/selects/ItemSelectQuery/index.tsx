@@ -44,6 +44,7 @@ export const ItemSelect: FC<ItemSelectProps> = ({
   placeholder = 'Select an item',
   gameServerId,
   multiple,
+  canClear,
 }) => {
   const [itemName, setItemName] = useState<string>('');
   const { field } = useController({ name, control });
@@ -88,6 +89,7 @@ export const ItemSelect: FC<ItemSelectProps> = ({
       required={required}
       loading={loading}
       label={label}
+      canClear={canClear}
       gameServer={gameServer}
       setItemName={setItemName}
       isLoadingData={isLoadingItems}
@@ -119,6 +121,7 @@ export const ItemSelectQueryView: FC<ItemSelectQueryViewProps> = ({
   loading,
   isLoadingData = false,
   setItemName,
+  canClear,
   label,
 }) => {
   const renderIcon = useCallback((gameServer: GameServerOutputDTO, item: ItemsOutputDTO) => {
@@ -151,6 +154,7 @@ export const ItemSelectQueryView: FC<ItemSelectQueryViewProps> = ({
       multiple={multiple}
       hasMargin={hasMargin}
       description={description}
+      canClear={canClear}
       render={(selectedItems) => {
         if (selectedItems.length === 0) {
           return <div>Select item...</div>;
