@@ -12,7 +12,10 @@ interface IPosthogProperties {
 
 const blockedEvents: string[] = ['entity-killed', 'chat-message'];
 
-const client = new PosthogInternal(config.get('posthog.apiKey'), { host: config.get('posthog.host') });
+const client =
+  config.get('posthog.enabled') && config.get('posthog.apiKey')
+    ? new PosthogInternal(config.get('posthog.apiKey'), { host: config.get('posthog.host') })
+    : null;
 
 export class PostHog extends DomainScoped {
   constructor(domainId: string) {
@@ -25,6 +28,7 @@ export class PostHog extends DomainScoped {
 
   async trackEvent(eventName: string, properties: IPosthogProperties) {
     if (!config.get('posthog.enabled')) return;
+    if (!client) return;
     if (blockedEvents.includes(eventName)) return;
     const distinctId = ctx.data.user || properties.user || properties.player || 'anonymous';
 
