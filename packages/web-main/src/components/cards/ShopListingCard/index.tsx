@@ -57,8 +57,15 @@ export const ShopListingCard: FC<ShopListingCard> = ({
               {shopListing.items.map((itemMeta, index) => {
                 return (
                   <>
-                    <strong style={{ whiteSpace: 'nowrap', display: 'inline-block', marginBottom: '.5rem' }}>
-                      {itemMeta.item.name}: {itemMeta.amount}
+                    <strong
+                      style={{
+                        maxWidth: '100%',
+                        lineBreak: 'anywhere',
+                        display: 'inline-block',
+                        marginBottom: '.5rem',
+                      }}
+                    >
+                      {itemMeta.amount}x{itemMeta.item.name}
                       {itemMeta.quality ? `, quality: ${itemMeta.quality}` : ''}
                     </strong>
                     {shopListing.items.length > 1 && index < shopListing.items.length - 1 && ', '}
