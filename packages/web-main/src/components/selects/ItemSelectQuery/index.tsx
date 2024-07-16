@@ -1,10 +1,11 @@
 import { GameServerOutputDTO, GameServerOutputDTOTypeEnum, ItemsOutputDTO } from '@takaro/apiclient';
 import { Avatar, getInitials, SelectQueryField, Skeleton, styled } from '@takaro/lib-components';
 import { gameServerQueryOptions } from 'queries/gameserver';
-import { itemsQueryOptions } from 'queries/item';
+import { itemQueryOptions, itemsQueryOptions } from 'queries/item';
 import { FC, useState, useCallback } from 'react';
 import { CustomQuerySelectProps } from '..';
 import { useQuery } from '@tanstack/react-query';
+import { useController } from 'react-hook-form';
 
 export interface ItemSelectProps extends CustomQuerySelectProps {
   gameServerId: string;
@@ -45,12 +46,22 @@ export const ItemSelect: FC<ItemSelectProps> = ({
   multiple,
 }) => {
   const [itemName, setItemName] = useState<string>('');
+  const { field } = useController({ name, control });
 
   const { data: gameServer, isLoading: isLoadingGameServer } = useQuery(gameServerQueryOptions(gameServerId));
+
   const { data, isLoading: isLoadingItems } = useQuery(
     itemsQueryOptions({ search: { name: [itemName] }, filters: { gameserverId: [gameServerId] } })
   );
+
+  const { data: initialItem } = useQuery({
+    ...itemQueryOptions(field.value),
+    enabled: !!field.value,
+  });
+
   const items = data?.data ?? [];
+  const includingInitialItem =
+    initialItem && !items.some((item) => item.id === initialItem.id) ? [initialItem, ...items] : items;
 
   if (isLoadingGameServer) {
     return <Skeleton variant="rectangular" width="100%" height="40px" />;
@@ -63,7 +74,7 @@ export const ItemSelect: FC<ItemSelectProps> = ({
   return (
     <ItemSelectQueryView
       control={control}
-      items={items}
+      items={includingInitialItem}
       name={name}
       readOnly={readOnly}
       description={description}
@@ -113,7 +124,7 @@ export const ItemSelectQueryView: FC<ItemSelectQueryViewProps> = ({
   const renderIcon = useCallback((gameServer: GameServerOutputDTO, item: ItemsOutputDTO) => {
     if (item.code && gameServer && gameServerTypeToIconFolderMap[gameServer.type] !== 'Mock') {
       return (
-        <Avatar size="tiny">
+        <Avatar size="small">
           <Avatar.Image
             src={`/icons/${gameServerTypeToIconFolderMap[gameServer.type]}/${item.code}.png`}
             alt={`Item icon of ${item.name}`}
