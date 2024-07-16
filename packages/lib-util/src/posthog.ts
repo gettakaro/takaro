@@ -10,8 +10,7 @@ interface IPosthogProperties {
   user: string;
 }
 
-const blockedEvents: string[] = ['entity-killed', 'chat-message'];
-
+const blockedEvents: string[] = ['entity-killed', 'chat-message', 'role-removed'];
 const client =
   config.get('posthog.enabled') && config.get('posthog.apiKey')
     ? new PosthogInternal(config.get('posthog.apiKey'), { host: config.get('posthog.host') })
