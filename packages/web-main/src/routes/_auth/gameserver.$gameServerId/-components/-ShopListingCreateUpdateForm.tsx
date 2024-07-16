@@ -44,7 +44,6 @@ const validationSchema = z.object({
       })
     )
     .min(1, 'At least one item is required'),
-  //roleIds: z.array(z.string()).optional(),
 });
 
 export type FormValues = z.infer<typeof validationSchema>;
@@ -106,9 +105,9 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
               readOnly={readOnly}
               control={control}
               name="name"
-              label="Name"
+              label="Friendly name"
               loading={isLoading}
-              description="If no name is provided, the name of the first item will be used."
+              description="If no friendly name is provided, the name of the first item will be used."
             />
             <TextField
               control={control}
@@ -161,7 +160,6 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
                         label="Amount"
                         readOnly={readOnly}
                         loading={isLoading}
-                        suffix={currencyName}
                         required
                       />
                       <TextField
