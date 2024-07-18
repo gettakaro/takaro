@@ -195,7 +195,7 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
     req: AuthenticatedRequest,
     email: string,
     code: string
-  ): Promise<UserOutputDTO> {
+  ): Promise<{ user: UserOutputDTO; domainId: string }> {
     const redis = await Redis.getClient('playerLink');
     const resolvedPlayerId = await redis.get(code);
     const resolvedDomainId = await redis.get(`${code}-domain`);
@@ -241,6 +241,6 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
 
     await userService.repo.linkPlayer(user.id, resolvedPlayerId);
     await redis.del(code);
-    return user;
+    return { user, domainId: resolvedDomainId };
   }
 }
