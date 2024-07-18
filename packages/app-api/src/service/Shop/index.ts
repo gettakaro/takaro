@@ -203,9 +203,6 @@ export class ShopListingService extends TakaroService<
   }
 
   async claimOrder(orderId: string): Promise<ShopOrderOutputDTO> {
-    const userId = ctx.data.user;
-    if (!userId) throw new errors.UnauthorizedError();
-
     const order = await this.orderRepo.findOne(orderId);
     if (!order) throw new errors.NotFoundError(`Shop order with id ${orderId} not found`);
     await this.checkIfOrderBelongsToUser(order);
@@ -213,7 +210,7 @@ export class ShopListingService extends TakaroService<
       throw new errors.BadRequestError(`Can only claim paid, unclaimed orders. Current status: ${order.status}`);
 
     const userService = new UserService(this.domainId);
-    const user = await userService.findOne(userId);
+    const user = await userService.findOne(order.userId);
 
     if (!user.playerId)
       throw new errors.BadRequestError(
@@ -265,7 +262,7 @@ export class ShopListingService extends TakaroService<
         eventName: EVENT_TYPES.SHOP_ORDER_STATUS_CHANGED,
         gameserverId: gameServerId,
         playerId: pog.playerId,
-        userId,
+        userId: order.userId,
         meta: new TakaroEventShopOrderStatusChanged({
           id: updatedOrder.id,
           status: ShopOrderStatus.COMPLETED,

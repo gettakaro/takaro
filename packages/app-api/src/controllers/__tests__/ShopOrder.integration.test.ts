@@ -663,6 +663,24 @@ const tests = [
       return pogResAfter;
     },
   }),
+  new IntegrationTest<IShopSetup>({
+    group,
+    snapshot: false,
+    name: 'High privilege user can claim an order in someone elses name',
+    setup: shopSetup,
+    test: async function () {
+      const orderRes = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
+        listingId: this.setupData.listing100.id,
+        amount: 1,
+      });
+
+      const order = orderRes.data.data;
+
+      const res = await this.client.shopOrder.shopOrderControllerClaim(order.id);
+      expect(res.data.data.status).to.be.eq(ShopOrderOutputDTOStatusEnum.Completed);
+      return res;
+    },
+  }),
 ];
 
 describe(group, function () {
