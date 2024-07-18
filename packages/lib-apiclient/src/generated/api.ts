@@ -7315,6 +7315,12 @@ export interface ShopListingSearchInputAllowedFilters {
    * @memberof ShopListingSearchInputAllowedFilters
    */
   name?: Array<string>;
+  /**
+   *
+   * @type {boolean}
+   * @memberof ShopListingSearchInputAllowedFilters
+   */
+  draft?: boolean;
 }
 /**
  *
@@ -7397,19 +7403,19 @@ export interface ShopListingUpdateDTO {
    * @type {string}
    * @memberof ShopListingUpdateDTO
    */
-  gameServerId: string;
+  gameServerId?: string;
   /**
    *
    * @type {Array<ShopListingItemMetaInputDTO>}
    * @memberof ShopListingUpdateDTO
    */
-  items: Array<ShopListingItemMetaInputDTO>;
+  items?: Array<ShopListingItemMetaInputDTO>;
   /**
    *
    * @type {number}
    * @memberof ShopListingUpdateDTO
    */
-  price: number;
+  price?: number;
   /**
    *
    * @type {string}
@@ -7731,6 +7737,12 @@ export interface ShopSearchInputAllowedRangeFilter {
    * @memberof ShopSearchInputAllowedRangeFilter
    */
   price?: number;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof ShopSearchInputAllowedRangeFilter
+   */
+  deletedAt?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
   /**
    *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}

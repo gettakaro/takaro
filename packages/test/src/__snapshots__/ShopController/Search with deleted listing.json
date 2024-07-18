@@ -1,0 +1,19 @@
+{
+  "body": {
+    "meta": {
+      "page": 0,
+      "limit": 100,
+      "total": 0
+    },
+    "data": []
+  },
+  "status": 200,
+  "test": {
+    "group": "ShopController",
+    "snapshot": true,
+    "name": "Search with deleted listing",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

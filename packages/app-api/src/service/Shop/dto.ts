@@ -72,11 +72,14 @@ export class ShopListingCreateDTO<T = void> extends TakaroDTO<T> {
 
 export class ShopListingUpdateDTO extends TakaroDTO<ShopListingUpdateDTO> {
   @IsUUID()
+  @IsOptional()
   gameServerId!: string;
   @ValidateNested({ each: true })
   @Type(() => ShopListingItemMetaInputDTO)
+  @IsOptional()
   items: ShopListingItemMetaInputDTO[];
   @IsNumber()
+  @IsOptional()
   price!: number;
   @IsString()
   @IsOptional()
