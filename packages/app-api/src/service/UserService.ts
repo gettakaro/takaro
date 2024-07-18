@@ -242,7 +242,7 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
     await userService.repo.linkPlayer(user.id, resolvedPlayerId);
     await redis.del(code);
 
-    const eventService = new EventService(this.domainId);
+    const eventService = new EventService(resolvedDomainId);
     await eventService.create(
       new EventCreateDTO({
         eventName: HookEvents.PLAYER_LINKED,
