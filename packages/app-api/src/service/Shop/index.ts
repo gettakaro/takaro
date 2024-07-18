@@ -177,6 +177,8 @@ export class ShopListingService extends TakaroService<
       new EventCreateDTO({
         eventName: EVENT_TYPES.SHOP_ORDER_CREATED,
         gameserverId: gameServerId,
+        playerId: pog.playerId,
+        userId,
         meta: new TakaroEventShopOrderCreated({
           id: order.id,
         }),
@@ -248,6 +250,8 @@ export class ShopListingService extends TakaroService<
       new EventCreateDTO({
         eventName: EVENT_TYPES.SHOP_ORDER_STATUS_CHANGED,
         gameserverId: gameServerId,
+        playerId: pog.playerId,
+        userId,
         meta: new TakaroEventShopOrderStatusChanged({
           id: updatedOrder.id,
           status: ShopOrderStatus.COMPLETED,
@@ -274,10 +278,14 @@ export class ShopListingService extends TakaroService<
     const listing = await this.findOne(order.listingId);
     const gameServerId = listing.gameServerId;
 
+    const user = await new UserService(this.domainId).findOne(order.userId);
+
     await this.eventService.create(
       new EventCreateDTO({
         eventName: EVENT_TYPES.SHOP_ORDER_STATUS_CHANGED,
         gameserverId: gameServerId,
+        userId: user.id,
+        playerId: user.playerId,
         meta: new TakaroEventShopOrderStatusChanged({
           id: updatedOrder.id,
           status: ShopOrderStatus.CANCELED,
