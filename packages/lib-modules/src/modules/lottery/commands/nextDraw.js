@@ -39,7 +39,9 @@ function formatTimeToReach(cronJob) {
 
 async function main() {
   const { player, module: mod } = data;
-  await player.pm(`The next lottery draw is in about ${formatTimeToReach(mod.systemConfig.cronJobs.drawLottery)}`);
+  await player.pm(
+    `The next lottery draw is in about ${formatTimeToReach(mod.systemConfig.cronJobs.drawLottery.temporalValue)}`
+  );
 }
 
 await main();

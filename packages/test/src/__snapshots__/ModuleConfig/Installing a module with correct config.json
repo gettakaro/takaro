@@ -2,28 +2,30 @@
   "body": {
     "meta": {},
     "data": {
-      "gameserverId": "a9433419-2c5f-4522-8f6c-2e3255c5929e",
-      "moduleId": "22d3d2ef-6294-487b-9bc5-d9a2b1489be3",
+      "gameserverId": "12377bdc-a3bd-4594-8722-361545ce1894",
+      "moduleId": "d5617ae9-efeb-47fd-99b5-05c442f1760d",
       "module": {
-        "id": "22d3d2ef-6294-487b-9bc5-d9a2b1489be3",
-        "createdAt": "2024-03-02T14:34:58.719Z",
-        "updatedAt": "2024-03-02T14:34:58.719Z",
+        "createdAt": "2024-07-14T14:37:19.265Z",
+        "updatedAt": "2024-07-14T14:37:19.267Z",
+        "id": "d5617ae9-efeb-47fd-99b5-05c442f1760d",
         "name": "Test module",
+        "builtin": null,
         "description": "Test description",
         "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"foo\":{\"type\":\"string\",\"minLength\":3,\"maxLength\":10}},\"required\":[\"foo\"],\"additionalProperties\":false}",
         "uiSchema": "{}",
-        "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{},\"required\":[],\"additionalProperties\":false}",
-        "builtin": null,
         "cronJobs": [],
         "hooks": [],
         "commands": [],
         "functions": [],
-        "permissions": []
+        "permissions": [],
+        "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable/disable the module without having to uninstall it.\"}},\"required\":[],\"additionalProperties\":false}"
       },
       "userConfig": {
         "foo": "bar"
       },
-      "systemConfig": {}
+      "systemConfig": {
+        "enabled": true
+      }
     }
   },
   "status": 200,

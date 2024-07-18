@@ -200,7 +200,7 @@ const tests = [
         {
           systemConfig: JSON.stringify({
             cronJobs: {
-              [this.setupData.cronJobsModule.cronJobs[0].name]: '5 * * * *',
+              [this.setupData.cronJobsModule.cronJobs[0].name]: { temporalValue: '5 * * * *' },
             },
           }),
         }
@@ -229,8 +229,8 @@ const tests = [
         {
           systemConfig: JSON.stringify({
             cronJobs: {
-              [updatedModuleRes.data.data.cronJobs[0].name]: '5 * * * *',
-              [updatedModuleRes.data.data.cronJobs[1].name]: '13 * * * *',
+              [updatedModuleRes.data.data.cronJobs[0].name]: { temporalValue: '5 * * * *' },
+              [updatedModuleRes.data.data.cronJobs[1].name]: { temporalValue: '13 * * * *' },
             },
           }),
         }
@@ -250,8 +250,12 @@ const tests = [
       );
 
       expect(installRes.data.data.systemConfig).to.deep.equal({
+        enabled: true,
         cronJobs: {
-          [this.setupData.cronJobsModule.cronJobs[0].name]: this.setupData.cronJobsModule.cronJobs[0].temporalValue,
+          [this.setupData.cronJobsModule.cronJobs[0].name]: {
+            enabled: true,
+            temporalValue: this.setupData.cronJobsModule.cronJobs[0].temporalValue,
+          },
         },
       });
 

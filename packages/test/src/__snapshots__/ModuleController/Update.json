@@ -2,20 +2,20 @@
   "body": {
     "meta": {},
     "data": {
-      "id": "89610257-3c2a-4c73-bf22-d3f87bd701b8",
-      "createdAt": "2024-03-02T14:35:14.202Z",
-      "updatedAt": "2024-03-02T14:35:14.232Z",
+      "createdAt": "2024-07-14T14:37:36.007Z",
+      "updatedAt": "2024-07-14T14:37:36.064Z",
+      "id": "427827e5-1d7e-4591-b958-2002c0579293",
       "name": "Updated module",
+      "builtin": null,
       "description": "Updated description",
       "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{},\"required\":[],\"additionalProperties\":false}",
       "uiSchema": "{}",
-      "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{},\"required\":[],\"additionalProperties\":false}",
-      "builtin": null,
       "cronJobs": [],
       "hooks": [],
       "commands": [],
       "functions": [],
-      "permissions": []
+      "permissions": [],
+      "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable/disable the module without having to uninstall it.\"}},\"required\":[],\"additionalProperties\":false}"
     }
   },
   "status": 200,

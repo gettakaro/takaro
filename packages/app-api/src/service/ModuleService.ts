@@ -17,7 +17,7 @@ import {
   TakaroEventModuleUpdated,
   TakaroEventModuleDeleted,
 } from '@takaro/modules';
-import { GameServerService } from './GameServerService.js';
+import { GameServerService, ModuleInstallDTO } from './GameServerService.js';
 import { PermissionCreateDTO, PermissionOutputDTO } from './RoleService.js';
 
 // Curse you ESM... :(
@@ -382,6 +382,26 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
 
       case 'function':
         return await this.repo.findByFunction(itemId);
+    }
+  }
+
+  /**
+   * After creating a hook, command, cronjob or function, the systemConfig may be outdated
+   * @param moduleId
+   */
+  async refreshInstallations(moduleId: string) {
+    const gameserverService = new GameServerService(this.domainId);
+    const installations = await gameserverService.getInstalledModules({ moduleId });
+
+    for (const installation of installations) {
+      await gameserverService.installModule(
+        installation.gameserverId,
+        moduleId,
+        new ModuleInstallDTO({
+          systemConfig: JSON.stringify(installation.systemConfig),
+          userConfig: JSON.stringify(installation.userConfig),
+        })
+      );
     }
   }
 }
