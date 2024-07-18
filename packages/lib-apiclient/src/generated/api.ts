@@ -5550,6 +5550,25 @@ export interface PlayerCreateDTO {
 /**
  *
  * @export
+ * @interface PlayerMeOutputDTO
+ */
+export interface PlayerMeOutputDTO {
+  /**
+   *
+   * @type {PlayerOutputWithRolesDTO}
+   * @memberof PlayerMeOutputDTO
+   */
+  player: PlayerOutputWithRolesDTO;
+  /**
+   *
+   * @type {Array<PlayerOnGameserverOutputArrayDTOAPI>}
+   * @memberof PlayerMeOutputDTO
+   */
+  pogs: Array<PlayerOnGameserverOutputArrayDTOAPI>;
+}
+/**
+ *
+ * @export
  * @interface PlayerOnGameServerCreateDTO
  */
 export interface PlayerOnGameServerCreateDTO {
@@ -17134,6 +17153,36 @@ export const PlayerApiAxiosParamCreator = function (configuration?: Configuratio
       };
     },
     /**
+     * Get the player that is currently authenticated. This is a low-privilege route, returning limited data.
+     * @summary Get current player
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerControllerGetMe: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      const localVarPath = `/player/me`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      *  Required permissions: `READ_PLAYERS`
      * @summary Get one
      * @param {string} id
@@ -17296,6 +17345,26 @@ export const PlayerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
+     * Get the player that is currently authenticated. This is a low-privilege route, returning limited data.
+     * @summary Get current player
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async playerControllerGetMe(
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerMeOutputDTO>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.playerControllerGetMe(options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['PlayerApi.playerControllerGetMe']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
      *  Required permissions: `READ_PLAYERS`
      * @summary Get one
      * @param {string} id
@@ -17400,6 +17469,15 @@ export const PlayerApiFactory = function (configuration?: Configuration, basePat
         .then((request) => request(axios, basePath));
     },
     /**
+     * Get the player that is currently authenticated. This is a low-privilege route, returning limited data.
+     * @summary Get current player
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerControllerGetMe(options?: any): AxiosPromise<PlayerMeOutputDTO> {
+      return localVarFp.playerControllerGetMe(options).then((request) => request(axios, basePath));
+    },
+    /**
      *  Required permissions: `READ_PLAYERS`
      * @summary Get one
      * @param {string} id
@@ -17471,6 +17549,19 @@ export class PlayerApi extends BaseAPI {
   ) {
     return PlayerApiFp(this.configuration)
       .playerControllerAssignRole(id, roleId, playerRoleAssignChangeDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Get the player that is currently authenticated. This is a low-privilege route, returning limited data.
+   * @summary Get current player
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof PlayerApi
+   */
+  public playerControllerGetMe(options?: RawAxiosRequestConfig) {
+    return PlayerApiFp(this.configuration)
+      .playerControllerGetMe(options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -18872,7 +18963,7 @@ export const SettingsApiAxiosParamCreator = function (configuration?: Configurat
       };
     },
     /**
-     *  Required permissions: `READ_SETTINGS`
+     *
      * @summary Get
      * @param {Array<SettingsControllerGetKeysEnum>} [keys]
      * @param {string} [gameServerId]
@@ -18916,7 +19007,7 @@ export const SettingsApiAxiosParamCreator = function (configuration?: Configurat
       };
     },
     /**
-     *  Required permissions: `READ_SETTINGS`
+     *
      * @summary Get one
      * @param {string} key
      * @param {string} [gameServerId]
@@ -19033,7 +19124,7 @@ export const SettingsApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *  Required permissions: `READ_SETTINGS`
+     *
      * @summary Get
      * @param {Array<SettingsControllerGetKeysEnum>} [keys]
      * @param {string} [gameServerId]
@@ -19057,7 +19148,7 @@ export const SettingsApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *  Required permissions: `READ_SETTINGS`
+     *
      * @summary Get one
      * @param {string} key
      * @param {string} [gameServerId]
@@ -19132,7 +19223,7 @@ export const SettingsApiFactory = function (configuration?: Configuration, baseP
         .then((request) => request(axios, basePath));
     },
     /**
-     *  Required permissions: `READ_SETTINGS`
+     *
      * @summary Get
      * @param {Array<SettingsControllerGetKeysEnum>} [keys]
      * @param {string} [gameServerId]
@@ -19147,7 +19238,7 @@ export const SettingsApiFactory = function (configuration?: Configuration, baseP
       return localVarFp.settingsControllerGet(keys, gameServerId, options).then((request) => request(axios, basePath));
     },
     /**
-     *  Required permissions: `READ_SETTINGS`
+     *
      * @summary Get one
      * @param {string} key
      * @param {string} [gameServerId]
@@ -19200,7 +19291,7 @@ export class SettingsApi extends BaseAPI {
   }
 
   /**
-   *  Required permissions: `READ_SETTINGS`
+   *
    * @summary Get
    * @param {Array<SettingsControllerGetKeysEnum>} [keys]
    * @param {string} [gameServerId]
@@ -19219,7 +19310,7 @@ export class SettingsApi extends BaseAPI {
   }
 
   /**
-   *  Required permissions: `READ_SETTINGS`
+   *
    * @summary Get one
    * @param {string} key
    * @param {string} [gameServerId]

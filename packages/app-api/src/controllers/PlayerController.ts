@@ -10,7 +10,9 @@ import { ParamId } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 import { ParamIdAndRoleId } from '../lib/validators.js';
-import { errors } from '@takaro/util';
+import { TakaroDTO, errors } from '@takaro/util';
+import { UserService } from '../service/UserService.js';
+import { PlayerOnGameserverOutputArrayDTOAPI } from './PlayerOnGameserverController.js';
 
 export class PlayerOutputDTOAPI extends APIOutput<PlayerOutputWithRolesDTO> {
   @Type(() => PlayerOutputWithRolesDTO)
@@ -80,6 +82,15 @@ class PlayerRoleAssignChangeDTO {
   expiresAt?: string;
 }
 
+class PlayerMeOutputDTO extends TakaroDTO<PlayerMeOutputDTO> {
+  @ValidateNested()
+  @Type(() => PlayerOutputWithRolesDTO)
+  player: PlayerOutputWithRolesDTOAPI;
+  @ValidateNested({ each: true })
+  @Type(() => PlayerOnGameserverOutputArrayDTOAPI)
+  pogs: PlayerOnGameserverOutputArrayDTOAPI[];
+}
+
 @OpenAPI({
   security: [{ domainAuth: [] }],
 })
@@ -100,6 +111,23 @@ export class PlayerController {
       req,
       res,
     });
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([]))
+  @ResponseSchema(PlayerMeOutputDTO)
+  @OpenAPI({
+    summary: 'Get current player',
+    description:
+      'Get the player that is currently authenticated. This is a low-privilege route, returning limited data.',
+  })
+  @Get('/player/me')
+  async getMe(@Req() req: AuthenticatedRequest) {
+    const service = new PlayerService(req.domainId);
+    const userService = new UserService(req.domainId);
+    const user = await userService.findOne(req.user.id);
+    if (!user.playerId) throw new errors.NotFoundError('Player not found, please link your player account.');
+    const res = await service.resolveFromId(user.playerId);
+    return apiResponse(new PlayerMeOutputDTO(res));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_PLAYERS]))
