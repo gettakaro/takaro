@@ -7111,6 +7111,12 @@ export interface ShopListingCreateDTO {
    * @memberof ShopListingCreateDTO
    */
   name?: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof ShopListingCreateDTO
+   */
+  draft?: boolean;
 }
 /**
  *
@@ -7235,6 +7241,18 @@ export interface ShopListingOutputDTO {
    * @memberof ShopListingOutputDTO
    */
   name?: string;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof ShopListingOutputDTO
+   */
+  deletedAt?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {boolean}
+   * @memberof ShopListingOutputDTO
+   */
+  draft: boolean;
   /**
    *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
@@ -7398,6 +7416,12 @@ export interface ShopListingUpdateDTO {
    * @memberof ShopListingUpdateDTO
    */
   name?: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof ShopListingUpdateDTO
+   */
+  draft?: boolean;
 }
 /**
  *

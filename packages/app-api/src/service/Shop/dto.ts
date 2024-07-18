@@ -1,4 +1,14 @@
-import { IsUUID, IsOptional, IsNumber, IsString, IsEnum, ValidateNested, Min } from 'class-validator';
+import {
+  IsUUID,
+  IsOptional,
+  IsNumber,
+  IsString,
+  IsEnum,
+  ValidateNested,
+  Min,
+  IsISO8601,
+  IsBoolean,
+} from 'class-validator';
 import { TakaroModelDTO, TakaroDTO } from '@takaro/util';
 import { Type } from 'class-transformer';
 import { ItemsOutputDTO } from '../ItemsService.js';
@@ -37,6 +47,11 @@ export class ShopListingOutputDTO extends TakaroModelDTO<ShopListingOutputDTO> {
   @IsString()
   @IsOptional()
   name?: string;
+  @IsISO8601()
+  @IsOptional()
+  deletedAt?: Date;
+  @IsBoolean()
+  draft: boolean;
 }
 
 export class ShopListingCreateDTO<T = void> extends TakaroDTO<T> {
@@ -50,6 +65,9 @@ export class ShopListingCreateDTO<T = void> extends TakaroDTO<T> {
   @IsString()
   @IsOptional()
   name?: string;
+  @IsBoolean()
+  @IsOptional()
+  draft?: boolean;
 }
 
 export class ShopListingUpdateDTO extends TakaroDTO<ShopListingUpdateDTO> {
@@ -63,6 +81,9 @@ export class ShopListingUpdateDTO extends TakaroDTO<ShopListingUpdateDTO> {
   @IsString()
   @IsOptional()
   name?: string;
+  @IsBoolean()
+  @IsOptional()
+  draft?: boolean;
 }
 
 export enum ShopOrderStatus {

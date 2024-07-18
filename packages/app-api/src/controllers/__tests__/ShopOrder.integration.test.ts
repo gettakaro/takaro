@@ -532,6 +532,48 @@ const tests = [
       return pogResAfter;
     },
   }),
+  new IntegrationTest<IShopSetup>({
+    group,
+    snapshot: false,
+    name: 'Deleting a listing, cancels orders and refunds currency',
+    setup: shopSetup,
+    test: async function () {
+      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
+        this.setupData.gameServer1.id,
+        this.setupData.pogs1[0].playerId,
+        { currency: 250 }
+      );
+
+      const orderRes = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
+        listingId: this.setupData.listing100.id,
+        amount: 1,
+      });
+
+      const order = orderRes.data.data;
+
+      const pogsResBefore = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
+        this.setupData.gameServer1.id,
+        this.setupData.pogs1[0].playerId
+      );
+
+      expect(pogsResBefore.data.data.currency).to.be.eq(150);
+
+      await this.client.shopListing.shopListingControllerDelete(this.setupData.listing100.id);
+
+      const pogResAfter = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
+        this.setupData.gameServer1.id,
+        this.setupData.pogs1[0].playerId
+      );
+
+      expect(pogResAfter.data.data.currency).to.be.eq(250);
+
+      const orderResAfter = await this.setupData.client1.shopOrder.shopOrderControllerGetOne(order.id);
+
+      expect(orderResAfter.data.data.status).to.be.eq(ShopOrderOutputDTOStatusEnum.Canceled);
+
+      return pogResAfter;
+    },
+  }),
 ];
 
 describe(group, function () {

@@ -110,6 +110,10 @@ export class ShopListingService extends TakaroService<
   }
 
   async delete(id: string): Promise<string> {
+    // Find all related orders and cancel them
+    const orders = await this.orderRepo.find({ filters: { listingId: [id] } });
+    await Promise.allSettled(orders.results.map((order) => this.cancelOrder(order.id)));
+
     await this.repo.delete(id);
 
     await this.eventService.create(

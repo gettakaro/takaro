@@ -50,6 +50,9 @@ export class ShopListingModel extends TakaroModel {
   price!: number;
   name?: string;
 
+  deletedAt?: Date;
+  draft: boolean;
+
   items: ItemsModel[];
 
   static get relationMappings() {
@@ -226,8 +229,8 @@ export class ShopListingRepo extends ITakaroRepo<
     if (!existing) throw new errors.NotFoundError();
 
     const { query } = await this.getModel();
-    const data = await query.deleteById(id);
-    return !!data;
+    await query.updateAndFetchById(id, { deletedAt: new Date() });
+    return true;
   }
 
   async addRole(listingId: string, roleId: string): Promise<ShopListingOutputDTO> {
