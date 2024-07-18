@@ -83,7 +83,7 @@ export class EventsCountInputDTO extends BaseStatsInputDTO {
 })
 @JsonController()
 export class StatsController {
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS, PERMISSIONS.READ_PLAYERS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_PLAYERS]))
   @ResponseSchema(StatsOutputDTOAPI)
   @Get('/stats/ping')
   async getPingStats(@Req() req: AuthenticatedRequest, @QueryParams() query: PogStatsInputDTO) {
@@ -91,7 +91,7 @@ export class StatsController {
     return apiResponse(await service.getPing(query.playerId, query.gameServerId, query.startDate, query.endDate));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS, PERMISSIONS.READ_PLAYERS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_PLAYERS]))
   @ResponseSchema(StatsOutputDTOAPI)
   @Get('/stats/currency')
   async getCurrencyStats(@Req() req: AuthenticatedRequest, @QueryParams() query: PogStatsInputDTO) {
@@ -99,7 +99,7 @@ export class StatsController {
     return apiResponse(await service.getCurrency(query.playerId, query.gameServerId, query.startDate, query.endDate));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS]))
+  @UseBefore(AuthService.getAuthMiddleware([]))
   @ResponseSchema(StatsOutputDTOAPI)
   @OpenAPI({
     description: 'The roundtrip time for reachability tests between Takaro and the game server',
@@ -110,7 +110,7 @@ export class StatsController {
     return apiResponse(await service.getLatency(query.gameServerId, query.startDate, query.endDate));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS, PERMISSIONS.READ_PLAYERS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_PLAYERS]))
   @ResponseSchema(StatsOutputDTOAPI)
   @Get('/stats/players-online')
   async getPlayerOnlineStats(@Req() req: AuthenticatedRequest, @QueryParams() query: PlayersOnlineInputDTO) {
@@ -118,7 +118,7 @@ export class StatsController {
     return apiResponse(await service.getPlayersOnline(query.gameServerId, query.startDate, query.endDate));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS, PERMISSIONS.READ_PLAYERS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_PLAYERS]))
   @ResponseSchema(StatsOutputDTOAPI)
   @Get('/stats/activity')
   async getActivityStats(@Req() req: AuthenticatedRequest, @QueryParams() query: ActivityInputDTO) {
@@ -128,7 +128,7 @@ export class StatsController {
     );
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS, PERMISSIONS.READ_PLAYERS]))
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_PLAYERS]))
   @ResponseSchema(StatsOutputDTOAPI)
   @OpenAPI({
     summary: 'Get event count over time',

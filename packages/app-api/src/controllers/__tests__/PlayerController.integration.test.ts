@@ -10,7 +10,7 @@ const tests = [
     name: 'Assign role to player',
     setup: SetupGameServerPlayers.setup,
     test: async function () {
-      const permissions = await this.client.permissionCodesToInputs([PERMISSIONS.READ_GAMESERVERS]);
+      const permissions = await this.client.permissionCodesToInputs([PERMISSIONS.MANAGE_GAMESERVERS]);
 
       const role = await this.client.role.roleControllerCreate({
         name: 'Test role',
@@ -26,7 +26,7 @@ const tests = [
     name: 'Assigning the same role twice should fail',
     setup: SetupGameServerPlayers.setup,
     test: async function () {
-      const permissions = await this.client.permissionCodesToInputs([PERMISSIONS.READ_GAMESERVERS]);
+      const permissions = await this.client.permissionCodesToInputs([PERMISSIONS.MANAGE_GAMESERVERS]);
       const role = await this.client.role.roleControllerCreate({
         name: 'Test role',
         permissions,
@@ -43,7 +43,7 @@ const tests = [
     name: 'Assigning the same role for different gameservers should work',
     setup: SetupGameServerPlayers.setup,
     test: async function () {
-      const permissions = await this.client.permissionCodesToInputs([PERMISSIONS.READ_GAMESERVERS]);
+      const permissions = await this.client.permissionCodesToInputs([PERMISSIONS.MANAGE_GAMESERVERS]);
       const role = await this.client.role.roleControllerCreate({
         name: 'Test role',
         permissions,
@@ -64,7 +64,7 @@ const tests = [
     name: 'Assigning the same role for same gameserver should fail',
     setup: SetupGameServerPlayers.setup,
     test: async function () {
-      const permissions = await this.client.permissionCodesToInputs([PERMISSIONS.READ_GAMESERVERS]);
+      const permissions = await this.client.permissionCodesToInputs([PERMISSIONS.MANAGE_GAMESERVERS]);
       const role = await this.client.role.roleControllerCreate({
         name: 'Test role',
         permissions,
@@ -85,7 +85,7 @@ const tests = [
     name: 'Can assign an expiring role to a player',
     setup: SetupGameServerPlayers.setup,
     test: async function () {
-      const permissions = await this.client.permissionCodesToInputs([PERMISSIONS.READ_GAMESERVERS]);
+      const permissions = await this.client.permissionCodesToInputs([PERMISSIONS.MANAGE_GAMESERVERS]);
       const role = await this.client.role.roleControllerCreate({
         name: 'Test role',
         permissions,
@@ -108,7 +108,7 @@ const tests = [
     name: 'Expired roles get deleted',
     setup: SetupGameServerPlayers.setup,
     test: async function () {
-      const permissions = await this.client.permissionCodesToInputs([PERMISSIONS.READ_GAMESERVERS]);
+      const permissions = await this.client.permissionCodesToInputs([PERMISSIONS.MANAGE_GAMESERVERS]);
       const role = await this.client.role.roleControllerCreate({
         name: 'Test role',
         permissions,
@@ -135,7 +135,7 @@ const tests = [
       // Assign a different role for gameserver with expiry
       // -> Global role should still be there
 
-      const permissions = await this.client.permissionCodesToInputs([PERMISSIONS.READ_GAMESERVERS]);
+      const permissions = await this.client.permissionCodesToInputs([PERMISSIONS.MANAGE_GAMESERVERS]);
       const globalRole = await this.client.role.roleControllerCreate({
         name: 'Global role',
         permissions,
@@ -173,7 +173,7 @@ const tests = [
       // Assign a different role for gameserver with no expiry
       // -> Global role should be gone
 
-      const permissions = await this.client.permissionCodesToInputs([PERMISSIONS.READ_GAMESERVERS]);
+      const permissions = await this.client.permissionCodesToInputs([PERMISSIONS.MANAGE_GAMESERVERS]);
       const globalRole = await this.client.role.roleControllerCreate({
         name: 'Global role',
         permissions,

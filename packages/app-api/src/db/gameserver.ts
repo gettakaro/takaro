@@ -115,7 +115,7 @@ export class GameServerRepo extends ITakaroRepo<
     };
   }
 
-  async findOne(id: string): Promise<GameServerOutputDTO> {
+  async findOne(id: string, decryptConnectionInfo: boolean): Promise<GameServerOutputDTO> {
     const { query } = await this.getModel();
     const data = await query.findById(id);
 
@@ -123,8 +123,11 @@ export class GameServerRepo extends ITakaroRepo<
       throw new errors.NotFoundError(`Record with id ${id} not found`);
     }
 
-    const connectionInfo = JSON.parse(await decrypt(data.connectionInfo as unknown as string));
+    if (!decryptConnectionInfo) {
+      return new GameServerOutputDTO(data);
+    }
 
+    const connectionInfo = JSON.parse(await decrypt(data.connectionInfo as unknown as string));
     return new GameServerOutputDTO({ ...data, connectionInfo });
   }
 
@@ -169,7 +172,7 @@ export class GameServerRepo extends ITakaroRepo<
     });
 
     await query.updateAndFetchById(id, updateData);
-    return this.findOne(id);
+    return this.findOne(id, true);
   }
 
   async getModuleInstallation(gameserverId: string, moduleId: string) {

@@ -40,7 +40,7 @@ const domainLinks: NavbarLink[] = [
       to: '/gameservers',
     },
     icon: <GameServersIcon />,
-    requiredPermissions: [PERMISSIONS.ReadGameservers],
+    requiredPermissions: [PERMISSIONS.ManageGameservers],
   },
   {
     label: 'Events',
@@ -127,7 +127,7 @@ interface NavbarProps {
 }
 
 export const Navbar: FC<NavbarProps> = ({ showGameServerNav }) => {
-  const { hasPermission } = useHasPermission([PERMISSIONS.ReadGameservers]);
+  const { hasPermission } = useHasPermission([PERMISSIONS.ManageGameservers]);
   const theme = useTheme();
 
   return (

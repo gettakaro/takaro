@@ -13,7 +13,7 @@ import { PERMISSIONS } from '@takaro/apiclient';
 export const Route = createFileRoute('/_auth/_global/gameservers')({
   beforeLoad: async ({ context }) => {
     const session = await context.auth.getSession();
-    if (!hasPermission(session, ['READ_GAMESERVERS'])) {
+    if (!hasPermission(session, [PERMISSIONS.ManageGameservers])) {
       throw redirect({ to: '/forbidden' });
     }
   },

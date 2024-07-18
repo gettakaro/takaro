@@ -5213,7 +5213,6 @@ export const PERMISSIONS = {
   ManageRoles: 'MANAGE_ROLES',
   ReadRoles: 'READ_ROLES',
   ManageGameservers: 'MANAGE_GAMESERVERS',
-  ReadGameservers: 'READ_GAMESERVERS',
   ReadModules: 'READ_MODULES',
   ManageModules: 'MANAGE_MODULES',
   ReadPlayers: 'READ_PLAYERS',
@@ -5547,6 +5546,25 @@ export interface PlayerCreateDTO {
    * @memberof PlayerCreateDTO
    */
   epicOnlineServicesId?: string;
+}
+/**
+ *
+ * @export
+ * @interface PlayerMeOutputDTO
+ */
+export interface PlayerMeOutputDTO {
+  /**
+   *
+   * @type {PlayerOutputWithRolesDTO}
+   * @memberof PlayerMeOutputDTO
+   */
+  player: PlayerOutputWithRolesDTO;
+  /**
+   *
+   * @type {Array<PlayerOnGameserverOutputArrayDTOAPI>}
+   * @memberof PlayerMeOutputDTO
+   */
+  pogs: Array<PlayerOnGameserverOutputArrayDTOAPI>;
 }
 /**
  *
@@ -13121,7 +13139,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     * Get all module installations for a gameserver Required permissions: `READ_GAMESERVERS`
+     * Get all module installations for a gameserver
      * @summary Get installed modules
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -13157,7 +13175,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     * Get a module installation by id Required permissions: `READ_GAMESERVERS`
+     * Get a module installation by id
      * @summary Get module installation
      * @param {string} gameServerId
      * @param {string} moduleId
@@ -13199,7 +13217,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     * Fetch a gameserver by id Required permissions: `READ_GAMESERVERS`
+     * Fetch a gameserver by id
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -13265,7 +13283,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     * Fetch gameserver types (7dtd, Rust, ...) Required permissions: `READ_GAMESERVERS`
+     * Fetch gameserver types (7dtd, Rust, ...)
      * @summary Get types
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -13532,7 +13550,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     * Fetch gameservers Required permissions: `READ_GAMESERVERS`
+     * Fetch gameservers
      * @summary Search
      * @param {GameServerSearchInputDTO} [gameServerSearchInputDTO] GameServerSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -13665,7 +13683,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     * Test if Takaro can connect to a gameserver. Will do a thorough check and report details. Required permissions: `READ_GAMESERVERS`
+     * Test if Takaro can connect to a gameserver. Will do a thorough check and report details.
      * @summary Test reachability
      * @param {GameServerTestReachabilityInputDTO} [gameServerTestReachabilityInputDTO] GameServerTestReachabilityInputDTO
      * @param {*} [options] Override http request option.
@@ -13706,7 +13724,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     * Test if Takaro can connect to a gameserver. Will do a thorough check and report details. Required permissions: `READ_GAMESERVERS`
+     * Test if Takaro can connect to a gameserver. Will do a thorough check and report details.
      * @summary Test reachability for id
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -13983,7 +14001,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     * Get all module installations for a gameserver Required permissions: `READ_GAMESERVERS`
+     * Get all module installations for a gameserver
      * @summary Get installed modules
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -14006,7 +14024,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     * Get a module installation by id Required permissions: `READ_GAMESERVERS`
+     * Get a module installation by id
      * @summary Get module installation
      * @param {string} gameServerId
      * @param {string} moduleId
@@ -14035,7 +14053,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     * Fetch a gameserver by id Required permissions: `READ_GAMESERVERS`
+     * Fetch a gameserver by id
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -14079,7 +14097,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     * Fetch gameserver types (7dtd, Rust, ...) Required permissions: `READ_GAMESERVERS`
+     * Fetch gameserver types (7dtd, Rust, ...)
      * @summary Get types
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -14256,7 +14274,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     * Fetch gameservers Required permissions: `READ_GAMESERVERS`
+     * Fetch gameservers
      * @summary Search
      * @param {GameServerSearchInputDTO} [gameServerSearchInputDTO] GameServerSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -14340,7 +14358,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     * Test if Takaro can connect to a gameserver. Will do a thorough check and report details. Required permissions: `READ_GAMESERVERS`
+     * Test if Takaro can connect to a gameserver. Will do a thorough check and report details.
      * @summary Test reachability
      * @param {GameServerTestReachabilityInputDTO} [gameServerTestReachabilityInputDTO] GameServerTestReachabilityInputDTO
      * @param {*} [options] Override http request option.
@@ -14365,7 +14383,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     * Test if Takaro can connect to a gameserver. Will do a thorough check and report details. Required permissions: `READ_GAMESERVERS`
+     * Test if Takaro can connect to a gameserver. Will do a thorough check and report details.
      * @summary Test reachability for id
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -14543,7 +14561,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
       return localVarFp.gameServerControllerGetImport(id, options).then((request) => request(axios, basePath));
     },
     /**
-     * Get all module installations for a gameserver Required permissions: `READ_GAMESERVERS`
+     * Get all module installations for a gameserver
      * @summary Get installed modules
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -14558,7 +14576,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
         .then((request) => request(axios, basePath));
     },
     /**
-     * Get a module installation by id Required permissions: `READ_GAMESERVERS`
+     * Get a module installation by id
      * @summary Get module installation
      * @param {string} gameServerId
      * @param {string} moduleId
@@ -14575,7 +14593,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
         .then((request) => request(axios, basePath));
     },
     /**
-     * Fetch a gameserver by id Required permissions: `READ_GAMESERVERS`
+     * Fetch a gameserver by id
      * @summary Get one
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -14595,7 +14613,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
       return localVarFp.gameServerControllerGetPlayers(id, options).then((request) => request(axios, basePath));
     },
     /**
-     * Fetch gameserver types (7dtd, Rust, ...) Required permissions: `READ_GAMESERVERS`
+     * Fetch gameserver types (7dtd, Rust, ...)
      * @summary Get types
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -14690,7 +14708,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
       return localVarFp.gameServerControllerRemove(id, options).then((request) => request(axios, basePath));
     },
     /**
-     * Fetch gameservers Required permissions: `READ_GAMESERVERS`
+     * Fetch gameservers
      * @summary Search
      * @param {GameServerSearchInputDTO} [gameServerSearchInputDTO] GameServerSearchInputDTO
      * @param {*} [options] Override http request option.
@@ -14741,7 +14759,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
         .then((request) => request(axios, basePath));
     },
     /**
-     * Test if Takaro can connect to a gameserver. Will do a thorough check and report details. Required permissions: `READ_GAMESERVERS`
+     * Test if Takaro can connect to a gameserver. Will do a thorough check and report details.
      * @summary Test reachability
      * @param {GameServerTestReachabilityInputDTO} [gameServerTestReachabilityInputDTO] GameServerTestReachabilityInputDTO
      * @param {*} [options] Override http request option.
@@ -14756,7 +14774,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
         .then((request) => request(axios, basePath));
     },
     /**
-     * Test if Takaro can connect to a gameserver. Will do a thorough check and report details. Required permissions: `READ_GAMESERVERS`
+     * Test if Takaro can connect to a gameserver. Will do a thorough check and report details.
      * @summary Test reachability for id
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -14896,7 +14914,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   * Get all module installations for a gameserver Required permissions: `READ_GAMESERVERS`
+   * Get all module installations for a gameserver
    * @summary Get installed modules
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -14910,7 +14928,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   * Get a module installation by id Required permissions: `READ_GAMESERVERS`
+   * Get a module installation by id
    * @summary Get module installation
    * @param {string} gameServerId
    * @param {string} moduleId
@@ -14929,7 +14947,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   * Fetch a gameserver by id Required permissions: `READ_GAMESERVERS`
+   * Fetch a gameserver by id
    * @summary Get one
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -14957,7 +14975,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   * Fetch gameserver types (7dtd, Rust, ...) Required permissions: `READ_GAMESERVERS`
+   * Fetch gameserver types (7dtd, Rust, ...)
    * @summary Get types
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
@@ -15074,7 +15092,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   * Fetch gameservers Required permissions: `READ_GAMESERVERS`
+   * Fetch gameservers
    * @summary Search
    * @param {GameServerSearchInputDTO} [gameServerSearchInputDTO] GameServerSearchInputDTO
    * @param {*} [options] Override http request option.
@@ -15131,7 +15149,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   * Test if Takaro can connect to a gameserver. Will do a thorough check and report details. Required permissions: `READ_GAMESERVERS`
+   * Test if Takaro can connect to a gameserver. Will do a thorough check and report details.
    * @summary Test reachability
    * @param {GameServerTestReachabilityInputDTO} [gameServerTestReachabilityInputDTO] GameServerTestReachabilityInputDTO
    * @param {*} [options] Override http request option.
@@ -15148,7 +15166,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   * Test if Takaro can connect to a gameserver. Will do a thorough check and report details. Required permissions: `READ_GAMESERVERS`
+   * Test if Takaro can connect to a gameserver. Will do a thorough check and report details.
    * @summary Test reachability for id
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -17135,6 +17153,36 @@ export const PlayerApiAxiosParamCreator = function (configuration?: Configuratio
       };
     },
     /**
+     * Get the player that is currently authenticated. This is a low-privilege route, returning limited data.
+     * @summary Get current player
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerControllerGetMe: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+      const localVarPath = `/player/me`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      *  Required permissions: `READ_PLAYERS`
      * @summary Get one
      * @param {string} id
@@ -17297,6 +17345,26 @@ export const PlayerApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
+     * Get the player that is currently authenticated. This is a low-privilege route, returning limited data.
+     * @summary Get current player
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async playerControllerGetMe(
+      options?: RawAxiosRequestConfig
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerMeOutputDTO>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.playerControllerGetMe(options);
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['PlayerApi.playerControllerGetMe']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration
+        )(axios, operationBasePath || basePath);
+    },
+    /**
      *  Required permissions: `READ_PLAYERS`
      * @summary Get one
      * @param {string} id
@@ -17401,6 +17469,15 @@ export const PlayerApiFactory = function (configuration?: Configuration, basePat
         .then((request) => request(axios, basePath));
     },
     /**
+     * Get the player that is currently authenticated. This is a low-privilege route, returning limited data.
+     * @summary Get current player
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    playerControllerGetMe(options?: any): AxiosPromise<PlayerMeOutputDTO> {
+      return localVarFp.playerControllerGetMe(options).then((request) => request(axios, basePath));
+    },
+    /**
      *  Required permissions: `READ_PLAYERS`
      * @summary Get one
      * @param {string} id
@@ -17472,6 +17549,19 @@ export class PlayerApi extends BaseAPI {
   ) {
     return PlayerApiFp(this.configuration)
       .playerControllerAssignRole(id, roleId, playerRoleAssignChangeDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Get the player that is currently authenticated. This is a low-privilege route, returning limited data.
+   * @summary Get current player
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof PlayerApi
+   */
+  public playerControllerGetMe(options?: RawAxiosRequestConfig) {
+    return PlayerApiFp(this.configuration)
+      .playerControllerGetMe(options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -18873,7 +18963,7 @@ export const SettingsApiAxiosParamCreator = function (configuration?: Configurat
       };
     },
     /**
-     *  Required permissions: `READ_SETTINGS`
+     *
      * @summary Get
      * @param {Array<SettingsControllerGetKeysEnum>} [keys]
      * @param {string} [gameServerId]
@@ -18917,7 +19007,7 @@ export const SettingsApiAxiosParamCreator = function (configuration?: Configurat
       };
     },
     /**
-     *  Required permissions: `READ_SETTINGS`
+     *
      * @summary Get one
      * @param {string} key
      * @param {string} [gameServerId]
@@ -19034,7 +19124,7 @@ export const SettingsApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *  Required permissions: `READ_SETTINGS`
+     *
      * @summary Get
      * @param {Array<SettingsControllerGetKeysEnum>} [keys]
      * @param {string} [gameServerId]
@@ -19058,7 +19148,7 @@ export const SettingsApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *  Required permissions: `READ_SETTINGS`
+     *
      * @summary Get one
      * @param {string} key
      * @param {string} [gameServerId]
@@ -19133,7 +19223,7 @@ export const SettingsApiFactory = function (configuration?: Configuration, baseP
         .then((request) => request(axios, basePath));
     },
     /**
-     *  Required permissions: `READ_SETTINGS`
+     *
      * @summary Get
      * @param {Array<SettingsControllerGetKeysEnum>} [keys]
      * @param {string} [gameServerId]
@@ -19148,7 +19238,7 @@ export const SettingsApiFactory = function (configuration?: Configuration, baseP
       return localVarFp.settingsControllerGet(keys, gameServerId, options).then((request) => request(axios, basePath));
     },
     /**
-     *  Required permissions: `READ_SETTINGS`
+     *
      * @summary Get one
      * @param {string} key
      * @param {string} [gameServerId]
@@ -19201,7 +19291,7 @@ export class SettingsApi extends BaseAPI {
   }
 
   /**
-   *  Required permissions: `READ_SETTINGS`
+   *
    * @summary Get
    * @param {Array<SettingsControllerGetKeysEnum>} [keys]
    * @param {string} [gameServerId]
@@ -19220,7 +19310,7 @@ export class SettingsApi extends BaseAPI {
   }
 
   /**
-   *  Required permissions: `READ_SETTINGS`
+   *
    * @summary Get one
    * @param {string} key
    * @param {string} [gameServerId]
@@ -20219,7 +20309,7 @@ export class ShopOrderApi extends BaseAPI {
 export const StatsApiAxiosParamCreator = function (configuration?: Configuration) {
   return {
     /**
-     *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+     *  Required permissions: `READ_PLAYERS`
      * @summary Get activity stats
      * @param {StatsControllerGetActivityStatsTimeTypeEnum} timeType
      * @param {StatsControllerGetActivityStatsDataTypeEnum} dataType
@@ -20285,7 +20375,7 @@ export const StatsApiAxiosParamCreator = function (configuration?: Configuration
       };
     },
     /**
-     *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+     *  Required permissions: `READ_PLAYERS`
      * @summary Get currency stats
      * @param {string} gameServerId
      * @param {string} playerId
@@ -20345,7 +20435,7 @@ export const StatsApiAxiosParamCreator = function (configuration?: Configuration
       };
     },
     /**
-     * Calculates how many times an event type has occured over `bucketStep` time. Supports different filters and can return multiple series at a time. Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+     * Calculates how many times an event type has occured over `bucketStep` time. Supports different filters and can return multiple series at a time. Required permissions: `READ_PLAYERS`
      * @summary Get event count over time
      * @param {StatsControllerGetEventsCountEventNameEnum} eventName
      * @param {StatsControllerGetEventsCountBucketStepEnum} bucketStep
@@ -20435,7 +20525,7 @@ export const StatsApiAxiosParamCreator = function (configuration?: Configuration
       };
     },
     /**
-     * The roundtrip time for reachability tests between Takaro and the game server Required permissions: `READ_GAMESERVERS`
+     * The roundtrip time for reachability tests between Takaro and the game server
      * @summary Get latency stats
      * @param {string} gameServerId
      * @param {StatsControllerGetPingStatsStartDateParameter} [startDate]
@@ -20487,7 +20577,7 @@ export const StatsApiAxiosParamCreator = function (configuration?: Configuration
       };
     },
     /**
-     *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+     *  Required permissions: `READ_PLAYERS`
      * @summary Get ping stats
      * @param {string} gameServerId
      * @param {string} playerId
@@ -20547,7 +20637,7 @@ export const StatsApiAxiosParamCreator = function (configuration?: Configuration
       };
     },
     /**
-     *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+     *  Required permissions: `READ_PLAYERS`
      * @summary Get player online stats
      * @param {string} [gameServerId]
      * @param {StatsControllerGetPingStatsStartDateParameter} [startDate]
@@ -20607,7 +20697,7 @@ export const StatsApiFp = function (configuration?: Configuration) {
   const localVarAxiosParamCreator = StatsApiAxiosParamCreator(configuration);
   return {
     /**
-     *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+     *  Required permissions: `READ_PLAYERS`
      * @summary Get activity stats
      * @param {StatsControllerGetActivityStatsTimeTypeEnum} timeType
      * @param {StatsControllerGetActivityStatsDataTypeEnum} dataType
@@ -20644,7 +20734,7 @@ export const StatsApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+     *  Required permissions: `READ_PLAYERS`
      * @summary Get currency stats
      * @param {string} gameServerId
      * @param {string} playerId
@@ -20678,7 +20768,7 @@ export const StatsApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     * Calculates how many times an event type has occured over `bucketStep` time. Supports different filters and can return multiple series at a time. Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+     * Calculates how many times an event type has occured over `bucketStep` time. Supports different filters and can return multiple series at a time. Required permissions: `READ_PLAYERS`
      * @summary Get event count over time
      * @param {StatsControllerGetEventsCountEventNameEnum} eventName
      * @param {StatsControllerGetEventsCountBucketStepEnum} bucketStep
@@ -20727,7 +20817,7 @@ export const StatsApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     * The roundtrip time for reachability tests between Takaro and the game server Required permissions: `READ_GAMESERVERS`
+     * The roundtrip time for reachability tests between Takaro and the game server
      * @summary Get latency stats
      * @param {string} gameServerId
      * @param {StatsControllerGetPingStatsStartDateParameter} [startDate]
@@ -20758,7 +20848,7 @@ export const StatsApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+     *  Required permissions: `READ_PLAYERS`
      * @summary Get ping stats
      * @param {string} gameServerId
      * @param {string} playerId
@@ -20792,7 +20882,7 @@ export const StatsApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
-     *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+     *  Required permissions: `READ_PLAYERS`
      * @summary Get player online stats
      * @param {string} [gameServerId]
      * @param {StatsControllerGetPingStatsStartDateParameter} [startDate]
@@ -20833,7 +20923,7 @@ export const StatsApiFactory = function (configuration?: Configuration, basePath
   const localVarFp = StatsApiFp(configuration);
   return {
     /**
-     *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+     *  Required permissions: `READ_PLAYERS`
      * @summary Get activity stats
      * @param {StatsControllerGetActivityStatsTimeTypeEnum} timeType
      * @param {StatsControllerGetActivityStatsDataTypeEnum} dataType
@@ -20856,7 +20946,7 @@ export const StatsApiFactory = function (configuration?: Configuration, basePath
         .then((request) => request(axios, basePath));
     },
     /**
-     *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+     *  Required permissions: `READ_PLAYERS`
      * @summary Get currency stats
      * @param {string} gameServerId
      * @param {string} playerId
@@ -20877,7 +20967,7 @@ export const StatsApiFactory = function (configuration?: Configuration, basePath
         .then((request) => request(axios, basePath));
     },
     /**
-     * Calculates how many times an event type has occured over `bucketStep` time. Supports different filters and can return multiple series at a time. Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+     * Calculates how many times an event type has occured over `bucketStep` time. Supports different filters and can return multiple series at a time. Required permissions: `READ_PLAYERS`
      * @summary Get event count over time
      * @param {StatsControllerGetEventsCountEventNameEnum} eventName
      * @param {StatsControllerGetEventsCountBucketStepEnum} bucketStep
@@ -20919,7 +21009,7 @@ export const StatsApiFactory = function (configuration?: Configuration, basePath
         .then((request) => request(axios, basePath));
     },
     /**
-     * The roundtrip time for reachability tests between Takaro and the game server Required permissions: `READ_GAMESERVERS`
+     * The roundtrip time for reachability tests between Takaro and the game server
      * @summary Get latency stats
      * @param {string} gameServerId
      * @param {StatsControllerGetPingStatsStartDateParameter} [startDate]
@@ -20938,7 +21028,7 @@ export const StatsApiFactory = function (configuration?: Configuration, basePath
         .then((request) => request(axios, basePath));
     },
     /**
-     *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+     *  Required permissions: `READ_PLAYERS`
      * @summary Get ping stats
      * @param {string} gameServerId
      * @param {string} playerId
@@ -20959,7 +21049,7 @@ export const StatsApiFactory = function (configuration?: Configuration, basePath
         .then((request) => request(axios, basePath));
     },
     /**
-     *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+     *  Required permissions: `READ_PLAYERS`
      * @summary Get player online stats
      * @param {string} [gameServerId]
      * @param {StatsControllerGetPingStatsStartDateParameter} [startDate]
@@ -20988,7 +21078,7 @@ export const StatsApiFactory = function (configuration?: Configuration, basePath
  */
 export class StatsApi extends BaseAPI {
   /**
-   *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+   *  Required permissions: `READ_PLAYERS`
    * @summary Get activity stats
    * @param {StatsControllerGetActivityStatsTimeTypeEnum} timeType
    * @param {StatsControllerGetActivityStatsDataTypeEnum} dataType
@@ -21013,7 +21103,7 @@ export class StatsApi extends BaseAPI {
   }
 
   /**
-   *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+   *  Required permissions: `READ_PLAYERS`
    * @summary Get currency stats
    * @param {string} gameServerId
    * @param {string} playerId
@@ -21036,7 +21126,7 @@ export class StatsApi extends BaseAPI {
   }
 
   /**
-   * Calculates how many times an event type has occured over `bucketStep` time. Supports different filters and can return multiple series at a time. Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+   * Calculates how many times an event type has occured over `bucketStep` time. Supports different filters and can return multiple series at a time. Required permissions: `READ_PLAYERS`
    * @summary Get event count over time
    * @param {StatsControllerGetEventsCountEventNameEnum} eventName
    * @param {StatsControllerGetEventsCountBucketStepEnum} bucketStep
@@ -21080,7 +21170,7 @@ export class StatsApi extends BaseAPI {
   }
 
   /**
-   * The roundtrip time for reachability tests between Takaro and the game server Required permissions: `READ_GAMESERVERS`
+   * The roundtrip time for reachability tests between Takaro and the game server
    * @summary Get latency stats
    * @param {string} gameServerId
    * @param {StatsControllerGetPingStatsStartDateParameter} [startDate]
@@ -21101,7 +21191,7 @@ export class StatsApi extends BaseAPI {
   }
 
   /**
-   *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+   *  Required permissions: `READ_PLAYERS`
    * @summary Get ping stats
    * @param {string} gameServerId
    * @param {string} playerId
@@ -21124,7 +21214,7 @@ export class StatsApi extends BaseAPI {
   }
 
   /**
-   *  Required permissions: `READ_GAMESERVERS`, `READ_PLAYERS`
+   *  Required permissions: `READ_PLAYERS`
    * @summary Get player online stats
    * @param {string} [gameServerId]
    * @param {StatsControllerGetPingStatsStartDateParameter} [startDate]

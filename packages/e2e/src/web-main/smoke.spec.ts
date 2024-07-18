@@ -7,12 +7,11 @@ import { TEST_IDS } from './testIds.js';
 // When a user certain specific READ_* permissions, they should be able to see the page
 const items = [
   {
-    permission: [PERMISSIONS.ReadEvents, PERMISSIONS.ReadGameservers, PERMISSIONS.ReadPlayers, PERMISSIONS.ReadUsers],
+    permission: [PERMISSIONS.ReadEvents, PERMISSIONS.ReadPlayers, PERMISSIONS.ReadUsers],
     linkName: 'Events',
     path: 'events',
   },
   { permission: [PERMISSIONS.ReadPlayers], linkName: 'Players', path: 'players' },
-  { permission: [PERMISSIONS.ReadGameservers], linkName: 'Game servers', path: 'gameservers' },
   { permission: [PERMISSIONS.ReadUsers], linkName: 'Users', path: 'users' },
   { permission: [PERMISSIONS.ReadModules], linkName: 'Modules', path: 'modules' },
   { permission: [PERMISSIONS.ReadVariables], linkName: 'Variables', path: 'variables' },
