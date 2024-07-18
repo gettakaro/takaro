@@ -9,7 +9,7 @@ import { RoleService, UserAssignmentOutputDTO } from './RoleService.js';
 import { Type } from 'class-transformer';
 import { ory } from '@takaro/auth';
 import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
-import { TakaroEventRoleAssigned, TakaroEventRoleRemoved } from '@takaro/modules';
+import { HookEvents, TakaroEventPlayerLinked, TakaroEventRoleAssigned, TakaroEventRoleRemoved } from '@takaro/modules';
 import { AuthenticatedRequest } from './AuthService.js';
 
 export class UserOutputDTO extends TakaroModelDTO<UserOutputDTO> {
@@ -241,6 +241,17 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
 
     await userService.repo.linkPlayer(user.id, resolvedPlayerId);
     await redis.del(code);
+
+    const eventService = new EventService(this.domainId);
+    await eventService.create(
+      new EventCreateDTO({
+        eventName: HookEvents.PLAYER_LINKED,
+        playerId: resolvedPlayerId,
+        userId: user.id,
+        meta: new TakaroEventPlayerLinked(),
+      })
+    );
+
     return { user, domainId: resolvedDomainId };
   }
 }
