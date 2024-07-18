@@ -42,6 +42,7 @@ export const TakaroEvents = {
   SHOP_LISTING_DELETED: 'shop-listing-deleted',
   SHOP_ORDER_CREATED: 'shop-order-created',
   SHOP_ORDER_STATUS_CHANGED: 'shop-order-status-changed',
+  PLAYER_LINKED: 'player-linked',
 } as const;
 
 export class BaseTakaroEvent<T> extends BaseEvent<T> {
@@ -334,6 +335,11 @@ export class TakaroEventShopOrderStatusChanged extends BaseEvent<TakaroEventShop
   status: string;
 }
 
+export class TakaroEventPlayerLinked extends BaseEvent<TakaroEventPlayerLinked> {
+  @IsString()
+  type = TakaroEvents.PLAYER_LINKED;
+}
+
 export const TakaroEventsMapping = {
   [TakaroEvents.ROLE_ASSIGNED]: TakaroEventRoleAssigned,
   [TakaroEvents.PLAYER_NEW_IP_DETECTED]: TakaroEventPlayerNewIpDetected,
@@ -359,4 +365,5 @@ export const TakaroEventsMapping = {
   [TakaroEvents.SHOP_LISTING_DELETED]: TakaroEventShopListingDeleted,
   [TakaroEvents.SHOP_ORDER_CREATED]: TakaroEventShopOrderCreated,
   [TakaroEvents.SHOP_ORDER_STATUS_CHANGED]: TakaroEventShopOrderStatusChanged,
+  [TakaroEvents.PLAYER_LINKED]: TakaroEventPlayerLinked,
 } as const;

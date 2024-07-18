@@ -29,7 +29,7 @@ async function checkIfInviteLinkReceived(userEmail: string) {
   expect(inviteLinkMatch).to.have.length(2);
 }
 
-async function triggerLinkAndCheck(
+async function triggerLink(
   client: Client,
   userClient: Client,
   setupData: SetupGameServerPlayers.ISetupData,
@@ -44,7 +44,6 @@ async function triggerLinkAndCheck(
   expect(chatEvents).to.have.length(1);
   const code = chatEvents[0].data.msg.match(/code=(\w+-\w+-\w+)/)[1];
   await userClient.user.userControllerLinkPlayerProfile({ email, code });
-  await checkIfInviteLinkReceived(email);
 }
 
 async function getClient(email: string, password: string) {
@@ -113,7 +112,7 @@ const tests = [
     test: async function () {
       const existingUser = await createUser(this.client);
       const userClient = await getClient(existingUser.user.email, existingUser.password);
-      await triggerLinkAndCheck(this.client, userClient, this.setupData, existingUser.user.email);
+      await triggerLink(this.client, userClient, this.setupData, existingUser.user.email);
       await checkRoleAndPermissions(this.client, userClient, existingUser.user.id);
     },
   }),

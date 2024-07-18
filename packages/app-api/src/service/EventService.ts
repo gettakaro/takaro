@@ -144,6 +144,8 @@ export class EventService extends TakaroService<EventModel, EventOutputDTO, Even
 
     const created = await this.repo.create(data);
 
+    this.log.info(`Event ${created.eventName} created`, { id: created.id });
+
     eventsMetric.inc({
       event: created.eventName,
       player: created.playerId || 'none',
