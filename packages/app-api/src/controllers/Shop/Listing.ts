@@ -1,4 +1,4 @@
-import { IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsBoolean, IsISO8601, IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { ShopListingService } from '../../service/Shop/index.js';
@@ -37,12 +37,18 @@ class ShopListingSearchInputAllowedFilters {
   @IsOptional()
   @IsString({ each: true })
   name: string[];
+  @IsOptional()
+  @IsBoolean()
+  draft: boolean;
 }
 
 class ShopSearchInputAllowedRangeFilter extends RangeFilterCreatedAndUpdatedAt {
   @IsOptional()
   @IsNumber()
   price: number;
+  @IsOptional()
+  @IsISO8601()
+  deletedAt!: string;
 }
 
 class ShopListingSearchInputDTO extends ITakaroQuery<ShopListingSearchInputAllowedFilters> {
