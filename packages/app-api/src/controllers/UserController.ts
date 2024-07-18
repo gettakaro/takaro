@@ -286,7 +286,12 @@ export class UserController {
   })
   async linkPlayerProfile(@Req() req: AuthenticatedRequest, @Body() data: LinkPlayerUnauthedInputDTO) {
     const userService = new UserService('dummy-domain-id');
-    const user = await userService.NOT_DOMAIN_SCOPED_linkPlayerProfile(req, data.email, data.code);
+    const { user, domainId } = await userService.NOT_DOMAIN_SCOPED_linkPlayerProfile(req, data.email, data.code);
+    req.res?.cookie('takaro-domain', domainId, {
+      sameSite: config.get('http.domainCookie.sameSite') as boolean | 'strict' | 'lax' | 'none' | undefined,
+      secure: config.get('http.domainCookie.secure'),
+      domain: config.get('http.domainCookie.domain'),
+    });
     return apiResponse(user);
   }
 }

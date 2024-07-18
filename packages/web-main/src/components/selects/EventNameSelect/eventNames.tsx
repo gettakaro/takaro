@@ -16,7 +16,14 @@ export const categorizedEventNames = [
   },
   {
     category: 'Player',
-    events: [e.PlayerCreated, e.PlayerConnected, e.PlayerDisconnected, e.PlayerNewIpDetected, e.PlayerDeath],
+    events: [
+      e.PlayerCreated,
+      e.PlayerConnected,
+      e.PlayerDisconnected,
+      e.PlayerNewIpDetected,
+      e.PlayerDeath,
+      e.PlayerLinked,
+    ],
   },
   {
     category: 'Game Server',
