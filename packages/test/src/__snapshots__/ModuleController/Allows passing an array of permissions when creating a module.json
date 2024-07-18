@@ -2,31 +2,31 @@
   "body": {
     "meta": {},
     "data": {
-      "id": "98c686ab-0b5c-4082-9178-0889d950c898",
-      "createdAt": "2024-03-02T14:35:16.868Z",
-      "updatedAt": "2024-03-02T14:35:16.868Z",
+      "createdAt": "2024-07-14T14:37:39.670Z",
+      "updatedAt": "2024-07-14T14:37:39.670Z",
+      "id": "76be821d-b9c0-4766-927f-711042fe05cc",
       "name": "Test module",
+      "builtin": null,
       "description": "No description provided.",
       "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{},\"required\":[],\"additionalProperties\":false}",
       "uiSchema": "{}",
-      "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{},\"required\":[],\"additionalProperties\":false}",
-      "builtin": null,
       "cronJobs": [],
       "hooks": [],
       "commands": [],
       "functions": [],
       "permissions": [
         {
-          "id": "1829a300-aee9-42a7-be2d-42812f24f652",
-          "createdAt": "2024-03-02T14:35:16.869Z",
-          "updatedAt": "2024-03-02T14:35:16.869Z",
-          "moduleId": "98c686ab-0b5c-4082-9178-0889d950c898",
+          "createdAt": "2024-07-14T14:37:39.671Z",
+          "updatedAt": "2024-07-14T14:37:39.671Z",
+          "id": "daf2dd25-d597-4509-9c80-70ff8bf614f3",
+          "moduleId": "76be821d-b9c0-4766-927f-711042fe05cc",
           "permission": "test",
-          "friendlyName": "test",
           "description": "test",
+          "friendlyName": "test",
           "canHaveCount": false
         }
-      ]
+      ],
+      "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable/disable the module without having to uninstall it.\"}},\"required\":[],\"additionalProperties\":false}"
     }
   },
   "status": 200,

@@ -101,6 +101,9 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
 
     const created = await this.repo.create(new CronJobCreateDTO({ ...item, function: fnIdToAdd }));
 
+    const moduleService = new ModuleService(this.domainId);
+    await moduleService.refreshInstallations(item.moduleId);
+
     const gameServerService = new GameServerService(this.domainId);
     const installedModules = await gameServerService.getInstalledModules({ moduleId: item.moduleId });
     await Promise.all(installedModules.map((mod) => this.addCronjobToQueue(created, mod)));
@@ -195,6 +198,9 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
     const gameServerService = new GameServerService(this.domainId);
     const mod = await gameServerService.getModuleInstallation(modInstallation.gameserverId, modInstallation.moduleId);
 
+    if (!mod.systemConfig.enabled) return;
+    if (!mod.systemConfig.cronJobs[cronJob.name].enabled) return;
+
     await queueService.queues.cronjobs.queue.add(
       {
         functionId: cronJob.function.id,
@@ -206,7 +212,9 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
       {
         jobId,
         repeat: {
-          pattern: systemConfig ? modInstallation.systemConfig.cronJobs[cronJob.name] : cronJob.temporalValue,
+          pattern: systemConfig
+            ? modInstallation.systemConfig.cronJobs[cronJob.name].temporalValue
+            : cronJob.temporalValue,
           jobId,
         },
       }

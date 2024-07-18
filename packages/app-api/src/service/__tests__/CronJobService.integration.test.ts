@@ -77,7 +77,7 @@ const tests = [
       expect(repeatables).to.have.length(1);
       expect(repeatables[0].pattern).to.equal(
         // @ts-expect-error shortcoming in the generated types... :(
-        assignment.systemConfig.cronJobs?.[cronjob.name]
+        assignment.systemConfig.cronJobs?.[cronjob.name].temporalValue
       );
     },
   }),

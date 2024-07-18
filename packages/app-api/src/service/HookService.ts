@@ -24,6 +24,7 @@ import { GameServerService } from './GameServerService.js';
 import { HookEvents, isDiscordMessageEvent, EventPayload, EventTypes, EventMapping } from '@takaro/modules';
 import { PlayerOnGameServerService } from './PlayerOnGameserverService.js';
 import { PlayerService } from './PlayerService.js';
+import { ModuleService } from './ModuleService.js';
 
 interface IHandleHookOptions {
   eventType: EventTypes;
@@ -160,6 +161,10 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
     }
 
     const created = await this.repo.create(new HookCreateDTO({ ...item, function: fnIdToAdd }));
+
+    const moduleService = new ModuleService(this.domainId);
+    await moduleService.refreshInstallations(item.moduleId);
+
     return created;
   }
   async update(id: string, item: HookUpdateDTO) {
@@ -237,6 +242,8 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
           const copiedHookData = { ...hookData };
 
           const moduleInstallation = await gameServerService.getModuleInstallation(gameServerId, hook.moduleId);
+          if (!moduleInstallation.systemConfig.enabled) return;
+          if (!moduleInstallation.systemConfig.hooks[hook.name].enabled) return;
 
           if (isDiscordMessageEvent(eventData)) {
             const configuredChannel = moduleInstallation.systemConfig.hooks[`${hook.name} Discord channel ID`];

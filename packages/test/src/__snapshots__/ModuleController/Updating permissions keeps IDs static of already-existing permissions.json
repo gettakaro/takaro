@@ -2,41 +2,41 @@
   "body": {
     "meta": {},
     "data": {
-      "id": "4c398c33-5a3f-4715-a1cc-1cacacf11898",
-      "createdAt": "2024-03-02T14:35:17.937Z",
-      "updatedAt": "2024-03-02T14:35:17.970Z",
+      "createdAt": "2024-07-14T14:37:41.062Z",
+      "updatedAt": "2024-07-14T14:37:41.119Z",
+      "id": "eee2696e-d240-4f31-bac4-00994dd9d0e9",
       "name": "Test module",
+      "builtin": null,
       "description": "No description provided.",
       "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{},\"required\":[],\"additionalProperties\":false}",
       "uiSchema": "{}",
-      "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{},\"required\":[],\"additionalProperties\":false}",
-      "builtin": null,
       "cronJobs": [],
       "hooks": [],
       "commands": [],
       "functions": [],
       "permissions": [
         {
-          "id": "1a520a8f-792e-4f1a-81de-74a52fe58128",
-          "createdAt": "2024-03-02T14:35:17.938Z",
-          "updatedAt": "2024-03-02T14:35:17.974Z",
-          "moduleId": "4c398c33-5a3f-4715-a1cc-1cacacf11898",
+          "createdAt": "2024-07-14T14:37:41.064Z",
+          "updatedAt": "2024-07-14T14:37:41.125Z",
+          "id": "66f456a7-8203-4426-934c-e20909e39de7",
+          "moduleId": "eee2696e-d240-4f31-bac4-00994dd9d0e9",
           "permission": "test",
-          "friendlyName": "test",
           "description": "test",
+          "friendlyName": "test",
           "canHaveCount": false
         },
         {
-          "id": "3e56163f-2434-4458-b987-7b5f19e8f4bc",
-          "createdAt": "2024-03-02T14:35:17.975Z",
-          "updatedAt": "2024-03-02T14:35:17.976Z",
-          "moduleId": "4c398c33-5a3f-4715-a1cc-1cacacf11898",
+          "createdAt": "2024-07-14T14:37:41.126Z",
+          "updatedAt": "2024-07-14T14:37:41.126Z",
+          "id": "88477052-ae00-41a0-b345-e610ba82a544",
+          "moduleId": "eee2696e-d240-4f31-bac4-00994dd9d0e9",
           "permission": "test2",
-          "friendlyName": "test2",
           "description": "test2",
+          "friendlyName": "test2",
           "canHaveCount": false
         }
-      ]
+      ],
+      "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable/disable the module without having to uninstall it.\"}},\"required\":[],\"additionalProperties\":false}"
     }
   },
   "status": 200,

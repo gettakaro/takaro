@@ -15,6 +15,7 @@ import { parseCommand } from '../lib/commandParser.js';
 import { GameServerService } from './GameServerService.js';
 import { PlayerService } from './PlayerService.js';
 import { PlayerOnGameServerService } from './PlayerOnGameserverService.js';
+import { ModuleService } from './ModuleService.js';
 
 export class CommandOutputDTO extends TakaroModelDTO<CommandOutputDTO> {
   @IsString()
@@ -204,6 +205,9 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
       );
     }
 
+    const moduleService = new ModuleService(this.domainId);
+    await moduleService.refreshInstallations(item.moduleId);
+
     return created;
   }
 
@@ -318,6 +322,9 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
         const { data, db } = command;
 
         const commandConfig = data.module.systemConfig.commands[db.name];
+        if (!data.module.systemConfig.enabled) return;
+        if (!commandConfig.enabled) return;
+
         const delay = commandConfig ? commandConfig.delay * 1000 : 0;
 
         if (delay) {
