@@ -28,7 +28,7 @@ import {
   ModuleInstallationOutputDTO,
   ModuleInstallDTO,
 } from '../service/GameServerService.js';
-import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
+import { AuthenticatedRequest, AuthService, checkPermissions } from '../service/AuthService.js';
 import {
   Body,
   Get,
@@ -48,6 +48,7 @@ import { IdUuidDTO, IdUuidDTOAPI, ParamId, PogParam } from '../lib/validators.js
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 import { PlayerOnGameserverOutputDTOAPI } from './PlayerOnGameserverController.js';
+import { UserService } from '../service/UserService.js';
 
 class GameServerTypesOutputDTOAPI extends APIOutput<GameServerOutputDTO[]> {
   @Type(() => GameServerOutputDTO)
@@ -210,7 +211,7 @@ class ImportOutputDTOAPI extends APIOutput<ImportOutputDTO> {
 })
 @JsonController()
 export class GameServerController {
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS]))
+  @UseBefore(AuthService.getAuthMiddleware([]))
   @ResponseSchema(GameServerOutputArrayDTOAPI)
   @OpenAPI({
     description: 'Fetch gameservers',
@@ -230,7 +231,7 @@ export class GameServerController {
     });
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS]))
+  @UseBefore(AuthService.getAuthMiddleware([]))
   @ResponseSchema(GameServerTypesOutputDTOAPI)
   @OpenAPI({
     description: 'Fetch gameserver types (7dtd, Rust, ...)',
@@ -241,7 +242,7 @@ export class GameServerController {
     return apiResponse(await service.getTypes());
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS]))
+  @UseBefore(AuthService.getAuthMiddleware([]))
   @ResponseSchema(GameServerOutputDTOAPI)
   @OpenAPI({
     description: 'Fetch a gameserver by id',
@@ -249,7 +250,10 @@ export class GameServerController {
   @Get('/gameserver/:id')
   async getOne(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new GameServerService(req.domainId);
-    return apiResponse(await service.findOne(params.id));
+    const userService = new UserService(req.domainId);
+    const user = await userService.findOne(req.user.id);
+    const hasManageServerPermission = checkPermissions([PERMISSIONS.MANAGE_GAMESERVERS], user);
+    return apiResponse(await service.findOne(params.id, hasManageServerPermission));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
@@ -286,7 +290,7 @@ export class GameServerController {
     return apiResponse(new IdUuidDTO({ id: params.id }));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS]))
+  @UseBefore(AuthService.getAuthMiddleware([]))
   @ResponseSchema(GameServerTestReachabilityDTOAPI)
   @OpenAPI({
     description: 'Test if Takaro can connect to a gameserver. Will do a thorough check and report details.',
@@ -298,7 +302,7 @@ export class GameServerController {
     return apiResponse(res);
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS]))
+  @UseBefore(AuthService.getAuthMiddleware([]))
   @ResponseSchema(GameServerTestReachabilityDTOAPI)
   @OpenAPI({
     description: 'Test if Takaro can connect to a gameserver. Will do a thorough check and report details.',
@@ -310,7 +314,7 @@ export class GameServerController {
     return apiResponse(res);
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS]))
+  @UseBefore(AuthService.getAuthMiddleware([]))
   @ResponseSchema(ModuleInstallationOutputDTOAPI)
   @OpenAPI({
     description: 'Get a module installation by id',
@@ -322,7 +326,7 @@ export class GameServerController {
     return apiResponse(res);
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS]))
+  @UseBefore(AuthService.getAuthMiddleware([]))
   @ResponseSchema(ModuleInstallationOutputArrayDTOAPI)
   @OpenAPI({
     description: 'Get all module installations for a gameserver',

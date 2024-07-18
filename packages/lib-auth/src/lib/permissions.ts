@@ -5,7 +5,6 @@ export enum PERMISSIONS {
   'MANAGE_ROLES' = 'MANAGE_ROLES',
   'READ_ROLES' = 'READ_ROLES',
   'MANAGE_GAMESERVERS' = 'MANAGE_GAMESERVERS',
-  'READ_GAMESERVERS' = 'READ_GAMESERVERS',
   'READ_MODULES' = 'READ_MODULES',
   'MANAGE_MODULES' = 'MANAGE_MODULES',
   'READ_PLAYERS' = 'READ_PLAYERS',
@@ -58,11 +57,6 @@ export const PERMISSION_DETAILS: Record<PERMISSIONS, IPermissionDetails> = {
     permission: PERMISSIONS.MANAGE_GAMESERVERS,
     friendlyName: 'Manage Game Servers',
     description: 'Can create, update, and delete game servers',
-  },
-  [PERMISSIONS.READ_GAMESERVERS]: {
-    permission: PERMISSIONS.READ_GAMESERVERS,
-    friendlyName: 'Read Game Servers',
-    description: 'Can view game server details',
   },
   [PERMISSIONS.READ_MODULES]: {
     permission: PERMISSIONS.READ_MODULES,

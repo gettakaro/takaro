@@ -97,7 +97,7 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
         <CardBody>
           <Header>
             {reachable ? <span>online</span> : <Chip label={'offline'} color="error" variant="outline" />}
-            <PermissionsGuard requiredPermissions={[[PERMISSIONS.ReadGameservers, PERMISSIONS.ManageGameservers]]}>
+            <PermissionsGuard requiredPermissions={[[PERMISSIONS.ManageGameservers]]}>
               <Dropdown>
                 <Dropdown.Trigger asChild>
                   <IconButton icon={<MenuIcon />} ariaLabel="Settings" />

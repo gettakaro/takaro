@@ -25,7 +25,7 @@ const tests = [
     name: 'Can assign an expiring role to a user',
     setup: userSetup,
     test: async function () {
-      const permissions = await this.client.permissionCodesToInputs([PERMISSIONS.READ_GAMESERVERS]);
+      const permissions = await this.client.permissionCodesToInputs([PERMISSIONS.MANAGE_GAMESERVERS]);
       const role = await this.client.role.roleControllerCreate({
         name: 'Test role',
         permissions,
@@ -47,7 +47,7 @@ const tests = [
     name: 'Expired roles get deleted',
     setup: userSetup,
     test: async function () {
-      const permissions = await this.client.permissionCodesToInputs([PERMISSIONS.READ_GAMESERVERS]);
+      const permissions = await this.client.permissionCodesToInputs([PERMISSIONS.MANAGE_GAMESERVERS]);
       const role = await this.client.role.roleControllerCreate({
         name: 'Test role',
         permissions,

@@ -9,6 +9,7 @@ import { hasPermission } from 'hooks/useHasPermission';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { useMemo, useState } from 'react';
 import { EventFilter, EventFilterInputs, eventFilterSchema } from 'components/events/EventFilter';
+import { PERMISSIONS } from '@takaro/apiclient';
 
 Settings.throwOnInvalid = true;
 
@@ -16,7 +17,15 @@ export const Route = createFileRoute('/_auth/_global/events')({
   validateSearch: eventFilterSchema,
   beforeLoad: async ({ context }) => {
     const session = await context.auth.getSession();
-    if (!hasPermission(session, ['READ_EVENTS', 'READ_GAMESERVERS', 'READ_PLAYERS', 'READ_USERS', 'READ_MODULES'])) {
+    if (
+      !hasPermission(session, [
+        PERMISSIONS.ReadEvents,
+        PERMISSIONS.ManageGameservers,
+        PERMISSIONS.ReadPlayers,
+        PERMISSIONS.ReadUsers,
+        PERMISSIONS.ReadModules,
+      ])
+    ) {
       throw redirect({ to: '/forbidden' });
     }
   },
