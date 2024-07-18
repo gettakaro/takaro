@@ -209,6 +209,8 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
         );
       }
 
+      await this.refreshInstallations(id);
+
       return updated;
     } catch (e) {
       throw new errors.BadRequestError('Invalid config schema');
