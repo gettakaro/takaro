@@ -1551,6 +1551,7 @@ export const EventCreateDTOEventNameEnum = {
   ShopListingDeleted: 'shop-listing-deleted',
   ShopOrderCreated: 'shop-order-created',
   ShopOrderStatusChanged: 'shop-order-status-changed',
+  PlayerLinked: 'player-linked',
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
@@ -1803,6 +1804,7 @@ export const EventOutputDTOEventNameEnum = {
   ShopListingDeleted: 'shop-listing-deleted',
   ShopOrderCreated: 'shop-order-created',
   ShopOrderStatusChanged: 'shop-order-status-changed',
+  PlayerLinked: 'player-linked',
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
@@ -1836,6 +1838,7 @@ export type EventOutputDTOMeta =
   | TakaroEventModuleUninstalled
   | TakaroEventModuleUpdated
   | TakaroEventPlayerCreated
+  | TakaroEventPlayerLinked
   | TakaroEventPlayerNewIpDetected
   | TakaroEventRoleAssigned
   | TakaroEventRoleCreated
@@ -2000,6 +2003,7 @@ export const EventSearchInputAllowedFiltersEventNameEnum = {
   ShopListingDeleted: 'shop-listing-deleted',
   ShopOrderCreated: 'shop-order-created',
   ShopOrderStatusChanged: 'shop-order-status-changed',
+  PlayerLinked: 'player-linked',
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
@@ -2167,6 +2171,7 @@ export const EventsCountInputDTOEventNameEnum = {
   ShopListingDeleted: 'shop-listing-deleted',
   ShopOrderCreated: 'shop-order-created',
   ShopOrderStatusChanged: 'shop-order-status-changed',
+  PlayerLinked: 'player-linked',
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',
@@ -3181,6 +3186,7 @@ export const HookCreateDTOEventTypeEnum = {
   ShopListingDeleted: 'shop-listing-deleted',
   ShopOrderCreated: 'shop-order-created',
   ShopOrderStatusChanged: 'shop-order-status-changed',
+  PlayerLinked: 'player-linked',
 } as const;
 
 export type HookCreateDTOEventTypeEnum = (typeof HookCreateDTOEventTypeEnum)[keyof typeof HookCreateDTOEventTypeEnum];
@@ -3323,6 +3329,7 @@ export const HookOutputDTOEventTypeEnum = {
   ShopListingDeleted: 'shop-listing-deleted',
   ShopOrderCreated: 'shop-order-created',
   ShopOrderStatusChanged: 'shop-order-status-changed',
+  PlayerLinked: 'player-linked',
 } as const;
 
 export type HookOutputDTOEventTypeEnum = (typeof HookOutputDTOEventTypeEnum)[keyof typeof HookOutputDTOEventTypeEnum];
@@ -3410,6 +3417,7 @@ export const HookSearchInputAllowedFiltersEventTypeEnum = {
   ShopListingDeleted: 'shop-listing-deleted',
   ShopOrderCreated: 'shop-order-created',
   ShopOrderStatusChanged: 'shop-order-status-changed',
+  PlayerLinked: 'player-linked',
 } as const;
 
 export type HookSearchInputAllowedFiltersEventTypeEnum =
@@ -3555,6 +3563,7 @@ export const HookTriggerDTOEventTypeEnum = {
   ShopListingDeleted: 'shop-listing-deleted',
   ShopOrderCreated: 'shop-order-created',
   ShopOrderStatusChanged: 'shop-order-status-changed',
+  PlayerLinked: 'player-linked',
 } as const;
 
 export type HookTriggerDTOEventTypeEnum =
@@ -3630,6 +3639,7 @@ export const HookUpdateDTOEventTypeEnum = {
   ShopListingDeleted: 'shop-listing-deleted',
   ShopOrderCreated: 'shop-order-created',
   ShopOrderStatusChanged: 'shop-order-status-changed',
+  PlayerLinked: 'player-linked',
 } as const;
 
 export type HookUpdateDTOEventTypeEnum = (typeof HookUpdateDTOEventTypeEnum)[keyof typeof HookUpdateDTOEventTypeEnum];
@@ -3865,6 +3875,7 @@ export const IHookEventTypeEnum = {
   ShopListingDeleted: 'shop-listing-deleted',
   ShopOrderCreated: 'shop-order-created',
   ShopOrderStatusChanged: 'shop-order-status-changed',
+  PlayerLinked: 'player-linked',
 } as const;
 
 export type IHookEventTypeEnum = (typeof IHookEventTypeEnum)[keyof typeof IHookEventTypeEnum];
@@ -8078,6 +8089,19 @@ export interface TakaroEventPlayerCreated {
    *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
    * @memberof TakaroEventPlayerCreated
+   */
+  timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface TakaroEventPlayerLinked
+ */
+export interface TakaroEventPlayerLinked {
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof TakaroEventPlayerLinked
    */
   timestamp: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
@@ -21168,6 +21192,7 @@ export const StatsControllerGetEventsCountEventNameEnum = {
   ShopListingDeleted: 'shop-listing-deleted',
   ShopOrderCreated: 'shop-order-created',
   ShopOrderStatusChanged: 'shop-order-status-changed',
+  PlayerLinked: 'player-linked',
   PlayerConnected: 'player-connected',
   PlayerDisconnected: 'player-disconnected',
   ChatMessage: 'chat-message',

@@ -9,7 +9,7 @@ import { RoleService, UserAssignmentOutputDTO } from './RoleService.js';
 import { Type } from 'class-transformer';
 import { ory } from '@takaro/auth';
 import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
-import { TakaroEventRoleAssigned, TakaroEventRoleRemoved } from '@takaro/modules';
+import { HookEvents, TakaroEventPlayerLinked, TakaroEventRoleAssigned, TakaroEventRoleRemoved } from '@takaro/modules';
 import { AuthenticatedRequest } from './AuthService.js';
 
 export class UserOutputDTO extends TakaroModelDTO<UserOutputDTO> {
@@ -195,7 +195,7 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
     req: AuthenticatedRequest,
     email: string,
     code: string
-  ): Promise<UserOutputDTO> {
+  ): Promise<{ user: UserOutputDTO; domainId: string }> {
     const redis = await Redis.getClient('playerLink');
     const resolvedPlayerId = await redis.get(code);
     const resolvedDomainId = await redis.get(`${code}-domain`);
@@ -241,6 +241,17 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
 
     await userService.repo.linkPlayer(user.id, resolvedPlayerId);
     await redis.del(code);
-    return user;
+
+    const eventService = new EventService(resolvedDomainId);
+    await eventService.create(
+      new EventCreateDTO({
+        eventName: HookEvents.PLAYER_LINKED,
+        playerId: resolvedPlayerId,
+        userId: user.id,
+        meta: new TakaroEventPlayerLinked(),
+      })
+    );
+
+    return { user, domainId: resolvedDomainId };
   }
 }
