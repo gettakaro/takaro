@@ -153,7 +153,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     const expired = player.roleAssignments.filter((item) => item.expiresAt && new Date(item.expiresAt) < now);
 
     if (expired.length) this.log.info('Removing expired roles', { expired: expired.map((item) => item.roleId) });
-    await Promise.all(expired.map((item) => this.removeRole(item.roleId, player.id)));
+    await Promise.all(expired.map((item) => this.removeRole(item.roleId, player.id, item.gameServerId)));
 
     // Delete expired roles from original object
     player.roleAssignments = player.roleAssignments.filter((item) => !expired.includes(item));

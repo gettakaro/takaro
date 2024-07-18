@@ -252,7 +252,14 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
       whereObj.gameServerId = null;
     }
 
-    await roleOnPlayerModel.query().delete().where(whereObj);
+    const res = await roleOnPlayerModel.query().delete().where(whereObj);
+    if (res === 0) {
+      this.log.warn(`Tried to remove role from player ${playerId} but it was not assigned`, {
+        roleId,
+        gameServerId,
+        playerId,
+      });
+    }
   }
 
   async getPlayersToRefreshSteam(): Promise<string[]> {
