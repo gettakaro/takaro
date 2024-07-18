@@ -280,6 +280,13 @@ export class ShopListingService extends TakaroService<
 
     const user = await new UserService(this.domainId).findOne(order.userId);
 
+    // Refund the player
+    const pogsService = new PlayerOnGameServerService(this.domainId);
+    const pog = (await pogsService.find({ filters: { playerId: [user.playerId], gameServerId: [gameServerId] } }))
+      .results[0];
+    if (!pog) throw new errors.NotFoundError('Player not found');
+    await pogsService.addCurrency(pog.id, listing.price * order.amount);
+
     await this.eventService.create(
       new EventCreateDTO({
         eventName: EVENT_TYPES.SHOP_ORDER_STATUS_CHANGED,

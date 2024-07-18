@@ -494,6 +494,44 @@ const tests = [
       }
     },
   }),
+  new IntegrationTest<IShopSetup>({
+    group,
+    snapshot: false,
+    name: 'Cancelling an order returns the currency',
+    setup: shopSetup,
+    test: async function () {
+      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
+        this.setupData.gameServer1.id,
+        this.setupData.pogs1[0].playerId,
+        { currency: 250 }
+      );
+
+      const orderRes = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
+        listingId: this.setupData.listing100.id,
+        amount: 1,
+      });
+
+      const order = orderRes.data.data;
+
+      const pogsResBefore = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
+        this.setupData.gameServer1.id,
+        this.setupData.pogs1[0].playerId
+      );
+
+      expect(pogsResBefore.data.data.currency).to.be.eq(150);
+
+      await this.setupData.client1.shopOrder.shopOrderControllerCancel(order.id);
+
+      const pogResAfter = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
+        this.setupData.gameServer1.id,
+        this.setupData.pogs1[0].playerId
+      );
+
+      expect(pogResAfter.data.data.currency).to.be.eq(250);
+
+      return pogResAfter;
+    },
+  }),
 ];
 
 describe(group, function () {
