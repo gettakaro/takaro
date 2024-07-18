@@ -13,8 +13,13 @@
     "group": "ShopController",
     "snapshot": true,
     "name": "Delete",
+    "filteredFields": [
+      "itemId",
+      "gameServerId",
+      "gameserverId",
+      "listingId"
+    ],
     "expectedStatus": 404,
-    "filteredFields": [],
     "standardEnvironment": true
   }
 }

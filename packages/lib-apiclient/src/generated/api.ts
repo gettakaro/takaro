@@ -7111,6 +7111,12 @@ export interface ShopListingCreateDTO {
    * @memberof ShopListingCreateDTO
    */
   name?: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof ShopListingCreateDTO
+   */
+  draft?: boolean;
 }
 /**
  *
@@ -7240,6 +7246,18 @@ export interface ShopListingOutputDTO {
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
    * @memberof ShopListingOutputDTO
    */
+  deletedAt?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  /**
+   *
+   * @type {boolean}
+   * @memberof ShopListingOutputDTO
+   */
+  draft: boolean;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof ShopListingOutputDTO
+   */
   createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
   /**
    *
@@ -7297,6 +7315,12 @@ export interface ShopListingSearchInputAllowedFilters {
    * @memberof ShopListingSearchInputAllowedFilters
    */
   name?: Array<string>;
+  /**
+   *
+   * @type {boolean}
+   * @memberof ShopListingSearchInputAllowedFilters
+   */
+  draft?: boolean;
 }
 /**
  *
@@ -7379,25 +7403,31 @@ export interface ShopListingUpdateDTO {
    * @type {string}
    * @memberof ShopListingUpdateDTO
    */
-  gameServerId: string;
+  gameServerId?: string;
   /**
    *
    * @type {Array<ShopListingItemMetaInputDTO>}
    * @memberof ShopListingUpdateDTO
    */
-  items: Array<ShopListingItemMetaInputDTO>;
+  items?: Array<ShopListingItemMetaInputDTO>;
   /**
    *
    * @type {number}
    * @memberof ShopListingUpdateDTO
    */
-  price: number;
+  price?: number;
   /**
    *
    * @type {string}
    * @memberof ShopListingUpdateDTO
    */
   name?: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof ShopListingUpdateDTO
+   */
+  draft?: boolean;
 }
 /**
  *
@@ -7707,6 +7737,12 @@ export interface ShopSearchInputAllowedRangeFilter {
    * @memberof ShopSearchInputAllowedRangeFilter
    */
   price?: number;
+  /**
+   *
+   * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
+   * @memberof ShopSearchInputAllowedRangeFilter
+   */
+  deletedAt?: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
   /**
    *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}

@@ -50,6 +50,9 @@ export class ShopListingModel extends TakaroModel {
   price!: number;
   name?: string;
 
+  deletedAt?: Date;
+  draft: boolean;
+
   items: ItemsModel[];
 
   static get relationMappings() {
@@ -172,7 +175,7 @@ export class ShopListingRepo extends ITakaroRepo<
 
   async find(filters: ITakaroQuery<ShopListingOutputDTO>) {
     const { query } = await this.getModel();
-
+    query.where('deletedAt', null);
     const result = await new QueryBuilder<ShopListingModel, ShopListingOutputDTO>({
       ...filters,
       extend: [...(filters.extend || []), 'items.item'],
@@ -187,9 +190,8 @@ export class ShopListingRepo extends ITakaroRepo<
   async findOne(id: string): Promise<ShopListingOutputDTO> {
     const { query } = await this.getModel();
     const res = await query.findById(id).withGraphFetched('items.item');
-    if (!res) {
-      throw new errors.NotFoundError();
-    }
+    if (!res) throw new errors.NotFoundError();
+    if (res.deletedAt) throw new errors.NotFoundError();
     return new ShopListingOutputDTO(res);
   }
 
@@ -226,8 +228,8 @@ export class ShopListingRepo extends ITakaroRepo<
     if (!existing) throw new errors.NotFoundError();
 
     const { query } = await this.getModel();
-    const data = await query.deleteById(id);
-    return !!data;
+    await query.updateAndFetchById(id, { deletedAt: new Date() });
+    return true;
   }
 
   async addRole(listingId: string, roleId: string): Promise<ShopListingOutputDTO> {

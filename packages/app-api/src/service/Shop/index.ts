@@ -94,6 +94,14 @@ export class ShopListingService extends TakaroService<
   }
 
   async update(id: string, item: ShopListingUpdateDTO): Promise<ShopListingOutputDTO> {
+    const existing = await this.findOne(id);
+
+    // Going from non-draft to draft means we need to cancel all pending orders
+    if (!existing.draft && item.draft) {
+      const orders = await this.orderRepo.find({ filters: { listingId: [id], status: [ShopOrderStatus.PAID] } });
+      await Promise.allSettled(orders.results.map((order) => this.cancelOrder(order.id)));
+    }
+
     const updated = await this.repo.update(id, item);
 
     await this.eventService.create(
@@ -110,6 +118,10 @@ export class ShopListingService extends TakaroService<
   }
 
   async delete(id: string): Promise<string> {
+    // Find all related orders and cancel them
+    const orders = await this.orderRepo.find({ filters: { listingId: [id], status: [ShopOrderStatus.PAID] } });
+    await Promise.allSettled(orders.results.map((order) => this.cancelOrder(order.id)));
+
     await this.repo.delete(id);
 
     await this.eventService.create(
@@ -161,6 +173,8 @@ export class ShopListingService extends TakaroService<
       );
 
     const listing = await this.findOne(listingId);
+    if (listing.draft) throw new errors.BadRequestError('Cannot order a draft listing');
+    if (listing.deletedAt) throw new errors.BadRequestError('Cannot order a deleted listing');
     const gameServerId = listing.gameServerId;
 
     const playerService = new PlayerService(this.domainId);
@@ -279,6 +293,13 @@ export class ShopListingService extends TakaroService<
     const gameServerId = listing.gameServerId;
 
     const user = await new UserService(this.domainId).findOne(order.userId);
+
+    // Refund the player
+    const pogsService = new PlayerOnGameServerService(this.domainId);
+    const pog = (await pogsService.find({ filters: { playerId: [user.playerId], gameServerId: [gameServerId] } }))
+      .results[0];
+    if (!pog) throw new errors.NotFoundError('Player not found');
+    await pogsService.addCurrency(pog.id, listing.price * order.amount);
 
     await this.eventService.create(
       new EventCreateDTO({
