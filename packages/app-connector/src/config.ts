@@ -2,11 +2,16 @@ import { Config, IBaseConfig } from '@takaro/config';
 import { queuesConfigSchema, IQueuesConfig } from '@takaro/queues';
 import { IAuthConfig, authConfigSchema } from '@takaro/auth';
 import { errors } from '@takaro/util';
+import ms from 'ms';
 
 interface IConnectorConfig extends IBaseConfig {
   http: {
     port: number;
     allowedOrigins: string[];
+  };
+  gameServerManager: {
+    reconnectAfterMs: number;
+    syncIntervalMs: number;
   };
 }
 
@@ -41,6 +46,20 @@ const configSchema = {
       format: Array,
       default: [],
       env: 'CORS_ALLOWED_ORIGINS',
+    },
+  },
+  gameServerManager: {
+    reconnectAfterMs: {
+      doc: "If we don't receive a message from a server in this time, we consider it dead and try to reconnect",
+      format: 'integer',
+      default: ms('5m'),
+      env: 'GAMESERVER_MANAGER_RECONNECT_AFTER_MS',
+    },
+    syncIntervalMs: {
+      doc: 'How often we check our current state against the backend',
+      format: 'integer',
+      default: ms('15m'),
+      env: 'GAMESERVER_MANAGER_SYNC_INTERVAL_MS',
     },
   },
 };

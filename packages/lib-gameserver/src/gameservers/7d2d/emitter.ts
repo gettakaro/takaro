@@ -16,7 +16,6 @@ import { SdtdConnectionInfo } from './connectionInfo.js';
 import { TakaroEmitter } from '../../TakaroEmitter.js';
 import { SevenDaysToDie } from './index.js';
 import ms from 'ms';
-import {} from 'timers/promises';
 
 interface I7DaysToDieEvent extends JsonObject {
   msg: string;
@@ -106,7 +105,7 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
       new Promise((_resolve, reject) => {
         setTimeout(() => {
           reject(new Error('Timed out'));
-        }, 10000);
+        }, 30000);
       }),
     ]);
   }
