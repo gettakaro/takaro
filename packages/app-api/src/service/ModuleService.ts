@@ -275,13 +275,29 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
         })
       );
     } else {
-      mod = await this.update(
-        mod.id,
-        new ModuleUpdateDTO({
-          ...builtin,
-          permissions: await Promise.all(builtin.permissions.map((p) => new PermissionOutputDTO(p))),
-        })
-      );
+      try {
+        mod = await this.update(
+          mod.id,
+          new ModuleUpdateDTO({
+            ...builtin,
+            permissions: await Promise.all(builtin.permissions.map((p) => new PermissionOutputDTO(p))),
+          })
+        );
+      } catch (error) {
+        if ((error as Error).message === 'Invalid config schema') {
+          this.log.warn('Invalid config schema, uninstalling module', { moduleId: mod.id });
+          await this.delete(mod.id);
+          mod = await this.create(
+            new ModuleCreateInternalDTO({
+              ...builtin,
+              builtin: isImport ? null : builtin.name,
+              permissions: await Promise.all(builtin.permissions.map((p) => new PermissionOutputDTO(p))),
+            })
+          );
+        } else {
+          throw error;
+        }
+      }
     }
 
     const commands = Promise.all(
@@ -396,14 +412,26 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     const installations = await gameserverService.getInstalledModules({ moduleId });
 
     for (const installation of installations) {
-      await gameserverService.installModule(
-        installation.gameserverId,
-        moduleId,
-        new ModuleInstallDTO({
-          systemConfig: JSON.stringify(installation.systemConfig),
-          userConfig: JSON.stringify(installation.userConfig),
-        })
-      );
+      try {
+        await gameserverService.installModule(
+          installation.gameserverId,
+          moduleId,
+          new ModuleInstallDTO({
+            systemConfig: JSON.stringify(installation.systemConfig),
+            userConfig: JSON.stringify(installation.userConfig),
+          })
+        );
+      } catch (error) {
+        if ((error as Error).message === 'Invalid config schema') {
+          this.log.warn('Invalid config schema, uninstalling module', {
+            moduleId,
+            gameserverId: installation.gameserverId,
+          });
+          await gameserverService.uninstallModule(installation.gameserverId, moduleId);
+        } else {
+          throw error;
+        }
+      }
     }
   }
 }
