@@ -246,7 +246,7 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
           if (!moduleInstallation.systemConfig.hooks[hook.name].enabled) return;
 
           if (isDiscordMessageEvent(eventData)) {
-            const configuredChannel = moduleInstallation.systemConfig.hooks[`${hook.name} Discord channel ID`];
+            const configuredChannel = moduleInstallation.systemConfig.hooks[hook.name].discordChannelId;
             if (eventData.channel.id !== configuredChannel) return;
           }
 
