@@ -231,9 +231,14 @@ export class ShopListingService extends TakaroService<
 
     const gameServerService = new GameServerService(this.domainId);
     if (listing.items.length) {
-      await Promise.allSettled(
-        listing.items.map((item) => gameServerService.giveItem(gameServerId, pog.playerId, item.item.code, item.amount))
-      );
+      for (let i = 0; i < order.amount; i++) {
+        await Promise.allSettled(
+          listing.items.map((item) =>
+            gameServerService.giveItem(gameServerId, pog.playerId, item.item.code, item.amount)
+          )
+        );
+      }
+
       await gameServerService.sendMessage(
         gameServerId,
         'You have received items from a shop order.',
