@@ -271,19 +271,16 @@ export const useGameServerModuleUninstall = () => {
     useMutation<ModuleInstallationOutputDTO, AxiosError<ModuleInstallationOutputDTOAPI>, GameServerModuleUninstall>({
       mutationFn: async ({ gameServerId, moduleId }) =>
         (await apiClient.gameserver.gameServerControllerUninstallModule(gameServerId, moduleId)).data.data,
-      onSuccess: async (deletedModule: ModuleInstallationOutputDTO) => {
-        queryClient.setQueryData<ModuleInstallationOutputDTO[]>(
-          installedModuleKeys.list(deletedModule.gameserverId),
-          (old) => {
-            return old
-              ? old.filter((installedModule) => {
-                  return installedModule.moduleId !== deletedModule.moduleId;
-                })
-              : old!;
-          }
-        );
+      onSuccess: async (_, { moduleId, gameServerId }) => {
+        queryClient.setQueryData<ModuleInstallationOutputDTO[]>(installedModuleKeys.list(gameServerId), (old) => {
+          return old
+            ? old.filter((installedModule) => {
+                return installedModule.moduleId !== moduleId;
+              })
+            : old;
+        });
         await queryClient.invalidateQueries({
-          queryKey: installedModuleKeys.detail(deletedModule.gameserverId, deletedModule.moduleId),
+          queryKey: installedModuleKeys.detail(gameServerId, moduleId),
         });
       },
     }),

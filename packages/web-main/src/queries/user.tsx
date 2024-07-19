@@ -127,7 +127,7 @@ export const useInviteUser = () => {
 };
 
 interface UserRemoveInput {
-  id: string;
+  userId: string;
 }
 export const useUserRemove = () => {
   const apiClient = getApiClient();
@@ -136,8 +136,9 @@ export const useUserRemove = () => {
 
   return mutationWrapper<IdUuidDTO, UserRemoveInput>(
     useMutation<IdUuidDTO, AxiosError<IdUuidDTO>, UserRemoveInput>({
-      mutationFn: async ({ id }) => (await apiClient.user.userControllerRemove(id)).data.data,
-      onSuccess: async () => {
+      mutationFn: async ({ userId }) => (await apiClient.user.userControllerRemove(userId)).data.data,
+      onSuccess: async (_, { userId }) => {
+        await queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
         await queryClient.invalidateQueries({ queryKey: userKeys.list() });
         enqueueSnackbar('User has been deleted', { variant: 'default' });
       },

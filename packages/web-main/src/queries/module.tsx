@@ -117,7 +117,7 @@ export const useModuleCreate = () => {
 };
 
 interface ModuleRemove {
-  id: string;
+  moduleId: string;
 }
 
 export const useModuleRemove = () => {
@@ -126,11 +126,11 @@ export const useModuleRemove = () => {
 
   return mutationWrapper<IdUuidDTO, ModuleRemove>(
     useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, ModuleRemove>({
-      mutationFn: async ({ id }) => (await apiClient.module.moduleControllerRemove(id)).data.data,
-      onSuccess: async (removedModule: IdUuidDTO) => {
+      mutationFn: async ({ moduleId }) => (await apiClient.module.moduleControllerRemove(moduleId)).data.data,
+      onSuccess: async (_, { moduleId }) => {
         await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
-        await queryClient.invalidateQueries({ queryKey: moduleKeys.detail(removedModule.id) });
-        await queryClient.invalidateQueries({ queryKey: moduleKeys.export(removedModule.id) });
+        await queryClient.invalidateQueries({ queryKey: moduleKeys.detail(moduleId) });
+        await queryClient.invalidateQueries({ queryKey: moduleKeys.export(moduleId) });
       },
     }),
     {}
@@ -357,7 +357,7 @@ export const useCommandRemove = ({ moduleId }) => {
   return mutationWrapper<IdUuidDTO, CommandRemove>(
     useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, CommandRemove>({
       mutationFn: async ({ commandId }) => (await apiClient.command.commandControllerRemove(commandId)).data.data,
-      onSuccess: async (removedCommand: IdUuidDTO) => {
+      onSuccess: async (_, { commandId }) => {
         // invalidate list of commands
         await queryClient.invalidateQueries({ queryKey: moduleKeys.commands.list() });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.export(moduleId) });
@@ -367,10 +367,10 @@ export const useCommandRemove = ({ moduleId }) => {
           }
           return {
             ...prev,
-            commands: prev.commands.filter((command) => command.id !== removedCommand.id),
+            commands: prev.commands.filter((command) => command.id !== commandId),
           };
         });
-        queryClient.removeQueries({ queryKey: moduleKeys.commands.detail(removedCommand.id) });
+        queryClient.removeQueries({ queryKey: moduleKeys.commands.detail(commandId) });
       },
     }),
     defaultCommandErrorMessages
@@ -462,21 +462,19 @@ export const useCronJobRemove = ({ moduleId }: { moduleId: string }) => {
     useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, CronJobRemove>({
       mutationFn: async ({ cronJobId }: { cronJobId: string }) =>
         (await apiClient.cronjob.cronJobControllerRemove(cronJobId)).data.data,
-      onSuccess: async (removedCronJob: IdUuidDTO) => {
+      onSuccess: async (_, { cronJobId }) => {
         await queryClient.invalidateQueries({ queryKey: moduleKeys.cronJobs.list() });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.export(moduleId) });
-
+        queryClient.removeQueries({ queryKey: moduleKeys.cronJobs.detail(cronJobId) });
         queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(moduleId), (prev) => {
           if (!prev) {
             return prev;
           }
           return {
             ...prev,
-            cronJobs: prev.cronJobs.filter((cronJob) => cronJob.id !== removedCronJob.id),
+            cronJobs: prev.cronJobs.filter((cronJob) => cronJob.id !== cronJobId),
           };
         });
-        // remove cache of specific cronjob
-        queryClient.removeQueries({ queryKey: moduleKeys.cronJobs.detail(removedCronJob.id) });
       },
     }),
     defaultCronJobErrorMessages
@@ -560,22 +558,19 @@ export const useFunctionRemove = ({ moduleId }: { moduleId: string }) => {
   return mutationWrapper<IdUuidDTO, FunctionRemove>(
     useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, FunctionRemove>({
       mutationFn: async ({ functionId }) => (await apiClient.function.functionControllerRemove(functionId)).data.data,
-      onSuccess: async (removedFn: IdUuidDTO) => {
-        // invalidate list of functions
+      onSuccess: async (_, { functionId }) => {
         await queryClient.invalidateQueries({ queryKey: moduleKeys.functions.list() });
-
         queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(moduleId), (prev) => {
           if (!prev) {
             return prev;
           }
           return {
             ...prev,
-            functions: prev.functions.filter((func) => func.id !== removedFn.id),
+            functions: prev.functions.filter((func) => func.id !== functionId),
           };
         });
 
-        // remove cache of specific function
-        queryClient.removeQueries({ queryKey: moduleKeys.functions.detail(removedFn.id) });
+        queryClient.removeQueries({ queryKey: moduleKeys.functions.detail(functionId) });
       },
     }),
     defaultFunctionErrorMessages
