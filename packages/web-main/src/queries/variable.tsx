@@ -86,9 +86,9 @@ export const useVariableDelete = () => {
   return mutationWrapper<IdUuidDTO, VariableDeleteInput>(
     useMutation<IdUuidDTO, AxiosError<VariableOutputDTO>, VariableDeleteInput>({
       mutationFn: async ({ variableId }) => (await apiClient.variable.variableControllerDelete(variableId)).data.data,
-      onSuccess: async (removedVar) => {
+      onSuccess: async (_, { variableId }) => {
         await queryClient.invalidateQueries({ queryKey: variableKeys.list() });
-        queryClient.removeQueries({ queryKey: variableKeys.detail(removedVar.id) });
+        queryClient.removeQueries({ queryKey: variableKeys.detail(variableId) });
       },
     }),
     {}

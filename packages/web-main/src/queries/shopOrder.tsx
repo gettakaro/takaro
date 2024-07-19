@@ -6,9 +6,11 @@ import {
   ShopOrderOutputArrayDTOAPI,
   ShopOrderOutputDTO,
   ShopOrderSearchInputDTO,
+  ShopOrderUpdateDTOStatusEnum,
 } from '@takaro/apiclient';
 import { AxiosError } from 'axios';
 import { getApiClient } from 'util/getApiClient';
+import { pogKeys } from './pog';
 
 export const shopOrderKeys = {
   list: () => ['shopOrder'],
@@ -43,6 +45,11 @@ export const useShopOrderCreate = () => {
     useMutation<ShopOrderOutputDTO, AxiosError<ShopOrderOutputDTO>, ShopOrderCreateDTO>({
       mutationFn: async (shopOrder) => (await getApiClient().shopOrder.shopOrderControllerCreate(shopOrder)).data.data,
       onSuccess: (newShopOrder) => {
+        // we could also potentially update this manually if a shopOrder can be extended with a listing!
+        // this is required to update the currency of the pog.
+        // TODO: this scope should be limited to the pog
+        // but until now there is no data this can be achieved with.
+        queryClient.invalidateQueries({ queryKey: pogKeys.all });
         queryClient.invalidateQueries({ queryKey: shopOrderKeys.list() });
         queryClient.setQueryData(shopOrderKeys.detail(newShopOrder.id), newShopOrder);
       },
@@ -55,16 +62,33 @@ interface ShopOrderCancel {
   shopOrderId: string;
 }
 export const useShopOrderCancel = () => {
+  const queryClient = useQueryClient();
+
   return mutationWrapper<APIOutput, ShopOrderCancel>(
     useMutation<APIOutput, AxiosError<APIOutput>, ShopOrderCancel>({
       mutationFn: async ({ shopOrderId }) =>
         (await getApiClient().shopOrder.shopOrderControllerCancel(shopOrderId)).data,
+      onSuccess: (_, { shopOrderId }) => {
+        // TODO: make scope smaller
+        // cache invalidated to update the returned currency of the pog.
+        queryClient.invalidateQueries({ queryKey: pogKeys.all });
+        queryClient.invalidateQueries({ queryKey: shopOrderKeys.list() });
+
+        const shopOrder = queryClient.getQueryData<ShopOrderOutputDTO>(shopOrderKeys.detail(shopOrderId));
+        if (shopOrder) {
+          const updatedShopOrder = {
+            ...shopOrder,
+            status: ShopOrderUpdateDTOStatusEnum.Canceled,
+          } as ShopOrderOutputDTO;
+          queryClient.setQueryData<ShopOrderOutputDTO>(shopOrderKeys.detail(shopOrderId), updatedShopOrder);
+        }
+      },
     }),
     {}
   );
 };
 
-interface ShopOrderUpdate {
+interface ShopOrderClaim {
   shopOrderId: string;
 }
 
@@ -72,14 +96,21 @@ export const useShopOrderClaim = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
-  return mutationWrapper<ShopOrderOutputDTO, ShopOrderUpdate>(
-    useMutation<ShopOrderOutputDTO, AxiosError<ShopOrderOutputDTO>, ShopOrderUpdate>({
+  return mutationWrapper<ShopOrderOutputDTO, ShopOrderClaim>(
+    useMutation<ShopOrderOutputDTO, AxiosError<ShopOrderOutputDTO>, ShopOrderClaim>({
       mutationFn: async ({ shopOrderId }) => {
         return (await apiClient.shopOrder.shopOrderControllerClaim(shopOrderId)).data.data;
       },
-      onSuccess: async (updatedShopListing) => {
-        await queryClient.invalidateQueries({ queryKey: shopOrderKeys.list() });
-        queryClient.setQueryData(shopOrderKeys.detail(updatedShopListing.id), updatedShopListing);
+      onSuccess: async (_, { shopOrderId }) => {
+        queryClient.invalidateQueries({ queryKey: shopOrderKeys.list() });
+        const shopOrder = queryClient.getQueryData<ShopOrderOutputDTO>(shopOrderKeys.detail(shopOrderId));
+        if (shopOrder) {
+          const updatedShopOrder = {
+            ...shopOrder,
+            status: ShopOrderUpdateDTOStatusEnum.Completed,
+          } as ShopOrderOutputDTO;
+          queryClient.setQueryData<ShopOrderOutputDTO>(shopOrderKeys.detail(shopOrderId), updatedShopOrder);
+        }
       },
     }),
     {}
