@@ -1,9 +1,9 @@
 import { styled } from '@takaro/lib-components';
 
-export const Header = styled.div`
+export const Header = styled.div<{ hasMultipleChildren: boolean }>`
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: ${({ hasMultipleChildren }) => (hasMultipleChildren ? 'space-between' : 'flex-end')};
   width: 100%;
   margin-bottom: ${({ theme }) => theme.spacing['2']};
 `;

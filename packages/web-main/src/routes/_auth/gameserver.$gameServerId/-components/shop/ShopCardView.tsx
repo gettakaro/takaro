@@ -32,7 +32,13 @@ export const ShopCardView: FC<ShopViewProps> = ({ gameServerId, currency, curren
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
-  } = useInfiniteQuery(shopListingInfiniteQueryOptions({ filters: { gameServerId: [gameServerId] } }));
+  } = useInfiniteQuery(
+    shopListingInfiniteQueryOptions({
+      filters: { gameServerId: [gameServerId] },
+      sortBy: 'draft',
+      sortDirection: 'desc',
+    })
+  );
 
   if (
     !shopListings ||

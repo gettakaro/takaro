@@ -3,7 +3,16 @@ import {
   ShopListingOutputDTO,
   ShopListingSearchInputDTOSortDirectionEnum,
 } from '@takaro/apiclient';
-import { Avatar, Button, DateFormatter, Table, getInitials, styled, useTableActions } from '@takaro/lib-components';
+import {
+  Avatar,
+  Button,
+  Chip,
+  DateFormatter,
+  Table,
+  getInitials,
+  styled,
+  useTableActions,
+} from '@takaro/lib-components';
 import { useQuery } from '@tanstack/react-query';
 import { FC } from 'react';
 import { createColumnHelper } from '@tanstack/react-table';
@@ -103,6 +112,11 @@ export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, g
           .map((shoplistingMeta) => `${shoplistingMeta.amount}x ${shoplistingMeta.item.name}`)
           .join(', '),
     }),
+    columnHelper.accessor('draft', {
+      header: 'Status',
+      id: 'draft',
+      cell: (info) => (info.getValue() ? <Chip color="primary" label="Draft" /> : 'Available'),
+    }),
 
     columnHelper.accessor('createdAt', {
       header: 'Created at',
@@ -131,6 +145,7 @@ export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, g
       cell: (info) => (
         <ShopListingBuyFormContainer>
           <ShopListingBuyForm
+            isDraft={info.row.original.draft}
             currencyName={currencyName}
             price={info.row.original.price}
             playerCurrencyAmount={currency || 0}

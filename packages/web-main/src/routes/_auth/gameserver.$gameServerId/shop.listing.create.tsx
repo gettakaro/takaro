@@ -34,12 +34,13 @@ function Component() {
     initialData: loaderCurrencyName,
   });
 
-  const onSubmit: SubmitHandler<FormValues> = ({ name, items, price }) => {
+  const onSubmit: SubmitHandler<FormValues> = ({ name, items, price, draft }) => {
     mutate({
       name: name ? name : undefined,
       price,
       gameServerId,
       items,
+      draft,
     });
     navigate({ to: '/gameserver/$gameServerId/shop', params: { gameServerId } });
   };
