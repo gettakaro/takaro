@@ -2,15 +2,15 @@
   "body": {
     "meta": {},
     "data": {
-      "id": "b91c2e8f-470d-48e0-93d8-6dac9945916b",
-      "createdAt": "2023-12-23T10:21:10.697Z",
-      "updatedAt": "2023-12-23T10:21:10.697Z",
-      "name": "Warren_Bahringer5",
-      "steamId": "fc8tk03el39wydpk",
-      "xboxLiveId": null,
-      "epicOnlineServicesId": null,
-      "ipHistory": [],
+      "createdAt": "2024-07-20T14:50:07.363Z",
+      "updatedAt": "2024-07-20T14:50:07.579Z",
+      "id": "03a543be-0ef8-48f3-a5a9-a045cfe28dc2",
+      "name": "Bradly.Schowalter4",
+      "steamId": "kyts1il9aa0n3stu",
+      "xboxLiveId": "kmu3dseopvoorrv6",
+      "epicOnlineServicesId": "fqpk20fnpvxe0efl",
       "steamAvatar": null,
+      "steamLastFetch": null,
       "steamAccountCreated": null,
       "steamCommunityBanned": null,
       "steamEconomyBan": null,
@@ -19,19 +19,19 @@
       "steamNumberOfVACBans": null,
       "roleAssignments": [
         {
-          "playerId": "b91c2e8f-470d-48e0-93d8-6dac9945916b",
-          "roleId": "2dd6691c-43bb-4eef-b7fc-45636439d2f0",
+          "playerId": "03a543be-0ef8-48f3-a5a9-a045cfe28dc2",
+          "roleId": "a3f6364d-9486-49e1-8b80-8f31391663d8",
           "role": {
-            "id": "2dd6691c-43bb-4eef-b7fc-45636439d2f0",
-            "createdAt": "2023-12-23T10:21:10.352Z",
-            "updatedAt": "2023-12-23T10:21:10.353Z",
+            "createdAt": "2024-07-20T14:50:07.064Z",
+            "updatedAt": "2024-07-20T14:50:07.064Z",
+            "id": "a3f6364d-9486-49e1-8b80-8f31391663d8",
             "name": "Player",
-            "permissions": [],
-            "system": true
+            "system": true,
+            "permissions": []
           }
         }
       ],
-      "steamLastFetch": null
+      "ipHistory": []
     }
   },
   "status": 200,

@@ -2,12 +2,12 @@
   "body": {
     "meta": {},
     "data": {
-      "gameserverId": "e7dbe8ef-a4fd-46e9-9f96-451c8b02840e",
-      "moduleId": "ee3ce3fe-428a-4fc8-8303-75ab74242c60",
+      "gameserverId": "63e973ca-b4f7-411b-b411-909d4225afc2",
+      "moduleId": "3765e8f8-99d5-4324-af27-dc4c5fb761e3",
       "module": {
-        "createdAt": "2024-07-14T14:37:16.054Z",
-        "updatedAt": "2024-07-14T14:37:16.056Z",
-        "id": "ee3ce3fe-428a-4fc8-8303-75ab74242c60",
+        "createdAt": "2024-07-20T14:49:52.914Z",
+        "updatedAt": "2024-07-20T14:49:52.914Z",
+        "id": "3765e8f8-99d5-4324-af27-dc4c5fb761e3",
         "name": "Test module",
         "builtin": null,
         "description": "No description provided.",
@@ -16,18 +16,18 @@
         "cronJobs": [],
         "hooks": [
           {
-            "createdAt": "2024-07-14T14:37:16.387Z",
-            "updatedAt": "2024-07-14T14:37:16.388Z",
-            "id": "6e0e3d90-7bd0-4120-98a2-9e3b972b5beb",
+            "createdAt": "2024-07-20T14:49:52.965Z",
+            "updatedAt": "2024-07-20T14:49:52.967Z",
+            "id": "e6318dae-81d8-4b66-b6c0-7aa8805a1d5a",
             "name": "Test hook",
             "eventType": "discord-message",
             "regex": "/this (is) a [regex]/g",
-            "moduleId": "ee3ce3fe-428a-4fc8-8303-75ab74242c60",
-            "functionId": "2751e421-e4ec-4cdb-b5b8-cac1a6c824db",
+            "moduleId": "3765e8f8-99d5-4324-af27-dc4c5fb761e3",
+            "functionId": "4560c141-54ee-4037-8e8c-58be97d6e32e",
             "function": {
-              "createdAt": "2024-07-14T14:37:16.385Z",
-              "updatedAt": "2024-07-14T14:37:16.385Z",
-              "id": "2751e421-e4ec-4cdb-b5b8-cac1a6c824db",
+              "createdAt": "2024-07-20T14:49:52.964Z",
+              "updatedAt": "2024-07-20T14:49:52.964Z",
+              "id": "4560c141-54ee-4037-8e8c-58be97d6e32e",
               "code": "import { data, takaro } from '@takaro/helpers';\nasync function main() {\n    const {} = data;\n}\nawait main();",
               "name": null,
               "moduleId": null
