@@ -53,10 +53,10 @@ export const ShopOrderTableView: FC<ShopOrderTableView> = ({ gameServerId }) => 
         listingId: columnSearch.columnSearchState.find((search) => search.id === 'listingId')?.value,
         status: columnSearch.columnSearchState.find((search) => search.id === 'status')?.value,
       },
+      extend: ['listing'],
     }),
   });
 
-  // IMPORTANT: id should be identical to data object key.
   const columnHelper = createColumnHelper<ShopOrderOutputDTO>();
   const columnDefs = [
     columnHelper.accessor('listingId', {
@@ -67,7 +67,7 @@ export const ShopOrderTableView: FC<ShopOrderTableView> = ({ gameServerId }) => 
           to="/gameserver/$gameServerId/shop/listing/$shopListingId/view"
           params={{ gameServerId, shopListingId: info.getValue() }}
         >
-          View item
+          {info.row.original.listing?.name ?? info.row.original.listing?.items[0].item.name}
         </Link>
       ),
       enableColumnFilter: true,
