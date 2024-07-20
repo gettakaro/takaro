@@ -44,7 +44,7 @@ import {
 } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { IdUuidDTO, IdUuidDTOAPI, ParamId, PogParam } from '../lib/validators.js';
+import { ParamId, PogParam } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 import { PlayerOnGameserverOutputDTOAPI } from './PlayerOnGameserverController.js';
@@ -275,7 +275,7 @@ export class GameServerController {
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
-  @ResponseSchema(IdUuidDTOAPI)
+  @ResponseSchema(APIOutput)
   @OpenAPI({
     description: 'Delete a gameserver',
   })
@@ -283,7 +283,7 @@ export class GameServerController {
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new GameServerService(req.domainId);
     await service.delete(params.id);
-    return apiResponse(new IdUuidDTO({ id: params.id }));
+    return apiResponse();
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_GAMESERVERS]))

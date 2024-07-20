@@ -18,7 +18,6 @@ import { Type } from 'class-transformer';
 import { IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Request, Response } from 'express';
 import { TokenOutputDTO, TokenInputDTO, AuthService } from '../service/AuthService.js';
-import { IdUuidDTO, IdUuidDTOAPI } from '../lib/validators.js';
 
 export class DomainCreateOutputDTOAPI extends APIOutput<DomainCreateOutputDTO> {
   @Type(() => DomainCreateOutputDTO)
@@ -106,11 +105,11 @@ export class DomainController {
   }
 
   @Delete('/domain/:id')
-  @ResponseSchema(IdUuidDTOAPI)
+  @ResponseSchema(APIOutput)
   async remove(@Param('id') id: string) {
     const service = new DomainService();
     await service.delete(id);
-    return apiResponse(new IdUuidDTO({ id }));
+    return apiResponse();
   }
 
   @Post('/token')
