@@ -27,6 +27,12 @@ class EventSearchInputAllowedFilters {
   @IsOptional()
   @IsString({ each: true })
   gameserverId!: string[];
+  @IsOptional()
+  @IsUUID('4', { each: true })
+  actingUserId!: string;
+  @IsOptional()
+  @IsUUID('4', { each: true })
+  actingModuleId!: string;
 }
 
 export class EventSearchInputDTO extends ITakaroQuery<EventOutputDTO> {

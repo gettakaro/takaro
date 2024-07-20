@@ -33,6 +33,8 @@ export class EventModel extends TakaroModel {
   playerId: string;
   userId: string;
   gameserverId: string;
+  actingUserId: string;
+  actingModuleId: string;
 
   meta: Record<string, string>;
 

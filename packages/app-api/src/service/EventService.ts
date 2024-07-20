@@ -50,6 +50,14 @@ export class EventOutputDTO extends TakaroModelDTO<EventOutputDTO> {
   gameserverId!: string;
 
   @IsOptional()
+  @IsUUID()
+  actingUserId!: string;
+
+  @IsOptional()
+  @IsUUID()
+  actingModuleId!: string;
+
+  @IsOptional()
   @IsObject()
   meta: EventPayload;
 
@@ -95,6 +103,14 @@ export class EventCreateDTO extends TakaroDTO<EventCreateDTO> {
   gameserverId!: string;
 
   @IsOptional()
+  @IsUUID()
+  actingUserId!: string;
+
+  @IsOptional()
+  @IsUUID()
+  actingModuleId!: string;
+
+  @IsOptional()
   @IsObject()
   meta: BaseEvent<any>;
 }
@@ -132,7 +148,8 @@ export class EventService extends TakaroService<EventModel, EventOutputDTO, Even
     let eventMeta: BaseEvent<any> | null = null;
 
     // If no userId is provided, use the calling user
-    if (!data.userId && ctx.data.user) data.userId = ctx.data.user;
+    if (!data.actingUserId && ctx.data.user) data.actingUserId = ctx.data.user;
+    if (!data.actingModuleId && ctx.data.module) data.actingModuleId = ctx.data.module;
 
     if (!isTakaroDTO(data.meta)) {
       eventMeta = new dto(data.meta);
