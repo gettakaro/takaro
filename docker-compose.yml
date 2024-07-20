@@ -19,13 +19,9 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
-    networks:
-      - takaro   
       
   redis:
-    image: redis
-    networks:
-      - takaro    
+    image: redis 
     ports:
       - 6379:6379
 
@@ -82,8 +78,6 @@ services:
 
       TRACING_ENDPOINT: 'http://tempo:4317'
       TAKARO_SERVICE: 'dev-takaro'
-    networks:
-      - takaro
     ports:
       # api
       - 13000:3000
@@ -114,8 +108,6 @@ services:
       LOGGING_LEVEL: debug
       NODE_OPTIONS: '--loader ts-node/esm'
       POSTGRES_HOST: postgresql
-    networks:
-      - takaro
 
   e2e:
     build:
@@ -131,8 +123,6 @@ services:
       - 20000:20000
     environment:
       - DISPLAY=:0
-    networks:
-      - takaro
 
   kratos-migrate:
     image: oryd/kratos:v1.0.0
@@ -142,8 +132,6 @@ services:
       - ./containers/ory/kratos:/etc/config/kratos
     command: -c /etc/config/kratos/kratos.yml migrate sql -e --yes
     restart: on-failure
-    networks:
-      - takaro    
   kratos:
     image: oryd/kratos:v1.0.0
     ports:
@@ -154,9 +142,7 @@ services:
       - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_kratos:5432/kratos
     command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier
     volumes:
-      - ./containers/ory/kratos:/etc/config/kratos
-    networks:
-      - takaro      
+      - ./containers/ory/kratos:/etc/config/kratos 
   postgresql_kratos:
     image: postgres:15
     ports:
@@ -167,8 +153,6 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: kratos
-    networks:
-      - takaro
   hydra-e2e:
     image: oryd/hydra:v2.0.3
     ports:
@@ -181,8 +165,6 @@ services:
     environment:
       - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_hydra:5432/hydra
       - URLS_SELF_ISSUER=http://127.0.0.1:14444/
-    networks:
-      - takaro
   hydra:
     image: oryd/hydra:v2.0.3
     ports:
@@ -194,9 +176,7 @@ services:
       - ./containers/ory/hydra:/etc/config/hydra
     environment:
       - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_hydra:5432/hydra
-      - URLS_SELF_ISSUER=http://hydra:4444/
-    networks:
-      - takaro      
+      - URLS_SELF_ISSUER=http://hydra:4444/ 
   hydra-migrate:
     image: oryd/hydra:v2.0.3
     environment:
@@ -204,8 +184,6 @@ services:
     command: migrate -c /etc/config/hydra/hydra.yml sql -e --yes
     volumes:
       - ./containers/ory/hydra:/etc/config/hydra
-    networks:
-      - takaro
   postgresql_hydra:
     image: postgres:15
     ports:
@@ -216,8 +194,6 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: hydra
-    networks:
-      - takaro
   #  mailslurper:
   #    image: oryd/mailslurper:latest-smtps
   #    ports:
@@ -238,13 +214,9 @@ services:
       - 8025:8025
     logging:
       driver: none
-    networks:
-      - takaro
 
   prometheus:
     image: prom/prometheus:v2.52.0
-    networks:
-      - takaro    
     container_name: prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -258,14 +230,10 @@ services:
     image: prom/pushgateway
     container_name: pushgateway
     ports:
-      - "9091:9091"
-    networks:
-      - takaro      
+      - "9091:9091"  
 
   grafana:
     image: grafana/grafana:10.4.4
-    networks:
-      - takaro     
     environment:
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
@@ -282,16 +250,9 @@ services:
     volumes:
       - ./containers/tempo/tempo.yaml:/etc/tempo.yaml
       - ./_data/tempo:/tmp/tempo
-    networks:
-      - takaro 
     ports:
       #      - "14268:14268"  # jaeger ingest
       - '3200:3200' # tempo
       - '4317:4317' # otlp grpc
 #      - "4318:4318"  # otlp http
 #      - "9411:9411"   # zipkin
-
-networks:
-  takaro:
-    external:
-      name: takaro

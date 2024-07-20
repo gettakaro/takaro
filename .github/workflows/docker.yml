@@ -8,7 +8,7 @@ concurrency:
 
 jobs:
   docker:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       docker_tag: ${{ steps.prep.outputs.version }}
     strategy:
@@ -27,14 +27,14 @@ jobs:
           sudo sh -c "echo 1 > /proc/sys/net/netfilter/nf_conntrack_tcp_be_liberal"
 
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Repo metadata
         id: repo
-        uses: actions/github-script@v3
+        uses: actions/github-script@v7
         with:
           script: |
-            const repo = await github.repos.get(context.repo)
+            const repo = await github.rest.repos.get(context.repo)
             return repo.data
       - name: Prepare
         id: prep

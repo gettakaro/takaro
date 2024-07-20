@@ -13,7 +13,7 @@ async function waitUntilHealthyHttp(url, maxRetries = 5) {
     if (stdout === '200') {
       return;
     }
-  } catch (err) { }
+  } catch (err) {}
 
   if (maxRetries > 0) {
     await sleep(1000);
