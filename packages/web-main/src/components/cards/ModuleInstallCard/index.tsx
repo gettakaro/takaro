@@ -113,10 +113,11 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
           </div>
           <p>{mod.description}</p>
           <SpacedRow>
-            <span style={{ color: `${theme.colors.primary} !important` }}>
+            <span style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
               {mod.commands.length > 0 && <p>Commands: {mod.commands.length}</p>}
               {mod.hooks.length > 0 && <p>Hooks: {mod.hooks.length}</p>}
               {mod.cronJobs.length > 0 && <p>Cronjobs: {mod.cronJobs.length}</p>}
+              {mod.permissions.length > 0 && <p>Permissions: {mod.permissions.length}</p>}
             </span>
             <ActionIconsContainer>
               {!installation && <Button text="Install" onClick={handleInstallConfigureClick} />}
