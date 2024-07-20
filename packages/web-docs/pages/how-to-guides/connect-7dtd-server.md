@@ -1,14 +1,16 @@
 # Connect your 7 Days To Die Server to Takaro
 
 This guide explains how to connect your 7 Days To Die server to Takaro. Make sure you have set up Web API Credentials, as described in our [docs](https://docs.takaro.io/games/7d2d).
-<iframe 
+
+<iframe
   className="aspect-video w-full"
   src="https://www.youtube.com/embed/W-aPgEVmBBg"
   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-  width="100%" 
-  height="500px" 
+  width="100%"
+  height="500px"
   allowFullScreen
 />
+
   
 ## Step 1 Navigate to Game Servers
 
