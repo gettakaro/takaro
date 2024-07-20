@@ -142,6 +142,7 @@ export class PlayerController {
     @Body() data: PlayerRoleAssignChangeDTO
   ) {
     const service = new PlayerService(req.domainId);
-    return apiResponse(await service.removeRole(params.roleId, params.id, data.gameServerId));
+    await service.removeRole(params.roleId, params.id, data.gameServerId);
+    return apiResponse();
   }
 }

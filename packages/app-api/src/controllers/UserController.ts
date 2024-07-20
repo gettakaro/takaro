@@ -12,7 +12,7 @@ import { AuthenticatedRequest, AuthService, LoginOutputDTO } from '../service/Au
 import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Put, Params, Res, Param } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { IdUuidDTO, IdUuidDTOAPI, ParamId, ParamIdAndRoleId } from '../lib/validators.js';
+import { ParamId, ParamIdAndRoleId } from '../lib/validators.js';
 import { Request, Response } from 'express';
 import { PERMISSIONS } from '@takaro/auth';
 import { RangeFilterCreatedAndUpdatedAt } from './shared.js';
@@ -203,12 +203,12 @@ export class UserController {
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_USERS], false))
-  @ResponseSchema(IdUuidDTOAPI)
+  @ResponseSchema(APIOutput)
   @Delete('/user/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new UserService(req.domainId);
     await service.delete(params.id);
-    return apiResponse(new IdUuidDTO({ id: params.id }));
+    return apiResponse();
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_USERS, PERMISSIONS.MANAGE_ROLES], false))
@@ -229,11 +229,7 @@ export class UserController {
   async removeRole(@Req() req: AuthenticatedRequest, @Params() params: ParamIdAndRoleId) {
     const service = new UserService(req.domainId);
     await service.removeRole(params.roleId, params.id);
-    return apiResponse(
-      new IdUuidDTO({
-        id: params.roleId,
-      })
-    );
+    return apiResponse();
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_USERS], false))

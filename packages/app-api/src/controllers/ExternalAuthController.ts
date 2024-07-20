@@ -17,7 +17,7 @@ function getKey(key: string) {
 async function redirectMiddleware() {
   const redis = await Redis.getClient('redirectMiddle');
 
-  return async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  return async (req: AuthenticatedRequest, _res: Response, next: NextFunction) => {
     if (req.query.redirect) {
       await redis.set(getKey(req.user.id), req.query.redirect as string, {
         EX: 60 * 5,

@@ -94,7 +94,7 @@ export class DiscordController {
   @ResponseSchema(APIOutput)
   async sendMessage(
     @Req() req: AuthenticatedRequest,
-    @Res() res: Response,
+    @Res() _res: Response,
     @Params() params: DiscordParamId,
     @Body() body: SendMessageInputDTO
   ) {
@@ -107,7 +107,7 @@ export class DiscordController {
   @ResponseSchema(GuildOutputDTOAPI)
   async updateGuild(
     @Req() req: AuthenticatedRequest,
-    @Res() res: Response,
+    @Res() _res: Response,
     @Params() params: ParamId,
     @Body() body: GuildApiUpdateDTO
   ) {

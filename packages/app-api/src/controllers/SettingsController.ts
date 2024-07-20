@@ -107,7 +107,7 @@ export class SettingsController {
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_SETTINGS]))
-  @ResponseSchema(SettingsOutputArrayDTOAPI)
+  @ResponseSchema(APIOutput)
   @Delete('/settings/:key')
   async delete(
     @Req() req: AuthenticatedRequest,
@@ -116,6 +116,6 @@ export class SettingsController {
   ) {
     const service = new SettingsService(req.domainId, query.gameServerId);
     await service.set(params.key, null);
-    return apiResponse(service.getAll());
+    return apiResponse();
   }
 }

@@ -11,7 +11,7 @@ import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
 import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Put, Params, Res } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
+import { ParamId } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 import { builtinModuleModificationMiddleware } from '../middlewares/builtinModuleModification.js';
@@ -93,11 +93,11 @@ export class FunctionController {
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), builtinModuleModificationMiddleware)
-  @ResponseSchema(IdUuidDTOAPI)
+  @ResponseSchema(APIOutput)
   @Delete('/function/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new FunctionService(req.domainId);
     await service.delete(params.id);
-    return apiResponse(new IdUuidDTO({ id: params.id }));
+    return apiResponse();
   }
 }

@@ -3,7 +3,7 @@ import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { ShopListingService } from '../../service/Shop/index.js';
 import { AuthenticatedRequest, AuthService } from '../../service/AuthService.js';
-import { Body, Get, Post, JsonController, UseBefore, Req, Params, Res, Delete } from 'routing-controllers';
+import { Body, Get, Post, JsonController, UseBefore, Req, Params, Res } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId } from '../../lib/validators.js';
@@ -128,7 +128,7 @@ export class ShopOrderController {
 
   @UseBefore(AuthService.getAuthMiddleware([]))
   @ResponseSchema(ShopOrderOutputDTOAPI)
-  @Delete('/:id')
+  @Post('/:id/cancel')
   async cancel(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new ShopListingService(req.domainId);
     const order = await service.cancelOrder(params.id);
