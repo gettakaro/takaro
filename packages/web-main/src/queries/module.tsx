@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient, queryOptions, infiniteQueryOptions } from '@tanstack/react-query';
 import { getApiClient } from 'util/getApiClient';
 import {
+  APIOutput,
   BuiltinModule,
   CommandCreateDTO,
   CommandOutputDTO,
@@ -18,8 +19,6 @@ import {
   HookOutputDTO,
   HookOutputDTOAPI,
   HookUpdateDTO,
-  IdUuidDTO,
-  IdUuidDTOAPI,
   ModuleCreateDTO,
   ModuleExportDTOAPI,
   ModuleOutputArrayDTOAPI,
@@ -124,9 +123,9 @@ export const useModuleRemove = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
-  return mutationWrapper<IdUuidDTO, ModuleRemove>(
-    useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, ModuleRemove>({
-      mutationFn: async ({ moduleId }) => (await apiClient.module.moduleControllerRemove(moduleId)).data.data,
+  return mutationWrapper<APIOutput, ModuleRemove>(
+    useMutation<APIOutput, AxiosError<APIOutput>, ModuleRemove>({
+      mutationFn: async ({ moduleId }) => (await apiClient.module.moduleControllerRemove(moduleId)).data,
       onSuccess: async (_, { moduleId }) => {
         await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.detail(moduleId) });
@@ -224,10 +223,10 @@ export const useHookRemove = ({ moduleId }) => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
-  return mutationWrapper<IdUuidDTO, HookRemove>(
-    useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, HookRemove>({
-      mutationFn: async ({ hookId }) => (await apiClient.hook.hookControllerRemove(hookId)).data.data,
-      onSuccess: async (removedHook: IdUuidDTO) => {
+  return mutationWrapper<APIOutput, HookRemove>(
+    useMutation<APIOutput, AxiosError<APIOutput>, HookRemove>({
+      mutationFn: async ({ hookId }) => (await apiClient.hook.hookControllerRemove(hookId)).data,
+      onSuccess: async (_, { hookId }) => {
         await queryClient.invalidateQueries({ queryKey: moduleKeys.hooks.list() });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.export(moduleId) });
         queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(moduleId), (prev) => {
@@ -236,10 +235,10 @@ export const useHookRemove = ({ moduleId }) => {
           }
           return {
             ...prev,
-            hooks: prev.hooks.filter((hook) => hook.id !== removedHook.id),
+            hooks: prev.hooks.filter((hook) => hook.id !== hookId),
           };
         });
-        return queryClient.removeQueries({ queryKey: moduleKeys.hooks.detail(removedHook.id) });
+        return queryClient.removeQueries({ queryKey: moduleKeys.hooks.detail(hookId) });
       },
     }),
     defaultHookErrorMessages
@@ -354,9 +353,9 @@ export const useCommandRemove = ({ moduleId }) => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
-  return mutationWrapper<IdUuidDTO, CommandRemove>(
-    useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, CommandRemove>({
-      mutationFn: async ({ commandId }) => (await apiClient.command.commandControllerRemove(commandId)).data.data,
+  return mutationWrapper<APIOutput, CommandRemove>(
+    useMutation<APIOutput, AxiosError<APIOutput>, CommandRemove>({
+      mutationFn: async ({ commandId }) => (await apiClient.command.commandControllerRemove(commandId)).data,
       onSuccess: async (_, { commandId }) => {
         // invalidate list of commands
         await queryClient.invalidateQueries({ queryKey: moduleKeys.commands.list() });
@@ -458,10 +457,10 @@ export const useCronJobRemove = ({ moduleId }: { moduleId: string }) => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
-  return mutationWrapper<IdUuidDTO, CronJobRemove>(
-    useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, CronJobRemove>({
+  return mutationWrapper<APIOutput, CronJobRemove>(
+    useMutation<APIOutput, AxiosError<APIOutput>, CronJobRemove>({
       mutationFn: async ({ cronJobId }: { cronJobId: string }) =>
-        (await apiClient.cronjob.cronJobControllerRemove(cronJobId)).data.data,
+        (await apiClient.cronjob.cronJobControllerRemove(cronJobId)).data,
       onSuccess: async (_, { cronJobId }) => {
         await queryClient.invalidateQueries({ queryKey: moduleKeys.cronJobs.list() });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.export(moduleId) });
@@ -555,9 +554,9 @@ export const useFunctionRemove = ({ moduleId }: { moduleId: string }) => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
-  return mutationWrapper<IdUuidDTO, FunctionRemove>(
-    useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, FunctionRemove>({
-      mutationFn: async ({ functionId }) => (await apiClient.function.functionControllerRemove(functionId)).data.data,
+  return mutationWrapper<APIOutput, FunctionRemove>(
+    useMutation<APIOutput, AxiosError<APIOutput>, FunctionRemove>({
+      mutationFn: async ({ functionId }) => (await apiClient.function.functionControllerRemove(functionId)).data,
       onSuccess: async (_, { functionId }) => {
         await queryClient.invalidateQueries({ queryKey: moduleKeys.functions.list() });
         queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(moduleId), (prev) => {

@@ -2,7 +2,6 @@ import { useMutation, useQueryClient, queryOptions } from '@tanstack/react-query
 import { getApiClient } from 'util/getApiClient';
 import {
   APIOutput,
-  IdUuidDTO,
   LinkPlayerUnauthedInputDTO,
   MeOutoutDTO,
   UserOutputArrayDTOAPI,
@@ -134,9 +133,9 @@ export const useUserRemove = () => {
   const queryClient = useQueryClient();
   const { enqueueSnackbar } = useSnackbar();
 
-  return mutationWrapper<IdUuidDTO, UserRemoveInput>(
-    useMutation<IdUuidDTO, AxiosError<IdUuidDTO>, UserRemoveInput>({
-      mutationFn: async ({ userId }) => (await apiClient.user.userControllerRemove(userId)).data.data,
+  return mutationWrapper<APIOutput, UserRemoveInput>(
+    useMutation<APIOutput, AxiosError<APIOutput>, UserRemoveInput>({
+      mutationFn: async ({ userId }) => (await apiClient.user.userControllerRemove(userId)).data,
       onSuccess: async (_, { userId }) => {
         await queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
         await queryClient.invalidateQueries({ queryKey: userKeys.list() });

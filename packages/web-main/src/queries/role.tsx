@@ -4,8 +4,6 @@ import {
   RoleOutputDTO,
   RoleCreateInputDTO,
   RoleUpdateInputDTO,
-  IdUuidDTO,
-  IdUuidDTOAPI,
   RoleOutputDTOAPI,
   PermissionOutputDTOAPI,
   PermissionOutputDTO,
@@ -104,9 +102,9 @@ export const useRoleRemove = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
-  return mutationWrapper<IdUuidDTO, RoleRemove>(
-    useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, RoleRemove>({
-      mutationFn: async ({ roleId }) => (await apiClient.role.roleControllerRemove(roleId)).data.data,
+  return mutationWrapper<APIOutput, RoleRemove>(
+    useMutation<APIOutput, AxiosError<APIOutput>, RoleRemove>({
+      mutationFn: async ({ roleId }) => (await apiClient.role.roleControllerRemove(roleId)).data,
       onSuccess: (_, { roleId }) => {
         queryClient.invalidateQueries({ queryKey: roleKeys.list() });
         queryClient.removeQueries({ queryKey: roleKeys.detail(roleId) });

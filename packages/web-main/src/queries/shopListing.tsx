@@ -1,5 +1,5 @@
 import {
-  IdUuidDTO,
+  APIOutput,
   ShopListingCreateDTO,
   ShopListingOutputArrayDTOAPI,
   ShopListingOutputDTO,
@@ -55,18 +55,19 @@ export const useShopListingCreate = () => {
 };
 
 interface ShopListingDelete {
-  id: string;
+  shopListingId: string;
 }
 
 export const useShopListingDelete = () => {
   const queryClient = useQueryClient();
 
-  return mutationWrapper<IdUuidDTO, ShopListingDelete>(
-    useMutation<IdUuidDTO, AxiosError<IdUuidDTO>, ShopListingDelete>({
-      mutationFn: async ({ id }) => (await getApiClient().shopListing.shopListingControllerDelete(id)).data,
-      onSuccess: async ({ id: deletedShopListingId }) => {
+  return mutationWrapper<APIOutput, ShopListingDelete>(
+    useMutation<APIOutput, AxiosError<APIOutput>, ShopListingDelete>({
+      mutationFn: async ({ shopListingId }) =>
+        (await getApiClient().shopListing.shopListingControllerDelete(shopListingId)).data,
+      onSuccess: async (_, { shopListingId }) => {
         await queryClient.invalidateQueries({ queryKey: shopListingKeys.list() });
-        queryClient.removeQueries({ queryKey: shopListingKeys.detail(deletedShopListingId) });
+        queryClient.removeQueries({ queryKey: shopListingKeys.detail(shopListingId) });
       },
     }),
     {}
