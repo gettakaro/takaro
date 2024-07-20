@@ -65,7 +65,7 @@ async function main() {
       .map((line) => line.trim())
       .includes('takaro')
   ) {
-    await exec('docker', 'docker network create takaro', { log: false });
+    $`docker network create takaro`;
   }
 
   console.log('Bringing up datastores');
