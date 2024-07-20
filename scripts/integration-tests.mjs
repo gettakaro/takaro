@@ -13,7 +13,7 @@ async function waitUntilHealthyHttp(url, maxRetries = 5) {
     if (stdout === '200') {
       return;
     }
-  } catch (err) { }
+  } catch (err) {}
 
   if (maxRetries > 0) {
     await sleep(1000);
@@ -57,7 +57,16 @@ async function main() {
   await cleanUp();
   await mkdir('./reports/integrationTests', { recursive: true });
 
-  await exec('docker', ['network', 'create', 'takaro']);
+  // Check if network exists, if not create it
+  const { stdout: networkList } = await $`docker network ls --format '{{.Name}}'`;
+  if (
+    !networkList
+      .split('\n')
+      .map((line) => line.trim())
+      .includes('takaro')
+  ) {
+    await exec('docker', 'docker network create takaro', { log: false });
+  }
 
   console.log('Bringing up datastores');
   await upMany(['postgresql', 'redis', 'postgresql_kratos', 'postgresql_hydra'], composeOpts);
