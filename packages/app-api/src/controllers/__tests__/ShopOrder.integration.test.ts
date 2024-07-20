@@ -488,6 +488,7 @@ const tests = [
         if (!error.response) throw error;
         expect(error.response.data.meta.error.code).to.be.eq('BadRequestError');
         expect(error.response.data.meta.error.message).to.be.eq(
+          // eslint-disable-next-line
           "Can only cancel paid orders that weren't claimed yet. Current status: CANCELED"
         );
         return error.response;
