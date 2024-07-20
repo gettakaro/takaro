@@ -57,17 +57,6 @@ async function main() {
   await cleanUp();
   await mkdir('./reports/integrationTests', { recursive: true });
 
-  // Check if network exists, if not create it
-  const { stdout: networkList } = await $`docker network ls --format '{{.Name}}'`;
-  if (
-    !networkList
-      .split('\n')
-      .map((line) => line.trim())
-      .includes('takaro')
-  ) {
-    $`docker network create takaro`;
-  }
-
   console.log('Bringing up datastores');
   await upMany(['postgresql', 'redis', 'postgresql_kratos', 'postgresql_hydra'], composeOpts);
   await sleep(1000);
