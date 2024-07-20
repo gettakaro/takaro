@@ -1,15 +1,11 @@
 import {
   IsUUID,
-  ValidateNested,
   ValidationOptions,
   ValidatorConstraint,
   ValidatorConstraintInterface,
   isUUID,
   registerDecorator,
 } from 'class-validator';
-import { TakaroDTO } from '@takaro/util';
-import { Type } from 'class-transformer';
-import { APIOutput } from '@takaro/http';
 
 export class ParamId {
   @IsUUID('4')
@@ -27,17 +23,6 @@ export class PogParam {
 
   @IsUUID('4')
   playerId!: string;
-}
-
-export class IdUuidDTO extends TakaroDTO<IdUuidDTO> {
-  @IsUUID('4')
-  id!: string;
-}
-
-export class IdUuidDTOAPI extends APIOutput<IdUuidDTO> {
-  @Type(() => IdUuidDTO)
-  @ValidateNested()
-  declare data: IdUuidDTO;
 }
 
 @ValidatorConstraint({ async: true })
