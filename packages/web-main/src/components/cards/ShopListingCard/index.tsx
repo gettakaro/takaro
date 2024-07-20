@@ -1,4 +1,4 @@
-import { Avatar, Card, getInitials } from '@takaro/lib-components';
+import { Avatar, Card, Chip, getInitials } from '@takaro/lib-components';
 import { FC } from 'react';
 import { Header, CardBody } from './style';
 import { GameServerOutputDTOTypeEnum, ShopListingOutputDTO } from '@takaro/apiclient';
@@ -35,7 +35,8 @@ export const ShopListingCard: FC<ShopListingCard> = ({
       <Card>
         <CardBody>
           <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <Header>
+            <Header hasMultipleChildren={shopListing.draft}>
+              {hasPermission && shopListing.draft && <Chip color="primary" label="Draft" />}
               {hasPermission && (
                 <ShopListingActions
                   shopListingName={shopListingName}
@@ -75,6 +76,7 @@ export const ShopListingCard: FC<ShopListingCard> = ({
             </div>
           </div>
           <ShopListingBuyForm
+            isDraft={shopListing.draft}
             currencyName={currencyName}
             shopListingId={shopListing.id}
             playerCurrencyAmount={playerCurrencyAmount}

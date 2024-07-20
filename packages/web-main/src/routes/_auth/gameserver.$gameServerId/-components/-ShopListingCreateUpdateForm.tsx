@@ -1,6 +1,16 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ShopListingOutputDTO } from '@takaro/apiclient';
-import { Alert, Button, CollapseList, Drawer, FormError, IconButton, TextField, styled } from '@takaro/lib-components';
+import {
+  Alert,
+  Button,
+  CollapseList,
+  Drawer,
+  FormError,
+  IconButton,
+  Switch,
+  TextField,
+  styled,
+} from '@takaro/lib-components';
 import { useRouter } from '@tanstack/react-router';
 import { ItemSelect } from 'components/selects/ItemSelectQuery';
 import { FC, useEffect, useState } from 'react';
@@ -35,6 +45,7 @@ interface ShopListingCreateUpdateFormProps {
 const validationSchema = z.object({
   name: z.string().optional().nullable(),
   price: z.number().min(0, 'Price is required.'),
+  draft: z.boolean().optional(),
   items: z
     .array(
       z.object({
@@ -68,6 +79,7 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
       values: {
         name: initialData.name ? initialData.name : undefined,
         price: initialData.price,
+        draft: initialData.draft !== undefined ? initialData.draft : undefined,
         items: initialData.items.map((shopListingItemMeta) => {
           return {
             amount: shopListingItemMeta.amount,
@@ -118,6 +130,14 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
               loading={isLoading}
               suffix={currencyName}
               required
+            />
+            <Switch
+              readOnly={readOnly}
+              control={control}
+              name="draft"
+              label="Draft"
+              loading={isLoading}
+              description="The shop listing cannot be bought and will not be shown to users who don't have MANAGE_SHOP_LISTINGS permissions."
             />
             <CollapseList>
               <CollapseList.Item title="Items">

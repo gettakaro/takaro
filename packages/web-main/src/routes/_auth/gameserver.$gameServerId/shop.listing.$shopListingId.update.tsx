@@ -33,7 +33,7 @@ function Component() {
   const navigate = Route.useNavigate();
   const { mutate, error } = useShopListingUpdate();
 
-  const onSubmit: SubmitHandler<FormValues> = ({ items, price, name }) => {
+  const onSubmit: SubmitHandler<FormValues> = ({ items, price, name, draft }) => {
     mutate({
       shopListingId,
       shopListingDetails: {
@@ -41,6 +41,7 @@ function Component() {
         price,
         gameServerId,
         name: name ? name : undefined,
+        draft: draft !== undefined ? draft : undefined,
       },
     });
 

@@ -11,6 +11,7 @@ interface ShopListingBuyFormProps {
   shopListingId: string;
   price: number;
   currencyName: string;
+  isDraft: boolean;
 }
 
 const validationSchema = z.object({
@@ -21,6 +22,7 @@ export const ShopListingBuyForm: FC<ShopListingBuyFormProps> = ({
   shopListingId,
   playerCurrencyAmount,
   price,
+  isDraft,
   currencyName,
 }) => {
   const { enqueueSnackbar } = useSnackbar();
@@ -64,7 +66,7 @@ export const ShopListingBuyForm: FC<ShopListingBuyFormProps> = ({
         isLoading={isPendingShopOrderCreate}
         fullWidth
         type="submit"
-        disabled={playerCurrencyAmount < price}
+        disabled={playerCurrencyAmount < price || isDraft}
         text={`Buy for ${price * watch('amount')} ${currencyName}`}
       />
     </form>
