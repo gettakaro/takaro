@@ -39,6 +39,10 @@ export class BaseApiClient<T extends IBaseApiClientConfig> {
     if (this.config.log) this.log = this.config.log;
   }
 
+  setHeader(key: string, value: string) {
+    this.axios.defaults.headers.common[key] = value;
+  }
+
   isJsonMime(mime: string) {
     return mime === 'application/json';
   }

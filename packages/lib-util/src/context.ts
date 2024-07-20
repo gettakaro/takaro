@@ -7,7 +7,7 @@ interface TransactionStore {
   gameServer?: string;
   jobId?: string;
   user?: string;
-  vmId?: number;
+  module?: string;
 }
 
 function isValidTransactionStore(store: unknown): store is TransactionStore {

@@ -233,6 +233,10 @@ export class AuthService extends DomainScoped {
         }
 
         ctx.addData({ user: user.id, domain: user.domain });
+        const moduleId = req.headers['x-takaro-module'] as string;
+        if (moduleId) {
+          ctx.addData({ module: moduleId });
+        }
 
         const hasAllPermissions = checkPermissions(permissions, user);
 

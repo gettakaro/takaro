@@ -12,6 +12,8 @@ export function getTakaro(
     log: logger ? logger : console,
   });
 
+  takaro.setHeader('X-Takaro-Module', data.module.moduleId);
+
   if (data.pog) {
     const sendPmToPlayer = async (message: string) => {
       return takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
