@@ -44,7 +44,7 @@ export const ShopListingActions: FC<ShopListingActions> = ({ shopListingId, game
 
   const handleOnDeleteConfirmationClick = (e: MouseEvent) => {
     e.stopPropagation();
-    deleteShopListing({ id: shopListingId });
+    deleteShopListing({ shopListingId });
     setOpenDeleteConfirmationDialog(false);
   };
 

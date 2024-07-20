@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient, queryOptions } from '@tanstack/react-query';
 import { getApiClient } from 'util/getApiClient';
 import {
-  IdUuidDTO,
+  APIOutput,
   VariableCreateDTO,
   VariableOutputArrayDTOAPI,
   VariableOutputDTO,
@@ -83,9 +83,9 @@ export const useVariableDelete = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
-  return mutationWrapper<IdUuidDTO, VariableDeleteInput>(
-    useMutation<IdUuidDTO, AxiosError<VariableOutputDTO>, VariableDeleteInput>({
-      mutationFn: async ({ variableId }) => (await apiClient.variable.variableControllerDelete(variableId)).data.data,
+  return mutationWrapper<APIOutput, VariableDeleteInput>(
+    useMutation<APIOutput, AxiosError<VariableOutputDTO>, VariableDeleteInput>({
+      mutationFn: async ({ variableId }) => (await apiClient.variable.variableControllerDelete(variableId)).data,
       onSuccess: async (_, { variableId }) => {
         await queryClient.invalidateQueries({ queryKey: variableKeys.list() });
         queryClient.removeQueries({ queryKey: variableKeys.detail(variableId) });

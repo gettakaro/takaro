@@ -9,8 +9,6 @@ import {
   GameServerTestReachabilityDTOAPI,
   GameServerTestReachabilityInputDTOTypeEnum,
   GameServerUpdateDTO,
-  IdUuidDTO,
-  IdUuidDTOAPI,
   ImportOutputDTO,
   KickPlayerInputDTO,
   ModuleInstallationOutputDTO,
@@ -132,25 +130,26 @@ export const useGameServerUpdate = () => {
 };
 
 interface GameServerRemove {
-  id: string;
+  gameServerId: string;
 }
 
 export const useGameServerRemove = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
-  return mutationWrapper<IdUuidDTO, GameServerRemove>(
-    useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, GameServerRemove>({
-      mutationFn: async ({ id }) => (await apiClient.gameserver.gameServerControllerRemove(id)).data.data,
-      onSuccess: async (removedGameServer: IdUuidDTO) => {
+  return mutationWrapper<APIOutput, GameServerRemove>(
+    useMutation<APIOutput, AxiosError<APIOutput>, GameServerRemove>({
+      mutationFn: async ({ gameServerId }) =>
+        (await apiClient.gameserver.gameServerControllerRemove(gameServerId)).data,
+      onSuccess: async (_, { gameServerId }) => {
         // remove all cached information of game server list.
         await queryClient.invalidateQueries({ queryKey: gameServerKeys.list() });
         // remove all cached information about specific game server.
         await queryClient.invalidateQueries({
-          queryKey: gameServerKeys.detail(removedGameServer.id),
+          queryKey: gameServerKeys.detail(gameServerId),
         });
         queryClient.removeQueries({
-          queryKey: gameServerKeys.reachability(removedGameServer.id),
+          queryKey: gameServerKeys.reachability(gameServerId),
         });
       },
     }),

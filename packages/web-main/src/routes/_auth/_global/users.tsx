@@ -254,8 +254,7 @@ export const UserDeleteDialog: FC<VariableDeleteProps> = ({ user, openDialog, se
 
   const handleOnDelete = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
-
-    await mutateAsync({ id: user.id });
+    await mutateAsync({ userId: user.id });
     setOpenDialog(false);
   };
 

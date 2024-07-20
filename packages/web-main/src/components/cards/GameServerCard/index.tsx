@@ -74,7 +74,7 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
   };
 
   const handleOnDelete = () => {
-    mutate({ id });
+    mutate({ gameServerId: id });
   };
 
   const handleOnCopyClick = (e: MouseEvent) => {

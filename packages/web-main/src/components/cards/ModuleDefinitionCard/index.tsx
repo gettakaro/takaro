@@ -56,7 +56,7 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
 
   const handleOnDelete = async (e: MouseEvent) => {
     e.stopPropagation();
-    await mutateAsync({ id: mod.id });
+    await mutateAsync({ moduleId: mod.id });
     setOpenDeleteDialog(false);
   };
 
