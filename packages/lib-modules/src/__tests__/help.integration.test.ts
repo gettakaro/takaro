@@ -71,7 +71,7 @@ const tests = [
       expect(sortedEvents[9].data.msg).to.be.eq('setwaypoint: Creates a new waypoint.');
       expect(sortedEvents[10].data.msg).to.be.eq('teleport: Teleports to one of your set locations.');
       expect(sortedEvents[11].data.msg).to.be.eq(
-        'teleportwaypoint: Placeholder command, this will not be used directly. The module will install aliases for this command corresponding to the waypoint '
+        'teleportwaypoint: Placeholder command, this will not be used directly. The module will install aliases for this command corresponding to the waypoint names.'
       );
       expect(sortedEvents[12].data.msg).to.be.eq('tplist: Lists all your set locations.');
     },
