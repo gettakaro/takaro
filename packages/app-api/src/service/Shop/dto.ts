@@ -106,6 +106,10 @@ export class ShopOrderOutputDTO extends TakaroModelDTO<ShopOrderOutputDTO> {
   amount: number;
   @IsEnum(Object.values(ShopOrderStatus))
   status: string;
+  @ValidateNested()
+  @Type(() => ShopListingOutputDTO)
+  @IsOptional()
+  listing?: ShopListingOutputDTO;
 }
 
 export class ShopOrderCreateDTO<T = void> extends TakaroDTO<T> {
