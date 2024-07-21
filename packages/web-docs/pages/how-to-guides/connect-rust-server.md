@@ -2,7 +2,14 @@
 
 This guide explains how to connect your Rust server to Takaro. Before Takaro can connect to your Rust server, you will need to configure RCON (Remote Console) credentials. These credentials allow Takaro to authenticate and interact with your Rust server through the RCON protocol. You can find how to configure this in our [docs](https://docs.takaro.io/games/Rust).
 
-<iframe className="aspect-video w-full" src="https://www.youtube.com/embed/Nbag_w24GGs" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" width="100%" height="500px" allowFullScreen />
+<iframe
+  className="aspect-video w-full"
+  src="https://www.youtube.com/embed/Nbag_w24GGs"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  width="100%"
+  height="500px"
+  allowFullScreen
+/>
 
 ## Step 1 Navigate to Game servers
 
