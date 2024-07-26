@@ -1,6 +1,5 @@
 import { FC, ReactElement } from 'react';
 import { Size, styled } from '../../../styled';
-import { AiOutlineContainer as Icon } from 'react-icons/ai';
 
 const Container = styled.div<{ size: Size }>`
   display: flex;
@@ -56,7 +55,7 @@ const ActionContainer = styled.div`
 const Description = styled.p`
   max-width: 300px;
   margin: 0.5rem auto 1rem auto;
-  color: ${({ theme }) => theme.colors.textAlt};
+  color: ${({ theme }) => theme.colors.text};
   text-align: center;
 `;
 
@@ -78,7 +77,6 @@ export interface EmptyProps {
 export const Empty: FC<EmptyProps> = ({ description = 'No Data', header, actions, size = 'medium' }) => {
   return (
     <Container size={size}>
-      <Icon size={40} />
       <h2>{header}</h2>
       <Description>{description}</Description>
       <ActionContainer>{actions}</ActionContainer>

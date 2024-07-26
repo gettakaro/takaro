@@ -19,7 +19,7 @@ import {
   RowSelectionState,
 } from '@tanstack/react-table';
 import { Wrapper, StyledTable, Toolbar, Flex, TableWrapper } from './style';
-import { Empty, Spinner, ToggleButtonGroup } from '../../../components';
+import { Button, Empty, Spinner, ToggleButtonGroup } from '../../../components';
 import { AiOutlinePicCenter as RelaxedDensityIcon, AiOutlinePicRight as TightDensityIcon } from 'react-icons/ai';
 
 import { ColumnHeader } from './subcomponents/ColumnHeader';
@@ -289,7 +289,17 @@ export function Table<DataType extends object>({
                 <tr>
                   <td colSpan={table.getAllColumns().length + ROW_SELECTION_COL_SPAN}>
                     <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <Empty header="No data" description="We couldn't find what you are looking for." actions={[]} />
+                      <Empty
+                        header=""
+                        description="Items will appear here. Add your first item to begin!"
+                        actions={[
+                          <Button
+                            variant="clear"
+                            onClick={() => window.open('https://docs.takaro.io')}
+                            text="Learn more"
+                          />,
+                        ]}
+                      />
                     </div>
                   </td>
                 </tr>
