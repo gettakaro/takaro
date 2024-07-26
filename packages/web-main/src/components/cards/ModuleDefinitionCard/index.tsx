@@ -9,7 +9,6 @@ import {
   Dropdown,
   useTheme,
   ValueConfirmationField,
-  Alert,
   styled,
   Spinner,
 } from '@takaro/lib-components';
@@ -30,6 +29,7 @@ import {
   AiOutlineExport as ExportIcon,
 } from 'react-icons/ai';
 import { useQuery } from '@tanstack/react-query';
+import { useSnackbar } from 'notistack';
 
 const DownloadLink = styled.a`
   display: block;
@@ -48,17 +48,22 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
   const [openExportDialog, setOpenExportDialog] = useState<boolean>(false);
   const [isValid, setIsValid] = useState<boolean>(false);
   const [downloadLink, setDownloadLink] = useState<string | null>(null);
-  const { mutateAsync, isPending: isDeleting } = useModuleRemove();
+  const { mutate, isPending: isDeleting, isSuccess } = useModuleRemove();
   const { data: exported, isPending: isExporting } = useQuery(moduleExportOptions(mod.id, openExportDialog));
+  const { enqueueSnackbar } = useSnackbar();
 
   const theme = useTheme();
   const navigate = useNavigate();
 
-  const handleOnDelete = async (e: MouseEvent) => {
+  const handleOnDelete = (e: MouseEvent) => {
     e.stopPropagation();
-    await mutateAsync({ moduleId: mod.id });
-    setOpenDeleteDialog(false);
+    mutate({ moduleId: mod.id });
   };
+
+  if (isSuccess) {
+    enqueueSnackbar('Module successfully deleted!', { variant: 'default' });
+    setOpenDeleteDialog(false);
+  }
 
   useEffect(() => {
     if (!isExporting && exported) {
@@ -91,7 +96,6 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
 
   const handleOnOpenClick = (e: MouseEvent) => {
     e.stopPropagation();
-    // TODO: should open in new tab
     window.open(`/studio/${mod.id}`, '_blank');
   };
 
@@ -168,10 +172,6 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
             Delete Module: <span style={{ textTransform: 'capitalize' }}>{mod.name}</span>{' '}
           </Dialog.Heading>
           <Dialog.Body size="medium">
-            <Alert
-              variant="info"
-              text="You can hold down shift when deleting a module to bypass this confirmation entirely."
-            />
             <p>
               Are you sure you want to delete the module <strong>{mod.name}</strong>? To confirm, type the module name
               below.

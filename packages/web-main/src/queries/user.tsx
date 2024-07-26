@@ -139,7 +139,7 @@ export const useUserRemove = () => {
       onSuccess: async (_, { userId }) => {
         await queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
         await queryClient.invalidateQueries({ queryKey: userKeys.list() });
-        enqueueSnackbar('User has been deleted', { variant: 'default' });
+        enqueueSnackbar('User successfully deleted!', { variant: 'default' });
       },
     }),
     {}

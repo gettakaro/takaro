@@ -6,7 +6,6 @@ import { VariablesForm, ExecutionType, IFormInputs } from './-variables/Variable
 import { useSnackbar } from 'notistack';
 import { queryClient } from 'queryClient';
 import { hasPermission } from 'hooks/useHasPermission';
-import { useEffect } from 'react';
 
 export const Route = createFileRoute('/_auth/_global/variables/update/$variableId')({
   beforeLoad: async ({ context }) => {
@@ -31,16 +30,14 @@ function Component() {
     throw notFound();
   }
 
-  function updateVariable(variable: IFormInputs) {
-    mutate({ variableId: data.id, variableDetails: variable });
+  if (isSuccess) {
+    enqueueSnackbar('Variable updated!', { variant: 'default', type: 'success' });
     navigate({ to: '/variables' });
   }
 
-  useEffect(() => {
-    if (isSuccess) {
-      navigate({ to: '/variables' });
-    }
-  }, [navigate, isSuccess]);
+  function updateVariable(variable: IFormInputs) {
+    mutate({ variableId: data.id, variableDetails: variable });
+  }
 
   // set null values to undefined otherwise zod will complain
   if (data?.playerId === null) {

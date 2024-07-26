@@ -1,6 +1,5 @@
 import { FC, MouseEvent, useState } from 'react';
 import {
-  Alert,
   Button,
   Card,
   Chip,
@@ -13,6 +12,7 @@ import {
 } from '@takaro/lib-components';
 import { Header, TitleContainer } from './style';
 import { useNavigate } from '@tanstack/react-router';
+import { useSnackbar } from 'notistack';
 
 import { AiOutlineMenu as MenuIcon } from 'react-icons/ai';
 import { useRoleRemove } from 'queries/role';
@@ -26,8 +26,8 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
   const [valid, setValid] = useState<boolean>(false);
   const theme = useTheme();
   const navigate = useNavigate();
-
-  const { mutate, isPending: isDeleting } = useRoleRemove();
+  const { enqueueSnackbar } = useSnackbar();
+  const { mutate, isPending: isDeleting, isSuccess } = useRoleRemove();
 
   const handleOnEditClick = (e: MouseEvent): void => {
     e.stopPropagation();
@@ -45,8 +45,12 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
 
   const handleOnDelete = (e: MouseEvent) => {
     e.stopPropagation();
-    mutate({ roleId: id });
-    setOpenDialog(false);
+    try {
+      mutate({ roleId: id });
+
+      if (isSuccess) setOpenDialog(false);
+      enqueueSnackbar('Role successfully deleted!', { variant: 'default', type: 'success' });
+    } catch {}
   };
 
   return (
@@ -99,10 +103,6 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
         <Dialog.Content>
           <Dialog.Heading>Delete role</Dialog.Heading>
           <Dialog.Body size="medium">
-            <Alert
-              variant="info"
-              text="You can hold down shift when deleting a role to bypass this confirmation entirely."
-            />
             <p>
               Are you sure you want to delete the role? To confirm, type <strong>{name}</strong>.
             </p>

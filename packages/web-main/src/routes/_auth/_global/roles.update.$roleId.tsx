@@ -1,10 +1,10 @@
-import { useEffect } from 'react';
 import { DrawerSkeleton } from '@takaro/lib-components';
 import { useRoleUpdate, roleQueryOptions, permissionsQueryOptions } from 'queries/role';
 import { SubmitHandler } from 'react-hook-form';
 import { RoleForm, IFormInputs } from './-roles/RoleCreateUpdateForm';
-import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
+import { useSnackbar } from 'notistack';
 
 export const Route = createFileRoute('/_auth/_global/roles/update/$roleId')({
   beforeLoad: async ({ context }) => {
@@ -27,7 +27,13 @@ function Component() {
   const { role, permissions } = Route.useLoaderData();
   const { mutate, isPending: isUpdatingRole, error, isSuccess } = useRoleUpdate();
   const { roleId } = Route.useParams();
-  const navigate = useNavigate();
+  const navigate = Route.useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
+
+  if (isSuccess) {
+    enqueueSnackbar('Role updated!', { variant: 'default', type: 'success' });
+    navigate({ to: '/roles' });
+  }
 
   const onSubmit: SubmitHandler<IFormInputs> = ({ permissions: formPermissions, name }) => {
     const activePermissions = Object.entries(formPermissions)
@@ -44,12 +50,6 @@ function Component() {
       },
     });
   };
-
-  useEffect(() => {
-    if (!open || isSuccess) {
-      navigate({ to: '/roles' });
-    }
-  }, [open, navigate, isSuccess]);
 
   return (
     <RoleForm

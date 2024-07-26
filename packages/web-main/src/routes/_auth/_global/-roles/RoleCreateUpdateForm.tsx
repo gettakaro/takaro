@@ -119,11 +119,13 @@ export const RoleForm: FC<CreateUpdateRoleFormProps> = ({
                 ))}
               </CollapseList.Item>
               <CollapseList.Item title="Module permissions">
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any  */}
                 {Object.values(groupedModulePermissions).map((group: any) => (
                   <Card key={group.module.id} variant="outline" style={{ marginBottom: theme.spacing['2'] }}>
                     <h3 style={{ marginBottom: theme.spacing['1'], textTransform: 'capitalize' }}>
                       {group.module.name}
                     </h3>
+                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any  */}
                     {group.permissions.map((permission: any) => (
                       <PermissionField
                         key={permission.id}
@@ -145,7 +147,12 @@ export const RoleForm: FC<CreateUpdateRoleFormProps> = ({
           ) : (
             <ButtonContainer>
               <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
-              <Button fullWidth text="Save changes" type="submit" form="create-role-form" />
+              <Button
+                fullWidth
+                text={initialData ? 'Update role' : 'Create role'}
+                type="submit"
+                form="create-role-form"
+              />
             </ButtonContainer>
           )}
         </Drawer.Footer>
