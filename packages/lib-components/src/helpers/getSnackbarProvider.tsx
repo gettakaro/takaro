@@ -13,10 +13,10 @@ import { AlertVariants } from '../styled';
 
 const snackbarOptions: Partial<SnackbarProviderProps> = {
   anchorOrigin: {
-    horizontal: 'center',
-    vertical: 'top',
+    horizontal: 'right',
+    vertical: 'bottom',
   },
-  autoHideDuration: 8000,
+  autoHideDuration: 4000,
   hideIconVariant: true,
   maxSnack: 3,
   preventDuplicate: true,
