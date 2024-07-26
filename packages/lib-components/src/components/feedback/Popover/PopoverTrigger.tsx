@@ -1,6 +1,7 @@
 import { forwardRef, cloneElement, isValidElement, HTMLProps, PropsWithChildren } from 'react';
 import { usePopoverContext } from './PopoverContext';
 import { useMergeRefs } from '@floating-ui/react';
+import { ReactNode } from '@tanstack/react-router';
 
 export type PopoverTriggerProps = HTMLProps<HTMLElement> &
   PropsWithChildren<{
@@ -10,7 +11,7 @@ export type PopoverTriggerProps = HTMLProps<HTMLElement> &
 export const PopoverTrigger = forwardRef<HTMLElement, PopoverTriggerProps>(
   ({ children, asChild = false, ...props }, propRef) => {
     const context = usePopoverContext();
-    const childrenRef = (children as any).ref;
+    const childrenRef = (children as ReactNode).ref;
     const ref = useMergeRefs([context.refs.setReference, propRef, childrenRef]);
 
     // `asChild` allows the user to pass any element as the anchor
