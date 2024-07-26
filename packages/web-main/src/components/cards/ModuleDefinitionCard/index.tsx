@@ -207,7 +207,13 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
             )}
 
             {!isExporting && downloadLink && (
-              <DownloadLink href={downloadLink} download={`${mod.name}.json`}>
+              <DownloadLink
+                href={downloadLink}
+                download={`${mod.name}.json`}
+                onClick={() => {
+                  setOpenExportDialog(false);
+                }}
+              >
                 Download {mod.name}.json
               </DownloadLink>
             )}
