@@ -42,7 +42,7 @@ export const EventNameSelect: FC<CustomSelectProps> = ({
       inPortal={inPortal}
       render={(selectedItems) => {
         if (selectedItems.length === 0) {
-          return <div>select...</div>;
+          return <div>select event...</div>;
         }
         return <div>{multiple ? selectedItems.map((item) => item.label).join(', ') : selectedItems[0].label}</div>;
       }}

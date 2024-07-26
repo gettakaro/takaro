@@ -98,7 +98,7 @@ export const ModuleSelectView: FC<ModuleSelectViewProps> = ({
       multiple={multiple}
       render={(selectedItems) => {
         if (selectedItems.length === 0) {
-          return <div>Select...</div>;
+          return <div>Select module...</div>;
         }
         return <div>{selectedItems[0].label}</div>;
       }}
