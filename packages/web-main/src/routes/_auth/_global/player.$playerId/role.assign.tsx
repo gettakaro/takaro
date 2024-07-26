@@ -134,7 +134,7 @@ function Component() {
         <Drawer.Footer>
           <ButtonContainer>
             <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
-            <Button fullWidth text="Save changes" isLoading={isPending} type="submit" form="create-role-form" />
+            <Button fullWidth text="Assign role" isLoading={isPending} type="submit" form="create-role-form" />
           </ButtonContainer>
         </Drawer.Footer>
       </Drawer.Content>

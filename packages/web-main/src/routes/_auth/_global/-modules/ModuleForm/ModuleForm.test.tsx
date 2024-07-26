@@ -11,8 +11,8 @@ function createModuleDTO(overrides: Partial<ModuleOutputDTO> = {}): ModuleOutput
     name: 'test',
     description: 'module description',
     configSchema: JSON.stringify({ type: 'valid' }), // Default to valid schema
-    createdAt: DateTime.now().toISO()!,
-    updatedAt: DateTime.now().toISO()!,
+    createdAt: DateTime.now().toISO(),
+    updatedAt: DateTime.now().toISO(),
     hooks: [],
     cronJobs: [],
     commands: [],
@@ -32,7 +32,6 @@ describe('Render ConfigFields', () => {
           onSubmit={() => {}}
           isLoading={false}
           mod={createModuleDTO({ configSchema: JSON.stringify(test.schema) })}
-          isSuccess={false}
           error={null}
         />
       );
@@ -47,7 +46,6 @@ describe('Render ConfigFields', () => {
           onSubmit={() => {}}
           isLoading={false}
           mod={createModuleDTO({ configSchema: JSON.stringify(test.schema) })}
-          isSuccess={false}
           error={null}
         />
       );

@@ -131,7 +131,7 @@ function Component() {
           });
         }
       }
-      enqueueSnackbar('Settings have been successfully saved', { variant: 'default' });
+      enqueueSnackbar('Settings updated!', { variant: 'default', type: 'success' });
       reset({}, { keepValues: true });
     } catch (error) {
       enqueueSnackbar('An error occurred while saving settings', { variant: 'default', type: 'error' });
@@ -233,7 +233,7 @@ function Component() {
               )}
             </SettingsContainer>
           ))}
-          {!readOnly && <Button disabled={!formState.isDirty} text="Save" type="submit" variant="default" />}
+          {!readOnly && <Button disabled={!formState.isDirty} text="Save settings" type="submit" variant="default" />}
         </>
       </form>
     </>

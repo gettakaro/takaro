@@ -10,7 +10,6 @@ import {
   Skeleton,
   useTheme,
   ValueConfirmationField,
-  Alert,
 } from '@takaro/lib-components';
 import { EventOutputDTO, GameServerOutputDTO, PERMISSIONS } from '@takaro/apiclient';
 import { useNavigate } from '@tanstack/react-router';
@@ -23,6 +22,7 @@ import {
   AiOutlineFunction as ModulesIcon,
   AiOutlineSetting as SettingsIcon,
 } from 'react-icons/ai';
+import { useSnackbar } from 'notistack';
 
 import { Header, TitleContainer, DetailsContainer } from './style';
 import { useGameServerRemove } from 'queries/gameserver';
@@ -35,6 +35,7 @@ import { useQuery } from '@tanstack/react-query';
 export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reachable }) => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const [valid, setValid] = useState<boolean>(false);
+  const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
   const theme = useTheme();
   const { mutate, isPending: isDeleting } = useGameServerRemove();
@@ -49,7 +50,7 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
         online: [true],
         gameServerId: [id],
       },
-    })
+    }),
   );
 
   useEffect(() => {
@@ -74,7 +75,10 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
   };
 
   const handleOnDelete = () => {
-    mutate({ gameServerId: id });
+    try {
+      mutate({ gameServerId: id });
+      enqueueSnackbar('Gameserver successfully deleted', { variant: 'default', type: 'success' });
+    } catch {}
   };
 
   const handleOnCopyClick = (e: MouseEvent) => {
@@ -168,10 +172,6 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
         <Dialog.Content>
           <Dialog.Heading>delete: gameserver</Dialog.Heading>
           <Dialog.Body size="medium">
-            <Alert
-              variant="info"
-              text="You can hold down shift when deleting a gameserver to bypass this confirmation entirely."
-            />
             <p>
               Are you sure you want to delete the gameserver? To confirm, type <strong>{name}</strong> in the field
               below.

@@ -6,7 +6,6 @@ import { GameServerOutputDTO, GameServerTestReachabilityInputDTOTypeEnum } from 
 import { useGameServerReachabilityByConfig } from 'queries/gameserver';
 import { connectionInfoFieldsMap } from './connectionInfoFieldsMap';
 import { useNavigate } from '@tanstack/react-router';
-import { useSnackbar } from 'notistack';
 
 interface CreateUpdateFormProps {
   initialData?: GameServerOutputDTO;
@@ -45,7 +44,6 @@ export const CreateUpdateForm: FC<CreateUpdateFormProps> = ({ initialData, isLoa
   const [connectionError, setConnectionError] = useState<string | null>(null);
   const { mutateAsync: testReachabilityMutation, isPending: testingConnection } = useGameServerReachabilityByConfig();
   const navigate = useNavigate();
-  const { enqueueSnackbar } = useSnackbar();
 
   const { control, handleSubmit, watch, trigger, formState } = useForm<IFormInputs>({
     mode: 'onChange',
@@ -58,7 +56,7 @@ export const CreateUpdateForm: FC<CreateUpdateFormProps> = ({ initialData, isLoa
       values: {
         name: initialData.name,
         type: initialData.type,
-        connectionInfo: initialData.connectionInfo as any,
+        connectionInfo: initialData.connectionInfo,
       },
     }),
   });
@@ -78,7 +76,6 @@ export const CreateUpdateForm: FC<CreateUpdateFormProps> = ({ initialData, isLoa
     });
 
     if (response.connectable) {
-      enqueueSnackbar('Connection established', { type: 'success', variant: 'default' });
       setConnectionOk(true);
       setConnectionError(null);
     } else {

@@ -4,14 +4,10 @@ import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { getApiClient } from 'util/getApiClient';
-import { GameServerSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
+import { useSnackbar } from 'notistack';
 import { useGameServerCreateFromCSMMImport } from 'queries/gameserver';
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
-
-export interface IFormInputs {
-  importData: FileList;
-}
 
 export const Route = createFileRoute('/_auth/_global/gameservers/create/import')({
   beforeLoad: async ({ context }) => {
@@ -34,12 +30,14 @@ const validationSchema = z.object({
 });
 function Component() {
   const [open, setOpen] = useState(true);
+  // eslint-disable-next-line
   const [jobStatus, setJobStatus] = useState<any | null>(null);
   const [jobId, setJobId] = useState<string | null>(null);
   const [refreshInterval, setRefreshInterval] = useState<number | null>(null);
   const { mutateAsync, error: importError } = useGameServerCreateFromCSMMImport();
   const navigate = useNavigate();
   const api = getApiClient();
+  const { enqueueSnackbar } = useSnackbar();
 
   const fetchJobStatus = async () => {
     if (!jobId) return;
@@ -68,19 +66,6 @@ function Component() {
   }, [jobId]);
 
   useEffect(() => {
-    const handleRedirect = async () => {
-      const newestServerRes = await api.gameserver.gameServerControllerSearch({
-        sortBy: 'createdAt',
-        sortDirection: GameServerSearchInputDTOSortDirectionEnum.Desc,
-        limit: 1,
-      });
-      localStorage.setItem('gameServerId', newestServerRes.data.data[0].id);
-      navigate({
-        to: '/gameserver/$gameServerId/dashboard/overview',
-        params: { gameServerId: newestServerRes.data.data[0].id },
-      });
-    };
-
     if (!jobStatus) return;
 
     if (jobStatus.status === 'failed' || jobStatus.status === 'completed') {
@@ -88,18 +73,20 @@ function Component() {
     }
 
     if (jobStatus.status === 'completed') {
-      handleRedirect();
+      enqueueSnackbar('gameserver imported!', { variant: 'default', type: 'success' });
+      navigate({ to: '/gameservers' });
     }
   }, [jobStatus]);
 
-  const { control, handleSubmit } = useForm<IFormInputs>({
-    mode: 'onSubmit',
+  const { control, handleSubmit } = useForm<z.infer<typeof validationSchema>>({
+    mode: 'onChange',
     resolver: zodResolver(validationSchema),
   });
 
-  const onSubmit: SubmitHandler<IFormInputs> = async ({ importData }) => {
+  const onSubmit: SubmitHandler<z.infer<typeof validationSchema>> = async ({ importData }) => {
+    const typedImportData = importData as FileList;
     const formData = new FormData();
-    formData.append('import.json', importData[0]);
+    formData.append('import.json', typedImportData[0]);
     const job = await mutateAsync(formData);
     setJobId(job.id);
   };
@@ -132,10 +119,12 @@ function Component() {
           </form>
           {importError && <FormError error={importError} />}
           {jobStatus && jobStatus.status !== 'completed' && jobStatus.status !== 'failed' && <Spinner size="medium" />}
-          {jobStatus && <pre>{JSON.stringify(jobStatus, null, 2)}</pre>}
+          {jobStatus && jobStatus.status === 'failed' && (
+            <FormError error={jobStatus.failedReason + '. Verify that you are uploading the correct data!'} />
+          )}
         </Drawer.Body>
         <Drawer.Footer>
-          <Button fullWidth text="Submit" form="import-game-server-form" type="submit" />
+          <Button fullWidth text="Import gameserver" form="import-game-server-form" type="submit" />
         </Drawer.Footer>
       </Drawer.Content>
     </Drawer>
