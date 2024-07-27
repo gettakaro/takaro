@@ -6,7 +6,6 @@ import { CreateUpdateForm } from './-gameservers/CreateUpdateForm';
 import { IFormInputs } from './-gameservers/validationSchema';
 import { GameServerCreateDTOTypeEnum } from '@takaro/apiclient';
 import { hasPermission } from 'hooks/useHasPermission';
-import { useSnackbar } from 'notistack';
 
 export const Route = createFileRoute('/_auth/_global/gameservers/create/')({
   beforeLoad: async ({ context }) => {
@@ -20,7 +19,6 @@ export const Route = createFileRoute('/_auth/_global/gameservers/create/')({
 
 function Component() {
   const navigate = useNavigate({ from: Route.fullPath });
-  const { enqueueSnackbar } = useSnackbar();
   const { mutate, isPending, error: gameServerCreateError, isSuccess } = useGameServerCreate();
 
   const onSubmit: SubmitHandler<IFormInputs> = ({ type, connectionInfo, name }) => {
@@ -32,7 +30,6 @@ function Component() {
   };
 
   if (isSuccess) {
-    enqueueSnackbar('Gameserver created!', { variant: 'default', type: 'success' });
     navigate({ to: '/gameservers' });
   }
 

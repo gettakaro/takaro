@@ -31,7 +31,6 @@ function Component() {
   }
 
   if (isSuccess) {
-    enqueueSnackbar('Variable updated!', { variant: 'default', type: 'success' });
     navigate({ to: '/variables' });
   }
 

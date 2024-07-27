@@ -23,10 +23,10 @@ function Component() {
   const { gameServerId } = Route.useParams();
   const gameServer = Route.useLoaderData();
   const navigate = useNavigate({ from: Route.fullPath });
-  const { mutateAsync, isPending, error: gameServerUpdateError } = useGameServerUpdate();
+  const { mutate, isPending, error: gameServerUpdateError } = useGameServerUpdate();
 
-  const onSubmit: SubmitHandler<IFormInputs> = async ({ name, connectionInfo }) => {
-    await mutateAsync({
+  const onSubmit: SubmitHandler<IFormInputs> = ({ name, connectionInfo }) => {
+    mutate({
       gameServerId,
       gameServerDetails: {
         name,

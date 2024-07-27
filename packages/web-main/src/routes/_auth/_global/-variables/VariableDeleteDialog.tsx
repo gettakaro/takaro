@@ -2,7 +2,6 @@ import { VariableOutputDTO } from '@takaro/apiclient';
 import { Button, Dialog } from '@takaro/lib-components';
 import { useVariableDelete } from 'queries/variable';
 import { FC } from 'react';
-import { useSnackbar } from 'notistack';
 import { useNavigate } from '@tanstack/react-router';
 
 interface VariableDeleteProps {
@@ -13,11 +12,9 @@ interface VariableDeleteProps {
 
 export const VariableDeleteDialog: FC<VariableDeleteProps> = ({ variable, openDialog, setOpenDialog }) => {
   const { mutateAsync, isPending: isDeleting, isSuccess } = useVariableDelete();
-  const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
 
   if (isSuccess) {
-    enqueueSnackbar('Variable successfully deleted!', { variant: 'default', type: 'success' });
     navigate({ to: '/variables' });
   }
 
