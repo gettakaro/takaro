@@ -27,12 +27,14 @@ interface I7DaysToDieEvent extends JsonObject {
  */
 const blackListedMessages = [
   'NullReferenceException',
-  'VehicleManager write #',
   'Infinity or NaN floating point numbers appear when calculating the transform matrix for a Collider',
   'IsMovementBlocked',
   'Particle System is trying to spawn on a mesh with zero surface area',
   'AddDecorationAt',
   'EntityFactory CreateEntity: unknown type',
+  'DroneManager',
+  'VehicleManager',
+  'kinematic body',
 ];
 
 const EventRegexMap = {
