@@ -5,6 +5,7 @@ import {
   SettingsOutputDTOKeyEnum,
   SettingsOutputDTOTypeEnum,
 } from '@takaro/apiclient';
+
 const group = 'SettingsController';
 
 const mockGameServer = {

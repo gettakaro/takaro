@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
 import { logger, ctx } from '@takaro/util';
+import { context, trace } from '@opentelemetry/api';
 
 const SUPPRESS_BODY_KEYWORDS = ['password', 'newPassword'];
 const HIDDEN_ROUTES = ['/metrics', '/health', '/healthz', '/ready', '/readyz', '/queues/api/queues'];
-import { context, trace } from '@opentelemetry/api';
 const log = logger('http');
 
 /**

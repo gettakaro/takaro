@@ -1,6 +1,5 @@
 import { FC, useEffect, useMemo, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { AiOutlinePlus as PlusIcon, AiOutlineDelete as DeleteIcon } from 'react-icons/ai';
 import {
   Table,
   useTableActions,
@@ -17,7 +16,13 @@ import {
 import { useUserRemove, useInviteUser, usersQueryOptions } from 'queries/user';
 import { UserOutputWithRolesDTO, UserSearchInputDTOSortDirectionEnum, PERMISSIONS } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
-import { AiOutlineUser as ProfileIcon, AiOutlineEdit as EditIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
+import {
+  AiOutlinePlus as PlusIcon,
+  AiOutlineDelete as DeleteIcon,
+  AiOutlineUser as ProfileIcon,
+  AiOutlineEdit as EditIcon,
+  AiOutlineRight as ActionIcon,
+} from 'react-icons/ai';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';

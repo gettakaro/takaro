@@ -33,7 +33,11 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
 
   const handleOnDeleteClick = (e: MouseEvent) => {
     e.stopPropagation();
-    e.shiftKey ? handleUninstall(e) : setOpenDialog(true);
+    if (e.shiftKey) {
+      handleUninstall(e);
+    } else {
+      setOpenDialog(true);
+    }
   };
 
   const handleUninstall = async (e: MouseEvent) => {

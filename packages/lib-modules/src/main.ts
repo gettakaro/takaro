@@ -8,11 +8,10 @@ import { Lottery } from './modules/lottery/index.js';
 import { PlayerOnboarding } from './modules/playerOnboarding/index.js';
 import { ServerMessages } from './modules/serverMessages/index.js';
 import { Teleports } from './modules/teleports/index.js';
-export { BuiltinModule, ICommand, ICommandArgument, ICronJob, IHook, IFunction } from './BuiltinModule.js';
-
-export * from './dto/index.js';
-
 import { Utils } from './modules/utils/index.js';
+
+export { BuiltinModule, ICommand, ICommandArgument, ICronJob, IHook, IFunction } from './BuiltinModule.js';
+export * from './dto/index.js';
 
 let cached: Array<BuiltinModule<unknown>> | null = null;
 

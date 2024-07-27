@@ -1,5 +1,4 @@
-import { IntegrationTest, expect } from '@takaro/test';
-import { IModuleTestsSetupData, modulesTestSetup } from '@takaro/test';
+import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup } from '@takaro/test';
 import { EventPlayerConnected, GameEvents } from '../dto/gameEvents.js';
 import { HookEvents } from '../main.js';
 

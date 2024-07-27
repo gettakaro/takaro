@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate, createFileRoute } from '@tanstack/react-router';
 import { UpdateVerificationFlowBody, VerificationFlow } from '@ory/client';
 import { styled, Skeleton } from '@takaro/lib-components';
 import { UserAuthCard } from '@ory/elements';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { createFileRoute } from '@tanstack/react-router';
 import { z } from 'zod';
 import { useOry } from 'hooks/useOry';
 
@@ -45,7 +44,9 @@ function Component() {
       oryClient
         // the flow data contains the form fields, error messages and csrf token
         .getVerificationFlow({ id: flowId })
-        .then(({ data: flow }) => setFlow(flow))
+        .then(({ data: flow }) => {
+          setFlow(flow);
+        })
         .catch(sdkErrorHandler),
     [],
   );

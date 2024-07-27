@@ -183,5 +183,5 @@ process.on('unhandledRejection', (reason) => {
 });
 
 process.on('uncaughtException', (error: Error) => {
-  log.error(`Caught exception: ${error}\n` + `Exception origin: ${error.stack}`);
+  log.error(`Caught exception: ${error}\n Exception origin: ${error.stack}`);
 });

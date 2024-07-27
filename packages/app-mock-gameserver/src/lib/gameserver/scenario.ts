@@ -51,7 +51,7 @@ export async function playScenario(socketServer: MockServerSocketServer, gameIns
           }
 
           resolve();
-        } catch (error) {
+        } catch (_error) {
           resolve();
         }
       }, event.time);

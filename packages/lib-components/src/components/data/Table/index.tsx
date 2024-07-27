@@ -1,5 +1,5 @@
 /// <reference path="./react-table.d.ts" />
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useMemo, useState, JSX } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Density } from '../../../styled';
@@ -297,6 +297,7 @@ export function Table<DataType extends object>({
                         description="Items will appear here. Add your first item to begin!"
                         actions={[
                           <Button
+                            key={id + '-learn-more-button'}
                             variant="clear"
                             onClick={() => window.open('https://docs.takaro.io')}
                             text="Learn more"

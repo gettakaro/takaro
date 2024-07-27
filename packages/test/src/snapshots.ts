@@ -7,6 +7,7 @@ import { ITakaroAPIAxiosResponse } from '@takaro/apiclient';
 import { IIntegrationTest } from './integrationTest.js';
 import * as url from 'url';
 import { integrationConfig } from './main.js';
+
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 function normalizePath(path: string) {
@@ -54,7 +55,7 @@ export async function matchSnapshot<SetupData>(
 
   try {
     file = await readFile(snapshotPath, { encoding: 'utf-8' });
-  } catch (error) {
+  } catch (_error) {
     await mkdir(path.dirname(snapshotPath), { recursive: true });
     await writeFile(snapshotPath, JSON.stringify(fullData, null, 2));
     throw new Error(`No snapshot exists, created a new one: ${snapshotPath}`);

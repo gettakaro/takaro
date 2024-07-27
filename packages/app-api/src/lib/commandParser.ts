@@ -43,7 +43,7 @@ export async function parseCommand(
       case 'string':
         parsedArgs[argument.name] = value.replace(/"/g, '');
         break;
-      case 'number':
+      case 'number': {
         const parsed = parseInt(value, 10);
 
         if (isNaN(parsed)) {
@@ -60,6 +60,7 @@ export async function parseCommand(
 
         parsedArgs[argument.name] = parseInt(value, 10);
         break;
+      }
       case 'boolean':
         if (value !== 'true' && value !== 'false') {
           log.warn('Invalid boolean value', {

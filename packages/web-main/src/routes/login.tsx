@@ -19,20 +19,6 @@ export const Route = createFileRoute('/login')({
   component: Component,
 });
 
-/*
-const StyledLink = styled(Link)`
-  width: 100%;
-  display: block;
-  text-align: left;
-  margin-top: -1.5rem;
-  margin-bottom: 2.5rem;
-
-  &:hover {
-    text-decoration: underline;
-  }
-`;
-*/
-
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -109,7 +95,7 @@ function Component() {
     await router.invalidate();
     // hack to wait for auth state to update???
     await sleep(500);
-    navigate({ to: search.redirect || '/' });
+    await navigate({ to: search.redirect ?? '/' });
   }
 
   useEffect(() => {
@@ -140,8 +126,8 @@ function Component() {
     setLoading(true);
     setError(undefined);
     try {
-      if (loginFlow?.id) {
-        await logIn(loginFlow?.id, email, password, csrfToken!);
+      if (loginFlow?.id && csrfToken) {
+        await logIn(loginFlow.id, email, password, csrfToken);
       }
     } catch (error) {
       reset();

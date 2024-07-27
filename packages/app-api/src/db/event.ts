@@ -16,7 +16,7 @@ type LogicalOperator = 'AND' | 'OR';
 export interface Filter {
   field: string;
   operator: Operator;
-  value: any;
+  value: unknown;
 }
 
 export interface FilterGroup {

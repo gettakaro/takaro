@@ -108,12 +108,15 @@ function Component() {
     }
 
     // dirtyFields.settings contains an ARRAY of all settings, but the unchanged ones are empty slots
-    const changedFields: FormSetting[] = formState.dirtyFields.settings.reduce((acc, dirtySetting, idx) => {
-      if (dirtySetting) {
-        acc.push(settings[idx]);
-      }
-      return acc;
-    }, [] as FormSetting[]);
+    const changedFields: FormSetting[] = formState.dirtyFields.settings.reduce<FormSetting[]>(
+      (acc, dirtySetting, idx) => {
+        if (dirtySetting) {
+          acc.push(settings[idx]);
+        }
+        return acc;
+      },
+      [],
+    );
 
     try {
       for (const setting of changedFields) {
@@ -133,7 +136,7 @@ function Component() {
       }
       enqueueSnackbar('Settings updated!', { variant: 'default', type: 'success' });
       reset({}, { keepValues: true });
-    } catch (error) {
+    } catch (_error) {
       enqueueSnackbar('An error occurred while saving settings', { variant: 'default', type: 'error' });
       return;
     }
@@ -149,9 +152,11 @@ function Component() {
           // to make sure we only append the fields once
           // All fields are strings, however, the Switch component requires a boolean value.
           if (fields.length !== Object.keys(gameServerSettings).length) {
-            type === SettingsOutputDTOTypeEnum.Override
-              ? append({ key, type: SettingsOutputDTOTypeEnum.Override, value: value === 'true' ? true : false })
-              : append({ key, type: SettingsOutputDTOTypeEnum.Inherit, value: value === 'true' ? true : false });
+            if (type === SettingsOutputDTOTypeEnum.Override) {
+              append({ key, type: SettingsOutputDTOTypeEnum.Override, value: value === 'true' ? true : false });
+            } else {
+              append({ key, type: SettingsOutputDTOTypeEnum.Inherit, value: value === 'true' ? true : false });
+            }
           }
           settingsComponents[key] = (fieldName: string, disabled: boolean) => (
             <NoSpacing>
@@ -160,9 +165,11 @@ function Component() {
           );
         } else {
           if (fields.length !== Object.keys(gameServerSettings).length) {
-            type === SettingsOutputDTOTypeEnum.Override // other cases are `inherit` or `default` but we both consider them as `inherit`
-              ? append({ key, type: SettingsOutputDTOTypeEnum.Override, value: value })
-              : append({ key, type: SettingsOutputDTOTypeEnum.Inherit, value: value });
+            if (type === SettingsOutputDTOTypeEnum.Override) {
+              append({ key, type: SettingsOutputDTOTypeEnum.Override, value: value });
+            } else {
+              append({ key, type: SettingsOutputDTOTypeEnum.Inherit, value: value });
+            }
           }
           settingsComponents[key] = (fieldName: string, disabled: boolean) => (
             <NoSpacing>

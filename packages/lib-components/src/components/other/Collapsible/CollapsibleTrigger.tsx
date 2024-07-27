@@ -29,7 +29,10 @@ const Container = styled.button<{ open: boolean }>`
 `;
 
 export type TriggerProps = HTMLProps<HTMLElement> & PropsWithChildren<{ asChild?: boolean }>;
-export const CollapsibleTrigger = forwardRef<HTMLElement, TriggerProps>(({ children, asChild }, ref) => {
+export const CollapsibleTrigger = forwardRef<HTMLElement, TriggerProps>(function CollapsibleTrigger(
+  { children, asChild },
+  ref,
+) {
   const { setOpen, open } = useCollapsibleContext();
 
   const handleClick = () => {
@@ -37,9 +40,11 @@ export const CollapsibleTrigger = forwardRef<HTMLElement, TriggerProps>(({ child
   };
 
   if (asChild && isValidElement(children)) {
-    const existingOnClick = children.props.onClick;
+    const hasOnClick = children.props.onClick;
     const mergedOnClick = () => {
-      existingOnClick && existingOnClick();
+      if (hasOnClick) {
+        hasOnClick();
+      }
       handleClick();
     };
 
@@ -47,7 +52,6 @@ export const CollapsibleTrigger = forwardRef<HTMLElement, TriggerProps>(({ child
       onClick: mergedOnClick,
       role: 'button',
     });
-  } else {
   }
 
   return (

@@ -111,7 +111,7 @@ export class Rust implements IGameServer {
 
   async executeConsoleCommand(rawCommand: string) {
     const client = await this.getClient();
-    return new Promise<CommandOutput>(async (resolve, reject) => {
+    return new Promise<CommandOutput>((resolve, reject) => {
       const command = rawCommand.trim();
       const requestId = this.getRequestId();
 

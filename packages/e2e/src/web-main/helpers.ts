@@ -1,4 +1,5 @@
-import { test, type Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
+import { test } from '@playwright/test';
 
 import { AdminClient } from '@takaro/apiclient';
 import { integrationConfig } from '@takaro/test';

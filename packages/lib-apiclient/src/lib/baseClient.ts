@@ -1,6 +1,5 @@
 import { MetaApi } from '../generated/api.js';
-import { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
-import axios from 'axios';
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
 
 export interface IBaseApiClientConfig {
   url: string;
@@ -106,11 +105,12 @@ export class BaseApiClient<T extends IBaseApiClientConfig> {
    */
   async waitUntilHealthy(timeout = 600000) {
     const start = Date.now();
-    while (true) {
+    let isHealthy = false;
+    while (!isHealthy) {
       try {
         const { data } = await this.meta.metaGetHealth();
         if (data.healthy) {
-          return;
+          isHealthy = true;
         }
       } catch {
         // ignore

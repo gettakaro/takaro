@@ -1,12 +1,20 @@
 import { FC, useEffect, useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
-import { Button, Card, CollapseList, Drawer, FormError, Switch, TextField, useTheme } from '@takaro/lib-components';
+import {
+  styled,
+  Button,
+  Card,
+  CollapseList,
+  Drawer,
+  FormError,
+  Switch,
+  TextField,
+  useTheme,
+} from '@takaro/lib-components';
 import { PermissionOutputDTO, RoleOutputDTO } from '@takaro/apiclient';
 import { useForm, SubmitHandler, Control } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-
-import { styled } from '@takaro/lib-components';
 
 const ButtonContainer = styled.div`
   display: flex;

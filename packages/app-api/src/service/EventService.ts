@@ -1,7 +1,7 @@
 import { TakaroService } from './Base.js';
 
 import { IsEnum, IsObject, IsOptional, IsUUID, ValidateNested } from 'class-validator';
-import { TakaroDTO, TakaroModelDTO, ctx, errors, isTakaroDTO, traceableClass } from '@takaro/util';
+import { TakaroDTO, TakaroModelDTO, ctx, errors, isTakaroDTO, traceableClass, PostHog } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { EventModel, EventRepo, Filter, FilterGroup } from '../db/event.js';
@@ -15,7 +15,6 @@ import { BaseEvent, EventMapping, EventPayload, TakaroEvents } from '@takaro/mod
 import { ValueOf } from 'type-fest';
 import { HookService } from './HookService.js';
 import { eventsMetric } from '../lib/metrics.js';
-import { PostHog } from '@takaro/util';
 
 export const EVENT_TYPES = {
   ...TakaroEvents,

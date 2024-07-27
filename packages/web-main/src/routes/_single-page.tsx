@@ -1,5 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router';
-import { Outlet } from '@tanstack/react-router';
+import { createFileRoute, Outlet } from '@tanstack/react-router';
 import { styled } from '@takaro/lib-components';
 
 export const Route = createFileRoute('/_single-page')({

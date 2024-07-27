@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from '@tanstack/react-router';
 import { RecoveryFlow, UpdateRecoveryFlowBody } from '@ory/client';
 import { styled, Company, Skeleton } from '@takaro/lib-components';
 import { RecoverySectionAdditionalProps, UserAuthCard } from '@ory/elements';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { z } from 'zod';
 import { useOry } from 'hooks/useOry';
 import { AxiosError } from 'axios';
@@ -51,7 +50,9 @@ function Component() {
     (flowId: string) =>
       oryClient
         .getRecoveryFlow({ id: flowId })
-        .then(({ data: flow }) => setFlow(flow))
+        .then(({ data: flow }) => {
+          setFlow(flow);
+        })
         .catch(sdkErrorHandler),
     [],
   );

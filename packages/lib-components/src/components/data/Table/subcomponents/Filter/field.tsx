@@ -1,7 +1,6 @@
 import { Control, UseFormSetValue, useWatch } from 'react-hook-form';
 import { SelectField, TextField } from '../../../../../components';
-import { FilterInputType, IFormInputs } from '.';
-import { Operators } from '.';
+import { Operators, FilterInputType, IFormInputs } from '.';
 import { Column } from '@tanstack/react-table';
 import { useLayoutEffect } from 'react';
 import { camelCaseToSpaces } from '../../../../../helpers';

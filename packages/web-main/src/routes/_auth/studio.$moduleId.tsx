@@ -28,7 +28,7 @@ const LoadingContainer = styled.div`
 `;
 
 export const Route = createFileRoute('/_auth/studio/$moduleId')({
-  beforeLoad: async ({}) => {
+  beforeLoad: async () => {
     try {
       const me = (await getApiClient().user.userControllerMe()).data.data;
       if (!hasPermission(me.user, ['MANAGE_MODULES'])) {
@@ -106,7 +106,7 @@ function Component() {
         .reduce(moduleItemPropertiesReducer(FileType.Commands), nameToId);
 
       mod.functions
-        .sort((a, b) => a.name!.localeCompare(b.name!))
+        .sort((a, b) => a.name!.localeCompare(b.name))
         .reduce(moduleItemPropertiesReducer(FileType.Functions), nameToId);
 
       return nameToId;

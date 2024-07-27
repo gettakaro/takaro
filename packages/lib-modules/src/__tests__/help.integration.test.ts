@@ -1,5 +1,4 @@
-import { IntegrationTest, expect } from '@takaro/test';
-import { IModuleTestsSetupData, modulesTestSetup, chatMessageSorter } from '@takaro/test';
+import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, chatMessageSorter } from '@takaro/test';
 import { GameEvents } from '../dto/gameEvents.js';
 
 const group = 'Help command';

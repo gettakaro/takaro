@@ -22,9 +22,8 @@ import {
   getGame,
   BanDTO,
 } from '@takaro/gameserver';
-import { errors, TakaroModelDTO, traceableClass } from '@takaro/util';
+import { errors, TakaroModelDTO, traceableClass, TakaroDTO } from '@takaro/util';
 import { SettingsService } from './SettingsService.js';
-import { TakaroDTO } from '@takaro/util';
 import { queueService } from '@takaro/queues';
 import {
   HookEvents,
@@ -39,8 +38,7 @@ import {
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import type { ModuleOutputDTO as ModuleOutputDTOType } from './ModuleService.js';
-import { ModuleOutputDTO } from './ModuleService.js';
-import { ModuleService } from './ModuleService.js';
+import { ModuleOutputDTO, ModuleService } from './ModuleService.js';
 
 // Curse you ESM... :(
 import _Ajv from 'ajv';
@@ -253,9 +251,8 @@ export class GameServerService extends TakaroService<
     } else if (connectionInfo && type) {
       const instance = await getGame(type, connectionInfo, {});
       return instance.testReachability();
-    } else {
-      throw new errors.BadRequestError('Missing required parameters');
     }
+    throw new errors.BadRequestError('Missing required parameters');
   }
 
   async getModuleInstallation(gameserverId: string, moduleId: string) {
@@ -299,7 +296,7 @@ export class GameServerService extends TakaroService<
     if (!isValidUserConfig || !isValidSystemConfig) {
       const allErrors = [...(validateSystemConfig.errors ?? []), ...(validateUserConfig.errors ?? [])];
       const prettyErrors = allErrors
-        ?.map((e) => {
+        .map((e) => {
           if (e.keyword === 'additionalProperties') {
             return `${e.message}, invalid: ${e.params.additionalProperty}`;
           }
@@ -375,13 +372,10 @@ export class GameServerService extends TakaroService<
 
     const settingsService = new SettingsService(this.domainId, id);
     const settingsArr = await settingsService.getAll();
-    const settings = settingsArr.reduce(
-      (acc, curr) => {
-        acc[curr.key] = curr.value;
-        return acc;
-      },
-      {} as Record<string, string>,
-    );
+    const settings = settingsArr.reduce<Record<string, string>>((acc, curr) => {
+      acc[curr.key] = curr.value;
+      return acc;
+    }, {});
 
     gameInstance = await getGame(gameserver.type, gameserver.connectionInfo, settings);
 
@@ -578,7 +572,7 @@ export class GameServerService extends TakaroService<
 
     try {
       parsed = JSON.parse(raw);
-    } catch (error) {
+    } catch (_error) {
       throw new errors.BadRequestError('Invalid JSON');
     }
 

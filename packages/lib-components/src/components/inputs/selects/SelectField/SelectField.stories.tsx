@@ -1,6 +1,5 @@
-import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Button, SelectField, SelectFieldProps } from '../../../../components';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { styled } from '../../../../styled';
@@ -34,7 +33,7 @@ const OptionIcon = styled.img`
   color: transparent;
 `;
 
-export const onChange: StoryFn<SelectFieldProps & ExtraStoryProps> = (args) => {
+export const OnChange: StoryFn<SelectFieldProps & ExtraStoryProps> = (args) => {
   const { control } = useForm();
   const selectValue = useWatch({ control, name: 'film' });
 

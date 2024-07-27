@@ -137,15 +137,15 @@ interface GameServerRemove {
 export const useGameServerRemove = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
 
   return mutationWrapper<APIOutput, GameServerRemove>(
     useMutation<APIOutput, AxiosError<APIOutput>, GameServerRemove>({
       mutationFn: async ({ gameServerId }) =>
         (await apiClient.gameserver.gameServerControllerRemove(gameServerId)).data,
       onSuccess: async (_, { gameServerId }) => {
-        // remove all cached information of game server list.
+        enqueueSnackbar('Gameserver successfully deleted', { variant: 'default', type: 'success' });
         await queryClient.invalidateQueries({ queryKey: gameServerKeys.list() });
-        // remove all cached information about specific game server.
         await queryClient.invalidateQueries({
           queryKey: gameServerKeys.detail(gameServerId),
         });

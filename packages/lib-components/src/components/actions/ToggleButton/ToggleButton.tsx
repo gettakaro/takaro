@@ -13,36 +13,34 @@ export interface ToggleButtonProps {
   tooltip?: string;
 }
 
-export const ToggleButton = forwardRef<HTMLButtonElement, ToggleButtonProps>(
-  (
-    { selected = false, disabled = false, onClick = undefined, value, parentClickEvent = () => {}, children, tooltip },
-    ref,
-  ) => {
-    const handleOnClick = () => {
-      if (disabled) return;
-      parentClickEvent(value);
-      if (onClick) {
-        onClick();
-      }
-    };
-
-    if (tooltip) {
-      return (
-        <Tooltip>
-          <Tooltip.Trigger asChild>
-            <Item isSelected={selected} isDisabled={disabled} onClick={handleOnClick} ref={ref}>
-              {children}
-            </Item>
-          </Tooltip.Trigger>
-          <Tooltip.Content>{tooltip}</Tooltip.Content>
-        </Tooltip>
-      );
+export const ToggleButton = forwardRef<HTMLButtonElement, ToggleButtonProps>(function ToggleButton(
+  { selected = false, disabled = false, onClick = undefined, value, parentClickEvent = () => {}, children, tooltip },
+  ref,
+) {
+  const handleOnClick = () => {
+    if (disabled) return;
+    parentClickEvent(value);
+    if (onClick) {
+      onClick();
     }
+  };
 
+  if (tooltip) {
     return (
-      <Item isSelected={selected} isDisabled={disabled} onClick={handleOnClick} ref={ref}>
-        {children}
-      </Item>
+      <Tooltip>
+        <Tooltip.Trigger asChild>
+          <Item isSelected={selected} isDisabled={disabled} onClick={handleOnClick} ref={ref}>
+            {children}
+          </Item>
+        </Tooltip.Trigger>
+        <Tooltip.Content>{tooltip}</Tooltip.Content>
+      </Tooltip>
     );
-  },
-);
+  }
+
+  return (
+    <Item isSelected={selected} isDisabled={disabled} onClick={handleOnClick} ref={ref}>
+      {children}
+    </Item>
+  );
+});

@@ -48,7 +48,7 @@ export const EventNameSelect: FC<CustomSelectProps> = ({
       }}
     >
       {categorizedEventNames.map(({ events, category }) => (
-        <SelectField.OptionGroup label={category}>
+        <SelectField.OptionGroup label={category} key={`${selectName}-${category}`}>
           {events.map((eventName: string) => (
             <SelectField.Option key={`${selectName}-${eventName}`} value={eventName} label={cleanEventName(eventName)}>
               {cleanEventName(eventName)}

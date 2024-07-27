@@ -27,7 +27,7 @@ class DiscordBot {
       return;
     }
 
-    return new Promise<void>(async (resolve, reject) => {
+    return new Promise<void>((resolve, reject) => {
       this.client.on('ready', (client) => {
         this.log.info(`Logged in as ${client.user.tag}!`);
         this.log.info(`Invite link: ${this.inviteLink}`);

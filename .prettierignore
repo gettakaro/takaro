@@ -2,3 +2,4 @@ node_modules
 dist
 packages/lib-apiclient/src/generated
 packages/web-main/src/routeTree.gen.ts
+eslint.config.mjs

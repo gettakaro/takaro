@@ -16,7 +16,10 @@ const variants = {
   hidden: { opacity: 0, x: '20px' },
 };
 
-export const Content = forwardRef<HTMLDivElement, PropsWithChildren<ContentProps>>(({ children, value }, ref) => {
+export const Content = forwardRef<HTMLDivElement, PropsWithChildren<ContentProps>>(function TabsContent(
+  { children, value },
+  ref,
+) {
   const { value: selectedValue } = useTabsContext();
 
   const isHidden = value !== selectedValue;

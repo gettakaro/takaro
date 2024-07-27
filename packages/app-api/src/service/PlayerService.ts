@@ -367,16 +367,16 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
   }
 
   async observeIp(playerId: string, gameServerId: string, ip: string) {
-    const lookupResult = (await ipLookup).get(ip);
+    const lookupResult = ipLookup.get(ip);
 
     let newIpRecord;
 
-    if (lookupResult && lookupResult.country) {
+    if (lookupResult?.country) {
       newIpRecord = await this.repo.observeIp(playerId, gameServerId, ip, {
         country: lookupResult.country.iso_code,
-        city: lookupResult.city?.names.en || null,
-        latitude: lookupResult.location?.latitude.toString() || null,
-        longitude: lookupResult.location?.longitude.toString() || null,
+        city: lookupResult.city?.names.en ?? null,
+        latitude: lookupResult.location?.latitude.toString() ?? null,
+        longitude: lookupResult.location?.longitude.toString() ?? null,
       });
     } else {
       newIpRecord = await this.repo.observeIp(playerId, gameServerId, ip, null);

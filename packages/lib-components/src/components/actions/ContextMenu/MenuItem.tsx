@@ -44,7 +44,10 @@ export interface MenuItemProps extends React.ButtonHTMLAttributes<HTMLButtonElem
   disabled?: boolean;
 }
 
-export const MenuItem = forwardRef<HTMLButtonElement, MenuItemProps>(({ label, shortcut, disabled, ...props }, ref) => {
+export const MenuItem = forwardRef<HTMLButtonElement, MenuItemProps>(function MenuItem(
+  { label, shortcut, disabled, ...props },
+  ref,
+) {
   const containerRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {

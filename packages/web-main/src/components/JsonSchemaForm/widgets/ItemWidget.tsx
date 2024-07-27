@@ -34,9 +34,8 @@ const Inner = styled.div`
 const shouldFilter = (value: unknown, multiple: boolean): boolean => {
   if (multiple) {
     return value !== undefined && (value as string[]).length !== 0;
-  } else {
-    return value !== undefined;
   }
+  return value !== undefined;
 };
 
 export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema, F extends FormContextType = any>({
@@ -138,7 +137,7 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
     >
       <SelectQueryField.OptionGroup label="options">
         {items.map((item) => (
-          <SelectQueryField.Option value={item.id} label={item.name}>
+          <SelectQueryField.Option value={item.id} label={item.name} key={name + '-' + item.id}>
             <Inner>
               {renderIcon(gameServer, item)}
               <span>{item.name}</span>

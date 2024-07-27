@@ -7,7 +7,6 @@ import { Type } from 'class-transformer';
 import { CronJobCreateDTO, CronJobOutputDTO, CronJobService, CronJobUpdateDTO } from './CronJobService.js';
 import { HookCreateDTO, HookOutputDTO, HookService, HookUpdateDTO } from './HookService.js';
 import { errors, TakaroDTO, TakaroModelDTO, traceableClass } from '@takaro/util';
-import { getModules } from '@takaro/modules';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { CommandCreateDTO, CommandOutputDTO, CommandService, CommandUpdateDTO } from './CommandService.js';
@@ -16,6 +15,7 @@ import {
   TakaroEventModuleCreated,
   TakaroEventModuleUpdated,
   TakaroEventModuleDeleted,
+  getModules,
 } from '@takaro/modules';
 import { GameServerService, ModuleInstallDTO } from './GameServerService.js';
 import { PermissionCreateDTO, PermissionOutputDTO } from './RoleService.js';
@@ -169,7 +169,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
         mod.configSchema = JSON.stringify(getEmptyConfigSchema());
       }
       ajv.compile(JSON.parse(mod.configSchema));
-    } catch (e) {
+    } catch (_e) {
       throw new errors.BadRequestError('Invalid config schema');
     }
     const created = await this.repo.create(mod);
@@ -180,7 +180,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
       new EventCreateDTO({
         eventName: EVENT_TYPES.MODULE_CREATED,
         moduleId: created.id,
-        meta: await new TakaroEventModuleCreated(),
+        meta: new TakaroEventModuleCreated(),
       }),
     );
 
@@ -204,7 +204,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
           new EventCreateDTO({
             eventName: EVENT_TYPES.MODULE_UPDATED,
             moduleId: id,
-            meta: await new TakaroEventModuleUpdated(),
+            meta: new TakaroEventModuleUpdated(),
           }),
         );
       }
@@ -212,7 +212,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
       await this.refreshInstallations(id);
 
       return updated;
-    } catch (e) {
+    } catch (_e) {
       throw new errors.BadRequestError('Invalid config schema');
     }
   }
@@ -231,7 +231,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
       new EventCreateDTO({
         eventName: EVENT_TYPES.MODULE_DELETED,
         moduleId: id,
-        meta: await new TakaroEventModuleDeleted(),
+        meta: new TakaroEventModuleDeleted(),
       }),
     );
 

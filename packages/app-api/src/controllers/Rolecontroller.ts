@@ -16,6 +16,7 @@ import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators.js';
 import { Response } from 'express';
 import { PERMISSIONS } from '@takaro/auth';
+
 export class RoleOutputDTOAPI extends APIOutput<RoleOutputDTO> {
   @Type(() => RoleOutputDTO)
   @ValidateNested()

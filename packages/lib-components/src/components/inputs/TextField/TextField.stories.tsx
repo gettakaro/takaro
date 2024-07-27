@@ -1,5 +1,4 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
 import { TextField, TextFieldProps, Button } from '../../../components';
@@ -42,7 +41,7 @@ const validationSchema = z.object({
 });
 type FormFields = { name: string };
 
-export const onChange: StoryFn<TextFieldProps> = (args) => {
+export const OnChange: StoryFn<TextFieldProps> = (args) => {
   const { control } = useForm({ mode: 'onChange' });
   const TextFieldValue = useWatch({ name: args.name, control });
 

@@ -8,26 +8,27 @@ type ItemProps = {
   onClick?: () => void;
 };
 
-export const Item = forwardRef<HTMLDivElement, ItemProps & React.HTMLProps<HTMLDivElement>>(
-  ({ children, active, onClick }, ref) => {
-    const id = useId();
-    const theme = useTheme();
+export const Item = forwardRef<HTMLDivElement, ItemProps & React.HTMLProps<HTMLDivElement>>(function Item(
+  { children, active, onClick },
+  ref,
+) {
+  const id = useId();
+  const theme = useTheme();
 
-    return (
-      <ItemContent
-        ref={ref}
-        role="option"
-        onClick={onClick}
-        id={id}
-        aria-selected={active}
-        style={{
-          background: active ? theme.colors['primary'] : 'none',
-          padding: `${theme.spacing['0_5']} ${theme.spacing['1']}}`,
-          cursor: 'default',
-        }}
-      >
-        {children}
-      </ItemContent>
-    );
-  },
-);
+  return (
+    <ItemContent
+      ref={ref}
+      role="option"
+      onClick={onClick}
+      id={id}
+      aria-selected={active}
+      style={{
+        background: active ? theme.colors['primary'] : 'none',
+        padding: `${theme.spacing['0_5']} ${theme.spacing['1']}}`,
+        cursor: 'default',
+      }}
+    >
+      {children}
+    </ItemContent>
+  );
+});

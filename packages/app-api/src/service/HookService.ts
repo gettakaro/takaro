@@ -35,7 +35,7 @@ interface IHandleHookOptions {
 
 @ValidatorConstraint()
 export class IsSafeRegex implements ValidatorConstraintInterface {
-  public async validate(regex: string) {
+  public validate(regex: string) {
     return safeRegex(regex);
   }
 }

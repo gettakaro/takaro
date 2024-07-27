@@ -1,5 +1,4 @@
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
-import { useEffect } from 'react';
 import { JsonSchemaForm } from '..';
 import { Button } from '@takaro/lib-components';
 import { gameServersQueryOptions } from 'queries/gameserver';
@@ -11,13 +10,7 @@ export default {
 
 export const Default = () => {
   const fieldId = 'item';
-
-  const { data, isLoading } = useQuery(gameServersQueryOptions({}));
-
-  useEffect(() => {
-    if (data) {
-    }
-  }, [data]);
+  const { isLoading } = useQuery(gameServersQueryOptions({}));
 
   const schema: RJSFSchema = {
     $schema: 'http://json-schema.org/draft-07/schema#',

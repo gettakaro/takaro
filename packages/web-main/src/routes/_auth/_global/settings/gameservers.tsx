@@ -71,7 +71,11 @@ function Component() {
   const validationSchema = useMemo(() => {
     if (data) {
       const res = data.reduce((acc, { key }) => {
-        booleanFields.includes(key) ? (acc[key] = z.boolean()) : (acc[key] = z.string());
+        if (booleanFields.includes(key)) {
+          acc[key] = z.boolean();
+        } else {
+          acc[key] = z.string();
+        }
         return acc;
       }, {});
       return z.object(res);
@@ -98,7 +102,7 @@ function Component() {
 
       enqueueSnackbar('Settings has been successfully saved', { variant: 'default' });
       reset({}, { keepValues: true });
-    } catch (error) {
+    } catch (_error) {
       enqueueSnackbar('An error occurred while saving settings', { variant: 'default', type: 'error' });
       return;
     }

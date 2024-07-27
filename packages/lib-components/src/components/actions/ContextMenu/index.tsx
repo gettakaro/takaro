@@ -9,6 +9,7 @@ import {
   HTMLProps,
   RefObject,
   ReactElement,
+  JSX,
 } from 'react';
 import {
   useFloating,
@@ -51,7 +52,10 @@ type ContextMenuComponent = {
   Group: typeof ContextMenuGroup;
 };
 
-export const ContextMenu = forwardRef<HTMLButtonElement, ContextMenuProps>(({ children, targetRef }, _ref) => {
+export const ContextMenu = forwardRef<HTMLButtonElement, ContextMenuProps>(function ContextMenu(
+  { children, targetRef },
+  _ref,
+) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 

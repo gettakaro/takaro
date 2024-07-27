@@ -27,9 +27,8 @@ export const Description: FC<DescriptionProps> = ({ description, inputName, styl
               {part}
             </a>
           );
-        } else {
-          return part;
         }
+        return part;
       })}
     </StyledP>
   );

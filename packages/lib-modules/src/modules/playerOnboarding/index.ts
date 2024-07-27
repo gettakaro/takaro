@@ -1,5 +1,6 @@
 import { BuiltinModule, ICommand, IHook } from '../../BuiltinModule.js';
 import { HookEvents } from '../../dto/index.js';
+
 export class PlayerOnboarding extends BuiltinModule<PlayerOnboarding> {
   constructor() {
     super(

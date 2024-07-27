@@ -1,5 +1,6 @@
 import { GameServerOutputDTO } from '@takaro/apiclient';
-import { expect, type Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
+import { expect } from '@playwright/test';
 import { BasePage } from './BasePage.js';
 
 export class GameServersPage extends BasePage {

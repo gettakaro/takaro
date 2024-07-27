@@ -4,7 +4,7 @@ import { ParentSize } from '@visx/responsive';
 import { GridColumns } from '@visx/grid';
 import { Group } from '@visx/group';
 import { AreaClosed, Bar } from '@visx/shape';
-import { max, extent } from '@visx/vendor/d3-array';
+import { max, extent, bisector } from '@visx/vendor/d3-array';
 import { scaleTime, scaleLinear } from '@visx/scale';
 import { AxisBottom, AxisLeft } from '@visx/axis';
 import { curveMonotoneX } from '@visx/curve';
@@ -14,7 +14,6 @@ import { timeFormat } from '@visx/vendor/d3-time-format';
 import { PatternLines } from '@visx/pattern';
 import { Brush } from '@visx/brush';
 import { Bounds } from '@visx/brush/lib/types';
-import { bisector } from '@visx/vendor/d3-array';
 
 import { useTheme } from '../../../hooks';
 import { useGradients } from '../useGradients';

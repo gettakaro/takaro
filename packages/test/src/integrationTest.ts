@@ -1,12 +1,11 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
 import 'reflect-metadata';
-
 import { matchSnapshot } from './snapshots.js';
 import { integrationConfig, sandbox } from './main.js';
 import { expect } from './test/expect.js';
 import { AdminClient, Client, AxiosResponse, isAxiosError } from '@takaro/apiclient';
 import { randomUUID } from 'crypto';
 import { retry } from '@takaro/util';
+
 export class IIntegrationTest<SetupData> {
   snapshot!: boolean;
   group!: string;
@@ -55,7 +54,7 @@ before(async () => {
         `Removed ${danglingDomains.data.data.length} dangling domains. Your previous test run probably failed to clean up properly.`,
       );
     }
-  } catch (error) {
+  } catch (_error) {
     console.warn('Failed to clean up dangling domains');
   }
 });
@@ -75,11 +74,10 @@ export class IntegrationTest<SetupData> {
 
   constructor(public test: IIntegrationTest<SetupData>) {
     if (test.snapshot) {
-      this.test.expectedStatus = this.test.expectedStatus ?? 200;
-      this.test.filteredFields = this.test.filteredFields ?? [];
+      this.test.expectedStatus ??= 200;
+      this.test.filteredFields ??= [];
     }
-    this.test.standardEnvironment = this.test.standardEnvironment ?? true;
-
+    this.test.standardEnvironment ??= true;
     this.client = new Client({
       url: integrationConfig.get('host'),
       auth: {},
@@ -169,11 +167,9 @@ export class IntegrationTest<SetupData> {
 
           if (integrationTestContext.test.snapshot) {
             response = error.response;
-          } else {
-            if (error.response?.data) {
-              console.error(error.response?.data);
-              throw new Error(`Test failed: ${error.response.config.url} ${JSON.stringify(error.response?.data)}}`);
-            }
+          } else if (error.response?.data) {
+            console.error(error.response?.data);
+            throw new Error(`Test failed: ${error.response.config.url} ${JSON.stringify(error.response?.data)}}`);
           }
         }
 

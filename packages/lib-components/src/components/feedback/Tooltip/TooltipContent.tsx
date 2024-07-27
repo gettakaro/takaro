@@ -17,7 +17,10 @@ const Container = styled.div<{ elevation: Elevation }>`
   z-index: ${({ theme }) => theme.zIndex.tooltip};
 `;
 
-export const TooltipContent = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElement>>(({ style, ...props }, propRef) => {
+export const TooltipContent = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElement>>(function TooltipContent(
+  { style, ...props },
+  propRef,
+) {
   const theme = useTheme();
   const { floatingStyles, open, arrowRef, context, getFloatingProps } = useTooltipContext();
   const ref = useMergeRefs([context.refs.setFloating, propRef]);

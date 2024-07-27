@@ -243,6 +243,7 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
           )}
         </>
       );
+      break;
     case EventOutputDTOEventNameEnum.PlayerCreated:
       properties = (
         <>

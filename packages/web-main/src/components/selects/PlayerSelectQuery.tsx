@@ -128,7 +128,7 @@ export const PlayerSelectQueryView: FC<PlayerSelectQueryViewProps> = ({
     >
       <SelectQueryField.OptionGroup label="options">
         {players.map((player) => (
-          <SelectQueryField.Option value={player.id} label={player.name}>
+          <SelectQueryField.Option key={selectName + '-' + player.id} value={player.id} label={player.name}>
             <Inner>
               <Avatar size="tiny">
                 <Avatar.Image src={player.steamAvatar} alt={`Steam avatar ${player.name}`} />

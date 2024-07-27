@@ -27,7 +27,7 @@ export default {
   },
 } as Meta<FileFieldProps>;
 
-export const onSubmit: StoryFn<FileFieldProps> = (args) => {
+export const OnSubmit: StoryFn<FileFieldProps> = (args) => {
   type FormFields = {
     profileImage: FileList;
   };
