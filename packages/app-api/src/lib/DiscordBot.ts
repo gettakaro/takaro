@@ -27,26 +27,24 @@ class DiscordBot {
       return;
     }
 
-    return new Promise<void>((resolve, reject) => {
-      this.client.on('ready', (client) => {
-        this.log.info(`Logged in as ${client.user.tag}!`);
-        this.log.info(`Invite link: ${this.inviteLink}`);
-        resolve();
-      });
-
-      if (config.get('discord.handleEvents')) {
-        this.log.info('Setting up event handling');
-        this.client.on('messageCreate', (message) => this.messageHandler(message));
-      } else {
-        this.log.info('Event handling is disabled');
-      }
-
-      try {
-        await this.client.login(config.get('discord.botToken'));
-      } catch (error) {
-        reject(error);
-      }
+    this.client.on('ready', (client) => {
+      this.log.info(`Logged in as ${client.user.tag}!`);
+      this.log.info(`Invite link: ${this.inviteLink}`);
+      return;
     });
+
+    if (config.get('discord.handleEvents')) {
+      this.log.info('Setting up event handling');
+      this.client.on('messageCreate', (message) => this.messageHandler(message));
+    } else {
+      this.log.info('Event handling is disabled');
+    }
+
+    try {
+      await this.client.login(config.get('discord.botToken'));
+    } catch (_error) {
+      throw new errors.InternalServerError();
+    }
   }
 
   async getChannel(channelId: string): Promise<GuildBasedChannel> {
