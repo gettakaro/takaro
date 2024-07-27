@@ -12,7 +12,7 @@ export interface TextAreaFieldProps {
 export type GenericTextAreaFieldProps = TextAreaFieldProps & GenericInputProps<string, HTMLTextAreaElement>;
 
 const defaultsApplier = defaultInputPropsFactory<TextAreaFieldProps & GenericInputProps<string, HTMLTextAreaElement>>(
-  defaultInputProps
+  defaultInputProps,
 );
 
 export const GenericTextAreaField = forwardRef<HTMLTextAreaElement, GenericTextAreaFieldProps>((props, ref) => {

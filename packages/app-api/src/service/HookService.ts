@@ -152,7 +152,7 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
       const newFn = await functionsService.create(
         new FunctionCreateDTO({
           code: item.function,
-        })
+        }),
       );
       fnIdToAdd = newFn.id;
     } else {
@@ -185,7 +185,7 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
         fn.id,
         new FunctionUpdateDTO({
           code: item.function,
-        })
+        }),
       );
     }
 
@@ -255,7 +255,7 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
           copiedHookData.module = await gameServerService.getModuleInstallation(gameServerId, hook.moduleId);
 
           return queueService.queues.hooks.queue.add(copiedHookData as IHookJobData);
-        })
+        }),
       );
     }
   }

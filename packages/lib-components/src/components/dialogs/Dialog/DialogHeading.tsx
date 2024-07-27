@@ -21,7 +21,7 @@ interface DialogHeadingProps extends HTMLProps<HTMLHeadingElement> {
 
 export const DialogHeading = forwardRef<HTMLHeadingElement, DialogHeadingProps>(function DialogHeading(
   { children, hasClose = true, ...props },
-  ref
+  ref,
 ) {
   const { setLabelId, setOpen } = useDialogContext();
   const id = useId();

@@ -8,7 +8,10 @@ const log = logger('Mock');
 export class MockEmitter extends TakaroEmitter {
   private scopedListener = this.listener.bind(this);
 
-  constructor(private config: MockConnectionInfo, private io: Socket) {
+  constructor(
+    private config: MockConnectionInfo,
+    private io: Socket,
+  ) {
     super();
   }
 

@@ -29,5 +29,5 @@ export const Item = forwardRef<HTMLDivElement, ItemProps & React.HTMLProps<HTMLD
         {children}
       </ItemContent>
     );
-  }
+  },
 );

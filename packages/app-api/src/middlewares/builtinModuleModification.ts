@@ -6,7 +6,7 @@ import { ModuleService } from '../service/ModuleService.js';
 export async function builtinModuleModificationMiddleware(
   req: AuthenticatedRequest,
   _res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> {
   const moduleService = new ModuleService(req.domainId);
 

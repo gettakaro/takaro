@@ -66,7 +66,7 @@ export const GenericFileField = forwardRef<HTMLInputElement, GenericFileFieldPro
     (e: any) => {
       onChange(e.currentTarget.files);
     },
-    [onChange, multiple]
+    [onChange, multiple],
   );
 
   return (

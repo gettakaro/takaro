@@ -42,7 +42,7 @@ export const ActionMenu = forwardRef<HTMLUListElement, ActionMenuProps>(
         ))}
       </Container>
     );
-  }
+  },
 );
 
 interface ActionProps {

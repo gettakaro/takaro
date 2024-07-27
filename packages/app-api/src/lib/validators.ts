@@ -39,7 +39,7 @@ export class IsTypeOrArrayOfType<T> implements ValidatorConstraintInterface {
 }
 
 function createTypeOrArrayOfTypeDecorator<T>(
-  typeCheck: (value: unknown) => value is T
+  typeCheck: (value: unknown) => value is T,
 ): (validationOptions?: ValidationOptions) => PropertyDecorator {
   return (validationOptions?: ValidationOptions) => {
     return (object: object, propertyName: string | symbol) => {
@@ -55,14 +55,14 @@ function createTypeOrArrayOfTypeDecorator<T>(
 }
 
 export const IsStringOrArrayOfString = createTypeOrArrayOfTypeDecorator<string>(
-  (value): value is string => typeof value === 'string'
+  (value): value is string => typeof value === 'string',
 );
 export const IsNumberOrArrayOfNumber = createTypeOrArrayOfTypeDecorator<number>(
-  (value): value is number => typeof value === 'number'
+  (value): value is number => typeof value === 'number',
 );
 export const IsBooleanOrArrayOfBoolean = createTypeOrArrayOfTypeDecorator<boolean>(
-  (value): value is boolean => typeof value === 'boolean'
+  (value): value is boolean => typeof value === 'boolean',
 );
 export const IsUUIDOrArrayOfUUID = createTypeOrArrayOfTypeDecorator<string>(
-  (value): value is string => typeof value === 'string' && isUUID(value)
+  (value): value is string => typeof value === 'string' && isUUID(value),
 );

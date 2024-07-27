@@ -36,7 +36,7 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
       icon,
       showIcon = 'always',
     },
-    ref
+    ref,
   ) => {
     if (isLoading) {
       return (
@@ -72,5 +72,5 @@ export const Chip = forwardRef<HTMLDivElement, ChipProps>(
         {onDelete && !readOnly && !disabled && <Icon onClick={onDelete} size={12} />}
       </Container>
     );
-  }
+  },
 );

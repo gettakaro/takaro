@@ -246,7 +246,7 @@ const tests = [
     group,
     snapshot: true,
     name: `Prevents creating more than config.get('takaro.maxVariables') (${config.get(
-      'takaro.maxVariables'
+      'takaro.maxVariables',
     )}) variables`,
     setup: async function (this: IntegrationTest<void>): Promise<void> {
       const chunkSize = Math.ceil(config.get('takaro.maxVariables') / 10);
@@ -260,8 +260,8 @@ const tests = [
               this.client.variable.variableControllerCreate({
                 key: `Test variable ${i * chunkSize + j}`,
                 value: 'Test value',
-              })
-            )
+              }),
+            ),
         );
       }
 

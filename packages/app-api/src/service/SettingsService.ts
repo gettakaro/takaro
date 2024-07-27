@@ -54,7 +54,10 @@ export class SettingsOutputDTO extends TakaroDTO<SettingsOutputDTO> {
 
 @traceableClass('service:settings')
 export class SettingsService extends TakaroService<SettingsModel, Settings, never, never> {
-  constructor(public readonly domainId: string, public readonly gameServerId?: string) {
+  constructor(
+    public readonly domainId: string,
+    public readonly gameServerId?: string,
+  ) {
     super(domainId);
   }
 
@@ -104,7 +107,7 @@ export class SettingsService extends TakaroService<SettingsModel, Settings, neve
         gameserverId: this.gameServerId,
         userId,
         meta: new TakaroEventSettingsSet({ key, value }),
-      })
+      }),
     );
 
     return this.get(key);
@@ -114,7 +117,7 @@ export class SettingsService extends TakaroService<SettingsModel, Settings, neve
     const toReturn = await Promise.all(
       keys.map((key) => {
         return this.get(key);
-      })
+      }),
     );
 
     return toReturn;

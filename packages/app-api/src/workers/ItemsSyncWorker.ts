@@ -22,7 +22,7 @@ export class ItemsSyncWorker extends TakaroWorker<IGameServerQueueData> {
           jobId: 'itemsSync',
           every: config.get('queues.itemsSync.interval'),
         },
-      }
+      },
     );
   }
 }
@@ -50,7 +50,7 @@ export async function processJob(job: Job<IGameServerQueueData>) {
         if (reachable.connectable) {
           await queueService.queues.itemsSync.queue.add(
             { domainId: domain.id, gameServerId: gs.id },
-            { jobId: `itemsSync-${domain.id}-${gs.id}-${Date.now()}` }
+            { jobId: `itemsSync-${domain.id}-${gs.id}-${Date.now()}` },
           );
         }
       });

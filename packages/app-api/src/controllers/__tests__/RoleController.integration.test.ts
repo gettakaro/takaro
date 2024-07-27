@@ -44,7 +44,7 @@ const tests = [
       return this.client.role.roleControllerUpdate(this.setupData.id, {
         name: 'New name',
         permissions: await this.client.permissionCodesToInputs(
-          this.setupData.permissions.map((p) => p.permission.permission)
+          this.setupData.permissions.map((p) => p.permission.permission),
         ),
       });
     },

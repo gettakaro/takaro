@@ -23,7 +23,7 @@ const tests = [
               },
             },
           }),
-        }
+        },
       );
 
       const setEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);

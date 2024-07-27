@@ -47,12 +47,12 @@ before(async () => {
     });
 
     await Promise.allSettled(
-      danglingDomains.data.data.map((domain) => adminClient.domain.domainControllerRemove(domain.id))
+      danglingDomains.data.data.map((domain) => adminClient.domain.domainControllerRemove(domain.id)),
     );
 
     if (danglingDomains.data.data.length > 0) {
       console.log(
-        `Removed ${danglingDomains.data.data.length} dangling domains. Your previous test run probably failed to clean up properly.`
+        `Removed ${danglingDomains.data.data.length} dangling domains. Your previous test run probably failed to clean up properly.`,
       );
     }
   } catch (error) {
@@ -130,7 +130,7 @@ export class IntegrationTest<SetupData> {
 
             console.error(error.response?.data);
             throw new Error(
-              `Setup failed: ${error.config?.method} ${error.config?.url} ${JSON.stringify(error.response?.data)}}`
+              `Setup failed: ${error.config?.method} ${error.config?.url} ${JSON.stringify(error.response?.data)}}`,
             );
           }
         }
@@ -144,7 +144,7 @@ export class IntegrationTest<SetupData> {
         if (integrationTestContext.standardDomainId) {
           try {
             await integrationTestContext.adminClient.domain.domainControllerRemove(
-              integrationTestContext.standardDomainId
+              integrationTestContext.standardDomainId,
             );
           } catch (error) {
             if (!isAxiosError(error)) {
@@ -191,14 +191,14 @@ export class IntegrationTest<SetupData> {
           setup,
           integrationConfig.get('mocha.waitBetweenRetries'),
           integrationConfig.get('mocha.retries'),
-          teardown
+          teardown,
         );
       const retryableTeardown = () =>
         retry(
           teardown,
           integrationConfig.get('mocha.waitBetweenRetries'),
           integrationConfig.get('mocha.retries'),
-          async () => {}
+          async () => {},
         );
 
       beforeEach(retryableSetup);
@@ -212,8 +212,8 @@ export class IntegrationTest<SetupData> {
           async () => {
             await retryableTeardown();
             await retryableSetup();
-          }
-        )
+          },
+        ),
       );
     });
   }

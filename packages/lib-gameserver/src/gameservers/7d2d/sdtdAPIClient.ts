@@ -52,7 +52,7 @@ export class SdtdApiClient {
           });
           return Promise.reject(simplifiedError);
         }
-      }
+      },
     );
   }
 

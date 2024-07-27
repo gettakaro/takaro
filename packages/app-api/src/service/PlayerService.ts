@@ -169,7 +169,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
         playerId: player.id,
         roleId: roles.results[0].id,
         role: roles.results[0],
-      })
+      }),
     );
 
     return this.handleRoleExpiry(player);
@@ -207,7 +207,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
 
   async resolveFromId(
     playerId: string,
-    gameServerId?: string
+    gameServerId?: string,
   ): Promise<{ player: PlayerOutputWithRolesDTO; pogs: PlayerOnGameserverOutputWithRolesDTO[] }> {
     const playerOnGameServerService = new PlayerOnGameServerService(this.domainId);
     const player = await this.findOne(playerId);
@@ -222,7 +222,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
 
   async resolveRef(
     gamePlayer: IGamePlayer,
-    gameServerId: string
+    gameServerId: string,
   ): Promise<{ player: PlayerOutputWithRolesDTO; pog: PlayerOnGameserverOutputWithRolesDTO }> {
     const playerOnGameServerService = new PlayerOnGameServerService(this.domainId);
     let pog = await playerOnGameServerService.findAssociations(gamePlayer.gameId, gameServerId);
@@ -253,7 +253,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
           steamId: gamePlayer.steamId,
           epicOnlineServicesId: gamePlayer.epicOnlineServicesId,
           xboxLiveId: gamePlayer.xboxLiveId,
-        })
+        }),
       );
     } else {
       // At least one player is found, use the first one
@@ -267,7 +267,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
           steamId: gamePlayer.steamId,
           xboxLiveId: gamePlayer.xboxLiveId,
           epicOnlineServicesId: gamePlayer.epicOnlineServicesId,
-        })
+        }),
       );
     }
 
@@ -299,7 +299,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
         gameserverId,
         playerId: targetId,
         meta: new TakaroEventRoleAssigned({ role }),
-      })
+      }),
     );
   }
 
@@ -317,7 +317,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
         playerId: targetId,
         gameserverId,
         meta: new TakaroEventRoleRemoved({ role: { id: role.id, name: role.name } }),
-      })
+      }),
     );
   }
 
@@ -396,7 +396,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
             latitude: newIpRecord.latitude,
             longitude: newIpRecord.longitude,
           }),
-        })
+        }),
       );
     }
   }
@@ -421,7 +421,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
       `Browse to ${config.get('http.frontendHost')}/link?code=${secretCode} to complete the linking process.`,
       new IMessageOptsDTO({
         recipient: pog,
-      })
+      }),
     );
   }
 }

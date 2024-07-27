@@ -29,7 +29,7 @@ export const Absolute: FC<AbsoluteProps> = ({ isStart }) => {
 
   if (!dispatch || !state) {
     throw new Error(
-      'useDateRangePickerDispatchContext and useDateRangePickerContext must be used within a DateRangePickerProvider'
+      'useDateRangePickerDispatchContext and useDateRangePickerContext must be used within a DateRangePickerProvider',
     );
   }
 
@@ -46,7 +46,7 @@ export const Absolute: FC<AbsoluteProps> = ({ isStart }) => {
         },
         {
           message: 'Invalid date format, it should be "MMM D, YYYY @ HH:mm:ss.SSS"',
-        }
+        },
       ),
     });
   }, []);
@@ -60,7 +60,7 @@ export const Absolute: FC<AbsoluteProps> = ({ isStart }) => {
     clearErrors('date');
     setValue(
       'date',
-      isStart ? state.start.toFormat('MMM d, yyyy @ HH:mm:ss.SSS') : state.end.toFormat('MMM d, yyyy @ HH:mm:ss.SSS')
+      isStart ? state.start.toFormat('MMM d, yyyy @ HH:mm:ss.SSS') : state.end.toFormat('MMM d, yyyy @ HH:mm:ss.SSS'),
     );
   }, [isStart ? state.start : state.end]);
 

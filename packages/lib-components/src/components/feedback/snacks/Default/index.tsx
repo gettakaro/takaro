@@ -73,5 +73,5 @@ export const DefaultSnack = forwardRef<HTMLDivElement, DefaultSnackProps>(
         </ContentContainer>
       </Wrapper>
     );
-  }
+  },
 );

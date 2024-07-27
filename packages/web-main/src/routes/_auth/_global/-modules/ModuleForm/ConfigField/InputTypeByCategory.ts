@@ -50,10 +50,13 @@ const inputTypeInfo: InputTypeInfo[] = [
   },
 ];
 
-export const groupedByCategory = inputTypeInfo.reduce((acc, info) => {
-  if (!acc[info.category]) {
-    acc[info.category] = [];
-  }
-  acc[info.category].push(info);
-  return acc;
-}, {} as Record<string, InputTypeInfo[]>);
+export const groupedByCategory = inputTypeInfo.reduce(
+  (acc, info) => {
+    if (!acc[info.category]) {
+      acc[info.category] = [];
+    }
+    acc[info.category].push(info);
+    return acc;
+  },
+  {} as Record<string, InputTypeInfo[]>,
+);

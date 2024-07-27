@@ -46,7 +46,7 @@ interface IFunctionResult {
 export type FunctionExecutor = (
   code: string,
   data: IHookJobData | ICommandJobData | ICronJobData,
-  token: string
+  token: string,
 ) => Promise<IFunctionResult>;
 
 async function getJobToken(domainId: string) {
@@ -60,7 +60,7 @@ async function getJobToken(domainId: string) {
 export async function executeFunction(
   functionId: string,
   data: IHookJobData | ICommandJobData | ICronJobData,
-  domainId: string
+  domainId: string,
 ) {
   if (!rateLimiter) {
     const redisClient = await Redis.getClient('worker:rateLimiter', { legacyMode: true });
@@ -225,7 +225,7 @@ export async function executeFunction(
     meta.result.logs = await Promise.all(
       result.logs.map(async (log) => {
         return new TakaroEventFunctionLog(log);
-      })
+      }),
     );
 
     await eventService.create(new EventCreateDTO({ ...eventData, meta }));

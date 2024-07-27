@@ -13,7 +13,7 @@ export const server = new HTTP(
   {
     port: config.get('http.port'),
     allowedOrigins: config.get('http.allowedOrigins'),
-  }
+  },
 );
 
 const log = logger('main');

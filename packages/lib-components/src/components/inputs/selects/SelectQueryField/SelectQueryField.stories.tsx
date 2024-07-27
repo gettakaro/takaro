@@ -42,7 +42,7 @@ export const ServerSideSubmit: StoryFn<SelectQueryFieldProps> = (args) => {
 
     setTimeout(() => {
       const filteredOptions = films.filter((film) =>
-        film.name.toLowerCase().trim().includes(debouncedValue.toLowerCase())
+        film.name.toLowerCase().trim().includes(debouncedValue.toLowerCase()),
       );
       setOptions(filteredOptions);
       setLoading(false);

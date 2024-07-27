@@ -193,7 +193,7 @@ export class GameServerRepo extends ITakaroRepo<
     const res = await qry;
 
     return Promise.all(
-      res.map((item) => new ModuleInstallationOutputDTO(item as unknown as ModuleInstallationOutputDTO))
+      res.map((item) => new ModuleInstallationOutputDTO(item as unknown as ModuleInstallationOutputDTO)),
     );
   }
 

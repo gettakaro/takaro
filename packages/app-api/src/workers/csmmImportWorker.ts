@@ -84,7 +84,7 @@ async function process(job: Job<ICSMMImportData>) {
         adminToken: data.server.authToken,
         useTls: data.server.webPort === 443,
       }),
-    })
+    }),
   );
 
   ctx.addData({
@@ -107,7 +107,7 @@ async function process(job: Job<ICSMMImportData>) {
       new RoleCreateInputDTO({
         name: role.name,
         permissions: [],
-      })
+      }),
     );
   }
 
@@ -173,7 +173,7 @@ async function process(job: Job<ICSMMImportData>) {
           useTls: data.server.webPort === 443,
           useCPM: true,
         }),
-      })
+      }),
     );
   }
 

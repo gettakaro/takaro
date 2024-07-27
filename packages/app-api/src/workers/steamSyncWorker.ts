@@ -19,7 +19,7 @@ export class SteamSyncWorker extends TakaroWorker<IGameServerQueueData> {
           jobId: 'steamSync',
           every: config.get('queues.steamSync.interval'),
         },
-      }
+      },
     );
   }
 }

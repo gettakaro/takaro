@@ -18,7 +18,7 @@ export const EventFeedWidget: FC<IProps> = ({ query }) => {
       extend: ['gameServer', 'module', 'player', 'user'],
       sortBy: 'createdAt',
       sortDirection: 'desc',
-    })
+    }),
   );
 
   useEffect(() => {

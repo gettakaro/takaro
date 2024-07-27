@@ -24,7 +24,7 @@ export const DateSelector: FC<DateSelectorProps> = ({ isStart }) => {
 
   if (!dispatch || !state) {
     throw new Error(
-      'useDateRangePickerDispatchContext and useDateRangePickerContext must be used within a DateRangePickerProvider'
+      'useDateRangePickerDispatchContext and useDateRangePickerContext must be used within a DateRangePickerProvider',
     );
   }
 

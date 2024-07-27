@@ -42,7 +42,7 @@ const simpleFormat = combine(
     format: 'isoDateTime',
   }),
   colorize(),
-  myFormat
+  myFormat,
 );
 
 const jsonFormat = combine(addCtx(), timestamp({ format: 'isoDateTime' }), json());

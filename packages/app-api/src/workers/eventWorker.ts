@@ -62,7 +62,7 @@ async function processJob(job: Job<IEventQueueData>) {
           gameserverId: gameServerId,
           playerId: player.id,
           meta: chatMessage,
-        })
+        }),
       );
     }
 
@@ -74,7 +74,7 @@ async function processJob(job: Job<IEventQueueData>) {
           eventName: EVENT_TYPES.PLAYER_CONNECTED,
           gameserverId: gameServerId,
           playerId: player.id,
-        })
+        }),
       );
     }
 
@@ -86,7 +86,7 @@ async function processJob(job: Job<IEventQueueData>) {
           eventName: EVENT_TYPES.PLAYER_DISCONNECTED,
           gameserverId: gameServerId,
           playerId: player.id,
-        })
+        }),
       );
     }
 
@@ -98,7 +98,7 @@ async function processJob(job: Job<IEventQueueData>) {
           gameserverId: gameServerId,
           playerId: player.id,
           meta: new EventPlayerDeath(playerDeath),
-        })
+        }),
       );
     }
 
@@ -110,7 +110,7 @@ async function processJob(job: Job<IEventQueueData>) {
           gameserverId: gameServerId,
           playerId: player.id,
           meta: new EventEntityKilled(entityKilled),
-        })
+        }),
       );
     }
   }

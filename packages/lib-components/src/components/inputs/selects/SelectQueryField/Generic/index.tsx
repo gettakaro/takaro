@@ -243,7 +243,7 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
                 });
               })}
             </ul>
-          )
+          ),
       ) ?? []),
     ];
   }, [children]);

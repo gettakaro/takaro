@@ -32,7 +32,7 @@ export interface ClientToServerEvents {
     x: number,
     y: number,
     z: number,
-    callback: (e: Awaited<ReturnType<IMockGameServer['teleportPlayer']>>) => void
+    callback: (e: Awaited<ReturnType<IMockGameServer['teleportPlayer']>>) => void,
   ) => Promise<void>;
   ping: (callback: (e: string) => void) => void;
 }

@@ -20,7 +20,7 @@ import { FieldTemplateProps, FormContextType, RJSFSchema, StrictRJSFSchema } fro
  * @param props - The `FieldTemplateProps` for this component
  */
 export function FieldTemplate<T = any, S extends StrictRJSFSchema = RJSFSchema, F extends FormContextType = any>(
-  props: FieldTemplateProps<T, S, F>
+  props: FieldTemplateProps<T, S, F>,
 ) {
   const {
     children,

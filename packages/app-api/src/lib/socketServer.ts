@@ -54,8 +54,8 @@ class SocketServer {
     this.io.use(
       (
         socket: Socket<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>,
-        next: (err?: Error | undefined) => void
-      ) => this.logMiddleware(socket, next)
+        next: (err?: Error | undefined) => void,
+      ) => this.logMiddleware(socket, next),
     );
 
     const authMiddleware = ctx.wrap('socket:auth', AuthService.getAuthMiddleware([]));
@@ -66,8 +66,8 @@ class SocketServer {
     this.io.use(
       (
         socket: Socket<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>,
-        next: (err?: Error | undefined) => void
-      ) => this.routerMiddleware(socket, next)
+        next: (err?: Error | undefined) => void,
+      ) => this.routerMiddleware(socket, next),
     );
 
     this.io.on('connection', (socket) => {
@@ -89,14 +89,14 @@ class SocketServer {
   public emit(
     domainId: string,
     event: keyof ServerToClientEvents,
-    data: Parameters<ServerToClientEvents[keyof ServerToClientEvents]> = []
+    data: Parameters<ServerToClientEvents[keyof ServerToClientEvents]> = [],
   ) {
     this.io.to(domainId).emit(event, ...data);
   }
 
   private async routerMiddleware(
     socket: Socket<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>,
-    next: (err?: Error | undefined) => void
+    next: (err?: Error | undefined) => void,
   ) {
     try {
       const ctxData = ctx.data;
@@ -114,7 +114,7 @@ class SocketServer {
 
   private logMiddleware(
     socket: Socket<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>,
-    next: (err?: Error | undefined) => void
+    next: (err?: Error | undefined) => void,
   ) {
     this.log.info('socket connected', {
       id: socket.id,

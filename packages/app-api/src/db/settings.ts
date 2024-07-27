@@ -20,7 +20,10 @@ export class SettingsModel extends TakaroModel {
 }
 @traceableClass('repo:settings')
 export class SettingsRepo extends ITakaroRepo<SettingsModel, Settings, never, never> {
-  constructor(public readonly domainId: string, public readonly gameServerId: string | null = null) {
+  constructor(
+    public readonly domainId: string,
+    public readonly gameServerId: string | null = null,
+  ) {
     super(domainId);
   }
 

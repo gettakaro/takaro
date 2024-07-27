@@ -52,7 +52,7 @@ export const useVariableCreate = () => {
         queryClient.setQueryData<VariableOutputDTO>(variableKeys.detail(newVariable.id), newVariable);
       },
     }),
-    defaultVariableErrorMessages
+    defaultVariableErrorMessages,
   );
 };
 
@@ -76,7 +76,7 @@ export const useVariableUpdate = () => {
         queryClient.setQueryData<VariableOutputDTO>(variableKeys.detail(updatedVar.id), updatedVar);
       },
     }),
-    defaultVariableErrorMessages
+    defaultVariableErrorMessages,
   );
 };
 
@@ -98,6 +98,6 @@ export const useVariableDelete = () => {
         queryClient.removeQueries({ queryKey: variableKeys.detail(variableId) });
       },
     }),
-    {}
+    {},
   );
 };

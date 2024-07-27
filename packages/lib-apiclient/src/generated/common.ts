@@ -32,7 +32,7 @@ export const assertParamExists = function (functionName: string, paramName: stri
   if (paramValue === null || paramValue === undefined) {
     throw new RequiredError(
       paramName,
-      `Required parameter ${paramName} was null or undefined when calling ${functionName}.`
+      `Required parameter ${paramName} was null or undefined when calling ${functionName}.`,
     );
   }
 };
@@ -83,7 +83,7 @@ export const setOAuthToObject = async function (
   object: any,
   name: string,
   scopes: string[],
-  configuration?: Configuration
+  configuration?: Configuration,
 ) {
   if (configuration && configuration.accessToken) {
     const localVarAccessTokenValue =
@@ -101,7 +101,7 @@ function setFlattenedQueryParams(urlSearchParams: URLSearchParams, parameter: an
       (parameter as any[]).forEach((item) => setFlattenedQueryParams(urlSearchParams, item, key));
     } else {
       Object.keys(parameter).forEach((currentKey) =>
-        setFlattenedQueryParams(urlSearchParams, parameter[currentKey], `${key}${key !== '' ? '.' : ''}${currentKey}`)
+        setFlattenedQueryParams(urlSearchParams, parameter[currentKey], `${key}${key !== '' ? '.' : ''}${currentKey}`),
       );
     }
   } else {
@@ -152,12 +152,12 @@ export const createRequestFunction = function (
   axiosArgs: RequestArgs,
   globalAxios: AxiosInstance,
   BASE_PATH: string,
-  configuration?: Configuration
+  configuration?: Configuration,
 ) {
   return <T = unknown, R = AxiosResponse<T>>(axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
     const axiosRequestArgs = {
       ...axiosArgs.options,
-      url: (axios.defaults.baseURL ? '' : configuration?.basePath ?? basePath) + axiosArgs.url,
+      url: (axios.defaults.baseURL ? '' : (configuration?.basePath ?? basePath)) + axiosArgs.url,
     };
     return axios.request<T, R>(axiosRequestArgs);
   };

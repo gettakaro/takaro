@@ -79,7 +79,7 @@ function Component() {
         email: z.string().email('This is not a valid email address.').min(1, { message: 'Email is a required field.' }),
         password: z.string().min(1, { message: 'Password is a required field' }),
       }),
-    []
+    [],
   );
 
   async function createLoginFlow() {

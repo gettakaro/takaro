@@ -17,7 +17,7 @@ export enum GAME_SERVER_TYPE {
 export async function getGame(
   type: GAME_SERVER_TYPE | GameServerOutputDTOTypeEnum,
   connectionInfo: Record<string, unknown>,
-  settings: Partial<Settings>
+  settings: Partial<Settings>,
 ): Promise<IGameServer> {
   switch (type) {
     case GAME_SERVER_TYPE.SEVENDAYSTODIE:

@@ -88,7 +88,7 @@ export const OnSubmit: StoryFn<SelectFieldProps> = (args) => {
       z.object({
         film: z.enum(['not-sure-how-this-works', ...films.map((film) => film.name)]),
       }),
-    []
+    [],
   );
 
   const { control, handleSubmit } = useForm<FormFields>({
@@ -151,7 +151,7 @@ export const MultiSelect: StoryFn<SelectFieldProps> = (args) => {
       z.object({
         film: z.string().array(),
       }),
-    []
+    [],
   );
 
   const { control, handleSubmit } = useForm<FormFields>({
@@ -182,11 +182,11 @@ export const MultiSelect: StoryFn<SelectFieldProps> = (args) => {
                 {selectedFilms.length === 0
                   ? 'Select...'
                   : selectedFilms.length <= 3
-                  ? selectedFilms.map((film) => film.name).join(', ')
-                  : `${selectedFilms
-                      .slice(0, 3)
-                      .map((film) => film.name)
-                      .join(', ')} and ${selectedFilms.length - 3} more`}
+                    ? selectedFilms.map((film) => film.name).join(', ')
+                    : `${selectedFilms
+                        .slice(0, 3)
+                        .map((film) => film.name)
+                        .join(', ')} and ${selectedFilms.length - 3} more`}
               </div>
             );
           }}

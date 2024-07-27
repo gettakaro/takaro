@@ -150,7 +150,7 @@ const InviteUser: FC = () => {
       z.object({
         userEmail: z.string().email('Email is not valid.').min(1),
       }),
-    []
+    [],
   );
 
   const { control, handleSubmit } = useForm<IFormInputs>({

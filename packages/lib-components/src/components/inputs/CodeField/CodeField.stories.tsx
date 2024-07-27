@@ -31,7 +31,7 @@ export const onSubmit: StoryFn<CodeFieldProps> = (args) => {
       z.object({
         code: z.string().min(args.fields).max(args.fields),
       }),
-    [args.fields]
+    [args.fields],
   );
 
   const { handleSubmit, control } = useForm<FormFields>({

@@ -143,7 +143,7 @@ const Chart = <T,>({
         range: [0, xMax],
         domain: extent(filteredData, xAccessor) as [Date, Date],
       }),
-    [xMax, filteredData]
+    [xMax, filteredData],
   );
 
   const yScale = useMemo(
@@ -153,7 +153,7 @@ const Chart = <T,>({
         domain: [0, max(filteredData, yAccessor) || 0],
         nice: true,
       }),
-    [yMax, filteredData]
+    [yMax, filteredData],
   );
 
   const xBrushScale = useMemo(
@@ -162,7 +162,7 @@ const Chart = <T,>({
         range: [0, xBrushMax],
         domain: extent(data, xAccessor) as [Date, Date],
       }),
-    [xBrushMax]
+    [xBrushMax],
   );
 
   const yBrushScale = useMemo(
@@ -172,7 +172,7 @@ const Chart = <T,>({
         domain: [0, max(data, yAccessor) || 0],
         nice: true,
       }),
-    [yBrushMax]
+    [yBrushMax],
   );
 
   const initialBrushPosition = useMemo(
@@ -180,7 +180,7 @@ const Chart = <T,>({
       start: { x: xBrushScale(xAccessor(data[0])) },
       end: { x: xBrushScale(xAccessor(data[data.length - 1])) },
     }),
-    [xBrushScale]
+    [xBrushScale],
   );
 
   const onBrushChange = (domain: Bounds | null) => {
@@ -213,7 +213,7 @@ const Chart = <T,>({
         tooltipTop: tooltipY,
       });
     },
-    [yScale, xScale, filteredData, yAccessor, xAccessor, width, height]
+    [yScale, xScale, filteredData, yAccessor, xAccessor, width, height],
   );
 
   if (width < 10) return null;

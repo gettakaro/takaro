@@ -14,7 +14,7 @@ export function hasNextPage(pageInfo: MetadataOutput) {
 
 export function mutationWrapper<I, O>(
   mutation: any,
-  errorMessages: Partial<ErrorMessageMapping>
+  errorMessages: Partial<ErrorMessageMapping>,
 ): UseMutationResult<I, string | string[], O, unknown> {
   mutation.error = getErrorUserMessage(mutation.error, errorMessages);
   return mutation;

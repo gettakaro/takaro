@@ -77,6 +77,6 @@ export function useDropdown({
       labelsRef,
       elementsRef,
     }),
-    [open, setOpen, data, context, labelId, descriptionId, interactions]
+    [open, setOpen, data, context, labelId, descriptionId, interactions],
   );
 }

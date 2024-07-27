@@ -7,7 +7,7 @@ import { DOMAIN_STATES } from '../db/domain.js';
 export async function domainStateMiddleware(
   req: AuthenticatedRequest,
   _res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> {
   if (!req.domainId) {
     return next(new errors.UnauthorizedError());

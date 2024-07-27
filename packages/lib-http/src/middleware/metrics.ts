@@ -38,7 +38,7 @@ export async function metricsMiddleware(req: Request, res: Response, next: NextF
         method,
         status: res.statusCode.toString(),
       },
-      (Date.now() - start) / 1000
+      (Date.now() - start) / 1000,
     );
   }
 }

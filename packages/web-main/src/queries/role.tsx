@@ -70,7 +70,7 @@ export const useRoleCreate = () => {
         queryClient.setQueryData(roleKeys.detail(newRole.id), newRole);
       },
     }),
-    defaultRoleErrorMessages
+    defaultRoleErrorMessages,
   );
 };
 
@@ -95,7 +95,7 @@ export const useRoleUpdate = () => {
         await queryClient.setQueryData(roleKeys.detail(updatedRole.id), updatedRole);
       },
     }),
-    defaultRoleErrorMessages
+    defaultRoleErrorMessages,
   );
 };
 
@@ -117,7 +117,7 @@ export const useRoleRemove = () => {
         queryClient.removeQueries({ queryKey: roleKeys.detail(roleId) });
       },
     }),
-    {}
+    {},
   );
 };
 
@@ -139,7 +139,7 @@ export const useUserRoleAssign = ({ userId }: { userId: string }) => {
         await queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
       },
     }),
-    {}
+    {},
   );
 };
 
@@ -154,6 +154,6 @@ export const useUserRoleUnassign = () => {
         return res;
       },
     }),
-    {}
+    {},
   );
 };

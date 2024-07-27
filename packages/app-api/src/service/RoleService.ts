@@ -230,7 +230,7 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
         eventName: EVENT_TYPES.ROLE_UPDATED,
         userId,
         meta: new TakaroEventRoleUpdated({ role: { id: res.id, name: res.name } }),
-      })
+      }),
     );
 
     return res;
@@ -253,7 +253,7 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
         eventName: EVENT_TYPES.ROLE_DELETED,
         userId,
         meta: new TakaroEventRoleDeleted({ role: { id: toDelete.id, name: toDelete.name } }),
-      })
+      }),
     );
 
     return id;
@@ -273,7 +273,7 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
         eventName: EVENT_TYPES.ROLE_CREATED,
         userId,
         meta: new TakaroEventRoleCreated({ role: { id: res.id, name: res.name } }),
-      })
+      }),
     );
 
     return res;
@@ -306,13 +306,13 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
       toUpdate.map((permission) =>
         this.repo
           .removePermissionFromRole(roleId, permission.permissionId)
-          .then(() => this.repo.addPermissionToRole(roleId, permission))
-      )
+          .then(() => this.repo.addPermissionToRole(roleId, permission)),
+      ),
     );
 
     // Create promises for removing and adding permissions
     const removePromises = toRemove.map((permission) =>
-      this.repo.removePermissionFromRole(roleId, permission.permissionId)
+      this.repo.removePermissionFromRole(roleId, permission.permissionId),
     );
     const addPromises = toAdd.map((permission) => this.repo.addPermissionToRole(roleId, permission));
 
@@ -333,7 +333,7 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
           id: mod.id,
           name: mod.name,
         },
-      }))
+      })),
     ) as PermissionOutputDTO[];
 
     const systemPermissions = await this.repo.getSystemPermissions();

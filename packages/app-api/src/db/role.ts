@@ -102,8 +102,8 @@ export class RoleRepo extends ITakaroRepo<RoleModel, RoleOutputDTO, ServiceRoleC
                 ...c,
                 permission: new PermissionOutputDTO(c.permission),
                 count: c.count || 0,
-              })
-          )
+              }),
+          ),
       ),
     });
   }

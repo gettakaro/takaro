@@ -62,7 +62,7 @@ export function PlayerStats() {
   }, [selectedPeriod]);
 
   const { data: dailyActiveUsers } = useQuery(
-    ActivityStatsQueryOptions({ timeType: 'daily', dataType: 'players', startDate, endDate: now })
+    ActivityStatsQueryOptions({ timeType: 'daily', dataType: 'players', startDate, endDate: now }),
   );
 
   const { data: newPlayersData, isLoading: isLoadingNewPlayerData } = useQuery(
@@ -70,7 +70,7 @@ export function PlayerStats() {
       filters: { eventName: ['player-created'], gameserverId: ['null'] },
       greaterThan: { createdAt: startDate },
       lessThan: { createdAt: now },
-    })
+    }),
   );
 
   const { data: playersOnlineData } = useQuery(PlayersOnlineStatsQueryOptions(undefined, startDate, now));

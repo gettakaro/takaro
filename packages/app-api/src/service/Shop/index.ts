@@ -87,7 +87,7 @@ export class ShopListingService extends TakaroService<
         meta: new TakaroEventShopListingCreated({
           id: created.id,
         }),
-      })
+      }),
     );
 
     return created;
@@ -111,7 +111,7 @@ export class ShopListingService extends TakaroService<
         meta: new TakaroEventShopListingUpdated({
           id: updated.id,
         }),
-      })
+      }),
     );
 
     return updated;
@@ -131,7 +131,7 @@ export class ShopListingService extends TakaroService<
         meta: new TakaroEventShopListingDeleted({
           id,
         }),
-      })
+      }),
     );
 
     return id;
@@ -169,7 +169,7 @@ export class ShopListingService extends TakaroService<
 
     if (!user.playerId)
       throw new errors.BadRequestError(
-        'You have not linked your account to a player yet. Please link your account to a player first.'
+        'You have not linked your account to a player yet. Please link your account to a player first.',
       );
 
     const listing = await this.findOne(listingId);
@@ -196,7 +196,7 @@ export class ShopListingService extends TakaroService<
         meta: new TakaroEventShopOrderCreated({
           id: order.id,
         }),
-      })
+      }),
     );
 
     return order;
@@ -214,7 +214,7 @@ export class ShopListingService extends TakaroService<
 
     if (!user.playerId)
       throw new errors.BadRequestError(
-        'You have not linked your account to a player yet. Please link your account to a player first.'
+        'You have not linked your account to a player yet. Please link your account to a player first.',
       );
 
     const listing = await this.findOne(order.listingId);
@@ -226,7 +226,7 @@ export class ShopListingService extends TakaroService<
     if (!pog) throw new errors.BadRequestError('You have not logged in to the game server yet.');
     if (!pog.online)
       throw new errors.BadRequestError(
-        'You must be online in the game server to claim the order. If you have just logged in, please wait a few seconds and try again.'
+        'You must be online in the game server to claim the order. If you have just logged in, please wait a few seconds and try again.',
       );
 
     const gameServerService = new GameServerService(this.domainId);
@@ -234,8 +234,8 @@ export class ShopListingService extends TakaroService<
       for (let i = 0; i < order.amount; i++) {
         await Promise.allSettled(
           listing.items.map((item) =>
-            gameServerService.giveItem(gameServerId, pog.playerId, item.item.code, item.amount)
-          )
+            gameServerService.giveItem(gameServerId, pog.playerId, item.item.code, item.amount),
+          ),
         );
       }
 
@@ -244,7 +244,7 @@ export class ShopListingService extends TakaroService<
         'You have received items from a shop order.',
         new IMessageOptsDTO({
           recipient: new IPlayerReferenceDTO({ gameId: pog.gameId }),
-        })
+        }),
       );
       for (const item of listing.items) {
         await gameServerService.sendMessage(
@@ -252,14 +252,14 @@ export class ShopListingService extends TakaroService<
           `${item.amount}x ${item.item.name}`,
           new IMessageOptsDTO({
             recipient: new IPlayerReferenceDTO({ gameId: pog.gameId }),
-          })
+          }),
         );
       }
     }
 
     const updatedOrder = await this.orderRepo.update(
       orderId,
-      new ShopOrderUpdateDTO({ status: ShopOrderStatus.COMPLETED })
+      new ShopOrderUpdateDTO({ status: ShopOrderStatus.COMPLETED }),
     );
 
     await this.eventService.create(
@@ -272,7 +272,7 @@ export class ShopListingService extends TakaroService<
           id: updatedOrder.id,
           status: ShopOrderStatus.COMPLETED,
         }),
-      })
+      }),
     );
 
     return updatedOrder;
@@ -284,11 +284,11 @@ export class ShopListingService extends TakaroService<
     await this.checkIfOrderBelongsToUser(order);
     if (order.status !== ShopOrderStatus.PAID)
       throw new errors.BadRequestError(
-        `Can only cancel paid orders that weren't claimed yet. Current status: ${order.status}`
+        `Can only cancel paid orders that weren't claimed yet. Current status: ${order.status}`,
       );
     const updatedOrder = await this.orderRepo.update(
       orderId,
-      new ShopOrderUpdateDTO({ status: ShopOrderStatus.CANCELED })
+      new ShopOrderUpdateDTO({ status: ShopOrderStatus.CANCELED }),
     );
 
     const listing = await this.findOne(order.listingId);
@@ -313,7 +313,7 @@ export class ShopListingService extends TakaroService<
           id: updatedOrder.id,
           status: ShopOrderStatus.CANCELED,
         }),
-      })
+      }),
     );
 
     return updatedOrder;

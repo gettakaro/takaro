@@ -49,7 +49,7 @@ export const Calendar: FC<CalendarProps> = ({
 
       return isPastAllowed && isFutureAllowed && isCustomFilterPassed;
     },
-    [allowedPastDates, allowedFutureDates, customDateFilter, today]
+    [allowedPastDates, allowedFutureDates, customDateFilter, today],
   );
 
   const previousMonth = useCallback(() => {

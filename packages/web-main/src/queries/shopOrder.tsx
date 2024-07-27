@@ -53,7 +53,7 @@ export const useShopOrderCreate = () => {
         queryClient.setQueryData(shopOrderKeys.detail(newShopOrder.id), newShopOrder);
       },
     }),
-    {}
+    {},
   );
 };
 
@@ -83,7 +83,7 @@ export const useShopOrderCancel = () => {
         }
       },
     }),
-    {}
+    {},
   );
 };
 
@@ -114,6 +114,6 @@ export const useShopOrderClaim = () => {
         }
       },
     }),
-    {}
+    {},
   );
 };

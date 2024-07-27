@@ -15,7 +15,7 @@ const _tests = [
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.onboardingModule.id
+        this.setupData.onboardingModule.id,
       );
       const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
       await this.client.hook.hookControllerTrigger({
@@ -47,7 +47,7 @@ const _tests = [
           userConfig: JSON.stringify({
             starterKitItems: ['cigar'],
           }),
-        }
+        },
       );
       const events = this.setupData.eventAwaiter.waitForEvents(HookEvents.COMMAND_EXECUTED);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
@@ -72,7 +72,7 @@ const _tests = [
           userConfig: JSON.stringify({
             starterKitItems: ['cigar'],
           }),
-        }
+        },
       );
       const firstEvents = this.setupData.eventAwaiter.waitForEvents(HookEvents.COMMAND_EXECUTED);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
@@ -101,7 +101,7 @@ const _tests = [
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.onboardingModule.id
+        this.setupData.onboardingModule.id,
       );
       const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {

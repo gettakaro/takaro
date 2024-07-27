@@ -36,7 +36,7 @@ export const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId, 
       filters: {
         id: filteredServerIds as string[],
       },
-    })
+    }),
   );
 
   const handleOnDelete = async () => {

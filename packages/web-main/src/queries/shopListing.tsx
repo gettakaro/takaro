@@ -53,7 +53,7 @@ export const useShopListingCreate = () => {
         queryClient.setQueryData(shopListingKeys.detail(newShopListing.id), newShopListing);
       },
     }),
-    {}
+    {},
   );
 };
 
@@ -75,7 +75,7 @@ export const useShopListingDelete = () => {
         queryClient.removeQueries({ queryKey: shopListingKeys.detail(shopListingId) });
       },
     }),
-    {}
+    {},
   );
 };
 
@@ -100,6 +100,6 @@ export const useShopListingUpdate = () => {
         queryClient.setQueryData(shopListingKeys.detail(updatedShopListing.id), updatedShopListing);
       },
     }),
-    {}
+    {},
   );
 };

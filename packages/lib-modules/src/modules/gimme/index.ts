@@ -33,7 +33,7 @@ export class Gimme extends BuiltinModule<Gimme> {
       }),
       JSON.stringify({
         items: { 'ui:widget': 'item' },
-      })
+      }),
     );
 
     this.commands = [

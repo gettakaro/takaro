@@ -25,7 +25,7 @@ export const PopoverTrigger = forwardRef<HTMLElement, PopoverTriggerProps>(
           'data-state': context.open ? 'open' : 'closed',
           onFocus: props.onFocus,
           onBlur: props.onBlur,
-        })
+        }),
       );
     }
 
@@ -40,5 +40,5 @@ export const PopoverTrigger = forwardRef<HTMLElement, PopoverTriggerProps>(
         {children}
       </button>
     );
-  }
+  },
 );

@@ -44,7 +44,7 @@ export class MockGameserver implements IMockGameServer {
       | 'entity-killed'
       | 'gameEvent'
       | 'pong',
-    data: any
+    data: any,
   ) {
     this.socketServer.io.emit(type, { name: this.name, ...data });
   }
@@ -97,7 +97,7 @@ export class MockGameserver implements IMockGameServer {
     await Promise.all(
       players.map(async (p) => {
         return (await this.redis).hSet(this.getRedisKey(`player:${p.gameId}`), p);
-      })
+      }),
     );
   }
 
@@ -125,7 +125,7 @@ export class MockGameserver implements IMockGameServer {
     let playerData = await Promise.all(
       players.map(async (p) => {
         return (await this.redis).hGetAll(p);
-      })
+      }),
     );
 
     if (onlyOnline) playerData = playerData.filter((p) => p.online === 'true');
@@ -139,8 +139,8 @@ export class MockGameserver implements IMockGameServer {
             ip: player.ip,
             steamId: player.steamId,
             ping: parseInt(faker.random.numeric(2), 10),
-          })
-      )
+          }),
+      ),
     );
   }
 
@@ -173,7 +173,7 @@ export class MockGameserver implements IMockGameServer {
       await Promise.all(
         players.map(async (p) => {
           await this.setPlayerOnlineStatus(p, true);
-        })
+        }),
       );
       output.rawResult = 'Connected all players';
       output.success = true;
@@ -184,7 +184,7 @@ export class MockGameserver implements IMockGameServer {
       await Promise.all(
         players.map(async (p) => {
           await this.setPlayerOnlineStatus(p, false);
-        })
+        }),
       );
       output.rawResult = 'Disconnected all players';
       output.success = true;
@@ -220,7 +220,7 @@ export class MockGameserver implements IMockGameServer {
       new EventChatMessage({
         msg: message,
         channel: ChatChannel.GLOBAL,
-      })
+      }),
     );
     await this.sendLog(fullMessage);
   }
@@ -253,7 +253,7 @@ export class MockGameserver implements IMockGameServer {
       new EventPlayerDisconnected({
         player,
         msg: `${player.name} disconnected: Kicked ${reason}`,
-      })
+      }),
     );
   }
 
@@ -275,7 +275,7 @@ export class MockGameserver implements IMockGameServer {
       new EventPlayerDisconnected({
         player,
         msg: `${player.name} disconnected: Banned ${options.reason} until ${options.expiresAt}`,
-      })
+      }),
     );
 
     if (options.expiresAt) {
@@ -315,7 +315,7 @@ export class MockGameserver implements IMockGameServer {
           ...banDto,
           player,
         });
-      })
+      }),
     );
 
     return banDataWithPlayer.filter(Boolean) as BanDTO[];

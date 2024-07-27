@@ -36,5 +36,5 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
         {badge && <div>{badge}</div>}
       </Default>
     );
-  }
+  },
 );

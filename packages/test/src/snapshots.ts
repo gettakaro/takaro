@@ -33,7 +33,7 @@ function filterFields(data: unknown, filteredFields = DEFAULT_FILTERED_FIELDS): 
     return Object.fromEntries(
       Object.entries(data as JsonObject)
         .filter(([key]) => !filteredFields.includes(key))
-        .map(([key, value]) => [key, filterFields(value, filteredFields)])
+        .map(([key, value]) => [key, filterFields(value, filteredFields)]),
     );
   }
   return data;
@@ -41,7 +41,7 @@ function filterFields(data: unknown, filteredFields = DEFAULT_FILTERED_FIELDS): 
 
 export async function matchSnapshot<SetupData>(
   test: IIntegrationTest<SetupData>,
-  response: ITakaroAPIAxiosResponse<unknown>
+  response: ITakaroAPIAxiosResponse<unknown>,
 ) {
   const snapshotPath = path.resolve(__dirname, '../src/__snapshots__', test.group, normalizePath(`${test.name}.json`));
   let file = '';
@@ -66,7 +66,7 @@ export async function matchSnapshot<SetupData>(
   try {
     expect(filterFields(fullData, filteredFields)).to.deep.equal(
       snapshotData,
-      `Snapshot does not match: ${snapshotPath}`
+      `Snapshot does not match: ${snapshotPath}`,
     );
   } catch (error) {
     if (integrationConfig.get('overwriteSnapshots')) {

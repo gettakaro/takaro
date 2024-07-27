@@ -166,7 +166,7 @@ const tests = [
           expect(error.response?.status).to.equal(400);
           expect(error.response?.data.meta.error.code).to.equal('ValidationError');
           expect(error.response?.data.meta.error.details[0].constraints.whitelistValidation).to.equal(
-            'property builtin should not exist'
+            'property builtin should not exist',
           );
         }
       }
@@ -314,7 +314,7 @@ const tests = [
           const exportRes = await this.client.module.moduleControllerExport(mod.id);
           expect(exportRes.data.data).to.deep.equalInAnyOrder(builtin);
         },
-      })
+      }),
   ),
   ...getModules().map(
     (builtin) =>
@@ -342,7 +342,7 @@ const tests = [
           ).data.data;
           expect(modsAfter).to.have.length(2);
         },
-      })
+      }),
   ),
 ];
 

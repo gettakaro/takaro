@@ -71,7 +71,7 @@ export class Meta {
             },
           },
         },
-      }
+      },
     );
 
     // Add required permissions to operation descriptions

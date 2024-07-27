@@ -99,7 +99,7 @@ const Chart = <T,>({
         tooltipData: tooltipAccessor(data),
       });
     },
-    [data, tooltipAccessor]
+    [data, tooltipAccessor],
   );
 
   const webs = genAngles(data.length);

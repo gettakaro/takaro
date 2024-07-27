@@ -167,7 +167,7 @@ export class ShopListingRepo extends ITakaroRepo<
     await Promise.all(
       itemMetas.map(async (i) => {
         await ItemOnShopListingModel.bindKnex(knex).query().insert(i);
-      })
+      }),
     );
 
     return this.findOne(listing.id);
@@ -216,7 +216,7 @@ export class ShopListingRepo extends ITakaroRepo<
       await Promise.all(
         itemMetas.map(async (i) => {
           await ItemOnShopListingModel.bindKnex(knex).query().insert(i);
-        })
+        }),
       );
     }
 

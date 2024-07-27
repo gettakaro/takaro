@@ -135,7 +135,7 @@ export class RustEmitter extends TakaroEmitter {
       GameEvents.LOG_LINE,
       new EventLogLine({
         msg: e.Message,
-      })
+      }),
     );
   }
 

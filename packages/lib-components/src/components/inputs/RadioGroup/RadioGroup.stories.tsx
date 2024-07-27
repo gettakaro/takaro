@@ -38,7 +38,7 @@ export const OnSubmit: StoryFn<RadioGroupProps> = (args) => {
       z.object({
         gender: z.enum(['m', 'f']),
       }),
-    []
+    [],
   );
 
   const { control, handleSubmit } = useForm<FormFields>({

@@ -45,5 +45,5 @@ export const DrawerHeading = forwardRef<HTMLHeadingElement, DialogHeadingProps>(
         )}
       </Container>
     );
-  }
+  },
 );

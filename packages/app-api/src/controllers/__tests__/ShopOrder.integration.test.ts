@@ -17,7 +17,7 @@ async function createUserForPlayer(
   eventsAwaiter: EventsAwaiter,
   playerId: string,
   gameServerId: string,
-  createUser = true
+  createUser = true,
 ) {
   const password = 'shop-tester-password-very-safe';
 
@@ -70,7 +70,7 @@ interface IShopSetup extends SetupGameServerPlayers.ISetupData {
 
 const shopSetup = async function (this: IntegrationTest<IShopSetup>): Promise<IShopSetup> {
   const setupData = await SetupGameServerPlayers.setup.bind(
-    this as unknown as IntegrationTest<SetupGameServerPlayers.ISetupData>
+    this as unknown as IntegrationTest<SetupGameServerPlayers.ISetupData>,
   )();
 
   await this.client.settings.settingsControllerSet('economyEnabled', {
@@ -102,27 +102,27 @@ const shopSetup = async function (this: IntegrationTest<IShopSetup>): Promise<IS
   await this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(
     setupData.gameServer1.id,
     setupData.pogs1[0].playerId,
-    { currency: 250 }
+    { currency: 250 },
   );
 
   await this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(
     setupData.gameServer1.id,
     setupData.pogs1[1].playerId,
-    { currency: 250 }
+    { currency: 250 },
   );
 
   const { client: user1Client, user: user1 } = await createUserForPlayer(
     this.client,
     setupData.eventsAwaiter,
     setupData.pogs1[0].playerId,
-    setupData.gameServer1.id
+    setupData.gameServer1.id,
   );
 
   const { client: user2Client, user: user2 } = await createUserForPlayer(
     this.client,
     setupData.eventsAwaiter,
     setupData.pogs1[1].playerId,
-    setupData.gameServer1.id
+    setupData.gameServer1.id,
   );
 
   return {
@@ -372,7 +372,7 @@ const tests = [
         if (!error.response) throw error;
         expect(error.response.data.meta.error.code).to.be.eq('BadRequestError');
         expect(error.response.data.meta.error.message).to.be.eq(
-          'Can only claim paid, unclaimed orders. Current status: COMPLETED'
+          'Can only claim paid, unclaimed orders. Current status: COMPLETED',
         );
         return error.response;
       }
@@ -401,7 +401,7 @@ const tests = [
         if (!error.response) throw error;
         expect(error.response.data.meta.error.code).to.be.eq('BadRequestError');
         expect(error.response.data.meta.error.message).to.be.eq(
-          'Can only claim paid, unclaimed orders. Current status: CANCELED'
+          'Can only claim paid, unclaimed orders. Current status: CANCELED',
         );
         return error.response;
       }
@@ -489,7 +489,7 @@ const tests = [
         expect(error.response.data.meta.error.code).to.be.eq('BadRequestError');
         expect(error.response.data.meta.error.message).to.be.eq(
           // eslint-disable-next-line
-          "Can only cancel paid orders that weren't claimed yet. Current status: CANCELED"
+          "Can only cancel paid orders that weren't claimed yet. Current status: CANCELED",
         );
         return error.response;
       }
@@ -504,7 +504,7 @@ const tests = [
       await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
         this.setupData.gameServer1.id,
         this.setupData.pogs1[0].playerId,
-        { currency: 250 }
+        { currency: 250 },
       );
 
       const orderRes = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
@@ -516,7 +516,7 @@ const tests = [
 
       const pogsResBefore = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
         this.setupData.gameServer1.id,
-        this.setupData.pogs1[0].playerId
+        this.setupData.pogs1[0].playerId,
       );
 
       expect(pogsResBefore.data.data.currency).to.be.eq(150);
@@ -525,7 +525,7 @@ const tests = [
 
       const pogResAfter = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
         this.setupData.gameServer1.id,
-        this.setupData.pogs1[0].playerId
+        this.setupData.pogs1[0].playerId,
       );
 
       expect(pogResAfter.data.data.currency).to.be.eq(250);
@@ -542,7 +542,7 @@ const tests = [
       await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
         this.setupData.gameServer1.id,
         this.setupData.pogs1[0].playerId,
-        { currency: 250 }
+        { currency: 250 },
       );
 
       const orderRes = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
@@ -554,7 +554,7 @@ const tests = [
 
       const pogsResBefore = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
         this.setupData.gameServer1.id,
-        this.setupData.pogs1[0].playerId
+        this.setupData.pogs1[0].playerId,
       );
 
       expect(pogsResBefore.data.data.currency).to.be.eq(150);
@@ -563,7 +563,7 @@ const tests = [
 
       const pogResAfter = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
         this.setupData.gameServer1.id,
-        this.setupData.pogs1[0].playerId
+        this.setupData.pogs1[0].playerId,
       );
 
       expect(pogResAfter.data.data.currency).to.be.eq(250);
@@ -631,7 +631,7 @@ const tests = [
       await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
         this.setupData.gameServer1.id,
         this.setupData.pogs1[0].playerId,
-        { currency: 250 }
+        { currency: 250 },
       );
 
       const orderRes = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
@@ -643,7 +643,7 @@ const tests = [
 
       const pogsResBefore = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
         this.setupData.gameServer1.id,
-        this.setupData.pogs1[0].playerId
+        this.setupData.pogs1[0].playerId,
       );
 
       expect(pogsResBefore.data.data.currency).to.be.eq(150);
@@ -652,7 +652,7 @@ const tests = [
 
       const pogResAfter = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
         this.setupData.gameServer1.id,
-        this.setupData.pogs1[0].playerId
+        this.setupData.pogs1[0].playerId,
       );
 
       expect(pogResAfter.data.data.currency).to.be.eq(250);

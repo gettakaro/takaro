@@ -88,7 +88,7 @@ class GameServerManager {
         const client = await getDomainClient(domain.id);
         const gameServersRes = await client.gameserver.gameServerControllerSearch();
         gameServers.set(domain.id, gameServersRes.data.data);
-      })
+      }),
     );
 
     for (const result of results) {

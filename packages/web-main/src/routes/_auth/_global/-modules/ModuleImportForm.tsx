@@ -48,7 +48,7 @@ export const ModuleImportForm: FC<ModuleFormProps> = ({ isSuccess = false, onSub
           .refine((files) => files?.[0]?.size <= MAX_FILE_SIZE, 'Max file size is 50MB.')
           .refine((files) => ACCEPTED_FILE_TYPES.includes(files?.[0]?.type), 'Only .json files are accepted.'),
         name: z.string(),
-      })
+      }),
     ),
   });
 

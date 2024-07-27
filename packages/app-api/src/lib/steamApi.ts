@@ -73,7 +73,7 @@ class SteamApi {
               statusText: response.statusText,
               method: response.request.method,
               url: response.request.url,
-            }
+            },
           );
 
           return response;
@@ -96,7 +96,7 @@ class SteamApi {
             response: error.response?.data,
           });
           return Promise.reject(error);
-        }
+        },
       );
     }
     return this._client;

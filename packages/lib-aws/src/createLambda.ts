@@ -43,6 +43,6 @@ export async function createLambda({ domainId }: CreateLambdaOptions) {
       client: lambda,
       maxWaitTime: 60,
     },
-    { FunctionName: domainId }
+    { FunctionName: domainId },
   );
 }

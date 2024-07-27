@@ -88,7 +88,7 @@ export class Client extends BaseApiClient<IApiClientConfig> {
         isJsonMime: this.isJsonMime,
       },
       '',
-      this.axios
+      this.axios,
     );
   }
 
@@ -98,7 +98,7 @@ export class Client extends BaseApiClient<IApiClientConfig> {
         isJsonMime: this.isJsonMime,
       },
       '',
-      this.axios
+      this.axios,
     );
   }
 
@@ -108,7 +108,7 @@ export class Client extends BaseApiClient<IApiClientConfig> {
         isJsonMime: this.isJsonMime,
       },
       '',
-      this.axios
+      this.axios,
     );
   }
 
@@ -118,7 +118,7 @@ export class Client extends BaseApiClient<IApiClientConfig> {
         isJsonMime: this.isJsonMime,
       },
       '',
-      this.axios
+      this.axios,
     );
   }
 
@@ -128,7 +128,7 @@ export class Client extends BaseApiClient<IApiClientConfig> {
         isJsonMime: this.isJsonMime,
       },
       '',
-      this.axios
+      this.axios,
     );
   }
 
@@ -138,7 +138,7 @@ export class Client extends BaseApiClient<IApiClientConfig> {
         isJsonMime: this.isJsonMime,
       },
       '',
-      this.axios
+      this.axios,
     );
   }
 
@@ -148,7 +148,7 @@ export class Client extends BaseApiClient<IApiClientConfig> {
         isJsonMime: this.isJsonMime,
       },
       '',
-      this.axios
+      this.axios,
     );
   }
 
@@ -158,7 +158,7 @@ export class Client extends BaseApiClient<IApiClientConfig> {
         isJsonMime: this.isJsonMime,
       },
       '',
-      this.axios
+      this.axios,
     );
   }
 
@@ -168,7 +168,7 @@ export class Client extends BaseApiClient<IApiClientConfig> {
         isJsonMime: this.isJsonMime,
       },
       '',
-      this.axios
+      this.axios,
     );
   }
 
@@ -178,7 +178,7 @@ export class Client extends BaseApiClient<IApiClientConfig> {
         isJsonMime: this.isJsonMime,
       },
       '',
-      this.axios
+      this.axios,
     );
   }
 
@@ -188,7 +188,7 @@ export class Client extends BaseApiClient<IApiClientConfig> {
         isJsonMime: this.isJsonMime,
       },
       '',
-      this.axios
+      this.axios,
     );
   }
 
@@ -198,7 +198,7 @@ export class Client extends BaseApiClient<IApiClientConfig> {
         isJsonMime: this.isJsonMime,
       },
       '',
-      this.axios
+      this.axios,
     );
   }
 
@@ -208,7 +208,7 @@ export class Client extends BaseApiClient<IApiClientConfig> {
         isJsonMime: this.isJsonMime,
       },
       '',
-      this.axios
+      this.axios,
     );
   }
 
@@ -218,7 +218,7 @@ export class Client extends BaseApiClient<IApiClientConfig> {
         isJsonMime: this.isJsonMime,
       },
       '',
-      this.axios
+      this.axios,
     );
   }
 
@@ -228,7 +228,7 @@ export class Client extends BaseApiClient<IApiClientConfig> {
         isJsonMime: this.isJsonMime,
       },
       '',
-      this.axios
+      this.axios,
     );
   }
 
@@ -238,7 +238,7 @@ export class Client extends BaseApiClient<IApiClientConfig> {
         isJsonMime: this.isJsonMime,
       },
       '',
-      this.axios
+      this.axios,
     );
   }
 
@@ -248,7 +248,7 @@ export class Client extends BaseApiClient<IApiClientConfig> {
         isJsonMime: this.isJsonMime,
       },
       '',
-      this.axios
+      this.axios,
     );
   }
 
@@ -258,7 +258,7 @@ export class Client extends BaseApiClient<IApiClientConfig> {
         isJsonMime: this.isJsonMime,
       },
       '',
-      this.axios
+      this.axios,
     );
   }
 }

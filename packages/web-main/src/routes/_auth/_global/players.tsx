@@ -75,7 +75,7 @@ function Component() {
           ?.value,
         xboxLiveId: columnSearch.columnSearchState.find((search) => search.id === 'xboxLiveId')?.value,
       },
-    })
+    }),
   );
 
   // IMPORTANT: id should be identical to data object key.

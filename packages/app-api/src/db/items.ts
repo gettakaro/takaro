@@ -131,7 +131,7 @@ export class ItemRepo extends ITakaroRepo<ItemsModel, ItemsOutputDTO, ItemCreate
           description = EXCLUDED.description,
           icon = EXCLUDED.icon
       `,
-          values
+          values,
         );
       } catch (error) {
         this.log.error(error);

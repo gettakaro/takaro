@@ -35,7 +35,7 @@ export function createAxiosClient(baseURL: string) {
           status: response.status,
           method: response.request.method,
           url: response.request.url,
-        }
+        },
       );
 
       return response;
@@ -61,7 +61,7 @@ export function createAxiosClient(baseURL: string) {
       }
 
       return Promise.reject(error);
-    }
+    },
   );
 
   return client;

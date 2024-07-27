@@ -89,22 +89,22 @@ describe('commandParser', () => {
 
   it('Throws an error when invalid boolean types are provided', async () => {
     await expect(parseCommand('/settele test 42', MockTeleportCommand, mockGameServerId)).to.be.rejectedWith(
-      'The value for "public" should be either "true" or "false". Please correct it and try again.'
+      'The value for "public" should be either "true" or "false". Please correct it and try again.',
     );
     await expect(parseCommand('/settele test foobar', MockTeleportCommand, mockGameServerId)).to.be.rejectedWith(
-      'The value for "public" should be either "true" or "false". Please correct it and try again.'
+      'The value for "public" should be either "true" or "false". Please correct it and try again.',
     );
   });
 
   it('Throws an error when invalid number types are provided', async () => {
     await expect(parseCommand('/settele test true foobar', MockTeleportCommand, mockGameServerId)).to.be.rejectedWith(
-      'The value for "number" should be a number. Please correct it and try again.'
+      'The value for "number" should be a number. Please correct it and try again.',
     );
   });
 
   it('Throws when required arguments are missing', async () => {
     await expect(parseCommand('/settele', MockTeleportCommand, mockGameServerId)).to.be.rejectedWith(
-      'Oops! It seems you forgot to provide the "name" value. Please check and try again.'
+      'Oops! It seems you forgot to provide the "name" value. Please check and try again.',
     );
   });
 });

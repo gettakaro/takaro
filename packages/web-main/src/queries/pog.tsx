@@ -55,7 +55,7 @@ export const useSetCurrency = () => {
         queryClient.setQueryData(pogKeys.detail(updatedPog.playerId, updatedPog.gameServerId), updatedPog);
       },
     }),
-    {}
+    {},
   );
 };
 
@@ -77,7 +77,7 @@ export const useAddCurrency = () => {
         queryClient.setQueryData(pogKeys.detail(updatedPog.playerId, updatedPog.gameServerId), updatedPog);
       },
     }),
-    {}
+    {},
   );
 };
 
@@ -99,7 +99,7 @@ export const useDeductCurrency = () => {
         queryClient.setQueryData(pogKeys.detail(updatedPog.playerId, updatedPog.gameServerId), updatedPog);
       },
     }),
-    {}
+    {},
   );
 };
 
@@ -121,7 +121,7 @@ export const useTransactBetweenPlayers = () => {
             gameServerId,
             senderPlayerId,
             receiverPlayerId,
-            { currency }
+            { currency },
           )
         ).data.data,
       onSuccess: async (_, { senderPlayerId, receiverPlayerId, gameServerId }) => {
@@ -131,6 +131,6 @@ export const useTransactBetweenPlayers = () => {
         await queryClient.invalidateQueries({ queryKey: pogKeys.list() });
       },
     }),
-    {}
+    {},
   );
 };

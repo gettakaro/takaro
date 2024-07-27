@@ -47,5 +47,5 @@ export const InfiniteScroll = forwardRef<HTMLElement, InfiniteScrollProps>(
         )}
       </>
     );
-  }
+  },
 );

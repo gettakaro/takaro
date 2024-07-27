@@ -76,7 +76,9 @@ export const CheckboxContainer = styled.button<{
     }};
 
   border-radius: ${({ theme }) => theme.borderRadius.small};
-  transition: box-shadow 100ms linear, border-color 100ms linear;
+  transition:
+    box-shadow 100ms linear,
+    border-color 100ms linear;
   cursor: ${({ readOnly, disabled }) => {
     if (disabled) {
       return 'not-allowed';
