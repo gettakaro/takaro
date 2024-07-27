@@ -104,7 +104,7 @@ export function schemaToInputs(schema: SchemaObject): SchemaToInputsResult {
             input.type = InputType.enumeration;
             input.values = (property.items as any)['enum'];
             input.multiple = true;
-          } else if (property.items!['type'] !== 'string') {
+          } else if (property.items && property.items['type'] !== 'string') {
             throw new Error('property.items.type MUST be of type string');
           } else {
             if (property.minItems) {

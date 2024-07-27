@@ -48,7 +48,7 @@ interface IUserRoleAssign {
   expiresAt?: string;
 }
 
-export const useUserAssignRole = ({ userId }: { userId: string }) => {
+export const useUserAssignRole = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
@@ -56,7 +56,7 @@ export const useUserAssignRole = ({ userId }: { userId: string }) => {
     useMutation<APIOutput, AxiosError<APIOutput>, IUserRoleAssign>({
       mutationFn: async ({ userId, roleId, expiresAt }) =>
         (await apiClient.user.userControllerAssignRole(userId, roleId, { expiresAt })).data,
-      onSuccess: async () => {
+      onSuccess: async (_, { userId }) => {
         // invalidate user because new role assignment
         queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
       },

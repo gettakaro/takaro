@@ -9,8 +9,9 @@ import {
 } from '@takaro/apiclient';
 import { AxiosError } from 'axios';
 import { getApiClient } from 'util/getApiClient';
-import { InfiniteData, infiniteQueryOptions, queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
+import { infiniteQueryOptions, queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
 import { hasNextPage, mutationWrapper } from './util';
+import { useSnackbar } from 'notistack';
 
 export const discordKeys = {
   guilds: ['discordGuilds'] as const,
@@ -38,55 +39,21 @@ export const discordInviteQueryOptions = () =>
   });
 
 interface GuildUpdateInput {
-  id: string;
+  guildId: string;
   input: GuildUpdateDTO;
 }
 
 export const useDiscordGuildUpdate = () => {
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
 
   return mutationWrapper<GuildOutputDTO, GuildUpdateInput>(
     useMutation<GuildOutputDTO, AxiosError<GuildOutputDTOAPI>, GuildUpdateInput>({
-      mutationFn: async ({ id, input }) =>
-        (await getApiClient().discord.discordControllerUpdateGuild(id, input)).data.data,
-      onSuccess: (updatedGuild) => {
-        try {
-          // update guild in list of guilds
-          queryClient.setQueryData<InfiniteData<GuildOutputArrayDTOAPI>>(discordKeys.guilds, (prev) => {
-            if (!prev) {
-              return {
-                pages: [
-                  {
-                    data: [updatedGuild],
-                    meta: {
-                      page: 0,
-                      total: 1,
-                      limit: 100,
-                      error: { code: '', message: '', details: '' },
-                      serverTime: '',
-                    },
-                  },
-                ],
-                pageParams: [0],
-              };
-            }
-
-            return {
-              ...prev,
-              pages: prev.pages.map((page) => ({
-                ...page,
-                data: page.data.map((guild) => {
-                  if (guild.id === updatedGuild.id) {
-                    return updatedGuild;
-                  }
-                  return guild;
-                }),
-              })),
-            };
-          });
-        } catch (error) {
-          queryClient.invalidateQueries({ queryKey: discordKeys.guilds });
-        }
+      mutationFn: async ({ guildId, input }) =>
+        (await getApiClient().discord.discordControllerUpdateGuild(guildId, input)).data.data,
+      onSuccess: (_) => {
+        enqueueSnackbar('Discord guild updated!', { variant: 'default', type: 'success' });
+        queryClient.invalidateQueries({ queryKey: discordKeys.guilds });
       },
     }),
     {}

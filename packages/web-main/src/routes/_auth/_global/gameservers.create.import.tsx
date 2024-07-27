@@ -57,7 +57,7 @@ function Component() {
     setRefreshInterval(
       setInterval(() => {
         fetchJobStatus();
-      }, 1000) as unknown as number
+      }, 1000) as unknown as number,
     );
 
     return () => {

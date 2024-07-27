@@ -12,7 +12,6 @@ import {
 } from '@takaro/lib-components';
 import { Header, TitleContainer } from './style';
 import { useNavigate } from '@tanstack/react-router';
-import { useSnackbar } from 'notistack';
 
 import { AiOutlineMenu as MenuIcon } from 'react-icons/ai';
 import { useRoleRemove } from 'queries/role';
@@ -26,7 +25,6 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
   const [valid, setValid] = useState<boolean>(false);
   const theme = useTheme();
   const navigate = useNavigate();
-  const { enqueueSnackbar } = useSnackbar();
   const { mutate, isPending: isDeleting, isSuccess } = useRoleRemove();
 
   const handleOnEditClick = (e: MouseEvent): void => {
@@ -49,7 +47,6 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
       mutate({ roleId: id });
 
       if (isSuccess) setOpenDialog(false);
-      enqueueSnackbar('Role successfully deleted!', { variant: 'default', type: 'success' });
     } catch {}
   };
 

@@ -1,6 +1,5 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { SubmitHandler } from 'react-hook-form';
-import { useSnackbar } from 'notistack';
 
 import { DrawerSkeleton } from '@takaro/lib-components';
 import { permissionsQueryOptions, useRoleCreate } from 'queries/role';
@@ -20,13 +19,11 @@ export const Route = createFileRoute('/_auth/_global/roles/create')({
 });
 
 function Component() {
-  const { enqueueSnackbar } = useSnackbar();
   const { mutate, isPending: isCreatingRole, error, isSuccess } = useRoleCreate();
   const permissions = Route.useLoaderData();
   const navigate = Route.useNavigate();
 
   if (isSuccess) {
-    enqueueSnackbar('Role created!', { variant: 'default', type: 'success' });
     navigate({ to: '/roles' });
   }
 

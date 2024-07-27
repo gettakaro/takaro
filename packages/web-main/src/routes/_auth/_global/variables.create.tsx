@@ -2,7 +2,6 @@ import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import { ExecutionType, IFormInputs, VariablesForm } from './-variables/VariableCreateUpdateForm';
 import { useVariableCreate } from 'queries/variable';
 import { hasPermission } from 'hooks/useHasPermission';
-import { useSnackbar } from 'notistack';
 
 export const Route = createFileRoute('/_auth/_global/variables/create')({
   beforeLoad: async ({ context }) => {
@@ -16,11 +15,9 @@ export const Route = createFileRoute('/_auth/_global/variables/create')({
 
 function Component() {
   const { mutate, isPending, error, isSuccess } = useVariableCreate();
-  const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
 
   if (isSuccess) {
-    enqueueSnackbar('Variable created!', { variant: 'default', type: 'success' });
     navigate({ to: '/variables' });
   }
 

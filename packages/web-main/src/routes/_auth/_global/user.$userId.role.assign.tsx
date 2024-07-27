@@ -57,7 +57,7 @@ function Component() {
   const [open, setOpen] = useState(true);
   const router = useRouter();
   const { userId } = Route.useParams();
-  const { mutate, isPending, error } = useUserAssignRole({ userId: userId });
+  const { mutate, isPending, error } = useUserAssignRole();
   const roles = Route.useLoaderData();
 
   useEffect(() => {
@@ -110,7 +110,7 @@ function Component() {
         <Drawer.Footer>
           <ButtonContainer>
             <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
-            <Button fullWidth text="Save changes" isLoading={isPending} type="submit" form="assign-user-role-form" />
+            <Button fullWidth text="Assign role" isLoading={isPending} type="submit" form="assign-user-role-form" />
           </ButtonContainer>
         </Drawer.Footer>
       </Drawer.Content>

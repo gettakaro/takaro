@@ -29,7 +29,6 @@ import {
   AiOutlineExport as ExportIcon,
 } from 'react-icons/ai';
 import { useQuery } from '@tanstack/react-query';
-import { useSnackbar } from 'notistack';
 
 const DownloadLink = styled.a`
   display: block;
@@ -50,7 +49,6 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
   const [downloadLink, setDownloadLink] = useState<string | null>(null);
   const { mutate, isPending: isDeleting, isSuccess } = useModuleRemove();
   const { data: exported, isPending: isExporting } = useQuery(moduleExportOptions(mod.id, openExportDialog));
-  const { enqueueSnackbar } = useSnackbar();
 
   const theme = useTheme();
   const navigate = useNavigate();
@@ -61,7 +59,6 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
   };
 
   if (isSuccess) {
-    enqueueSnackbar('Module successfully deleted!', { variant: 'default' });
     setOpenDeleteDialog(false);
   }
 
