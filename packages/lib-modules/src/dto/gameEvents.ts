@@ -61,7 +61,7 @@ export class BaseGameEvent<T> extends BaseEvent<T> {
   msg: string;
 }
 
-export interface IPosition {
+export interface IPositionInterface {
   x: number;
   y: number;
   z: number;
@@ -105,7 +105,7 @@ export class EventChatMessage extends BaseGameEvent<EventChatMessage> {
   declare msg: string;
 }
 
-export class IPosition {
+export class IPosition implements IPositionInterface {
   @IsNumber()
   x: number;
   @IsNumber()
