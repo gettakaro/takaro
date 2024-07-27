@@ -8,7 +8,7 @@ it('Should render <NotificationBanner/>', () => {
   document.body.appendChild(notificationBannerPortal);
 
   const { container } = render(
-    <NotificationBanner description="Notification banner description" title="Notification banner title" />
+    <NotificationBanner description="Notification banner description" title="Notification banner title" />,
   );
   expect(container).toMatchSnapshot();
 });

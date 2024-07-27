@@ -33,7 +33,7 @@ describe('Render ConfigFields', () => {
           isLoading={false}
           mod={createModuleDTO({ configSchema: JSON.stringify(test.schema) })}
           error={null}
-        />
+        />,
       );
       expect(queryByRole('status')).toBeNull();
     });
@@ -47,7 +47,7 @@ describe('Render ConfigFields', () => {
           isLoading={false}
           mod={createModuleDTO({ configSchema: JSON.stringify(test.schema) })}
           error={null}
-        />
+        />,
       );
       expect(getByText('Failed to parse config fields')).toBeDefined();
     });

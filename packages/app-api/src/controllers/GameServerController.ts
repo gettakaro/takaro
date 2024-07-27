@@ -343,7 +343,7 @@ export class GameServerController {
   async installModule(
     @Req() req: AuthenticatedRequest,
     @Params() params: ParamIdAndModuleId,
-    @Body() data?: ModuleInstallDTO
+    @Body() data?: ModuleInstallDTO,
   ) {
     const service = new GameServerService(req.domainId);
 
@@ -370,7 +370,7 @@ export class GameServerController {
   async executeCommand(
     @Req() req: AuthenticatedRequest,
     @Params() params: ParamId,
-    @Body() data: CommandExecuteInputDTO
+    @Body() data: CommandExecuteInputDTO,
   ) {
     const service = new GameServerService(req.domainId);
     const result = await service.executeCommand(params.id, data.command);
@@ -398,7 +398,7 @@ export class GameServerController {
   async teleportPlayer(
     @Req() req: AuthenticatedRequest,
     @Params() params: PogParam,
-    @Body() data: TeleportPlayerInputDTO
+    @Body() data: TeleportPlayerInputDTO,
   ) {
     const service = new GameServerService(req.domainId);
     const result = await service.teleportPlayer(params.gameServerId, params.playerId, {

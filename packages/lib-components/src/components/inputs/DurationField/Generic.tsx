@@ -36,7 +36,7 @@ const validationSchema = z.object({
     z.object({
       value: z.number().positive(),
       unit: z.enum(luxonUnits), // Use updated units array
-    })
+    }),
   ),
 });
 
@@ -55,7 +55,7 @@ export const GenericDurationField = forwardRef<HTMLDivElement, GenericDurationFi
       onBlur,
       onFocus,
     },
-    ref
+    ref,
   ) => {
     const { control, handleSubmit, setValue } = useForm<z.infer<typeof validationSchema>>({
       mode: 'onSubmit',
@@ -196,5 +196,5 @@ export const GenericDurationField = forwardRef<HTMLDivElement, GenericDurationFi
         </Popover.Content>
       </Popover>
     );
-  }
+  },
 );

@@ -27,7 +27,10 @@ export class SevenDaysToDie implements IGameServer {
   private apiClient: SdtdApiClient;
   connectionInfo: SdtdConnectionInfo;
 
-  constructor(config: SdtdConnectionInfo, private settings: Partial<Settings> = {}) {
+  constructor(
+    config: SdtdConnectionInfo,
+    private settings: Partial<Settings> = {},
+  ) {
     this.connectionInfo = config;
     this.apiClient = new SdtdApiClient(this.connectionInfo);
   }
@@ -65,7 +68,7 @@ export class SevenDaysToDie implements IGameServer {
         }
 
         return new IGamePlayer(data);
-      })
+      }),
     );
 
     return players;
@@ -260,7 +263,7 @@ export class SevenDaysToDie implements IGameServer {
             }),
             reason,
             expiresAt,
-          })
+          }),
         );
       }
     }

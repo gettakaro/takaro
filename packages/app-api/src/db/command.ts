@@ -155,7 +155,7 @@ export class CommandRepo extends ITakaroRepo<CommandModel, CommandOutputDTO, Com
           this.where('commands.trigger', input).orWhereExists(function () {
             this.select(knex.raw('1'))
               .from(
-                knex.raw('jsonb_each("moduleAssignments"."systemConfig" -> \'commands\') as cmds(command, details)')
+                knex.raw('jsonb_each("moduleAssignments"."systemConfig" -> \'commands\') as cmds(command, details)'),
               )
               .whereRaw('cmds.command = "commands"."name"')
               // eslint-disable-next-line quotes

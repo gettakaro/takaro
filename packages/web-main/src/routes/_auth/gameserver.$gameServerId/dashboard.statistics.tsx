@@ -77,7 +77,7 @@ function Component() {
       endDate: now,
       eventName: EventsCountInputDTOEventNameEnum.ChatMessage,
       bucketStep: '1h',
-    })
+    }),
   );
 
   if (!playersOnlineData || !latencyData || !chatMessagesData) {

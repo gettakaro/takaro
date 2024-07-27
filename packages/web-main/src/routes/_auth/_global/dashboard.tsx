@@ -76,7 +76,7 @@ function Component() {
   }, [selectedPeriod]);
 
   const { data: dailyActiveUsers, isLoading: isLoadingDailyActiveUsers } = useQuery(
-    ActivityStatsQueryOptions({ timeType: 'daily', dataType: 'players', startDate, endDate: now })
+    ActivityStatsQueryOptions({ timeType: 'daily', dataType: 'players', startDate, endDate: now }),
   );
 
   const { data: cronjobsExecuted, isLoading: isLoadingCronJobsExecuted } = useQuery(
@@ -84,7 +84,7 @@ function Component() {
       search: { eventName: ['cronjob-executed'] },
       greaterThan: { createdAt: startDate },
       lessThan: { createdAt: now },
-    })
+    }),
   );
 
   const { data: commandsExecuted, isLoading: isLoadingCommandsExecuted } = useQuery(
@@ -92,7 +92,7 @@ function Component() {
       search: { eventName: ['command-executed'] },
       greaterThan: { createdAt: startDate },
       lessThan: { createdAt: now },
-    })
+    }),
   );
 
   const { data: HooksExecuted, isLoading: isLoadingHooksExecuted } = useQuery(
@@ -100,7 +100,7 @@ function Component() {
       search: { eventName: ['hook-executed'] },
       greaterThan: { createdAt: startDate },
       lessThan: { createdAt: now },
-    })
+    }),
   );
 
   const { data: failedFunctions } = useQuery(
@@ -111,7 +111,7 @@ function Component() {
       extend: ['gameServer', 'module', 'player', 'user'],
       sortBy: 'createdAt',
       sortDirection: 'desc',
-    })
+    }),
   );
 
   return (

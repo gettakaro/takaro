@@ -34,7 +34,7 @@ export class PlayerOnboarding extends BuiltinModule<PlayerOnboarding> {
       }),
       JSON.stringify({
         starterKitItems: { 'ui:widget': 'item' },
-      })
+      }),
     );
 
     this.hooks = [

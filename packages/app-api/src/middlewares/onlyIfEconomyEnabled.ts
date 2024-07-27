@@ -7,7 +7,7 @@ import { PlayerOnGameServerService, PlayerOnGameserverOutputDTO } from '../servi
 export async function onlyIfEconomyEnabledMiddleware(
   req: AuthenticatedRequest,
   _res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): Promise<void> {
   try {
     let gameServerId: string | null = null;

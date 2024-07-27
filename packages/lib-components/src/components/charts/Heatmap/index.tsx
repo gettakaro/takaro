@@ -169,7 +169,7 @@ const Chart = <T,>({
                     fillOpacity={bin.opacity}
                   />
                 );
-              })
+              }),
             )
           }
         </HeatmapRect>
@@ -200,7 +200,7 @@ function transformData<T>(
   xAccessor: (d: T) => number,
   yAccessor: (d: T) => number,
   zAccessor: (d: T) => number,
-  tooltipAccessor: (d: T) => string
+  tooltipAccessor: (d: T) => string,
 ): OuterBin[] {
   const map = new Map<number, Map<number, { count: number; tooltip: string }>>();
 

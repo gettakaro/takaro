@@ -40,7 +40,7 @@ export const ToggleButtonGroup: FC<ToggleButtonGroupProps> & SubComponents = ({
   fullWidth = false,
 }) => {
   const [selected, setSelected] = useState<string | Map<string, boolean>>(
-    exclusive ? defaultValue || '' : handleDefaultValueNonExclusive()
+    exclusive ? defaultValue || '' : handleDefaultValueNonExclusive(),
   );
 
   function handleDefaultValueNonExclusive() {
@@ -69,7 +69,7 @@ export const ToggleButtonGroup: FC<ToggleButtonGroupProps> & SubComponents = ({
     } else {
       // handle case that each button has a seperate state
       setSelected(
-        new Map((selected as Map<string, boolean>).set(value, !(selected as Map<string, boolean>).get(value)))
+        new Map((selected as Map<string, boolean>).set(value, !(selected as Map<string, boolean>).get(value))),
       );
     }
   };

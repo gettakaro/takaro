@@ -43,7 +43,7 @@ export const onSubmit: StoryFn<FileFieldProps> = (args) => {
       .refine((files) => files?.[0]?.size <= MAX_FILE_SIZE, 'Max file size is 5MB.')
       .refine(
         (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
-        'Only .jpg, .jpeg, .png and .webp files are accepted.'
+        'Only .jpg, .jpeg, .png and .webp files are accepted.',
       ),
   });
 
@@ -101,7 +101,7 @@ export const MultipleImages: StoryFn<FileFieldProps> = (args) => {
         },
         {
           message: 'You must select at least one file.',
-        }
+        },
       )
       .refine(
         (fileList: FileList) => {
@@ -110,7 +110,7 @@ export const MultipleImages: StoryFn<FileFieldProps> = (args) => {
         },
         {
           message: `You must select between 1 and ${MAX_FILES} files.`,
-        }
+        },
       )
       .refine(
         (fileList: FileList) => {
@@ -119,7 +119,7 @@ export const MultipleImages: StoryFn<FileFieldProps> = (args) => {
         },
         {
           message: 'Each file must be no larger than 5MB.',
-        }
+        },
       )
       .refine(
         (fileList: FileList) => {
@@ -128,7 +128,7 @@ export const MultipleImages: StoryFn<FileFieldProps> = (args) => {
         },
         {
           message: 'Only .jpg, .jpeg, .png, and .webp files are accepted.',
-        }
+        },
       ),
   });
 

@@ -114,7 +114,7 @@ export const useModuleCreate = () => {
         return queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(newModule.id), newModule);
       },
     }),
-    defaultModuleErrorMessages
+    defaultModuleErrorMessages,
   );
 };
 
@@ -137,7 +137,7 @@ export const useModuleRemove = () => {
         await queryClient.invalidateQueries({ queryKey: moduleKeys.export(moduleId) });
       },
     }),
-    {}
+    {},
   );
 };
 
@@ -160,7 +160,7 @@ export const useModuleImport = () => {
         await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
       },
     }),
-    {}
+    {},
   );
 };
 
@@ -184,7 +184,7 @@ export const useModuleUpdate = () => {
         return queryClient.setQueryData(moduleKeys.detail(updatedModule.id), updatedModule);
       },
     }),
-    defaultModuleErrorMessages
+    defaultModuleErrorMessages,
   );
 };
 
@@ -222,7 +222,7 @@ export const useHookCreate = () => {
         return queryClient.setQueryData(moduleKeys.hooks.detail(newHook.id), newHook);
       },
     }),
-    defaultHookErrorMessages
+    defaultHookErrorMessages,
   );
 };
 
@@ -254,7 +254,7 @@ export const useHookRemove = ({ moduleId }) => {
         return queryClient.removeQueries({ queryKey: moduleKeys.hooks.detail(hookId) });
       },
     }),
-    defaultHookErrorMessages
+    defaultHookErrorMessages,
   );
 };
 
@@ -286,7 +286,7 @@ export const useHookUpdate = () => {
         queryClient.setQueryData<HookOutputDTO>(moduleKeys.hooks.detail(updatedHook.id), updatedHook);
       },
     }),
-    defaultHookErrorMessages
+    defaultHookErrorMessages,
   );
 };
 
@@ -324,7 +324,7 @@ export const useCommandCreate = () => {
         return queryClient.setQueryData<CommandOutputDTO>(moduleKeys.commands.detail(newCommand.id), newCommand);
       },
     }),
-    defaultCommandErrorMessages
+    defaultCommandErrorMessages,
   );
 };
 
@@ -356,11 +356,11 @@ export const useCommandUpdate = () => {
         });
         return queryClient.setQueryData<CommandOutputDTO>(
           moduleKeys.commands.detail(updatedCommand.id),
-          updatedCommand
+          updatedCommand,
         );
       },
     }),
-    defaultCommandErrorMessages
+    defaultCommandErrorMessages,
   );
 };
 
@@ -393,7 +393,7 @@ export const useCommandRemove = ({ moduleId }) => {
         queryClient.removeQueries({ queryKey: moduleKeys.commands.detail(commandId) });
       },
     }),
-    defaultCommandErrorMessages
+    defaultCommandErrorMessages,
   );
 };
 
@@ -432,7 +432,7 @@ export const useCronJobCreate = () => {
         return queryClient.setQueryData<CronJobOutputDTO>(moduleKeys.cronJobs.detail(newCronJob.id), newCronJob);
       },
     }),
-    defaultCronJobErrorMessages
+    defaultCronJobErrorMessages,
   );
 };
 
@@ -464,11 +464,11 @@ export const useCronJobUpdate = () => {
         });
         return queryClient.setQueryData<CronJobOutputDTO>(
           moduleKeys.cronJobs.detail(updatedCronJob.id),
-          updatedCronJob
+          updatedCronJob,
         );
       },
     }),
-    defaultCronJobErrorMessages
+    defaultCronJobErrorMessages,
   );
 };
 
@@ -501,7 +501,7 @@ export const useCronJobRemove = ({ moduleId }: { moduleId: string }) => {
         });
       },
     }),
-    defaultCronJobErrorMessages
+    defaultCronJobErrorMessages,
   );
 };
 
@@ -544,7 +544,7 @@ export const useFunctionCreate = () => {
         return queryClient.setQueryData<FunctionOutputDTO>(moduleKeys.functions.detail(newFn.id), newFn);
       },
     }),
-    defaultFunctionErrorMessages
+    defaultFunctionErrorMessages,
   );
 };
 
@@ -567,7 +567,7 @@ export const useFunctionUpdate = () => {
         queryClient.setQueryData<FunctionOutputDTO>(moduleKeys.functions.detail(updatedFn.id), updatedFn);
       },
     }),
-    defaultFunctionErrorMessages
+    defaultFunctionErrorMessages,
   );
 };
 
@@ -597,6 +597,6 @@ export const useFunctionRemove = ({ moduleId }: { moduleId: string }) => {
         queryClient.removeQueries({ queryKey: moduleKeys.functions.detail(functionId) });
       },
     }),
-    defaultFunctionErrorMessages
+    defaultFunctionErrorMessages,
   );
 };

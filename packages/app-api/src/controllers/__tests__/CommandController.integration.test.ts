@@ -117,11 +117,11 @@ const tests = [
 
       // Creating an argument with the same name in a different command should work
       const newCommand = await this.client.command.commandControllerCreate(
-        mockCommand(this.setupData.data.moduleId, 'command 2')
+        mockCommand(this.setupData.data.moduleId, 'command 2'),
       );
 
       const arg2res = await this.client.command.commandControllerCreateArgument(
-        mockArgument(newCommand.data.data.id, ARG_NAME)
+        mockArgument(newCommand.data.data.id, ARG_NAME),
       );
 
       expect(arg2res.data.data.name).to.be.eq(ARG_NAME);

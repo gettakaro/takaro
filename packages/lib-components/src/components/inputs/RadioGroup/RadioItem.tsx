@@ -125,5 +125,5 @@ export const RadioItem = forwardRef<HTMLDivElement, RadioItemProps>(
         </RadioItemContainer>
       </>
     );
-  }
+  },
 );

@@ -19,7 +19,7 @@ const tests = [
             items: ['apple', 'banana', 'orange'],
             commands: [],
           }),
-        }
+        },
       );
       const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
 
@@ -46,7 +46,7 @@ const tests = [
             items: [],
             commands: ['say hello from test'],
           }),
-        }
+        },
       );
 
       const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
@@ -74,7 +74,7 @@ const tests = [
             items: [],
             commands: [],
           }),
-        }
+        },
       );
 
       const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);

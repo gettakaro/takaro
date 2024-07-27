@@ -28,7 +28,7 @@ export const JsonSchemaForm = forwardRef<Form, PropsWithChildren<JsonSchemaFormP
       hideSubmitButton = false,
       readOnly = false,
     },
-    ref
+    ref,
   ) => {
     if (hideSubmitButton) {
       uiSchema = {
@@ -58,5 +58,5 @@ export const JsonSchemaForm = forwardRef<Form, PropsWithChildren<JsonSchemaFormP
         readonly={readOnly}
       />
     );
-  }
+  },
 );

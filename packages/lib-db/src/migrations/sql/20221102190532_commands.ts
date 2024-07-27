@@ -25,7 +25,7 @@ export async function up(knex: Knex): Promise<void> {
       'READ_SETTINGS',
       'READ_COMMANDS',
       'MANAGE_COMMANDS',
-    ])
+    ]),
   );
 
   await knex.schema.alterTable('commands', (table) => {
@@ -61,6 +61,6 @@ export async function down(knex: Knex): Promise<void> {
       'MANAGE_PLAYERS',
       'MANAGE_SETTINGS',
       'READ_SETTINGS',
-    ])
+    ]),
   );
 }

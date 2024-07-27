@@ -22,7 +22,7 @@ export async function up(knex: Knex): Promise<void> {
       return knex('variables')
         .update({ key: `pub${teleport.key}` })
         .where('id', teleport.id);
-    })
+    }),
   );
 }
 

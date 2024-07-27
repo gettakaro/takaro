@@ -33,7 +33,7 @@ async function triggerLink(
   client: Client,
   userClient: Client,
   setupData: SetupGameServerPlayers.ISetupData,
-  email: string
+  email: string,
 ) {
   const chatEventWaiter = setupData.eventsAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
   await client.command.commandControllerTrigger(setupData.gameServer1.id, {
@@ -146,7 +146,7 @@ const tests = [
         if (!isAxiosError(error)) throw error;
         expect(error.response?.data.meta.error.code).to.be.equal('BadRequestError');
         expect(error.response?.data.meta.error.message).to.be.equal(
-          'Invalid player link code. Please verify the code and try again.'
+          'Invalid player link code. Please verify the code and try again.',
         );
       }
     },
@@ -180,7 +180,7 @@ const tests = [
         if (!isAxiosError(error)) throw error;
         expect(error.response?.data.meta.error.code).to.be.equal('BadRequestError');
         expect(error.response?.data.meta.error.message).to.be.equal(
-          'Email already in use, please login with the correct user first'
+          'Email already in use, please login with the correct user first',
         );
       }
     },

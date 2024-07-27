@@ -47,7 +47,7 @@ function Component() {
         .getVerificationFlow({ id: flowId })
         .then(({ data: flow }) => setFlow(flow))
         .catch(sdkErrorHandler),
-    []
+    [],
   );
 
   // initialize the sdkError for generic handling of errors

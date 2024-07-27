@@ -74,7 +74,7 @@ export abstract class TakaroEmitter {
     if (listeners) {
       this.listenerMap.set(
         event,
-        listeners.filter((l) => l !== listener)
+        listeners.filter((l) => l !== listener),
       );
     }
 
@@ -114,7 +114,7 @@ export function getErrorProxyHandler<T extends TakaroEmitter>(emitter: T) {
           if (!target.hasErrorListener()) {
             log.error('Unhandled error', error);
             const err = new Error(
-              'Unhandled error in TakaroEmitter, attach a listener to the "error" event to handle this'
+              'Unhandled error in TakaroEmitter, attach a listener to the "error" event to handle this',
             );
             Error.captureStackTrace(err);
             throw err;

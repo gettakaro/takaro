@@ -71,7 +71,7 @@ export class BaseApiClient<T extends IBaseApiClientConfig> {
             statusText: response.statusText,
             method: response.request.method,
             url: response.request.url,
-          }
+          },
         );
 
         return response;
@@ -94,7 +94,7 @@ export class BaseApiClient<T extends IBaseApiClientConfig> {
           response: error.response?.data,
         });
         return Promise.reject(error);
-      }
+      },
     );
 
     return axios;
@@ -130,7 +130,7 @@ export class BaseApiClient<T extends IBaseApiClientConfig> {
         isJsonMime: this.isJsonMime,
       },
       '',
-      this.axios
+      this.axios,
     );
   }
 }

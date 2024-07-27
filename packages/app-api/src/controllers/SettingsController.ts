@@ -72,7 +72,7 @@ export class SettingsController {
   async getOne(
     @Req() req: AuthenticatedRequest,
     @QueryParams() query: GetSettingsOneInput,
-    @Params() params: ParamKey
+    @Params() params: ParamKey,
   ) {
     if (!params.key || !Object.values(SETTINGS_KEYS).includes(params.key)) {
       throw new errors.NotFoundError();
@@ -112,7 +112,7 @@ export class SettingsController {
   async delete(
     @Req() req: AuthenticatedRequest,
     @QueryParams() query: GetSettingsOneInput,
-    @Params() params: ParamKey
+    @Params() params: ParamKey,
   ) {
     const service = new SettingsService(req.domainId, query.gameServerId);
     await service.set(params.key, null);

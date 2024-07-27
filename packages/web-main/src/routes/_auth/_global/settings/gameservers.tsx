@@ -28,7 +28,7 @@ function dirtyValues(dirtyFields: object | boolean, allValues: object): object {
   if (dirtyFields === true || Array.isArray(dirtyFields)) return allValues;
   // Here, we have an object
   return Object.fromEntries(
-    Object.keys(dirtyFields).map((key) => [key, dirtyValues(dirtyFields[key], allValues[key])])
+    Object.keys(dirtyFields).map((key) => [key, dirtyValues(dirtyFields[key], allValues[key])]),
   );
 }
 
@@ -43,7 +43,7 @@ export const booleanFields = ['economyEnabled'];
 
 export function mapSettings<T extends Promise<unknown>>(
   data: Settings,
-  fn: (key: keyof IFormInputs, value?: string) => T
+  fn: (key: keyof IFormInputs, value?: string) => T,
 ) {
   const promises: Promise<unknown>[] = [];
   for (const key in data) {
@@ -111,12 +111,12 @@ function Component() {
       data.forEach(({ key, value }) => {
         if (booleanFields.includes(key)) {
           settingsComponents.push(
-            <Switch readOnly={readOnly} control={control} label={camelCaseToSpaces(key)} name={key} key={key} />
+            <Switch readOnly={readOnly} control={control} label={camelCaseToSpaces(key)} name={key} key={key} />,
           );
           setValue(key, value === 'true');
         } else {
           settingsComponents.push(
-            <TextField readOnly={readOnly} control={control} label={camelCaseToSpaces(key)} name={key} key={key} />
+            <TextField readOnly={readOnly} control={control} label={camelCaseToSpaces(key)} name={key} key={key} />,
           );
           if (value) setValue(key, value);
         }

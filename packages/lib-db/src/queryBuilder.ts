@@ -97,7 +97,7 @@ export class QueryBuilder<Model extends ObjectionModel, OutputDTO> {
 
   private filters(
     tableName: string,
-    query: ObjectionQueryBuilder<Model, Page<Model>>
+    query: ObjectionQueryBuilder<Model, Page<Model>>,
   ): ObjectionQueryBuilder<Model, Page<Model>> {
     for (const filter in this.query.filters) {
       if (Object.prototype.hasOwnProperty.call(this.query.filters, filter)) {
@@ -121,7 +121,7 @@ export class QueryBuilder<Model extends ObjectionModel, OutputDTO> {
 
   private greaterThan(
     tableName: string,
-    query: ObjectionQueryBuilder<Model, Page<Model>>
+    query: ObjectionQueryBuilder<Model, Page<Model>>,
   ): ObjectionQueryBuilder<Model, Page<Model>> {
     for (const filter in this.query.greaterThan) {
       if (Object.prototype.hasOwnProperty.call(this.query.greaterThan, filter)) {
@@ -137,7 +137,7 @@ export class QueryBuilder<Model extends ObjectionModel, OutputDTO> {
 
   private lessThan(
     tableName: string,
-    query: ObjectionQueryBuilder<Model, Page<Model>>
+    query: ObjectionQueryBuilder<Model, Page<Model>>,
   ): ObjectionQueryBuilder<Model, Page<Model>> {
     for (const filter in this.query.lessThan) {
       if (Object.prototype.hasOwnProperty.call(this.query.lessThan, filter)) {

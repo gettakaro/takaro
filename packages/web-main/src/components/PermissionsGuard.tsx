@@ -27,7 +27,7 @@ export const PermissionsGuard: FC<PropsWithChildren<PermissionsGuardProps>> = ({
 
     const permissionsFromRoles = session.roles
       .flatMap((assignments) =>
-        assignments.role.permissions.map((permission) => permission.permission.permission as PERMISSIONS)
+        assignments.role.permissions.map((permission) => permission.permission.permission as PERMISSIONS),
       )
       .filter((permission) => Object.values(PERMISSIONS).includes(permission));
 

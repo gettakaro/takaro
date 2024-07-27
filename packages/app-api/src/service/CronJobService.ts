@@ -91,7 +91,7 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
       const newFn = await functionsService.create(
         new FunctionCreateDTO({
           code: item.function,
-        })
+        }),
       );
       fnIdToAdd = newFn.id;
     } else {
@@ -128,7 +128,7 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
         fn.id,
         new FunctionUpdateDTO({
           code: item.function,
-        })
+        }),
       );
     }
 
@@ -165,7 +165,7 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
       mod.cronJobs.map(async (cronJob) => {
         await this.removeCronjobFromQueue(cronJob, modInstallation);
         await this.addCronjobToQueue(cronJob, modInstallation);
-      })
+      }),
     );
   }
 
@@ -176,7 +176,7 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
     await Promise.all(
       mod.cronJobs.map(async (cronJob) => {
         await this.addCronjobToQueue(cronJob, modInstallation);
-      })
+      }),
     );
   }
 
@@ -187,7 +187,7 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
     await Promise.all(
       mod.cronJobs.map(async (cronJob) => {
         await this.removeCronjobFromQueue(cronJob, modInstallation);
-      })
+      }),
     );
   }
 
@@ -217,7 +217,7 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
             : cronJob.temporalValue,
           jobId,
         },
-      }
+      },
     );
     this.log.debug(`Added repeatable job ${jobId}`);
   }

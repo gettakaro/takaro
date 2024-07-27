@@ -9,7 +9,7 @@ export class Utils extends BuiltinModule<Utils> {
         $schema: 'http://json-schema.org/draft-07/schema#',
         type: 'object',
         additionalProperties: false,
-      })
+      }),
     );
 
     this.commands = [

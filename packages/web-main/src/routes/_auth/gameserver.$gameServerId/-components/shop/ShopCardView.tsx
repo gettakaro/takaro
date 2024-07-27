@@ -37,7 +37,7 @@ export const ShopCardView: FC<ShopViewProps> = ({ gameServerId, currency, curren
       filters: { gameServerId: [gameServerId] },
       sortBy: 'draft',
       sortDirection: 'desc',
-    })
+    }),
   );
 
   if (
@@ -78,7 +78,7 @@ export const ShopCardView: FC<ShopViewProps> = ({ gameServerId, currency, curren
               gameServerId={gameServerId}
               gameServerType={gameServerType}
             />
-          ))
+          )),
         )}
         {hasPermission && (
           <Card role="link" onClick={onCreateShopListingClicked} variant="outline">

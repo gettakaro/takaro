@@ -16,7 +16,7 @@ export interface ToggleButtonProps {
 export const ToggleButton = forwardRef<HTMLButtonElement, ToggleButtonProps>(
   (
     { selected = false, disabled = false, onClick = undefined, value, parentClickEvent = () => {}, children, tooltip },
-    ref
+    ref,
   ) => {
     const handleOnClick = () => {
       if (disabled) return;
@@ -44,5 +44,5 @@ export const ToggleButton = forwardRef<HTMLButtonElement, ToggleButtonProps>(
         {children}
       </Item>
     );
-  }
+  },
 );

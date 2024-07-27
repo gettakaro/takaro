@@ -10,7 +10,7 @@ export abstract class NOT_DOMAIN_SCOPED_ITakaroRepo<
   Model extends NOT_DOMAIN_SCOPED_TakaroModel,
   OutputDTO extends TakaroDTO<OutputDTO>,
   CreateInputDTO extends TakaroDTO<CreateInputDTO>,
-  UpdateDTO extends TakaroDTO<UpdateDTO>
+  UpdateDTO extends TakaroDTO<UpdateDTO>,
 > {
   log = logger(this.constructor.name);
 
@@ -37,7 +37,7 @@ export abstract class ITakaroRepo<
   Model extends TakaroModel,
   OutputDTO extends TakaroDTO<OutputDTO>,
   CreateInputDTO extends TakaroDTO<CreateInputDTO>,
-  UpdateDTO extends TakaroDTO<UpdateDTO>
+  UpdateDTO extends TakaroDTO<UpdateDTO>,
 > extends NOT_DOMAIN_SCOPED_ITakaroRepo<Model, OutputDTO, CreateInputDTO, UpdateDTO> {
   constructor(public readonly domainId: string) {
     super();

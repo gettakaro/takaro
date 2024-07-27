@@ -30,7 +30,7 @@ export const DropdownTrigger = forwardRef<HTMLElement, DropdownTriggerProps>(
       },
       ...props
     },
-    propRef
+    propRef,
   ) => {
     const context = useDropdownContext();
     const childrenRef = (children as any).ref;
@@ -54,7 +54,7 @@ export const DropdownTrigger = forwardRef<HTMLElement, DropdownTriggerProps>(
           onClick(event) {
             event.stopPropagation();
           },
-        })
+        }),
       );
     } else {
       inner = (
@@ -85,5 +85,5 @@ export const DropdownTrigger = forwardRef<HTMLElement, DropdownTriggerProps>(
     }
 
     return inner;
-  }
+  },
 );

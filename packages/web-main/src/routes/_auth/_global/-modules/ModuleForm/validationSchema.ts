@@ -50,7 +50,7 @@ export const validationSchema = z.object({
       description: z.string(),
       friendlyName: z.string(),
       canHaveCount: z.boolean().optional(),
-    })
+    }),
   ),
   configFields: z
     .array(
@@ -107,7 +107,7 @@ export const validationSchema = z.object({
             required: z.boolean(),
           }),
         ])
-        .and(baseConfigFieldShape)
+        .and(baseConfigFieldShape),
     )
 
     .refine(
@@ -121,7 +121,7 @@ export const validationSchema = z.object({
         params: {
           ref: { name: 'name' },
         },
-      }
+      },
     )
 
     .superRefine((data, ctx) => {

@@ -71,7 +71,7 @@ export const server = new HTTP(
   {
     port: config.get('http.port'),
     allowedOrigins: config.get('http.allowedOrigins'),
-  }
+  },
 );
 
 const log = logger('main');
@@ -163,9 +163,9 @@ async function domainInit(domain: DomainOutputDTO) {
       await Promise.all(
         installedModules.map(async (mod) => {
           await cronjobService.syncModuleCronjobs(mod);
-        })
+        }),
       );
-    })
+    }),
   );
 }
 

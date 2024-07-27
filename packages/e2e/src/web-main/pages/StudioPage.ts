@@ -5,7 +5,10 @@ import { BasePage } from './BasePage.js';
 const { expect } = playwright;
 
 export class StudioPage extends BasePage {
-  constructor(public readonly page: Page, public mod: ModuleOutputDTO) {
+  constructor(
+    public readonly page: Page,
+    public mod: ModuleOutputDTO,
+  ) {
     super(page);
   }
 

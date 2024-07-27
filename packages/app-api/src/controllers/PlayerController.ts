@@ -116,7 +116,7 @@ export class PlayerController {
   async assignRole(
     @Req() req: AuthenticatedRequest,
     @Params() params: ParamIdAndRoleId,
-    @Body() data: PlayerRoleAssignChangeDTO
+    @Body() data: PlayerRoleAssignChangeDTO,
   ) {
     const service = new PlayerService(req.domainId);
 
@@ -139,7 +139,7 @@ export class PlayerController {
   async removeRole(
     @Req() req: AuthenticatedRequest,
     @Params() params: ParamIdAndRoleId,
-    @Body() data: PlayerRoleAssignChangeDTO
+    @Body() data: PlayerRoleAssignChangeDTO,
   ) {
     const service = new PlayerService(req.domainId);
     await service.removeRole(params.roleId, params.id, data.gameServerId);

@@ -39,5 +39,5 @@ export const Company = forwardRef<HTMLDivElement, CompanyProps>(
         {textVisible && <div>Takaro</div>}
       </Container>
     );
-  }
+  },
 );

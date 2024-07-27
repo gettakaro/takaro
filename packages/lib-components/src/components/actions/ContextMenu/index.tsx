@@ -57,7 +57,7 @@ export const ContextMenu = forwardRef<HTMLButtonElement, ContextMenuProps>(({ ch
 
   const listItemsRef = useRef<Array<HTMLButtonElement | null>>([]);
   const listContentRef = useRef(
-    Children.map(children, (child) => (isValidElement(child) ? child.props.label : null)) as Array<string | null>
+    Children.map(children, (child) => (isValidElement(child) ? child.props.label : null)) as Array<string | null>,
   );
   const allowMouseUpCloseRef = useRef(false);
 
@@ -177,11 +177,11 @@ export const ContextMenu = forwardRef<HTMLButtonElement, ContextMenuProps>(({ ch
                               groupChild.props.onClick?.(e);
                               setIsOpen(false);
                             },
-                          })
+                          }),
                         );
                       }
                       return groupChild;
-                    }
+                    },
                   );
                   return <ContextMenu.Group {...child.props}>{newGroupChildren}</ContextMenu.Group>;
                 }
@@ -202,7 +202,7 @@ export const ContextMenu = forwardRef<HTMLButtonElement, ContextMenuProps>(({ ch
                       child.props.onClick?.(e);
                       setIsOpen(false);
                     },
-                  })
+                  }),
                 );
               }
             })}

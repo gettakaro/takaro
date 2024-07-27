@@ -39,7 +39,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       variant = 'default',
       onClick = () => {},
     },
-    ref
+    ref,
   ) => {
     function getIcon(): JSX.Element {
       if (isLoading) return <Spinner color={variant === 'default' ? 'white' : color} size="small" />;
@@ -95,5 +95,5 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     }
 
     return getVariant();
-  }
+  },
 );

@@ -58,5 +58,5 @@ export const DialogBody = forwardRef<HTMLParagraphElement, PropsWithChildren<Dia
         {children}
       </Container>
     );
-  }
+  },
 );

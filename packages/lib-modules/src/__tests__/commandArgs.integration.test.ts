@@ -86,7 +86,7 @@ const tests = [
 
       expect((await events).length).to.be.eq(1);
       expect((await events)[0].data.msg).to.be.eq(
-        'The value for "test" should be a number. Please correct it and try again.'
+        'The value for "test" should be a number. Please correct it and try again.',
       );
     },
   }),

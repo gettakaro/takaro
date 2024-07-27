@@ -23,7 +23,10 @@ export class HTTP {
   private httpServer: Server;
   private logger;
 
-  constructor(options: RoutingControllersOptions = {}, private httpOptions: IHTTPOptions = {}) {
+  constructor(
+    options: RoutingControllersOptions = {},
+    private httpOptions: IHTTPOptions = {},
+  ) {
     this.logger = logger('http');
     this.app = express();
     this.httpServer = createServer(this.app);
@@ -33,7 +36,7 @@ export class HTTP {
         verify: (req, res, buf) => {
           (req as any).rawBody = buf.toString();
         },
-      })
+      }),
     );
     this.app.use(LoggingMiddleware);
     this.app.use(metricsMiddleware);
@@ -53,7 +56,7 @@ export class HTTP {
             callback(new errors.BadRequestError('Not allowed by CORS'));
           }
         },
-      })
+      }),
     );
     this.app.use(cookieParser());
 

@@ -31,7 +31,7 @@ const tests = [
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.economyUtilsModule.id
+        this.setupData.economyUtilsModule.id,
       );
 
       const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 2);
@@ -52,7 +52,7 @@ const tests = [
         playerOnGameServer[0].playerId,
         {
           currency: 1000,
-        }
+        },
       );
 
       // trigger balance command
@@ -75,7 +75,7 @@ const tests = [
       // install module
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.economyUtilsModule.id
+        this.setupData.economyUtilsModule.id,
       );
 
       const giveCurrencies = this.setupData.players.map(async (player, index) => {
@@ -90,7 +90,7 @@ const tests = [
           playerOnGameServer[0].playerId,
           {
             currency: 1000 * index,
-          }
+          },
         );
       });
       await Promise.all(giveCurrencies);
@@ -107,7 +107,7 @@ const tests = [
       expect((await events).length).to.be.eq(6);
       for (const message of messages) {
         expect(message).to.match(
-          /(Richest players\:|1\. .+ - 4000 test coin|2\. .+ - 3000 test coin|3\. .+ - 2000 test coin|4\. .+ - 1000 test coin|5\. .+ - 0 test coin)/
+          /(Richest players\:|1\. .+ - 4000 test coin|2\. .+ - 3000 test coin|3\. .+ - 2000 test coin|4\. .+ - 1000 test coin|5\. .+ - 0 test coin)/,
         );
       }
     },
@@ -120,7 +120,7 @@ const tests = [
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.economyUtilsModule.id
+        this.setupData.economyUtilsModule.id,
       );
 
       const transferAmount = 500;
@@ -133,12 +133,12 @@ const tests = [
         senderPog.playerId,
         {
           currency: transferAmount,
-        }
+        },
       );
 
       const receiver = this.setupData.players[1];
       const receiverPog = receiver.playerOnGameServers?.find(
-        (pog) => pog.gameServerId === this.setupData.gameserver.id
+        (pog) => pog.gameServerId === this.setupData.gameserver.id,
       );
       if (!receiverPog) throw new Error('Receiver playerOnGameServer does not exist');
       expect(receiverPog.currency).to.be.eq(0);
@@ -156,13 +156,13 @@ const tests = [
       // check if balances are correct
       const updatedSender = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
         senderPog.gameServerId,
-        senderPog.playerId
+        senderPog.playerId,
       );
       expect(updatedSender.data.data.currency).to.be.eq(0);
 
       const updatedReceiver = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
         receiverPog.gameServerId,
-        receiverPog.playerId
+        receiverPog.playerId,
       );
       expect(updatedReceiver.data.data.currency).to.be.eq(transferAmount);
 
@@ -178,7 +178,7 @@ const tests = [
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.economyUtilsModule.id
+        this.setupData.economyUtilsModule.id,
       );
 
       const sender = this.setupData.players[0];
@@ -195,7 +195,7 @@ const tests = [
       const messages = (await events).sort(chatMessageSorter).map((e) => e.data.msg as string);
       expect((await events).length).to.be.eq(1);
       expect(messages[0]).to.be.eq(
-        `Failed to transfer ${transferAmount} test coin to ${receiver.name}. Are you sure you have enough balance?`
+        `Failed to transfer ${transferAmount} test coin to ${receiver.name}. Are you sure you have enough balance?`,
       );
     },
   }),
@@ -212,7 +212,7 @@ const tests = [
           userConfig: JSON.stringify({
             pendingAmount: 100,
           }),
-        }
+        },
       );
 
       const transferAmount = 500;
@@ -228,12 +228,12 @@ const tests = [
         senderPog.playerId,
         {
           currency: transferAmount,
-        }
+        },
       );
 
       const receiver = this.setupData.players[1];
       const receiverPog = receiver.playerOnGameServers?.find(
-        (pog) => pog.gameServerId === this.setupData.gameserver.id
+        (pog) => pog.gameServerId === this.setupData.gameserver.id,
       );
       if (!receiverPog) throw new Error('Receiver playerOnGameServer does not exist');
       expect(receiverPog.currency).to.be.eq(0);
@@ -252,21 +252,21 @@ const tests = [
         (
           await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
             senderPog.gameServerId,
-            senderPog.playerId
+            senderPog.playerId,
           )
-        ).data.data.currency
+        ).data.data.currency,
       ).to.be.eq(transferAmount);
       expect(
         (
           await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
             receiverPog.gameServerId,
-            receiverPog.playerId
+            receiverPog.playerId,
           )
-        ).data.data.currency
+        ).data.data.currency,
       ).to.be.eq(0);
       expect(messages.length).to.be.eq(1);
       expect(messages[0]).to.be.eq(
-        `You are about to send ${transferAmount} test coin to ${receiver.name}. (Please confirm by typing ${prefix}confirmtransfer)`
+        `You are about to send ${transferAmount} test coin to ${receiver.name}. (Please confirm by typing ${prefix}confirmtransfer)`,
       );
 
       // =================================================
@@ -284,17 +284,17 @@ const tests = [
         (
           await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
             senderPog.gameServerId,
-            senderPog.playerId
+            senderPog.playerId,
           )
-        ).data.data.currency
+        ).data.data.currency,
       ).to.be.eq(0);
       expect(
         (
           await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
             receiverPog.gameServerId,
-            receiverPog.playerId
+            receiverPog.playerId,
           )
-        ).data.data.currency
+        ).data.data.currency,
       ).to.be.eq(transferAmount);
 
       expect(messages[0]).to.be.eq(`You received ${transferAmount} test coin from ${sender.name}`);
@@ -314,7 +314,7 @@ const tests = [
           userConfig: JSON.stringify({
             pendingAmount: 100,
           }),
-        }
+        },
       );
       const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
@@ -338,7 +338,7 @@ const tests = [
 
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.economyUtilsModule.id
+        this.setupData.economyUtilsModule.id,
       );
 
       // Change permissions of role to only have manageCurrency permission
@@ -352,7 +352,7 @@ const tests = [
       });
 
       const receiverPog = receiver.playerOnGameServers?.find(
-        (pog) => pog.gameServerId === this.setupData.gameserver.id
+        (pog) => pog.gameServerId === this.setupData.gameserver.id,
       );
       if (!receiverPog) throw new Error('Receiver playerOnGameServer does not exist');
       expect(receiverPog.currency).to.be.eq(0);
@@ -368,9 +368,9 @@ const tests = [
         (
           await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
             receiverPog.gameServerId,
-            receiverPog.playerId
+            receiverPog.playerId,
           )
-        ).data.data.currency
+        ).data.data.currency,
       ).to.be.eq(grantAmount);
       expect(messages[0]).to.be.eq(`Granted ${grantAmount} test coin by ${granter.name}`);
       expect(messages[1]).to.be.eq(`You successfully granted ${grantAmount} test coin to ${receiver.name}`);
@@ -388,7 +388,7 @@ const tests = [
 
       // make sure receiver has enough currency
       const receiverPog = receiver.playerOnGameServers?.find(
-        (pog) => pog.gameServerId === this.setupData.gameserver.id
+        (pog) => pog.gameServerId === this.setupData.gameserver.id,
       );
       if (!receiverPog) throw new Error('Receiver playerOnGameServer does not exist');
       await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
@@ -396,12 +396,12 @@ const tests = [
         receiverPog.playerId,
         {
           currency: revokeAmount,
-        }
+        },
       );
 
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.economyUtilsModule.id
+        this.setupData.economyUtilsModule.id,
       );
 
       // Change permissions of role to only have manageCurrency permission
@@ -416,7 +416,7 @@ const tests = [
 
       // currency before revoke
       expect(
-        receiver.playerOnGameServers?.find((pog) => pog.gameServerId === this.setupData.gameserver.id)?.currency
+        receiver.playerOnGameServers?.find((pog) => pog.gameServerId === this.setupData.gameserver.id)?.currency,
       ).to.be.eq(0);
 
       const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 2);
@@ -430,9 +430,9 @@ const tests = [
         (
           await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
             receiverPog.gameServerId,
-            receiverPog.playerId
+            receiverPog.playerId,
           )
-        ).data.data.currency
+        ).data.data.currency,
       ).to.be.eq(0);
       expect(messages[0]).to.be.eq(`${revokeAmount} test coin were revoked by ${revoker.name}`);
       expect(messages[1]).to.be.eq(`You successfully revoked ${revokeAmount} test coin of ${receiver.name}'s balance`);
@@ -455,12 +455,12 @@ const tests = [
 
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.economyUtilsModule.id
+        this.setupData.economyUtilsModule.id,
       );
 
       // currency before revoke
       expect(
-        receiver.playerOnGameServers?.find((pog) => pog.gameServerId === this.setupData.gameserver.id)?.currency
+        receiver.playerOnGameServers?.find((pog) => pog.gameServerId === this.setupData.gameserver.id)?.currency,
       ).to.be.eq(0);
 
       const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 2);

@@ -27,7 +27,7 @@ export async function up(knex: Knex): Promise<void> {
       'MANAGE_COMMANDS',
       'READ_VARIABLES',
       'MANAGE_VARIABLES',
-    ])
+    ]),
   );
 
   await knex.schema.createTable('variables', (table) => {
@@ -69,6 +69,6 @@ export async function down(knex: Knex): Promise<void> {
       'READ_SETTINGS',
       'READ_COMMANDS',
       'MANAGE_COMMANDS',
-    ])
+    ]),
   );
 }

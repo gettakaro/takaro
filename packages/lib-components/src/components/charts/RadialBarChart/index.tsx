@@ -82,7 +82,7 @@ const Chart = <T,>({
         tooltipData: tooltipAccessor(data),
       });
     },
-    [data, tooltipAccessor]
+    [data, tooltipAccessor],
   );
 
   // bounds

@@ -7,7 +7,7 @@ describe('Ory', () => {
     // First, create a bunch of identities
     const totalIdentities = 150;
     const identities = await Promise.all(
-      Array.from({ length: totalIdentities }).map(() => ory.createIdentity(faker.internet.email(), 'password'))
+      Array.from({ length: totalIdentities }).map(() => ory.createIdentity(faker.internet.email(), 'password')),
     );
 
     // Fetch the first one by ID
@@ -20,7 +20,7 @@ describe('Ory', () => {
 
     // Make sure they're gone
     await expect(ory.getIdentity(identities[0].id)).to.eventually.be.rejectedWith(
-      'Request failed with status code 404'
+      'Request failed with status code 404',
     );
   });
 });

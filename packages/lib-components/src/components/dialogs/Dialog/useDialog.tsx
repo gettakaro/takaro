@@ -45,6 +45,6 @@ export function useDialog({
       setLabelId,
       setDescriptionId,
     }),
-    [open, setOpen, interactions, data, labelId, descriptionId]
+    [open, setOpen, interactions, data, labelId, descriptionId],
   );
 }

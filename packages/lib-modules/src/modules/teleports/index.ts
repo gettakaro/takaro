@@ -29,7 +29,7 @@ export class Teleports extends BuiltinModule<Teleports> {
       }),
       JSON.stringify({
         timeout: { 'ui:widget': 'duration' },
-      })
+      }),
     );
 
     this.functions = [

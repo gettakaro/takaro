@@ -52,7 +52,7 @@ export const ItemSelect: FC<ItemSelectProps> = ({
   const { data: gameServer, isLoading: isLoadingGameServer } = useQuery(gameServerQueryOptions(gameServerId));
 
   const { data, isLoading: isLoadingItems } = useQuery(
-    itemsQueryOptions({ search: { name: [itemName] }, filters: { gameserverId: [gameServerId] } })
+    itemsQueryOptions({ search: { name: [itemName] }, filters: { gameserverId: [gameServerId] } }),
   );
 
   const { data: initialItem } = useQuery({

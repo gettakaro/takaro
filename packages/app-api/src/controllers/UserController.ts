@@ -217,7 +217,7 @@ export class UserController {
   async assignRole(
     @Req() req: AuthenticatedRequest,
     @Params() params: ParamIdAndRoleId,
-    @Body() data: UserRoleAssignChangeDTO
+    @Body() data: UserRoleAssignChangeDTO,
   ) {
     const service = new UserService(req.domainId);
     return apiResponse(await service.assignRole(params.roleId, params.id, data.expiresAt));

@@ -53,7 +53,7 @@ export class ModuleDefinitionsPage extends BasePage {
       await Promise.all(
         permissions.map(async (permission, index) => {
           return this.fillPermission(permission, index);
-        })
+        }),
       );
     }
 

@@ -181,7 +181,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
         eventName: EVENT_TYPES.MODULE_CREATED,
         moduleId: created.id,
         meta: await new TakaroEventModuleCreated(),
-      })
+      }),
     );
 
     return created;
@@ -205,7 +205,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
             eventName: EVENT_TYPES.MODULE_UPDATED,
             moduleId: id,
             meta: await new TakaroEventModuleUpdated(),
-          })
+          }),
         );
       }
 
@@ -232,7 +232,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
         eventName: EVENT_TYPES.MODULE_DELETED,
         moduleId: id,
         meta: await new TakaroEventModuleDeleted(),
-      })
+      }),
     );
 
     return id;
@@ -272,7 +272,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
           ...builtin,
           builtin: isImport ? null : builtin.name,
           permissions: await Promise.all(builtin.permissions.map((p) => new PermissionOutputDTO(p))),
-        })
+        }),
       );
     } else {
       try {
@@ -281,7 +281,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
           new ModuleUpdateDTO({
             ...builtin,
             permissions: await Promise.all(builtin.permissions.map((p) => new PermissionOutputDTO(p))),
-          })
+          }),
         );
       } catch (error) {
         if ((error as Error).message === 'Invalid config schema') {
@@ -292,7 +292,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
               ...builtin,
               builtin: isImport ? null : builtin.name,
               permissions: await Promise.all(builtin.permissions.map((p) => new PermissionOutputDTO(p))),
-            })
+            }),
           );
         } else {
           throw error;
@@ -316,7 +316,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
           moduleId: mod.id,
         });
         return commandService.create(data);
-      })
+      }),
     );
 
     const hooks = Promise.all(
@@ -336,7 +336,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
           moduleId: mod.id,
         });
         return hookService.create(data);
-      })
+      }),
     );
     const cronjobs = Promise.all(
       builtin.cronJobs.map(async (c) => {
@@ -354,7 +354,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
           moduleId: mod.id,
         });
         return cronjobService.create(data);
-      })
+      }),
     );
 
     const functions = Promise.all(
@@ -377,7 +377,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
           moduleId: mod.id,
         });
         return functionService.create(data);
-      })
+      }),
     );
 
     return Promise.all([commands, hooks, cronjobs, functions]);
@@ -419,7 +419,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
           new ModuleInstallDTO({
             systemConfig: JSON.stringify(installation.systemConfig),
             userConfig: JSON.stringify(installation.userConfig),
-          })
+          }),
         );
       } catch (error) {
         if ((error as Error).message === 'Invalid config schema') {

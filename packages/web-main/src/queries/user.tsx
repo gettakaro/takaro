@@ -61,7 +61,7 @@ export const useUserAssignRole = () => {
         queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
       },
     }),
-    {}
+    {},
   );
 };
 
@@ -75,7 +75,7 @@ export const useUserSetSelectedDomain = () => {
     useMutation<void, AxiosError<APIOutput>, IUserSetSelectedDomain>({
       mutationFn: async ({ domainId }) => (await apiClient.user.userControllerSetSelectedDomain(domainId)).data,
     }),
-    {}
+    {},
   );
 };
 
@@ -87,7 +87,7 @@ export const useUserLinkPlayerProfile = () => {
       mutationFn: async (link_player_details) =>
         (await apiClient.user.userControllerLinkPlayerProfile(link_player_details)).data,
     }),
-    {}
+    {},
   );
 };
 
@@ -103,7 +103,7 @@ export const useUserRemoveRole = ({ userId }: { userId: string }) => {
         queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
       },
     }),
-    {}
+    {},
   );
 };
 
@@ -121,7 +121,7 @@ export const useInviteUser = () => {
         await queryClient.invalidateQueries({ queryKey: userKeys.list() });
       },
     }),
-    {}
+    {},
   );
 };
 
@@ -142,6 +142,6 @@ export const useUserRemove = () => {
         enqueueSnackbar('User successfully deleted!', { variant: 'default' });
       },
     }),
-    {}
+    {},
   );
 };

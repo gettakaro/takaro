@@ -140,7 +140,7 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
         .min(1, { message: 'The field must not be empty.' })
         .max(30, { message: 'The field must not be longer than 30 characters.' })
         .refine((value) => !value.includes('/'), { message: 'The field must not contain slashes.' }),
-    []
+    [],
   );
 
   const [internalFileName, setInternalFileName] = useState(fileName);

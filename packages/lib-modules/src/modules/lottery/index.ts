@@ -19,7 +19,7 @@ export class Lottery extends BuiltinModule<Lottery> {
         },
         required: [],
         additionalProperties: false,
-      })
+      }),
     );
 
     this.permissions = [

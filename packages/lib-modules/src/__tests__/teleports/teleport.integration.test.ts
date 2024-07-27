@@ -13,7 +13,7 @@ const tests = [
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id
+        this.setupData.teleportsModule.id,
       );
 
       const setEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
@@ -43,7 +43,7 @@ const tests = [
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id
+        this.setupData.teleportsModule.id,
       );
       const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
 
@@ -69,7 +69,7 @@ const tests = [
           userConfig: JSON.stringify({
             timeout: 5000,
           }),
-        }
+        },
       );
 
       const setTpEvent = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);

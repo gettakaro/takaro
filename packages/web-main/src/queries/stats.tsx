@@ -30,7 +30,7 @@ export const CurrencyStatsQueryOptions = (
   playerId: string,
   gameServerId: string,
   startDate?: string,
-  endDate?: string
+  endDate?: string,
 ) => {
   return queryOptions<StatsOutputDTO, AxiosError<StatsOutputDTO>, StatsOutput>({
     queryKey: statsKeys.currency(playerId, gameServerId, startDate, endDate),
@@ -70,7 +70,7 @@ export const EventsCountQueryOptions = (options: EventsCountInputDTO) => {
           options.playerId,
           options.userId,
           options.startDate,
-          options.endDate
+          options.endDate,
         )
       ).data.data,
   });
@@ -86,7 +86,7 @@ export const ActivityStatsQueryOptions = (options: ActivityInputDTO) => {
           options.dataType,
           options.gameServerId,
           options.startDate,
-          options.endDate
+          options.endDate,
         )
       ).data.data,
   });

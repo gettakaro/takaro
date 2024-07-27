@@ -7,7 +7,7 @@ export const retry = <T>(
   operation: () => Promise<T>,
   delay: number,
   retries: number,
-  cleanup: () => Promise<void>
+  cleanup: () => Promise<void>,
 ): Promise<T> => {
   return new Promise((resolve, reject) => {
     return operation()
@@ -22,7 +22,7 @@ export const retry = <T>(
                   return retry(operation, delay, retries - 1, cleanup);
                 })
                 .then(resolve)
-                .catch(reject)
+                .catch(reject),
             )
             .catch(reject);
         }

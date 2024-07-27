@@ -17,7 +17,7 @@ export class SystemWorker extends TakaroWorker<IBaseJobData> {
           jobId: 'system',
           every: ms('24h'),
         },
-      }
+      },
     );
   }
 }
@@ -31,7 +31,7 @@ export async function processJob(job: Job<IBaseJobData>) {
         { domainId: domain.id },
         {
           jobId: `system-${domain.id}-${Date.now()}`,
-        }
+        },
       );
     }
   } else {

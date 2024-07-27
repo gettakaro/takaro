@@ -92,7 +92,7 @@ InnerGeoMercator<T>) => {
         tooltipTop: eventSvgCoords?.y,
       });
     },
-    [yAccessor, xAccessor, width, height]
+    [yAccessor, xAccessor, width, height],
   );
 
   return width < 10 ? null : (

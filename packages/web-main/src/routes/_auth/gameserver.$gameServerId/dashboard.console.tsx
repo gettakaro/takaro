@@ -58,7 +58,7 @@ function Component() {
     const eventHandler = (
       handleGameserverId: string,
       type: 'player-disconnected' | 'player-connected' | 'chat-message' | 'log-line' | 'discord-message',
-      data: Record<string, unknown>
+      data: Record<string, unknown>,
     ) => {
       if (handleGameserverId !== gameServer.id) return;
 

@@ -72,7 +72,7 @@ export const useDeleteGameServerSetting = () => {
         queryClient.invalidateQueries({ queryKey: settingKeys.detail(deletedSettingKey!, deletedGameServerId!) });
       },
     }),
-    {}
+    {},
   );
 };
 
@@ -96,7 +96,7 @@ export const useSetGlobalSetting = () => {
         queryClient.invalidateQueries({ queryKey: settingKeys.all });
       },
     }),
-    {}
+    {},
   );
 };
 
@@ -127,6 +127,6 @@ export const useSetGameServerSetting = () => {
         queryClient.invalidateQueries({ queryKey: settingKeys.detail(updatedSettingKey!, updatedGameServerId!) });
       },
     }),
-    {}
+    {},
   );
 };

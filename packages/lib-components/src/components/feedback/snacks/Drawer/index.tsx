@@ -66,5 +66,5 @@ export const DrawerSnack = forwardRef<HTMLDivElement, PropsWithChildren<CustomCo
         <Content expanded={expanded}>{children}</Content>
       </Wrapper>
     );
-  }
+  },
 );

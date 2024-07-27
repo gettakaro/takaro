@@ -225,7 +225,7 @@ describe('7d2d event detection', () => {
       expect(
         emitStub.getCalls().some((call) => {
           return call.args[0] === GameEvents.CHAT_MESSAGE && (call.args[1] as EventChatMessage).msg === msg;
-        })
+        }),
       ).to.equal(true);
     }
   });

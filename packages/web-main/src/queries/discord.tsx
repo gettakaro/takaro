@@ -56,6 +56,6 @@ export const useDiscordGuildUpdate = () => {
         queryClient.invalidateQueries({ queryKey: discordKeys.guilds });
       },
     }),
-    {}
+    {},
   );
 };

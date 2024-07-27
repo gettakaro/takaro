@@ -48,7 +48,7 @@ export class RolesPage extends BasePage {
     }: {
       name?: string;
       permissions?: string[];
-    }
+    },
   ) {
     await this.openSettings(oldName);
     await this.page.getByRole('menuitem', { name: 'Edit role' }).click();

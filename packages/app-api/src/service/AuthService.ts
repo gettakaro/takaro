@@ -288,7 +288,7 @@ export class AuthService extends DomainScoped {
             accessToken: string,
             _refreshToken: string,
             profile: unknown,
-            cb: CallableFunction
+            cb: CallableFunction,
           ) {
             const req = origReq as AuthenticatedRequest;
             try {
@@ -301,7 +301,7 @@ export class AuthService extends DomainScoped {
 
               if (!userInfo.verified) {
                 return cb(
-                  new errors.BadRequestError('You must verify your Discord account before you can use it to log in.')
+                  new errors.BadRequestError('You must verify your Discord account before you can use it to log in.'),
                 );
               }
 
@@ -316,7 +316,7 @@ export class AuthService extends DomainScoped {
                 user.id,
                 new UserUpdateAuthDTO({
                   discordId: userInfo.id,
-                })
+                }),
               );
 
               if (
@@ -332,8 +332,8 @@ export class AuthService extends DomainScoped {
               log.error('Error in discord auth', error);
               return cb(error);
             }
-          }
-        )
+          },
+        ),
       );
 
       initializedStrategies.push('discord');

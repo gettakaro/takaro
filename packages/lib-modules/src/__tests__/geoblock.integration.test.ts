@@ -12,7 +12,7 @@ const customSetup = async function (this: IntegrationTest<IModuleTestsSetupData>
   await Promise.all(
     setupData.players.map(async (player) => {
       await this.client.player.playerControllerRemoveRole(player.id, setupData.role.id);
-    })
+    }),
   );
 
   return setupData;
@@ -34,7 +34,7 @@ const tests = [
             countries: ['RU'],
             ban: false,
           }),
-        }
+        },
       );
       const events = this.setupData.eventAwaiter.waitForEvents(HookEvents.PLAYER_DISCONNECTED);
       await this.client.hook.hookControllerTrigger({
@@ -70,7 +70,7 @@ const tests = [
             countries: ['RU'],
             ban: false,
           }),
-        }
+        },
       );
       const events = this.setupData.eventAwaiter.waitForEvents(HookEvents.HOOK_EXECUTED);
 
@@ -109,7 +109,7 @@ const tests = [
             countries: ['RU'],
             ban: false,
           }),
-        }
+        },
       );
       const events = this.setupData.eventAwaiter.waitForEvents(HookEvents.HOOK_EXECUTED);
 
@@ -148,7 +148,7 @@ const tests = [
             countries: ['RU'],
             ban: false,
           }),
-        }
+        },
       );
       const events = this.setupData.eventAwaiter.waitForEvents(HookEvents.PLAYER_DISCONNECTED);
 
@@ -185,7 +185,7 @@ const tests = [
             countries: ['RU'],
             ban: true,
           }),
-        }
+        },
       );
       const events = this.setupData.eventAwaiter.waitForEvents(HookEvents.PLAYER_DISCONNECTED);
 
@@ -223,7 +223,7 @@ const tests = [
             ban: true,
             message: 'Custom message',
           }),
-        }
+        },
       );
       const events = this.setupData.eventAwaiter.waitForEvents(HookEvents.PLAYER_DISCONNECTED);
 
@@ -261,7 +261,7 @@ const tests = [
             ban: true,
             message: 'Custom message',
           }),
-        }
+        },
       );
       const events = this.setupData.eventAwaiter.waitForEvents(HookEvents.PLAYER_DISCONNECTED);
 
@@ -299,7 +299,7 @@ const tests = [
             ban: true,
             message: 'Custom message',
           }),
-        }
+        },
       );
       const permissions = await this.client.permissionCodesToInputs(['GEOBLOCK_IMMUNITY']);
       const roleRes = await this.client.role.roleControllerCreate({
@@ -347,7 +347,7 @@ const tests = [
             ban: true,
             message: 'Custom message',
           }),
-        }
+        },
       );
       const events = this.setupData.eventAwaiter.waitForEvents(HookEvents.HOOK_EXECUTED);
 

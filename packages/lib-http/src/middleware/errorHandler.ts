@@ -11,7 +11,7 @@ export async function ErrorHandler(
   req: Request,
   res: Response,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _next: NextFunction
+  _next: NextFunction,
 ) {
   let status = 500;
   let parsedError = new errors.InternalServerError();

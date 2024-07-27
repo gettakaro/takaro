@@ -31,7 +31,7 @@ const validationSchema = z.object({
     z.object({
       enabled: z.boolean().optional(),
       count: z.number().optional(),
-    })
+    }),
   ),
 });
 export type IFormInputs = z.infer<typeof validationSchema>;
@@ -90,7 +90,7 @@ export const RoleForm: FC<CreateUpdateRoleFormProps> = ({
             count: initialData.permissions.find((p) => p.permissionId === permission.id)?.count,
           },
         }),
-        {}
+        {},
       ),
     },
   });

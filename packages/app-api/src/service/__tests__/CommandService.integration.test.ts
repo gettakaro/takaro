@@ -96,7 +96,7 @@ const tests = [
           channel: ChatChannel.GLOBAL,
           player: await getMockPlayer(),
         }),
-        this.setupData.gameserver.id
+        this.setupData.gameserver.id,
       );
 
       expect(addStub).to.have.been.calledOnce;
@@ -121,7 +121,7 @@ const tests = [
           channel: ChatChannel.GLOBAL,
           player: await getMockPlayer(),
         }),
-        this.setupData.gameserver.id
+        this.setupData.gameserver.id,
       );
 
       expect(addStub).to.not.have.been.calledOnce;
@@ -131,7 +131,7 @@ const tests = [
           msg: '/test',
           player: await getMockPlayer(),
         }),
-        this.setupData.gameserver.id
+        this.setupData.gameserver.id,
       );
 
       expect(addStub).to.have.been.calledOnce;
@@ -152,7 +152,7 @@ const tests = [
 
       await this.client.gameserver.gameServerControllerUninstallModule(
         this.setupData.gameserver.id,
-        this.setupData.mod.id
+        this.setupData.mod.id,
       );
 
       await this.setupData.service.handleChatMessage(
@@ -162,14 +162,14 @@ const tests = [
           player: await getMockPlayer(),
         }),
 
-        this.setupData.gameserver.id
+        this.setupData.gameserver.id,
       );
 
       expect(addStub).to.not.have.been.calledOnce;
 
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.mod.id
+        this.setupData.mod.id,
       );
 
       await this.setupData.service.handleChatMessage(
@@ -178,7 +178,7 @@ const tests = [
           channel: ChatChannel.GLOBAL,
           player: await getMockPlayer(),
         }),
-        this.setupData.gameserver.id
+        this.setupData.gameserver.id,
       );
 
       expect(addStub).to.have.been.calledOnce;
@@ -201,7 +201,7 @@ const tests = [
               },
             },
           }),
-        }
+        },
       );
 
       const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
@@ -219,7 +219,7 @@ const tests = [
           channel: ChatChannel.GLOBAL,
           player: await getMockPlayer(),
         }),
-        this.setupData.gameserver.id
+        this.setupData.gameserver.id,
       );
 
       expect(addStub).to.have.been.calledOnceWith(Sinon.match.any, {
@@ -235,7 +235,7 @@ const tests = [
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.mod.id
+        this.setupData.mod.id,
       );
 
       await this.client.command.commandControllerCreate({
@@ -257,7 +257,7 @@ const tests = [
           channel: ChatChannel.GLOBAL,
           player: await getMockPlayer(),
         }),
-        this.setupData.gameserver.id
+        this.setupData.gameserver.id,
       );
 
       expect(addStub).to.have.been.calledOnce;
@@ -287,7 +287,7 @@ const tests = [
               },
             },
           }),
-        }
+        },
       );
 
       await this.setupData.service.handleChatMessage(
@@ -297,14 +297,14 @@ const tests = [
           player: await getMockPlayer(),
         }),
 
-        this.setupData.gameserver.id
+        this.setupData.gameserver.id,
       );
 
       expect(addStub).to.not.have.been.calledOnce;
 
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.mod.id
+        this.setupData.mod.id,
       );
 
       await this.setupData.service.handleChatMessage(
@@ -313,7 +313,7 @@ const tests = [
           channel: ChatChannel.GLOBAL,
           player: await getMockPlayer(),
         }),
-        this.setupData.gameserver.id
+        this.setupData.gameserver.id,
       );
 
       expect(addStub).to.have.been.calledOnce;

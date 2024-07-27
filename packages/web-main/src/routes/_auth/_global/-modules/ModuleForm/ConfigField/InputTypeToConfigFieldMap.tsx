@@ -9,7 +9,7 @@ export const InputTypeToConfigFieldMap = (
   control: Control<IFormInputs>,
   index: number,
   id: string,
-  readOnly: boolean
+  readOnly: boolean,
 ) => {
   // In case of enum or array, we need the enum values to be able to set the default value
   const values = useWatch<IFormInputs>({

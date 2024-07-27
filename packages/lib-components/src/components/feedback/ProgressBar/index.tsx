@@ -69,7 +69,7 @@ const Progress = styled.div<{ color: Color; progress: number }>`
         color
       ].slice(
         1,
-        theme.colors[color].length
+        theme.colors[color].length,
       )}' fill-opacity='1' fill-rule='evenodd'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E")`};
   }
 `;

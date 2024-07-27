@@ -14,7 +14,7 @@ const tests = [
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.serverMessagesModule.id
+        this.setupData.serverMessagesModule.id,
       );
 
       const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
@@ -28,7 +28,7 @@ const tests = [
       expect((await events).length).to.be.eq(1);
       expect((await events)[0].data.msg).to.be.eq(
         // eslint-disable-next-line
-        "This is an automated message, don't forget to read the server rules!"
+        "This is an automated message, don't forget to read the server rules!",
       );
     },
   }),
@@ -45,7 +45,7 @@ const tests = [
           userConfig: JSON.stringify({
             messages: ['This is a custom message'],
           }),
-        }
+        },
       );
 
       const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
@@ -73,7 +73,7 @@ const tests = [
           userConfig: JSON.stringify({
             messages: ['Test message 1', 'Test message 2'],
           }),
-        }
+        },
       );
 
       // We should see each of our test messages at least once

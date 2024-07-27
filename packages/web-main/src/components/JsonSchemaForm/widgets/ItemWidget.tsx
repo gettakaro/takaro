@@ -60,7 +60,7 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
   const { data: prev, isLoading: isLoadingPreviousItems } = useQuery(
     itemsQueryOptions({
       filters: { gameserverId: [gameServerId], ...(shouldPreviousItemsBeLoaded && { id: multiple ? value : [value] }) },
-    })
+    }),
   );
 
   const previousItems = prev?.data ?? [];
@@ -69,13 +69,13 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
     itemsQueryOptions({
       ...(itemName !== '' && { search: { name: [itemName] } }),
       filters: { gameserverId: [gameServerId] },
-    })
+    }),
   );
   const searchedItems = data?.data ?? [];
 
   // get rid of duplicates
   const items = [...searchedItems, ...previousItems].filter(
-    (item, index, self) => self.findIndex((i) => i.id === item.id) === index
+    (item, index, self) => self.findIndex((i) => i.id === item.id) === index,
   );
 
   const renderIcon = (gameServer: GameServerOutputDTO, item: ItemsOutputDTO) => {

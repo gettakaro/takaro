@@ -88,13 +88,16 @@ export function Table<DataType extends object>({
   isLoading = false,
 }: TableProps<DataType>) {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(() => {
-    return columns.reduce((acc, column) => {
-      if (column.id === undefined) {
-        throw new Error('ColumnDef must have an id');
-      }
-      acc[column.id] = column?.meta?.hiddenColumn ? !column.meta.hiddenColumn : true;
-      return acc;
-    }, {} as Record<string, boolean>);
+    return columns.reduce(
+      (acc, column) => {
+        if (column.id === undefined) {
+          throw new Error('ColumnDef must have an id');
+        }
+        acc[column.id] = column?.meta?.hiddenColumn ? !column.meta.hiddenColumn : true;
+        return acc;
+      },
+      {} as Record<string, boolean>,
+    );
   });
   const [columnPinning, setColumnPinning] = useState<ColumnPinningState>({});
   const { storedValue: density, setValue: setDensity } = useLocalStorage<Density>(`table-density-${id}`, 'tight');
@@ -107,7 +110,7 @@ export function Table<DataType extends object>({
         throw new Error('ColumnDef must have an id');
       }
       return column.id;
-    })
+    }),
   );
 
   const ROW_SELECTION_COL_SPAN = rowSelection ? 1 : 0;

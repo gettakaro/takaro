@@ -138,10 +138,10 @@ export class ModuleController {
                   defaultValue: arg.defaultValue,
                   helpText: arg.helpText,
                   position: arg.position,
-                })
+                }),
             ),
-          })
-      )
+          }),
+      ),
     );
 
     output.hooks = await Promise.all(
@@ -151,8 +151,8 @@ export class ModuleController {
             function: _.function.code,
             name: _.name,
             eventType: _.eventType,
-          })
-      )
+          }),
+      ),
     );
 
     output.cronJobs = await Promise.all(
@@ -162,8 +162,8 @@ export class ModuleController {
             function: _.function.code,
             name: _.name,
             temporalValue: _.temporalValue,
-          })
-      )
+          }),
+      ),
     );
 
     output.functions = await Promise.all(
@@ -172,8 +172,8 @@ export class ModuleController {
           new IFunction({
             function: _.code,
             name: _.name,
-          })
-      )
+          }),
+      ),
     );
 
     output.permissions = await Promise.all(
@@ -184,8 +184,8 @@ export class ModuleController {
             description: _.description,
             permission: _.permission,
             friendlyName: _.friendlyName,
-          })
-      )
+          }),
+      ),
     );
 
     return apiResponse(output);

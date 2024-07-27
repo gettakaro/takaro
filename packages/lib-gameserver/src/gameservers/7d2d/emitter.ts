@@ -159,7 +159,7 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
       GameEvents.LOG_LINE,
       new EventLogLine({
         msg: logLine.msg,
-      })
+      }),
     );
   }
 

@@ -47,7 +47,7 @@ export const usePlayerRoleAssign = () => {
         queryClient.invalidateQueries({ queryKey: playerKeys.detail(playerId) });
       },
     }),
-    {}
+    {},
   );
 };
 
@@ -64,6 +64,6 @@ export const usePlayerRoleUnassign = () => {
         await queryClient.invalidateQueries({ queryKey: playerKeys.detail(playerId) });
       },
     }),
-    {}
+    {},
   );
 };

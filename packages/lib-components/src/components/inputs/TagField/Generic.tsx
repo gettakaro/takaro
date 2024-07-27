@@ -43,7 +43,7 @@ export const GenericTagField = forwardRef<HTMLDivElement, GenericTagFieldProps>(
       required,
       hasDescription,
     },
-    ref
+    ref,
   ) => {
     const combinedSeparators = [...defaultSeparators, ...separators];
     const [tags, setTags] = useState<string[]>(Array.isArray(value) ? value : []);
@@ -134,5 +134,5 @@ export const GenericTagField = forwardRef<HTMLDivElement, GenericTagFieldProps>(
         />
       </TagsContainer>
     );
-  }
+  },
 );

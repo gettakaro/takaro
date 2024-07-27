@@ -44,7 +44,7 @@ const AvatarImage = forwardRef<HTMLImageElement, AvatarImageProps>(
     }
 
     return imageLoadingStatus === 'loaded' ? <img {...imageProps} ref={ref} src={src} /> : null;
-  }
+  },
 );
 
 // * -------------------------------------------------------------------------------------------------
@@ -68,7 +68,7 @@ export const AvatarFallBack = forwardRef<HTMLSpanElement, PropsWithChildren<Avat
     }, [delayMs]);
 
     return canRender && imageLoadingStatus !== 'loaded' ? <span ref={ref}>{children}</span> : null;
-  }
+  },
 );
 
 // * -------------------------------------------------------------------------------------------------

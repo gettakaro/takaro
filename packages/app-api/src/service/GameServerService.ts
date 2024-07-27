@@ -177,12 +177,12 @@ export class GameServerService extends TakaroService<
 
     await queueService.queues.itemsSync.queue.add(
       { domainId: this.domainId, gameServerId: createdServer.id },
-      { jobId: `itemsSync-${this.domainId}-${createdServer.id}-${Date.now()}` }
+      { jobId: `itemsSync-${this.domainId}-${createdServer.id}-${Date.now()}` },
     );
 
     await queueService.queues.playerSync.queue.add(
       { domainId: this.domainId, gameServerId: createdServer.id },
-      { jobId: `playerSync-${this.domainId}-${createdServer.id}-${Date.now()}` }
+      { jobId: `playerSync-${this.domainId}-${createdServer.id}-${Date.now()}` },
     );
     return createdServer;
   }
@@ -240,7 +240,7 @@ export class GameServerService extends TakaroService<
               status: reachability.connectable ? 'online' : 'offline',
               details: reachability.reason,
             }),
-          })
+          }),
         );
       }
 
@@ -327,7 +327,7 @@ export class GameServerService extends TakaroService<
           systemConfig: installDto.systemConfig,
           userConfig: installDto.userConfig,
         }),
-      })
+      }),
     );
 
     return this.getModuleInstallation(gameserverId, moduleId);
@@ -348,7 +348,7 @@ export class GameServerService extends TakaroService<
         gameserverId,
         moduleId: moduleId,
         meta: await new TakaroEventModuleUninstalled(),
-      })
+      }),
     );
 
     return new ModuleInstallationOutputDTO({
@@ -375,10 +375,13 @@ export class GameServerService extends TakaroService<
 
     const settingsService = new SettingsService(this.domainId, id);
     const settingsArr = await settingsService.getAll();
-    const settings = settingsArr.reduce((acc, curr) => {
-      acc[curr.key] = curr.value;
-      return acc;
-    }, {} as Record<string, string>);
+    const settings = settingsArr.reduce(
+      (acc, curr) => {
+        acc[curr.key] = curr.value;
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
 
     gameInstance = await getGame(gameserver.type, gameserver.connectionInfo, settings);
 
@@ -410,7 +413,7 @@ export class GameServerService extends TakaroService<
           type: t,
           connectionInfoSchema: JSON.stringify(schema),
         });
-      })
+      }),
     );
   }
 
@@ -444,7 +447,7 @@ export class GameServerService extends TakaroService<
         eventName: GameEvents.CHAT_MESSAGE,
         gameserverId: gameServerId,
         meta,
-      })
+      }),
     );
   }
 
@@ -455,7 +458,7 @@ export class GameServerService extends TakaroService<
       await this.pogService.getPog(playerId, gameServerId),
       position.x,
       position.y,
-      position.z
+      position.z,
     );
   }
 
@@ -467,7 +470,7 @@ export class GameServerService extends TakaroService<
         player,
         reason,
         expiresAt,
-      })
+      }),
     );
   }
 
@@ -514,7 +517,7 @@ export class GameServerService extends TakaroService<
         positionX: location.x,
         positionY: location.y,
         positionZ: location.z,
-      })
+      }),
     );
 
     return location;
@@ -532,7 +535,7 @@ export class GameServerService extends TakaroService<
           ...item,
           gameserverId: gameServerId,
         });
-      })
+      }),
     );
 
     await itemsService.upsertMany(toInsert);
@@ -550,7 +553,7 @@ export class GameServerService extends TakaroService<
         const { pog } = await this.playerService.resolveRef(p, gameServerId);
         if (!pog) throw new errors.NotFoundError('Player not found');
         await pogRepo.syncInventory(pog.id, gameServerId, inventory);
-      })
+      }),
     );
   }
 
@@ -583,7 +586,7 @@ export class GameServerService extends TakaroService<
       { csmmExport: parsed, domainId: this.domainId },
       {
         jobId: randomUUID(),
-      }
+      },
     );
 
     return {

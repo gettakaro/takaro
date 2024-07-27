@@ -58,6 +58,6 @@ export const getUserPermissions = (session: UserOutputWithRolesDTO): PERMISSIONS
     session.roles
       .flatMap((assign) => assign.role.permissions.map((permission) => permission.permission.permission as PERMISSIONS))
       .filter((permission) => Object.values(PERMISSIONS).includes(permission))
-      .reduce((acc, permission) => acc.add(permission), new Set()) as Set<PERMISSIONS>
+      .reduce((acc, permission) => acc.add(permission), new Set()) as Set<PERMISSIONS>,
   );
 };

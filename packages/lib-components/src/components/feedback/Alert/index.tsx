@@ -105,5 +105,5 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(
         )}
       </AnimatePresence>
     );
-  }
+  },
 );

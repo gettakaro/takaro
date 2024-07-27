@@ -71,7 +71,7 @@ export class StatsService extends TakaroService<TakaroModel, TakaroDTO<void>, Ta
     const data = await this.prometheusQuery(
       `takaro_player_ping{job="worker", domain="${this.domainId}", player="${playerId}", gameserver="${gameserverId}"}`,
       startTime,
-      endTime
+      endTime,
     );
     return { values: data };
   }
@@ -80,7 +80,7 @@ export class StatsService extends TakaroService<TakaroModel, TakaroDTO<void>, Ta
     const data = await this.prometheusQuery(
       `takaro_player_currency{job="worker", domain="${this.domainId}", player="${playerId}", gameserver="${gameserverId}"}`,
       startTime,
-      endTime
+      endTime,
     );
     return { values: data };
   }
@@ -89,7 +89,7 @@ export class StatsService extends TakaroService<TakaroModel, TakaroDTO<void>, Ta
     const data = await this.prometheusQuery(
       `avg by(gameserver) (takaro_gameServer_latency{domain="${this.domainId}", gameserver="${gameserverId}"})`,
       startTime,
-      endTime
+      endTime,
     );
     return { values: data };
   }
@@ -99,14 +99,14 @@ export class StatsService extends TakaroService<TakaroModel, TakaroDTO<void>, Ta
       const data = await this.prometheusQuery(
         `takaro_players_online{job="worker", domain="${this.domainId}", gameserver="${gameserverId}"}`,
         startTime,
-        endTime
+        endTime,
       );
       return { values: data };
     } else {
       const data = await this.prometheusQuery(
         `sum by(domain) (takaro_players_online{job="worker", domain="${this.domainId}"})`,
         startTime,
-        endTime
+        endTime,
       );
       return { values: data };
     }
@@ -117,7 +117,7 @@ export class StatsService extends TakaroService<TakaroModel, TakaroDTO<void>, Ta
     timeType: 'daily' | 'weekly' | 'monthly',
     gameserverId?: string,
     startTime?: string,
-    endTime?: string
+    endTime?: string,
   ) {
     const metricName = `takaro_${timeType}_active_${dataType}`;
 
@@ -128,14 +128,14 @@ export class StatsService extends TakaroService<TakaroModel, TakaroDTO<void>, Ta
       const data = await this.prometheusQuery(
         `${metricName}{job="kpi", domain="${this.domainId}", gameServer="${gameserverId}"}`,
         startTime,
-        endTime
+        endTime,
       );
       return { values: data };
     } else {
       const data = await this.prometheusQuery(
         `sum by(domain) (${metricName}{job="kpi", domain="${this.domainId}", gameServer=""})`,
         startTime,
-        endTime
+        endTime,
       );
       return { values: data };
     }

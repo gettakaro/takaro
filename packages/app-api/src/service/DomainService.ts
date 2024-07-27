@@ -131,7 +131,7 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
     });
 
     const domain = await this.repo.create(
-      new DomainCreateInputDTO({ id, name: input.name, state: input.state ?? DOMAIN_STATES.ACTIVE })
+      new DomainCreateInputDTO({ id, name: input.name, state: input.state ?? DOMAIN_STATES.ACTIVE }),
     );
 
     const userService = new UserService(domain.id);
@@ -152,7 +152,7 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
 
     const rootRole = await roleService.createWithPermissions(
       new ServiceRoleCreateInputDTO({ name: 'root', system: true }),
-      [rootPermissionDTO]
+      [rootPermissionDTO],
     );
 
     const DEFAULT_ROLES: ServiceRoleCreateInputDTO[] = [
@@ -185,7 +185,7 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
         name: 'root',
         password: password,
         email: `root@${domain.id}.com`,
-      })
+      }),
     );
 
     await userService.assignRole(rootRole.id, rootUser.id);

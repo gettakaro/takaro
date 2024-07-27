@@ -15,7 +15,7 @@ export function addCounter(fn: CallableFunction, counterConfiguration: CounterCo
       new Counter({
         ...counterConfiguration,
         labelNames: ['status', 'domain', 'gameServer', 'user'],
-      })
+      }),
     );
   }
 
@@ -87,7 +87,7 @@ export function addCounterToAxios(axiosInstance: Axios, counterConfiguration: Co
           new Counter({
             ...counterConfiguration,
             labelNames: ['status', 'domain', 'gameServer', 'method', 'url', 'statusCode'],
-          })
+          }),
         );
       }
 
@@ -112,7 +112,7 @@ export function addCounterToAxios(axiosInstance: Axios, counterConfiguration: Co
           new Counter({
             ...counterConfiguration,
             labelNames: ['status', 'domain', 'gameServer', 'method', 'url', 'statusCode'],
-          })
+          }),
         );
       }
 
@@ -140,7 +140,7 @@ export function addCounterToAxios(axiosInstance: Axios, counterConfiguration: Co
       }
 
       return Promise.reject(error);
-    }
+    },
   );
 }
 

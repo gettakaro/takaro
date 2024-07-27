@@ -33,7 +33,7 @@ export async function playScenario(socketServer: MockServerSocketServer, gameIns
               {
                 gameId: eventData.player,
               } as IPlayerReferenceDTO,
-              false
+              false,
             );
           }
 

@@ -13,6 +13,6 @@ export async function down(knex: Knex): Promise<void> {
       'player-disconnected',
       'chat-message',
       'discord-message',
-    ])
+    ]),
   );
 }

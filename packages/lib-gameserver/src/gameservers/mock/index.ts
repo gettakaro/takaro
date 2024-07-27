@@ -22,7 +22,10 @@ export class Mock implements IGameServer {
   emitter: MockEmitter;
   io: Socket;
 
-  constructor(config: MockConnectionInfo, private settings: Partial<Settings> = {}) {
+  constructor(
+    config: MockConnectionInfo,
+    private settings: Partial<Settings> = {},
+  ) {
     this.connectionInfo = config;
     if (!this.connectionInfo.name) this.connectionInfo.name = 'default';
     this.io = io(this.connectionInfo.host, {

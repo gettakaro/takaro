@@ -34,7 +34,7 @@ export const OnlinePlayersCard: FC = () => {
         gameServerId: [gameServerId],
       },
       extend: ['player'],
-    })
+    }),
   );
 
   const { data: players, isLoading: isLoadingPlayers } = useQuery(
@@ -42,7 +42,7 @@ export const OnlinePlayersCard: FC = () => {
       filters: {
         id: data?.data.map((playerOnGameServer) => playerOnGameServer.playerId),
       },
-    })
+    }),
   );
 
   useEffect(() => {

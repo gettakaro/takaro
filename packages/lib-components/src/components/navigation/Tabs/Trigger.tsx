@@ -61,5 +61,5 @@ export const Trigger = forwardRef<HTMLButtonElement, PropsWithChildren<TriggerPr
         {children}
       </Container>
     );
-  }
+  },
 );

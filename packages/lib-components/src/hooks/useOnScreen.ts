@@ -10,7 +10,7 @@ export function useOnScreen(ref: React.RefObject<any>, rootMargin = '0px'): bool
       },
       {
         rootMargin,
-      }
+      },
     );
     if (ref.current) {
       observer.observe(ref.current);

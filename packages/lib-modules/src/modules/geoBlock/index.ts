@@ -307,7 +307,7 @@ export class GeoBlock extends BuiltinModule<GeoBlock> {
       }),
       JSON.stringify({
         banDuration: { 'ui:widget': 'duration' },
-      })
+      }),
     );
 
     this.permissions = [

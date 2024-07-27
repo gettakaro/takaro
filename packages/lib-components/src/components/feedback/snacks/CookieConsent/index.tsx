@@ -30,7 +30,7 @@ export const CookieConsentSnack = forwardRef<HTMLDivElement, CustomContentProps>
         functional: z.boolean(),
         analytical: z.boolean(),
       }),
-    []
+    [],
   );
 
   const onSubmit: SubmitHandler<FormInputs> = async () => {

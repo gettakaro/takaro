@@ -12,7 +12,7 @@ export interface PermissionsGuardProps {
 
 export const hasPermissionHelper = (
   userPermissions: PERMISSIONS[],
-  requiredPermissions: RequiredPermissions
+  requiredPermissions: RequiredPermissions,
 ): boolean => {
   if (userPermissions.includes(PERMISSIONS.Root)) {
     return true;
@@ -20,7 +20,7 @@ export const hasPermissionHelper = (
   return requiredPermissions.some((permissionSet) =>
     Array.isArray(permissionSet)
       ? permissionSet.every((permission) => userPermissions.includes(permission))
-      : userPermissions.includes(permissionSet as PERMISSIONS)
+      : userPermissions.includes(permissionSet as PERMISSIONS),
   );
 };
 
