@@ -14,7 +14,7 @@
     "test:style": "npm run lint && npm run prettier",
     "test:style:fix": "npm run lint:fix && npm run prettier:fix",
     "lint": "npx eslint \"**/*.{js,ts,tsx}\"",
-    "lint:fix": "npx --workspaces --if-present ",
+    "lint:fix": "npx eslint \"**/*.{js,ts,tsx}\" --fix ",
     "prettier": "npx --workspaces --if-present prettier --check --no-error-on-unmatched-pattern 'src/**/*.{ts,md,tsx}'",
     "prettier:fix": "npx --workspaces --if-present prettier --write --no-error-on-unmatched-pattern 'src/**/*.{ts,md,tsx}'",
     "prepare": "[ -d '.husky' ] && husky install || true",
