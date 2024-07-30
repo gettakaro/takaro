@@ -19,6 +19,7 @@ import { Worker } from 'worker_threads';
 import path from 'path';
 import * as url from 'url';
 import { DateTime, Duration, DurationLikeObject } from 'luxon';
+
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 @traceableClass('game:7d2d')

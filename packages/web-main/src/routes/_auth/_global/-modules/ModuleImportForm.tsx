@@ -1,7 +1,6 @@
-import { FileField, styled } from '@takaro/lib-components';
 import { FC, useEffect, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { Button, TextField, Drawer, CollapseList, FormError } from '@takaro/lib-components';
+import { FileField, styled, Button, TextField, Drawer, CollapseList, FormError } from '@takaro/lib-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from '@tanstack/react-router';
 import { z } from 'zod';

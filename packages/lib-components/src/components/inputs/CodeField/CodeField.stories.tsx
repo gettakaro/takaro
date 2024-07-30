@@ -1,5 +1,4 @@
-import React from 'react';
-import { useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { CodeField, CodeFieldProps } from '../../../components';
 import { useForm, SubmitHandler } from 'react-hook-form';
@@ -23,7 +22,7 @@ export default {
 
 type FormFields = { code: string };
 
-export const onSubmit: StoryFn<CodeFieldProps> = (args) => {
+export const OnSubmit: StoryFn<CodeFieldProps> = (args) => {
   const [result, setResult] = useState<string>();
 
   const validationSchema = useMemo(

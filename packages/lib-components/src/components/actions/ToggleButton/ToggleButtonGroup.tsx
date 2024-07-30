@@ -45,8 +45,6 @@ export const ToggleButtonGroup: FC<ToggleButtonGroupProps> & SubComponents = ({
 
   function handleDefaultValueNonExclusive() {
     const m = new Map<string, boolean>();
-    selected as Map<string, boolean>;
-
     Children.forEach(children, (child) => {
       if (isValidElement(child)) {
         m.set(child.props.value, false);
@@ -66,12 +64,9 @@ export const ToggleButtonGroup: FC<ToggleButtonGroupProps> & SubComponents = ({
         return setSelected('');
       }
       return setSelected(value);
-    } else {
-      // handle case that each button has a seperate state
-      setSelected(
-        new Map((selected as Map<string, boolean>).set(value, !(selected as Map<string, boolean>).get(value))),
-      );
     }
+    // handle case that each button has a seperate state
+    setSelected(new Map((selected as Map<string, boolean>).set(value, !(selected as Map<string, boolean>).get(value))));
   };
 
   useEffect(() => {

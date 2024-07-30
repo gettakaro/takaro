@@ -23,9 +23,7 @@ export async function metricsMiddleware(req: Request, res: Response, next: NextF
   const start = Date.now();
 
   try {
-    await next();
-  } catch (error) {
-    throw error;
+    next();
   } finally {
     counter.inc({
       path,

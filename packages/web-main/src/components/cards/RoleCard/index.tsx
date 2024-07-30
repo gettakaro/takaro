@@ -12,13 +12,16 @@ import {
 } from '@takaro/lib-components';
 import { Header, TitleContainer } from './style';
 import { useNavigate } from '@tanstack/react-router';
-
-import { AiOutlineMenu as MenuIcon } from 'react-icons/ai';
 import { useRoleRemove } from 'queries/role';
 import { RoleOutputDTO } from '@takaro/apiclient';
 import { CardBody } from '../style';
 
-import { AiOutlineEdit as EditIcon, AiOutlineDelete as DeleteIcon, AiOutlineEye as ViewIcon } from 'react-icons/ai';
+import {
+  AiOutlineMenu as MenuIcon,
+  AiOutlineEdit as EditIcon,
+  AiOutlineDelete as DeleteIcon,
+  AiOutlineEye as ViewIcon,
+} from 'react-icons/ai';
 
 export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
@@ -33,7 +36,12 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
   };
   const handleOnDeleteClick = (e: MouseEvent) => {
     e.stopPropagation();
-    e.shiftKey ? handleOnDelete(e) : setOpenDialog(true);
+
+    if (e.shiftKey) {
+      handleOnDelete(e);
+    } else {
+      setOpenDialog(true);
+    }
   };
 
   const handleOnViewClick = (e: MouseEvent) => {
@@ -43,11 +51,10 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
 
   const handleOnDelete = (e: MouseEvent) => {
     e.stopPropagation();
-    try {
-      mutate({ roleId: id });
-
-      if (isSuccess) setOpenDialog(false);
-    } catch {}
+    mutate({ roleId: id });
+    if (isSuccess) {
+      setOpenDialog(false);
+    }
   };
 
   return (

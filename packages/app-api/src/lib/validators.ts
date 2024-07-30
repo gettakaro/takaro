@@ -33,7 +33,7 @@ export class IsTypeOrArrayOfType<T> implements ValidatorConstraintInterface {
     this.typeCheck = typeCheck;
   }
 
-  public async validate(value: unknown) {
+  public validate(value: unknown) {
     return this.typeCheck(value) || (Array.isArray(value) && value.every(this.typeCheck));
   }
 }

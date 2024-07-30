@@ -118,7 +118,7 @@ export class DiscordController {
 
   @Get('/discord/invite')
   @ResponseSchema(DiscordInviteOutputDTO)
-  async getInvite() {
+  getInvite() {
     return apiResponse({
       botInvite: discordBot.inviteLink,
       devServer: 'https://catalysm.net/discord',

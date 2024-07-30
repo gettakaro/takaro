@@ -29,7 +29,9 @@ const AvatarImage = forwardRef<HTMLImageElement, AvatarImageProps>(
     const context = useAvatarContext();
     const imageLoadingStatus = useImageLoadingStatus(src);
     const handleLoadingStatusChange = useCallbackRef((status: ImageLoadingStatus) => {
-      onLoadingStatusChange && onLoadingStatusChange(status);
+      if (onLoadingStatusChange) {
+        onLoadingStatusChange(status);
+      }
       context.onImageLoadingStatusChange(status);
     });
 
@@ -46,6 +48,7 @@ const AvatarImage = forwardRef<HTMLImageElement, AvatarImageProps>(
     return imageLoadingStatus === 'loaded' ? <img {...imageProps} ref={ref} src={src} /> : null;
   },
 );
+AvatarImage.displayName = 'AvatarImage';
 
 // * -------------------------------------------------------------------------------------------------
 // * FallBack
@@ -70,6 +73,7 @@ export const AvatarFallBack = forwardRef<HTMLSpanElement, PropsWithChildren<Avat
     return canRender && imageLoadingStatus !== 'loaded' ? <span ref={ref}>{children}</span> : null;
   },
 );
+AvatarFallBack.displayName = 'AvatarFallBack';
 
 // * -------------------------------------------------------------------------------------------------
 // * FallBack

@@ -22,7 +22,7 @@ export class GetSettingsInput extends TakaroDTO<GetSettingsInput> {
     each: true,
     message: `key must be one of: ${Object.values(SETTINGS_KEYS).join(', ')}`,
   })
-  keys!: Array<SETTINGS_KEYS>;
+  keys!: SETTINGS_KEYS[];
 
   @IsString()
   @IsOptional()
@@ -91,11 +91,10 @@ export class SettingsController {
     if (query.keys) {
       // if only one value is passed in, the type will be a string. convert to an array for consistency in handling.
       // See: https://github.com/typestack/routing-controllers/issues/389
-      const keys: SETTINGS_KEYS[] = Array.isArray(query.keys) ? query.keys : [query.keys] || undefined;
+      const keys: SETTINGS_KEYS[] = Array.isArray(query.keys) ? query.keys : [query.keys];
       return apiResponse(await service.getMany(keys));
-    } else {
-      return apiResponse(await service.getAll());
     }
+    return apiResponse(await service.getAll());
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_SETTINGS]))

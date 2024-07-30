@@ -126,9 +126,8 @@ const tests = [
           expect(error.response?.status).to.eq(400);
           expect(error.response?.data.meta.error.message).to.be.eq('Cannot delete system roles');
           return error.response;
-        } else {
-          throw error;
         }
+        throw error;
       }
     },
     expectedStatus: 400,
@@ -149,9 +148,8 @@ const tests = [
           expect(error.response?.status).to.eq(409);
           expect(error.response?.data.meta.error.message).to.be.eq('Unique constraint violation');
           return error.response;
-        } else {
-          throw error;
         }
+        throw error;
       }
     },
     expectedStatus: 409,
@@ -173,9 +171,8 @@ const tests = [
           expect(error.response?.status).to.eq(400);
           expect(error.response?.data.meta.error.message).to.be.eq('Cannot update root role');
           return error.response;
-        } else {
-          throw error;
         }
+        throw error;
       }
     },
     expectedStatus: 400,

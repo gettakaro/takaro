@@ -79,7 +79,7 @@ async function process(job: Job<ICSMMImportData>) {
       name: data.server.name,
       type: GAME_SERVER_TYPE.SEVENDAYSTODIE,
       connectionInfo: JSON.stringify({
-        host: `${data.server.ip}:${data.server.webPort}`,
+        host: `${data.server.ip}:${data.server.webPort.toString()}`,
         adminUser: data.server.authName,
         adminToken: data.server.authToken,
         useTls: data.server.webPort === 443,
@@ -140,7 +140,7 @@ async function process(job: Job<ICSMMImportData>) {
 
     const CSMMRole = data.roles.find((r) => r.id === csmmPlayer.role);
     if (!CSMMRole) {
-      log.warn(`Player ${csmmPlayer.name} has no role with id ${csmmPlayer.role}, skipping role assignment`);
+      log.warn(`Player ${csmmPlayer.name} has no role with id ${csmmPlayer.role.toString()}, skipping role assignment`);
       continue;
     }
 
@@ -167,7 +167,7 @@ async function process(job: Job<ICSMMImportData>) {
       server.id,
       new GameServerUpdateDTO({
         connectionInfo: JSON.stringify({
-          host: `${data.server.ip}:${data.server.webPort}`,
+          host: `${data.server.ip}:${data.server.webPort.toString()}`,
           adminUser: data.server.authName,
           adminToken: data.server.authToken,
           useTls: data.server.webPort === 443,

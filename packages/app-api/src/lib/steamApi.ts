@@ -1,5 +1,4 @@
-import { AxiosError, AxiosInstance } from 'axios';
-import axios from 'axios';
+import axios, { AxiosError, AxiosInstance } from 'axios';
 import { config } from '../config.js';
 import { addCounterToAxios, logger } from '@takaro/util';
 
@@ -49,7 +48,7 @@ class SteamApi {
       });
 
       this._client.interceptors.request.use((config) => {
-        config.params = config.params || {};
+        config.params ||= {};
         config.params.key = this.apiKey;
         return config;
       });

@@ -50,7 +50,7 @@ export const Default: StoryFn = () => {
   );
 };
 
-export const submitProgrammatically: StoryFn = () => {
+export const SubmitProgrammatically: StoryFn = () => {
   const [data, setData] = useState({});
 
   const teleportsSchema: RJSFSchema = {

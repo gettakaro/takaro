@@ -6,10 +6,9 @@ import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
 import { Body, Get, Post, JsonController, UseBefore, Req, Params, Res, Delete } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { ParamId } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
-import { ParamIdAndRoleId } from '../lib/validators.js';
+import { ParamId, ParamIdAndRoleId } from '../lib/validators.js';
 import { errors } from '@takaro/util';
 
 export class PlayerOutputDTOAPI extends APIOutput<PlayerOutputWithRolesDTO> {

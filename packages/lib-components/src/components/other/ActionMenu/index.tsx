@@ -14,36 +14,37 @@ export interface ActionMenuProps {
   elevation?: Elevation;
 }
 
-export const ActionMenu = forwardRef<HTMLUListElement, ActionMenuProps>(
-  ({ attributes, children, selectedState, elevation = 4 }, ref) => {
-    const [selected, setSelected] = selectedState;
+export const ActionMenu = forwardRef<HTMLUListElement, ActionMenuProps>(function ActionMenu(
+  { attributes, children, selectedState, elevation = 4 },
+  ref,
+) {
+  const [selected, setSelected] = selectedState;
 
-    return (
-      <Container
-        elevation={elevation}
-        style={{
-          position: attributes.strategy,
-          top: attributes.y ? attributes.y + 5 : 0,
-          left: attributes.x ?? 0,
-        }}
-        ref={ref}
-      >
-        {Children.map(children, (child: ReactElement<ActionProps>, idx) => (
-          <Item onClick={() => setSelected(idx)}>
-            {child}
-            {selected === idx ? (
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <CheckMarkIcon size={15} />
-              </div>
-            ) : (
-              <div className="checkmark-placeholder"></div>
-            )}
-          </Item>
-        ))}
-      </Container>
-    );
-  },
-);
+  return (
+    <Container
+      elevation={elevation}
+      style={{
+        position: attributes.strategy,
+        top: attributes.y ? attributes.y + 5 : 0,
+        left: attributes.x ?? 0,
+      }}
+      ref={ref}
+    >
+      {Children.map(children, (child: ReactElement<ActionProps>, idx) => (
+        <Item onClick={() => setSelected(idx)}>
+          {child}
+          {selected === idx ? (
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <CheckMarkIcon size={15} />
+            </div>
+          ) : (
+            <div className="checkmark-placeholder"></div>
+          )}
+        </Item>
+      ))}
+    </Container>
+  );
+});
 
 interface ActionProps {
   onClick: () => unknown;

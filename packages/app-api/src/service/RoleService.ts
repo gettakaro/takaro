@@ -24,7 +24,7 @@ import { TakaroEventRoleCreated, TakaroEventRoleDeleted, TakaroEventRoleUpdated 
 
 @ValidatorConstraint()
 export class IsPermissionArray implements ValidatorConstraintInterface {
-  public async validate(permissions: PERMISSIONS[]) {
+  public validate(permissions: PERMISSIONS[]) {
     return (
       Array.isArray(permissions) && permissions.every((permission) => Object.values(PERMISSIONS).includes(permission))
     );
@@ -215,7 +215,7 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
       throw new errors.BadRequestError('Cannot update root role');
     }
 
-    if (!toUpdate?.system) {
+    if (!toUpdate.system) {
       await this.repo.update(id, item);
     }
 
@@ -239,7 +239,7 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
   async delete(id: string) {
     const toDelete = await this.repo.findOne(id);
 
-    if (toDelete?.system) {
+    if (toDelete.system) {
       throw new errors.BadRequestError('Cannot delete system roles');
     }
 

@@ -1,8 +1,6 @@
-import { Controller, Get } from 'routing-controllers';
-import { getMetadataArgsStorage } from 'routing-controllers';
-import { routingControllersToSpec } from 'routing-controllers-openapi';
+import { Controller, Get, getMetadataArgsStorage } from 'routing-controllers';
 import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
-import { ResponseSchema } from 'routing-controllers-openapi';
+import { routingControllersToSpec, ResponseSchema } from 'routing-controllers-openapi';
 import { IsBoolean } from 'class-validator';
 import { getMetrics, health } from '@takaro/util';
 import { OpenAPIObject } from 'openapi3-ts';

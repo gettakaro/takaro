@@ -8,7 +8,7 @@ export type GenericSwitchProps = GenericInputProps<boolean, HTMLInputElement>;
 
 const defaultsApplier = defaultInputPropsFactory<GenericSwitchProps>(defaultInputProps);
 
-export const GenericSwitch = forwardRef<HTMLButtonElement, GenericSwitchProps>((props, ref) => {
+export const GenericSwitch = forwardRef<HTMLButtonElement, GenericSwitchProps>(function Switch(props, ref) {
   const {
     readOnly,
     onChange,

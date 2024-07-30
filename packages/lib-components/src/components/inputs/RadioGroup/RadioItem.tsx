@@ -71,59 +71,60 @@ const variants = {
   unchecked: { scale: 0 },
 };
 
-export const RadioItem = forwardRef<HTMLDivElement, RadioItemProps>(
-  ({ readOnly = false, disabled = false, value }, ref) => {
-    const {
-      setSelectedValue,
-      selectedValue,
-      name,
-      disabled: groupDisabled,
-      readOnly: groupReadOnly,
-    } = useRadioGroupContext();
-    const checked = selectedValue === value;
-    const inputRef = useRef<HTMLInputElement>(null);
+export const RadioItem = forwardRef<HTMLDivElement, RadioItemProps>(function RadioItem(
+  { readOnly = false, disabled = false, value },
+  ref,
+) {
+  const {
+    setSelectedValue,
+    selectedValue,
+    name,
+    disabled: groupDisabled,
+    readOnly: groupReadOnly,
+  } = useRadioGroupContext();
+  const checked = selectedValue === value;
+  const inputRef = useRef<HTMLInputElement>(null);
 
-    const handleOnClick = () => {
-      if (readOnly || disabled || groupDisabled || groupReadOnly) return;
-      inputRef.current?.click();
-    };
+  const handleOnClick = () => {
+    if (readOnly || disabled || groupDisabled || groupReadOnly) return;
+    inputRef.current?.click();
+  };
 
-    return (
-      <>
-        <input
-          id={value}
-          name={name}
-          type="radio"
-          style={{ position: 'absolute', opacity: 0, margin: 0, padding: 0, pointerEvents: 'none' }}
-          aria-hidden="true"
-          value={value}
-          tabIndex={-1}
-          checked={checked}
-          aria-readonly={readOnly || groupReadOnly}
-          aria-disabled={disabled || groupDisabled}
-          onChange={(e) => setSelectedValue(e)}
-          ref={inputRef}
-        />
-        <RadioItemContainer
-          isChecked={checked}
-          readOnly={readOnly || groupReadOnly}
-          disabled={disabled || groupDisabled}
-          onClick={handleOnClick}
-          tabIndex={disabled ? -1 : 0}
-          role="radio"
-          ref={ref}
+  return (
+    <>
+      <input
+        id={value}
+        name={name}
+        type="radio"
+        style={{ position: 'absolute', opacity: 0, margin: 0, padding: 0, pointerEvents: 'none' }}
+        aria-hidden="true"
+        value={value}
+        tabIndex={-1}
+        checked={checked}
+        aria-readonly={readOnly || groupReadOnly}
+        aria-disabled={disabled || groupDisabled}
+        onChange={(e) => setSelectedValue(e)}
+        ref={inputRef}
+      />
+      <RadioItemContainer
+        isChecked={checked}
+        readOnly={readOnly || groupReadOnly}
+        disabled={disabled || groupDisabled}
+        onClick={handleOnClick}
+        tabIndex={disabled ? -1 : 0}
+        role="radio"
+        ref={ref}
+      >
+        <Inner
+          initial={checked ? 'checked' : 'unchecked'}
+          animate={checked ? 'checked' : 'unchecked'}
+          $isChecked={checked}
+          $readOnly={readOnly || groupReadOnly}
+          variants={variants}
         >
-          <Inner
-            initial={checked ? 'checked' : 'unchecked'}
-            animate={checked ? 'checked' : 'unchecked'}
-            $isChecked={checked}
-            $readOnly={readOnly || groupReadOnly}
-            variants={variants}
-          >
-            {checked && <CheckMarkIcon />}
-          </Inner>
-        </RadioItemContainer>
-      </>
-    );
-  },
-);
+          {checked && <CheckMarkIcon />}
+        </Inner>
+      </RadioItemContainer>
+    </>
+  );
+});

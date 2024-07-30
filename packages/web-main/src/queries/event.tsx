@@ -131,24 +131,23 @@ const addEventToData = (prev: InfiniteData<EventOutputArrayDTOAPI>, newEvent: Ev
       ...prev,
       pages: [newPage, ...updatedPages],
     };
-  } else {
-    // If the first page is not at its limit, add the new event to the first page
-    return {
-      ...prev,
-      pages: prev.pages.map((page, index) => {
-        if (index === 0) {
-          // Only update the first page
-          return {
-            ...page,
-            data: [newEvent, ...page.data],
-            meta: {
-              ...page.meta,
-              total: page.meta.total ? page.meta.total + 1 : 1,
-            },
-          };
-        }
-        return page;
-      }),
-    };
   }
+  // If the first page is not at its limit, add the new event to the first page
+  return {
+    ...prev,
+    pages: prev.pages.map((page, index) => {
+      if (index === 0) {
+        // Only update the first page
+        return {
+          ...page,
+          data: [newEvent, ...page.data],
+          meta: {
+            ...page.meta,
+            total: page.meta.total ? page.meta.total + 1 : 1,
+          },
+        };
+      }
+      return page;
+    }),
+  };
 };

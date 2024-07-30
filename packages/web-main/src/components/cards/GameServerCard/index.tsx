@@ -22,7 +22,6 @@ import {
   AiOutlineFunction as ModulesIcon,
   AiOutlineSetting as SettingsIcon,
 } from 'react-icons/ai';
-import { useSnackbar } from 'notistack';
 
 import { Header, TitleContainer, DetailsContainer } from './style';
 import { useGameServerRemove } from 'queries/gameserver';
@@ -35,7 +34,6 @@ import { useQuery } from '@tanstack/react-query';
 export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reachable }) => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const [valid, setValid] = useState<boolean>(false);
-  const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
   const theme = useTheme();
   const { mutate, isPending: isDeleting } = useGameServerRemove();
@@ -70,15 +68,15 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
   };
   const handleOnDeleteClick = (e: MouseEvent) => {
     e.stopPropagation();
-
-    e.shiftKey ? handleOnDelete() : setOpenDeleteDialog(true);
+    if (e.shiftKey) {
+      handleOnDelete();
+    } else {
+      setOpenDeleteDialog(true);
+    }
   };
 
   const handleOnDelete = () => {
-    try {
-      mutate({ gameServerId: id });
-      enqueueSnackbar('Gameserver successfully deleted', { variant: 'default', type: 'success' });
-    } catch {}
+    mutate({ gameServerId: id });
   };
 
   const handleOnCopyClick = (e: MouseEvent) => {

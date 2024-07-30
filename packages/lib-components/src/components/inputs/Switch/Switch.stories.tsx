@@ -1,10 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../styled';
-import {} from '.';
 import { Switch, SwitchProps, Button } from '../../../components';
 import { useForm, SubmitHandler, useWatch } from 'react-hook-form';
-import { useState } from 'react';
 
 const Wrapper = styled.div`
   padding: 5rem;
@@ -39,7 +37,7 @@ type FormFields = {
   hasCar: boolean;
 };
 
-export const onSubmit: StoryFn<SwitchProps> = (args) => {
+export const OnSubmit: StoryFn<SwitchProps> = (args) => {
   const [value, setValue] = useState<boolean>();
   const { control, handleSubmit } = useForm<FormFields>();
 

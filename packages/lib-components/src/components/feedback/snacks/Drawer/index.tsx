@@ -45,26 +45,27 @@ const Content = styled.div<{ expanded: boolean }>`
   border-radius-top-right: 0;
 `;
 
-export const DrawerSnack = forwardRef<HTMLDivElement, PropsWithChildren<CustomContentProps>>(
-  ({ id, message, children }, ref) => {
-    const { closeSnackbar } = useSnackbar();
-    const [expanded, setExpanded] = useState<boolean>(false);
+export const DrawerSnack = forwardRef<HTMLDivElement, PropsWithChildren<CustomContentProps>>(function DrawerSnack(
+  { id, message, children },
+  ref,
+) {
+  const { closeSnackbar } = useSnackbar();
+  const [expanded, setExpanded] = useState<boolean>(false);
 
-    const handleClose = () => {
-      closeSnackbar(id);
-    };
+  const handleClose = () => {
+    closeSnackbar(id);
+  };
 
-    return (
-      <Wrapper ref={ref} data-testid={id}>
-        <Container expanded={expanded}>
-          <h4>{message}</h4>
-          <div>
-            <ArrowDownIcon onClick={() => setExpanded(!expanded)} size={16} />
-            <CloseIcon onClick={handleClose} size={16} />
-          </div>
-        </Container>
-        <Content expanded={expanded}>{children}</Content>
-      </Wrapper>
-    );
-  },
-);
+  return (
+    <Wrapper ref={ref} data-testid={id}>
+      <Container expanded={expanded}>
+        <h4>{message}</h4>
+        <div>
+          <ArrowDownIcon onClick={() => setExpanded(!expanded)} size={16} />
+          <CloseIcon onClick={handleClose} size={16} />
+        </div>
+      </Container>
+      <Content expanded={expanded}>{children}</Content>
+    </Wrapper>
+  );
+});

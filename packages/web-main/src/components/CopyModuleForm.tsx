@@ -126,9 +126,11 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ moduleId, onSuccess })
           ),
         ]);
 
-        onSuccess && onSuccess(createdModule.id);
+        if (onSuccess) {
+          onSuccess(createdModule.id);
+        }
       }
-    } catch (error) {
+    } catch (_error) {
       await removeModule({ moduleId: createdModule.id });
     }
   };

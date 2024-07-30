@@ -1,11 +1,9 @@
-import { DomainScoped } from '@takaro/util';
-import { ctx, errors, logger, traceableClass } from '@takaro/util';
+import { ctx, errors, logger, traceableClass, DomainScoped, TakaroDTO } from '@takaro/util';
 import { UserOutputWithRolesDTO, UserService, UserUpdateAuthDTO } from '../service/UserService.js';
 import jwt from 'jsonwebtoken';
 import { NextFunction, Request, Response } from 'express';
 import { IsString } from 'class-validator';
 import ms from 'ms';
-import { TakaroDTO } from '@takaro/util';
 import { ory, PERMISSIONS } from '@takaro/auth';
 import { config } from '../config.js';
 import passport from 'passport';

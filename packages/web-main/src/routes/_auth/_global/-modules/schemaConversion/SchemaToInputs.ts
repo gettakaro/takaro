@@ -126,7 +126,7 @@ export function schemaToInputs(schema: SchemaObject): SchemaToInputsResult {
           throw new Error('Unknown input type');
       }
       inputs.push(input as AnyInput);
-    } catch (e) {
+    } catch (_e) {
       errors.push({
         message: `Error processing config field: '${name}'. Please try to recreate the field using the config details.`,
         detail: 'The following config field could not be processed.',

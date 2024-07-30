@@ -54,7 +54,7 @@ export const PlayerInventoryTable: FC<IPlayerInventoryProps> = ({ pog }) => {
   return (
     <Grid>
       {pog.inventory.map((item, index) => (
-        <Tooltip placement="top">
+        <Tooltip key={'tooltip' + item.name} placement="top">
           <Tooltip.Trigger asChild>
             <GridItem key={index}>
               <ItemIcon

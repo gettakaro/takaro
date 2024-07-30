@@ -175,7 +175,7 @@ export const Inner = styled.div<{ initialOffset: XYCoord | null; currentOffset: 
   transform: ${({ currentOffset }) => `translate(${currentOffset?.x}px, ${currentOffset?.y}px)`};
 `;
 
-export const CustomDragLayer = forwardRef<HTMLDivElement>((_, ref) => {
+export const CustomDragLayer = forwardRef<HTMLDivElement>(function ColumnHeaderDragLayer(_, ref) {
   const { itemType, isDragging, initialOffset, currentOffset } = useDragLayer((monitor) => ({
     item: monitor.getItem(),
     itemType: monitor.getItemType(),

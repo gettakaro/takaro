@@ -1,8 +1,7 @@
-import { ControlledInputProps } from '../InputProps';
 import { useController } from 'react-hook-form';
 import { FC } from 'react';
 import { GenericSwitch } from '.';
-import { defaultInputProps, defaultInputPropsFactory } from '../InputProps';
+import { ControlledInputProps, defaultInputProps, defaultInputPropsFactory } from '../InputProps';
 import { Label } from '../../../components';
 import { Container } from './style';
 import { InputWrapper, Description } from '../layout';

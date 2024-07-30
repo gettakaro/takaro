@@ -182,7 +182,7 @@ export const ItemSelectQueryView: FC<ItemSelectQueryViewProps> = ({
     >
       <SelectQueryField.OptionGroup label="options">
         {items.map((item) => (
-          <SelectQueryField.Option value={item.id} label={item.name}>
+          <SelectQueryField.Option key={selectName + '-' + item.id} value={item.id} label={item.name}>
             <Inner>
               {renderIcon(gameServer, item)}
               <span>{item.name}</span>

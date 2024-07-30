@@ -2,10 +2,15 @@ import { FC, useEffect, useState } from 'react';
 import { Button, SelectField, TextField, Drawer, CollapseList, FormError, styled } from '@takaro/lib-components';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { IFormInputs, validationSchema } from './validationSchema';
-import { GameServerOutputDTO, GameServerTestReachabilityInputDTOTypeEnum } from '@takaro/apiclient';
+import {
+  GameServerOutputDTO,
+  GameServerTestReachabilityInputDTOTypeEnum,
+  GameServerCreateDTOTypeEnum,
+} from '@takaro/apiclient';
 import { useGameServerReachabilityByConfig } from 'queries/gameserver';
 import { connectionInfoFieldsMap } from './connectionInfoFieldsMap';
 import { useNavigate } from '@tanstack/react-router';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 interface CreateUpdateFormProps {
   initialData?: GameServerOutputDTO;
@@ -13,9 +18,6 @@ interface CreateUpdateFormProps {
   onSubmit: SubmitHandler<IFormInputs>;
   error: string | string[] | null;
 }
-
-import { GameServerCreateDTOTypeEnum } from '@takaro/apiclient';
-import { zodResolver } from '@hookform/resolvers/zod';
 
 const gameTypeSelectOptions = [
   {

@@ -61,10 +61,6 @@ export class DiscordService extends TakaroService<
   GuildCreateInputDTO,
   GuildUpdateDTO
 > {
-  constructor(domainId: string) {
-    super(domainId);
-  }
-
   get repo() {
     return new DiscordRepo(this.domainId);
   }
@@ -119,7 +115,7 @@ export class DiscordService extends TakaroService<
       return existingDbGuilds.results.find((dbGuild) => dbGuild.discordId === guild.id);
     });
 
-    this.log.info(`Syncing guilds: ${addedGuilds.length} added`);
+    this.log.info(`Syncing guilds: ${addedGuilds.length.toString()} added`);
 
     await Promise.all(
       addedGuilds.map(async (guild) =>

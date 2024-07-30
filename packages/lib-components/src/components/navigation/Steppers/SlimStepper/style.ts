@@ -28,9 +28,8 @@ export const StepperHeaderItem = styled.div<{
   ${({ theme, stepState }) => {
     if (stepState === StepStates.COMPLETE) {
       return `border-right: .6rem solid ${lighten(0.15, theme.colors.primary)}`;
-    } else {
-      return 'border-right: .6rem solid transparent';
     }
+    return 'border-right: .6rem solid transparent';
   }};
 
   cursor: ${({ stepState, canStepBack }) => (stepState === StepStates.COMPLETE && canStepBack ? 'pointer' : 'inherit')};

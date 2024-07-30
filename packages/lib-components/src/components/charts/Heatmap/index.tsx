@@ -1,10 +1,9 @@
 import { ParentSize } from '@visx/responsive';
-import { scaleLinear } from '@visx/scale';
 import { Group } from '@visx/group';
 import { AxisTop, AxisLeft } from '@visx/axis';
 import { HeatmapRect } from '@visx/heatmap';
 import { useTooltipInPortal } from '@visx/tooltip';
-import { scaleBand } from '@visx/scale';
+import { scaleLinear, scaleBand } from '@visx/scale';
 
 import { InnerChartProps, Margin } from '../util';
 import { useTheme } from '../../../hooks';

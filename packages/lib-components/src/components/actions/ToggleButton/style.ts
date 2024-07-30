@@ -27,12 +27,11 @@ export const Container = styled.div<{
             border-top-left-radius: ${theme.borderRadius.small};
             border-bottom-left-radius: ${theme.borderRadius.small};
           `;
-        } else {
-          return `
+        }
+        return `
         border-top-left-radius: ${theme.borderRadius.small};
         border-top-right-radius: ${theme.borderRadius.small};
           `;
-        }
       }}
     }
 
@@ -44,13 +43,12 @@ export const Container = styled.div<{
             border-bottom-right-radius: ${theme.borderRadius.small};
             border-right: 0.1rem solid ${theme.colors.backgroundAccent};
           `;
-        } else {
-          return `
+        }
+        return `
             border-bottom-right-radius: ${theme.borderRadius.small};
             border-bottom-left-radius: ${theme.borderRadius.small};
             border-bottom: 0.1rem solid ${theme.colors.backgroundAccent};
       `;
-        }
       }}
     }
   }

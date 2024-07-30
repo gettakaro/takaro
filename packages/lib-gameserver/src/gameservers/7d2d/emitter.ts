@@ -88,8 +88,8 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
         this.logger.debug(`Connecting to ${this.config.host}`);
         this.eventSource = new EventSource(this.url, {
           headers: {
-            ['X-SDTD-API-TOKENNAME']: this.config.adminUser,
-            ['X-SDTD-API-SECRET']: this.config.adminToken,
+            'X-SDTD-API-TOKENNAME': this.config.adminUser,
+            'X-SDTD-API-SECRET': this.config.adminToken,
           },
         });
 

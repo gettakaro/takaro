@@ -77,10 +77,9 @@ class Context {
                 span.end();
                 throw err;
               });
-          } else {
-            span.end();
-            return result;
           }
+          span.end();
+          return result;
         } catch (err) {
           span.end();
           throw err;

@@ -3,7 +3,6 @@
   "version": "0.0.1",
   "private": false,
   "description": "Takaro UI is a simple and customizable component library to build React apps faster within the Takaro eco system",
-  "author": "Takaro Team",
   "license": "AGPL-3.0-or-later",
   "main": "src/index.ts",
   "types": "src/index.ts",

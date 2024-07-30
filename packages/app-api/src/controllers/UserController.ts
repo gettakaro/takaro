@@ -220,7 +220,8 @@ export class UserController {
     @Body() data: UserRoleAssignChangeDTO,
   ) {
     const service = new UserService(req.domainId);
-    return apiResponse(await service.assignRole(params.roleId, params.id, data.expiresAt));
+    await service.assignRole(params.roleId, params.id, data.expiresAt);
+    return apiResponse();
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_USERS, PERMISSIONS.MANAGE_ROLES], false))
@@ -248,7 +249,7 @@ export class UserController {
     description:
       'One user can have multiple domains, this endpoint is a helper to set the selected domain for the user',
   })
-  async setSelectedDomain(@Req() req: AuthenticatedRequest, @Param('domainId') domainId: string) {
+  setSelectedDomain(@Req() req: AuthenticatedRequest, @Param('domainId') domainId: string) {
     req.res?.cookie('takaro-domain', domainId, {
       sameSite: config.get('http.domainCookie.sameSite') as boolean | 'strict' | 'lax' | 'none' | undefined,
       secure: config.get('http.domainCookie.secure'),
@@ -264,7 +265,7 @@ export class UserController {
     description:
       'Unset the selected domain for the user, this will clear the domain cookie. On the next request, the backend will set this again.',
   })
-  async deleteSelectedDomainCookie(@Req() req: AuthenticatedRequest) {
+  deleteSelectedDomainCookie(@Req() req: AuthenticatedRequest) {
     req.res?.clearCookie('takaro-domain', {
       sameSite: config.get('http.domainCookie.sameSite') as boolean | 'strict' | 'lax' | 'none' | undefined,
       secure: config.get('http.domainCookie.secure'),

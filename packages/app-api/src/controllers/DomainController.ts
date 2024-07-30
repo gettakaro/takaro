@@ -1,5 +1,4 @@
 import { ITakaroQuery } from '@takaro/db';
-import { adminAuthMiddleware } from '@takaro/http';
 import {
   DomainCreateInputDTO,
   DomainCreateOutputDTO,
@@ -8,12 +7,11 @@ import {
   DomainUpdateInputDTO,
   DOMAIN_STATES,
 } from '../service/DomainService.js';
-import { apiResponse, APIOutput } from '@takaro/http';
-import { OpenAPI } from 'routing-controllers-openapi';
+import { apiResponse, APIOutput, adminAuthMiddleware } from '@takaro/http';
 
 import { Param, Body, Get, Post, Put, Delete, JsonController, UseBefore, Req, Res } from 'routing-controllers';
 
-import { ResponseSchema } from 'routing-controllers-openapi';
+import { ResponseSchema, OpenAPI } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Request, Response } from 'express';

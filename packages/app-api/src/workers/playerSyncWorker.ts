@@ -1,10 +1,9 @@
 import { IGameServerQueueData, TakaroWorker, queueService } from '@takaro/queues';
 import { config } from '../config.js';
 import { Job } from 'bullmq';
-import { logger } from '@takaro/util';
+import { logger, ctx } from '@takaro/util';
 import { DomainService } from '../service/DomainService.js';
 import { GameServerService } from '../service/GameServerService.js';
-import { ctx } from '@takaro/util';
 import { PlayerService } from '../service/PlayerService.js';
 import { PlayerOnGameServerService, PlayerOnGameServerUpdateDTO } from '../service/PlayerOnGameserverService.js';
 import { getWorkerMetrics } from '../lib/metrics.js';

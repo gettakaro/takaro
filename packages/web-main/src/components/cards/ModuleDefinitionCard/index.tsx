@@ -1,4 +1,3 @@
-import { ModuleOutputDTO } from '@takaro/apiclient';
 import {
   Company,
   Tooltip,
@@ -12,15 +11,14 @@ import {
   styled,
   Spinner,
 } from '@takaro/lib-components';
-import { PERMISSIONS } from '@takaro/apiclient';
+import { PERMISSIONS, ModuleOutputDTO } from '@takaro/apiclient';
 import { moduleExportOptions, useModuleRemove } from 'queries/module';
 import { FC, useState, MouseEvent, useEffect } from 'react';
-import { AiOutlineMenu as MenuIcon } from 'react-icons/ai';
 import { useNavigate } from '@tanstack/react-router';
-import { SpacedRow, ActionIconsContainer } from '../style';
-import { CardBody } from '../style';
+import { SpacedRow, ActionIconsContainer, CardBody } from '../style';
 import { PermissionsGuard } from 'components/PermissionsGuard';
 import {
+  AiOutlineMenu as MenuIcon,
   AiOutlineEdit as EditIcon,
   AiOutlineDelete as DeleteIcon,
   AiOutlineLink as LinkIcon,
@@ -83,7 +81,11 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
 
   const handleOnDeleteClick = (e: MouseEvent) => {
     e.stopPropagation();
-    e.shiftKey ? handleOnDelete(e) : setOpenDeleteDialog(true);
+    if (e.shiftKey) {
+      handleOnDelete(e);
+    } else {
+      setOpenDeleteDialog(true);
+    }
   };
 
   const handleOnCopyClick = (e: MouseEvent) => {

@@ -25,7 +25,7 @@ export function OryProvider({ children }: { children: React.ReactNode }) {
     }),
   );
 
-  const oryError = (
+  const useOryError = (
     /**
      * @param getFlow - Should be function to load a flow make it visible (Login.getFlow)
      * @param setFlow - Update flow data to view (Login.setFlow)
@@ -182,7 +182,7 @@ export function OryProvider({ children }: { children: React.ReactNode }) {
     <OryContext.Provider
       value={{
         oryClient,
-        oryError,
+        oryError: useOryError,
       }}
     >
       {children}

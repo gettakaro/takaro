@@ -74,7 +74,7 @@ StepsWithDots.args = {
   color: 'primary',
 };
 
-export const onChange: StoryFn<SliderProps> = (args) => {
+export const OnChange: StoryFn<SliderProps> = (args) => {
   const { control } = useForm({ mode: 'onChange' });
   const sliderValue = useWatch({ control, name: 'Slider' });
 

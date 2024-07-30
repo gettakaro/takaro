@@ -32,7 +32,10 @@ export interface CardProps extends HTMLProps<HTMLDivElement> {
 }
 
 // Forward ref and spread all props to the Container
-export const Card = forwardRef<HTMLDivElement, CardProps>(({ children, variant = 'default', ...props }, ref) => {
+export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
+  { children, variant = 'default', ...props },
+  ref,
+) {
   const canClick = 'onClick' in props;
 
   // Extract the className prop, if present

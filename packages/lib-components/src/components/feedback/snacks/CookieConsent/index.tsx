@@ -20,7 +20,10 @@ type FormInputs = {
   analytical: boolean;
 };
 
-export const CookieConsentSnack = forwardRef<HTMLDivElement, CustomContentProps>(({ id }, ref) => {
+export const CookieConsentSnack = forwardRef<HTMLDivElement, CustomContentProps>(function CookieConsentSnack(
+  { id },
+  ref,
+) {
   const { closeSnackbar } = useSnackbar();
   const [showDetails, setShowDetails] = useState<boolean>(false);
 

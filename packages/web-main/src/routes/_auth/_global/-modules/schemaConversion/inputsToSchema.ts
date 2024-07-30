@@ -1,7 +1,5 @@
-import { StrictRJSFSchema } from '@rjsf/utils';
-import { UiSchema } from '@rjsf/utils';
+import { StrictRJSFSchema, UiSchema } from '@rjsf/utils';
 import { AnyInput, InputType } from './inputTypes';
-
 import { EnumerationProperty } from './inputTypes/Enumeration';
 import { BooleanProperty } from './inputTypes/Boolean';
 import { ArrayProperty } from './inputTypes/Array';

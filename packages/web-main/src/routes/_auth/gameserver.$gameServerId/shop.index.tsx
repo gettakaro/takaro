@@ -3,6 +3,7 @@ import { gameServerSettingQueryOptions } from 'queries/setting';
 import { playerOnGameServerQueryOptions } from 'queries/pog';
 import { gameServerQueryOptions } from 'queries/gameserver';
 import { ShopView } from './-components/shop/ShopView';
+
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/')({
   loader: async ({ context, params }) => {
     const session = await context.auth.getSession();

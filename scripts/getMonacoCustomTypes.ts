@@ -6,8 +6,8 @@ import fs from 'fs-extra';
 import path from 'path';
 
 async function getDts({ nodeModulesPath, packages }: { nodeModulesPath: string; packages: string[] }) {
-  const typings: { [key: string]: string } = {};
-  const parsedPackages: { [key: string]: boolean } = {};
+  const typings: Record<string, string> = {};
+  const parsedPackages: Record<string, boolean> = {};
 
   async function getTypingsForPackages(packages: string[] = []) {
     for (const packageName of packages) {
@@ -82,7 +82,7 @@ async function main() {
   await fs.ensureDir(webMainEditorPath);
   await fs.writeJSON(path.join(webMainEditorPath, 'monacoCustomTypes.json'), dts);
 
-  console.log(`Generated ${Object.keys(dts).length} typings. Saved to ${webMainEditorPath}`);
+  console.log(`Generated ${Object.keys(dts).length.toString()} typings. Saved to ${webMainEditorPath}`);
 }
 
 main().catch(console.error);
