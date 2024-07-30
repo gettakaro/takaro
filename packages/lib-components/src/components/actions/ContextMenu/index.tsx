@@ -1,7 +1,6 @@
 import {
   Children,
   cloneElement,
-  forwardRef,
   isValidElement,
   useEffect,
   useRef,
@@ -9,7 +8,7 @@ import {
   HTMLProps,
   RefObject,
   ReactElement,
-  JSX,
+  FC,
 } from 'react';
 import {
   useFloating,
@@ -26,7 +25,7 @@ import {
   FloatingFocusManager,
 } from '@floating-ui/react';
 import { MenuItem, MenuItemProps } from './MenuItem';
-import { ContextMenuGroup } from './Group';
+import { Group } from './Group';
 
 import { styled } from '../../../styled';
 
@@ -46,16 +45,12 @@ export interface ContextMenuProps extends HTMLProps<HTMLButtonElement> {
   targetRef?: RefObject<HTMLElement>;
 }
 
-type ContextMenuComponent = {
-  (props: ContextMenuProps, ref: React.Ref<HTMLButtonElement>): JSX.Element;
+type SubComponentTypes = {
   Item: typeof MenuItem;
-  Group: typeof ContextMenuGroup;
+  Group: typeof Group;
 };
 
-export const ContextMenu = forwardRef<HTMLButtonElement, ContextMenuProps>(function ContextMenu(
-  { children, targetRef },
-  _ref,
-) {
+export const ContextMenu: FC<ContextMenuProps> & SubComponentTypes = ({ children, targetRef }) => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -215,7 +210,7 @@ export const ContextMenu = forwardRef<HTMLButtonElement, ContextMenuProps>(funct
       )}
     </FloatingPortal>
   );
-}) as unknown as ContextMenuComponent;
+};
 
 ContextMenu.Item = MenuItem;
-ContextMenu.Group = ContextMenuGroup;
+ContextMenu.Group = Group;

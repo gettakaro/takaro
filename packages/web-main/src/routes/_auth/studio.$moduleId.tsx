@@ -106,7 +106,7 @@ function Component() {
         .reduce(moduleItemPropertiesReducer(FileType.Commands), nameToId);
 
       mod.functions
-        .sort((a, b) => a.name!.localeCompare(b.name))
+        .sort((a, b) => a.name!.localeCompare(b.name!))
         .reduce(moduleItemPropertiesReducer(FileType.Functions), nameToId);
 
       return nameToId;
