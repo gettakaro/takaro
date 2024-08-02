@@ -1,20 +1,9 @@
-import { SelectField, styled } from '@takaro/lib-components';
+import { SelectField } from '@takaro/lib-components';
 import { FC } from 'react';
 import { CustomSelectProps } from '.';
 import { modulesQueryOptions } from 'queries/module';
 import { ModuleOutputDTO } from '@takaro/apiclient';
 import { useQuery } from '@tanstack/react-query';
-
-const Inner = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  width: 100%;
-
-  span {
-    margin-left: ${({ theme }) => theme.spacing['1']};
-  }
-`;
 
 export const ModuleSelect: FC<CustomSelectProps> = ({
   control,
@@ -96,19 +85,17 @@ export const ModuleSelectView: FC<ModuleSelectViewProps> = ({
       loading={loading}
       canClear={canClear}
       multiple={multiple}
-      render={(selectedItems) => {
-        if (selectedItems.length === 0) {
-          return <div>Select module...</div>;
+      render={(selectedModules) => {
+        if (selectedModules.length === 0) {
+          return <p>Select module...</p>;
         }
-        return <div>{selectedItems[0].label}</div>;
+        return selectedModules.map((gameServer) => gameServer.label).join(', ');
       }}
     >
       <SelectField.OptionGroup>
         {modules.map(({ id, name }) => (
           <SelectField.Option key={`select-${selectName}-${id}`} value={id} label={name}>
-            <Inner>
-              <span>{name}</span>
-            </Inner>
+            <span>{name}</span>
           </SelectField.Option>
         ))}
       </SelectField.OptionGroup>
