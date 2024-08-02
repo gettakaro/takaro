@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { useController } from 'react-hook-form';
 import { GenericCheckBox } from '.';
-import { Container, CheckboxContainer } from './style';
+import { Container, LoadingCheckBox } from './style';
 
 import { defaultInputProps, defaultInputPropsFactory, ControlledInputProps } from '../InputProps';
 import { Label, ErrorMessage, InputWrapper, Description } from '../layout';
@@ -54,7 +54,7 @@ export const ControlledCheckBox: FC<ControlledCheckBoxProps> = (props) => {
               htmlFor={name}
             />
           )}
-          <CheckboxContainer className="placeholder" readOnly={readOnly} hasError={!!error} disabled={disabled} />
+          <LoadingCheckBox className="placeholder" />
           {/* CASE: show label after <CheckBox /> */}
           {labelPosition === 'right' && label && (
             <Label
@@ -101,7 +101,6 @@ export const ControlledCheckBox: FC<ControlledCheckBoxProps> = (props) => {
           onChange={field.onChange}
           onBlur={field.onBlur}
           value={field.value}
-          ref={field.ref}
         />
 
         {/* CASE: show label after <CheckBox /> */}

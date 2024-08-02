@@ -1,115 +1,56 @@
-import { Size, styled } from '../../../styled';
-import { motion } from 'framer-motion';
-import { shade } from 'polished';
+import { styled } from '../../../styled';
 
 export const Container = styled.div`
   position: relative;
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
+  flex-direction: row;
+  text-align: left;
   margin-bottom: ${({ theme }) => theme.spacing['0_5']};
 `;
 
-export const Input = styled.input`
-  position: absolute;
-  visibility: hidden;
-`;
-
-export const BackgroundContainer = styled(motion.div)<{ $size: Size }>`
-  background-color: ${({ theme }) => shade(0.5, theme.colors.primary)};
-
-  ${({ $size }): string => {
-    switch ($size) {
-      case 'tiny':
-        return `
-          width: 1.2rem;
-          height: 1.2rem;
-        `;
-      case 'small':
-        return `
-          width: 1.6rem;
-          height: 1.6rem;
-        `;
-      case 'medium':
-        return `
-          width: 2rem;
-          height: 2rem;
-        `;
-      case 'large':
-        return `
-          width: 2.4rem;
-          height: 2.4rem;
-        `;
-      case 'huge':
-        return `
-          width: 2.8rem;
-          height: 2.8rem;
-        `;
-    }
-  }}
-`;
-
-export const CheckboxContainer = styled.button<{
-  isChecked?: boolean;
-  readOnly: boolean;
-  hasError: boolean;
-  disabled: boolean;
-}>`
-  display: flex;
-  padding: 0;
-  background-color: transparent;
-  position: relative;
-  align-items: center;
-  justify-content: center;
-  border: 0.1rem solid
-    ${({ theme, isChecked, hasError, disabled }): string => {
-      if (disabled) {
-        return theme.colors.disabled;
-      }
-      if (isChecked) {
-        return theme.colors.primary;
-      }
-      if (hasError) {
-        return theme.colors.error;
-      }
-      return theme.colors.backgroundAccent;
-    }};
-
-  border-radius: ${({ theme }) => theme.borderRadius.small};
-  transition:
-    box-shadow 100ms linear,
-    border-color 100ms linear;
-  cursor: ${({ readOnly, disabled }) => {
-    if (disabled) {
-      return 'not-allowed';
-    }
-    if (readOnly) {
-      return 'inherit';
-    }
-    return 'pointer';
-  }};
-  overflow: visible;
+export const LoadingCheckBox = styled.div`
   &.placeholder {
-    border: none; /* Otherwise the border does not have the animation */
+    border: none;
     border-radius: ${({ theme }) => theme.borderRadius.small};
-    width: 2.4rem;
-    height: 2.4rem;
+    width: 2rem;
+    height: 2rem;
     cursor: default;
   }
 `;
 
-export const CheckMarkContainer = styled.div<{ isChecked: boolean }>`
-  display: flex;
-  visibility: ${({ isChecked }): string => (isChecked ? 'visible' : 'hidden')};
-  width: 100%;
-  height: 100%;
-  align-items: center;
-  justify-content: center;
-  opacity: ${({ isChecked }): number => (isChecked ? 1 : 0)};
-  transition: 0.2s opacity ease-in-out cubic-bezier(0.215, 0.61, 0.355, 1);
+export const Input = styled.input<{ hasError: boolean; hasDescription: boolean }>`
+  width: 2rem;
+  height: 2rem;
+  border: 0.1rem solid ${({ theme, hasError }) => (hasError ? theme.colors.error : theme.colors.backgroundAccent)};
+  cursor: pointer;
+  position: relative;
+  padding: ${({ theme }) => theme.spacing['0_75']};
+  background: ${({ theme }) => theme.colors.backgroundAlt};
+  transition: 0.15ms linear background;
+  vertical-align: middle;
 
-  svg {
-    fill: white;
-    stroke: white;
+  :disabled {
+    background: ${({ theme }) => theme.colors.disabled};
+  }
+
+  :checked {
+    background: ${({ theme }) => theme.colors.primary};
+
+    :disabled {
+      background: ${({ theme }) => theme.colors.disabled};
+    }
+
+    ::after {
+      position: absolute;
+      content: '';
+      display: block;
+      left: 6px;
+      width: 4px;
+      top: 3px;
+      height: 8px;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
   }
 `;
