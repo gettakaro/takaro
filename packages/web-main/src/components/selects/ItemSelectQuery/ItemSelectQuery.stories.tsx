@@ -74,7 +74,6 @@ export const Default: StoryFn<ItemSelectQueryViewProps> = (args) => {
           name="item"
           label="Item"
           required={args.required}
-          hasMargin={args.hasMargin}
           readOnly={args.readOnly}
           loading={args.loading}
           disabled={args.disabled}

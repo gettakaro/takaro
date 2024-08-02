@@ -60,7 +60,6 @@ export const ShopListingBuyForm: FC<ShopListingBuyFormProps> = ({
         label="Amount"
         type="number"
         placeholder="Enter amount"
-        hasMargin={false}
       />
       <Button
         isLoading={isPendingShopOrderCreate}

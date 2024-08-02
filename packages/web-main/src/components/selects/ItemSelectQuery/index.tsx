@@ -39,7 +39,6 @@ export const ItemSelect: FC<ItemSelectProps> = ({
   inPortal,
   readOnly,
   required,
-  hasMargin,
   description,
   placeholder = 'Select an item',
   gameServerId,
@@ -84,7 +83,6 @@ export const ItemSelect: FC<ItemSelectProps> = ({
       inPortal={inPortal}
       hint={hint}
       multiple={multiple}
-      hasMargin={hasMargin}
       placeholder={placeholder}
       required={required}
       loading={loading}
@@ -112,7 +110,6 @@ export const ItemSelectQueryView: FC<ItemSelectQueryViewProps> = ({
   size,
   disabled,
   placeholder,
-  hasMargin,
   multiple,
   inPortal,
   hint,
@@ -152,7 +149,6 @@ export const ItemSelectQueryView: FC<ItemSelectQueryViewProps> = ({
       readOnly={readOnly}
       required={required}
       multiple={multiple}
-      hasMargin={hasMargin}
       description={description}
       canClear={canClear}
       render={(selectedItems) => {
