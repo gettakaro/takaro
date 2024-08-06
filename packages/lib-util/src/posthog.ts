@@ -10,7 +10,8 @@ interface IPosthogProperties {
   user: string;
 }
 
-const blockedEvents: string[] = ['entity-killed', 'chat-message'];
+const allowedEvents: string[] = ['player-linked', 'module-installed', 'shop-order-created', 'shop-listing-created'];
+
 const client =
   config.get('posthog.enabled') && config.get('posthog.apiKey')
     ? new PosthogInternal(config.get('posthog.apiKey'), { host: config.get('posthog.host') })
@@ -28,7 +29,7 @@ export class PostHog extends DomainScoped {
   async trackEvent(eventName: string, properties: IPosthogProperties) {
     if (!config.get('posthog.enabled')) return;
     if (!client) return;
-    if (blockedEvents.includes(eventName)) return;
+    if (!allowedEvents.includes(eventName)) return;
     const distinctId = ctx.data.user || properties.user || properties.player || 'anonymous';
 
     client.capture({
