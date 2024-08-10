@@ -103,7 +103,7 @@ const tests = [
   }),
 ];
 
-describe(group, function () {
+describe(group, () => {
   tests.forEach((test) => {
     test.run();
   });

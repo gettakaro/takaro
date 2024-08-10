@@ -19,7 +19,10 @@ interface FilterInputProps {
   onFilterChange: (value: string) => void;
 }
 
-export const FilterInput = forwardRef<HTMLInputElement, FilterInputProps>(({ selectName, onFilterChange }, ref) => {
+export const FilterInput = forwardRef<HTMLInputElement, FilterInputProps>(function FilterInput(
+  { selectName, onFilterChange },
+  ref,
+) {
   const [inputValue, setInputValue] = useState<string>('');
   const onChangeHandler = (value: string) => {
     setInputValue(value);

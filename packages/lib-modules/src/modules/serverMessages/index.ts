@@ -26,7 +26,7 @@ export class ServerMessages extends BuiltinModule<ServerMessages> {
           },
         },
         required: ['messages'],
-      })
+      }),
     );
 
     this.cronJobs = [

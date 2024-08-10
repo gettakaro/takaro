@@ -24,7 +24,7 @@ export type GenericSliderProps = SliderProps & GenericInputPropsFunctionHandlers
 const defaultsApplier = defaultInputPropsFactory<GenericSliderProps>(defaultInputProps);
 
 // TODO: should probably switch to the radixUI version
-export const GenericSlider = forwardRef<HTMLDivElement, GenericSliderProps>((props, ref) => {
+export const GenericSlider = forwardRef<HTMLDivElement, GenericSliderProps>(function GenericSlider(props, ref) {
   const {
     color = 'primary',
     size,

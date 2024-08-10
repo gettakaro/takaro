@@ -1,4 +1,3 @@
-import { ModuleOutputDTO } from '@takaro/apiclient';
 import {
   Company,
   Tooltip,
@@ -9,19 +8,17 @@ import {
   Dropdown,
   useTheme,
   ValueConfirmationField,
-  Alert,
   styled,
   Spinner,
 } from '@takaro/lib-components';
-import { PERMISSIONS } from '@takaro/apiclient';
+import { PERMISSIONS, ModuleOutputDTO } from '@takaro/apiclient';
 import { moduleExportOptions, useModuleRemove } from 'queries/module';
 import { FC, useState, MouseEvent, useEffect } from 'react';
-import { AiOutlineMenu as MenuIcon } from 'react-icons/ai';
 import { useNavigate } from '@tanstack/react-router';
-import { SpacedRow, ActionIconsContainer } from '../style';
-import { CardBody } from '../style';
+import { SpacedRow, ActionIconsContainer, CardBody } from '../style';
 import { PermissionsGuard } from 'components/PermissionsGuard';
 import {
+  AiOutlineMenu as MenuIcon,
   AiOutlineEdit as EditIcon,
   AiOutlineDelete as DeleteIcon,
   AiOutlineLink as LinkIcon,
@@ -48,17 +45,20 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
   const [openExportDialog, setOpenExportDialog] = useState<boolean>(false);
   const [isValid, setIsValid] = useState<boolean>(false);
   const [downloadLink, setDownloadLink] = useState<string | null>(null);
-  const { mutateAsync, isPending: isDeleting } = useModuleRemove();
+  const { mutate, isPending: isDeleting, isSuccess } = useModuleRemove();
   const { data: exported, isPending: isExporting } = useQuery(moduleExportOptions(mod.id, openExportDialog));
 
   const theme = useTheme();
   const navigate = useNavigate();
 
-  const handleOnDelete = async (e: MouseEvent) => {
+  const handleOnDelete = (e: MouseEvent) => {
     e.stopPropagation();
-    await mutateAsync({ moduleId: mod.id });
-    setOpenDeleteDialog(false);
+    mutate({ moduleId: mod.id });
   };
+
+  if (isSuccess) {
+    setOpenDeleteDialog(false);
+  }
 
   useEffect(() => {
     if (!isExporting && exported) {
@@ -81,7 +81,11 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
 
   const handleOnDeleteClick = (e: MouseEvent) => {
     e.stopPropagation();
-    e.shiftKey ? handleOnDelete(e) : setOpenDeleteDialog(true);
+    if (e.shiftKey) {
+      handleOnDelete(e);
+    } else {
+      setOpenDeleteDialog(true);
+    }
   };
 
   const handleOnCopyClick = (e: MouseEvent) => {
@@ -91,7 +95,6 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
 
   const handleOnOpenClick = (e: MouseEvent) => {
     e.stopPropagation();
-    // TODO: should open in new tab
     window.open(`/studio/${mod.id}`, '_blank');
   };
 
@@ -168,10 +171,6 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
             Delete Module: <span style={{ textTransform: 'capitalize' }}>{mod.name}</span>{' '}
           </Dialog.Heading>
           <Dialog.Body size="medium">
-            <Alert
-              variant="info"
-              text="You can hold down shift when deleting a module to bypass this confirmation entirely."
-            />
             <p>
               Are you sure you want to delete the module <strong>{mod.name}</strong>? To confirm, type the module name
               below.
@@ -207,7 +206,13 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
             )}
 
             {!isExporting && downloadLink && (
-              <DownloadLink href={downloadLink} download={`${mod.name}.json`}>
+              <DownloadLink
+                href={downloadLink}
+                download={`${mod.name}.json`}
+                onClick={() => {
+                  setOpenExportDialog(false);
+                }}
+              >
                 Download {mod.name}.json
               </DownloadLink>
             )}

@@ -11,6 +11,7 @@ import {
 import { AxiosError } from 'axios';
 import { getApiClient } from 'util/getApiClient';
 import { pogKeys } from './pog';
+import { useSnackbar } from 'notistack';
 
 export const shopOrderKeys = {
   list: () => ['shopOrder'],
@@ -40,21 +41,19 @@ export const shopOrderInfiniteQueryOptions = (queryParams: ShopOrderSearchInputD
 
 export const useShopOrderCreate = () => {
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
 
   return mutationWrapper<ShopOrderOutputDTO, ShopOrderCreateDTO>(
     useMutation<ShopOrderOutputDTO, AxiosError<ShopOrderOutputDTO>, ShopOrderCreateDTO>({
       mutationFn: async (shopOrder) => (await getApiClient().shopOrder.shopOrderControllerCreate(shopOrder)).data.data,
       onSuccess: (newShopOrder) => {
-        // we could also potentially update this manually if a shopOrder can be extended with a listing!
-        // this is required to update the currency of the pog.
-        // TODO: this scope should be limited to the pog
-        // but until now there is no data this can be achieved with.
+        enqueueSnackbar('Shop order created!', { variant: 'default', type: 'success' });
         queryClient.invalidateQueries({ queryKey: pogKeys.all });
         queryClient.invalidateQueries({ queryKey: shopOrderKeys.list() });
         queryClient.setQueryData(shopOrderKeys.detail(newShopOrder.id), newShopOrder);
       },
     }),
-    {}
+    {},
   );
 };
 
@@ -63,14 +62,14 @@ interface ShopOrderCancel {
 }
 export const useShopOrderCancel = () => {
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
 
   return mutationWrapper<APIOutput, ShopOrderCancel>(
     useMutation<APIOutput, AxiosError<APIOutput>, ShopOrderCancel>({
       mutationFn: async ({ shopOrderId }) =>
         (await getApiClient().shopOrder.shopOrderControllerCancel(shopOrderId)).data,
       onSuccess: (_, { shopOrderId }) => {
-        // TODO: make scope smaller
-        // cache invalidated to update the returned currency of the pog.
+        enqueueSnackbar('Shop order cancelled!', { variant: 'default', type: 'success' });
         queryClient.invalidateQueries({ queryKey: pogKeys.all });
         queryClient.invalidateQueries({ queryKey: shopOrderKeys.list() });
 
@@ -84,7 +83,7 @@ export const useShopOrderCancel = () => {
         }
       },
     }),
-    {}
+    {},
   );
 };
 
@@ -95,6 +94,7 @@ interface ShopOrderClaim {
 export const useShopOrderClaim = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
 
   return mutationWrapper<ShopOrderOutputDTO, ShopOrderClaim>(
     useMutation<ShopOrderOutputDTO, AxiosError<ShopOrderOutputDTO>, ShopOrderClaim>({
@@ -102,6 +102,7 @@ export const useShopOrderClaim = () => {
         return (await apiClient.shopOrder.shopOrderControllerClaim(shopOrderId)).data.data;
       },
       onSuccess: async (_, { shopOrderId }) => {
+        enqueueSnackbar('Shop order claimed!', { variant: 'default', type: 'success' });
         queryClient.invalidateQueries({ queryKey: shopOrderKeys.list() });
         const shopOrder = queryClient.getQueryData<ShopOrderOutputDTO>(shopOrderKeys.detail(shopOrderId));
         if (shopOrder) {
@@ -113,6 +114,6 @@ export const useShopOrderClaim = () => {
         }
       },
     }),
-    {}
+    {},
   );
 };

@@ -78,7 +78,7 @@ export function Filter<DataType extends object>({ table }: FilterProps<DataType>
               value: z.string().datetime().min(1),
             }),
           ])
-          .and(basedShape)
+          .and(basedShape),
       ),
     });
   }, [columnIds]);

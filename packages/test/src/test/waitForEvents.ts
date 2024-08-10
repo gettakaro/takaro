@@ -51,7 +51,7 @@ export class EventsAwaiter {
     let hasFinished = false;
 
     return Promise.race([
-      new Promise<IDetectedEvent[]>(async (resolve) => {
+      new Promise<IDetectedEvent[]>((resolve) => {
         if (Object.values(GameEvents).includes(expectedEvent as ValueOf<typeof GameEvents>)) {
           this.socket.on('gameEvent', (_gameserverId, event, data) => {
             if (event !== expectedEvent) {

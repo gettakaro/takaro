@@ -74,7 +74,7 @@ export abstract class TakaroEmitter {
     if (listeners) {
       this.listenerMap.set(
         event,
-        listeners.filter((l) => l !== listener)
+        listeners.filter((l) => l !== listener),
       );
     }
 
@@ -105,16 +105,15 @@ export function getErrorProxyHandler<T extends TakaroEmitter>(emitter: T) {
             return await target[prop](one, two);
             // Or if its a Promise, await it
           } else if (isPromise(target[prop])) {
-            return await target[prop];
-          } else {
-            // Otherwise, return the value
             return target[prop];
           }
+          // Otherwise, return the value
+          return target[prop];
         } catch (error) {
           if (!target.hasErrorListener()) {
             log.error('Unhandled error', error);
             const err = new Error(
-              'Unhandled error in TakaroEmitter, attach a listener to the "error" event to handle this'
+              'Unhandled error in TakaroEmitter, attach a listener to the "error" event to handle this',
             );
             Error.captureStackTrace(err);
             throw err;
@@ -126,7 +125,7 @@ export function getErrorProxyHandler<T extends TakaroEmitter>(emitter: T) {
             await target.emit('error', error);
           }
 
-          if (!TakaroEmitter.prototype.hasOwnProperty(prop)) {
+          if (!Object.prototype.hasOwnProperty.call(TakaroEmitter.prototype, prop)) {
             return Promise.reject(error);
           }
         }

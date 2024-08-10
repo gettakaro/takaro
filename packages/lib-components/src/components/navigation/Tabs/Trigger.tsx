@@ -37,29 +37,30 @@ interface TriggerProps {
   disabled?: boolean;
 }
 
-export const Trigger = forwardRef<HTMLButtonElement, PropsWithChildren<TriggerProps>>(
-  ({ children, disabled, value }, ref) => {
-    const { setValue, value: selectedValue } = useTabsContext();
+export const Trigger = forwardRef<HTMLButtonElement, PropsWithChildren<TriggerProps>>(function TabsTrigger(
+  { children, disabled, value },
+  ref,
+) {
+  const { setValue, value: selectedValue } = useTabsContext();
 
-    const handleClick = () => {
-      if (disabled) return;
-      setValue(value);
-    };
+  const handleClick = () => {
+    if (disabled) return;
+    setValue(value);
+  };
 
-    const isActive = value === selectedValue;
+  const isActive = value === selectedValue;
 
-    return (
-      <Container
-        role="tab"
-        ref={ref}
-        onClick={handleClick}
-        disabled={disabled}
-        isActive={isActive}
-        aria-selected={isActive}
-        aria-controls={`tab-content-${value}`}
-      >
-        {children}
-      </Container>
-    );
-  }
-);
+  return (
+    <Container
+      role="tab"
+      ref={ref}
+      onClick={handleClick}
+      disabled={disabled}
+      isActive={isActive}
+      aria-selected={isActive}
+      aria-controls={`tab-content-${value}`}
+    >
+      {children}
+    </Container>
+  );
+});

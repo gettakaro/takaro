@@ -112,7 +112,7 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
     return {
       total: result.total,
       results: await Promise.all(
-        result.results.map(async (item) => new PlayerOnGameserverOutputWithRolesDTO(await this.findOne(item.id)))
+        result.results.map(async (item) => new PlayerOnGameserverOutputWithRolesDTO(await this.findOne(item.id))),
       ),
     };
   }
@@ -135,7 +135,7 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
     const gameServerRoles = roles.filter((role) => role.gameServerId === data.gameServerId);
     const filteredRoles = [...globalRoles, ...gameServerRoles];
     const uniqueRoles = filteredRoles.filter(
-      (role, index, self) => self.findIndex((r) => r.roleId === role.roleId) === index
+      (role, index, self) => self.findIndex((r) => r.roleId === role.roleId) === index,
     );
     const roleDTOs = await Promise.all(uniqueRoles.map((role) => new PlayerRoleAssignmentOutputDTO(role)));
 
@@ -262,7 +262,7 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
         SET currency = currency - ?
         WHERE id = ?
       `,
-        [amount, senderId]
+        [amount, senderId],
       );
 
       await trx.raw(
@@ -271,7 +271,7 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
         SET currency = currency + ?
         WHERE id = ?
       `,
-        [amount, receiverId]
+        [amount, receiverId],
       );
     });
   }
@@ -287,7 +287,7 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
         WHERE id = ?
         RETURNING *;
       `,
-        [amount, playerId]
+        [amount, playerId],
       );
 
       if (result.rowCount === 0) {
@@ -308,7 +308,7 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
         WHERE id = ?
         RETURNING *;
       `,
-        [amount, playerId]
+        [amount, playerId],
       );
 
       if (result.rowCount === 0) {
@@ -336,7 +336,7 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
     const itemRepo = new ItemRepo(this.domainId);
     const itemDefs = await itemRepo.findItemsByCodes(
       items.map((item) => item.code),
-      gameServerId
+      gameServerId,
     );
 
     const toInsert = await Promise.all(
@@ -353,7 +353,7 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
           quantity: item.amount,
           domain: this.domainId,
         };
-      })
+      }),
     );
 
     const trx = await transaction.start(model.knex());

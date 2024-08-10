@@ -297,7 +297,7 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
         }
 
         return query.update(updateObj).where('steamId', item.steamId);
-      })
+      }),
     );
   }
 

@@ -48,7 +48,7 @@ interface IUserRoleAssign {
   expiresAt?: string;
 }
 
-export const useUserAssignRole = ({ userId }: { userId: string }) => {
+export const useUserAssignRole = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
@@ -56,12 +56,12 @@ export const useUserAssignRole = ({ userId }: { userId: string }) => {
     useMutation<APIOutput, AxiosError<APIOutput>, IUserRoleAssign>({
       mutationFn: async ({ userId, roleId, expiresAt }) =>
         (await apiClient.user.userControllerAssignRole(userId, roleId, { expiresAt })).data,
-      onSuccess: async () => {
+      onSuccess: async (_, { userId }) => {
         // invalidate user because new role assignment
         queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
       },
     }),
-    {}
+    {},
   );
 };
 
@@ -75,7 +75,7 @@ export const useUserSetSelectedDomain = () => {
     useMutation<void, AxiosError<APIOutput>, IUserSetSelectedDomain>({
       mutationFn: async ({ domainId }) => (await apiClient.user.userControllerSetSelectedDomain(domainId)).data,
     }),
-    {}
+    {},
   );
 };
 
@@ -87,7 +87,7 @@ export const useUserLinkPlayerProfile = () => {
       mutationFn: async (link_player_details) =>
         (await apiClient.user.userControllerLinkPlayerProfile(link_player_details)).data,
     }),
-    {}
+    {},
   );
 };
 
@@ -103,7 +103,7 @@ export const useUserRemoveRole = ({ userId }: { userId: string }) => {
         queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
       },
     }),
-    {}
+    {},
   );
 };
 
@@ -121,7 +121,7 @@ export const useInviteUser = () => {
         await queryClient.invalidateQueries({ queryKey: userKeys.list() });
       },
     }),
-    {}
+    {},
   );
 };
 
@@ -139,9 +139,9 @@ export const useUserRemove = () => {
       onSuccess: async (_, { userId }) => {
         await queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
         await queryClient.invalidateQueries({ queryKey: userKeys.list() });
-        enqueueSnackbar('User has been deleted', { variant: 'default' });
+        enqueueSnackbar('User successfully deleted!', { variant: 'default' });
       },
     }),
-    {}
+    {},
   );
 };

@@ -47,6 +47,6 @@ export function useDrawer({
       setDescriptionId,
       canDrag,
     }),
-    [open, setOpen, interactions, data, labelId, descriptionId]
+    [open, setOpen, interactions, data, labelId, descriptionId],
   );
 }

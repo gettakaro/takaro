@@ -1,6 +1,5 @@
-import { TakaroDTO, TakaroModelDTO, ctx, traceableClass } from '@takaro/util';
+import { TakaroDTO, TakaroModelDTO, ctx, traceableClass, errors } from '@takaro/util';
 import { IsEnum, IsString } from 'class-validator';
-import { errors } from '@takaro/util';
 import { PaginatedOutput } from '../db/base.js';
 import { SettingsModel, SettingsRepo } from '../db/settings.js';
 import { TakaroService } from './Base.js';
@@ -54,7 +53,10 @@ export class SettingsOutputDTO extends TakaroDTO<SettingsOutputDTO> {
 
 @traceableClass('service:settings')
 export class SettingsService extends TakaroService<SettingsModel, Settings, never, never> {
-  constructor(public readonly domainId: string, public readonly gameServerId?: string) {
+  constructor(
+    public readonly domainId: string,
+    public readonly gameServerId?: string,
+  ) {
     super(domainId);
   }
 
@@ -62,12 +64,12 @@ export class SettingsService extends TakaroService<SettingsModel, Settings, neve
     return new SettingsRepo(this.domainId, this.gameServerId);
   }
 
-  async find(): Promise<PaginatedOutput<never>> {
+  find(): Promise<PaginatedOutput<never>> {
     // Use the "getAll" method instead
     throw new errors.NotImplementedError();
   }
 
-  async findOne(): Promise<never> {
+  findOne(): Promise<never> {
     // Use the "get" method instead
     throw new errors.NotImplementedError();
   }
@@ -77,12 +79,12 @@ export class SettingsService extends TakaroService<SettingsModel, Settings, neve
     throw new errors.NotImplementedError();
   }
 
-  async delete(): Promise<string> {
+  delete(): Promise<string> {
     // This will cascade when a domain or gameserver is deleted
     throw new errors.NotImplementedError();
   }
 
-  async update(): Promise<never> {
+  update(): Promise<never> {
     // Use the "set" method instead
     throw new errors.NotImplementedError();
   }
@@ -104,17 +106,17 @@ export class SettingsService extends TakaroService<SettingsModel, Settings, neve
         gameserverId: this.gameServerId,
         userId,
         meta: new TakaroEventSettingsSet({ key, value }),
-      })
+      }),
     );
 
     return this.get(key);
   }
 
-  async getMany(keys: Array<SETTINGS_KEYS>): Promise<SettingsOutputDTO[]> {
+  async getMany(keys: SETTINGS_KEYS[]): Promise<SettingsOutputDTO[]> {
     const toReturn = await Promise.all(
       keys.map((key) => {
         return this.get(key);
-      })
+      }),
     );
 
     return toReturn;

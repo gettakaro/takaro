@@ -21,7 +21,10 @@ export class Rust implements IGameServer {
   connectionInfo: RustConnectionInfo;
   private client: WebSocket | null;
 
-  constructor(config: RustConnectionInfo, private settings: Partial<Settings> = {}) {
+  constructor(
+    config: RustConnectionInfo,
+    private settings: Partial<Settings> = {},
+  ) {
     this.connectionInfo = config;
   }
 
@@ -60,7 +63,7 @@ export class Rust implements IGameServer {
           name: player.DisplayName,
           ping: player.Ping,
         });
-      })
+      }),
     );
   }
 
@@ -108,7 +111,7 @@ export class Rust implements IGameServer {
 
   async executeConsoleCommand(rawCommand: string) {
     const client = await this.getClient();
-    return new Promise<CommandOutput>(async (resolve, reject) => {
+    return new Promise<CommandOutput>((resolve, reject) => {
       const command = rawCommand.trim();
       const requestId = this.getRequestId();
 
@@ -132,7 +135,7 @@ export class Rust implements IGameServer {
           Message: command,
           Identifier: requestId,
           Name: 'Takaro',
-        })
+        }),
       );
     });
   }
@@ -218,7 +221,7 @@ export class Rust implements IGameServer {
           name: item.Name,
           description: item.Description,
         });
-      })
+      }),
     );
   }
 

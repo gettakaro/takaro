@@ -9,7 +9,7 @@ import { UnControlledTextField } from '@takaro/lib-components';
  * @param props - The `WidgetProps` for this template
  */
 export function BaseInputTemplate<T = any, S extends StrictRJSFSchema = RJSFSchema, F extends FormContextType = any>(
-  props: BaseInputTemplateProps<T, S, F>
+  props: BaseInputTemplateProps<T, S, F>,
 ) {
   const {
     id,

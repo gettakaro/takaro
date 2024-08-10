@@ -1,5 +1,4 @@
-import { IntegrationTest, expect, integrationConfig } from '@takaro/test';
-import { IModuleTestsSetupData, modulesTestSetup } from '@takaro/test';
+import { IntegrationTest, expect, integrationConfig, IModuleTestsSetupData, modulesTestSetup } from '@takaro/test';
 import { GameEvents } from '../../dto/index.js';
 import { GameServerTypesOutputDTOTypeEnum, PlayerOutputDTO, RoleOutputDTO } from '@takaro/apiclient';
 
@@ -22,7 +21,7 @@ const waypointsSetup = async function (this: IntegrationTest<WaypointsSetup>): P
   await Promise.all(
     playersRes.data.data.map(async (player) => {
       await this.client.player.playerControllerRemoveRole(player.id, setupData.role.id);
-    })
+    }),
   );
 
   const manageWaypointsPermission = await this.client.permissionCodesToInputs(['TELEPORTS_MANAGE_WAYPOINTS']);
@@ -61,7 +60,7 @@ async function setupSecondServer() {
 
   await this.client.gameserver.gameServerControllerInstallModule(
     newGameServer.data.data.id,
-    this.setupData.teleportsModule.id
+    this.setupData.teleportsModule.id,
   );
 
   const connectedEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.PLAYER_CONNECTED, 5);
@@ -82,7 +81,7 @@ async function setupSecondServer() {
 
   await this.client.player.playerControllerAssignRole(
     newServerModerator.playerId,
-    this.setupData.manageWaypointsRole.id
+    this.setupData.manageWaypointsRole.id,
   );
 
   return {
@@ -155,7 +154,7 @@ const tests = [
 
       await this.client.player.playerControllerAssignRole(
         this.setupData.player.id,
-        this.setupData.manageWaypointsRole.id
+        this.setupData.manageWaypointsRole.id,
       );
 
       const secondEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);

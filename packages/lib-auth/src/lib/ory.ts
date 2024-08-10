@@ -50,7 +50,7 @@ class Ory {
         basePath: config.get('kratos.adminUrl'),
       }),
       undefined,
-      createAxiosClient(config.get('kratos.adminUrl'))
+      createAxiosClient(config.get('kratos.adminUrl')),
     );
 
     this.frontendClient = new FrontendApi(
@@ -58,14 +58,14 @@ class Ory {
         basePath: config.get('kratos.publicUrl'),
       }),
       undefined,
-      createAxiosClient(config.get('kratos.publicUrl'))
+      createAxiosClient(config.get('kratos.publicUrl')),
     );
     this.adminClient = new OAuth2Api(
       new Configuration({
         basePath: config.get('hydra.adminUrl'),
       }),
       undefined,
-      createAxiosClient(config.get('hydra.adminUrl'))
+      createAxiosClient(config.get('hydra.adminUrl')),
     );
   }
 

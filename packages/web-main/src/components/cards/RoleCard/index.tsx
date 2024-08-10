@@ -1,6 +1,5 @@
 import { FC, MouseEvent, useState } from 'react';
 import {
-  Alert,
   Button,
   Card,
   Chip,
@@ -13,21 +12,23 @@ import {
 } from '@takaro/lib-components';
 import { Header, TitleContainer } from './style';
 import { useNavigate } from '@tanstack/react-router';
-
-import { AiOutlineMenu as MenuIcon } from 'react-icons/ai';
 import { useRoleRemove } from 'queries/role';
 import { RoleOutputDTO } from '@takaro/apiclient';
 import { CardBody } from '../style';
 
-import { AiOutlineEdit as EditIcon, AiOutlineDelete as DeleteIcon, AiOutlineEye as ViewIcon } from 'react-icons/ai';
+import {
+  AiOutlineMenu as MenuIcon,
+  AiOutlineEdit as EditIcon,
+  AiOutlineDelete as DeleteIcon,
+  AiOutlineEye as ViewIcon,
+} from 'react-icons/ai';
 
 export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [valid, setValid] = useState<boolean>(false);
   const theme = useTheme();
   const navigate = useNavigate();
-
-  const { mutate, isPending: isDeleting } = useRoleRemove();
+  const { mutate, isPending: isDeleting, isSuccess } = useRoleRemove();
 
   const handleOnEditClick = (e: MouseEvent): void => {
     e.stopPropagation();
@@ -35,7 +36,12 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
   };
   const handleOnDeleteClick = (e: MouseEvent) => {
     e.stopPropagation();
-    e.shiftKey ? handleOnDelete(e) : setOpenDialog(true);
+
+    if (e.shiftKey) {
+      handleOnDelete(e);
+    } else {
+      setOpenDialog(true);
+    }
   };
 
   const handleOnViewClick = (e: MouseEvent) => {
@@ -46,7 +52,9 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
   const handleOnDelete = (e: MouseEvent) => {
     e.stopPropagation();
     mutate({ roleId: id });
-    setOpenDialog(false);
+    if (isSuccess) {
+      setOpenDialog(false);
+    }
   };
 
   return (
@@ -99,10 +107,6 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
         <Dialog.Content>
           <Dialog.Heading>Delete role</Dialog.Heading>
           <Dialog.Body size="medium">
-            <Alert
-              variant="info"
-              text="You can hold down shift when deleting a role to bypass this confirmation entirely."
-            />
             <p>
               Are you sure you want to delete the role? To confirm, type <strong>{name}</strong>.
             </p>

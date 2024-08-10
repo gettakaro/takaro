@@ -18,7 +18,7 @@ const Container = styled.div`
 `;
 
 export function CheckBoxWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema, F extends FormContextType = any>(
-  props: WidgetProps<T, S, F>
+  props: WidgetProps<T, S, F>,
 ) {
   const {
     schema,
@@ -41,7 +41,7 @@ export function CheckBoxWidget<T = unknown, S extends StrictRJSFSchema = RJSFSch
   const DescriptionFieldTemplate = getTemplate<'DescriptionFieldTemplate', T, S, F>(
     'DescriptionFieldTemplate',
     registry,
-    options
+    options,
   );
   const description = options.description || schema.description;
 

@@ -12,7 +12,7 @@ interface TooltipTriggerProps {
 }
 
 export const TooltipTrigger = forwardRef<HTMLElement, HTMLProps<HTMLElement> & TooltipTriggerProps>(
-  ({ children, asChild = false, ...props }, propRef) => {
+  function TooltipTrigger({ children, asChild = false, ...props }, propRef) {
     const context = useTooltipContext();
     const childrenRef = (children as any).ref;
     const ref = useMergeRefs([context.refs.setReference, propRef, childrenRef]);
@@ -26,7 +26,7 @@ export const TooltipTrigger = forwardRef<HTMLElement, HTMLProps<HTMLElement> & T
           ...children.props,
           ref,
           'data-state': context.open ? 'open' : 'closed',
-        })
+        }),
       );
     }
 
@@ -35,5 +35,5 @@ export const TooltipTrigger = forwardRef<HTMLElement, HTMLProps<HTMLElement> & T
         {children}
       </Container>
     );
-  }
+  },
 );

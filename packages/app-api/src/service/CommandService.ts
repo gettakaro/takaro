@@ -186,7 +186,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
       const newFn = await functionsService.create(
         new FunctionCreateDTO({
           code: item.function,
-        })
+        }),
       );
       fnIdToAdd = newFn.id;
     } else {
@@ -201,7 +201,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
       await Promise.all(
         item.arguments.map(async (a) => {
           return this.createArgument(created.id, new CommandArgumentCreateDTO(a));
-        })
+        }),
       );
     }
 
@@ -229,7 +229,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
         fn.id,
         new FunctionUpdateDTO({
           code: item.function,
-        })
+        }),
       );
     }
 
@@ -239,14 +239,14 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
       await Promise.all(
         existingArgs.map(async (a) => {
           return this.deleteArgument(a.id);
-        })
+        }),
       );
 
       // Create new args
       await Promise.all(
         item.arguments.map(async (a) => {
           return this.createArgument(id, new CommandArgumentCreateDTO(a));
-        })
+        }),
       );
     }
 
@@ -300,7 +300,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
               error.message,
               new IMessageOptsDTO({
                 recipient: chatMessage.player,
-              })
+              }),
             );
             return;
           }
@@ -314,7 +314,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
               module: await gameServerService.getModuleInstallation(gameServerId, c.moduleId),
             },
           };
-        })
+        }),
       );
 
       const promises = parsedCommands.map(async (command) => {
@@ -333,7 +333,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
             `Your command will be executed in ${delay / 1000} seconds.`,
             new IMessageOptsDTO({
               recipient: chatMessage.player,
-            })
+            }),
           );
         }
 
@@ -351,7 +351,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
             chatMessage,
             trigger: commandName,
           },
-          { delay }
+          { delay },
         );
       });
 

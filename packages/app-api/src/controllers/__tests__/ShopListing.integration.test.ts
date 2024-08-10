@@ -10,7 +10,7 @@ interface IShopSetup extends SetupGameServerPlayers.ISetupData {
 
 const shopSetup = async function (this: IntegrationTest<IShopSetup>): Promise<IShopSetup> {
   const setupData = await SetupGameServerPlayers.setup.bind(
-    this as unknown as IntegrationTest<SetupGameServerPlayers.ISetupData>
+    this as unknown as IntegrationTest<SetupGameServerPlayers.ISetupData>,
   )();
 
   await this.client.settings.settingsControllerSet('economyEnabled', {

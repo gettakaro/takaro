@@ -52,7 +52,7 @@ const validationSchema = z.object({
         amount: z.number().min(1, 'Amount must atleast be 1.'),
         quality: z.string().optional(),
         itemId: z.string().min(1, 'Item cannot be empty'),
-      })
+      }),
     )
     .min(1, 'At least one item is required'),
 });

@@ -18,5 +18,5 @@ export const Route = createFileRoute('/_auth/_global/modules/$moduleId/view')({
 
 function Component() {
   const mod = Route.useLoaderData();
-  return <ModuleForm mod={mod} error={null} />;
+  return <ModuleForm mod={mod} error={null} onSubmit={() => {}} />;
 }

@@ -136,7 +136,7 @@ export const GameServerSelectView: FC<GameServerSelectViewProps> = ({
       multiple={multiple}
       render={(selectedGameservers) => {
         if (selectedGameservers.length === 0) {
-          return <p>Select...</p>;
+          return <p>Select gameserver...</p>;
         }
 
         if (selectedGameservers.length === 1) {

@@ -34,7 +34,7 @@ export const chatMessageSorter = (a: IDetectedEvent, b: IDetectedEvent) => {
 };
 
 export const modulesTestSetup = async function (
-  this: IntegrationTest<IModuleTestsSetupData>
+  this: IntegrationTest<IModuleTestsSetupData>,
 ): Promise<IModuleTestsSetupData> {
   const modules = (await this.client.module.moduleControllerSearch()).data.data;
 
@@ -108,7 +108,7 @@ export const modulesTestSetup = async function (
   await Promise.all(
     playersRes.data.data.map(async (player) => {
       await this.client.player.playerControllerAssignRole(player.id, roleRes.data.data.id);
-    })
+    }),
   );
 
   return {

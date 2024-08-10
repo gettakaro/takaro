@@ -1,5 +1,4 @@
-import { IntegrationTest, expect } from '@takaro/test';
-import { IModuleTestsSetupData, modulesTestSetup } from '@takaro/test';
+import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup } from '@takaro/test';
 import { GameEvents } from '../../dto/index.js';
 
 const group = 'Teleports suite';
@@ -13,7 +12,7 @@ const tests = [
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id
+        this.setupData.teleportsModule.id,
       );
 
       const setEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 3);
@@ -24,7 +23,7 @@ const tests = [
             msg: `/settp test${i}`,
             playerId: this.setupData.players[0].id,
           });
-        })
+        }),
       );
 
       expect((await setEvents).length).to.be.eq(3);
@@ -60,7 +59,7 @@ const tests = [
           userConfig: JSON.stringify({
             allowPublicTeleports: true,
           }),
-        }
+        },
       );
 
       const setTpEvent = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
@@ -113,7 +112,7 @@ const tests = [
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id
+        this.setupData.teleportsModule.id,
       );
 
       const setTpEvent = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
@@ -146,7 +145,7 @@ const tests = [
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id
+        this.setupData.teleportsModule.id,
       );
 
       const setTpEvent = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);

@@ -2,8 +2,8 @@ import 'reflect-metadata';
 import { getModules } from '@takaro/modules';
 import { writeFile } from 'fs/promises';
 import { readdir, readFile } from 'node:fs/promises';
-
 import path from 'path';
+
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 async function main() {

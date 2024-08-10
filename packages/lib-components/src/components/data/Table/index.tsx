@@ -1,5 +1,5 @@
 /// <reference path="./react-table.d.ts" />
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useMemo, useState, JSX } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { Density } from '../../../styled';
@@ -19,7 +19,7 @@ import {
   RowSelectionState,
 } from '@tanstack/react-table';
 import { Wrapper, StyledTable, Toolbar, Flex, TableWrapper } from './style';
-import { Empty, Spinner, ToggleButtonGroup } from '../../../components';
+import { Button, Empty, Spinner, ToggleButtonGroup } from '../../../components';
 import { AiOutlinePicCenter as RelaxedDensityIcon, AiOutlinePicRight as TightDensityIcon } from 'react-icons/ai';
 
 import { ColumnHeader } from './subcomponents/ColumnHeader';
@@ -88,13 +88,16 @@ export function Table<DataType extends object>({
   isLoading = false,
 }: TableProps<DataType>) {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(() => {
-    return columns.reduce((acc, column) => {
-      if (column.id === undefined) {
-        throw new Error('ColumnDef must have an id');
-      }
-      acc[column.id] = column?.meta?.hiddenColumn ? !column.meta.hiddenColumn : true;
-      return acc;
-    }, {} as Record<string, boolean>);
+    return columns.reduce(
+      (acc, column) => {
+        if (column.id === undefined) {
+          throw new Error('ColumnDef must have an id');
+        }
+        acc[column.id] = column?.meta?.hiddenColumn ? !column.meta.hiddenColumn : true;
+        return acc;
+      },
+      {} as Record<string, boolean>,
+    );
   });
   const [columnPinning, setColumnPinning] = useState<ColumnPinningState>({});
   const { storedValue: density, setValue: setDensity } = useLocalStorage<Density>(`table-density-${id}`, 'tight');
@@ -107,7 +110,7 @@ export function Table<DataType extends object>({
         throw new Error('ColumnDef must have an id');
       }
       return column.id;
-    })
+    }),
   );
 
   const ROW_SELECTION_COL_SPAN = rowSelection ? 1 : 0;
@@ -289,7 +292,18 @@ export function Table<DataType extends object>({
                 <tr>
                   <td colSpan={table.getAllColumns().length + ROW_SELECTION_COL_SPAN}>
                     <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <Empty header="No data" description="We couldn't find what you are looking for." actions={[]} />
+                      <Empty
+                        header=""
+                        description="Items will appear here. Add your first item to begin!"
+                        actions={[
+                          <Button
+                            key={id + '-learn-more-button'}
+                            variant="clear"
+                            onClick={() => window.open('https://docs.takaro.io')}
+                            text="Learn more"
+                          />,
+                        ]}
+                      />
                     </div>
                   </td>
                 </tr>

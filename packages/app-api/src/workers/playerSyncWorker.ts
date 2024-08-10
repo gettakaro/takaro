@@ -1,10 +1,9 @@
 import { IGameServerQueueData, TakaroWorker, queueService } from '@takaro/queues';
 import { config } from '../config.js';
 import { Job } from 'bullmq';
-import { logger } from '@takaro/util';
+import { logger, ctx } from '@takaro/util';
 import { DomainService } from '../service/DomainService.js';
 import { GameServerService } from '../service/GameServerService.js';
-import { ctx } from '@takaro/util';
 import { PlayerService } from '../service/PlayerService.js';
 import { PlayerOnGameServerService, PlayerOnGameServerUpdateDTO } from '../service/PlayerOnGameserverService.js';
 import { getWorkerMetrics } from '../lib/metrics.js';
@@ -22,7 +21,7 @@ export class PlayerSyncWorker extends TakaroWorker<IGameServerQueueData> {
           jobId: 'playerSync',
           every: config.get('queues.playerSync.interval'),
         },
-      }
+      },
     );
   }
 }
@@ -54,7 +53,7 @@ export async function processJob(job: Job<IGameServerQueueData>) {
             if (reachable.connectable) {
               await queueService.queues.playerSync.queue.add(
                 { domainId: domain.id, gameServerId: gs.id },
-                { jobId: `playerSync-${domain.id}-${gs.id}-${Date.now()}` }
+                { jobId: `playerSync-${domain.id}-${gs.id}-${Date.now()}` },
               );
               log.debug(`Added playerSync job for domain: ${domain.id} and game server: ${gs.id}`);
             } else {
@@ -66,7 +65,7 @@ export async function processJob(job: Job<IGameServerQueueData>) {
               const playerOnGameServerService = new PlayerOnGameServerService(domain.id);
               await playerOnGameServerService.setOnlinePlayers(gs.id, []);
             }
-          })
+          }),
         );
 
         const res = await Promise.allSettled(promises);
@@ -81,7 +80,7 @@ export async function processJob(job: Job<IGameServerQueueData>) {
         if (res.some((r) => r.status === 'rejected')) {
           throw new Error('Some promises failed');
         }
-      })
+      }),
     );
 
     await Promise.allSettled(domainPromises);
@@ -107,12 +106,12 @@ export async function processJob(job: Job<IGameServerQueueData>) {
     promises.push(
       playerOnGameServerService
         .setOnlinePlayers(gameServerId, onlinePlayers)
-        .then(() => log.debug(`Set online players (${onlinePlayers.length}) for game server: ${gameServerId}`))
+        .then(() => log.debug(`Set online players (${onlinePlayers.length}) for game server: ${gameServerId}`)),
     );
     promises.push(
       gameServerService
         .syncInventories(gameServerId)
-        .then(() => log.debug(`Synced inventories for game server: ${gameServerId}`))
+        .then(() => log.debug(`Synced inventories for game server: ${gameServerId}`)),
     );
 
     promises.push(
@@ -127,22 +126,22 @@ export async function processJob(job: Job<IGameServerQueueData>) {
 
         workerMetrics.metrics.player_ping.set(
           { player: player.id, gameserver: gameServerId, domain: domainId },
-          gamePlayer.ping ?? 0
+          gamePlayer.ping ?? 0,
         );
 
         workerMetrics.metrics.player_currency.set(
           { player: player.id, gameserver: gameServerId, domain: domainId },
-          pog.currency
+          pog.currency,
         );
 
         await playerOnGameServerService.update(
           pog.id,
           new PlayerOnGameServerUpdateDTO({
             ping: gamePlayer.ping,
-          })
+          }),
         );
         await log.debug(`Synced player ${gamePlayer.gameId} on game server ${gameServerId}`);
-      })
+      }),
     );
 
     const res = await Promise.allSettled(promises);

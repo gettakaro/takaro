@@ -141,7 +141,7 @@ export class HookController {
     @Req() req: AuthenticatedRequest,
     @Res() res: Response,
     @Body() query: EventSearchInputDTO,
-    @QueryParam('success') success = false
+    @QueryParam('success') success = false,
   ) {
     const service = new EventService(req.domainId);
     const result = await service.metadataSearch(
@@ -157,7 +157,7 @@ export class HookController {
             { field: 'result.success', operator: '=', value: success },
           ],
         },
-      ]
+      ],
     );
 
     return apiResponse(result.results, {

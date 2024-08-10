@@ -21,7 +21,7 @@ const ItemListContainer = styled.div``;
  * @param props - The `ArrayFieldTemplateItemType` props for the component
  */
 export function ArrayFieldTemplate<T = any, S extends StrictRJSFSchema = RJSFSchema, F extends FormContextType = any>(
-  props: ArrayFieldTemplateProps<T, S, F>
+  props: ArrayFieldTemplateProps<T, S, F>,
 ) {
   const { canAdd, disabled, idSchema, uiSchema, items, onAddClick, readonly, registry, required, schema, title } =
     props;
@@ -29,19 +29,19 @@ export function ArrayFieldTemplate<T = any, S extends StrictRJSFSchema = RJSFSch
   const ArrayFieldDescriptionTemplate = getTemplate<'ArrayFieldDescriptionTemplate', T, S, F>(
     'ArrayFieldDescriptionTemplate',
     registry,
-    uiOptions
+    uiOptions,
   );
 
   const ArrayFieldItemTemplate = getTemplate<'ArrayFieldItemTemplate', T, S, F>(
     'ArrayFieldItemTemplate',
     registry,
-    uiOptions
+    uiOptions,
   );
 
   const ArrayFieldTitleTemplate = getTemplate<'ArrayFieldTitleTemplate', T, S, F>(
     'ArrayFieldTitleTemplate',
     registry,
-    uiOptions
+    uiOptions,
   );
 
   // Button templates are not overridden in the uiSchema

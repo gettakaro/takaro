@@ -75,7 +75,7 @@ function Component() {
           ?.value,
         xboxLiveId: columnSearch.columnSearchState.find((search) => search.id === 'xboxLiveId')?.value,
       },
-    })
+    }),
   );
 
   // IMPORTANT: id should be identical to data object key.
@@ -264,7 +264,6 @@ const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
     try {
       await Promise.all(bans);
       enqueueSnackbar(`${player.name} is banned from all your game servers.`, { variant: 'default', type: 'info' });
-    } catch (error) {
     } finally {
       setOpenBanDialog(false);
     }
@@ -285,7 +284,6 @@ const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
     try {
       await Promise.all(bans);
       enqueueSnackbar(`${player.name} is unbanned from all your game servers.`, { variant: 'default', type: 'info' });
-    } catch (error) {
     } finally {
       setOpenBanDialog(false);
     }

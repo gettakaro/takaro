@@ -24,7 +24,7 @@ describe('TakaroEmitter', () => {
       GameEvents.LOG_LINE,
       new EventLogLine({
         msg: 'test',
-      })
+      }),
     );
 
     expect(spy).to.have.been.calledOnce;
@@ -33,7 +33,7 @@ describe('TakaroEmitter', () => {
       GameEvents.LOG_LINE,
       new EventLogLine({
         msg: 'test',
-      })
+      }),
     );
 
     expect(spy).to.have.been.calledTwice;
@@ -49,7 +49,7 @@ describe('TakaroEmitter', () => {
       GameEvents.LOG_LINE,
       new EventLogLine({
         msg: 'test',
-      })
+      }),
     );
 
     expect(spy).to.have.been.calledOnce;
@@ -60,7 +60,7 @@ describe('TakaroEmitter', () => {
       GameEvents.LOG_LINE,
       new EventLogLine({
         msg: 'test',
-      })
+      }),
     );
 
     expect(spy).to.have.been.calledOnce;
@@ -82,7 +82,7 @@ describe('TakaroEmitter', () => {
       GameEvents.LOG_LINE,
       new EventLogLine({
         msg: 'test',
-      })
+      }),
     );
 
     expect(spy).to.have.been.calledOnce;
@@ -102,12 +102,12 @@ describe('TakaroEmitter', () => {
         msg: 'test',
         // @ts-expect-error testing validation, our types accurately detect this is invalid
         unknownProperty: 'this should trip validation',
-      })
+      }),
     );
 
     expect(errorSpy).to.have.been.calledOnce;
     expect(errorSpy.getCall(0).args[0].message).to.match(
-      /property unknownProperty has failed the following constraints: whitelistValidation/
+      /property unknownProperty has failed the following constraints: whitelistValidation/,
     );
   });
 

@@ -94,6 +94,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   }
 
   input, textarea {
+    appearance: none;
     box-sizing: border-box;
     margin: 0;
     outline: 0;

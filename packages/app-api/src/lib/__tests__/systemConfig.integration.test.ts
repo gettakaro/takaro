@@ -2,8 +2,8 @@ import { HookCreateDTOEventTypeEnum, ModuleOutputDTO } from '@takaro/apiclient';
 import { IntegrationTest, expect } from '@takaro/test';
 import { getModules } from '@takaro/modules';
 import { getSystemConfigSchema } from '../systemConfig.js';
-// Curse you ESM... :(
 import _Ajv from 'ajv';
+
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 
 const ajv = new Ajv({ useDefaults: true });

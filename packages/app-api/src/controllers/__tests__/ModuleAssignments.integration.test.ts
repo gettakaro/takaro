@@ -54,7 +54,7 @@ const tests = [
     test: async function () {
       return this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.utilsModule.id
+        this.setupData.utilsModule.id,
       );
     },
   }),
@@ -67,12 +67,12 @@ const tests = [
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.utilsModule.id
+        this.setupData.utilsModule.id,
       );
 
       return this.client.gameserver.gameServerControllerUninstallModule(
         this.setupData.gameserver.id,
-        this.setupData.utilsModule.id
+        this.setupData.utilsModule.id,
       );
     },
   }),
@@ -85,7 +85,7 @@ const tests = [
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id
+        this.setupData.teleportsModule.id,
       );
 
       await this.client.gameserver.gameServerControllerInstallModule(
@@ -93,12 +93,12 @@ const tests = [
         this.setupData.teleportsModule.id,
         {
           userConfig: JSON.stringify({ timeout: 1337 }),
-        }
+        },
       );
 
       const res = await this.client.gameserver.gameServerControllerGetModuleInstallation(
         this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id
+        this.setupData.teleportsModule.id,
       );
 
       expect(res.data.data.userConfig).to.deep.equal({

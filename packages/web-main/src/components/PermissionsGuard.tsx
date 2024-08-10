@@ -1,6 +1,5 @@
 import { PERMISSIONS } from '@takaro/apiclient';
-import { PermissionsGuard as Guard } from '@takaro/lib-components';
-import { RequiredPermissions } from '@takaro/lib-components';
+import { PermissionsGuard as Guard, RequiredPermissions } from '@takaro/lib-components';
 import { useSession } from 'hooks/useSession';
 import { FC, PropsWithChildren, ReactElement, useMemo } from 'react';
 
@@ -27,7 +26,7 @@ export const PermissionsGuard: FC<PropsWithChildren<PermissionsGuardProps>> = ({
 
     const permissionsFromRoles = session.roles
       .flatMap((assignments) =>
-        assignments.role.permissions.map((permission) => permission.permission.permission as PERMISSIONS)
+        assignments.role.permissions.map((permission) => permission.permission.permission as PERMISSIONS),
       )
       .filter((permission) => Object.values(PERMISSIONS).includes(permission));
 

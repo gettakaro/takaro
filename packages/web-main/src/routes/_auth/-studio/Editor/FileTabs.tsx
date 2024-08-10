@@ -206,9 +206,8 @@ const Tab: FC<TabProps> = ({
 
     if (pathsWithDuplicateFileNames.length === 0) {
       return documentFileName;
-    } else {
-      return calculateNearestUniquePath(currentPath, pathsWithDuplicateFileNames);
     }
+    return calculateNearestUniquePath(currentPath, pathsWithDuplicateFileNames);
   };
 
   const handleDiscardAndClose = (filePath: string): void => {

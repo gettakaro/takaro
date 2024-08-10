@@ -39,8 +39,8 @@ test('Logging in with invalid credentials shows error message', async ({ page, t
   await page.getByRole('button', { name: 'Log in with Email' }).click();
   await expect(
     page.getByText(
-      'The provided credentials are invalid, check for spelling mistakes in your password or username, email address, or phone number.'
-    )
+      'The provided credentials are invalid, check for spelling mistakes in your password or username, email address, or phone number.',
+    ),
   ).toBeVisible();
 });
 
@@ -99,7 +99,7 @@ test.fixme('Recover account and reset password', async ({ page, takaro }) => {
   await page.getByTestId('node/input/email').getByPlaceholder(' ').fill(user.email);
   await page.getByRole('button', { name: 'Submit' }).click();
   await expect(
-    page.getByText('An email containing a recovery code has been sent to the email address you provided.')
+    page.getByText('An email containing a recovery code has been sent to the email address you provided.'),
   ).toBeVisible();
   // It takes a while for the mail to be sent... :(
   await sleep(1000);
@@ -123,8 +123,8 @@ test.fixme('Recover account and reset password', async ({ page, takaro }) => {
 
   await expect(
     page.getByText(
-      'You successfully recovered your account. Please change your password or set up an alternative login method (e.g. social sign in) within the next'
-    )
+      'You successfully recovered your account. Please change your password or set up an alternative login method (e.g. social sign in) within the next',
+    ),
   ).toBeVisible();
   const newPassword = randomUUID();
   await page.getByTestId('node/input/password').getByPlaceholder(' ').fill(newPassword);

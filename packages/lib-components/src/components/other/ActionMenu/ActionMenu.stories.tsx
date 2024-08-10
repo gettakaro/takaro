@@ -1,7 +1,6 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { Action, ActionMenu, ActionMenuProps } from '.';
-import { useEffect, useState } from 'react';
 import { styled } from '../../../styled';
 import { useOutsideAlerter } from '../../../hooks';
 import { useFloating } from '@floating-ui/react';

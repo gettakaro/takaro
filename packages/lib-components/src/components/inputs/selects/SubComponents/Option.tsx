@@ -26,10 +26,9 @@ function toggleSelectedItem(selectedValues: SelectItem[], itemToToggle: SelectIt
   if (existingIndex > -1) {
     // If it exists, remove it from the array
     return selectedValues.filter((_, index) => index !== existingIndex);
-  } else {
-    // If it doesn't exist, add it to the array
-    return [...selectedValues, itemToToggle];
   }
+  // If it doesn't exist, add it to the array
+  return [...selectedValues, itemToToggle];
 }
 
 function hasSelectedItem(selectedItems: SelectItem[], itemToCheck: SelectItem) {

@@ -1,6 +1,5 @@
-import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
-import { useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Button, SelectField, SelectFieldProps } from '../../../../components';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { styled } from '../../../../styled';
@@ -34,7 +33,7 @@ const OptionIcon = styled.img`
   color: transparent;
 `;
 
-export const onChange: StoryFn<SelectFieldProps & ExtraStoryProps> = (args) => {
+export const OnChange: StoryFn<SelectFieldProps & ExtraStoryProps> = (args) => {
   const { control } = useForm();
   const selectValue = useWatch({ control, name: 'film' });
 
@@ -88,7 +87,7 @@ export const OnSubmit: StoryFn<SelectFieldProps> = (args) => {
       z.object({
         film: z.enum(['not-sure-how-this-works', ...films.map((film) => film.name)]),
       }),
-    []
+    [],
   );
 
   const { control, handleSubmit } = useForm<FormFields>({
@@ -151,7 +150,7 @@ export const MultiSelect: StoryFn<SelectFieldProps> = (args) => {
       z.object({
         film: z.string().array(),
       }),
-    []
+    [],
   );
 
   const { control, handleSubmit } = useForm<FormFields>({
@@ -182,11 +181,11 @@ export const MultiSelect: StoryFn<SelectFieldProps> = (args) => {
                 {selectedFilms.length === 0
                   ? 'Select...'
                   : selectedFilms.length <= 3
-                  ? selectedFilms.map((film) => film.name).join(', ')
-                  : `${selectedFilms
-                      .slice(0, 3)
-                      .map((film) => film.name)
-                      .join(', ')} and ${selectedFilms.length - 3} more`}
+                    ? selectedFilms.map((film) => film.name).join(', ')
+                    : `${selectedFilms
+                        .slice(0, 3)
+                        .map((film) => film.name)
+                        .join(', ')} and ${selectedFilms.length - 3} more`}
               </div>
             );
           }}

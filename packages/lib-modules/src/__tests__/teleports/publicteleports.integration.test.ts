@@ -1,5 +1,4 @@
-import { IntegrationTest, expect } from '@takaro/test';
-import { IModuleTestsSetupData, modulesTestSetup } from '@takaro/test';
+import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup } from '@takaro/test';
 import { GameEvents } from '../../dto/index.js';
 
 const group = 'Teleports suite';
@@ -18,7 +17,7 @@ const tests = [
           userConfig: JSON.stringify({
             allowPublicTeleports: true,
           }),
-        }
+        },
       );
 
       const setTpEvent = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
@@ -64,7 +63,7 @@ const tests = [
           userConfig: JSON.stringify({
             allowPublicTeleports: true,
           }),
-        }
+        },
       );
 
       const setTpEvent = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
@@ -121,7 +120,7 @@ const tests = [
             allowPublicTeleports: false,
             timeout: 0,
           }),
-        }
+        },
       );
 
       const setTpEvent = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
@@ -159,7 +158,7 @@ const tests = [
             allowPublicTeleports: true,
             timeout: 0,
           }),
-        }
+        },
       );
 
       const setTpEvent = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
@@ -200,7 +199,7 @@ const tests = [
             allowPublicTeleports: false,
             timeout: 0,
           }),
-        }
+        },
       );
 
       const tpEvent2 = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
@@ -238,7 +237,7 @@ const tests = [
             allowPublicTeleports: true,
             timeout: 0,
           }),
-        }
+        },
       );
 
       const setTpEvent = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
@@ -290,7 +289,7 @@ const tests = [
             allowPublicTeleports: true,
             timeout: 0,
           }),
-        }
+        },
       );
 
       const setTpEvent = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 4);
@@ -301,7 +300,7 @@ const tests = [
             msg: `/settp test${i}`,
             playerId: this.setupData.players[0].id,
           });
-        })
+        }),
       );
 
       expect((await setTpEvent).length).to.be.eq(4);
@@ -318,7 +317,7 @@ const tests = [
             msg: `/setpublic test${i}`,
             playerId: this.setupData.players[0].id,
           });
-        })
+        }),
       );
 
       expect((await setPublicEvent).length).to.be.eq(3);
@@ -337,7 +336,7 @@ const tests = [
       expect((await setPublicEvent2).length).to.be.eq(1);
 
       expect((await setPublicEvent2)[0].data.msg).to.be.eq(
-        'You have reached the maximum number of public teleports for your role, maximum allowed is 3'
+        'You have reached the maximum number of public teleports for your role, maximum allowed is 3',
       );
     },
   }),

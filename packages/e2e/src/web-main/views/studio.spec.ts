@@ -81,9 +81,9 @@ extendedTest.describe('filetab', () => {
   });
 
   extendedTest.describe('context menu', () => {
-    extendedTest.fixme('should close all tabs to the right', async ({}) => {});
-    extendedTest.fixme('should close all saved tabs', async ({}) => {});
-    extendedTest.fixme('should close all ohter tabs', async ({}) => {});
+    extendedTest.fixme('should close all tabs to the right', async () => {});
+    extendedTest.fixme('should close all saved tabs', async () => {});
+    extendedTest.fixme('should close all ohter tabs', async () => {});
   });
 });
 
@@ -216,8 +216,8 @@ extendedTest.describe('Built-in modules', () => {
     await expect(studioPage.page.locator('#takaro-root').getByText('Cannot edit in read-only editor')).toBeVisible();
   });
 
-  extendedTest.fixme('Cannot save command config', async ({}) => {});
-  extendedTest.fixme('Cannot delete command config argument', async ({}) => {});
+  extendedTest.fixme('Cannot save command config', async () => {});
+  extendedTest.fixme('Cannot delete command config argument', async () => {});
 });
 
 extendedTest.describe('Item configuration', () => {

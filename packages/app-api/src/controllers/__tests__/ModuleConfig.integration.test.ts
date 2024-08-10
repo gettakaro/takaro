@@ -74,7 +74,7 @@ const tests = [
       return this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
         this.setupData.module.id,
-        { userConfig: JSON.stringify({ foo: 'bar' }) }
+        { userConfig: JSON.stringify({ foo: 'bar' }) },
       );
     },
     filteredFields: ['gameserverId', 'moduleId'],
@@ -88,7 +88,7 @@ const tests = [
       return this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
         this.setupData.module.id,
-        { userConfig: JSON.stringify({ foo: 'a' }) }
+        { userConfig: JSON.stringify({ foo: 'a' }) },
       );
     },
     filteredFields: ['gameserverId', 'moduleId'],
@@ -105,7 +105,7 @@ const tests = [
         this.setupData.module.id,
         {
           userConfig: JSON.stringify({ foo: 'a'.repeat(11) }),
-        }
+        },
       );
     },
     filteredFields: ['gameserverId', 'moduleId'],
@@ -119,7 +119,7 @@ const tests = [
     test: async function () {
       return this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.module.id
+        this.setupData.module.id,
       );
     },
     filteredFields: ['gameserverId', 'moduleId'],
@@ -136,7 +136,7 @@ const tests = [
         this.setupData.module.id,
         {
           userConfig: JSON.stringify({ foo: 'bar', bar: 'foo' }),
-        }
+        },
       );
     },
     filteredFields: ['gameserverId', 'moduleId'],
@@ -154,7 +154,7 @@ const tests = [
         {
           userConfig: JSON.stringify({ foo: 'bar' }),
           systemConfig: 'invalid',
-        }
+        },
       );
     },
     filteredFields: ['gameserverId', 'moduleId'],
@@ -173,7 +173,7 @@ const tests = [
           {
             userConfig: JSON.stringify({ foo: 'bar' }),
             systemConfig: JSON.stringify({ foo: 'bar' }),
-          }
+          },
         );
         throw new Error('Should not be able to install module with invalid system config');
       } catch (error) {
@@ -203,7 +203,7 @@ const tests = [
               [this.setupData.cronJobsModule.cronJobs[0].name]: { temporalValue: '5 * * * *' },
             },
           }),
-        }
+        },
       );
     },
     filteredFields: ['gameserverId', 'moduleId', 'functionId'],
@@ -233,7 +233,7 @@ const tests = [
               [updatedModuleRes.data.data.cronJobs[1].name]: { temporalValue: '13 * * * *' },
             },
           }),
-        }
+        },
       );
     },
     filteredFields: ['gameserverId', 'moduleId', 'functionId'],
@@ -246,7 +246,7 @@ const tests = [
     test: async function () {
       const installRes = await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.cronJobsModule.id
+        this.setupData.cronJobsModule.id,
       );
 
       expect(installRes.data.data.systemConfig).to.deep.equal({

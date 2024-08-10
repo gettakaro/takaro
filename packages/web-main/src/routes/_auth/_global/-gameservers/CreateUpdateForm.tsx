@@ -2,11 +2,15 @@ import { FC, useEffect, useState } from 'react';
 import { Button, SelectField, TextField, Drawer, CollapseList, FormError, styled } from '@takaro/lib-components';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { IFormInputs, validationSchema } from './validationSchema';
-import { GameServerOutputDTO, GameServerTestReachabilityInputDTOTypeEnum } from '@takaro/apiclient';
+import {
+  GameServerOutputDTO,
+  GameServerTestReachabilityInputDTOTypeEnum,
+  GameServerCreateDTOTypeEnum,
+} from '@takaro/apiclient';
 import { useGameServerReachabilityByConfig } from 'queries/gameserver';
 import { connectionInfoFieldsMap } from './connectionInfoFieldsMap';
 import { useNavigate } from '@tanstack/react-router';
-import { useSnackbar } from 'notistack';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 interface CreateUpdateFormProps {
   initialData?: GameServerOutputDTO;
@@ -14,9 +18,6 @@ interface CreateUpdateFormProps {
   onSubmit: SubmitHandler<IFormInputs>;
   error: string | string[] | null;
 }
-
-import { GameServerCreateDTOTypeEnum } from '@takaro/apiclient';
-import { zodResolver } from '@hookform/resolvers/zod';
 
 const gameTypeSelectOptions = [
   {
@@ -45,7 +46,6 @@ export const CreateUpdateForm: FC<CreateUpdateFormProps> = ({ initialData, isLoa
   const [connectionError, setConnectionError] = useState<string | null>(null);
   const { mutateAsync: testReachabilityMutation, isPending: testingConnection } = useGameServerReachabilityByConfig();
   const navigate = useNavigate();
-  const { enqueueSnackbar } = useSnackbar();
 
   const { control, handleSubmit, watch, trigger, formState } = useForm<IFormInputs>({
     mode: 'onChange',
@@ -58,7 +58,7 @@ export const CreateUpdateForm: FC<CreateUpdateFormProps> = ({ initialData, isLoa
       values: {
         name: initialData.name,
         type: initialData.type,
-        connectionInfo: initialData.connectionInfo as any,
+        connectionInfo: initialData.connectionInfo,
       },
     }),
   });
@@ -78,7 +78,6 @@ export const CreateUpdateForm: FC<CreateUpdateFormProps> = ({ initialData, isLoa
     });
 
     if (response.connectable) {
-      enqueueSnackbar('Connection established', { type: 'success', variant: 'default' });
       setConnectionOk(true);
       setConnectionError(null);
     } else {

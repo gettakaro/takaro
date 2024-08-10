@@ -15,7 +15,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { DateTime, Settings } from 'luxon';
 import { RoleSelect } from 'components/selects';
-import { createFileRoute, notFound, redirect, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, notFound, redirect, useRouter } from '@tanstack/react-router';
 import { z } from 'zod';
 import { hasPermission } from 'hooks/useHasPermission';
 
@@ -55,14 +55,14 @@ export const Route = createFileRoute('/_auth/_global/user/$userId/role/assign')(
 
 function Component() {
   const [open, setOpen] = useState(true);
-  const navigate = useNavigate({ from: Route.fullPath });
+  const router = useRouter();
   const { userId } = Route.useParams();
-  const { mutate, isPending, error } = useUserAssignRole({ userId: userId });
+  const { mutate, isPending, error } = useUserAssignRole();
   const roles = Route.useLoaderData();
 
   useEffect(() => {
     if (!open) {
-      navigate({ to: '/user/$userId', params: { userId } });
+      router.history.go(-1);
     }
   }, [open]);
 
@@ -77,7 +77,6 @@ function Component() {
 
   const onSubmit: SubmitHandler<IFormInputs> = ({ id, roleId, expiresAt }) => {
     mutate({ userId: id, roleId, expiresAt });
-    navigate({ to: '/user/$userId', params: { userId: id } });
   };
 
   return (
@@ -111,7 +110,7 @@ function Component() {
         <Drawer.Footer>
           <ButtonContainer>
             <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
-            <Button fullWidth text="Save changes" isLoading={isPending} type="submit" form="assign-user-role-form" />
+            <Button fullWidth text="Assign role" isLoading={isPending} type="submit" form="assign-user-role-form" />
           </ButtonContainer>
         </Drawer.Footer>
       </Drawer.Content>

@@ -44,7 +44,7 @@ export const getLabelFromChildren = (children: ReactNode, value: string) => {
 
   // eslint-disable-next-line no-console
   console.error(
-    `No label found for value ${value}. This occurs when a value is passed through the defaultValue prop of useForm, but the value is not present in the options.`
+    `No label found for value ${value}. This occurs when a value is passed through the defaultValue prop of useForm, but the value is not present in the options.`,
   );
   return undefined;
 };

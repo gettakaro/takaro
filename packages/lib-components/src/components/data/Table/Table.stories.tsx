@@ -105,6 +105,7 @@ export default {
     sort: false,
     refetching: true,
     isLoading: false,
+    data,
   },
 } as Meta<TableProps<User>>;
 
@@ -121,7 +122,7 @@ const Users: FC<TableProps<User>> = (args) => {
   return (
     <Table
       id="story-table"
-      data={data}
+      data={args.data}
       columns={columns}
       pagination={{
         ...pagination,
@@ -139,4 +140,7 @@ const Users: FC<TableProps<User>> = (args) => {
   );
 };
 
-export const TableExample: StoryFn<TableProps<User>> = (args) => <Users {...args} />;
+export const EmptyTable: StoryFn<TableProps<User>> = (args) => {
+  return <Users {...args} data={[]} />;
+};
+export const DataTable: StoryFn<TableProps<User>> = (args) => <Users {...args} />;

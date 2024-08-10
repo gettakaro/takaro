@@ -6,7 +6,7 @@ import { MdDomain as DomainIcon } from 'react-icons/md';
 import { AiOutlineArrowRight as ArrowRightIcon } from 'react-icons/ai';
 import { useQueryClient } from '@tanstack/react-query';
 
-export const TAKARO_DOMAIN_COOKIE_REGEX = /(?:(?:^|.*;\s*)takaro-domain\s*\=\s*([^;]*).*$)|^.*$/;
+export const TAKARO_DOMAIN_COOKIE_REGEX = /(?:(?:^|.*;\s*)takaro-domain\s*=\s*([^;]*).*$)|^.*$/;
 
 const Container = styled.div`
   padding: ${({ theme }) => theme.spacing[4]};

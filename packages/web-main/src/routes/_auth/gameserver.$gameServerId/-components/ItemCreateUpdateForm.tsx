@@ -47,9 +47,9 @@ export const ItemCreateUpdateForm: FC<ItemFormProps> = ({ initialData, onSubmit,
           .refine((files) => files?.[0]?.size <= MAX_FILE_SIZE_MB * 100000, 'Max file size is 2MB.')
           .refine(
             (files) => ACCEPTED_IMAGE_TYPES.includes(files?.[0]?.type),
-            'Only .jpg, .jpeg, .png and .webp files are accepted.'
+            'Only .jpg, .jpeg, .png and .webp files are accepted.',
           ),
-      })
+      }),
     ),
   });
 

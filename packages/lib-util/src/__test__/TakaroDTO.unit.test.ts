@@ -41,14 +41,14 @@ describe('TakaroDTO', () => {
   it('Can validate without async construct', async () => {
     await expect(
       // @ts-expect-error - we are testing invalid data, TS accurately says it's not right but we need to test runtime as well
-      new TestDTO({ foo: ['a', 'b'], bar: 2 }).validate()
+      new TestDTO({ foo: ['a', 'b'], bar: 2 }).validate(),
     ).to.eventually.be.rejectedWith('property foo has failed the following constraints: isString');
   });
 
   it('throws an error when passing invalid data', async () => {
     await expect(
       // @ts-expect-error - we are testing invalid data, TS accurately says it's not right but we need to test runtime as well
-      new TestDTO({ foo: ['a', 'b'], bar: 2 }).validate()
+      new TestDTO({ foo: ['a', 'b'], bar: 2 }).validate(),
     ).to.eventually.be.rejectedWith('property foo has failed the following constraints: isString');
   });
 
@@ -103,7 +103,7 @@ describe('TakaroDTO', () => {
     });
 
     await expect(nested.validate()).to.eventually.be.rejectedWith(
-      'property two[0].foo has failed the following constraints: isString'
+      'property two[0].foo has failed the following constraints: isString',
     );
   });
 

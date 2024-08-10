@@ -1,5 +1,6 @@
 import Slider, { SliderTooltip } from 'rc-slider';
 import { FC } from 'react';
+
 const { Handle } = Slider;
 
 interface handleParams {

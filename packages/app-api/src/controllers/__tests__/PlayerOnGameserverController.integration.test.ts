@@ -32,7 +32,7 @@ const tests = [
 
       const playerRes = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
         player.gameServerId,
-        player.playerId
+        player.playerId,
       );
       expect(playerRes.data.data.id).to.be.eq(player.id);
     },
@@ -56,11 +56,11 @@ const tests = [
         player.playerId,
         {
           currency: 100,
-        }
+        },
       );
       const playerRes = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
         player.gameServerId,
-        player.playerId
+        player.playerId,
       );
 
       expect(playerRes.data.data.currency).to.be.eq(100);
@@ -86,7 +86,7 @@ const tests = [
         player.playerId,
         {
           currency: -100,
-        }
+        },
       );
 
       expect(rejectedRes.data.meta.error.message).to.be.eq('Currency must be positive');
@@ -114,7 +114,7 @@ const tests = [
         player.playerId,
         {
           currency: -100,
-        }
+        },
       );
 
       expect(rejectedRes.data.meta.error.message).to.be.eq('Economy is not enabled');
@@ -146,14 +146,14 @@ const tests = [
         player1.playerId,
         {
           currency: 100,
-        }
+        },
       );
       await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
         player2.gameServerId,
         player2.playerId,
         {
           currency: 100,
-        }
+        },
       );
 
       await this.client.playerOnGameserver.playerOnGameServerControllerTransactBetweenPlayers(
@@ -162,16 +162,16 @@ const tests = [
         player2.id,
         {
           currency: 50,
-        }
+        },
       );
 
       const player1Res = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
         player1.gameServerId,
-        player1.playerId
+        player1.playerId,
       );
       const player2Res = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
         player2.gameServerId,
-        player2.playerId
+        player2.playerId,
       );
 
       expect(player1Res.data.data.currency).to.be.eq(50);
@@ -203,14 +203,14 @@ const tests = [
         player1.playerId,
         {
           currency: 100,
-        }
+        },
       );
       await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
         player2.gameServerId,
         player2.playerId,
         {
           currency: 100,
-        }
+        },
       );
 
       try {
@@ -220,7 +220,7 @@ const tests = [
           player2.id,
           {
             currency: 150,
-          }
+          },
         );
       } catch (error) {
         if (!isAxiosError(error)) throw error;
@@ -230,11 +230,11 @@ const tests = [
 
       const player1Res = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
         player1.gameServerId,
-        player1.playerId
+        player1.playerId,
       );
       const player2Res = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
         player2.gameServerId,
-        player2.playerId
+        player2.playerId,
       );
 
       expect(player1Res.data.data.currency).to.be.eq(100);
@@ -274,7 +274,7 @@ const tests = [
           player2.id,
           {
             currency: 150,
-          }
+          },
         );
       } catch (error) {
         if (!isAxiosError(error)) throw error;
@@ -307,14 +307,14 @@ const tests = [
         player1.playerId,
         {
           currency: 100,
-        }
+        },
       );
       await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
         player2.gameServerId,
         player2.playerId,
         {
           currency: 100,
-        }
+        },
       );
 
       // Send 10 times 10 from player 1 to player 2
@@ -325,19 +325,19 @@ const tests = [
           player2.id,
           {
             currency: 10,
-          }
-        )
+          },
+        ),
       );
 
       await Promise.all(transactions);
 
       const player1Res = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
         player1.gameServerId,
-        player1.playerId
+        player1.playerId,
       );
       const player2Res = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
         player2.gameServerId,
-        player2.playerId
+        player2.playerId,
       );
 
       expect(player1Res.data.data.currency).to.be.eq(0);
@@ -363,14 +363,14 @@ const tests = [
       const adds = [...Array(10).keys()].map(() =>
         this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(player.gameServerId, player.playerId, {
           currency: 10,
-        })
+        }),
       );
 
       await Promise.all(adds);
 
       const playerRes = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
         player.gameServerId,
-        player.playerId
+        player.playerId,
       );
 
       expect(playerRes.data.data.currency).to.be.eq(100);
@@ -396,7 +396,7 @@ const tests = [
         player.playerId,
         {
           currency: 100,
-        }
+        },
       );
 
       // Deduct 10 times 10 concurrently, to check for concurrency issues
@@ -406,15 +406,15 @@ const tests = [
           player.playerId,
           {
             currency: 10,
-          }
-        )
+          },
+        ),
       );
 
       await Promise.all(deducts);
 
       const playerRes = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
         player.gameServerId,
-        player.playerId
+        player.playerId,
       );
 
       expect(playerRes.data.data.currency).to.be.eq(0);

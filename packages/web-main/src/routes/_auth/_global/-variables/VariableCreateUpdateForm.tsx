@@ -1,10 +1,9 @@
 import { FC, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { Button, TextField, Drawer, FormError, TextAreaField, Alert } from '@takaro/lib-components';
+import { styled, Button, TextField, Drawer, FormError, TextAreaField, Alert } from '@takaro/lib-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from '@tanstack/react-router';
 import { VariableOutputDTO } from '@takaro/apiclient';
-import { styled } from '@takaro/lib-components';
 import { z } from 'zod';
 import { GameServerSelect, PlayerSelect } from 'components/selects';
 import { ModuleSelect } from 'components/selects/ModuleSelect';

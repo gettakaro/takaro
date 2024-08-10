@@ -1,5 +1,4 @@
-import { IntegrationTest, expect, integrationConfig } from '@takaro/test';
-import { IModuleTestsSetupData, modulesTestSetup } from '@takaro/test';
+import { IntegrationTest, expect, integrationConfig, IModuleTestsSetupData, modulesTestSetup } from '@takaro/test';
 import { GameEvents } from '../dto/index.js';
 
 const group = 'Module permissions role assignments';
@@ -18,13 +17,13 @@ async function cleanRoleSetup(this: IntegrationTest<IModuleTestsSetupData>) {
 
   await this.client.gameserver.gameServerControllerInstallModule(
     defaultSetup.gameserver.id,
-    defaultSetup.teleportsModule.id
+    defaultSetup.teleportsModule.id,
   );
 
   await Promise.all(
     playersRes.data.data.map(async (player) => {
       await this.client.player.playerControllerRemoveRole(player.id, defaultSetup.role.id);
-    })
+    }),
   );
 
   return defaultSetup;
@@ -129,13 +128,13 @@ const tests = [
           userConfig: JSON.stringify({
             timeout: 0,
           }),
-        }
+        },
       );
 
       await Promise.all(
         this.setupData.players.map(async (player) => {
           await this.client.player.playerControllerRemoveRole(player.id, this.setupData.role.id);
-        })
+        }),
       );
 
       const playerRoleRes = await this.client.role.roleControllerSearch({ filters: { name: ['Player'] } });

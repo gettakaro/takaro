@@ -78,7 +78,7 @@ export class AdminClient extends BaseApiClient<IAdminApiClientConfig> {
         isJsonMime: this.isJsonMime,
       },
       '',
-      this.axios
+      this.axios,
     );
   }
 }

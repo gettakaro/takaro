@@ -7,6 +7,7 @@ import { ITakaroAPIAxiosResponse } from '@takaro/apiclient';
 import { IIntegrationTest } from './integrationTest.js';
 import * as url from 'url';
 import { integrationConfig } from './main.js';
+
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 function normalizePath(path: string) {
@@ -33,7 +34,7 @@ function filterFields(data: unknown, filteredFields = DEFAULT_FILTERED_FIELDS): 
     return Object.fromEntries(
       Object.entries(data as JsonObject)
         .filter(([key]) => !filteredFields.includes(key))
-        .map(([key, value]) => [key, filterFields(value, filteredFields)])
+        .map(([key, value]) => [key, filterFields(value, filteredFields)]),
     );
   }
   return data;
@@ -41,7 +42,7 @@ function filterFields(data: unknown, filteredFields = DEFAULT_FILTERED_FIELDS): 
 
 export async function matchSnapshot<SetupData>(
   test: IIntegrationTest<SetupData>,
-  response: ITakaroAPIAxiosResponse<unknown>
+  response: ITakaroAPIAxiosResponse<unknown>,
 ) {
   const snapshotPath = path.resolve(__dirname, '../src/__snapshots__', test.group, normalizePath(`${test.name}.json`));
   let file = '';
@@ -54,7 +55,7 @@ export async function matchSnapshot<SetupData>(
 
   try {
     file = await readFile(snapshotPath, { encoding: 'utf-8' });
-  } catch (error) {
+  } catch (_error) {
     await mkdir(path.dirname(snapshotPath), { recursive: true });
     await writeFile(snapshotPath, JSON.stringify(fullData, null, 2));
     throw new Error(`No snapshot exists, created a new one: ${snapshotPath}`);
@@ -66,7 +67,7 @@ export async function matchSnapshot<SetupData>(
   try {
     expect(filterFields(fullData, filteredFields)).to.deep.equal(
       snapshotData,
-      `Snapshot does not match: ${snapshotPath}`
+      `Snapshot does not match: ${snapshotPath}`,
     );
   } catch (error) {
     if (integrationConfig.get('overwriteSnapshots')) {

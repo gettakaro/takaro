@@ -5,7 +5,10 @@ export const Default = styled.button<{ color: Color }>`
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 150ms ease, fill 150ms ease, stroke 150ms ease;
+  transition:
+    background-color 150ms ease,
+    fill 150ms ease,
+    stroke 150ms ease;
   border-radius: ${({ theme }) => theme.borderRadius.small};
   border: 0.01rem solid transparent;
   background-clip: padding-box;

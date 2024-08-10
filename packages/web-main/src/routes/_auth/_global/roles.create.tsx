@@ -1,5 +1,4 @@
-import { useEffect } from 'react';
-import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 import { SubmitHandler } from 'react-hook-form';
 
 import { DrawerSkeleton } from '@takaro/lib-components';
@@ -20,15 +19,13 @@ export const Route = createFileRoute('/_auth/_global/roles/create')({
 });
 
 function Component() {
-  const navigate = useNavigate();
   const { mutate, isPending: isCreatingRole, error, isSuccess } = useRoleCreate();
   const permissions = Route.useLoaderData();
+  const navigate = Route.useNavigate();
 
-  useEffect(() => {
-    if (!open || isSuccess) {
-      navigate({ to: '/roles' });
-    }
-  }, [open, navigate, isSuccess]);
+  if (isSuccess) {
+    navigate({ to: '/roles' });
+  }
 
   const onSubmit: SubmitHandler<IFormInputs> = ({ name, permissions: formPermissions }) => {
     const activePermissions = Object.entries(formPermissions)

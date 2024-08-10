@@ -1,8 +1,7 @@
 import { FC } from 'react';
-import { Tooltip } from '../Tooltip';
+import { Tooltip, TooltipProps } from '../Tooltip';
 import { AiOutlineQuestion as QuestionIcon } from 'react-icons/ai';
 import { styled } from '../../../styled';
-import { TooltipProps } from '../Tooltip';
 
 const TriggerContainer = styled.div`
   background-color: ${({ theme }) => theme.colors.backgroundAlt};

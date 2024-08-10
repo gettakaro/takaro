@@ -34,7 +34,7 @@ export const HandleContainer = styled.div`
   }
 `;
 
-export const DrawerContent = forwardRef<HTMLElement, HTMLProps<HTMLDivElement>>((props, propRef) => {
+export const DrawerContent = forwardRef<HTMLElement, HTMLProps<HTMLDivElement>>(function DrawerContent(props, propRef) {
   const { context, labelId, descriptionId, getFloatingProps, setOpen, canDrag } = useDrawerContext();
 
   const ref = useMergeRefs([context.refs.setFloating, propRef]);

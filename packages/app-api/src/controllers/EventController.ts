@@ -108,7 +108,7 @@ export class EventController {
           logicalOperator: 'AND',
           filters: [{ field: 'result.success', operator: '=', value: false }],
         },
-      ]
+      ],
     );
 
     return apiResponse(result.results, {

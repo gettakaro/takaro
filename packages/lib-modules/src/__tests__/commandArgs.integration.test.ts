@@ -1,5 +1,4 @@
-import { IntegrationTest, expect } from '@takaro/test';
-import { IModuleTestsSetupData, modulesTestSetup } from '@takaro/test';
+import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup } from '@takaro/test';
 import { GameEvents } from '../dto/gameEvents.js';
 import { CommandArgumentCreateDTO } from '@takaro/apiclient';
 
@@ -86,7 +85,7 @@ const tests = [
 
       expect((await events).length).to.be.eq(1);
       expect((await events)[0].data.msg).to.be.eq(
-        'The value for "test" should be a number. Please correct it and try again.'
+        'The value for "test" should be a number. Please correct it and try again.',
       );
     },
   }),

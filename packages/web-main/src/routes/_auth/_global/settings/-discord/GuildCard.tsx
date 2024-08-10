@@ -21,7 +21,7 @@ export const GuildCard: FC<IServerCardProps> = ({ guild }) => {
   const { enqueueSnackbar } = useSnackbar();
 
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    mutate({ id: guild.id, input: { takaroEnabled: e.target.checked } });
+    mutate({ guildId: guild.id, input: { takaroEnabled: e.target.checked } });
     setTakaroEnabled(e.target.checked);
   };
 
@@ -32,7 +32,7 @@ export const GuildCard: FC<IServerCardProps> = ({ guild }) => {
         <>
           Failed to {guild.takaroEnabled ? 'disable' : 'enable'} guild: <strong>{guild.name}</strong>
         </>,
-        { variant: 'default', type: 'error' }
+        { variant: 'default', type: 'error' },
       );
     }
   }, [isError, guild.takaroEnabled, enqueueSnackbar, guild.name]);

@@ -42,12 +42,11 @@ export interface ModuleFormSubmitProps {
 interface ModuleFormProps {
   mod?: ModuleOutputDTO;
   isLoading?: boolean;
-  isSuccess?: boolean;
-  onSubmit?: (data: ModuleFormSubmitProps) => void;
+  onSubmit: (data: ModuleFormSubmitProps) => void;
   error: string | string[] | null;
 }
 
-export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess = false, onSubmit, isLoading = false, error }) => {
+export const ModuleForm: FC<ModuleFormProps> = ({ mod, onSubmit, isLoading = false, error }) => {
   const [open, setOpen] = useState(true);
   const navigate = useNavigate();
   const theme = useTheme();
@@ -96,16 +95,10 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess = false, onSubm
     name: 'configFields',
   });
 
-  useEffect(() => {
-    if (isSuccess) {
-      navigate({ to: '/modules' });
-    }
-  }, [isSuccess]);
-
   const submitHandler: SubmitHandler<IFormInputs> = ({ configFields, name, description, permissions }) => {
     const schema = inputsToSchema(configFields);
     const uiSchema = inputsToUiSchema(configFields);
-    onSubmit!({
+    onSubmit({
       name,
       description,
       permissions,
@@ -234,7 +227,7 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, isSuccess = false, onSubm
                       <ConfigField
                         key={`config-field-${field.id}`}
                         id={field.id}
-                        input={field as any} /* TODO: fix this type*/
+                        input={field}
                         control={control}
                         index={index}
                         readOnly={readOnly}

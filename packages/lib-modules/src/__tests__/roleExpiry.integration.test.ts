@@ -1,5 +1,4 @@
-import { IntegrationTest, expect } from '@takaro/test';
-import { IModuleTestsSetupData, modulesTestSetup } from '@takaro/test';
+import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup } from '@takaro/test';
 import { GameEvents } from '../dto/index.js';
 
 const group = 'Role expiry';
@@ -13,12 +12,12 @@ const tests = [
     test: async function () {
       // First, ensure all players have no roles
       await Promise.all(
-        this.setupData.players.map((p) => this.client.player.playerControllerRemoveRole(p.id, this.setupData.role.id))
+        this.setupData.players.map((p) => this.client.player.playerControllerRemoveRole(p.id, this.setupData.role.id)),
       );
 
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id
+        this.setupData.teleportsModule.id,
       );
 
       const eventsBeforeRole = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);

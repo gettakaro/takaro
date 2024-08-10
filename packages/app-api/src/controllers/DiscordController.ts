@@ -96,7 +96,7 @@ export class DiscordController {
     @Req() req: AuthenticatedRequest,
     @Res() _res: Response,
     @Params() params: DiscordParamId,
-    @Body() body: SendMessageInputDTO
+    @Body() body: SendMessageInputDTO,
   ) {
     const service = new DiscordService(req.domainId);
     await service.sendMessage(params.id, body);
@@ -109,7 +109,7 @@ export class DiscordController {
     @Req() req: AuthenticatedRequest,
     @Res() _res: Response,
     @Params() params: ParamId,
-    @Body() body: GuildApiUpdateDTO
+    @Body() body: GuildApiUpdateDTO,
   ) {
     const service = new DiscordService(req.domainId);
     const updated = await service.update(params.id, body);
@@ -118,7 +118,7 @@ export class DiscordController {
 
   @Get('/discord/invite')
   @ResponseSchema(DiscordInviteOutputDTO)
-  async getInvite() {
+  getInvite() {
     return apiResponse({
       botInvite: discordBot.inviteLink,
       devServer: 'https://catalysm.net/discord',

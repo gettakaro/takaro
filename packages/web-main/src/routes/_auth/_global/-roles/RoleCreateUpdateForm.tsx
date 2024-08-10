@@ -1,12 +1,20 @@
 import { FC, useEffect, useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
-import { Button, Card, CollapseList, Drawer, FormError, Switch, TextField, useTheme } from '@takaro/lib-components';
+import {
+  styled,
+  Button,
+  Card,
+  CollapseList,
+  Drawer,
+  FormError,
+  Switch,
+  TextField,
+  useTheme,
+} from '@takaro/lib-components';
 import { PermissionOutputDTO, RoleOutputDTO } from '@takaro/apiclient';
 import { useForm, SubmitHandler, Control } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-
-import { styled } from '@takaro/lib-components';
 
 const ButtonContainer = styled.div`
   display: flex;
@@ -31,7 +39,7 @@ const validationSchema = z.object({
     z.object({
       enabled: z.boolean().optional(),
       count: z.number().optional(),
-    })
+    }),
   ),
 });
 export type IFormInputs = z.infer<typeof validationSchema>;
@@ -90,7 +98,7 @@ export const RoleForm: FC<CreateUpdateRoleFormProps> = ({
             count: initialData.permissions.find((p) => p.permissionId === permission.id)?.count,
           },
         }),
-        {}
+        {},
       ),
     },
   });
@@ -119,11 +127,13 @@ export const RoleForm: FC<CreateUpdateRoleFormProps> = ({
                 ))}
               </CollapseList.Item>
               <CollapseList.Item title="Module permissions">
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any  */}
                 {Object.values(groupedModulePermissions).map((group: any) => (
                   <Card key={group.module.id} variant="outline" style={{ marginBottom: theme.spacing['2'] }}>
                     <h3 style={{ marginBottom: theme.spacing['1'], textTransform: 'capitalize' }}>
                       {group.module.name}
                     </h3>
+                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any  */}
                     {group.permissions.map((permission: any) => (
                       <PermissionField
                         key={permission.id}
@@ -145,7 +155,12 @@ export const RoleForm: FC<CreateUpdateRoleFormProps> = ({
           ) : (
             <ButtonContainer>
               <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
-              <Button fullWidth text="Save changes" type="submit" form="create-role-form" />
+              <Button
+                fullWidth
+                text={initialData ? 'Update role' : 'Create role'}
+                type="submit"
+                form="create-role-form"
+              />
             </ButtonContainer>
           )}
         </Drawer.Footer>

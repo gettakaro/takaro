@@ -21,56 +21,54 @@ export interface ChipProps {
   showIcon?: ShowIcon;
 }
 
-export const Chip = forwardRef<HTMLDivElement, ChipProps>(
-  (
-    {
-      color,
-      variant = 'default',
-      label,
-      disabled = false,
-      readOnly = false,
-      onClick = undefined,
-      onDelete = undefined,
-      isLoading = false,
-      dot = false,
-      icon,
-      showIcon = 'always',
-    },
-    ref
-  ) => {
-    if (isLoading) {
-      return (
-        <Container
-          ref={ref}
-          clickable={!readOnly && !disabled && onClick !== undefined}
-          color={color}
-          disabled={disabled}
-          outline={false}
-          onClick={onClick ? onClick : undefined}
-          className="placeholder"
-          showIcon={showIcon}
-        >
-          {dot && <Dot color={color} outline={variant !== 'default'} />}
-          <span style={{ minWidth: '70px', minHeight: '15px' }}></span>
-        </Container>
-      );
-    }
-
+export const Chip = forwardRef<HTMLDivElement, ChipProps>(function Chip(
+  {
+    color,
+    variant = 'default',
+    label,
+    disabled = false,
+    readOnly = false,
+    onClick = undefined,
+    onDelete = undefined,
+    isLoading = false,
+    dot = false,
+    icon,
+    showIcon = 'always',
+  },
+  ref,
+) {
+  if (isLoading) {
     return (
       <Container
         ref={ref}
-        clickable={onClick !== undefined}
+        clickable={!readOnly && !disabled && onClick !== undefined}
         color={color}
         disabled={disabled}
+        outline={false}
         onClick={onClick ? onClick : undefined}
-        outline={variant !== 'default'}
+        className="placeholder"
         showIcon={showIcon}
       >
         {dot && <Dot color={color} outline={variant !== 'default'} />}
-        <span>{label}</span>
-        {!onDelete && icon && cloneElement(icon, { size: 12, className: 'icon' })}
-        {onDelete && !readOnly && !disabled && <Icon onClick={onDelete} size={12} />}
+        <span style={{ minWidth: '70px', minHeight: '15px' }}></span>
       </Container>
     );
   }
-);
+
+  return (
+    <Container
+      ref={ref}
+      clickable={onClick !== undefined}
+      color={color}
+      disabled={disabled}
+      onClick={onClick ? onClick : undefined}
+      outline={variant !== 'default'}
+      showIcon={showIcon}
+    >
+      {dot && <Dot color={color} outline={variant !== 'default'} />}
+      <span>{label}</span>
+      {!onDelete && icon && cloneElement(icon, { size: 12, className: 'icon' })}
+      {onDelete && !readOnly && !disabled && <Icon onClick={onDelete} size={12} />}
+    </Container>
+  );
+});

@@ -1,4 +1,5 @@
-import { type Page, expect } from '@playwright/test';
+import type { Page } from '@playwright/test';
+import { expect } from '@playwright/test';
 import { BasePage } from './BasePage.js';
 
 interface Permission {
@@ -53,7 +54,7 @@ export class ModuleDefinitionsPage extends BasePage {
       await Promise.all(
         permissions.map(async (permission, index) => {
           return this.fillPermission(permission, index);
-        })
+        }),
       );
     }
 

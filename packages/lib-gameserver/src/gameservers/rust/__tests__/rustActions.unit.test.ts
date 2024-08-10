@@ -32,7 +32,7 @@ describe('rust actions', () => {
         new CommandOutput({
           rawResult: testData.oneBan,
           success: true,
-        })
+        }),
       );
 
       const result = await new Rust(await mockRustConnectionInfo).listBans();
@@ -48,7 +48,7 @@ describe('rust actions', () => {
         new CommandOutput({
           rawResult: testData.oneBanWithTime,
           success: true,
-        })
+        }),
       );
 
       const result = await new Rust(await mockRustConnectionInfo).listBans();
@@ -64,7 +64,7 @@ describe('rust actions', () => {
         new CommandOutput({
           rawResult: testData.twoBans,
           success: true,
-        })
+        }),
       );
 
       const result = await new Rust(await mockRustConnectionInfo).listBans();
@@ -84,7 +84,7 @@ describe('rust actions', () => {
         new CommandOutput({
           rawResult: testData.noBans,
           success: true,
-        })
+        }),
       );
 
       const result = await new Rust(await mockRustConnectionInfo).listBans();

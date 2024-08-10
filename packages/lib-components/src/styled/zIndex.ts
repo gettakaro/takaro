@@ -27,5 +27,5 @@ export const zIndex = types.reduce(
     acc[type] = baseValue + index;
     return acc;
   },
-  {} as Record<ComponentType, number> // initialize obj with correct type
+  {} as Record<ComponentType, number>, // initialize obj with correct type
 );

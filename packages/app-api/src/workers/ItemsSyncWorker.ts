@@ -1,10 +1,9 @@
 import { IGameServerQueueData, TakaroWorker, queueService } from '@takaro/queues';
 import { config } from '../config.js';
 import { Job } from 'bullmq';
-import { logger } from '@takaro/util';
 import { DomainService } from '../service/DomainService.js';
 import { GameServerService } from '../service/GameServerService.js';
-import { ctx } from '@takaro/util';
+import { ctx, logger } from '@takaro/util';
 import ms from 'ms';
 
 const log = logger('worker:itemsSync');
@@ -22,7 +21,7 @@ export class ItemsSyncWorker extends TakaroWorker<IGameServerQueueData> {
           jobId: 'itemsSync',
           every: config.get('queues.itemsSync.interval'),
         },
-      }
+      },
     );
   }
 }
@@ -50,7 +49,7 @@ export async function processJob(job: Job<IGameServerQueueData>) {
         if (reachable.connectable) {
           await queueService.queues.itemsSync.queue.add(
             { domainId: domain.id, gameServerId: gs.id },
-            { jobId: `itemsSync-${domain.id}-${gs.id}-${Date.now()}` }
+            { jobId: `itemsSync-${domain.id}-${gs.id}-${Date.now()}` },
           );
         }
       });

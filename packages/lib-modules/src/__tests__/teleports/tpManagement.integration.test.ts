@@ -1,5 +1,4 @@
-import { IntegrationTest, expect } from '@takaro/test';
-import { IModuleTestsSetupData, modulesTestSetup } from '@takaro/test';
+import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup } from '@takaro/test';
 import { GameEvents } from '../../dto/index.js';
 
 const group = 'Teleports suite';
@@ -13,7 +12,7 @@ const tests = [
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id
+        this.setupData.teleportsModule.id,
       );
       const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
 
@@ -34,7 +33,7 @@ const tests = [
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id
+        this.setupData.teleportsModule.id,
       );
 
       const firstEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
@@ -56,7 +55,7 @@ const tests = [
 
       expect((await secondEvents).length).to.be.eq(1);
       expect((await secondEvents)[0].data.msg).to.be.eq(
-        'Teleport test already exists, use /deletetp test to delete it.'
+        'Teleport test already exists, use /deletetp test to delete it.',
       );
     },
   }),
@@ -68,7 +67,7 @@ const tests = [
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id
+        this.setupData.teleportsModule.id,
       );
 
       const useTeleportsRole = await this.client.permissionCodesToInputs(['TELEPORTS_USE']);
@@ -89,7 +88,7 @@ const tests = [
             msg: `/settp test${i}`,
             playerId: this.setupData.players[0].id,
           });
-        })
+        }),
       );
 
       expect((await setEvents).length).to.be.eq(3);
@@ -106,7 +105,7 @@ const tests = [
 
       expect((await events).length).to.be.eq(1);
       expect((await events)[0].data.msg).to.be.eq(
-        'You have reached the maximum number of teleports for your role, maximum allowed is 3'
+        'You have reached the maximum number of teleports for your role, maximum allowed is 3',
       );
     },
   }),
@@ -118,7 +117,7 @@ const tests = [
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id
+        this.setupData.teleportsModule.id,
       );
       const setEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 3);
 
@@ -128,7 +127,7 @@ const tests = [
             msg: `/settp test${i}`,
             playerId: this.setupData.players[0].id,
           });
-        })
+        }),
       );
 
       expect((await setEvents).length).to.be.eq(3);
@@ -154,7 +153,7 @@ const tests = [
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id
+        this.setupData.teleportsModule.id,
       );
       const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {

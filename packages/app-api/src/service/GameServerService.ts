@@ -22,9 +22,8 @@ import {
   getGame,
   BanDTO,
 } from '@takaro/gameserver';
-import { errors, TakaroModelDTO, traceableClass } from '@takaro/util';
+import { errors, TakaroModelDTO, traceableClass, TakaroDTO } from '@takaro/util';
 import { SettingsService } from './SettingsService.js';
-import { TakaroDTO } from '@takaro/util';
 import { queueService } from '@takaro/queues';
 import {
   HookEvents,
@@ -39,8 +38,7 @@ import {
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import type { ModuleOutputDTO as ModuleOutputDTOType } from './ModuleService.js';
-import { ModuleOutputDTO } from './ModuleService.js';
-import { ModuleService } from './ModuleService.js';
+import { ModuleOutputDTO, ModuleService } from './ModuleService.js';
 
 // Curse you ESM... :(
 import _Ajv from 'ajv';
@@ -177,12 +175,12 @@ export class GameServerService extends TakaroService<
 
     await queueService.queues.itemsSync.queue.add(
       { domainId: this.domainId, gameServerId: createdServer.id },
-      { jobId: `itemsSync-${this.domainId}-${createdServer.id}-${Date.now()}` }
+      { jobId: `itemsSync-${this.domainId}-${createdServer.id}-${Date.now()}` },
     );
 
     await queueService.queues.playerSync.queue.add(
       { domainId: this.domainId, gameServerId: createdServer.id },
-      { jobId: `playerSync-${this.domainId}-${createdServer.id}-${Date.now()}` }
+      { jobId: `playerSync-${this.domainId}-${createdServer.id}-${Date.now()}` },
     );
     return createdServer;
   }
@@ -240,7 +238,7 @@ export class GameServerService extends TakaroService<
               status: reachability.connectable ? 'online' : 'offline',
               details: reachability.reason,
             }),
-          })
+          }),
         );
       }
 
@@ -253,9 +251,8 @@ export class GameServerService extends TakaroService<
     } else if (connectionInfo && type) {
       const instance = await getGame(type, connectionInfo, {});
       return instance.testReachability();
-    } else {
-      throw new errors.BadRequestError('Missing required parameters');
     }
+    throw new errors.BadRequestError('Missing required parameters');
   }
 
   async getModuleInstallation(gameserverId: string, moduleId: string) {
@@ -299,7 +296,7 @@ export class GameServerService extends TakaroService<
     if (!isValidUserConfig || !isValidSystemConfig) {
       const allErrors = [...(validateSystemConfig.errors ?? []), ...(validateUserConfig.errors ?? [])];
       const prettyErrors = allErrors
-        ?.map((e) => {
+        .map((e) => {
           if (e.keyword === 'additionalProperties') {
             return `${e.message}, invalid: ${e.params.additionalProperty}`;
           }
@@ -327,7 +324,7 @@ export class GameServerService extends TakaroService<
           systemConfig: installDto.systemConfig,
           userConfig: installDto.userConfig,
         }),
-      })
+      }),
     );
 
     return this.getModuleInstallation(gameserverId, moduleId);
@@ -348,7 +345,7 @@ export class GameServerService extends TakaroService<
         gameserverId,
         moduleId: moduleId,
         meta: await new TakaroEventModuleUninstalled(),
-      })
+      }),
     );
 
     return new ModuleInstallationOutputDTO({
@@ -375,10 +372,10 @@ export class GameServerService extends TakaroService<
 
     const settingsService = new SettingsService(this.domainId, id);
     const settingsArr = await settingsService.getAll();
-    const settings = settingsArr.reduce((acc, curr) => {
+    const settings = settingsArr.reduce<Record<string, string>>((acc, curr) => {
       acc[curr.key] = curr.value;
       return acc;
-    }, {} as Record<string, string>);
+    }, {});
 
     gameInstance = await getGame(gameserver.type, gameserver.connectionInfo, settings);
 
@@ -410,7 +407,7 @@ export class GameServerService extends TakaroService<
           type: t,
           connectionInfoSchema: JSON.stringify(schema),
         });
-      })
+      }),
     );
   }
 
@@ -444,7 +441,7 @@ export class GameServerService extends TakaroService<
         eventName: GameEvents.CHAT_MESSAGE,
         gameserverId: gameServerId,
         meta,
-      })
+      }),
     );
   }
 
@@ -455,7 +452,7 @@ export class GameServerService extends TakaroService<
       await this.pogService.getPog(playerId, gameServerId),
       position.x,
       position.y,
-      position.z
+      position.z,
     );
   }
 
@@ -467,7 +464,7 @@ export class GameServerService extends TakaroService<
         player,
         reason,
         expiresAt,
-      })
+      }),
     );
   }
 
@@ -514,7 +511,7 @@ export class GameServerService extends TakaroService<
         positionX: location.x,
         positionY: location.y,
         positionZ: location.z,
-      })
+      }),
     );
 
     return location;
@@ -532,7 +529,7 @@ export class GameServerService extends TakaroService<
           ...item,
           gameserverId: gameServerId,
         });
-      })
+      }),
     );
 
     await itemsService.upsertMany(toInsert);
@@ -550,7 +547,7 @@ export class GameServerService extends TakaroService<
         const { pog } = await this.playerService.resolveRef(p, gameServerId);
         if (!pog) throw new errors.NotFoundError('Player not found');
         await pogRepo.syncInventory(pog.id, gameServerId, inventory);
-      })
+      }),
     );
   }
 
@@ -575,7 +572,7 @@ export class GameServerService extends TakaroService<
 
     try {
       parsed = JSON.parse(raw);
-    } catch (error) {
+    } catch (_error) {
       throw new errors.BadRequestError('Invalid JSON');
     }
 
@@ -583,7 +580,7 @@ export class GameServerService extends TakaroService<
       { csmmExport: parsed, domainId: this.domainId },
       {
         jobId: randomUUID(),
-      }
+      },
     );
 
     return {

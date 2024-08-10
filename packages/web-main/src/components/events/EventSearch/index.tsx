@@ -213,7 +213,6 @@ export const EventSearch: FC<EventSearchProps> = ({ fields, operators, setFilter
               {suggestions.map((item: string, index: number) => (
                 <Item
                   {...getItemProps({
-                    key: item,
                     ref(node) {
                       listRef.current[index] = node;
                     },
@@ -221,6 +220,7 @@ export const EventSearch: FC<EventSearchProps> = ({ fields, operators, setFilter
                       acceptSuggestion(index);
                     },
                   })}
+                  key={item}
                   active={activeIndex === index}
                 >
                   <InputTypeContainer>{inputTypeMap(inputIndex)}</InputTypeContainer>

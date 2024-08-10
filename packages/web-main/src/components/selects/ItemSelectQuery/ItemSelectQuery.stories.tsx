@@ -3,9 +3,8 @@ import { Meta, StoryFn } from '@storybook/react';
 import { ItemSelectQueryView, ItemSelectQueryViewProps } from '.';
 import { z } from 'zod';
 import { Button } from '@takaro/lib-components';
-import { SubmitHandler } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
 import { GameServerOutputDTO, ItemsOutputDTO } from '@takaro/apiclient';
 
 export default {
@@ -75,7 +74,6 @@ export const Default: StoryFn<ItemSelectQueryViewProps> = (args) => {
           name="item"
           label="Item"
           required={args.required}
-          hasMargin={args.hasMargin}
           readOnly={args.readOnly}
           loading={args.loading}
           disabled={args.disabled}

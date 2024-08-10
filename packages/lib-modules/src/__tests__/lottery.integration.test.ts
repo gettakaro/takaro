@@ -1,5 +1,4 @@
-import { IntegrationTest, expect } from '@takaro/test';
-import { IModuleTestsSetupData, modulesTestSetup } from '@takaro/test';
+import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup } from '@takaro/test';
 import { GameEvents } from '../dto/index.js';
 import { Client } from '@takaro/apiclient';
 
@@ -11,7 +10,7 @@ async function expectTicketAmountLengthToBe(
   client: Client,
   gameServerId: string,
   moduleId: string,
-  expectedAmount = 0
+  expectedAmount = 0,
 ) {
   const ticketVars = await client.variable.variableControllerSearch({
     filters: {
@@ -122,7 +121,7 @@ const tests = [
 
       expect((await events).length).to.be.eq(1);
       expect((await events)[0].data.msg).to.be.eq(
-        `You have successfully bought ${ticketAmount} tickets for ${ticketPrice} ${currencyName}. Good luck!`
+        `You have successfully bought ${ticketAmount} tickets for ${ticketPrice} ${currencyName}. Good luck!`,
       );
 
       let pog = (
@@ -141,7 +140,7 @@ const tests = [
 
       expect((await events).length).to.be.eq(1);
       expect((await events)[0].data.msg).to.be.eq(
-        `You have successfully bought ${ticketAmount} tickets for ${ticketPrice} ${currencyName}. Good luck!`
+        `You have successfully bought ${ticketAmount} tickets for ${ticketPrice} ${currencyName}. Good luck!`,
       );
 
       pog = (
@@ -216,7 +215,7 @@ const tests = [
       const mod = (
         await this.client.gameserver.gameServerControllerGetModuleInstallation(
           this.setupData.gameserver.id,
-          this.setupData.lotteryModule.id
+          this.setupData.lotteryModule.id,
         )
       ).data.data;
 
@@ -293,7 +292,7 @@ const tests = [
       expect(events.length).to.be.eq(2);
       expect(events[0].data.msg).to.eq('Only one person has bought a ticket. The lottery has been cancelled.');
       expect(events[1].data.msg).to.eq(
-        `You have been refunded ${ticketCost} ${currencyName} because the lottery has been cancelled.`
+        `You have been refunded ${ticketCost} ${currencyName} because the lottery has been cancelled.`,
       );
 
       const pog = (

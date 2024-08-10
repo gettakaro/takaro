@@ -61,7 +61,7 @@ export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, g
         gameServerId: [gameServerId],
       },
       search: {},
-    })
+    }),
   );
 
   const handleOnCreateShopListingClicked = () => {

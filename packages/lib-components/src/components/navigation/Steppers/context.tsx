@@ -31,11 +31,11 @@ export const useStepper = () => {
   const decrementCurrentStep = useCallback(() => dispatch({ type: stepTypes.DECREMENT_CURRENT_STEP }), [dispatch]);
   const setSteps = useCallback(
     (steps: ReactNode[]) => dispatch({ type: stepTypes.SET_STEPS, payload: { steps } }),
-    [dispatch]
+    [dispatch],
   );
   const setCurrentStep = useCallback(
     (amount: number) => dispatch({ type: stepTypes.SET_CURRENT_STEP, payload: { amount } }),
-    [dispatch]
+    [dispatch],
   );
 
   return {

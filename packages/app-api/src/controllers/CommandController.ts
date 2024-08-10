@@ -149,7 +149,7 @@ export class CommandController {
   async updateArgument(
     @Req() req: AuthenticatedRequest,
     @Params() params: ParamId,
-    @Body() data: CommandArgumentUpdateDTO
+    @Body() data: CommandArgumentUpdateDTO,
   ) {
     const service = new CommandService(req.domainId);
     return apiResponse(await service.updateArgument(params.id, data));
@@ -180,7 +180,7 @@ export class CommandController {
     @Req() req: AuthenticatedRequest,
     @Res() res: Response,
     @Body() query: EventSearchInputDTO,
-    @QueryParam('success') success = false
+    @QueryParam('success') success = false,
   ) {
     const service = new EventService(req.domainId);
     const result = await service.metadataSearch(
@@ -196,7 +196,7 @@ export class CommandController {
             { field: 'result.success', operator: '=', value: success },
           ],
         },
-      ]
+      ],
     );
 
     return apiResponse(result.results, {

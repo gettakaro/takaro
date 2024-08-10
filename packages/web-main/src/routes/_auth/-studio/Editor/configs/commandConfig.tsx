@@ -45,7 +45,7 @@ const validationSchema = z.object({
       helpText: z.string().min(1, { message: 'Help text is required' }),
       defaultValue: z.string().nullable(),
       position: z.number().nonnegative(),
-    })
+    }),
   ),
 });
 

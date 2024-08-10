@@ -1,4 +1,4 @@
-import { FC, MouseEvent, useMemo, useRef, useState } from 'react';
+import { JSX, FC, MouseEvent, useMemo, useRef, useState } from 'react';
 import {
   styled,
   Button as TakaroButton,
@@ -140,7 +140,7 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
         .min(1, { message: 'The field must not be empty.' })
         .max(30, { message: 'The field must not be longer than 30 characters.' })
         .refine((value) => !value.includes('/'), { message: 'The field must not contain slashes.' }),
-    []
+    [],
   );
 
   const [internalFileName, setInternalFileName] = useState(fileName);
@@ -253,7 +253,7 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
 
     try {
       switch (type) {
-        case FileType.Hooks:
+        case FileType.Hooks: {
           const hook = await createHook({
             moduleId,
             name: newFileName,
@@ -264,7 +264,8 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
           itemId = hook.id;
           code = hook.function.code;
           break;
-        case FileType.Commands:
+        }
+        case FileType.Commands: {
           const command = await createCommand({
             moduleId,
             name: newFileName,
@@ -274,7 +275,8 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
           itemId = command.id;
           code = command.function.code;
           break;
-        case FileType.CronJobs:
+        }
+        case FileType.CronJobs: {
           const cronjob = await createCronJob({
             moduleId,
             name: newFileName,
@@ -284,7 +286,8 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
           itemId = cronjob.id;
           code = cronjob.function.code;
           break;
-        case FileType.Functions:
+        }
+        case FileType.Functions: {
           const func = await createFunction({
             moduleId,
             name: newFileName,
@@ -292,6 +295,7 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
           functionId = func.id;
           code = func.code;
           break;
+        }
         default:
           throw new Error('Invalid type');
       }
@@ -360,18 +364,17 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
           </Tooltip>
         </>
       );
-    } else {
-      return (
-        <>
-          <Tooltip placement="top">
-            <Tooltip.Trigger asChild>
-              <IconButton ariaLabel="New file" onClick={handleOnNewFileClick} icon={<AddFileIcon size={18} />} />
-            </Tooltip.Trigger>
-            <Tooltip.Content>New file</Tooltip.Content>
-          </Tooltip>
-        </>
-      );
     }
+    return (
+      <>
+        <Tooltip placement="top">
+          <Tooltip.Trigger asChild>
+            <IconButton ariaLabel="New file" onClick={handleOnNewFileClick} icon={<AddFileIcon size={18} />} />
+          </Tooltip.Trigger>
+          <Tooltip.Content>New file</Tooltip.Content>
+        </Tooltip>
+      </>
+    );
   };
 
   return (

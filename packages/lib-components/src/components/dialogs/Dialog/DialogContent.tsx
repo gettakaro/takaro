@@ -14,33 +14,35 @@ const CardBody = styled.div`
   min-width: 300px;
 `;
 
-export const DialogContent = forwardRef<HTMLDivElement, React.HTMLProps<HTMLDivElement>>((props, propRef) => {
-  const { context: floatingContext, ...context } = useDialogContext();
-  const ref = useMergeRefs([context.refs.setFloating, propRef]);
+export const DialogContent = forwardRef<HTMLDivElement, React.HTMLProps<HTMLDivElement>>(
+  function DialogContent(props, propRef) {
+    const { context: floatingContext, ...context } = useDialogContext();
+    const ref = useMergeRefs([context.refs.setFloating, propRef]);
 
-  const root = document.getElementById('dialog');
-  if (!root) {
-    throw new Error('Dialog need to render in a <div id="dialog"></div>');
-  }
+    const root = document.getElementById('dialog');
+    if (!root) {
+      throw new Error('Dialog need to render in a <div id="dialog"></div>');
+    }
 
-  return (
-    <FloatingPortal root={root}>
-      {context.open && (
-        <StyledFloatingOverlay lockScroll>
-          <FloatingFocusManager context={floatingContext}>
-            <Card
-              ref={ref}
-              aria-labelledby={context.labelId}
-              aria-describedby={context.descriptionId}
-              {...context.getFloatingProps({
-                ...props,
-              })}
-            >
-              <CardBody>{props.children}</CardBody>
-            </Card>
-          </FloatingFocusManager>
-        </StyledFloatingOverlay>
-      )}
-    </FloatingPortal>
-  );
-});
+    return (
+      <FloatingPortal root={root}>
+        {context.open && (
+          <StyledFloatingOverlay lockScroll>
+            <FloatingFocusManager context={floatingContext}>
+              <Card
+                ref={ref}
+                aria-labelledby={context.labelId}
+                aria-describedby={context.descriptionId}
+                {...context.getFloatingProps({
+                  ...props,
+                })}
+              >
+                <CardBody>{props.children}</CardBody>
+              </Card>
+            </FloatingFocusManager>
+          </StyledFloatingOverlay>
+        )}
+      </FloatingPortal>
+    );
+  },
+);

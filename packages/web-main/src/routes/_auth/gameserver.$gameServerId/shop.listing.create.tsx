@@ -15,7 +15,7 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/listi
   },
   loader: async ({ context, params }) => {
     return await context.queryClient.ensureQueryData(
-      gameServerSettingQueryOptions('currencyName', params.gameServerId)
+      gameServerSettingQueryOptions('currencyName', params.gameServerId),
     );
   },
   component: Component,

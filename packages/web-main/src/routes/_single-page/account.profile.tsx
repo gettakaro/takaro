@@ -46,7 +46,7 @@ function Component() {
         .getSettingsFlow({ id: flowId })
         .then(({ data: flow }) => setFlow(flow))
         .catch(sdkErrorHandler),
-    []
+    [],
   );
 
   // initialize the sdkError for generic handling of errors
@@ -113,7 +113,7 @@ function Component() {
                 // submit the form data the user provides to Ory
                 onSubmit={({ body }) => onSubmit(body as UpdateSettingsFlowBody)}
               />
-            )
+            ),
           )}
         </div>
       </Container>

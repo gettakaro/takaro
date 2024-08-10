@@ -25,7 +25,7 @@ export class HighPingKicker extends BuiltinModule<HighPingKicker> {
           },
         },
         required: [],
-      })
+      }),
     );
 
     this.cronJobs = [

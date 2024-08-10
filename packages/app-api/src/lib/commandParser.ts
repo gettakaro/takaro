@@ -8,7 +8,7 @@ const log = logger('lib:commandParser');
 export async function parseCommand(
   rawMessage: string,
   command: CommandOutputDTO,
-  gameServerId: string
+  gameServerId: string,
 ): Promise<IParsedCommand> {
   const split = rawMessage.match(/(?:[^\s"]+|"[^"]*")+/g);
 
@@ -32,7 +32,7 @@ export async function parseCommand(
     } else {
       log.warn('Missing argument', { rawMessage, command, argument });
       throw new errors.BadRequestError(
-        `Oops! It seems you forgot to provide the "${argument.name}" value. Please check and try again.`
+        `Oops! It seems you forgot to provide the "${argument.name}" value. Please check and try again.`,
       );
     }
 
@@ -43,7 +43,7 @@ export async function parseCommand(
       case 'string':
         parsedArgs[argument.name] = value.replace(/"/g, '');
         break;
-      case 'number':
+      case 'number': {
         const parsed = parseInt(value, 10);
 
         if (isNaN(parsed)) {
@@ -54,12 +54,13 @@ export async function parseCommand(
             value,
           });
           throw new errors.BadRequestError(
-            `The value for "${argument.name}" should be a number. Please correct it and try again.`
+            `The value for "${argument.name}" should be a number. Please correct it and try again.`,
           );
         }
 
         parsedArgs[argument.name] = parseInt(value, 10);
         break;
+      }
       case 'boolean':
         if (value !== 'true' && value !== 'false') {
           log.warn('Invalid boolean value', {
@@ -69,7 +70,7 @@ export async function parseCommand(
             value,
           });
           throw new errors.BadRequestError(
-            `The value for "${argument.name}" should be either "true" or "false". Please correct it and try again.`
+            `The value for "${argument.name}" should be either "true" or "false". Please correct it and try again.`,
           );
         }
 

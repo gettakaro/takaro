@@ -14,7 +14,7 @@ const log = logger('lib:tryResolvePlayer');
  */
 export async function tryResolvePlayer(
   input: string,
-  gameServerId: string
+  gameServerId: string,
 ): Promise<PlayerOnGameserverOutputWithRolesDTO> {
   const domainId = ctx.data.domain;
 

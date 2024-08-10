@@ -34,9 +34,8 @@ const Inner = styled.div`
 const shouldFilter = (value: unknown, multiple: boolean): boolean => {
   if (multiple) {
     return value !== undefined && (value as string[]).length !== 0;
-  } else {
-    return value !== undefined;
   }
+  return value !== undefined;
 };
 
 export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema, F extends FormContextType = any>({
@@ -60,7 +59,7 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
   const { data: prev, isLoading: isLoadingPreviousItems } = useQuery(
     itemsQueryOptions({
       filters: { gameserverId: [gameServerId], ...(shouldPreviousItemsBeLoaded && { id: multiple ? value : [value] }) },
-    })
+    }),
   );
 
   const previousItems = prev?.data ?? [];
@@ -69,13 +68,13 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
     itemsQueryOptions({
       ...(itemName !== '' && { search: { name: [itemName] } }),
       filters: { gameserverId: [gameServerId] },
-    })
+    }),
   );
   const searchedItems = data?.data ?? [];
 
   // get rid of duplicates
   const items = [...searchedItems, ...previousItems].filter(
-    (item, index, self) => self.findIndex((i) => i.id === item.id) === index
+    (item, index, self) => self.findIndex((i) => i.id === item.id) === index,
   );
 
   const renderIcon = (gameServer: GameServerOutputDTO, item: ItemsOutputDTO) => {
@@ -138,7 +137,7 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
     >
       <SelectQueryField.OptionGroup label="options">
         {items.map((item) => (
-          <SelectQueryField.Option value={item.id} label={item.name}>
+          <SelectQueryField.Option value={item.id} label={item.name} key={name + '-' + item.id}>
             <Inner>
               {renderIcon(gameServer, item)}
               <span>{item.name}</span>

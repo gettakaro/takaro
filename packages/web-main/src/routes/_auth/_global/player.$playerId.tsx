@@ -18,7 +18,7 @@ export const Route = createFileRoute('/_auth/_global/player/$playerId')({
     const [player, pogs] = await Promise.all([
       context.queryClient.ensureQueryData(playerQueryOptions(params.playerId)),
       context.queryClient.ensureQueryData(
-        playersOnGameServersQueryOptions({ filters: { playerId: [params.playerId] } })
+        playersOnGameServersQueryOptions({ filters: { playerId: [params.playerId] } }),
       ),
     ]);
     return { player, pogs };

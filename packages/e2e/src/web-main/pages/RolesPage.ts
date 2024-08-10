@@ -1,5 +1,6 @@
 import { BasePage } from './BasePage.js';
-import { expect, type Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
+import { expect } from '@playwright/test';
 
 export class RolesPage extends BasePage {
   constructor(public readonly page: Page) {
@@ -48,7 +49,7 @@ export class RolesPage extends BasePage {
     }: {
       name?: string;
       permissions?: string[];
-    }
+    },
   ) {
     await this.openSettings(oldName);
     await this.page.getByRole('menuitem', { name: 'Edit role' }).click();

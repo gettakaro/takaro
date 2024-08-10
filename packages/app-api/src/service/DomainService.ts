@@ -7,7 +7,6 @@ import type { RoleOutputDTO as RoleOutputDTOType } from './RoleService.js';
 import { NOT_DOMAIN_SCOPED_TakaroService } from './Base.js';
 import { IsEnum, IsOptional, IsString, Length, ValidateNested } from 'class-validator';
 import { DOMAIN_STATES, DomainModel, DomainRepo } from '../db/domain.js';
-export { DOMAIN_STATES } from '../db/domain.js';
 import { humanId } from 'human-id';
 import { Type } from 'class-transformer';
 import { GameServerService, GameServerUpdateDTO } from './GameServerService.js';
@@ -17,6 +16,8 @@ import { ModuleService } from './ModuleService.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { config } from '../config.js';
 import { EXECUTION_MODE } from '@takaro/config';
+
+export { DOMAIN_STATES } from '../db/domain.js';
 
 export class DomainCreateInputDTO extends TakaroDTO<DomainCreateInputDTO> {
   @Length(3, 200)
@@ -131,7 +132,7 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
     });
 
     const domain = await this.repo.create(
-      new DomainCreateInputDTO({ id, name: input.name, state: input.state ?? DOMAIN_STATES.ACTIVE })
+      new DomainCreateInputDTO({ id, name: input.name, state: input.state ?? DOMAIN_STATES.ACTIVE }),
     );
 
     const userService = new UserService(domain.id);
@@ -152,7 +153,7 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
 
     const rootRole = await roleService.createWithPermissions(
       new ServiceRoleCreateInputDTO({ name: 'root', system: true }),
-      [rootPermissionDTO]
+      [rootPermissionDTO],
     );
 
     const DEFAULT_ROLES: ServiceRoleCreateInputDTO[] = [
@@ -185,7 +186,7 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
         name: 'root',
         password: password,
         email: `root@${domain.id}.com`,
-      })
+      }),
     );
 
     await userService.assignRole(rootRole.id, rootUser.id);

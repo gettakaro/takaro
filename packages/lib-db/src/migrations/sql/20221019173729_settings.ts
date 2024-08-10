@@ -38,7 +38,7 @@ export async function up(knex: Knex): Promise<void> {
       'MANAGE_PLAYERS',
       'MANAGE_SETTINGS',
       'READ_SETTINGS',
-    ])
+    ]),
   );
 }
 
@@ -65,6 +65,6 @@ export async function down(knex: Knex): Promise<void> {
       'MANAGE_MODULES',
       'READ_PLAYERS',
       'MANAGE_PLAYERS',
-    ])
+    ]),
   );
 }

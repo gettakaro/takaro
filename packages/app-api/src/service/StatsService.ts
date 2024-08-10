@@ -10,7 +10,7 @@ import { EventsCountInputDTO } from '../controllers/StatsController.js';
 
 export class StatsOutputDTO extends TakaroDTO<StatsOutputDTO> {
   @IsObject()
-  values: Array<[number, number]> = [];
+  values: [number, number][] = [];
 }
 
 @traceableClass('service:stats')
@@ -22,19 +22,19 @@ export class StatsService extends TakaroService<TakaroModel, TakaroDTO<void>, Ta
     // Dummy since we're not talking to our DB here
     return {} as ITakaroRepo<TakaroModel, TakaroDTO<void>, TakaroDTO<void>, TakaroDTO<void>>;
   }
-  async find(): Promise<PaginatedOutput<TakaroDTO<void>>> {
+  find(): Promise<PaginatedOutput<TakaroDTO<void>>> {
     throw new errors.NotImplementedError();
   }
-  async findOne(): Promise<TakaroDTO<void>> {
+  findOne(): Promise<TakaroDTO<void>> {
     throw new errors.NotImplementedError();
   }
-  async create(): Promise<TakaroDTO<void>> {
+  create(): Promise<TakaroDTO<void>> {
     throw new errors.NotImplementedError();
   }
-  async update(): Promise<TakaroDTO<void>> {
+  update(): Promise<TakaroDTO<void>> {
     throw new errors.NotImplementedError();
   }
-  async delete(): Promise<string> {
+  delete(): Promise<string> {
     throw new errors.NotImplementedError();
   }
 
@@ -71,7 +71,7 @@ export class StatsService extends TakaroService<TakaroModel, TakaroDTO<void>, Ta
     const data = await this.prometheusQuery(
       `takaro_player_ping{job="worker", domain="${this.domainId}", player="${playerId}", gameserver="${gameserverId}"}`,
       startTime,
-      endTime
+      endTime,
     );
     return { values: data };
   }
@@ -80,7 +80,7 @@ export class StatsService extends TakaroService<TakaroModel, TakaroDTO<void>, Ta
     const data = await this.prometheusQuery(
       `takaro_player_currency{job="worker", domain="${this.domainId}", player="${playerId}", gameserver="${gameserverId}"}`,
       startTime,
-      endTime
+      endTime,
     );
     return { values: data };
   }
@@ -89,7 +89,7 @@ export class StatsService extends TakaroService<TakaroModel, TakaroDTO<void>, Ta
     const data = await this.prometheusQuery(
       `avg by(gameserver) (takaro_gameServer_latency{domain="${this.domainId}", gameserver="${gameserverId}"})`,
       startTime,
-      endTime
+      endTime,
     );
     return { values: data };
   }
@@ -99,17 +99,16 @@ export class StatsService extends TakaroService<TakaroModel, TakaroDTO<void>, Ta
       const data = await this.prometheusQuery(
         `takaro_players_online{job="worker", domain="${this.domainId}", gameserver="${gameserverId}"}`,
         startTime,
-        endTime
-      );
-      return { values: data };
-    } else {
-      const data = await this.prometheusQuery(
-        `sum by(domain) (takaro_players_online{job="worker", domain="${this.domainId}"})`,
-        startTime,
-        endTime
+        endTime,
       );
       return { values: data };
     }
+    const data = await this.prometheusQuery(
+      `sum by(domain) (takaro_players_online{job="worker", domain="${this.domainId}"})`,
+      startTime,
+      endTime,
+    );
+    return { values: data };
   }
 
   async getActivityStats(
@@ -117,7 +116,7 @@ export class StatsService extends TakaroService<TakaroModel, TakaroDTO<void>, Ta
     timeType: 'daily' | 'weekly' | 'monthly',
     gameserverId?: string,
     startTime?: string,
-    endTime?: string
+    endTime?: string,
   ) {
     const metricName = `takaro_${timeType}_active_${dataType}`;
 
@@ -128,17 +127,16 @@ export class StatsService extends TakaroService<TakaroModel, TakaroDTO<void>, Ta
       const data = await this.prometheusQuery(
         `${metricName}{job="kpi", domain="${this.domainId}", gameServer="${gameserverId}"}`,
         startTime,
-        endTime
-      );
-      return { values: data };
-    } else {
-      const data = await this.prometheusQuery(
-        `sum by(domain) (${metricName}{job="kpi", domain="${this.domainId}", gameServer=""})`,
-        startTime,
-        endTime
+        endTime,
       );
       return { values: data };
     }
+    const data = await this.prometheusQuery(
+      `sum by(domain) (${metricName}{job="kpi", domain="${this.domainId}", gameServer=""})`,
+      startTime,
+      endTime,
+    );
+    return { values: data };
   }
 
   async getEventsCountOverTime(filters: EventsCountInputDTO) {

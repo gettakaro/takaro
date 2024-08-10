@@ -15,6 +15,7 @@ import { getApiClient } from 'util/getApiClient';
 import { hasNextPage, mutationWrapper, queryParamsToArray } from 'queries/util';
 import { userKeys } from './user';
 import { ErrorMessageMapping } from '@takaro/lib-components/src/errors';
+import { useSnackbar } from 'notistack';
 
 export const roleKeys = {
   all: ['roles'] as const,
@@ -58,16 +59,18 @@ export const permissionsQueryOptions = () =>
 export const useRoleCreate = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
 
   return mutationWrapper<RoleOutputDTO, RoleCreateInputDTO>(
     useMutation<RoleOutputDTO, AxiosError<RoleOutputArrayDTOAPI>, RoleCreateInputDTO>({
       mutationFn: async (role) => (await apiClient.role.roleControllerCreate(role)).data.data,
       onSuccess: async (newRole) => {
+        enqueueSnackbar('Role created!', { variant: 'default', type: 'success' });
         await queryClient.invalidateQueries({ queryKey: roleKeys.list() });
         queryClient.setQueryData(roleKeys.detail(newRole.id), newRole);
       },
     }),
-    defaultRoleErrorMessages
+    defaultRoleErrorMessages,
   );
 };
 
@@ -79,6 +82,7 @@ interface RoleUpdate {
 export const useRoleUpdate = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
 
   return mutationWrapper<RoleOutputDTO, RoleUpdate>(
     useMutation<RoleOutputDTO, AxiosError<RoleOutputDTO>, RoleUpdate>({
@@ -86,11 +90,12 @@ export const useRoleUpdate = () => {
         return (await apiClient.role.roleControllerUpdate(roleId, roleDetails)).data.data;
       },
       onSuccess: async (updatedRole) => {
+        enqueueSnackbar('Role updated!', { variant: 'default', type: 'success' });
         queryClient.invalidateQueries({ queryKey: roleKeys.list() });
         await queryClient.setQueryData(roleKeys.detail(updatedRole.id), updatedRole);
       },
     }),
-    defaultRoleErrorMessages
+    defaultRoleErrorMessages,
   );
 };
 
@@ -101,16 +106,18 @@ interface RoleRemove {
 export const useRoleRemove = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
 
   return mutationWrapper<APIOutput, RoleRemove>(
     useMutation<APIOutput, AxiosError<APIOutput>, RoleRemove>({
       mutationFn: async ({ roleId }) => (await apiClient.role.roleControllerRemove(roleId)).data,
       onSuccess: (_, { roleId }) => {
+        enqueueSnackbar('Role successfully deleted!', { variant: 'default', type: 'success' });
         queryClient.invalidateQueries({ queryKey: roleKeys.list() });
         queryClient.removeQueries({ queryKey: roleKeys.detail(roleId) });
       },
     }),
-    {}
+    {},
   );
 };
 
@@ -132,7 +139,7 @@ export const useUserRoleAssign = ({ userId }: { userId: string }) => {
         await queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
       },
     }),
-    {}
+    {},
   );
 };
 
@@ -147,6 +154,6 @@ export const useUserRoleUnassign = () => {
         return res;
       },
     }),
-    {}
+    {},
   );
 };

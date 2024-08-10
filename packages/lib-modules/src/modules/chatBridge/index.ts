@@ -30,7 +30,7 @@ export class ChatBridge extends BuiltinModule<ChatBridge> {
           },
         },
         additionalProperties: false,
-      })
+      }),
     );
 
     this.hooks = [

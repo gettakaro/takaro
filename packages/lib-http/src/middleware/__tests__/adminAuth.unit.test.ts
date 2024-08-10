@@ -17,7 +17,7 @@ describe('adminAuth', () => {
       (_req: Request, res: Response) => {
         res.json({ ok: true });
       },
-      ErrorHandler
+      ErrorHandler,
     );
     await http.start();
   });

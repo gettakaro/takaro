@@ -33,7 +33,7 @@ async function main() {
 
     // NOTE: we should maybe check if the player has enough balance to send the amount since this is only checked when the transaction is executed.
     await sender.pm(
-      `You are about to send ${args.amount} ${currencyName} to ${receiverName}. (Please confirm by typing ${prefix}confirmtransfer)`
+      `You are about to send ${args.amount} ${currencyName} to ${receiverName}. (Please confirm by typing ${prefix}confirmtransfer)`,
     );
     return;
   }
@@ -45,11 +45,11 @@ async function main() {
       receiver.id,
       {
         currency: args.amount,
-      }
+      },
     );
-  } catch (e) {
+  } catch (_e) {
     throw new TakaroUserError(
-      `Failed to transfer ${args.amount} ${currencyName} to ${receiverName}. Are you sure you have enough balance?`
+      `Failed to transfer ${args.amount} ${currencyName} to ${receiverName}. Are you sure you have enough balance?`,
     );
   }
 

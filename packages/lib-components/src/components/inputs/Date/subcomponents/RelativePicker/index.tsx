@@ -58,7 +58,7 @@ export const RelativePicker: FC<RelativePickerProps> = ({ onChange, id, timeDire
         step: z.number().positive(),
         unit: z.nativeEnum(Unit),
       }),
-    []
+    [],
   );
 
   const defaultTense = () => {

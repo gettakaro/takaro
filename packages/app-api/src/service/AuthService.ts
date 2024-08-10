@@ -1,11 +1,9 @@
-import { DomainScoped } from '@takaro/util';
-import { ctx, errors, logger, traceableClass } from '@takaro/util';
+import { ctx, errors, logger, traceableClass, DomainScoped, TakaroDTO } from '@takaro/util';
 import { UserOutputWithRolesDTO, UserService, UserUpdateAuthDTO } from '../service/UserService.js';
 import jwt from 'jsonwebtoken';
 import { NextFunction, Request, Response } from 'express';
 import { IsString } from 'class-validator';
 import ms from 'ms';
-import { TakaroDTO } from '@takaro/util';
 import { ory, PERMISSIONS } from '@takaro/auth';
 import { config } from '../config.js';
 import passport from 'passport';
@@ -288,7 +286,7 @@ export class AuthService extends DomainScoped {
             accessToken: string,
             _refreshToken: string,
             profile: unknown,
-            cb: CallableFunction
+            cb: CallableFunction,
           ) {
             const req = origReq as AuthenticatedRequest;
             try {
@@ -301,7 +299,7 @@ export class AuthService extends DomainScoped {
 
               if (!userInfo.verified) {
                 return cb(
-                  new errors.BadRequestError('You must verify your Discord account before you can use it to log in.')
+                  new errors.BadRequestError('You must verify your Discord account before you can use it to log in.'),
                 );
               }
 
@@ -316,7 +314,7 @@ export class AuthService extends DomainScoped {
                 user.id,
                 new UserUpdateAuthDTO({
                   discordId: userInfo.id,
-                })
+                }),
               );
 
               if (
@@ -332,8 +330,8 @@ export class AuthService extends DomainScoped {
               log.error('Error in discord auth', error);
               return cb(error);
             }
-          }
-        )
+          },
+        ),
       );
 
       initializedStrategies.push('discord');

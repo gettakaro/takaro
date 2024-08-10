@@ -42,7 +42,6 @@ interface DefaultInputProps {
   readOnly?: boolean;
   disabled?: boolean;
   size?: Size;
-  hasMargin?: boolean;
 }
 
 type Required<T> = {
@@ -53,7 +52,6 @@ export const defaultInputProps: Required<DefaultInputProps> = {
   readOnly: false,
   disabled: false,
   size: 'medium',
-  hasMargin: true,
 };
 
 export function defaultInputPropsFactory<T extends InputProps>(defaultValues: Required<DefaultInputProps>) {

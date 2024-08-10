@@ -21,6 +21,7 @@ import { getApiClient } from 'util/getApiClient';
 import { hasNextPage, mutationWrapper, queryParamsToArray } from './util';
 import { AxiosError } from 'axios';
 import { ErrorMessageMapping } from '@takaro/lib-components/src/errors';
+import { useSnackbar } from 'notistack';
 
 export const gameServerKeys = {
   all: ['gameservers'] as const,
@@ -68,7 +69,7 @@ export const useGameServerCreateFromCSMMImport = () => {
   const queryClient = useQueryClient();
 
   return mutationWrapper<ImportOutputDTO, any>(
-    useMutation<ImportOutputDTO, AxiosError<ImportOutputDTO>, any>({
+    useMutation<ImportOutputDTO, AxiosError<any>, unknown>({
       mutationFn: async (config) =>
         (
           await apiClient.gameserver.gameServerControllerImportFromCSMM({
@@ -82,24 +83,25 @@ export const useGameServerCreateFromCSMMImport = () => {
         await queryClient.invalidateQueries({ queryKey: gameServerKeys.list() });
       },
     }),
-    {}
+    {},
   );
 };
 
 export const useGameServerCreate = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
 
   return mutationWrapper<GameServerOutputDTO, GameServerCreateDTO>(
-    useMutation<GameServerOutputDTO, AxiosError<any>, GameServerCreateDTO>({
+    useMutation<GameServerOutputDTO, AxiosError<GameServerOutputDTOAPI>, GameServerCreateDTO>({
       mutationFn: async (gameServer) => (await apiClient.gameserver.gameServerControllerCreate(gameServer)).data.data,
       onSuccess: async (newGameServer: GameServerOutputDTO) => {
-        // invalidate all queries that have list in the key
+        enqueueSnackbar('Gameserver created!', { variant: 'default', type: 'success' });
         await queryClient.invalidateQueries({ queryKey: gameServerKeys.list() });
         queryClient.setQueryData(gameServerKeys.detail(newGameServer.id), newGameServer);
       },
     }),
-    defaultGameServerErrorMessages
+    defaultGameServerErrorMessages,
   );
 };
 
@@ -111,6 +113,7 @@ interface GameServerUpdate {
 export const useGameServerUpdate = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
 
   return mutationWrapper<GameServerOutputDTO, GameServerUpdate>(
     useMutation<GameServerOutputDTO, AxiosError<GameServerOutputDTO>, GameServerUpdate>({
@@ -118,14 +121,12 @@ export const useGameServerUpdate = () => {
         return (await apiClient.gameserver.gameServerControllerUpdate(gameServerId, gameServerDetails)).data.data;
       },
       onSuccess: async (updatedGameServer) => {
-        // remove cache of gameserver list
+        enqueueSnackbar('Gameserver updated!', { variant: 'default', type: 'success' });
         await queryClient.invalidateQueries({ queryKey: gameServerKeys.list() });
-
-        // update cache of gameserver
         queryClient.setQueryData(gameServerKeys.detail(updatedGameServer.id), updatedGameServer);
       },
     }),
-    defaultGameServerErrorMessages
+    defaultGameServerErrorMessages,
   );
 };
 
@@ -136,15 +137,15 @@ interface GameServerRemove {
 export const useGameServerRemove = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
 
   return mutationWrapper<APIOutput, GameServerRemove>(
     useMutation<APIOutput, AxiosError<APIOutput>, GameServerRemove>({
       mutationFn: async ({ gameServerId }) =>
         (await apiClient.gameserver.gameServerControllerRemove(gameServerId)).data,
       onSuccess: async (_, { gameServerId }) => {
-        // remove all cached information of game server list.
+        enqueueSnackbar('Gameserver successfully deleted', { variant: 'default', type: 'success' });
         await queryClient.invalidateQueries({ queryKey: gameServerKeys.list() });
-        // remove all cached information about specific game server.
         await queryClient.invalidateQueries({
           queryKey: gameServerKeys.detail(gameServerId),
         });
@@ -153,7 +154,7 @@ export const useGameServerRemove = () => {
         });
       },
     }),
-    {}
+    {},
   );
 };
 
@@ -192,7 +193,7 @@ export const useGameServerReachabilityByConfig = () => {
         ).data.data;
       },
     }),
-    {}
+    {},
   );
 };
 
@@ -208,7 +209,7 @@ export const useGameServerSendMessage = () => {
       mutationFn: async ({ gameServerId }) =>
         (await apiClient.gameserver.gameServerControllerSendMessage(gameServerId)).data,
     }),
-    {}
+    {},
   );
 };
 
@@ -249,11 +250,11 @@ export const useGameServerModuleInstall = () => {
         // update installed module cache
         queryClient.setQueryData(
           installedModuleKeys.detail(moduleInstallation.gameserverId, moduleInstallation.moduleId),
-          moduleInstallation
+          moduleInstallation,
         );
       },
     }),
-    {}
+    {},
   );
 };
 
@@ -283,7 +284,7 @@ export const useGameServerModuleUninstall = () => {
         });
       },
     }),
-    {}
+    {},
   );
 };
 
@@ -301,7 +302,7 @@ export const useKickPlayerOnGameServer = () => {
       mutationFn: async ({ gameServerId, playerId, opts }) =>
         (await apiClient.gameserver.gameServerControllerKickPlayer(gameServerId, playerId, opts)).data,
     }),
-    {}
+    {},
   );
 };
 
@@ -319,7 +320,7 @@ export const useBanPlayerOnGameServer = () => {
       mutationFn: async ({ gameServerId, playerId, opts }) =>
         (await apiClient.gameserver.gameServerControllerBanPlayer(gameServerId, playerId, opts)).data,
     }),
-    {}
+    {},
   );
 };
 
@@ -336,6 +337,6 @@ export const useUnbanPlayerOnGameServer = () => {
       mutationFn: async ({ gameServerId, playerId }) =>
         (await apiClient.gameserver.gameServerControllerUnbanPlayer(gameServerId, playerId)).data,
     }),
-    {}
+    {},
   );
 };

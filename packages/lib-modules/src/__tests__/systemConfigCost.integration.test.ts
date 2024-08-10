@@ -1,5 +1,4 @@
-import { IntegrationTest, expect } from '@takaro/test';
-import { IModuleTestsSetupData, modulesTestSetup } from '@takaro/test';
+import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup } from '@takaro/test';
 import { GameEvents } from '../dto/index.js';
 import { sleep } from '@takaro/util';
 
@@ -28,7 +27,7 @@ const customSetup = async function (this: IntegrationTest<IModuleTestsSetupData>
           },
         },
       }),
-    }
+    },
   );
 
   const setEvents = setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
@@ -52,7 +51,7 @@ const customSetup = async function (this: IntegrationTest<IModuleTestsSetupData>
       playerOnGameServer[0].playerId,
       {
         currency: 100,
-      }
+      },
     );
   });
   await Promise.all(giveCurrencies);
@@ -101,7 +100,7 @@ const tests = [
             msg: `/settp test${index}`,
             playerId: this.setupData.players[0].id,
           });
-        })
+        }),
       );
 
       expect((await setEvents).length).to.be.eq(amount);
@@ -114,7 +113,7 @@ const tests = [
             msg: `/tp test${index}`,
             playerId: this.setupData.players[0].id,
           });
-        })
+        }),
       );
 
       expect((await events).length).to.be.eq(amount);
@@ -174,7 +173,7 @@ const tests = [
         playerOnGameServer[0].playerId,
         {
           currency: 5,
-        }
+        },
       );
 
       const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);

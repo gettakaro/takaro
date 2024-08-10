@@ -1,5 +1,4 @@
-import { IntegrationTest, expect } from '@takaro/test';
-import { IModuleTestsSetupData, modulesTestSetup } from '@takaro/test';
+import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup } from '@takaro/test';
 import { GameEvents } from '../dto/index.js';
 
 const group = 'gimme suite';
@@ -19,7 +18,7 @@ const tests = [
             items: ['apple', 'banana', 'orange'],
             commands: [],
           }),
-        }
+        },
       );
       const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
 
@@ -46,7 +45,7 @@ const tests = [
             items: [],
             commands: ['say hello from test'],
           }),
-        }
+        },
       );
 
       const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
@@ -74,7 +73,7 @@ const tests = [
             items: [],
             commands: [],
           }),
-        }
+        },
       );
 
       const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
