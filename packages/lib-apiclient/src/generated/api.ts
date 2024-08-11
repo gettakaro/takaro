@@ -1242,6 +1242,18 @@ export interface DomainOutputDTO {
   state: DomainOutputDTOStateEnum;
   /**
    *
+   * @type {number}
+   * @memberof DomainOutputDTO
+   */
+  rateLimitPoints: number;
+  /**
+   *
+   * @type {number}
+   * @memberof DomainOutputDTO
+   */
+  rateLimitDuration: number;
+  /**
+   *
    * @type {string}
    * @memberof DomainOutputDTO
    */

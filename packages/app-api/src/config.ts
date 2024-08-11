@@ -40,10 +40,6 @@ interface IHttpConfig extends IBaseConfig {
     url: string;
     startWorkers: boolean;
     kpiInterval: number;
-    functionsRateLimit: {
-      points: number;
-      duration: number;
-    };
   };
   steam: {
     apiKey: string;
@@ -193,20 +189,6 @@ const configSchema = {
       format: Number,
       default: ms('60m'),
       env: 'KPI_INTERVAL',
-    },
-    functionsRateLimit: {
-      points: {
-        doc: 'The total amount of points a domain can use in $duration',
-        format: Number,
-        default: 2500,
-        env: 'FUNCTIONS_RATE_LIMIT_POINTS',
-      },
-      duration: {
-        doc: 'The duration of the rate limiter, in ms',
-        format: Number,
-        default: ms('15min'),
-        env: 'FUNCTIONS_RATE_LIMIT_DURATION',
-      },
     },
   },
   steam: {

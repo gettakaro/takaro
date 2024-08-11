@@ -24,7 +24,7 @@ import {
 import { HookService } from '../service/HookService.js';
 import { CronJobService } from '../service/CronJobService.js';
 
-let rateLimiter: RateLimiterRedis | null = null;
+const rateLimiterMap: Map<string, RateLimiterRedis> = new Map();
 
 const log = logger('worker:function');
 
@@ -57,21 +57,38 @@ async function getJobToken(domainId: string) {
   return tokenRes.data.data.token;
 }
 
+async function getRateLimiter(domainId: string) {
+  const existingRateLimiter = rateLimiterMap.get(domainId);
+  if (existingRateLimiter) return existingRateLimiter;
+
+  log.debug(`Creating new function rate limiter for domain ${domainId}`);
+
+  const domainRes = await takaro.domain.domainControllerGetOne(domainId);
+  const domain = domainRes.data.data;
+
+  if (!domain) {
+    log.error('executeFunction: Domain not found');
+    throw new errors.NotFoundError();
+  }
+
+  const redisClient = await Redis.getClient('worker:rateLimiter', { legacyMode: true });
+  const rateLimiter = new RateLimiterRedis({
+    storeClient: redisClient,
+    keyPrefix: 'worker:rateLimiter',
+    points: domain.rateLimitPoints,
+    duration: domain.rateLimitDuration / 1000,
+  });
+
+  rateLimiterMap.set(domainId, rateLimiter);
+  return rateLimiter;
+}
+
 export async function executeFunction(
   functionId: string,
   data: IHookJobData | ICommandJobData | ICronJobData,
   domainId: string,
 ) {
-  if (!rateLimiter) {
-    const redisClient = await Redis.getClient('worker:rateLimiter', { legacyMode: true });
-    rateLimiter = new RateLimiterRedis({
-      storeClient: redisClient,
-      keyPrefix: 'worker:rateLimiter',
-      points: config.get('takaro.functionsRateLimit.points'),
-      duration: config.get('takaro.functionsRateLimit.duration') / 1000,
-    });
-  }
-
+  const rateLimiter = await getRateLimiter(domainId);
   const token = await getJobToken(domainId);
 
   const client = new Client({
