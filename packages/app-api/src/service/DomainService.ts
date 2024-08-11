@@ -5,7 +5,7 @@ import { randomBytes } from 'crypto';
 import { PermissionInputDTO, RoleService, ServiceRoleCreateInputDTO, RoleOutputDTO } from './RoleService.js';
 import type { RoleOutputDTO as RoleOutputDTOType } from './RoleService.js';
 import { NOT_DOMAIN_SCOPED_TakaroService } from './Base.js';
-import { IsEnum, IsOptional, IsString, Length, ValidateNested } from 'class-validator';
+import { IsEnum, IsNumber, IsOptional, IsString, Length, ValidateNested } from 'class-validator';
 import { DOMAIN_STATES, DomainModel, DomainRepo } from '../db/domain.js';
 import { humanId } from 'human-id';
 import { Type } from 'class-transformer';
@@ -48,6 +48,11 @@ export class DomainOutputDTO extends NOT_DOMAIN_SCOPED_TakaroModelDTO<DomainOutp
 
   @IsEnum(Object.values(DOMAIN_STATES))
   state: DOMAIN_STATES;
+
+  @IsNumber()
+  rateLimitPoints: number;
+  @IsNumber()
+  rateLimitDuration: number;
 }
 
 export class DomainCreateOutputDTO extends TakaroDTO<DomainCreateOutputDTO> {

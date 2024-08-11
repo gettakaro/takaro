@@ -10,32 +10,7 @@
       "port": 12001,
       "localRoot": "${workspaceFolder}/packages/app-api",
       "remoteRoot": "/app/packages/app-api",
-      "restart": true,
-      "outFiles": [
-        "${workspaceFolder}/packages/lib-http/**/*.js",
-        "${workspaceFolder}/packages/lib-auth/**/*.js",
-        "${workspaceFolder}/packages/lib-queues/**/*.js",
-        "${workspaceFolder}/packages/lib-util/**/*.js",
-        "${workspaceFolder}/packages/lib-gameserver/**/*.js",
-        "${workspaceFolder}/packages/**/dist/*.js"
-      ]
-    },
-    {
-      "type": "pwa-node",
-      "request": "attach",
-      "name": "vmm",
-      "skipFiles": ["<node_internals>/**"],
-      "address": "127.0.0.1",
-      "port": 12002,
-      "localRoot": "${workspaceFolder}/packages/app-vmm",
-      "remoteRoot": "/app/packages/app-vmm",
-      "restart": true,
-      "outFiles": [
-        "${workspaceFolder}/packages/lib-http/**/*.js",
-        "${workspaceFolder}/packages/lib-aws/**/*.js",
-        "${workspaceFolder}/packages/lib-queues/**/*.js",
-        "${workspaceFolder}/packages/**/dist/*.js"
-      ]
+      "restart": true
     },
     {
       "type": "pwa-node",
@@ -46,12 +21,7 @@
       "port": 12004,
       "localRoot": "${workspaceFolder}/packages/app-mock-gameserver",
       "remoteRoot": "/app/packages/app-mock-gameserver",
-      "restart": true,
-      "outFiles": [
-        "${workspaceFolder}/packages/lib-http/**/*.js",
-        "${workspaceFolder}/packages/lib-queues/**/*.js",
-        "${workspaceFolder}/packages/**/dist/*.js"
-      ]
+      "restart": true
     },
     {
       "type": "pwa-node",
@@ -62,13 +32,7 @@
       "port": 12003,
       "localRoot": "${workspaceFolder}/packages/app-connector",
       "remoteRoot": "/app/packages/app-connector",
-      "restart": true,
-      "outFiles": [
-        "${workspaceFolder}/packages/lib-http/**/*.js",
-        "${workspaceFolder}/packages/lib-queues/**/*.js",
-        "${workspaceFolder}/packages/lib-gameserver/**/*.js",
-        "${workspaceFolder}/packages/**/dist/*.js"
-      ]
+      "restart": true
     },
     {
       "name": "Playwright",
