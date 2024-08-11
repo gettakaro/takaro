@@ -95,7 +95,7 @@ const tests = [
 
       const playersResAfter = await this.client.player.playerControllerSearch({
         filters: {
-          steamId: [MOCK_PLAYER.steamId],
+          steamId: [MOCK_PLAYER.steamId as string],
         },
         extend: ['playerOnGameServers'],
       });
