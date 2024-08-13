@@ -4,7 +4,7 @@ For a hands-on experience and quick start with the Takaro API, please visit the 
 
 ## Authentication
 
-If you are logged in to the Takaro dashboard, you can automatically use the endpoints on the [interactive API documentation](https://api.stg.takaro.dev/api.html). 
+If you are logged in to the Takaro dashboard, you can automatically use the endpoints on the [interactive API documentation](https://api.stg.takaro.dev/api.html).
 
 If you dont have login credentials, ask your server administrator to create these.
 
@@ -59,7 +59,6 @@ In the above example, the API will return the second page of results, with a lim
 You can combine filters, searches, and pagination in a single query. Here is an example that combines all three:
 
 ```json
-
 {
   "filters": {
     "email": "john@example.com"
@@ -74,7 +73,6 @@ You can combine filters, searches, and pagination in a single query. Here is an 
 
 This query will return the first page of records where the email field exactly matches "example.com", and the name field contains the substring "John", with a maximum of 5 records in the response.
 
-
 ## Error Codes and Handling
 
 The Takaro API returns error information within the response data. In case an error occurs, you should inspect the `meta.error` property in the response data for details about the error.
@@ -87,7 +85,7 @@ If there is an error in the API response, it might look like this:
     "error": {
       "code": "ValidationError",
       "details": {// ...}
-    } 
+    }
   },
   "data": null
 }
@@ -95,12 +93,10 @@ If there is an error in the API response, it might look like this:
 
 In this example, the meta.error property will contain a description of the error.
 
-
 ## SDKs and Libraries
 
 > ⚠️ **Coming soon**
 > The package already exists but is not yet published on npm.
-
 
 To interact with the Takaro API programmatically, you can use the `@takaro/apiclient` library. This is included in the Takaro monorepo and can simplify making API requests and handling responses.
 
@@ -126,22 +122,17 @@ const client = new Client({
 
 ## Technical Reference
 
-Takaro uses [Ory Kratos](https://www.ory.sh/kratos/) for identity management. For some backend machine-to-machine authorization, it uses [Ory Hydra](https://www.ory.sh/hydra/) which implements the OpenID Connect protocol.
+Takaro uses [Ory Kratos](https://www.ory.sh/kratos/) for identity management.
 
 Takaro is a multi-tenant application. Each tenant (domain) has its own isolated set of data. Some API routes are domain-scoped while others (think of domain management routes) use admin authentication.
 
 ### Admin authentication
 
-Since admin authentication is used mostly for automation, it uses OpenID Connect using the client credentials flow. After installing the auth services, you can create a client using the Ory Hydra CLI (or the admin API).
-
-```sh
-hydra -e http://localhost:4445  create client --grant-type client_credentials --audience t:api:admin --format json
-```
-
-This will return a client ID and secret, note these down and **keep them secret**. You can now use these credentials to get an access token. The `lib-apiclient` library automatically handles this. (See [lib-apiclient](../../packages/lib-apiclient/README.md))
+Since admin authentication is used mostly for automation, it uses a shared secret set as environment variable.
+The `lib-apiclient` library automatically handles this. (See [lib-apiclient](../../packages/lib-apiclient/README.md))
 
 You can create a domain with the following command:
 
 ```sh
-curl -X POST localhost:13000/domain -H "Content-Type: application/json" -u admin:${ADMIN_SECRET} --data '{"name": "test-domain"}' | jq
+curl -X POST localhost:13000/domain -H "Content-Type: application/json" -H "X-Takaro-Admin-Token: xxx" --data '{"name": "test-domain"}' | jq
 ```

@@ -163,7 +163,7 @@ export class AuthService extends DomainScoped {
 
     // Either the user is authenticated via the IDP or via a JWT (api client)
     // The token check is 'cheaper' than a request to the IDP so we do it first
-    // TODO: At some point we should refactor our custom JWT and use Ory (Hydra) fully or something...
+    // TODO: At some point we should refactor our custom JWT and/or use Ory (Hydra) fully or something...
     if (req.headers['x-takaro-token']) {
       const token = req.headers['x-takaro-token'] as string;
       const payload = await this.verifyJwt(token);
@@ -262,6 +262,32 @@ export class AuthService extends DomainScoped {
     });
 
     return fn;
+  }
+
+  static adminAuthMiddleware(request: Request, response: Response, next: NextFunction) {
+    try {
+      const rawToken = request.headers['x-takaro-admin-token'];
+
+      if (!rawToken) {
+        log.warn('No token provided');
+        return next(new errors.UnauthorizedError());
+      }
+
+      if (!config.get('adminClientSecret')) {
+        log.warn('No admin client secret provided');
+        return next(new errors.UnauthorizedError());
+      }
+
+      if (rawToken !== config.get('adminClientSecret')) {
+        log.warn('Invalid admin token');
+        return next(new errors.UnauthorizedError());
+      }
+
+      return next();
+    } catch (error) {
+      log.error('Unexpected error', { error });
+      next(new errors.ForbiddenError());
+    }
   }
 
   static initPassport(): string[] {

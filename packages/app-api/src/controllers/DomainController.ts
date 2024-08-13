@@ -7,7 +7,7 @@ import {
   DomainUpdateInputDTO,
   DOMAIN_STATES,
 } from '../service/DomainService.js';
-import { apiResponse, APIOutput, adminAuthMiddleware } from '@takaro/http';
+import { apiResponse, APIOutput } from '@takaro/http';
 
 import { Param, Body, Get, Post, Put, Delete, JsonController, UseBefore, Req, Res } from 'routing-controllers';
 
@@ -63,7 +63,7 @@ export class TokenOutputDTOAPI extends APIOutput<TokenOutputDTO> {
 @OpenAPI({
   security: [{ adminAuth: [] }],
 })
-@UseBefore(adminAuthMiddleware)
+@UseBefore(AuthService.adminAuthMiddleware)
 @JsonController()
 export class DomainController {
   @Post('/domain/search')
