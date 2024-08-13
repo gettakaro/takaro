@@ -48,12 +48,6 @@ Start the development environment:
 docker compose up --build
 ```
 
-You will need to create an admin client for the following configuration scripts. Set the `ADMIN_CLIENT_ID` and `ADMIN_CLIENT_SECRET` in your .env file. Give the containers a restart after you've done this.
-
-```bash
-docker compose exec hydra hydra -e http://localhost:4445  create client --grant-type client_credentials --audience t:api:admin --format json
-```
-
 At this point, everything should be running. There is a dashboard available where all the services are listed. You can access it at http://localhost:13337.
 
 To view logs:

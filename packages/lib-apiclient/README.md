@@ -1,6 +1,6 @@
 # @takaro/apiclient
 
-Automatically generated API client for Takaro. 
+Automatically generated API client for Takaro.
 
 ## Usage
 
@@ -12,10 +12,8 @@ const url = 'http://localhost:13000';
 const adminClient = new AdminClient({
   url,
   auth: {
-    clientId: config.get('hydra.adminClientId'),
-    clientSecret: config.get('hydra.adminClientSecret'),
+    clientSecret: config.get('adminClientSecret'),
   },
-  OAuth2URL: config.get('hydra.publicUrl'),
 });
 
 const createdDomain = await this.adminClient.domain.domainControllerCreate({
@@ -26,10 +24,9 @@ const client = new Client({
   url,
   auth: {
     username: createdDomain.data.data.rootUser.email,
-    password: createdDomain.data.data.password
+    password: createdDomain.data.data.password,
   },
 });
 
 await client.login();
-
 ```

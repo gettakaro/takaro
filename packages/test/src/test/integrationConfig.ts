@@ -5,11 +5,9 @@ interface IIntegrationTestConfig extends IBaseConfig {
   host: string;
   frontendHost: string;
   auth: {
-    adminClientId: string;
     adminClientSecret: string;
     username: string;
     password: string;
-    OAuth2URL: string;
   };
   mockGameserver: {
     host: string;
@@ -39,12 +37,6 @@ const configSchema = {
     env: 'TEST_FRONTEND_TARGET',
   },
   auth: {
-    adminClientId: {
-      doc: 'The client ID to use when authenticating with the Takaro server',
-      format: String,
-      default: null,
-      env: 'ADMIN_CLIENT_ID',
-    },
     adminClientSecret: {
       doc: 'The client secret to use when authenticating with the Takaro server',
       format: String,
@@ -62,12 +54,6 @@ const configSchema = {
       format: String,
       default: 'takaro-test-password',
       env: 'TEST_PASSWORD',
-    },
-    OAuth2URL: {
-      doc: 'The URL of the Takaro OAuth server',
-      format: String,
-      default: 'http://hydra:4444',
-      env: 'TAKARO_OAUTH_HOST',
     },
   },
   mockGameserver: {

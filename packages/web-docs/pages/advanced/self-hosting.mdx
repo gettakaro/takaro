@@ -72,16 +72,7 @@ Now we can start the services with Docker Compose:
 docker compose up -d
 ```
 
-You will need to create an admin client in Hydra.
-
-```bash
-docker compose exec hydra hydra -e http://localhost:4445  create client --grant-type client_credentials --audience t:api:admin --format json
-```
-
-Copy the client id and secret and set the ADMIN_CLIENT_ID and ADMIN_CLIENT_SECRET in your .env file.
-Give the containers a restart after you've done this.
-
-Finally, you should be able to access the Takaro web interface at `https://takaro.your-domain.com`.
+You should be able to access the Takaro web interface at `https://takaro.your-domain.com`.
 
 ## Troubleshooting
 

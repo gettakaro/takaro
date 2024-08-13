@@ -1,17 +1,11 @@
-import { Configuration, CreateIdentityBody, FrontendApi, IdentityApi, OAuth2Api } from '@ory/client';
+import { Configuration, CreateIdentityBody, FrontendApi, IdentityApi } from '@ory/client';
 import { config } from '../config.js';
-import { errors, logger, TakaroDTO } from '@takaro/util';
+import { logger } from '@takaro/util';
 import { createAxiosClient } from './oryAxiosClient.js';
 import { Request } from 'express';
-import { IsBoolean, IsNumber, IsString } from 'class-validator';
 
 enum IDENTITY_SCHEMA {
   USER = 'user_v0',
-}
-
-export enum AUDIENCES {
-  // Used for various sysadmin tasks in the Takaro API
-  TAKARO_API_ADMIN = 't:api:admin',
 }
 
 export interface ITakaroIdentity {
@@ -19,28 +13,9 @@ export interface ITakaroIdentity {
   email: string;
 }
 
-export class TakaroTokenDTO extends TakaroDTO<TakaroTokenDTO> {
-  @IsBoolean()
-  active: boolean;
-  @IsString()
-  clientId: string;
-  @IsNumber()
-  exp: number;
-  @IsNumber()
-  iat: number;
-  @IsString()
-  iss: string;
-  @IsString()
-  sub: string;
-  @IsString({ each: true })
-  aud: string[];
-}
-
 class Ory {
-  private authToken: string | null = null;
   private log = logger('ory');
 
-  private adminClient: OAuth2Api;
   private identityClient: IdentityApi;
   private frontendClient: FrontendApi;
 
@@ -60,17 +35,6 @@ class Ory {
       undefined,
       createAxiosClient(config.get('kratos.publicUrl')),
     );
-    this.adminClient = new OAuth2Api(
-      new Configuration({
-        basePath: config.get('hydra.adminUrl'),
-      }),
-      undefined,
-      createAxiosClient(config.get('hydra.adminUrl')),
-    );
-  }
-
-  get OAuth2URL() {
-    return config.get('hydra.publicUrl');
   }
 
   async getIdentity(id: string): Promise<ITakaroIdentity> {
@@ -182,58 +146,6 @@ class Ory {
         session_token: tokenFromAuthHeader,
       },
     });
-  }
-
-  async introspectToken(token: string): Promise<TakaroTokenDTO> {
-    const introspectRes = await this.adminClient.introspectOAuth2Token({
-      token,
-    });
-
-    const data = new TakaroTokenDTO({
-      active: introspectRes.data.active,
-      clientId: introspectRes.data.client_id,
-      aud: introspectRes.data.aud,
-      exp: introspectRes.data.exp,
-      iat: introspectRes.data.iat,
-      iss: introspectRes.data.iss,
-      sub: introspectRes.data.sub,
-    });
-
-    try {
-      // Check for correctness of the data
-      // DOES NOT CHECK FOR EXPIRATION
-      await data.validate();
-    } catch (error) {
-      this.log.warn('Introspected token has invalid shape', { error });
-      throw new errors.ForbiddenError();
-    }
-
-    return data;
-  }
-
-  // Currently, this is only used for creating the admin-auth client.
-  // ...In the future we should make this more generic and allow for
-  // creating any API client perhaps?
-  async createOIDCClient(): Promise<{
-    clientId: string;
-    clientSecret: string;
-  }> {
-    const client = await this.adminClient.createOAuth2Client({
-      oAuth2Client: {
-        grant_types: ['client_credentials'],
-        audience: [AUDIENCES.TAKARO_API_ADMIN],
-      },
-    });
-
-    if (!client.data.client_id || !client.data.client_secret) {
-      this.log.error('Could not create OIDC client', { client });
-      throw new errors.InternalServerError();
-    }
-
-    return {
-      clientId: client.data.client_id,
-      clientSecret: client.data.client_secret,
-    };
   }
 
   async getRecoveryFlow(id: string) {

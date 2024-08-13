@@ -31,10 +31,8 @@ const log = logger('worker:function');
 const takaro = new AdminClient({
   url: config.get('takaro.url'),
   auth: {
-    clientId: config.get('hydra.adminClientId'),
-    clientSecret: config.get('hydra.adminClientSecret'),
+    clientSecret: config.get('adminClientSecret'),
   },
-  OAuth2URL: config.get('hydra.publicUrl'),
   log: logger('adminClient'),
 });
 

@@ -43,8 +43,7 @@
       "outFiles": ["${workspaceFolder}/dist/extension.js"],
       "preLaunchTask": "${defaultBuildTask}",
       "env": {
-        "DEBUG": "true",
-        "TAKARO_OAUTH_HOST": "http://127.0.0.1:14444"
+        "DEBUG": "true"
       }
     }
   ]

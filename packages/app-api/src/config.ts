@@ -227,9 +227,11 @@ const configSchema = {
   },
 };
 
-export const config = new Config<IHttpConfig & IQueuesConfig & IDbConfig & Pick<IAuthConfig, 'kratos' | 'hydra'>>([
+export const config = new Config<
+  IHttpConfig & IQueuesConfig & IDbConfig & Pick<IAuthConfig, 'kratos' | 'adminClientSecret'>
+>([
   configSchema,
   queuesConfigSchema,
   dbConfigSchema,
-  { kratos: authConfigSchema.kratos, hydra: authConfigSchema.hydra },
+  { kratos: authConfigSchema.kratos, adminClientSecret: authConfigSchema.adminClientSecret },
 ]);
