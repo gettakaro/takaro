@@ -65,11 +65,7 @@ async function main() {
 
   await upMany(['kratos'], composeOpts);
 
-  await Promise.all([
-    waitUntilHealthyHttp('http://127.0.0.1:4433/health/ready', 60),
-    waitUntilHealthyHttp('http://127.0.0.1:4444/health/ready', 60),
-    waitUntilHealthyHttp('http://127.0.0.1:14444/health/ready', 60),
-  ]);
+  await Promise.all([waitUntilHealthyHttp('http://127.0.0.1:4433/health/ready', 60)]);
 
   // Check if ADMIN_CLIENT_SECRET is set already if not set, create them
   if (!composeOpts.env.ADMIN_CLIENT_SECRET) {
