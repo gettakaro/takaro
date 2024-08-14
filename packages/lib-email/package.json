@@ -15,8 +15,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@takaro/config": "0.0.1",
-    "@takaro/util": "0.0.1",
     "ejs": "^3.1.9",
     "nodemailer": "^6.9.3"
   },

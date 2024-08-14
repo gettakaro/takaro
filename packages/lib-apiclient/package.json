@@ -19,7 +19,6 @@
   "license": "ISC",
   "dependencies": {},
   "devDependencies": {
-    "@openapitools/openapi-generator-cli": "^2.5.2",
-    "@takaro/test": "0.0.1"
+    "@openapitools/openapi-generator-cli": "^2.5.2"
   }
 }

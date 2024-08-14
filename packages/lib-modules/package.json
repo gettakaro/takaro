@@ -17,10 +17,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "@takaro/apiclient": "^0.0.1"
-  },
-  "devDependencies": {
-    "@takaro/test": "0.0.1"
-  }
+  "dependencies": {},
+  "devDependencies": {}
 }

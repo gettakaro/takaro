@@ -16,11 +16,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@takaro/modules": "0.0.1",
     "eventsource": "^2.0.2"
   },
   "devDependencies": {
-    "@takaro/test": "0.0.1",
     "@types/eventsource": "^1.1.9"
   }
 }

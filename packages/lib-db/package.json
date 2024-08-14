@@ -23,7 +23,6 @@
     "pg": "^8.8.0"
   },
   "devDependencies": {
-    "@takaro/test": "0.0.1",
     "@types/convict": "^6.1.1"
   }
 }

@@ -16,8 +16,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@takaro/config": "0.0.1",
-    "@takaro/util": "0.0.1",
     "body-parser": "^1.20.0",
     "class-validator-jsonschema": "^3.1.1",
     "cookie-parser": "^1.4.6",
@@ -28,7 +26,6 @@
     "zod": "^3.17.10"
   },
   "devDependencies": {
-    "@takaro/test": "0.0.1",
     "@types/cookie-parser": "^1.4.3",
     "@types/cors": "^2.8.12",
     "@types/express": "^4.17.13",

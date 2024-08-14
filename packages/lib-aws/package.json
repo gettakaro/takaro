@@ -15,11 +15,8 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "@takaro/config": "0.0.1"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "@takaro/test": "0.0.1",
     "@types/convict": "^6.1.1"
   }
 }

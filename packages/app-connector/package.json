@@ -16,11 +16,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "@takaro/http": "0.0.1",
-    "@takaro/gameserver": "0.0.1",
-    "@takaro/queues": "0.0.1",
-    "@takaro/auth": "0.0.1"
-  },
+  "dependencies": {},
   "devDependencies": {}
 }

@@ -19,7 +19,6 @@
     "convict": "^6.2.3"
   },
   "devDependencies": {
-    "@takaro/test": "0.0.1",
     "@types/convict": "^6.1.1"
   }
 }

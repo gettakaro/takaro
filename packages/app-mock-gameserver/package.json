@@ -17,8 +17,5 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "@takaro/util": "0.0.1",
-    "@takaro/http": "0.0.1"
-  }
+  "dependencies": {}
 }
