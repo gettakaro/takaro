@@ -1142,6 +1142,12 @@ export interface DomainCreateInputDTO {
    * @memberof DomainCreateInputDTO
    */
   state?: DomainCreateInputDTOStateEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof DomainCreateInputDTO
+   */
+  externalReference?: string;
 }
 
 export const DomainCreateInputDTOStateEnum = {
@@ -1234,6 +1240,12 @@ export interface DomainOutputDTO {
    * @memberof DomainOutputDTO
    */
   name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof DomainOutputDTO
+   */
+  externalReference: string;
   /**
    *
    * @type {string}
@@ -1410,6 +1422,12 @@ export interface DomainUpdateInputDTO {
    * @memberof DomainUpdateInputDTO
    */
   name?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof DomainUpdateInputDTO
+   */
+  externalReference?: string;
   /**
    *
    * @type {string}
@@ -8495,55 +8513,6 @@ export interface TakaroModelDTO {
    * @memberof TakaroModelDTO
    */
   updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
-}
-/**
- *
- * @export
- * @interface TakaroTokenDTO
- */
-export interface TakaroTokenDTO {
-  /**
-   *
-   * @type {boolean}
-   * @memberof TakaroTokenDTO
-   */
-  active: boolean;
-  /**
-   *
-   * @type {string}
-   * @memberof TakaroTokenDTO
-   */
-  clientId: string;
-  /**
-   *
-   * @type {number}
-   * @memberof TakaroTokenDTO
-   */
-  exp: number;
-  /**
-   *
-   * @type {number}
-   * @memberof TakaroTokenDTO
-   */
-  iat: number;
-  /**
-   *
-   * @type {string}
-   * @memberof TakaroTokenDTO
-   */
-  iss: string;
-  /**
-   *
-   * @type {string}
-   * @memberof TakaroTokenDTO
-   */
-  sub: string;
-  /**
-   *
-   * @type {Array<string>}
-   * @memberof TakaroTokenDTO
-   */
-  aud: Array<string>;
 }
 /**
  *
