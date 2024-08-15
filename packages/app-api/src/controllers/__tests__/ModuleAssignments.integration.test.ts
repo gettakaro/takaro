@@ -129,7 +129,7 @@ const tests = [
       });
     },
     expectedStatus: 400,
-    filteredFields: ['moduleId', 'functionId', 'commandId'],
+    filteredFields: ['moduleId', 'functionId', 'commandId', 'gameserverId'],
   }),
   new IntegrationTest<ISetupData>({
     group,

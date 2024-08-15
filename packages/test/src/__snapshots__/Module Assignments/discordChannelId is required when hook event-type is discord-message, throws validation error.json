@@ -59,7 +59,8 @@
     "filteredFields": [
       "moduleId",
       "functionId",
-      "commandId"
+      "commandId",
+      "gameserverId"
     ],
     "standardEnvironment": true
   }
