@@ -154,7 +154,7 @@ const tests = [
         userConfig: JSON.stringify({}),
         systemConfig: JSON.stringify({
           hooks: {
-            [`${hookName} Discord channel ID`]: '1234567890',
+            [hookName]: { discordChannelId: '123' },
           },
         }),
       });
