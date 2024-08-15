@@ -1,4 +1,4 @@
-import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup } from '@takaro/test';
+import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '../dto/index.js';
 import { sleep } from '@takaro/util';
 
@@ -30,14 +30,14 @@ const customSetup = async function (this: IntegrationTest<IModuleTestsSetupData>
     },
   );
 
-  const setEvents = setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+  const setEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
   await this.client.command.commandControllerTrigger(setupData.gameserver.id, {
     msg: '/settp test',
     playerId: setupData.players[0].id,
   });
 
   expect((await setEvents).length).to.be.eq(1);
-  expect((await setEvents)[0].data.msg).to.be.eq('Teleport test set.');
+  expect((await setEvents)[0].data.meta.msg).to.be.eq('Teleport test set.');
 
   const giveCurrencies = setupData.players.map(async (player) => {
     const playerOnGameServer = (
@@ -66,7 +66,7 @@ const tests = [
     setup: customSetup,
     name: 'Deducts money when cost is configured',
     test: async function () {
-      const events = this.setupData.eventAwaiter.waitForEvents('command-executed', 1);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents('command-executed', 1);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/tp test',
         playerId: this.setupData.players[0].id,
@@ -91,7 +91,7 @@ const tests = [
     test: async function () {
       const amount = 10;
 
-      const setEvents = this.setupData.eventAwaiter.waitForEvents('command-executed', amount);
+      const setEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents('command-executed', amount);
 
       await Promise.all(
         Array.from({ length: amount }).map(async (_, index) => {
@@ -105,7 +105,7 @@ const tests = [
 
       expect((await setEvents).length).to.be.eq(amount);
 
-      const events = this.setupData.eventAwaiter.waitForEvents('command-executed', amount);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents('command-executed', amount);
       await Promise.all(
         Array.from({ length: amount }).map(async (_, index) => {
           await sleep(1);
@@ -136,7 +136,7 @@ const tests = [
     setup: customSetup,
     name: 'Does not deduct currency when command unsuccessful',
     test: async function () {
-      const events = this.setupData.eventAwaiter.waitForEvents('command-executed', 1);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents('command-executed', 1);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/tp doesntexist',
         playerId: this.setupData.players[0].id,
@@ -176,14 +176,14 @@ const tests = [
         },
       );
 
-      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/tp test',
         playerId: this.setupData.players[1].id,
       });
 
       expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.msg).to.be.eq('You do not have enough currency to execute this command.');
+      expect((await events)[0].data.meta.msg).to.be.eq('You do not have enough currency to execute this command.');
     },
   }),
 ];

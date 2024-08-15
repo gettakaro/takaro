@@ -1,4 +1,4 @@
-import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup } from '@takaro/test';
+import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '../../dto/index.js';
 
 const group = 'Teleports suite';
@@ -15,7 +15,7 @@ const tests = [
         this.setupData.teleportsModule.id,
       );
 
-      const setEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 3);
+      const setEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 3);
 
       await Promise.all(
         Array.from({ length: 3 }).map(async (_, i) => {
@@ -29,10 +29,10 @@ const tests = [
       expect((await setEvents).length).to.be.eq(3);
 
       for (const event of await setEvents) {
-        expect(event.data.msg).to.match(/Teleport test\d set\./);
+        expect(event.data.meta.msg).to.match(/Teleport test\d set\./);
       }
 
-      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 4);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 4);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/tplist',
@@ -40,10 +40,10 @@ const tests = [
       });
 
       expect((await events).length).to.be.eq(4);
-      expect((await events)[0].data.msg).to.be.eq('You have 3 teleports available');
-      expect((await events)[1].data.msg).to.match(/test0: \([-\d]+,[-\d]+,[-\d]+\)/);
-      expect((await events)[2].data.msg).to.match(/test1: \([-\d]+,[-\d]+,[-\d]+\)/);
-      expect((await events)[3].data.msg).to.match(/test2: \([-\d]+,[-\d]+,[-\d]+\)/);
+      expect((await events)[0].data.meta.msg).to.be.eq('You have 3 teleports available');
+      expect((await events)[1].data.meta.msg).to.match(/test0: \([-\d]+,[-\d]+,[-\d]+\)/);
+      expect((await events)[2].data.meta.msg).to.match(/test1: \([-\d]+,[-\d]+,[-\d]+\)/);
+      expect((await events)[3].data.meta.msg).to.match(/test2: \([-\d]+,[-\d]+,[-\d]+\)/);
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -62,7 +62,7 @@ const tests = [
         },
       );
 
-      const setTpEvent = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const setTpEvent = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/settp test',
@@ -70,9 +70,9 @@ const tests = [
       });
 
       expect((await setTpEvent).length).to.be.eq(1);
-      expect((await setTpEvent)[0].data.msg).to.be.eq('Teleport test set.');
+      expect((await setTpEvent)[0].data.meta.msg).to.be.eq('Teleport test set.');
 
-      const setPublicEvent = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const setPublicEvent = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/setpublic test',
@@ -80,9 +80,9 @@ const tests = [
       });
 
       expect((await setPublicEvent).length).to.be.eq(1);
-      expect((await setPublicEvent)[0].data.msg).to.be.eq('Teleport test is now public.');
+      expect((await setPublicEvent)[0].data.meta.msg).to.be.eq('Teleport test is now public.');
 
-      const setTpEvent2 = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const setTpEvent2 = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/settp test2',
@@ -90,9 +90,9 @@ const tests = [
       });
 
       expect((await setTpEvent2).length).to.be.eq(1);
-      expect((await setTpEvent2)[0].data.msg).to.be.eq('Teleport test2 set.');
+      expect((await setTpEvent2)[0].data.meta.msg).to.be.eq('Teleport test2 set.');
 
-      const tpEvent = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 2);
+      const tpEvent = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 2);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/tplist',
@@ -100,8 +100,8 @@ const tests = [
       });
 
       expect((await tpEvent).length).to.be.eq(2);
-      expect((await tpEvent)[0].data.msg).to.be.eq('You have 1 teleport available');
-      expect((await tpEvent)[1].data.msg).to.match(/test: \([-\d]+,[-\d]+,[-\d]+\) \(public\)/);
+      expect((await tpEvent)[0].data.meta.msg).to.be.eq('You have 1 teleport available');
+      expect((await tpEvent)[1].data.meta.msg).to.match(/test: \([-\d]+,[-\d]+,[-\d]+\) \(public\)/);
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -115,7 +115,7 @@ const tests = [
         this.setupData.teleportsModule.id,
       );
 
-      const setTpEvent = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const setTpEvent = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/settp test',
@@ -123,9 +123,9 @@ const tests = [
       });
 
       expect((await setTpEvent).length).to.be.eq(1);
-      expect((await setTpEvent)[0].data.msg).to.be.eq('Teleport test set.');
+      expect((await setTpEvent)[0].data.meta.msg).to.be.eq('Teleport test set.');
 
-      const tpEvent = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const tpEvent = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/tplist',
@@ -133,7 +133,9 @@ const tests = [
       });
 
       expect((await tpEvent).length).to.be.eq(1);
-      expect((await tpEvent)[0].data.msg).to.be.eq('You have no teleports available, use /settp <name> to set one.');
+      expect((await tpEvent)[0].data.meta.msg).to.be.eq(
+        'You have no teleports available, use /settp <name> to set one.',
+      );
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -148,7 +150,7 @@ const tests = [
         this.setupData.teleportsModule.id,
       );
 
-      const setTpEvent = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const setTpEvent = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/settp test',
@@ -156,9 +158,9 @@ const tests = [
       });
 
       expect((await setTpEvent).length).to.be.eq(1);
-      expect((await setTpEvent)[0].data.msg).to.be.eq('Teleport test set.');
+      expect((await setTpEvent)[0].data.meta.msg).to.be.eq('Teleport test set.');
 
-      const setTpEvent2 = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const setTpEvent2 = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/settp test2',
@@ -166,9 +168,9 @@ const tests = [
       });
 
       expect((await setTpEvent2).length).to.be.eq(1);
-      expect((await setTpEvent2)[0].data.msg).to.be.eq('Teleport test2 set.');
+      expect((await setTpEvent2)[0].data.meta.msg).to.be.eq('Teleport test2 set.');
 
-      const tpEvent = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 2);
+      const tpEvent = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 2);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/tplist',
@@ -176,8 +178,8 @@ const tests = [
       });
 
       expect((await tpEvent).length).to.be.eq(2);
-      expect((await tpEvent)[0].data.msg).to.be.eq('You have 1 teleport available');
-      expect((await tpEvent)[1].data.msg).to.match(/test2: \([-\d]+,[-\d]+,[-\d]+\)/);
+      expect((await tpEvent)[0].data.meta.msg).to.be.eq('You have 1 teleport available');
+      expect((await tpEvent)[1].data.meta.msg).to.match(/test2: \([-\d]+,[-\d]+,[-\d]+\)/);
     },
   }),
 ];

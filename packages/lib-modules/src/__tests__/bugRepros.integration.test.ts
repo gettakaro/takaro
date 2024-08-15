@@ -1,4 +1,4 @@
-import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup } from '@takaro/test';
+import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '../dto/index.js';
 import { EventChatMessageChannelEnum } from '@takaro/apiclient';
 
@@ -46,7 +46,7 @@ const tests = [
 
       await this.client.gameserver.gameServerControllerInstallModule(this.setupData.gameserver.id, mod.id);
 
-      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 2);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 2);
 
       await this.client.hook.hookControllerTrigger({
         eventType: 'chat-message',
@@ -60,7 +60,7 @@ const tests = [
       });
 
       expect((await events).length).to.be.eq(2);
-      expect((await events).map((e) => e.data.msg)).to.include.members(['First hook', 'Second hook']);
+      expect((await events).map((e) => e.data.meta.msg)).to.include.members(['First hook', 'Second hook']);
     },
   }),
 ];

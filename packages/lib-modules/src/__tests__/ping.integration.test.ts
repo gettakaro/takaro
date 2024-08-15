@@ -1,5 +1,5 @@
-import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup } from '@takaro/test';
-import { GameEvents } from '../dto/index.js';
+import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
+import { HookEvents } from '../dto/index.js';
 
 const group = 'Ping command';
 
@@ -15,7 +15,7 @@ const tests = [
         this.setupData.utilsModule.id,
       );
 
-      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(HookEvents.CHAT_MESSAGE);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/ping',
@@ -23,7 +23,7 @@ const tests = [
       });
 
       expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.msg).to.be.eq('Pong!');
+      expect((await events)[0].data.meta.msg).to.be.eq('Pong!');
     },
   }),
 ];

@@ -20,7 +20,6 @@ export interface IModuleTestsSetupData {
   geoBlockModule: ModuleOutputDTO;
   role: RoleOutputDTO;
   players: PlayerOutputDTO[];
-  eventAwaiter: EventsAwaiter;
 }
 
 export const chatMessageSorter = (a: IDetectedEvent, b: IDetectedEvent) => {
@@ -124,6 +123,5 @@ export const modulesTestSetup = async function (
     gameserver: gameServer1.data.data,
     role: roleRes.data.data,
     players: playersRes.data.data,
-    eventAwaiter,
   };
 };

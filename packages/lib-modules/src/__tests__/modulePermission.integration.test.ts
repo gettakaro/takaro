@@ -1,4 +1,11 @@
-import { IntegrationTest, expect, integrationConfig, IModuleTestsSetupData, modulesTestSetup } from '@takaro/test';
+import {
+  IntegrationTest,
+  expect,
+  integrationConfig,
+  IModuleTestsSetupData,
+  modulesTestSetup,
+  EventsAwaiter,
+} from '@takaro/test';
 import { GameEvents } from '../dto/index.js';
 
 const group = 'Module permissions role assignments';
@@ -47,14 +54,14 @@ const tests = [
       });
       await this.client.player.playerControllerAssignRole(this.setupData.players[0].id, this.setupData.role.id);
 
-      const setEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const setEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/settp test',
         playerId: this.setupData.players[0].id,
       });
 
       expect((await setEvents).length).to.be.eq(1);
-      expect((await setEvents)[0].data.msg).to.be.eq('Teleport test set.');
+      expect((await setEvents)[0].data.meta.msg).to.be.eq('Teleport test set.');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -75,14 +82,14 @@ const tests = [
         gameServerId: newGameServer.data.data.id,
       });
 
-      const setEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const setEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/settp test',
         playerId: this.setupData.players[0].id,
       });
 
       expect((await setEvents).length).to.be.eq(1);
-      expect((await setEvents)[0].data.msg).to.be.eq('You do not have permission to use teleports.');
+      expect((await setEvents)[0].data.meta.msg).to.be.eq('You do not have permission to use teleports.');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -105,14 +112,14 @@ const tests = [
         gameServerId: this.setupData.gameserver.id,
       });
 
-      const setEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const setEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/settp test',
         playerId: this.setupData.players[0].id,
       });
 
       expect((await setEvents).length).to.be.eq(1);
-      expect((await setEvents)[0].data.msg).to.be.eq('Teleport test set.');
+      expect((await setEvents)[0].data.meta.msg).to.be.eq('Teleport test set.');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -148,7 +155,7 @@ const tests = [
         ],
       });
 
-      const setTpEvent = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const setTpEvent = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/settp test',
@@ -156,30 +163,30 @@ const tests = [
       });
 
       expect((await setTpEvent).length).to.be.eq(1);
-      expect((await setTpEvent)[0].data.msg).to.be.eq('Teleport test set.');
+      expect((await setTpEvent)[0].data.meta.msg).to.be.eq('Teleport test set.');
 
-      const tpEvent = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const tpEvent = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/tp test',
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await tpEvent)[0].data.msg).to.be.eq('Teleported to test.');
+      expect((await tpEvent)[0].data.meta.msg).to.be.eq('Teleported to test.');
 
       await this.client.role.roleControllerUpdate(playerRoleRes.data.data[0].id, {
         name: 'Player',
         permissions: [],
       });
 
-      const tpEventNoPerm = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const tpEventNoPerm = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/tp test',
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await tpEventNoPerm)[0].data.msg).to.be.eq('You do not have permission to use teleports.');
+      expect((await tpEventNoPerm)[0].data.meta.msg).to.be.eq('You do not have permission to use teleports.');
     },
   }),
 ];

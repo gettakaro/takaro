@@ -23,7 +23,7 @@ export class EventsAwaiter {
   socket: Socket;
 
   async connect(client: Client) {
-    return new Promise<void>((resolve, reject) => {
+    return new Promise<EventsAwaiter>((resolve, reject) => {
       this.socket = io(integrationConfig.get('host'), {
         extraHeaders: {
           Authorization: `Bearer ${client.token}`,
@@ -31,7 +31,7 @@ export class EventsAwaiter {
       });
 
       this.socket.on('connect', async () => {
-        return resolve();
+        return resolve(this);
       });
 
       this.socket.on('connect_error', (err) => {
