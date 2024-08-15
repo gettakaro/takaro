@@ -69,7 +69,7 @@ async function main() {
 
   // Check if ADMIN_CLIENT_SECRET is set already if not set, create them
   if (!composeOpts.env.ADMIN_CLIENT_SECRET) {
-    console.log('No OAuth admin client configured, creating one...');
+    console.log('No admin secret configured, creating one...');
     composeOpts.env.ADMIN_CLIENT_SECRET = randomUUID();
   }
 
