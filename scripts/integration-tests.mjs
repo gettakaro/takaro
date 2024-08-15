@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto';
-import { upMany, logs, upAll, down, run, pullAll } from 'docker-compose/dist/v2';
+import { upMany, logs, upAll, down, run, pullAll } from 'docker-compose/dist/v2.js';
 import { $ } from 'zx';
 import { writeFile, mkdir } from 'fs/promises';
 
