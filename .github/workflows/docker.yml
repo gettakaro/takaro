@@ -88,8 +88,8 @@ jobs:
             PACKAGE=${{ matrix.package.name }}
   node-ci:
     needs: [docker]
-    timeout-minutes: 120
-    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    runs-on: ubicloud-standard-8
     strategy:
       matrix:
         node-version: [18.18]
