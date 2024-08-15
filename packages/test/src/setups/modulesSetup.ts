@@ -23,10 +23,10 @@ export interface IModuleTestsSetupData {
 }
 
 export const chatMessageSorter = (a: IDetectedEvent, b: IDetectedEvent) => {
-  if (a.data.msg < b.data.msg) {
+  if (a.data.meta.msg < b.data.meta.msg) {
     return -1;
   }
-  if (a.data.msg > b.data.msg) {
+  if (a.data.meta.msg > b.data.meta.msg) {
     return 1;
   }
   return 0;
