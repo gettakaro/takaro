@@ -89,77 +89,76 @@ export async function processJob(job: Job<IGameServerQueueData>) {
   }
 
   if (job.data.gameServerId) {
-    const workerMetrics = getWorkerMetrics(job.data.gameServerId);
-
-    const { domainId, gameServerId } = job.data;
-    log.debug(`Processing playerSync job for domain: ${domainId} and game server: ${gameServerId}`);
-    const gameServerService = new GameServerService(domainId);
-    const playerService = new PlayerService(domainId);
-    const playerOnGameServerService = new PlayerOnGameServerService(domainId);
-
-    const onlinePlayers = await gameServerService.getPlayers(gameServerId);
-
-    const promises = [];
-
-    workerMetrics.metrics.players_online.set({ gameserver: gameServerId, domain: domainId }, onlinePlayers.length);
-
-    promises.push(
-      playerOnGameServerService
-        .setOnlinePlayers(gameServerId, onlinePlayers)
-        .then(() => log.debug(`Set online players (${onlinePlayers.length}) for game server: ${gameServerId}`)),
-    );
-    promises.push(
-      gameServerService
-        .syncInventories(gameServerId)
-        .then(() => log.debug(`Synced inventories for game server: ${gameServerId}`)),
-    );
-
-    promises.push(
-      ...onlinePlayers.map(async (gamePlayer) => {
-        log.debug(`Syncing player ${gamePlayer.gameId} on game server ${gameServerId}`);
-        const { player, pog } = await playerService.resolveRef(gamePlayer, gameServerId);
-        await gameServerService.getPlayerLocation(gameServerId, player.id);
-
-        if (gamePlayer.ip) {
-          await playerService.observeIp(player.id, gameServerId, gamePlayer.ip);
-        }
-
-        workerMetrics.metrics.player_ping.set(
-          { player: player.id, gameserver: gameServerId, domain: domainId },
-          gamePlayer.ping ?? 0,
-        );
-
-        workerMetrics.metrics.player_currency.set(
-          { player: player.id, gameserver: gameServerId, domain: domainId },
-          pog.currency,
-        );
-
-        await playerOnGameServerService.update(
-          pog.id,
-          new PlayerOnGameServerUpdateDTO({
-            ping: gamePlayer.ping,
-          }),
-        );
-        await log.debug(`Synced player ${gamePlayer.gameId} on game server ${gameServerId}`);
-      }),
-    );
-
-    const res = await Promise.allSettled(promises);
-    await workerMetrics.finalize();
-
-    for (const r of res) {
-      if (r.status === 'rejected') {
-        log.error(r.reason);
-        await job.log(r.reason);
-      }
-    }
-
-    if (res.some((r) => r.status === 'rejected')) {
-      throw new Error('Some promises failed');
-    }
-
+    await handlePlayerSync(job.data.gameServerId, job.data.domainId);
     return;
   }
 
   log.error(`Invalid job data: ${JSON.stringify(job.data)}`);
+}
+
+export async function handlePlayerSync(gameServerId: string, domainId: string) {
+  const workerMetrics = getWorkerMetrics(gameServerId);
+
+  log.debug(`Processing playerSync job for domain: ${domainId} and game server: ${gameServerId}`);
+  const gameServerService = new GameServerService(domainId);
+  const playerService = new PlayerService(domainId);
+  const playerOnGameServerService = new PlayerOnGameServerService(domainId);
+
+  const onlinePlayers = await gameServerService.getPlayers(gameServerId);
+
+  const promises = [];
+
+  workerMetrics.metrics.players_online.set({ gameserver: gameServerId, domain: domainId }, onlinePlayers.length);
+
+  promises.push(
+    playerOnGameServerService
+      .setOnlinePlayers(gameServerId, onlinePlayers)
+      .then(() => log.debug(`Set online players (${onlinePlayers.length}) for game server: ${gameServerId}`)),
+  );
+  promises.push(
+    gameServerService
+      .syncInventories(gameServerId)
+      .then(() => log.debug(`Synced inventories for game server: ${gameServerId}`)),
+  );
+
+  promises.push(
+    ...onlinePlayers.map(async (gamePlayer) => {
+      log.debug(`Syncing player ${gamePlayer.gameId} on game server ${gameServerId}`);
+      const { player, pog } = await playerService.resolveRef(gamePlayer, gameServerId);
+      await gameServerService.getPlayerLocation(gameServerId, player.id);
+
+      if (gamePlayer.ip) {
+        await playerService.observeIp(player.id, gameServerId, gamePlayer.ip);
+      }
+
+      workerMetrics.metrics.player_ping.set(
+        { player: player.id, gameserver: gameServerId, domain: domainId },
+        gamePlayer.ping ?? 0,
+      );
+
+      workerMetrics.metrics.player_currency.set(
+        { player: player.id, gameserver: gameServerId, domain: domainId },
+        pog.currency,
+      );
+
+      await playerOnGameServerService.update(
+        pog.id,
+        new PlayerOnGameServerUpdateDTO({
+          ping: gamePlayer.ping,
+        }),
+      );
+      await log.debug(`Synced player ${gamePlayer.gameId} on game server ${gameServerId}`);
+    }),
+  );
+
+  const res = await Promise.allSettled(promises);
+  await workerMetrics.finalize();
+
+  for (const r of res) {
+    if (r.status === 'rejected') {
+      log.warn(r.reason);
+    }
+  }
+
+  return;
 }

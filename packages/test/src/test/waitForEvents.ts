@@ -1,17 +1,12 @@
 import 'reflect-metadata';
-import { EventTypes, GameEvents } from '@takaro/modules';
+import { EventTypes } from '@takaro/modules';
 import { Client } from '@takaro/apiclient';
 import { io, Socket } from 'socket.io-client';
 import { integrationConfig } from './integrationConfig.js';
-import { ValueOf } from 'type-fest';
 
 export interface IDetectedEvent {
   event: EventTypes;
   data: any;
-}
-
-interface IExtraFilters {
-  gameServerId?: string;
 }
 
 export const sorter = (a: IDetectedEvent, b: IDetectedEvent) => {
@@ -45,54 +40,39 @@ export class EventsAwaiter {
     });
   }
 
-  async waitForEvents(expectedEvent: EventTypes | string, amount = 1, extraFilters: Partial<IExtraFilters> = {}) {
+  async disconnect() {
+    this.socket.removeAllListeners();
+    this.socket.disconnect();
+  }
+
+  async waitForEvents(expectedEvent: EventTypes | string, amount = 1) {
+    if (!this.socket.connected) throw new Error('Socket not connected');
     const events: IDetectedEvent[] = [];
     const discardedEvents: IDetectedEvent[] = [];
     let hasFinished = false;
 
     return Promise.race([
       new Promise<IDetectedEvent[]>((resolve) => {
-        if (Object.values(GameEvents).includes(expectedEvent as ValueOf<typeof GameEvents>)) {
-          this.socket.on('gameEvent', (_gameserverId, event, data) => {
-            if (event !== expectedEvent) {
-              // log.warn(`Received event ${event} but expected ${expectedEvent}`);
-              //console.log(JSON.stringify({ event, data }, null, 2));
-              discardedEvents.push({ event, data });
-              return;
-            }
+        this.socket.on('event', (event) => {
+          if (event.eventName === expectedEvent) {
+            events.push({ event, data: event });
+          } else {
+            discardedEvents.push({ event, data: event });
+          }
 
-            if (event === expectedEvent) {
-              if (extraFilters.gameServerId && extraFilters.gameServerId !== _gameserverId) {
-                return;
-              }
-              events.push({ event, data });
-            }
-
-            if (events.length === amount) {
-              hasFinished = true;
-              resolve(events);
-            }
-          });
-        } else {
-          this.socket.on('event', (event) => {
-            if (event.eventName === expectedEvent) {
-              events.push({ event, data: event });
-            } else {
-              discardedEvents.push({ event, data: event });
-            }
-
-            if (events.length === amount) {
-              hasFinished = true;
-              resolve(events);
-            }
-          });
-        }
+          if (events.length === amount) {
+            hasFinished = true;
+            this.disconnect();
+            resolve(events);
+          }
+        });
       }),
       new Promise<IDetectedEvent[]>((_, reject) => {
         setTimeout(() => {
           if (hasFinished) return;
           const msg = `Event ${expectedEvent} timed out - received ${events.length}/${amount} events.`;
           console.warn(msg);
+          this.disconnect();
           reject(new Error(msg));
         }, integrationConfig.get('waitForEventsTimeout'));
       }),

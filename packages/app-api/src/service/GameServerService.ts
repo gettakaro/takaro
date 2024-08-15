@@ -52,6 +52,7 @@ import { Type } from 'class-transformer';
 import { gameServerLatency } from '../lib/metrics.js';
 import { Pushgateway } from 'prom-client';
 import { config } from '../config.js';
+import { handlePlayerSync } from '../workers/playerSyncWorker.js';
 
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 const ajv = new Ajv({ useDefaults: true, strict: true });
@@ -178,10 +179,7 @@ export class GameServerService extends TakaroService<
       { jobId: `itemsSync-${this.domainId}-${createdServer.id}-${Date.now()}` },
     );
 
-    await queueService.queues.playerSync.queue.add(
-      { domainId: this.domainId, gameServerId: createdServer.id },
-      { jobId: `playerSync-${this.domainId}-${createdServer.id}-${Date.now()}` },
-    );
+    await handlePlayerSync(createdServer.id, this.domainId);
     return createdServer;
   }
 
