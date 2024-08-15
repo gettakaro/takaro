@@ -1,4 +1,11 @@
-import { IntegrationTest, expect, SetupGameServerPlayers, MailhogAPI, integrationConfig } from '@takaro/test';
+import {
+  IntegrationTest,
+  expect,
+  SetupGameServerPlayers,
+  MailhogAPI,
+  integrationConfig,
+  EventsAwaiter,
+} from '@takaro/test';
 import { GameEvents } from '@takaro/modules';
 import { faker } from '@faker-js/faker';
 import { randomUUID } from 'crypto';
@@ -35,14 +42,16 @@ async function triggerLink(
   setupData: SetupGameServerPlayers.ISetupData,
   email: string,
 ) {
-  const chatEventWaiter = setupData.eventsAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
+  const eventsAwaiter = new EventsAwaiter();
+  await eventsAwaiter.connect(client);
+  const chatEventWaiter = eventsAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
   await client.command.commandControllerTrigger(setupData.gameServer1.id, {
     msg: '/link',
     playerId: setupData.pogs1[0].playerId,
   });
   const chatEvents = await chatEventWaiter;
   expect(chatEvents).to.have.length(1);
-  const code = chatEvents[0].data.msg.match(/code=(\w+-\w+-\w+)/)[1];
+  const code = chatEvents[0].data.meta.msg.match(/code=(\w+-\w+-\w+)/)[1];
   await userClient.user.userControllerLinkPlayerProfile({ email, code });
 }
 
@@ -85,7 +94,9 @@ const tests = [
     test: async function () {
       const userEmail = `test_${faker.internet.email()}`;
 
-      const chatEventWaiter = this.setupData.eventsAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
+      const eventsAwaiter = new EventsAwaiter();
+      await eventsAwaiter.connect(this.client);
+      const chatEventWaiter = eventsAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
       await this.client.command.commandControllerTrigger(this.setupData.gameServer1.id, {
         msg: '/link',
         playerId: this.setupData.pogs1[0].playerId,
@@ -98,7 +109,7 @@ const tests = [
 
       await unAuthedClient.user.userControllerLinkPlayerProfile({
         email: userEmail,
-        code: chatEvents[0].data.msg.match(/code=(\w+-\w+-\w+)/)[1],
+        code: chatEvents[0].data.meta.msg.match(/code=(\w+-\w+-\w+)/)[1],
       });
 
       await checkIfInviteLinkReceived(userEmail);
@@ -125,7 +136,9 @@ const tests = [
     test: async function () {
       const userEmail = `test_${faker.internet.email()}`;
 
-      const chatEventWaiter = this.setupData.eventsAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
+      const eventsAwaiter = new EventsAwaiter();
+      await eventsAwaiter.connect(this.client);
+      const chatEventWaiter = eventsAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
       await this.client.command.commandControllerTrigger(this.setupData.gameServer1.id, {
         msg: '/link',
         playerId: this.setupData.pogs1[0].playerId,
@@ -161,7 +174,9 @@ const tests = [
       const userB = await createUser(this.client);
       const userBClient = await getClient(userB.user.email, userB.password);
 
-      const chatEventWaiter = this.setupData.eventsAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
+      const eventsAwaiter = new EventsAwaiter();
+      await eventsAwaiter.connect(this.client);
+      const chatEventWaiter = eventsAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
       await this.client.command.commandControllerTrigger(this.setupData.gameServer1.id, {
         msg: '/link',
         playerId: this.setupData.pogs1[0].playerId,
@@ -173,7 +188,7 @@ const tests = [
       try {
         await userBClient.user.userControllerLinkPlayerProfile({
           email: userA.user.email,
-          code: chatEvents[0].data.msg.match(/code=(\w+-\w+-\w+)/)[1],
+          code: chatEvents[0].data.meta.msg.match(/code=(\w+-\w+-\w+)/)[1],
         });
         throw new Error('Should not be able to link with existing email');
       } catch (error) {
@@ -193,7 +208,9 @@ const tests = [
     test: async function () {
       const userA = await createUser(this.client);
 
-      const chatEventWaiter = this.setupData.eventsAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
+      const eventsAwaiter = new EventsAwaiter();
+      await eventsAwaiter.connect(this.client);
+      const chatEventWaiter = eventsAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
       await this.client.command.commandControllerTrigger(this.setupData.gameServer1.id, {
         msg: '/link',
         playerId: this.setupData.pogs1[0].playerId,
@@ -207,7 +224,7 @@ const tests = [
       try {
         await unAuthedClient.user.userControllerLinkPlayerProfile({
           email: userA.user.email,
-          code: chatEvents[0].data.msg.match(/code=(\w+-\w+-\w+)/)[1],
+          code: chatEvents[0].data.meta.msg.match(/code=(\w+-\w+-\w+)/)[1],
         });
         throw new Error('Should not be able to link with existing email');
       } catch (error) {
