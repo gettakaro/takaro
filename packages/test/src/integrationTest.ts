@@ -66,9 +66,9 @@ after(async () => {
   await Promise.all(
     Object.keys(queueService.queues).map(async (queue) => {
       // @ts-expect-error Temp debug code, cba fixing types...
-      await queueService.queues[queue].queue.bullQueue.clean(0, 'completed');
+      await queueService.queues[queue].queue.bullQueue.clean(0, 5000, 'completed');
       // @ts-expect-error Temp debug code, cba fixing types...
-      await queueService.queues[queue].queue.bullQueue.clean(0, 'failed');
+      await queueService.queues[queue].queue.bullQueue.clean(0, 5000, 'failed');
     }),
   );
 });
