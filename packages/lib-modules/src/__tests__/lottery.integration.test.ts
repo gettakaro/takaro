@@ -1,4 +1,4 @@
-import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup } from '@takaro/test';
+import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '../dto/index.js';
 import { Client } from '@takaro/apiclient';
 
@@ -85,7 +85,7 @@ const tests = [
     setup,
     name: 'Cannot buy 0 lottery tickets',
     test: async function () {
-      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE);
       const player = this.setupData.players[0];
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
@@ -94,7 +94,7 @@ const tests = [
       });
 
       expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.msg).to.be.eq('You must buy at least 1 ticket.');
+      expect((await events)[0].data.meta.msg).to.be.eq('You must buy at least 1 ticket.');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -103,7 +103,7 @@ const tests = [
     setup,
     name: 'Can buy lottery ticket',
     test: async function () {
-      let events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
+      let events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE);
 
       const ticketAmount = 1;
       const ticketPrice = ticketAmount * ticketCost;
@@ -120,7 +120,7 @@ const tests = [
       ).data.data.value;
 
       expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.msg).to.be.eq(
+      expect((await events)[0].data.meta.msg).to.be.eq(
         `You have successfully bought ${ticketAmount} tickets for ${ticketPrice} ${currencyName}. Good luck!`,
       );
 
@@ -131,7 +131,7 @@ const tests = [
       expect(pog.currency).to.be.eq(playerStartBalance - ticketPrice);
       await expectTicketAmountLengthToBe(this.client, this.setupData.gameserver.id, this.setupData.lotteryModule.id, 1);
 
-      events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
+      events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: `/buyTicket ${ticketAmount}`,
@@ -139,7 +139,7 @@ const tests = [
       });
 
       expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.msg).to.be.eq(
+      expect((await events)[0].data.meta.msg).to.be.eq(
         `You have successfully bought ${ticketAmount} tickets for ${ticketPrice} ${currencyName}. Good luck!`,
       );
 
@@ -158,7 +158,7 @@ const tests = [
     test: async function () {
       const wantAmount = 10;
 
-      const waitForBuyEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
+      const waitForBuyEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: `/buyTicket ${wantAmount}}`,
@@ -167,7 +167,7 @@ const tests = [
 
       await waitForBuyEvents;
 
-      const waitForViewEvent = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
+      const waitForViewEvent = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/viewTickets',
@@ -177,7 +177,7 @@ const tests = [
       const events = await waitForViewEvent;
 
       expect(events.length).to.be.eq(1);
-      expect(events[0].data.msg).to.be.eq(`You have bought ${wantAmount} tickets.`);
+      expect(events[0].data.meta.msg).to.be.eq(`You have bought ${wantAmount} tickets.`);
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -191,7 +191,10 @@ const tests = [
       ).data.data.value;
 
       const playerAmount = this.setupData.players.length;
-      const ticketEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, playerAmount);
+      const ticketEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(
+        GameEvents.CHAT_MESSAGE,
+        playerAmount,
+      );
 
       // let some players buy tickets
       const asyncTasks = this.setupData.players.map(async (player) => {
@@ -204,7 +207,7 @@ const tests = [
       await Promise.allSettled(asyncTasks);
       await ticketEvents;
 
-      const lotteryEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 4);
+      const lotteryEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 4);
 
       await this.client.cronjob.cronJobControllerTrigger({
         moduleId: this.setupData.lotteryModule.id,
@@ -225,9 +228,9 @@ const tests = [
       const events = await lotteryEvents;
 
       expect(events.length).to.be.eq(4);
-      expect(events[3].data.msg).to.contain(`${prize} ${currencyName}`);
+      expect(events[3].data.meta.msg).to.contain(`${prize} ${currencyName}`);
 
-      const winnerName = events[3].data.msg.split('!')[0];
+      const winnerName = events[3].data.meta.msg.split('!')[0];
       const winner = this.setupData.players.find((player) => player.name === winnerName);
       if (!winner) {
         throw new Error('winner name not found in the list of setup players');
@@ -245,7 +248,7 @@ const tests = [
     setup,
     name: 'If no players joined, the lottery is cancelled',
     test: async function () {
-      const waitForEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const waitForEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
       await this.client.cronjob.cronJobControllerTrigger({
         moduleId: this.setupData.lotteryModule.id,
@@ -256,7 +259,7 @@ const tests = [
       const events = await waitForEvents;
 
       expect(events.length).to.be.eq(1);
-      expect(events[0].data.msg).to.eq('No one has bought any tickets. The lottery has been cancelled.');
+      expect(events[0].data.meta.msg).to.eq('No one has bought any tickets. The lottery has been cancelled.');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -265,7 +268,9 @@ const tests = [
     setup,
     name: 'If one player joined, the lottery is cancelled and the player gets his money back',
     test: async function () {
-      const waitForTicketEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
+      const waitForTicketEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(
+        GameEvents.CHAT_MESSAGE,
+      );
 
       const player = this.setupData.players[0];
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
@@ -279,7 +284,7 @@ const tests = [
         await this.client.settings.settingsControllerGetOne('currencyName', this.setupData.gameserver.id)
       ).data.data.value;
 
-      const waitForEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 2);
+      const waitForEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 2);
 
       await this.client.cronjob.cronJobControllerTrigger({
         moduleId: this.setupData.lotteryModule.id,
@@ -290,8 +295,8 @@ const tests = [
       const events = await waitForEvents;
 
       expect(events.length).to.be.eq(2);
-      expect(events[0].data.msg).to.eq('Only one person has bought a ticket. The lottery has been cancelled.');
-      expect(events[1].data.msg).to.eq(
+      expect(events[0].data.meta.msg).to.eq('Only one person has bought a ticket. The lottery has been cancelled.');
+      expect(events[1].data.meta.msg).to.eq(
         `You have been refunded ${ticketCost} ${currencyName} because the lottery has been cancelled.`,
       );
 
@@ -309,7 +314,7 @@ const tests = [
     setup,
     name: 'Can view next lottery draw',
     test: async function () {
-      const waitForEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
+      const waitForEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/nextDraw',
@@ -319,7 +324,7 @@ const tests = [
       const events = await waitForEvents;
 
       expect(events.length).to.be.eq(1);
-      expect(events[0].data.msg).to.contain('The next lottery draw is in');
+      expect(events[0].data.meta.msg).to.contain('The next lottery draw is in');
     },
   }),
 ];

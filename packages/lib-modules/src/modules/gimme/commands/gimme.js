@@ -6,7 +6,7 @@ async function main() {
 
   if (items.length + commands.length === 0) {
     throw new TakaroUserError(
-      'No items or commands configured, please ask your server administrator to configure this module.'
+      'No items or commands configured, please ask your server administrator to configure this module.',
     );
   }
 
@@ -18,6 +18,7 @@ async function main() {
     await takaro.gameserver.gameServerControllerGiveItem(data.gameServerId, data.player.id, {
       name: randomOption,
       amount: 1,
+      quality: 0,
     });
     await data.player.pm(`You received ${randomOption}!`);
   } else {

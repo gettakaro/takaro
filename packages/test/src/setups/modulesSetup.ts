@@ -20,14 +20,13 @@ export interface IModuleTestsSetupData {
   geoBlockModule: ModuleOutputDTO;
   role: RoleOutputDTO;
   players: PlayerOutputDTO[];
-  eventAwaiter: EventsAwaiter;
 }
 
 export const chatMessageSorter = (a: IDetectedEvent, b: IDetectedEvent) => {
-  if (a.data.msg < b.data.msg) {
+  if (a.data.meta.msg < b.data.meta.msg) {
     return -1;
   }
-  if (a.data.msg > b.data.msg) {
+  if (a.data.meta.msg > b.data.meta.msg) {
     return 1;
   }
   return 0;
@@ -124,6 +123,5 @@ export const modulesTestSetup = async function (
     gameserver: gameServer1.data.data,
     role: roleRes.data.data,
     players: playersRes.data.data,
-    eventAwaiter,
   };
 };

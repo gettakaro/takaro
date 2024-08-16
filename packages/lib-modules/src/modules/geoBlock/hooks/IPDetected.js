@@ -35,16 +35,16 @@ async function main() {
     await handleAction();
     return;
   }
-}
 
-if (mode === 'deny') {
-  if (countries.includes(country)) {
-    console.log('Blocked country detected, performing actions');
-    await handleAction();
-    return;
-  } else {
-    console.log('Allowed country detected, no action');
-    return;
+  if (mode === 'deny') {
+    if (countries.includes(country)) {
+      console.log('Blocked country detected, performing actions');
+      await handleAction();
+      return;
+    } else {
+      console.log('Allowed country detected, no action');
+      return;
+    }
   }
 }
 

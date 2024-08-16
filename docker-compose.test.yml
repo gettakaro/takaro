@@ -13,6 +13,16 @@ services:
       file: docker-compose.yml
       service: redis    
 
+  prometheus:
+    extends:
+      file: docker-compose.yml
+      service: prometheus  
+
+  pushgateway:
+    extends:
+      file: docker-compose.yml
+      service: pushgateway        
+
   kratos:
     environment:
       - DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgresql_kratos:5432/${POSTGRES_DB}

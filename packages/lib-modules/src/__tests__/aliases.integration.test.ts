@@ -1,4 +1,4 @@
-import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup } from '@takaro/test';
+import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '../dto/index.js';
 
 const group = 'Aliases';
@@ -25,23 +25,23 @@ const tests = [
         },
       );
 
-      const setEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const setEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/settp test',
         playerId: this.setupData.players[0].id,
       });
 
       expect((await setEvents).length).to.be.eq(1);
-      expect((await setEvents)[0].data.msg).to.be.eq('Teleport test set.');
+      expect((await setEvents)[0].data.meta.msg).to.be.eq('Teleport test set.');
 
-      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/tellyport test',
         playerId: this.setupData.players[0].id,
       });
 
       expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.msg).to.be.eq('Teleported to test.');
+      expect((await events)[0].data.meta.msg).to.be.eq('Teleported to test.');
     },
   }),
 ];

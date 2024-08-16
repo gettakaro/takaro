@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto';
-import { upMany, logs, exec, upAll, down, run, pullAll } from 'docker-compose';
+import { upMany, logs, upAll, down, run, pullAll, buildOne } from 'docker-compose/dist/v2.js';
 import { $ } from 'zx';
 import { writeFile, mkdir } from 'fs/promises';
 
@@ -69,7 +69,7 @@ async function main() {
 
   // Check if ADMIN_CLIENT_SECRET is set already if not set, create them
   if (!composeOpts.env.ADMIN_CLIENT_SECRET) {
-    console.log('No OAuth admin client configured, creating one...');
+    console.log('No admin secret configured, creating one...');
     composeOpts.env.ADMIN_CLIENT_SECRET = randomUUID();
   }
 
@@ -78,6 +78,9 @@ async function main() {
 
   console.log('Running Takaro SQL migrations...');
   await run('takaro_api', 'npm -w packages/app-api run db:migrate', composeOpts);
+
+  console.log('Building Takaro test image...');
+  await buildOne('takaro', { ...composeOpts, log: false });
 
   console.log('Starting all containers...');
   await upAll(composeOpts);

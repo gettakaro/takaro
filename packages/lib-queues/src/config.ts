@@ -93,7 +93,7 @@ export const queuesConfigSchema = {
       concurrency: {
         doc: 'The number of commands to run at once',
         format: Number,
-        default: 1,
+        default: 10,
         env: 'COMMANDS_QUEUE_CONCURRENCY',
       },
     },
@@ -107,7 +107,7 @@ export const queuesConfigSchema = {
       concurrency: {
         doc: 'The number of cronjobs to run at once',
         format: Number,
-        default: 1,
+        default: 10,
         env: 'CRONJOBS_QUEUE_CONCURRENCY',
       },
     },
@@ -121,7 +121,7 @@ export const queuesConfigSchema = {
       concurrency: {
         doc: 'The number of hooks to run at once',
         format: Number,
-        default: 1,
+        default: 10,
         env: 'HOOKS_QUEUE_CONCURRENCY',
       },
     },
@@ -135,7 +135,7 @@ export const queuesConfigSchema = {
       concurrency: {
         doc: 'The number of events to run at once',
         format: Number,
-        default: 1,
+        default: 10,
         env: 'EVENTS_QUEUE_CONCURRENCY',
       },
     },

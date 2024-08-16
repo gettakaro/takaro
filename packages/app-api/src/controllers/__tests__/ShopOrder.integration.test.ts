@@ -12,13 +12,7 @@ import { GameEvents } from '@takaro/modules';
 
 const group = 'ShopOrderController';
 
-async function createUserForPlayer(
-  client: Client,
-  eventsAwaiter: EventsAwaiter,
-  playerId: string,
-  gameServerId: string,
-  createUser = true,
-) {
+async function createUserForPlayer(client: Client, playerId: string, gameServerId: string, createUser = true) {
   const password = 'shop-tester-password-very-safe';
 
   let user: UserOutputDTO | null = null;
@@ -42,6 +36,8 @@ async function createUserForPlayer(
   const userClient = new Client({ auth: { username: user.email, password }, url: integrationConfig.get('host') });
   await userClient.login();
 
+  const eventsAwaiter = new EventsAwaiter();
+  await eventsAwaiter.connect(client);
   const chatEventWaiter = eventsAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
   await client.command.commandControllerTrigger(gameServerId, {
     msg: '/link',
@@ -49,7 +45,7 @@ async function createUserForPlayer(
   });
   const chatEvents = await chatEventWaiter;
   expect(chatEvents).to.have.length(1);
-  const code = chatEvents[0].data.msg.match(/code=(\w+-\w+-\w+)/)[1];
+  const code = chatEvents[0].data.meta.msg.match(/code=(\w+-\w+-\w+)/)[1];
   await userClient.user.userControllerLinkPlayerProfile({ email: user.email, code });
 
   return {
@@ -113,14 +109,12 @@ const shopSetup = async function (this: IntegrationTest<IShopSetup>): Promise<IS
 
   const { client: user1Client, user: user1 } = await createUserForPlayer(
     this.client,
-    setupData.eventsAwaiter,
     setupData.pogs1[0].playerId,
     setupData.gameServer1.id,
   );
 
   const { client: user2Client, user: user2 } = await createUserForPlayer(
     this.client,
-    setupData.eventsAwaiter,
     setupData.pogs1[1].playerId,
     setupData.gameServer1.id,
   );

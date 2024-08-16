@@ -20,6 +20,12 @@ class QueuesService {
     return QueuesService.instance;
   }
 
+  async disconnect() {
+    for (const queue of Object.values(this.queuesMap)) {
+      await queue.queue.bullQueue.close();
+    }
+  }
+
   private queuesMap = {
     commands: {
       queue: new TakaroQueue<ICommandJobData>(config.get('queues.commands.name')),

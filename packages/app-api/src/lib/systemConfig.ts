@@ -81,6 +81,7 @@ export function getSystemConfigSchema(mod: ModuleOutputDTO | ModuleOutputDTOApi)
           systemConfigSchema.required.push('hooks');
         }
 
+        systemConfigSchema.properties.hooks.properties[hook.name].required.push('discordChannelId');
         systemConfigSchema.properties.hooks.properties[hook.name].properties.discordChannelId = {
           type: 'string',
           description: 'Discord channel ID where Takaro will listen for messages.',

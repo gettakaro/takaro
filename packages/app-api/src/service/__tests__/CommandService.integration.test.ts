@@ -43,6 +43,10 @@ async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStanda
     })
   ).data.data;
 
+  const eventsAwaiter = new EventsAwaiter();
+  await eventsAwaiter.connect(this.client);
+  const connectedEvents = eventsAwaiter.waitForEvents(HookEvents.PLAYER_CREATED, 5);
+
   const gameserver = (
     await this.client.gameserver.gameServerControllerCreate({
       name: 'Test gameserver',
@@ -52,10 +56,6 @@ async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStanda
       }),
     })
   ).data.data;
-
-  const eventsAwaiter = new EventsAwaiter();
-  await eventsAwaiter.connect(this.client);
-  const connectedEvents = eventsAwaiter.waitForEvents(HookEvents.PLAYER_CONNECTED, 5);
 
   await this.client.gameserver.gameServerControllerExecuteCommand(gameserver.id, {
     command: 'connectAll',

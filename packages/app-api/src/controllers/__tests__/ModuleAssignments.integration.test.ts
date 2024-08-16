@@ -129,7 +129,7 @@ const tests = [
       });
     },
     expectedStatus: 400,
-    filteredFields: ['moduleId', 'functionId', 'commandId'],
+    filteredFields: ['moduleId', 'functionId', 'commandId', 'gameserverId'],
   }),
   new IntegrationTest<ISetupData>({
     group,
@@ -154,7 +154,7 @@ const tests = [
         userConfig: JSON.stringify({}),
         systemConfig: JSON.stringify({
           hooks: {
-            [`${hookName} Discord channel ID`]: '1234567890',
+            [hookName]: { discordChannelId: '123' },
           },
         }),
       });

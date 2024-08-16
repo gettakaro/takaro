@@ -1,4 +1,11 @@
-import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, chatMessageSorter } from '@takaro/test';
+import {
+  IntegrationTest,
+  expect,
+  IModuleTestsSetupData,
+  modulesTestSetup,
+  chatMessageSorter,
+  EventsAwaiter,
+} from '@takaro/test';
 import { GameEvents } from '../dto/index.js';
 
 const group = 'Economy utils suite';
@@ -33,7 +40,7 @@ const tests = [
         this.setupData.economyUtilsModule.id,
       );
 
-      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 2);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 2);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/balance',
@@ -61,8 +68,8 @@ const tests = [
       });
 
       expect((await events).length).to.be.eq(2);
-      expect((await events)[0].data.msg).to.be.eq('balance: 0 test coin');
-      expect((await events)[1].data.msg).to.be.eq('balance: 1000 test coin');
+      expect((await events)[0].data.meta.msg).to.be.eq('balance: 0 test coin');
+      expect((await events)[1].data.meta.msg).to.be.eq('balance: 1000 test coin');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -95,14 +102,14 @@ const tests = [
       await Promise.all(giveCurrencies);
 
       // title message (1) + balance of player messages (5)
-      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 6);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 6);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/topcurrency',
         playerId: this.setupData.players[0].id,
       });
 
-      const messages = (await events).map((e) => e.data.msg as string);
+      const messages = (await events).map((e) => e.data.meta.msg as string);
       expect((await events).length).to.be.eq(6);
       for (const message of messages) {
         expect(message).to.match(
@@ -142,14 +149,14 @@ const tests = [
       if (!receiverPog) throw new Error('Receiver playerOnGameServer does not exist');
       expect(receiverPog.currency).to.be.eq(0);
 
-      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 2);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 2);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: `/transfer ${receiver.name} ${transferAmount}`,
         playerId: sender.id,
       });
 
-      const messages = (await events).sort(chatMessageSorter).map((e) => e.data.msg as string);
+      const messages = (await events).sort(chatMessageSorter).map((e) => e.data.meta.msg as string);
       expect((await events).length).to.be.eq(2);
 
       // check if balances are correct
@@ -184,14 +191,14 @@ const tests = [
       const receiver = this.setupData.players[1];
       const transferAmount = 500;
 
-      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: `/transfer ${receiver.name} ${transferAmount}`,
         playerId: sender.id,
       });
 
-      const messages = (await events).sort(chatMessageSorter).map((e) => e.data.msg as string);
+      const messages = (await events).sort(chatMessageSorter).map((e) => e.data.meta.msg as string);
       expect((await events).length).to.be.eq(1);
       expect(messages[0]).to.be.eq(
         `Failed to transfer ${transferAmount} test coin to ${receiver.name}. Are you sure you have enough balance?`,
@@ -237,14 +244,14 @@ const tests = [
       if (!receiverPog) throw new Error('Receiver playerOnGameServer does not exist');
       expect(receiverPog.currency).to.be.eq(0);
 
-      let events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      let events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: `/transfer ${receiver.name} ${transferAmount}`,
         playerId: sender.id,
       });
 
-      let messages = (await events).sort(chatMessageSorter).map((e) => e.data.msg as string);
+      let messages = (await events).sort(chatMessageSorter).map((e) => e.data.meta.msg as string);
 
       // check if balances have not changed yet
       expect(
@@ -271,13 +278,13 @@ const tests = [
       // =================================================
       // transfer confirmed
       // =================================================
-      events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 2);
+      events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 2);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: `${prefix}confirmtransfer`,
         playerId: sender.id,
       });
 
-      messages = (await events).sort(chatMessageSorter).map((e) => e.data.msg as string);
+      messages = (await events).sort(chatMessageSorter).map((e) => e.data.meta.msg as string);
       expect((await events).length).to.be.eq(2);
       expect(
         (
@@ -315,13 +322,13 @@ const tests = [
           }),
         },
       );
-      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/confirmtransfer',
         playerId: this.setupData.players[0].id,
       });
 
-      const messages = (await events).sort(chatMessageSorter).map((e) => e.data.msg as string);
+      const messages = (await events).sort(chatMessageSorter).map((e) => e.data.meta.msg as string);
       expect(messages[0]).to.be.eq('You have no pending transfer.');
     },
   }),
@@ -356,13 +363,13 @@ const tests = [
       if (!receiverPog) throw new Error('Receiver playerOnGameServer does not exist');
       expect(receiverPog.currency).to.be.eq(0);
 
-      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 2);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 2);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: `/grantcurrency ${receiver.name} ${grantAmount}`,
         playerId: granter.id,
       });
 
-      const messages = (await events).sort(chatMessageSorter).map((e) => e.data.msg as string);
+      const messages = (await events).sort(chatMessageSorter).map((e) => e.data.meta.msg as string);
       expect(
         (
           await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
@@ -418,13 +425,13 @@ const tests = [
         receiver.playerOnGameServers?.find((pog) => pog.gameServerId === this.setupData.gameserver.id)?.currency,
       ).to.be.eq(0);
 
-      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 2);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 2);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: `/revokecurrency ${receiver.name} ${revokeAmount}`,
         playerId: revoker.id,
       });
 
-      const messages = (await events).sort(chatMessageSorter).map((e) => e.data.msg as string);
+      const messages = (await events).sort(chatMessageSorter).map((e) => e.data.meta.msg as string);
       expect(
         (
           await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
@@ -462,7 +469,7 @@ const tests = [
         receiver.playerOnGameServers?.find((pog) => pog.gameServerId === this.setupData.gameserver.id)?.currency,
       ).to.be.eq(0);
 
-      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 2);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 2);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: `/grantcurrency ${receiver.name} ${amount}`,
         playerId: sender.id,
@@ -473,7 +480,7 @@ const tests = [
         playerId: sender.id,
       });
 
-      const messages = (await events).sort(chatMessageSorter).map((e) => e.data.msg as string);
+      const messages = (await events).sort(chatMessageSorter).map((e) => e.data.meta.msg as string);
       expect(messages[0]).to.be.eq('You do not have permission to use grant currency command.');
       expect(messages[1]).to.be.eq('You do not have permission to use revoke currency command.');
     },

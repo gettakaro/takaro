@@ -1,4 +1,11 @@
-import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, chatMessageSorter } from '@takaro/test';
+import {
+  IntegrationTest,
+  expect,
+  IModuleTestsSetupData,
+  modulesTestSetup,
+  chatMessageSorter,
+  EventsAwaiter,
+} from '@takaro/test';
 import { GameEvents } from '../dto/gameEvents.js';
 
 const group = 'Help command';
@@ -14,7 +21,7 @@ const tests = [
         this.setupData.gameserver.id,
         this.setupData.utilsModule.id,
       );
-      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 3);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 3);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/help',
         playerId: this.setupData.players[0].id,
@@ -23,11 +30,13 @@ const tests = [
       expect((await events).length).to.be.eq(3);
       const sortedEvents = (await events).sort(chatMessageSorter);
 
-      expect(sortedEvents[0].data.msg).to.be.eq('Available commands:');
-      expect(sortedEvents[1].data.msg).to.be.eq(
+      expect(sortedEvents[0].data.meta.msg).to.be.eq('Available commands:');
+      expect(sortedEvents[1].data.meta.msg).to.be.eq(
         'help: The text you are reading right now, displays information about commands.',
       );
-      expect(sortedEvents[2].data.msg).to.be.eq('ping: Replies with pong, useful for testing if the connection works.');
+      expect(sortedEvents[2].data.meta.msg).to.be.eq(
+        'ping: Replies with pong, useful for testing if the connection works.',
+      );
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -44,7 +53,7 @@ const tests = [
         this.setupData.gameserver.id,
         this.setupData.teleportsModule.id,
       );
-      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 13);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 13);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/help',
         playerId: this.setupData.players[0].id,
@@ -52,27 +61,29 @@ const tests = [
 
       const sortedEvents = (await events).sort(chatMessageSorter);
 
-      expect(sortedEvents[0].data.msg).to.be.eq('Available commands:');
-      expect(sortedEvents[1].data.msg).to.be.eq('deletetp: Deletes a location.');
-      expect(sortedEvents[2].data.msg).to.be.eq('deletewaypoint: Deletes a waypoint.');
-      expect(sortedEvents[3].data.msg).to.be.eq(
+      expect(sortedEvents[0].data.meta.msg).to.be.eq('Available commands:');
+      expect(sortedEvents[1].data.meta.msg).to.be.eq('deletetp: Deletes a location.');
+      expect(sortedEvents[2].data.meta.msg).to.be.eq('deletewaypoint: Deletes a waypoint.');
+      expect(sortedEvents[3].data.meta.msg).to.be.eq(
         'help: The text you are reading right now, displays information about commands.',
       );
-      expect(sortedEvents[4].data.msg).to.be.eq('listwaypoints: Lists all waypoints.');
-      expect(sortedEvents[5].data.msg).to.be.eq('ping: Replies with pong, useful for testing if the connection works.');
-      expect(sortedEvents[6].data.msg).to.be.eq(
+      expect(sortedEvents[4].data.meta.msg).to.be.eq('listwaypoints: Lists all waypoints.');
+      expect(sortedEvents[5].data.meta.msg).to.be.eq(
+        'ping: Replies with pong, useful for testing if the connection works.',
+      );
+      expect(sortedEvents[6].data.meta.msg).to.be.eq(
         'setprivate: Sets a teleport to be private, only the teleport owner can teleport to it.',
       );
-      expect(sortedEvents[7].data.msg).to.be.eq(
+      expect(sortedEvents[7].data.meta.msg).to.be.eq(
         'setpublic: Sets a teleport to be public, allowing other players to teleport to it.',
       );
-      expect(sortedEvents[8].data.msg).to.be.eq('settp: Sets a location to teleport to.');
-      expect(sortedEvents[9].data.msg).to.be.eq('setwaypoint: Creates a new waypoint.');
-      expect(sortedEvents[10].data.msg).to.be.eq('teleport: Teleports to one of your set locations.');
-      expect(sortedEvents[11].data.msg).to.be.eq(
+      expect(sortedEvents[8].data.meta.msg).to.be.eq('settp: Sets a location to teleport to.');
+      expect(sortedEvents[9].data.meta.msg).to.be.eq('setwaypoint: Creates a new waypoint.');
+      expect(sortedEvents[10].data.meta.msg).to.be.eq('teleport: Teleports to one of your set locations.');
+      expect(sortedEvents[11].data.meta.msg).to.be.eq(
         'teleportwaypoint: Placeholder command, this will not be used directly. The module will install aliases for this command corresponding to the waypoint names.',
       );
-      expect(sortedEvents[12].data.msg).to.be.eq('tplist: Lists all your set locations.');
+      expect(sortedEvents[12].data.meta.msg).to.be.eq('tplist: Lists all your set locations.');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -86,7 +97,7 @@ const tests = [
         this.setupData.utilsModule.id,
       );
 
-      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/help ping',
@@ -96,7 +107,9 @@ const tests = [
       expect((await events).length).to.be.eq(1);
       const sortedEvents = (await events).sort(chatMessageSorter);
 
-      expect(sortedEvents[0].data.msg).to.be.eq('ping: Replies with pong, useful for testing if the connection works.');
+      expect(sortedEvents[0].data.meta.msg).to.be.eq(
+        'ping: Replies with pong, useful for testing if the connection works.',
+      );
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -110,7 +123,7 @@ const tests = [
         this.setupData.utilsModule.id,
       );
 
-      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/help foobar',
@@ -118,7 +131,7 @@ const tests = [
       });
 
       expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.msg).to.be.eq(
+      expect((await events)[0].data.meta.msg).to.be.eq(
         'Unknown command "foobar", use this command without arguments to see all available commands.',
       );
     },

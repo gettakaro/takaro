@@ -96,7 +96,7 @@ export class Mock implements IGameServer {
       if (!error || !(error instanceof Error)) {
         return new TestReachabilityOutputDTO({
           connectable: false,
-          reason: 'Unknown error',
+          reason: `Unknown error: ${error}`,
         });
       }
 
@@ -109,7 +109,7 @@ export class Mock implements IGameServer {
 
       return new TestReachabilityOutputDTO({
         connectable: false,
-        reason: 'Unable to connect to server',
+        reason: `Unable to connect to server: ${error.message}`,
       });
     }
 
