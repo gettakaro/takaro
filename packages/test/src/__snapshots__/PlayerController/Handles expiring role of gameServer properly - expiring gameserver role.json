@@ -17,6 +17,7 @@
       "steamVacBanned": null,
       "steamsDaysSinceLastBan": null,
       "steamNumberOfVACBans": null,
+      "steamLevel": null,
       "roleAssignments": [
         {
           "createdAt": "2024-07-20T14:50:08.211Z",
