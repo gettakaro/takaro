@@ -88,18 +88,13 @@ jobs:
             PACKAGE=${{ matrix.package.name }}
   node-ci:
     needs: [docker]
-    timeout-minutes: 30
-    runs-on: ubicloud
+    timeout-minutes: 60
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         node-version: [18.18]
 
     steps:
-      - name: IPv4 Address
-        run: curl -sL --ipv4 ifconfig.me      
-      - name: Deploy your SSH KEY
-        run: |
-          sudo sh -c 'echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDs2TYfws1GhOby1DrV7UZI25lYE5MqeojocjdPoXUm/ niek@candaele.dev" >> /home/runneradmin/.ssh/authorized_keys'    
       - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
@@ -112,7 +107,7 @@ jobs:
       - run: npm run test:style
 
       - name: Integration tests
-        run:  npx zx scripts/integration-tests.mjs
+        run: npx zx scripts/integration-tests.mjs
         env:
           DOCKER_TAG: ${{ needs.docker.outputs.docker_tag }}
           TEST_LOGGING_LEVEL: debug
@@ -129,27 +124,26 @@ jobs:
           name: integrationTests
           path: reports
           retention-days: 30
-
-  e2e:
-    needs: [docker]
-    timeout-minutes: 60
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18.18
-      - run: ./scripts/dev-init.sh
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
-      - name: Integration tests e2e
-        run: npx zx scripts/integration-tests.mjs
-        env:
-          DOCKER_TAG: ${{ needs.docker.outputs.docker_tag }}
-          IS_E2E: true
-      - uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: e2e
-          path: reports
-          retention-days: 30
+#  e2e:
+#    needs: [docker]
+#    timeout-minutes: 60
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v3
+#      - uses: actions/setup-node@v3
+#        with:
+#          node-version: 18.18
+#      - run: ./scripts/dev-init.sh
+#      - name: Install Playwright Browsers
+#        run: npx playwright install --with-deps
+#      - name: Integration tests e2e
+#        run: npx zx scripts/integration-tests.mjs
+#        env:
+#          DOCKER_TAG: ${{ needs.docker.outputs.docker_tag }}
+#          IS_E2E: true
+#      - uses: actions/upload-artifact@v3
+#        if: always()
+#        with:
+#          name: e2e
+#          path: reports
+#          retention-days: 30

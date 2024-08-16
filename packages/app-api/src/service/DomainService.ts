@@ -30,12 +30,20 @@ export class DomainCreateInputDTO extends TakaroDTO<DomainCreateInputDTO> {
   @IsEnum(Object.values(DOMAIN_STATES))
   @IsOptional()
   state: DOMAIN_STATES;
+
+  @Length(3, 200)
+  @IsOptional()
+  externalReference: string;
 }
 
 export class DomainUpdateInputDTO extends TakaroDTO<DomainUpdateInputDTO> {
   @Length(3, 200)
   @IsOptional()
   name: string;
+
+  @Length(3, 200)
+  @IsOptional()
+  externalReference: string;
 
   @IsEnum(Object.values(DOMAIN_STATES))
   @IsOptional()
@@ -45,6 +53,9 @@ export class DomainUpdateInputDTO extends TakaroDTO<DomainUpdateInputDTO> {
 export class DomainOutputDTO extends NOT_DOMAIN_SCOPED_TakaroModelDTO<DomainOutputDTO> {
   @IsString()
   name: string;
+
+  @IsString()
+  externalReference: string;
 
   @IsEnum(Object.values(DOMAIN_STATES))
   state: DOMAIN_STATES;

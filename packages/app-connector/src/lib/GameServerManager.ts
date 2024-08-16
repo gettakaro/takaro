@@ -132,6 +132,7 @@ class GameServerManager {
   }
 
   async add(domainId: string, gameServerId: string) {
+    this.gameServerDomainMap.set(gameServerId, domainId);
     const gameServer = await this.getGameServer(gameServerId);
 
     if (!gameServer.reachable) {

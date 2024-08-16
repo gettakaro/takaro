@@ -16,6 +16,7 @@ import { Type } from 'class-transformer';
 import { IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Request, Response } from 'express';
 import { TokenOutputDTO, TokenInputDTO, AuthService } from '../service/AuthService.js';
+import { adminAuthMiddleware } from '../middlewares/adminAuth.js';
 
 export class DomainCreateOutputDTOAPI extends APIOutput<DomainCreateOutputDTO> {
   @Type(() => DomainCreateOutputDTO)
@@ -63,7 +64,7 @@ export class TokenOutputDTOAPI extends APIOutput<TokenOutputDTO> {
 @OpenAPI({
   security: [{ adminAuth: [] }],
 })
-@UseBefore(AuthService.adminAuthMiddleware)
+@UseBefore(adminAuthMiddleware)
 @JsonController()
 export class DomainController {
   @Post('/domain/search')

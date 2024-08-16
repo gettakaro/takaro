@@ -2,12 +2,12 @@
   "body": {
     "meta": {},
     "data": {
-      "gameserverId": "e249fc99-94d3-4385-ac7c-b67ffc7c0b43",
-      "moduleId": "05aefb7b-a0b2-4658-ab06-a159239b2c22",
+      "gameserverId": "467705c5-3030-4933-9479-e7178d8017d7",
+      "moduleId": "4d45d7ad-4a6b-4b7e-9a30-9038f1d6c231",
       "module": {
-        "createdAt": "2024-07-14T14:37:17.691Z",
-        "updatedAt": "2024-07-14T14:37:17.693Z",
-        "id": "05aefb7b-a0b2-4658-ab06-a159239b2c22",
+        "createdAt": "2024-08-15T10:16:55.343Z",
+        "updatedAt": "2024-08-15T10:16:55.344Z",
+        "id": "4d45d7ad-4a6b-4b7e-9a30-9038f1d6c231",
         "name": "Test module",
         "builtin": null,
         "description": "No description provided.",
@@ -16,18 +16,18 @@
         "cronJobs": [],
         "hooks": [
           {
-            "createdAt": "2024-07-14T14:37:18.028Z",
-            "updatedAt": "2024-07-14T14:37:18.030Z",
-            "id": "0ceb4137-e60f-4106-ad16-1ecbf93e9953",
+            "createdAt": "2024-08-15T10:16:55.411Z",
+            "updatedAt": "2024-08-15T10:16:55.413Z",
+            "id": "80bb3ece-f340-441e-bb28-aedcbc457fe3",
             "name": "Test hook",
             "eventType": "discord-message",
             "regex": "/this (is) a [regex]/g",
-            "moduleId": "05aefb7b-a0b2-4658-ab06-a159239b2c22",
-            "functionId": "376745cc-a110-4035-b63f-53ef4a7bff2e",
+            "moduleId": "4d45d7ad-4a6b-4b7e-9a30-9038f1d6c231",
+            "functionId": "b1d949a2-0dc5-4633-b30d-83c51a2a89e2",
             "function": {
-              "createdAt": "2024-07-14T14:37:18.027Z",
-              "updatedAt": "2024-07-14T14:37:18.027Z",
-              "id": "376745cc-a110-4035-b63f-53ef4a7bff2e",
+              "createdAt": "2024-08-15T10:16:55.410Z",
+              "updatedAt": "2024-08-15T10:16:55.410Z",
+              "id": "b1d949a2-0dc5-4633-b30d-83c51a2a89e2",
               "code": "import { data, takaro } from '@takaro/helpers';\nasync function main() {\n    const {} = data;\n}\nawait main();",
               "name": null,
               "moduleId": null
@@ -37,15 +37,15 @@
         "commands": [],
         "functions": [],
         "permissions": [],
-        "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable/disable the module without having to uninstall it.\"},\"hooks\":{\"type\":\"object\",\"properties\":{\"Test hook\":{\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable the Test hook hook.\"},\"discordChannelId\":{\"type\":\"string\",\"description\":\"Discord channel ID where Takaro will listen for messages.\"}},\"required\":[],\"default\":{}}},\"required\":[],\"default\":{}}},\"required\":[\"hooks\"],\"additionalProperties\":false}"
+        "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable/disable the module without having to uninstall it.\"},\"hooks\":{\"type\":\"object\",\"properties\":{\"Test hook\":{\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable the Test hook hook.\"},\"discordChannelId\":{\"type\":\"string\",\"description\":\"Discord channel ID where Takaro will listen for messages.\"}},\"required\":[\"discordChannelId\"],\"default\":{}}},\"required\":[],\"default\":{}}},\"required\":[\"hooks\"],\"additionalProperties\":false}"
       },
       "userConfig": {},
       "systemConfig": {
         "hooks": {
           "Test hook": {
-            "enabled": true
-          },
-          "Test hook Discord channel ID": "1234567890"
+            "enabled": true,
+            "discordChannelId": "123"
+          }
         },
         "enabled": true
       }

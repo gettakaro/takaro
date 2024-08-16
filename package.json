@@ -161,5 +161,9 @@
   "overrides": {
     "class-validator": "0.13.2",
     "esbuild": "0.19.11"
+  },
+  "optionalDependencies": {
+    "bufferutil": "^4.0.8",
+    "utf-8-validate": "^6.0.4"
   }
 }

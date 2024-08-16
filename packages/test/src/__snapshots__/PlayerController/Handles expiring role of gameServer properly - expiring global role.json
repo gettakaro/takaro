@@ -70,7 +70,9 @@
       "playerId",
       "steamId",
       "roleId",
-      "gameServerId"
+      "gameServerId",
+      "epicOnlineServicesId",
+      "xboxLiveId"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true

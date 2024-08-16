@@ -20,7 +20,8 @@ export class MockEmitter extends TakaroEmitter {
   }
 
   async stop(): Promise<void> {
-    this.io.offAny(this.scopedListener);
+    this.io.removeAllListeners();
+    this.io.disconnect();
   }
 
   private async listener(event: GameEventTypes, args: any) {

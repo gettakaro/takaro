@@ -193,8 +193,9 @@ export async function executeFunction(
         result.logs.length &&
         (result.logs[result.logs.length - 1].details as unknown as string)?.includes('TakaroUserError')
       ) {
+        const msg = result.logs[result.logs.length - 1].msg;
         await client.gameserver.gameServerControllerSendMessage(data.gameServerId, {
-          message: result.logs[result.logs.length - 1].msg,
+          message: msg ?? 'User error but no details provided',
           opts: {
             recipient: {
               gameId: data.pog.gameId,

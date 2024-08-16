@@ -1,4 +1,4 @@
-import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup } from '@takaro/test';
+import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '../../dto/index.js';
 
 const group = 'Teleports suite';
@@ -14,7 +14,7 @@ const tests = [
         this.setupData.gameserver.id,
         this.setupData.teleportsModule.id,
       );
-      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/settp test',
@@ -22,7 +22,7 @@ const tests = [
       });
 
       expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.msg).to.be.eq('Teleport test set.');
+      expect((await events)[0].data.meta.msg).to.be.eq('Teleport test set.');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -36,7 +36,7 @@ const tests = [
         this.setupData.teleportsModule.id,
       );
 
-      const firstEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const firstEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/settp test',
@@ -44,9 +44,9 @@ const tests = [
       });
 
       expect((await firstEvents).length).to.be.eq(1);
-      expect((await firstEvents)[0].data.msg).to.be.eq('Teleport test set.');
+      expect((await firstEvents)[0].data.meta.msg).to.be.eq('Teleport test set.');
 
-      const secondEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const secondEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/settp test',
@@ -54,7 +54,7 @@ const tests = [
       });
 
       expect((await secondEvents).length).to.be.eq(1);
-      expect((await secondEvents)[0].data.msg).to.be.eq(
+      expect((await secondEvents)[0].data.meta.msg).to.be.eq(
         'Teleport test already exists, use /deletetp test to delete it.',
       );
     },
@@ -80,7 +80,7 @@ const tests = [
         ],
       });
 
-      const setEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 3);
+      const setEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 3);
 
       await Promise.all(
         Array.from({ length: 3 }).map(async (_, i) => {
@@ -94,9 +94,9 @@ const tests = [
       expect((await setEvents).length).to.be.eq(3);
 
       for (const event of await setEvents) {
-        expect(event.data.msg).to.match(/Teleport test\d set\./);
+        expect(event.data.meta.msg).to.match(/Teleport test\d set\./);
       }
-      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/settp test',
@@ -104,7 +104,7 @@ const tests = [
       });
 
       expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.msg).to.be.eq(
+      expect((await events)[0].data.meta.msg).to.be.eq(
         'You have reached the maximum number of teleports for your role, maximum allowed is 3',
       );
     },
@@ -119,7 +119,7 @@ const tests = [
         this.setupData.gameserver.id,
         this.setupData.teleportsModule.id,
       );
-      const setEvents = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 3);
+      const setEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 3);
 
       await Promise.all(
         Array.from({ length: 3 }).map(async (_, i) => {
@@ -133,16 +133,16 @@ const tests = [
       expect((await setEvents).length).to.be.eq(3);
 
       for (const event of await setEvents) {
-        expect(event.data.msg).to.match(/Teleport test\d set\./);
+        expect(event.data.meta.msg).to.match(/Teleport test\d set\./);
       }
-      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/deletetp test1',
         playerId: this.setupData.players[0].id,
       });
 
       expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.msg).to.be.eq('Teleport test1 deleted.');
+      expect((await events)[0].data.meta.msg).to.be.eq('Teleport test1 deleted.');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -155,14 +155,14 @@ const tests = [
         this.setupData.gameserver.id,
         this.setupData.teleportsModule.id,
       );
-      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/deletetp test',
         playerId: this.setupData.players[0].id,
       });
 
       expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.msg).to.be.eq('Teleport test does not exist.');
+      expect((await events)[0].data.meta.msg).to.be.eq('Teleport test does not exist.');
     },
   }),
 ];
