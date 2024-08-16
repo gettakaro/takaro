@@ -17,6 +17,7 @@
       "steamVacBanned": null,
       "steamsDaysSinceLastBan": null,
       "steamNumberOfVACBans": null,
+      "steamLevel": null,
       "roleAssignments": [
         {
           "playerId": "03a543be-0ef8-48f3-a5a9-a045cfe28dc2",
