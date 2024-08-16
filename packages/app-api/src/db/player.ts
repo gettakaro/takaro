@@ -23,6 +23,7 @@ export interface ISteamData {
   steamVacBanned: boolean;
   steamsDaysSinceLastBan: number;
   steamNumberOfVACBans: number;
+  steamLevel: number;
 }
 
 interface IObserveIPOpts {
