@@ -89,7 +89,7 @@ jobs:
   node-ci:
     needs: [docker]
     timeout-minutes: 60
-    runs-on: ubicloud-standard-8
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         node-version: [18.18]
