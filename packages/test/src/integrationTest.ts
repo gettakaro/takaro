@@ -3,6 +3,7 @@ import { matchSnapshot } from './snapshots.js';
 import { integrationConfig, sandbox } from './main.js';
 import { expect } from './test/expect.js';
 import { AdminClient, Client, AxiosResponse, isAxiosError } from '@takaro/apiclient';
+import { queueService } from '@takaro/queues';
 import { randomUUID } from 'crypto';
 import { retry } from '@takaro/util';
 
@@ -33,6 +34,31 @@ const adminClient = new AdminClient({
     clientSecret: integrationConfig.get('auth.adminClientSecret'),
   },
   log: noopLog,
+});
+
+beforeEach(async () => {
+  const queueState = await Promise.all(
+    Object.keys(queueService.queues).map(async (queue) => {
+      // @ts-expect-error Temp debug code, cba fixing types...
+      const active = await queueService.queues[queue].queue.bullQueue.getActiveCount();
+      // @ts-expect-error Temp debug code, cba fixing types...
+      const waiting = await queueService.queues[queue].queue.bullQueue.getWaitingCount();
+      // @ts-expect-error Temp debug code, cba fixing types...
+      const completed = await queueService.queues[queue].queue.bullQueue.getCompletedCount();
+      // @ts-expect-error Temp debug code, cba fixing types...
+      const failed = await queueService.queues[queue].queue.bullQueue.getFailedCount();
+
+      return {
+        name: queue,
+        active,
+        waiting,
+        completed,
+        failed,
+      };
+    }),
+  );
+
+  console.table(queueState);
 });
 
 before(async () => {
