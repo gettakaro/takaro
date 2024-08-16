@@ -119,6 +119,16 @@ class SteamApi {
 
     return response.data.players;
   }
+
+  async getLevel(steamId: string): Promise<number> {
+    const response = await this.client.get('/IPlayerService/GetSteamLevel/v1', {
+      params: {
+        steamid: steamId,
+      },
+    });
+
+    return response.data.response.player_level;
+  }
 }
 
 export const steamApi = new SteamApi();

@@ -73,6 +73,10 @@ export class PlayerOutputDTO extends TakaroModelDTO<PlayerOutputDTO> {
   @IsOptional()
   steamNumberOfVACBans?: number;
 
+  @IsNumber()
+  @IsOptional()
+  steamLevel?: number;
+
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => PlayerOnGameserverOutputDTO)
@@ -339,28 +343,31 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
       steamApi.getPlayerBans(toRefresh),
     ]);
 
-    const fullData: (ISteamData | { steamId: string })[] = toRefresh.map((steamId) => {
-      const summary = summaries.find((item) => item.steamid === steamId);
-      const ban = bans.find((item) => item.SteamId === steamId);
+    const fullData: (ISteamData | { steamId: string })[] = await Promise.all(
+      toRefresh.map(async (steamId) => {
+        const summary = summaries.find((item) => item.steamid === steamId);
+        const ban = bans.find((item) => item.SteamId === steamId);
 
-      if (!summary || !ban) {
-        this.log.warn('Steam data missing', { steamId, summary, ban });
+        if (!summary || !ban) {
+          this.log.warn('Steam data missing', { steamId, summary, ban });
+          return {
+            steamId,
+          };
+        }
+
         return {
           steamId,
+          steamAvatar: summary.avatarfull,
+          steamAccountCreated: summary.timecreated,
+          steamCommunityBanned: ban.CommunityBanned,
+          steamEconomyBan: ban.EconomyBan,
+          steamVacBanned: ban.VACBanned,
+          steamsDaysSinceLastBan: ban.DaysSinceLastBan,
+          steamNumberOfVACBans: ban.NumberOfVACBans,
+          steamLevel: summary ? await steamApi.getLevel(steamId) : null,
         };
-      }
-
-      return {
-        steamId,
-        steamAvatar: summary.avatarfull,
-        steamAccountCreated: summary.timecreated,
-        steamCommunityBanned: ban.CommunityBanned,
-        steamEconomyBan: ban.EconomyBan,
-        steamVacBanned: ban.VACBanned,
-        steamsDaysSinceLastBan: ban.DaysSinceLastBan,
-        steamNumberOfVACBans: ban.NumberOfVACBans,
-      };
-    });
+      }),
+    );
 
     await this.repo.setSteamData(fullData);
     return toRefresh.length;
