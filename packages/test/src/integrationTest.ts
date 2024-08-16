@@ -61,6 +61,18 @@ beforeEach(async () => {
   console.table(queueState);
 });
 
+after(async () => {
+  // Delete all completed and failed jobs
+  await Promise.all(
+    Object.keys(queueService.queues).map(async (queue) => {
+      // @ts-expect-error Temp debug code, cba fixing types...
+      await queueService.queues[queue].queue.bullQueue.clean(0, 'completed');
+      // @ts-expect-error Temp debug code, cba fixing types...
+      await queueService.queues[queue].queue.bullQueue.clean(0, 'failed');
+    }),
+  );
+});
+
 before(async () => {
   try {
     const danglingDomains = await adminClient.domain.domainControllerSearch({
