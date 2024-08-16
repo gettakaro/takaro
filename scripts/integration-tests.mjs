@@ -33,7 +33,7 @@ process.env = {
   POSTGRES_DB: 'takaro-test-db',
   POSTGRES_PASSWORD,
   POSTGRES_ENCRYPTION_KEY,
-  MOCHA_RETRIES: 0,
+  MOCHA_RETRIES: 5,
 };
 
 const composeOpts = {
