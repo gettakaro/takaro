@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto';
-import { upMany, logs, upAll, down, run, pullAll } from 'docker-compose/dist/v2.js';
+import { upMany, logs, upAll, down, run, pullAll, buildOne } from 'docker-compose/dist/v2.js';
 import { $ } from 'zx';
 import { writeFile, mkdir } from 'fs/promises';
 
@@ -33,7 +33,7 @@ process.env = {
   POSTGRES_DB: 'takaro-test-db',
   POSTGRES_PASSWORD,
   POSTGRES_ENCRYPTION_KEY,
-  MOCHA_RETRIES: 5,
+  MOCHA_RETRIES: 0,
 };
 
 const composeOpts = {
@@ -78,6 +78,9 @@ async function main() {
 
   console.log('Running Takaro SQL migrations...');
   await run('takaro_api', 'npm -w packages/app-api run db:migrate', composeOpts);
+
+  console.log('Building Takaro test image...');
+  await buildOne('takaro', { ...composeOpts, log: false });
 
   console.log('Starting all containers...');
   await upAll(composeOpts);

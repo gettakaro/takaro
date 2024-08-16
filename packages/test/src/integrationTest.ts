@@ -63,7 +63,7 @@ beforeEach(async () => {
 
 after(async () => {
   // Delete all completed and failed jobs
-  await Promise.all(
+  await Promise.allSettled(
     Object.keys(queueService.queues).map(async (queue) => {
       // @ts-expect-error Temp debug code, cba fixing types...
       await queueService.queues[queue].queue.bullQueue.clean(0, 5000, 'completed');
@@ -71,6 +71,7 @@ after(async () => {
       await queueService.queues[queue].queue.bullQueue.clean(0, 5000, 'failed');
     }),
   );
+  await queueService.disconnect();
 });
 
 before(async () => {
