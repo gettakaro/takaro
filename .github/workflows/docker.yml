@@ -76,7 +76,9 @@ jobs:
           sbom: true
           file: ${{ matrix.package.dockerfile }}
           push: ${{ !startsWith(github.actor, 'renovate') }}
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: |
+            ${{ steps.meta.outputs.tags }}
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             PACKAGE=${{ matrix.package.name }}
