@@ -144,7 +144,7 @@ export class TakaroEventCommandExecuted extends BaseEvent<TakaroEventCommandExec
   @IsDefined()
   data: Record<string, unknown>;
 
-  @ValidateNested({ each: true })
+  @ValidateNested()
   @Type(() => TakaroEventFunctionResult)
   result: TakaroEventFunctionResult;
 
@@ -161,7 +161,7 @@ export class TakaroEventHookExecuted extends BaseEvent<TakaroEventHookExecuted> 
   @IsDefined()
   data: Record<string, unknown>;
 
-  @ValidateNested({ each: true })
+  @ValidateNested()
   @Type(() => TakaroEventFunctionResult)
   result: TakaroEventFunctionResult;
 
@@ -178,7 +178,7 @@ export class TakaroEventCronjobExecuted extends BaseEvent<TakaroEventCronjobExec
   @IsDefined()
   data: Record<string, unknown>;
 
-  @ValidateNested({ each: true })
+  @ValidateNested()
   @Type(() => TakaroEventFunctionResult)
   result: TakaroEventFunctionResult;
 
