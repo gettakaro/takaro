@@ -12,7 +12,7 @@ This guide will set up a basic Takaro instance on a single server. This guide as
 Docker and general server administration. We make a lot of assumptions about the
 environment in which Takaro is running, you will need to adapt this guide to your specific environment.
 
-For simplicity, we will not cover certain aspects of running a production service in this guide, such as backups, monitoring, security hardening, scaling, etc.
+For simplicity, we will not cover certain aspects of running a production service in this guide, such as reverse proxy, backups, monitoring, security hardening, scaling, etc.
 
 ## Prerequisites
 
@@ -31,34 +31,19 @@ Clone the Takaro repository to your server:
 git clone https://github.com/gettakaro/takaro.git
 ```
 
-There is a reference Docker compose file at `deploy/compose/docker-compose.yaml`.
-Take a look at this file to see what we'll be deploying.
-
-```bash
-cd deploy/compose
-cat docker-compose.yaml
-```
-
-Let's replace the placeholder domain with your domain, we'll be using `sed` to do this:
-
-```bash
-sed -i 's/takaro.example.com/takaro.your-domain.com/g' docker-compose.yaml
-```
-
-The containers use a network called `takaro`, we need to create this network:
-
-```bash
-docker network create takaro
-```
-
 The compose file will store a bunch of persistent data. Different containers need different permissions on these folders
 
 ```bash
 ./scripts/setup-data-folders.sh
 ```
 
-The compose file is set up to provision TLS certificates via Cloudflare. You will need to add an env var `CF_DNS_API_TOKEN` with your Cloudflare API token. You can get this token from the Cloudflare dashboard.
-There are other providers supported, see the [Traefik docs](https://doc.traefik.io/traefik/https/acme/#providers) for more info.
+There is a reference Docker compose file at `deploy/compose/docker-compose.yml`.
+Take a look at this file to see what we'll be deploying.
+
+```bash
+cd deploy/compose
+cat docker-compose.yml
+```
 
 Copy the example .env file from the repo and edit it as needed
 

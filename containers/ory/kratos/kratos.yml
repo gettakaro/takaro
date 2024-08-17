@@ -9,6 +9,7 @@ serve:
       enabled: true
       allowed_origins:
         - http://127.0.0.1:13001
+        - http://127.0.0.1:13002
       allowed_methods:
         - POST
         - GET
@@ -58,7 +59,7 @@ selfservice:
       enabled: true
       ui_url: http://127.0.0.1:13001/account/recovery
       use: code
-          
+
     verification:
       enabled: false
       ui_url: http://127.0.0.1:13001/account/verification
@@ -113,6 +114,6 @@ identity:
 
 courier:
   smtp:
-    connection_uri: "smtp://mailhog:1025/?disable_starttls=true"
+    connection_uri: 'smtp://mailhog:1025/?disable_starttls=true'
     from_address: noreply@takaro.io
     from_name: Takaro
