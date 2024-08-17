@@ -67,6 +67,8 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}-${{ matrix.package.name }}:latest
+          cache-to: type=inline
           file: ${{ matrix.package.dockerfile }}
           push: ${{ !startsWith(github.actor, 'renovate') }}
           tags: ${{ steps.meta.outputs.tags }}
