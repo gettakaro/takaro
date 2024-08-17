@@ -66,7 +66,7 @@ class SettingsSetDTO {
 })
 @JsonController()
 export class SettingsController {
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_SETTINGS]))
+  @UseBefore(AuthService.getAuthMiddleware([]))
   @ResponseSchema(SettingsOutputDTOAPI)
   @Get('/settings/:key')
   async getOne(
@@ -82,7 +82,7 @@ export class SettingsController {
     return apiResponse(await service.get(params.key));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_SETTINGS]))
+  @UseBefore(AuthService.getAuthMiddleware([]))
   @ResponseSchema(SettingsOutputArrayDTOAPI)
   @Get('/settings')
   async get(@Req() req: AuthenticatedRequest, @QueryParams() query: GetSettingsInput) {
