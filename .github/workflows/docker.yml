@@ -3,7 +3,8 @@ name: Docker
 on:
   push:
     branches:
-      - '*'
+      - 'main'
+      - 'development'
     tags:
       - '*'
   pull_request:
