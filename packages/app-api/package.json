@@ -1,6 +1,6 @@
 {
   "name": "@takaro/api",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "REST API for Takaro",
   "main": "dist/main.js",
   "types": "main.ts",
