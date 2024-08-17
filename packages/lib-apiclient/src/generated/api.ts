@@ -17378,7 +17378,7 @@ export const PlayerApiFp = function (configuration?: Configuration) {
      * @throws {RequiredError}
      */
     async playerControllerGetMe(
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerMeOutputDTO>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.playerControllerGetMe(options);
       const index = configuration?.serverIndex ?? 0;
@@ -17388,7 +17388,7 @@ export const PlayerApiFp = function (configuration?: Configuration) {
           localVarAxiosArgs,
           globalAxios,
           BASE_PATH,
-          configuration
+          configuration,
         )(axios, operationBasePath || basePath);
     },
     /**
