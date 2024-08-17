@@ -49,6 +49,9 @@ jobs:
         with:
           images: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}-${{ matrix.package.name }}
 
+      - name: Get Git commit timestamps
+        run: echo "TIMESTAMP=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
@@ -77,6 +80,10 @@ jobs:
           build-args: |
             PACKAGE=${{ matrix.package.name }}
             TAKARO_VERSION=${{ steps.meta.outputs.version }}
+            TAKARO_COMMIT=${{ github.sha }}
+            TAKARO_BUILD_DATE=${{ env.TIMESTAMP }}
+        env:
+          SOURCE_DATE_EPOCH: ${{ env.TIMESTAMP }}
   node-ci:
     needs: [docker]
     timeout-minutes: 60
