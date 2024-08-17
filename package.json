@@ -160,7 +160,7 @@
   },
   "overrides": {
     "class-validator": "0.13.2",
-    "esbuild": "0.19.11"
+    "esbuild": "0.23.1"
   },
   "optionalDependencies": {
     "bufferutil": "^4.0.8",
