@@ -13,7 +13,7 @@ export abstract class NOT_DOMAIN_SCOPED_TakaroService<
   abstract get repo(): NOT_DOMAIN_SCOPED_ITakaroRepo<Model, OutputDTO, CreateInputDTO, UpdateDTO>;
 
   abstract find(filters: ITakaroQuery<OutputDTO>): Promise<PaginatedOutput<OutputDTO>>;
-  abstract findOne(id: string | number): Promise<OutputDTO | undefined>;
+  abstract findOne(id: string | number, ...args: any[]): Promise<OutputDTO | undefined>;
   abstract create(item: CreateInputDTO): Promise<OutputDTO>;
   abstract update(id: string, item: UpdateDTO): Promise<OutputDTO | undefined>;
   abstract delete(id: string): Promise<string>;

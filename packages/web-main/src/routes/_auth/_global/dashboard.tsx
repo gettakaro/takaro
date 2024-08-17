@@ -10,11 +10,12 @@ import { useQuery } from '@tanstack/react-query';
 import { hasPermission } from 'hooks/useHasPermission';
 import { PlayersOnlineStatsQueryOptions, ActivityStatsQueryOptions } from 'queries/stats';
 import { EventFeed, EventItem } from 'components/events/EventFeed';
+import { PERMISSIONS } from '@takaro/apiclient';
 
 export const Route = createFileRoute('/_auth/_global/dashboard')({
   beforeLoad: async ({ context }) => {
     const session = await context.auth.getSession();
-    if (!hasPermission(session, ['READ_EVENTS', 'READ_GAMESERVERS', 'READ_PLAYERS'])) {
+    if (!hasPermission(session, [PERMISSIONS.ReadEvents, PERMISSIONS.ManageGameservers, PERMISSIONS.ReadPlayers])) {
       throw redirect({ to: '/forbidden' });
     }
   },

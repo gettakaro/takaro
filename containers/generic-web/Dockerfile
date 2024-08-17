@@ -28,4 +28,10 @@ WORKDIR /app
 COPY containers/generic-web/entrypoint.sh ./entrypoint.sh
 RUN chmod +x ./entrypoint.sh
 
+ARG TAKARO_VERSION=unset
+ARG TAKARO_COMMIT=unset
+ARG TAKARO_BUILD_DATE=unset
+ENV TAKARO_FULL_VERSION=${TAKARO_VERSION}-${TAKARO_COMMIT}-${TAKARO_BUILD_DATE}
+ENV VITE_TAKARO_VERSION=${TAKARO_FULL_VERSION}
+
 CMD ["./entrypoint.sh"]

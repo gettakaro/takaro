@@ -154,8 +154,8 @@ export class GameServerService extends TakaroService<
     return this.repo.find(filters);
   }
 
-  findOne(id: string): Promise<GameServerOutputDTO> {
-    return this.repo.findOne(id);
+  findOne(id: string, decryptConnectionInfo: boolean): Promise<GameServerOutputDTO> {
+    return this.repo.findOne(id, decryptConnectionInfo);
   }
 
   async create(item: GameServerCreateDTO): Promise<GameServerOutputDTO> {
@@ -222,7 +222,7 @@ export class GameServerService extends TakaroService<
       const reachability = await instance.testReachability();
       gameServerLatency.set({ gameserver: id, domain: this.domainId }, reachability.latency ?? 0);
 
-      const currentServer = await this.findOne(id);
+      const currentServer = await this.findOne(id, true);
 
       if (currentServer.reachable !== reachability.connectable) {
         this.log.info(`Updating reachability for ${id} to ${reachability.connectable}`);
@@ -361,7 +361,7 @@ export class GameServerService extends TakaroService<
   }
 
   async getGame(id: string): Promise<IGameServer> {
-    const gameserver = await this.repo.findOne(id);
+    const gameserver = await this.repo.findOne(id, true);
     let gameInstance = gameClassCache.get(id);
 
     if (gameInstance) {

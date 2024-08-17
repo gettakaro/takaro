@@ -33,7 +33,7 @@ export const GameServerNav: FC = () => {
           params: { gameServerId: gameServerId },
         },
         icon: <DashboardIcon />,
-        requiredPermissions: [PERMISSIONS.ReadGameservers],
+        requiredPermissions: [PERMISSIONS.ManageGameservers],
       },
       {
         label: 'Shop & Orders',
@@ -42,7 +42,7 @@ export const GameServerNav: FC = () => {
           params: { gameServerId: gameServerId },
         },
         icon: <ShopIcon />,
-        requiredPermissions: [PERMISSIONS.ReadGameservers],
+        requiredPermissions: [],
       },
       {
         label: 'Modules',
@@ -51,7 +51,7 @@ export const GameServerNav: FC = () => {
           params: { gameServerId: gameServerId },
         },
         icon: <ModulesIcon />,
-        requiredPermissions: [PERMISSIONS.ReadGameservers, PERMISSIONS.ReadModules],
+        requiredPermissions: [PERMISSIONS.ReadModules],
       },
       {
         label: 'Settings',
@@ -60,7 +60,7 @@ export const GameServerNav: FC = () => {
           params: { gameServerId: gameServerId },
         },
         icon: <SettingsIcon />,
-        requiredPermissions: [PERMISSIONS.ReadSettings, PERMISSIONS.ReadGameservers],
+        requiredPermissions: [PERMISSIONS.ReadSettings],
       },
     ];
   }, [gameServerId]);
