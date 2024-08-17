@@ -31,3 +31,8 @@ jobs:
         with:
           branch: main-promotion
           labels: skip-changelog
+          token: ${{ steps.generate_token.outputs.token }}
+          title: Merge development into main
+          body: |
+            This PR merges the development branch into the main branch.
+            It is created automatically by the Takaro CI bot.
