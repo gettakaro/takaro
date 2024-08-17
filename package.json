@@ -1,6 +1,6 @@
 {
   "name": "takaro",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "",
   "scripts": {
     "start": "COMMAND=\"start\" REGEX=app  ./scripts/run-all-pkgs.sh",
