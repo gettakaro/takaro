@@ -235,7 +235,20 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
       gameServerId,
     };
 
-    await roleOnPlayerModel.query().insert(updateObj);
+    const whereObj: Record<string, unknown> = {
+      playerId,
+      roleId,
+    };
+
+    if (gameServerId) whereObj.gameServerId = gameServerId;
+
+    const existing = await roleOnPlayerModel.query().findOne(whereObj);
+
+    if (existing) {
+      await roleOnPlayerModel.query().update(updateObj).where(whereObj);
+    } else {
+      await roleOnPlayerModel.query().insert(updateObj);
+    }
   }
 
   async removeRole(playerId: string, roleId: string, gameServerId?: string): Promise<void> {

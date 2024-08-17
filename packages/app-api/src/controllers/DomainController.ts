@@ -44,6 +44,10 @@ export class DomainSearchInputAllowedFilters {
   @IsOptional()
   @IsEnum(Object.values(DOMAIN_STATES), { each: true })
   state!: DOMAIN_STATES[];
+
+  @IsOptional()
+  @IsString({ each: true })
+  externalReference!: string[];
 }
 
 export class DomainSearchInputDTO extends ITakaroQuery<DomainOutputDTO> {

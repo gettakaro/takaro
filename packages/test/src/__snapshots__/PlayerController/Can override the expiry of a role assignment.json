@@ -1,0 +1,82 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "createdAt": "2024-08-17T14:54:58.892Z",
+      "updatedAt": "2024-08-17T14:54:59.406Z",
+      "id": "0bc2831c-42fb-4bc8-876d-37a7f789cf63",
+      "name": "Candice_Berge",
+      "steamId": "xf5eryn8r1gs02tu",
+      "xboxLiveId": "ne67y6p9cmjncz8m",
+      "epicOnlineServicesId": "x606jagm8uou2go9",
+      "steamAvatar": null,
+      "steamLastFetch": null,
+      "steamAccountCreated": null,
+      "steamCommunityBanned": null,
+      "steamEconomyBan": null,
+      "steamVacBanned": null,
+      "steamsDaysSinceLastBan": null,
+      "steamNumberOfVACBans": null,
+      "steamLevel": null,
+      "roleAssignments": [
+        {
+          "createdAt": "2024-08-17T14:54:59.664Z",
+          "updatedAt": "2024-08-17T14:54:59.690Z",
+          "id": "0a6d9fe7-e80a-410a-bf12-7095eac25143",
+          "playerId": "0bc2831c-42fb-4bc8-876d-37a7f789cf63",
+          "roleId": "e6de15d8-f192-4a90-a663-c5322f2e2d6f",
+          "gameServerId": null,
+          "expiresAt": "2024-08-17T15:54:59.646Z",
+          "role": {
+            "createdAt": "2024-08-17T14:54:59.638Z",
+            "updatedAt": "2024-08-17T14:54:59.639Z",
+            "id": "e6de15d8-f192-4a90-a663-c5322f2e2d6f",
+            "name": "Test role",
+            "system": false,
+            "permissions": [
+              {
+                "createdAt": "2024-08-17T14:54:59.641Z",
+                "updatedAt": "2024-08-17T14:54:59.641Z",
+                "id": "95ca3c75-4659-4be8-a1a9-3784cf84f0ea",
+                "roleId": "e6de15d8-f192-4a90-a663-c5322f2e2d6f",
+                "count": 0,
+                "permissionId": "3b7f6e7e-14fa-48b2-9b62-2aff6575350f"
+              }
+            ]
+          }
+        },
+        {
+          "playerId": "0bc2831c-42fb-4bc8-876d-37a7f789cf63",
+          "roleId": "7b6d0471-cc33-4226-8155-d5584d559601",
+          "role": {
+            "createdAt": "2024-08-17T14:54:58.381Z",
+            "updatedAt": "2024-08-17T14:54:58.382Z",
+            "id": "7b6d0471-cc33-4226-8155-d5584d559601",
+            "name": "Player",
+            "system": true,
+            "permissions": []
+          }
+        }
+      ],
+      "ipHistory": []
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "PlayerController",
+    "snapshot": true,
+    "name": "Can override the expiry of a role assignment",
+    "filteredFields": [
+      "name",
+      "playerId",
+      "steamId",
+      "roleId",
+      "gameServerId",
+      "epicOnlineServicesId",
+      "xboxLiveId",
+      "expiresAt"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}
