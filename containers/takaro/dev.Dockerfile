@@ -24,4 +24,7 @@ WORKDIR /app
 
 RUN npm ci
 
+ARG TAKARO_VERSION=localdev
+ENV TAKARO_VERSION=${TAKARO_VERSION}
+
 CMD ["npm", "run", "start:dev"]

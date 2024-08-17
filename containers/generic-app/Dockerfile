@@ -30,6 +30,9 @@ ARG PACKAGE
 ENV PACKAGE=${PACKAGE}
 ENV NODE_ENV=production
 
+ARG TAKARO_VERSION=unset
+ENV TAKARO_VERSION=${TAKARO_VERSION}
+
 WORKDIR /app
 
 COPY --from=builder /app/packages/${PACKAGE}/package*.json /app/packages/${PACKAGE}/
