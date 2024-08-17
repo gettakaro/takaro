@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { matchSnapshot } from './snapshots.js';
 import { integrationConfig, sandbox } from './main.js';
 import { expect } from './test/expect.js';
-import { AdminClient, Client, AxiosResponse, isAxiosError } from '@takaro/apiclient';
+import { AdminClient, Client, AxiosResponse, isAxiosError, TakaroEventCommandExecuted } from '@takaro/apiclient';
 import { randomUUID } from 'crypto';
 import { retry } from '@takaro/util';
 
@@ -133,6 +133,17 @@ export class IntegrationTest<SetupData> {
       }
 
       async function teardown(): Promise<void> {
+        const failedFunctionsRes = await integrationTestContext.client.event.eventControllerGetFailedFunctions();
+
+        if (failedFunctionsRes.data.data.length > 0) {
+          console.error(`There were ${failedFunctionsRes.data.data.length} failed functions`);
+          for (const failedFn of failedFunctionsRes.data.data) {
+            const name = (failedFn.meta as TakaroEventCommandExecuted).command?.name;
+            const msgs = (failedFn.meta as TakaroEventCommandExecuted)?.result.logs.map((l) => l.msg);
+            console.log(`Function with name "${name}" failed with messages: ${msgs}`);
+          }
+        }
+
         if (integrationTestContext.test.teardown) {
           await integrationTestContext.test.teardown.bind(integrationTestContext)();
         }
