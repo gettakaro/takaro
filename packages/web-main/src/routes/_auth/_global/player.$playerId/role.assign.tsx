@@ -30,7 +30,7 @@ const ButtonContainer = styled.div`
 `;
 
 const roleAssignValidationSchema = z.object({
-  id: z.string().uuid(),
+  playerId: z.string().uuid(),
   roleId: z.string().uuid(),
   gameServerId: z.string().optional(),
   expiresAt: z.string().optional(),
@@ -69,15 +69,15 @@ function Component() {
     mode: 'onSubmit',
     resolver: zodResolver(roleAssignValidationSchema),
     defaultValues: {
-      id: playerId,
+      playerId,
       roleId: roles[0].id,
       gameServerId: gameServers[0].id,
     },
   });
 
-  const onSubmit: SubmitHandler<IFormInputs> = async ({ id, roleId, gameServerId, expiresAt }) => {
+  const onSubmit: SubmitHandler<IFormInputs> = async ({ playerId, roleId, gameServerId, expiresAt }) => {
     if (gameServerId === 'null') gameServerId = undefined;
-    await mutateAsync({ id, roleId, gameServerId, expiresAt });
+    await mutateAsync({ playerId, roleId, gameServerId, expiresAt });
     navigate({ to: '/player/$playerId/info', params: { playerId } });
   };
 
@@ -89,7 +89,7 @@ function Component() {
           <CollapseList>
             <form onSubmit={handleSubmit(onSubmit)} id="create-role-form">
               <CollapseList.Item title="General">
-                <TextField readOnly control={control} name="id" label="Player" />
+                <TextField readOnly control={control} name="playerId" label="Player" />
                 <RoleSelect control={control} name="roleId" />
                 <SelectField
                   canClear={true}
@@ -134,7 +134,7 @@ function Component() {
         <Drawer.Footer>
           <ButtonContainer>
             <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
-            <Button fullWidth text="Save changes" isLoading={isPending} type="submit" form="create-role-form" />
+            <Button fullWidth text="Assign role" isLoading={isPending} type="submit" form="assign-player-role-form" />
           </ButtonContainer>
         </Drawer.Footer>
       </Drawer.Content>

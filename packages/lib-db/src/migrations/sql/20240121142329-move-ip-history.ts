@@ -27,7 +27,7 @@ export async function up(knex: Knex): Promise<void> {
         playerId: pog.playerId,
         gameServerId: pog.gameServerId,
       };
-    })
+    }),
   );
 
   if (newRecords.length) {

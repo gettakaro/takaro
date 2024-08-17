@@ -62,5 +62,5 @@ export const validationSchema = baseShape.and(
         name: z.string().min(1, { message: 'Name cannot be empty' }).optional(),
       }),
     }),
-  ])
+  ]),
 );

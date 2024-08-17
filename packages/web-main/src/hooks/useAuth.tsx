@@ -88,7 +88,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       ).data.data.user;
       setLocalSession(session);
       return newSession;
-    } catch (error) {
+    } catch (_error) {
       // logout if session is invalid
       localStorage.removeItem('session');
       setLocalSession(null);

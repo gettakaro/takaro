@@ -1,10 +1,9 @@
 import { ParentSize } from '@visx/responsive';
-import { scaleLinear } from '@visx/scale';
 import { Group } from '@visx/group';
 import { AxisTop, AxisLeft } from '@visx/axis';
 import { HeatmapRect } from '@visx/heatmap';
 import { useTooltipInPortal } from '@visx/tooltip';
-import { scaleBand } from '@visx/scale';
+import { scaleLinear, scaleBand } from '@visx/scale';
 
 import { InnerChartProps, Margin } from '../util';
 import { useTheme } from '../../../hooks';
@@ -169,7 +168,7 @@ const Chart = <T,>({
                     fillOpacity={bin.opacity}
                   />
                 );
-              })
+              }),
             )
           }
         </HeatmapRect>
@@ -200,7 +199,7 @@ function transformData<T>(
   xAccessor: (d: T) => number,
   yAccessor: (d: T) => number,
   zAccessor: (d: T) => number,
-  tooltipAccessor: (d: T) => string
+  tooltipAccessor: (d: T) => string,
 ): OuterBin[] {
   const map = new Map<number, Map<number, { count: number; tooltip: string }>>();
 

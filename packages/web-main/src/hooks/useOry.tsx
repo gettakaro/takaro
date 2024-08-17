@@ -10,7 +10,7 @@ interface OryContext {
     getFlow: ((flowId: string) => Promise<void | AxiosError>) | undefined,
     setFlow: React.Dispatch<React.SetStateAction<any>> | undefined,
     defaultNav: string | undefined,
-    fatalToDash?: boolean
+    fatalToDash?: boolean,
   ) => (error: AxiosError<any>) => Promise<AxiosError | void>;
 }
 const OryContext = createContext<OryContext | null>(null);
@@ -22,10 +22,10 @@ export function OryProvider({ children }: { children: React.ReactNode }) {
       baseOptions: {
         withCredentials: true,
       },
-    })
+    }),
   );
 
-  const oryError = (
+  const useOryError = (
     /**
      * @param getFlow - Should be function to load a flow make it visible (Login.getFlow)
      * @param setFlow - Update flow data to view (Login.setFlow)
@@ -36,7 +36,7 @@ export function OryProvider({ children }: { children: React.ReactNode }) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setFlow: React.Dispatch<React.SetStateAction<any>> | undefined,
     defaultNav: string | undefined,
-    fatalToDash = false
+    fatalToDash = false,
   ) => {
     const navigate = useNavigate();
 
@@ -125,7 +125,7 @@ export function OryProvider({ children }: { children: React.ReactNode }) {
               const redirect = new URL(
                 responseData.redirect_browser_to,
                 // need to add the base url since the `redirect_browser_to` is a relative url with no hostname
-                window.location.origin
+                window.location.origin,
               );
 
               // Path has changed
@@ -174,7 +174,7 @@ export function OryProvider({ children }: { children: React.ReactNode }) {
 
         throw error;
       },
-      [navigate, getFlow]
+      [navigate, getFlow],
     );
   };
 
@@ -182,7 +182,7 @@ export function OryProvider({ children }: { children: React.ReactNode }) {
     <OryContext.Provider
       value={{
         oryClient,
-        oryError,
+        oryError: useOryError,
       }}
     >
       {children}

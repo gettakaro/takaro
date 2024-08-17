@@ -1,4 +1,4 @@
-import { FC, cloneElement } from 'react';
+import { JSX, FC, cloneElement } from 'react';
 import { styled } from '../../../styled';
 import { Link, LinkProps } from '@tanstack/react-router';
 import { Tooltip } from '../../../components';

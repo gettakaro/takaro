@@ -18,7 +18,7 @@ describe('rateLimit middleware', () => {
           max: 5,
           windowSeconds: 5,
           useInMemory: false,
-        })
+        }),
       )
       getLow() {
         return 'Hello World';
@@ -30,17 +30,20 @@ describe('rateLimit middleware', () => {
           max: 15,
           windowSeconds: 5,
           useInMemory: false,
-        })
+        }),
       )
       getHigh() {
         return 'Hello World';
       }
 
       @Get('/authenticated')
-      @UseBefore((req: Request, _res: Response, next: NextFunction) => {
-        ctx.addData({ user: req.query.user as string });
-        next();
-      }, await createRateLimitMiddleware({ max: 5, windowSeconds: 5, useInMemory: false }))
+      @UseBefore(
+        (req: Request, _res: Response, next: NextFunction) => {
+          ctx.addData({ user: req.query.user as string });
+          next();
+        },
+        await createRateLimitMiddleware({ max: 5, windowSeconds: 5, useInMemory: false }),
+      )
       getAuthenticated() {
         return 'Hello World';
       }
@@ -50,7 +53,7 @@ describe('rateLimit middleware', () => {
       {
         controllers: [TestController],
       },
-      { port: undefined }
+      { port: undefined },
     );
 
     await http.start();

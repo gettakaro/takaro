@@ -1,15 +1,7 @@
 import { ModuleInstallationOutputDTO, ModuleOutputDTO, PERMISSIONS } from '@takaro/apiclient';
-import {
-  Dialog,
-  Button,
-  IconButton,
-  Card,
-  useTheme,
-  Dropdown,
-  ValueConfirmationField,
-  Alert,
-} from '@takaro/lib-components';
+import { Dialog, Button, IconButton, Card, useTheme, Dropdown, ValueConfirmationField } from '@takaro/lib-components';
 import { PermissionsGuard } from 'components/PermissionsGuard';
+import { useSnackbar } from 'notistack';
 
 import { FC, useState, MouseEvent } from 'react';
 import {
@@ -34,13 +26,18 @@ interface IModuleCardProps {
 export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gameServerId }) => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [valid, setValid] = useState<boolean>(false);
-  const { mutateAsync: uninstallModule, isPending: isDeleting } = useGameServerModuleUninstall();
+  const { mutateAsync: uninstallModule, isPending: isDeleting, isSuccess } = useGameServerModuleUninstall();
   const navigate = useNavigate();
   const theme = useTheme();
+  const { enqueueSnackbar } = useSnackbar();
 
   const handleOnDeleteClick = (e: MouseEvent) => {
     e.stopPropagation();
-    e.shiftKey ? handleUninstall(e) : setOpenDialog(true);
+    if (e.shiftKey) {
+      handleUninstall(e);
+    } else {
+      setOpenDialog(true);
+    }
   };
 
   const handleUninstall = async (e: MouseEvent) => {
@@ -52,6 +49,10 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
     });
     setOpenDialog(false);
   };
+
+  if (isSuccess) {
+    enqueueSnackbar('Module uninstalled!', { variant: 'default', type: 'success' });
+  }
 
   const handleOnOpenClick = () => {
     window.open(`/studio/${mod.id}`, '_blank');
@@ -113,10 +114,11 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
           </div>
           <p>{mod.description}</p>
           <SpacedRow>
-            <span style={{ color: `${theme.colors.primary} !important` }}>
+            <span style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
               {mod.commands.length > 0 && <p>Commands: {mod.commands.length}</p>}
               {mod.hooks.length > 0 && <p>Hooks: {mod.hooks.length}</p>}
               {mod.cronJobs.length > 0 && <p>Cronjobs: {mod.cronJobs.length}</p>}
+              {mod.permissions.length > 0 && <p>Permissions: {mod.permissions.length}</p>}
             </span>
             <ActionIconsContainer>
               {!installation && <Button text="Install" onClick={handleInstallConfigureClick} />}
@@ -146,10 +148,6 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
               disabled={!valid}
               text="Uninstall module"
               color="error"
-            />
-            <Alert
-              variant="info"
-              text="You can hold down shift when uninstalling a module to bypass this confirmation entirely."
             />
           </Dialog.Body>
         </Dialog.Content>

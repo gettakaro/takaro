@@ -42,7 +42,7 @@ export async function down(knex: Knex): Promise<void> {
       'MANAGE_PLAYERS',
       'MANAGE_SETTINGS',
       'READ_SETTINGS',
-    ])
+    ]),
   );
 
   await knex.schema.dropTable('roleOnPlayer');

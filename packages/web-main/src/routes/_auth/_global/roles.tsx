@@ -1,12 +1,10 @@
-import { Outlet, redirect, useNavigate } from '@tanstack/react-router';
-import { EmptyPage, Skeleton, Empty, Button } from '@takaro/lib-components';
+import { Outlet, redirect, useNavigate, createFileRoute } from '@tanstack/react-router';
+import { EmptyPage, Skeleton, Empty, Button, InfiniteScroll } from '@takaro/lib-components';
 import { rolesInfiniteQueryOptions } from 'queries/role';
 import { RoleCard, AddCard, CardList } from 'components/cards';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { createFileRoute } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { InfiniteScroll } from '@takaro/lib-components';
 
 export const Route = createFileRoute('/_auth/_global/roles')({
   beforeLoad: async ({ context }) => {
@@ -24,13 +22,14 @@ export const Route = createFileRoute('/_auth/_global/roles')({
   component: Component,
 
   notFoundComponent: () => {
-    const navigate = useNavigate();
     return (
       <EmptyPage>
         <Empty
           header="No roles"
           description="Create a role and assign it to user or players."
-          actions={[<Button text="Create a role" onClick={() => navigate({ to: '/roles/create' })} />]}
+          actions={[
+            <Button key="create-role-button" text="Create a role" onClick={() => redirect({ to: '/roles/create' })} />,
+          ]}
         />
         <Outlet />
       </EmptyPage>

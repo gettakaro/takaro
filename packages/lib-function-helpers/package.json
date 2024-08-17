@@ -1,6 +1,6 @@
 {
   "name": "@takaro/helpers",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "A collection of helpers, used inside Takaro Functions",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
@@ -16,10 +16,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@takaro/apiclient": "0.0.1",
-    "@takaro/config": "0.0.1",
     "axios": "1.4.0",
-    "croner": "8.0.0",
+    "croner": "8.1.1",
     "lodash-es": "4.17.21"
   }
 }

@@ -16,6 +16,11 @@ export class DomainModel extends NOT_DOMAIN_SCOPED_TakaroModel {
   static tableName = TABLE_NAME;
   name!: string;
   state!: DOMAIN_STATES;
+
+  rateLimitPoints: number;
+  rateLimitDuration: number;
+
+  externalReference?: string;
 }
 
 @traceableClass('repo:domain')

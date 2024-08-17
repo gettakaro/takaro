@@ -1,7 +1,5 @@
-import React, { useMemo } from 'react';
-import { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
-
 import { Button, TextField, CollapseList, Chip, RadioGroup, Switch, Drawer, DrawerSkeleton } from '../../../components';
 import { styled } from '../../../styled';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -45,7 +43,7 @@ export const Default: StoryFn = () => {
         description: z.string().min(20, 'description must be at least 20 characters'),
         priceType: z.enum(['fixed', 'variable']),
       }),
-    []
+    [],
   );
 
   const { handleSubmit, control } = useForm<FormFields>({

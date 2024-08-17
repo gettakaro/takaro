@@ -23,7 +23,7 @@ const Container = styled.div`
  * @param props - The `ObjectFieldTemplateProps` for this component
  */
 export function ObjectFieldTemplate<T = any, S extends StrictRJSFSchema = RJSFSchema, F extends FormContextType = any>(
-  props: ObjectFieldTemplateProps<T, S, F>
+  props: ObjectFieldTemplateProps<T, S, F>,
 ) {
   const {
     description,
@@ -44,7 +44,7 @@ export function ObjectFieldTemplate<T = any, S extends StrictRJSFSchema = RJSFSc
   const DescriptionFieldTemplate = getTemplate<'DescriptionFieldTemplate', T, S, F>(
     'DescriptionFieldTemplate',
     registry,
-    uiOptions
+    uiOptions,
   );
   // Button templates are not overridden in the uiSchema
   const {
@@ -82,7 +82,7 @@ export function ObjectFieldTemplate<T = any, S extends StrictRJSFSchema = RJSFSc
             <div key={`element-${title}-${index}`} style={{ marginBottom: '10px' }}>
               {element.content}
             </div>
-          )
+          ),
         )}
         {canExpand<T, S, F>(schema, uiSchema, formData) && (
           <div>

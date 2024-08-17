@@ -1,7 +1,6 @@
 import { SubmitHandler } from 'react-hook-form';
-import { redirect, useNavigate } from '@tanstack/react-router';
+import { redirect, useNavigate, createFileRoute } from '@tanstack/react-router';
 import { useGameServerCreate } from 'queries/gameserver';
-import { createFileRoute } from '@tanstack/react-router';
 import { CreateUpdateForm } from './-gameservers/CreateUpdateForm';
 import { IFormInputs } from './-gameservers/validationSchema';
 import { GameServerCreateDTOTypeEnum } from '@takaro/apiclient';
@@ -19,16 +18,19 @@ export const Route = createFileRoute('/_auth/_global/gameservers/create/')({
 
 function Component() {
   const navigate = useNavigate({ from: Route.fullPath });
-  const { mutateAsync, isPending, error: gameServerCreateError } = useGameServerCreate();
+  const { mutate, isPending, error: gameServerCreateError, isSuccess } = useGameServerCreate();
 
-  const onSubmit: SubmitHandler<IFormInputs> = async ({ type, connectionInfo, name }) => {
-    await mutateAsync({
+  const onSubmit: SubmitHandler<IFormInputs> = ({ type, connectionInfo, name }) => {
+    mutate({
       type: type as GameServerCreateDTOTypeEnum,
       name,
       connectionInfo: JSON.stringify(connectionInfo),
     });
-    navigate({ to: '/gameservers' });
   };
+
+  if (isSuccess) {
+    navigate({ to: '/gameservers' });
+  }
 
   return <CreateUpdateForm onSubmit={onSubmit} isLoading={isPending} error={gameServerCreateError} />;
 }

@@ -1,6 +1,6 @@
 {
   "name": "@takaro/db",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "An opinionated data layer",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
@@ -23,7 +23,6 @@
     "pg": "^8.8.0"
   },
   "devDependencies": {
-    "@takaro/test": "0.0.1",
     "@types/convict": "^6.1.1"
   }
 }

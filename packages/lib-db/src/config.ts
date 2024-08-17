@@ -7,6 +7,8 @@ export interface IDbConfig extends IBaseConfig {
     user: string;
     password: string;
     database: string;
+    ssl: boolean;
+    ca: string;
   };
   redis: {
     host: string;
@@ -50,6 +52,18 @@ export const configSchema = {
       format: String,
       default: 'postgres',
       env: 'POSTGRES_DB',
+    },
+    ssl: {
+      doc: 'Whether to use SSL for the connection',
+      format: Boolean,
+      default: false,
+      env: 'POSTGRES_SSL',
+    },
+    ca: {
+      doc: 'The CA certificate to use for SSL connections',
+      format: String,
+      default: '',
+      env: 'POSTGRES_CA',
     },
   },
   redis: {

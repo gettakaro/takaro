@@ -1,5 +1,4 @@
-import { IntegrationTest, expect } from '@takaro/test';
-import { IModuleTestsSetupData, modulesTestSetup } from '@takaro/test';
+import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '../dto/gameEvents.js';
 import { CommandArgumentCreateDTO } from '@takaro/apiclient';
 
@@ -77,7 +76,7 @@ const tests = [
       },
     ]),
     test: async function () {
-      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/test "test"',
@@ -85,8 +84,8 @@ const tests = [
       });
 
       expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.msg).to.be.eq(
-        'The value for "test" should be a number. Please correct it and try again.'
+      expect((await events)[0].data.meta.msg).to.be.eq(
+        'The value for "test" should be a number. Please correct it and try again.',
       );
     },
   }),
@@ -100,7 +99,7 @@ const tests = [
       { name: 'number', type: 'number', position: 2, defaultValue: '42' },
     ]),
     test: async function () {
-      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/test "test"',
@@ -108,7 +107,7 @@ const tests = [
       });
 
       expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.msg).to.be.eq('{"name":"test","public":false,"number":42}');
+      expect((await events)[0].data.meta.msg).to.be.eq('{"name":"test","public":false,"number":42}');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -120,7 +119,7 @@ const tests = [
       { name: 'public', type: 'boolean', position: 1 },
     ]),
     test: async function () {
-      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/test "test test" true',
@@ -128,7 +127,7 @@ const tests = [
       });
 
       expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.msg).to.be.eq('{"name":"test test","public":true}');
+      expect((await events)[0].data.meta.msg).to.be.eq('{"name":"test test","public":true}');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -137,7 +136,7 @@ const tests = [
     snapshot: false,
     setup: playerArgSetup,
     test: async function () {
-      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 2);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 2);
 
       const pogRes = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
         filters: {
@@ -153,8 +152,8 @@ const tests = [
       });
 
       expect((await events).length).to.be.eq(2);
-      expect((await events)[0].data.msg).to.be.eq(pog.gameId);
-      expect((await events)[1].data.msg).to.be.eq(pog.positionX?.toString());
+      expect((await events)[0].data.meta.msg).to.be.eq(pog.gameId);
+      expect((await events)[1].data.meta.msg).to.be.eq(pog.positionX?.toString());
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -163,7 +162,7 @@ const tests = [
     snapshot: false,
     setup: playerArgSetup,
     test: async function () {
-      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 2);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 2);
 
       const pogRes = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
         filters: {
@@ -179,8 +178,8 @@ const tests = [
       });
 
       expect((await events).length).to.be.eq(2);
-      expect((await events)[0].data.msg).to.be.eq(pog.gameId);
-      expect((await events)[1].data.msg).to.be.eq(pog.positionX?.toString());
+      expect((await events)[0].data.meta.msg).to.be.eq(pog.gameId);
+      expect((await events)[1].data.meta.msg).to.be.eq(pog.positionX?.toString());
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -189,7 +188,7 @@ const tests = [
     snapshot: false,
     setup: playerArgSetup,
     test: async function () {
-      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 2);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 2);
 
       const pogRes = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
         filters: {
@@ -205,8 +204,8 @@ const tests = [
       });
 
       expect((await events).length).to.be.eq(2);
-      expect((await events)[0].data.msg).to.be.eq(pog.gameId);
-      expect((await events)[1].data.msg).to.be.eq(pog.positionX?.toString());
+      expect((await events)[0].data.meta.msg).to.be.eq(pog.gameId);
+      expect((await events)[1].data.meta.msg).to.be.eq(pog.positionX?.toString());
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -215,7 +214,7 @@ const tests = [
     snapshot: false,
     setup: playerArgSetup,
     test: async function () {
-      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 2);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 2);
 
       const pogRes = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
         filters: {
@@ -231,8 +230,8 @@ const tests = [
       });
 
       expect((await events).length).to.be.eq(2);
-      expect((await events)[0].data.msg).to.be.eq(pog.gameId);
-      expect((await events)[1].data.msg).to.be.eq(pog.positionX?.toString());
+      expect((await events)[0].data.meta.msg).to.be.eq(pog.gameId);
+      expect((await events)[1].data.meta.msg).to.be.eq(pog.positionX?.toString());
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -241,7 +240,7 @@ const tests = [
     snapshot: false,
     setup: playerArgSetup,
     test: async function () {
-      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
       // Find a letter contained in one of the players' names
       const letterToSearch = ['e', 'a'].find((letter) => {
@@ -256,7 +255,7 @@ const tests = [
       });
 
       expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.msg).to.match(/Multiple players found/);
+      expect((await events)[0].data.meta.msg).to.match(/Multiple players found/);
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -265,7 +264,7 @@ const tests = [
     snapshot: false,
     setup: playerArgSetup,
     test: async function () {
-      const events = this.setupData.eventAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/test itsimpossiblethatwewilleverfindaplayerwiththisnameright',
@@ -273,7 +272,7 @@ const tests = [
       });
 
       expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.msg).to.match(/No player found with the name or ID/);
+      expect((await events)[0].data.meta.msg).to.match(/No player found with the name or ID/);
     },
   }),
 ];

@@ -30,11 +30,10 @@ async function main() {
     if (countries.includes(country)) {
       console.log('Allowed country detected, no action');
       return;
-    } else {
-      console.log('Blocked country detected, performing actions');
-      await handleAction();
-      return;
     }
+    console.log('Blocked country detected, performing actions');
+    await handleAction();
+    return;
   }
 
   if (mode === 'deny') {

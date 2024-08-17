@@ -28,7 +28,7 @@ const LoadingContainer = styled.div`
 `;
 
 export const Route = createFileRoute('/_auth/studio/$moduleId')({
-  beforeLoad: async ({}) => {
+  beforeLoad: async () => {
     try {
       const me = (await getApiClient().user.userControllerMe()).data.data;
       if (!hasPermission(me.user, ['MANAGE_MODULES'])) {

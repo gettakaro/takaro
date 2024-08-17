@@ -98,7 +98,7 @@ const Chart = <T,>({
         tooltipData: tooltipAccessor(data),
       });
     },
-    [data, tooltipAccessor]
+    [data, tooltipAccessor],
   );
 
   return width < 10 ? null : (

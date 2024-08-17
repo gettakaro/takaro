@@ -74,6 +74,6 @@ export const NotificationBanner: FC<NotificationBannerProps> = ({ title, descrip
         </Container>
       )}
     </AnimatePresence>,
-    document.querySelector('#notification-banner') as Element
+    document.querySelector('#notification-banner') as Element,
   );
 };

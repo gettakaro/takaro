@@ -27,14 +27,6 @@ if [ ! -d "./_data/db" ]; then
   fi
 fi
 
-# Same for Hydra
-if [ ! -d "./_data/hydra-db" ]; then
-  mkdir -p ./_data/hydra-db
-  if command -v sudo >/dev/null 2>&1; then
-    sudo chown -R 999:0 ./_data/hydra-db
-  fi
-fi
-
 # Same for Kratos
 if [ ! -d "./_data/kratos-db" ]; then
   mkdir -p ./_data/kratos-db

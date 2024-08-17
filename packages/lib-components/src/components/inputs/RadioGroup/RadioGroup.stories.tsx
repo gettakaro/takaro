@@ -1,5 +1,4 @@
-import React, { ChangeEvent } from 'react';
-import { useMemo, useState } from 'react';
+import React, { ChangeEvent, useMemo, useState } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { Button, RadioGroup, RadioGroupProps } from '../../../components';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -38,7 +37,7 @@ export const OnSubmit: StoryFn<RadioGroupProps> = (args) => {
       z.object({
         gender: z.enum(['m', 'f']),
       }),
-    []
+    [],
   );
 
   const { control, handleSubmit } = useForm<FormFields>({
@@ -64,7 +63,10 @@ export const OnSubmit: StoryFn<RadioGroupProps> = (args) => {
           description={args.description}
         >
           {options.map(({ value, label }) => (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+            <div
+              key={`gender-${value}`}
+              style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}
+            >
               <RadioGroup.Item value={value} id={value} />
               <label htmlFor={value} style={{ cursor: !args.disabled && !args.readOnly ? 'pointer' : 'default' }}>
                 {label}

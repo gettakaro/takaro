@@ -117,7 +117,7 @@ export class PlayerOnGameServerService extends TakaroService<
   }
 
   private async extend(
-    players: PlayerOnGameserverOutputWithRolesDTO | PlayerOnGameserverOutputWithRolesDTO[]
+    players: PlayerOnGameserverOutputWithRolesDTO | PlayerOnGameserverOutputWithRolesDTO[],
   ): Promise<PlayerOnGameserverOutputWithRolesDTO[]> {
     const roleService = new RoleService(this.domainId);
     const roles = await roleService.find({ filters: { name: ['Player'] } });
@@ -131,7 +131,7 @@ export class PlayerOnGameServerService extends TakaroService<
         new PlayerRoleAssignmentOutputDTO({
           roleId: roles.results[0].id,
           role: roles.results[0],
-        })
+        }),
       );
     }
 
@@ -149,7 +149,7 @@ export class PlayerOnGameServerService extends TakaroService<
   }
 
   async find(
-    filters: ITakaroQuery<PlayerOnGameserverOutputDTO>
+    filters: ITakaroQuery<PlayerOnGameserverOutputDTO>,
   ): Promise<PaginatedOutput<PlayerOnGameserverOutputWithRolesDTO>> {
     const res = await this.repo.find(filters);
     return {
@@ -204,7 +204,7 @@ export class PlayerOnGameServerService extends TakaroService<
         eventName: TakaroEvents.PLAYER_CREATED,
         playerId: playerId,
         gameserverId: gameServerId,
-      })
+      }),
     );
 
     return this.findOne(created.id);
@@ -240,7 +240,7 @@ export class PlayerOnGameServerService extends TakaroService<
         meta: new TakaroEventCurrencyDeducted({
           amount,
         }),
-      })
+      }),
     );
 
     await eventsService.create(
@@ -252,7 +252,7 @@ export class PlayerOnGameServerService extends TakaroService<
         meta: new TakaroEventCurrencyAdded({
           amount,
         }),
-      })
+      }),
     );
   }
 
@@ -271,7 +271,7 @@ export class PlayerOnGameServerService extends TakaroService<
         meta: new TakaroEventCurrencyDeducted({
           amount,
         }),
-      })
+      }),
     );
 
     return updatedPlayerOnGameServer;
@@ -292,7 +292,7 @@ export class PlayerOnGameServerService extends TakaroService<
         meta: new TakaroEventCurrencyAdded({
           amount,
         }),
-      })
+      }),
     );
 
     return updatedPlayerOnGameServer;

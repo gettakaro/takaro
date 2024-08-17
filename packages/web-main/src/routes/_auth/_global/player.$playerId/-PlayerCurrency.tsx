@@ -18,7 +18,7 @@ interface CurrencyProps {
 export const Currency: FC<CurrencyProps> = ({ playerId, gameServerId, economyEnabled }) => {
   const { data: pog, isPending: isPendingPog } = useQuery(playerOnGameServerQueryOptions(gameServerId, playerId));
   const { data: currencyStats, isPending: isPendingCurrencyStats } = useQuery(
-    CurrencyStatsQueryOptions(playerId, gameServerId)
+    CurrencyStatsQueryOptions(playerId, gameServerId),
   );
 
   if (isPendingPog || isPendingCurrencyStats) {

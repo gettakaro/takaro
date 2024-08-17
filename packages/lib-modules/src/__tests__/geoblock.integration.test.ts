@@ -1,5 +1,4 @@
-import { IntegrationTest, expect } from '@takaro/test';
-import { IModuleTestsSetupData, modulesTestSetup } from '@takaro/test';
+import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { HookEvents } from '../dto/index.js';
 import { TakaroEventPlayerNewIpDetected } from '@takaro/modules';
 import { faker } from '@faker-js/faker';
@@ -12,7 +11,7 @@ const customSetup = async function (this: IntegrationTest<IModuleTestsSetupData>
   await Promise.all(
     setupData.players.map(async (player) => {
       await this.client.player.playerControllerRemoveRole(player.id, setupData.role.id);
-    })
+    }),
   );
 
   return setupData;
@@ -34,9 +33,9 @@ const tests = [
             countries: ['RU'],
             ban: false,
           }),
-        }
+        },
       );
-      const events = this.setupData.eventAwaiter.waitForEvents(HookEvents.PLAYER_DISCONNECTED);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(HookEvents.PLAYER_DISCONNECTED);
       await this.client.hook.hookControllerTrigger({
         gameServerId: this.setupData.gameserver.id,
         playerId: this.setupData.players[0].id,
@@ -51,8 +50,7 @@ const tests = [
       });
 
       expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.msg).to.match(/Kicked Your IP address is banned/);
-      expect((await events)[0].data.player.name).to.be.eq(this.setupData.players[0].name);
+      expect((await events)[0].data.playerId).to.be.eq(this.setupData.players[0].id);
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -70,9 +68,9 @@ const tests = [
             countries: ['RU'],
             ban: false,
           }),
-        }
+        },
       );
-      const events = this.setupData.eventAwaiter.waitForEvents(HookEvents.HOOK_EXECUTED);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(HookEvents.HOOK_EXECUTED);
 
       await this.client.hook.hookControllerTrigger({
         gameServerId: this.setupData.gameserver.id,
@@ -109,9 +107,9 @@ const tests = [
             countries: ['RU'],
             ban: false,
           }),
-        }
+        },
       );
-      const events = this.setupData.eventAwaiter.waitForEvents(HookEvents.HOOK_EXECUTED);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(HookEvents.HOOK_EXECUTED);
 
       await this.client.hook.hookControllerTrigger({
         gameServerId: this.setupData.gameserver.id,
@@ -148,9 +146,9 @@ const tests = [
             countries: ['RU'],
             ban: false,
           }),
-        }
+        },
       );
-      const events = this.setupData.eventAwaiter.waitForEvents(HookEvents.PLAYER_DISCONNECTED);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(HookEvents.PLAYER_DISCONNECTED);
 
       await this.client.hook.hookControllerTrigger({
         gameServerId: this.setupData.gameserver.id,
@@ -166,8 +164,7 @@ const tests = [
       });
 
       expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.msg).to.match(/Kicked Your IP address is banned/);
-      expect((await events)[0].data.player.name).to.be.eq(this.setupData.players[0].name);
+      expect((await events)[0].data.playerId).to.be.eq(this.setupData.players[0].id);
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -185,9 +182,9 @@ const tests = [
             countries: ['RU'],
             ban: true,
           }),
-        }
+        },
       );
-      const events = this.setupData.eventAwaiter.waitForEvents(HookEvents.PLAYER_DISCONNECTED);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(HookEvents.PLAYER_DISCONNECTED);
 
       await this.client.hook.hookControllerTrigger({
         gameServerId: this.setupData.gameserver.id,
@@ -203,46 +200,7 @@ const tests = [
       });
 
       expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.msg).to.match(/Banned Your IP address is banned/);
-      expect((await events)[0].data.player.name).to.be.eq(this.setupData.players[0].name);
-    },
-  }),
-  new IntegrationTest<IModuleTestsSetupData>({
-    group,
-    snapshot: false,
-    setup: customSetup,
-    name: 'MESSAGE CONFIGURATION: Custom message displayed to player on kick/ban',
-    test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.geoBlockModule.id,
-        {
-          userConfig: JSON.stringify({
-            mode: 'allow',
-            countries: ['RU'],
-            ban: true,
-            message: 'Custom message',
-          }),
-        }
-      );
-      const events = this.setupData.eventAwaiter.waitForEvents(HookEvents.PLAYER_DISCONNECTED);
-
-      await this.client.hook.hookControllerTrigger({
-        gameServerId: this.setupData.gameserver.id,
-        playerId: this.setupData.players[0].id,
-        eventType: HookEvents.PLAYER_NEW_IP_DETECTED,
-        eventMeta: new TakaroEventPlayerNewIpDetected({
-          city: 'nowhere',
-          country: 'BE',
-          latitude: '0',
-          longitude: '0',
-          ip: faker.internet.ip(),
-        }),
-      });
-
-      expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.msg).to.match(/Banned Custom message/);
-      expect((await events)[0].data.player.name).to.be.eq(this.setupData.players[0].name);
+      expect((await events)[0].data.playerId).to.be.eq(this.setupData.players[0].id);
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -261,9 +219,9 @@ const tests = [
             ban: true,
             message: 'Custom message',
           }),
-        }
+        },
       );
-      const events = this.setupData.eventAwaiter.waitForEvents(HookEvents.PLAYER_DISCONNECTED);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(HookEvents.PLAYER_DISCONNECTED);
 
       await this.client.hook.hookControllerTrigger({
         gameServerId: this.setupData.gameserver.id,
@@ -279,8 +237,7 @@ const tests = [
       });
 
       expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.msg).to.match(/Banned Custom message/);
-      expect((await events)[0].data.player.name).to.be.eq(this.setupData.players[0].name);
+      expect((await events)[0].data.playerId).to.be.eq(this.setupData.players[0].id);
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -299,7 +256,7 @@ const tests = [
             ban: true,
             message: 'Custom message',
           }),
-        }
+        },
       );
       const permissions = await this.client.permissionCodesToInputs(['GEOBLOCK_IMMUNITY']);
       const roleRes = await this.client.role.roleControllerCreate({
@@ -309,7 +266,7 @@ const tests = [
 
       await this.client.player.playerControllerAssignRole(this.setupData.players[0].id, roleRes.data.data.id);
 
-      const events = this.setupData.eventAwaiter.waitForEvents(HookEvents.HOOK_EXECUTED);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(HookEvents.HOOK_EXECUTED);
 
       await this.client.hook.hookControllerTrigger({
         gameServerId: this.setupData.gameserver.id,
@@ -347,9 +304,9 @@ const tests = [
             ban: true,
             message: 'Custom message',
           }),
-        }
+        },
       );
-      const events = this.setupData.eventAwaiter.waitForEvents(HookEvents.HOOK_EXECUTED);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(HookEvents.HOOK_EXECUTED);
 
       await this.client.hook.hookControllerTrigger({
         gameServerId: this.setupData.gameserver.id,

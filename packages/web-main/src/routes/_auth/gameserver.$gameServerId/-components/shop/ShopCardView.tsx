@@ -32,7 +32,13 @@ export const ShopCardView: FC<ShopViewProps> = ({ gameServerId, currency, curren
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
-  } = useInfiniteQuery(shopListingInfiniteQueryOptions({ filters: { gameServerId: [gameServerId] } }));
+  } = useInfiniteQuery(
+    shopListingInfiniteQueryOptions({
+      filters: { gameServerId: [gameServerId] },
+      sortBy: 'draft',
+      sortDirection: 'desc',
+    }),
+  );
 
   if (
     !shopListings ||
@@ -46,17 +52,18 @@ export const ShopCardView: FC<ShopViewProps> = ({ gameServerId, currency, curren
           <Empty
             header="No shop listings"
             description="Create a shop listing to start selling items."
-            actions={[<Button onClick={onCreateShopListingClicked} text="Create shop listing" />]}
+            actions={[
+              <Button key="shop-listing-empty" onClick={onCreateShopListingClicked} text="Create shop listing" />,
+            ]}
           />
         </EmptyPage>
       );
-    } else {
-      return (
-        <EmptyPage>
-          <Empty header="No items in shop" description="" actions={[]} />
-        </EmptyPage>
-      );
     }
+    return (
+      <EmptyPage>
+        <Empty header="No items in shop" description="" actions={[]} />
+      </EmptyPage>
+    );
   }
 
   return (
@@ -72,7 +79,7 @@ export const ShopCardView: FC<ShopViewProps> = ({ gameServerId, currency, curren
               gameServerId={gameServerId}
               gameServerType={gameServerType}
             />
-          ))
+          )),
         )}
         {hasPermission && (
           <Card role="link" onClick={onCreateShopListingClicked} variant="outline">

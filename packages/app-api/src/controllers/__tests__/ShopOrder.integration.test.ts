@@ -12,13 +12,7 @@ import { GameEvents } from '@takaro/modules';
 
 const group = 'ShopOrderController';
 
-async function createUserForPlayer(
-  client: Client,
-  eventsAwaiter: EventsAwaiter,
-  playerId: string,
-  gameServerId: string,
-  createUser = true
-) {
+async function createUserForPlayer(client: Client, playerId: string, gameServerId: string, createUser = true) {
   const password = 'shop-tester-password-very-safe';
 
   let user: UserOutputDTO | null = null;
@@ -42,6 +36,8 @@ async function createUserForPlayer(
   const userClient = new Client({ auth: { username: user.email, password }, url: integrationConfig.get('host') });
   await userClient.login();
 
+  const eventsAwaiter = new EventsAwaiter();
+  await eventsAwaiter.connect(client);
   const chatEventWaiter = eventsAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
   await client.command.commandControllerTrigger(gameServerId, {
     msg: '/link',
@@ -49,7 +45,7 @@ async function createUserForPlayer(
   });
   const chatEvents = await chatEventWaiter;
   expect(chatEvents).to.have.length(1);
-  const code = chatEvents[0].data.msg.match(/code=(\w+-\w+-\w+)/)[1];
+  const code = chatEvents[0].data.meta.msg.match(/code=(\w+-\w+-\w+)/)[1];
   await userClient.user.userControllerLinkPlayerProfile({ email: user.email, code });
 
   return {
@@ -70,7 +66,7 @@ interface IShopSetup extends SetupGameServerPlayers.ISetupData {
 
 const shopSetup = async function (this: IntegrationTest<IShopSetup>): Promise<IShopSetup> {
   const setupData = await SetupGameServerPlayers.setup.bind(
-    this as unknown as IntegrationTest<SetupGameServerPlayers.ISetupData>
+    this as unknown as IntegrationTest<SetupGameServerPlayers.ISetupData>,
   )();
 
   await this.client.settings.settingsControllerSet('economyEnabled', {
@@ -102,27 +98,25 @@ const shopSetup = async function (this: IntegrationTest<IShopSetup>): Promise<IS
   await this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(
     setupData.gameServer1.id,
     setupData.pogs1[0].playerId,
-    { currency: 250 }
+    { currency: 250 },
   );
 
   await this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(
     setupData.gameServer1.id,
     setupData.pogs1[1].playerId,
-    { currency: 250 }
+    { currency: 250 },
   );
 
   const { client: user1Client, user: user1 } = await createUserForPlayer(
     this.client,
-    setupData.eventsAwaiter,
     setupData.pogs1[0].playerId,
-    setupData.gameServer1.id
+    setupData.gameServer1.id,
   );
 
   const { client: user2Client, user: user2 } = await createUserForPlayer(
     this.client,
-    setupData.eventsAwaiter,
     setupData.pogs1[1].playerId,
-    setupData.gameServer1.id
+    setupData.gameServer1.id,
   );
 
   return {
@@ -372,7 +366,7 @@ const tests = [
         if (!error.response) throw error;
         expect(error.response.data.meta.error.code).to.be.eq('BadRequestError');
         expect(error.response.data.meta.error.message).to.be.eq(
-          'Can only claim paid, unclaimed orders. Current status: COMPLETED'
+          'Can only claim paid, unclaimed orders. Current status: COMPLETED',
         );
         return error.response;
       }
@@ -401,7 +395,7 @@ const tests = [
         if (!error.response) throw error;
         expect(error.response.data.meta.error.code).to.be.eq('BadRequestError');
         expect(error.response.data.meta.error.message).to.be.eq(
-          'Can only claim paid, unclaimed orders. Current status: CANCELED'
+          'Can only claim paid, unclaimed orders. Current status: CANCELED',
         );
         return error.response;
       }
@@ -488,10 +482,198 @@ const tests = [
         if (!error.response) throw error;
         expect(error.response.data.meta.error.code).to.be.eq('BadRequestError');
         expect(error.response.data.meta.error.message).to.be.eq(
-          "Can only cancel paid orders that weren't claimed yet. Current status: CANCELED"
+          // eslint-disable-next-line
+          "Can only cancel paid orders that weren't claimed yet. Current status: CANCELED",
         );
         return error.response;
       }
+    },
+  }),
+  new IntegrationTest<IShopSetup>({
+    group,
+    snapshot: false,
+    name: 'Cancelling an order returns the currency',
+    setup: shopSetup,
+    test: async function () {
+      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
+        this.setupData.gameServer1.id,
+        this.setupData.pogs1[0].playerId,
+        { currency: 250 },
+      );
+
+      const orderRes = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
+        listingId: this.setupData.listing100.id,
+        amount: 1,
+      });
+
+      const order = orderRes.data.data;
+
+      const pogsResBefore = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
+        this.setupData.gameServer1.id,
+        this.setupData.pogs1[0].playerId,
+      );
+
+      expect(pogsResBefore.data.data.currency).to.be.eq(150);
+
+      await this.setupData.client1.shopOrder.shopOrderControllerCancel(order.id);
+
+      const pogResAfter = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
+        this.setupData.gameServer1.id,
+        this.setupData.pogs1[0].playerId,
+      );
+
+      expect(pogResAfter.data.data.currency).to.be.eq(250);
+
+      return pogResAfter;
+    },
+  }),
+  new IntegrationTest<IShopSetup>({
+    group,
+    snapshot: false,
+    name: 'Deleting a listing, cancels orders and refunds currency',
+    setup: shopSetup,
+    test: async function () {
+      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
+        this.setupData.gameServer1.id,
+        this.setupData.pogs1[0].playerId,
+        { currency: 250 },
+      );
+
+      const orderRes = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
+        listingId: this.setupData.listing100.id,
+        amount: 1,
+      });
+
+      const order = orderRes.data.data;
+
+      const pogsResBefore = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
+        this.setupData.gameServer1.id,
+        this.setupData.pogs1[0].playerId,
+      );
+
+      expect(pogsResBefore.data.data.currency).to.be.eq(150);
+
+      await this.client.shopListing.shopListingControllerDelete(this.setupData.listing100.id);
+
+      const pogResAfter = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
+        this.setupData.gameServer1.id,
+        this.setupData.pogs1[0].playerId,
+      );
+
+      expect(pogResAfter.data.data.currency).to.be.eq(250);
+
+      const orderResAfter = await this.setupData.client1.shopOrder.shopOrderControllerGetOne(order.id);
+
+      expect(orderResAfter.data.data.status).to.be.eq(ShopOrderOutputDTOStatusEnum.Canceled);
+
+      return pogResAfter;
+    },
+  }),
+  new IntegrationTest<IShopSetup>({
+    group,
+    snapshot: false,
+    name: 'Cannot buy a deleted listing',
+    setup: shopSetup,
+    expectedStatus: 404,
+    test: async function () {
+      await this.client.shopListing.shopListingControllerDelete(this.setupData.listing100.id);
+
+      try {
+        await this.setupData.client1.shopOrder.shopOrderControllerCreate({
+          listingId: this.setupData.listing100.id,
+          amount: 1,
+        });
+        throw new Error('Should not be able to create order');
+      } catch (error) {
+        if (!isAxiosError(error)) throw error;
+        if (!error.response) throw error;
+        expect(error.response.data.meta.error.code).to.be.eq('NotFoundError');
+        return error.response;
+      }
+    },
+  }),
+  new IntegrationTest<IShopSetup>({
+    group,
+    snapshot: false,
+    name: 'Cannot buy a draft listing',
+    setup: shopSetup,
+    expectedStatus: 400,
+    test: async function () {
+      await this.client.shopListing.shopListingControllerUpdate(this.setupData.listing100.id, { draft: true });
+
+      try {
+        await this.setupData.client1.shopOrder.shopOrderControllerCreate({
+          listingId: this.setupData.listing100.id,
+          amount: 1,
+        });
+        throw new Error('Should not be able to create order');
+      } catch (error) {
+        if (!isAxiosError(error)) throw error;
+        if (!error.response) throw error;
+        expect(error.response.data.meta.error.code).to.be.eq('BadRequestError');
+        expect(error.response.data.meta.error.message).to.be.eq('Cannot order a draft listing');
+        return error.response;
+      }
+    },
+  }),
+  new IntegrationTest<IShopSetup>({
+    group,
+    snapshot: false,
+    name: 'Setting a listing to draft cancels pending orders',
+    setup: shopSetup,
+    test: async function () {
+      await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
+        this.setupData.gameServer1.id,
+        this.setupData.pogs1[0].playerId,
+        { currency: 250 },
+      );
+
+      const orderRes = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
+        listingId: this.setupData.listing100.id,
+        amount: 1,
+      });
+
+      const order = orderRes.data.data;
+
+      const pogsResBefore = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
+        this.setupData.gameServer1.id,
+        this.setupData.pogs1[0].playerId,
+      );
+
+      expect(pogsResBefore.data.data.currency).to.be.eq(150);
+
+      await this.client.shopListing.shopListingControllerUpdate(this.setupData.listing100.id, { draft: true });
+
+      const pogResAfter = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
+        this.setupData.gameServer1.id,
+        this.setupData.pogs1[0].playerId,
+      );
+
+      expect(pogResAfter.data.data.currency).to.be.eq(250);
+
+      const orderResAfter = await this.setupData.client1.shopOrder.shopOrderControllerGetOne(order.id);
+
+      expect(orderResAfter.data.data.status).to.be.eq(ShopOrderOutputDTOStatusEnum.Canceled);
+
+      return pogResAfter;
+    },
+  }),
+  new IntegrationTest<IShopSetup>({
+    group,
+    snapshot: false,
+    name: 'High privilege user can claim an order in someone elses name',
+    setup: shopSetup,
+    test: async function () {
+      const orderRes = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
+        listingId: this.setupData.listing100.id,
+        amount: 1,
+      });
+
+      const order = orderRes.data.data;
+
+      const res = await this.client.shopOrder.shopOrderControllerClaim(order.id);
+      expect(res.data.data.status).to.be.eq(ShopOrderOutputDTOStatusEnum.Completed);
+      return res;
     },
   }),
 ];

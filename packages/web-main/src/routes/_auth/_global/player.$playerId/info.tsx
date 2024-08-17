@@ -55,7 +55,7 @@ const IpInfo: FC<{ ipInfo: IpHistoryOutputDTO[] }> = ({ ipInfo }) => {
     <IpInfoContainer>
       {ipInfo.map((ip) => {
         return (
-          <IpInfoLine>
+          <IpInfoLine key={ip + '-info-line'}>
             <Tooltip>
               <Tooltip.Trigger asChild>
                 <CountryCodeToEmoji countryCode={ip.country} />

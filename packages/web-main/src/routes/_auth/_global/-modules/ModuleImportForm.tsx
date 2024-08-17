@@ -1,7 +1,6 @@
-import { FileField, styled } from '@takaro/lib-components';
 import { FC, useEffect, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { Button, TextField, Drawer, CollapseList, FormError } from '@takaro/lib-components';
+import { FileField, styled, Button, TextField, Drawer, CollapseList, FormError } from '@takaro/lib-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from '@tanstack/react-router';
 import { z } from 'zod';
@@ -48,7 +47,7 @@ export const ModuleImportForm: FC<ModuleFormProps> = ({ isSuccess = false, onSub
           .refine((files) => files?.[0]?.size <= MAX_FILE_SIZE, 'Max file size is 50MB.')
           .refine((files) => ACCEPTED_FILE_TYPES.includes(files?.[0]?.type), 'Only .json files are accepted.'),
         name: z.string(),
-      })
+      }),
     ),
   });
 
@@ -95,7 +94,7 @@ export const ModuleImportForm: FC<ModuleFormProps> = ({ isSuccess = false, onSub
         <Drawer.Footer>
           <ButtonContainer>
             <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
-            <Button type="submit" form="module-definition" fullWidth text="Save changes" />
+            <Button type="submit" form="module-definition" fullWidth text="Import module" />
           </ButtonContainer>
         </Drawer.Footer>
       </Drawer.Content>

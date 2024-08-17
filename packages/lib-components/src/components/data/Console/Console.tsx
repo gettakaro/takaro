@@ -67,17 +67,19 @@ export const Console: FC<ConsoleProps> = ({ listenerFactory, onExecuteCommand, s
   // this is required so that react-window knows the padding of the element
   // again, react-window does not have types, cba to type this.
   //
-  const innerElementType = forwardRef<HTMLDivElement, any>(({ style, ...rest }, ref) => (
-    <div
-      ref={ref}
-      style={{
-        ...style,
-        height: `${style.height + LIST_PADDING_SIZE * 2}px`,
-        paddingTop: `${GUTTER_SIZE}px`,
-      }}
-      {...rest}
-    />
-  ));
+  const InnerElementType = forwardRef<HTMLDivElement, any>(function InnerConsole({ style, ...rest }, ref) {
+    return (
+      <div
+        ref={ref}
+        style={{
+          ...style,
+          height: `${style.height + LIST_PADDING_SIZE * 2}px`,
+          paddingTop: `${GUTTER_SIZE}px`,
+        }}
+        {...rest}
+      />
+    );
+  });
 
   return (
     <Wrapper>
@@ -99,7 +101,7 @@ export const Console: FC<ConsoleProps> = ({ listenerFactory, onExecuteCommand, s
                 width={width}
                 height={height}
                 onScroll={toggleLiveModeOnConsoleScroll}
-                innerElementType={innerElementType}
+                innerElementType={InnerElementType}
                 ref={consoleMessagesBoxRef}
               >
                 {({ data, index, style }) => {

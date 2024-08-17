@@ -16,7 +16,6 @@ import { SdtdConnectionInfo } from './connectionInfo.js';
 import { TakaroEmitter } from '../../TakaroEmitter.js';
 import { SevenDaysToDie } from './index.js';
 import ms from 'ms';
-import {} from 'timers/promises';
 
 interface I7DaysToDieEvent extends JsonObject {
   msg: string;
@@ -28,12 +27,14 @@ interface I7DaysToDieEvent extends JsonObject {
  */
 const blackListedMessages = [
   'NullReferenceException',
-  'VehicleManager write #',
   'Infinity or NaN floating point numbers appear when calculating the transform matrix for a Collider',
   'IsMovementBlocked',
   'Particle System is trying to spawn on a mesh with zero surface area',
   'AddDecorationAt',
   'EntityFactory CreateEntity: unknown type',
+  'DroneManager',
+  'VehicleManager',
+  'kinematic body',
 ];
 
 const EventRegexMap = {
@@ -87,8 +88,8 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
         this.logger.debug(`Connecting to ${this.config.host}`);
         this.eventSource = new EventSource(this.url, {
           headers: {
-            ['X-SDTD-API-TOKENNAME']: this.config.adminUser,
-            ['X-SDTD-API-SECRET']: this.config.adminToken,
+            'X-SDTD-API-TOKENNAME': this.config.adminUser,
+            'X-SDTD-API-SECRET': this.config.adminToken,
           },
         });
 
@@ -106,7 +107,7 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
       new Promise((_resolve, reject) => {
         setTimeout(() => {
           reject(new Error('Timed out'));
-        }, 10000);
+        }, 30000);
       }),
     ]);
   }
@@ -158,7 +159,7 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
       GameEvents.LOG_LINE,
       new EventLogLine({
         msg: logLine.msg,
-      })
+      }),
     );
   }
 

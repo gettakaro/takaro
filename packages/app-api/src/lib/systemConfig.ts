@@ -17,6 +17,12 @@ export function getEmptyConfigSchema(): Ajv.AnySchemaObject {
 export function getSystemConfigSchema(mod: ModuleOutputDTO | ModuleOutputDTOApi): string {
   const systemConfigSchema = getEmptyConfigSchema();
 
+  systemConfigSchema.properties.enabled = {
+    type: 'boolean',
+    default: true,
+    description: 'Enable/disable the module without having to uninstall it.',
+  };
+
   if (mod.cronJobs.length) {
     systemConfigSchema.properties.cronJobs = {
       type: 'object',
@@ -29,35 +35,57 @@ export function getSystemConfigSchema(mod: ModuleOutputDTO | ModuleOutputDTOApi)
 
     for (const cronJob of mod.cronJobs) {
       systemConfigSchema.properties.cronJobs.properties[cronJob.name] = {
-        type: 'string',
-        default: cronJob.temporalValue,
+        type: 'object',
+        required: [],
+        default: {},
+        properties: {
+          enabled: {
+            type: 'boolean',
+            default: true,
+            description: `Enable the ${cronJob.name} cron job.`,
+          },
+          temporalValue: {
+            type: 'string',
+            description: 'Temporal value for the cron job. Controls when it runs',
+            default: cronJob.temporalValue,
+          },
+        },
       };
     }
   }
 
   if (mod.hooks.length) {
-    for (const hook of mod.hooks) {
-      if (hook.eventType === DiscordEvents.DISCORD_MESSAGE) {
-        if (!systemConfigSchema.properties.hooks) {
-          systemConfigSchema.properties.hooks = {
-            type: 'object',
-            properties: {},
-            required: [],
-            default: {},
-          };
-        }
+    systemConfigSchema.properties.hooks = {
+      type: 'object',
+      properties: {},
+      required: [],
+      default: {},
+    };
 
+    for (const hook of mod.hooks) {
+      systemConfigSchema.properties.hooks.properties[hook.name] = {
+        type: 'object',
+        properties: {
+          enabled: {
+            type: 'boolean',
+            default: true,
+            description: `Enable the ${hook.name} hook.`,
+          },
+        },
+        required: [],
+        default: {},
+      };
+
+      if (hook.eventType === DiscordEvents.DISCORD_MESSAGE) {
         if (!systemConfigSchema.required.includes('hooks')) {
           systemConfigSchema.required.push('hooks');
         }
 
-        const configKey = `${hook.name} Discord channel ID`;
-
-        systemConfigSchema.properties.hooks.properties[configKey] = {
+        systemConfigSchema.properties.hooks.properties[hook.name].required.push('discordChannelId');
+        systemConfigSchema.properties.hooks.properties[hook.name].properties.discordChannelId = {
           type: 'string',
           description: 'Discord channel ID where Takaro will listen for messages.',
         };
-        systemConfigSchema.properties.hooks.required.push(configKey);
       }
     }
   }
@@ -77,7 +105,19 @@ export function getSystemConfigSchema(mod: ModuleOutputDTO | ModuleOutputDTOApi)
 
       systemConfigSchema.properties.commands.properties[configKey] = {
         type: 'object',
+        properties: {},
+        required: [],
+        default: {},
+      };
+
+      systemConfigSchema.properties.commands.properties[configKey] = {
+        type: 'object',
         properties: {
+          enabled: {
+            type: 'boolean',
+            default: true,
+            description: `Enable the ${configKey} command.`,
+          },
           delay: {
             type: 'number',
             default: 0,

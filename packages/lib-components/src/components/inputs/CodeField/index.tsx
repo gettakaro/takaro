@@ -142,6 +142,7 @@ export const CodeField: FC<CodeFieldProps> = (props) => {
       <InputContainer fields={fields} aria-describedby={setAriaDescribedBy(name, !!description)}>
         {Array.from(Array(fields).keys()).map((_, i) => (
           <Input
+            key={`${name}-${i}`}
             autoCapitalize="off"
             autoComplete="off"
             hasError={!!error}

@@ -7,7 +7,7 @@ interface TransactionStore {
   gameServer?: string;
   jobId?: string;
   user?: string;
-  vmId?: number;
+  module?: string;
 }
 
 function isValidTransactionStore(store: unknown): store is TransactionStore {
@@ -77,10 +77,9 @@ class Context {
                 span.end();
                 throw err;
               });
-          } else {
-            span.end();
-            return result;
           }
+          span.end();
+          return result;
         } catch (err) {
           span.end();
           throw err;

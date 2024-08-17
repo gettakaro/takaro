@@ -10,7 +10,6 @@ import {
   Skeleton,
   useTheme,
   ValueConfirmationField,
-  Alert,
 } from '@takaro/lib-components';
 import { EventOutputDTO, GameServerOutputDTO, PERMISSIONS } from '@takaro/apiclient';
 import { useNavigate } from '@tanstack/react-router';
@@ -49,7 +48,7 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
         online: [true],
         gameServerId: [id],
       },
-    })
+    }),
   );
 
   useEffect(() => {
@@ -69,12 +68,15 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
   };
   const handleOnDeleteClick = (e: MouseEvent) => {
     e.stopPropagation();
-
-    e.shiftKey ? handleOnDelete() : setOpenDeleteDialog(true);
+    if (e.shiftKey) {
+      handleOnDelete();
+    } else {
+      setOpenDeleteDialog(true);
+    }
   };
 
   const handleOnDelete = () => {
-    mutate({ id });
+    mutate({ gameServerId: id });
   };
 
   const handleOnCopyClick = (e: MouseEvent) => {
@@ -168,10 +170,6 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
         <Dialog.Content>
           <Dialog.Heading>delete: gameserver</Dialog.Heading>
           <Dialog.Body size="medium">
-            <Alert
-              variant="info"
-              text="You can hold down shift when deleting a gameserver to bypass this confirmation entirely."
-            />
             <p>
               Are you sure you want to delete the gameserver? To confirm, type <strong>{name}</strong> in the field
               below.

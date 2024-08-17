@@ -22,9 +22,8 @@ const getPageWindow = (pageCount: number, windowSize: number, currentPage: numbe
     return { start: 1, end: windowSize + 1 };
   } else if (currentPage + floor >= pageCount) {
     return { start: pageCount - windowSize + 1, end: pageCount + 1 };
-  } else {
-    return { start: currentPage - ceiling + 1, end: currentPage + floor + 1 };
   }
+  return { start: currentPage - ceiling + 1, end: currentPage + floor + 1 };
 };
 
 export interface PagePickerProps {
@@ -85,6 +84,7 @@ export const PagePicker: FC<PagePickerProps> = ({
       {showButtons &&
         pages.map((i) => (
           <Button
+            key={`page-${i}`}
             variant="outline"
             onClick={() => setPageIndex(i - 1)}
             className={i === pageIndex + 1 ? 'active' : ''}

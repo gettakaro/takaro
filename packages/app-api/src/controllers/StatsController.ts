@@ -124,7 +124,13 @@ export class StatsController {
   async getActivityStats(@Req() req: AuthenticatedRequest, @QueryParams() query: ActivityInputDTO) {
     const service = new StatsService(req.domainId);
     return apiResponse(
-      await service.getActivityStats(query.dataType, query.timeType, query.gameServerId, query.startDate, query.endDate)
+      await service.getActivityStats(
+        query.dataType,
+        query.timeType,
+        query.gameServerId,
+        query.startDate,
+        query.endDate,
+      ),
     );
   }
 

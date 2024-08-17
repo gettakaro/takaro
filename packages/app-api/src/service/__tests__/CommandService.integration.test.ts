@@ -6,11 +6,13 @@ import { Mock } from '@takaro/gameserver';
 import { IGamePlayer, EventChatMessage, HookEvents, ChatChannel } from '@takaro/modules';
 import Sinon from 'sinon';
 import { EventService } from '../EventService.js';
+import { faker } from '@faker-js/faker';
 
 export async function getMockPlayer(extra: Partial<IGamePlayer> = {}): Promise<IGamePlayer> {
   const data: Partial<IGamePlayer> = {
     gameId: '1',
     name: 'mock-player',
+    steamId: faker.random.alphaNumeric(17),
     ...extra,
   };
 
@@ -41,6 +43,10 @@ async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStanda
     })
   ).data.data;
 
+  const eventsAwaiter = new EventsAwaiter();
+  await eventsAwaiter.connect(this.client);
+  const connectedEvents = eventsAwaiter.waitForEvents(HookEvents.PLAYER_CREATED, 5);
+
   const gameserver = (
     await this.client.gameserver.gameServerControllerCreate({
       name: 'Test gameserver',
@@ -50,10 +56,6 @@ async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStanda
       }),
     })
   ).data.data;
-
-  const eventsAwaiter = new EventsAwaiter();
-  await eventsAwaiter.connect(this.client);
-  const connectedEvents = eventsAwaiter.waitForEvents(HookEvents.PLAYER_CONNECTED, 5);
 
   await this.client.gameserver.gameServerControllerExecuteCommand(gameserver.id, {
     command: 'connectAll',
@@ -94,7 +96,7 @@ const tests = [
           channel: ChatChannel.GLOBAL,
           player: await getMockPlayer(),
         }),
-        this.setupData.gameserver.id
+        this.setupData.gameserver.id,
       );
 
       expect(addStub).to.have.been.calledOnce;
@@ -119,7 +121,7 @@ const tests = [
           channel: ChatChannel.GLOBAL,
           player: await getMockPlayer(),
         }),
-        this.setupData.gameserver.id
+        this.setupData.gameserver.id,
       );
 
       expect(addStub).to.not.have.been.calledOnce;
@@ -129,7 +131,7 @@ const tests = [
           msg: '/test',
           player: await getMockPlayer(),
         }),
-        this.setupData.gameserver.id
+        this.setupData.gameserver.id,
       );
 
       expect(addStub).to.have.been.calledOnce;
@@ -138,7 +140,7 @@ const tests = [
   new IntegrationTest<IStandardSetupData>({
     group,
     snapshot: false,
-    name: 'Doesnt trigger when module is disabled',
+    name: 'Doesnt trigger when module is uninstalled',
     setup,
     test: async function () {
       const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
@@ -150,7 +152,7 @@ const tests = [
 
       await this.client.gameserver.gameServerControllerUninstallModule(
         this.setupData.gameserver.id,
-        this.setupData.mod.id
+        this.setupData.mod.id,
       );
 
       await this.setupData.service.handleChatMessage(
@@ -160,14 +162,14 @@ const tests = [
           player: await getMockPlayer(),
         }),
 
-        this.setupData.gameserver.id
+        this.setupData.gameserver.id,
       );
 
       expect(addStub).to.not.have.been.calledOnce;
 
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.mod.id
+        this.setupData.mod.id,
       );
 
       await this.setupData.service.handleChatMessage(
@@ -176,7 +178,7 @@ const tests = [
           channel: ChatChannel.GLOBAL,
           player: await getMockPlayer(),
         }),
-        this.setupData.gameserver.id
+        this.setupData.gameserver.id,
       );
 
       expect(addStub).to.have.been.calledOnce;
@@ -199,7 +201,7 @@ const tests = [
               },
             },
           }),
-        }
+        },
       );
 
       const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
@@ -217,7 +219,7 @@ const tests = [
           channel: ChatChannel.GLOBAL,
           player: await getMockPlayer(),
         }),
-        this.setupData.gameserver.id
+        this.setupData.gameserver.id,
       );
 
       expect(addStub).to.have.been.calledOnceWith(Sinon.match.any, {
@@ -233,7 +235,7 @@ const tests = [
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.mod.id
+        this.setupData.mod.id,
       );
 
       await this.client.command.commandControllerCreate({
@@ -255,7 +257,63 @@ const tests = [
           channel: ChatChannel.GLOBAL,
           player: await getMockPlayer(),
         }),
-        this.setupData.gameserver.id
+        this.setupData.gameserver.id,
+      );
+
+      expect(addStub).to.have.been.calledOnce;
+    },
+  }),
+  new IntegrationTest<IStandardSetupData>({
+    group,
+    snapshot: false,
+    name: 'Doesnt trigger when module is disabled',
+    setup,
+    test: async function () {
+      const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
+      sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves({
+        x: 0,
+        y: 0,
+        z: 0,
+      });
+
+      await this.client.gameserver.gameServerControllerInstallModule(
+        this.setupData.gameserver.id,
+        this.setupData.mod.id,
+        {
+          systemConfig: JSON.stringify({
+            commands: {
+              [this.setupData.normalCommand.name]: {
+                enabled: false,
+              },
+            },
+          }),
+        },
+      );
+
+      await this.setupData.service.handleChatMessage(
+        new EventChatMessage({
+          msg: '/test',
+          channel: ChatChannel.GLOBAL,
+          player: await getMockPlayer(),
+        }),
+
+        this.setupData.gameserver.id,
+      );
+
+      expect(addStub).to.not.have.been.calledOnce;
+
+      await this.client.gameserver.gameServerControllerInstallModule(
+        this.setupData.gameserver.id,
+        this.setupData.mod.id,
+      );
+
+      await this.setupData.service.handleChatMessage(
+        new EventChatMessage({
+          msg: '/test',
+          channel: ChatChannel.GLOBAL,
+          player: await getMockPlayer(),
+        }),
+        this.setupData.gameserver.id,
       );
 
       expect(addStub).to.have.been.calledOnce;

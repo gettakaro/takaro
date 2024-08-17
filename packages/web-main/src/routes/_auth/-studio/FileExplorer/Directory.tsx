@@ -30,7 +30,7 @@ export const Directory: FC<DirectoryProps> = ({
 }) => {
   const [isOpen, setOpen] = useState(
     // if top level folder or if dir has 0 or 1 file, open it by default.
-    Object.keys(files).filter((path) => path.includes(prefixedPath)).length >= 1
+    Object.keys(files).filter((path) => path.includes(prefixedPath)).length >= 1,
   );
 
   const toggle = (): void => setOpen((prev) => !prev);

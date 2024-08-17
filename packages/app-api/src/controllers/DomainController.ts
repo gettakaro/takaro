@@ -1,5 +1,4 @@
 import { ITakaroQuery } from '@takaro/db';
-import { adminAuthMiddleware } from '@takaro/http';
 import {
   DomainCreateInputDTO,
   DomainCreateOutputDTO,
@@ -9,16 +8,15 @@ import {
   DOMAIN_STATES,
 } from '../service/DomainService.js';
 import { apiResponse, APIOutput } from '@takaro/http';
-import { OpenAPI } from 'routing-controllers-openapi';
 
 import { Param, Body, Get, Post, Put, Delete, JsonController, UseBefore, Req, Res } from 'routing-controllers';
 
-import { ResponseSchema } from 'routing-controllers-openapi';
+import { ResponseSchema, OpenAPI } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Request, Response } from 'express';
 import { TokenOutputDTO, TokenInputDTO, AuthService } from '../service/AuthService.js';
-import { IdUuidDTO, IdUuidDTOAPI } from '../lib/validators.js';
+import { adminAuthMiddleware } from '../middlewares/adminAuth.js';
 
 export class DomainCreateOutputDTOAPI extends APIOutput<DomainCreateOutputDTO> {
   @Type(() => DomainCreateOutputDTO)
@@ -106,11 +104,11 @@ export class DomainController {
   }
 
   @Delete('/domain/:id')
-  @ResponseSchema(IdUuidDTOAPI)
+  @ResponseSchema(APIOutput)
   async remove(@Param('id') id: string) {
     const service = new DomainService();
     await service.delete(id);
-    return apiResponse(new IdUuidDTO({ id }));
+    return apiResponse();
   }
 
   @Post('/token')

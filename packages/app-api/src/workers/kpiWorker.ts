@@ -22,7 +22,7 @@ export class KPIWorker extends TakaroWorker<unknown> {
           jobId: 'kpi',
           every: config.get('queues.kpi.interval'),
         },
-      }
+      },
     );
   }
 }
@@ -79,7 +79,7 @@ export async function processJob(_job: Job<unknown>) {
             weeklyActivePlayers: weeklyActivePlayers.total,
             monthlyActivePlayers: monthlyActivePlayers.total,
           };
-        })
+        }),
       );
 
       const playerActivityMetrics = await playerService.calculatePlayerActivityMetrics();
@@ -116,7 +116,7 @@ export async function processJob(_job: Job<unknown>) {
         users: users.total,
         installedModules: domainInstalledModules,
       };
-    })
+    }),
   );
 
   // Calculate the totals
@@ -133,7 +133,7 @@ export async function processJob(_job: Job<unknown>) {
       players: 0,
       users: 0,
       installedModules: 0,
-    }
+    },
   );
 
   metrics.gameServers.set(totals.gameServers);

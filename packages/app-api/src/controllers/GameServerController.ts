@@ -44,7 +44,7 @@ import {
 } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { IdUuidDTO, IdUuidDTOAPI, ParamId, PogParam } from '../lib/validators.js';
+import { ParamId, PogParam } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 import { PlayerOnGameserverOutputDTOAPI } from './PlayerOnGameserverController.js';
@@ -279,7 +279,7 @@ export class GameServerController {
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
-  @ResponseSchema(IdUuidDTOAPI)
+  @ResponseSchema(APIOutput)
   @OpenAPI({
     description: 'Delete a gameserver',
   })
@@ -287,7 +287,7 @@ export class GameServerController {
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new GameServerService(req.domainId);
     await service.delete(params.id);
-    return apiResponse(new IdUuidDTO({ id: params.id }));
+    return apiResponse();
   }
 
   @UseBefore(AuthService.getAuthMiddleware([]))
@@ -347,7 +347,7 @@ export class GameServerController {
   async installModule(
     @Req() req: AuthenticatedRequest,
     @Params() params: ParamIdAndModuleId,
-    @Body() data?: ModuleInstallDTO
+    @Body() data?: ModuleInstallDTO,
   ) {
     const service = new GameServerService(req.domainId);
 
@@ -374,7 +374,7 @@ export class GameServerController {
   async executeCommand(
     @Req() req: AuthenticatedRequest,
     @Params() params: ParamId,
-    @Body() data: CommandExecuteInputDTO
+    @Body() data: CommandExecuteInputDTO,
   ) {
     const service = new GameServerService(req.domainId);
     const result = await service.executeCommand(params.id, data.command);
@@ -389,8 +389,8 @@ export class GameServerController {
   @Post('/gameserver/:id/message')
   async sendMessage(@Req() req: AuthenticatedRequest, @Params() params: ParamId, @Body() data: MessageSendInputDTO) {
     const service = new GameServerService(req.domainId);
-    const result = await service.sendMessage(params.id, data.message, data.opts);
-    return apiResponse(result);
+    await service.sendMessage(params.id, data.message, data.opts);
+    return apiResponse();
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
@@ -402,15 +402,15 @@ export class GameServerController {
   async teleportPlayer(
     @Req() req: AuthenticatedRequest,
     @Params() params: PogParam,
-    @Body() data: TeleportPlayerInputDTO
+    @Body() data: TeleportPlayerInputDTO,
   ) {
     const service = new GameServerService(req.domainId);
-    const result = await service.teleportPlayer(params.gameServerId, params.playerId, {
+    await service.teleportPlayer(params.gameServerId, params.playerId, {
       x: data.x,
       y: data.y,
       z: data.z,
     });
-    return apiResponse(result);
+    return apiResponse();
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
@@ -421,8 +421,8 @@ export class GameServerController {
   @Post('/gameserver/:gameServerId/player/:playerId/kick')
   async kickPlayer(@Req() req: AuthenticatedRequest, @Params() params: PogParam, @Body() data: KickPlayerInputDTO) {
     const service = new GameServerService(req.domainId);
-    const result = await service.kickPlayer(params.gameServerId, params.playerId, data.reason);
-    return apiResponse(result);
+    await service.kickPlayer(params.gameServerId, params.playerId, data.reason);
+    return apiResponse();
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
@@ -433,8 +433,8 @@ export class GameServerController {
   @Post('/gameserver/:gameServerId/player/:playerId/ban')
   async banPlayer(@Req() req: AuthenticatedRequest, @Params() params: PogParam, @Body() data: BanPlayerInputDTO) {
     const service = new GameServerService(req.domainId);
-    const result = await service.banPlayer(params.gameServerId, params.playerId, data.reason, data.expiresAt);
-    return apiResponse(result);
+    await service.banPlayer(params.gameServerId, params.playerId, data.reason, data.expiresAt);
+    return apiResponse();
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
@@ -445,8 +445,8 @@ export class GameServerController {
   @Post('/gameserver/:gameServerId/player/:playerId/unban')
   async unbanPlayer(@Req() req: AuthenticatedRequest, @Params() params: PogParam) {
     const service = new GameServerService(req.domainId);
-    const result = await service.unbanPlayer(params.gameServerId, params.playerId);
-    return apiResponse(result);
+    await service.unbanPlayer(params.gameServerId, params.playerId);
+    return apiResponse();
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
@@ -470,8 +470,8 @@ export class GameServerController {
   })
   async giveItem(@Req() req: AuthenticatedRequest, @Params() params: PogParam, @Body() data: GiveItemInputDTO) {
     const service = new GameServerService(req.domainId);
-    const result = await service.giveItem(params.gameServerId, params.playerId, data.name, data.amount, data.quality);
-    return apiResponse(result);
+    await service.giveItem(params.gameServerId, params.playerId, data.name, data.amount, data.quality);
+    return apiResponse();
   }
 
   @Get('/gameserver/:id/players')

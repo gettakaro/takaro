@@ -24,6 +24,7 @@ import { GameServerService } from './GameServerService.js';
 import { HookEvents, isDiscordMessageEvent, EventPayload, EventTypes, EventMapping } from '@takaro/modules';
 import { PlayerOnGameServerService } from './PlayerOnGameserverService.js';
 import { PlayerService } from './PlayerService.js';
+import { ModuleService } from './ModuleService.js';
 
 interface IHandleHookOptions {
   eventType: EventTypes;
@@ -34,7 +35,7 @@ interface IHandleHookOptions {
 
 @ValidatorConstraint()
 export class IsSafeRegex implements ValidatorConstraintInterface {
-  public async validate(regex: string) {
+  public validate(regex: string) {
     return safeRegex(regex);
   }
 }
@@ -151,7 +152,7 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
       const newFn = await functionsService.create(
         new FunctionCreateDTO({
           code: item.function,
-        })
+        }),
       );
       fnIdToAdd = newFn.id;
     } else {
@@ -160,6 +161,10 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
     }
 
     const created = await this.repo.create(new HookCreateDTO({ ...item, function: fnIdToAdd }));
+
+    const moduleService = new ModuleService(this.domainId);
+    await moduleService.refreshInstallations(item.moduleId);
+
     return created;
   }
   async update(id: string, item: HookUpdateDTO) {
@@ -180,7 +185,7 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
         fn.id,
         new FunctionUpdateDTO({
           code: item.function,
-        })
+        }),
       );
     }
 
@@ -237,9 +242,11 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
           const copiedHookData = { ...hookData };
 
           const moduleInstallation = await gameServerService.getModuleInstallation(gameServerId, hook.moduleId);
+          if (!moduleInstallation.systemConfig.enabled) return;
+          if (!moduleInstallation.systemConfig.hooks[hook.name].enabled) return;
 
           if (isDiscordMessageEvent(eventData)) {
-            const configuredChannel = moduleInstallation.systemConfig.hooks[`${hook.name} Discord channel ID`];
+            const configuredChannel = moduleInstallation.systemConfig.hooks[hook.name].discordChannelId;
             if (eventData.channel.id !== configuredChannel) return;
           }
 
@@ -248,7 +255,7 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
           copiedHookData.module = await gameServerService.getModuleInstallation(gameServerId, hook.moduleId);
 
           return queueService.queues.hooks.queue.add(copiedHookData as IHookJobData);
-        })
+        }),
       );
     }
   }

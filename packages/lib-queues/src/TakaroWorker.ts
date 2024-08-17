@@ -14,7 +14,7 @@ export abstract class TakaroWorker<T> {
       addCounter(fn, {
         name: label,
         help: `How many jobs were processed by ${name}`,
-      })
+      }),
     );
 
     this.bullWorker = new Worker(name, instrumentedProcessor as Processor, {

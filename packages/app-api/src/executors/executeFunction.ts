@@ -24,17 +24,15 @@ import {
 import { HookService } from '../service/HookService.js';
 import { CronJobService } from '../service/CronJobService.js';
 
-let rateLimiter: RateLimiterRedis | null = null;
+const rateLimiterMap: Map<string, RateLimiterRedis> = new Map();
 
 const log = logger('worker:function');
 
 const takaro = new AdminClient({
   url: config.get('takaro.url'),
   auth: {
-    clientId: config.get('hydra.adminClientId'),
-    clientSecret: config.get('hydra.adminClientSecret'),
+    clientSecret: config.get('adminClientSecret'),
   },
-  OAuth2URL: config.get('hydra.publicUrl'),
   log: logger('adminClient'),
 });
 
@@ -46,7 +44,7 @@ interface IFunctionResult {
 export type FunctionExecutor = (
   code: string,
   data: IHookJobData | ICommandJobData | ICronJobData,
-  token: string
+  token: string,
 ) => Promise<IFunctionResult>;
 
 async function getJobToken(domainId: string) {
@@ -57,21 +55,38 @@ async function getJobToken(domainId: string) {
   return tokenRes.data.data.token;
 }
 
+async function getRateLimiter(domainId: string) {
+  const existingRateLimiter = rateLimiterMap.get(domainId);
+  if (existingRateLimiter) return existingRateLimiter;
+
+  log.debug(`Creating new function rate limiter for domain ${domainId}`);
+
+  const domainRes = await takaro.domain.domainControllerGetOne(domainId);
+  const domain = domainRes.data.data;
+
+  if (!domain) {
+    log.error('executeFunction: Domain not found');
+    throw new errors.NotFoundError();
+  }
+
+  const redisClient = await Redis.getClient('worker:rateLimiter', { legacyMode: true });
+  const rateLimiter = new RateLimiterRedis({
+    storeClient: redisClient,
+    keyPrefix: 'worker:rateLimiter',
+    points: domain.rateLimitPoints,
+    duration: domain.rateLimitDuration / 1000,
+  });
+
+  rateLimiterMap.set(domainId, rateLimiter);
+  return rateLimiter;
+}
+
 export async function executeFunction(
   functionId: string,
   data: IHookJobData | ICommandJobData | ICronJobData,
-  domainId: string
+  domainId: string,
 ) {
-  if (!rateLimiter) {
-    const redisClient = await Redis.getClient('worker:rateLimiter', { legacyMode: true });
-    rateLimiter = new RateLimiterRedis({
-      storeClient: redisClient,
-      keyPrefix: 'worker:rateLimiter',
-      points: config.get('takaro.functionsRateLimit.points'),
-      duration: config.get('takaro.functionsRateLimit.duration') / 1000,
-    });
-  }
-
+  const rateLimiter = await getRateLimiter(domainId);
   const token = await getJobToken(domainId);
 
   const client = new Client({
@@ -178,8 +193,9 @@ export async function executeFunction(
         result.logs.length &&
         (result.logs[result.logs.length - 1].details as unknown as string)?.includes('TakaroUserError')
       ) {
+        const msg = result.logs[result.logs.length - 1].msg;
         await client.gameserver.gameServerControllerSendMessage(data.gameServerId, {
-          message: result.logs[result.logs.length - 1].msg,
+          message: msg ?? 'User error but no details provided',
           opts: {
             recipient: {
               gameId: data.pog.gameId,
@@ -225,7 +241,7 @@ export async function executeFunction(
     meta.result.logs = await Promise.all(
       result.logs.map(async (log) => {
         return new TakaroEventFunctionLog(log);
-      })
+      }),
     );
 
     await eventService.create(new EventCreateDTO({ ...eventData, meta }));

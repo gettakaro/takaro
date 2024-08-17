@@ -1,6 +1,6 @@
 {
   "name": "@takaro/email",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
@@ -15,8 +15,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@takaro/config": "0.0.1",
-    "@takaro/util": "0.0.1",
     "ejs": "^3.1.9",
     "nodemailer": "^6.9.3"
   },

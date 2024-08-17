@@ -1,4 +1,5 @@
 import { styled, Label, InputWrapper } from '@takaro/lib-components';
+import { FieldTemplateProps, FormContextType, RJSFSchema, StrictRJSFSchema } from '@rjsf/utils';
 
 const Container = styled.div`
   width: 100%;
@@ -12,15 +13,13 @@ const Container = styled.div`
   }
 `;
 
-import { FieldTemplateProps, FormContextType, RJSFSchema, StrictRJSFSchema } from '@rjsf/utils';
-
 /** The `FieldTemplate` component is the template used by `SchemaField` to render any field. It renders the field
  * content, (label, description, children, errors and help) inside of a `WrapIfAdditional` component.
  *
  * @param props - The `FieldTemplateProps` for this component
  */
 export function FieldTemplate<T = any, S extends StrictRJSFSchema = RJSFSchema, F extends FormContextType = any>(
-  props: FieldTemplateProps<T, S, F>
+  props: FieldTemplateProps<T, S, F>,
 ) {
   const {
     children,

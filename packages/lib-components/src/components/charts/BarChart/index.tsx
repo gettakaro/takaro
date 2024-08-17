@@ -127,7 +127,7 @@ const Chart = <T,>({
         domain: filteredData.map(xAccessor),
         padding: 0.4,
       }),
-    [xMax, filteredData]
+    [xMax, filteredData],
   );
   const yScale = useMemo(
     () =>
@@ -136,7 +136,7 @@ const Chart = <T,>({
         round: true,
         domain: [0, max(filteredData, yAccessor) ?? 0],
       }),
-    [yMax, filteredData]
+    [yMax, filteredData],
   );
 
   const xBrushScale = useMemo(
@@ -146,7 +146,7 @@ const Chart = <T,>({
         domain: data.map(xAccessor),
         round: true,
       }),
-    [xBrushMax]
+    [xBrushMax],
   );
 
   const yBrushScale = useMemo(
@@ -156,7 +156,7 @@ const Chart = <T,>({
         domain: [0, Math.max(...data.map(yAccessor))],
         nice: true,
       }),
-    [yBrushMax]
+    [yBrushMax],
   );
 
   const onBrushChange = (domain: Bounds | null) => {

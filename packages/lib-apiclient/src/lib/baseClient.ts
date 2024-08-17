@@ -1,6 +1,5 @@
 import { MetaApi } from '../generated/api.js';
-import { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
-import axios from 'axios';
+import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
 
 export interface IBaseApiClientConfig {
   url: string;
@@ -39,6 +38,10 @@ export class BaseApiClient<T extends IBaseApiClientConfig> {
     if (this.config.log) this.log = this.config.log;
   }
 
+  setHeader(key: string, value: string) {
+    this.axios.defaults.headers.common[key] = value;
+  }
+
   isJsonMime(mime: string) {
     return mime === 'application/json';
   }
@@ -67,7 +70,7 @@ export class BaseApiClient<T extends IBaseApiClientConfig> {
             statusText: response.statusText,
             method: response.request.method,
             url: response.request.url,
-          }
+          },
         );
 
         return response;
@@ -90,7 +93,7 @@ export class BaseApiClient<T extends IBaseApiClientConfig> {
           response: error.response?.data,
         });
         return Promise.reject(error);
-      }
+      },
     );
 
     return axios;
@@ -102,11 +105,12 @@ export class BaseApiClient<T extends IBaseApiClientConfig> {
    */
   async waitUntilHealthy(timeout = 600000) {
     const start = Date.now();
-    while (true) {
+    let isHealthy = false;
+    while (!isHealthy) {
       try {
         const { data } = await this.meta.metaGetHealth();
         if (data.healthy) {
-          return;
+          isHealthy = true;
         }
       } catch {
         // ignore
@@ -126,7 +130,7 @@ export class BaseApiClient<T extends IBaseApiClientConfig> {
         isJsonMime: this.isJsonMime,
       },
       '',
-      this.axios
+      this.axios,
     );
   }
 }

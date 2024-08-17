@@ -20,14 +20,14 @@ export async function up(knex: Knex): Promise<void> {
   const readPermissionOnRole = await knex('permissionOnRole')
     .whereIn(
       'permissionId',
-      readPerms.map((p) => p.id)
+      readPerms.map((p) => p.id),
     )
     .select('id');
 
   const managePermissionOnRole = await knex('permissionOnRole')
     .whereIn(
       'permissionId',
-      managePerms.map((p) => p.id)
+      managePerms.map((p) => p.id),
     )
     .select('id');
 
@@ -35,7 +35,7 @@ export async function up(knex: Knex): Promise<void> {
   await knex('permissionOnRole')
     .whereIn(
       'id',
-      readPermissionOnRole.map((p) => p.id)
+      readPermissionOnRole.map((p) => p.id),
     )
     .update({
       permissionId: readModulePerm.id,
@@ -44,7 +44,7 @@ export async function up(knex: Knex): Promise<void> {
   await knex('permissionOnRole')
     .whereIn(
       'id',
-      managePermissionOnRole.map((p) => p.id)
+      managePermissionOnRole.map((p) => p.id),
     )
     .update({
       permissionId: manageModulePerm.id,

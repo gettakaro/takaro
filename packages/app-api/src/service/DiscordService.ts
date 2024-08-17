@@ -61,10 +61,6 @@ export class DiscordService extends TakaroService<
   GuildCreateInputDTO,
   GuildUpdateDTO
 > {
-  constructor(domainId: string) {
-    super(domainId);
-  }
-
   get repo() {
     return new DiscordRepo(this.domainId);
   }
@@ -119,7 +115,7 @@ export class DiscordService extends TakaroService<
       return existingDbGuilds.results.find((dbGuild) => dbGuild.discordId === guild.id);
     });
 
-    this.log.info(`Syncing guilds: ${addedGuilds.length} added`);
+    this.log.info(`Syncing guilds: ${addedGuilds.length.toString()} added`);
 
     await Promise.all(
       addedGuilds.map(async (guild) =>
@@ -128,9 +124,9 @@ export class DiscordService extends TakaroService<
             discordId: guild.id,
             name: guild.name,
             icon: guild.icon,
-          })
-        )
-      )
+          }),
+        ),
+      ),
     );
     await Promise.all(
       toUpdate.map(async (guild) => {
@@ -141,9 +137,9 @@ export class DiscordService extends TakaroService<
           new GuildUpdateDTO({
             name: guild.name,
             icon: guild.icon,
-          })
+          }),
         );
-      })
+      }),
     );
 
     const newDbGuilds = await this.repo.find({
@@ -159,7 +155,7 @@ export class DiscordService extends TakaroService<
           const dbGuild = newDbGuilds.results.find((dbGuild) => dbGuild.discordId === guild.id);
           if (!dbGuild) return;
           return this.repo.setUserRelation(userId, dbGuild.id, permissions.has(PermissionsBitField.Flags.ManageGuild));
-        })
+        }),
       );
     }
   }
@@ -209,7 +205,7 @@ export class DiscordService extends TakaroService<
           eventData: messageDTO,
           gameServerId: gameServer.id,
         });
-      })
+      }),
     );
   }
 

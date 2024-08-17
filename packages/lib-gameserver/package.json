@@ -1,6 +1,6 @@
 {
   "name": "@takaro/gameserver",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "Handles abstraction between Takaro and game servers",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
@@ -16,11 +16,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@takaro/modules": "0.0.1",
     "eventsource": "^2.0.2"
   },
   "devDependencies": {
-    "@takaro/test": "0.0.1",
     "@types/eventsource": "^1.1.9"
   }
 }

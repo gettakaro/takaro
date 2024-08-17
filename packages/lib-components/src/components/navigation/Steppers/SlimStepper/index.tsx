@@ -26,7 +26,7 @@ const StepperSteps: FC<PropsWithChildren<void>> = ({ children }) => {
       {children &&
         Children.map(
           children,
-          (child) => steps.length !== 0 && isValidElement(child) && child.props.id === steps[currentStep].id && child
+          (child) => steps.length !== 0 && isValidElement(child) && child.props.id === steps[currentStep].id && child,
         )}
     </div>
   );

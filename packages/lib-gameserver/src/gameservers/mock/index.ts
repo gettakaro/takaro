@@ -22,7 +22,10 @@ export class Mock implements IGameServer {
   emitter: MockEmitter;
   io: Socket;
 
-  constructor(config: MockConnectionInfo, private settings: Partial<Settings> = {}) {
+  constructor(
+    config: MockConnectionInfo,
+    private settings: Partial<Settings> = {},
+  ) {
     this.connectionInfo = config;
     if (!this.connectionInfo.name) this.connectionInfo.name = 'default';
     this.io = io(this.connectionInfo.host, {
@@ -93,7 +96,7 @@ export class Mock implements IGameServer {
       if (!error || !(error instanceof Error)) {
         return new TestReachabilityOutputDTO({
           connectable: false,
-          reason: 'Unknown error',
+          reason: `Unknown error: ${error}`,
         });
       }
 
@@ -106,7 +109,7 @@ export class Mock implements IGameServer {
 
       return new TestReachabilityOutputDTO({
         connectable: false,
-        reason: 'Unable to connect to server',
+        reason: `Unable to connect to server: ${error.message}`,
       });
     }
 

@@ -87,7 +87,7 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
           return newSet;
         });
       }
-    } catch (e) {
+    } catch (_e) {
       enqueueSnackbar('Something went wrong while saving the file', { variant: 'default', type: 'error' });
     }
   };

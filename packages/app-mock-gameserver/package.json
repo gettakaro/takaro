@@ -1,6 +1,6 @@
 {
   "name": "@takaro/mock-gameserver",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "A mock gameserver for testing purposes, acts just like a real gameserver",
   "main": "dist/main.js",
   "types": "main.ts",
@@ -17,8 +17,5 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "@takaro/util": "0.0.1",
-    "@takaro/http": "0.0.1"
-  }
+  "dependencies": {}
 }

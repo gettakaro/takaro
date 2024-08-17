@@ -27,7 +27,7 @@ describe('7d2d Actions', () => {
         new CommandOutput({
           rawResult: testData.oneBan,
           success: true,
-        })
+        }),
       );
 
       const result = await new SevenDaysToDie(await mockSdtdConnectionInfo).listBans();
@@ -43,7 +43,7 @@ describe('7d2d Actions', () => {
         new CommandOutput({
           rawResult: testData.twoBans,
           success: true,
-        })
+        }),
       );
 
       const result = await new SevenDaysToDie(await mockSdtdConnectionInfo).listBans();
@@ -63,7 +63,7 @@ describe('7d2d Actions', () => {
         new CommandOutput({
           rawResult: testData.noBans,
           success: true,
-        })
+        }),
       );
 
       const result = await new SevenDaysToDie(await mockSdtdConnectionInfo).listBans();
@@ -77,7 +77,7 @@ describe('7d2d Actions', () => {
         new CommandOutput({
           rawResult: testData.oneBanWithDisplayName,
           success: true,
-        })
+        }),
       );
 
       const result = await new SevenDaysToDie(await mockSdtdConnectionInfo).listBans();

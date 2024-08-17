@@ -119,8 +119,8 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
                 new CronJobOutputDTO({
                   ...cronJob,
                   function: new FunctionOutputDTO(cronJob.function),
-                })
-            )
+                }),
+            ),
           ),
           hooks: await Promise.all(
             item.hooks.map(
@@ -128,8 +128,8 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
                 new HookOutputDTO({
                   ...hook,
                   function: new FunctionOutputDTO(hook.function),
-                })
-            )
+                }),
+            ),
           ),
           commands: await Promise.all(
             item.commands.map(
@@ -137,14 +137,14 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
                 new CommandOutputDTO({
                   ...command,
                   function: new FunctionOutputDTO(command.function),
-                })
-            )
+                }),
+            ),
           ),
           functions: await Promise.all(item.functions.map((func) => new FunctionOutputDTO(func))),
         };
 
         return new ModuleOutputDTO(parsed);
-      })
+      }),
     );
 
     return {
@@ -195,7 +195,7 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
           friendlyName: permission.friendlyName,
           description: permission.description,
           canHaveCount: permission.canHaveCount,
-        }))
+        })),
       );
     }
 
@@ -217,10 +217,13 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
       const permissionModel = PermissionModel.bindKnex(knex);
 
       const existingPermissions = await permissionModel.query().where('moduleId', id);
-      const existingPermissionsMap = existingPermissions.reduce((acc, permission) => {
-        acc[permission.permission] = permission;
-        return acc;
-      }, {} as Record<string, PermissionModel>);
+      const existingPermissionsMap = existingPermissions.reduce(
+        (acc, permission) => {
+          acc[permission.permission] = permission;
+          return acc;
+        },
+        {} as Record<string, PermissionModel>,
+      );
 
       const toUpdate = data.permissions.filter((permission) => {
         const existingPermission = existingPermissionsMap[permission.permission];
@@ -234,7 +237,7 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
 
       const toInsert = data.permissions.filter((permission) => !existingPermissionsMap[permission.permission]);
       const toDelete = existingPermissions.filter(
-        (permission) => !data.permissions.find((p) => p.permission === permission.permission)
+        (permission) => !data.permissions.find((p) => p.permission === permission.permission),
       );
 
       if (toDelete.length) {
@@ -243,7 +246,7 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
           .delete()
           .whereIn(
             'id',
-            toDelete.map((permission) => permission.id)
+            toDelete.map((permission) => permission.id),
           );
       }
 
@@ -263,7 +266,7 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
             permission: permission.permission,
             friendlyName: permission.friendlyName,
             description: permission.description,
-          }))
+          })),
         );
       }
     }

@@ -18,7 +18,7 @@ import {
 } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { IdUuidDTO, IdUuidDTOAPI, ParamId } from '../lib/validators.js';
+import { ParamId } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 import { EventTypes, HookEvents } from '@takaro/modules';
@@ -113,12 +113,12 @@ export class HookController {
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), builtinModuleModificationMiddleware)
-  @ResponseSchema(IdUuidDTOAPI)
+  @ResponseSchema(APIOutput)
   @Delete('/hook/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new HookService(req.domainId);
     await service.delete(params.id);
-    return apiResponse(new IdUuidDTO({ id: params.id }));
+    return apiResponse();
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]))
@@ -141,7 +141,7 @@ export class HookController {
     @Req() req: AuthenticatedRequest,
     @Res() res: Response,
     @Body() query: EventSearchInputDTO,
-    @QueryParam('success') success = false
+    @QueryParam('success') success = false,
   ) {
     const service = new EventService(req.domainId);
     const result = await service.metadataSearch(
@@ -157,7 +157,7 @@ export class HookController {
             { field: 'result.success', operator: '=', value: success },
           ],
         },
-      ]
+      ],
     );
 
     return apiResponse(result.results, {

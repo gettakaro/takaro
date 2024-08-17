@@ -2,7 +2,7 @@ import { Client } from '@takaro/apiclient';
 
 export function getTakaro(
   data: Record<string, any>,
-  logger?: Pick<Console, 'log' | 'debug' | 'error' | 'warn' | 'info'>
+  logger?: Pick<Console, 'log' | 'debug' | 'error' | 'warn' | 'info'>,
 ): { takaro: Client; data: Record<string, any> } {
   const takaro = new Client({
     url: data.url,
@@ -11,6 +11,8 @@ export function getTakaro(
     },
     log: logger ? logger : console,
   });
+
+  takaro.setHeader('X-Takaro-Module', data.module.moduleId);
 
   if (data.pog) {
     const sendPmToPlayer = async (message: string) => {

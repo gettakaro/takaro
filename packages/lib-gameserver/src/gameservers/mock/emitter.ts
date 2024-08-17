@@ -8,7 +8,10 @@ const log = logger('Mock');
 export class MockEmitter extends TakaroEmitter {
   private scopedListener = this.listener.bind(this);
 
-  constructor(private config: MockConnectionInfo, private io: Socket) {
+  constructor(
+    private config: MockConnectionInfo,
+    private io: Socket,
+  ) {
     super();
   }
 
@@ -17,7 +20,8 @@ export class MockEmitter extends TakaroEmitter {
   }
 
   async stop(): Promise<void> {
-    this.io.offAny(this.scopedListener);
+    this.io.removeAllListeners();
+    this.io.disconnect();
   }
 
   private async listener(event: GameEventTypes, args: any) {

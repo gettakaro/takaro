@@ -10,7 +10,7 @@ interface IShopSetup extends SetupGameServerPlayers.ISetupData {
 
 const shopSetup = async function (this: IntegrationTest<IShopSetup>): Promise<IShopSetup> {
   const setupData = await SetupGameServerPlayers.setup.bind(
-    this as unknown as IntegrationTest<SetupGameServerPlayers.ISetupData>
+    this as unknown as IntegrationTest<SetupGameServerPlayers.ISetupData>,
   )();
 
   await this.client.settings.settingsControllerSet('economyEnabled', {
@@ -98,6 +98,7 @@ const tests = [
     group,
     snapshot: true,
     name: 'Delete',
+    filteredFields: ['itemId', 'gameServerId', 'gameserverId', 'listingId'],
     setup: shopSetup,
     expectedStatus: 404,
     test: async function () {
@@ -151,6 +152,19 @@ const tests = [
         price: 0,
         name: 'Test item',
       });
+    },
+  }),
+  // Should not include deleted listings in search
+  new IntegrationTest<IShopSetup>({
+    group,
+    snapshot: true,
+    name: 'Search with deleted listing',
+    setup: shopSetup,
+    test: async function () {
+      await this.client.shopListing.shopListingControllerDelete(this.setupData.listing.id);
+      const res = await this.client.shopListing.shopListingControllerSearch({});
+      expect(res.data.data.length).to.be.equal(0);
+      return res;
     },
   }),
 ];

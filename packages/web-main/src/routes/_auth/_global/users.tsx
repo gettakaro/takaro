@@ -1,6 +1,5 @@
 import { FC, useEffect, useMemo, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { AiOutlinePlus as PlusIcon, AiOutlineDelete as DeleteIcon } from 'react-icons/ai';
 import {
   Table,
   useTableActions,
@@ -17,7 +16,13 @@ import {
 import { useUserRemove, useInviteUser, usersQueryOptions } from 'queries/user';
 import { UserOutputWithRolesDTO, UserSearchInputDTOSortDirectionEnum, PERMISSIONS } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
-import { AiOutlineUser as ProfileIcon, AiOutlineEdit as EditIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
+import {
+  AiOutlinePlus as PlusIcon,
+  AiOutlineDelete as DeleteIcon,
+  AiOutlineUser as ProfileIcon,
+  AiOutlineEdit as EditIcon,
+  AiOutlineRight as ActionIcon,
+} from 'react-icons/ai';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
@@ -150,7 +155,7 @@ const InviteUser: FC = () => {
       z.object({
         userEmail: z.string().email('Email is not valid.').min(1),
       }),
-    []
+    [],
   );
 
   const { control, handleSubmit } = useForm<IFormInputs>({
@@ -254,8 +259,7 @@ export const UserDeleteDialog: FC<VariableDeleteProps> = ({ user, openDialog, se
 
   const handleOnDelete = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
-
-    await mutateAsync({ id: user.id });
+    await mutateAsync({ userId: user.id });
     setOpenDialog(false);
   };
 

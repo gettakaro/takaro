@@ -6,9 +6,12 @@ import {
   ShopOrderOutputArrayDTOAPI,
   ShopOrderOutputDTO,
   ShopOrderSearchInputDTO,
+  ShopOrderUpdateDTOStatusEnum,
 } from '@takaro/apiclient';
 import { AxiosError } from 'axios';
 import { getApiClient } from 'util/getApiClient';
+import { pogKeys } from './pog';
+import { useSnackbar } from 'notistack';
 
 export const shopOrderKeys = {
   list: () => ['shopOrder'],
@@ -38,16 +41,19 @@ export const shopOrderInfiniteQueryOptions = (queryParams: ShopOrderSearchInputD
 
 export const useShopOrderCreate = () => {
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
 
   return mutationWrapper<ShopOrderOutputDTO, ShopOrderCreateDTO>(
     useMutation<ShopOrderOutputDTO, AxiosError<ShopOrderOutputDTO>, ShopOrderCreateDTO>({
       mutationFn: async (shopOrder) => (await getApiClient().shopOrder.shopOrderControllerCreate(shopOrder)).data.data,
       onSuccess: (newShopOrder) => {
+        enqueueSnackbar('Shop order created!', { variant: 'default', type: 'success' });
+        queryClient.invalidateQueries({ queryKey: pogKeys.all });
         queryClient.invalidateQueries({ queryKey: shopOrderKeys.list() });
         queryClient.setQueryData(shopOrderKeys.detail(newShopOrder.id), newShopOrder);
       },
     }),
-    {}
+    {},
   );
 };
 
@@ -55,33 +61,59 @@ interface ShopOrderCancel {
   shopOrderId: string;
 }
 export const useShopOrderCancel = () => {
+  const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
+
   return mutationWrapper<APIOutput, ShopOrderCancel>(
     useMutation<APIOutput, AxiosError<APIOutput>, ShopOrderCancel>({
       mutationFn: async ({ shopOrderId }) =>
         (await getApiClient().shopOrder.shopOrderControllerCancel(shopOrderId)).data,
+      onSuccess: (_, { shopOrderId }) => {
+        enqueueSnackbar('Shop order cancelled!', { variant: 'default', type: 'success' });
+        queryClient.invalidateQueries({ queryKey: pogKeys.all });
+        queryClient.invalidateQueries({ queryKey: shopOrderKeys.list() });
+
+        const shopOrder = queryClient.getQueryData<ShopOrderOutputDTO>(shopOrderKeys.detail(shopOrderId));
+        if (shopOrder) {
+          const updatedShopOrder = {
+            ...shopOrder,
+            status: ShopOrderUpdateDTOStatusEnum.Canceled,
+          } as ShopOrderOutputDTO;
+          queryClient.setQueryData<ShopOrderOutputDTO>(shopOrderKeys.detail(shopOrderId), updatedShopOrder);
+        }
+      },
     }),
-    {}
+    {},
   );
 };
 
-interface ShopOrderUpdate {
+interface ShopOrderClaim {
   shopOrderId: string;
 }
 
 export const useShopOrderClaim = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
 
-  return mutationWrapper<ShopOrderOutputDTO, ShopOrderUpdate>(
-    useMutation<ShopOrderOutputDTO, AxiosError<ShopOrderOutputDTO>, ShopOrderUpdate>({
+  return mutationWrapper<ShopOrderOutputDTO, ShopOrderClaim>(
+    useMutation<ShopOrderOutputDTO, AxiosError<ShopOrderOutputDTO>, ShopOrderClaim>({
       mutationFn: async ({ shopOrderId }) => {
         return (await apiClient.shopOrder.shopOrderControllerClaim(shopOrderId)).data.data;
       },
-      onSuccess: async (updatedShopListing) => {
-        await queryClient.invalidateQueries({ queryKey: shopOrderKeys.list() });
-        queryClient.setQueryData(shopOrderKeys.detail(updatedShopListing.id), updatedShopListing);
+      onSuccess: async (_, { shopOrderId }) => {
+        enqueueSnackbar('Shop order claimed!', { variant: 'default', type: 'success' });
+        queryClient.invalidateQueries({ queryKey: shopOrderKeys.list() });
+        const shopOrder = queryClient.getQueryData<ShopOrderOutputDTO>(shopOrderKeys.detail(shopOrderId));
+        if (shopOrder) {
+          const updatedShopOrder = {
+            ...shopOrder,
+            status: ShopOrderUpdateDTOStatusEnum.Completed,
+          } as ShopOrderOutputDTO;
+          queryClient.setQueryData<ShopOrderOutputDTO>(shopOrderKeys.detail(shopOrderId), updatedShopOrder);
+        }
       },
     }),
-    {}
+    {},
   );
 };

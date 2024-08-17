@@ -99,7 +99,7 @@ export class PlayerOnGameServerController {
   async search(
     @Req() req: AuthenticatedRequest,
     @Res() res: Response,
-    @Body() query: PlayerOnGameServerSearchInputDTO
+    @Body() query: PlayerOnGameServerSearchInputDTO,
   ) {
     const service = new PlayerOnGameServerService(req.domainId);
     const result = await service.find({
@@ -128,7 +128,7 @@ export class PlayerOnGameServerController {
   async setCurrency(
     @Req() req: AuthenticatedRequest,
     @Params() params: PogParam,
-    @Body() body: PlayerOnGameServerSetCurrencyInputDTO
+    @Body() body: PlayerOnGameServerSetCurrencyInputDTO,
   ) {
     const service = new PlayerOnGameServerService(req.domainId);
     const pog = await service.getPog(params.playerId, params.gameServerId);
@@ -141,7 +141,7 @@ export class PlayerOnGameServerController {
   async transactBetweenPlayers(
     @Req() req: AuthenticatedRequest,
     @Params() params: ParamSenderReceiver,
-    @Body() body: PlayerOnGameServerSetCurrencyInputDTO
+    @Body() body: PlayerOnGameServerSetCurrencyInputDTO,
   ) {
     const service = new PlayerOnGameServerService(req.domainId);
     return apiResponse(await service.transact(params.sender, params.receiver, body.currency));
@@ -153,7 +153,7 @@ export class PlayerOnGameServerController {
   async addCurrency(
     @Req() req: AuthenticatedRequest,
     @Params() params: PogParam,
-    @Body() body: PlayerOnGameServerSetCurrencyInputDTO
+    @Body() body: PlayerOnGameServerSetCurrencyInputDTO,
   ) {
     const service = new PlayerOnGameServerService(req.domainId);
     const pog = await service.getPog(params.playerId, params.gameServerId);
@@ -166,7 +166,7 @@ export class PlayerOnGameServerController {
   async deductCurrency(
     @Req() req: AuthenticatedRequest,
     @Params() params: PogParam,
-    @Body() body: PlayerOnGameServerSetCurrencyInputDTO
+    @Body() body: PlayerOnGameServerSetCurrencyInputDTO,
   ) {
     const service = new PlayerOnGameServerService(req.domainId);
     const pog = await service.getPog(params.playerId, params.gameServerId);

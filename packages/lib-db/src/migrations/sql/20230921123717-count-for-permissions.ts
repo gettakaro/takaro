@@ -36,7 +36,7 @@ export async function up(knex: Knex): Promise<void> {
     perms.map((perm) => ({
       permission: perm,
       canHaveCount: false,
-    }))
+    })),
   );
 
   await knex.schema.createTable('temp_permissiononrole', (table) => {

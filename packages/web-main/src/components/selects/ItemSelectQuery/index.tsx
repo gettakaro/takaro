@@ -39,7 +39,6 @@ export const ItemSelect: FC<ItemSelectProps> = ({
   inPortal,
   readOnly,
   required,
-  hasMargin,
   description,
   placeholder = 'Select an item',
   gameServerId,
@@ -52,7 +51,7 @@ export const ItemSelect: FC<ItemSelectProps> = ({
   const { data: gameServer, isLoading: isLoadingGameServer } = useQuery(gameServerQueryOptions(gameServerId));
 
   const { data, isLoading: isLoadingItems } = useQuery(
-    itemsQueryOptions({ search: { name: [itemName] }, filters: { gameserverId: [gameServerId] } })
+    itemsQueryOptions({ search: { name: [itemName] }, filters: { gameserverId: [gameServerId] } }),
   );
 
   const { data: initialItem } = useQuery({
@@ -84,7 +83,6 @@ export const ItemSelect: FC<ItemSelectProps> = ({
       inPortal={inPortal}
       hint={hint}
       multiple={multiple}
-      hasMargin={hasMargin}
       placeholder={placeholder}
       required={required}
       loading={loading}
@@ -112,7 +110,6 @@ export const ItemSelectQueryView: FC<ItemSelectQueryViewProps> = ({
   size,
   disabled,
   placeholder,
-  hasMargin,
   multiple,
   inPortal,
   hint,
@@ -152,7 +149,6 @@ export const ItemSelectQueryView: FC<ItemSelectQueryViewProps> = ({
       readOnly={readOnly}
       required={required}
       multiple={multiple}
-      hasMargin={hasMargin}
       description={description}
       canClear={canClear}
       render={(selectedItems) => {
@@ -182,7 +178,7 @@ export const ItemSelectQueryView: FC<ItemSelectQueryViewProps> = ({
     >
       <SelectQueryField.OptionGroup label="options">
         {items.map((item) => (
-          <SelectQueryField.Option value={item.id} label={item.name}>
+          <SelectQueryField.Option key={selectName + '-' + item.id} value={item.id} label={item.name}>
             <Inner>
               {renderIcon(gameServer, item)}
               <span>{item.name}</span>

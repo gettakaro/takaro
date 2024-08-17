@@ -47,13 +47,11 @@ describe('7d2d event detection', () => {
     expect(emitStub.getCalls()[0].args[0]).to.equal(GameEvents.PLAYER_CONNECTED);
     expect((emitStub.getCalls()[0].args[1] as EventPlayerConnected).player).to.deep.equal({
       name: 'Catalysm',
-      ping: undefined,
+
       gameId: '0002b5d970954287afdcb5dc35af0424',
       steamId: '76561198028175941',
       epicOnlineServicesId: '0002b5d970954287afdcb5dc35af0424',
       xboxLiveId: undefined,
-      ip: undefined,
-      platformId: undefined,
     });
     expect(emitStub.getCalls()[1].args[0]).to.equal(GameEvents.LOG_LINE);
   });
@@ -68,13 +66,11 @@ describe('7d2d event detection', () => {
     expect(emitStub.getCalls()[0].args[0]).to.equal(GameEvents.PLAYER_CONNECTED);
     expect((emitStub.getCalls()[0].args[1] as EventPlayerConnected).player).to.deep.equal({
       name: 'Catalysm',
-      ping: undefined,
+
       gameId: '0002b5d970954287afdcb5dc35af0424',
       steamId: '76561198028175941',
       epicOnlineServicesId: '0002b5d970954287afdcb5dc35af0424',
       xboxLiveId: undefined,
-      ip: undefined,
-      platformId: undefined,
     });
     expect(emitStub.getCalls()[1].args[0]).to.equal(GameEvents.LOG_LINE);
   });
@@ -88,13 +84,11 @@ describe('7d2d event detection', () => {
     expect(emitStub.getCalls()[0].args[0]).to.equal(GameEvents.PLAYER_CONNECTED);
     expect((emitStub.getCalls()[0].args[1] as EventPlayerConnected).player).to.deep.equal({
       name: 'Catalysm',
-      ping: undefined,
+
       gameId: '0002b5d970954287afdcb5dc35af0424',
       steamId: undefined,
       xboxLiveId: '123456abcdef',
       epicOnlineServicesId: '0002b5d970954287afdcb5dc35af0424',
-      ip: undefined,
-      platformId: undefined,
     });
     expect(emitStub.getCalls()[1].args[0]).to.equal(GameEvents.LOG_LINE);
   });
@@ -108,13 +102,11 @@ describe('7d2d event detection', () => {
     expect(emitStub.getCalls()[0].args[0]).to.equal(GameEvents.PLAYER_CONNECTED);
     expect((emitStub.getCalls()[0].args[1] as EventPlayerConnected).player).to.deep.equal({
       name: 'Cata lysm',
-      ping: undefined,
+
       gameId: '0002b5d970954287afdcb5dc35af0424',
       steamId: '76561198028175941',
       epicOnlineServicesId: '0002b5d970954287afdcb5dc35af0424',
       xboxLiveId: undefined,
-      ip: undefined,
-      platformId: undefined,
     });
     expect(emitStub.getCalls()[1].args[0]).to.equal(GameEvents.LOG_LINE);
   });
@@ -129,13 +121,10 @@ describe('7d2d event detection', () => {
     expect(emitStub.getCalls()[0].args[0]).to.equal(GameEvents.PLAYER_DISCONNECTED);
     expect((emitStub.getCalls()[0].args[1] as EventPlayerConnected).player).to.deep.equal({
       name: 'Catalysm',
-      ping: undefined,
+
       gameId: '0002b5d970954287afdcb5dc35af0424',
       steamId: '76561198028175941',
       xboxLiveId: undefined,
-      ip: undefined,
-      platformId: undefined,
-      epicOnlineServicesId: undefined,
     });
     expect(emitStub.getCalls()[1].args[0]).to.equal(GameEvents.LOG_LINE);
   });
@@ -159,10 +148,6 @@ describe('7d2d event detection', () => {
       ping: undefined,
       gameId: '0002b5d970954287afdcb5dc35af0424',
       steamId: '76561198028175941',
-      xboxLiveId: undefined,
-      ip: undefined,
-      platformId: undefined,
-      epicOnlineServicesId: undefined,
     });
   });
 
@@ -190,10 +175,6 @@ describe('7d2d event detection', () => {
       ping: undefined,
       gameId: '0002b5d970954287afdcb5dc35af0424',
       steamId: '76561198028175941',
-      xboxLiveId: undefined,
-      ip: undefined,
-      platformId: undefined,
-      epicOnlineServicesId: undefined,
     });
   });
 
@@ -225,7 +206,7 @@ describe('7d2d event detection', () => {
       expect(
         emitStub.getCalls().some((call) => {
           return call.args[0] === GameEvents.CHAT_MESSAGE && (call.args[1] as EventChatMessage).msg === msg;
-        })
+        }),
       ).to.equal(true);
     }
   });

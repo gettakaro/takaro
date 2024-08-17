@@ -17,7 +17,7 @@ export class SystemWorker extends TakaroWorker<IBaseJobData> {
           jobId: 'system',
           every: ms('24h'),
         },
-      }
+      },
     );
   }
 }
@@ -27,11 +27,11 @@ export async function processJob(job: Job<IBaseJobData>) {
     const domainRepo = new DomainRepo();
     const domains = await domainRepo.find({});
     for (const domain of domains.results) {
-      queueService.queues.system.queue.add(
+      await queueService.queues.system.queue.add(
         { domainId: domain.id },
         {
-          jobId: `system-${domain.id}-${Date.now()}`,
-        }
+          jobId: `system-${domain.id.toString()}-${Date.now().toString()}`,
+        },
       );
     }
   } else {

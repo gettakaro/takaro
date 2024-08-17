@@ -23,9 +23,7 @@ export async function metricsMiddleware(req: Request, res: Response, next: NextF
   const start = Date.now();
 
   try {
-    await next();
-  } catch (error) {
-    throw error;
+    next();
   } finally {
     counter.inc({
       path,
@@ -38,7 +36,7 @@ export async function metricsMiddleware(req: Request, res: Response, next: NextF
         method,
         status: res.statusCode.toString(),
       },
-      (Date.now() - start) / 1000
+      (Date.now() - start) / 1000,
     );
   }
 }

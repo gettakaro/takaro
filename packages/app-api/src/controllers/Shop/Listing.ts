@@ -1,4 +1,4 @@
-import { IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsBoolean, IsISO8601, IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { ShopListingService } from '../../service/Shop/index.js';
@@ -6,7 +6,7 @@ import { AuthenticatedRequest, AuthService } from '../../service/AuthService.js'
 import { Body, Get, Post, JsonController, UseBefore, Req, Params, Res, Delete, Put } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { IdUuidDTO, ParamId } from '../../lib/validators.js';
+import { ParamId } from '../../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 import { RangeFilterCreatedAndUpdatedAt } from '../shared.js';
@@ -37,12 +37,18 @@ class ShopListingSearchInputAllowedFilters {
   @IsOptional()
   @IsString({ each: true })
   name: string[];
+  @IsOptional()
+  @IsBoolean()
+  draft: boolean;
 }
 
 class ShopSearchInputAllowedRangeFilter extends RangeFilterCreatedAndUpdatedAt {
   @IsOptional()
   @IsNumber()
   price: number;
+  @IsOptional()
+  @IsISO8601()
+  deletedAt!: string;
 }
 
 class ShopListingSearchInputDTO extends ITakaroQuery<ShopListingSearchInputAllowedFilters> {
@@ -113,10 +119,10 @@ export class ShopListingController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_SHOP_LISTINGS]))
   @Delete('/:id')
-  @ResponseSchema(IdUuidDTO)
+  @ResponseSchema(APIOutput)
   async delete(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new ShopListingService(req.domainId);
     await service.delete(params.id);
-    return apiResponse({ id: params.id });
+    return apiResponse();
   }
 }

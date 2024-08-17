@@ -1,6 +1,6 @@
 {
   "name": "@takaro/connector",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "Connects to game servers and detects events for Takaro",
   "main": "dist/main.js",
   "types": "main.ts",
@@ -16,11 +16,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "@takaro/http": "0.0.1",
-    "@takaro/gameserver": "0.0.1",
-    "@takaro/queues": "0.0.1",
-    "@takaro/auth": "0.0.1"
-  },
+  "dependencies": {},
   "devDependencies": {}
 }

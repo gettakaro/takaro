@@ -23,6 +23,7 @@ export interface ISteamData {
   steamVacBanned: boolean;
   steamsDaysSinceLastBan: number;
   steamNumberOfVACBans: number;
+  steamLevel: number;
 }
 
 interface IObserveIPOpts {
@@ -297,7 +298,7 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
         }
 
         return query.update(updateObj).where('steamId', item.steamId);
-      })
+      }),
     );
   }
 

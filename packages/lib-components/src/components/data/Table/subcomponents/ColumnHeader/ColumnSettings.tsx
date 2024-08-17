@@ -46,20 +46,19 @@ export function ColumnSettings<DataType extends object>({
             <Tooltip.Content>Toggle to ascending</Tooltip.Content>
           </Tooltip>
         );
-      } else {
-        return (
-          <Tooltip>
-            <Tooltip.Trigger asChild>
-              <IconButton
-                icon={<SortAscendingIcon />}
-                ariaLabel="toggle to descending"
-                onClick={() => toggleSorting(true)}
-              />
-            </Tooltip.Trigger>
-            <Tooltip.Content>Toggle to descending</Tooltip.Content>
-          </Tooltip>
-        );
       }
+      return (
+        <Tooltip>
+          <Tooltip.Trigger asChild>
+            <IconButton
+              icon={<SortAscendingIcon />}
+              ariaLabel="toggle to descending"
+              onClick={() => toggleSorting(true)}
+            />
+          </Tooltip.Trigger>
+          <Tooltip.Content>Toggle to descending</Tooltip.Content>
+        </Tooltip>
+      );
     }
   }, [table.getState().sorting, header.column.id]);
 
@@ -129,9 +128,11 @@ export function ColumnSettings<DataType extends object>({
             icon={<PinIcon />}
             label="Pin to left"
             onClick={() => {
-              !header.column.getIsPinned() && header.column.getCanPin()
-                ? header.column.pin('left')
-                : header.column.pin(false);
+              if (!header.column.getIsPinned() && header.column.getCanPin()) {
+                header.column.pin('left');
+              } else {
+                header.column.pin(false);
+              }
             }}
           />
           <Dropdown.Menu.Item
@@ -140,9 +141,11 @@ export function ColumnSettings<DataType extends object>({
             icon={<PinIcon style={{ transform: 'scaleX(-1)' }} />}
             label="Pin to right"
             onClick={() => {
-              !header.column.getIsPinned() && header.column.getCanPin()
-                ? header.column.pin('right')
-                : header.column.pin(false);
+              if (!header.column.getIsPinned() && header.column.getCanPin()) {
+                header.column.pin('right');
+              } else {
+                header.column.pin(false);
+              }
             }}
           />
           <Dropdown.Menu.Item disabled={true} icon={<DeleteIcon />} label="Delete column" onClick={() => {}} />

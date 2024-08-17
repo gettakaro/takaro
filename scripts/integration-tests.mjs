@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto';
-import { upMany, logs, exec, upAll, down, run, pullAll } from 'docker-compose';
+import { upMany, logs, upAll, down, run, pullAll, buildOne } from 'docker-compose/dist/v2.js';
 import { $ } from 'zx';
 import { writeFile, mkdir } from 'fs/promises';
 
@@ -13,7 +13,7 @@ async function waitUntilHealthyHttp(url, maxRetries = 5) {
     if (stdout === '200') {
       return;
     }
-  } catch (err) { }
+  } catch (err) {}
 
   if (maxRetries > 0) {
     await sleep(1000);
@@ -33,7 +33,6 @@ process.env = {
   POSTGRES_DB: 'takaro-test-db',
   POSTGRES_PASSWORD,
   POSTGRES_ENCRYPTION_KEY,
-  TAKARO_OAUTH_HOST: process.env.IS_E2E ? 'http://127.0.0.1:14444' : 'http://hydra:4444',
   MOCHA_RETRIES: 5,
 };
 
@@ -58,37 +57,20 @@ async function main() {
   await mkdir('./reports/integrationTests', { recursive: true });
 
   console.log('Bringing up datastores');
-  await upMany(['postgresql', 'redis', 'postgresql_kratos', 'postgresql_hydra'], composeOpts);
+  await upMany(['postgresql', 'redis', 'postgresql_kratos'], composeOpts);
   await sleep(1000);
 
   console.log('Running SQL migrations...');
-  await run('hydra-migrate', 'migrate -c /etc/config/hydra/hydra.yml sql -e --yes', { ...composeOpts, log: false });
   await run('kratos-migrate', '-c /etc/config/kratos/kratos.yml migrate sql -e --yes', { ...composeOpts, log: false });
 
-  await upMany(['kratos', 'hydra', 'hydra-e2e'], composeOpts);
+  await upMany(['kratos'], composeOpts);
 
-  await Promise.all([
-    waitUntilHealthyHttp('http://127.0.0.1:4433/health/ready', 60),
-    waitUntilHealthyHttp('http://127.0.0.1:4444/health/ready', 60),
-    waitUntilHealthyHttp('http://127.0.0.1:14444/health/ready', 60),
-  ]);
+  await Promise.all([waitUntilHealthyHttp('http://127.0.0.1:4433/health/ready', 60)]);
 
-  // Check if ADMIN_CLIENT_ID and ADMIN_CLIENT_SECRET are set already
-  // If not set, create them
-  if (!composeOpts.env.ADMIN_CLIENT_ID || !composeOpts.env.ADMIN_CLIENT_SECRET) {
-    console.log('No OAuth admin client configured, creating one...');
-    const rawClientOutput = await exec(
-      'hydra',
-      'hydra -e http://localhost:4445  create client --grant-type client_credentials --audience t:api:admin --format json',
-      composeOpts
-    );
-    const parsedClientOutput = JSON.parse(rawClientOutput.out);
-
-    console.log('Created OAuth admin client', {
-      clientId: parsedClientOutput.client_id,
-    });
-    composeOpts.env.ADMIN_CLIENT_ID = parsedClientOutput.client_id;
-    composeOpts.env.ADMIN_CLIENT_SECRET = parsedClientOutput.client_secret;
+  // Check if ADMIN_CLIENT_SECRET is set already if not set, create them
+  if (!composeOpts.env.ADMIN_CLIENT_SECRET) {
+    console.log('No admin secret configured, creating one...');
+    composeOpts.env.ADMIN_CLIENT_SECRET = randomUUID();
   }
 
   console.log('Pulling latest images...');
@@ -96,6 +78,9 @@ async function main() {
 
   console.log('Running Takaro SQL migrations...');
   await run('takaro_api', 'npm -w packages/app-api run db:migrate', composeOpts);
+
+  console.log('Building Takaro test image...');
+  await buildOne('takaro', { ...composeOpts, log: false });
 
   console.log('Starting all containers...');
   await upAll(composeOpts);
@@ -118,9 +103,7 @@ async function main() {
       const testVars = {
         TEST_HTTP_TARGET: 'http://127.0.0.1:13000',
         TEST_FRONTEND_TARGET: 'http://127.0.0.1:13001',
-        ADMIN_CLIENT_ID: `${composeOpts.env.ADMIN_CLIENT_ID}`,
         ADMIN_CLIENT_SECRET: `${composeOpts.env.ADMIN_CLIENT_SECRET}`,
-        TAKARO_OAUTH_HOST: 'http://127.0.0.1:14444 ',
         MOCK_GAMESERVER_HOST: 'http://takaro_mock_gameserver:3002',
         MAILHOG_URL: 'http://127.0.0.1:8025',
       };
@@ -138,10 +121,10 @@ async function main() {
     failed = true;
   }
 
-  const logsResult = await logs(
-    ['takaro_api', 'takaro_mock_gameserver', 'takaro_connector', 'kratos', 'hydra', 'hydra-e2e'],
-    { ...composeOpts, log: false }
-  );
+  const logsResult = await logs(['takaro_api', 'takaro_mock_gameserver', 'takaro_connector', 'kratos'], {
+    ...composeOpts,
+    log: false,
+  });
 
   await writeFile('./reports/integrationTests/docker-logs.txt', logsResult.out);
   await writeFile('./reports/integrationTests/docker-logs-err.txt', logsResult.err);

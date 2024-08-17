@@ -10,7 +10,10 @@ const Container = styled.div`
   border-radius: ${({ theme }) => theme.borderRadius.medium};
 `;
 
-export const PopoverContent = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElement>>(({ style, ...props }, propRef) => {
+export const PopoverContent = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElement>>(function PopoverContent(
+  { style, ...props },
+  propRef,
+) {
   const theme = useTheme();
   const { context: floatingContext, arrowRef, ...context } = usePopoverContext();
   const ref = useMergeRefs([context.refs.setFloating, propRef]);

@@ -18,6 +18,7 @@ export function getKnexOptions(extra: Record<string, unknown> = {}) {
       user: config.get('postgres.user'),
       password: config.get('postgres.password'),
       database: config.get('postgres.database'),
+      ssl: config.get('postgres.ssl') ? { ca: config.get('postgres.ca') } : false,
     },
     ...extra,
   };

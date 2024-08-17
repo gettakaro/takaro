@@ -8,10 +8,8 @@ config();
 const adminClient = new AdminClient({
   url: process.env.TAKARO_HOST,
   auth: {
-    clientId: process.env.ADMIN_CLIENT_ID,
     clientSecret: process.env.ADMIN_CLIENT_SECRET,
   },
-  OAuth2URL: process.env.TAKARO_OAUTH_HOST,
 });
 
 async function main() {

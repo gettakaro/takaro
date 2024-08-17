@@ -24,7 +24,7 @@ import { TakaroEventRoleCreated, TakaroEventRoleDeleted, TakaroEventRoleUpdated 
 
 @ValidatorConstraint()
 export class IsPermissionArray implements ValidatorConstraintInterface {
-  public async validate(permissions: PERMISSIONS[]) {
+  public validate(permissions: PERMISSIONS[]) {
     return (
       Array.isArray(permissions) && permissions.every((permission) => Object.values(PERMISSIONS).includes(permission))
     );
@@ -215,7 +215,7 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
       throw new errors.BadRequestError('Cannot update root role');
     }
 
-    if (!toUpdate?.system) {
+    if (!toUpdate.system) {
       await this.repo.update(id, item);
     }
 
@@ -230,7 +230,7 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
         eventName: EVENT_TYPES.ROLE_UPDATED,
         userId,
         meta: new TakaroEventRoleUpdated({ role: { id: res.id, name: res.name } }),
-      })
+      }),
     );
 
     return res;
@@ -239,7 +239,7 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
   async delete(id: string) {
     const toDelete = await this.repo.findOne(id);
 
-    if (toDelete?.system) {
+    if (toDelete.system) {
       throw new errors.BadRequestError('Cannot delete system roles');
     }
 
@@ -253,7 +253,7 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
         eventName: EVENT_TYPES.ROLE_DELETED,
         userId,
         meta: new TakaroEventRoleDeleted({ role: { id: toDelete.id, name: toDelete.name } }),
-      })
+      }),
     );
 
     return id;
@@ -273,7 +273,7 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
         eventName: EVENT_TYPES.ROLE_CREATED,
         userId,
         meta: new TakaroEventRoleCreated({ role: { id: res.id, name: res.name } }),
-      })
+      }),
     );
 
     return res;
@@ -306,13 +306,13 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
       toUpdate.map((permission) =>
         this.repo
           .removePermissionFromRole(roleId, permission.permissionId)
-          .then(() => this.repo.addPermissionToRole(roleId, permission))
-      )
+          .then(() => this.repo.addPermissionToRole(roleId, permission)),
+      ),
     );
 
     // Create promises for removing and adding permissions
     const removePromises = toRemove.map((permission) =>
-      this.repo.removePermissionFromRole(roleId, permission.permissionId)
+      this.repo.removePermissionFromRole(roleId, permission.permissionId),
     );
     const addPromises = toAdd.map((permission) => this.repo.addPermissionToRole(roleId, permission));
 
@@ -333,7 +333,7 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
           id: mod.id,
           name: mod.name,
         },
-      }))
+      })),
     ) as PermissionOutputDTO[];
 
     const systemPermissions = await this.repo.getSystemPermissions();

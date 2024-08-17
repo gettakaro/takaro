@@ -12,7 +12,7 @@ export type ControlledRadioGroupProps = PropsWithChildren<ControlledInputProps>;
 const defaultsApplier = defaultInputPropsFactory<ControlledRadioGroupProps>(defaultInputProps);
 
 export const ControlledRadioGroup: FC<ControlledRadioGroupProps> & RadioGroupSubComponents = (props) => {
-  const { name, control, description, children, disabled, readOnly, required, hasMargin } = defaultsApplier(props);
+  const { name, control, description, children, disabled, readOnly, required } = defaultsApplier(props);
 
   const {
     field,
@@ -32,7 +32,6 @@ export const ControlledRadioGroup: FC<ControlledRadioGroupProps> & RadioGroupSub
           hasError={!!error}
           required={required}
           hasDescription={!!description}
-          hasMargin={hasMargin}
         >
           {children}
         </GenericRadioGroup>

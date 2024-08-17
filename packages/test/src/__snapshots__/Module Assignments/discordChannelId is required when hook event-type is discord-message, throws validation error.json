@@ -3,7 +3,7 @@
     "meta": {
       "error": {
         "code": "BadRequestError",
-        "message": "Invalid config: /hooks must have required property 'Test hook Discord channel ID'"
+        "message": "Invalid config: /hooks/Test hook must have required property 'discordChannelId'"
       }
     },
     "data": {}
@@ -17,7 +17,8 @@
     "filteredFields": [
       "moduleId",
       "functionId",
-      "commandId"
+      "commandId",
+      "gameserverId"
     ],
     "standardEnvironment": true
   }

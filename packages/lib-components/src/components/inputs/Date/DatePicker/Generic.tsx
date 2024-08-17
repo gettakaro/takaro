@@ -97,8 +97,8 @@ export const GenericDatePicker: FC<GenericDatePickerProps> = ({
   const initialSelectedDateTime = value
     ? DateTime.fromISO(value)
     : isDateAllowed(DateTime.local().startOf('day'))
-    ? DateTime.local().startOf('day')
-    : findFirstAllowedDate();
+      ? DateTime.local().startOf('day')
+      : findFirstAllowedDate();
 
   const [selectedDateTime, setSelectedDateTime] = useState<DateTime>(initialSelectedDateTime);
   const [friendlyName, setFriendlyName] = useState<string | undefined>(undefined);
@@ -148,8 +148,11 @@ export const GenericDatePicker: FC<GenericDatePickerProps> = ({
 
   useLayoutEffect(() => {
     if (onFocus && onBlur) {
-      // consider open to be a focus event
-      open ? onFocus(event) : onBlur(event);
+      if (open) {
+        onFocus(event);
+      } else {
+        onBlur(event);
+      }
     }
   }, [open]);
 
@@ -188,7 +191,9 @@ export const GenericDatePicker: FC<GenericDatePickerProps> = ({
                   customDateFilter={customDateFilter}
                   onDateClick={(date) => {
                     setSelectedDateTime(date);
-                    relativePickerOptions?.showFriendlyName && setFriendlyName(undefined);
+                    if (relativePickerOptions?.showFriendlyName) {
+                      setFriendlyName(undefined);
+                    }
                     if (isDateOnly) {
                       handleOnChange(date);
                     }
@@ -201,8 +206,9 @@ export const GenericDatePicker: FC<GenericDatePickerProps> = ({
                   interval={timePickerOptions?.interval}
                   onChange={(newTime) => {
                     setSelectedDateTime(newTime);
-                    relativePickerOptions?.showFriendlyName && setFriendlyName(undefined);
-
+                    if (relativePickerOptions?.showFriendlyName) {
+                      setFriendlyName(undefined);
+                    }
                     // see notes above
                     if (isTimeOnly) {
                       handleOnChange(newTime);
@@ -219,7 +225,9 @@ export const GenericDatePicker: FC<GenericDatePickerProps> = ({
                 id={id}
                 timeDirection={relativePickerOptions?.timeDirection}
                 onChange={(newDate, friendlyName) => {
-                  relativePickerOptions?.showFriendlyName && setFriendlyName(friendlyName);
+                  if (relativePickerOptions?.showFriendlyName) {
+                    setFriendlyName(friendlyName);
+                  }
                   setSelectedDateTime(newDate);
                   handleOnChange(newDate);
                 }}

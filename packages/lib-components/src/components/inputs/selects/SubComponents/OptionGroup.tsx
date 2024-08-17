@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren } from 'react';
+import { FC, PropsWithChildren, JSX } from 'react';
 
 export interface OptionGroupProps extends PropsWithChildren {
   label?: string;

@@ -1,11 +1,9 @@
-import { DomainScoped } from '@takaro/util';
-import { ctx, errors, logger, traceableClass } from '@takaro/util';
+import { ctx, errors, logger, traceableClass, DomainScoped, TakaroDTO } from '@takaro/util';
 import { UserOutputWithRolesDTO, UserService, UserUpdateAuthDTO } from '../service/UserService.js';
 import jwt from 'jsonwebtoken';
 import { NextFunction, Request, Response } from 'express';
 import { IsString } from 'class-validator';
 import ms from 'ms';
-import { TakaroDTO } from '@takaro/util';
 import { ory, PERMISSIONS } from '@takaro/auth';
 import { config } from '../config.js';
 import passport from 'passport';
@@ -165,7 +163,7 @@ export class AuthService extends DomainScoped {
 
     // Either the user is authenticated via the IDP or via a JWT (api client)
     // The token check is 'cheaper' than a request to the IDP so we do it first
-    // TODO: At some point we should refactor our custom JWT and use Ory (Hydra) fully or something...
+    // TODO: At some point we should refactor our custom JWT and/or use Ory (Hydra) fully or something...
     if (req.headers['x-takaro-token']) {
       const token = req.headers['x-takaro-token'] as string;
       const payload = await this.verifyJwt(token);
@@ -233,6 +231,10 @@ export class AuthService extends DomainScoped {
         }
 
         ctx.addData({ user: user.id, domain: user.domain });
+        const moduleId = req.headers['x-takaro-module'] as string;
+        if (moduleId) {
+          ctx.addData({ module: moduleId });
+        }
 
         const hasAllPermissions = checkPermissions(permissions, user);
 
@@ -284,7 +286,7 @@ export class AuthService extends DomainScoped {
             accessToken: string,
             _refreshToken: string,
             profile: unknown,
-            cb: CallableFunction
+            cb: CallableFunction,
           ) {
             const req = origReq as AuthenticatedRequest;
             try {
@@ -297,7 +299,7 @@ export class AuthService extends DomainScoped {
 
               if (!userInfo.verified) {
                 return cb(
-                  new errors.BadRequestError('You must verify your Discord account before you can use it to log in.')
+                  new errors.BadRequestError('You must verify your Discord account before you can use it to log in.'),
                 );
               }
 
@@ -312,7 +314,7 @@ export class AuthService extends DomainScoped {
                 user.id,
                 new UserUpdateAuthDTO({
                   discordId: userInfo.id,
-                })
+                }),
               );
 
               if (
@@ -328,8 +330,8 @@ export class AuthService extends DomainScoped {
               log.error('Error in discord auth', error);
               return cb(error);
             }
-          }
-        )
+          },
+        ),
       );
 
       initializedStrategies.push('discord');

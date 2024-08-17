@@ -1,5 +1,6 @@
 import { parentPort } from 'worker_threads';
 import type { IItemDTO } from '../../interfaces/GameServer.js';
+
 const vanillaItems = (await import('./items-7d2d.json', { assert: { type: 'json' } })).default as Record<string, any>;
 
 if (!parentPort) {

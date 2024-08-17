@@ -5,6 +5,7 @@ import { useGameServerModuleInstall } from 'queries/gameserver';
 import Form from '@rjsf/core';
 import { JsonSchemaForm } from 'components/JsonSchemaForm';
 import { ModuleInstallationOutputDTO, ModuleOutputDTO } from '@takaro/apiclient';
+import { useSnackbar } from 'notistack';
 
 interface InstallModuleFormProps {
   gameServerId: string;
@@ -30,6 +31,7 @@ export const InstallModuleForm: FC<InstallModuleFormProps> = ({
   const [systemConfigSubmitted, setSystemConfigSubmitted] = useState<boolean>(false);
   const navigate = useNavigate();
   const { mutate, isPending, error, isSuccess } = useGameServerModuleInstall();
+  const { enqueueSnackbar } = useSnackbar();
 
   const [userConfig, setUserConfig] = useState<Record<string, unknown>>({});
   const [systemConfig, setSystemConfig] = useState<Record<string, unknown>>({});
@@ -69,6 +71,7 @@ export const InstallModuleForm: FC<InstallModuleFormProps> = ({
   useEffect(() => {
     if (isSuccess) {
       navigate({ to: '/gameserver/$gameServerId/modules', params: { gameServerId } });
+      enqueueSnackbar('Module installed!', { variant: 'default', type: 'success' });
     }
   }, [isSuccess]);
 
@@ -80,13 +83,10 @@ export const InstallModuleForm: FC<InstallModuleFormProps> = ({
     }
   }, [userConfigSubmitted, systemConfigSubmitted, userConfig, systemConfig]);
 
-  const isInstalled = modInstallation?.createdAt !== undefined;
-  const actionType = isInstalled ? 'Update' : 'Install';
-
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <Drawer.Content>
-        <Drawer.Heading>{actionType} module</Drawer.Heading>
+        <Drawer.Heading>Install module</Drawer.Heading>
         <Drawer.Body>
           <CollapseList>
             <CollapseList.Item title="User config">
@@ -123,7 +123,7 @@ export const InstallModuleForm: FC<InstallModuleFormProps> = ({
               <Button
                 fullWidth
                 isLoading={isPending}
-                text={`${actionType} module`}
+                text="Install module"
                 type="button"
                 onClick={() => {
                   systemConfigFormRef.current?.formElement.current.requestSubmit();

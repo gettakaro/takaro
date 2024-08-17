@@ -32,7 +32,7 @@ export class TakaroDTO<T> {
         ignoreDecorators: true,
         excludePrefixes: ['_'],
         enableCircularCheck: true,
-      }
+      },
     );
 
     const validationErrors = await validate(obj as object, {

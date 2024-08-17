@@ -1,5 +1,4 @@
-import { Axios, AxiosResponse } from 'axios';
-import axios from 'axios';
+import axios, { Axios, AxiosResponse } from 'axios';
 import { SdtdConnectionInfo } from './connectionInfo.js';
 import {
   CommandResponse,
@@ -44,15 +43,14 @@ export class SdtdApiClient {
             url: error.config.url,
           });
           return Promise.reject(simplifiedError);
-        } else {
-          const simplifiedError = new errors.BadRequestError('Axios error', {
-            extra: 'A request to the 7D2D server failed',
-            message: error.message,
-            url: error.config.url,
-          });
-          return Promise.reject(simplifiedError);
         }
-      }
+        const simplifiedError = new errors.BadRequestError('Axios error', {
+          extra: 'A request to the 7D2D server failed',
+          message: error.message,
+          url: error.config.url,
+        });
+        return Promise.reject(simplifiedError);
+      },
     );
   }
 

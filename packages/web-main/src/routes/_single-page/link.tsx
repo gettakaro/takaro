@@ -25,7 +25,7 @@ export const Route = createFileRoute('/_single-page/link')({
       if (session) {
         return session.user;
       }
-    } catch (e) {
+    } catch (_e) {
       return undefined;
     }
   },

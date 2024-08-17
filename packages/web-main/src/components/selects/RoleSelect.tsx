@@ -28,7 +28,7 @@ export const RoleSelect: FC<CustomSelectProps> = ({
   multiple,
 }) => {
   const { data: roles, isLoading: isLoadingData } = useQuery(
-    rolesQueryOptions({ sortBy: 'system', sortDirection: 'asc' })
+    rolesQueryOptions({ sortBy: 'system', sortDirection: 'asc' }),
   );
 
   if (isLoadingData) {

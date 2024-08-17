@@ -1,11 +1,9 @@
-import { HTTP } from '../../app.js';
+import { ErrorHandler, HTTP } from '@takaro/http';
 import supertest from 'supertest';
 import { expect } from '@takaro/test';
-import { ory } from '@takaro/auth';
-import { AdminClient } from '@takaro/apiclient';
 import { adminAuthMiddleware } from '../adminAuth.js';
-import { ErrorHandler } from '../errorHandler.js';
 import { Request, Response } from 'express';
+import { config } from '../../config.js';
 
 describe('adminAuth', () => {
   let http: HTTP;
@@ -17,7 +15,7 @@ describe('adminAuth', () => {
       (_req: Request, res: Response) => {
         res.json({ ok: true });
       },
-      ErrorHandler
+      ErrorHandler,
     );
     await http.start();
   });
@@ -33,33 +31,20 @@ describe('adminAuth', () => {
     expect(response.status).to.be.equal(401);
   });
 
-  it('Rejects requests with invalid credentials', async () => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const response = await supertest(http.expressInstance).get('/test').set('Authorization', 'Bearer foobar');
-    expect(response.status).to.be.equal(403);
-  });
-
   it('Accepts requests with valid credentials', async () => {
-    const { clientId, clientSecret } = await ory.createOIDCClient();
-
-    const adminClient = new AdminClient({
-      url: 'http://localhost:3000',
-      auth: {
-        clientId,
-        clientSecret,
-      },
-      OAuth2URL: ory.OAuth2URL,
-    });
-
-    const token = await adminClient.getOidcToken();
-
     const response = await supertest(http.expressInstance)
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
+      // @ts-expect-error Supertest typings are wrong
       .get('/test')
-      .set('Authorization', `Bearer ${token.access_token}`);
+      .set('X-Takaro-Admin-Token', config.get('adminClientSecret'));
 
     expect(response.status).to.be.equal(200);
+  });
+
+  it('Rejects requests with invalid credentials', async () => {
+    const response = await supertest(http.expressInstance)
+      // @ts-expect-error Supertest typings are wrong
+      .get('/test')
+      .set('X-Takaro-Admin-Token', 'foobar');
+    expect(response.status).to.be.equal(403);
   });
 });

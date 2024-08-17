@@ -2,11 +2,11 @@ import {
   EventOutputDTO,
   EventSearchInputAllowedFiltersEventNameEnum,
   EventSearchInputDTOSortDirectionEnum,
+  EventOutputDTOEventNameEnum as EventName,
 } from '@takaro/apiclient';
 import { useSocket } from 'hooks/useSocket';
 import { eventsQueryOptions } from 'queries/event';
 import { getApiClient } from 'util/getApiClient';
-import { EventOutputDTOEventNameEnum as EventName } from '@takaro/apiclient';
 import { FC, useEffect } from 'react';
 import { Skeleton } from '@takaro/lib-components';
 import { CardBody } from './style';
@@ -34,7 +34,7 @@ export const ChatMessagesCard: FC = () => {
       sortBy: 'createdAt',
       sortDirection: EventSearchInputDTOSortDirectionEnum.Desc,
       extend: ['player'],
-    })
+    }),
   );
 
   useEffect(() => {
@@ -58,11 +58,7 @@ export const ChatMessagesCard: FC = () => {
   return (
     <StyledCard variant={'outline'}>
       <CardBody>
-        <Scrollable>
-          {events?.reverse().map((event) => (
-            <ChatMessage key={event.id} event={event} />
-          ))}
-        </Scrollable>
+        <Scrollable>{events?.reverse().map((event) => <ChatMessage key={event.id} event={event} />)}</Scrollable>
         <ChatInput
           onSubmit={async (msg) => {
             await apiClient.gameserver.gameServerControllerSendMessage(gameServerId, {

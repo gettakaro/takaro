@@ -47,7 +47,7 @@ export const QuickSelect: FC<QuickSelectProps> = ({ id }) => {
         step: z.number().positive(),
         unit: z.nativeEnum(Unit),
       }),
-    []
+    [],
   );
 
   const { control, handleSubmit } = useForm<FormInputs>({

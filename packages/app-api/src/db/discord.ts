@@ -69,7 +69,7 @@ export class DiscordRepo extends ITakaroRepo<DiscordGuildModel, GuildOutputDTO, 
     if (result.length > 1 && !result.every((r) => r.domain === result[0].domain)) {
       logger('discord').warn(`POTENTIAL DOMAIN SCOPING ISSUE: ${guildId} has multiple domains associated with it. `);
       throw new errors.BadRequestError(
-        'Could not resolve Takaro domain from guild ID, have you associated your guild with multiple Takaro domains?'
+        'Could not resolve Takaro domain from guild ID, have you associated your guild with multiple Takaro domains?',
       );
     }
 
@@ -168,7 +168,7 @@ export class DiscordRepo extends ITakaroRepo<DiscordGuildModel, GuildOutputDTO, 
       .join(
         `${DISCORD_GUILDS_TABLE_NAME}`,
         `${DISCORD_GUILDS_TABLE_NAME}.id`,
-        `${USER_ON_DISCORD_GUILD_TABLE_NAME}.discordGuildId`
+        `${USER_ON_DISCORD_GUILD_TABLE_NAME}.discordGuildId`,
       )
       .where(`${USER_ON_DISCORD_GUILD_TABLE_NAME}.userId`, userId)
       .where(`${USER_ON_DISCORD_GUILD_TABLE_NAME}.hasManageServer`, true);

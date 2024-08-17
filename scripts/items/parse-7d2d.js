@@ -4,8 +4,9 @@ const { promisify } = require('node:util');
 const { readFile, readdir } = require('fs/promises');
 const { parse } = require('csv/sync');
 const { mkdir, copyFile } = require('node:fs/promises');
-const parseXml = promisify(parseString);
 const sharp = require('sharp');
+
+const parseXml = promisify(parseString);
 
 function lowerCaseFirstLetter(string) {
   return string.charAt(0).toLowerCase() + string.slice(1);

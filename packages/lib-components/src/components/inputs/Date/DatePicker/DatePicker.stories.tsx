@@ -1,5 +1,4 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../../styled';
 import { Button, DatePicker, DatePickerProps } from '../../../../components';
@@ -156,7 +155,7 @@ export const OnDateAndTimeSubmit: StoryFn<DatePickerProps> = (args) => {
   );
 };
 
-export const onTimeSubmit: StoryFn<DatePickerProps> = (args) => {
+export const OnTimeSubmit: StoryFn<DatePickerProps> = (args) => {
   const [result, setResult] = useState<string>('none');
 
   const { control, handleSubmit } = useForm<FormFields>({

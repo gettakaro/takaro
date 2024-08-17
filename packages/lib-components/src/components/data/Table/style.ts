@@ -14,6 +14,7 @@ export const Toolbar = styled.div`
   border-left: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
   border-right: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
   border-top: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
+  background: ${({ theme }) => theme.colors.backgroundAlt};
 
   border-top-left-radius: ${({ theme }) => theme.borderRadius.large};
   border-top-right-radius: ${({ theme }) => theme.borderRadius.large};

@@ -1,4 +1,4 @@
-import { forwardRef, HTMLProps, Ref } from 'react';
+import { forwardRef, HTMLProps, Ref, JSX } from 'react';
 import {
   useMergeRefs,
   FloatingPortal,
@@ -24,7 +24,10 @@ type DropdownMenuComponent = {
   Group: typeof DropdownMenuGroup;
 };
 
-export const DropdownMenu = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElement>>(({ children, ...props }, propRef) => {
+export const DropdownMenu = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElement>>(function DropdownMenu(
+  { children, ...props },
+  propRef,
+) {
   const { context, floatingStyles, elementsRef, labelsRef, getFloatingProps, descriptionId, labelId } =
     useDropdownContext();
 

@@ -1,7 +1,6 @@
 import { HorizontalNav, useTheme } from '@takaro/lib-components';
-import { Link, createFileRoute, redirect } from '@tanstack/react-router';
+import { Link, createFileRoute, redirect, Outlet } from '@tanstack/react-router';
 import { ErrorBoundary } from 'components/ErrorBoundary';
-import { Outlet } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
 import { PERMISSIONS } from '@takaro/apiclient';
 

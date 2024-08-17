@@ -1,7 +1,5 @@
-import { createRootRouteWithContext } from '@tanstack/react-router';
-import { styled, Loading } from '@takaro/lib-components';
-import { Outlet } from '@tanstack/react-router';
-import { ErrorPage } from '@takaro/lib-components';
+import { createRootRouteWithContext, Outlet } from '@tanstack/react-router';
+import { styled, Loading, ErrorPage } from '@takaro/lib-components';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import React, { Suspense } from 'react';
 import { RouterContext } from '../router';
@@ -26,7 +24,7 @@ const TanStackRouterDevtools =
     : React.lazy(() =>
         import('@tanstack/router-devtools').then((res) => ({
           default: res.TanStackRouterDevtools,
-        }))
+        })),
       );
 
 function Component() {

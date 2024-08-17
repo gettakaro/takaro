@@ -32,7 +32,6 @@ export const ControlledSelectField: FC<ControlledSelectFieldProps> & SubComponen
     enableFilter,
     inPortal,
     canClear,
-    hasMargin = true,
   } = defaultsApplier(props);
 
   const {
@@ -81,7 +80,7 @@ export const ControlledSelectField: FC<ControlledSelectFieldProps> & SubComponen
   }
 
   return (
-    <InputWrapper marginBottom={hasMargin ? undefined : '0'}>
+    <InputWrapper>
       <Container>
         {label && (
           <Label

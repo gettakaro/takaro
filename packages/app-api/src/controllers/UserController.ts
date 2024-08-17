@@ -12,7 +12,7 @@ import { AuthenticatedRequest, AuthService, LoginOutputDTO } from '../service/Au
 import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Put, Params, Res, Param } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { IdUuidDTO, IdUuidDTOAPI, ParamId, ParamIdAndRoleId } from '../lib/validators.js';
+import { ParamId, ParamIdAndRoleId } from '../lib/validators.js';
 import { Request, Response } from 'express';
 import { PERMISSIONS } from '@takaro/auth';
 import { RangeFilterCreatedAndUpdatedAt } from './shared.js';
@@ -203,12 +203,12 @@ export class UserController {
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_USERS], false))
-  @ResponseSchema(IdUuidDTOAPI)
+  @ResponseSchema(APIOutput)
   @Delete('/user/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new UserService(req.domainId);
     await service.delete(params.id);
-    return apiResponse(new IdUuidDTO({ id: params.id }));
+    return apiResponse();
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_USERS, PERMISSIONS.MANAGE_ROLES], false))
@@ -217,10 +217,11 @@ export class UserController {
   async assignRole(
     @Req() req: AuthenticatedRequest,
     @Params() params: ParamIdAndRoleId,
-    @Body() data: UserRoleAssignChangeDTO
+    @Body() data: UserRoleAssignChangeDTO,
   ) {
     const service = new UserService(req.domainId);
-    return apiResponse(await service.assignRole(params.roleId, params.id, data.expiresAt));
+    await service.assignRole(params.roleId, params.id, data.expiresAt);
+    return apiResponse();
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_USERS, PERMISSIONS.MANAGE_ROLES], false))
@@ -229,11 +230,7 @@ export class UserController {
   async removeRole(@Req() req: AuthenticatedRequest, @Params() params: ParamIdAndRoleId) {
     const service = new UserService(req.domainId);
     await service.removeRole(params.roleId, params.id);
-    return apiResponse(
-      new IdUuidDTO({
-        id: params.roleId,
-      })
-    );
+    return apiResponse();
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_USERS], false))
@@ -252,7 +249,7 @@ export class UserController {
     description:
       'One user can have multiple domains, this endpoint is a helper to set the selected domain for the user',
   })
-  async setSelectedDomain(@Req() req: AuthenticatedRequest, @Param('domainId') domainId: string) {
+  setSelectedDomain(@Req() req: AuthenticatedRequest, @Param('domainId') domainId: string) {
     req.res?.cookie('takaro-domain', domainId, {
       sameSite: config.get('http.domainCookie.sameSite') as boolean | 'strict' | 'lax' | 'none' | undefined,
       secure: config.get('http.domainCookie.secure'),
@@ -268,7 +265,7 @@ export class UserController {
     description:
       'Unset the selected domain for the user, this will clear the domain cookie. On the next request, the backend will set this again.',
   })
-  async deleteSelectedDomainCookie(@Req() req: AuthenticatedRequest) {
+  deleteSelectedDomainCookie(@Req() req: AuthenticatedRequest) {
     req.res?.clearCookie('takaro-domain', {
       sameSite: config.get('http.domainCookie.sameSite') as boolean | 'strict' | 'lax' | 'none' | undefined,
       secure: config.get('http.domainCookie.secure'),

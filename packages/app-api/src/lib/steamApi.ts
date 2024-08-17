@@ -1,5 +1,4 @@
-import { AxiosError, AxiosInstance } from 'axios';
-import axios from 'axios';
+import axios, { AxiosError, AxiosInstance } from 'axios';
 import { config } from '../config.js';
 import { addCounterToAxios, logger } from '@takaro/util';
 
@@ -49,7 +48,7 @@ class SteamApi {
       });
 
       this._client.interceptors.request.use((config) => {
-        config.params = config.params || {};
+        config.params ||= {};
         config.params.key = this.apiKey;
         return config;
       });
@@ -73,7 +72,7 @@ class SteamApi {
               statusText: response.statusText,
               method: response.request.method,
               url: response.request.url,
-            }
+            },
           );
 
           return response;
@@ -96,7 +95,7 @@ class SteamApi {
             response: error.response?.data,
           });
           return Promise.reject(error);
-        }
+        },
       );
     }
     return this._client;
@@ -119,6 +118,16 @@ class SteamApi {
     });
 
     return response.data.players;
+  }
+
+  async getLevel(steamId: string): Promise<number> {
+    const response = await this.client.get('/IPlayerService/GetSteamLevel/v1', {
+      params: {
+        steamid: steamId,
+      },
+    });
+
+    return response.data.response.player_level;
   }
 }
 

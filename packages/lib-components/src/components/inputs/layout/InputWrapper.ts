@@ -1,6 +1,6 @@
 import { styled } from '../../../styled';
 
-export const InputWrapper = styled.div<{ marginBottom?: string }>`
+export const InputWrapper = styled.div`
   width: 100%;
-  margin-bottom: ${({ theme, marginBottom }) => (marginBottom ? marginBottom : theme.spacing[2])};
+  margin-bottom: ${({ theme }) => theme.spacing[2]};
 `;

@@ -15,7 +15,7 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/listi
   },
   loader: async ({ context, params }) => {
     return await context.queryClient.ensureQueryData(
-      gameServerSettingQueryOptions('currencyName', params.gameServerId)
+      gameServerSettingQueryOptions('currencyName', params.gameServerId),
     );
   },
   component: Component,
@@ -34,12 +34,13 @@ function Component() {
     initialData: loaderCurrencyName,
   });
 
-  const onSubmit: SubmitHandler<FormValues> = ({ name, items, price }) => {
+  const onSubmit: SubmitHandler<FormValues> = ({ name, items, price, draft }) => {
     mutate({
       name: name ? name : undefined,
       price,
       gameServerId,
       items,
+      draft,
     });
     navigate({ to: '/gameserver/$gameServerId/shop', params: { gameServerId } });
   };

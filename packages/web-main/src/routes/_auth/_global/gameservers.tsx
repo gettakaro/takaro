@@ -58,7 +58,13 @@ function Component() {
         <Empty
           header="Bro, what are you waiting on?"
           description="Create a game server to really get started with Takaro."
-          actions={[<Button text="Create a game server" onClick={() => navigate({ to: '/gameservers/create' })} />]}
+          actions={[
+            <Button
+              key="gameservers-create"
+              text="Create a game server"
+              onClick={() => navigate({ to: '/gameservers/create' })}
+            />,
+          ]}
         />
         <Outlet />
       </EmptyPage>

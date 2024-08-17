@@ -92,7 +92,7 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ moduleId, onSuccess })
               eventType: hook.eventType,
               regex: hook.regex ?? '',
               function: hook.function.code,
-            })
+            }),
           ),
           ...mod.commands.map((command) =>
             createCommand({
@@ -107,14 +107,14 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ moduleId, onSuccess })
                 helpText: arg.helpText,
                 position: arg.position,
               })),
-            })
+            }),
           ),
           ...mod.functions.map((f) =>
             createFunction({
               moduleId: createdModule.id,
               name: f.name,
               code: f.code,
-            })
+            }),
           ),
           ...mod.cronJobs.map((cronJob) =>
             createCronJob({
@@ -122,14 +122,16 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ moduleId, onSuccess })
               name: cronJob.name,
               temporalValue: cronJob.temporalValue,
               function: cronJob.function.code,
-            })
+            }),
           ),
         ]);
 
-        onSuccess && onSuccess(createdModule.id);
+        if (onSuccess) {
+          onSuccess(createdModule.id);
+        }
       }
-    } catch (error) {
-      await removeModule({ id: createdModule.id });
+    } catch (_error) {
+      await removeModule({ moduleId: createdModule.id });
     }
   };
 

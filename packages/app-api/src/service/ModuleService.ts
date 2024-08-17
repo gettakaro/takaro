@@ -7,7 +7,6 @@ import { Type } from 'class-transformer';
 import { CronJobCreateDTO, CronJobOutputDTO, CronJobService, CronJobUpdateDTO } from './CronJobService.js';
 import { HookCreateDTO, HookOutputDTO, HookService, HookUpdateDTO } from './HookService.js';
 import { errors, TakaroDTO, TakaroModelDTO, traceableClass } from '@takaro/util';
-import { getModules } from '@takaro/modules';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { CommandCreateDTO, CommandOutputDTO, CommandService, CommandUpdateDTO } from './CommandService.js';
@@ -16,8 +15,9 @@ import {
   TakaroEventModuleCreated,
   TakaroEventModuleUpdated,
   TakaroEventModuleDeleted,
+  getModules,
 } from '@takaro/modules';
-import { GameServerService } from './GameServerService.js';
+import { GameServerService, ModuleInstallDTO } from './GameServerService.js';
 import { PermissionCreateDTO, PermissionOutputDTO } from './RoleService.js';
 
 // Curse you ESM... :(
@@ -169,7 +169,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
         mod.configSchema = JSON.stringify(getEmptyConfigSchema());
       }
       ajv.compile(JSON.parse(mod.configSchema));
-    } catch (e) {
+    } catch (_e) {
       throw new errors.BadRequestError('Invalid config schema');
     }
     const created = await this.repo.create(mod);
@@ -180,8 +180,8 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
       new EventCreateDTO({
         eventName: EVENT_TYPES.MODULE_CREATED,
         moduleId: created.id,
-        meta: await new TakaroEventModuleCreated(),
-      })
+        meta: new TakaroEventModuleCreated(),
+      }),
     );
 
     return created;
@@ -204,13 +204,15 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
           new EventCreateDTO({
             eventName: EVENT_TYPES.MODULE_UPDATED,
             moduleId: id,
-            meta: await new TakaroEventModuleUpdated(),
-          })
+            meta: new TakaroEventModuleUpdated(),
+          }),
         );
       }
 
+      await this.refreshInstallations(id);
+
       return updated;
-    } catch (e) {
+    } catch (_e) {
       throw new errors.BadRequestError('Invalid config schema');
     }
   }
@@ -229,8 +231,8 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
       new EventCreateDTO({
         eventName: EVENT_TYPES.MODULE_DELETED,
         moduleId: id,
-        meta: await new TakaroEventModuleDeleted(),
-      })
+        meta: new TakaroEventModuleDeleted(),
+      }),
     );
 
     return id;
@@ -270,16 +272,32 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
           ...builtin,
           builtin: isImport ? null : builtin.name,
           permissions: await Promise.all(builtin.permissions.map((p) => new PermissionOutputDTO(p))),
-        })
+        }),
       );
     } else {
-      mod = await this.update(
-        mod.id,
-        new ModuleUpdateDTO({
-          ...builtin,
-          permissions: await Promise.all(builtin.permissions.map((p) => new PermissionOutputDTO(p))),
-        })
-      );
+      try {
+        mod = await this.update(
+          mod.id,
+          new ModuleUpdateDTO({
+            ...builtin,
+            permissions: await Promise.all(builtin.permissions.map((p) => new PermissionOutputDTO(p))),
+          }),
+        );
+      } catch (error) {
+        if ((error as Error).message === 'Invalid config schema') {
+          this.log.warn('Invalid config schema, uninstalling module', { moduleId: mod.id });
+          await this.delete(mod.id);
+          mod = await this.create(
+            new ModuleCreateInternalDTO({
+              ...builtin,
+              builtin: isImport ? null : builtin.name,
+              permissions: await Promise.all(builtin.permissions.map((p) => new PermissionOutputDTO(p))),
+            }),
+          );
+        } else {
+          throw error;
+        }
+      }
     }
 
     const commands = Promise.all(
@@ -298,7 +316,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
           moduleId: mod.id,
         });
         return commandService.create(data);
-      })
+      }),
     );
 
     const hooks = Promise.all(
@@ -318,7 +336,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
           moduleId: mod.id,
         });
         return hookService.create(data);
-      })
+      }),
     );
     const cronjobs = Promise.all(
       builtin.cronJobs.map(async (c) => {
@@ -336,7 +354,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
           moduleId: mod.id,
         });
         return cronjobService.create(data);
-      })
+      }),
     );
 
     const functions = Promise.all(
@@ -359,7 +377,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
           moduleId: mod.id,
         });
         return functionService.create(data);
-      })
+      }),
     );
 
     return Promise.all([commands, hooks, cronjobs, functions]);
@@ -382,6 +400,38 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
 
       case 'function':
         return await this.repo.findByFunction(itemId);
+    }
+  }
+
+  /**
+   * After creating a hook, command, cronjob or function, the systemConfig may be outdated
+   * @param moduleId
+   */
+  async refreshInstallations(moduleId: string) {
+    const gameserverService = new GameServerService(this.domainId);
+    const installations = await gameserverService.getInstalledModules({ moduleId });
+
+    for (const installation of installations) {
+      try {
+        await gameserverService.installModule(
+          installation.gameserverId,
+          moduleId,
+          new ModuleInstallDTO({
+            systemConfig: JSON.stringify(installation.systemConfig),
+            userConfig: JSON.stringify(installation.userConfig),
+          }),
+        );
+      } catch (error) {
+        if ((error as Error).message === 'Invalid config schema') {
+          this.log.warn('Invalid config schema, uninstalling module', {
+            moduleId,
+            gameserverId: installation.gameserverId,
+          });
+          await gameserverService.uninstallModule(installation.gameserverId, moduleId);
+        } else {
+          throw error;
+        }
+      }
     }
   }
 }

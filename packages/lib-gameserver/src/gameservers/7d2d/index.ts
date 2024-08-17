@@ -19,6 +19,7 @@ import { Worker } from 'worker_threads';
 import path from 'path';
 import * as url from 'url';
 import { DateTime, Duration, DurationLikeObject } from 'luxon';
+
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 @traceableClass('game:7d2d')
@@ -27,7 +28,10 @@ export class SevenDaysToDie implements IGameServer {
   private apiClient: SdtdApiClient;
   connectionInfo: SdtdConnectionInfo;
 
-  constructor(config: SdtdConnectionInfo, private settings: Partial<Settings> = {}) {
+  constructor(
+    config: SdtdConnectionInfo,
+    private settings: Partial<Settings> = {},
+  ) {
     this.connectionInfo = config;
     this.apiClient = new SdtdApiClient(this.connectionInfo);
   }
@@ -65,7 +69,7 @@ export class SevenDaysToDie implements IGameServer {
         }
 
         return new IGamePlayer(data);
-      })
+      }),
     );
 
     return players;
@@ -147,6 +151,7 @@ export class SevenDaysToDie implements IGameServer {
 
   async executeConsoleCommand(rawCommand: string) {
     const encodedCommand = encodeURIComponent(rawCommand);
+    this.logger.debug(`Executing command: "${rawCommand}"`);
     const result = await this.apiClient.executeConsoleCommand(encodedCommand);
 
     return new CommandOutput({
@@ -259,7 +264,7 @@ export class SevenDaysToDie implements IGameServer {
             }),
             reason,
             expiresAt,
-          })
+          }),
         );
       }
     }

@@ -1,13 +1,12 @@
 import { ITakaroQuery, TakaroModel, NOT_DOMAIN_SCOPED_TakaroModel } from '@takaro/db';
 import { ITakaroRepo, NOT_DOMAIN_SCOPED_ITakaroRepo, PaginatedOutput } from '../db/base.js';
-import { logger } from '@takaro/util';
-import { TakaroDTO } from '@takaro/util';
+import { logger, TakaroDTO } from '@takaro/util';
 
 export abstract class NOT_DOMAIN_SCOPED_TakaroService<
   Model extends NOT_DOMAIN_SCOPED_TakaroModel,
   OutputDTO extends TakaroDTO<OutputDTO>,
   CreateInputDTO extends TakaroDTO<CreateInputDTO>,
-  UpdateDTO extends TakaroDTO<UpdateDTO>
+  UpdateDTO extends TakaroDTO<UpdateDTO>,
 > {
   log = logger(this.constructor.name);
 
@@ -24,7 +23,7 @@ export abstract class TakaroService<
   Model extends TakaroModel,
   OutputDTO extends TakaroDTO<OutputDTO>,
   CreateInputDTO extends TakaroDTO<CreateInputDTO>,
-  UpdateDTO extends TakaroDTO<UpdateDTO>
+  UpdateDTO extends TakaroDTO<UpdateDTO>,
 > extends NOT_DOMAIN_SCOPED_TakaroService<Model, OutputDTO, CreateInputDTO, UpdateDTO> {
   constructor(public readonly domainId: string) {
     super();

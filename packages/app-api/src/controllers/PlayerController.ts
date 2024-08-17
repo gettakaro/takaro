@@ -6,13 +6,12 @@ import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
 import { Body, Get, Post, JsonController, UseBefore, Req, Params, Res, Delete } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { ParamId } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
-import { ParamIdAndRoleId } from '../lib/validators.js';
 import { TakaroDTO, errors } from '@takaro/util';
 import { UserService } from '../service/UserService.js';
 import { PlayerOnGameserverOutputArrayDTOAPI } from './PlayerOnGameserverController.js';
+import { ParamId, ParamIdAndRoleId } from '../lib/validators.js';
 
 export class PlayerOutputDTOAPI extends APIOutput<PlayerOutputWithRolesDTO> {
   @Type(() => PlayerOutputWithRolesDTO)
@@ -144,7 +143,7 @@ export class PlayerController {
   async assignRole(
     @Req() req: AuthenticatedRequest,
     @Params() params: ParamIdAndRoleId,
-    @Body() data: PlayerRoleAssignChangeDTO
+    @Body() data: PlayerRoleAssignChangeDTO,
   ) {
     const service = new PlayerService(req.domainId);
 
@@ -167,9 +166,10 @@ export class PlayerController {
   async removeRole(
     @Req() req: AuthenticatedRequest,
     @Params() params: ParamIdAndRoleId,
-    @Body() data: PlayerRoleAssignChangeDTO
+    @Body() data: PlayerRoleAssignChangeDTO,
   ) {
     const service = new PlayerService(req.domainId);
-    return apiResponse(await service.removeRole(params.roleId, params.id, data.gameServerId));
+    await service.removeRole(params.roleId, params.id, data.gameServerId);
+    return apiResponse();
   }
 }

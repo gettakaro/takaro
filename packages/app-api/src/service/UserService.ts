@@ -89,7 +89,7 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
     const roleService = new RoleService(this.domainId);
     const roles = await roleService.find({ filters: { name: ['User'] } });
     const assignments = await Promise.all(
-      roles.results.map((role) => new UserAssignmentOutputDTO({ role, roleId: role.id, userId: user.id }))
+      roles.results.map((role) => new UserAssignmentOutputDTO({ role, roleId: role.id, userId: user.id })),
     );
     withOry.roles.push(...assignments);
     return withOry;
@@ -151,7 +151,7 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
         eventName: EVENT_TYPES.ROLE_ASSIGNED,
         userId,
         meta: new TakaroEventRoleAssigned({ role: { id: role.id, name: role.name } }),
-      })
+      }),
     );
   }
 
@@ -168,7 +168,7 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
         eventName: EVENT_TYPES.ROLE_REMOVED,
         userId,
         meta: new TakaroEventRoleRemoved({ role: { id: role.id, name: role.name } }),
-      })
+      }),
     );
   }
 
@@ -194,7 +194,7 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
   async NOT_DOMAIN_SCOPED_linkPlayerProfile(
     req: AuthenticatedRequest,
     email: string,
-    code: string
+    code: string,
   ): Promise<{ user: UserOutputDTO; domainId: string }> {
     const redis = await Redis.getClient('playerLink');
     const resolvedPlayerId = await redis.get(code);
@@ -249,7 +249,7 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
         playerId: resolvedPlayerId,
         userId: user.id,
         meta: new TakaroEventPlayerLinked(),
-      })
+      }),
     );
 
     return { user, domainId: resolvedDomainId };

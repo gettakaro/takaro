@@ -5,7 +5,10 @@ import type { Page } from '@playwright/test';
 export class PlayerProfilePage extends BasePage {
   public player: PlayerOutputDTO;
 
-  constructor(public readonly page: Page, player: PlayerOutputDTO) {
+  constructor(
+    public readonly page: Page,
+    player: PlayerOutputDTO,
+  ) {
     super(page);
     this.player = player;
   }

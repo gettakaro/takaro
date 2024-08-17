@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - '**'
+      - '!renovate/**'
 
 jobs:
   style-fix:
@@ -19,16 +20,16 @@ jobs:
           private_key: ${{ secrets.TAKARO_CI_APP_PRIV_KEY }}
 
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           token: ${{ steps.generate_token.outputs.token }}
 
       - name: Use Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18.18
-          cache: "npm"
-  
+          cache: 'npm'
+
       - run: ./scripts/dev-init.sh
 
       - name: Run Prettier

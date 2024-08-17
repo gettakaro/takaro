@@ -8,6 +8,7 @@ import {
 } from '@takaro/apiclient';
 import { AxiosError } from 'axios';
 import { mutationWrapper } from 'queries/util';
+import { useSnackbar } from 'notistack';
 
 export const pogKeys = {
   all: ['pogs'] as const,
@@ -38,6 +39,7 @@ export const playerOnGameServerQueryOptions = (gameServerId: string, playerId: s
 type CurrencyInput = PlayerOnGameServerSetCurrencyInputDTO & PogInput;
 export const useSetCurrency = () => {
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
 
   return mutationWrapper<PlayerOnGameserverOutputDTO, CurrencyInput>(
     useMutation<PlayerOnGameserverOutputDTO, AxiosError<PlayerOnGameserverOutputDTO>, CurrencyInput>({
@@ -48,16 +50,18 @@ export const useSetCurrency = () => {
           })
         ).data.data,
       onSuccess: (updatedPog) => {
+        enqueueSnackbar('Currency set!', { variant: 'default', type: 'success' });
         queryClient.invalidateQueries({ queryKey: pogKeys.list() });
         queryClient.setQueryData(pogKeys.detail(updatedPog.playerId, updatedPog.gameServerId), updatedPog);
       },
     }),
-    {}
+    {},
   );
 };
 
 export const useAddCurrency = () => {
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
 
   return mutationWrapper<PlayerOnGameserverOutputDTO, CurrencyInput>(
     useMutation<PlayerOnGameserverOutputDTO, AxiosError<PlayerOnGameserverOutputDTO>, CurrencyInput>({
@@ -68,16 +72,18 @@ export const useAddCurrency = () => {
           })
         ).data.data,
       onSuccess: (updatedPog) => {
+        enqueueSnackbar('Currency added!', { variant: 'default', type: 'success' });
         queryClient.invalidateQueries({ queryKey: pogKeys.list() });
         queryClient.setQueryData(pogKeys.detail(updatedPog.playerId, updatedPog.gameServerId), updatedPog);
       },
     }),
-    {}
+    {},
   );
 };
 
 export const useDeductCurrency = () => {
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
 
   return mutationWrapper<PlayerOnGameserverOutputDTO, CurrencyInput>(
     useMutation<PlayerOnGameserverOutputDTO, AxiosError<PlayerOnGameserverOutputDTO>, CurrencyInput>({
@@ -88,39 +94,43 @@ export const useDeductCurrency = () => {
           })
         ).data.data,
       onSuccess: (updatedPog) => {
+        enqueueSnackbar('Currency deducted!', { variant: 'default', type: 'success' });
         queryClient.invalidateQueries({ queryKey: pogKeys.list() });
         queryClient.setQueryData(pogKeys.detail(updatedPog.playerId, updatedPog.gameServerId), updatedPog);
       },
     }),
-    {}
+    {},
   );
 };
 
 interface TransactBetweenPlayersInput extends PlayerOnGameServerSetCurrencyInputDTO {
   gameServerId: string;
-  senderId: string;
-  receiverId: string;
+  senderPlayerId: string;
+  receiverPlayerId: string;
 }
 
 export const useTransactBetweenPlayers = () => {
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
 
   return mutationWrapper<unknown, TransactBetweenPlayersInput>(
     useMutation<unknown, AxiosError<PlayerOnGameserverOutputDTO>, TransactBetweenPlayersInput>({
-      mutationFn: async ({ gameServerId, senderId, receiverId, currency }) =>
+      mutationFn: async ({ gameServerId, senderPlayerId, receiverPlayerId, currency }) =>
         (
           await getApiClient().playerOnGameserver.playerOnGameServerControllerTransactBetweenPlayers(
             gameServerId,
-            senderId,
-            receiverId,
-            { currency }
+            senderPlayerId,
+            receiverPlayerId,
+            { currency },
           )
         ).data.data,
-      onSuccess: () => {
-        // TODO: instead of invalidating all, should invalidate only the list, sender and receiver.
-        queryClient.invalidateQueries({ queryKey: pogKeys.all });
+      onSuccess: async (_, { senderPlayerId, receiverPlayerId, gameServerId }) => {
+        enqueueSnackbar('Transaction successfull!', { variant: 'default', type: 'success' });
+        await queryClient.invalidateQueries({ queryKey: pogKeys.detail(senderPlayerId, gameServerId) });
+        await queryClient.invalidateQueries({ queryKey: pogKeys.detail(receiverPlayerId, gameServerId) });
+        await queryClient.invalidateQueries({ queryKey: pogKeys.list() });
       },
     }),
-    {}
+    {},
   );
 };

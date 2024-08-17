@@ -11,7 +11,7 @@ import { IHookJobData, ICommandJobData, ICronJobData } from '@takaro/queues';
 export const executeFunctionLocal: FunctionExecutor = async (
   fn: string,
   data: IHookJobData | ICommandJobData | ICronJobData,
-  token: string
+  token: string,
 ) => {
   data.token = token;
   data.url = config.get('takaro.url');
@@ -78,7 +78,7 @@ export const executeFunctionLocal: FunctionExecutor = async (
         this.setExport('takaro', takaro);
         this.setExport('data', hydratedData);
       },
-      { context: referencingModule.context }
+      { context: referencingModule.context },
     );
 
     if (specifier === '@takaro/helpers') {

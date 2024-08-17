@@ -1,7 +1,7 @@
 import { TakaroService } from './Base.js';
 
 import { IsEnum, IsObject, IsOptional, IsUUID, ValidateNested } from 'class-validator';
-import { TakaroDTO, TakaroModelDTO, ctx, errors, isTakaroDTO, traceableClass } from '@takaro/util';
+import { TakaroDTO, TakaroModelDTO, ctx, errors, isTakaroDTO, traceableClass, PostHog } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { EventModel, EventRepo, Filter, FilterGroup } from '../db/event.js';
@@ -15,7 +15,6 @@ import { BaseEvent, EventMapping, EventPayload, TakaroEvents } from '@takaro/mod
 import { ValueOf } from 'type-fest';
 import { HookService } from './HookService.js';
 import { eventsMetric } from '../lib/metrics.js';
-import { PostHog } from '@takaro/util';
 
 export const EVENT_TYPES = {
   ...TakaroEvents,
@@ -48,6 +47,14 @@ export class EventOutputDTO extends TakaroModelDTO<EventOutputDTO> {
   @IsOptional()
   @IsUUID()
   gameserverId!: string;
+
+  @IsOptional()
+  @IsUUID()
+  actingUserId!: string;
+
+  @IsOptional()
+  @IsUUID()
+  actingModuleId!: string;
 
   @IsOptional()
   @IsObject()
@@ -95,6 +102,14 @@ export class EventCreateDTO extends TakaroDTO<EventCreateDTO> {
   gameserverId!: string;
 
   @IsOptional()
+  @IsUUID()
+  actingUserId!: string;
+
+  @IsOptional()
+  @IsUUID()
+  actingModuleId!: string;
+
+  @IsOptional()
   @IsObject()
   meta: BaseEvent<any>;
 }
@@ -132,7 +147,8 @@ export class EventService extends TakaroService<EventModel, EventOutputDTO, Even
     let eventMeta: BaseEvent<any> | null = null;
 
     // If no userId is provided, use the calling user
-    if (!data.userId && ctx.data.user) data.userId = ctx.data.user;
+    if (!data.actingUserId && ctx.data.user) data.actingUserId = ctx.data.user;
+    if (!data.actingModuleId && ctx.data.module) data.actingModuleId = ctx.data.module;
 
     if (!isTakaroDTO(data.meta)) {
       eventMeta = new dto(data.meta);

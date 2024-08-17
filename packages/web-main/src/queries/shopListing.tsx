@@ -1,5 +1,5 @@
 import {
-  IdUuidDTO,
+  APIOutput,
   ShopListingCreateDTO,
   ShopListingOutputArrayDTOAPI,
   ShopListingOutputDTO,
@@ -10,6 +10,7 @@ import { infiniteQueryOptions, queryOptions, useMutation, useQueryClient } from 
 import { AxiosError } from 'axios';
 import { getApiClient } from 'util/getApiClient';
 import { hasNextPage, mutationWrapper, queryParamsToArray } from './util';
+import { useSnackbar } from 'notistack';
 
 export const shopListingKeys = {
   all: ['shopListing'] as const,
@@ -40,36 +41,41 @@ export const shopListingInfiniteQueryOptions = (queryParams: ShopListingSearchIn
 
 export const useShopListingCreate = () => {
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
 
   return mutationWrapper<ShopListingOutputDTO, ShopListingCreateDTO>(
     useMutation<ShopListingOutputDTO, AxiosError<ShopListingOutputDTO>, ShopListingCreateDTO>({
       mutationFn: async (shopListing) =>
         (await getApiClient().shopListing.shopListingControllerCreate(shopListing)).data.data,
       onSuccess: (newShopListing) => {
+        enqueueSnackbar('Shoplisting created!', { variant: 'default', type: 'success' });
         queryClient.invalidateQueries({ queryKey: shopListingKeys.list() });
         queryClient.setQueryData(shopListingKeys.detail(newShopListing.id), newShopListing);
       },
     }),
-    {}
+    {},
   );
 };
 
 interface ShopListingDelete {
-  id: string;
+  shopListingId: string;
 }
 
 export const useShopListingDelete = () => {
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
 
-  return mutationWrapper<IdUuidDTO, ShopListingDelete>(
-    useMutation<IdUuidDTO, AxiosError<IdUuidDTO>, ShopListingDelete>({
-      mutationFn: async ({ id }) => (await getApiClient().shopListing.shopListingControllerDelete(id)).data,
-      onSuccess: async ({ id: deletedShopListingId }) => {
+  return mutationWrapper<APIOutput, ShopListingDelete>(
+    useMutation<APIOutput, AxiosError<APIOutput>, ShopListingDelete>({
+      mutationFn: async ({ shopListingId }) =>
+        (await getApiClient().shopListing.shopListingControllerDelete(shopListingId)).data,
+      onSuccess: async (_, { shopListingId }) => {
+        enqueueSnackbar('Shoplisting successfully deleted!', { variant: 'default', type: 'success' });
         await queryClient.invalidateQueries({ queryKey: shopListingKeys.list() });
-        queryClient.removeQueries({ queryKey: shopListingKeys.detail(deletedShopListingId) });
+        queryClient.removeQueries({ queryKey: shopListingKeys.detail(shopListingId) });
       },
     }),
-    {}
+    {},
   );
 };
 
@@ -81,6 +87,7 @@ interface ShopListingUpdate {
 export const useShopListingUpdate = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
 
   return mutationWrapper<ShopListingOutputDTO, ShopListingUpdate>(
     useMutation<ShopListingOutputDTO, AxiosError<ShopListingOutputDTO>, ShopListingUpdate>({
@@ -88,10 +95,11 @@ export const useShopListingUpdate = () => {
         return (await apiClient.shopListing.shopListingControllerUpdate(shopListingId, shopListingDetails)).data.data;
       },
       onSuccess: async (updatedShopListing) => {
+        enqueueSnackbar('Shoplisting updated!', { variant: 'default', type: 'success' });
         await queryClient.invalidateQueries({ queryKey: shopListingKeys.list() });
         queryClient.setQueryData(shopListingKeys.detail(updatedShopListing.id), updatedShopListing);
       },
     }),
-    {}
+    {},
   );
 };

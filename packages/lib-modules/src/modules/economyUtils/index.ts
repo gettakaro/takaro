@@ -19,7 +19,7 @@ export class EconomyUtils extends BuiltinModule<EconomyUtils> {
         },
         required: [],
         additionalProperties: false,
-      })
+      }),
     );
 
     this.permissions = [

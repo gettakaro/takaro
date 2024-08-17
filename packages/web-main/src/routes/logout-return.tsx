@@ -1,7 +1,6 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { createFileRoute, useRouter } from '@tanstack/react-router';
+import { createFileRoute, useRouter, useNavigate } from '@tanstack/react-router';
 import { useEffect } from 'react';
-import { useNavigate } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/logout-return')({
   component: Component,

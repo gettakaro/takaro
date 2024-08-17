@@ -22,7 +22,7 @@ interface DropdownGroupProps {
   divider?: boolean;
 }
 
-export const ContextMenuGroup: FC<PropsWithChildren<DropdownGroupProps>> = ({ label, divider = false, children }) => {
+export const Group: FC<PropsWithChildren<DropdownGroupProps>> = ({ label, divider = false, children }) => {
   const showDivider = divider || label ? true : false;
 
   return (

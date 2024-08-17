@@ -11,7 +11,7 @@ export interface ErrorMessageMapping {
 
 export function getErrorUserMessage(
   apiError: AxiosError<any> | null,
-  errorMessages: Partial<ErrorMessageMapping>
+  errorMessages: Partial<ErrorMessageMapping>,
 ): string | string[] | null {
   const defaultMesssage = 'An error occurred. Please try again later.';
 
@@ -72,7 +72,10 @@ export function transformError(apiError: AxiosError<any>) {
 }
 
 export class ResponseValidationError extends BaseError {
-  constructor(message: string, public validationErrors: ValidationError[]) {
+  constructor(
+    message: string,
+    public validationErrors: ValidationError[],
+  ) {
     super(message, { meta: { validationErrors } });
   }
 

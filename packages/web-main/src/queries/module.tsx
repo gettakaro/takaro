@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient, queryOptions, infiniteQueryOptions } from '@tanstack/react-query';
 import { getApiClient } from 'util/getApiClient';
 import {
+  APIOutput,
   BuiltinModule,
   CommandCreateDTO,
   CommandOutputDTO,
@@ -18,8 +19,6 @@ import {
   HookOutputDTO,
   HookOutputDTOAPI,
   HookUpdateDTO,
-  IdUuidDTO,
-  IdUuidDTOAPI,
   ModuleCreateDTO,
   ModuleExportDTOAPI,
   ModuleOutputArrayDTOAPI,
@@ -33,6 +32,7 @@ import { queryParamsToArray, hasNextPage, mutationWrapper } from './util';
 import { AxiosError, AxiosResponse } from 'axios';
 import { ErrorMessageMapping } from '@takaro/lib-components/src/errors';
 import { queryClient } from 'queryClient';
+import { useSnackbar } from 'notistack';
 
 export const moduleKeys = {
   all: ['modules'] as const,
@@ -101,6 +101,7 @@ export const moduleQueryOptions = (moduleId: string) =>
 export const useModuleCreate = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
 
   return mutationWrapper<ModuleOutputDTO, ModuleCreateDTO>(
     useMutation<ModuleOutputDTO, AxiosError<ModuleOutputDTOAPI>, ModuleCreateDTO>({
@@ -108,32 +109,35 @@ export const useModuleCreate = () => {
         (await apiClient.module.moduleControllerCreate(moduleCreateDTO)).data.data,
 
       onSuccess: async (newModule: ModuleOutputDTO) => {
+        enqueueSnackbar('Module created!', { variant: 'default', type: 'success' });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
         return queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(newModule.id), newModule);
       },
     }),
-    defaultModuleErrorMessages
+    defaultModuleErrorMessages,
   );
 };
 
 interface ModuleRemove {
-  id: string;
+  moduleId: string;
 }
 
 export const useModuleRemove = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
 
-  return mutationWrapper<IdUuidDTO, ModuleRemove>(
-    useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, ModuleRemove>({
-      mutationFn: async ({ id }) => (await apiClient.module.moduleControllerRemove(id)).data.data,
-      onSuccess: async (removedModule: IdUuidDTO) => {
+  return mutationWrapper<APIOutput, ModuleRemove>(
+    useMutation<APIOutput, AxiosError<APIOutput>, ModuleRemove>({
+      mutationFn: async ({ moduleId }) => (await apiClient.module.moduleControllerRemove(moduleId)).data,
+      onSuccess: async (_, { moduleId }) => {
+        enqueueSnackbar('Module successfully deleted!', { variant: 'default', type: 'success' });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
-        await queryClient.invalidateQueries({ queryKey: moduleKeys.detail(removedModule.id) });
-        await queryClient.invalidateQueries({ queryKey: moduleKeys.export(removedModule.id) });
+        await queryClient.invalidateQueries({ queryKey: moduleKeys.detail(moduleId) });
+        await queryClient.invalidateQueries({ queryKey: moduleKeys.export(moduleId) });
       },
     }),
-    {}
+    {},
   );
 };
 
@@ -146,15 +150,17 @@ export const moduleExportOptions = (moduleId: string, enabled: boolean = true) =
 
 export const useModuleImport = () => {
   const apiClient = getApiClient();
+  const { enqueueSnackbar } = useSnackbar();
 
   return mutationWrapper<void, BuiltinModule>(
     useMutation<AxiosResponse<void>, AxiosError<ModuleExportDTOAPI>, BuiltinModule>({
       mutationFn: async (mod) => await apiClient.module.moduleControllerImport(mod),
       onSuccess: async () => {
+        enqueueSnackbar('Module imported!', { variant: 'default', type: 'success' });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
       },
     }),
-    {}
+    {},
   );
 };
 
@@ -165,18 +171,20 @@ interface ModuleUpdate {
 export const useModuleUpdate = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
 
   return mutationWrapper<ModuleOutputDTO, ModuleUpdate>(
     useMutation<ModuleOutputDTO, AxiosError<ModuleOutputDTOAPI>, ModuleUpdate>({
       mutationFn: async ({ id, moduleUpdate }) =>
         (await apiClient.module.moduleControllerUpdate(id, moduleUpdate)).data.data,
       onSuccess: async (updatedModule: ModuleOutputDTO) => {
+        enqueueSnackbar('Module updated!', { variant: 'default', type: 'success' });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.export(updatedModule.id) });
         return queryClient.setQueryData(moduleKeys.detail(updatedModule.id), updatedModule);
       },
     }),
-    defaultModuleErrorMessages
+    defaultModuleErrorMessages,
   );
 };
 
@@ -192,11 +200,13 @@ export const hookQueryOptions = (hookId: string) =>
 export const useHookCreate = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
 
   return mutationWrapper<HookOutputDTO, HookCreateDTO>(
     useMutation<HookOutputDTO, AxiosError<HookOutputDTOAPI>, HookCreateDTO>({
       mutationFn: async (hook) => (await apiClient.hook.hookControllerCreate(hook)).data.data,
       onSuccess: async (newHook: HookOutputDTO) => {
+        enqueueSnackbar('Hook created!', { variant: 'default', type: 'success' });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.hooks.list() });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.export(newHook.moduleId) });
         queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(newHook.moduleId), (prev) => {
@@ -212,7 +222,7 @@ export const useHookCreate = () => {
         return queryClient.setQueryData(moduleKeys.hooks.detail(newHook.id), newHook);
       },
     }),
-    defaultHookErrorMessages
+    defaultHookErrorMessages,
   );
 };
 
@@ -223,11 +233,13 @@ interface HookRemove {
 export const useHookRemove = ({ moduleId }) => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
 
-  return mutationWrapper<IdUuidDTO, HookRemove>(
-    useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, HookRemove>({
-      mutationFn: async ({ hookId }) => (await apiClient.hook.hookControllerRemove(hookId)).data.data,
-      onSuccess: async (removedHook: IdUuidDTO) => {
+  return mutationWrapper<APIOutput, HookRemove>(
+    useMutation<APIOutput, AxiosError<APIOutput>, HookRemove>({
+      mutationFn: async ({ hookId }) => (await apiClient.hook.hookControllerRemove(hookId)).data,
+      onSuccess: async (_, { hookId }) => {
+        enqueueSnackbar('Hook successfully deleted!', { variant: 'default', type: 'success' });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.hooks.list() });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.export(moduleId) });
         queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(moduleId), (prev) => {
@@ -236,13 +248,13 @@ export const useHookRemove = ({ moduleId }) => {
           }
           return {
             ...prev,
-            hooks: prev.hooks.filter((hook) => hook.id !== removedHook.id),
+            hooks: prev.hooks.filter((hook) => hook.id !== hookId),
           };
         });
-        return queryClient.removeQueries({ queryKey: moduleKeys.hooks.detail(removedHook.id) });
+        return queryClient.removeQueries({ queryKey: moduleKeys.hooks.detail(hookId) });
       },
     }),
-    defaultHookErrorMessages
+    defaultHookErrorMessages,
   );
 };
 
@@ -253,11 +265,13 @@ interface HookUpdate {
 export const useHookUpdate = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
 
   return mutationWrapper<HookOutputDTO, HookUpdate>(
     useMutation<HookOutputDTO, AxiosError<HookOutputDTOAPI>, HookUpdate>({
       mutationFn: async ({ hookId, hook }) => (await apiClient.hook.hookControllerUpdate(hookId, hook)).data.data,
       onSuccess: async (updatedHook: HookOutputDTO) => {
+        enqueueSnackbar('Hook updated!', { variant: 'default', type: 'success' });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.hooks.list() });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.export(updatedHook.moduleId) });
         queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(updatedHook.moduleId), (prev) => {
@@ -272,7 +286,7 @@ export const useHookUpdate = () => {
         queryClient.setQueryData<HookOutputDTO>(moduleKeys.hooks.detail(updatedHook.id), updatedHook);
       },
     }),
-    defaultHookErrorMessages
+    defaultHookErrorMessages,
   );
 };
 
@@ -289,11 +303,13 @@ export const commandQueryOptions = (commandId: string) =>
 export const useCommandCreate = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
 
   return mutationWrapper<CommandOutputDTO, CommandCreateDTO>(
     useMutation<CommandOutputDTO, AxiosError<CommandOutputDTOAPI>, CommandCreateDTO>({
       mutationFn: async (command) => (await apiClient.command.commandControllerCreate(command)).data.data,
       onSuccess: async (newCommand: CommandOutputDTO) => {
+        enqueueSnackbar('Command created!', { variant: 'default', type: 'success' });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.commands.list() });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.export(newCommand.moduleId) });
         queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(newCommand.moduleId), (prev) => {
@@ -308,7 +324,7 @@ export const useCommandCreate = () => {
         return queryClient.setQueryData<CommandOutputDTO>(moduleKeys.commands.detail(newCommand.id), newCommand);
       },
     }),
-    defaultCommandErrorMessages
+    defaultCommandErrorMessages,
   );
 };
 
@@ -319,12 +335,14 @@ interface CommandUpdate {
 export const useCommandUpdate = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
 
   return mutationWrapper<CommandOutputDTO, CommandUpdate>(
     useMutation<CommandOutputDTO, AxiosError<CommandOutputDTOAPI>, CommandUpdate>({
       mutationFn: async ({ commandId, command }) =>
         (await apiClient.command.commandControllerUpdate(commandId, command)).data.data,
       onSuccess: async (updatedCommand: CommandOutputDTO) => {
+        enqueueSnackbar('Command updated!', { variant: 'default', type: 'success' });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.commands.list() });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.export(updatedCommand.moduleId) });
         queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(updatedCommand.id), (prev) => {
@@ -338,11 +356,11 @@ export const useCommandUpdate = () => {
         });
         return queryClient.setQueryData<CommandOutputDTO>(
           moduleKeys.commands.detail(updatedCommand.id),
-          updatedCommand
+          updatedCommand,
         );
       },
     }),
-    defaultCommandErrorMessages
+    defaultCommandErrorMessages,
   );
 };
 
@@ -353,11 +371,13 @@ interface CommandRemove {
 export const useCommandRemove = ({ moduleId }) => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
 
-  return mutationWrapper<IdUuidDTO, CommandRemove>(
-    useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, CommandRemove>({
-      mutationFn: async ({ commandId }) => (await apiClient.command.commandControllerRemove(commandId)).data.data,
-      onSuccess: async (removedCommand: IdUuidDTO) => {
+  return mutationWrapper<APIOutput, CommandRemove>(
+    useMutation<APIOutput, AxiosError<APIOutput>, CommandRemove>({
+      mutationFn: async ({ commandId }) => (await apiClient.command.commandControllerRemove(commandId)).data,
+      onSuccess: async (_, { commandId }) => {
+        enqueueSnackbar('Command successfully deleted!', { variant: 'default', type: 'success' });
         // invalidate list of commands
         await queryClient.invalidateQueries({ queryKey: moduleKeys.commands.list() });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.export(moduleId) });
@@ -367,13 +387,13 @@ export const useCommandRemove = ({ moduleId }) => {
           }
           return {
             ...prev,
-            commands: prev.commands.filter((command) => command.id !== removedCommand.id),
+            commands: prev.commands.filter((command) => command.id !== commandId),
           };
         });
-        queryClient.removeQueries({ queryKey: moduleKeys.commands.detail(removedCommand.id) });
+        queryClient.removeQueries({ queryKey: moduleKeys.commands.detail(commandId) });
       },
     }),
-    defaultCommandErrorMessages
+    defaultCommandErrorMessages,
   );
 };
 
@@ -389,13 +409,14 @@ export const cronjobQueryOptions = (cronjobId: string) =>
 export const useCronJobCreate = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
 
   return mutationWrapper<CronJobOutputDTO, CronJobCreateDTO>(
     useMutation<CronJobOutputDTO, AxiosError<CronJobOutputDTOAPI>, CronJobCreateDTO>({
       mutationFn: async (cronjob: CronJobCreateDTO) =>
         (await apiClient.cronjob.cronJobControllerCreate(cronjob)).data.data,
       onSuccess: async (newCronJob: CronJobOutputDTO) => {
-        // invalidate list of cronjobs
+        enqueueSnackbar('Cronjob created!', { variant: 'default', type: 'success' });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.cronJobs.list() });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.export(newCronJob.moduleId) });
         queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(newCronJob.moduleId), (prev) => {
@@ -411,7 +432,7 @@ export const useCronJobCreate = () => {
         return queryClient.setQueryData<CronJobOutputDTO>(moduleKeys.cronJobs.detail(newCronJob.id), newCronJob);
       },
     }),
-    defaultCronJobErrorMessages
+    defaultCronJobErrorMessages,
   );
 };
 
@@ -422,13 +443,14 @@ interface CronJobUpdate {
 export const useCronJobUpdate = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
 
   return mutationWrapper<CronJobOutputDTO, CronJobUpdate>(
     useMutation<CronJobOutputDTO, AxiosError<CronJobOutputDTOAPI>, CronJobUpdate>({
       mutationFn: async ({ cronJobId, cronJob }) =>
         (await apiClient.cronjob.cronJobControllerUpdate(cronJobId, cronJob)).data.data,
       onSuccess: async (updatedCronJob: CronJobOutputDTO) => {
-        // invalidate list of cronjob
+        enqueueSnackbar('Cronjob updated!', { variant: 'default', type: 'success' });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.cronJobs.list() });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.export(updatedCronJob.moduleId) });
         queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(updatedCronJob.moduleId), (prev) => {
@@ -442,11 +464,11 @@ export const useCronJobUpdate = () => {
         });
         return queryClient.setQueryData<CronJobOutputDTO>(
           moduleKeys.cronJobs.detail(updatedCronJob.id),
-          updatedCronJob
+          updatedCronJob,
         );
       },
     }),
-    defaultCronJobErrorMessages
+    defaultCronJobErrorMessages,
   );
 };
 
@@ -457,29 +479,29 @@ interface CronJobRemove {
 export const useCronJobRemove = ({ moduleId }: { moduleId: string }) => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
 
-  return mutationWrapper<IdUuidDTO, CronJobRemove>(
-    useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, CronJobRemove>({
+  return mutationWrapper<APIOutput, CronJobRemove>(
+    useMutation<APIOutput, AxiosError<APIOutput>, CronJobRemove>({
       mutationFn: async ({ cronJobId }: { cronJobId: string }) =>
-        (await apiClient.cronjob.cronJobControllerRemove(cronJobId)).data.data,
-      onSuccess: async (removedCronJob: IdUuidDTO) => {
+        (await apiClient.cronjob.cronJobControllerRemove(cronJobId)).data,
+      onSuccess: async (_, { cronJobId }) => {
+        enqueueSnackbar('Cronjob successfully deleted!', { variant: 'default', type: 'success' });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.cronJobs.list() });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.export(moduleId) });
-
+        queryClient.removeQueries({ queryKey: moduleKeys.cronJobs.detail(cronJobId) });
         queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(moduleId), (prev) => {
           if (!prev) {
             return prev;
           }
           return {
             ...prev,
-            cronJobs: prev.cronJobs.filter((cronJob) => cronJob.id !== removedCronJob.id),
+            cronJobs: prev.cronJobs.filter((cronJob) => cronJob.id !== cronJobId),
           };
         });
-        // remove cache of specific cronjob
-        queryClient.removeQueries({ queryKey: moduleKeys.cronJobs.detail(removedCronJob.id) });
       },
     }),
-    defaultCronJobErrorMessages
+    defaultCronJobErrorMessages,
   );
 };
 
@@ -522,7 +544,7 @@ export const useFunctionCreate = () => {
         return queryClient.setQueryData<FunctionOutputDTO>(moduleKeys.functions.detail(newFn.id), newFn);
       },
     }),
-    defaultFunctionErrorMessages
+    defaultFunctionErrorMessages,
   );
 };
 
@@ -545,7 +567,7 @@ export const useFunctionUpdate = () => {
         queryClient.setQueryData<FunctionOutputDTO>(moduleKeys.functions.detail(updatedFn.id), updatedFn);
       },
     }),
-    defaultFunctionErrorMessages
+    defaultFunctionErrorMessages,
   );
 };
 
@@ -557,27 +579,24 @@ export const useFunctionRemove = ({ moduleId }: { moduleId: string }) => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
-  return mutationWrapper<IdUuidDTO, FunctionRemove>(
-    useMutation<IdUuidDTO, AxiosError<IdUuidDTOAPI>, FunctionRemove>({
-      mutationFn: async ({ functionId }) => (await apiClient.function.functionControllerRemove(functionId)).data.data,
-      onSuccess: async (removedFn: IdUuidDTO) => {
-        // invalidate list of functions
+  return mutationWrapper<APIOutput, FunctionRemove>(
+    useMutation<APIOutput, AxiosError<APIOutput>, FunctionRemove>({
+      mutationFn: async ({ functionId }) => (await apiClient.function.functionControllerRemove(functionId)).data,
+      onSuccess: async (_, { functionId }) => {
         await queryClient.invalidateQueries({ queryKey: moduleKeys.functions.list() });
-
         queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(moduleId), (prev) => {
           if (!prev) {
             return prev;
           }
           return {
             ...prev,
-            functions: prev.functions.filter((func) => func.id !== removedFn.id),
+            functions: prev.functions.filter((func) => func.id !== functionId),
           };
         });
 
-        // remove cache of specific function
-        queryClient.removeQueries({ queryKey: moduleKeys.functions.detail(removedFn.id) });
+        queryClient.removeQueries({ queryKey: moduleKeys.functions.detail(functionId) });
       },
     }),
-    defaultFunctionErrorMessages
+    defaultFunctionErrorMessages,
   );
 };

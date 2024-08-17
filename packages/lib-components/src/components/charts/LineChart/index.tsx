@@ -103,7 +103,7 @@ const Chart = <T,>({
         range: [margin.left, innerWidth],
         domain: extent(data, xAccessor) as [Date, Date],
       }),
-    [innerWidth]
+    [innerWidth],
   );
 
   const yScale = useMemo(
@@ -112,7 +112,7 @@ const Chart = <T,>({
         range: [innerHeight, margin.bottom],
         domain: [0, max(data, yAccessor) as number],
       }),
-    [innerHeight]
+    [innerHeight],
   );
 
   const handleTooltip = useCallback(
@@ -134,7 +134,7 @@ const Chart = <T,>({
         tooltipTop: tooltipY,
       });
     },
-    [yScale, xScale, data, yAccessor, xAccessor, width, height]
+    [yScale, xScale, data, yAccessor, xAccessor, width, height],
   );
 
   return width === 10 ? null : (

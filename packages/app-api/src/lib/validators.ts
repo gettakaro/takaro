@@ -1,15 +1,11 @@
 import {
   IsUUID,
-  ValidateNested,
   ValidationOptions,
   ValidatorConstraint,
   ValidatorConstraintInterface,
   isUUID,
   registerDecorator,
 } from 'class-validator';
-import { TakaroDTO } from '@takaro/util';
-import { Type } from 'class-transformer';
-import { APIOutput } from '@takaro/http';
 
 export class ParamId {
   @IsUUID('4')
@@ -29,17 +25,6 @@ export class PogParam {
   playerId!: string;
 }
 
-export class IdUuidDTO extends TakaroDTO<IdUuidDTO> {
-  @IsUUID('4')
-  id!: string;
-}
-
-export class IdUuidDTOAPI extends APIOutput<IdUuidDTO> {
-  @Type(() => IdUuidDTO)
-  @ValidateNested()
-  declare data: IdUuidDTO;
-}
-
 @ValidatorConstraint({ async: true })
 export class IsTypeOrArrayOfType<T> implements ValidatorConstraintInterface {
   private typeCheck: (value: unknown) => value is T;
@@ -48,13 +33,13 @@ export class IsTypeOrArrayOfType<T> implements ValidatorConstraintInterface {
     this.typeCheck = typeCheck;
   }
 
-  public async validate(value: unknown) {
+  public validate(value: unknown) {
     return this.typeCheck(value) || (Array.isArray(value) && value.every(this.typeCheck));
   }
 }
 
 function createTypeOrArrayOfTypeDecorator<T>(
-  typeCheck: (value: unknown) => value is T
+  typeCheck: (value: unknown) => value is T,
 ): (validationOptions?: ValidationOptions) => PropertyDecorator {
   return (validationOptions?: ValidationOptions) => {
     return (object: object, propertyName: string | symbol) => {
@@ -70,14 +55,14 @@ function createTypeOrArrayOfTypeDecorator<T>(
 }
 
 export const IsStringOrArrayOfString = createTypeOrArrayOfTypeDecorator<string>(
-  (value): value is string => typeof value === 'string'
+  (value): value is string => typeof value === 'string',
 );
 export const IsNumberOrArrayOfNumber = createTypeOrArrayOfTypeDecorator<number>(
-  (value): value is number => typeof value === 'number'
+  (value): value is number => typeof value === 'number',
 );
 export const IsBooleanOrArrayOfBoolean = createTypeOrArrayOfTypeDecorator<boolean>(
-  (value): value is boolean => typeof value === 'boolean'
+  (value): value is boolean => typeof value === 'boolean',
 );
 export const IsUUIDOrArrayOfUUID = createTypeOrArrayOfTypeDecorator<string>(
-  (value): value is string => typeof value === 'string' && isUUID(value)
+  (value): value is string => typeof value === 'string' && isUUID(value),
 );

@@ -77,7 +77,7 @@ test('Can edit gameserver', async ({ page, takaro }) => {
   await GameServersPage.action('Edit');
 
   expect(page.url()).toBe(
-    `${integrationConfig.get('frontendHost')}/gameservers/update/${GameServersPage.gameServer.id}`
+    `${integrationConfig.get('frontendHost')}/gameservers/update/${GameServersPage.gameServer.id}`,
   );
 
   const newGameServerName = 'My edited mock server';
@@ -164,7 +164,7 @@ test.describe('Dashboard', () => {
         await GameServersPage.page.keyboard.press('ArrowDown');
 
         await expect(GameServersPage.page.getByPlaceholder('Type here to execute a command..')).toHaveValue('');
-      }
+      },
     );
 
     test.fixme('Command history should have a cap of 50 commands', async ({ takaro }) => {
@@ -185,10 +185,10 @@ test.describe('Dashboard', () => {
 
       // The very first command 'Command 1' and 'Command 2' should be gone as it exceeded the cap of 50
       await expect(GameServersPage.page.getByPlaceholder('Type here to execute a command..')).not.toHaveValue(
-        'Command 1'
+        'Command 1',
       );
       await expect(GameServersPage.page.getByPlaceholder('Type here to execute a command..')).not.toHaveValue(
-        'Command 2'
+        'Command 2',
       );
     });
   });

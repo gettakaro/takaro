@@ -11,13 +11,13 @@ export async function ErrorHandler(
   req: Request,
   res: Response,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _next: NextFunction
+  _next: NextFunction,
 ) {
   let status = 500;
   let parsedError = new errors.InternalServerError();
 
   if (originalError.name === 'BadRequestError') {
-    if (originalError.hasOwnProperty('errors')) {
+    if (Object.prototype.hasOwnProperty.call(originalError, 'errors')) {
       // @ts-expect-error Error typing is weird in ts... but we validate during runtime so should be OK
       const validationErrors = originalError['errors'] as ValidationError[];
       parsedError = new errors.ValidationError('Validation error', validationErrors);

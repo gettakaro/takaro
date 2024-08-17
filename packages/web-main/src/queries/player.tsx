@@ -1,8 +1,15 @@
 import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getApiClient } from 'util/getApiClient';
-import { APIOutput, PlayerOutputArrayDTOAPI, PlayerOutputWithRolesDTO, PlayerSearchInputDTO } from '@takaro/apiclient';
+import {
+  APIOutput,
+  PlayerOutputArrayDTOAPI,
+  PlayerOutputWithRolesDTO,
+  PlayerRoleAssignChangeDTO,
+  PlayerSearchInputDTO,
+} from '@takaro/apiclient';
 import { AxiosError } from 'axios';
 import { mutationWrapper, queryParamsToArray } from 'queries/util';
+import { useSnackbar } from 'notistack';
 
 export const playerKeys = {
   all: ['players'] as const,
@@ -22,47 +29,41 @@ export const playersQueryOptions = (queryParams: PlayerSearchInputDTO = {}) =>
     queryFn: async () => (await getApiClient().player.playerControllerSearch(queryParams)).data,
   });
 
-interface IPlayerRoleAssign {
-  id: string;
+interface IPlayerRoleAssign extends PlayerRoleAssignChangeDTO {
+  playerId: string;
   roleId: string;
-  gameServerId?: string;
-  expiresAt?: string;
 }
 
 export const usePlayerRoleAssign = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
   return mutationWrapper<APIOutput, IPlayerRoleAssign>(
     useMutation<APIOutput, AxiosError<APIOutput>, IPlayerRoleAssign>({
-      mutationFn: async ({ id, roleId, gameServerId, expiresAt }) => {
-        const res = (await apiClient.player.playerControllerAssignRole(id, roleId, { gameServerId, expiresAt })).data;
-        // TODO: _should_ happen in the onSuccess below I guess
-        // But no access to the ID there
-        // At this point, we technically already know the req was successful
-        // because it would have thrown an error otherwise
-        queryClient.invalidateQueries({ queryKey: playerKeys.detail(id) });
-        return res;
+      mutationFn: async ({ playerId, roleId, gameServerId, expiresAt }) =>
+        (await apiClient.player.playerControllerAssignRole(playerId, roleId, { gameServerId, expiresAt })).data,
+      onSuccess: (_, { playerId }) => {
+        enqueueSnackbar('Role assigned to player!', { variant: 'default', type: 'success' });
+        queryClient.invalidateQueries({ queryKey: playerKeys.detail(playerId) });
       },
     }),
-    {}
+    {},
   );
 };
 
-export const usePlayerRoleUnassign = ({ playerId }: { playerId: string }) => {
+export const usePlayerRoleUnassign = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
   return mutationWrapper<APIOutput, IPlayerRoleAssign>(
     useMutation<APIOutput, AxiosError<APIOutput>, IPlayerRoleAssign>({
-      mutationFn: async ({ id, roleId, gameServerId }) => {
-        const res = (await apiClient.player.playerControllerRemoveRole(id, roleId, { gameServerId })).data;
-        // TODO: Same cache issue as in useRoleAssign...
-        queryClient.invalidateQueries({ queryKey: playerKeys.detail(id) });
-        return res;
-      },
-      onSuccess: async () => {
+      mutationFn: async ({ playerId, roleId, gameServerId }) =>
+        (await apiClient.player.playerControllerRemoveRole(playerId, roleId, { gameServerId })).data,
+      onSuccess: async (_, { playerId }) => {
+        enqueueSnackbar('Role removed from player!', { variant: 'default', type: 'success' });
         await queryClient.invalidateQueries({ queryKey: playerKeys.detail(playerId) });
       },
     }),
-    {}
+    {},
   );
 };

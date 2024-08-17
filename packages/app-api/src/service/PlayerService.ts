@@ -73,6 +73,10 @@ export class PlayerOutputDTO extends TakaroModelDTO<PlayerOutputDTO> {
   @IsOptional()
   steamNumberOfVACBans?: number;
 
+  @IsNumber()
+  @IsOptional()
+  steamLevel?: number;
+
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => PlayerOnGameserverOutputDTO)
@@ -169,7 +173,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
         playerId: player.id,
         roleId: roles.results[0].id,
         role: roles.results[0],
-      })
+      }),
     );
 
     return this.handleRoleExpiry(player);
@@ -207,7 +211,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
 
   async resolveFromId(
     playerId: string,
-    gameServerId?: string
+    gameServerId?: string,
   ): Promise<{ player: PlayerOutputWithRolesDTO; pogs: PlayerOnGameserverOutputWithRolesDTO[] }> {
     const playerOnGameServerService = new PlayerOnGameServerService(this.domainId);
     const player = await this.findOne(playerId);
@@ -222,7 +226,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
 
   async resolveRef(
     gamePlayer: IGamePlayer,
-    gameServerId: string
+    gameServerId: string,
   ): Promise<{ player: PlayerOutputWithRolesDTO; pog: PlayerOnGameserverOutputWithRolesDTO }> {
     const playerOnGameServerService = new PlayerOnGameServerService(this.domainId);
     let pog = await playerOnGameServerService.findAssociations(gamePlayer.gameId, gameServerId);
@@ -253,7 +257,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
           steamId: gamePlayer.steamId,
           epicOnlineServicesId: gamePlayer.epicOnlineServicesId,
           xboxLiveId: gamePlayer.xboxLiveId,
-        })
+        }),
       );
     } else {
       // At least one player is found, use the first one
@@ -267,7 +271,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
           steamId: gamePlayer.steamId,
           xboxLiveId: gamePlayer.xboxLiveId,
           epicOnlineServicesId: gamePlayer.epicOnlineServicesId,
-        })
+        }),
       );
     }
 
@@ -299,7 +303,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
         gameserverId,
         playerId: targetId,
         meta: new TakaroEventRoleAssigned({ role }),
-      })
+      }),
     );
   }
 
@@ -317,7 +321,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
         playerId: targetId,
         gameserverId,
         meta: new TakaroEventRoleRemoved({ role: { id: role.id, name: role.name } }),
-      })
+      }),
     );
   }
 
@@ -339,44 +343,47 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
       steamApi.getPlayerBans(toRefresh),
     ]);
 
-    const fullData: (ISteamData | { steamId: string })[] = toRefresh.map((steamId) => {
-      const summary = summaries.find((item) => item.steamid === steamId);
-      const ban = bans.find((item) => item.SteamId === steamId);
+    const fullData: (ISteamData | { steamId: string })[] = await Promise.all(
+      toRefresh.map(async (steamId) => {
+        const summary = summaries.find((item) => item.steamid === steamId);
+        const ban = bans.find((item) => item.SteamId === steamId);
 
-      if (!summary || !ban) {
-        this.log.warn('Steam data missing', { steamId, summary, ban });
+        if (!summary || !ban) {
+          this.log.warn('Steam data missing', { steamId, summary, ban });
+          return {
+            steamId,
+          };
+        }
+
         return {
           steamId,
+          steamAvatar: summary.avatarfull,
+          steamAccountCreated: summary.timecreated,
+          steamCommunityBanned: ban.CommunityBanned,
+          steamEconomyBan: ban.EconomyBan,
+          steamVacBanned: ban.VACBanned,
+          steamsDaysSinceLastBan: ban.DaysSinceLastBan,
+          steamNumberOfVACBans: ban.NumberOfVACBans,
+          steamLevel: summary ? await steamApi.getLevel(steamId) : null,
         };
-      }
-
-      return {
-        steamId,
-        steamAvatar: summary.avatarfull,
-        steamAccountCreated: summary.timecreated,
-        steamCommunityBanned: ban.CommunityBanned,
-        steamEconomyBan: ban.EconomyBan,
-        steamVacBanned: ban.VACBanned,
-        steamsDaysSinceLastBan: ban.DaysSinceLastBan,
-        steamNumberOfVACBans: ban.NumberOfVACBans,
-      };
-    });
+      }),
+    );
 
     await this.repo.setSteamData(fullData);
     return toRefresh.length;
   }
 
   async observeIp(playerId: string, gameServerId: string, ip: string) {
-    const lookupResult = (await ipLookup).get(ip);
+    const lookupResult = ipLookup.get(ip);
 
     let newIpRecord;
 
-    if (lookupResult && lookupResult.country) {
+    if (lookupResult?.country) {
       newIpRecord = await this.repo.observeIp(playerId, gameServerId, ip, {
         country: lookupResult.country.iso_code,
-        city: lookupResult.city?.names.en || null,
-        latitude: lookupResult.location?.latitude.toString() || null,
-        longitude: lookupResult.location?.longitude.toString() || null,
+        city: lookupResult.city?.names.en ?? null,
+        latitude: lookupResult.location?.latitude.toString() ?? null,
+        longitude: lookupResult.location?.longitude.toString() ?? null,
       });
     } else {
       newIpRecord = await this.repo.observeIp(playerId, gameServerId, ip, null);
@@ -396,7 +403,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
             latitude: newIpRecord.latitude,
             longitude: newIpRecord.longitude,
           }),
-        })
+        }),
       );
     }
   }
@@ -421,7 +428,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
       `Browse to ${config.get('http.frontendHost')}/link?code=${secretCode} to complete the linking process.`,
       new IMessageOptsDTO({
         recipient: pog,
-      })
+      }),
     );
   }
 }

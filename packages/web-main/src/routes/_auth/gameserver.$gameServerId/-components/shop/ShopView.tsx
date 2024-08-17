@@ -12,7 +12,7 @@ const Header = styled.div`
   gap: ${({ theme }) => theme.spacing['2']};
 
   strong {
-    font-size: ${({ theme }) => theme.fontSize['medium']};
+    font-size: ${({ theme }) => theme.fontSize.medium};
     margin-right: ${({ theme }) => theme.spacing['0_5']};
   }
 `;

@@ -1,12 +1,11 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
 import 'reflect-metadata';
-
 import { matchSnapshot } from './snapshots.js';
 import { integrationConfig, sandbox } from './main.js';
 import { expect } from './test/expect.js';
 import { AdminClient, Client, AxiosResponse, isAxiosError } from '@takaro/apiclient';
 import { randomUUID } from 'crypto';
 import { retry } from '@takaro/util';
+
 export class IIntegrationTest<SetupData> {
   snapshot!: boolean;
   group!: string;
@@ -31,10 +30,8 @@ const testDomainPrefix = 'integration-';
 const adminClient = new AdminClient({
   url: integrationConfig.get('host'),
   auth: {
-    clientId: integrationConfig.get('auth.adminClientId'),
     clientSecret: integrationConfig.get('auth.adminClientSecret'),
   },
-  OAuth2URL: integrationConfig.get('auth.OAuth2URL'),
   log: noopLog,
 });
 
@@ -47,15 +44,15 @@ before(async () => {
     });
 
     await Promise.allSettled(
-      danglingDomains.data.data.map((domain) => adminClient.domain.domainControllerRemove(domain.id))
+      danglingDomains.data.data.map((domain) => adminClient.domain.domainControllerRemove(domain.id)),
     );
 
     if (danglingDomains.data.data.length > 0) {
       console.log(
-        `Removed ${danglingDomains.data.data.length} dangling domains. Your previous test run probably failed to clean up properly.`
+        `Removed ${danglingDomains.data.data.length} dangling domains. Your previous test run probably failed to clean up properly.`,
       );
     }
-  } catch (error) {
+  } catch (_error) {
     console.warn('Failed to clean up dangling domains');
   }
 });
@@ -75,11 +72,10 @@ export class IntegrationTest<SetupData> {
 
   constructor(public test: IIntegrationTest<SetupData>) {
     if (test.snapshot) {
-      this.test.expectedStatus = this.test.expectedStatus ?? 200;
-      this.test.filteredFields = this.test.filteredFields ?? [];
+      this.test.expectedStatus ??= 200;
+      this.test.filteredFields ??= [];
     }
-    this.test.standardEnvironment = this.test.standardEnvironment ?? true;
-
+    this.test.standardEnvironment ??= true;
     this.client = new Client({
       url: integrationConfig.get('host'),
       auth: {},
@@ -130,7 +126,7 @@ export class IntegrationTest<SetupData> {
 
             console.error(error.response?.data);
             throw new Error(
-              `Setup failed: ${error.config?.method} ${error.config?.url} ${JSON.stringify(error.response?.data)}}`
+              `Setup failed: ${error.config?.method} ${error.config?.url} ${JSON.stringify(error.response?.data)}}`,
             );
           }
         }
@@ -144,7 +140,7 @@ export class IntegrationTest<SetupData> {
         if (integrationTestContext.standardDomainId) {
           try {
             await integrationTestContext.adminClient.domain.domainControllerRemove(
-              integrationTestContext.standardDomainId
+              integrationTestContext.standardDomainId,
             );
           } catch (error) {
             if (!isAxiosError(error)) {
@@ -169,11 +165,9 @@ export class IntegrationTest<SetupData> {
 
           if (integrationTestContext.test.snapshot) {
             response = error.response;
-          } else {
-            if (error.response?.data) {
-              console.error(error.response?.data);
-              throw new Error(`Test failed: ${error.response.config.url} ${JSON.stringify(error.response?.data)}}`);
-            }
+          } else if (error.response?.data) {
+            console.error(error.response?.data);
+            throw new Error(`Test failed: ${error.response.config.url} ${JSON.stringify(error.response?.data)}}`);
           }
         }
 
@@ -191,14 +185,14 @@ export class IntegrationTest<SetupData> {
           setup,
           integrationConfig.get('mocha.waitBetweenRetries'),
           integrationConfig.get('mocha.retries'),
-          teardown
+          teardown,
         );
       const retryableTeardown = () =>
         retry(
           teardown,
           integrationConfig.get('mocha.waitBetweenRetries'),
           integrationConfig.get('mocha.retries'),
-          async () => {}
+          async () => {},
         );
 
       beforeEach(retryableSetup);
@@ -212,8 +206,8 @@ export class IntegrationTest<SetupData> {
           async () => {
             await retryableTeardown();
             await retryableSetup();
-          }
-        )
+          },
+        ),
       );
     });
   }
