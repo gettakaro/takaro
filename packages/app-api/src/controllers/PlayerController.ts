@@ -147,15 +147,7 @@ export class PlayerController {
   ) {
     const service = new PlayerService(req.domainId);
 
-    try {
-      await service.assignRole(params.roleId, params.id, data.gameServerId, data.expiresAt);
-    } catch (error) {
-      if (error instanceof Error && error.name === 'UniqueViolationError') {
-        throw new errors.BadRequestError('Role already assigned');
-      } else {
-        throw error;
-      }
-    }
+    await service.assignRole(params.roleId, params.id, data.gameServerId, data.expiresAt);
 
     return apiResponse();
   }

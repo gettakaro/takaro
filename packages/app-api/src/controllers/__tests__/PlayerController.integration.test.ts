@@ -23,23 +23,6 @@ const tests = [
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
     snapshot: true,
-    name: 'Assigning the same role twice should fail',
-    setup: SetupGameServerPlayers.setup,
-    test: async function () {
-      const permissions = await this.client.permissionCodesToInputs([PERMISSIONS.MANAGE_GAMESERVERS]);
-      const role = await this.client.role.roleControllerCreate({
-        name: 'Test role',
-        permissions,
-      });
-      const player = this.setupData.players[0];
-      await this.client.player.playerControllerAssignRole(player.id, role.data.data.id);
-      return this.client.player.playerControllerAssignRole(player.id, role.data.data.id);
-    },
-    expectedStatus: 400,
-  }),
-  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
-    group,
-    snapshot: true,
     name: 'Assigning the same role for different gameservers should work',
     setup: SetupGameServerPlayers.setup,
     test: async function () {
@@ -57,27 +40,6 @@ const tests = [
         gameServerId: this.setupData.gameServer2.id,
       });
     },
-  }),
-  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
-    group,
-    snapshot: true,
-    name: 'Assigning the same role for same gameserver should fail',
-    setup: SetupGameServerPlayers.setup,
-    test: async function () {
-      const permissions = await this.client.permissionCodesToInputs([PERMISSIONS.MANAGE_GAMESERVERS]);
-      const role = await this.client.role.roleControllerCreate({
-        name: 'Test role',
-        permissions,
-      });
-      const player = this.setupData.players[0];
-      await this.client.player.playerControllerAssignRole(player.id, role.data.data.id, {
-        gameServerId: this.setupData.gameServer1.id,
-      });
-      return this.client.player.playerControllerAssignRole(player.id, role.data.data.id, {
-        gameServerId: this.setupData.gameServer1.id,
-      });
-    },
-    expectedStatus: 400,
   }),
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
@@ -201,6 +163,53 @@ const tests = [
       return playerRes;
     },
     filteredFields: ['name', 'playerId', 'steamId', 'roleId', 'gameServerId', 'epicOnlineServicesId', 'xboxLiveId'],
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: true,
+    name: 'Can override the expiry of a role assignment',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      // Assign a role with expiry
+      // Assign same role with new expiry
+      // -> Role should have new expiry
+
+      const permissions = await this.client.permissionCodesToInputs([PERMISSIONS.MANAGE_GAMESERVERS]);
+
+      const role = await this.client.role.roleControllerCreate({
+        name: 'Test role',
+        permissions,
+      });
+
+      const player = this.setupData.players[0];
+      const expiresAt = new Date(Date.now() - 10).toISOString();
+      const newExpiresAt = new Date(Date.now() + 1000 * 60 * 60).toISOString();
+
+      await this.client.player.playerControllerAssignRole(player.id, role.data.data.id, {
+        expiresAt,
+      });
+
+      await this.client.player.playerControllerAssignRole(player.id, role.data.data.id, {
+        expiresAt: newExpiresAt,
+      });
+
+      const res = await this.client.player.playerControllerGetOne(player.id);
+      const roleAssignment = res.data.data.roleAssignments.find((a) => a.role.name === role.data.data.name);
+      if (!roleAssignment) throw new Error('Role assignment not found');
+
+      expect(roleAssignment.expiresAt).to.be.eq(newExpiresAt);
+      return res;
+    },
+    filteredFields: [
+      'name',
+      'playerId',
+      'steamId',
+      'roleId',
+      'gameServerId',
+      'epicOnlineServicesId',
+      'xboxLiveId',
+      'expiresAt',
+    ],
   }),
 ];
 
