@@ -100,7 +100,15 @@ jobs:
         node-version: [18.18]
 
     steps:
+      - name: Generate token
+        id: generate_token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: ${{ secrets.TAKARO_CI_APP_ID }}
+          private_key: ${{ secrets.TAKARO_CI_APP_PRIV_KEY }}
       - uses: actions/checkout@v3
+        with:
+          token: ${{ steps.generate_token.outputs.token }}
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
@@ -122,6 +130,18 @@ jobs:
           GRAFANA_CLOUD_TEMPO_URL: ${{ secrets.GRAFANA_CLOUD_TEMPO_URL }}
           GRAFANA_CLOUD_API_USER: ${{ secrets.GRAFANA_CLOUD_API_USER }}
           GRAFANA_CLOUD_API_KEY: ${{ secrets.GRAFANA_CLOUD_API_KEY }}
+
+      - name: Commit and push if changed
+        if: github.event_name == 'push'
+        run: |
+          if git diff --quiet; then
+            echo "No changes to commit."
+          else
+            git config --global user.name 'takaro-ci-bot[bot]'
+            git config --global user.email '138661031+takaro-ci-bot[bot]@users.noreply.github.com'
+            git commit -am "chore: generate api client"
+            git push
+          fi
 
       - uses: actions/upload-artifact@v3
         if: always()
