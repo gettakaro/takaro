@@ -1,6 +1,6 @@
 {
   "name": "@takaro/connector",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Connects to game servers and detects events for Takaro",
   "main": "dist/main.js",
   "types": "main.ts",
