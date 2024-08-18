@@ -16,6 +16,7 @@ import { GameServerService } from './GameServerService.js';
 import { PlayerService } from './PlayerService.js';
 import { PlayerOnGameServerService } from './PlayerOnGameserverService.js';
 import { ModuleService } from './ModuleService.js';
+import { UserService } from './UserService.js';
 
 export class CommandOutputDTO extends TakaroModelDTO<CommandOutputDTO> {
   @IsString()
@@ -285,8 +286,11 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
       this.log.debug(`Found ${triggeredCommands.length} commands that match the event`);
 
       const gameServerService = new GameServerService(this.domainId);
+      const userService = new UserService(this.domainId);
 
       const { player, pog } = await this.playerService.resolveRef(chatMessage.player, gameServerId);
+      const userRes = await userService.find({ filters: { playerId: [player.id] } });
+      const user = userRes.results[0];
 
       const parsedCommands = await Promise.all(
         triggeredCommands.map(async (c) => {
@@ -348,6 +352,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
             module: data.module,
             gameServerId,
             player,
+            user,
             chatMessage,
             trigger: commandName,
           },
