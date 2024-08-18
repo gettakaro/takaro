@@ -5,6 +5,7 @@ on:
     branches:
       - 'main'
       - 'development'
+      - 'auto-generate-api-client'
     tags:
       - '*'
   merge_group:
