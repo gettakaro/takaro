@@ -121,6 +121,8 @@ async function main() {
     failed = true;
   }
 
+  await $`npm -w packages/lib-apiclient run generate`;
+
   const logsResult = await logs(['takaro_api', 'takaro_mock_gameserver', 'takaro_connector', 'kratos'], {
     ...composeOpts,
     log: false,
