@@ -120,6 +120,21 @@ export class EconomyUtils extends BuiltinModule<EconomyUtils> {
           },
         ],
       }),
+      new ICommand({
+        function: this.loadFn('commands', 'claim'),
+        name: 'claim',
+        trigger: 'claim',
+        helpText: 'Claim your pending shop orders.',
+        arguments: [
+          {
+            name: 'all',
+            type: 'boolean',
+            helpText: 'If true, claim ALL pending orders. If false, claim only the first one.',
+            position: 0,
+            defaultValue: 'false',
+          },
+        ],
+      }),
     ];
   }
 }
