@@ -24,7 +24,7 @@
     "release:patch": "npm version patch --no-git-tag-version --workspaces && git add **/package.json; npm version patch --include-workspace-root --force"
   },
   "engines": {
-    "node": "18.18.x",
+    "node": "18.20.x",
     "npm": ">=9"
   },
   "contributors": [
@@ -95,7 +95,7 @@
     "storybook": "7.6.20",
     "ts-mocha": "^10.0.0",
     "ts-node": "10.9.2",
-    "typedoc": "^0.25.9",
+    "typedoc": "^0.26.0",
     "typescript": "^5.3.3",
     "typescript-eslint": "^7.17.0",
     "vite-tsconfig-paths": "^4.2.1",
