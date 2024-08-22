@@ -58,7 +58,7 @@ function Component() {
   );
 
   // initialize the sdkError for generic handling of errors
-  const sdkErrorHandler = oryError(getFlow, setFlow, '/recovery');
+  const sdkErrorHandler = oryError(getFlow, setFlow, '/account/recovery');
 
   // create a new recovery flow
   const createFlow = () => {

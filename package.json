@@ -119,7 +119,7 @@
     "@faker-js/faker": "^7.6.0",
     "@hookform/resolvers": "^3.3.4",
     "@ory/client": "^1.1.21",
-    "@ory/elements": "^0.0.1-beta.7",
+    "@ory/elements": "^0.3.0",
     "@sentry/node": "^7.44.2",
     "@sentry/tracing": "^7.44.2",
     "@socket.io/redis-adapter": "^8.2.1",
