@@ -101,11 +101,11 @@ export function traceableClass(name: string) {
 
           if (key !== 'constructor' && typeof this[typedKey] === 'function') {
             const originalMethod = this[typedKey];
-            // @ts-expect-error - I don't know how to fix this :(
-            this[typedKey] = ctx.wrap(`${name}:${key}`, (...args: any[]) => {
-              // @ts-expect-error - I don't know how to fix this :(
-              return originalMethod.bind(this)(...args);
-            });
+            if (typeof originalMethod === 'function') {
+              this[typedKey] = ctx.wrap(`${name}:${key}`, (...args: any[]) => {
+                return originalMethod.bind(this)(...args);
+              }) as (typeof this)[typeof typedKey];
+            }
           }
         }
       }

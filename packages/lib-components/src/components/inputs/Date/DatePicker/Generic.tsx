@@ -103,8 +103,10 @@ export const GenericDatePicker: FC<GenericDatePickerProps> = ({
   const [selectedDateTime, setSelectedDateTime] = useState<DateTime>(initialSelectedDateTime);
   const [friendlyName, setFriendlyName] = useState<string | undefined>(undefined);
 
-  const isDateOnly = !timeFormats.includes(format);
-  const isTimeOnly = !dateFormats.includes(format);
+  const isFormatInTimeFormats = timeFormats.includes(JSON.stringify(format));
+  const isFormatInDateFormats = dateFormats.includes(JSON.stringify(format));
+  const isDateOnly = !isFormatInTimeFormats;
+  const isTimeOnly = !isFormatInDateFormats;
   const isDateTime = !isDateOnly && !isTimeOnly;
 
   const isAbsolute = mode === 'absolute';
@@ -181,7 +183,7 @@ export const GenericDatePicker: FC<GenericDatePickerProps> = ({
         <ContentContainer>
           {isAbsolute && (
             <InnerContainer>
-              {dateFormats.includes(format) && (
+              {isFormatInDateFormats && (
                 <Calendar
                   id={`calendar-${id}`}
                   // should be start of day to not update the time when only selecting a date
@@ -200,7 +202,7 @@ export const GenericDatePicker: FC<GenericDatePickerProps> = ({
                   }}
                 />
               )}
-              {timeFormats.includes(format) && (
+              {isFormatInTimeFormats && (
                 <TimePicker
                   selectedDate={selectedDateTime}
                   interval={timePickerOptions?.interval}

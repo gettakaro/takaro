@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { StrictMode, useState } from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../../styled';
 import { Button, DatePicker, DatePickerProps } from '../../../../components';
@@ -229,5 +229,39 @@ export const RelativeSubmit: StoryFn<DatePickerProps> = (args) => {
       </form>
       <p>result: {result}</p>
     </Wrapper>
+  );
+};
+
+export const AbsoluteSubmit = () => {
+  const [result, setResult] = useState<string>();
+  const { control, handleSubmit } = useForm<FormFields>({
+    mode: 'onSubmit',
+    resolver: zodResolver(validationSchema),
+  });
+
+  const onSubmit: SubmitHandler<FormFields> = ({ date }) => {
+    setResult(date);
+  };
+
+  return (
+    <StrictMode>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <DatePicker
+          mode="absolute"
+          control={control}
+          label="Expiration date"
+          name="date"
+          required={false}
+          loading={false}
+          description={'The role will be automatically removed after this date'}
+          popOverPlacement={'bottom'}
+          timePickerOptions={{ interval: 30 }}
+          allowPastDates={false}
+          format={DateTime.TIME_SIMPLE}
+        />
+        <Button type="submit" text="Submit form" />
+      </form>
+      <p>result: {result}</p>
+    </StrictMode>
   );
 };

@@ -21,7 +21,7 @@ export const timeFormats = [
   DateTime.TIME_24_WITH_SHORT_OFFSET,
   DateTime.TIME_24_WITH_LONG_OFFSET,
   ...DateAndTimeFormats,
-];
+].map((format) => JSON.stringify(format));
 
 export const dateFormats = [
   DateTime.DATE_SHORT,
@@ -29,4 +29,4 @@ export const dateFormats = [
   DateTime.DATE_FULL,
   DateTime.DATE_HUGE,
   ...DateAndTimeFormats,
-];
+].map((format) => JSON.stringify(format));
