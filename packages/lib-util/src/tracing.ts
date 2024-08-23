@@ -2,8 +2,7 @@
 //diag.setLogger(new DiagConsoleLogger(), DiagLogLevel.VERBOSE);
 import { NodeSDK, resources } from '@opentelemetry/sdk-node';
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
-import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
-
+import { ATTR_SERVICE_NAME } from '@opentelemetry/semantic-conventions';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
 
 if (process.env.TRACING_ENABLED === 'true') {
@@ -15,7 +14,7 @@ if (process.env.TRACING_ENABLED === 'true') {
     traceExporter,
     instrumentations: [getNodeAutoInstrumentations()],
     resource: new resources.Resource({
-      [SemanticResourceAttributes.SERVICE_NAME]: process.env.TAKARO_SERVICE,
+      [ATTR_SERVICE_NAME]: process.env.TAKARO_SERVICE,
     }),
   });
 
