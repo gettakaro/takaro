@@ -28,7 +28,7 @@
     "human-id": "^4.0.0",
     "jsonwebtoken": "^8.5.1",
     "maxmind": "^4.3.18",
-    "passport": "^0.6.0",
+    "passport": "^0.7.0",
     "passport-oauth2": "^1.7.0",
     "pg": "^8.8.0"
   },

@@ -87,7 +87,7 @@ function Component() {
         <Drawer.Heading>Assign role</Drawer.Heading>
         <Drawer.Body>
           <CollapseList>
-            <form onSubmit={handleSubmit(onSubmit)} id="create-role-form">
+            <form onSubmit={handleSubmit(onSubmit)} id="assign-player-role-form">
               <CollapseList.Item title="General">
                 <TextField readOnly control={control} name="playerId" label="Player" />
                 <RoleSelect control={control} name="roleId" />
@@ -116,12 +116,12 @@ function Component() {
                 <DatePicker
                   mode="absolute"
                   control={control}
-                  label={'Expiration date'}
-                  name={'expiresAt'}
+                  label="Expiration date"
+                  name="expiresAt"
                   required={false}
                   loading={isPending}
-                  description={'The role will be automatically removed after this date'}
-                  popOverPlacement={'bottom'}
+                  description="The role will be automatically removed after this date"
+                  popOverPlacement="bottom"
                   allowPastDates={false}
                   timePickerOptions={{ interval: 30 }}
                   format={DateTime.DATETIME_SHORT}
