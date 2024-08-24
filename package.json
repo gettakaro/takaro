@@ -116,7 +116,7 @@
     "@aws-sdk/client-lambda": "^3.583.0",
     "@aws-sdk/client-s3": "^3.583.0",
     "@discordjs/rest": "^1.7.1",
-    "@faker-js/faker": "^7.6.0",
+    "@faker-js/faker": "^8.0.0",
     "@hookform/resolvers": "^3.3.4",
     "@ory/client": "^1.1.21",
     "@ory/elements": "^0.3.0",
