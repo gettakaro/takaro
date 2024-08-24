@@ -2,6 +2,8 @@ import { Worker, Processor, WorkerOptions } from 'bullmq';
 import { logger, ctx, addCounter } from '@takaro/util';
 import { getRedisConnectionOptions } from './util/redisConnectionOptions.js';
 
+type WorkerOptionsWithoutConnectionOptions = Omit<WorkerOptions, 'connection'>;
+
 export abstract class TakaroWorker<T> {
   log = logger('worker');
   public bullWorker: Worker<T, unknown>;
@@ -10,7 +12,7 @@ export abstract class TakaroWorker<T> {
     name: string,
     concurrency = 1,
     fn: Processor<T, unknown>,
-    extraBullOpts: WorkerOptions = { connection: getRedisConnectionOptions() },
+    extraBullOpts: WorkerOptionsWithoutConnectionOptions,
   ) {
     const label = `worker:${name}`;
 
@@ -23,6 +25,7 @@ export abstract class TakaroWorker<T> {
     );
 
     this.bullWorker = new Worker(name, instrumentedProcessor as Processor, {
+      connection: getRedisConnectionOptions(),
       concurrency,
       removeOnComplete: { count: 100 },
       removeOnFail: { count: 5000 },
