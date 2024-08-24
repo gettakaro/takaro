@@ -12,8 +12,7 @@
     "_test": "jest",
     "test:unit": "CI=true vitest",
     "test:watch": "jest --watch",
-    "test:update": "jest --updateSnapshot",
-    "sort-package": "sort-package-json"
+    "test:update": "jest --updateSnapshot"
   },
   "devDependencies": {
     "@hookform/devtools": "^4.2.2",
@@ -24,7 +23,6 @@
     "@types/topojson-client": "^3.1.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "sort-package-json": "^2.0.0",
     "storybook": "7.6.20"
   },
   "peerDependencies": {
