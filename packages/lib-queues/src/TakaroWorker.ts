@@ -12,7 +12,7 @@ export abstract class TakaroWorker<T> {
     name: string,
     concurrency = 1,
     fn: Processor<T, unknown>,
-    extraBullOpts: WorkerOptionsWithoutConnectionOptions,
+    extraBullOpts: WorkerOptionsWithoutConnectionOptions = {},
   ) {
     const label = `worker:${name}`;
 
