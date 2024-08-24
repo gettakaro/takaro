@@ -85,12 +85,12 @@ export class MockGameserver implements IMockGameServer {
     const players = Array.from(Array(5).keys()).map((p) => ({
       gameId: p.toString(),
       name: faker.internet.userName(),
-      epicOnlineServicesId: faker.random.alphaNumeric(16),
-      steamId: faker.random.alphaNumeric(16),
-      xboxLiveId: faker.random.alphaNumeric(16),
-      positionX: 500 - parseInt(faker.random.numeric(3), 10),
-      positionY: 500 - parseInt(faker.random.numeric(3), 10),
-      positionZ: 500 - parseInt(faker.random.numeric(3), 10),
+      epicOnlineServicesId: faker.string.alphanumeric(16),
+      steamId: faker.string.alphanumeric(16),
+      xboxLiveId: faker.string.alphanumeric(16),
+      positionX: 500 - faker.number.int({ max: 999 }),
+      positionY: 500 - faker.number.int({ max: 999 }),
+      positionZ: 500 - faker.number.int({ max: 999 }),
       online: 'true',
     }));
 
@@ -116,7 +116,7 @@ export class MockGameserver implements IMockGameServer {
       name: player.name,
       ip: player.ip,
       steamId: player.steamId,
-      ping: parseInt(faker.random.numeric(2), 10),
+      ping: faker.number.int({ max: 99 }),
     });
   }
 
@@ -138,7 +138,7 @@ export class MockGameserver implements IMockGameServer {
             name: player.name,
             ip: player.ip,
             steamId: player.steamId,
-            ping: parseInt(faker.random.numeric(2), 10),
+            ping: faker.number.int({ max: 99 }),
           }),
       ),
     );
@@ -347,11 +347,11 @@ export class MockGameserver implements IMockGameServer {
     return [
       new IItemDTO({
         code: 'wood',
-        amount: parseInt(faker.random.numeric(2), 10),
+        amount: faker.number.int({ max: 99 }),
       }),
       new IItemDTO({
         code: 'stone',
-        amount: parseInt(faker.random.numeric(2), 10),
+        amount: faker.number.int({ max: 99 }),
       }),
     ];
   }
