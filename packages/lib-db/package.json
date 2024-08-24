@@ -18,7 +18,7 @@
   "license": "ISC",
   "dependencies": {
     "convict": "^6.2.3",
-    "knex": "^2.2.0",
+    "knex": "^3.0.0",
     "objection": "^3.0.1",
     "pg": "^8.8.0"
   },
