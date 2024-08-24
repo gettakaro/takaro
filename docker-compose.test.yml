@@ -147,5 +147,4 @@ services:
       
 networks:
   takaro:
-    external:
-      name: takaro
+    external: true
