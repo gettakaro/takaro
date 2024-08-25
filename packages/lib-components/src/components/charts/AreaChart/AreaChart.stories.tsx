@@ -56,8 +56,8 @@ interface PingData {
 function generateData() {
   const data: PingData[] = [];
   for (let i = 0; i < 100; i++) {
-    const timestamp = faker.date.between('2021-01-01T00:00:00Z', '2021-01-31T23:59:59Z').toISOString();
-    const latency = faker.datatype.number({ min: 0, max: 70, precision: 1 });
+    const timestamp = faker.date.between({ from: '2021-01-01T00:00:00Z', to: '2021-01-31T23:59:59Z' }).toISOString();
+    const latency = faker.number.float({ min: 0, max: 70, precision: 1 });
     data.push({ timestamp, latency });
   }
   data.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
