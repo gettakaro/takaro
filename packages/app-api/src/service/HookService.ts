@@ -59,7 +59,7 @@ export class HookOutputDTO extends TakaroModelDTO<HookOutputDTO> {
 
 export class HookCreateDTO extends TakaroDTO<HookCreateDTO> {
   @IsString()
-  @Length(3, 50)
+  @Length(1, 50)
   name: string;
 
   @Validate(IsSafeRegex, {
@@ -85,7 +85,7 @@ export class HookCreateDTO extends TakaroDTO<HookCreateDTO> {
 }
 
 export class HookUpdateDTO extends TakaroDTO<HookUpdateDTO> {
-  @Length(3, 50)
+  @Length(1, 50)
   @IsString()
   @IsOptional()
   name: string;
