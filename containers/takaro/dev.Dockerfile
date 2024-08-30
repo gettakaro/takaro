@@ -1,4 +1,4 @@
-FROM node:18.20.4-bullseye
+FROM node:20.17.0-bullseye
 
 ENV NODE_ENV=development
 
