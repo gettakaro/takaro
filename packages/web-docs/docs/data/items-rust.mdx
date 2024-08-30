@@ -1,0 +1,43 @@
+---
+title: Items Rust
+hide_table_of_contents: true
+---
+
+import React from 'react';
+import rustItems from './items-rust.json';
+
+export function RustItems() {
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Category</th>
+          <th>Stackable</th>
+          <th>Code</th>
+        </tr>
+      </thead>
+      <tbody>
+        {Object.values(rustItems).map((item) => {
+
+          return (
+            <tr key={item.itemid}>
+              <td>{item.Name}</td>
+              <td>{item.Description}</td>
+              <td>{item.Category}</td>
+              <td>{item.stackable}</td>
+              <td>{item.shortname}</td>
+          </tr>)
+        })}
+      </tbody>
+    </table>
+
+);
+}
+
+# Rust items list
+
+This data is fetched automatically from the latest version of the game.
+
+<RustItems />
