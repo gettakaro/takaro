@@ -12,7 +12,7 @@ export async function getMockPlayer(extra: Partial<IGamePlayer> = {}): Promise<I
   const data: Partial<IGamePlayer> = {
     gameId: '1',
     name: 'mock-player',
-    steamId: faker.random.alphaNumeric(17),
+    steamId: faker.string.alphanumeric(17),
     ...extra,
   };
 

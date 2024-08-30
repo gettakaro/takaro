@@ -1,0 +1,27 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "expiresAt": "2024-08-30T09:40:46.419Z",
+      "value": "Updated value",
+      "updatedAt": "2024-08-30T08:40:46.434Z",
+      "createdAt": "2024-08-30T08:40:46.418Z",
+      "id": "85ffa578-6cf3-40dd-be4c-60d005305426",
+      "key": "Test variable",
+      "gameServerId": null,
+      "playerId": null,
+      "moduleId": null
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "VariableController",
+    "snapshot": true,
+    "name": "Create var without expiry and update with expiry",
+    "expectedStatus": 200,
+    "filteredFields": [
+      "expiresAt"
+    ],
+    "standardEnvironment": true
+  }
+}

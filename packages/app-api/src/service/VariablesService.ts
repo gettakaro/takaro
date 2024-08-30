@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsISO8601, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { TakaroDTO, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { TakaroService } from './Base.js';
 import { VariableRepo, VariablesModel } from '../db/variable.js';
@@ -15,6 +15,10 @@ export class VariableOutputDTO extends TakaroModelDTO<VariableOutputDTO> {
 
   @IsString()
   value: string;
+
+  @IsISO8601()
+  @IsOptional()
+  expiresAt?: string;
 
   @IsUUID()
   @IsOptional()
@@ -51,6 +55,10 @@ export class VariableCreateDTO extends TakaroDTO<VariableCreateDTO> {
   @IsString()
   value: string;
 
+  @IsISO8601()
+  @IsOptional()
+  expiresAt?: string;
+
   @IsUUID()
   @IsOptional()
   gameServerId?: string;
@@ -71,6 +79,10 @@ export class VariableUpdateDTO extends TakaroDTO<VariableUpdateDTO> {
 
   @IsString()
   value: string;
+
+  @IsISO8601()
+  @IsOptional()
+  expiresAt?: string;
 
   @IsUUID()
   @IsOptional()
@@ -115,5 +127,12 @@ export class VariablesService extends TakaroService<
   async delete(id: string) {
     await this.repo.delete(id);
     return id;
+  }
+
+  async cleanExpiringVariables() {
+    // Raw query to avoid the business-logic which filters out expired variables
+    const { query } = await this.repo.getModel();
+    const now = new Date();
+    await query.where('expiresAt', '<', now.toISOString()).delete();
   }
 }

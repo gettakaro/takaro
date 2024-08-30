@@ -67,7 +67,7 @@ export class CommandArgumentOutputDTO extends TakaroModelDTO<CommandArgumentOutp
 
 export class CommandCreateDTO extends TakaroDTO<CommandCreateDTO> implements ICommand {
   @IsString()
-  @Length(3, 150)
+  @Length(1, 150)
   name: string;
 
   @IsString()
@@ -92,7 +92,7 @@ export class CommandCreateDTO extends TakaroDTO<CommandCreateDTO> implements ICo
 
 export class CommandArgumentCreateDTO extends TakaroDTO<CommandArgumentCreateDTO> implements ICommandArgument {
   @IsString()
-  @Length(2, 150)
+  @Length(1, 150)
   name: string;
 
   @IsString()
@@ -115,7 +115,7 @@ export class CommandArgumentCreateDTO extends TakaroDTO<CommandArgumentCreateDTO
 }
 
 export class CommandUpdateDTO extends TakaroDTO<CommandUpdateDTO> {
-  @Length(3, 150)
+  @Length(1, 150)
   @IsString()
   @IsOptional()
   name?: string;
@@ -140,7 +140,7 @@ export class CommandUpdateDTO extends TakaroDTO<CommandUpdateDTO> {
 
 export class CommandArgumentUpdateDTO extends TakaroDTO<CommandArgumentUpdateDTO> {
   @IsString()
-  @Length(3, 150)
+  @Length(1, 150)
   @IsOptional()
   name?: string;
 

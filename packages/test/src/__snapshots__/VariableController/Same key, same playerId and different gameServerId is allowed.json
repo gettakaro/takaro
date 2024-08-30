@@ -9,6 +9,7 @@
       "value": "Test value",
       "gameServerId": "8ee6dd6f-0498-468e-a449-e00be600e71e",
       "playerId": "0f810184-f403-4233-9f02-f9f9ff942a4e",
+      "expiresAt": null,
       "moduleId": null
     }
   },

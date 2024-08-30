@@ -12,8 +12,7 @@
     "_test": "jest",
     "test:unit": "CI=true vitest",
     "test:watch": "jest --watch",
-    "test:update": "jest --updateSnapshot",
-    "sort-package": "sort-package-json"
+    "test:update": "jest --updateSnapshot"
   },
   "devDependencies": {
     "@hookform/devtools": "^4.2.2",
@@ -24,7 +23,6 @@
     "@types/topojson-client": "^3.1.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "sort-package-json": "^1.53.1",
     "storybook": "7.6.20"
   },
   "peerDependencies": {
@@ -47,7 +45,7 @@
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.50.1",
-    "react-icons": "^4.11.0",
+    "react-icons": "^4.11.0 || ^5.0.0",
     "react-intersection-observer": "^9.5.1",
     "react-virtualized-auto-sizer": "^1.0.9",
     "react-window": "^1.8.8",

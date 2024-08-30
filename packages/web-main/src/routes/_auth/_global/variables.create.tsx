@@ -28,6 +28,7 @@ function Component() {
       moduleId: variable.moduleId,
       playerId: variable.playerId,
       gameServerId: variable.gameServerId,
+      expiresAt: variable.expiresAt,
     });
   }
 

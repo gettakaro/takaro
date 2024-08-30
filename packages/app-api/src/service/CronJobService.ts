@@ -29,7 +29,7 @@ export class CronJobOutputDTO extends TakaroModelDTO<CronJobOutputDTO> {
 
 export class CronJobCreateDTO extends TakaroDTO<CronJobCreateDTO> {
   @IsString()
-  @Length(3, 50)
+  @Length(1, 50)
   name!: string;
 
   @IsString()
@@ -44,7 +44,7 @@ export class CronJobCreateDTO extends TakaroDTO<CronJobCreateDTO> {
 }
 
 export class CronJobUpdateDTO extends TakaroDTO<CronJobUpdateDTO> {
-  @Length(3, 50)
+  @Length(1, 50)
   @IsString()
   @IsOptional()
   name!: string;

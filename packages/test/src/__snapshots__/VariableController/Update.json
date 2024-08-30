@@ -9,6 +9,7 @@
       "value": "Updated value",
       "gameServerId": null,
       "playerId": null,
+      "expiresAt": null,
       "moduleId": null
     }
   },
