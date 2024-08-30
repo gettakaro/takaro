@@ -7,7 +7,7 @@ import { IHookJobData, ICommandJobData, ICronJobData, isCommandData, isHookData,
 import { executeLambda } from '@takaro/aws';
 import { config } from '../config.js';
 import { RateLimiterRedis, RateLimiterRes } from 'rate-limiter-flexible';
-import { CommandService } from '../service/CommandService.js';
+import { commandLockKey, CommandService } from '../service/CommandService.js';
 import { PlayerOnGameServerService } from '../service/PlayerOnGameserverService.js';
 import { EVENT_TYPES, EventCreateDTO, EventService } from '../service/EventService.js';
 import {
@@ -23,6 +23,8 @@ import {
 } from '@takaro/modules';
 import { HookService } from '../service/HookService.js';
 import { CronJobService } from '../service/CronJobService.js';
+import { GameServerService } from '../service/GameServerService.js';
+import { IMessageOptsDTO, IPlayerReferenceDTO } from '@takaro/gameserver';
 
 const rateLimiterMap: Map<string, RateLimiterRedis> = new Map();
 
@@ -88,6 +90,7 @@ export async function executeFunction(
 ) {
   const rateLimiter = await getRateLimiter(domainId);
   const token = await getJobToken(domainId);
+  const redisClient = await Redis.getClient('worker:command-lock');
 
   const client = new Client({
     auth: {
@@ -128,6 +131,7 @@ export async function executeFunction(
 
     if (!command) throw new errors.InternalServerError();
     if ('commands' in data.module.systemConfig) {
+      // Handle cost
       const commandsConfig = data.module.systemConfig?.commands as Record<string, any>;
       const cost = commandsConfig[command?.name]?.cost;
       if (cost) {
@@ -140,6 +144,48 @@ export async function executeFunction(
               },
             },
           });
+          return;
+        }
+      }
+
+      // Handle cooldown
+      const cooldown = commandsConfig[command?.name]?.cooldown;
+
+      if (cooldown) {
+        const lastExecution = await eventService.metadataSearch(
+          {
+            filters: {
+              playerId: [data.player.id],
+              gameserverId: [data.gameServerId],
+            },
+            greaterThan: {
+              createdAt: new Date(Date.now() - cooldown * 1000),
+            },
+          },
+          [
+            {
+              logicalOperator: 'AND',
+              filters: [{ field: 'command.id', operator: '=', value: data.itemId }],
+            },
+          ],
+        );
+
+        if (lastExecution.results.length) {
+          log.warn(
+            `Player ${data.player.id} tried to execute command ${data.itemId} but the cooldown hasn't passed yet`,
+          );
+
+          const lastExecutionDate = new Date(lastExecution.results[0].createdAt);
+          const timeWhenCanExecute = new Date(lastExecutionDate.getTime() + cooldown * 1000);
+
+          const gameserverService = new GameServerService(domainId);
+          await gameserverService.sendMessage(
+            data.gameServerId,
+            `This command can only be executed once every ${cooldown} seconds. You can execute it again at ${timeWhenCanExecute.toISOString()}`,
+            new IMessageOptsDTO({
+              recipient: new IPlayerReferenceDTO({ gameId: data.pog.gameId }),
+            }),
+          );
           return;
         }
       }
@@ -275,5 +321,9 @@ export async function executeFunction(
     log.error('executeFunction', err);
     await eventService.create(new EventCreateDTO({ ...eventData, meta }));
     return null;
+  } finally {
+    if (isCommandData(data)) {
+      await redisClient.del(commandLockKey(data));
+    }
   }
 }
