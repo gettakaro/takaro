@@ -1,4 +1,4 @@
-FROM node:18.20.4-alpine AS builder
+FROM node:20.17.0-alpine AS builder
 
 ARG PACKAGE
 ENV NODE_ENV=development
