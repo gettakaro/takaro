@@ -42,7 +42,7 @@
     "@storybook/cli": "7.6.20",
     "@storybook/react": "7.6.20",
     "@storybook/react-vite": "7.6.20",
-    "@testing-library/react": "^14.1.2",
+    "@testing-library/react": "^16.0.0",
     "@types/body-parser": "^1.19.2",
     "@types/chai": "^4.2.22",
     "@types/chai-as-promised": "^7.1.4",
