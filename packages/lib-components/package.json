@@ -17,7 +17,7 @@
   "devDependencies": {
     "@hookform/devtools": "^4.2.2",
     "@mdx-js/react": "^2.1.5",
-    "@types/jest": "^28.1.6",
+    "@types/jest": "^29.0.0",
     "@types/react-window": "^1.8.5",
     "@types/styled-components": "^5.1.25",
     "@types/topojson-client": "^3.1.4",
