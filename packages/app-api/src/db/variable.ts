@@ -18,6 +18,8 @@ export class VariablesModel extends TakaroModel {
   playerId?: string;
   moduleId?: string;
 
+  expiresAt?: string;
+
   static relationMappings = {
     gameServer: {
       relation: TakaroModel.BelongsToOneRelation,
@@ -58,7 +60,14 @@ export class VariableRepo extends ITakaroRepo<VariablesModel, VariableOutputDTO,
   }
   async find(filters: ITakaroQuery<VariableOutputDTO>) {
     const { query } = await this.getModel();
-    const result = await new QueryBuilder<VariablesModel, VariableOutputDTO>(filters).build(query);
+    // Create a subquery for expiring variables
+    // We filter out any vars that are past the expiry date AND are not null
+    const subquery = query.clone().whereNotNull('expiresAt').where('expiresAt', '<', new Date().toISOString());
+
+    const result = await new QueryBuilder<VariablesModel, VariableOutputDTO>(filters)
+      .build(query)
+      .whereNotIn('id', subquery.select('id'));
+
     return {
       total: result.total,
       results: await Promise.all(result.results.map((item) => new VariableOutputDTO(item))),
@@ -67,7 +76,11 @@ export class VariableRepo extends ITakaroRepo<VariablesModel, VariableOutputDTO,
 
   async findOne(id: string): Promise<VariableOutputDTO> {
     const { query } = await this.getModel();
-    const data = await query.findById(id);
+    // Create a subquery for expiring variables
+    // We filter out any vars that are past the expiry date AND are not null
+    const subquery = query.clone().whereNotNull('expiresAt').where('expiresAt', '<', new Date().toISOString());
+
+    const data = await query.findById(id).whereNotIn('id', subquery.select('id'));
 
     if (!data) {
       throw new errors.NotFoundError();

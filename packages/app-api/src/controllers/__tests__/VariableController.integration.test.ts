@@ -311,6 +311,65 @@ const tests = [
     },
     expectedStatus: 409, // Expect a conflict HTTP status code
   }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: true,
+    name: 'Can create expiring variables',
+    setup: SetupGameServerPlayers.setup,
+    filteredFields: ['expiresAt'],
+    test: async function () {
+      const res = await this.client.variable.variableControllerCreate({
+        key: 'Test variable',
+        value: 'Test value',
+        expiresAt: new Date(Date.now() + 1000 * 60 * 60).toISOString(),
+      });
+
+      expect(res.data.data.expiresAt).to.not.be.null;
+
+      return res;
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: true,
+    name: 'Create var without expiry and update with expiry',
+    setup: SetupGameServerPlayers.setup,
+    filteredFields: ['expiresAt'],
+    test: async function () {
+      const res = await this.client.variable.variableControllerCreate({
+        key: 'Test variable',
+        value: 'Test value',
+      });
+
+      expect(res.data.data.expiresAt).to.be.null;
+
+      const secondRes = await this.client.variable.variableControllerUpdate(res.data.data.id, {
+        expiresAt: new Date(Date.now() + 1000 * 60 * 60).toISOString(),
+        value: 'Updated value',
+      });
+
+      expect(secondRes.data.data.expiresAt).to.not.be.null;
+
+      return secondRes;
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Create var with expiry in the past, fetching it should return 404',
+    setup: SetupGameServerPlayers.setup,
+    filteredFields: ['expiresAt'],
+    test: async function () {
+      const createRes = await this.client.variable.variableControllerCreate({
+        key: 'Test variable',
+        value: 'Test value',
+        expiresAt: new Date(Date.now() - 100).toISOString(),
+      });
+
+      await expect(this.client.variable.variableControllerFindOne(createRes.data.data.id)).to.be.rejectedWith('404');
+    },
+    expectedStatus: 404,
+  }),
 ];
 
 describe(group, function () {

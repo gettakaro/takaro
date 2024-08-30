@@ -129,6 +129,18 @@ function Component() {
       cell: (info) => <DateFormatter ISODate={info.getValue()} />,
       enableSorting: false,
     }),
+    columnHelper.accessor('expiresAt', {
+      header: 'Expires at',
+      id: 'expiresAt',
+      meta: { dataType: 'datetime' },
+      cell: (info) => {
+        const value = info.getValue();
+
+        if (!value) return 'Never';
+        return <DateFormatter ISODate={value} />;
+      },
+      enableSorting: false,
+    }),
     columnHelper.display({
       header: 'Actions',
       id: 'actions',

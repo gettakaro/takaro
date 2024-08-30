@@ -2,13 +2,13 @@
   "body": {
     "meta": {},
     "data": {
-      "id": "1e080cc8-ba84-4fc9-8b9b-133eeb544ae9",
-      "createdAt": "2023-07-13T19:15:54.951Z",
-      "updatedAt": "2023-07-13T19:15:54.952Z",
       "key": "Test variable",
       "value": "Test value",
+      "expiresAt": "2024-08-30T09:40:45.577Z",
+      "createdAt": "2024-08-30T08:40:45.591Z",
+      "updatedAt": "2024-08-30T08:40:45.591Z",
+      "id": "eea5140f-fbd4-4f6b-a615-59301244cb65",
       "gameServerId": null,
-      "expiresAt": null,
       "playerId": null,
       "moduleId": null
     }
@@ -17,9 +17,11 @@
   "test": {
     "group": "VariableController",
     "snapshot": true,
-    "name": "Create",
+    "name": "Can create expiring variables",
     "expectedStatus": 200,
-    "filteredFields": [],
+    "filteredFields": [
+      "expiresAt"
+    ],
     "standardEnvironment": true
   }
 }
