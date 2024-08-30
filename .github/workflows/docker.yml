@@ -128,7 +128,7 @@ jobs:
           GRAFANA_CLOUD_API_KEY: ${{ secrets.GRAFANA_CLOUD_API_KEY }}
 
       - name: Commit and push if changed
-        if: github.event_name == 'push' && contains(github.ref, 'refs/heads/development')
+        if: github.event_name == 'push' && github.ref == 'refs/heads/development'
         run: |
           if git diff --quiet; then
             echo "No changes to commit."
