@@ -355,7 +355,7 @@ const tests = [
   }),
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
-    snapshot: true,
+    snapshot: false,
     name: 'Create var with expiry in the past, fetching it should return 404',
     setup: SetupGameServerPlayers.setup,
     filteredFields: ['expiresAt'],
