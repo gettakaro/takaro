@@ -180,6 +180,7 @@ export async function executeFunction(
             filters: {
               playerId: [data.player.id],
               gameserverId: [data.gameServerId],
+              eventName: [EVENT_TYPES.COMMAND_EXECUTED],
             },
             greaterThan: {
               createdAt: new Date(Date.now() - cooldown * 1000),
