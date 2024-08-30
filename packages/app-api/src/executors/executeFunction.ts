@@ -7,7 +7,7 @@ import { IHookJobData, ICommandJobData, ICronJobData, isCommandData, isHookData,
 import { executeLambda } from '@takaro/aws';
 import { config } from '../config.js';
 import { RateLimiterRedis, RateLimiterRes } from 'rate-limiter-flexible';
-import { commandLockKey, CommandService } from '../service/CommandService.js';
+import { commandsRunningKey, CommandService } from '../service/CommandService.js';
 import { PlayerOnGameServerService } from '../service/PlayerOnGameserverService.js';
 import { EVENT_TYPES, EventCreateDTO, EventService } from '../service/EventService.js';
 import {
@@ -117,6 +117,7 @@ export async function executeFunction(
   });
 
   if (isCommandData(data)) {
+    const gameserverService = new GameServerService(domainId);
     const commandService = new CommandService(domainId);
     const command = await commandService.findOne(data.itemId);
     if (!command) throw new errors.InternalServerError();
@@ -136,22 +137,44 @@ export async function executeFunction(
       const cost = commandsConfig[command?.name]?.cost;
       if (cost) {
         if (data.pog.currency < cost) {
-          await client.gameserver.gameServerControllerSendMessage(data.gameServerId, {
-            message: 'You do not have enough currency to execute this command.',
-            opts: {
-              recipient: {
+          await gameserverService.sendMessage(
+            data.gameServerId,
+            'You do not have enough currency to execute this command.',
+            new IMessageOptsDTO({
+              recipient: new IPlayerReferenceDTO({
                 gameId: data.pog.gameId,
-              },
-            },
-          });
+              }),
+            }),
+          );
           return;
         }
       }
 
       // Handle cooldown
       const cooldown = commandsConfig[command?.name]?.cooldown;
+      const redisRes = (await redisClient.get(commandsRunningKey(data))) ?? '0';
+      await redisClient.decr(commandsRunningKey(data));
+      const commandsRunning = parseInt(redisRes, 10);
 
       if (cooldown) {
+        if (commandsRunning > 1) {
+          log.warn(
+            `Player ${data.player.id} tried to execute command ${data.itemId} but the command is already running ${commandsRunning} times`,
+          );
+
+          await gameserverService.sendMessage(
+            data.gameServerId,
+            'You can only execute one command at a time. Please wait for the previous command to finish.',
+            new IMessageOptsDTO({
+              recipient: new IPlayerReferenceDTO({
+                gameId: data.pog.gameId,
+              }),
+            }),
+          );
+
+          return;
+        }
+
         const lastExecution = await eventService.metadataSearch(
           {
             filters: {
@@ -321,9 +344,5 @@ export async function executeFunction(
     log.error('executeFunction', err);
     await eventService.create(new EventCreateDTO({ ...eventData, meta }));
     return null;
-  } finally {
-    if (isCommandData(data)) {
-      await redisClient.del(commandLockKey(data));
-    }
   }
 }

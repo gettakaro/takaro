@@ -3,7 +3,7 @@ import { TakaroService } from './Base.js';
 import { CommandModel, CommandRepo } from '../db/command.js';
 import { IsNumber, IsOptional, IsString, IsUUID, Length, ValidateNested } from 'class-validator';
 import { FunctionCreateDTO, FunctionOutputDTO, FunctionService, FunctionUpdateDTO } from './FunctionService.js';
-import { IMessageOptsDTO, IPlayerReferenceDTO } from '@takaro/gameserver';
+import { IMessageOptsDTO } from '@takaro/gameserver';
 import { ICommandJobData, IParsedCommand, queueService } from '@takaro/queues';
 import { Type } from 'class-transformer';
 import { TakaroDTO, errors, TakaroModelDTO, traceableClass } from '@takaro/util';
@@ -18,8 +18,8 @@ import { PlayerOnGameServerService } from './PlayerOnGameserverService.js';
 import { ModuleService } from './ModuleService.js';
 import { UserService } from './UserService.js';
 
-export function commandLockKey(data: ICommandJobData) {
-  return `command:${data.pog.id}`;
+export function commandsRunningKey(data: ICommandJobData) {
+  return `commands-running:${data.pog.id}`;
 }
 
 export class CommandOutputDTO extends TakaroModelDTO<CommandOutputDTO> {
@@ -345,7 +345,6 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
           );
         }
 
-        const redisClient = await Redis.getClient('worker:command-lock');
         const jobData = {
           timestamp: data.timestamp,
           domainId: this.domainId,
@@ -361,26 +360,8 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
           trigger: commandName,
         };
 
-        const isLocked = await redisClient.exists(commandLockKey(jobData));
-
-        if (isLocked) {
-          this.log.warn(`Command is locked for player ${data.player.id}`);
-
-          const gameserverService = new GameServerService(this.domainId);
-          await gameserverService.sendMessage(
-            jobData.gameServerId,
-            'You can only execute one command at a time. Please wait for the previous command to finish.',
-            new IMessageOptsDTO({
-              recipient: new IPlayerReferenceDTO({ gameId: jobData.pog.gameId }),
-            }),
-          );
-
-          return;
-        }
-
-        await redisClient.set(commandLockKey(jobData), '1', {
-          EX: 300,
-        });
+        const redisClient = await Redis.getClient('worker:command-lock');
+        await redisClient.incr(commandsRunningKey(jobData));
 
         return queueService.queues.commands.queue.add(jobData, { delay });
       });
