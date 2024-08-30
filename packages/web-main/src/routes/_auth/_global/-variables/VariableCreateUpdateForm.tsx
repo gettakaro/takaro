@@ -1,12 +1,13 @@
 import { FC, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { styled, Button, TextField, Drawer, FormError, TextAreaField, Alert } from '@takaro/lib-components';
+import { styled, Button, TextField, Drawer, FormError, TextAreaField, Alert, DatePicker } from '@takaro/lib-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from '@tanstack/react-router';
 import { VariableOutputDTO } from '@takaro/apiclient';
 import { z } from 'zod';
 import { GameServerSelect, PlayerSelect } from 'components/selects';
 import { ModuleSelect } from 'components/selects/ModuleSelect';
+import { DateTime } from 'luxon';
 
 export enum ExecutionType {
   CREATE = 'create',
@@ -19,6 +20,7 @@ const validationSchema = z.object({
   playerId: z.string().uuid().optional(),
   gameServerId: z.string().uuid().optional(),
   moduleId: z.string().uuid().optional(),
+  expiresAt: z.string().optional(),
 });
 export type IFormInputs = z.infer<typeof validationSchema>;
 
@@ -55,6 +57,7 @@ export const VariablesForm: FC<CreateAndUpdateVariableformProps> = ({ variable, 
       playerId: variable?.playerId,
       gameServerId: variable?.gameServerId,
       moduleId: variable?.moduleId,
+      expiresAt: variable?.expiresAt,
     },
   });
 
@@ -92,6 +95,17 @@ export const VariablesForm: FC<CreateAndUpdateVariableformProps> = ({ variable, 
               placeholder="My cool role"
               description="Value is a string. However the most common use case is to store stringified JSON. You can e.g. use https://jsonformatter.org/json-stringify-online to stringify JSON."
               required
+            />
+            <DatePicker
+              control={control}
+              label="Expiration date"
+              loading={isLoading}
+              name="expiresAt"
+              description="If you want the variable to expire at a specific date, select the date here"
+              mode="absolute"
+              required={false}
+              allowPastDates={false}
+              format={DateTime.DATETIME_SHORT}
             />
             <PlayerSelect canClear={true} control={control} loading={isLoading} name="playerId" />
             <GameServerSelect
