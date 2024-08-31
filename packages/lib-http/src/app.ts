@@ -11,7 +11,6 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { metricsMiddleware } from './main.js';
-import { paginationMiddleware } from './middleware/paginationMiddleware.js';
 
 interface IHTTPOptions {
   port?: number;
@@ -40,7 +39,6 @@ export class HTTP {
     );
     this.app.use(LoggingMiddleware);
     this.app.use(metricsMiddleware);
-    this.app.use(paginationMiddleware);
     this.app.set('x-powered-by', false);
     this.app.use(
       cors({
