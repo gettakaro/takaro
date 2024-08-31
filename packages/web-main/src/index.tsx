@@ -5,9 +5,6 @@ import { App } from './App';
 // TODO: currently this results in web-main not loading at all.
 //import { registerWebVitalCallbacks } from './reportWebVitals';
 import * as Sentry from '@sentry/react';
-
-// styles required for slider component we rely on
-import 'rc-slider/assets/index.css';
 import 'simplebar-react/dist/simplebar.min.css';
 
 const container = document.getElementById('takaro-root');
