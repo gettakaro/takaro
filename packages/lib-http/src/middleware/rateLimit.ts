@@ -12,12 +12,7 @@ export interface IRateLimitMiddlewareOptions {
 
 export async function createRateLimitMiddleware(opts: IRateLimitMiddlewareOptions) {
   const log = logger('http:rateLimit');
-  const redis = await Redis.getClient('http:rateLimit', {
-    // Legacy mode is required for rate-limiter-flexible which isn't updated
-    // to use the new v4 redis API.
-    // See: https://github.com/animir/node-rate-limiter-flexible/wiki/Redis#usage
-    legacyMode: true,
-  });
+  const redis = await Redis.getClient('http:rateLimit');
 
   // We create a randomHash to use in Redis keys
   // This makes sure that each endpoint can get different rate limits without too much hassle
