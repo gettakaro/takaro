@@ -51,7 +51,7 @@
     "react-window": "^1.8.8",
     "simplebar-react": "^3.2.4",
     "styled-components": "^5.3.5",
-    "web-vitals": "^2.1.2",
+    "web-vitals": "^2.1.2 || ^4.0.0",
     "@visx/scale": "^3.5.0",
     "@visx/responsive": "^3.3.0",
     "@visx/group": "^3.3.0",
