@@ -3,10 +3,7 @@
 import url from 'node:url';
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
-import deprecationPlugin from 'eslint-plugin-deprecation';
 import reactPlugin from 'eslint-plugin-react';
-import reactHooksPlugin from 'eslint-plugin-react-hooks';
-import importPlugin from 'eslint-plugin-import';
 import storybookPlugin from 'eslint-plugin-storybook';
 
 import { FlatCompat } from '@eslint/eslintrc';
@@ -18,10 +15,7 @@ export default tseslint.config(
   {
     plugins: {
       '@typescript-eslint': tseslint.plugin,
-      'deprecation': deprecationPlugin,
-      'import': importPlugin,
       'react': reactPlugin,
-      'react-hooks': reactHooksPlugin,
     },
   },
 
@@ -42,7 +36,8 @@ export default tseslint.config(
       '**/*.d.ts',
       '**/jest.config.js',
       '**/mocharc.js',
-      '**/.storybook/**'
+      '**/.storybook/**',
+      '**/.docusaurus/**'
     ],
   },
 
@@ -68,7 +63,6 @@ export default tseslint.config(
       },
     },
     rules: {
-      'deprecation/deprecation': 'error',
 
       'no-console': 'off',
       quotes: ['error', 'single'],
@@ -115,20 +109,6 @@ export default tseslint.config(
           allow: ['arrowFunctions'],
         },
       ],
-
-      // eslint-plugin-import
-      'import/consistent-type-specifier-style': 'error',
-      'import/first': 'error',
-      'import/newline-after-import': 'error',
-      'import/no-absolute-path': 'error',
-      'import/no-amd': 'error',
-      'import/no-default-export': 'error',
-      'import/no-duplicates': 'error',
-      'import/no-mutable-exports': 'error',
-      'import/no-named-default': 'error',
-      'import/no-named-export': 'off',
-      'import/no-self-import': 'error',
-      'import/prefer-default-export': 'off',
     },
   },
   {
@@ -150,9 +130,6 @@ export default tseslint.config(
     extends: [
       ...compat.config(storybookPlugin.configs.recommended)
     ],
-    rules: {
-      'react-hooks/rules-of-hooks': 'off'
-    }
   },
 
   // config for tests
@@ -173,7 +150,6 @@ export default tseslint.config(
     files: ['packages/lib-components/**/*.{ts,tsx,mts,cts,js,jsx}', 'packages/web-main/**/*.{ts,tsx,mts,cts,js,jsx}'],
     extends: [
       ...compat.config(reactPlugin.configs.recommended),
-      ...compat.config(reactHooksPlugin.configs.recommended),
     ],
     rules: {
       'import/no-default-export': 'off',
@@ -181,7 +157,6 @@ export default tseslint.config(
       'react/no-unescaped-entities': 'off',
       'react/prop-types': 'off',
       'react/exhaustive-deps': 'off',
-      'react-hooks/exhaustive-deps': 'off',
     },
     settings: {
       react: {
