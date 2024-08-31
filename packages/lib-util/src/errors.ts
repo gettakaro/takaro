@@ -1,5 +1,5 @@
 import { ValidationError as CValidationError } from 'class-validator';
-import { ValidationError as YValidationError } from 'yup';
+import { ZodError as ZValidationError } from 'zod';
 
 export class TakaroError extends Error {
   public http: number;
@@ -34,12 +34,12 @@ export class NotImplementedError extends TakaroError {
 export class ValidationError extends TakaroError {
   constructor(
     message: string,
-    public details?: CValidationError[] | YValidationError[],
+    public details?: CValidationError[] | ZValidationError[],
   ) {
     super(message);
 
     if (details?.length) {
-      if (details[0] instanceof YValidationError) {
+      if (details[0] instanceof ZValidationError) {
         this.message = `${message}: ${details[0].message}`;
       }
     }

@@ -157,7 +157,6 @@
     "tsconfig-paths-webpack-plugin": "^4.0.0",
     "type-fest": "^2.18.0",
     "xml2js": "^0.6.2",
-    "yup": "^0.32.11",
     "zod": "^3.21.4"
   },
   "overrides": {
