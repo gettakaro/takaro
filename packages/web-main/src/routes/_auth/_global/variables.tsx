@@ -76,6 +76,7 @@ function Component() {
       header: 'Value',
       id: 'value',
       cell: (info) => (info.getValue().length > 10 ? <VariableValueDetail value={info.getValue()} /> : info.getValue()),
+      enableColumnFilter: false,
     }),
     columnHelper.accessor('gameServerId', {
       header: 'Game Server',
@@ -127,7 +128,7 @@ function Component() {
       id: 'updatedAt',
       meta: { dataType: 'datetime' },
       cell: (info) => <DateFormatter ISODate={info.getValue()} />,
-      enableSorting: false,
+      enableSorting: true,
     }),
     columnHelper.accessor('expiresAt', {
       header: 'Expires at',
