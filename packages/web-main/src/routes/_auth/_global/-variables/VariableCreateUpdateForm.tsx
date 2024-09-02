@@ -17,9 +17,9 @@ export enum ExecutionType {
 const validationSchema = z.object({
   key: z.string().min(1).max(100),
   value: z.string().min(1).max(255),
-  playerId: z.string().uuid().optional().nullish(),
-  gameServerId: z.string().uuid().optional().nullish(),
-  moduleId: z.string().uuid().optional().nullish(),
+  playerId: z.string().uuid().optional(),
+  gameServerId: z.string().uuid().optional(),
+  moduleId: z.string().uuid().optional(),
   expiresAt: z.string().optional().nullish(),
 });
 export type IFormInputs = z.infer<typeof validationSchema>;
