@@ -5,6 +5,7 @@ import { VariablesForm, ExecutionType, IFormInputs } from './-variables/Variable
 import { useSnackbar } from 'notistack';
 import { queryClient } from 'queryClient';
 import { hasPermission } from 'hooks/useHasPermission';
+import { VariableUpdateDTO } from '@takaro/apiclient';
 
 export const Route = createFileRoute('/_auth/_global/variables/update/$variableId')({
   beforeLoad: async ({ context }) => {
@@ -34,7 +35,14 @@ function Component() {
   }
 
   function updateVariable(variable: IFormInputs) {
-    mutate({ variableId: data.id, variableDetails: variable });
+    if (variable.expiresAt === null) {
+      variable.expiresAt = undefined;
+    }
+    const updatedVariable: VariableUpdateDTO = {
+      ...variable,
+      expiresAt: variable.expiresAt,
+    };
+    mutate({ variableId: data.id, variableDetails: updatedVariable });
   }
 
   // set null values to undefined otherwise zod will complain
