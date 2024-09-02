@@ -25,7 +25,7 @@
   },
   "engines": {
     "node": "20.17.x",
-    "npm": ">=9"
+    "npm": "10.8.2"
   },
   "contributors": [
     "Niek Candaele",
@@ -121,6 +121,7 @@
     "body-parser": "^1.20.0",
     "bullmq": "^3.10.1",
     "class-transformer": "^0.5.1",
+    "concurrently": "^8.2.2",
     "convict": "^6.2.3",
     "csv": "^6.3.6",
     "discord-api-types": "^0.37.98",
