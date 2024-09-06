@@ -125,6 +125,13 @@ export function getSystemConfigSchema(mod: ModuleOutputDTO | ModuleOutputDTOApi)
             maximum: ms('1 day') / 1000,
             description: 'How many seconds to wait before executing the command.',
           },
+          cooldown: {
+            type: 'number',
+            default: 0,
+            minimum: 0,
+            maximum: ms('7 days') / 1000,
+            description: 'How many seconds a player has to wait before executing the command again.',
+          },
           cost: {
             type: 'number',
             default: 0,
