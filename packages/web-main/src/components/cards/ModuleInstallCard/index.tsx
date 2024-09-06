@@ -1,5 +1,14 @@
 import { ModuleInstallationOutputDTO, ModuleOutputDTO, PERMISSIONS } from '@takaro/apiclient';
-import { Dialog, Button, IconButton, Card, useTheme, Dropdown, ValueConfirmationField } from '@takaro/lib-components';
+import {
+  Dialog,
+  Button,
+  IconButton,
+  Card,
+  useTheme,
+  Dropdown,
+  ValueConfirmationField,
+  Chip,
+} from '@takaro/lib-components';
 import { PermissionsGuard } from 'components/PermissionsGuard';
 import { useSnackbar } from 'notistack';
 
@@ -10,11 +19,13 @@ import {
   AiOutlineMenu as MenuIcon,
   AiOutlineLink as LinkIcon,
   AiOutlineEye as ViewIcon,
+  AiOutlineStop as DisableIcon,
+  AiOutlineCheck as EnableIcon,
 } from 'react-icons/ai';
 
 import { useNavigate } from '@tanstack/react-router';
 import { SpacedRow, ActionIconsContainer, CardBody } from '../style';
-import { useGameServerModuleUninstall } from 'queries/gameserver';
+import { useGameServerModuleInstall, useGameServerModuleUninstall } from 'queries/gameserver';
 
 interface IModuleCardProps {
   mod: ModuleOutputDTO;
@@ -27,6 +38,7 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const [valid, setValid] = useState<boolean>(false);
   const { mutateAsync: uninstallModule, isPending: isDeleting, isSuccess } = useGameServerModuleUninstall();
+  const { mutate: installModule } = useGameServerModuleInstall();
   const navigate = useNavigate();
   const theme = useTheme();
   const { enqueueSnackbar } = useSnackbar();
@@ -74,12 +86,31 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
     });
   };
 
+  const handleOnModuleEnableDisableClick = (e: MouseEvent) => {
+    e.stopPropagation();
+
+    if (installation) {
+      const systemConfig = installation.systemConfig;
+      systemConfig['enabled'] = !systemConfig['enabled'];
+      installModule({
+        moduleId: mod.id,
+        gameServerId,
+        moduleInstall: {
+          systemConfig: JSON.stringify(systemConfig),
+          userConfig: JSON.stringify(installation.userConfig),
+        },
+      });
+    }
+  };
+
+  const isModuleInstallationEnabled = installation?.systemConfig['enabled'] === true ? true : false;
+
   return (
     <>
       <Card data-testid={`module-${mod.id}`}>
         <CardBody>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <h2>{mod.name}</h2>
+            <h2 style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>{mod.name}</h2>
             {installation && (
               <Dropdown>
                 <Dropdown.Trigger asChild>
@@ -99,6 +130,12 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
                         label="Configure module "
                       />
                       <Dropdown.Menu.Item
+                        icon={isModuleInstallationEnabled ? <DisableIcon fill={theme.colors.error} /> : <EnableIcon />}
+                        onClick={handleOnModuleEnableDisableClick}
+                        label={isModuleInstallationEnabled ? 'Disable module' : 'Enable module'}
+                      />
+
+                      <Dropdown.Menu.Item
                         icon={<DeleteIcon fill={theme.colors.error} />}
                         onClick={handleOnDeleteClick}
                         label="Uninstall module"
@@ -117,13 +154,18 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
             )}
           </div>
           <p>{mod.description}</p>
+
           <SpacedRow>
-            <span style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-              {mod.commands.length > 0 && <p>Commands: {mod.commands.length}</p>}
-              {mod.hooks.length > 0 && <p>Hooks: {mod.hooks.length}</p>}
-              {mod.cronJobs.length > 0 && <p>Cronjobs: {mod.cronJobs.length}</p>}
-              {mod.permissions.length > 0 && <p>Permissions: {mod.permissions.length}</p>}
-            </span>
+            {installation && !installation.systemConfig['enabled'] ? (
+              <Chip label="disabled" variant="outline" color="error" />
+            ) : (
+              <span style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                {mod.commands.length > 0 && <p>Commands: {mod.commands.length}</p>}
+                {mod.hooks.length > 0 && <p>Hooks: {mod.hooks.length}</p>}
+                {mod.cronJobs.length > 0 && <p>Cronjobs: {mod.cronJobs.length}</p>}
+                {mod.permissions.length > 0 && <p>Permissions: {mod.permissions.length}</p>}
+              </span>
+            )}
             <ActionIconsContainer>
               {!installation && <Button text="Install" onClick={handleInstallConfigureClick} />}
             </ActionIconsContainer>
