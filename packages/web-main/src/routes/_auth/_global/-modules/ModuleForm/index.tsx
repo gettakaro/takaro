@@ -42,7 +42,7 @@ export interface ModuleFormSubmitProps {
 interface ModuleFormProps {
   mod?: ModuleOutputDTO;
   isLoading?: boolean;
-  onSubmit: (data: ModuleFormSubmitProps) => void;
+  onSubmit?: (data: ModuleFormSubmitProps) => void;
   error: string | string[] | null;
 }
 
@@ -98,7 +98,7 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, onSubmit, isLoading = fal
   const submitHandler: SubmitHandler<IFormInputs> = ({ configFields, name, description, permissions }) => {
     const schema = inputsToSchema(configFields);
     const uiSchema = inputsToUiSchema(configFields);
-    onSubmit({
+    onSubmit!({
       name,
       description,
       permissions,

@@ -1,4 +1,4 @@
-import { FC, MouseEvent, useState } from 'react';
+import { FC, MouseEvent, useEffect, useState } from 'react';
 import {
   Button,
   Card,
@@ -52,10 +52,13 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
   const handleOnDelete = (e: MouseEvent) => {
     e.stopPropagation();
     mutate({ roleId: id });
+  };
+
+  useEffect(() => {
     if (isSuccess) {
       setOpenDialog(false);
     }
-  };
+  }, []);
 
   return (
     <>

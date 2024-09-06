@@ -22,8 +22,8 @@ export class UsersPage extends BasePage {
     await this.page.getByRole('button', { name: 'Send Invitation' }).click();
   }
 
-  async action({ action, email }: { action: Actions; email: string }) {
-    const tr = this.page.getByRole('row', { name: email });
+  async action({ action, name }: { action: Actions; name: string }) {
+    const tr = this.page.getByRole('row', { name });
     await tr.getByRole('button', { name: 'user-actions' }).click();
 
     switch (action) {
