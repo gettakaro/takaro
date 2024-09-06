@@ -18,7 +18,7 @@ const setup = async function (this: IntegrationTest<RoleOutputDTO>) {
 
 async function multiRolesSetup(client: Client) {
   // Create 5 users
-  const users = await Promise.all(
+  await Promise.all(
     Array.from({ length: 5 }).map(
       async (_, i) =>
         (
@@ -30,6 +30,8 @@ async function multiRolesSetup(client: Client) {
         ).data.data,
     ),
   );
+
+  const users = (await client.user.userControllerSearch({ sortBy: 'name', sortDirection: 'asc' })).data.data;
 
   const permissions1 = await client.permissionCodesToInputs([PERMISSIONS.MANAGE_ROLES]);
   const permissions2 = await client.permissionCodesToInputs([PERMISSIONS.MANAGE_USERS]);
@@ -255,6 +257,31 @@ const tests = [
       const members2 = (await this.client.role.roleControllerGetMembers(role2.id)).data.data;
       expect(members2.users.results).to.have.lengthOf(0);
       expect(members2.users.total).to.be.eq(0);
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    setup: SetupGameServerPlayers.setup,
+    name: 'Can fetch members of group - supports pagination',
+    test: async function () {
+      const { users, role1 } = await multiRolesSetup(this.client);
+
+      // Assign the role to 2 users
+      await this.client.user.userControllerAssignRole(users[0].id, role1.id);
+      await this.client.user.userControllerAssignRole(users[1].id, role1.id);
+
+      // Fetch first page of users (limit 1)
+      const members = (await this.client.role.roleControllerGetMembers(role1.id, 0, 1)).data.data;
+      expect(members.users.results).to.have.lengthOf(1);
+      expect(members.users.total).to.be.eq(2);
+      expect(members.users.results[0].id).to.eq(users[0].id);
+
+      // Fetch second page of users (limit 1)
+      const members2 = (await this.client.role.roleControllerGetMembers(role1.id, 1, 1)).data.data;
+      expect(members2.users.results).to.have.lengthOf(1);
+      expect(members2.users.total).to.be.eq(2);
+      expect(members2.users.results[0].id).to.eq(users[1].id);
     },
   }),
 ];

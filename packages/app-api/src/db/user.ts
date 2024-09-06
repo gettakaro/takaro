@@ -1,9 +1,10 @@
-import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
+import { TakaroModel, ITakaroQuery, QueryBuilder, SortDirection } from '@takaro/db';
 import { Model } from 'objection';
 import { PermissionOnRoleModel, ROLE_TABLE_NAME, RoleModel } from './role.js';
 import { errors, traceableClass } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import { UserOutputDTO, UserCreateInputDTO, UserUpdateDTO, UserOutputWithRolesDTO } from '../service/UserService.js';
+import { PaginationParams } from '../controllers/shared.js';
 
 export const USER_TABLE_NAME = 'users';
 const ROLE_ON_USER_TABLE_NAME = 'roleOnUser';
@@ -142,7 +143,7 @@ export class UserRepo extends ITakaroRepo<UserModel, UserOutputDTO, UserCreateIn
     await roleOnUserModel.query().delete().where({ userId, roleId });
   }
 
-  async getRoleMembers(roleId: string) {
+  async getRoleMembers(roleId: string, pagination: PaginationParams) {
     const knex = await this.getKnex();
     const roleOnUserModel = RoleOnUserModel.bindKnex(knex);
 
@@ -153,7 +154,13 @@ export class UserRepo extends ITakaroRepo<UserModel, UserOutputDTO, UserCreateIn
         total: 0,
         results: [],
       };
-    return this.find({ filters: { id: ids } });
+    return this.find({
+      filters: { id: ids },
+      limit: pagination.limit,
+      page: pagination.page,
+      sortBy: 'name',
+      sortDirection: SortDirection.asc,
+    });
   }
 
   async NOT_DOMAIN_SCOPED_resolveDomainByIdpId(idpId: string): Promise<string[]> {
