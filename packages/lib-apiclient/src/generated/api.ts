@@ -4642,6 +4642,18 @@ export interface MeOutoutDTO {
    * @memberof MeOutoutDTO
    */
   domain: string;
+  /**
+   *
+   * @type {PlayerOutputWithRolesDTO}
+   * @memberof MeOutoutDTO
+   */
+  player?: PlayerOutputWithRolesDTO;
+  /**
+   *
+   * @type {Array<PlayerOnGameserverOutputDTO>}
+   * @memberof MeOutoutDTO
+   */
+  pogs: Array<PlayerOnGameserverOutputDTO>;
 }
 /**
  *
