@@ -272,16 +272,43 @@ const tests = [
       await this.client.user.userControllerAssignRole(users[1].id, role1.id);
 
       // Fetch first page of users (limit 1)
-      const members = (await this.client.role.roleControllerGetMembers(role1.id, 0, 1)).data.data;
+      const members = (await this.client.role.roleControllerGetMembers(role1.id, undefined, 0, 1)).data.data;
       expect(members.users.results).to.have.lengthOf(1);
       expect(members.users.total).to.be.eq(2);
       expect(members.users.results[0].id).to.eq(users[0].id);
 
       // Fetch second page of users (limit 1)
-      const members2 = (await this.client.role.roleControllerGetMembers(role1.id, 1, 1)).data.data;
+      const members2 = (await this.client.role.roleControllerGetMembers(role1.id, undefined, 1, 1)).data.data;
       expect(members2.users.results).to.have.lengthOf(1);
       expect(members2.users.total).to.be.eq(2);
       expect(members2.users.results[0].id).to.eq(users[1].id);
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    setup: SetupGameServerPlayers.setup,
+    name: 'Can fetch members of group - filter by gameserver',
+    test: async function () {
+      const { role1 } = await multiRolesSetup(this.client);
+
+      // Assign the role to the player
+      await this.client.player.playerControllerAssignRole(this.setupData.players[0].id, role1.id, {
+        gameServerId: this.setupData.gameServer1.id,
+      });
+
+      // Fetch the members of the role for gameServer1
+      const members = (await this.client.role.roleControllerGetMembers(role1.id, this.setupData.gameServer1.id, 0, 10))
+        .data.data;
+      expect(members.players.results).to.have.lengthOf(1);
+      expect(members.players.total).to.be.eq(1);
+      expect(members.players.results[0].id).to.eq(this.setupData.players[0].id);
+
+      // Fetch the members of the role for gameServer2
+      const members2 = (await this.client.role.roleControllerGetMembers(role1.id, this.setupData.gameServer2.id, 0, 10))
+        .data.data;
+      expect(members2.players.results).to.have.lengthOf(0);
+      expect(members2.players.total).to.be.eq(0);
     },
   }),
 ];

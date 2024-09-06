@@ -13,7 +13,7 @@ import {
 import { ROLE_TABLE_NAME, RoleModel } from './role.js';
 import { PLAYER_ON_GAMESERVER_TABLE_NAME, PlayerOnGameServerModel } from './playerOnGameserver.js';
 import { config } from '../config.js';
-import { PaginationParams } from '../controllers/shared.js';
+import { PaginationParamsWithGameServer } from '../controllers/Rolecontroller.js';
 
 export interface ISteamData {
   steamId: string;
@@ -277,11 +277,17 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
     }
   }
 
-  async getRoleMembers(roleId: string, pagination: PaginationParams) {
+  async getRoleMembers(roleId: string, filters: PaginationParamsWithGameServer) {
     const knex = await this.getKnex();
     const roleOnPlayerModel = RoleOnPlayerModel.bindKnex(knex);
 
-    const res = await roleOnPlayerModel.query().where({ roleId }).select('playerId');
+    const whereObj: Record<string, string> = { roleId };
+
+    if (filters.gameServerId) {
+      whereObj.gameServerId = filters.gameServerId;
+    }
+
+    const res = await roleOnPlayerModel.query().where(whereObj).select('playerId');
     const ids = res.map((item) => item.playerId);
     if (!ids.length)
       return {
@@ -290,8 +296,8 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
       };
     return this.find({
       filters: { id: ids },
-      limit: pagination.limit,
-      page: pagination.page,
+      limit: filters.limit,
+      page: filters.page,
       sortBy: 'name',
       sortDirection: SortDirection.asc,
     });
