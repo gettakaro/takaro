@@ -6,9 +6,9 @@ import { styled, Skeleton } from '@takaro/lib-components';
 import { ErrorBoundary } from 'components/ErrorBoundary';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
-import { StudioInner } from './-studio/StudioInner';
-import { ModuleOnboarding } from './-studio/ModuleOnboarding';
-import { FileMap, FileType, StudioProvider } from './-studio/useStudioStore';
+import { ModuleBuilderInner } from './-module-builder/ModuleBuilderInner';
+import { ModuleOnboarding } from './-module-builder/ModuleOnboarding';
+import { FileMap, FileType, ModuleBuilderProvider } from './-module-builder/useModuleBuilderStore';
 import { getApiClient } from 'util/getApiClient';
 
 const Flex = styled.div`
@@ -27,7 +27,7 @@ const LoadingContainer = styled.div`
   gap: ${({ theme }) => theme.spacing['4']};
 `;
 
-export const Route = createFileRoute('/_auth/studio/$moduleId')({
+export const Route = createFileRoute('/_auth/module-builder/$moduleId')({
   beforeLoad: async () => {
     try {
       const me = (await getApiClient().user.userControllerMe()).data.data;
@@ -125,7 +125,7 @@ function Component() {
 
   return (
     <ErrorBoundary>
-      <StudioProvider
+      <ModuleBuilderProvider
         moduleId={mod.id}
         moduleName={mod.name}
         fileMap={fileMap}
@@ -135,10 +135,10 @@ function Component() {
       >
         <Flex>
           <Wrapper>
-            <StudioInner />
+            <ModuleBuilderInner />
           </Wrapper>
         </Flex>
-      </StudioProvider>
+      </ModuleBuilderProvider>
     </ErrorBoundary>
   );
 }

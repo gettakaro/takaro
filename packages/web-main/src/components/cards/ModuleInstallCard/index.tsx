@@ -55,7 +55,7 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
   }
 
   const handleOnOpenClick = () => {
-    window.open(`/studio/${mod.id}`, '_blank');
+    window.open(`/module-builder/${mod.id}`, '_blank');
   };
 
   const handleOnViewModuleConfigClick = (e: MouseEvent) => {
@@ -106,7 +106,11 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
                     </PermissionsGuard>
                   </Dropdown.Menu.Group>
                   <Dropdown.Menu.Group>
-                    <Dropdown.Menu.Item icon={<LinkIcon />} onClick={handleOnOpenClick} label="Open in studio" />
+                    <Dropdown.Menu.Item
+                      icon={<LinkIcon />}
+                      onClick={handleOnOpenClick}
+                      label="Open in Module Builder"
+                    />
                   </Dropdown.Menu.Group>
                 </Dropdown.Menu>
               </Dropdown>

@@ -8,7 +8,7 @@ import { useFunctionUpdate } from 'queries/module';
 import { useSnackbar } from 'notistack';
 import { Button, Tooltip, styled } from '@takaro/lib-components';
 import { AiFillSave as SaveIcon } from 'react-icons/ai';
-import { useStudioContext } from '../useStudioStore';
+import { useModuleBuilderContext } from '../useModuleBuilderStore';
 import { useActiveCode } from '../useActiveCode';
 
 const Stack = styled.div`
@@ -37,9 +37,9 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
   const editorInstance = useRef<mon.editor.IStandaloneCodeEditor>();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const monacoRef = useRef<typeof mon | null>(null);
-  const fileMap = useStudioContext((s) => s.fileMap);
+  const fileMap = useModuleBuilderContext((s) => s.fileMap);
 
-  const activeFile = useStudioContext((s) => s.activeFile);
+  const activeFile = useModuleBuilderContext((s) => s.activeFile);
   if (!activeFile) {
     throw new Error('Editor should not be rendered without an active file');
   }
