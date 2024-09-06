@@ -1,7 +1,8 @@
-import { IntegrationTest, expect } from '@takaro/test';
-import { RoleOutputDTO } from '@takaro/apiclient';
+import { IntegrationTest, expect, SetupGameServerPlayers } from '@takaro/test';
+import { Client, RoleOutputDTO } from '@takaro/apiclient';
 import { PERMISSIONS } from '@takaro/auth';
 import { AxiosError } from 'axios';
+import { faker } from '@faker-js/faker';
 
 const group = 'RoleController';
 
@@ -14,6 +15,39 @@ const setup = async function (this: IntegrationTest<RoleOutputDTO>) {
     })
   ).data.data;
 };
+
+async function multiRolesSetup(client: Client) {
+  // Create 5 users
+  const users = await Promise.all(
+    Array.from({ length: 5 }).map(
+      async (_, i) =>
+        (
+          await client.user.userControllerCreate({
+            email: faker.internet.email(),
+            password: faker.internet.password(),
+            name: `User ${i}`,
+          })
+        ).data.data,
+    ),
+  );
+
+  const permissions1 = await client.permissionCodesToInputs([PERMISSIONS.MANAGE_ROLES]);
+  const permissions2 = await client.permissionCodesToInputs([PERMISSIONS.MANAGE_USERS]);
+  const role1 = (
+    await client.role.roleControllerCreate({
+      name: 'Test role 1',
+      permissions: permissions1,
+    })
+  ).data.data;
+  const role2 = (
+    await client.role.roleControllerCreate({
+      name: 'Test role 2',
+      permissions: permissions2,
+    })
+  ).data.data;
+
+  return { users, role1, role2 };
+}
 
 const tests = [
   new IntegrationTest<RoleOutputDTO>({
@@ -176,6 +210,52 @@ const tests = [
       }
     },
     expectedStatus: 400,
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    setup: SetupGameServerPlayers.setup,
+    name: 'Can fetch members of group - players',
+    test: async function () {
+      const { role1, role2 } = await multiRolesSetup(this.client);
+
+      // Assign the role to the player
+      await this.client.player.playerControllerAssignRole(this.setupData.players[0].id, role1.id);
+
+      // Fetch the members of the role
+      const members = (await this.client.role.roleControllerGetMembers(role1.id)).data.data;
+      expect(members.players.results).to.have.lengthOf(1);
+      expect(members.players.total).to.be.eq(1);
+      expect(members.players.results[0].id).to.eq(this.setupData.players[0].id);
+
+      // Fetch members of role2
+      const members2 = (await this.client.role.roleControllerGetMembers(role2.id)).data.data;
+      expect(members2.players.results).to.have.lengthOf(0);
+      expect(members2.players.total).to.be.eq(0);
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    setup: SetupGameServerPlayers.setup,
+    name: 'Can fetch members of group - users',
+    test: async function () {
+      const { users, role1, role2 } = await multiRolesSetup(this.client);
+
+      // Assign the role to the user
+      await this.client.user.userControllerAssignRole(users[0].id, role1.id);
+
+      // Fetch the members of the role
+      const members = (await this.client.role.roleControllerGetMembers(role1.id)).data.data;
+      expect(members.users.results).to.have.lengthOf(1);
+      expect(members.users.total).to.be.eq(1);
+      expect(members.users.results[0].id).to.eq(users[0].id);
+
+      // Fetch members of role2
+      const members2 = (await this.client.role.roleControllerGetMembers(role2.id)).data.data;
+      expect(members2.users.results).to.have.lengthOf(0);
+      expect(members2.users.total).to.be.eq(0);
+    },
   }),
 ];
 
