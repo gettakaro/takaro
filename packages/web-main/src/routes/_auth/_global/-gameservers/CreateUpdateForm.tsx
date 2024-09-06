@@ -117,7 +117,7 @@ export const CreateUpdateForm: FC<CreateUpdateFormProps> = ({ initialData, isLoa
                   label="Enabled"
                   name="enabled"
                   key="enabled"
-                  description="If disabled, Takaro will not interact with this server. You can retain all settings and data, but Takaro will not update any data or interact with the server."
+                  description="If disabled, Takaro will not interact with this server. You can retain all settings and data, but Takaro will not update any data or connect to the server."
                   control={control}
                   loading={isLoading}
                 />

@@ -2644,6 +2644,18 @@ export interface GameServerSearchInputAllowedFilters {
    * @memberof GameServerSearchInputAllowedFilters
    */
   type?: Array<GameServerSearchInputAllowedFiltersTypeEnum>;
+  /**
+   *
+   * @type {Array<boolean>}
+   * @memberof GameServerSearchInputAllowedFilters
+   */
+  reachable?: Array<boolean>;
+  /**
+   *
+   * @type {Array<boolean>}
+   * @memberof GameServerSearchInputAllowedFilters
+   */
+  enabled?: Array<boolean>;
 }
 
 export const GameServerSearchInputAllowedFiltersTypeEnum = {

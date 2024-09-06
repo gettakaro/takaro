@@ -6,6 +6,7 @@
       "createdAt": "2023-12-24T15:22:57.034Z",
       "updatedAt": "2023-12-24T15:22:57.034Z",
       "name": "Test gameserver",
+      "enabled": true,
       "connectionInfo": {
         "host": "http://takaro:3002"
       },
