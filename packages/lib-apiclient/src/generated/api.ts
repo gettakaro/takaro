@@ -2568,6 +2568,12 @@ export interface GameServerOutputDTO {
   reachable: boolean;
   /**
    *
+   * @type {boolean}
+   * @memberof GameServerOutputDTO
+   */
+  enabled: boolean;
+  /**
+   *
    * @type {string}
    * @memberof GameServerOutputDTO
    */
@@ -2845,6 +2851,12 @@ export interface GameServerUpdateDTO {
    * @memberof GameServerUpdateDTO
    */
   reachable?: boolean;
+  /**
+   *
+   * @type {boolean}
+   * @memberof GameServerUpdateDTO
+   */
+  enabled?: boolean;
 }
 
 export const GameServerUpdateDTOTypeEnum = {

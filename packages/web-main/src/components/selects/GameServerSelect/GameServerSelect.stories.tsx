@@ -24,6 +24,7 @@ export const Default: StoryFn<GameServerSelectViewProps> = () => {
       id: '1',
       createdAt: '',
       updatedAt: '',
+      enabled: true,
       connectionInfo: {},
     },
     {
@@ -33,6 +34,7 @@ export const Default: StoryFn<GameServerSelectViewProps> = () => {
       id: '1',
       createdAt: '',
       updatedAt: '',
+      enabled: true,
       connectionInfo: {},
     },
   ];

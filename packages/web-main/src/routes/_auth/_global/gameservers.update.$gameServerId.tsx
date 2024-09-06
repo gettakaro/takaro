@@ -29,6 +29,7 @@ function Component() {
       gameServerId,
       gameServerDetails: {
         name,
+        enabled: gameServer.enabled,
         type: gameServer.type,
         connectionInfo: JSON.stringify(connectionInfo),
       },
