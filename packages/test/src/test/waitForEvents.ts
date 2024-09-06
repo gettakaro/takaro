@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { EventTypes } from '@takaro/modules';
+import type { EventTypes } from '@takaro/modules';
 import { Client } from '@takaro/apiclient';
 import { io, Socket } from 'socket.io-client';
 import { integrationConfig } from './integrationConfig.js';
