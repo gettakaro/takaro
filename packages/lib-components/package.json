@@ -32,7 +32,7 @@
     "@rjsf/utils": "^5.6.2",
     "@rjsf/validator-ajv8": "^5.6.2",
     "@tanstack/react-table": "^8.7.9",
-    "@tanstack/react-router": "1.35.3",
+    "@tanstack/react-router": "1.56.1",
     "@types/luxon": "3.4.2",
     "framer-motion": "^10.16.12 || ^11.0.0",
     "luxon": "3.5.0",
