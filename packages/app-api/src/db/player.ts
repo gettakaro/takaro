@@ -1,4 +1,4 @@
-import { ITakaroQuery, QueryBuilder, TakaroModel } from '@takaro/db';
+import { ITakaroQuery, QueryBuilder, SortDirection, TakaroModel } from '@takaro/db';
 import { Model } from 'objection';
 import { errors, traceableClass } from '@takaro/util';
 import { GameServerModel, GAMESERVER_TABLE_NAME } from './gameserver.js';
@@ -13,6 +13,7 @@ import {
 import { ROLE_TABLE_NAME, RoleModel } from './role.js';
 import { PLAYER_ON_GAMESERVER_TABLE_NAME, PlayerOnGameServerModel } from './playerOnGameserver.js';
 import { config } from '../config.js';
+import { PaginationParams } from '../controllers/shared.js';
 
 export interface ISteamData {
   steamId: string;
@@ -276,7 +277,7 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
     }
   }
 
-  async getRoleMembers(roleId: string) {
+  async getRoleMembers(roleId: string, pagination: PaginationParams) {
     const knex = await this.getKnex();
     const roleOnPlayerModel = RoleOnPlayerModel.bindKnex(knex);
 
@@ -287,7 +288,13 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
         total: 0,
         results: [],
       };
-    return this.find({ filters: { id: ids } });
+    return this.find({
+      filters: { id: ids },
+      limit: pagination.limit,
+      page: pagination.page,
+      sortBy: 'name',
+      sortDirection: SortDirection.asc,
+    });
   }
 
   async getPlayersToRefreshSteam(): Promise<string[]> {

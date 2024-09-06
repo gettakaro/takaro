@@ -5274,6 +5274,25 @@ export type PERMISSIONS = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
 /**
  *
  * @export
+ * @interface PaginationParams
+ */
+export interface PaginationParams {
+  /**
+   *
+   * @type {number}
+   * @memberof PaginationParams
+   */
+  page?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof PaginationParams
+   */
+  limit?: number;
+}
+/**
+ *
+ * @export
  * @interface ParamId
  */
 export interface ParamId {
@@ -18570,10 +18589,17 @@ export const RoleApiAxiosParamCreator = function (configuration?: Configuration)
      *  Required permissions: `READ_ROLES`, `READ_PLAYERS`, `READ_USERS`
      * @summary Get members
      * @param {string} id
+     * @param {number} [page]
+     * @param {number} [limit]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    roleControllerGetMembers: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+    roleControllerGetMembers: async (
+      id: string,
+      page?: number,
+      limit?: number,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
       // verify required parameter 'id' is not null or undefined
       assertParamExists('roleControllerGetMembers', 'id', id);
       const localVarPath = `/role/{id}/members`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
@@ -18589,6 +18615,14 @@ export const RoleApiAxiosParamCreator = function (configuration?: Configuration)
       const localVarQueryParameter = {} as any;
 
       // authentication domainAuth required
+
+      if (page !== undefined) {
+        localVarQueryParameter['page'] = page;
+      }
+
+      if (limit !== undefined) {
+        localVarQueryParameter['limit'] = limit;
+      }
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -18809,14 +18843,18 @@ export const RoleApiFp = function (configuration?: Configuration) {
      *  Required permissions: `READ_ROLES`, `READ_PLAYERS`, `READ_USERS`
      * @summary Get members
      * @param {string} id
+     * @param {number} [page]
+     * @param {number} [limit]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async roleControllerGetMembers(
       id: string,
+      page?: number,
+      limit?: number,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RoleMembersOutputDTOAPI>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.roleControllerGetMembers(id, options);
+      const localVarAxiosArgs = await localVarAxiosParamCreator.roleControllerGetMembers(id, page, limit, options);
       const index = configuration?.serverIndex ?? 0;
       const operationBasePath = operationServerMap['RoleApi.roleControllerGetMembers']?.[index]?.url;
       return (axios, basePath) =>
@@ -18961,11 +18999,18 @@ export const RoleApiFactory = function (configuration?: Configuration, basePath?
      *  Required permissions: `READ_ROLES`, `READ_PLAYERS`, `READ_USERS`
      * @summary Get members
      * @param {string} id
+     * @param {number} [page]
+     * @param {number} [limit]
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    roleControllerGetMembers(id: string, options?: any): AxiosPromise<RoleMembersOutputDTOAPI> {
-      return localVarFp.roleControllerGetMembers(id, options).then((request) => request(axios, basePath));
+    roleControllerGetMembers(
+      id: string,
+      page?: number,
+      limit?: number,
+      options?: any,
+    ): AxiosPromise<RoleMembersOutputDTOAPI> {
+      return localVarFp.roleControllerGetMembers(id, page, limit, options).then((request) => request(axios, basePath));
     },
     /**
      *  Required permissions: `READ_ROLES`
@@ -19051,13 +19096,15 @@ export class RoleApi extends BaseAPI {
    *  Required permissions: `READ_ROLES`, `READ_PLAYERS`, `READ_USERS`
    * @summary Get members
    * @param {string} id
+   * @param {number} [page]
+   * @param {number} [limit]
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof RoleApi
    */
-  public roleControllerGetMembers(id: string, options?: RawAxiosRequestConfig) {
+  public roleControllerGetMembers(id: string, page?: number, limit?: number, options?: RawAxiosRequestConfig) {
     return RoleApiFp(this.configuration)
-      .roleControllerGetMembers(id, options)
+      .roleControllerGetMembers(id, page, limit, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

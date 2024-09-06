@@ -10,13 +10,26 @@ import {
   RoleMembersOutputDTO,
 } from '../service/RoleService.js';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
-import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Put, Params, Res } from 'routing-controllers';
+import {
+  Body,
+  Get,
+  Post,
+  Delete,
+  JsonController,
+  UseBefore,
+  Req,
+  Put,
+  Params,
+  Res,
+  QueryParams,
+} from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators.js';
 import { Response } from 'express';
 import { PERMISSIONS } from '@takaro/auth';
+import { PaginationParams } from './shared.js';
 
 export class RoleOutputDTOAPI extends APIOutput<RoleOutputDTO> {
   @Type(() => RoleOutputDTO)
@@ -126,9 +139,13 @@ export class RoleController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_ROLES, PERMISSIONS.READ_PLAYERS, PERMISSIONS.READ_USERS]))
   @ResponseSchema(RoleMembersOutputDTOAPI)
   @Get('/role/:id/members')
-  async getMembers(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
+  async getMembers(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamId,
+    @QueryParams() pagination: PaginationParams,
+  ) {
     const service = new RoleService(req.domainId);
-    const members = await service.getRoleMembers(params.id);
+    const members = await service.getRoleMembers(params.id, pagination);
     return apiResponse(members);
   }
 }
