@@ -31,7 +31,13 @@ import { useSocket } from 'hooks/useSocket';
 import { playersOnGameServersQueryOptions } from 'queries/pog';
 import { useQuery } from '@tanstack/react-query';
 
-export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reachable }) => {
+const StatusChip: FC<{ reachable: boolean; enabled: boolean }> = ({ reachable, enabled }) => {
+  if (!enabled) return <Chip label="disabled" color="warning" variant="outline" />;
+  if (!reachable) return <Chip label="offline" color="error" variant="outline" />;
+  return 'online';
+};
+
+export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reachable, enabled }) => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const [valid, setValid] = useState<boolean>(false);
   const navigate = useNavigate();
@@ -98,7 +104,7 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
       >
         <CardBody>
           <Header>
-            {reachable ? <span>online</span> : <Chip label={'offline'} color="error" variant="outline" />}
+            <StatusChip reachable={reachable} enabled={enabled} />
             <PermissionsGuard requiredPermissions={[[PERMISSIONS.ManageGameservers]]}>
               <Dropdown>
                 <Dropdown.Trigger asChild>
