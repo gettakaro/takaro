@@ -276,6 +276,20 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
     }
   }
 
+  async getRoleMembers(roleId: string) {
+    const knex = await this.getKnex();
+    const roleOnPlayerModel = RoleOnPlayerModel.bindKnex(knex);
+
+    const res = await roleOnPlayerModel.query().where({ roleId }).select('playerId');
+    const ids = res.map((item) => item.playerId);
+    if (!ids.length)
+      return {
+        total: 0,
+        results: [],
+      };
+    return this.find({ filters: { id: ids } });
+  }
+
   async getPlayersToRefreshSteam(): Promise<string[]> {
     const { query } = await this.getModel();
 
