@@ -145,26 +145,26 @@ jobs:
           name: integrationTests
           path: reports
           retention-days: 30
-#  e2e:
-#    needs: [docker]
-#    timeout-minutes: 60
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v4
-#      - uses: actions/setup-node@v4
-#        with:
-#          node-version: 18.18
-#      - run: ./scripts/dev-init.sh
-#      - name: Install Playwright Browsers
-#        run: npx playwright install --with-deps
-#      - name: Integration tests e2e
-#        run: npx zx scripts/integration-tests.mjs
-#        env:
-#          DOCKER_TAG: ${{ needs.docker.outputs.docker_tag }}
-#          IS_E2E: true
-#      - uses: actions/upload-artifact@v3
-#        if: always()
-#        with:
-#          name: e2e
-#          path: reports
-#          retention-days: 30
+  e2e:
+    needs: [docker]
+    timeout-minutes: 60
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: ./scripts/dev-init.sh
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+      - name: Integration tests e2e
+        run: npx zx scripts/integration-tests.mjs
+        env:
+          DOCKER_TAG: ${{ needs.docker.outputs.docker_tag }}
+          IS_E2E: true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e
+          path: reports
+          retention-days: 30
