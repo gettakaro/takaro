@@ -28,11 +28,15 @@ docker compose exec takaro npm -w packages/app-api run test:integration -- -g "S
 ### Integration tests
 
 Takaro is a complex system, getting it to run in a test environment is not trivial. We use a combination of Docker, Docker Compose and a custom script to get everything running.
+This command assumes have a working/correctly set up dev environment.
 
 ```sh
-# Assumes you have a running dev environment
-
 DOCKER_TAG=latest npx zx scripts/integration-tests.mjs
+
+# To run using the containers specific PR, use pr-[PR_ID].
+# You can find the PR_ID next to the title or in the URL.
+# E.g. https://github.com/gettakaro/takaro/pull/1246 --> PR_ID=1246
+DOCKER_TAG=pr-1246 npx zx scripts/integration-tests.mjs
 ```
 
 See the [Github Actions config](https://github.com/gettakaro/takaro/tree/main/.github/workflows) for more details.
