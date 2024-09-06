@@ -13,6 +13,8 @@ import {
   CopyId,
   useTheme,
 } from '@takaro/lib-components';
+
+import { Player } from 'components/Player';
 import { useUserRemove, useInviteUser, usersQueryOptions } from 'queries/user';
 import { UserOutputWithRolesDTO, UserSearchInputDTOSortDirectionEnum, PERMISSIONS } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
@@ -55,10 +57,12 @@ function Component() {
       filters: {
         name: columnFilters.columnFiltersState.find((filter) => filter.id === 'name')?.value,
         discordId: columnFilters.columnFiltersState.find((filter) => filter.id === 'discordId')?.value,
+        playerId: columnFilters.columnFiltersState.find((filter) => filter.id === 'playerId')?.value,
       },
       search: {
         name: columnSearch.columnSearchState.find((search) => search.id === 'name')?.value,
         discordId: columnSearch.columnSearchState.find((search) => search.id === 'discordId')?.value,
+        playerId: columnSearch.columnSearchState.find((search) => search.id === 'playerId')?.value,
       },
     }),
   });
@@ -98,6 +102,16 @@ function Component() {
       header: 'Discord ID',
       id: 'discordId',
       cell: (info) => <CopyId placeholder="Discord ID" id={info.getValue()} />,
+    }),
+    columnHelper.accessor('playerId', {
+      header: 'Player ID',
+      id: 'playerId',
+      cell: (info) =>
+        info.getValue() ? (
+          <Player playerId={info.getValue() as string} name={info.getValue()} showAvatar={false} />
+        ) : (
+          'no player assigned'
+        ),
     }),
     columnHelper.accessor('createdAt', {
       header: 'Created at',
