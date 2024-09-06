@@ -33,6 +33,9 @@ This command assumes have a working/correctly set up dev environment.
 ```sh
 DOCKER_TAG=latest npx zx scripts/integration-tests.mjs
 
+# To also run end-to-end tests
+DOCKER_TAG=latest IS_E2E=1 npx zx scripts/integration-tests.mjs
+
 # To run using the containers specific PR, use pr-[PR_ID].
 # You can find the PR_ID next to the title or in the URL.
 # E.g. https://github.com/gettakaro/takaro/pull/1246 --> PR_ID=1246
