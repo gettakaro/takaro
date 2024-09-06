@@ -44,6 +44,7 @@ export const ShopOrderTableView: FC<ShopOrderTableView> = ({ gameServerId }) => 
         ? ShopOrderSearchInputDTOSortDirectionEnum.Desc
         : ShopOrderSearchInputDTOSortDirectionEnum.Asc,
       filters: {
+        // TODO: should remove this
         userId: [session.id],
         listingId: columnFilters.columnFiltersState.find((filter) => filter.id === 'listingId')?.value,
         status: columnFilters.columnFiltersState.find((filter) => filter.id === 'status')?.value,

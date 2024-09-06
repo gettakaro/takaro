@@ -4,7 +4,7 @@ import { calculateNearestUniquePath, getFileName } from './utils';
 import { DiJsBadge as JsIcon } from 'react-icons/di';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { useStudioContext } from '../useStudioStore';
+import { useModuleBuilderContext } from '../useModuleBuilderStore';
 
 const closeIcon =
   'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNOS40MjggOEwxMiAxMC41NzMgMTAuNTcyIDEyIDggOS40MjggNS40MjggMTIgNCAxMC41NzMgNi41NzIgOCA0IDUuNDI4IDUuNDI3IDQgOCA2LjU3MiAxMC41NzMgNCAxMiA1LjQyOCA5LjQyOCA4eiIgZmlsbD0iIzQyNDI0MiIvPjwvc3ZnPg==';
@@ -73,9 +73,9 @@ export interface FileTabsProps {
 }
 
 export const FileTabs: FC<FileTabsProps> = ({ closableTabs, dirtyFiles, setDirtyFiles }) => {
-  const activeFile = useStudioContext((s) => s.activeFile);
-  const setActiveFile = useStudioContext((s) => s.setActiveFile);
-  const visibleFiles = useStudioContext((s) => s.visibleFiles);
+  const activeFile = useModuleBuilderContext((s) => s.activeFile);
+  const setActiveFile = useModuleBuilderContext((s) => s.setActiveFile);
+  const visibleFiles = useModuleBuilderContext((s) => s.visibleFiles);
 
   // TODO: furhter implement tab moving, but with the current implementation of sandpack, it does not really support it.
   const moveTab = (_filePath: string, _atIndex: number) => {
@@ -149,10 +149,10 @@ const Tab: FC<TabProps> = ({
   moveTab,
   index,
 }) => {
-  const setActiveFile = useStudioContext((s) => s.setActiveFile);
-  const visibleFiles = useStudioContext((s) => s.visibleFiles);
-  const closeFile = useStudioContext((s) => s.closeFile);
-  const activeFile = useStudioContext((s) => s.activeFile);
+  const setActiveFile = useModuleBuilderContext((s) => s.setActiveFile);
+  const visibleFiles = useModuleBuilderContext((s) => s.visibleFiles);
+  const closeFile = useModuleBuilderContext((s) => s.closeFile);
+  const activeFile = useModuleBuilderContext((s) => s.activeFile);
 
   const theme = useTheme();
   const [openDialog, setOpenDialog] = useState<boolean>(false);
