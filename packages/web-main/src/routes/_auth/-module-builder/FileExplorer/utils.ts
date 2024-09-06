@@ -1,4 +1,4 @@
-import { StudioProps } from '../useStudioStore';
+import { ModuleBuilderProps } from '../useModuleBuilderStore';
 
 export const fromPropsToModules = ({
   autoHiddenFiles,
@@ -8,7 +8,7 @@ export const fromPropsToModules = ({
   depth,
 }: {
   prefixedPath: string;
-  files: StudioProps['fileMap'];
+  files: ModuleBuilderProps['fileMap'];
   autoHiddenFiles?: boolean;
   visibleFiles: string[];
   depth: number;

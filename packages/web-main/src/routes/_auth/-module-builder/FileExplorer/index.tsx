@@ -1,16 +1,16 @@
 import type { FC } from 'react';
 import { ModuleList } from './ModuleList';
-import { useStudioContext } from '../useStudioStore';
+import { useModuleBuilderContext } from '../useModuleBuilderStore';
 
 export interface FileExplorerProps {
   autoHiddenFiles?: boolean;
 }
 
 export const FileExplorer: FC<FileExplorerProps> = ({ autoHiddenFiles = false }) => {
-  const activeFile = useStudioContext((s) => s.activeFile);
-  const openFile = useStudioContext((s) => s.openFile);
-  const visibleFiles = useStudioContext((s) => s.visibleFiles);
-  const files = useStudioContext((s) => s.fileMap);
+  const activeFile = useModuleBuilderContext((s) => s.activeFile);
+  const openFile = useModuleBuilderContext((s) => s.openFile);
+  const visibleFiles = useModuleBuilderContext((s) => s.visibleFiles);
+  const files = useModuleBuilderContext((s) => s.fileMap);
 
   return (
     <>

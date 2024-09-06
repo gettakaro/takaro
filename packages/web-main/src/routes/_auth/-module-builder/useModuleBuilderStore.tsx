@@ -34,7 +34,7 @@ interface File {
 // code is optional here
 type FileWithPath = Omit<File, 'code'> & { path: string; code?: string };
 
-export type StudioProps = {
+export type ModuleBuilderProps = {
   moduleId: string;
   moduleName: string;
   readOnly: boolean;
@@ -44,12 +44,12 @@ export type StudioProps = {
   /// List of files that are visible in the editor (tabs)
   visibleFiles: string[];
 };
-type StudioActions = FileActions;
-type StudioState = StudioProps & StudioActions;
-type StudioStore = ReturnType<typeof createStudioStore>;
+type ModuleBuilderActions = FileActions;
+type ModuleBuilderState = ModuleBuilderProps & ModuleBuilderActions;
+type ModuleBuilderStore = ReturnType<typeof createModuleBuilderStore>;
 
-const createStudioStore = (initProps: StudioProps) => {
-  return createStore<StudioState>()((set) => ({
+const createModuleBuilderStore = (initProps: ModuleBuilderProps) => {
+  return createStore<ModuleBuilderState>()((set) => ({
     ...initProps,
 
     openFile: (path: string): void => {
@@ -151,19 +151,19 @@ const createStudioStore = (initProps: StudioProps) => {
   }));
 };
 
-const StudioContext = createContext<StudioStore | null>(null);
-type StudioProviderProps = PropsWithChildren<StudioProps>;
-export function StudioProvider({ children, ...props }: StudioProviderProps) {
-  const storeRef = useRef<StudioStore>();
+const ModuleBuilderContext = createContext<ModuleBuilderStore | null>(null);
+type ModuleBuilderProviderProps = PropsWithChildren<ModuleBuilderProps>;
+export function ModuleBuilderProvider({ children, ...props }: ModuleBuilderProviderProps) {
+  const storeRef = useRef<ModuleBuilderStore>();
   if (!storeRef.current) {
-    storeRef.current = createStudioStore(props);
+    storeRef.current = createModuleBuilderStore(props);
   }
 
-  return <StudioContext.Provider value={storeRef.current}>{children}</StudioContext.Provider>;
+  return <ModuleBuilderContext.Provider value={storeRef.current}>{children}</ModuleBuilderContext.Provider>;
 }
 
-export function useStudioContext<T>(selector: (state: StudioState) => T): T {
-  const store = useContext(StudioContext);
-  if (!store) throw new Error('StudioStore should be used within a StudioProvider');
+export function useModuleBuilderContext<T>(selector: (state: ModuleBuilderState) => T): T {
+  const store = useContext(ModuleBuilderContext);
+  if (!store) throw new Error('ModuleBuilder should be used within a ModuleBuilderProvider');
   return useStore(store, selector);
 }

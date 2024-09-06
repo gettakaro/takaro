@@ -75,7 +75,7 @@ const domainLinks: NavbarLink[] = [
     requiredPermissions: [PERMISSIONS.ReadRoles],
   },
   {
-    label: 'Modules',
+    label: 'Module Builder',
     linkProps: {
       to: '/modules',
     },
