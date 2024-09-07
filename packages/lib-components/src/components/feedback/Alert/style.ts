@@ -58,10 +58,15 @@ export const Container = styled(motion.div)<{
   }}
 `;
 
-export const Grid = styled.div<{ hasTitle: boolean }>`
+export const Grid = styled.div<{ hasTitle: boolean; showIcon: boolean }>`
   display: grid;
-  grid-template-columns: ${({ theme, hasTitle }) =>
-    !hasTitle ? `${theme.spacing[5]} 1fr fit-content(100px)` : `${theme.spacing[5]} 1fr`};} 
+  grid-template-columns: ${({ theme, hasTitle, showIcon }) => {
+    const result = '';
+    if (showIcon) result.concat(`${theme.spacing[5]}`);
+    result.concat(' 1fr');
+    if (hasTitle) result.concat(' fit-content(100px)');
+    return result;
+  }}
   align-items: center;
   gap: ${({ theme, hasTitle }) => (hasTitle ? 0 : theme.spacing['0_5'])};
 `;
@@ -83,5 +88,6 @@ export const ButtonContainer = styled.div<{
 }>`
   display: ${({ show }): string => (show ? 'flex' : 'none')};
   align-items: center;
+  white-space: nowrap;
   margin-top: ${({ theme, hasTitle }): string => (hasTitle ? theme.spacing['1'] : theme.spacing[0])};
 `;
