@@ -53,7 +53,7 @@ class LoginOutputDTOAPI extends APIOutput<LoginOutputDTO> {
   declare data: LoginOutputDTO;
 }
 
-class MeOutoutDTO extends TakaroDTO<MeOutoutDTO> {
+class MeOutputDTO extends TakaroDTO<MeOutputDTO> {
   @Type(() => UserOutputWithRolesDTO)
   @ValidateNested()
   user: UserOutputWithRolesDTO;
@@ -71,10 +71,10 @@ class MeOutoutDTO extends TakaroDTO<MeOutoutDTO> {
   pogs: PlayerOnGameserverOutputDTO[];
 }
 
-class MeOutoutDTOAPI extends APIOutput<MeOutoutDTO> {
-  @Type(() => MeOutoutDTO)
+class MeOutoutDTOAPI extends APIOutput<MeOutputDTO> {
+  @Type(() => MeOutputDTO)
   @ValidateNested()
-  declare data: MeOutoutDTO;
+  declare data: MeOutputDTO;
 }
 
 class UserOutputDTOAPI extends APIOutput<UserOutputWithRolesDTO> {
@@ -167,7 +167,7 @@ export class UserController {
     const user = await new UserService(req.domainId).findOne(req.user.id);
     const domainService = new DomainService();
     const domains = await domainService.resolveDomainByIdpId(user.idpId);
-    const response = new MeOutoutDTO({ user, domains, domain: req.domainId });
+    const response = new MeOutputDTO({ user, domains, domain: req.domainId, pogs: [] });
 
     if (user.playerId) {
       const playerService = await new PlayerService(req.domainId);
