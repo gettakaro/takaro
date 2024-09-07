@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { RequiredPermissions } from '@takaro/lib-components';
 import { hasPermissionHelper } from '@takaro/lib-components/src/components/other/PermissionsGuard';
-import { PERMISSIONS, UserOutputWithRolesDTO } from '@takaro/apiclient';
+import { MeOutoutDTO, PERMISSIONS } from '@takaro/apiclient';
 import { useSession } from './useSession';
 
 export const useHasPermission = (requiredPermissions: RequiredPermissions) => {
@@ -12,11 +12,11 @@ export const useHasPermission = (requiredPermissions: RequiredPermissions) => {
       return [];
     }
 
-    if (session.roles === undefined || session.roles.length === 0) {
+    if (session.user.roles === undefined || session.user.roles.length === 0) {
       return new Set() as Set<PERMISSIONS>;
     }
 
-    return session.roles
+    return session.user.roles
       .flatMap((assign) => assign.role.permissions.map((permission) => permission.permission.permission as PERMISSIONS))
       .filter((permission) => Object.values(PERMISSIONS).includes(permission))
       .reduce((acc, permission) => acc.add(permission), new Set());
@@ -30,17 +30,17 @@ export const useHasPermission = (requiredPermissions: RequiredPermissions) => {
 };
 
 // Non hook version
-export const hasPermission = (session: UserOutputWithRolesDTO, requiredPermissions: RequiredPermissions): boolean => {
+export const hasPermission = (session: MeOutoutDTO, requiredPermissions: RequiredPermissions): boolean => {
   if (!session) {
     return false;
   }
 
   const userPermissions = () => {
-    if (session.roles === undefined || session.roles.length === 0) {
+    if (session.user.roles === undefined || session.user.roles.length === 0) {
       return new Set() as Set<PERMISSIONS>;
     }
 
-    return session.roles
+    return session.user.roles
       .flatMap((assign) => assign.role.permissions.map((permission) => permission.permission.permission as PERMISSIONS))
       .filter((permission) => Object.values(PERMISSIONS).includes(permission))
       .reduce((acc, permission) => acc.add(permission), new Set()) as Set<PERMISSIONS>;
@@ -49,13 +49,13 @@ export const hasPermission = (session: UserOutputWithRolesDTO, requiredPermissio
   return hasPermissionHelper(Array.from(userPermissions()), requiredPermissions);
 };
 
-export const getUserPermissions = (session: UserOutputWithRolesDTO): PERMISSIONS[] => {
-  if (session.roles === undefined || session.roles.length === 0) {
+export const getUserPermissions = (session: MeOutoutDTO): PERMISSIONS[] => {
+  if (session.user.roles === undefined || session.user.roles.length === 0) {
     return [];
   }
 
   return Array.from(
-    session.roles
+    session.user.roles
       .flatMap((assign) => assign.role.permissions.map((permission) => permission.permission.permission as PERMISSIONS))
       .filter((permission) => Object.values(PERMISSIONS).includes(permission))
       .reduce((acc, permission) => acc.add(permission), new Set()) as Set<PERMISSIONS>,
