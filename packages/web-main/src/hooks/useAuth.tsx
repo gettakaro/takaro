@@ -22,7 +22,6 @@ export interface IAuthContext {
 
 function getLocalSession() {
   const expirableSessionString = localStorage.getItem('session');
-
   if (!expirableSessionString) {
     return null;
   }
@@ -86,7 +85,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           },
         })
       ).data.data;
-      setLocalSession(session);
+      setLocalSession(newSession);
       return newSession;
     } catch (_error) {
       // logout if session is invalid
@@ -94,7 +93,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLocalSession(null);
       queryClient.clear();
       window.location.href = '/login';
-      throw 'should not have no session and not be redirected to login';
+      throw 'should have no session and should be redirected to login';
     }
   };
 
