@@ -8,9 +8,11 @@ on:
   push:
     branches:
       - development
+      - main
 jobs:
   mainPromotion:
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/development'
     steps:
       - name: Generate token
         id: generate_token
@@ -39,6 +41,7 @@ jobs:
 
   updateDevelopment:
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
     steps:
       - name: Generate token
         id: generate_token
