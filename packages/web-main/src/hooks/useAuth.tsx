@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { MeOutoutDTO } from '@takaro/apiclient';
+import { MeOutputDTO } from '@takaro/apiclient';
 import { createContext, useCallback, useContext } from 'react';
 import { useOry } from './useOry';
 import * as Sentry from '@sentry/react';
@@ -10,14 +10,14 @@ import { usePostHog } from 'posthog-js/react';
 const SESSION_EXPIRES_AFTER_MINUTES = 5;
 
 interface ExpirableSession {
-  session: MeOutoutDTO;
+  session: MeOutputDTO;
   expiresAt: string;
 }
 
 export interface IAuthContext {
   logOut: () => Promise<void>;
-  getSession: () => Promise<MeOutoutDTO>;
-  login: (user: MeOutoutDTO) => void;
+  getSession: () => Promise<MeOutputDTO>;
+  login: (user: MeOutputDTO) => void;
 }
 
 function getLocalSession() {
@@ -33,7 +33,7 @@ function getLocalSession() {
   return expirableSession.session;
 }
 
-function setLocalSession(session: MeOutoutDTO | null) {
+function setLocalSession(session: MeOutputDTO | null) {
   if (session) {
     const expirableSession: ExpirableSession = {
       session,
@@ -61,7 +61,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return Promise.resolve();
   }, [oryClient, queryClient]);
 
-  const login = useCallback((session: MeOutoutDTO) => {
+  const login = useCallback((session: MeOutputDTO) => {
     setLocalSession(session);
     Sentry.setUser({ id: session.user.id, email: session.user.email, username: session.user.name });
     posthog.identify(session.user.idpId, {
@@ -70,7 +70,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  const getSession = async function (): Promise<MeOutoutDTO> {
+  const getSession = async function (): Promise<MeOutputDTO> {
     const session = getLocalSession();
 
     if (session) {

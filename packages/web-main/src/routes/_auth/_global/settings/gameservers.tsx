@@ -64,7 +64,7 @@ function Component() {
   useDocumentTitle('Settings');
   const { enqueueSnackbar } = useSnackbar();
   const { mutateAsync: setGlobalSetting, isPending } = useSetGlobalSetting();
-  const { hasPermission } = useHasPermission([PERMISSIONS.ManageSettings]);
+  const hasPermission = useHasPermission([PERMISSIONS.ManageSettings]);
   const readOnly = !hasPermission;
   const data = Route.useLoaderData();
 

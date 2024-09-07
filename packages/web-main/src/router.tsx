@@ -4,7 +4,7 @@ import { createRouter } from '@tanstack/react-router';
 import { QueryClient } from '@tanstack/react-query';
 import { DefaultErrorComponent } from 'components/ErrorComponent';
 import { IAuthContext } from 'hooks/useAuth';
-import { MeOutoutDTO } from '@takaro/apiclient';
+import { MeOutputDTO } from '@takaro/apiclient';
 
 export interface RouterContext {
   queryClient: QueryClient;
@@ -17,7 +17,7 @@ export const router = createRouter({
     auth: {
       logOut: async () => {},
       login: () => {},
-      getSession: async () => ({}) as Promise<MeOutoutDTO>,
+      getSession: async () => ({}) as Promise<MeOutputDTO>,
     },
     queryClient: queryClient,
   },

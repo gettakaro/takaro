@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { RequiredPermissions } from '@takaro/lib-components';
 import { hasPermissionHelper } from '@takaro/lib-components/src/components/other/PermissionsGuard';
-import { MeOutoutDTO, PERMISSIONS } from '@takaro/apiclient';
+import { MeOutputDTO, PERMISSIONS } from '@takaro/apiclient';
 import { useSession } from './useSession';
 
 export const useHasPermission = (requiredPermissions: RequiredPermissions) => {
@@ -26,11 +26,11 @@ export const useHasPermission = (requiredPermissions: RequiredPermissions) => {
     return hasPermissionHelper(Array.from(userPermissions), requiredPermissions);
   }, [requiredPermissions, userPermissions]);
 
-  return { hasPermission };
+  return hasPermission;
 };
 
 // Non hook version
-export const hasPermission = (session: MeOutoutDTO, requiredPermissions: RequiredPermissions): boolean => {
+export const hasPermission = (session: MeOutputDTO, requiredPermissions: RequiredPermissions): boolean => {
   if (!session) {
     return false;
   }
@@ -49,7 +49,7 @@ export const hasPermission = (session: MeOutoutDTO, requiredPermissions: Require
   return hasPermissionHelper(Array.from(userPermissions()), requiredPermissions);
 };
 
-export const getUserPermissions = (session: MeOutoutDTO): PERMISSIONS[] => {
+export const getUserPermissions = (session: MeOutputDTO): PERMISSIONS[] => {
   if (session.user.roles === undefined || session.user.roles.length === 0) {
     return [];
   }
