@@ -54,7 +54,7 @@ export class Meta {
       {
         info: {
           title: `Takaro ${process.env.PACKAGE || 'API'}`,
-          version: process.env.TAKARO_VERSION || '0.0.0',
+          version: `${process.env.TAKARO_VERSION} - ${process.env.TAKARO_COMMIT} `,
           contact: {
             name: 'Takaro Team',
             email: 'support@takaro.io',
