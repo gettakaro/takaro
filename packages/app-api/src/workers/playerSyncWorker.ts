@@ -46,7 +46,7 @@ export async function processJob(job: Job<IGameServerQueueData>) {
         const promises = [];
 
         const gameserverService = new GameServerService(domain.id);
-        const gameServers = await gameserverService.find({});
+        const gameServers = await gameserverService.find({ filters: { enabled: [true] } });
         promises.push(
           ...gameServers.results.map(async (gs) => {
             const reachable = await gameserverService.testReachability(gs.id);

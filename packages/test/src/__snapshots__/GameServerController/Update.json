@@ -6,6 +6,7 @@
       "createdAt": "2023-12-24T15:22:57.938Z",
       "updatedAt": "2023-12-24T15:22:58.000Z",
       "name": "Test gameserver 2",
+      "enabled": true,
       "connectionInfo": {
         "host": "somewhere.else",
         "port": 9876

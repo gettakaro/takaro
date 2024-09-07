@@ -2568,6 +2568,12 @@ export interface GameServerOutputDTO {
   reachable: boolean;
   /**
    *
+   * @type {boolean}
+   * @memberof GameServerOutputDTO
+   */
+  enabled: boolean;
+  /**
+   *
    * @type {string}
    * @memberof GameServerOutputDTO
    */
@@ -2638,6 +2644,18 @@ export interface GameServerSearchInputAllowedFilters {
    * @memberof GameServerSearchInputAllowedFilters
    */
   type?: Array<GameServerSearchInputAllowedFiltersTypeEnum>;
+  /**
+   *
+   * @type {Array<boolean>}
+   * @memberof GameServerSearchInputAllowedFilters
+   */
+  reachable?: Array<boolean>;
+  /**
+   *
+   * @type {Array<boolean>}
+   * @memberof GameServerSearchInputAllowedFilters
+   */
+  enabled?: Array<boolean>;
 }
 
 export const GameServerSearchInputAllowedFiltersTypeEnum = {
@@ -2845,6 +2863,12 @@ export interface GameServerUpdateDTO {
    * @memberof GameServerUpdateDTO
    */
   reachable?: boolean;
+  /**
+   *
+   * @type {boolean}
+   * @memberof GameServerUpdateDTO
+   */
+  enabled?: boolean;
 }
 
 export const GameServerUpdateDTOTypeEnum = {
