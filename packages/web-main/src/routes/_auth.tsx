@@ -10,7 +10,6 @@ export const Route = createFileRoute('/_auth')({
       throw redirect({ to: '/login', search: { redirect: redirectPath } });
     }
   },
-
   loader: async ({ context }) => {
     return await context.queryClient.ensureQueryData(userMeQueryOptions());
   },
