@@ -24,11 +24,12 @@ function Component() {
   const navigate = useNavigate({ from: Route.fullPath });
   const { mutate, isPending, error: gameServerUpdateError } = useGameServerUpdate();
 
-  const onSubmit: SubmitHandler<IFormInputs> = ({ name, connectionInfo }) => {
+  const onSubmit: SubmitHandler<IFormInputs> = ({ name, connectionInfo, enabled }) => {
     mutate({
       gameServerId,
       gameServerDetails: {
         name,
+        enabled,
         type: gameServer.type,
         connectionInfo: JSON.stringify(connectionInfo),
       },

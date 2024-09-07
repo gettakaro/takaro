@@ -81,6 +81,8 @@ export class GameServerOutputDTO extends TakaroModelDTO<GameServerOutputDTO> {
   type: GAME_SERVER_TYPE;
   @IsBoolean()
   reachable: boolean;
+  @IsBoolean()
+  enabled: boolean;
 }
 
 export class GameServerCreateDTO extends TakaroDTO<GameServerCreateDTO> {
@@ -106,6 +108,9 @@ export class GameServerUpdateDTO extends TakaroDTO<GameServerUpdateDTO> {
   @IsBoolean()
   @IsOptional()
   reachable: boolean;
+  @IsBoolean()
+  @IsOptional()
+  enabled: boolean;
 }
 
 export class ModuleInstallDTO extends TakaroDTO<ModuleInstallDTO> {
@@ -362,6 +367,9 @@ export class GameServerService extends TakaroService<
 
   async getGame(id: string): Promise<IGameServer> {
     const gameserver = await this.repo.findOne(id, true);
+
+    if (!gameserver.enabled) throw new errors.BadRequestError('Game server is disabled');
+
     let gameInstance = gameClassCache.get(id);
 
     if (gameInstance) {

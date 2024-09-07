@@ -76,15 +76,18 @@ class GameServerManager {
    */
   private async syncServers() {
     const isFirstTimeRun = this.emitterMap.size === 0;
-    const domains = await takaro.domain.domainControllerSearch();
-    const enabledDomains = domains.data.data.filter((domain) => domain.state === DomainOutputDTOStateEnum.Active);
+    const enabledDomains = (
+      await takaro.domain.domainControllerSearch({ filters: { state: [DomainOutputDTOStateEnum.Active] } })
+    ).data.data;
 
     const gameServers: Map<string, GameServerOutputDTO[]> = new Map();
 
     const results = await Promise.allSettled(
       enabledDomains.map(async (domain) => {
         const client = await getDomainClient(domain.id);
-        const gameServersRes = await client.gameserver.gameServerControllerSearch();
+        const gameServersRes = await client.gameserver.gameServerControllerSearch({
+          filters: { enabled: [true], reachable: [true] },
+        });
         gameServers.set(domain.id, gameServersRes.data.data);
       }),
     );
@@ -137,6 +140,11 @@ class GameServerManager {
 
     if (!gameServer.reachable) {
       this.log.warn(`GameServer ${gameServerId} is not reachable, skipping...`);
+      return;
+    }
+
+    if (!gameServer.enabled) {
+      this.log.warn(`GameServer ${gameServerId} is not enabled, skipping...`);
       return;
     }
 

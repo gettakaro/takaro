@@ -27,6 +27,7 @@ export const Default: StoryFn<ItemSelectQueryViewProps> = (args) => {
     name: 'Online Mock Server 1',
     type: 'MOCK',
     reachable: true,
+    enabled: true,
     connectionInfo: {},
   };
 
