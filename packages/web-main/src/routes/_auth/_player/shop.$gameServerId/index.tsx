@@ -7,14 +7,12 @@ import { gameServerQueryOptions } from 'queries/gameserver';
 export const Route = createFileRoute('/_auth/_player/shop/$gameServerId/')({
   loader: async ({ context, params }) => {
     const session = await context.auth.getSession();
-
     const [currencyName, gameServer] = await Promise.all([
       context.queryClient.ensureQueryData(gameServerSettingQueryOptions('currencyName', params.gameServerId)),
       context.queryClient.ensureQueryData(gameServerQueryOptions(params.gameServerId)),
     ]);
 
     const pog = session.pogs.find((pog) => pog.gameServerId === params.gameServerId);
-
     return {
       currencyName: currencyName.value,
       gameServer: gameServer,

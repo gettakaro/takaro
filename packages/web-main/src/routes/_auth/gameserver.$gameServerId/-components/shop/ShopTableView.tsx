@@ -154,25 +154,24 @@ export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, g
         </ShopListingBuyFormContainer>
       ),
     }),
-    hasPermission &&
-      columnHelper.display({
-        header: 'Other actions',
-        id: 'actions',
-        enableSorting: false,
-        enableColumnFilter: false,
-        enableHiding: true,
-        enablePinning: false,
-        enableGlobalFilter: false,
-        enableResizing: false,
-        maxSize: 50,
-        cell: (info) => (
-          <ShopListingActions
-            shopListingId={info.row.original.id}
-            shopListingName={info.row.original.name || ''}
-            gameServerId={gameServerId}
-          />
-        ),
-      }),
+    columnHelper.display({
+      header: 'Other actions',
+      id: 'actions',
+      enableSorting: false,
+      enableColumnFilter: false,
+      enableHiding: true,
+      enablePinning: false,
+      enableGlobalFilter: false,
+      enableResizing: false,
+      maxSize: 50,
+      cell: (info) => (
+        <ShopListingActions
+          shopListingId={info.row.original.id}
+          shopListingName={info.row.original.name || ''}
+          gameServerId={gameServerId}
+        />
+      ),
+    }),
   ];
 
   const p =
@@ -185,21 +184,19 @@ export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, g
       : undefined;
 
   return (
-    <>
-      <Table
-        title="Shop"
-        id="shop-table"
-        {...(hasPermission && {
-          renderToolbar: () => <Button onClick={handleOnCreateShopListingClicked} text="Create shop listing" />,
-        })}
-        columns={columnDefs}
-        data={data?.data as ShopListingOutputDTO[]}
-        pagination={p}
-        columnFiltering={columnFilters}
-        columnSearch={columnSearch}
-        sorting={sorting}
-        isLoading={isLoading}
-      />
-    </>
+    <Table
+      title="Shop"
+      id="shop-table"
+      {...(hasPermission && {
+        renderToolbar: () => <Button onClick={handleOnCreateShopListingClicked} text="Create shop listing" />,
+      })}
+      columns={columnDefs}
+      data={data?.data as ShopListingOutputDTO[]}
+      pagination={p}
+      columnFiltering={columnFilters}
+      columnSearch={columnSearch}
+      sorting={sorting}
+      isLoading={isLoading}
+    />
   );
 };
