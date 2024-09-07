@@ -13,7 +13,7 @@ const items = [
   },
   { permission: [PERMISSIONS.ReadPlayers], linkName: 'Players', path: 'players' },
   { permission: [PERMISSIONS.ReadUsers], linkName: 'Users', path: 'users' },
-  { permission: [PERMISSIONS.ReadModules], linkName: 'Modules', path: 'modules' },
+  { permission: [PERMISSIONS.ReadModules], linkName: 'Module Builder', path: 'modules' },
   { permission: [PERMISSIONS.ReadVariables], linkName: 'Variables', path: 'variables' },
   { permission: [PERMISSIONS.ReadSettings], linkName: 'Settings', path: 'settings' },
   { permission: [PERMISSIONS.ReadRoles], linkName: 'Roles', path: 'roles' },
@@ -39,7 +39,7 @@ for (const { linkName, path, permission } of items) {
     await expect(page).toHaveURL(new RegExp(`${path}.*`));
   });
 
-  userTest.fixme(`Can go to ${linkName} with permissions`, async ({ takaro, page }) => {
+  userTest(`Can go to ${linkName} with permissions`, async ({ takaro, page }) => {
     const route = `/${path}`;
 
     // check if link redirects to Forbidden page
