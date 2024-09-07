@@ -2,10 +2,11 @@ import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import { useModuleImport } from 'queries/module';
 import { ModuleImportForm, IFormInputs } from './-modules/ModuleImportForm';
 import { hasPermission } from 'hooks/useHasPermission';
+import { userMeQueryOptions } from 'queries/user';
 
 export const Route = createFileRoute('/_auth/_global/modules/create/import')({
   beforeLoad: async ({ context }) => {
-    const session = await context.auth.getSession();
+    const session = await context.queryClient.ensureQueryData(userMeQueryOptions());
     if (!hasPermission(session, ['MANAGE_MODULES'])) {
       throw redirect({ to: '/forbidden' });
     }

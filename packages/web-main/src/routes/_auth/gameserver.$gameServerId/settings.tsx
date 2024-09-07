@@ -14,10 +14,11 @@ import { hasPermission, useHasPermission } from 'hooks/useHasPermission';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { useQueries } from '@tanstack/react-query';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
+import { userMeQueryOptions } from 'queries/user';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/settings')({
   beforeLoad: async ({ context }) => {
-    const session = await context.auth.getSession();
+    const session = await context.queryClient.ensureQueryData(userMeQueryOptions());
     if (!hasPermission(session, [PERMISSIONS.ReadSettings])) {
       throw redirect({ to: '/forbidden' });
     }
