@@ -5,6 +5,7 @@ import { useOry } from './useOry';
 import * as Sentry from '@sentry/react';
 import { getApiClient } from 'util/getApiClient';
 import { usePostHog } from 'posthog-js/react';
+import { userKeys } from 'queries/user';
 
 export interface IAuthContext {
   logOut: () => Promise<void>;
@@ -44,10 +45,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           },
         })
       ).data.data;
+      queryClient.setQueryData(userKeys.me(), newSession);
       return newSession;
     } catch (_error) {
-      // logout if session is invalid
-      localStorage.removeItem('session');
       queryClient.clear();
       window.location.href = '/login';
       throw 'should have no session and should be redirected to login';

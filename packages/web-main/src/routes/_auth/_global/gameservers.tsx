@@ -9,10 +9,11 @@ import { ErrorBoundary } from '@sentry/react';
 import { Button, Empty, EmptyPage, InfiniteScroll, Skeleton } from '@takaro/lib-components';
 import { Fragment } from 'react';
 import { PERMISSIONS } from '@takaro/apiclient';
+import { userMeQueryOptions } from 'queries/user';
 
 export const Route = createFileRoute('/_auth/_global/gameservers')({
   beforeLoad: async ({ context }) => {
-    const session = await context.auth.getSession();
+    const session = await context.queryClient.ensureQueryData(userMeQueryOptions());
     if (!hasPermission(session, [PERMISSIONS.ManageGameservers])) {
       throw redirect({ to: '/forbidden' });
     }

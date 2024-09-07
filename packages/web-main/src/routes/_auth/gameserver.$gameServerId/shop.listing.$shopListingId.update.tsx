@@ -5,10 +5,12 @@ import { gameServerSettingQueryOptions } from 'queries/setting';
 import { shopListingQueryOptions, useShopListingUpdate } from 'queries/shopListing';
 import { SubmitHandler } from 'react-hook-form';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
+import { userMeQueryOptions } from 'queries/user';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/listing/$shopListingId/update')({
   beforeLoad: async ({ context }) => {
-    if (!hasPermission(await context.auth.getSession(), ['MANAGE_SHOP_LISTINGS'])) {
+    const session = await context.queryClient.ensureQueryData(userMeQueryOptions());
+    if (!hasPermission(session, ['MANAGE_SHOP_LISTINGS'])) {
       throw redirect({ to: '/forbidden' });
     }
   },

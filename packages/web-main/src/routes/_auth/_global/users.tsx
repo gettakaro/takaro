@@ -15,7 +15,7 @@ import {
 } from '@takaro/lib-components';
 
 import { Player } from 'components/Player';
-import { useUserRemove, useInviteUser, usersQueryOptions } from 'queries/user';
+import { useUserRemove, useInviteUser, usersQueryOptions, userMeQueryOptions } from 'queries/user';
 import { UserOutputWithRolesDTO, UserSearchInputDTOSortDirectionEnum, PERMISSIONS } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
 import {
@@ -34,7 +34,7 @@ import { useQuery } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/_global/users')({
   beforeLoad: async ({ context }) => {
-    const session = await context.auth.getSession();
+    const session = await context.queryClient.ensureQueryData(userMeQueryOptions());
     if (!hasPermission(session, ['READ_USERS'])) {
       throw redirect({ to: '/forbidden' });
     }
@@ -95,7 +95,7 @@ function Component() {
       id: 'email',
       enableSorting: true,
       meta: {
-        hiddenColumn: true,
+        hideColumn: true,
       },
     }),
     columnHelper.accessor('discordId', {
@@ -116,14 +116,14 @@ function Component() {
     columnHelper.accessor('createdAt', {
       header: 'Created at',
       id: 'createdAt',
-      meta: { dataType: 'datetime', hiddenColumn: true },
+      meta: { dataType: 'datetime', hideColumn: true },
       cell: (info) => <DateFormatter ISODate={info.getValue()} />,
       enableSorting: true,
     }),
     columnHelper.accessor('updatedAt', {
       header: 'Updated at',
       id: 'updatedAt',
-      meta: { dataType: 'datetime', hiddenColumn: true },
+      meta: { dataType: 'datetime', hideColumn: true },
       cell: (info) => <DateFormatter ISODate={info.getValue()} />,
       enableSorting: true,
     }),

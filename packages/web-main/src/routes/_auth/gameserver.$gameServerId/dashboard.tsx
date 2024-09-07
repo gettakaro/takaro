@@ -2,11 +2,12 @@ import { HorizontalNav, useTheme } from '@takaro/lib-components';
 import { Link, createFileRoute, redirect, Outlet } from '@tanstack/react-router';
 import { ErrorBoundary } from 'components/ErrorBoundary';
 import { hasPermission } from 'hooks/useHasPermission';
+import { userMeQueryOptions } from 'queries/user';
 import { PERMISSIONS } from '@takaro/apiclient';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/dashboard')({
   beforeLoad: async ({ context }) => {
-    const session = await context.auth.getSession();
+    const session = await context.queryClient.ensureQueryData(userMeQueryOptions());
     if (!hasPermission(session, [PERMISSIONS.ManageGameservers])) {
       throw redirect({ to: '/forbidden' });
     }
