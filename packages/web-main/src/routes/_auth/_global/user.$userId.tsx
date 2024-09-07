@@ -73,7 +73,7 @@ const UserRolesTable: FC<IUserRolesTableProps> = ({ roles, userId }) => {
       header: 'Name',
       id: 'name',
       cell: (info) => (
-        <Link to="/roles/view/$roleId" params={{ roleId: info.row.original.roleId }}>
+        <Link to="/roles/$roleId/view" params={{ roleId: info.row.original.roleId }}>
           {info.getValue()}
         </Link>
       ),
@@ -114,7 +114,7 @@ const UserRolesTable: FC<IUserRolesTableProps> = ({ roles, userId }) => {
               icon={<ViewIcon />}
               onClick={() =>
                 navigate({
-                  to: '/roles/view/$roleId',
+                  to: '/roles/$roleId/view',
                   params: { roleId: info.row.original.roleId },
                 })
               }

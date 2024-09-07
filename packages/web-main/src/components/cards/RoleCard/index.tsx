@@ -32,7 +32,7 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
 
   const handleOnEditClick = (e: MouseEvent): void => {
     e.stopPropagation();
-    navigate({ to: '/roles/update/$roleId', params: { roleId: id } });
+    navigate({ to: '/roles/$roleId/update', params: { roleId: id } });
   };
   const handleOnDeleteClick = (e: MouseEvent) => {
     e.stopPropagation();
@@ -46,7 +46,7 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
 
   const handleOnViewClick = (e: MouseEvent) => {
     e.stopPropagation();
-    navigate({ to: '/roles/view/$roleId', params: { roleId: id } });
+    navigate({ to: '/roles/$roleId/view', params: { roleId: id } });
   };
 
   const handleOnDelete = (e: MouseEvent) => {
