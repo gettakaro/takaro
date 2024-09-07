@@ -35,11 +35,8 @@ if [ ! -d "./_data/kratos-db" ]; then
   fi
 fi
 
-# Check if mode is not 77 yet
-if [ "$(stat -c %a ./_data)" != "777" ]; then
-  if command -v sudo >/dev/null 2>&1; then
-    sudo chmod -R 777 ./_data
-  fi
+if command -v sudo >/dev/null 2>&1; then
+  sudo chmod -R 777 ./_data
 fi
 
 ls -la _data
