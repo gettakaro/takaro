@@ -228,8 +228,8 @@ interface FormInputs {
 const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
   const [openBanDialog, setOpenBanDialog] = useState<boolean>(false);
   const [openUnbanDialog, setOpenUnbanDialog] = useState<boolean>(false);
-  const { hasPermission: hasManageRoles } = useHasPermission([PERMISSIONS.ManageRoles]);
-  const { hasPermission: hasManagePlayers } = useHasPermission([PERMISSIONS.ManagePlayers]);
+  const hasManageRoles = useHasPermission([PERMISSIONS.ManageRoles]);
+  const hasManagePlayers = useHasPermission([PERMISSIONS.ManagePlayers]);
 
   const { enqueueSnackbar } = useSnackbar();
 

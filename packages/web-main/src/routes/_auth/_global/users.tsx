@@ -162,7 +162,7 @@ interface IFormInputs {
 
 const InviteUser: FC = () => {
   const [open, setOpen] = useState<boolean>(false);
-  const { hasPermission: hasManageUsersPermission } = useHasPermission([PERMISSIONS.ManageUsers]);
+  const hasManageUsersPermission = useHasPermission([PERMISSIONS.ManageUsers]);
 
   const validationSchema = useMemo(
     () =>
@@ -227,8 +227,8 @@ const UserMenu: FC<{ user: UserOutputWithRolesDTO }> = ({ user }) => {
   const [openDeleteUserDialog, setOpenDeleteUserDialog] = useState<boolean>(false);
   const theme = useTheme();
   const navigate = useNavigate();
-  const { hasPermission: hasReadUsersPermission } = useHasPermission([PERMISSIONS.ReadUsers]);
-  const { hasPermission: hasManageRolesPermission } = useHasPermission([PERMISSIONS.ManageRoles]);
+  const hasReadUsersPermission = useHasPermission([PERMISSIONS.ReadUsers]);
+  const hasManageRolesPermission = useHasPermission([PERMISSIONS.ManageRoles]);
 
   return (
     <>

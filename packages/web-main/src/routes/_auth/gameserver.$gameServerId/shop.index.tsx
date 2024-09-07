@@ -13,7 +13,6 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/')({
     ]);
 
     const pog = session.pogs.find((pog) => pog.gameServerId == params.gameServerId);
-
     return {
       currencyName: currencyName.value,
       gameServer: gameServer,
@@ -25,6 +24,7 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/')({
 
 function Component() {
   const { currencyName, gameServer, currency } = Route.useLoaderData();
+
   const { gameServerId } = Route.useParams();
 
   return (

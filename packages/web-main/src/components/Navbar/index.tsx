@@ -127,7 +127,7 @@ interface NavbarProps {
 }
 
 export const Navbar: FC<NavbarProps> = ({ showGameServerNav }) => {
-  const { hasPermission } = useHasPermission([PERMISSIONS.ManageGameservers]);
+  const hasPermission = useHasPermission([PERMISSIONS.ManageGameservers]);
   const theme = useTheme();
 
   return (

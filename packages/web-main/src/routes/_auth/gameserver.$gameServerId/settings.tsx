@@ -90,7 +90,7 @@ function Component() {
     ],
   });
 
-  const { hasPermission } = useHasPermission([PERMISSIONS.ManageSettings]);
+  const hasPermission = useHasPermission([PERMISSIONS.ManageSettings]);
   const readOnly = !hasPermission;
 
   const { control, handleSubmit, watch, formState, reset } = useForm<IFormInputs>({
