@@ -9,10 +9,11 @@ import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { useSnackbar } from 'notistack';
 import { hasPermission, useHasPermission } from 'hooks/useHasPermission';
 import { createFileRoute, redirect } from '@tanstack/react-router';
+import { userMeQueryOptions } from 'queries/user';
 
 export const Route = createFileRoute('/_auth/_global/settings/gameservers')({
   beforeLoad: async ({ context }) => {
-    const session = await context.auth.getSession();
+    const session = await context.queryClient.ensureQueryData(userMeQueryOptions());
     if (!hasPermission(session, ['READ_SETTINGS'])) {
       throw redirect({ to: '/forbidden' });
     }

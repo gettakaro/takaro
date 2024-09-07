@@ -75,7 +75,7 @@ export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, g
       id: 'id',
       enableColumnFilter: true,
       enableSorting: true,
-      meta: { hiddenColumn: true },
+      meta: { hideColumn: true },
     }),
     columnHelper.display({
       header: 'Icon',
@@ -121,14 +121,14 @@ export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, g
     columnHelper.accessor('createdAt', {
       header: 'Created at',
       id: 'createdAt',
-      meta: { dataType: 'datetime', hiddenColumn: true },
+      meta: { dataType: 'datetime', hideColumn: true },
       cell: (info) => <DateFormatter ISODate={info.getValue()} />,
       enableSorting: true,
     }),
     columnHelper.accessor('updatedAt', {
       header: 'Updated at',
       id: 'updatedAt',
-      meta: { dataType: 'datetime', hiddenColumn: true },
+      meta: { dataType: 'datetime', hideColumn: true },
       cell: (info) => <DateFormatter ISODate={info.getValue()} />,
       enableSorting: true,
     }),
@@ -142,6 +142,7 @@ export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, g
       enablePinning: false,
       enableGlobalFilter: false,
       enableResizing: false,
+
       cell: (info) => (
         <ShopListingBuyFormContainer>
           <ShopListingBuyForm
@@ -155,7 +156,7 @@ export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, g
       ),
     }),
     columnHelper.display({
-      header: 'Other actions',
+      header: 'Actions',
       id: 'actions',
       enableSorting: false,
       enableColumnFilter: false,
@@ -164,6 +165,7 @@ export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, g
       enableGlobalFilter: false,
       enableResizing: false,
       maxSize: 50,
+      meta: { includeColumn: hasPermission },
       cell: (info) => (
         <ShopListingActions
           shopListingId={info.row.original.id}

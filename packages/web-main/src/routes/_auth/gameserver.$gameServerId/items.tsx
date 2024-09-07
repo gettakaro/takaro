@@ -92,7 +92,7 @@ export function Component() {
     columnHelper.accessor('updatedAt', {
       header: 'Updated at',
       id: 'updatedAt',
-      meta: { dataType: 'datetime', hiddenColumn: true },
+      meta: { dataType: 'datetime', hideColumn: true },
       cell: (info) => <DateFormatter ISODate={info.getValue()} />,
       enableSorting: true,
     }),

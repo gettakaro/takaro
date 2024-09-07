@@ -5,10 +5,11 @@ import { RoleCard, AddCard, CardList } from 'components/cards';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { hasPermission } from 'hooks/useHasPermission';
 import { useInfiniteQuery } from '@tanstack/react-query';
+import { userMeQueryOptions } from 'queries/user';
 
 export const Route = createFileRoute('/_auth/_global/roles')({
   beforeLoad: async ({ context }) => {
-    const session = await context.auth.getSession();
+    const session = await context.queryClient.ensureQueryData(userMeQueryOptions());
     if (!hasPermission(session, ['READ_ROLES'])) {
       throw redirect({ to: '/forbidden' });
     }

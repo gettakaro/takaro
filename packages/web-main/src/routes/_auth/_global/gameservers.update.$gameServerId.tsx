@@ -6,10 +6,11 @@ import { CreateUpdateForm } from './-gameservers/CreateUpdateForm';
 import { IFormInputs } from './-gameservers/validationSchema';
 import { hasPermission } from 'hooks/useHasPermission';
 import { useEffect } from 'react';
+import { userMeQueryOptions } from 'queries/user';
 
 export const Route = createFileRoute('/_auth/_global/gameservers/update/$gameServerId')({
   beforeLoad: async ({ context }) => {
-    const session = await context.auth.getSession();
+    const session = await context.queryClient.ensureQueryData(userMeQueryOptions());
     if (!hasPermission(session, ['MANAGE_GAMESERVERS'])) {
       throw redirect({ to: '/forbidden' });
     }
