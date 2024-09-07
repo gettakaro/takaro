@@ -50,7 +50,7 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, onSubmit, isLoading = fal
   const [open, setOpen] = useState(true);
   const navigate = useNavigate();
   const theme = useTheme();
-  const readOnly = onSubmit ? true : false;
+  const readOnly = onSubmit ? false : true;
 
   useEffect(() => {
     if (!open) {
