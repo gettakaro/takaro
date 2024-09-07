@@ -103,6 +103,8 @@ services:
     environment:
       VITE_API: http://127.0.0.1:13000
       VITE_ORY_URL: http://127.0.0.1:4433
+      VITE_POSTHOG_PUBLIC_API_KEY: "placeholder"
+      VITE_POSTHOG_API_URL: "placeholder"
     ports:
       - 13001:80
 
