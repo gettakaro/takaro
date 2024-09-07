@@ -16,6 +16,9 @@ const config: StorybookConfig = {
 
     // related to storybook out of memory: https://github.com/storybookjs/storybook/issues/12348
     return mergeConfig(config, {
+      core: {
+        disableTelemetry: true,
+      },
       build: {
         sourcemap: buildSourceMap,
       },

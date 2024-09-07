@@ -9,10 +9,10 @@ const __dirname = path.dirname(new URL(import.meta.url).pathname);
 async function main() {
   // Built in modules
   // TODO: we should probably 'export' them in CI and save it as JSON so it's consistent with the community modules
-  const modules = await getModules();
+  const modules = getModules();
   const modulesJson = JSON.stringify(modules, null, 2);
   await writeFile('dist/modules.json', modulesJson);
-  await writeFile('../web-docs/pages/modules.json', modulesJson);
+  await writeFile('../web-docs/docs/modules.json', modulesJson);
   await writeFile('../e2e/src/web-main/fixtures/modules.json', modulesJson);
 
   // Community modules
@@ -26,7 +26,7 @@ async function main() {
 
   const communityModulesJson = JSON.stringify(communityModules, null, 2);
   await writeFile('dist/community-modules.json', communityModulesJson);
-  await writeFile('../web-docs/pages/community-modules.json', communityModulesJson);
+  await writeFile('../web-docs/docs/community-modules.json', communityModulesJson);
   await writeFile('../e2e/src/web-main/fixtures/community-modules.json', communityModulesJson);
 }
 

@@ -4642,6 +4642,18 @@ export interface MeOutoutDTO {
    * @memberof MeOutoutDTO
    */
   domain: string;
+  /**
+   *
+   * @type {PlayerOutputWithRolesDTO}
+   * @memberof MeOutoutDTO
+   */
+  player?: PlayerOutputWithRolesDTO;
+  /**
+   *
+   * @type {Array<PlayerOnGameserverOutputDTO>}
+   * @memberof MeOutoutDTO
+   */
+  pogs: Array<PlayerOnGameserverOutputDTO>;
 }
 /**
  *
@@ -5271,6 +5283,50 @@ export const PERMISSIONS = {
 
 export type PERMISSIONS = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
 
+/**
+ *
+ * @export
+ * @interface PaginationParams
+ */
+export interface PaginationParams {
+  /**
+   *
+   * @type {number}
+   * @memberof PaginationParams
+   */
+  page?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof PaginationParams
+   */
+  limit?: number;
+}
+/**
+ *
+ * @export
+ * @interface PaginationParamsWithGameServer
+ */
+export interface PaginationParamsWithGameServer {
+  /**
+   *
+   * @type {string}
+   * @memberof PaginationParamsWithGameServer
+   */
+  gameServerId?: string;
+  /**
+   *
+   * @type {number}
+   * @memberof PaginationParamsWithGameServer
+   */
+  page?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof PaginationParamsWithGameServer
+   */
+  limit?: number;
+}
 /**
  *
  * @export
@@ -6693,6 +6749,82 @@ export interface RoleCreateInputDTO {
    * @memberof RoleCreateInputDTO
    */
   permissions: Array<PermissionInputDTO>;
+}
+/**
+ *
+ * @export
+ * @interface RoleMembersOutputDTO
+ */
+export interface RoleMembersOutputDTO {
+  /**
+   *
+   * @type {RoleMembersPlayersOutputDTO}
+   * @memberof RoleMembersOutputDTO
+   */
+  players: RoleMembersPlayersOutputDTO;
+  /**
+   *
+   * @type {RoleMembersUsersOutputDTO}
+   * @memberof RoleMembersOutputDTO
+   */
+  users: RoleMembersUsersOutputDTO;
+}
+/**
+ *
+ * @export
+ * @interface RoleMembersOutputDTOAPI
+ */
+export interface RoleMembersOutputDTOAPI {
+  /**
+   *
+   * @type {RoleMembersOutputDTO}
+   * @memberof RoleMembersOutputDTOAPI
+   */
+  data: RoleMembersOutputDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof RoleMembersOutputDTOAPI
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface RoleMembersPlayersOutputDTO
+ */
+export interface RoleMembersPlayersOutputDTO {
+  /**
+   *
+   * @type {number}
+   * @memberof RoleMembersPlayersOutputDTO
+   */
+  total: number;
+  /**
+   *
+   * @type {Array<PlayerOutputWithRolesDTO>}
+   * @memberof RoleMembersPlayersOutputDTO
+   */
+  results: Array<PlayerOutputWithRolesDTO>;
+}
+/**
+ *
+ * @export
+ * @interface RoleMembersUsersOutputDTO
+ */
+export interface RoleMembersUsersOutputDTO {
+  /**
+   *
+   * @type {number}
+   * @memberof RoleMembersUsersOutputDTO
+   */
+  total: number;
+  /**
+   *
+   * @type {Array<UserOutputWithRolesDTO>}
+   * @memberof RoleMembersUsersOutputDTO
+   */
+  results: Array<UserOutputWithRolesDTO>;
 }
 /**
  *
@@ -18491,6 +18623,60 @@ export const RoleApiAxiosParamCreator = function (configuration?: Configuration)
       };
     },
     /**
+     *  Required permissions: `READ_ROLES`, `READ_PLAYERS`, `READ_USERS`
+     * @summary Get members
+     * @param {string} id
+     * @param {string} [gameServerId]
+     * @param {number} [page]
+     * @param {number} [limit]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    roleControllerGetMembers: async (
+      id: string,
+      gameServerId?: string,
+      page?: number,
+      limit?: number,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('roleControllerGetMembers', 'id', id);
+      const localVarPath = `/role/{id}/members`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      if (gameServerId !== undefined) {
+        localVarQueryParameter['gameServerId'] = gameServerId;
+      }
+
+      if (page !== undefined) {
+        localVarQueryParameter['page'] = page;
+      }
+
+      if (limit !== undefined) {
+        localVarQueryParameter['limit'] = limit;
+      }
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      *  Required permissions: `READ_ROLES`
      * @summary Get one
      * @param {string} id
@@ -18697,6 +18883,40 @@ export const RoleApiFp = function (configuration?: Configuration) {
         )(axios, operationBasePath || basePath);
     },
     /**
+     *  Required permissions: `READ_ROLES`, `READ_PLAYERS`, `READ_USERS`
+     * @summary Get members
+     * @param {string} id
+     * @param {string} [gameServerId]
+     * @param {number} [page]
+     * @param {number} [limit]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async roleControllerGetMembers(
+      id: string,
+      gameServerId?: string,
+      page?: number,
+      limit?: number,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RoleMembersOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.roleControllerGetMembers(
+        id,
+        gameServerId,
+        page,
+        limit,
+        options,
+      );
+      const index = configuration?.serverIndex ?? 0;
+      const operationBasePath = operationServerMap['RoleApi.roleControllerGetMembers']?.[index]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, operationBasePath || basePath);
+    },
+    /**
      *  Required permissions: `READ_ROLES`
      * @summary Get one
      * @param {string} id
@@ -18827,6 +19047,27 @@ export const RoleApiFactory = function (configuration?: Configuration, basePath?
       return localVarFp.roleControllerCreate(roleCreateInputDTO, options).then((request) => request(axios, basePath));
     },
     /**
+     *  Required permissions: `READ_ROLES`, `READ_PLAYERS`, `READ_USERS`
+     * @summary Get members
+     * @param {string} id
+     * @param {string} [gameServerId]
+     * @param {number} [page]
+     * @param {number} [limit]
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    roleControllerGetMembers(
+      id: string,
+      gameServerId?: string,
+      page?: number,
+      limit?: number,
+      options?: any,
+    ): AxiosPromise<RoleMembersOutputDTOAPI> {
+      return localVarFp
+        .roleControllerGetMembers(id, gameServerId, page, limit, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
      *  Required permissions: `READ_ROLES`
      * @summary Get one
      * @param {string} id
@@ -18903,6 +19144,29 @@ export class RoleApi extends BaseAPI {
   public roleControllerCreate(roleCreateInputDTO?: RoleCreateInputDTO, options?: RawAxiosRequestConfig) {
     return RoleApiFp(this.configuration)
       .roleControllerCreate(roleCreateInputDTO, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   *  Required permissions: `READ_ROLES`, `READ_PLAYERS`, `READ_USERS`
+   * @summary Get members
+   * @param {string} id
+   * @param {string} [gameServerId]
+   * @param {number} [page]
+   * @param {number} [limit]
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof RoleApi
+   */
+  public roleControllerGetMembers(
+    id: string,
+    gameServerId?: string,
+    page?: number,
+    limit?: number,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return RoleApiFp(this.configuration)
+      .roleControllerGetMembers(id, gameServerId, page, limit, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

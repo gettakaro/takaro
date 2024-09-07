@@ -7,15 +7,29 @@ import {
   RoleUpdateInputDTO,
   RoleOutputDTO,
   PermissionOutputDTO,
+  RoleMembersOutputDTO,
 } from '../service/RoleService.js';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
-import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Put, Params, Res } from 'routing-controllers';
+import {
+  Body,
+  Get,
+  Post,
+  Delete,
+  JsonController,
+  UseBefore,
+  Req,
+  Put,
+  Params,
+  Res,
+  QueryParams,
+} from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
-import { IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators.js';
 import { Response } from 'express';
 import { PERMISSIONS } from '@takaro/auth';
+import { PaginationParams } from './shared.js';
 
 export class RoleOutputDTOAPI extends APIOutput<RoleOutputDTO> {
   @Type(() => RoleOutputDTO)
@@ -49,6 +63,18 @@ export class PermissionOutputDTOAPI extends APIOutput<PermissionOutputDTO[]> {
   @Type(() => PermissionOutputDTO)
   @ValidateNested({ each: true })
   declare data: PermissionOutputDTO[];
+}
+
+export class RoleMembersOutputDTOAPI extends APIOutput<RoleMembersOutputDTO> {
+  @Type(() => RoleMembersOutputDTO)
+  @ValidateNested()
+  declare data: RoleMembersOutputDTO;
+}
+
+export class PaginationParamsWithGameServer extends PaginationParams {
+  @IsOptional()
+  @IsUUID()
+  gameServerId: string;
 }
 
 @OpenAPI({
@@ -114,5 +140,18 @@ export class RoleController {
     const roleService = new RoleService(req.domainId);
     const allPermissions = await roleService.getPermissions();
     return apiResponse(allPermissions);
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_ROLES, PERMISSIONS.READ_PLAYERS, PERMISSIONS.READ_USERS]))
+  @ResponseSchema(RoleMembersOutputDTOAPI)
+  @Get('/role/:id/members')
+  async getMembers(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamId,
+    @QueryParams() filters: PaginationParamsWithGameServer,
+  ) {
+    const service = new RoleService(req.domainId);
+    const members = await service.getRoleMembers(params.id, filters);
+    return apiResponse(members);
   }
 }

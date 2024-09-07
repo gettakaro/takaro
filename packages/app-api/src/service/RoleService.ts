@@ -21,6 +21,9 @@ import { TakaroService } from './Base.js';
 import { ModuleService } from './ModuleService.js';
 import { EventService, EventCreateDTO, EVENT_TYPES } from './EventService.js';
 import { TakaroEventRoleCreated, TakaroEventRoleDeleted, TakaroEventRoleUpdated } from '@takaro/modules';
+import { PlayerOutputWithRolesDTO, PlayerService } from './PlayerService.js';
+import { UserOutputWithRolesDTO, UserService } from './UserService.js';
+import { PaginationParamsWithGameServer } from '../controllers/Rolecontroller.js';
 
 @ValidatorConstraint()
 export class IsPermissionArray implements ValidatorConstraintInterface {
@@ -190,6 +193,31 @@ export class UserAssignmentOutputDTO extends TakaroModelDTO<UserAssignmentOutput
   expiresAt: string;
 }
 
+class RoleMembersPlayersOutputDTO extends TakaroDTO<RoleMembersPlayersOutputDTO> {
+  @IsNumber()
+  total: number;
+  @ValidateNested({ each: true })
+  @Type(() => PlayerOutputWithRolesDTO)
+  results: PlayerOutputWithRolesDTO[];
+}
+
+class RoleMembersUsersOutputDTO extends TakaroDTO<RoleMembersUsersOutputDTO> {
+  @IsNumber()
+  total: number;
+  @ValidateNested({ each: true })
+  @Type(() => UserOutputWithRolesDTO)
+  results: UserOutputWithRolesDTO[];
+}
+
+export class RoleMembersOutputDTO extends TakaroDTO<RoleMembersOutputDTO> {
+  @ValidateNested()
+  @Type(() => RoleMembersPlayersOutputDTO)
+  players: RoleMembersPlayersOutputDTO;
+  @ValidateNested()
+  @Type(() => RoleMembersUsersOutputDTO)
+  users: RoleMembersUsersOutputDTO;
+}
+
 @traceableClass('service:role')
 export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCreateInputDTO, RoleUpdateInputDTO> {
   get repo() {
@@ -345,5 +373,18 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
   async permissionCodeToRecord(permissionCode: string): Promise<PermissionOutputDTO> {
     const record = await this.repo.permissionCodeToRecord(permissionCode);
     return new PermissionOutputDTO(record);
+  }
+
+  async getRoleMembers(roleId: string, filters: PaginationParamsWithGameServer): Promise<RoleMembersOutputDTO> {
+    const playerRepo = new PlayerService(this.domainId).repo;
+    const players = await playerRepo.getRoleMembers(roleId, filters);
+
+    const userRepo = new UserService(this.domainId).repo;
+    const users = await userRepo.getRoleMembers(roleId, filters);
+
+    return new RoleMembersOutputDTO({
+      players,
+      users,
+    });
   }
 }

@@ -26,10 +26,6 @@ export { ControlledTextAreaField as TextAreaField } from './TextAreaField';
 export type { ControlledTextAreaFieldProps as TextAreaFieldProps } from './TextAreaField';
 export { GenericTextAreaField as UnControlledTextAreaField } from './TextAreaField/Generic';
 
-export { ControlledSlider as Slider } from './Slider';
-export type { ControlledSliderProps as SliderProps } from './Slider';
-export { GenericSlider as UnControlledSlider } from './Slider/Generic';
-
 export { CodeField } from './CodeField';
 export type { CodeFieldProps } from './CodeField';
 
