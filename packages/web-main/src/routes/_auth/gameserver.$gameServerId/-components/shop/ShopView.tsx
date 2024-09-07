@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { GameServerOutputDTOTypeEnum } from '@takaro/apiclient';
-import { Chip, ToggleButtonGroup, styled, useLocalStorage } from '@takaro/lib-components';
+import { Alert, Chip, ToggleButtonGroup, styled, useLocalStorage } from '@takaro/lib-components';
 import { AiOutlineTable as TableViewIcon, AiOutlineUnorderedList as ListViewIcon } from 'react-icons/ai';
 import { ShopTableView } from './ShopTableView';
 import { ShopCardView } from './ShopCardView';
@@ -45,7 +45,11 @@ export const ShopView: FC<ShopViewProps> = ({ gameServerId, currency, currencyNa
           {hasCurrency ? (
             <Chip variant="outline" color="primary" label={`${currency} ${currencyName}`} />
           ) : (
-            <Chip variant="outline" color="error" label="No player linked to this gameserver." />
+            <Alert
+              showIcon={false}
+              variant="error"
+              text={<p>You are not linked to this gameserver. Read here how to link</p>}
+            />
           )}
         </Header>
         <ToggleButtonGroup

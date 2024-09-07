@@ -22,7 +22,6 @@ import {
 
 import { FaDiscord as DiscordIcon } from 'react-icons/fa';
 import { PermissionsGuard } from 'components/PermissionsGuard';
-import { useHasPermission } from 'hooks/useHasPermission';
 import { GameServerNav } from './GameServerNav';
 import { TAKARO_DOMAIN_COOKIE_REGEX } from 'routes/_auth/domain.select';
 
@@ -127,13 +126,12 @@ interface NavbarProps {
 }
 
 export const Navbar: FC<NavbarProps> = ({ showGameServerNav }) => {
-  const hasPermission = useHasPermission([PERMISSIONS.ManageGameservers]);
   const theme = useTheme();
 
   return (
     <Container animate={{ width: 325 }} transition={{ duration: 1, type: 'spring', bounce: 0.5 }}>
       <IconNavContainer data-testid="takaro-icon-nav">
-        {hasPermission && showGameServerNav && <GameServerNav />}
+        {showGameServerNav && <GameServerNav />}
         <Nav data-testid="global-nav">
           {domainLinks.length > 0 && <h3>Global</h3>}
           {domainLinks.map((link) => renderLink(link))}
