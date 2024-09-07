@@ -30,8 +30,8 @@ const LoadingContainer = styled.div`
 export const Route = createFileRoute('/_auth/module-builder/$moduleId')({
   beforeLoad: async () => {
     try {
-      const me = (await getApiClient().user.userControllerMe()).data.data;
-      if (!hasPermission(me.user, ['MANAGE_MODULES'])) {
+      const session = (await getApiClient().user.userControllerMe()).data.data;
+      if (!hasPermission(session, ['MANAGE_MODULES'])) {
         throw redirect({ to: '/forbidden' });
       }
     } catch {

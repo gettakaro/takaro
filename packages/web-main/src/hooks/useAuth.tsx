@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { MeOutoutDTO, UserOutputWithRolesDTO } from '@takaro/apiclient';
+import { MeOutoutDTO } from '@takaro/apiclient';
 import { createContext, useCallback, useContext } from 'react';
 import { useOry } from './useOry';
 import * as Sentry from '@sentry/react';
@@ -10,13 +10,13 @@ import { usePostHog } from 'posthog-js/react';
 const SESSION_EXPIRES_AFTER_MINUTES = 5;
 
 interface ExpirableSession {
-  session: UserOutputWithRolesDTO;
+  session: MeOutoutDTO;
   expiresAt: string;
 }
 
 export interface IAuthContext {
   logOut: () => Promise<void>;
-  getSession: () => Promise<UserOutputWithRolesDTO>;
+  getSession: () => Promise<MeOutoutDTO>;
   login: (user: MeOutoutDTO) => void;
 }
 
@@ -34,7 +34,7 @@ function getLocalSession() {
   return expirableSession.session;
 }
 
-function setLocalSession(session: UserOutputWithRolesDTO | null) {
+function setLocalSession(session: MeOutoutDTO | null) {
   if (session) {
     const expirableSession: ExpirableSession = {
       session,
@@ -63,7 +63,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [oryClient, queryClient]);
 
   const login = useCallback((session: MeOutoutDTO) => {
-    setLocalSession(session.user);
+    setLocalSession(session);
     Sentry.setUser({ id: session.user.id, email: session.user.email, username: session.user.name });
     posthog.identify(session.user.idpId, {
       email: session.user.email,
@@ -71,7 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  const getSession = async function (): Promise<UserOutputWithRolesDTO> {
+  const getSession = async function (): Promise<MeOutoutDTO> {
     const session = getLocalSession();
 
     if (session) {
@@ -85,7 +85,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             'Cache-Control': 'no-cache',
           },
         })
-      ).data.data.user;
+      ).data.data;
       setLocalSession(session);
       return newSession;
     } catch (_error) {

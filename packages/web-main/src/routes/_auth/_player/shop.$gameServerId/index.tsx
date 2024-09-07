@@ -3,18 +3,17 @@ import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { ShopView } from 'routes/_auth/gameserver.$gameServerId/-components/shop/ShopView';
 import { gameServerSettingQueryOptions } from 'queries/setting';
 import { gameServerQueryOptions } from 'queries/gameserver';
-import { playerOnGameServerQueryOptions } from 'queries/pog';
 
 export const Route = createFileRoute('/_auth/_player/shop/$gameServerId/')({
   loader: async ({ context, params }) => {
     const session = await context.auth.getSession();
 
-    const [currencyName, gameServer, pog] = await Promise.all([
+    const [currencyName, gameServer] = await Promise.all([
       context.queryClient.ensureQueryData(gameServerSettingQueryOptions('currencyName', params.gameServerId)),
       context.queryClient.ensureQueryData(gameServerQueryOptions(params.gameServerId)),
-      session.playerId &&
-        context.queryClient.ensureQueryData(playerOnGameServerQueryOptions(params.gameServerId, session.playerId)),
     ]);
+
+    const pog = session.pogs.find((pog) => pog.gameServerId === params.gameServerId);
 
     return {
       currencyName: currencyName.value,

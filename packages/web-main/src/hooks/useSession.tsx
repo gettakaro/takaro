@@ -1,8 +1,8 @@
-import { UserOutputWithRolesDTO } from '@takaro/apiclient';
+import { MeOutoutDTO } from '@takaro/apiclient';
 import { createContext, useContext } from 'react';
 
 export interface ISessionContext {
-  session: UserOutputWithRolesDTO;
+  session: MeOutoutDTO;
 }
 
 export const SessionContext = createContext<ISessionContext>({} as any);
