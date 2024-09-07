@@ -55,6 +55,8 @@ jobs:
           token: ${{ steps.generate_token.outputs.token }}
       - name: Update dev
         run: |
+          git config --global user.name 'takaro-ci-bot[bot]'
+          git config --global user.email '138661031+takaro-ci-bot[bot]@users.noreply.github.com'        
           git fetch origin main:main
           git rebase main
           git push --force-with-lease origin development
