@@ -1,14 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { RecoveryFlow, UpdateRecoveryFlowBody } from '@ory/client';
-import { styled, Company, Skeleton } from '@takaro/lib-components';
+import { styled, Company, LoadingPage } from '@takaro/lib-components';
 import { RecoverySectionAdditionalProps, UserAuthCard } from '@ory/elements';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 import { z } from 'zod';
 import { useOry } from 'hooks/useOry';
 import { AxiosError } from 'axios';
 import { useSnackbar } from 'notistack';
-import { flushSync } from 'react-dom';
 
 const searchSchema = z.object({
   flowId: z.string().catch(''),
@@ -36,15 +35,19 @@ const Container = styled.div`
 const StyledUserCard = styled(UserAuthCard)`
   width: 800px;
   max-width: none;
+
+  h2 {
+    font-size: ${({ theme }) => theme.fontSize.mediumLarge}};
+  }
 `;
 
 function Component() {
   useDocumentTitle('Recovery');
-  const [flow, setFlow] = useState<RecoveryFlow>();
+  const [flow, setFlow] = useState<RecoveryFlow | null>();
   const { flowId } = Route.useSearch();
   const { oryClient, oryError } = useOry();
   const { enqueueSnackbar } = useSnackbar();
-  const navigate = useNavigate({ from: Route.fullPath });
+  const navigate = Route.useNavigate();
 
   const getFlow = useCallback(
     (flowId: string) =>
@@ -66,14 +69,10 @@ function Component() {
       .createBrowserRecoveryFlow()
       // flow contains the form fields, error messages and csrf token
       .then(({ data: flow }) => {
-        // Set the flow data
-
-        flushSync(() => {
-          setFlow(flow);
-        });
-
         // Update URI query params to include flow id
         navigate({ search: { flowId: flow.id } });
+        // Set the flow data
+        setFlow(flow);
       })
       .catch(sdkErrorHandler);
   };
@@ -85,7 +84,15 @@ function Component() {
     }
 
     try {
-      const { data } = await oryClient.updateRecoveryFlow({ flow: flow.id, updateRecoveryFlowBody: body });
+      const { data } = await oryClient.updateRecoveryFlow({
+        flow: flow.id,
+        updateRecoveryFlowBody: body,
+      });
+
+      // bandage fix, I expected this to automatically navigate to the settings flow (/account/profile).
+      if (data.continue_with && data.continue_with.length > 0) {
+        navigate({ to: '/account/profile', search: { flowId: data.continue_with[0]['flow']['id'] } });
+      }
       setFlow(data);
     } catch (e) {
       sdkErrorHandler(e as AxiosError);
@@ -100,14 +107,13 @@ function Component() {
     }
   }, []);
 
-  if (!flow) return <Skeleton variant="rectangular" width="100%" height="100%" />;
+  if (!flow) return <LoadingPage />;
 
   return (
     <>
       <Container>
-        <Company size="huge" />
+        <Company size="large" />
         <StyledUserCard
-          title="Recovery"
           flowType={'recovery'}
           flow={flow}
           additionalProps={
@@ -118,7 +124,7 @@ function Component() {
               },
             } as RecoverySectionAdditionalProps
           }
-          onSubmit={({ body }) => submitFlow(body as UpdateRecoveryFlowBody)}
+          onSubmit={async ({ body }) => await submitFlow(body as UpdateRecoveryFlowBody)}
         />
       </Container>
     </>

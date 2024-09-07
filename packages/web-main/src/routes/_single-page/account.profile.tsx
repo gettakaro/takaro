@@ -6,6 +6,7 @@ import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { z } from 'zod';
 import { useOry } from 'hooks/useOry';
+import { useSnackbar } from 'notistack';
 
 const searchSchema = z.object({
   flowId: z.string().catch(''),
@@ -32,6 +33,7 @@ const StyledUserCard = styled(UserSettingsCard)`
 
 function Component() {
   useDocumentTitle('Profile');
+  const { enqueueSnackbar } = useSnackbar();
   const { oryClient, oryError } = useOry();
   const [flow, setFlow] = useState<SettingsFlow | null>(null);
   const { flowId } = Route.useSearch();
@@ -77,6 +79,7 @@ function Component() {
       .updateSettingsFlow({ flow: flow.id, updateSettingsFlowBody: body })
       .then(({ data: flow }) => {
         setFlow(flow);
+        enqueueSnackbar('Your changes have been saved', { type: 'info' });
         navigate({ to: '/login' });
       })
       .catch(sdkErrorHandler);
