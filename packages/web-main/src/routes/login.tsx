@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { Button, TextField, styled, Company, FormError } from '@takaro/lib-components';
 import { AiFillMail as Mail } from 'react-icons/ai';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { createFileRoute, useNavigate, useRouter, useSearch } from '@tanstack/react-router';
+import { createFileRoute, Link, useNavigate, useRouter, useSearch } from '@tanstack/react-router';
 import { LoginFlow } from '@ory/client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -24,15 +24,29 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
   height: 100vh;
   width: 100%;
-
   max-width: 600px;
   text-align: center;
   margin: -200px auto 0 auto;
-
   gap: ${({ theme }) => theme.spacing[6]};
+`;
+
+const LessMargin = styled.div`
+  div {
+    margin-bottom: ${({ theme }) => theme.spacing['0_5']};
+  }
+`;
+
+const LinkContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: ${({ theme }) => theme.spacing['1_5']};
+
+  a {
+    font-size: ${({ theme }) => theme.fontSize.tiny};
+  }
 `;
 
 interface IFormInputs {
@@ -165,8 +179,14 @@ function Component() {
         */}
         <form onSubmit={handleSubmit(onSubmit)}>
           <TextField control={control} label="Email" loading={loading} name="email" placeholder="hi cutie" required />
-          <TextField control={control} label="Password" loading={loading} name="password" required type="password" />
-          {/* <StyledLink to="/account/recovery">Forgot your password?</StyledLink> */}
+          <LessMargin>
+            <TextField control={control} label="Password" loading={loading} name="password" required type="password" />
+          </LessMargin>
+          <LinkContainer>
+            <Link to="/account/recovery" search={{ flowId: '' }}>
+              Forgot your password?
+            </Link>
+          </LinkContainer>
           {error && <FormError error={error} />}
           <Button
             icon={<Mail />}
