@@ -106,9 +106,7 @@ export async function executeFunction(
   const dataForEvent = { ...data };
   delete dataForEvent.token;
   delete dataForEvent.url;
-  const meta: Partial<TakaroEventCommandExecuted | TakaroEventHookExecuted | TakaroEventCronjobExecuted> = {
-    data: dataForEvent,
-  };
+  const meta: Partial<TakaroEventCommandExecuted | TakaroEventHookExecuted | TakaroEventCronjobExecuted> = {};
 
   const eventData = new EventCreateDTO({
     moduleId: data.module.moduleId,
