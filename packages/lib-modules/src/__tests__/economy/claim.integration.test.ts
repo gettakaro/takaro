@@ -127,9 +127,9 @@ const tests = [
 
       expect(await events).to.have.length(4);
       expect((await events)[0].data.meta.msg).to.equal('You have received items from a shop order.');
-      expect((await events)[1].data.meta.msg).to.equal('1x Wood');
+      expect((await events)[1].data.meta.msg).to.equal('1x Stone');
       expect((await events)[2].data.meta.msg).to.equal('You have received items from a shop order.');
-      expect((await events)[3].data.meta.msg).to.equal('1x Stone');
+      expect((await events)[3].data.meta.msg).to.equal('1x Wood');
     },
   }),
 ];
