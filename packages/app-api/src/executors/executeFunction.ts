@@ -257,7 +257,12 @@ export async function executeFunction(
 
     if (!result.logs) result.logs = [];
     const cleanLogs = result.logs.map((rawLog) => {
-      let cleanMsg = JSON.stringify(rawLog.msg);
+      let cleanMsg = rawLog.msg;
+
+      if (typeof cleanMsg !== 'string') {
+        cleanMsg = JSON.stringify(cleanMsg);
+      }
+
       if (cleanMsg.length > 1000) {
         cleanMsg = cleanMsg.substring(0, 1000) + '...';
       }
