@@ -1,4 +1,4 @@
-import { forwardRef, MouseEvent, useState } from 'react';
+import { forwardRef, isValidElement, MouseEvent, ReactElement, useState } from 'react';
 import { Container, Grid, IconContainer, ButtonContainer } from './style';
 import {
   AiFillCheckCircle as Success,
@@ -20,14 +20,15 @@ type Action = {
 export interface AlertProps {
   variant: AlertVariants;
   title?: string;
-  text?: string | string[];
+  text?: string | string[] | ReactElement;
   elevation?: Elevation;
   dismiss?: boolean;
   action?: Action;
+  showIcon?: boolean;
 }
 
 export const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
-  { variant, title, text, dismiss = false, elevation = 4, action },
+  { variant, title, text, dismiss = false, elevation = 4, action, showIcon = true },
   ref,
 ) {
   const [visible, setVisible] = useState(true);
@@ -39,7 +40,6 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
     e.stopPropagation();
     action?.execute();
   };
-
   const handleDismiss = (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -58,6 +58,19 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
         return <Info size={24} />;
     }
   }
+
+  function renderText() {
+    if (isValidElement(text)) {
+      return text;
+    }
+
+    if (typeof text === 'string') {
+      return <p>{text}</p>;
+    } else if (Array.isArray(text)) {
+      return <ul>{text?.map((message) => <li key={'message-' + message}>{message}</li>)}</ul>;
+    }
+  }
+
   return (
     <AnimatePresence>
       {visible && (
@@ -72,8 +85,8 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
           ref={ref}
           role="status"
         >
-          <Grid hasTitle={hasTitle}>
-            <IconContainer variant={variant}>{getIcon()}</IconContainer>
+          <Grid hasTitle={hasTitle} showIcon={showIcon}>
+            {showIcon && <IconContainer variant={variant}>{getIcon()}</IconContainer>}
 
             {/* If title is declared set title, otherwise put everything on single line */}
             {title && (
@@ -82,25 +95,13 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
                 <div />
               </>
             )}
-            {typeof text === 'string' ? (
-              <p>{text}</p>
-            ) : (
-              text && (
-                <ul>
-                  {text.map((message) => (
-                    <li key={'message-' + message}>{message}</li>
-                  ))}
-                </ul>
-              )
-            )}
+            {renderText()}
             {hasTitle ? <div /> : null}
             <ButtonContainer hasTitle={hasTitle} show={dismiss || action ? true : false} variant={variant}>
               {action && (
-                <Button size="small" variant="outline" onClick={handleExecute} text={action.text} color={variant} />
+                <Button size="tiny" variant="outline" onClick={handleExecute} text={action.text} color={variant} />
               )}
-              {dismiss && (
-                <Button size="small" color="white" variant="outline" onClick={handleDismiss} text="Dismiss" />
-              )}
+              {dismiss && <Button size="tiny" color="white" variant="outline" onClick={handleDismiss} text="Dismiss" />}
             </ButtonContainer>
           </Grid>
         </Container>

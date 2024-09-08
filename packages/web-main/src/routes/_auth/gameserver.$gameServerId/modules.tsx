@@ -7,6 +7,7 @@ import { modulesQueryOptions } from 'queries/module';
 import { hasPermission } from 'hooks/useHasPermission';
 import { PERMISSIONS } from '@takaro/apiclient';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
+import { userMeQueryOptions } from 'queries/user';
 
 const SubHeader = styled.h2`
   font-size: ${({ theme }) => theme.fontSize.mediumLarge};
@@ -15,7 +16,7 @@ const SubHeader = styled.h2`
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/modules')({
   beforeLoad: async ({ context }) => {
-    const session = await context.auth.getSession();
+    const session = await context.queryClient.ensureQueryData(userMeQueryOptions());
     if (!hasPermission(session, [PERMISSIONS.ReadModules])) {
       throw redirect({ to: '/forbidden' });
     }

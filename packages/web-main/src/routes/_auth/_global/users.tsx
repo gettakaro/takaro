@@ -13,7 +13,9 @@ import {
   CopyId,
   useTheme,
 } from '@takaro/lib-components';
-import { useUserRemove, useInviteUser, usersQueryOptions } from 'queries/user';
+
+import { Player } from 'components/Player';
+import { useUserRemove, useInviteUser, usersQueryOptions, userMeQueryOptions } from 'queries/user';
 import { UserOutputWithRolesDTO, UserSearchInputDTOSortDirectionEnum, PERMISSIONS } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
 import {
@@ -32,7 +34,7 @@ import { useQuery } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/_global/users')({
   beforeLoad: async ({ context }) => {
-    const session = await context.auth.getSession();
+    const session = await context.queryClient.ensureQueryData(userMeQueryOptions());
     if (!hasPermission(session, ['READ_USERS'])) {
       throw redirect({ to: '/forbidden' });
     }
@@ -55,10 +57,12 @@ function Component() {
       filters: {
         name: columnFilters.columnFiltersState.find((filter) => filter.id === 'name')?.value,
         discordId: columnFilters.columnFiltersState.find((filter) => filter.id === 'discordId')?.value,
+        playerId: columnFilters.columnFiltersState.find((filter) => filter.id === 'playerId')?.value,
       },
       search: {
         name: columnSearch.columnSearchState.find((search) => search.id === 'name')?.value,
         discordId: columnSearch.columnSearchState.find((search) => search.id === 'discordId')?.value,
+        playerId: columnSearch.columnSearchState.find((search) => search.id === 'playerId')?.value,
       },
     }),
   });
@@ -91,7 +95,7 @@ function Component() {
       id: 'email',
       enableSorting: true,
       meta: {
-        hiddenColumn: true,
+        hideColumn: true,
       },
     }),
     columnHelper.accessor('discordId', {
@@ -99,17 +103,27 @@ function Component() {
       id: 'discordId',
       cell: (info) => <CopyId placeholder="Discord ID" id={info.getValue()} />,
     }),
+    columnHelper.accessor('playerId', {
+      header: 'Player ID',
+      id: 'playerId',
+      cell: (info) =>
+        info.getValue() ? (
+          <Player playerId={info.getValue() as string} name={info.getValue()} showAvatar={false} />
+        ) : (
+          'no player assigned'
+        ),
+    }),
     columnHelper.accessor('createdAt', {
       header: 'Created at',
       id: 'createdAt',
-      meta: { dataType: 'datetime', hiddenColumn: true },
+      meta: { dataType: 'datetime', hideColumn: true },
       cell: (info) => <DateFormatter ISODate={info.getValue()} />,
       enableSorting: true,
     }),
     columnHelper.accessor('updatedAt', {
       header: 'Updated at',
       id: 'updatedAt',
-      meta: { dataType: 'datetime', hiddenColumn: true },
+      meta: { dataType: 'datetime', hideColumn: true },
       cell: (info) => <DateFormatter ISODate={info.getValue()} />,
       enableSorting: true,
     }),
@@ -148,7 +162,7 @@ interface IFormInputs {
 
 const InviteUser: FC = () => {
   const [open, setOpen] = useState<boolean>(false);
-  const { hasPermission: hasManageUsersPermission } = useHasPermission([PERMISSIONS.ManageUsers]);
+  const hasManageUsersPermission = useHasPermission([PERMISSIONS.ManageUsers]);
 
   const validationSchema = useMemo(
     () =>
@@ -213,8 +227,8 @@ const UserMenu: FC<{ user: UserOutputWithRolesDTO }> = ({ user }) => {
   const [openDeleteUserDialog, setOpenDeleteUserDialog] = useState<boolean>(false);
   const theme = useTheme();
   const navigate = useNavigate();
-  const { hasPermission: hasReadUsersPermission } = useHasPermission([PERMISSIONS.ReadUsers]);
-  const { hasPermission: hasManageRolesPermission } = useHasPermission([PERMISSIONS.ManageRoles]);
+  const hasReadUsersPermission = useHasPermission([PERMISSIONS.ReadUsers]);
+  const hasManageRolesPermission = useHasPermission([PERMISSIONS.ManageRoles]);
 
   return (
     <>

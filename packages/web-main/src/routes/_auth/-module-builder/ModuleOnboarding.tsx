@@ -78,7 +78,7 @@ export const ModuleOnboarding: FC<ModuleOnboardingProps> = ({ moduleId }) => {
   };
 
   if (createHookIsSuccess || createCommandIsSuccess || createCronJobIsSuccess) {
-    navigate({ to: '/studio/$moduleId', params: { moduleId } });
+    navigate({ to: '/module-builder/$moduleId', params: { moduleId } });
   }
 
   return (

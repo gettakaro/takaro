@@ -1,16 +1,14 @@
 import { FC } from 'react';
 import { GameServerOutputDTOTypeEnum } from '@takaro/apiclient';
-import { Chip, ToggleButtonGroup, styled, useLocalStorage } from '@takaro/lib-components';
+import { Alert, Chip, ToggleButtonGroup, styled, useLocalStorage } from '@takaro/lib-components';
 import { AiOutlineTable as TableViewIcon, AiOutlineUnorderedList as ListViewIcon } from 'react-icons/ai';
 import { ShopTableView } from './ShopTableView';
 import { ShopCardView } from './ShopCardView';
 
 const Header = styled.div`
   display: flex;
-  justify-content: flex-start;
-  margin-bottom: ${({ theme }) => theme.spacing['2']};
+  align-items: center;
   gap: ${({ theme }) => theme.spacing['2']};
-
   strong {
     font-size: ${({ theme }) => theme.fontSize.medium};
     margin-right: ${({ theme }) => theme.spacing['0_5']};
@@ -29,6 +27,9 @@ type ViewType = 'list' | 'table';
 export const ShopView: FC<ShopViewProps> = ({ gameServerId, currency, currencyName, gameServerType }) => {
   const { setValue: setView, storedValue: view } = useLocalStorage<ViewType>('shopview', 'list');
 
+  // 0 is falsy!
+  const hasCurrency = currency !== undefined;
+
   return (
     <>
       <div
@@ -36,15 +37,15 @@ export const ShopView: FC<ShopViewProps> = ({ gameServerId, currency, currencyNa
           width: '100%',
           marginBottom: '10px',
           display: 'flex',
-          justifyContent: currency ? 'space-between' : 'flex-end',
+          justifyContent: 'space-between',
           alignItems: 'center',
         }}
       >
         <Header>
-          {currency !== undefined && (
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <Chip variant="outline" color="primary" label={`${currency} ${currencyName}`} />
-            </div>
+          {hasCurrency ? (
+            <Chip variant="outline" color="primary" label={`${currency} ${currencyName}`} />
+          ) : (
+            <Alert showIcon={false} variant="error" text={<p>You are not linked to this gameserver.</p>} />
           )}
         </Header>
         <ToggleButtonGroup

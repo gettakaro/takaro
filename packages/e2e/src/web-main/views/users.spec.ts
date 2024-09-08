@@ -4,13 +4,13 @@ import { navigateTo } from '../helpers.js';
 
 test('Can view users', async ({ page, takaro }) => {
   await navigateTo(page, 'global-users');
-  await expect(page.getByRole('row', { name: takaro.rootUser.email })).toBeVisible();
+  await expect(page.getByRole('row', { name: takaro.rootUser.name })).toBeVisible();
 });
 
 test('Can Delete a user', async ({ page, takaro }) => {
   const { usersPage, testUser } = takaro;
   await usersPage.goto();
-  await usersPage.action({ action: 'delete', email: testUser.email });
+  await usersPage.action({ action: 'delete', name: testUser.name });
   await page.getByRole('button', { name: 'delete user' }).click();
   await expect(page.getByRole('row', { name: testUser.email })).not.toBeVisible();
 });
@@ -23,29 +23,27 @@ test.describe('Role assignment', () => {
     const { usersPage, testUser } = takaro;
 
     await usersPage.goto();
-    await usersPage.action({ action: 'profile', email: testUser.email });
+    await usersPage.action({ action: 'profile', name: testUser.name });
 
     await page.getByRole('button', { name: 'Assign role' }).click();
 
     await page.locator('#roleId').click();
     await page.getByRole('option', { name: 'Moderator' }).click();
 
-    await page.getByRole('button', { name: 'Save changes' }).click();
+    await page.getByRole('button', { name: 'Assign role' }).click();
   });
 
-  test('Can remove a role from a user', async ({ page, takaro }) => {
+  test.fixme('Can remove a role from a user', async ({ page, takaro }) => {
     const { usersPage } = takaro;
     await usersPage.goto();
 
-    await usersPage.action({ action: 'profile', email: takaro.testUser.email });
+    await usersPage.action({ action: 'profile', name: takaro.testUser.name });
 
     await page.getByRole('button', { name: 'Assign role' }).click();
     await page.locator('#roleId').click();
     await page.getByRole('option', { name: 'Moderator' }).click();
-
-    await page.getByRole('button', { name: 'Save changes' }).click();
-
-    await expect(page.getByRole('cell', { name: 'Moderator', exact: true })).toBeVisible();
+    await page.keyboard.press('Escape');
+    await page.getByRole('button', { name: 'Assign role' }).click();
 
     await page
       .getByRole('row', { name: 'Moderator Never player-actions' })

@@ -20,11 +20,11 @@ export const PermissionsGuard: FC<PropsWithChildren<PermissionsGuardProps>> = ({
       return []; // unreachable
     }
 
-    if (session.roles === undefined || session.roles.length === 0) {
+    if (session.user.roles === undefined || session.user.roles.length === 0) {
       return [];
     }
 
-    const permissionsFromRoles = session.roles
+    const permissionsFromRoles = session.user.roles
       .flatMap((assignments) =>
         assignments.role.permissions.map((permission) => permission.permission.permission as PERMISSIONS),
       )

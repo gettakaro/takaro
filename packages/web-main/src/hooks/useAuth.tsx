@@ -1,49 +1,16 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { MeOutoutDTO, UserOutputWithRolesDTO } from '@takaro/apiclient';
+import { MeOutputDTO } from '@takaro/apiclient';
 import { createContext, useCallback, useContext } from 'react';
 import { useOry } from './useOry';
 import * as Sentry from '@sentry/react';
-import { DateTime } from 'luxon';
 import { getApiClient } from 'util/getApiClient';
 import { usePostHog } from 'posthog-js/react';
-
-const SESSION_EXPIRES_AFTER_MINUTES = 5;
-
-interface ExpirableSession {
-  session: UserOutputWithRolesDTO;
-  expiresAt: string;
-}
+import { userKeys } from 'queries/user';
 
 export interface IAuthContext {
   logOut: () => Promise<void>;
-  getSession: () => Promise<UserOutputWithRolesDTO>;
-  login: (user: MeOutoutDTO) => void;
-}
-
-function getLocalSession() {
-  const expirableSessionString = localStorage.getItem('session');
-
-  if (!expirableSessionString) {
-    return null;
-  }
-
-  const expirableSession: ExpirableSession = JSON.parse(expirableSessionString);
-  if (DateTime.fromISO(expirableSession.expiresAt) < DateTime.now()) {
-    return null;
-  }
-  return expirableSession.session;
-}
-
-function setLocalSession(session: UserOutputWithRolesDTO | null) {
-  if (session) {
-    const expirableSession: ExpirableSession = {
-      session,
-      expiresAt: DateTime.now().plus({ minutes: SESSION_EXPIRES_AFTER_MINUTES }).toISO(),
-    };
-    localStorage.setItem('session', JSON.stringify(expirableSession));
-  } else {
-    localStorage.removeItem('session');
-  }
+  getSession: () => Promise<MeOutputDTO>;
+  login: (user: MeOutputDTO) => void;
 }
 
 export const AuthContext = createContext<IAuthContext | null>(null);
@@ -55,15 +22,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logOut = useCallback(async () => {
     const logoutFlowRes = await oryClient.createBrowserLogoutFlow();
-    setLocalSession(null);
     queryClient.clear();
     window.location.href = logoutFlowRes.data.logout_url;
     // Extra clean up is done in /logout-return
     return Promise.resolve();
   }, [oryClient, queryClient]);
 
-  const login = useCallback((session: MeOutoutDTO) => {
-    setLocalSession(session.user);
+  const login = useCallback((session: MeOutputDTO) => {
     Sentry.setUser({ id: session.user.id, email: session.user.email, username: session.user.name });
     posthog.identify(session.user.idpId, {
       email: session.user.email,
@@ -71,13 +36,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  const getSession = async function (): Promise<UserOutputWithRolesDTO> {
-    const session = getLocalSession();
-
-    if (session) {
-      return session;
-    }
-
+  const getSession = async function (): Promise<MeOutputDTO> {
     try {
       const newSession = (
         await getApiClient().user.userControllerMe({
@@ -85,16 +44,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             'Cache-Control': 'no-cache',
           },
         })
-      ).data.data.user;
-      setLocalSession(session);
+      ).data.data;
+      queryClient.setQueryData(userKeys.me(), newSession);
       return newSession;
     } catch (_error) {
-      // logout if session is invalid
-      localStorage.removeItem('session');
-      setLocalSession(null);
       queryClient.clear();
       window.location.href = '/login';
-      throw 'should not have no session and not be redirected to login';
+      throw 'should have no session and should be redirected to login';
     }
   };
 

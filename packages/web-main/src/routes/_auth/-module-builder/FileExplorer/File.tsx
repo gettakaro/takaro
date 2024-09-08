@@ -36,7 +36,7 @@ import {
   useFunctionRemove,
   useFunctionUpdate,
 } from 'queries/module';
-import { FileType, useStudioContext } from '../useStudioStore';
+import { FileType, useModuleBuilderContext } from '../useModuleBuilderStore';
 import { useNavigate } from '@tanstack/react-router';
 
 const Button = styled.button<{ isActive: boolean; depth: number }>`
@@ -124,14 +124,14 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const fileRef = useRef<HTMLButtonElement>(null);
 
-  const moduleId = useStudioContext((s) => s.moduleId);
-  const fileMap = useStudioContext((s) => s.fileMap);
-  const updateFile = useStudioContext((s) => s.updateFile);
-  const addFile = useStudioContext((s) => s.addFile);
-  const closeFile = useStudioContext((s) => s.closeFile);
-  const deleteFile = useStudioContext((s) => s.deleteFile);
-  const readOnly = useStudioContext((s) => s.readOnly);
-  const renameFile = useStudioContext((s) => s.renameFile);
+  const moduleId = useModuleBuilderContext((s) => s.moduleId);
+  const fileMap = useModuleBuilderContext((s) => s.fileMap);
+  const updateFile = useModuleBuilderContext((s) => s.updateFile);
+  const addFile = useModuleBuilderContext((s) => s.addFile);
+  const closeFile = useModuleBuilderContext((s) => s.closeFile);
+  const deleteFile = useModuleBuilderContext((s) => s.deleteFile);
+  const readOnly = useModuleBuilderContext((s) => s.readOnly);
+  const renameFile = useModuleBuilderContext((s) => s.renameFile);
 
   const fileNameValidation = useMemo(
     () =>
@@ -169,7 +169,7 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
     if (openFile) {
       openFile(path);
       navigate({
-        from: '/studio/$moduleId',
+        from: '/module-builder/$moduleId',
         search: {
           file: path,
         },

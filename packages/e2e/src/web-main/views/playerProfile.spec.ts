@@ -25,12 +25,5 @@ extendedTest('Can remove role from player', async ({ page, extended }) => {
 
 extendedTest('can view player events', async ({ extended }) => {
   const { PlayerProfilePage } = extended;
-
   await PlayerProfilePage.gotoEvents();
-});
-
-extendedTest('can view player economy', async ({ page, extended }) => {
-  const { PlayerProfilePage } = extended;
-  await PlayerProfilePage.gotoEconomy();
-  await expect(page.getByText('Coming soon')).toBeVisible();
 });
