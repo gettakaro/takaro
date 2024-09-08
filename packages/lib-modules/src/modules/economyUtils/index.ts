@@ -148,6 +148,20 @@ export class EconomyUtils extends BuiltinModule<EconomyUtils> {
             position: 0,
             defaultValue: '1',
           },
+          {
+            name: 'item',
+            type: 'number',
+            helpText: 'Select a specific item to view more details.',
+            position: 1,
+            defaultValue: '0',
+          },
+          {
+            name: 'action',
+            type: 'string',
+            helpText: 'Perform an action on the selected item. Currently only "buy" is supported.',
+            position: 2,
+            defaultValue: 'none',
+          },
         ],
       }),
     ];

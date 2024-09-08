@@ -89,6 +89,60 @@ const tests = [
       expect((await events)[0].data.meta.msg).to.equal('No items found.');
     },
   }),
+  new IntegrationTest<IShopSetup>({
+    group,
+    snapshot: false,
+    setup: shopSetup,
+    name: 'Can show details about an item',
+    test: async function () {
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(HookEvents.CHAT_MESSAGE, 2);
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/shop 1 1',
+        playerId: this.setupData.players[0].id,
+      });
+
+      expect(await events).to.have.length(2);
+      expect((await events)[0].data.meta.msg).to.equal('Listing Test item - 100 test coin');
+      expect((await events)[1].data.meta.msg).to.equal('- 1x Stone.  Description: Stone can get you stoned');
+    },
+  }),
+  new IntegrationTest<IShopSetup>({
+    group,
+    snapshot: false,
+    setup: shopSetup,
+    name: 'Shows an error when requesting details for an invalid item',
+    test: async function () {
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(HookEvents.CHAT_MESSAGE, 1);
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/shop 1 5',
+        playerId: this.setupData.players[0].id,
+      });
+
+      expect(await events).to.have.length(1);
+      expect((await events)[0].data.meta.msg).to.equal(
+        'Item not found. Please select an item from the list, valid options are 1-2.',
+      );
+    },
+  }),
+
+  new IntegrationTest<IShopSetup>({
+    group,
+    snapshot: false,
+    setup: shopSetup,
+    name: 'Can buy an item',
+    test: async function () {
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(HookEvents.CHAT_MESSAGE, 1);
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/shop 1 1 buy',
+        playerId: this.setupData.players[0].id,
+      });
+
+      expect(await events).to.have.length(1);
+      expect((await events)[0].data.meta.msg).to.equal(
+        'You have purchased Test item for 100 test coin. You can now claim your items.',
+      );
+    },
+  }),
 ];
 
 describe(group, function () {
