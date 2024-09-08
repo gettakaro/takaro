@@ -135,6 +135,21 @@ export class EconomyUtils extends BuiltinModule<EconomyUtils> {
           },
         ],
       }),
+      new ICommand({
+        function: this.loadFn('commands', 'shop'),
+        name: 'shop',
+        trigger: 'shop',
+        helpText: 'Browse the shop and view available items.',
+        arguments: [
+          {
+            name: 'page',
+            type: 'number',
+            helpText: 'Display more items from the shop by specifying a page number.',
+            position: 0,
+            defaultValue: '1',
+          },
+        ],
+      }),
     ];
   }
 }

@@ -10,6 +10,7 @@ export interface IShopSetup extends IModuleTestsSetupData {
   userClient: Client;
   listing100: ShopListingOutputDTO;
   listing33: ShopListingOutputDTO;
+  createListings: (client: Client, opts: ICreateListingsOpts) => Promise<ShopListingOutputDTO[]>;
 }
 
 async function createUserForPlayer(client: Client, playerId: string, gameServerId: string) {
@@ -47,7 +48,13 @@ async function createUserForPlayer(client: Client, playerId: string, gameServerI
 }
 
 async function setupShop(client: Client, gameServerId: string) {
-  const items = (await client.item.itemControllerSearch()).data.data;
+  const items = (
+    await client.item.itemControllerSearch({
+      sortBy: 'code',
+      sortDirection: 'asc',
+      filters: { gameserverId: [gameServerId] },
+    })
+  ).data.data;
 
   const listing100Res = await client.shopListing.shopListingControllerCreate({
     gameServerId: gameServerId,
@@ -67,6 +74,34 @@ async function setupShop(client: Client, gameServerId: string) {
     listing100: listing100Res.data.data,
     listing33: listing33Res.data.data,
   };
+}
+
+interface ICreateListingsOpts {
+  gameServerId: string;
+  amount: number;
+  name?: string;
+}
+
+async function createListings(
+  client: Client,
+  { gameServerId, amount, name }: ICreateListingsOpts,
+): Promise<ShopListingOutputDTO[]> {
+  const items = (await client.item.itemControllerSearch()).data.data;
+
+  const createdItems = await Promise.all(
+    Array.from({ length: amount }).map(async () => {
+      const item = await client.shopListing.shopListingControllerCreate({
+        gameServerId,
+        items: [{ itemId: items[0].id, amount: 1 }],
+        price: faker.number.int({ min: 1, max: 100 }),
+        name: name ?? faker.commerce.productName(),
+      });
+
+      return item.data.data;
+    }),
+  );
+
+  return createdItems;
 }
 
 export const shopSetup = async function (this: IntegrationTest<IShopSetup>): Promise<IShopSetup> {
@@ -103,5 +138,5 @@ export const shopSetup = async function (this: IntegrationTest<IShopSetup>): Pro
     { currency: 250 },
   );
 
-  return { ...setupData, userClient, listing100, listing33 };
+  return { ...setupData, userClient, listing100, listing33, createListings };
 };
