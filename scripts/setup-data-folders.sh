@@ -28,9 +28,12 @@ fi
 # Same for Postgres
 if [ ! -d "./_data/db" ]; then
   mkdir -p ./_data/db
-  if command -v sudo >/dev/null 2>&1; then
-    sudo chown -R 999:0 ./_data/db
-  fi
+fi
+
+# The postgres container seems to reset the ownership of the data directory
+# So we cannot just rely on 'does it exist already'
+if command -v sudo >/dev/null 2>&1; then
+  sudo chown -R 999:0 ./_data/db
 fi
 
 # Same for Kratos
