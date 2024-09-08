@@ -17,8 +17,6 @@ const tests = [
       });
 
       expect(await events).to.have.length(2);
-      console.log(JSON.stringify((await events)[0].data.meta.msg, null, 2));
-      console.log(JSON.stringify((await events)[1].data.meta.msg, null, 2));
       expect((await events)[0].data.meta.msg).to.eq('- Test item - 100 test coin. 1x Stone');
       expect((await events)[1].data.meta.msg).to.eq('- Test item 2 - 33 test coin. 1x Wood');
     },
