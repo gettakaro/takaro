@@ -159,14 +159,9 @@ test('Can install a module with a discord hook', async ({ page, takaro }) => {
 
   await page.getByRole('link', { name: 'Servers' }).click();
   await page.getByText('Test server').click();
-  await page
-    .getByRole('navigation')
-    .filter({ hasText: 'ServerDashboardModulesSettings' })
-    .getByRole('link', { name: 'Modules' })
-    .click();
-
+  await page.getByTestId('server-nav').getByRole('link', { name: 'Modules' }).click();
   await page.getByTestId(`module-${mod.data.data.id}`).getByRole('button', { name: 'Install' }).click();
-  await page.getByLabel('My hook Discord channel IDRequired').fill('123');
+  await page.getByLabel('DiscordChannelId').fill('123');
   await page.getByRole('button', { name: 'Install module' }).click();
 
   await expect(page.getByTestId(`module-${mod.data.data.id}`).getByRole('button', { name: 'Settings' })).toBeVisible();

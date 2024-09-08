@@ -95,7 +95,7 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
 
   const handleOnOpenClick = (e: MouseEvent) => {
     e.stopPropagation();
-    window.open(`/studio/${mod.id}`, '_blank');
+    window.open(`/module-builder/${mod.id}`, '_blank');
   };
 
   const handleOnExportClick = async (e: MouseEvent) => {
@@ -149,7 +149,11 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
                   )}
                   <Dropdown.Menu.Group>
                     <Dropdown.Menu.Item icon={<CopyIcon />} onClick={handleOnCopyClick} label="Copy module" />
-                    <Dropdown.Menu.Item icon={<LinkIcon />} onClick={handleOnOpenClick} label="Open in Studio" />
+                    <Dropdown.Menu.Item
+                      icon={<LinkIcon />}
+                      onClick={handleOnOpenClick}
+                      label="Open in Module Builder"
+                    />
                     <Dropdown.Menu.Item icon={<ExportIcon />} onClick={handleOnExportClick} label="Export to file" />
                   </Dropdown.Menu.Group>
                 </Dropdown.Menu>

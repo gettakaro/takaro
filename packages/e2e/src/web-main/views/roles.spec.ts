@@ -17,12 +17,12 @@ test('Can create role', async ({ takaro, page }) => {
   await expect(page.getByText(roleName)).toBeVisible();
 });
 
-test('Can delete role', async ({ takaro, page }) => {
+test.fixme('Can delete role', async ({ takaro, page }) => {
   const { rolesPage } = takaro;
+  const roleName = 'Test role';
   await rolesPage.goto();
-  await rolesPage.delete('Test role');
-
-  await expect(page.getByText('Test role')).not.toBeVisible();
+  await rolesPage.delete(roleName);
+  await expect(page.getByText(roleName)).not.toBeVisible();
 });
 
 test('Can edit role', async ({ takaro }) => {

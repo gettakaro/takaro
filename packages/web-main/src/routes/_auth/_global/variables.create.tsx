@@ -2,10 +2,12 @@ import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import { ExecutionType, IFormInputs, VariablesForm } from './-variables/VariableCreateUpdateForm';
 import { useVariableCreate } from 'queries/variable';
 import { hasPermission } from 'hooks/useHasPermission';
+import { VariableCreateDTO } from '@takaro/apiclient';
+import { userMeQueryOptions } from 'queries/user';
 
 export const Route = createFileRoute('/_auth/_global/variables/create')({
   beforeLoad: async ({ context }) => {
-    const session = await context.auth.getSession();
+    const session = await context.queryClient.ensureQueryData(userMeQueryOptions());
     if (!hasPermission(session, ['READ_VARIABLES', 'MANAGE_VARIABLES'])) {
       throw redirect({ to: '/forbidden' });
     }
@@ -22,14 +24,14 @@ function Component() {
   }
 
   function createVariable(variable: IFormInputs) {
-    mutate({
-      key: variable.key,
-      value: variable.value,
-      moduleId: variable.moduleId,
-      playerId: variable.playerId,
-      gameServerId: variable.gameServerId,
+    if (variable.expiresAt === null) {
+      variable.expiresAt = undefined;
+    }
+    const createdVariable: VariableCreateDTO = {
+      ...variable,
       expiresAt: variable.expiresAt,
-    });
+    };
+    mutate(createdVariable);
   }
 
   return <VariablesForm isLoading={isPending} submit={createVariable} type={ExecutionType.CREATE} error={error} />;

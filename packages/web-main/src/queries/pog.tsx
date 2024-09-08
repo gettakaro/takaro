@@ -9,6 +9,7 @@ import {
 import { AxiosError } from 'axios';
 import { mutationWrapper } from 'queries/util';
 import { useSnackbar } from 'notistack';
+import { userKeys } from './user';
 
 export const pogKeys = {
   all: ['pogs'] as const,
@@ -51,6 +52,7 @@ export const useSetCurrency = () => {
         ).data.data,
       onSuccess: (updatedPog) => {
         enqueueSnackbar('Currency set!', { variant: 'default', type: 'success' });
+        queryClient.invalidateQueries({ queryKey: userKeys.me() });
         queryClient.invalidateQueries({ queryKey: pogKeys.list() });
         queryClient.setQueryData(pogKeys.detail(updatedPog.playerId, updatedPog.gameServerId), updatedPog);
       },
@@ -74,6 +76,7 @@ export const useAddCurrency = () => {
       onSuccess: (updatedPog) => {
         enqueueSnackbar('Currency added!', { variant: 'default', type: 'success' });
         queryClient.invalidateQueries({ queryKey: pogKeys.list() });
+        queryClient.invalidateQueries({ queryKey: userKeys.me() });
         queryClient.setQueryData(pogKeys.detail(updatedPog.playerId, updatedPog.gameServerId), updatedPog);
       },
     }),
@@ -95,6 +98,7 @@ export const useDeductCurrency = () => {
         ).data.data,
       onSuccess: (updatedPog) => {
         enqueueSnackbar('Currency deducted!', { variant: 'default', type: 'success' });
+        queryClient.invalidateQueries({ queryKey: userKeys.me() });
         queryClient.invalidateQueries({ queryKey: pogKeys.list() });
         queryClient.setQueryData(pogKeys.detail(updatedPog.playerId, updatedPog.gameServerId), updatedPog);
       },
@@ -126,9 +130,10 @@ export const useTransactBetweenPlayers = () => {
         ).data.data,
       onSuccess: async (_, { senderPlayerId, receiverPlayerId, gameServerId }) => {
         enqueueSnackbar('Transaction successfull!', { variant: 'default', type: 'success' });
-        await queryClient.invalidateQueries({ queryKey: pogKeys.detail(senderPlayerId, gameServerId) });
-        await queryClient.invalidateQueries({ queryKey: pogKeys.detail(receiverPlayerId, gameServerId) });
-        await queryClient.invalidateQueries({ queryKey: pogKeys.list() });
+        queryClient.invalidateQueries({ queryKey: userKeys.me() });
+        queryClient.invalidateQueries({ queryKey: pogKeys.detail(senderPlayerId, gameServerId) });
+        queryClient.invalidateQueries({ queryKey: pogKeys.detail(receiverPlayerId, gameServerId) });
+        queryClient.invalidateQueries({ queryKey: pogKeys.list() });
       },
     }),
     {},

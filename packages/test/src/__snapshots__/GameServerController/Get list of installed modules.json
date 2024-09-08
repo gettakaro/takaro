@@ -13,11 +13,13 @@
           "enabled": true,
           "commands": {
             "help": {
+              "cooldown": 0,
               "cost": 0,
               "delay": 0,
               "enabled": true
             },
             "ping": {
+              "cooldown": 0,
               "cost": 0,
               "delay": 0,
               "enabled": true

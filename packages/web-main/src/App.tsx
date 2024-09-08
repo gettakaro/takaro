@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ThemeProvider } from 'styled-components';
-import { ThemeProvider as OryThemeProvider } from '@ory/elements';
+import { ThemeProvider as OryThemeProvider, IntlProvider as OryIntlProvider } from '@ory/elements';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { GlobalStyle, SnackbarProvider, darkTheme } from '@takaro/lib-components';
@@ -57,19 +57,21 @@ export function App() {
       }}
     >
       <OryThemeProvider themeOverrides={oryThemeOverrides}>
-        <ThemeProvider theme={darkTheme}>
-          <SnackbarProvider>
-            <QueryClientProvider client={queryClient}>
-              <OryProvider>
-                <AuthProvider>
-                  <GlobalStyle />
-                  <InnerApp />
-                  <ReactQueryDevtools initialIsOpen={false} position="bottom" buttonPosition="bottom-left" />
-                </AuthProvider>
-              </OryProvider>
-            </QueryClientProvider>
-          </SnackbarProvider>
-        </ThemeProvider>
+        <OryIntlProvider>
+          <ThemeProvider theme={darkTheme}>
+            <SnackbarProvider>
+              <QueryClientProvider client={queryClient}>
+                <OryProvider>
+                  <AuthProvider>
+                    <GlobalStyle />
+                    <InnerApp />
+                    <ReactQueryDevtools initialIsOpen={false} position="bottom" buttonPosition="bottom-left" />
+                  </AuthProvider>
+                </OryProvider>
+              </QueryClientProvider>
+            </SnackbarProvider>
+          </ThemeProvider>
+        </OryIntlProvider>
       </OryThemeProvider>
     </PostHogProvider>
   );

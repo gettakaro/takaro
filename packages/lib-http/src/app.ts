@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import express, { Application } from 'express';
 import { logger, errors, Sentry } from '@takaro/util';
 import { getBullBoard } from '@takaro/queues';
-import { Server, createServer } from 'http';
+import { Server, createServer } from 'node:http';
 import { RoutingControllersOptions, useExpressServer } from 'routing-controllers';
 import { Meta } from './controllers/meta.js';
 import { LoggingMiddleware } from './middleware/logger.js';
@@ -88,7 +88,7 @@ export class HTTP {
     return this.app;
   }
 
-  get server() {
+  get server(): Server {
     return this.httpServer;
   }
 

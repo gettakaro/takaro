@@ -1,6 +1,6 @@
 {
   "name": "@takaro/apiclient",
-  "version": "0.0.4",
+  "version": "0.0.10",
   "description": "API client for Takaro",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
@@ -11,7 +11,7 @@
     "test": "npm run test:unit --if-present && npm run test:integration --if-present",
     "test:unit": "echo 'No tests (yet :))'",
     "test:integration": "mocha --config ../../.mocharc.js src/**/*.integration.test.ts --exit",
-    "generate": "npx @openapitools/openapi-generator-cli generate -i ${TAKARO_HOST}/openapi.json -g typescript-axios -o ./src/generated/",
+    "generate": "node ../../scripts/wait-until-healthy.mjs && npx @openapitools/openapi-generator-cli generate -i ${TAKARO_HOST}/openapi.json -g typescript-axios -o ./src/generated/",
     "postgenerate": "./fix-esm.sh && npm run build"
   },
   "keywords": [],

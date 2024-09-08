@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from '@tanstack/react-router';
 import { VariableOutputDTO } from '@takaro/apiclient';
 import { z } from 'zod';
-import { GameServerSelect, PlayerSelect } from 'components/selects';
+import { GameServerSelect, PlayerSelectQuery } from 'components/selects';
 import { ModuleSelect } from 'components/selects/ModuleSelect';
 import { DateTime } from 'luxon';
 
@@ -15,12 +15,12 @@ export enum ExecutionType {
 }
 
 const validationSchema = z.object({
-  key: z.string().min(1).max(25),
+  key: z.string().min(1).max(100),
   value: z.string().min(1).max(255),
   playerId: z.string().uuid().optional(),
   gameServerId: z.string().uuid().optional(),
   moduleId: z.string().uuid().optional(),
-  expiresAt: z.string().optional(),
+  expiresAt: z.string().optional().nullish(),
 });
 export type IFormInputs = z.infer<typeof validationSchema>;
 
@@ -107,7 +107,7 @@ export const VariablesForm: FC<CreateAndUpdateVariableformProps> = ({ variable, 
               allowPastDates={false}
               format={DateTime.DATETIME_SHORT}
             />
-            <PlayerSelect canClear={true} control={control} loading={isLoading} name="playerId" />
+            <PlayerSelectQuery canClear={true} control={control} loading={isLoading} name="playerId" />
             <GameServerSelect
               canClear={true}
               control={control}
@@ -122,7 +122,6 @@ export const VariablesForm: FC<CreateAndUpdateVariableformProps> = ({ variable, 
               loading={isLoading}
               description="If a different value needs to be stored for each module, select the module here."
             />
-
             {error && <FormError error={error} />}
           </form>
         </Drawer.Body>

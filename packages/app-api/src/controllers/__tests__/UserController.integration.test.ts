@@ -1,6 +1,7 @@
-import { IntegrationTest, expect } from '@takaro/test';
+import { IntegrationTest, expect, integrationConfig } from '@takaro/test';
 import { PERMISSIONS } from '@takaro/auth';
-import { UserOutputDTO } from '@takaro/apiclient';
+import { Client, UserOutputDTO } from '@takaro/apiclient';
+import { faker } from '@faker-js/faker';
 
 const group = 'UserController';
 
@@ -63,6 +64,59 @@ const tests = [
       return userRes;
     },
     filteredFields: ['idpId', 'roleId', 'userId', 'lastSeen'],
+  }),
+  // Repro for https://github.com/gettakaro/takaro/issues/1013
+  new IntegrationTest<IUserSetup>({
+    group,
+    snapshot: true,
+    name: 'Inviting a user that is already invited should return the existing user',
+    setup: userSetup,
+    test: async function () {
+      const email = faker.internet.email();
+      await this.client.user.userControllerInvite({
+        email,
+      });
+
+      const res = await this.client.user.userControllerInvite({
+        email,
+      });
+
+      return res;
+    },
+    filteredFields: ['idpId', 'roleId', 'userId', 'lastSeen', 'email', 'name'],
+  }),
+  new IntegrationTest<IUserSetup>({
+    group,
+    snapshot: true,
+    name: 'Inviting a user that already exists in a different domain should work transparently',
+    setup: userSetup,
+    test: async function () {
+      const email = faker.internet.email();
+      await this.client.user.userControllerInvite({
+        email,
+      });
+
+      const domain2 = await this.adminClient.domain.domainControllerCreate({
+        name: 'integration-test-domain-2',
+      });
+
+      const client2 = new Client({
+        auth: {
+          username: domain2.data.data.rootUser.email,
+          password: domain2.data.data.password,
+        },
+        url: integrationConfig.get('host'),
+      });
+
+      await client2.login();
+
+      const res = await client2.user.userControllerInvite({
+        email,
+      });
+
+      return res;
+    },
+    filteredFields: ['idpId', 'roleId', 'userId', 'lastSeen', 'email', 'name'],
   }),
 ];
 

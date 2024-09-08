@@ -5,7 +5,7 @@ import { BasePage } from './BasePage.js';
 
 const { expect } = playwright;
 
-export class StudioPage extends BasePage {
+export class ModuleBuilderPage extends BasePage {
   constructor(
     public readonly page: Page,
     public mod: ModuleOutputDTO,
@@ -15,7 +15,7 @@ export class StudioPage extends BasePage {
 
   async goto() {
     expect(this.mod.id).toBeTruthy();
-    await this.page.goto(`studio/${this.mod.id}`);
+    await this.page.goto(`module-builder/${this.mod.id}`);
   }
 
   async getTreeFile(name: string): Promise<Locator> {

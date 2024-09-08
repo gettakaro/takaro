@@ -2,7 +2,7 @@ name: Deploy docs to Pages
 
 on:
   push:
-    branches: ["main"]
+    branches: ['main']
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -12,7 +12,7 @@ permissions:
 
 # Allow one concurrent deployment
 concurrency:
-  group: "pages"
+  group: 'pages'
   cancel-in-progress: true
 
 jobs:
@@ -36,7 +36,7 @@ jobs:
 
       - run: ./scripts/dev-init.sh
 
-      - run: npm -w packages/web-docs run export
+      - run: npm -w packages/web-docs run build
 
       - name: Generate API client docs
         run: |
@@ -44,9 +44,9 @@ jobs:
           mv reports/api-docs packages/web-docs/build/api-docs
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v3
         with:
-          path: "./packages/web-docs/build"
+          path: './packages/web-docs/build'
 
       - name: Deploy to GitHub Pages
         id: deployment

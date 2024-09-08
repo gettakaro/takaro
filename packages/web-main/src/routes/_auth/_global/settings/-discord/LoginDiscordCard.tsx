@@ -15,7 +15,7 @@ export const LoginDiscordCard: FC = () => {
   const { session } = useSession();
   const { colors } = useTheme();
 
-  const hasLinkedDiscord = !!session.discordId;
+  const hasLinkedDiscord = !!session.user.discordId;
   return (
     <Card>
       <Body>

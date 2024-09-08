@@ -12,6 +12,7 @@ import { AxiosError } from 'axios';
 import { getApiClient } from 'util/getApiClient';
 import { pogKeys } from './pog';
 import { useSnackbar } from 'notistack';
+import { userKeys } from './user';
 
 export const shopOrderKeys = {
   list: () => ['shopOrder'],
@@ -48,6 +49,7 @@ export const useShopOrderCreate = () => {
       mutationFn: async (shopOrder) => (await getApiClient().shopOrder.shopOrderControllerCreate(shopOrder)).data.data,
       onSuccess: (newShopOrder) => {
         enqueueSnackbar('Shop order created!', { variant: 'default', type: 'success' });
+        queryClient.invalidateQueries({ queryKey: userKeys.me() });
         queryClient.invalidateQueries({ queryKey: pogKeys.all });
         queryClient.invalidateQueries({ queryKey: shopOrderKeys.list() });
         queryClient.setQueryData(shopOrderKeys.detail(newShopOrder.id), newShopOrder);
@@ -70,6 +72,7 @@ export const useShopOrderCancel = () => {
         (await getApiClient().shopOrder.shopOrderControllerCancel(shopOrderId)).data,
       onSuccess: (_, { shopOrderId }) => {
         enqueueSnackbar('Shop order cancelled!', { variant: 'default', type: 'success' });
+        queryClient.invalidateQueries({ queryKey: userKeys.me() });
         queryClient.invalidateQueries({ queryKey: pogKeys.all });
         queryClient.invalidateQueries({ queryKey: shopOrderKeys.list() });
 

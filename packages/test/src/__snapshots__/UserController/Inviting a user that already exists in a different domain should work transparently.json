@@ -1,0 +1,46 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "createdAt": "2024-09-06T12:14:05.670Z",
+      "updatedAt": "2024-09-06T12:14:05.670Z",
+      "id": "5fed0aee-290f-4723-8325-54b20fc0adbf",
+      "name": "Lyda_Heaney@gmail.com",
+      "idpId": "49234eb1-ece5-4a60-956f-c04088e9fd50",
+      "discordId": null,
+      "lastSeen": "2024-09-06T12:14:05.670Z",
+      "playerId": null,
+      "roles": [
+        {
+          "role": {
+            "createdAt": "2024-09-06T12:14:05.160Z",
+            "updatedAt": "2024-09-06T12:14:05.161Z",
+            "id": "34ea1d1c-ec43-4b72-98b0-61072c9adb4f",
+            "name": "User",
+            "system": true,
+            "permissions": []
+          },
+          "roleId": "34ea1d1c-ec43-4b72-98b0-61072c9adb4f",
+          "userId": "5fed0aee-290f-4723-8325-54b20fc0adbf"
+        }
+      ],
+      "email": "Lyda_Heaney@gmail.com"
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "UserController",
+    "snapshot": true,
+    "name": "Inviting a user that already exists in a different domain should work transparently",
+    "filteredFields": [
+      "idpId",
+      "roleId",
+      "userId",
+      "lastSeen",
+      "email",
+      "name"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

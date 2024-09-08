@@ -1,5 +1,14 @@
 import { FC, useEffect, useState } from 'react';
-import { Button, SelectField, TextField, Drawer, CollapseList, FormError, styled } from '@takaro/lib-components';
+import {
+  Button,
+  SelectField,
+  TextField,
+  Drawer,
+  CollapseList,
+  FormError,
+  styled,
+  Switch,
+} from '@takaro/lib-components';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { IFormInputs, validationSchema } from './validationSchema';
 import {
@@ -53,10 +62,12 @@ export const CreateUpdateForm: FC<CreateUpdateFormProps> = ({ initialData, isLoa
     defaultValues: {
       name: '',
       type: '',
+      enabled: true,
     },
     ...(initialData && {
       values: {
         name: initialData.name,
+        enabled: initialData.enabled,
         type: initialData.type,
         connectionInfo: initialData.connectionInfo,
       },
@@ -101,6 +112,14 @@ export const CreateUpdateForm: FC<CreateUpdateFormProps> = ({ initialData, isLoa
                   name="name"
                   placeholder="My cool server"
                   required
+                />
+                <Switch
+                  label="Enabled"
+                  name="enabled"
+                  key="enabled"
+                  description="If disabled, Takaro will not interact with this server. You can retain all settings and data, but Takaro will not update any data or connect to the server."
+                  control={control}
+                  loading={isLoading}
                 />
                 <SelectField
                   control={control}
