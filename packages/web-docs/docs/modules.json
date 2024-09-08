@@ -408,6 +408,35 @@
             "defaultValue": "false"
           }
         ]
+      },
+      {
+        "function": "import { takaro, data, TakaroUserError } from '@takaro/helpers';\nasync function main() {\n    const { arguments: args, player, gameServerId } = data;\n    const { page, item, action } = args;\n    const shopItems = await takaro.shopListing.shopListingControllerSearch({\n        limit: 5,\n        page: page - 1,\n        sortBy: 'name',\n        sortDirection: 'asc',\n        filters: {\n            gameServerId: [gameServerId],\n            draft: false,\n        },\n    });\n    if (shopItems.data.data.length === 0) {\n        await player.pm('No items found.');\n        return;\n    }\n    const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', data.gameServerId)).data.data;\n    if (!item) {\n        // List the shop items\n        for (const listing of shopItems.data.data) {\n            const items = listing.items.slice(0, 3).map((item) => {\n                return `${item.amount}x ${item.item.name}`;\n            });\n            await player.pm(`- ${listing.name} - ${listing.price} ${currencyName.value}. ${items.join(', ')}`);\n        }\n        return;\n    }\n    const selectedItem = shopItems.data.data[item - 1];\n    if (!selectedItem)\n        throw new TakaroUserError(`Item not found. Please select an item from the list, valid options are 1-${shopItems.data.data.length}.`);\n    if (action === 'none') {\n        // Display more info about the item\n        await player.pm(`Listing ${selectedItem.name} - ${selectedItem.price} ${currencyName.value}`);\n        await Promise.all(selectedItem.items.map((item) => {\n            const quality = item.quality ? `Quality: ${item.quality}` : '';\n            const description = (item.item.description ? `Description: ${item.item.description}` : '').replaceAll('\\\\n', ' ');\n            return player.pm(`- ${item.amount}x ${item.item.name}. ${quality} ${description}`);\n        }));\n        return;\n    }\n    if (action === 'buy') {\n        await takaro.shopOrder.shopOrderControllerCreate({\n            amount: 1,\n            listingId: selectedItem.id,\n            userId: data.user.id,\n        });\n        await player.pm(`You have purchased ${selectedItem.name} for ${selectedItem.price} ${currencyName.value}. You can now claim your items.`);\n        return;\n    }\n    throw new TakaroUserError('Invalid action. Valid actions are \"buy\".');\n}\nawait main();\n//# sourceMappingURL=shop.js.map",
+        "name": "shop",
+        "trigger": "shop",
+        "helpText": "Browse the shop and view available items.",
+        "arguments": [
+          {
+            "name": "page",
+            "type": "number",
+            "helpText": "Display more items from the shop by specifying a page number.",
+            "position": 0,
+            "defaultValue": "1"
+          },
+          {
+            "name": "item",
+            "type": "number",
+            "helpText": "Select a specific item to view more details.",
+            "position": 1,
+            "defaultValue": "0"
+          },
+          {
+            "name": "action",
+            "type": "string",
+            "helpText": "Perform an action on the selected item. Currently only \"buy\" is supported.",
+            "position": 2,
+            "defaultValue": "none"
+          }
+        ]
       }
     ],
     "hooks": [],
