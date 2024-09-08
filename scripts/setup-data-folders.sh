@@ -2,6 +2,12 @@
 
 mkdir -p _data
 
+echo "---------------------------------------------------------------------------------------------------"
+echo "Setting up data folders..."
+echo "Data will be stored in the _data folder"
+echo "The script will ask for sudo permissions to change the ownership of the data folders"
+echo "---------------------------------------------------------------------------------------------------"
+
 # The prometheus container runs as a user with UID and GID 65534
 # so we need to make sure the data directory is writable by that user
 if [ ! -d "./_data/prometheus" ]; then
@@ -35,11 +41,12 @@ if [ ! -d "./_data/kratos-db" ]; then
   fi
 fi
 
-# Check if mode is not 77 yet
-if [ "$(stat -c %a ./_data)" != "777" ]; then
-  if command -v sudo >/dev/null 2>&1; then
-    sudo chmod -R 777 ./_data
-  fi
+if command -v sudo >/dev/null 2>&1; then
+  sudo chmod -R 777 ./_data
 fi
 
+echo "---------------------------------------------------------------------------------------------------"
 ls -la _data
+echo "---------------------------------------------------------------------------------------------------"
+echo "Data folders setup complete"
+echo "---------------------------------------------------------------------------------------------------"
