@@ -76,7 +76,7 @@ function Component() {
   });
 
   const onSubmit: SubmitHandler<IFormInputs> = ({ id, roleId, expiresAt }) => {
-    mutate({ userId: id, roleId, expiresAt });
+    mutate({ userId: id, roleId, expiresAt, id });
   };
 
   return (

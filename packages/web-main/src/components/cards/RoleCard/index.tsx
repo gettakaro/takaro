@@ -21,7 +21,9 @@ import {
   AiOutlineEdit as EditIcon,
   AiOutlineDelete as DeleteIcon,
   AiOutlineEye as ViewIcon,
+  AiOutlineUserSwitch as ManagePlayersIcon,
 } from 'react-icons/ai';
+import { useHasPermission } from 'hooks/useHasPermission';
 
 export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
@@ -29,6 +31,10 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
   const theme = useTheme();
   const navigate = useNavigate();
   const { mutate, isPending: isDeleting, isSuccess } = useRoleRemove();
+  const hasRequiredManagePlayersPermission = useHasPermission(['READ_ROLES', 'READ_PLAYERS', 'READ_USERS']);
+
+  const isUserRole = name === 'User';
+  const isPlayerRole = name === 'Player';
 
   const handleOnEditClick = (e: MouseEvent): void => {
     e.stopPropagation();
@@ -47,6 +53,16 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
   const handleOnViewClick = (e: MouseEvent) => {
     e.stopPropagation();
     navigate({ to: '/roles/$roleId/view', params: { roleId: id } });
+  };
+
+  const handleOnManagePlayersClicked = (e: MouseEvent) => {
+    e.stopPropagation();
+    navigate({ to: '/roles/$roleId/players', params: { roleId: id } });
+  };
+
+  const handleOnManageUsersClicked = (e: MouseEvent) => {
+    e.stopPropagation();
+    navigate({ to: '/roles/$roleId/users', params: { roleId: id } });
   };
 
   const handleOnDelete = (e: MouseEvent) => {
@@ -86,6 +102,18 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
                   {name !== 'root' && (
                     <Dropdown.Menu.Item onClick={handleOnEditClick} icon={<EditIcon />} label="Edit role" />
                   )}
+                  <Dropdown.Menu.Item
+                    icon={<ManagePlayersIcon />}
+                    onClick={handleOnManagePlayersClicked}
+                    label="Manage players"
+                    disabled={!hasRequiredManagePlayersPermission || isPlayerRole || isUserRole}
+                  />
+                  <Dropdown.Menu.Item
+                    icon={<ManagePlayersIcon />}
+                    onClick={handleOnManageUsersClicked}
+                    label="Manage Users"
+                    disabled={!hasRequiredManagePlayersPermission || isPlayerRole || isUserRole}
+                  />
                   {!system && (
                     <Dropdown.Menu.Item
                       onClick={handleOnDeleteClick}
@@ -94,9 +122,6 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
                     />
                   )}
                 </Dropdown.Menu.Group>
-
-                <Dropdown.Menu.Item onClick={() => {}} label="Manage users (coming soon)" disabled />
-                <Dropdown.Menu.Item onClick={() => {}} label="Manage players (coming soon)" disabled />
               </Dropdown.Menu>
             </Dropdown>
           </Header>
