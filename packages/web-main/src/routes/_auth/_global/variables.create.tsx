@@ -3,10 +3,11 @@ import { ExecutionType, IFormInputs, VariablesForm } from './-variables/Variable
 import { useVariableCreate } from 'queries/variable';
 import { hasPermission } from 'hooks/useHasPermission';
 import { VariableCreateDTO } from '@takaro/apiclient';
+import { userMeQueryOptions } from 'queries/user';
 
 export const Route = createFileRoute('/_auth/_global/variables/create')({
   beforeLoad: async ({ context }) => {
-    const session = await context.auth.getSession();
+    const session = await context.queryClient.ensureQueryData(userMeQueryOptions());
     if (!hasPermission(session, ['READ_VARIABLES', 'MANAGE_VARIABLES'])) {
       throw redirect({ to: '/forbidden' });
     }

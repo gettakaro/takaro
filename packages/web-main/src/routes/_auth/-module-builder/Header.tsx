@@ -1,6 +1,6 @@
 import { styled } from '@takaro/lib-components';
 import { CopyModulePopOver } from './CopyModulePopOver';
-import { useStudioContext } from './useStudioStore';
+import { useModuleBuilderContext } from './useModuleBuilderStore';
 
 const Flex = styled.div`
   display: flex;
@@ -19,8 +19,8 @@ const Container = styled.header`
 `;
 
 export const Header = () => {
-  const moduleName = useStudioContext((s) => s.moduleName);
-  const moduleId = useStudioContext((s) => s.moduleId);
+  const moduleName = useModuleBuilderContext((s) => s.moduleName);
+  const moduleId = useModuleBuilderContext((s) => s.moduleId);
 
   return (
     <Container>

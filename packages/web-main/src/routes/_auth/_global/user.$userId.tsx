@@ -1,6 +1,6 @@
 import { UserAssignmentOutputDTO, UserOutputWithRolesDTO } from '@takaro/apiclient';
 import { Button, Divider, Dropdown, IconButton, Skeleton, Table, useTableActions } from '@takaro/lib-components';
-import { useUserRemoveRole, userQueryOptions } from 'queries/user';
+import { useUserRemoveRole, userMeQueryOptions, userQueryOptions } from 'queries/user';
 import { createColumnHelper } from '@tanstack/react-table';
 import { FC } from 'react';
 import { Outlet, redirect, useNavigate, createFileRoute, Link } from '@tanstack/react-router';
@@ -11,7 +11,7 @@ import { useQuery } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/_global/user/$userId')({
   beforeLoad: async ({ context }) => {
-    const session = await context.auth.getSession();
+    const session = await context.queryClient.ensureQueryData(userMeQueryOptions());
     if (!hasPermission(session, ['READ_USERS'])) {
       throw redirect({ to: '/forbidden' });
     }

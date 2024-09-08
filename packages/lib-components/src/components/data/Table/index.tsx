@@ -93,7 +93,19 @@ export function Table<DataType extends object>({
         if (column.id === undefined) {
           throw new Error('ColumnDef must have an id');
         }
-        acc[column.id] = column?.meta?.hiddenColumn ? !column.meta.hiddenColumn : true;
+
+        if (column?.meta?.includeColumn == false) {
+          acc[column.id] = false;
+          return acc;
+        } else {
+          acc[column.id] = true;
+        }
+
+        if (column?.meta?.hideColumn) {
+          acc[column.id] = !column.meta.hideColumn;
+        } else {
+          acc[column.id] = true;
+        }
         return acc;
       },
       {} as Record<string, boolean>,

@@ -3,15 +3,15 @@ import { fromPropsToModules } from './utils';
 import { FileExplorerProps } from '.';
 import { Directory } from './Directory';
 import { File } from './File';
-import { StudioProps } from '../useStudioStore';
+import { ModuleBuilderProps } from '../useModuleBuilderStore';
 
 export interface ModuleListProps extends FileExplorerProps {
   prefixedPath: string;
-  files: StudioProps['fileMap'];
+  files: ModuleBuilderProps['fileMap'];
   openFile: (path: string) => void;
   depth?: number;
-  visibleFiles: StudioProps['visibleFiles'];
-  activeFile: StudioProps['activeFile'];
+  visibleFiles: ModuleBuilderProps['visibleFiles'];
+  activeFile: ModuleBuilderProps['activeFile'];
 }
 
 export const ModuleList: FC<ModuleListProps> = ({

@@ -3,7 +3,7 @@ import { styled } from '@takaro/lib-components';
 import { File } from './File';
 import { ModuleList } from './ModuleList';
 import { FileExplorerProps } from '.';
-import { StudioProps } from '../useStudioStore';
+import { ModuleBuilderProps } from '../useModuleBuilderStore';
 
 const DirectoryContainer = styled.div`
   position: relative;
@@ -13,10 +13,10 @@ const DirectoryContainer = styled.div`
 export interface DirectoryProps extends FileExplorerProps {
   prefixedPath: string;
   openFile: (path: string) => void;
-  activeFile: StudioProps['activeFile'];
+  activeFile: ModuleBuilderProps['activeFile'];
   depth: number;
-  files: StudioProps['fileMap'];
-  visibleFiles: NonNullable<StudioProps['visibleFiles']>;
+  files: ModuleBuilderProps['fileMap'];
+  visibleFiles: NonNullable<ModuleBuilderProps['visibleFiles']>;
 }
 
 export const Directory: FC<DirectoryProps> = ({

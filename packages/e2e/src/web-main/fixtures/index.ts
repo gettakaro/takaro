@@ -13,7 +13,7 @@ import {
   UserOutputDTO,
 } from '@takaro/apiclient';
 import { humanId } from 'human-id';
-import { ModuleDefinitionsPage, StudioPage, GameServersPage, UsersPage, RolesPage } from '../pages/index.js';
+import { ModuleDefinitionsPage, ModuleBuilderPage, GameServersPage, UsersPage, RolesPage } from '../pages/index.js';
 import { getAdminClient, login } from '../helpers.js';
 import { PlayerProfilePage } from '../pages/PlayerProfile.js';
 
@@ -25,7 +25,7 @@ export interface IBaseFixtures {
   takaro: {
     rootClient: Client;
     adminClient: AdminClient;
-    studioPage: StudioPage;
+    moduleBuilderPage: ModuleBuilderPage;
     moduleDefinitionsPage: ModuleDefinitionsPage;
     GameServersPage: GameServersPage;
     usersPage: UsersPage;
@@ -103,7 +103,7 @@ const main = pwTest.extend<IBaseFixtures>({
         adminClient,
         builtinModule: mods.data.data[0],
         gameServer: gameServer.data.data,
-        studioPage: new StudioPage(page, mod.data.data),
+        moduleBuilderPage: new ModuleBuilderPage(page, mod.data.data),
         GameServersPage: new GameServersPage(page, gameServer.data.data),
         moduleDefinitionsPage: new ModuleDefinitionsPage(page),
         usersPage: new UsersPage(page),
@@ -193,7 +193,7 @@ export const extendedTest = main.extend<ExtendedFixture>({
           moduleId: mod.data.data.id,
         }),
       ]);
-      takaro.studioPage.mod = mod.data.data;
+      takaro.moduleBuilderPage.mod = mod.data.data;
       await connectedEvents;
       const players = (await rootClient.player.playerControllerSearch()).data.data;
 
