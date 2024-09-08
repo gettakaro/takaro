@@ -247,15 +247,34 @@ export async function executeFunction(
     switch (config.get('functions.executionMode')) {
       case EXECUTION_MODE.LOCAL:
         result = await executeFunctionLocal(functionRes.data.data.code, data, token);
-        meta.result = new TakaroEventFunctionResult(result);
         break;
       case EXECUTION_MODE.LAMBDA:
         result = await executeLambda({ fn: functionRes.data.data.code, data, token, domainId });
-        meta.result = new TakaroEventFunctionResult(result);
         break;
       default:
         throw new errors.ConfigError(`Invalid execution mode: ${config.get('functions.executionMode')}`);
     }
+
+    if (!result.logs) result.logs = [];
+    const cleanLogs = result.logs.map((rawLog) => {
+      let cleanMsg = rawLog.msg;
+
+      if (typeof cleanMsg !== 'string') {
+        cleanMsg = JSON.stringify(cleanMsg);
+      }
+
+      if (cleanMsg.length > 1000) {
+        cleanMsg = cleanMsg.substring(0, 1000) + '...';
+      }
+
+      if (!cleanMsg.length) {
+        cleanMsg = 'Empty log';
+      }
+
+      return new TakaroEventFunctionLog({ ...rawLog, msg: cleanMsg });
+    });
+
+    meta.result = new TakaroEventFunctionResult({ ...result, logs: cleanLogs });
 
     if (isCommandData(data) && !result.success) {
       if (
@@ -304,15 +323,6 @@ export async function executeFunction(
         }
       }
     }
-
-    if (!result.logs) result.logs = [];
-    if (!meta.result.logs) meta.result.logs = [];
-    // Ensure all logs are TakaroEventFunctionLog
-    meta.result.logs = await Promise.all(
-      result.logs.map(async (log) => {
-        return new TakaroEventFunctionLog(log);
-      }),
-    );
 
     await eventService.create(new EventCreateDTO({ ...eventData, meta }));
   } catch (err: any) {

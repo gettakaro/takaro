@@ -6,9 +6,9 @@ import {
   chatMessageSorter,
   EventsAwaiter,
 } from '@takaro/test';
-import { GameEvents } from '../dto/index.js';
+import { GameEvents } from '../../dto/index.js';
 
-const group = 'Economy utils suite';
+const group = 'EconomyUtils';
 
 const customSetup = async function (this: IntegrationTest<IModuleTestsSetupData>): Promise<IModuleTestsSetupData> {
   const setupData = await modulesTestSetup.bind(this)();

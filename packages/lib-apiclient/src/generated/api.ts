@@ -7669,6 +7669,12 @@ export interface ShopOrderCreateDTO {
   listingId: string;
   /**
    *
+   * @type {string}
+   * @memberof ShopOrderCreateDTO
+   */
+  userId?: string;
+  /**
+   *
    * @type {number}
    * @memberof ShopOrderCreateDTO
    */
@@ -7685,7 +7691,7 @@ export interface ShopOrderCreateInternalDTO {
    * @type {string}
    * @memberof ShopOrderCreateInternalDTO
    */
-  userId: string;
+  userId?: string;
   /**
    *
    * @type {string}
