@@ -10,7 +10,7 @@ import {
   titleId,
 } from '@rjsf/utils';
 
-import { styled } from '@takaro/lib-components';
+import { Collapsible, styled } from '@takaro/lib-components';
 
 const Container = styled.div`
   padding-left: ${({ theme }) => theme.spacing['0_5']};
@@ -51,9 +51,21 @@ export function ObjectFieldTemplate<T = any, S extends StrictRJSFSchema = RJSFSc
     ButtonTemplates: { AddButton },
   } = registry.templates;
 
+  function isParentCommandHookCronjob() {
+    if (
+      idSchema['$id'] === 'root_commands' ||
+      idSchema['$id'] === 'root_hooks' ||
+      idSchema['$id'] === 'root_cronJobs'
+    ) {
+      return true;
+    }
+    return false;
+  }
+
   return (
     <Container>
-      {title && (
+      {/* if parent title is commands/cronjobs/hooks then dont render */}
+      {title && isParentCommandHookCronjob() && (
         <TitleFieldTemplate
           id={titleId<T>(idSchema)}
           title={title}
@@ -73,17 +85,31 @@ export function ObjectFieldTemplate<T = any, S extends StrictRJSFSchema = RJSFSc
         />
       )}
       <div>
-        {properties.map((element, index) =>
-          // Remove the <Grid> if the inner element is hidden as the <Grid>
-          // itself would otherwise still take up space.
-          element.hidden ? (
-            element.content
-          ) : (
-            <div key={`element-${title}-${index}`} style={{ marginBottom: '10px' }}>
-              {element.content}
-            </div>
-          ),
-        )}
+        {properties.map((element, index) => {
+          if (title === 'commands' || title === 'hooks' || title === 'cronJobs') {
+            {
+              console.log(element.content);
+            }
+            return (
+              <Collapsible key={`element-${title}-${index}`}>
+                <Collapsible.Trigger>{element.name}</Collapsible.Trigger>
+                <Collapsible.Content>{element.content}</Collapsible.Content>
+              </Collapsible>
+            );
+          }
+
+          return (
+            // Remove the <Grid> if the inner element is hidden as the <Grid>
+            // itself would otherwise still take up space.
+            element.hidden ? (
+              element.content
+            ) : (
+              <div key={`element-${title}-${index}`} style={{ marginBottom: '10px' }}>
+                {element.content}
+              </div>
+            )
+          );
+        })}
         {canExpand<T, S, F>(schema, uiSchema, formData) && (
           <div>
             <div>

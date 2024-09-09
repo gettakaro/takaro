@@ -17,6 +17,7 @@ const Container = styled.div`
 `;
 
 const StatCard = styled(Card)`
+  position: relative;
   height: 400px;
   width: 45%;
   padding-bottom: ${({ theme }) => theme.spacing[4]};
