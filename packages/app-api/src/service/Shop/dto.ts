@@ -115,6 +115,9 @@ export class ShopOrderOutputDTO extends TakaroModelDTO<ShopOrderOutputDTO> {
 export class ShopOrderCreateDTO<T = void> extends TakaroDTO<T> {
   @IsUUID()
   listingId: string;
+  @IsUUID()
+  @IsOptional()
+  userId?: string;
   @Min(1)
   amount: number;
 }
