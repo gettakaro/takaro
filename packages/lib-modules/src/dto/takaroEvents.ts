@@ -1,6 +1,5 @@
 import {
   IsBoolean,
-  IsDefined,
   IsEnum,
   IsIP,
   IsISO31661Alpha2,
@@ -141,9 +140,6 @@ export class TakaroEventCommandExecuted extends BaseEvent<TakaroEventCommandExec
   @IsString()
   type = TakaroEvents.COMMAND_EXECUTED;
 
-  @IsDefined()
-  data: Record<string, unknown>;
-
   @ValidateNested()
   @Type(() => TakaroEventFunctionResult)
   result: TakaroEventFunctionResult;
@@ -158,9 +154,6 @@ export class TakaroEventHookExecuted extends BaseEvent<TakaroEventHookExecuted> 
   @IsString()
   type = TakaroEvents.HOOK_EXECUTED;
 
-  @IsDefined()
-  data: Record<string, unknown>;
-
   @ValidateNested()
   @Type(() => TakaroEventFunctionResult)
   result: TakaroEventFunctionResult;
@@ -174,9 +167,6 @@ export class TakaroEventHookExecuted extends BaseEvent<TakaroEventHookExecuted> 
 export class TakaroEventCronjobExecuted extends BaseEvent<TakaroEventCronjobExecuted> {
   @IsString()
   type = TakaroEvents.CRONJOB_EXECUTED;
-
-  @IsDefined()
-  data: Record<string, unknown>;
 
   @ValidateNested()
   @Type(() => TakaroEventFunctionResult)

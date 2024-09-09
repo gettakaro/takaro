@@ -103,12 +103,7 @@ export async function executeFunction(
   const functionRes = await client.function.functionControllerGetOne(functionId);
   const eventService = new EventService(domainId);
 
-  const dataForEvent = { ...data };
-  delete dataForEvent.token;
-  delete dataForEvent.url;
-  const meta: Partial<TakaroEventCommandExecuted | TakaroEventHookExecuted | TakaroEventCronjobExecuted> = {
-    data: dataForEvent,
-  };
+  const meta: Partial<TakaroEventCommandExecuted | TakaroEventHookExecuted | TakaroEventCronjobExecuted> = {};
 
   const eventData = new EventCreateDTO({
     moduleId: data.module.moduleId,
