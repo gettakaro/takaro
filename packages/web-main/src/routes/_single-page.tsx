@@ -1,5 +1,5 @@
 import { createFileRoute, Outlet } from '@tanstack/react-router';
-import { styled } from '@takaro/lib-components';
+import { styled, Company } from '@takaro/lib-components';
 
 export const Route = createFileRoute('/_single-page')({
   component: LayoutComponent,
@@ -10,13 +10,15 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: calc(100vh - 200px);
-  margin-top: 200px;
+  height: 100vh;
+  width: 800px;
+  margin: 0 auto;
 `;
 
 function LayoutComponent() {
   return (
     <Container>
+      <Company size="large" />
       <Outlet />
     </Container>
   );

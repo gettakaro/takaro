@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, createFileRoute } from '@tanstack/react-router';
 import { UpdateVerificationFlowBody, VerificationFlow } from '@ory/client';
-import { styled, Skeleton } from '@takaro/lib-components';
 import { UserAuthCard } from '@ory/elements';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { z } from 'zod';
@@ -15,21 +14,6 @@ export const Route = createFileRoute('/_single-page/account/verification')({
   component: Component,
   validateSearch: (search) => searchSchema.parse(search),
 });
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-
-  height: 100vh;
-
-  max-width: 600px;
-  text-align: center;
-  margin: -200px auto 0 auto;
-
-  gap: ${({ theme }) => theme.spacing[6]};
-`;
 
 function Component() {
   useDocumentTitle('Verification');
@@ -94,24 +78,17 @@ function Component() {
     createFlow();
   }, []);
 
-  if (!flow) return <Skeleton variant="rectangular" width="100%" height="100%" />;
+  if (!flow) return <></>;
 
   return (
-    <>
-      <Container>
-        <UserAuthCard
-          title="Verification"
-          flowType="verification"
-          // we always need to provide the flow data since it contains the form fields, error messages and csrf token
-          flow={flow}
-          // we want users to be able to go back to the login page from the verification page
-          additionalProps={{
-            signupURL: '/login',
-          }}
-          // submit the verification form data to Ory
-          onSubmit={({ body }) => submitFlow(body as UpdateVerificationFlowBody)}
-        />
-      </Container>
-    </>
+    <UserAuthCard
+      title="Account verification"
+      flowType={'verification'}
+      flow={flow}
+      additionalProps={{
+        signupURL: '/login',
+      }}
+      onSubmit={({ body }) => submitFlow(body as UpdateVerificationFlowBody)}
+    />
   );
 }

@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
 import { RecoveryFlow, UpdateRecoveryFlowBody } from '@ory/client';
-import { styled, Company, LoadingPage } from '@takaro/lib-components';
 import { RecoverySectionAdditionalProps, UserAuthCard } from '@ory/elements';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { createFileRoute } from '@tanstack/react-router';
@@ -17,29 +16,6 @@ export const Route = createFileRoute('/_single-page/account/recovery')({
   component: Component,
   validateSearch: (search) => searchSchema.parse(search),
 });
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  height: 100vh;
-
-  text-align: start;
-  margin: -200px auto 0 auto;
-
-  gap: ${({ theme }) => theme.spacing[6]};
-`;
-
-const StyledUserCard = styled(UserAuthCard)`
-  width: 800px;
-  max-width: none;
-
-  h2 {
-    font-size: ${({ theme }) => theme.fontSize.mediumLarge}};
-  }
-`;
 
 function Component() {
   useDocumentTitle('Recovery');
@@ -89,10 +65,10 @@ function Component() {
         updateRecoveryFlowBody: body,
       });
 
-      // bandage fix, I expected this to automatically navigate to the settings flow (/account/profile).
-      if (data.continue_with && data.continue_with.length > 0) {
-        navigate({ to: '/account/profile', search: { flowId: data.continue_with[0]['flow']['id'] } });
-      }
+      //// bandage fix, I expected this to automatically navigate to the settings flow (/account/profile).
+      //if (data.continue_with && data.continue_with.length > 0) {
+      //  navigate({ to: '/account/profile', search: { flowId: data.continue_with[0]['flow']['id'] } });
+      //}
       setFlow(data);
     } catch (e) {
       sdkErrorHandler(e as AxiosError);
@@ -107,26 +83,21 @@ function Component() {
     }
   }, []);
 
-  if (!flow) return <LoadingPage />;
+  if (!flow) return <></>;
 
   return (
-    <>
-      <Container>
-        <Company size="large" />
-        <StyledUserCard
-          flowType={'recovery'}
-          flow={flow}
-          additionalProps={
-            {
-              loginURL: {
-                handler: () => navigate({ to: '/login', replace: true }),
-                href: '/login',
-              },
-            } as RecoverySectionAdditionalProps
-          }
-          onSubmit={async ({ body }) => await submitFlow(body as UpdateRecoveryFlowBody)}
-        />
-      </Container>
-    </>
+    <UserAuthCard
+      flowType={'recovery'}
+      flow={flow}
+      additionalProps={
+        {
+          loginURL: {
+            handler: () => navigate({ to: '/login', replace: true }),
+            href: '/login',
+          },
+        } as RecoverySectionAdditionalProps
+      }
+      onSubmit={async ({ body }) => await submitFlow(body as UpdateRecoveryFlowBody)}
+    />
   );
 }
