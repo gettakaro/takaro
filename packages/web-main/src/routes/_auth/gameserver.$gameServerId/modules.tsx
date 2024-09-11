@@ -1,18 +1,21 @@
-import { Skeleton, styled, useTheme } from '@takaro/lib-components';
-import { Outlet, redirect, createFileRoute } from '@tanstack/react-router';
-import { useQueries } from '@tanstack/react-query';
-import { ModuleInstallCard, CardList } from 'components/cards';
+import { Skeleton } from '@takaro/lib-components';
+import { redirect, createFileRoute } from '@tanstack/react-router';
+import { CardList } from 'components/cards';
 import { gameServerModuleInstallationsOptions } from 'queries/gameserver';
 import { modulesQueryOptions } from 'queries/module';
 import { hasPermission } from 'hooks/useHasPermission';
-import { PERMISSIONS } from '@takaro/apiclient';
+import { ModuleInstallationOutputDTO, ModuleOutputArrayDTOAPI, PERMISSIONS } from '@takaro/apiclient';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { userMeQueryOptions } from 'queries/user';
+import { ViewSelector } from 'components/ViewSelector';
+import { ModulesCardView } from './-components/modules/modulesCardView';
+import { ModulesTableView } from './-components/modules/modulesTableView';
 
-const SubHeader = styled.h2`
-  font-size: ${({ theme }) => theme.fontSize.mediumLarge};
-  margin-bottom: ${({ theme }) => theme.spacing[2]}};
-`;
+export interface ModuleViewProps {
+  gameServerId: string;
+  installations: ModuleInstallationOutputDTO[];
+  modules: ModuleOutputArrayDTOAPI;
+}
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/modules')({
   beforeLoad: async ({ context }) => {
@@ -44,56 +47,19 @@ export function Component() {
   const { gameServerId } = Route.useParams();
   useDocumentTitle('Modules');
 
-  const [{ data: modules }, { data: installations }] = useQueries({
-    queries: [
-      {
-        ...modulesQueryOptions(),
-        initialData: loaderData.modules,
-      },
-      {
-        ...gameServerModuleInstallationsOptions(gameServerId),
-        initialData: loaderData.installations,
-      },
-    ],
-  });
-
-  const mappedModules = modules.data.map((mod) => {
-    const installation = installations.find((inst) => inst.moduleId === mod.id);
-    return {
-      ...mod,
-      installed: !!installation,
-      installation: installation,
-    };
-  });
-
-  const installedModules = mappedModules.filter((mod) => mod.installed);
-  const availableModules = mappedModules.filter((mod) => !mod.installed);
-
-  const theme = useTheme();
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: theme.spacing[2], overflowY: 'auto' }}>
-      {installedModules.length > 0 && (
-        <div>
-          <SubHeader>Installed</SubHeader>
-          <CardList>
-            {installedModules.map((mod) => (
-              <ModuleInstallCard key={mod.id} mod={mod} installation={mod.installation} gameServerId={gameServerId} />
-            ))}
-          </CardList>
-        </div>
-      )}
-      <div>
-        <SubHeader>Available</SubHeader>
-        <div style={{ overflowY: 'auto', height: '100%' }}>
-          <CardList>
-            {availableModules.map((mod) => (
-              <ModuleInstallCard key={mod.id} mod={mod} installation={mod.installation} gameServerId={gameServerId} />
-            ))}
-          </CardList>
-        </div>
-      </div>
-      <Outlet />
-    </div>
+  const tableView = (
+    <ModulesTableView
+      gameServerId={gameServerId}
+      installations={loaderData.installations}
+      modules={loaderData.modules}
+    />
   );
+  const cardView = (
+    <ModulesCardView
+      gameServerId={gameServerId}
+      installations={loaderData.installations}
+      modules={loaderData.modules}
+    />
+  );
+  return <ViewSelector id="shop" tableView={tableView} cardView={cardView} />;
 }

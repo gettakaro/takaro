@@ -275,8 +275,8 @@ export const useGameServerModuleUninstall = () => {
         queryClient.setQueryData<ModuleInstallationOutputDTO[]>(installedModuleKeys.list(gameServerId), (old) => {
           return old
             ? old.filter((installedModule) => {
-                return installedModule.moduleId !== moduleId;
-              })
+              return installedModule.moduleId !== moduleId;
+            })
             : old;
         });
         await queryClient.invalidateQueries({

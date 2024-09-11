@@ -128,10 +128,10 @@ export const ShopOrderTableView: FC<ShopOrderTableView> = ({ gameServerId }) => 
   const p =
     !isLoading && data
       ? {
-          paginationState: pagination.paginationState,
-          setPaginationState: pagination.setPaginationState,
-          pageOptions: pagination.getPageOptions(data),
-        }
+        paginationState: pagination.paginationState,
+        setPaginationState: pagination.setPaginationState,
+        pageOptions: pagination.getPageOptions(data),
+      }
       : undefined;
 
   return (
