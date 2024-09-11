@@ -15,5 +15,8 @@ export { CollapseList } from './CollapseList';
 export { PermissionsGuard, hasPermissionHelper } from './PermissionsGuard';
 export type { PermissionsGuardProps, RequiredPermissions } from './PermissionsGuard';
 
+export { Plan } from './Plan';
+export type { PlanProps } from './Plan';
+
 export { Collapsible } from './Collapsible';
 export type { CollapsibleProps } from './Collapsible';
