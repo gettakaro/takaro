@@ -22,7 +22,7 @@ import { ModuleService } from './ModuleService.js';
 import { EventService, EventCreateDTO, EVENT_TYPES } from './EventService.js';
 import { TakaroEventRoleCreated, TakaroEventRoleDeleted, TakaroEventRoleUpdated } from '@takaro/modules';
 import { PlayerOutputWithRolesDTO, PlayerService } from './PlayerService.js';
-import { UserOutputWithRolesDTO, UserService } from './UserService.js';
+import { UserOutputWithRolesDTO, UserService } from './User/index.js';
 import { PaginationParamsWithGameServer } from '../controllers/Rolecontroller.js';
 
 @ValidatorConstraint()

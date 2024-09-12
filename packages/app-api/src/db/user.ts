@@ -3,7 +3,7 @@ import { Model } from 'objection';
 import { PermissionOnRoleModel, ROLE_TABLE_NAME, RoleModel } from './role.js';
 import { errors, traceableClass } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
-import { UserOutputDTO, UserCreateInputDTO, UserUpdateDTO, UserOutputWithRolesDTO } from '../service/UserService.js';
+import { UserOutputDTO, UserCreateInputDTO, UserUpdateDTO, UserOutputWithRolesDTO } from '../service/User/dto.js';
 import { PaginationParams } from '../controllers/shared.js';
 
 export const USER_TABLE_NAME = 'users';
@@ -73,10 +73,12 @@ export class UserRepo extends ITakaroRepo<UserModel, UserOutputDTO, UserCreateIn
 
   async find(filters: ITakaroQuery<UserOutputDTO>) {
     const { query } = await this.getModel();
-    const result = await new QueryBuilder<UserModel, UserOutputDTO>({
+    const qry = new QueryBuilder<UserModel, UserOutputDTO>({
       ...filters,
       extend: ['roles.role.permissions.permission'],
     }).build(query);
+
+    const result = await qry;
 
     return {
       total: result.total,

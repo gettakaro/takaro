@@ -9,7 +9,7 @@ import { Type } from 'class-transformer';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 import { TakaroDTO, errors } from '@takaro/util';
-import { UserService } from '../service/UserService.js';
+import { UserService } from '../service/User/index.js';
 import { PlayerOnGameserverOutputArrayDTOAPI } from './PlayerOnGameserverController.js';
 import { ParamId, ParamIdAndRoleId } from '../lib/validators.js';
 

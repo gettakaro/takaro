@@ -1,13 +1,8 @@
 import { IsEmail, IsISO8601, IsOptional, IsString, IsUUID, Length, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
-import {
-  UserCreateInputDTO,
-  UserOutputDTO,
-  UserOutputWithRolesDTO,
-  UserService,
-  UserUpdateDTO,
-} from '../service/UserService.js';
+import { UserCreateInputDTO, UserOutputDTO, UserOutputWithRolesDTO, UserUpdateDTO } from '../service/User/dto.js';
+import { UserService } from '../service/User/index.js';
 import { AuthenticatedRequest, AuthService, LoginOutputDTO } from '../service/AuthService.js';
 import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Put, Params, Res, Param } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
@@ -105,6 +100,10 @@ class UserSearchInputAllowedFilters {
   @IsOptional()
   @IsUUID(4, { each: true })
   playerId!: string[];
+
+  @IsOptional()
+  @IsUUID(4, { each: true })
+  roleId!: string[];
 }
 
 class UserSearchInputAllowedRangeFilter extends RangeFilterCreatedAndUpdatedAt {
