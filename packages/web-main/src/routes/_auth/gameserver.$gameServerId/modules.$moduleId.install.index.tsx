@@ -3,10 +3,11 @@ import { moduleQueryOptions } from 'queries/module';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { InstallModuleForm } from './-InstallModuleForm';
 import { hasPermission } from 'hooks/useHasPermission';
+import { userMeQueryOptions } from 'queries/user';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/modules/$moduleId/install/')({
   beforeLoad: async ({ context }) => {
-    const session = await context.auth.getSession();
+    const session = await context.queryClient.ensureQueryData(userMeQueryOptions());
     if (!hasPermission(session, ['MANAGE_MODULES'])) {
       throw redirect({ to: '/forbidden' });
     }

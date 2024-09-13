@@ -8,9 +8,11 @@ on:
   push:
     branches:
       - development
+      - main
 jobs:
   mainPromotion:
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/development'
     steps:
       - name: Generate token
         id: generate_token
@@ -32,7 +34,29 @@ jobs:
           branch: main-promotion
           labels: skip-changelog
           token: ${{ steps.generate_token.outputs.token }}
-          title: Merge development into main
+          title: 🤖 Merge development into main
           body: |
             This PR merges the development branch into the main branch.
             It is created automatically by the Takaro CI bot.
+
+  updateDevelopment:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Generate token
+        id: generate_token
+        uses: tibdex/github-app-token@v2
+        with:
+          app_id: ${{ secrets.TAKARO_CI_APP_ID }}
+          private_key: ${{ secrets.TAKARO_CI_APP_PRIV_KEY }}
+      - uses: actions/checkout@v4
+        with:
+          ref: development
+          token: ${{ steps.generate_token.outputs.token }}
+      - name: Update dev
+        run: |
+          git config --global user.name 'takaro-ci-bot[bot]'
+          git config --global user.email '138661031+takaro-ci-bot[bot]@users.noreply.github.com'        
+          git fetch origin main:main
+          git rebase main
+          git push --force-with-lease origin development

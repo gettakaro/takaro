@@ -10,7 +10,6 @@ const config: Config = {
   baseUrl: '/',
   organizationName: 'gettakaro',
   projectName: 'takaro',
-
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'throw',
 

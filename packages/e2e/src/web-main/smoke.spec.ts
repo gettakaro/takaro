@@ -13,7 +13,7 @@ const items = [
   },
   { permission: [PERMISSIONS.ReadPlayers], linkName: 'Players', path: 'players' },
   { permission: [PERMISSIONS.ReadUsers], linkName: 'Users', path: 'users' },
-  { permission: [PERMISSIONS.ReadModules], linkName: 'Modules', path: 'modules' },
+  { permission: [PERMISSIONS.ReadModules], linkName: 'Module Builder', path: 'modules' },
   { permission: [PERMISSIONS.ReadVariables], linkName: 'Variables', path: 'variables' },
   { permission: [PERMISSIONS.ReadSettings], linkName: 'Settings', path: 'settings' },
   { permission: [PERMISSIONS.ReadRoles], linkName: 'Roles', path: 'roles' },

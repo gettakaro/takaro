@@ -9,3 +9,4 @@ export { IntegrationTest, logInWithPermissions } from './integrationTest.js';
 
 export * as SetupGameServerPlayers from './setups/gameServerWithPlayers.js';
 export { IModuleTestsSetupData, modulesTestSetup, chatMessageSorter } from './setups/modulesSetup.js';
+export { IShopSetup, shopSetup } from './setups/shopSetup.js';

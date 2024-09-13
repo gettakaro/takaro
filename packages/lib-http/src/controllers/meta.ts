@@ -54,7 +54,7 @@ export class Meta {
       {
         info: {
           title: `Takaro ${process.env.PACKAGE || 'API'}`,
-          version: process.env.TAKARO_VERSION || '0.0.0',
+          version: `${process.env.TAKARO_VERSION} - ${process.env.TAKARO_COMMIT} `,
           contact: {
             name: 'Takaro Team',
             email: 'support@takaro.io',
@@ -66,9 +66,9 @@ export class Meta {
           securitySchemes: {
             adminAuth: {
               description: 'Used for system administration, like creating or deleting domains',
-              type: 'http',
-              scheme: 'bearer',
-              bearerFormat: 'JWT',
+              type: 'apiKey',
+              in: 'header',
+              name: 'x-takaro-admin-token',
             },
             domainAuth: {
               description: 'Used for anything inside a domain. Players, GameServers, etc.',
@@ -153,7 +153,7 @@ export class Meta {
 
           show-method-in-nav-bar="as-colored-block"
           show-header="false"
-          allow-authentication="false"
+          allow-authentication="true"
           allow-server-selection="false"
 
           schema-style="table"

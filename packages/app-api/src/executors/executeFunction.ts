@@ -7,7 +7,7 @@ import { IHookJobData, ICommandJobData, ICronJobData, isCommandData, isHookData,
 import { executeLambda } from '@takaro/aws';
 import { config } from '../config.js';
 import { RateLimiterRedis, RateLimiterRes } from 'rate-limiter-flexible';
-import { CommandService } from '../service/CommandService.js';
+import { commandsRunningKey, CommandService } from '../service/CommandService.js';
 import { PlayerOnGameServerService } from '../service/PlayerOnGameserverService.js';
 import { EVENT_TYPES, EventCreateDTO, EventService } from '../service/EventService.js';
 import {
@@ -23,6 +23,8 @@ import {
 } from '@takaro/modules';
 import { HookService } from '../service/HookService.js';
 import { CronJobService } from '../service/CronJobService.js';
+import { GameServerService } from '../service/GameServerService.js';
+import { IMessageOptsDTO, IPlayerReferenceDTO } from '@takaro/gameserver';
 
 const rateLimiterMap: Map<string, RateLimiterRedis> = new Map();
 
@@ -88,6 +90,7 @@ export async function executeFunction(
 ) {
   const rateLimiter = await getRateLimiter(domainId);
   const token = await getJobToken(domainId);
+  const redisClient = await Redis.getClient('worker:command-lock');
 
   const client = new Client({
     auth: {
@@ -100,12 +103,7 @@ export async function executeFunction(
   const functionRes = await client.function.functionControllerGetOne(functionId);
   const eventService = new EventService(domainId);
 
-  const dataForEvent = { ...data };
-  delete dataForEvent.token;
-  delete dataForEvent.url;
-  const meta: Partial<TakaroEventCommandExecuted | TakaroEventHookExecuted | TakaroEventCronjobExecuted> = {
-    data: dataForEvent,
-  };
+  const meta: Partial<TakaroEventCommandExecuted | TakaroEventHookExecuted | TakaroEventCronjobExecuted> = {};
 
   const eventData = new EventCreateDTO({
     moduleId: data.module.moduleId,
@@ -114,6 +112,7 @@ export async function executeFunction(
   });
 
   if (isCommandData(data)) {
+    const gameserverService = new GameServerService(domainId);
     const commandService = new CommandService(domainId);
     const command = await commandService.findOne(data.itemId);
     if (!command) throw new errors.InternalServerError();
@@ -128,18 +127,84 @@ export async function executeFunction(
 
     if (!command) throw new errors.InternalServerError();
     if ('commands' in data.module.systemConfig) {
+      // Handle cost
       const commandsConfig = data.module.systemConfig?.commands as Record<string, any>;
       const cost = commandsConfig[command?.name]?.cost;
       if (cost) {
         if (data.pog.currency < cost) {
-          await client.gameserver.gameServerControllerSendMessage(data.gameServerId, {
-            message: 'You do not have enough currency to execute this command.',
-            opts: {
-              recipient: {
+          await gameserverService.sendMessage(
+            data.gameServerId,
+            'You do not have enough currency to execute this command.',
+            new IMessageOptsDTO({
+              recipient: new IPlayerReferenceDTO({
                 gameId: data.pog.gameId,
-              },
+              }),
+            }),
+          );
+          return;
+        }
+      }
+
+      // Handle cooldown
+      const cooldown = commandsConfig[command?.name]?.cooldown;
+      const redisRes = (await redisClient.get(commandsRunningKey(data))) ?? '0';
+      await redisClient.decr(commandsRunningKey(data));
+      const commandsRunning = parseInt(redisRes, 10);
+
+      if (cooldown) {
+        if (commandsRunning > 1) {
+          log.warn(
+            `Player ${data.player.id} tried to execute command ${data.itemId} but the command is already running ${commandsRunning} times`,
+          );
+
+          await gameserverService.sendMessage(
+            data.gameServerId,
+            'You can only execute one command at a time. Please wait for the previous command to finish.',
+            new IMessageOptsDTO({
+              recipient: new IPlayerReferenceDTO({
+                gameId: data.pog.gameId,
+              }),
+            }),
+          );
+
+          return;
+        }
+
+        const lastExecution = await eventService.metadataSearch(
+          {
+            filters: {
+              playerId: [data.player.id],
+              gameserverId: [data.gameServerId],
+              eventName: [EVENT_TYPES.COMMAND_EXECUTED],
             },
-          });
+            greaterThan: {
+              createdAt: new Date(Date.now() - cooldown * 1000),
+            },
+          },
+          [
+            {
+              logicalOperator: 'AND',
+              filters: [{ field: 'command.id', operator: '=', value: data.itemId }],
+            },
+          ],
+        );
+
+        if (lastExecution.results.length) {
+          log.warn(
+            `Player ${data.player.id} tried to execute command ${data.itemId} but the cooldown hasn't passed yet`,
+          );
+
+          const lastExecutionDate = new Date(lastExecution.results[0].createdAt);
+          const timeWhenCanExecute = new Date(lastExecutionDate.getTime() + cooldown * 1000);
+
+          const gameserverService = new GameServerService(domainId);
+          await gameserverService.sendMessage(
+            data.gameServerId,
+            `This command can only be executed once every ${cooldown} seconds. You can execute it again at ${timeWhenCanExecute.toISOString()}`,
+            new IMessageOptsDTO({
+              recipient: new IPlayerReferenceDTO({ gameId: data.pog.gameId }),
+            }),
+          );
           return;
         }
       }
@@ -177,15 +242,34 @@ export async function executeFunction(
     switch (config.get('functions.executionMode')) {
       case EXECUTION_MODE.LOCAL:
         result = await executeFunctionLocal(functionRes.data.data.code, data, token);
-        meta.result = new TakaroEventFunctionResult(result);
         break;
       case EXECUTION_MODE.LAMBDA:
         result = await executeLambda({ fn: functionRes.data.data.code, data, token, domainId });
-        meta.result = new TakaroEventFunctionResult(result);
         break;
       default:
         throw new errors.ConfigError(`Invalid execution mode: ${config.get('functions.executionMode')}`);
     }
+
+    if (!result.logs) result.logs = [];
+    const cleanLogs = result.logs.map((rawLog) => {
+      let cleanMsg = rawLog.msg;
+
+      if (typeof cleanMsg !== 'string') {
+        cleanMsg = JSON.stringify(cleanMsg);
+      }
+
+      if (cleanMsg.length > 1000) {
+        cleanMsg = cleanMsg.substring(0, 1000) + '...';
+      }
+
+      if (!cleanMsg.length) {
+        cleanMsg = 'Empty log';
+      }
+
+      return new TakaroEventFunctionLog({ ...rawLog, msg: cleanMsg });
+    });
+
+    meta.result = new TakaroEventFunctionResult({ ...result, logs: cleanLogs });
 
     if (isCommandData(data) && !result.success) {
       if (
@@ -234,15 +318,6 @@ export async function executeFunction(
         }
       }
     }
-
-    if (!result.logs) result.logs = [];
-    if (!meta.result.logs) meta.result.logs = [];
-    // Ensure all logs are TakaroEventFunctionLog
-    meta.result.logs = await Promise.all(
-      result.logs.map(async (log) => {
-        return new TakaroEventFunctionLog(log);
-      }),
-    );
 
     await eventService.create(new EventCreateDTO({ ...eventData, meta }));
   } catch (err: any) {

@@ -19,6 +19,8 @@ import { RangeFilterCreatedAndUpdatedAt } from './shared.js';
 import { DomainOutputDTO, DomainService } from '../service/DomainService.js';
 import { TakaroDTO } from '@takaro/util';
 import { config } from '../config.js';
+import { PlayerOutputWithRolesDTO, PlayerService } from '../service/PlayerService.js';
+import { PlayerOnGameserverOutputDTO } from '../service/PlayerOnGameserverService.js';
 
 export class GetUserDTO {
   @Length(3, 50)
@@ -51,7 +53,7 @@ class LoginOutputDTOAPI extends APIOutput<LoginOutputDTO> {
   declare data: LoginOutputDTO;
 }
 
-class MeOutoutDTO extends TakaroDTO<MeOutoutDTO> {
+class MeOutputDTO extends TakaroDTO<MeOutputDTO> {
   @Type(() => UserOutputWithRolesDTO)
   @ValidateNested()
   user: UserOutputWithRolesDTO;
@@ -60,12 +62,19 @@ class MeOutoutDTO extends TakaroDTO<MeOutoutDTO> {
   domains: DomainOutputDTO[];
   @IsString()
   domain: string;
+  @Type(() => PlayerOutputWithRolesDTO)
+  @ValidateNested()
+  @IsOptional()
+  player?: PlayerOutputWithRolesDTO;
+  @Type(() => PlayerOnGameserverOutputDTO)
+  @ValidateNested({ each: true })
+  pogs: PlayerOnGameserverOutputDTO[];
 }
 
-class MeOutoutDTOAPI extends APIOutput<MeOutoutDTO> {
-  @Type(() => MeOutoutDTO)
+class MeOutoutDTOAPI extends APIOutput<MeOutputDTO> {
+  @Type(() => MeOutputDTO)
   @ValidateNested()
-  declare data: MeOutoutDTO;
+  declare data: MeOutputDTO;
 }
 
 class UserOutputDTOAPI extends APIOutput<UserOutputWithRolesDTO> {
@@ -158,7 +167,16 @@ export class UserController {
     const user = await new UserService(req.domainId).findOne(req.user.id);
     const domainService = new DomainService();
     const domains = await domainService.resolveDomainByIdpId(user.idpId);
-    return apiResponse({ user, domains, domain: req.domainId });
+    const response = new MeOutputDTO({ user, domains, domain: req.domainId, pogs: [] });
+
+    if (user.playerId) {
+      const playerService = await new PlayerService(req.domainId);
+      const { player, pogs } = await playerService.resolveFromId(user.playerId);
+      response.player = player;
+      response.pogs = pogs;
+    }
+
+    return apiResponse(response);
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_USERS], false))

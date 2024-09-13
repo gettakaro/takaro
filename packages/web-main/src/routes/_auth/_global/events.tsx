@@ -10,13 +10,14 @@ import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { useMemo, useState } from 'react';
 import { EventFilter, EventFilterInputs, eventFilterSchema } from 'components/events/EventFilter';
 import { PERMISSIONS } from '@takaro/apiclient';
+import { userMeQueryOptions } from 'queries/user';
 
 Settings.throwOnInvalid = true;
 
 export const Route = createFileRoute('/_auth/_global/events')({
   validateSearch: eventFilterSchema,
   beforeLoad: async ({ context }) => {
-    const session = await context.auth.getSession();
+    const session = await context.queryClient.ensureQueryData(userMeQueryOptions());
     if (
       !hasPermission(session, [
         PERMISSIONS.ReadEvents,

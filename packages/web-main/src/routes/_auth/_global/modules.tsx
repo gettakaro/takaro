@@ -7,6 +7,7 @@ import { useNavigate, Outlet, redirect, createFileRoute } from '@tanstack/react-
 import { hasPermission } from 'hooks/useHasPermission';
 import { modulesInfiniteQueryOptions } from 'queries/module';
 import { useInfiniteQuery } from '@tanstack/react-query';
+import { userMeQueryOptions } from 'queries/user';
 
 const SubHeader = styled.h2<{ withMargin?: boolean }>`
   font-size: ${({ theme }) => theme.fontSize.mediumLarge};
@@ -19,7 +20,7 @@ const SubText = styled.p`
 
 export const Route = createFileRoute('/_auth/_global/modules')({
   beforeLoad: async ({ context }) => {
-    const session = await context.auth.getSession();
+    const session = await context.queryClient.ensureQueryData(userMeQueryOptions());
     if (!hasPermission(session, [PERMISSIONS.ReadModules])) {
       throw redirect({ to: '/forbidden' });
     }

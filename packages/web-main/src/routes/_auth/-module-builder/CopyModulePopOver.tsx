@@ -59,7 +59,7 @@ export const CopyModulePopOver: FC<CopyModulePopOverProps> = ({ moduleId }) => {
             {/* NOTE: We cannot rely on router navigation since
               the router is not available in the context of the snackbar.
             */}
-            <a href={`/studio/${moduleId}`}>open new module</a>
+            <a href={`/module-builder/${moduleId}`}>open new module</a>
           </p>
         </CustomContent>
       ),

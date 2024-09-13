@@ -3,7 +3,7 @@ import { getApiClient } from 'util/getApiClient';
 import {
   APIOutput,
   LinkPlayerUnauthedInputDTO,
-  MeOutoutDTO,
+  MeOutputDTO,
   UserOutputArrayDTOAPI,
   UserOutputWithRolesDTO,
   UserSearchInputDTO,
@@ -37,7 +37,7 @@ export const userQueryOptions = (userId: string) =>
   });
 
 export const userMeQueryOptions = () =>
-  queryOptions<MeOutoutDTO, AxiosError<MeOutoutDTO>>({
+  queryOptions<MeOutputDTO, AxiosError<MeOutputDTO>>({
     queryKey: userKeys.me(),
     queryFn: async () => (await getApiClient().user.userControllerMe()).data.data,
   });

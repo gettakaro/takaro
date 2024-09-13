@@ -1,4 +1,5 @@
 import {
+  IsBoolean,
   IsEnum,
   IsISO8601,
   IsJSON,
@@ -86,6 +87,14 @@ class GameServerSearchInputAllowedFilters {
   @IsOptional()
   @IsEnum(GAME_SERVER_TYPE, { each: true })
   type!: GAME_SERVER_TYPE[];
+
+  @IsOptional()
+  @IsBoolean({ each: true })
+  reachable!: boolean[];
+
+  @IsOptional()
+  @IsBoolean({ each: true })
+  enabled!: boolean[];
 }
 
 class GameServerSearchInputDTO extends ITakaroQuery<GameServerOutputDTO> {

@@ -11,9 +11,6 @@ global.afterEach = () => {};
 globalThis.afterEach = () => {};
 global.before = () => {};
 
-const isPR = process.env.GITHUB_HEAD_REF; // This is set for PRs
-const isMainBranch = process.env.GITHUB_REF === 'refs/heads/main'; // Adjust the branch name if necessary
-
 const projects = [
   {
     name: 'chromium',
@@ -21,28 +18,15 @@ const projects = [
   },
 ];
 
-// Add Firefox only if not a PR or if it's the main branch
-if (!isPR || isMainBranch) {
-  projects.push({
-    name: 'firefox',
-    use: { ...devices['Desktop Firefox'] },
-  });
-}
-
 export default defineConfig({
   // Look for test files in the "tests" directory, relative to this configuration file.
   testDir: './src',
-
-  // Each test is given 60 seconds. (default 30 seconds)
   timeout: 90000,
   expect: {
-    // Each assertion is given 10 seconds. (default 5 seconds)
     timeout: 15000,
   },
 
-  // Run all tests in parallel.
   fullyParallel: true,
-
   // Fail the build on CI if you accidentally left test.only in the source code.
   forbidOnly: !!process.env.CI,
 

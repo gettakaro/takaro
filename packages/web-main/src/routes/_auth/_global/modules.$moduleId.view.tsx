@@ -3,10 +3,11 @@ import { ModuleForm } from './-modules/ModuleForm';
 import { DrawerSkeleton } from '@takaro/lib-components';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
+import { userMeQueryOptions } from 'queries/user';
 
 export const Route = createFileRoute('/_auth/_global/modules/$moduleId/view')({
   beforeLoad: async ({ context }) => {
-    const session = await context.auth.getSession();
+    const session = await context.queryClient.ensureQueryData(userMeQueryOptions());
     if (!hasPermission(session, ['READ_MODULES'])) {
       throw redirect({ to: '/forbidden' });
     }
@@ -18,5 +19,5 @@ export const Route = createFileRoute('/_auth/_global/modules/$moduleId/view')({
 
 function Component() {
   const mod = Route.useLoaderData();
-  return <ModuleForm mod={mod} error={null} onSubmit={() => {}} />;
+  return <ModuleForm mod={mod} error={null} />;
 }

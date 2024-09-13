@@ -42,7 +42,7 @@ export interface ModuleFormSubmitProps {
 interface ModuleFormProps {
   mod?: ModuleOutputDTO;
   isLoading?: boolean;
-  onSubmit: (data: ModuleFormSubmitProps) => void;
+  onSubmit?: (data: ModuleFormSubmitProps) => void;
   error: string | string[] | null;
 }
 
@@ -50,7 +50,7 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, onSubmit, isLoading = fal
   const [open, setOpen] = useState(true);
   const navigate = useNavigate();
   const theme = useTheme();
-  const readOnly = !onSubmit;
+  const readOnly = onSubmit ? false : true;
 
   useEffect(() => {
     if (!open) {
@@ -98,7 +98,7 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, onSubmit, isLoading = fal
   const submitHandler: SubmitHandler<IFormInputs> = ({ configFields, name, description, permissions }) => {
     const schema = inputsToSchema(configFields);
     const uiSchema = inputsToUiSchema(configFields);
-    onSubmit({
+    onSubmit!({
       name,
       description,
       permissions,

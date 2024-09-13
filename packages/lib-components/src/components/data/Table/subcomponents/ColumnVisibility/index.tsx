@@ -18,7 +18,16 @@ export function ColumnVisibility<DataType extends object>({
   openColumnVisibilityTooltip,
   setHasShownColumnVisibilityTooltip,
 }: ColumnVisibilityProps<DataType>) {
-  const viableColumns = table.getAllLeafColumns().filter((column) => column.getCanHide() === true);
+  const viableColumns = table
+    .getAllLeafColumns()
+    .filter((column) => column.getCanHide() === true)
+    .filter((column) => {
+      if (column.columnDef.meta?.includeColumn === false) {
+        return false;
+      }
+      return true;
+    });
+
   const hiddenColumns = viableColumns.filter((column) => column.getIsVisible() === false);
 
   return (

@@ -34,6 +34,7 @@ import { Player } from 'components/Player';
 import { useQuery } from '@tanstack/react-query';
 import { getApiClient } from 'util/getApiClient';
 import { PlayerStats } from './-players/playerStats';
+import { userMeQueryOptions } from 'queries/user';
 
 export const StyledDialogBody = styled(Dialog.Body)`
   h2 {
@@ -42,7 +43,7 @@ export const StyledDialogBody = styled(Dialog.Body)`
 `;
 export const Route = createFileRoute('/_auth/_global/players')({
   beforeLoad: async ({ context }) => {
-    const session = await context.auth.getSession();
+    const session = await context.queryClient.ensureQueryData(userMeQueryOptions());
     if (!hasPermission(session, ['READ_PLAYERS'])) {
       throw redirect({ to: '/forbidden' });
     }
@@ -107,7 +108,7 @@ function Component() {
       cell: (info) => <CopyId placeholder="EOS ID" id={info.getValue()} />,
       enableColumnFilter: true,
       enableSorting: true,
-      meta: { hiddenColumn: true },
+      meta: { hideColumn: true },
     }),
     columnHelper.accessor('xboxLiveId', {
       header: 'Xbox ID',
@@ -115,7 +116,7 @@ function Component() {
       cell: (info) => <CopyId placeholder="Xbox ID" id={info.getValue()} />,
       enableColumnFilter: true,
       enableSorting: true,
-      meta: { hiddenColumn: true },
+      meta: { hideColumn: true },
     }),
 
     columnHelper.accessor('steamAccountCreated', {
@@ -123,7 +124,7 @@ function Component() {
       id: 'steamAccountCreated',
       cell: (info) => (info.getValue() ? <DateFormatter ISODate={info.getValue()!} /> : ''),
       enableSorting: true,
-      meta: { hiddenColumn: true, dataType: 'datetime' },
+      meta: { hideColumn: true, dataType: 'datetime' },
     }),
     columnHelper.accessor('steamCommunityBanned', {
       header: 'Community Banned',
@@ -170,7 +171,7 @@ function Component() {
     columnHelper.accessor('updatedAt', {
       header: 'Updated at',
       id: 'updatedAt',
-      meta: { dataType: 'datetime', hiddenColumn: true },
+      meta: { dataType: 'datetime', hideColumn: true },
       cell: (info) => <DateFormatter ISODate={info.getValue()} />,
       enableSorting: true,
     }),
@@ -228,8 +229,8 @@ interface FormInputs {
 const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
   const [openBanDialog, setOpenBanDialog] = useState<boolean>(false);
   const [openUnbanDialog, setOpenUnbanDialog] = useState<boolean>(false);
-  const { hasPermission: hasManageRoles } = useHasPermission([PERMISSIONS.ManageRoles]);
-  const { hasPermission: hasManagePlayers } = useHasPermission([PERMISSIONS.ManagePlayers]);
+  const hasManageRoles = useHasPermission([PERMISSIONS.ManageRoles]);
+  const hasManagePlayers = useHasPermission([PERMISSIONS.ManagePlayers]);
 
   const { enqueueSnackbar } = useSnackbar();
 

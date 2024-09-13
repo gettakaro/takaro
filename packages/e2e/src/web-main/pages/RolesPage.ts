@@ -30,7 +30,7 @@ export class RolesPage extends BasePage {
     for (const permission of permissions) {
       await this.togglePermission(permission);
     }
-    await this.page.getByRole('button', { name: 'Save changes' }).click();
+    await this.page.getByRole('button', { name: 'Create role' }).click();
   }
 
   async delete(name: string) {
@@ -61,7 +61,7 @@ export class RolesPage extends BasePage {
     for (const permission of permissions) {
       await this.togglePermission(permission);
     }
-    await this.page.getByRole('button', { name: 'Save changes' }).click();
+    await this.page.getByRole('button', { name: 'Update role' }).click();
   }
 
   private async togglePermission(permission: string) {

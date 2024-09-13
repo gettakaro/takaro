@@ -9,7 +9,7 @@ import {
   styled,
 } from '@takaro/lib-components';
 import { rolesQueryOptions } from 'queries/role';
-import { useUserAssignRole } from 'queries/user';
+import { userMeQueryOptions, useUserAssignRole } from 'queries/user';
 import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -37,7 +37,7 @@ type IFormInputs = z.infer<typeof roleAssignValidationSchema>;
 
 export const Route = createFileRoute('/_auth/_global/user/$userId/role/assign')({
   beforeLoad: async ({ context }) => {
-    const session = await context.auth.getSession();
+    const session = await context.queryClient.ensureQueryData(userMeQueryOptions());
     if (!hasPermission(session, ['READ_ROLES', 'MANAGE_ROLES', 'READ_USERS', 'MANAGE_USERS'])) {
       throw redirect({ to: '/forbidden' });
     }

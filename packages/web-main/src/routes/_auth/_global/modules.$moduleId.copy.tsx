@@ -5,10 +5,11 @@ import { moduleQueryOptions } from 'queries/module';
 import { useSnackbar } from 'notistack';
 import { useState } from 'react';
 import { CopyModuleForm } from 'components/CopyModuleForm';
+import { userMeQueryOptions } from 'queries/user';
 
 export const Route = createFileRoute('/_auth/_global/modules/$moduleId/copy')({
   beforeLoad: async ({ context }) => {
-    const session = await context.auth.getSession();
+    const session = await context.queryClient.ensureQueryData(userMeQueryOptions());
     if (!hasPermission(session, ['MANAGE_MODULES'])) {
       throw redirect({ to: '/forbidden' });
     }

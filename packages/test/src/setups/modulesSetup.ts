@@ -1,5 +1,5 @@
 import { ModuleOutputDTO, GameServerOutputDTO, RoleOutputDTO, PlayerOutputDTO } from '@takaro/apiclient';
-import { EventTypes, HookEvents } from '@takaro/modules';
+import type { EventTypes } from '@takaro/modules';
 import { EventsAwaiter, IntegrationTest, integrationConfig } from '../main.js';
 
 export interface IDetectedEvent {
@@ -40,7 +40,7 @@ export const modulesTestSetup = async function (
   const eventAwaiter = new EventsAwaiter();
   await eventAwaiter.connect(this.client);
   // 10 players, 10 pogs should be created
-  const playerCreatedEvents = eventAwaiter.waitForEvents(HookEvents.PLAYER_CREATED, 20);
+  const playerCreatedEvents = eventAwaiter.waitForEvents('player-created', 20);
 
   const gameServer1 = await this.client.gameserver.gameServerControllerCreate({
     name: 'Gameserver 1',

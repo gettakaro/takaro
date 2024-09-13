@@ -8,7 +8,7 @@ import { Header } from './Header';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { EventFeedWidget } from 'components/events/EventFeedWidget';
 import { ErrorBoundary } from 'components/ErrorBoundary';
-import { FileType, useStudioContext } from './useStudioStore';
+import { FileType, useModuleBuilderContext } from './useModuleBuilderStore';
 
 const EventsWrapper = styled.div`
   padding-right: ${({ theme }) => theme.spacing[1]};
@@ -39,12 +39,12 @@ const EditorPlaceholder = styled.div`
   justify-content: center;
 `;
 
-export const StudioInner: FC = () => {
-  useDocumentTitle('Studio');
-  const readOnly = useStudioContext((s) => s.readOnly);
-  const activeFilePath = useStudioContext((s) => s.activeFile);
-  const files = useStudioContext((s) => s.fileMap);
-  const moduleId = useStudioContext((s) => s.moduleId);
+export const ModuleBuilderInner: FC = () => {
+  useDocumentTitle('Module Builder');
+  const readOnly = useModuleBuilderContext((s) => s.readOnly);
+  const activeFilePath = useModuleBuilderContext((s) => s.activeFile);
+  const files = useModuleBuilderContext((s) => s.fileMap);
+  const moduleId = useModuleBuilderContext((s) => s.moduleId);
   const activeFile = activeFilePath ? files[activeFilePath] : null;
 
   function getConfigComponent(type: FileType, itemId: string) {

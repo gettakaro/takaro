@@ -130,13 +130,20 @@ jobs:
       - name: Commit and push if changed
         if: github.ref == 'refs/heads/development'
         run: |
+          # Check if there are any changes
           if git diff --quiet; then
             echo "No changes to commit."
           else
-            git config --global user.name 'takaro-ci-bot[bot]'
-            git config --global user.email '138661031+takaro-ci-bot[bot]@users.noreply.github.com'
-            git commit -am "chore: generate api client"
-            git push
+            # Check if the last commit was made by the CI bot
+            LAST_AUTHOR=$(git log -1 --pretty=format:'%an')
+            if [ "$LAST_AUTHOR" = "takaro-ci-bot[bot]" ]; then
+              echo "Last commit was made by the CI bot. Skipping commit."
+            else
+              git config --global user.name 'takaro-ci-bot[bot]'
+              git config --global user.email '138661031+takaro-ci-bot[bot]@users.noreply.github.com'
+              git commit -am "chore: generate api client"
+              git push
+            fi
           fi
 
       - uses: actions/upload-artifact@v4
@@ -145,26 +152,26 @@ jobs:
           name: integrationTests
           path: reports
           retention-days: 30
-#  e2e:
-#    needs: [docker]
-#    timeout-minutes: 60
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v4
-#      - uses: actions/setup-node@v4
-#        with:
-#          node-version: 18.18
-#      - run: ./scripts/dev-init.sh
-#      - name: Install Playwright Browsers
-#        run: npx playwright install --with-deps
-#      - name: Integration tests e2e
-#        run: npx zx scripts/integration-tests.mjs
-#        env:
-#          DOCKER_TAG: ${{ needs.docker.outputs.docker_tag }}
-#          IS_E2E: true
-#      - uses: actions/upload-artifact@v3
-#        if: always()
-#        with:
-#          name: e2e
-#          path: reports
-#          retention-days: 30
+  e2e:
+    needs: [docker]
+    timeout-minutes: 60
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: ./scripts/dev-init.sh
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+      - name: Integration tests e2e
+        run: npx zx scripts/integration-tests.mjs
+        env:
+          DOCKER_TAG: ${{ needs.docker.outputs.docker_tag }}
+          IS_E2E: true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e
+          path: reports
+          retention-days: 30

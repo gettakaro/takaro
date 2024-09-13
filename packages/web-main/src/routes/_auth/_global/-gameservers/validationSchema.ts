@@ -14,6 +14,7 @@ const baseShape = z.object({
     })
     .max(21)
     .min(1, { message: 'Server name cannot be empty' }),
+  enabled: z.boolean(),
 });
 
 export const validationSchema = baseShape.and(

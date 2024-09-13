@@ -44,9 +44,7 @@ export const getAdminClient = () => {
   return new AdminClient({
     url: integrationConfig.get('host'),
     auth: {
-      clientId: integrationConfig.get('auth.adminClientId'),
       clientSecret: integrationConfig.get('auth.adminClientSecret'),
     },
-    OAuth2URL: integrationConfig.get('auth.OAuth2URL'),
   });
 };

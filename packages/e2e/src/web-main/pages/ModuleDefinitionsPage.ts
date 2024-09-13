@@ -19,12 +19,12 @@ export class ModuleDefinitionsPage extends BasePage {
   }
 
   async open(name: string) {
-    const [studioPage] = await Promise.all([
+    const [moduleBuilderPage] = await Promise.all([
       this.page.context().waitForEvent('page'),
       await this.openSettings(name),
-      await this.page.getByRole('menuitem', { name: 'Open in studio' }).click(),
+      await this.page.getByRole('menuitem', { name: 'Open in Module Builder' }).click(),
     ]);
-    return studioPage;
+    return moduleBuilderPage;
   }
 
   async edit({

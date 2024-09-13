@@ -23,7 +23,6 @@ import {
   AiOutlineClose as CancelOrderIcon,
   AiOutlineCheck as ClaimOrderIcon,
 } from 'react-icons/ai';
-import { useSession } from 'hooks/useSession';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
 interface ShopOrderTableView {
@@ -31,7 +30,6 @@ interface ShopOrderTableView {
 }
 
 export const ShopOrderTableView: FC<ShopOrderTableView> = ({ gameServerId }) => {
-  const { session } = useSession();
   useDocumentTitle('Orders');
 
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<ShopOrderOutputDTO>({ pageSize: 25 });
@@ -44,7 +42,6 @@ export const ShopOrderTableView: FC<ShopOrderTableView> = ({ gameServerId }) => 
         ? ShopOrderSearchInputDTOSortDirectionEnum.Desc
         : ShopOrderSearchInputDTOSortDirectionEnum.Asc,
       filters: {
-        userId: [session.id],
         listingId: columnFilters.columnFiltersState.find((filter) => filter.id === 'listingId')?.value,
         status: columnFilters.columnFiltersState.find((filter) => filter.id === 'status')?.value,
       },

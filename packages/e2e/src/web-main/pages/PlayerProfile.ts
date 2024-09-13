@@ -26,7 +26,7 @@ export class PlayerProfilePage extends BasePage {
     await this.page.locator('#roleId').click();
 
     await this.page.getByRole('option', { name: roleName }).click();
-    await this.page.getByRole('button', { name: 'Save changes' }).click();
+    await this.page.getByRole('button', { name: 'Assign role' }).click();
   }
   async unassignRole({ roleName }: { roleName: string }) {
     await this.page.getByRole('row', { name: roleName }).getByRole('button', { name: 'player-actions' }).click();

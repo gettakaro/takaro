@@ -2,10 +2,11 @@ import { Link, Outlet, createFileRoute, redirect } from '@tanstack/react-router'
 import { styled, HorizontalNav } from '@takaro/lib-components';
 import { ErrorBoundary } from 'components/ErrorBoundary';
 import { hasPermission } from 'hooks/useHasPermission';
+import { userMeQueryOptions } from 'queries/user';
 
 export const Route = createFileRoute('/_auth/_global/settings')({
   beforeLoad: async ({ context }) => {
-    const session = await context.auth.getSession();
+    const session = await context.queryClient.ensureQueryData(userMeQueryOptions());
     if (!hasPermission(session, ['READ_SETTINGS'])) {
       throw redirect({ to: '/forbidden' });
     }

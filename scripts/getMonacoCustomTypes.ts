@@ -77,7 +77,16 @@ async function main() {
     packages: ['axios', '@takaro/helpers', '@takaro/queues'],
   });
 
-  const webMainEditorPath = path.join(__dirname, '..', 'packages', 'web-main', 'src', 'routes', '-studio', 'Editor');
+  const webMainEditorPath = path.join(
+    __dirname,
+    '..',
+    'packages',
+    'web-main',
+    'src',
+    'routes',
+    '-module-builder',
+    'Editor',
+  );
 
   await fs.ensureDir(webMainEditorPath);
   await fs.writeJSON(path.join(webMainEditorPath, 'monacoCustomTypes.json'), dts);
