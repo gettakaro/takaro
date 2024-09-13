@@ -105,6 +105,31 @@ const tests = [
   new IntegrationTest<IStandardSetupData>({
     group,
     snapshot: false,
+    name: 'Commands are case insensitive',
+    setup,
+    test: async function () {
+      const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
+      sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves({
+        x: 0,
+        y: 0,
+        z: 0,
+      });
+
+      await this.setupData.service.handleChatMessage(
+        new EventChatMessage({
+          msg: '/TeSt',
+          channel: ChatChannel.GLOBAL,
+          player: await getMockPlayer(),
+        }),
+        this.setupData.gameserver.id,
+      );
+
+      expect(addStub).to.have.been.calledOnce;
+    },
+  }),
+  new IntegrationTest<IStandardSetupData>({
+    group,
+    snapshot: false,
     name: 'Doesnt trigger when message doesnt start with prefix',
     setup,
     test: async function () {
