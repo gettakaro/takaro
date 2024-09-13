@@ -153,14 +153,12 @@ export class CommandRepo extends ITakaroRepo<CommandModel, CommandOutputDTO, Com
         .innerJoin('gameservers', 'moduleAssignments.gameserverId', 'gameservers.id')
         .where('gameservers.id', gameServerId)
         .andWhere(function () {
-          // Adjust the trigger comparison to be case-insensitive
           this.whereRaw('LOWER("commands"."trigger") = ?', [lowerCaseInput]).orWhereExists(function () {
             this.select(knex.raw('1'))
               .from(
                 knex.raw('jsonb_each("moduleAssignments"."systemConfig" -> \'commands\') as cmds(command, details)'),
               )
               .whereRaw('cmds.command = "commands"."name"')
-              // Adjust the aliases comparison to be case-insensitive
               .andWhereRaw(
                 `EXISTS (
                     SELECT 1 FROM jsonb_array_elements_text(cmds.details -> 'aliases') AS alias
