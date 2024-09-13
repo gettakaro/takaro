@@ -80,7 +80,7 @@ export class UserRepo extends ITakaroRepo<UserModel, UserOutputDTO, UserCreateIn
     }).build(query);
 
     if (filters.filters?.roleId) {
-      query
+      qry
         .withGraphFetched('roles.role')
         .whereExists(
           RoleOnUserModel.query().where('userId', UserModel.ref('id')).whereIn('roleId', filters.filters.roleId),

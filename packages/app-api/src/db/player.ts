@@ -175,7 +175,7 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
     }).build(query);
 
     if (filters.filters?.roleId) {
-      query
+      qry
         .join(ROLE_ON_PLAYER_TABLE_NAME, `${ROLE_ON_PLAYER_TABLE_NAME}.playerId`, `${PLAYER_TABLE_NAME}.id`)
         .whereIn(`${ROLE_ON_PLAYER_TABLE_NAME}.roleId`, filters.filters.roleId);
     }

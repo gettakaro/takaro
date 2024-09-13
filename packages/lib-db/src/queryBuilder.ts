@@ -7,7 +7,7 @@ import {
   Expression,
   PrimitiveValue,
 } from 'objection';
-import { getKnex } from './knex.js';
+import { getKnex, isDbAvailable } from './knex.js';
 
 export class ITakaroQuery<T> {
   @IsOptional()
@@ -60,17 +60,19 @@ export enum SortDirection {
 const modelColumns = new Map<string, string[]>();
 
 async function populateModelColumns() {
-  const knex = await getKnex();
-  // Find all tables
-  const tables = await knex.raw(
-    // eslint-disable-next-line
-    "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE'",
-  );
-  // For each table, store the columns
-  for (const table of tables.rows) {
-    const tableName = table.table_name;
-    const columns = await knex(tableName).columnInfo();
-    modelColumns.set(tableName, Object.keys(columns));
+  if (await isDbAvailable()) {
+    const knex = await getKnex();
+    // Find all tables
+    const tables = await knex.raw(
+      // eslint-disable-next-line
+      "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE'",
+    );
+    // For each table, store the columns
+    for (const table of tables.rows) {
+      const tableName = table.table_name;
+      const columns = await knex(tableName).columnInfo();
+      modelColumns.set(tableName, Object.keys(columns));
+    }
   }
 }
 
