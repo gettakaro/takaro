@@ -1,5 +1,5 @@
 import { TakaroService } from '../Base.js';
-import { ITakaroQuery, Redis } from '@takaro/db';
+import { Redis } from '@takaro/db';
 import { send } from '@takaro/email';
 
 import { UserModel, UserRepo } from '../../db/user.js';
@@ -10,6 +10,7 @@ import { EVENT_TYPES, EventCreateDTO, EventService } from '../EventService.js';
 import { HookEvents, TakaroEventPlayerLinked, TakaroEventRoleAssigned, TakaroEventRoleRemoved } from '@takaro/modules';
 import { AuthenticatedRequest } from '../AuthService.js';
 import { UserOutputDTO, UserCreateInputDTO, UserUpdateDTO, UserOutputWithRolesDTO, UserUpdateAuthDTO } from './dto.js';
+import { UserSearchInputDTO } from '../../controllers/UserController.js';
 
 export * from './dto.js';
 
@@ -52,7 +53,7 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
     return user;
   }
 
-  async find(filters: ITakaroQuery<UserOutputDTO>) {
+  async find(filters: Partial<UserSearchInputDTO>) {
     const result = await this.repo.find(filters);
     const extendedWithOry = {
       ...result,

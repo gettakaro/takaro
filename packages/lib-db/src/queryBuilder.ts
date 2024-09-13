@@ -7,16 +7,17 @@ import {
   Expression,
   PrimitiveValue,
 } from 'objection';
+import { getKnex } from './knex.js';
 
 export class ITakaroQuery<T> {
   @IsOptional()
   filters?: {
-    [key in keyof T]?: unknown[] | unknown;
+    [key: string]: unknown[] | string[] | boolean | null | undefined;
   };
 
   @IsOptional()
   search?: {
-    [key in keyof T]?: unknown[] | unknown;
+    [key: string]: unknown[] | string[] | boolean | null | undefined;
   };
 
   @IsOptional()
@@ -39,7 +40,7 @@ export class ITakaroQuery<T> {
 
   @IsOptional()
   @IsString()
-  sortBy?: Extract<keyof T, string>;
+  sortBy?: string;
 
   @IsOptional()
   @IsString()
@@ -56,16 +57,70 @@ export enum SortDirection {
   desc = 'desc',
 }
 
-export class QueryBuilder<Model extends ObjectionModel, OutputDTO> {
-  constructor(private readonly query: ITakaroQuery<OutputDTO> = new ITakaroQuery()) {}
+const modelColumns = new Map<string, string[]>();
 
-  build(query: ObjectionQueryBuilder<Model, Model[]>): ObjectionQueryBuilder<Model, Page<Model>> {
-    const tableName = query.modelClass().tableName;
+async function populateModelColumns() {
+  const knex = await getKnex();
+  // Find all tables
+  const tables = await knex.raw(
+    // eslint-disable-next-line
+    "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE'",
+  );
+  // For each table, store the columns
+  for (const table of tables.rows) {
+    const tableName = table.table_name;
+    const columns = await knex(tableName).columnInfo();
+    modelColumns.set(tableName, Object.keys(columns));
+  }
+}
+
+await populateModelColumns();
+
+export class QueryBuilder<Model extends ObjectionModel, OutputDTO> {
+  private query: ITakaroQuery<OutputDTO>;
+  constructor(rawQuery: ITakaroQuery<OutputDTO> = new ITakaroQuery()) {
+    this.query = JSON.parse(JSON.stringify(rawQuery));
+  }
+
+  /**
+   * Our custom query builder can only handle columns that exist in the table
+   * However, we might want to do complex/relational logic in higher layers
+   * To make sure we don't error out here, we filter out any columns that don't exist in the current table
+   */
+  private cleanQueryObject(tableName: string) {
+    const columns = modelColumns.get(tableName) ?? [];
+
+    for (const key in this.query.filters) {
+      if (Object.prototype.hasOwnProperty.call(this.query.filters, key)) {
+        if (!columns.includes(key)) {
+          if (this.query.filters) {
+            this.query.filters[key] = [];
+          }
+        }
+      }
+    }
+
+    for (const key in this.query.search) {
+      if (Object.prototype.hasOwnProperty.call(this.query.search, key)) {
+        if (!columns.includes(key)) {
+          if (this.query.search) {
+            this.query.search[key] = [];
+          }
+        }
+      }
+    }
+
+    return this.query;
+  }
+
+  build(queryBuilder: ObjectionQueryBuilder<Model, Model[]>): ObjectionQueryBuilder<Model, Page<Model>> {
+    const tableName = queryBuilder.modelClass().tableName;
+    this.cleanQueryObject(tableName);
 
     const pagination = this.pagination();
     const sorting = this.sorting();
 
-    let qry = query.page(pagination.page, pagination.limit).orderBy(sorting.sortBy, sorting.sortDirection);
+    let qry = queryBuilder.page(pagination.page, pagination.limit).orderBy(sorting.sortBy, sorting.sortDirection);
 
     qry = this.filters(tableName, qry);
     qry = this.greaterThan(tableName, qry);
@@ -104,7 +159,7 @@ export class QueryBuilder<Model extends ObjectionModel, OutputDTO> {
         const searchVal = this.query.filters[filter];
 
         if (searchVal && Array.isArray(searchVal)) {
-          if (searchVal.includes(null) || searchVal.includes('null')) {
+          if (searchVal.includes('null')) {
             query.whereNull(`${tableName}.${filter}`);
             continue;
           }

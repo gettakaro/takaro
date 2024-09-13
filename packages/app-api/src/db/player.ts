@@ -1,4 +1,4 @@
-import { ITakaroQuery, QueryBuilder, SortDirection, TakaroModel } from '@takaro/db';
+import { QueryBuilder, TakaroModel } from '@takaro/db';
 import { Model } from 'objection';
 import { errors, traceableClass } from '@takaro/util';
 import { GameServerModel, GAMESERVER_TABLE_NAME } from './gameserver.js';
@@ -13,7 +13,7 @@ import {
 import { ROLE_TABLE_NAME, RoleModel } from './role.js';
 import { PLAYER_ON_GAMESERVER_TABLE_NAME, PlayerOnGameServerModel } from './playerOnGameserver.js';
 import { config } from '../config.js';
-import { PaginationParamsWithGameServer } from '../controllers/Rolecontroller.js';
+import { PlayerSearchInputDTO } from '../controllers/PlayerController.js';
 
 export interface ISteamData {
   steamId: string;
@@ -166,13 +166,22 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
     };
   }
 
-  async find(filters: ITakaroQuery<PlayerOutputWithRolesDTO>) {
+  async find(filters: Partial<PlayerSearchInputDTO>) {
     const { query } = await this.getModel();
     const extend = filters.extend || [];
-    const result = await new QueryBuilder<PlayerModel, PlayerOutputWithRolesDTO>({
+    const qry = new QueryBuilder<PlayerModel, PlayerOutputWithRolesDTO>({
       ...filters,
       extend: ['roleAssignments.role.permissions', ...extend],
     }).build(query);
+
+    if (filters.filters?.roleId) {
+      query
+        .join(ROLE_ON_PLAYER_TABLE_NAME, `${ROLE_ON_PLAYER_TABLE_NAME}.playerId`, `${PLAYER_TABLE_NAME}.id`)
+        .whereIn(`${ROLE_ON_PLAYER_TABLE_NAME}.roleId`, filters.filters.roleId);
+    }
+
+    const result = await qry;
+
     return {
       total: result.total,
       results: await Promise.all(result.results.map((item) => new PlayerOutputWithRolesDTO(item))),
@@ -275,32 +284,6 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
         playerId,
       });
     }
-  }
-
-  async getRoleMembers(roleId: string, filters: PaginationParamsWithGameServer) {
-    const knex = await this.getKnex();
-    const roleOnPlayerModel = RoleOnPlayerModel.bindKnex(knex);
-
-    const whereObj: Record<string, string> = { roleId };
-
-    if (filters.gameServerId) {
-      whereObj.gameServerId = filters.gameServerId;
-    }
-
-    const res = await roleOnPlayerModel.query().where(whereObj).select('playerId');
-    const ids = res.map((item) => item.playerId);
-    if (!ids.length)
-      return {
-        total: 0,
-        results: [],
-      };
-    return this.find({
-      filters: { id: ids },
-      limit: filters.limit,
-      page: filters.page,
-      sortBy: 'name',
-      sortDirection: SortDirection.asc,
-    });
   }
 
   async getPlayersToRefreshSteam(): Promise<string[]> {

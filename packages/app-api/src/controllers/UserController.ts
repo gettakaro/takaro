@@ -10,7 +10,7 @@ import { Type } from 'class-transformer';
 import { ParamId, ParamIdAndRoleId } from '../lib/validators.js';
 import { Request, Response } from 'express';
 import { PERMISSIONS } from '@takaro/auth';
-import { RangeFilterCreatedAndUpdatedAt } from './shared.js';
+import { AllowedFilters, RangeFilterCreatedAndUpdatedAt } from './shared.js';
 import { DomainOutputDTO, DomainService } from '../service/DomainService.js';
 import { TakaroDTO } from '@takaro/util';
 import { config } from '../config.js';
@@ -84,35 +84,31 @@ class UserOutputArrayDTOAPI extends APIOutput<UserOutputWithRolesDTO[]> {
   declare data: UserOutputWithRolesDTO[];
 }
 
-class UserSearchInputAllowedFilters {
+class UserSearchInputAllowedFilters extends AllowedFilters {
   @IsOptional()
   @IsString({ each: true })
-  name!: string[];
-
+  name?: string[] | undefined;
   @IsOptional()
   @IsString({ each: true })
-  idpId!: string[];
-
+  idpId?: string[] | undefined;
   @IsOptional()
   @IsString({ each: true })
-  discordId!: string[];
-
+  discordId?: string[] | undefined;
   @IsOptional()
   @IsUUID(4, { each: true })
-  playerId!: string[];
-
+  playerId?: string[] | undefined;
   @IsOptional()
   @IsUUID(4, { each: true })
-  roleId!: string[];
+  roleId?: string[] | undefined;
 }
 
 class UserSearchInputAllowedRangeFilter extends RangeFilterCreatedAndUpdatedAt {
   @IsOptional()
   @IsISO8601()
-  lastSeen!: string;
+  lastSeen?: string | undefined;
 }
 
-class UserSearchInputDTO extends ITakaroQuery<UserOutputDTO> {
+export class UserSearchInputDTO extends ITakaroQuery<UserOutputDTO> {
   @ValidateNested()
   @Type(() => UserSearchInputAllowedFilters)
   declare filters: UserSearchInputAllowedFilters;
@@ -127,7 +123,7 @@ class UserSearchInputDTO extends ITakaroQuery<UserOutputDTO> {
 
   @ValidateNested()
   @Type(() => UserSearchInputAllowedRangeFilter)
-  declare lessThan: UserSearchInputAllowedRangeFilter;
+  declare lessThan: Partial<UserSearchInputAllowedRangeFilter>;
 }
 
 class LinkPlayerUnauthedInputDTO extends TakaroDTO<LinkPlayerUnauthedInputDTO> {

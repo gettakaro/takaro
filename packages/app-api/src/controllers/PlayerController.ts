@@ -12,6 +12,7 @@ import { TakaroDTO, errors } from '@takaro/util';
 import { UserService } from '../service/User/index.js';
 import { PlayerOnGameserverOutputArrayDTOAPI } from './PlayerOnGameserverController.js';
 import { ParamId, ParamIdAndRoleId } from '../lib/validators.js';
+import { AllowedFilters } from './shared.js';
 
 export class PlayerOutputDTOAPI extends APIOutput<PlayerOutputWithRolesDTO> {
   @Type(() => PlayerOutputWithRolesDTO)
@@ -31,37 +32,31 @@ export class PlayerOutputWithRolesDTOAPI extends APIOutput<PlayerOutputWithRoles
   declare data: PlayerOutputWithRolesDTO;
 }
 
-class PlayerSearchInputAllowedFilters {
+class PlayerSearchInputAllowedFilters extends AllowedFilters {
+  @IsOptional()
+  @IsString({ each: true })
+  name?: string[];
+  @IsOptional()
+  @IsString({ each: true })
+  steamId?: string[];
+  @IsOptional()
+  @IsString({ each: true })
+  epicOnlineServicesId?: string[];
+  @IsOptional()
+  @IsString({ each: true })
+  xboxLiveId?: string[];
+  @IsOptional()
+  @IsBoolean({ each: true })
+  steamCommunityBanned?: boolean[];
+  @IsOptional()
+  @IsBoolean({ each: true })
+  steamVacBanned?: boolean[];
   @IsOptional()
   @IsUUID(4, { each: true })
-  id!: string[];
-
-  @IsOptional()
-  @IsString({ each: true })
-  name!: string[];
-
-  @IsOptional()
-  @IsString({ each: true })
-  steamId!: string[];
-
-  @IsOptional()
-  @IsString({ each: true })
-  epicOnlineServicesId!: string[];
-
-  @IsOptional()
-  @IsString({ each: true })
-  xboxLiveId!: string[];
-
-  @IsOptional()
-  @IsBoolean({ each: true })
-  steamCommunityBanned!: boolean[];
-
-  @IsOptional()
-  @IsBoolean({ each: true })
-  steamVacBanned!: boolean[];
+  roleId?: string[] | undefined;
 }
 
-class PlayerSearchInputDTO extends ITakaroQuery<PlayerSearchInputAllowedFilters> {
+export class PlayerSearchInputDTO extends ITakaroQuery<PlayerSearchInputAllowedFilters> {
   @ValidateNested()
   @Type(() => PlayerSearchInputAllowedFilters)
   declare filters: PlayerSearchInputAllowedFilters;

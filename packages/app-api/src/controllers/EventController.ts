@@ -9,9 +9,9 @@ import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 import { EVENT_TYPES, EventCreateDTO, EventOutputDTO, EventService } from '../service/EventService.js';
 import { ParamId } from '../lib/validators.js';
-import { RangeFilterCreatedAndUpdatedAt } from './shared.js';
+import { AllowedFilters, RangeFilterCreatedAndUpdatedAt } from './shared.js';
 
-class EventSearchInputAllowedFilters {
+class EventSearchInputAllowedFilters extends AllowedFilters {
   @IsOptional()
   @IsUUID('4', { each: true })
   id!: string[];
@@ -29,10 +29,10 @@ class EventSearchInputAllowedFilters {
   gameserverId!: string[];
   @IsOptional()
   @IsUUID('4', { each: true })
-  actingUserId!: string;
+  actingUserId!: string[];
   @IsOptional()
   @IsUUID('4', { each: true })
-  actingModuleId!: string;
+  actingModuleId!: string[];
 }
 
 export class EventSearchInputDTO extends ITakaroQuery<EventOutputDTO> {

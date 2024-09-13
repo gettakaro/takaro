@@ -1,4 +1,4 @@
-import { IsUUID, ValidateNested } from 'class-validator';
+import { IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import {
@@ -15,6 +15,7 @@ import { ParamId } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 import { builtinModuleModificationMiddleware } from '../middlewares/builtinModuleModification.js';
+import { AllowedFilters } from './shared.js';
 
 @OpenAPI({
   security: [{ domainAuth: [] }],
@@ -31,9 +32,13 @@ class FunctionOutputArrayDTOAPI extends APIOutput<FunctionOutputDTO[]> {
   declare data: FunctionOutputDTO[];
 }
 
-class FunctionSearchInputAllowedFilters {
+class FunctionSearchInputAllowedFilters extends AllowedFilters {
+  @IsOptional()
   @IsUUID(4, { each: true })
-  id!: string[];
+  moduleId: string[];
+  @IsOptional()
+  @IsString({ each: true })
+  name: string[];
 }
 
 class FunctionSearchInputDTO extends ITakaroQuery<FunctionOutputDTO> {
