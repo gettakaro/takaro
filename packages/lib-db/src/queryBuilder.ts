@@ -59,7 +59,7 @@ export enum SortDirection {
 
 const modelColumns = new Map<string, string[]>();
 
-async function populateModelColumns() {
+export async function populateModelColumns() {
   if (await isDbAvailable()) {
     const knex = await getKnex();
     // Find all tables
