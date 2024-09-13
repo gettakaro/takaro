@@ -71,7 +71,7 @@ async function getRateLimiter(domainId: string) {
     throw new errors.NotFoundError();
   }
 
-  const redisClient = await Redis.getClient('worker:rateLimiter', { legacyMode: true });
+  const redisClient = await Redis.getClient('worker:rateLimiter');
   const rateLimiter = new RateLimiterRedis({
     storeClient: redisClient,
     keyPrefix: 'worker:rateLimiter',
