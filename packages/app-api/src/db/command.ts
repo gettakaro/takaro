@@ -142,6 +142,7 @@ export class CommandRepo extends ITakaroRepo<CommandModel, CommandOutputDTO, Com
   async getTriggeredCommands(input: string, gameServerId: string) {
     const { query } = await this.getModel();
     const knex = await this.getKnex();
+    const lowerCaseInput = input.toLowerCase();
 
     const commandIds: string[] = (
       await query
@@ -152,14 +153,19 @@ export class CommandRepo extends ITakaroRepo<CommandModel, CommandOutputDTO, Com
         .innerJoin('gameservers', 'moduleAssignments.gameserverId', 'gameservers.id')
         .where('gameservers.id', gameServerId)
         .andWhere(function () {
-          this.where('commands.trigger', input).orWhereExists(function () {
+          this.whereRaw('LOWER("commands"."trigger") = ?', [lowerCaseInput]).orWhereExists(function () {
             this.select(knex.raw('1'))
               .from(
                 knex.raw('jsonb_each("moduleAssignments"."systemConfig" -> \'commands\') as cmds(command, details)'),
               )
               .whereRaw('cmds.command = "commands"."name"')
-              // eslint-disable-next-line quotes
-              .andWhereRaw("cmds.details -> 'aliases' \\?| array[?]", [input]);
+              .andWhereRaw(
+                `EXISTS (
+                    SELECT 1 FROM jsonb_array_elements_text(cmds.details -> 'aliases') AS alias
+                    WHERE LOWER(alias) = ?
+                  )`,
+                [lowerCaseInput],
+              );
           });
         })
     )
