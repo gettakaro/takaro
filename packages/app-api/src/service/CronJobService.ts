@@ -210,8 +210,8 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
         module: mod,
       },
       {
-        jobId,
         repeat: {
+          key: jobId,
           pattern: systemConfig
             ? modInstallation.systemConfig.cronJobs[cronJob.name].temporalValue
             : cronJob.temporalValue,
@@ -226,7 +226,7 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
     const repeatables = await queueService.queues.cronjobs.queue.getRepeatableJobs();
     const jobId = this.getJobId(modInstallation, cronJob);
 
-    const repeatable = repeatables.find((r) => r.id === jobId);
+    const repeatable = repeatables.find((r) => r.key === jobId);
     if (repeatable) {
       await queueService.queues.cronjobs.queue.removeRepeatableByKey(repeatable.key);
       this.log.debug(`Removed repeatable job ${jobId}`);
