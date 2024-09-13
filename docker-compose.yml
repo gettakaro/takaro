@@ -21,7 +21,13 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       
   redis:
-    image: redis 
+    image: redis:alpine
+    # enables memory overcommit on reboot
+    # echo "vm.overcommit_memory = 1" | sudo tee /etc/sysctl.d/takaro-aio-memory-overcommit.conf
+    # sudo sysctl -w vm.overcommit_memory=1 (enables on-the-fly temporary)
+    # https://github.com/redis/docker-library-redis/issues/19#issuecomment-96080885
+    # Kernel docs: https://www.kernel.org/doc/Documentation/vm/overcommit-accounting
+    command: redis-server --maxmemory-policy noeviction
     ports:
       - 6379:6379
 
