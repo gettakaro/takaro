@@ -10,6 +10,7 @@ import { ModuleBuilderInner } from './-module-builder/ModuleBuilderInner';
 import { ModuleOnboarding } from './-module-builder/ModuleOnboarding';
 import { FileMap, FileType, ModuleBuilderProvider } from './-module-builder/useModuleBuilderStore';
 import { getApiClient } from 'util/getApiClient';
+import { useDocumentTitle } from 'hooks/useDocumentTitle';
 
 const Flex = styled.div`
   display: flex;
@@ -57,6 +58,7 @@ function Component() {
   const mod = Route.useLoaderData();
   const { file: activeFileParam } = Route.useSearch();
 
+  useDocumentTitle(mod.name);
   // Ideally, we should only block when there are unsaved changes but for that we should first get rid of sandpack.
   useEffect(() => {
     function handleOnBeforeUnload(event: BeforeUnloadEvent) {

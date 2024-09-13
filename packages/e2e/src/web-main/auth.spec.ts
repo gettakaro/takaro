@@ -82,7 +82,7 @@ test('Invite user - happy path', async ({ page, takaro }) => {
   await expect(page.getByText('No items in shop')).toBeVisible();
 });
 
-test.fixme('Recover account and reset password', async ({ page, takaro }) => {
+test('Recover account and reset password', async ({ page, takaro }) => {
   test.slow();
   const user = (await takaro.rootClient.user.userControllerMe()).data.data;
 
@@ -92,20 +92,19 @@ test.fixme('Recover account and reset password', async ({ page, takaro }) => {
   await page.waitForLoadState();
 
   await page.getByRole('link', { name: 'Forgot your password?' }).click();
+  await expect(page.getByRole('heading')).toHaveText('Recover your account');
 
-  await expect(page.getByRole('heading')).toHaveText('Recovery');
-
-  await page.getByTestId('node/input/email').getByPlaceholder(' ').fill(user.email);
+  await page.getByTestId('node/input/email').getByPlaceholder(' ').fill(user.user.email);
   await page.getByRole('button', { name: 'Submit' }).click();
   await expect(
     page.getByText('An email containing a recovery code has been sent to the email address you provided.'),
   ).toBeVisible();
-  // It takes a while for the mail to be sent... :(
+  // It takes a while for the mail to be sent...
   await sleep(1000);
 
   const mails = await takaro.mailhog.searchMessages({
     kind: 'to',
-    query: user.email,
+    query: user.user.email,
   });
 
   expect(mails.items.length).toBe(1);
@@ -128,13 +127,9 @@ test.fixme('Recover account and reset password', async ({ page, takaro }) => {
   const newPassword = randomUUID();
   await page.getByTestId('node/input/password').getByPlaceholder(' ').fill(newPassword);
   await page.getByTestId('password-settings-card').getByRole('button', { name: 'Save' }).click();
-  await expect(page.getByText('Your changes have been saved!')).toBeVisible();
-
-  await page.getByRole('button').filter({ hasText: user.email }).click();
-  await page.getByText('Logout').click();
   await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
   await page.waitForLoadState();
-  await login(page, user.email, newPassword);
+  await login(page, user.user.email, newPassword);
 
   // check if we are on the dashboard
   await expect(page.getByTestId('takaro-icon-nav')).toBeVisible();

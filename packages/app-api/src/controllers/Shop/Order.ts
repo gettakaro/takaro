@@ -75,7 +75,7 @@ export class ShopOrderController {
   @ResponseSchema(ShopOrderOutputDTOAPI)
   async create(@Req() req: AuthenticatedRequest, @Body() item: ShopOrderCreateDTO) {
     const service = new ShopListingService(req.domainId);
-    const order = await service.createOrder(item.listingId, item.amount);
+    const order = await service.createOrder(item.listingId, item.amount, item.userId);
     return apiResponse(order);
   }
 

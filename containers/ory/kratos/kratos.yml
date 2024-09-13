@@ -117,3 +117,8 @@ courier:
     connection_uri: 'smtp://mailhog:1025/?disable_starttls=true'
     from_address: noreply@takaro.io
     from_name: Takaro
+
+# https://github.com/ory/kratos/pull/3624
+# SPA flows no longer return a 422 error.
+feature_flags:
+  use_continue_with_transitions: true
