@@ -10,7 +10,7 @@ import { PlayerOutputDTO } from './PlayerService.js';
 import { Type } from 'class-transformer';
 import { GameServerOutputDTO } from './GameServerService.js';
 import { ModuleOutputDTO } from './ModuleService.js';
-import { UserOutputDTO } from './UserService.js';
+import { UserOutputDTO } from './User/index.js';
 import { BaseEvent, EventMapping, EventPayload, TakaroEvents } from '@takaro/modules';
 import { ValueOf } from 'type-fest';
 import { HookService } from './HookService.js';

@@ -9,6 +9,7 @@ import { ParamId } from '../lib/validators.js';
 import { AuthService, AuthenticatedRequest } from '../service/AuthService.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
+import { AllowedFilters } from './shared.js';
 
 export class ItemOutputDTOAPI extends APIOutput<ItemsOutputDTO> {
   @Type(() => ItemsOutputDTO)
@@ -22,11 +23,7 @@ export class ItemOutputArrayDTOAPI extends APIOutput<ItemsOutputDTO[]> {
   declare data: ItemsOutputDTO[];
 }
 
-class ItemSearchInputAllowedFilters {
-  @IsOptional()
-  @IsString({ each: true })
-  id!: string[];
-
+class ItemSearchInputAllowedFilters extends AllowedFilters {
   @IsOptional()
   @IsString({ each: true })
   name!: string[];

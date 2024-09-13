@@ -9,7 +9,7 @@ import { Type } from 'class-transformer';
 import { ParamId } from '../../lib/validators.js';
 import { Response } from 'express';
 import { ShopOrderOutputDTO, ShopOrderCreateDTO } from '../../service/Shop/dto.js';
-import { RangeFilterCreatedAndUpdatedAt } from '../shared.js';
+import { AllowedFilters, RangeFilterCreatedAndUpdatedAt } from '../shared.js';
 
 class ShopOrderOutputDTOAPI extends APIOutput<ShopOrderOutputDTO> {
   @Type(() => ShopOrderOutputDTO)
@@ -23,10 +23,7 @@ class ShopOrderOutputArrayDTOAPI extends APIOutput<ShopOrderOutputDTO[]> {
   declare data: ShopOrderOutputDTO[];
 }
 
-class ShopOrderSearchInputAllowedFilters {
-  @IsOptional()
-  @IsUUID(4, { each: true })
-  id: string[];
+class ShopOrderSearchInputAllowedFilters extends AllowedFilters {
   @IsOptional()
   @IsUUID(4, { each: true })
   listingId: string[];

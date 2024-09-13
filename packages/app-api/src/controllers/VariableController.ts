@@ -14,6 +14,7 @@ import { ParamId } from '../lib/validators.js';
 import { AuthService, AuthenticatedRequest } from '../service/AuthService.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
+import { AllowedFilters } from './shared.js';
 
 export class VariableOutputDTOAPI extends APIOutput<VariableOutputDTO> {
   @Type(() => VariableOutputDTO)
@@ -27,11 +28,7 @@ export class VariableOutputArrayDTOAPI extends APIOutput<VariableOutputDTO[]> {
   declare data: VariableOutputDTO[];
 }
 
-class VariableSearchInputAllowedFilters {
-  @IsOptional()
-  @IsString({ each: true })
-  id!: string[];
-
+class VariableSearchInputAllowedFilters extends AllowedFilters {
   @IsOptional()
   @IsString({ each: true })
   key!: string[];

@@ -17,6 +17,7 @@ import { IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Request, Response } from 'express';
 import { TokenOutputDTO, TokenInputDTO, AuthService } from '../service/AuthService.js';
 import { adminAuthMiddleware } from '../middlewares/adminAuth.js';
+import { AllowedFilters } from './shared.js';
 
 export class DomainCreateOutputDTOAPI extends APIOutput<DomainCreateOutputDTO> {
   @Type(() => DomainCreateOutputDTO)
@@ -36,7 +37,11 @@ export class DomainOutputArrayDTOAPI extends APIOutput<DomainOutputDTO[]> {
   declare data: DomainOutputDTO[];
 }
 
-export class DomainSearchInputAllowedFilters {
+export class DomainSearchInputAllowedFilters extends AllowedFilters {
+  @IsOptional()
+  @IsString({ each: true })
+  id!: string[];
+
   @IsOptional()
   @IsString({ each: true })
   name!: string[];

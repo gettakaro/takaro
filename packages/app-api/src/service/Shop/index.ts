@@ -13,7 +13,7 @@ import {
   ShopOrderStatus,
   ShopOrderCreateInternalDTO,
 } from './dto.js';
-import { UserService } from '../UserService.js';
+import { UserService } from '../User/index.js';
 import { checkPermissions } from '../AuthService.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { PlayerService } from '../PlayerService.js';

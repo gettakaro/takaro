@@ -3,7 +3,7 @@ import { TakaroService } from './Base.js';
 import { ISteamData, PlayerModel, PlayerRepo } from '../db/player.js';
 import { IsBoolean, IsISO8601, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { TakaroDTO, TakaroModelDTO, errors, traceableClass } from '@takaro/util';
-import { ITakaroQuery, Redis } from '@takaro/db';
+import { Redis } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import {
   PlayerOnGameServerService,
@@ -28,6 +28,7 @@ import maxmind, { CityResponse } from 'maxmind';
 import { humanId } from 'human-id';
 import { GameServerService } from './GameServerService.js';
 import { IMessageOptsDTO } from '@takaro/gameserver';
+import { PlayerSearchInputDTO } from '../controllers/PlayerController.js';
 
 const ipLookup = await open(GeoIpDbName.City, (path) => maxmind.open<CityResponse>(path));
 
@@ -179,7 +180,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     return this.handleRoleExpiry(player);
   }
 
-  async find(filters: ITakaroQuery<PlayerOutputDTO>): Promise<PaginatedOutput<PlayerOutputWithRolesDTO>> {
+  async find(filters: Partial<PlayerSearchInputDTO>): Promise<PaginatedOutput<PlayerOutputWithRolesDTO>> {
     const players = await this.repo.find(filters);
     players.results = await Promise.all(players.results.map((item) => this.extend(item)));
     return players;

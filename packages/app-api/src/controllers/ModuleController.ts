@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsOptional, IsString, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { ModuleCreateDTO, ModuleOutputDTO, ModuleService, ModuleUpdateDTO } from '../service/ModuleService.js';
@@ -13,6 +13,7 @@ import { errors } from '@takaro/util';
 import { builtinModuleModificationMiddleware } from '../middlewares/builtinModuleModification.js';
 import { BuiltinModule, ICommand, ICronJob, IHook, IFunction, ICommandArgument } from '@takaro/modules';
 import { PermissionCreateDTO } from '../service/RoleService.js';
+import { AllowedFilters } from './shared.js';
 
 export class ModuleOutputDTOAPI extends APIOutput<ModuleOutputDTO> {
   @Type(() => ModuleOutputDTO)
@@ -26,11 +27,7 @@ export class ModuleOutputArrayDTOAPI extends APIOutput<ModuleOutputDTO[]> {
   declare data: ModuleOutputDTO[];
 }
 
-class ModuleSearchInputAllowedFilters {
-  @IsOptional()
-  @IsUUID(4, { each: true })
-  id!: string[];
-
+class ModuleSearchInputAllowedFilters extends AllowedFilters {
   @IsOptional()
   @IsString({ each: true })
   name!: string[];

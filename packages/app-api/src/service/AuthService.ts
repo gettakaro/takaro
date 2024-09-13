@@ -1,5 +1,6 @@
 import { ctx, errors, logger, traceableClass, DomainScoped, TakaroDTO } from '@takaro/util';
-import { UserOutputWithRolesDTO, UserService, UserUpdateAuthDTO } from '../service/UserService.js';
+import { UserService } from '../service/User/index.js';
+import { UserOutputWithRolesDTO, UserUpdateAuthDTO } from '../service/User/dto.js';
 import jwt from 'jsonwebtoken';
 import { NextFunction, Request, Response } from 'express';
 import { IsString } from 'class-validator';

@@ -16,7 +16,7 @@ import { GameServerService } from './GameServerService.js';
 import { PlayerService } from './PlayerService.js';
 import { PlayerOnGameServerService } from './PlayerOnGameserverService.js';
 import { ModuleService } from './ModuleService.js';
-import { UserService } from './UserService.js';
+import { UserService } from './User/index.js';
 
 export function commandsRunningKey(data: ICommandJobData) {
   return `commands-running:${data.pog.id}`;

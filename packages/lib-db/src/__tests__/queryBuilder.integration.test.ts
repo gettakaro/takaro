@@ -1,5 +1,5 @@
 import { disconnectKnex, getKnex } from '../knex.js';
-import { QueryBuilder, SortDirection } from '../queryBuilder.js';
+import { populateModelColumns, QueryBuilder, SortDirection } from '../queryBuilder.js';
 import { expect } from '@takaro/test';
 import { TakaroModel } from '../TakaroModel.js';
 import { Model } from 'objection';
@@ -60,6 +60,8 @@ describe('QueryBuilder', () => {
 
     TestUserModel.knex(knex);
     TestPostModel.knex(knex);
+
+    await populateModelColumns();
   });
 
   afterEach(async () => {

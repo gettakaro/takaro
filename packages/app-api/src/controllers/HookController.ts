@@ -25,6 +25,7 @@ import { EventTypes, HookEvents } from '@takaro/modules';
 import { builtinModuleModificationMiddleware } from '../middlewares/builtinModuleModification.js';
 import { EventOutputArrayDTOAPI, EventSearchInputDTO } from './EventController.js';
 import { EVENT_TYPES, EventService } from '../service/EventService.js';
+import { AllowedFilters } from './shared.js';
 
 export class HookOutputDTOAPI extends APIOutput<HookOutputDTO> {
   @Type(() => HookOutputDTO)
@@ -38,11 +39,7 @@ export class HookOutputArrayDTOAPI extends APIOutput<HookOutputDTO[]> {
   declare data: HookOutputDTO[];
 }
 
-class HookSearchInputAllowedFilters {
-  @IsOptional()
-  @IsUUID(4, { each: true })
-  id!: string[];
-
+class HookSearchInputAllowedFilters extends AllowedFilters {
   @IsOptional()
   @IsUUID(4, { each: true })
   moduleId!: string[];
