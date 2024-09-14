@@ -38,9 +38,10 @@ interface IFormInputs {
   serverChatName: string;
   economyEnabled: boolean;
   currencyName: string;
+  developerMode: boolean;
 }
 
-export const booleanFields = ['economyEnabled'];
+export const booleanFields = ['economyEnabled', 'developerMode'];
 
 export function mapSettings<T extends Promise<unknown>>(
   data: Settings,
