@@ -1,4 +1,4 @@
-import { Divider, styled } from '@takaro/lib-components';
+import { styled } from '@takaro/lib-components';
 import { FormContextType, TitleFieldProps, RJSFSchema, StrictRJSFSchema } from '@rjsf/utils';
 
 const Container = styled.div`
@@ -19,7 +19,6 @@ export function TitleFieldTemplate<T = any, S extends StrictRJSFSchema = RJSFSch
   return (
     <Container id={id}>
       <h4>{title}</h4>
-      <Divider fullWidth />
     </Container>
   );
 }
