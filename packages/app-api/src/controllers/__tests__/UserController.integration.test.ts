@@ -1,4 +1,4 @@
-import { IntegrationTest, expect, integrationConfig } from '@takaro/test';
+import { IntegrationTest, expect, integrationConfig, SetupGameServerPlayers } from '@takaro/test';
 import { PERMISSIONS } from '@takaro/auth';
 import { Client, UserOutputDTO } from '@takaro/apiclient';
 import { faker } from '@faker-js/faker';
@@ -18,6 +18,41 @@ const userSetup = async function (this: IntegrationTest<IUserSetup>) {
   });
   return { user: user.data.data };
 };
+
+async function multiRolesSetup(client: Client) {
+  // Create 5 users
+  await Promise.all(
+    Array.from({ length: 5 }).map(
+      async (_, i) =>
+        (
+          await client.user.userControllerCreate({
+            email: faker.internet.email(),
+            password: faker.internet.password(),
+            name: `User ${i}`,
+          })
+        ).data.data,
+    ),
+  );
+
+  const users = (await client.user.userControllerSearch({ sortBy: 'name', sortDirection: 'asc' })).data.data;
+
+  const permissions1 = await client.permissionCodesToInputs([PERMISSIONS.MANAGE_ROLES]);
+  const permissions2 = await client.permissionCodesToInputs([PERMISSIONS.MANAGE_USERS]);
+  const role1 = (
+    await client.role.roleControllerCreate({
+      name: 'Test role 1',
+      permissions: permissions1,
+    })
+  ).data.data;
+  const role2 = (
+    await client.role.roleControllerCreate({
+      name: 'Test role 2',
+      permissions: permissions2,
+    })
+  ).data.data;
+
+  return { users, role1, role2 };
+}
 
 const tests = [
   new IntegrationTest<IUserSetup>({
@@ -117,6 +152,26 @@ const tests = [
       return res;
     },
     filteredFields: ['idpId', 'roleId', 'userId', 'lastSeen', 'email', 'name'],
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    setup: SetupGameServerPlayers.setup,
+    name: 'Can fetch members of group - users',
+    test: async function () {
+      const { users, role1, role2 } = await multiRolesSetup(this.client);
+
+      // Assign the role to the user
+      await this.client.user.userControllerAssignRole(users[0].id, role1.id);
+
+      // Fetch the members of the role
+      const members1 = (await this.client.user.userControllerSearch({ filters: { roleId: [role1.id] } })).data.data;
+      expect(members1).to.have.lengthOf(1);
+
+      // Fetch members of role2
+      const members2 = (await this.client.user.userControllerSearch({ filters: { roleId: [role2.id] } })).data.data;
+      expect(members2).to.have.lengthOf(0);
+    },
   }),
 ];
 

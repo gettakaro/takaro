@@ -11,6 +11,7 @@ export enum SETTINGS_KEYS {
   serverChatName = 'serverChatName',
   economyEnabled = 'economyEnabled',
   currencyName = 'currencyName',
+  developerMode = 'developerMode',
 }
 
 export const DEFAULT_SETTINGS: Record<SETTINGS_KEYS, string> = {
@@ -18,19 +19,19 @@ export const DEFAULT_SETTINGS: Record<SETTINGS_KEYS, string> = {
   serverChatName: 'Takaro',
   economyEnabled: 'false',
   currencyName: 'Takaro coins',
+  developerMode: 'false',
 };
 export class Settings extends TakaroModelDTO<Settings> {
   @IsString()
   commandPrefix: string;
-
   @IsString()
   serverChatName: string;
-
   @IsString()
   economyEnabled: string;
-
   @IsString()
   currencyName: string;
+  @IsString()
+  developerMode: string;
 }
 
 export enum SettingsMode {

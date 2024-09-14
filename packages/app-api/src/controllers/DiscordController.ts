@@ -10,8 +10,9 @@ import { ResponseSchema } from 'routing-controllers-openapi';
 import { TakaroDTO } from '@takaro/util';
 import { ParamId } from '../lib/validators.js';
 import { discordBot } from '../lib/DiscordBot.js';
+import { AllowedFilters } from './shared.js';
 
-class GuildSearchInputAllowedFilters {
+class GuildSearchInputAllowedFilters extends AllowedFilters {
   @IsOptional()
   @IsString({ each: true })
   name!: string[];

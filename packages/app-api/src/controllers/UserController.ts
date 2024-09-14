@@ -1,13 +1,8 @@
 import { IsEmail, IsISO8601, IsOptional, IsString, IsUUID, Length, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
-import {
-  UserCreateInputDTO,
-  UserOutputDTO,
-  UserOutputWithRolesDTO,
-  UserService,
-  UserUpdateDTO,
-} from '../service/UserService.js';
+import { UserCreateInputDTO, UserOutputDTO, UserOutputWithRolesDTO, UserUpdateDTO } from '../service/User/dto.js';
+import { UserService } from '../service/User/index.js';
 import { AuthenticatedRequest, AuthService, LoginOutputDTO } from '../service/AuthService.js';
 import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Put, Params, Res, Param } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
@@ -15,7 +10,7 @@ import { Type } from 'class-transformer';
 import { ParamId, ParamIdAndRoleId } from '../lib/validators.js';
 import { Request, Response } from 'express';
 import { PERMISSIONS } from '@takaro/auth';
-import { RangeFilterCreatedAndUpdatedAt } from './shared.js';
+import { AllowedFilters, RangeFilterCreatedAndUpdatedAt } from './shared.js';
 import { DomainOutputDTO, DomainService } from '../service/DomainService.js';
 import { TakaroDTO } from '@takaro/util';
 import { config } from '../config.js';
@@ -89,31 +84,31 @@ class UserOutputArrayDTOAPI extends APIOutput<UserOutputWithRolesDTO[]> {
   declare data: UserOutputWithRolesDTO[];
 }
 
-class UserSearchInputAllowedFilters {
+class UserSearchInputAllowedFilters extends AllowedFilters {
   @IsOptional()
   @IsString({ each: true })
-  name!: string[];
-
+  name?: string[] | undefined;
   @IsOptional()
   @IsString({ each: true })
-  idpId!: string[];
-
+  idpId?: string[] | undefined;
   @IsOptional()
   @IsString({ each: true })
-  discordId!: string[];
-
+  discordId?: string[] | undefined;
   @IsOptional()
   @IsUUID(4, { each: true })
-  playerId!: string[];
+  playerId?: string[] | undefined;
+  @IsOptional()
+  @IsUUID(4, { each: true })
+  roleId?: string[] | undefined;
 }
 
 class UserSearchInputAllowedRangeFilter extends RangeFilterCreatedAndUpdatedAt {
   @IsOptional()
   @IsISO8601()
-  lastSeen!: string;
+  lastSeen?: string | undefined;
 }
 
-class UserSearchInputDTO extends ITakaroQuery<UserOutputDTO> {
+export class UserSearchInputDTO extends ITakaroQuery<UserOutputDTO> {
   @ValidateNested()
   @Type(() => UserSearchInputAllowedFilters)
   declare filters: UserSearchInputAllowedFilters;
@@ -128,7 +123,7 @@ class UserSearchInputDTO extends ITakaroQuery<UserOutputDTO> {
 
   @ValidateNested()
   @Type(() => UserSearchInputAllowedRangeFilter)
-  declare lessThan: UserSearchInputAllowedRangeFilter;
+  declare lessThan: Partial<UserSearchInputAllowedRangeFilter>;
 }
 
 class LinkPlayerUnauthedInputDTO extends TakaroDTO<LinkPlayerUnauthedInputDTO> {

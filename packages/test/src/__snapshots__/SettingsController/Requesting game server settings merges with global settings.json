@@ -21,6 +21,11 @@
         "key": "currencyName",
         "value": "Takaro coins",
         "type": "default"
+      },
+      {
+        "key": "developerMode",
+        "value": "false",
+        "type": "default"
       }
     ]
   },

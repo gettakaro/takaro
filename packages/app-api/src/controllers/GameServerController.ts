@@ -49,7 +49,8 @@ import { ParamId, PogParam } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 import { PlayerOnGameserverOutputDTOAPI } from './PlayerOnGameserverController.js';
-import { UserService } from '../service/UserService.js';
+import { UserService } from '../service/User/index.js';
+import { AllowedFilters } from './shared.js';
 
 class GameServerTypesOutputDTOAPI extends APIOutput<GameServerOutputDTO[]> {
   @Type(() => GameServerOutputDTO)
@@ -75,11 +76,7 @@ class GameServerTestReachabilityDTOAPI extends APIOutput<TestReachabilityOutputD
   declare data: TestReachabilityOutputDTO;
 }
 
-class GameServerSearchInputAllowedFilters {
-  @IsOptional()
-  @IsUUID(4, { each: true })
-  id!: string[];
-
+class GameServerSearchInputAllowedFilters extends AllowedFilters {
   @IsOptional()
   @IsString({ each: true })
   name!: string[];

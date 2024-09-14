@@ -5,7 +5,7 @@ import { logger } from '@takaro/util';
 import { GameServerService } from '../service/GameServerService.js';
 import { PlayerService } from '../service/PlayerService.js';
 import { DomainRepo } from '../db/domain.js';
-import { UserService } from '../service/UserService.js';
+import { UserService } from '../service/User/index.js';
 import { kpiGateway, metrics } from '../lib/metrics.js';
 import { PlayerOnGameServerService } from '../service/PlayerOnGameserverService.js';
 

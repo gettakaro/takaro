@@ -1,7 +1,44 @@
 import { IntegrationTest, SetupGameServerPlayers, expect } from '@takaro/test';
 import { PERMISSIONS } from '@takaro/auth';
+import { faker } from '@faker-js/faker';
+import { Client } from '@takaro/apiclient';
 
 const group = 'PlayerController';
+
+async function multiRolesSetup(client: Client) {
+  // Create 5 users
+  await Promise.all(
+    Array.from({ length: 5 }).map(
+      async (_, i) =>
+        (
+          await client.user.userControllerCreate({
+            email: faker.internet.email(),
+            password: faker.internet.password(),
+            name: `User ${i}`,
+          })
+        ).data.data,
+    ),
+  );
+
+  const users = (await client.user.userControllerSearch({ sortBy: 'name', sortDirection: 'asc' })).data.data;
+
+  const permissions1 = await client.permissionCodesToInputs([PERMISSIONS.MANAGE_ROLES]);
+  const permissions2 = await client.permissionCodesToInputs([PERMISSIONS.MANAGE_USERS]);
+  const role1 = (
+    await client.role.roleControllerCreate({
+      name: 'Test role 1',
+      permissions: permissions1,
+    })
+  ).data.data;
+  const role2 = (
+    await client.role.roleControllerCreate({
+      name: 'Test role 2',
+      permissions: permissions2,
+    })
+  ).data.data;
+
+  return { users, role1, role2 };
+}
 
 const tests = [
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
@@ -210,6 +247,25 @@ const tests = [
       'xboxLiveId',
       'expiresAt',
     ],
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    setup: SetupGameServerPlayers.setup,
+    name: 'Can fetch members of group - players',
+    test: async function () {
+      const { role1, role2 } = await multiRolesSetup(this.client);
+
+      // Assign the role to the player
+      await this.client.player.playerControllerAssignRole(this.setupData.players[0].id, role1.id);
+
+      // Fetch the members of the role
+      const members1 = (await this.client.player.playerControllerSearch({ filters: { roleId: [role1.id] } })).data.data;
+      expect(members1.length).to.be.eq(1);
+
+      const members2 = (await this.client.player.playerControllerSearch({ filters: { roleId: [role2.id] } })).data.data;
+      expect(members2.length).to.be.eq(0);
+    },
   }),
 ];
 

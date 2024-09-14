@@ -177,5 +177,5 @@ async function process(job: Job<ICSMMImportData>) {
     );
   }
 
-  await job.update({} as ICSMMImportData);
+  await job.updateData({} as ICSMMImportData);
 }

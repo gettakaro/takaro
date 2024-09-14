@@ -1,6 +1,6 @@
 import { errors, TakaroDTO, NOT_DOMAIN_SCOPED_TakaroModelDTO, traceableClass } from '@takaro/util';
 import { createLambda, deleteLambda } from '@takaro/aws';
-import { UserCreateInputDTO, UserOutputDTO, UserService } from './UserService.js';
+import { UserCreateInputDTO, UserOutputDTO, UserService } from './User/index.js';
 import { randomBytes } from 'crypto';
 import { PermissionInputDTO, RoleService, ServiceRoleCreateInputDTO, RoleOutputDTO } from './RoleService.js';
 import type { RoleOutputDTO as RoleOutputDTOType } from './RoleService.js';

@@ -21,9 +21,8 @@ import { TakaroService } from './Base.js';
 import { ModuleService } from './ModuleService.js';
 import { EventService, EventCreateDTO, EVENT_TYPES } from './EventService.js';
 import { TakaroEventRoleCreated, TakaroEventRoleDeleted, TakaroEventRoleUpdated } from '@takaro/modules';
-import { PlayerOutputWithRolesDTO, PlayerService } from './PlayerService.js';
-import { UserOutputWithRolesDTO, UserService } from './UserService.js';
-import { PaginationParamsWithGameServer } from '../controllers/Rolecontroller.js';
+import { PlayerOutputWithRolesDTO } from './PlayerService.js';
+import { UserOutputWithRolesDTO } from './User/index.js';
 
 @ValidatorConstraint()
 export class IsPermissionArray implements ValidatorConstraintInterface {
@@ -373,18 +372,5 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
   async permissionCodeToRecord(permissionCode: string): Promise<PermissionOutputDTO> {
     const record = await this.repo.permissionCodeToRecord(permissionCode);
     return new PermissionOutputDTO(record);
-  }
-
-  async getRoleMembers(roleId: string, filters: PaginationParamsWithGameServer): Promise<RoleMembersOutputDTO> {
-    const playerRepo = new PlayerService(this.domainId).repo;
-    const players = await playerRepo.getRoleMembers(roleId, filters);
-
-    const userRepo = new UserService(this.domainId).repo;
-    const users = await userRepo.getRoleMembers(roleId, filters);
-
-    return new RoleMembersOutputDTO({
-      players,
-      users,
-    });
   }
 }
