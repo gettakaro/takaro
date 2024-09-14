@@ -18,5 +18,8 @@ export type { PermissionsGuardProps, RequiredPermissions } from './PermissionsGu
 export { Plan } from './Plan';
 export type { PlanProps } from './Plan';
 
+export { UsageCard } from './Usage/UsageCard';
+export type { UsageCardProps } from './Usage/UsageCard';
+
 export { Collapsible } from './Collapsible';
 export type { CollapsibleProps } from './Collapsible';
