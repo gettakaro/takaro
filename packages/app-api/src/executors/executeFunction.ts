@@ -217,6 +217,8 @@ export async function executeFunction(
     const hook = await hookService.findOne(data.itemId);
     if (!hook) throw new errors.InternalServerError();
 
+    if (data.player) eventData.playerId = data.player.id;
+
     (meta as TakaroEventHookExecuted).hook = new TakaroEventHookDetails({
       id: hook.id,
       name: hook.name,
