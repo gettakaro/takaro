@@ -20,7 +20,7 @@ import safeRegex from 'safe-regex';
 import { TakaroDTO, errors, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
-import { GameServerService } from './GameServerService.js';
+import { GameServerService, ModuleInstallDTO } from './GameServerService.js';
 import { HookEvents, isDiscordMessageEvent, EventPayload, EventTypes, EventMapping } from '@takaro/modules';
 import { PlayerOnGameServerService } from './PlayerOnGameserverService.js';
 import { PlayerService } from './PlayerService.js';
@@ -190,6 +190,26 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
     }
 
     const updated = await this.repo.update(id, item);
+
+    const gameServerService = new GameServerService(this.domainId);
+    const installations = await gameServerService.getInstalledModules({ moduleId: updated.moduleId });
+    await Promise.all(
+      installations.map((i) => {
+        const newSystemConfig = i.systemConfig;
+        const cmdCfg = newSystemConfig.hooks[existing.name];
+        delete newSystemConfig.hooks[existing.name];
+        newSystemConfig.hooks[updated.name] = cmdCfg;
+        return gameServerService.installModule(
+          i.gameserverId,
+          i.moduleId,
+          new ModuleInstallDTO({
+            userConfig: JSON.stringify(i.userConfig),
+            systemConfig: JSON.stringify(newSystemConfig),
+          }),
+        );
+      }),
+    );
+
     return updated;
   }
 

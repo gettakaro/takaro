@@ -12,7 +12,7 @@ import { ITakaroQuery, Redis } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { SettingsService, SETTINGS_KEYS } from './SettingsService.js';
 import { parseCommand } from '../lib/commandParser.js';
-import { GameServerService } from './GameServerService.js';
+import { GameServerService, ModuleInstallDTO } from './GameServerService.js';
 import { PlayerService } from './PlayerService.js';
 import { PlayerOnGameServerService } from './PlayerOnGameserverService.js';
 import { ModuleService } from './ModuleService.js';
@@ -256,6 +256,26 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
     }
 
     const updated = await this.repo.update(id, item);
+
+    const gameServerService = new GameServerService(this.domainId);
+    const installations = await gameServerService.getInstalledModules({ moduleId: updated.moduleId });
+    await Promise.all(
+      installations.map((i) => {
+        const newSystemConfig = i.systemConfig;
+        const cmdCfg = newSystemConfig.commands[existing.name];
+        delete newSystemConfig.commands[existing.name];
+        newSystemConfig.commands[updated.name] = cmdCfg;
+        return gameServerService.installModule(
+          i.gameserverId,
+          i.moduleId,
+          new ModuleInstallDTO({
+            userConfig: JSON.stringify(i.userConfig),
+            systemConfig: JSON.stringify(newSystemConfig),
+          }),
+        );
+      }),
+    );
+
     return updated;
   }
 

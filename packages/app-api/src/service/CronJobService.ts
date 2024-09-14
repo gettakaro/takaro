@@ -9,7 +9,7 @@ import { TakaroDTO, errors, TakaroModelDTO, traceableClass } from '@takaro/util'
 import { PaginatedOutput } from '../db/base.js';
 import { ITakaroQuery } from '@takaro/db';
 import { ModuleService } from './ModuleService.js';
-import { GameServerService, ModuleInstallationOutputDTO } from './GameServerService.js';
+import { GameServerService, ModuleInstallationOutputDTO, ModuleInstallDTO } from './GameServerService.js';
 import { randomUUID } from 'crypto';
 
 export class CronJobOutputDTO extends TakaroModelDTO<CronJobOutputDTO> {
@@ -136,6 +136,23 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
 
     const gameServerService = new GameServerService(this.domainId);
     const installedModules = await gameServerService.getInstalledModules({ moduleId: updated.moduleId });
+    await Promise.all(
+      installedModules.map((i) => {
+        const newSystemConfig = i.systemConfig;
+        const cmdCfg = newSystemConfig.cronJobs[existing.name];
+        delete newSystemConfig.cronJobs[existing.name];
+        newSystemConfig.cronJobs[updated.name] = cmdCfg;
+        return gameServerService.installModule(
+          i.gameserverId,
+          i.moduleId,
+          new ModuleInstallDTO({
+            userConfig: JSON.stringify(i.userConfig),
+            systemConfig: JSON.stringify(newSystemConfig),
+          }),
+        );
+      }),
+    );
+
     await Promise.all(installedModules.map((mod) => this.syncModuleCronjobs(mod)));
 
     return updated;
