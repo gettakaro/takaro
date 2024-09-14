@@ -133,10 +133,6 @@ test('Can install module with empty config', async ({ page, takaro }) => {
 
   const mod = modRes.data.data[0];
   expect(mod).toBeDefined();
-
-  // there is only 1 server
-  // TODO: change to this when double slash issue is fixed
-  //await navigateTo(page, 'server-modules');
   await page.goto(`/gameserver/${takaro.gameServer.id}/modules`);
   await page.getByTestId(`module-${mod.id}`).getByRole('button', { name: 'Install' }).click();
   await page.getByRole('button', { name: 'Install module', exact: true }).click();
@@ -150,8 +146,9 @@ test('Can install a module with a discord hook', async ({ page, takaro }) => {
     description: 'aaa',
   });
 
+  const hookName = 'My hook';
   await takaro.rootClient.hook.hookControllerCreate({
-    name: 'My hook',
+    name: hookName,
     eventType: HookCreateDTOEventTypeEnum.DiscordMessage,
     moduleId: mod.data.data.id,
     regex: 'test',
@@ -160,7 +157,9 @@ test('Can install a module with a discord hook', async ({ page, takaro }) => {
   await page.getByRole('link', { name: 'Servers' }).click();
   await page.getByText('Test server').click();
   await page.getByTestId('server-nav').getByRole('link', { name: 'Modules' }).click();
+
   await page.getByTestId(`module-${mod.data.data.id}`).getByRole('button', { name: 'Install' }).click();
+  await page.getByRole('button').filter({ hasText: hookName }).click();
   await page.getByLabel('DiscordChannelId').fill('123');
   await page.getByRole('button', { name: 'Install module' }).click();
 
