@@ -8,7 +8,7 @@ export interface PlanProps {
   title: string;
   description: string;
   items: string[];
-  price: number;
+  price?: string;
   buttonText: string;
   highlight?: boolean;
 }
@@ -62,10 +62,12 @@ export const Plan: FC<PlanProps> = ({ to, title, description, items, price, butt
             }}
           >
             <h2>For a small price of</h2>
-            <p style={{ fontSize: theme.fontSize.mediumLarge, fontWeight: 600 }}>
-              <span style={{ fontSize: theme.fontSize.huge, fontWeight: 800, marginRight: '2rem' }}>€{price}</span>/
-              month
-            </p>
+            {price && (
+              <p style={{ fontSize: theme.fontSize.mediumLarge, fontWeight: 600 }}>
+                <span style={{ fontSize: theme.fontSize.huge, fontWeight: 800, marginRight: '2rem' }}>€{price}</span>/
+                month
+              </p>
+            )}
             <a style={{ width: '100%' }} className="button" href={to} target="_blank" rel="noreferrer">
               <Button fullWidth text={buttonText} />
             </a>
