@@ -113,6 +113,7 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
           <EventProperty name="module" value={event?.module?.name} />
           <EventProperty name="success" value={`${meta.result?.success}`} />
           <EventProperty name="hook" value={meta.hook?.name} />
+          <EventProperty name="player" value={event.player?.name} />
         </>
       );
       break;
