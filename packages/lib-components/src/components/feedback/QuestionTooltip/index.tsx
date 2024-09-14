@@ -24,7 +24,7 @@ export const QuestionTooltip: FC<TooltipProps> = ({ children }) => {
     <Tooltip>
       <Tooltip.Trigger asChild>
         <TriggerContainer>
-          <QuestionIcon size="18" />
+          <QuestionIcon size="15" />
         </TriggerContainer>
       </Tooltip.Trigger>
       <Tooltip.Content>
