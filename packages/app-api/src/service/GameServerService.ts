@@ -496,6 +496,11 @@ export class GameServerService extends TakaroService<
     return gameInstance.giveItem(pog, item, amount, quality);
   }
 
+  async shutdown(gameServerId: string) {
+    const gameInstance = await this.getGame(gameServerId);
+    return gameInstance.shutdown();
+  }
+
   async getPlayers(gameServerId: string) {
     const gameInstance = await this.getGame(gameServerId);
     const gamePlayers = await gameInstance.getPlayers();

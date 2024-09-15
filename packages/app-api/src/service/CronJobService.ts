@@ -170,7 +170,7 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
     return id;
   }
 
-  public getJobId(modInstallation: ModuleInstallationOutputDTO, cronJob: CronJobOutputDTO) {
+  public getJobKey(modInstallation: ModuleInstallationOutputDTO, cronJob: CronJobOutputDTO) {
     return `${modInstallation.gameserverId}-${cronJob.id}`;
   }
 
@@ -209,7 +209,7 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
   }
 
   private async addCronjobToQueue(cronJob: CronJobOutputDTO, modInstallation: ModuleInstallationOutputDTO) {
-    const jobId = this.getJobId(modInstallation, cronJob);
+    const key = this.getJobKey(modInstallation, cronJob);
     const systemConfig = modInstallation.systemConfig.cronJobs;
 
     const gameServerService = new GameServerService(this.domainId);
@@ -228,25 +228,24 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
       },
       {
         repeat: {
-          key: jobId,
+          key: key,
           pattern: systemConfig
             ? modInstallation.systemConfig.cronJobs[cronJob.name].temporalValue
             : cronJob.temporalValue,
-          jobId,
         },
       },
     );
-    this.log.debug(`Added repeatable job ${jobId}`);
+    this.log.debug(`Added repeatable job ${key}`);
   }
 
   private async removeCronjobFromQueue(cronJob: CronJobOutputDTO, modInstallation: ModuleInstallationOutputDTO) {
     const repeatables = await queueService.queues.cronjobs.queue.getRepeatableJobs();
-    const jobId = this.getJobId(modInstallation, cronJob);
+    const key = this.getJobKey(modInstallation, cronJob);
 
-    const repeatable = repeatables.find((r) => r.key === jobId);
+    const repeatable = repeatables.find((r) => r.key === key);
     if (repeatable) {
       await queueService.queues.cronjobs.queue.removeRepeatableByKey(repeatable.key);
-      this.log.debug(`Removed repeatable job ${jobId}`);
+      this.log.debug(`Removed repeatable job ${key}`);
     }
   }
 

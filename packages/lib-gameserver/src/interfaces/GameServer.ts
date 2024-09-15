@@ -99,4 +99,5 @@ export interface IGameServer {
   banPlayer(options: BanDTO): Promise<void>;
   unbanPlayer(player: IPlayerReferenceDTO): Promise<void>;
   listBans(): Promise<BanDTO[]>;
+  shutdown(): Promise<void>;
 }
