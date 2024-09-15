@@ -8,6 +8,7 @@ import { Lottery } from './modules/lottery/index.js';
 import { PlayerOnboarding } from './modules/playerOnboarding/index.js';
 import { ServerMessages } from './modules/serverMessages/index.js';
 import { Teleports } from './modules/teleports/index.js';
+import { TimedShutdown } from './modules/timedShutdown/index.js';
 import { Utils } from './modules/utils/index.js';
 
 export { BuiltinModule, ICommand, ICommandArgument, ICronJob, IHook, IFunction } from './BuiltinModule.js';
@@ -28,6 +29,7 @@ export function getModules(): Array<BuiltinModule<unknown>> {
       new EconomyUtils(),
       new Lottery(),
       new GeoBlock(),
+      new TimedShutdown(),
     ];
   }
 
