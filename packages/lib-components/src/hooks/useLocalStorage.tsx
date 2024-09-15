@@ -8,7 +8,6 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
       const item = window.localStorage.getItem(key);
       return item ? JSON.parse(item) : initialValue;
     } catch (e) {
-      // eslint-disable-next-line no-console
       console.error('Error reading the local storage value', e);
       return initialValue;
     }
@@ -24,11 +23,9 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
     } catch (e) {
       // DOMException code 22 for QuotaExceededError
       if (e instanceof DOMException && e.name === 'QuotaExceededError') {
-        // eslint-disable-next-line no-console
         console.error('LocalStorage quota exceeded', e);
         setError(e);
       } else {
-        // eslint-disable-next-line no-console
         console.error('Error setting the local storage value', e);
       }
     }

@@ -38,7 +38,7 @@ export interface TableProps<DataType extends object> {
   isLoading?: boolean;
 
   // currently not possible to type this properly: https://github.com/TanStack/table/issues/4241
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   columns: ColumnDef<DataType, any>[];
 
   /// Renders actions that are always visible

@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 // Extracted from https://github.com/Claviz/dts-extractor
 // And adjusted/integrated into the project
 

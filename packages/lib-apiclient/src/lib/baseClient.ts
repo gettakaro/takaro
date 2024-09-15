@@ -16,12 +16,10 @@ interface Logger {
 export class BaseApiClient<T extends IBaseApiClientConfig> {
   protected axios: AxiosInstance;
   protected log: Logger = {
-    /* eslint-disable no-console */
     error: console.error,
     info: console.log,
     warn: console.warn,
     debug: console.log,
-    /* eslint-enable no-console */
   };
 
   constructor(protected readonly config: T) {
