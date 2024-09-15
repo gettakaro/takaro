@@ -97,6 +97,18 @@ const tests = [
 
       expect((await secondEvents).length).to.be.eq(1);
       expect((await secondEvents)[0].data.meta.msg).to.be.eq('Test message 2');
+
+      // After this, it should loop back to the first message
+      const thirdEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+
+      await this.client.cronjob.cronJobControllerTrigger({
+        cronjobId: this.setupData.serverMessagesModule.cronJobs[0].id,
+        gameServerId: this.setupData.gameserver.id,
+        moduleId: this.setupData.serverMessagesModule.id,
+      });
+
+      expect((await thirdEvents).length).to.be.eq(1);
+      expect((await thirdEvents)[0].data.meta.msg).to.be.eq('Test message 1');
     },
   }),
 ];
