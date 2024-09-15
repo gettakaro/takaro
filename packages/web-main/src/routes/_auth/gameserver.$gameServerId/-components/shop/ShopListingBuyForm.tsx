@@ -5,6 +5,7 @@ import { useForm, SubmitHandler } from 'react-hook-form';
 import { useSnackbar } from 'notistack';
 
 import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 interface ShopListingBuyFormProps {
   playerCurrencyAmount: number;
@@ -32,6 +33,7 @@ export const ShopListingBuyForm: FC<ShopListingBuyFormProps> = ({
     defaultValues: {
       amount: 1,
     },
+    resolver: zodResolver(validationSchema),
   });
 
   const handleOnBuyClick: SubmitHandler<z.infer<typeof validationSchema>> = async ({ amount }) => {

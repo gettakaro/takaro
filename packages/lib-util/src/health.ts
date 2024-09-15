@@ -14,7 +14,7 @@ class Health {
       const results = await Promise.all(Array.from(this.hooks.values()).map((hook) => hook()));
 
       return results.every((result) => result);
-    } catch (_error) {
+    } catch {
       return false;
     }
   }

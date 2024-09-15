@@ -36,7 +36,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  const getSession = async function (): Promise<MeOutputDTO> {
+  const getSession = async function(): Promise<MeOutputDTO> {
     try {
       const newSession = (
         await getApiClient().user.userControllerMe({
@@ -47,7 +47,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       ).data.data;
       queryClient.setQueryData(userKeys.me(), newSession);
       return newSession;
-    } catch (_error) {
+    } catch {
       queryClient.clear();
       window.location.href = '/login';
       throw 'should have no session and should be redirected to login';

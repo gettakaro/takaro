@@ -21,7 +21,7 @@ const myFormat = printf((info) => {
   if (Object.getOwnPropertyNames(cleanMeta).length) {
     try {
       metaString = `| ${JSON.stringify(cleanMeta, Object.getOwnPropertyNames(cleanMeta))}`;
-    } catch (_e) {
+    } catch {
       metaString = '| Invalid Meta Information';
     }
   }

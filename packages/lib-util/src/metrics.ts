@@ -59,7 +59,7 @@ function sanitizeUrl(cfg?: InternalAxiosRequestConfig) {
 
   try {
     urlObj = new URL(url);
-  } catch (_error) {
+  } catch {
     return undefined;
   }
 
