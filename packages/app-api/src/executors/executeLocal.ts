@@ -1,4 +1,5 @@
-import { getTakaro, checkPermission, TakaroUserError, axios, _, nextCronJobRun } from '@takaro/helpers';
+import { getTakaro, checkPermission, TakaroUserError, _, nextCronJobRun } from '@takaro/helpers';
+import axios from 'axios';
 import vm from 'node:vm';
 import { FunctionExecutor } from './executeFunction.js';
 import { config } from '../config.js';
