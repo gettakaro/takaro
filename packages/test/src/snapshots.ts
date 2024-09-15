@@ -55,7 +55,7 @@ export async function matchSnapshot<SetupData>(
 
   try {
     file = await readFile(snapshotPath, { encoding: 'utf-8' });
-  } catch (_error) {
+  } catch {
     await mkdir(path.dirname(snapshotPath), { recursive: true });
     await writeFile(snapshotPath, JSON.stringify(fullData, null, 2));
     throw new Error(`No snapshot exists, created a new one: ${snapshotPath}`);
