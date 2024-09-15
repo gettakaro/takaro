@@ -65,7 +65,7 @@ export class HTTP {
         ...options,
         defaultErrorHandler: false,
         validation: { whitelist: true, forbidNonWhitelisted: true },
-        // eslint-disable-next-line @typescript-eslint/ban-types
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
         controllers: [Meta, ...(options.controllers as Function[])],
       });
     } else {

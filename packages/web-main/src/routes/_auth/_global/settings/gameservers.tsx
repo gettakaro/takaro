@@ -104,7 +104,7 @@ function Component() {
 
       enqueueSnackbar('Settings has been successfully saved', { variant: 'default' });
       reset({}, { keepValues: true });
-    } catch (_error) {
+    } catch {
       enqueueSnackbar('An error occurred while saving settings', { variant: 'default', type: 'error' });
       return;
     }

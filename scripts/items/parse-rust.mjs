@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
-const { readdir, readFile, copyFile } = require('fs/promises');
+import { readdir, readFile, copyFile } from 'node:fs/promises';
 
 const location = './_data/rust';
 
@@ -14,7 +14,7 @@ async function main() {
       const json = JSON.parse(fileContent);
 
       items[json.shortname] = json;
-    })
+    }),
   );
 
   console.log(JSON.stringify(items, null, 2));
@@ -38,7 +38,7 @@ async function parseIcons(items) {
       if (!item) return;
 
       await copyFile(`${iconsFolder}/${icon}`, `${outputFolder}/${name}.png`);
-    })
+    }),
   );
 }
 

@@ -3,6 +3,7 @@ import { DurationField, DurationFieldProps } from '../../../components';
 import { z } from 'zod';
 import { StoryFn, Meta } from '@storybook/react';
 import { useForm, SubmitHandler } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 export default {
   title: 'Inputs/DurationField',
@@ -26,7 +27,9 @@ export const Default: StoryFn<DurationFieldProps> = (args) => {
     duration: z.number().positive(),
   });
 
-  const { control, handleSubmit } = useForm<z.infer<typeof validationSchema>>();
+  const { control, handleSubmit } = useForm<z.infer<typeof validationSchema>>({
+    resolver: zodResolver(validationSchema),
+  });
   const onSubmit: SubmitHandler<z.infer<typeof validationSchema>> = ({ duration }) => {
     setResult(duration);
   };
