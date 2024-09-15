@@ -70,7 +70,10 @@ const tests = [
       const repeatables = allRepeatables.filter((job) => {
         return (
           job.key ===
-          service.getJobId(assignment as ServiceModuleInstallationOutputDTO, mod.cronJobs[0] as ServiceCronJobOutputDTO)
+          service.getJobKey(
+            assignment as ServiceModuleInstallationOutputDTO,
+            mod.cronJobs[0] as ServiceCronJobOutputDTO,
+          )
         );
       });
 
@@ -96,7 +99,10 @@ const tests = [
       const repeatables = allRepeatables.filter((job) => {
         return (
           job.key ===
-          service.getJobId(assignment as ServiceModuleInstallationOutputDTO, mod.cronJobs[0] as ServiceCronJobOutputDTO)
+          service.getJobKey(
+            assignment as ServiceModuleInstallationOutputDTO,
+            mod.cronJobs[0] as ServiceCronJobOutputDTO,
+          )
         );
       });
 
@@ -118,7 +124,10 @@ const tests = [
       const repeatables = allRepeatables.filter((job) => {
         return (
           job.key ===
-          service.getJobId(assignment as ServiceModuleInstallationOutputDTO, mod.cronJobs[0] as ServiceCronJobOutputDTO)
+          service.getJobKey(
+            assignment as ServiceModuleInstallationOutputDTO,
+            mod.cronJobs[0] as ServiceCronJobOutputDTO,
+          )
         );
       });
 
@@ -140,7 +149,10 @@ const tests = [
       const repeatables = allRepeatables.filter((job) => {
         return (
           job.key ===
-          service.getJobId(assignment as ServiceModuleInstallationOutputDTO, mod.cronJobs[0] as ServiceCronJobOutputDTO)
+          service.getJobKey(
+            assignment as ServiceModuleInstallationOutputDTO,
+            mod.cronJobs[0] as ServiceCronJobOutputDTO,
+          )
         );
       });
 
@@ -162,7 +174,10 @@ const tests = [
       const repeatables = allRepeatables.filter((job) => {
         return (
           job.key ===
-          service.getJobId(assignment as ServiceModuleInstallationOutputDTO, mod.cronJobs[0] as ServiceCronJobOutputDTO)
+          service.getJobKey(
+            assignment as ServiceModuleInstallationOutputDTO,
+            mod.cronJobs[0] as ServiceCronJobOutputDTO,
+          )
         );
       });
 
