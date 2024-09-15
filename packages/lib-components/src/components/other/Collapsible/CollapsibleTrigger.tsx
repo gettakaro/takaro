@@ -22,6 +22,18 @@ const Container = styled.button<{ open: boolean }>`
   margin-bottom: ${({ theme, open }) => (!open ? theme.spacing['1'] : theme.spacing['0_5'])};
   border: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
   color: ${({ theme }) => theme.colors.textAlt};
+  font-size: ${({ theme }) => theme.fontSize.mediumLarge};
+
+  ${({ open }) => {
+    if (open) {
+      return `
+        border-bottom: 0;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+        margin-bottom: 0;
+      `;
+    }
+  }}
 
   svg {
     fill: ${({ theme }) => theme.colors.textAlt};
