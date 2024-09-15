@@ -1,6 +1,6 @@
 {
   "name": "@takaro/aws",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "AWS helper functions",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
