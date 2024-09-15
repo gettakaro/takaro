@@ -355,6 +355,10 @@ export class MockGameserver implements IMockGameServer {
       }),
     ];
   }
+
+  async shutdown() {
+    await this.sendLog('Shutting down');
+  }
 }
 
 const cachedMockServer: Map<string, MockGameserver> = new Map();
