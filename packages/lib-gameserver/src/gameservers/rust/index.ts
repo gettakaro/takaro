@@ -232,4 +232,8 @@ export class Rust implements IGameServer {
     const items = JSON.parse(parsed.Inventory);
     return await Promise.all(items.map((i: any) => new IItemDTO({ code: i.itemName, amount: i.amount })));
   }
+
+  async shutdown(): Promise<void> {
+    await this.executeConsoleCommand('quit');
+  }
 }
