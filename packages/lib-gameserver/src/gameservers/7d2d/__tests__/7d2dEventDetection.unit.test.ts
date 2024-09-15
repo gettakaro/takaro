@@ -113,7 +113,6 @@ describe('7d2d event detection', () => {
 
   it('[PlayerDisconnected]: Can detect simple player disconnected', async () => {
     await new SevenDaysToDieEmitter(await mockConnectionInfo()).parseMessage({
-      // eslint-disable-next-line quotes
       msg: `Player disconnected: EntityID=171, PltfmId='Steam_76561198028175941', CrossId='EOS_0002b5d970954287afdcb5dc35af0424', OwnerID='Steam_76561198028175941', PlayerName='Catalysm'`,
     });
     expect(emitStub).to.have.been.calledTwice;
@@ -134,7 +133,6 @@ describe('7d2d event detection', () => {
     const emitter = new SevenDaysToDieEmitter(await mockConnectionInfo());
 
     await emitter.parseMessage({
-      // eslint-disable-next-line quotes
       msg: `Chat handled by mod 'CSMM Patrons': Chat (from 'Steam_76561198028175941', entity id '549', to 'Global'): fsafsafasf`,
     });
 
@@ -155,12 +153,10 @@ describe('7d2d event detection', () => {
     const emitter = new SevenDaysToDieEmitter(await mockConnectionInfo());
 
     await emitter.parseMessage({
-      // eslint-disable-next-line quotes
       msg: `"Chat (from '-non-player-', entity id '-1', to 'Global'): 'Cata': a"`,
     });
 
     await emitter.parseMessage({
-      // eslint-disable-next-line quotes
       msg: `Chat handled by mod '1CSMM_Patrons': Chat (from 'Steam_76561198028175941', entity id '546', to 'Global'): &ping`,
     });
 

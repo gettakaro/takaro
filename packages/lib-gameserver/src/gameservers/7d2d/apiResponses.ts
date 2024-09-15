@@ -100,7 +100,6 @@ export interface PlayerEquipment extends Record<string, InventoryItem> {
   boots: InventoryItem;
   gloves: InventoryItem;
 }
-/* eslint-enable */
 
 export interface PlayerListResponse {
   total: number;
@@ -187,7 +186,7 @@ export interface GetServerInfo {
 
 export interface GetServerInfoEntry {
   type: string;
-  value: any; // eslint-disable-line
+  value: any;
 }
 
 export interface GetWebUIUpdatesResponse {

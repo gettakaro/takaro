@@ -72,7 +72,7 @@ export function ColumnHeader<DataType extends object>({ header, table, isLoading
       const hoverMiddleX = (hoverBoundingRect.right - hoverBoundingRect.left) / 2;
 
       // Determine mouse position
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
       const clientOffset = monitor.getClientOffset()!;
 
       // Get pixels to the top

@@ -33,7 +33,7 @@ export function OryProvider({ children }: { children: React.ReactNode }) {
      * @param fatalToDash - When true and error can not be handled, then redirect to dashboard, else rethrow error
      */
     getFlow: ((flowId: string) => Promise<void | AxiosError>) | undefined,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     setFlow: React.Dispatch<React.SetStateAction<any>> | undefined,
     defaultNav: string | undefined,
     fatalToDash = false,
