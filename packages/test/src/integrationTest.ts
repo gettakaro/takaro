@@ -19,10 +19,10 @@ export class IIntegrationTest<SetupData> {
 }
 
 const noopLog = {
-  info: () => { },
-  error: () => { },
-  warn: () => { },
-  debug: () => { },
+  info: () => {},
+  error: () => {},
+  warn: () => {},
+  debug: () => {},
 };
 
 const testDomainPrefix = 'integration-';
@@ -106,7 +106,7 @@ export class IntegrationTest<SetupData> {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const integrationTestContext = this;
 
-    describe(`${this.test.group} - ${this.test.name}`, function() {
+    describe(`${this.test.group} - ${this.test.name}`, function () {
       this.retries(integrationConfig.get('mocha.retries'));
 
       async function setup(): Promise<void> {
@@ -209,7 +209,7 @@ export class IntegrationTest<SetupData> {
           teardown,
           integrationConfig.get('mocha.waitBetweenRetries'),
           integrationConfig.get('mocha.retries'),
-          async () => { },
+          async () => {},
         );
 
       beforeEach(retryableSetup);

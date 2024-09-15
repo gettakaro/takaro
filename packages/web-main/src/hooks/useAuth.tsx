@@ -36,7 +36,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  const getSession = async function(): Promise<MeOutputDTO> {
+  const getSession = async function (): Promise<MeOutputDTO> {
     try {
       const newSession = (
         await getApiClient().user.userControllerMe({
