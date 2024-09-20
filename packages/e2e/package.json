@@ -15,7 +15,7 @@
   "author": "Takaro Team",
   "license": "AGPL-3.0-or-later",
   "devDependencies": {
-    "@playwright/test": "1.46.1"
+    "@playwright/test": "1.47.1"
   },
   "dependencies": {
     "deep-equal-in-any-order": "^2.0.6"
