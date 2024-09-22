@@ -598,4 +598,8 @@ export class GameServerService extends TakaroService<
       id: job.id,
     };
   }
+
+  async syncBans(_gameServerId: string) {
+    throw new errors.NotImplementedError();
+  }
 }

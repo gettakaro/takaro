@@ -26,6 +26,10 @@ export interface IQueuesConfig extends IBaseConfig {
       name: string;
       interval: number;
     };
+    bansSync: {
+      name: string;
+      interval: number;
+    };
     steamSync: {
       name: string;
       interval: number;
@@ -159,6 +163,20 @@ export const queuesConfigSchema = {
         format: Number,
         default: ms('1hour'),
         env: 'ITEMS_SYNC_QUEUE_INTERVAL',
+      },
+    },
+    bansSync: {
+      name: {
+        doc: 'The name of the queue to use for bans sync',
+        format: String,
+        default: 'bansSync',
+        env: 'BANS_SYNC_QUEUE_NAME',
+      },
+      interval: {
+        doc: 'The interval to run the bans sync',
+        format: Number,
+        default: ms('1hour'),
+        env: 'BANS_SYNC_QUEUE_INTERVAL',
       },
     },
     steamSync: {
