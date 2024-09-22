@@ -40,11 +40,13 @@ export const RoleSelect: FC<CustomSelectProps> = ({
     return <div>no game servers</div>;
   }
 
+  const filteredRoles = roles.data.filter((role) => role.name !== 'User' && role.name !== 'Player');
+
   return (
     <RoleSelectView
       control={control}
       name={name}
-      roles={roles.data}
+      roles={filteredRoles}
       readOnly={readOnly}
       description={description}
       size={size}
