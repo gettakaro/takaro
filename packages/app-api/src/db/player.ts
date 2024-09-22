@@ -366,6 +366,23 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
     return await query2.findById(res.id);
   }
 
+  async getCountryStats(gameServerIds?: string[]) {
+    const { query } = await this.getIPHistoryModel();
+
+    const qry = query
+      .select('country')
+      .countDistinct('playerId as playerCount')
+      .whereNotNull('country')
+      .groupBy('country')
+      .orderBy('playerCount', 'desc');
+
+    if (gameServerIds && gameServerIds.length > 0) {
+      qry.whereIn('gameServerId', gameServerIds);
+    }
+
+    return await qry;
+  }
+
   async calculatePlayerActivityMetrics() {
     const oneDayAgo = new Date(new Date().valueOf() - 1000 * 60 * 60 * 24).toISOString();
     const oneWeekAgo = new Date(new Date().valueOf() - 1000 * 60 * 60 * 24 * 7).toISOString();
