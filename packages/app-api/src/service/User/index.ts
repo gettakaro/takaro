@@ -92,6 +92,10 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
     const role = await roleService.findOne(roleId);
     if (!role) throw new errors.NotFoundError(`Role ${roleId} not found`);
 
+    if ((role?.name === 'Player' || role?.name === 'User') && role.system) {
+      throw new errors.BadRequestError('Cannot assign Player or User role, everyone has these by default');
+    }
+
     await this.repo.assignRole(userId, roleId, expiresAt);
     await eventService.create(
       new EventCreateDTO({

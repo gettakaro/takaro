@@ -296,6 +296,10 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
 
     const role = await roleService.findOne(roleId);
 
+    if ((role?.name === 'Player' || role?.name === 'User') && role.system) {
+      throw new errors.BadRequestError('Cannot assign Player or User role, everyone has these by default');
+    }
+
     this.log.info('Assigning role to player', { roleId, player: targetId, gameserverId, expiresAt });
     await this.repo.assignRole(targetId, roleId, gameserverId, expiresAt);
     await eventService.create(

@@ -2,6 +2,7 @@ import { IntegrationTest, SetupGameServerPlayers, expect } from '@takaro/test';
 import { PERMISSIONS } from '@takaro/auth';
 import { faker } from '@faker-js/faker';
 import { Client } from '@takaro/apiclient';
+import { AxiosError } from 'axios';
 
 const group = 'PlayerController';
 
@@ -265,6 +266,51 @@ const tests = [
 
       const members2 = (await this.client.player.playerControllerSearch({ filters: { roleId: [role2.id] } })).data.data;
       expect(members2.length).to.be.eq(0);
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    setup: SetupGameServerPlayers.setup,
+    name: 'Does not allow assigning player system role',
+    test: async function () {
+      const role = await this.client.role.roleControllerSearch({ filters: { name: ['Player'] } });
+      const player = this.setupData.players[0];
+      try {
+        await this.client.player.playerControllerAssignRole(player.id, role.data.data[0].id);
+        throw new Error('Should have thrown');
+      } catch (error) {
+        if (error instanceof AxiosError && error.response) {
+          expect(error.response.data.meta.error.message).to.be.eq(
+            'Cannot assign Player or User role, everyone has these by default',
+          );
+        } else {
+          throw error;
+        }
+      }
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    setup: SetupGameServerPlayers.setup,
+    name: 'Does not allow assigning user system role',
+    test: async function () {
+      const role = await this.client.role.roleControllerSearch({ filters: { name: ['User'] } });
+      const player = this.setupData.players[0];
+
+      try {
+        await this.client.player.playerControllerAssignRole(player.id, role.data.data[0].id);
+        throw new Error('Should have thrown');
+      } catch (error) {
+        if (error instanceof AxiosError && error.response) {
+          expect(error.response.data.meta.error.message).to.be.eq(
+            'Cannot assign Player or User role, everyone has these by default',
+          );
+        } else {
+          throw error;
+        }
+      }
     },
   }),
 ];
