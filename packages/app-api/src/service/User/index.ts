@@ -54,6 +54,15 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
   }
 
   async find(filters: Partial<UserSearchInputDTO>) {
+    // Everyone has the User and Player roles by default
+    // Filtering by these roles would be redundant
+    if (filters.filters?.roleId) {
+      const roleService = new RoleService(this.domainId);
+      const role = await roleService.findOne(filters.filters.roleId[0]);
+      if ((role?.name === 'Player' || role?.name === 'User') && role.system) {
+        delete filters.filters.roleId;
+      }
+    }
     const result = await this.repo.find(filters);
     const extendedWithOry = {
       ...result,
@@ -91,6 +100,10 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
 
     const role = await roleService.findOne(roleId);
     if (!role) throw new errors.NotFoundError(`Role ${roleId} not found`);
+
+    if ((role?.name === 'Player' || role?.name === 'User') && role.system) {
+      throw new errors.BadRequestError('Cannot assign Player or User role, everyone has these by default');
+    }
 
     await this.repo.assignRole(userId, roleId, expiresAt);
     await eventService.create(

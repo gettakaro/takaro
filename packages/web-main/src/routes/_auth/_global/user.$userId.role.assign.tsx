@@ -8,14 +8,13 @@ import {
   DrawerSkeleton,
   styled,
 } from '@takaro/lib-components';
-import { rolesQueryOptions } from 'queries/role';
 import { userMeQueryOptions, useUserAssignRole } from 'queries/user';
 import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { DateTime, Settings } from 'luxon';
 import { RoleSelect } from 'components/selects';
-import { createFileRoute, notFound, redirect, useRouter } from '@tanstack/react-router';
+import { createFileRoute, redirect, useRouter } from '@tanstack/react-router';
 import { z } from 'zod';
 import { hasPermission } from 'hooks/useHasPermission';
 
@@ -42,13 +41,6 @@ export const Route = createFileRoute('/_auth/_global/user/$userId/role/assign')(
       throw redirect({ to: '/forbidden' });
     }
   },
-  loader: async ({ context }) => {
-    const data = await context.queryClient.ensureQueryData(rolesQueryOptions());
-    if (data.data.length === 0) {
-      throw notFound();
-    }
-    return data.data;
-  },
   component: Component,
   pendingComponent: () => <DrawerSkeleton />,
 });
@@ -58,7 +50,6 @@ function Component() {
   const router = useRouter();
   const { userId } = Route.useParams();
   const { mutate, isPending, error } = useUserAssignRole();
-  const roles = Route.useLoaderData();
 
   useEffect(() => {
     if (!open) {
@@ -69,9 +60,8 @@ function Component() {
   const { control, handleSubmit } = useForm<IFormInputs>({
     mode: 'onSubmit',
     resolver: zodResolver(roleAssignValidationSchema),
-    values: {
+    defaultValues: {
       id: userId,
-      roleId: roles[0].id,
     },
   });
 
