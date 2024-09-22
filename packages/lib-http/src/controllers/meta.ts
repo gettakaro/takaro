@@ -40,16 +40,17 @@ export class Meta {
       'class-transformer/cjs/storage.js'
     );
 
-    const storage = getMetadataArgsStorage();
+    const metadataArgsStorage = getMetadataArgsStorage();
+    const metadataStorage = getMetadataStorage();
     const schemas = validationMetadatasToSchemas({
       refPointerPrefix: '#/components/schemas/',
       classTransformerMetadataStorage: classTransformerStorage.defaultMetadataStorage,
-      classValidatorMetadataStorage: getMetadataStorage(),
+      classValidatorMetadataStorage: metadataStorage,
       forbidNonWhitelisted: true,
     });
 
     spec = routingControllersToSpec(
-      storage,
+      metadataArgsStorage,
       {},
       {
         info: {
@@ -85,7 +86,7 @@ export class Meta {
 
     const requiredPermsRegex = /authMiddleware\((.+)\)/;
 
-    storage.uses.forEach((use) => {
+    metadataArgsStorage.uses.forEach((use) => {
       const requiredPerms =
         use.middleware.name
           .match(requiredPermsRegex)?.[1]
