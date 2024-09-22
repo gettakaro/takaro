@@ -2,13 +2,13 @@ import { TakaroService } from './Base.js';
 
 import { IsBoolean, IsIP, IsISO8601, IsNumber, IsOptional, IsString, Min, ValidateNested } from 'class-validator';
 import { TakaroDTO, TakaroModelDTO, ctx, errors, traceableClass } from '@takaro/util';
-import { ITakaroQuery } from '@takaro/db';
+import { ITakaroQuery, SortDirection } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { PlayerOnGameServerModel, PlayerOnGameServerRepo } from '../db/playerOnGameserver.js';
 import { IItemDTO } from '@takaro/gameserver';
 import { Type } from 'class-transformer';
 import { PlayerRoleAssignmentOutputDTO, RoleService } from './RoleService.js';
-import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
+import { EVENT_TYPES, EventCreateDTO, EventOutputDTO, EventService } from './EventService.js';
 import { IGamePlayer, TakaroEventCurrencyAdded, TakaroEventCurrencyDeducted, TakaroEvents } from '@takaro/modules';
 import { PlayerService } from './PlayerService.js';
 
@@ -54,6 +54,9 @@ export class PlayerOnGameserverOutputDTO extends TakaroModelDTO<PlayerOnGameserv
 
   @IsISO8601()
   lastSeen!: string;
+
+  @IsNumber()
+  playtimeSeconds: number;
 }
 
 export class PlayerOnGameserverOutputWithRolesDTO extends PlayerOnGameserverOutputDTO {
@@ -101,6 +104,10 @@ export class PlayerOnGameServerUpdateDTO extends TakaroDTO<PlayerOnGameServerUpd
 
   @IsBoolean()
   online: boolean;
+
+  @IsNumber()
+  @IsOptional()
+  playtimeSeconds?: number;
 }
 
 @traceableClass('service:playerOnGameserver')
@@ -299,5 +306,68 @@ export class PlayerOnGameServerService extends TakaroService<
   }
   async setOnlinePlayers(gameServerId: string, players: IGamePlayer[]) {
     await this.repo.setOnlinePlayers(gameServerId, players);
+  }
+
+  async handlePlaytimeIncrease(disconnectedEvent: EventOutputDTO) {
+    const playerService = new PlayerService(this.domainId);
+    const { player, pogs } = await playerService.resolveFromId(disconnectedEvent.playerId);
+    const pog = pogs.find((pog) => pog.gameServerId === disconnectedEvent.gameserverId);
+
+    if (!player) {
+      this.log.warn('Player not found', { playerId: disconnectedEvent.playerId });
+      return;
+    }
+
+    if (!pog) {
+      this.log.warn('Player on game server not found', {
+        playerId: player.id,
+        gameServerId: disconnectedEvent.gameserverId,
+      });
+      return;
+    }
+
+    // Find the last connected event
+    const lastConnectedEvents = await new EventService(this.domainId).find({
+      filters: {
+        eventName: [EVENT_TYPES.PLAYER_CONNECTED, EVENT_TYPES.PLAYER_DISCONNECTED],
+        playerId: [player.id],
+        gameserverId: [disconnectedEvent.gameserverId],
+      },
+      sortBy: 'createdAt',
+      sortDirection: SortDirection.desc,
+      limit: 2,
+    });
+
+    if (!lastConnectedEvents.results.length) {
+      this.log.warn('No connected event found', { playerId: player.id });
+      return;
+    }
+
+    // If we only have disconnected events, exit out
+    // Cannot calculate correct playtime, we missed connected events
+    if (lastConnectedEvents.results.filter((event) => event.eventName === EVENT_TYPES.PLAYER_CONNECTED).length === 0) {
+      this.log.warn('No connected event found', { playerId: player.id });
+      return;
+    }
+
+    // Edge case: if we missed a player connected event, the playtime calc would be off
+    // Eg: connected, disconnected, disconnected
+    // In this case, we should ignore the disconnected event
+    // We expect the retrieved events to be disconnected, connected.
+    const hasRightOrder =
+      lastConnectedEvents.results[0].eventName === EVENT_TYPES.PLAYER_DISCONNECTED &&
+      lastConnectedEvents.results[1].eventName === EVENT_TYPES.PLAYER_CONNECTED;
+
+    if (!hasRightOrder) {
+      this.log.warn('Unexpected event order', { playerId: player.id });
+      return;
+    }
+
+    const connectedEvent = lastConnectedEvents.results[1];
+    const difference = new Date(disconnectedEvent.createdAt).getTime() - new Date(connectedEvent.createdAt).getTime();
+    const seconds = Math.floor(difference / 1000);
+    await this.update(pog.id, new PlayerOnGameServerUpdateDTO({ playtimeSeconds: pog.playtimeSeconds + seconds }));
+
+    return;
   }
 }

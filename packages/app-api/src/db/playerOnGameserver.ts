@@ -33,6 +33,7 @@ export class PlayerOnGameServerModel extends TakaroModel {
   positionZ: number;
 
   lastSeen: string;
+  playtimeSeconds: number;
 
   currency: number;
 
@@ -178,6 +179,7 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
       positionZ: data.positionZ,
       currency: data.currency,
       online: data.online,
+      playtimeSeconds: data.playtimeSeconds,
     });
 
     return this.findOne(res.id);
