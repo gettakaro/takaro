@@ -78,6 +78,12 @@ export class EventsCountInputDTO extends BaseStatsInputDTO {
   bucketStep: string;
 }
 
+export class CountryStatsInputDTO extends TakaroDTO<CountryStatsInputDTO> {
+  @IsOptional()
+  @IsString({ each: true })
+  gameServerId: string[];
+}
+
 @OpenAPI({
   security: [{ domainAuth: [] }],
 })
@@ -145,5 +151,16 @@ export class StatsController {
   async getEventsCount(@Req() req: AuthenticatedRequest, @QueryParams() query: EventsCountInputDTO) {
     const service = new StatsService(req.domainId);
     return apiResponse(await service.getEventsCountOverTime(query));
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_PLAYERS]))
+  @ResponseSchema(StatsOutputDTOAPI)
+  @OpenAPI({
+    summary: 'Get statistics about the countries of the players',
+  })
+  @Get('/stats/countries')
+  async getCountryStats(@Req() req: AuthenticatedRequest, @QueryParams() query: CountryStatsInputDTO) {
+    const service = new StatsService(req.domainId);
+    return apiResponse(await service.getCountryStats(query));
   }
 }
