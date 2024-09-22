@@ -81,7 +81,7 @@ export const VariablesForm: FC<CreateAndUpdateVariableformProps> = ({ variable, 
               label="Value"
               loading={isLoading}
               name="value"
-              placeholder="My cool role"
+              placeholder="My cool variable"
               description="Value is a string. However the most common use case is to store stringified JSON. You can e.g. use https://jsonformatter.org/json-stringify-online to stringify JSON."
               required
               readOnly={readOnly}

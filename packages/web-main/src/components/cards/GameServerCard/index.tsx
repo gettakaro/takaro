@@ -21,15 +21,17 @@ import {
   AiOutlineCopy as CopyIcon,
   AiOutlineFunction as ModulesIcon,
   AiOutlineSetting as SettingsIcon,
+  AiOutlineStop as ShutdownIcon,
 } from 'react-icons/ai';
 
 import { Header, TitleContainer, DetailsContainer } from './style';
-import { useGameServerRemove } from 'queries/gameserver';
+import { useGameServerRemove, useGameServerShutdown } from 'queries/gameserver';
 import { PermissionsGuard } from 'components/PermissionsGuard';
 import { CardBody } from '../style';
 import { useSocket } from 'hooks/useSocket';
 import { playersOnGameServersQueryOptions } from 'queries/pog';
 import { useQuery } from '@tanstack/react-query';
+import { useHasPermission } from 'hooks/useHasPermission';
 
 const StatusChip: FC<{ reachable: boolean; enabled: boolean }> = ({ reachable, enabled }) => {
   if (!enabled) return <Chip label="disabled" color="warning" variant="outline" />;
@@ -38,11 +40,15 @@ const StatusChip: FC<{ reachable: boolean; enabled: boolean }> = ({ reachable, e
 };
 
 export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reachable, enabled }) => {
-  const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
+  const [openDeleteGameServerDialog, setOpenDeleteGameServerDialog] = useState<boolean>(false);
+  const [openShutdownGameServerDialog, setOpenShutdownGameServerDialog] = useState<boolean>(false);
+
+  const hasManageGameServerPermission = useHasPermission(['MANAGE_GAMESERVERS']);
+  const { mutate: shutdownGameServer, isPending: isShuttingDown } = useGameServerShutdown();
   const [valid, setValid] = useState<boolean>(false);
   const navigate = useNavigate();
   const theme = useTheme();
-  const { mutate, isPending: isDeleting } = useGameServerRemove();
+  const { mutate: removeGameServer, isPending: isDeleting } = useGameServerRemove();
   const { socket } = useSocket();
   const {
     data: onlinePogs,
@@ -77,12 +83,23 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
     if (e.shiftKey) {
       handleOnDelete();
     } else {
-      setOpenDeleteDialog(true);
+      setOpenDeleteGameServerDialog(true);
     }
   };
 
   const handleOnDelete = () => {
-    mutate({ gameServerId: id });
+    removeGameServer({ gameServerId: id });
+    setOpenDeleteGameServerDialog(false);
+  };
+
+  const handleOnShutdown = () => {
+    shutdownGameServer(id);
+    setOpenShutdownGameServerDialog(false);
+  };
+
+  const handleOnShutdownClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    setOpenShutdownGameServerDialog(true);
   };
 
   const handleOnCopyClick = (e: MouseEvent) => {
@@ -113,11 +130,23 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
                 <Dropdown.Menu>
                   <Dropdown.Menu.Group label="Actions">
                     <Dropdown.Menu.Item icon={<CopyIcon />} onClick={handleOnCopyClick} label="Copy gameserverID" />
-                    <Dropdown.Menu.Item icon={<EditIcon />} onClick={handleOnEditClick} label="Edit gameserver" />
+                    <Dropdown.Menu.Item
+                      icon={<EditIcon />}
+                      disabled={!hasManageGameServerPermission}
+                      onClick={handleOnEditClick}
+                      label="Edit gameserver"
+                    />
                     <Dropdown.Menu.Item
                       icon={<DeleteIcon fill={theme.colors.error} />}
                       onClick={handleOnDeleteClick}
+                      disabled={!hasManageGameServerPermission}
                       label="Delete gameserver"
+                    />
+                    <Dropdown.Menu.Item
+                      icon={<ShutdownIcon fill={theme.colors.error} />}
+                      label="Shutdown gameserver"
+                      disabled={!hasManageGameServerPermission}
+                      onClick={handleOnShutdownClick}
                     />
                   </Dropdown.Menu.Group>
                   <Dropdown.Menu.Group label="Navigation">
@@ -127,7 +156,7 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
                         e.stopPropagation();
                         navigate({ to: '/gameserver/$gameServerId/dashboard/overview', params: { gameServerId: id } });
                       }}
-                      label="go to dashboard"
+                      label="Go to dashboard"
                     />
                     <Dropdown.Menu.Item
                       icon={<ModulesIcon />}
@@ -135,7 +164,7 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
                         e.stopPropagation();
                         navigate({ to: '/gameserver/$gameServerId/modules', params: { gameServerId: id } });
                       }}
-                      label="go to modules"
+                      label="Go to modules"
                     />
                     <Dropdown.Menu.Item
                       icon={<ModulesIcon />}
@@ -143,7 +172,7 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
                         e.stopPropagation();
                         navigate({ to: '/gameserver/$gameServerId/shop', params: { gameServerId: id } });
                       }}
-                      label="go to shop"
+                      label="Go to shop"
                     />
                     <Dropdown.Menu.Item
                       icon={<SettingsIcon />}
@@ -151,7 +180,7 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
                         e.stopPropagation();
                         navigate({ to: '/gameserver/$gameServerId/settings', params: { gameServerId: id } });
                       }}
-                      label="go to settings"
+                      label="Go to settings"
                     />
                   </Dropdown.Menu.Group>
                 </Dropdown.Menu>
@@ -178,7 +207,7 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
           </DetailsContainer>
         </CardBody>
       </Card>
-      <Dialog open={openDeleteDialog} onOpenChange={setOpenDeleteDialog}>
+      <Dialog open={openDeleteGameServerDialog} onOpenChange={setOpenDeleteGameServerDialog}>
         <Dialog.Content>
           <Dialog.Heading>delete: gameserver</Dialog.Heading>
           <Dialog.Body size="medium">
@@ -194,10 +223,31 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
             />
             <Button
               isLoading={isDeleting}
-              onClick={() => handleOnDelete()}
+              onClick={handleOnDelete}
               disabled={!valid}
               fullWidth
               text="Delete gameserver"
+              color="error"
+            />
+          </Dialog.Body>
+        </Dialog.Content>
+      </Dialog>
+      <Dialog open={openShutdownGameServerDialog} onOpenChange={setOpenShutdownGameServerDialog}>
+        <Dialog.Content>
+          <Dialog.Heading>shutdown: gameserver</Dialog.Heading>
+          <Dialog.Body size="medium">
+            <p>
+              The gameserver will be stopped gracefully. If the gameserver is not reachable, this will have no effect.
+              Note that most hosting providers will automatically restart the gameserver after a shutdown, which makes
+              this operator act as a restart instead. <br />
+              <br /> Are you sure you want to <strong>shutdown</strong> <strong>{name}</strong>?
+            </p>
+            <p></p>
+            <Button
+              isLoading={isShuttingDown}
+              onClick={handleOnShutdown}
+              fullWidth
+              text="Shutdown gameserver"
               color="error"
             />
           </Dialog.Body>
