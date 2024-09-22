@@ -272,6 +272,30 @@ const tests = [
     group,
     snapshot: false,
     setup: SetupGameServerPlayers.setup,
+    name: 'Can fetch members of group - player system role returns all players',
+    test: async function () {
+      const role = await this.client.role.roleControllerSearch({ filters: { name: ['Player'] } });
+      const members = (await this.client.player.playerControllerSearch({ filters: { roleId: [role.data.data[0].id] } }))
+        .data.data;
+      expect(members.length).to.be.eq(this.setupData.players.length);
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    setup: SetupGameServerPlayers.setup,
+    name: 'Can fetch members of group - user system role returns all players',
+    test: async function () {
+      const role = await this.client.role.roleControllerSearch({ filters: { name: ['User'] } });
+      const members = (await this.client.player.playerControllerSearch({ filters: { roleId: [role.data.data[0].id] } }))
+        .data.data;
+      expect(members.length).to.be.eq(this.setupData.players.length);
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    setup: SetupGameServerPlayers.setup,
     name: 'Does not allow assigning player system role',
     test: async function () {
       const role = await this.client.role.roleControllerSearch({ filters: { name: ['Player'] } });
