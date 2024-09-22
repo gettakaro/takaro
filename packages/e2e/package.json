@@ -18,6 +18,6 @@
     "@playwright/test": "1.47.2"
   },
   "dependencies": {
-    "deep-equal-in-any-order": "^2.0.6"
+    "deep-equal-in-any-order": "2.0.6"
   }
 }
