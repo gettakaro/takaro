@@ -50,6 +50,9 @@ class PlayerOnGameServerSearchInputAllowedRangeFilter extends RangeFilterCreated
   @IsOptional()
   @IsISO8601()
   lastSeen!: string;
+  @IsOptional()
+  @IsNumber()
+  playtimeSeconds: number;
 }
 
 class PlayerOnGameServerSearchInputDTO extends ITakaroQuery<PlayerOnGameserverOutputDTO> {
