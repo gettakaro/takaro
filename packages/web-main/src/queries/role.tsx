@@ -13,7 +13,6 @@ import { infiniteQueryOptions, queryOptions, useMutation, useQueryClient } from 
 import { AxiosError } from 'axios';
 import { getApiClient } from 'util/getApiClient';
 import { hasNextPage, mutationWrapper, queryParamsToArray } from 'queries/util';
-import { userKeys } from './user';
 import { ErrorMessageMapping } from '@takaro/lib-components/src/errors';
 import { useSnackbar } from 'notistack';
 
@@ -22,6 +21,7 @@ export const roleKeys = {
   list: () => [...roleKeys.all, 'list'] as const,
   detail: (id: string) => [...roleKeys.all, 'detail', id] as const,
   permissions: () => [...roleKeys.all, 'permissions'] as const,
+  members: (id: string) => [...roleKeys.all, 'members', id] as const,
 };
 
 const defaultRoleErrorMessages: Partial<ErrorMessageMapping> = {
@@ -115,43 +115,6 @@ export const useRoleRemove = () => {
         enqueueSnackbar('Role successfully deleted!', { variant: 'default', type: 'success' });
         queryClient.invalidateQueries({ queryKey: roleKeys.list() });
         queryClient.removeQueries({ queryKey: roleKeys.detail(roleId) });
-      },
-    }),
-    {},
-  );
-};
-
-interface IUserRoleAssign {
-  id: string;
-  roleId: string;
-}
-
-export const useUserRoleAssign = ({ userId }: { userId: string }) => {
-  const apiClient = getApiClient();
-  const queryClient = useQueryClient();
-  return mutationWrapper<APIOutput, IUserRoleAssign>(
-    useMutation<APIOutput, AxiosError<APIOutput>, IUserRoleAssign>({
-      mutationFn: async ({ id, roleId }) => {
-        const res = (await apiClient.user.userControllerAssignRole(id, roleId)).data;
-        return res;
-      },
-      onSuccess: async () => {
-        await queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
-      },
-    }),
-    {},
-  );
-};
-
-export const useUserRoleUnassign = () => {
-  const apiClient = getApiClient();
-  const queryClient = useQueryClient();
-  return mutationWrapper<APIOutput, IUserRoleAssign>(
-    useMutation<APIOutput, AxiosError<APIOutput>, IUserRoleAssign>({
-      mutationFn: async ({ id, roleId }) => {
-        const res = (await apiClient.user.userControllerRemoveRole(id, roleId)).data;
-        queryClient.invalidateQueries({ queryKey: userKeys.detail(id) });
-        return res;
       },
     }),
     {},

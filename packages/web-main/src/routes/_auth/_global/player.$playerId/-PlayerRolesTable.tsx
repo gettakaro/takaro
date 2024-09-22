@@ -63,7 +63,7 @@ export const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId, 
       header: 'Name',
       id: 'name',
       cell: (info) => (
-        <Link to="/roles/view/$roleId" params={{ roleId: info.row.original.roleId }}>
+        <Link to="/roles/$roleId/view" params={{ roleId: info.row.original.roleId }}>
           {info.getValue()}
         </Link>
       ),
@@ -126,7 +126,7 @@ export const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId, 
               icon={<ViewIcon />}
               onClick={() =>
                 navigate({
-                  to: '/roles/view/$roleId',
+                  to: '/roles/$roleId/view',
                   params: { roleId: info.row.original.roleId },
                 })
               }

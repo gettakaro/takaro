@@ -26,10 +26,7 @@ const defaultVariableErrorMessages: Partial<ErrorMessageMapping> = {
 export const variableQueryOptions = (variableId: string) =>
   queryOptions<VariableOutputDTO, AxiosError<VariableOutputDTO>>({
     queryKey: variableKeys.detail(variableId),
-    queryFn: async () => {
-      const resp = (await getApiClient().variable.variableControllerFindOne(variableId)).data.data;
-      return resp;
-    },
+    queryFn: async () => (await getApiClient().variable.variableControllerFindOne(variableId)).data.data,
   });
 
 export const variablesQueryOptions = (queryParams: VariableSearchInputDTO) =>

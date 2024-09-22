@@ -57,8 +57,8 @@ export const useUserAssignRole = () => {
       mutationFn: async ({ userId, roleId, expiresAt }) =>
         (await apiClient.user.userControllerAssignRole(userId, roleId, { expiresAt })).data,
       onSuccess: async (_, { userId }) => {
-        // invalidate user because new role assignment
         queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
+        queryClient.invalidateQueries({ queryKey: userKeys.list() });
       },
     }),
     {},
@@ -140,6 +140,41 @@ export const useUserRemove = () => {
         await queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
         await queryClient.invalidateQueries({ queryKey: userKeys.list() });
         enqueueSnackbar('User successfully deleted!', { variant: 'default' });
+      },
+    }),
+    {},
+  );
+};
+
+interface IUserRoleAssign {
+  id: string;
+  roleId: string;
+}
+
+export const useUserRoleAssign = () => {
+  const apiClient = getApiClient();
+  const queryClient = useQueryClient();
+  return mutationWrapper<APIOutput, IUserRoleAssign>(
+    useMutation<APIOutput, AxiosError<APIOutput>, IUserRoleAssign>({
+      mutationFn: async ({ id, roleId }) => (await apiClient.user.userControllerAssignRole(id, roleId)).data,
+      onSuccess: async (_, { userId }) => {
+        queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
+        queryClient.invalidateQueries({ queryKey: userKeys.list() });
+      },
+    }),
+    {},
+  );
+};
+
+export const useUserRoleUnassign = () => {
+  const apiClient = getApiClient();
+  const queryClient = useQueryClient();
+  return mutationWrapper<APIOutput, IUserRoleAssign>(
+    useMutation<APIOutput, AxiosError<APIOutput>, IUserRoleAssign>({
+      mutationFn: async ({ id, roleId }) => (await apiClient.user.userControllerRemoveRole(id, roleId)).data,
+      onSuccess: async (_, { id }) => {
+        queryClient.invalidateQueries({ queryKey: userKeys.detail(id) });
+        queryClient.invalidateQueries({ queryKey: userKeys.list() });
       },
     }),
     {},

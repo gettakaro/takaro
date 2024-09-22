@@ -45,6 +45,7 @@ export const usePlayerRoleAssign = () => {
       onSuccess: (_, { playerId }) => {
         enqueueSnackbar('Role assigned to player!', { variant: 'default', type: 'success' });
         queryClient.invalidateQueries({ queryKey: playerKeys.detail(playerId) });
+        queryClient.invalidateQueries({ queryKey: playerKeys.list() });
       },
     }),
     {},
@@ -61,7 +62,8 @@ export const usePlayerRoleUnassign = () => {
         (await apiClient.player.playerControllerRemoveRole(playerId, roleId, { gameServerId })).data,
       onSuccess: async (_, { playerId }) => {
         enqueueSnackbar('Role removed from player!', { variant: 'default', type: 'success' });
-        await queryClient.invalidateQueries({ queryKey: playerKeys.detail(playerId) });
+        queryClient.invalidateQueries({ queryKey: playerKeys.detail(playerId) });
+        queryClient.invalidateQueries({ queryKey: playerKeys.list() });
       },
     }),
     {},
