@@ -157,6 +157,7 @@ export class StatsController {
   @ResponseSchema(StatsOutputDTOAPI)
   @OpenAPI({
     summary: 'Get statistics about the countries of the players',
+    description: 'Calculates how many players are from each country. Returns a count per country (ISO3166).',
   })
   @Get('/stats/countries')
   async getCountryStats(@Req() req: AuthenticatedRequest, @QueryParams() query: CountryStatsInputDTO) {
