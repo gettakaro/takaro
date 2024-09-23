@@ -152,7 +152,7 @@
     "zod": "3.23.8"
   },
   "overrides": {
-    "esbuild": "0.23.1"
+    "esbuild": "0.24.0"
   },
   "optionalDependencies": {
     "bufferutil": "4.0.8",
