@@ -16,7 +16,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@bull-board/express": "^5.0.1"
+    "@bull-board/express": "5.23.0"
   },
   "devDependencies": {}
 }

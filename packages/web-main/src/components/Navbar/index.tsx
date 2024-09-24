@@ -24,6 +24,7 @@ import { FaDiscord as DiscordIcon } from 'react-icons/fa';
 import { PermissionsGuard } from 'components/PermissionsGuard';
 import { GameServerNav } from './GameServerNav';
 import { TAKARO_DOMAIN_COOKIE_REGEX } from 'routes/_auth/domain.select';
+import { DeveloperModeGuard } from 'components/DeveloperModeGuard';
 
 const domainLinks: NavbarLink[] = [
   {
@@ -32,6 +33,7 @@ const domainLinks: NavbarLink[] = [
       to: '/dashboard',
     },
     icon: <DashboardIcon />,
+    requiresDevelopmentModeEnabled: false,
   },
   {
     label: 'Game servers',
@@ -40,6 +42,7 @@ const domainLinks: NavbarLink[] = [
     },
     icon: <GameServersIcon />,
     requiredPermissions: [PERMISSIONS.ManageGameservers],
+    requiresDevelopmentModeEnabled: false,
   },
   {
     label: 'Events',
@@ -48,6 +51,7 @@ const domainLinks: NavbarLink[] = [
     },
     icon: <EventsIcon />,
     requiredPermissions: [PERMISSIONS.ReadEvents],
+    requiresDevelopmentModeEnabled: false,
   },
   {
     label: 'Players',
@@ -56,6 +60,7 @@ const domainLinks: NavbarLink[] = [
     },
     icon: <PlayersIcon />,
     requiredPermissions: [PERMISSIONS.ReadPlayers],
+    requiresDevelopmentModeEnabled: false,
   },
   {
     label: 'Users',
@@ -64,6 +69,7 @@ const domainLinks: NavbarLink[] = [
     },
     icon: <UsersIcon />,
     requiredPermissions: [PERMISSIONS.ReadUsers],
+    requiresDevelopmentModeEnabled: false,
   },
   {
     label: 'Roles',
@@ -72,6 +78,7 @@ const domainLinks: NavbarLink[] = [
     },
     icon: <RolesIcon />,
     requiredPermissions: [PERMISSIONS.ReadRoles],
+    requiresDevelopmentModeEnabled: false,
   },
   {
     label: 'Module Builder',
@@ -79,6 +86,7 @@ const domainLinks: NavbarLink[] = [
       to: '/modules',
     },
     icon: <ModulesIcon />,
+    requiresDevelopmentModeEnabled: true,
     requiredPermissions: [PERMISSIONS.ReadModules],
   },
   {
@@ -87,6 +95,7 @@ const domainLinks: NavbarLink[] = [
       to: '/variables',
     },
     icon: <VariablesIcon />,
+    requiresDevelopmentModeEnabled: false,
     requiredPermissions: [PERMISSIONS.ReadVariables],
   },
   {
@@ -96,6 +105,7 @@ const domainLinks: NavbarLink[] = [
     },
     icon: <SettingsIcon />,
     end: false,
+    requiresDevelopmentModeEnabled: false,
     requiredPermissions: [PERMISSIONS.ReadSettings],
   },
 ];
@@ -105,20 +115,29 @@ export interface NavbarLink {
   label: string;
   icon: ReactElement;
   requiredPermissions?: RequiredPermissions;
+  requiresDevelopmentModeEnabled?: boolean;
   end?: boolean;
 }
 
-export const renderLink = ({ linkProps, icon, label, requiredPermissions }: NavbarLink) => (
-  <PermissionsGuard key={`guard-${linkProps.to}`} requiredPermissions={requiredPermissions || []}>
-    <div key={`wrapper-${linkProps.to}`}>
-      <Link to={linkProps.to} key={`link-${linkProps.to}`}>
-        <span key={`inner-${linkProps.to}`}>
-          {cloneElement(icon, { size: 20, key: `icon-${linkProps.to}` })}
-          <p key={`label-${linkProps.to}`}>{label}</p>
-        </span>
-      </Link>
-    </div>
-  </PermissionsGuard>
+export const renderLink = ({
+  linkProps,
+  icon,
+  label,
+  requiredPermissions,
+  requiresDevelopmentModeEnabled,
+}: NavbarLink) => (
+  <DeveloperModeGuard enabled={requiresDevelopmentModeEnabled}>
+    <PermissionsGuard key={`guard-${linkProps.to}`} requiredPermissions={requiredPermissions || []}>
+      <div key={`wrapper-${linkProps.to}`}>
+        <Link to={linkProps.to} key={`link-${linkProps.to}`}>
+          <span key={`inner-${linkProps.to}`}>
+            {cloneElement(icon, { size: 20, key: `icon-${linkProps.to}` })}
+            <p key={`label-${linkProps.to}`}>{label}</p>
+          </span>
+        </Link>
+      </div>
+    </PermissionsGuard>
+  </DeveloperModeGuard>
 );
 
 interface NavbarProps {
