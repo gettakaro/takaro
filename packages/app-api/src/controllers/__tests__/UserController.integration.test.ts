@@ -2,6 +2,7 @@ import { IntegrationTest, expect, integrationConfig, SetupGameServerPlayers } fr
 import { PERMISSIONS } from '@takaro/auth';
 import { Client, UserOutputDTO } from '@takaro/apiclient';
 import { faker } from '@faker-js/faker';
+import { AxiosError } from 'axios';
 
 const group = 'UserController';
 
@@ -171,6 +172,79 @@ const tests = [
       // Fetch members of role2
       const members2 = (await this.client.user.userControllerSearch({ filters: { roleId: [role2.id] } })).data.data;
       expect(members2).to.have.lengthOf(0);
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    setup: SetupGameServerPlayers.setup,
+    name: 'Can fetch members of group - player system role returns all players',
+    test: async function () {
+      const { users } = await multiRolesSetup(this.client);
+      const role = await this.client.role.roleControllerSearch({ filters: { name: ['Player'] } });
+      const members = (await this.client.user.userControllerSearch({ filters: { roleId: [role.data.data[0].id] } }))
+        .data.data;
+      expect(members.length).to.be.eq(users.length);
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    setup: SetupGameServerPlayers.setup,
+    name: 'Can fetch members of group - user system role returns all players',
+    test: async function () {
+      const { users } = await multiRolesSetup(this.client);
+      const role = await this.client.role.roleControllerSearch({ filters: { name: ['User'] } });
+      const members = (await this.client.user.userControllerSearch({ filters: { roleId: [role.data.data[0].id] } }))
+        .data.data;
+      expect(members.length).to.be.eq(users.length);
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    setup: SetupGameServerPlayers.setup,
+    name: 'Does not allow assigning player system role',
+    test: async function () {
+      const { users } = await multiRolesSetup(this.client);
+      const role = await this.client.role.roleControllerSearch({ filters: { name: ['Player'] } });
+      const user = users[0];
+      try {
+        await this.client.user.userControllerAssignRole(user.id, role.data.data[0].id);
+        throw new Error('Should have thrown');
+      } catch (error) {
+        if (error instanceof AxiosError && error.response) {
+          expect(error.response.data.meta.error.message).to.be.eq(
+            'Cannot assign Player or User role, everyone has these by default',
+          );
+        } else {
+          throw error;
+        }
+      }
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    setup: SetupGameServerPlayers.setup,
+    name: 'Does not allow assigning user system role',
+    test: async function () {
+      const { users } = await multiRolesSetup(this.client);
+      const role = await this.client.role.roleControllerSearch({ filters: { name: ['User'] } });
+      const user = users[0];
+
+      try {
+        await this.client.user.userControllerAssignRole(user.id, role.data.data[0].id);
+        throw new Error('Should have thrown');
+      } catch (error) {
+        if (error instanceof AxiosError && error.response) {
+          expect(error.response.data.meta.error.message).to.be.eq(
+            'Cannot assign Player or User role, everyone has these by default',
+          );
+        } else {
+          throw error;
+        }
+      }
     },
   }),
 ];

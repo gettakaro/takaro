@@ -33,7 +33,6 @@ export class MockGameserver implements IMockGameServer {
     return `${REDIS_PREFIX}${this.name}:${key}`;
   }
 
-  // eslint-disable-next-line
   emitEvent(
     type:
       | 'log'

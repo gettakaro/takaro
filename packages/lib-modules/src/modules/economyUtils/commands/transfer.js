@@ -47,7 +47,7 @@ async function main() {
         currency: args.amount,
       },
     );
-  } catch (_e) {
+  } catch {
     throw new TakaroUserError(
       `Failed to transfer ${args.amount} ${currencyName} to ${receiverName}. Are you sure you have enough balance?`,
     );

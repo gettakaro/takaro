@@ -6,7 +6,8 @@ import { ITakaroRepo, PaginatedOutput } from '../db/base.js';
 import { Axios } from 'axios';
 import { IsObject } from 'class-validator';
 import { config } from '../config.js';
-import { EventsCountInputDTO } from '../controllers/StatsController.js';
+import { CountryStatsInputDTO, EventsCountInputDTO } from '../controllers/StatsController.js';
+import { PlayerService } from './PlayerService.js';
 
 export class StatsOutputDTO extends TakaroDTO<StatsOutputDTO> {
   @IsObject()
@@ -167,5 +168,11 @@ export class StatsService extends TakaroService<TakaroModel, TakaroDTO<void>, Ta
 
     const data = await this.prometheusQuery(query, filters.startDate, filters.endDate);
     return { values: data };
+  }
+
+  async getCountryStats(query: CountryStatsInputDTO) {
+    const playerService = new PlayerService(this.domainId);
+    const res = await playerService.repo.getCountryStats(query.gameServerId);
+    return { values: res };
   }
 }

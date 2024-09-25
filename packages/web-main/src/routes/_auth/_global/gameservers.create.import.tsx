@@ -31,7 +31,7 @@ const validationSchema = z.object({
 });
 function Component() {
   const [open, setOpen] = useState(true);
-  // eslint-disable-next-line
+
   const [jobStatus, setJobStatus] = useState<any | null>(null);
   const [jobId, setJobId] = useState<string | null>(null);
   const [refreshInterval, setRefreshInterval] = useState<number | null>(null);

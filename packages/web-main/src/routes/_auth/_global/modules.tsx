@@ -8,6 +8,7 @@ import { hasPermission } from 'hooks/useHasPermission';
 import { modulesInfiniteQueryOptions } from 'queries/module';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { userMeQueryOptions } from 'queries/user';
+import { globalGameServerSetingQueryOptions } from 'queries/setting';
 
 const SubHeader = styled.h2<{ withMargin?: boolean }>`
   font-size: ${({ theme }) => theme.fontSize.mediumLarge};
@@ -21,7 +22,11 @@ const SubText = styled.p`
 export const Route = createFileRoute('/_auth/_global/modules')({
   beforeLoad: async ({ context }) => {
     const session = await context.queryClient.ensureQueryData(userMeQueryOptions());
-    if (!hasPermission(session, [PERMISSIONS.ReadModules])) {
+    const developerModeEnabled = await context.queryClient.ensureQueryData(
+      globalGameServerSetingQueryOptions('developerMode'),
+    );
+
+    if (!hasPermission(session, [PERMISSIONS.ReadModules]) || developerModeEnabled.value === 'false') {
       throw redirect({ to: '/forbidden' });
     }
   },

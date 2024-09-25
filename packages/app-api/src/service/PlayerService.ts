@@ -181,6 +181,16 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
   }
 
   async find(filters: Partial<PlayerSearchInputDTO>): Promise<PaginatedOutput<PlayerOutputWithRolesDTO>> {
+    // Everyone has the User and Player roles by default
+    // Filtering by these roles would be redundant
+    if (filters.filters?.roleId) {
+      const roleService = new RoleService(this.domainId);
+      const role = await roleService.findOne(filters.filters.roleId[0]);
+      if ((role?.name === 'Player' || role?.name === 'User') && role.system) {
+        delete filters.filters.roleId;
+      }
+    }
+
     const players = await this.repo.find(filters);
     players.results = await Promise.all(players.results.map((item) => this.extend(item)));
     return players;
@@ -295,6 +305,10 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     const roleService = new RoleService(this.domainId);
 
     const role = await roleService.findOne(roleId);
+
+    if ((role?.name === 'Player' || role?.name === 'User') && role.system) {
+      throw new errors.BadRequestError('Cannot assign Player or User role, everyone has these by default');
+    }
 
     this.log.info('Assigning role to player', { roleId, player: targetId, gameserverId, expiresAt });
     await this.repo.assignRole(targetId, roleId, gameserverId, expiresAt);

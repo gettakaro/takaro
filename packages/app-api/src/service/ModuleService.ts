@@ -169,7 +169,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
         mod.configSchema = JSON.stringify(getEmptyConfigSchema());
       }
       ajv.compile(JSON.parse(mod.configSchema));
-    } catch (_e) {
+    } catch {
       throw new errors.BadRequestError('Invalid config schema');
     }
     const created = await this.repo.create(mod);
@@ -212,7 +212,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
       await this.refreshInstallations(id);
 
       return updated;
-    } catch (_e) {
+    } catch {
       throw new errors.BadRequestError('Invalid config schema');
     }
   }

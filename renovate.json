@@ -3,9 +3,7 @@
   "extends": [
     "config:base"
   ],
-  "schedule": [
-    "after 10pm and before 5am every weekday"
-  ],
+  "rangeStrategy": "pin",
   "baseBranches": [
     "development"
   ],

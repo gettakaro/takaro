@@ -81,13 +81,14 @@ async function processJob(job: Job<IEventQueueData>) {
     if (type === EVENT_TYPES.PLAYER_DISCONNECTED) {
       await playerOnGameServerService.update(pog.id, new PlayerOnGameServerUpdateDTO({ online: false }));
 
-      await eventService.create(
+      const createdEvent = await eventService.create(
         new EventCreateDTO({
           eventName: EVENT_TYPES.PLAYER_DISCONNECTED,
           gameserverId: gameServerId,
           playerId: player.id,
         }),
       );
+      await playerOnGameServerService.handlePlaytimeIncrease(createdEvent);
     }
 
     if (type === EVENT_TYPES.PLAYER_DEATH) {

@@ -583,7 +583,7 @@ export class GameServerService extends TakaroService<
 
     try {
       parsed = JSON.parse(raw);
-    } catch (_error) {
+    } catch {
       throw new errors.BadRequestError('Invalid JSON');
     }
 
