@@ -194,10 +194,10 @@ function Component() {
   const p =
     !isLoading && data
       ? {
-          paginationState: pagination.paginationState,
-          setPaginationState: pagination.setPaginationState,
-          pageOptions: pagination.getPageOptions(data),
-        }
+        paginationState: pagination.paginationState,
+        setPaginationState: pagination.setPaginationState,
+        pageOptions: pagination.getPageOptions(data),
+      }
       : undefined;
 
   return (
@@ -316,7 +316,7 @@ const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
             onClick={async () => {
               setOpenBanDialog(true);
             }}
-            disabled={!hasManagePlayers}
+            disabled={true || !hasManagePlayers}
           />
           <Dropdown.Menu.Item
             label="Unban from ALL game servers (coming soon)"
@@ -324,7 +324,7 @@ const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
             onClick={async () => {
               setOpenUnbanDialog(true);
             }}
-            disabled={!hasManagePlayers}
+            disabled={true || !hasManagePlayers}
           />
         </Dropdown.Menu>
       </Dropdown>
