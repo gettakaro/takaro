@@ -26,7 +26,7 @@
     "storybook": "7.6.20"
   },
   "peerDependencies": {
-    "@floating-ui/react": "0.26.22",
+    "@floating-ui/react": "0.26.24",
     "@monaco-editor/react": "4.6.0",
     "@rjsf/core": "5.20.0",
     "@rjsf/utils": "5.20.0",
