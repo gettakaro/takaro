@@ -22,8 +22,6 @@ export const GameServerNav: FC = () => {
   const { data: gameservers, isPending } = useQuery(gameServersQueryOptions());
   const { gameServerId } = route.useParams();
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore reusable link
   const gameServerLinks: NavbarLink[] = useMemo(() => {
     return [
       {
