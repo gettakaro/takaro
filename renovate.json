@@ -23,6 +23,15 @@
         "mocha"
       ],
       "automerge": true
+    },
+    {
+      "matchPackagePatterns": [
+        "vite",
+        "vitest",
+        "concurrently",
+        "@faker-js"
+      ],
+      "automerge": true
     }
   ]
 }
