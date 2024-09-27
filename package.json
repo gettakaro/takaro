@@ -122,7 +122,7 @@
     "class-transformer": "0.5.1",
     "class-validator": "0.14.1",
     "class-validator-jsonschema": "5.0.1",
-    "concurrently": "8.2.2",
+    "concurrently": "9.0.1",
     "convict": "6.2.4",
     "csv": "6.3.10",
     "discord-api-types": "0.37.101",
