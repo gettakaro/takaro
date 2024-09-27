@@ -108,7 +108,7 @@
     "@aws-sdk/client-lambda": "3.637.0",
     "@aws-sdk/client-s3": "3.637.0",
     "@discordjs/rest": "2.4.0",
-    "@faker-js/faker": "8.4.1",
+    "@faker-js/faker": "9.0.3",
     "@hookform/resolvers": "3.9.0",
     "@ory/client": "1.14.5",
     "@ory/elements": "0.3.0",
