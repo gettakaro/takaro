@@ -124,7 +124,7 @@ export const renderLink = ({
   icon,
   label,
   requiredPermissions,
-  requiresDevelopmentModeEnabled,
+  requiresDevelopmentModeEnabled = false,
 }: NavbarLink) => (
   <DeveloperModeGuard enabled={requiresDevelopmentModeEnabled}>
     <PermissionsGuard key={`guard-${linkProps.to}`} requiredPermissions={requiredPermissions || []}>
