@@ -58,17 +58,15 @@ export const Container = styled(motion.div)<{
   }}
 `;
 
-export const Grid = styled.div<{ hasTitle: boolean; showIcon: boolean }>`
+export const Grid = styled.div`
   display: grid;
-  grid-template-columns: ${({ theme, hasTitle, showIcon }) => {
-    const result = '';
-    if (showIcon) result.concat(`${theme.spacing[5]}`);
-    result.concat(' 1fr');
-    if (hasTitle) result.concat(' fit-content(100px)');
-    return result;
-  }}
+  grid-template-columns: 50px 1fr;
   align-items: center;
-  gap: ${({ theme, hasTitle }) => (hasTitle ? 0 : theme.spacing['0_5'])};
+
+  p,
+  .action {
+    grid-column: 2;
+  }
 `;
 
 export const IconContainer = styled.div<{ variant: AlertVariants }>`
