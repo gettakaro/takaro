@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "@jsonforms/core": "3.3.0",
-    "@jsonforms/react": "3.3.0",
+    "@jsonforms/core": "3.4.0",
+    "@jsonforms/react": "3.4.0",
     "@sentry/integrations": "7.119.0",
     "@sentry/react": "8.27.0",
     "@sentry/tracing": "7.114.0",
