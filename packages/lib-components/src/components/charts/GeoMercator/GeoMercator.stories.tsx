@@ -27,19 +27,22 @@ const data: Shape[] = [
 export default {
   title: 'Charts/GeoMercator',
   component: GeoMercator,
+  args: {
+    showZoomControls: false,
+    allowZoomAndDrag: false,
+  },
 } as Meta<GeoMercatorProps<Shape>>;
 
 const Wrapper = styled.div`
-  width: 90vw;
-  height: 90vh;
+  width: fit-content;
 `;
 
 const Inner = styled.div`
-  width: 90vw;
-  height: 90vh;
+  width: 800px;
+  height: 800px;
 `;
 
-export const Default: StoryFn<GeoMercatorProps<Shape>> = () => {
+export const Default: StoryFn<GeoMercatorProps<Shape>> = (args) => {
   const getCountry = (d: Shape) => d.code;
   const getAmount = (d: Shape) => Number(d.amount);
   const tooltipAccessor = (d: Shape) => {
@@ -48,17 +51,21 @@ export const Default: StoryFn<GeoMercatorProps<Shape>> = () => {
 
   return (
     <Wrapper>
-      <Card variant="outline">
-        <Inner>
-          <h2>Map</h2>
-          <GeoMercator<Shape>
-            name="geo-mercator"
-            xAccessor={getCountry}
-            yAccessor={getAmount}
-            tooltipAccessor={tooltipAccessor}
-            data={data}
-          />
-        </Inner>
+      <Card>
+        <Card.Title label="Map" />
+        <Card.Body>
+          <Inner>
+            <GeoMercator<Shape>
+              name="geo-mercator"
+              xAccessor={getCountry}
+              yAccessor={getAmount}
+              tooltipAccessor={tooltipAccessor}
+              data={data}
+              showZoomControls={args.showZoomControls}
+              allowZoomAndDrag={args.allowZoomAndDrag}
+            />
+          </Inner>
+        </Card.Body>
       </Card>
     </Wrapper>
   );

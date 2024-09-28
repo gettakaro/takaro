@@ -21,3 +21,6 @@ export type { LineChartProps } from './LineChart';
 
 export { RadialBarChart } from './RadialBarChart';
 export type { RadialBarChartProps } from './RadialBarChart';
+
+export { GeoMercator } from './GeoMercator';
+export type { GeoMercatorProps } from './GeoMercator';

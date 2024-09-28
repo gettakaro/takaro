@@ -85,7 +85,14 @@ const InfoCard = styled(Card)`
   }
 `;
 
-const InfoCardBody = styled.div`
+const CardContainer = styled.div`
+  display: grid;
+  grid-template-columns: minmax(554px, max-content) max-content;
+  gap: ${({ theme }) => theme.spacing['2']};
+  width: 100%;
+`;
+
+const InnerBody = styled.div`
   display: grid;
   grid-template-columns: max-content 1fr;
   gap: ${({ theme }) => theme.spacing['8']};
@@ -96,24 +103,19 @@ const InfoCardBody = styled.div`
   }
 `;
 
-const CardContainer = styled.div`
-  display: grid;
-  grid-template-columns: minmax(554px, max-content) max-content;
-  gap: ${({ theme }) => theme.spacing['2']};
-  width: 100%;
-`;
-
 const PlayerInfoCard: FC<{ player: PlayerOutputDTO }> = ({ player }) => {
   return (
     <InfoCard variant="outline">
-      <h3>General</h3>
-      <InfoCardBody>
-        <span>Player ID </span> <CopyId id={player.id} />
-        <span>Steam ID </span> {player.steamId ? <CopyId id={player.steamId} /> : '/'}
-        <span>Epic Online Services ID </span>
-        {player.epicOnlineServicesId ? <CopyId id={player.epicOnlineServicesId} /> : '/'}
-        <span>Xbox Live ID </span> {player.xboxLiveId ? <CopyId id={player.xboxLiveId} /> : '/'}
-      </InfoCardBody>
+      <InfoCard.Title label="General" />
+      <InfoCard.Body>
+        <InnerBody>
+          <span>Player ID </span> <CopyId id={player.id} />
+          <span>Steam ID </span> {player.steamId ? <CopyId id={player.steamId} /> : '/'}
+          <span>Epic Online Services ID </span>
+          {player.epicOnlineServicesId ? <CopyId id={player.epicOnlineServicesId} /> : '/'}
+          <span>Xbox Live ID </span> {player.xboxLiveId ? <CopyId id={player.xboxLiveId} /> : '/'}
+        </InnerBody>
+      </InfoCard.Body>
     </InfoCard>
   );
 };
@@ -121,14 +123,16 @@ const PlayerInfoCard: FC<{ player: PlayerOutputDTO }> = ({ player }) => {
 const SteamInfoCard: FC<{ player: PlayerOutputDTO }> = ({ player }) => {
   return (
     <InfoCard variant="outline" onClick={() => window.open(`https://steamcommunity.com/profiles/${player.steamId}`)}>
-      <h3>Steam</h3>
-      <InfoCardBody>
-        <span>VAC banned</span> {player.steamVacBanned ? 'Yes' : 'No'}
-        <span>VAC bans</span> {player.steamNumberOfVACBans ?? 0}
-        <span>Days since last ban</span> {player.steamsDaysSinceLastBan ?? 0}
-        <span>Community banned</span> {player.steamCommunityBanned ? 'Yes' : 'No'}
-        <span>Economy Banned</span> {player.steamEconomyBan ? 'Yes' : 'No'}
-      </InfoCardBody>
+      <InfoCard.Title label="Steam" />
+      <InfoCard.Body>
+        <InnerBody>
+          <span>VAC banned</span> {player.steamVacBanned ? 'Yes' : 'No'}
+          <span>VAC bans</span> {player.steamNumberOfVACBans ?? 0}
+          <span>Days since last ban</span> {player.steamsDaysSinceLastBan ?? 0}
+          <span>Community banned</span> {player.steamCommunityBanned ? 'Yes' : 'No'}
+          <span>Economy Banned</span> {player.steamEconomyBan ? 'Yes' : 'No'}
+        </InnerBody>
+      </InfoCard.Body>
     </InfoCard>
   );
 };

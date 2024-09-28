@@ -1,4 +1,4 @@
-import { LineChart, Card, styled, Loading, Stats } from '@takaro/lib-components';
+import { LineChart, Card, styled, Stats, QuestionTooltip, Skeleton } from '@takaro/lib-components';
 import { useQuery } from '@tanstack/react-query';
 import { DateTime } from 'luxon';
 import { PlayersOnlineStatsQueryOptions, ActivityStatsQueryOptions } from 'queries/stats';
@@ -8,16 +8,10 @@ import { TimePeriodSelect } from 'components/selects';
 import { eventsQueryOptions } from 'queries/event';
 
 const Container = styled.div`
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 150px;
   width: 100%;
-  gap: ${({ theme }) => theme.spacing[4]};
-  padding-bottom: ${({ theme }) => theme.spacing[4]};
-`;
-
-const StatCard = styled(Card)`
-  position: relative;
-  height: 300px;
-  width: 90%;
+  gap: ${({ theme }) => theme.spacing[2]};
   padding-bottom: ${({ theme }) => theme.spacing[4]};
 `;
 
@@ -76,7 +70,15 @@ export function PlayerStats() {
   const { data: playersOnlineData } = useQuery(PlayersOnlineStatsQueryOptions(undefined, startDate, now));
 
   if (!dailyActiveUsers || !newPlayersData || !playersOnlineData) {
-    return <Loading />;
+    return (
+      <Container>
+        <Skeleton variant="rectangular" width="100%" height="300px" />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+          <Skeleton width="100%" variant="rectangular" height="140px" />
+          <Skeleton width="100%" variant="rectangular" height="140px" />
+        </div>
+      </Container>
+    );
   }
 
   return (
@@ -85,17 +87,22 @@ export function PlayerStats() {
         <TimePeriodSelect control={control} name="period" />
       </div>
       <Container>
-        <StatCard variant="outline">
-          <h2>Daily active players</h2>
-          <small>How many players were active on the server each day</small>
-          <LineChart
-            name="Daily active players"
-            data={dailyActiveUsers.values}
-            xAccessor={(d) => new Date(d[0] * 1000)}
-            yAccessor={(d) => d[1]}
-            curveType="curveBasis"
-          />
-        </StatCard>
+        <Card variant="outline">
+          <Card.Title label="Daily active players">
+            <QuestionTooltip>How many players were active on the server each day.</QuestionTooltip>
+          </Card.Title>
+          <Card.Body>
+            <div style={{ height: '200px' }}>
+              <LineChart
+                name="Daily active players"
+                data={dailyActiveUsers.values}
+                xAccessor={(d) => new Date(d[0] * 1000)}
+                yAccessor={(d) => d[1]}
+                curveType="curveBasis"
+              />
+            </div>
+          </Card.Body>
+        </Card>
 
         <Stats border={false} direction="vertical">
           <Stats.Stat
