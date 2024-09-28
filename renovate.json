@@ -19,6 +19,12 @@
     },
     {
       "matchPackageNames": [
+        "/^ory|^@ory/"
+      ],
+      "groupName": "Ory"
+    },
+    {
+      "matchPackageNames": [
         "/@sentry/"
       ],
       "groupName": "@sentry"
