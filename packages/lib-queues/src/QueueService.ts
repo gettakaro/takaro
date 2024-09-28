@@ -45,6 +45,9 @@ class QueuesService {
     itemsSync: {
       queue: new TakaroQueue<IGameServerQueueData>(config.get('queues.itemsSync.name')),
     },
+    bansSync: {
+      queue: new TakaroQueue<IGameServerQueueData>(config.get('queues.bansSync.name')),
+    },
     playerSync: {
       queue: new TakaroQueue<IGameServerQueueData>(config.get('queues.playerSync.name')),
     },
