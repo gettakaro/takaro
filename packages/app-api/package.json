@@ -30,7 +30,7 @@
     "maxmind": "4.3.21",
     "passport": "0.7.0",
     "passport-oauth2": "1.8.0",
-    "pg": "8.12.0"
+    "pg": "8.13.0"
   },
   "devDependencies": {
     "@types/basic-auth": "1.1.8",

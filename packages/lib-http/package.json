@@ -19,7 +19,7 @@
     "body-parser": "1.20.3",
     "cookie-parser": "1.4.6",
     "cors": "2.8.5",
-    "express": "4.19.2",
+    "express": "4.21.0",
     "i": "0.3.7",
     "rate-limiter-flexible": "5.0.3",
     "zod": "3.23.8"
