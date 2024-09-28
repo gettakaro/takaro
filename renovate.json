@@ -27,7 +27,14 @@
       "matchPackageNames": [
         "/@sentry/"
       ],
-      "groupName": "@sentry"
+      "groupName": "Sentry"
+    },
+    {
+      "matchPackageNames": [
+        "/^posthog-/"
+      ],
+      "groupName": "Posthog",
+      "automerge": true
     },
     {
       "matchPackageNames": [
