@@ -9,9 +9,14 @@ export async function up(knex: Knex): Promise<void> {
 
     table.uuid('gameServerId').references('gameservers.id').onDelete('CASCADE').notNullable();
     table.uuid('playerId').references('players.id').onDelete('CASCADE').notNullable();
+    // PlayerId and gameServerId should be unique combined
+    table.unique(['playerId', 'gameServerId']);
 
     table.boolean('takaroManaged').notNullable();
+    table.boolean('isGlobal').notNullable().defaultTo(false);
+
     table.timestamp('until').nullable();
+    table.string('reason').nullable();
   });
 }
 

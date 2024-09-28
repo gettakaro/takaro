@@ -5,6 +5,7 @@ import { DomainService } from '../service/DomainService.js';
 import { GameServerService } from '../service/GameServerService.js';
 import { ctx, logger } from '@takaro/util';
 import ms from 'ms';
+import { BanService } from '../service/Ban/index.js';
 
 const log = logger('worker:bansSync');
 
@@ -63,8 +64,8 @@ export async function processJob(job: Job<IGameServerQueueData>) {
   if (job.data.gameServerId) {
     // Processing for a specific game server
     log.info(`Processing bans sync job for domain: ${job.data.domainId} and game server: ${job.data.gameServerId}`);
-    const gameserverService = new GameServerService(job.data.domainId);
-    await gameserverService.syncBans(job.data.gameServerId);
+    const banService = new BanService(job.data.domainId);
+    await banService.syncBans(job.data.gameServerId);
 
     return;
   }

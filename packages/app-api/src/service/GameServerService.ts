@@ -465,6 +465,7 @@ export class GameServerService extends TakaroService<
   async banPlayer(gameServerId: string, playerId: string, reason: string, expiresAt: string) {
     const player = await this.pogService.getPog(playerId, gameServerId);
     const gameInstance = await this.getGame(gameServerId);
+    this.log.info('Banning player', { playerId, gameServerId, reason, expiresAt });
     return gameInstance.banPlayer(
       new BanDTO({
         player,
@@ -477,12 +478,14 @@ export class GameServerService extends TakaroService<
   async kickPlayer(gameServerId: string, playerId: string, reason: string) {
     const player = await this.pogService.getPog(playerId, gameServerId);
     const gameInstance = await this.getGame(gameServerId);
+    this.log.info('Kicking player', { playerId, gameServerId, reason });
     return gameInstance.kickPlayer(player, reason);
   }
 
   async unbanPlayer(gameServerId: string, playerId: string) {
     const player = await this.pogService.getPog(playerId, gameServerId);
     const gameInstance = await this.getGame(gameServerId);
+    this.log.info('Unbanning player', { playerId, gameServerId });
     return gameInstance.unbanPlayer(player);
   }
 
@@ -597,9 +600,5 @@ export class GameServerService extends TakaroService<
     return {
       id: job.id,
     };
-  }
-
-  async syncBans(_gameServerId: string) {
-    throw new errors.NotImplementedError();
   }
 }

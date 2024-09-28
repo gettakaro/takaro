@@ -15,7 +15,9 @@ export class BanModel extends TakaroModel {
   playerId: string;
 
   takaroManaged: boolean;
-  until: Date;
+  isGlobal: boolean;
+  until: string;
+  reason: string;
 
   static get relationMappings() {
     return {
@@ -76,15 +78,74 @@ export class BanRepo extends ITakaroRepo<BanModel, BanOutputDTO, BanCreateDTO, B
     return new BanOutputDTO(data);
   }
 
-  async create(_item: BanCreateDTO): Promise<BanOutputDTO> {
-    throw new errors.NotImplementedError();
+  async create(item: BanCreateDTO): Promise<BanOutputDTO> {
+    const { query } = await this.getModel();
+    const data = item.toJSON();
+    if (!data.takaroManaged) data.takaroManaged = false;
+    const record = await query.insert({ ...data, domain: this.domainId });
+    return this.findOne(record.id);
   }
 
-  async delete(_id: string): Promise<boolean> {
-    throw new errors.NotImplementedError();
+  async delete(id: string): Promise<boolean> {
+    const { query } = await this.getModel();
+    const res = await query.deleteById(id);
+    return res > 0;
   }
 
-  async update(_id: string, _data: BanUpdateDTO): Promise<BanOutputDTO> {
-    throw new errors.NotImplementedError();
+  async update(id: string, _data: BanUpdateDTO): Promise<BanOutputDTO> {
+    const { query } = await this.getModel();
+    await query.patch(_data.toJSON());
+    return this.findOne(id);
+  }
+
+  async syncBans(gameServerId: string, bans: BanCreateDTO[]) {
+    const { model } = await this.getModel();
+    const knex = model.knex();
+
+    // We try to do all this in as little queries as possible for better performance
+    // Start a transaction to ensure all operations are atomic
+    await knex.transaction(async (trx) => {
+      if (bans.length > 0) {
+        // Upsert all the bans
+        await trx(BANS_TABLE_NAME)
+          .insert(
+            bans.map((ban) => ({
+              gameServerId,
+              playerId: ban.playerId,
+              reason: ban.reason,
+              until: ban.until,
+              takaroManaged: false,
+              domain: this.domainId,
+            })),
+          )
+          .onConflict(['gameServerId', 'playerId'])
+          .merge(['reason', 'until'])
+          .where('bans.domain', this.domainId);
+
+        // Delete all bans that are no longer in the game server & are not takaro managed
+        await trx(BANS_TABLE_NAME)
+          .where({
+            gameServerId,
+            domain: this.domainId,
+            takaroManaged: false,
+          })
+          .whereNotIn(
+            'playerId',
+            bans.map((ban) => ban.playerId),
+          )
+          .delete();
+      }
+
+      // If there are no bans left, delete all bans for the game server
+      if (bans.length === 0) {
+        await trx(BANS_TABLE_NAME)
+          .where({
+            gameServerId,
+            domain: this.domainId,
+            takaroManaged: false,
+          })
+          .delete();
+      }
+    });
   }
 }
