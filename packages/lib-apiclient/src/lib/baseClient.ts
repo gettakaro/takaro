@@ -40,6 +40,10 @@ export class BaseApiClient<T extends IBaseApiClientConfig> {
     this.axios.defaults.headers.common[key] = value;
   }
 
+  get axiosInstance() {
+    return this.axios;
+  }
+
   isJsonMime(mime: string) {
     return mime === 'application/json';
   }

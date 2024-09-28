@@ -4536,6 +4536,37 @@ export type ITakaroQuerySortDirectionEnum =
 /**
  *
  * @export
+ * @interface ImportInputDTO
+ */
+export interface ImportInputDTO {
+  /**
+   *
+   * @type {boolean}
+   * @memberof ImportInputDTO
+   */
+  roles: boolean;
+  /**
+   *
+   * @type {boolean}
+   * @memberof ImportInputDTO
+   */
+  players: boolean;
+  /**
+   *
+   * @type {boolean}
+   * @memberof ImportInputDTO
+   */
+  currency: boolean;
+  /**
+   *
+   * @type {boolean}
+   * @memberof ImportInputDTO
+   */
+  shop: boolean;
+}
+/**
+ *
+ * @export
  * @interface ImportOutputDTO
  */
 export interface ImportOutputDTO {
@@ -4562,6 +4593,60 @@ export interface ImportOutputDTOAPI {
    *
    * @type {MetadataOutput}
    * @memberof ImportOutputDTOAPI
+   */
+  meta: MetadataOutput;
+}
+/**
+ *
+ * @export
+ * @interface ImportStatusOutputDTO
+ */
+export interface ImportStatusOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof ImportStatusOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ImportStatusOutputDTO
+   */
+  status: ImportStatusOutputDTOStatusEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof ImportStatusOutputDTO
+   */
+  failedReason?: string;
+}
+
+export const ImportStatusOutputDTOStatusEnum = {
+  Pending: 'pending',
+  Completed: 'completed',
+  Failed: 'failed',
+} as const;
+
+export type ImportStatusOutputDTOStatusEnum =
+  (typeof ImportStatusOutputDTOStatusEnum)[keyof typeof ImportStatusOutputDTOStatusEnum];
+
+/**
+ *
+ * @export
+ * @interface ImportStatusOutputDTOAPI
+ */
+export interface ImportStatusOutputDTOAPI {
+  /**
+   *
+   * @type {ImportStatusOutputDTO}
+   * @memberof ImportStatusOutputDTOAPI
+   */
+  data: ImportStatusOutputDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof ImportStatusOutputDTOAPI
    */
   meta: MetadataOutput;
 }
@@ -15173,7 +15258,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
     async gameServerControllerGetImport(
       id: string,
       options?: RawAxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ImportOutputDTOAPI>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ImportStatusOutputDTOAPI>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerGetImport(id, options);
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
@@ -15785,7 +15870,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    gameServerControllerGetImport(id: string, options?: RawAxiosRequestConfig): AxiosPromise<ImportOutputDTOAPI> {
+    gameServerControllerGetImport(id: string, options?: RawAxiosRequestConfig): AxiosPromise<ImportStatusOutputDTOAPI> {
       return localVarFp.gameServerControllerGetImport(id, options).then((request) => request(axios, basePath));
     },
     /**
