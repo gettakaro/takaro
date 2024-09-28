@@ -85,19 +85,18 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
           ref={ref}
           role="status"
         >
-          <Grid hasTitle={hasTitle} showIcon={showIcon}>
+          <Grid>
             {showIcon && <IconContainer variant={variant}>{getIcon()}</IconContainer>}
 
             {/* If title is declared set title, otherwise put everything on single line */}
-            {title && (
-              <>
-                <h2>{title}</h2>
-                <div />
-              </>
-            )}
-            {renderText()}
-            {hasTitle ? <div /> : null}
-            <ButtonContainer hasTitle={hasTitle} show={dismiss || action ? true : false} variant={variant}>
+            {title && <h2>{title}</h2>}
+            <p>{renderText()}</p>
+            <ButtonContainer
+              hasTitle={hasTitle}
+              show={dismiss || action ? true : false}
+              variant={variant}
+              className="action"
+            >
               {action && (
                 <Button size="tiny" variant="outline" onClick={handleExecute} text={action.text} color={variant} />
               )}
