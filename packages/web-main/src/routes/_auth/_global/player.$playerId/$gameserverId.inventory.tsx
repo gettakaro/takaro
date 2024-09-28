@@ -9,11 +9,13 @@ import {
   AiOutlineClockCircle as KickIcon,
   AiOutlineStop as BanIcon,
   AiOutlineUndo as UnbanIcon,
+  AiOutlineEnvironment as TeleportIcon,
 } from 'react-icons/ai';
 import { MouseEvent, useState } from 'react';
 import { GiveItemDialog } from 'components/GiveItemDialog';
 import { KickPlayerDialog } from 'components/KickPlayerDialog';
 import { BanPlayerDialog } from 'components/BanPlayerDialog';
+import { TeleportPlayerDialog } from 'components/TeleportPlayerDialog';
 import { useUnbanPlayerOnGameServer } from 'queries/gameserver';
 
 export const Route = createFileRoute('/_auth/_global/player/$playerId/$gameserverId/inventory')({
@@ -32,6 +34,7 @@ function Component() {
   const [openGiveItemDialog, setOpenGiveItemDialog] = useState(false);
   const [openKickPlayerDialog, setOpenKickPlayerDialog] = useState(false);
   const [openBanPlayerDialog, setOpenBanPlayerDialog] = useState(false);
+  const [openTeleportPlayerDialog, setOpenTeleportPlayerDialog] = useState(false);
   const { mutate } = useUnbanPlayerOnGameServer();
 
   function handleOnGiveItemClicked(e: MouseEvent) {
@@ -49,6 +52,11 @@ function Component() {
     setOpenBanPlayerDialog(true);
   }
 
+  function handleOnTeleportPlayerClicked(e: MouseEvent) {
+    e.stopPropagation();
+    setOpenTeleportPlayerDialog(true);
+  }
+
   function unBanPlayerClicked() {
     mutate({ playerId, gameServerId });
   }
@@ -64,6 +72,12 @@ function Component() {
           <Dropdown.Menu>
             <Dropdown.Menu.Group>
               <Dropdown.Menu.Item icon={<GiveItemIcon />} label="Give item" onClick={handleOnGiveItemClicked} />
+              {/* teleport player should come on the map page */}
+              <Dropdown.Menu.Item
+                icon={<TeleportIcon />}
+                label="Teleport player"
+                onClick={handleOnTeleportPlayerClicked}
+              />
               <Dropdown.Menu.Item icon={<KickIcon />} label="Kick player" onClick={handleOnKickPlayerClicked} />
               <Dropdown.Menu.Item icon={<BanIcon />} label="Ban player" onClick={handleOnBanPlayerClicked} />
               <Dropdown.Menu.Item icon={<UnbanIcon />} label="Unban player" onClick={handleOnBanPlayerClicked} />
@@ -89,6 +103,12 @@ function Component() {
         playerId={playerId}
         open={openBanPlayerDialog}
         setOpen={setOpenBanPlayerDialog}
+      />
+      <TeleportPlayerDialog
+        gameServerId={gameServerId}
+        playerId={playerId}
+        open={openTeleportPlayerDialog}
+        setOpen={setOpenTeleportPlayerDialog}
       />
     </Section>
   );

@@ -368,8 +368,8 @@ export const useTeleportPlayer = () => {
     useMutation<APIOutput, AxiosError<APIOutput>, TeleportPlayerInput>({
       mutationFn: async ({ gameServerId, playerId, x, y, z }) =>
         (await apiClient.gameserver.gameServerControllerTeleportPlayer(gameServerId, playerId, { x, y, z })).data,
-      onSuccess: async () => {
-        enqueueSnackbar('Gameserver shutdown.', { variant: 'default', type: 'info' });
+      onSuccess: async (_, { x, y, z }) => {
+        enqueueSnackbar(`Teleported player to (${x},${y},${z})`, { variant: 'default', type: 'info' });
       },
     }),
     {},

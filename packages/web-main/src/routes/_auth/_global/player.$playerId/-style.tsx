@@ -1,12 +1,5 @@
-import { styled, Dialog } from '@takaro/lib-components';
+import { styled } from '@takaro/lib-components';
 
-export const StyledDialogBody = styled(Dialog.Body)`
-  h2 {
-    margin-bottom: ${({ theme }) => theme.spacing['0_5']};
-  }
-`;
-
-/* NOTE: if this is needed somewhere else it should be moved into lib-components */
 export const SocialContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -23,17 +16,6 @@ export const Scrollable = styled.div`
   height: 100%;
   width: 100%;
   overflow-y: auto;
-`;
-
-export const Container = styled.div`
-  max-width: ${({ theme }) => theme.breakpoint['large']}};
-
-  display: flex;
-  flex-direction: column;
-
-  gap: ${({ theme }) => theme.spacing['4']};
-
-  width: 100%;
 `;
 
 export const ChipContainer = styled.div`

@@ -7,7 +7,6 @@ import {
   getInitials,
   HorizontalNav,
   CopyId,
-  Card,
   Tooltip,
 } from '@takaro/lib-components';
 import { Outlet, redirect, createFileRoute, Link } from '@tanstack/react-router';
@@ -18,11 +17,11 @@ import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { ErrorBoundary } from 'components/ErrorBoundary';
 import { hasPermission } from 'hooks/useHasPermission';
 import { userMeQueryOptions } from 'queries/user';
-import { PlayerOutputWithRolesDTO } from '@takaro/apiclient';
-import { FC } from 'react';
 import { GameServerSelect } from 'components/selects';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { gameServerSettingQueryOptions } from 'queries/setting';
+import { useQuery } from '@tanstack/react-query';
 
 export const searchSchema = z.object({
   gameServerId: z.string().optional().catch(''),
@@ -69,7 +68,41 @@ function Component() {
       gameServerId: search.gameServerId,
     },
   });
-  const gameserverId = watch('gameServerId');
+  const gameServerId = watch('gameServerId');
+
+  const { data } = useQuery({
+    ...gameServerSettingQueryOptions('economyEnabled', gameServerId!),
+    enabled: gameServerId ? true : false,
+  });
+  const hasEconomyEnabled = data && data.value === 'true' ? true : false;
+
+  const renderEconomyLink = () => {
+    if (!gameServerId) {
+      return (
+        <Tooltip>
+          <Tooltip.Trigger asChild>
+            <div style={{ color: theme.colors.textAlt }}>Economy</div>
+          </Tooltip.Trigger>
+          <Tooltip.Content>Select gameserver to view page</Tooltip.Content>
+        </Tooltip>
+      );
+    } else if (hasEconomyEnabled) {
+      return (
+        <Link to="/player/$playerId/$gameserverId/economy" params={{ playerId, gameserverId: gameServerId! }}>
+          Economy
+        </Link>
+      );
+    } else {
+      return (
+        <Tooltip>
+          <Tooltip.Trigger asChild>
+            <div style={{ color: theme.colors.textAlt }}>Economy</div>
+          </Tooltip.Trigger>
+          <Tooltip.Content>Economy is disabled on this server.</Tooltip.Content>
+        </Tooltip>
+      );
+    }
+  };
 
   return (
     <Container>
@@ -122,8 +155,8 @@ function Component() {
         <Link to="/player/$playerId/events" params={{ playerId }}>
           Events
         </Link>
-        {gameserverId ? (
-          <Link to="/player/$playerId/$gameserverId/inventory" params={{ playerId, gameserverId }}>
+        {gameServerId ? (
+          <Link to="/player/$playerId/$gameserverId/inventory" params={{ playerId, gameserverId: gameServerId }}>
             Inventory
           </Link>
         ) : (
@@ -131,21 +164,10 @@ function Component() {
             <Tooltip.Trigger asChild>
               <div style={{ color: theme.colors.textAlt }}>Inventory</div>
             </Tooltip.Trigger>
-            <Tooltip.Content>Select gameserver</Tooltip.Content>
+            <Tooltip.Content>Select gameserver to view page</Tooltip.Content>
           </Tooltip>
         )}
-        {gameserverId ? (
-          <Link to="/player/$playerId/$gameserverId/economy" params={{ playerId, gameserverId }}>
-            Economy
-          </Link>
-        ) : (
-          <Tooltip>
-            <Tooltip.Trigger asChild>
-              <div style={{ color: theme.colors.textAlt }}>Economy</div>
-            </Tooltip.Trigger>
-            <Tooltip.Content>Select gameserver</Tooltip.Content>
-          </Tooltip>
-        )}
+        {renderEconomyLink()}
       </HorizontalNav>
       <ErrorBoundary>
         <Outlet />
@@ -154,37 +176,62 @@ function Component() {
   );
 }
 
-const InfoCard = styled(Card)`
-  h3 {
-    color: ${({ theme }) => theme.colors.textAlt};
-    font-weight: 400;
+//const InfoCard = styled(Card)`
+//  h3 {
+//    color: ${({ theme }) => theme.colors.textAlt};
+//    font-weight: 400;
+//
+//    margin-bottom: ${({ theme }) => theme.spacing['1']};
+//  }
+//`;
+//
+//const InfoCardBody = styled.div`
+//  display: grid;
+//  grid-template-columns: max-content 1fr;
+//  gap: ${({ theme }) => theme.spacing['8']};
+//  grid-row-gap: ${({ theme }) => theme.spacing['0_75']};
+//
+//  span {
+//    text-transform: capitalize;
+//  }
+//`;
 
-    margin-bottom: ${({ theme }) => theme.spacing['1']};
-  }
-`;
+//const SteamInfoCard: FC<{ player: PlayerOutputWithRolesDTO }> = ({ player }) => {
+//  return (
+//    <InfoCard variant="outline" onClick={() => window.open(`https://steamcommunity.com/profiles/${player.steamId}`)}>
+//      <h3>Steam</h3>
+//      <InfoCardBody>
+//        <span>VAC banned</span> {player.steamVacBanned ? 'Yes' : 'No'}
+//        <span>VAC bans</span> {player.steamNumberOfVACBans ?? 0}
+//        <span>Days since last ban</span> {player.steamsDaysSinceLastBan ?? 0}
+//        <span>Community banned</span> {player.steamCommunityBanned ? 'Yes' : 'No'}
+//        <span>Economy Banned</span> {player.steamEconomyBan ? 'Yes' : 'No'}
+//      </InfoCardBody>
+//    </InfoCard>
+//  );
+//};
 
-const InfoCardBody = styled.div`
-  display: grid;
-  grid-template-columns: max-content 1fr;
-  gap: ${({ theme }) => theme.spacing['8']};
-  grid-row-gap: ${({ theme }) => theme.spacing['0_75']};
-
-  span {
-    text-transform: capitalize;
-  }
-`;
-
-const SteamInfoCard: FC<{ player: PlayerOutputWithRolesDTO }> = ({ player }) => {
-  return (
-    <InfoCard variant="outline" onClick={() => window.open(`https://steamcommunity.com/profiles/${player.steamId}`)}>
-      <h3>Steam</h3>
-      <InfoCardBody>
-        <span>VAC banned</span> {player.steamVacBanned ? 'Yes' : 'No'}
-        <span>VAC bans</span> {player.steamNumberOfVACBans ?? 0}
-        <span>Days since last ban</span> {player.steamsDaysSinceLastBan ?? 0}
-        <span>Community banned</span> {player.steamCommunityBanned ? 'Yes' : 'No'}
-        <span>Economy Banned</span> {player.steamEconomyBan ? 'Yes' : 'No'}
-      </InfoCardBody>
-    </InfoCard>
-  );
-};
+//const IpInfo: FC<{ ipInfo: IpHistoryOutputDTO[] }> = ({ ipInfo }) => {
+//  if (ipInfo.length === 0) {
+//    return <p>No records</p>;
+//  }
+//
+//  return (
+//    <IpInfoContainer>
+//      {ipInfo.map((ip) => {
+//        return (
+//          <IpInfoLine key={ip + '-info-line'}>
+//            <Tooltip>
+//              <Tooltip.Trigger asChild>
+//                <CountryCodeToEmoji countryCode={ip.country} />
+//              </Tooltip.Trigger>
+//              <Tooltip.Content>{ip.country}</Tooltip.Content>
+//            </Tooltip>
+//            <span>{DateTime.fromISO(ip.createdAt).toLocaleString(DateTime.DATETIME_MED)}</span>
+//            <span>{ip.city}</span>
+//          </IpInfoLine>
+//        );
+//      })}
+//    </IpInfoContainer>
+//  );
+//};
