@@ -36,12 +36,14 @@ import { ItemsSyncWorker } from './workers/ItemsSyncWorker.js';
 import { PlayerSyncWorker } from './workers/playerSyncWorker.js';
 import { CSMMImportWorker } from './workers/csmmImportWorker.js';
 import { SteamSyncWorker } from './workers/steamSyncWorker.js';
+import { BansSyncWorker } from './workers/bansSyncWorker.js';
 import { AxiosError } from 'axios';
 import { StatsController } from './controllers/StatsController.js';
 import { KPIWorker } from './workers/kpiWorker.js';
 import { ShopOrderController } from './controllers/Shop/Order.js';
 import { ShopListingController } from './controllers/Shop/Listing.js';
 import { SystemWorker } from './workers/systemWorker.js';
+import { BanController } from './controllers/BanController.js';
 
 export const server = new HTTP(
   {
@@ -66,6 +68,7 @@ export const server = new HTTP(
       StatsController,
       ShopListingController,
       ShopOrderController,
+      BanController,
     ],
   },
   {
@@ -111,6 +114,9 @@ async function main() {
 
     new PlayerSyncWorker();
     log.info('👷 playerSync worker started');
+
+    new BansSyncWorker();
+    log.info('👷 bansSync worker started');
 
     new SteamSyncWorker();
     log.info('👷 steamSync worker started');

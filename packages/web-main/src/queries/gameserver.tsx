@@ -79,7 +79,7 @@ export const useGameServerCreateFromCSMMImport = () => {
             },
           })
         ).data.data,
-      onSuccess: async () => {
+      onSettled: async () => {
         await queryClient.invalidateQueries({ queryKey: gameServerKeys.list() });
       },
     }),

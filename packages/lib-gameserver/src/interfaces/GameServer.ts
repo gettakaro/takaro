@@ -60,9 +60,9 @@ export class IMessageOptsDTO extends TakaroDTO<IMessageOptsDTO> {
 }
 
 export class BanDTO extends TakaroDTO<BanDTO> {
-  @Type(() => IPlayerReferenceDTO)
+  @Type(() => IGamePlayer)
   @ValidateNested()
-  player: IPlayerReferenceDTO;
+  player: IGamePlayer;
 
   @IsString()
   reason: string;

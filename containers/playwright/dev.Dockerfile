@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/playwright:v1.46.1-jammy
+FROM mcr.microsoft.com/playwright:v1.47.2-jammy
 
 RUN npm install -g npm@9
 

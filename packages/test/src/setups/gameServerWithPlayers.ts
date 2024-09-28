@@ -2,6 +2,7 @@ import { EventsAwaiter } from '../test/waitForEvents.js';
 import { GameServerOutputDTO, ModuleOutputDTO, PlayerOnGameserverOutputDTO, PlayerOutputDTO } from '@takaro/apiclient';
 import { IntegrationTest } from '../integrationTest.js';
 import { integrationConfig } from '../test/integrationConfig.js';
+import { randomUUID } from 'crypto';
 
 export interface ISetupData {
   gameServer1: GameServerOutputDTO;
@@ -19,12 +20,14 @@ export const setup = async function (this: IntegrationTest<ISetupData>): Promise
   // 10 players, 10 pogs should be created
   const connectedEvents = eventsAwaiter.waitForEvents('player-created', 20);
 
+  const serverName = randomUUID();
+
   const gameServer1 = await this.client.gameserver.gameServerControllerCreate({
     name: 'Gameserver 1',
     type: 'MOCK',
     connectionInfo: JSON.stringify({
       host: integrationConfig.get('mockGameserver.host'),
-      name: 'mock1',
+      name: `mock1-${serverName}`,
     }),
   });
 
@@ -33,7 +36,7 @@ export const setup = async function (this: IntegrationTest<ISetupData>): Promise
     type: 'MOCK',
     connectionInfo: JSON.stringify({
       host: integrationConfig.get('mockGameserver.host'),
-      name: 'mock2',
+      name: `mock2-${serverName}`,
     }),
   });
 

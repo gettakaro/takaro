@@ -53,6 +53,7 @@ import { gameServerLatency } from '../lib/metrics.js';
 import { Pushgateway } from 'prom-client';
 import { config } from '../config.js';
 import { handlePlayerSync } from '../workers/playerSyncWorker.js';
+import { ImportInputDTO } from '../controllers/GameServerController.js';
 
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 const ajv = new Ajv({ useDefaults: true, strict: true });
@@ -165,11 +166,6 @@ export class GameServerService extends TakaroService<
 
   async create(item: GameServerCreateDTO): Promise<GameServerOutputDTO> {
     const isReachable = await this.testReachability(undefined, JSON.parse(item.connectionInfo), item.type);
-
-    if (!isReachable.connectable) {
-      throw new errors.BadRequestError(`Game server is not reachable: ${isReachable.reason}`);
-    }
-
     const createdServer = await this.repo.create(item);
 
     await queueService.queues.connector.queue.add({
@@ -178,13 +174,15 @@ export class GameServerService extends TakaroService<
       operation: 'create',
       time: new Date().toISOString(),
     });
-
     await queueService.queues.itemsSync.queue.add(
       { domainId: this.domainId, gameServerId: createdServer.id },
-      { jobId: `itemsSync-${this.domainId}-${createdServer.id}-${Date.now()}` },
+      { jobId: `itemsSync-${this.domainId}-${createdServer.id}-init` },
     );
 
-    await handlePlayerSync(createdServer.id, this.domainId);
+    if (isReachable.connectable) {
+      await handlePlayerSync(createdServer.id, this.domainId);
+    }
+
     return createdServer;
   }
 
@@ -465,6 +463,7 @@ export class GameServerService extends TakaroService<
   async banPlayer(gameServerId: string, playerId: string, reason: string, expiresAt: string) {
     const player = await this.pogService.getPog(playerId, gameServerId);
     const gameInstance = await this.getGame(gameServerId);
+    this.log.info('Banning player', { playerId, gameServerId, reason, expiresAt });
     return gameInstance.banPlayer(
       new BanDTO({
         player,
@@ -477,12 +476,14 @@ export class GameServerService extends TakaroService<
   async kickPlayer(gameServerId: string, playerId: string, reason: string) {
     const player = await this.pogService.getPog(playerId, gameServerId);
     const gameInstance = await this.getGame(gameServerId);
+    this.log.info('Kicking player', { playerId, gameServerId, reason });
     return gameInstance.kickPlayer(player, reason);
   }
 
   async unbanPlayer(gameServerId: string, playerId: string) {
     const player = await this.pogService.getPog(playerId, gameServerId);
     const gameInstance = await this.getGame(gameServerId);
+    this.log.info('Unbanning player', { playerId, gameServerId });
     return gameInstance.unbanPlayer(player);
   }
 
@@ -576,19 +577,9 @@ export class GameServerService extends TakaroService<
     };
   }
 
-  async import(data: Express.Multer.File) {
-    let parsed;
-
-    const raw = data.buffer.toString();
-
-    try {
-      parsed = JSON.parse(raw);
-    } catch {
-      throw new errors.BadRequestError('Invalid JSON');
-    }
-
+  async import(importData: Record<string, unknown>, options: ImportInputDTO) {
     const job = await queueService.queues.csmmImport.queue.add(
-      { csmmExport: parsed, domainId: this.domainId },
+      { csmmExport: importData, domainId: this.domainId, options },
       {
         jobId: randomUUID(),
       },

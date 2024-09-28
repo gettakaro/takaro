@@ -12,6 +12,38 @@
   ],
   "packageRules": [
     {
+      "matchPackageNames": [
+        "/@jsonforms/"
+      ],
+      "groupName": "@jsonforms"
+    },
+    {
+      "matchPackageNames": [
+        "/^ory|^@ory/"
+      ],
+      "groupName": "Ory"
+    },
+    {
+      "matchPackageNames": [
+        "/@sentry/"
+      ],
+      "groupName": "Sentry"
+    },
+    {
+      "matchPackageNames": [
+        "/^posthog-/"
+      ],
+      "groupName": "Posthog",
+      "automerge": true
+    },
+    {
+      "matchPackageNames": [
+        "/@opentelemetry/"
+      ],
+      "groupName": "@opentelemetry",
+      "automerge": true
+    },
+    {
       "matchDepTypes": [
         "devDependencies"
       ],
@@ -21,6 +53,15 @@
         "@types",
         "chai",
         "mocha"
+      ],
+      "automerge": true
+    },
+    {
+      "matchPackagePatterns": [
+        "vite",
+        "vitest",
+        "concurrently",
+        "@faker-js"
       ],
       "automerge": true
     }

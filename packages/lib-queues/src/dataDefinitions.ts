@@ -81,4 +81,10 @@ export interface IGameServerQueueData extends IBaseJobData {
 
 export interface ICSMMImportData extends IBaseJobData {
   csmmExport: Record<string, unknown>;
+  options: {
+    currency: boolean;
+    players: boolean;
+    roles: boolean;
+    shop: boolean;
+  };
 }

@@ -24,7 +24,7 @@ class ShopListingItemMetaOutputDTO extends TakaroModelDTO<ShopListingItemMetaOut
   item: ItemsOutputDTO;
 }
 
-class ShopListingItemMetaInputDTO extends TakaroDTO<ShopListingItemMetaOutputDTO> {
+export class ShopListingItemMetaInputDTO extends TakaroDTO<ShopListingItemMetaInputDTO> {
   @IsNumber()
   amount: number;
   @IsString()
