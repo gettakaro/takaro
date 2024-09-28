@@ -149,11 +149,20 @@ function Component() {
           />
         </Stats>
 
-        <div style={{ display: 'flex', flexFlow: 'flex-wrap', gap: '2rem', marginTop: '40px' }}>
+        <div
+          style={{
+            width: '100%',
+            display: 'grid',
+            gridTemplateColumns: '3fr 1fr ',
+            gap: '2rem',
+            marginTop: '40px',
+            gridTemplateRows: 'auto',
+          }}
+        >
           <Card variant="outline">
             <Card.Title label="Players online" />
             <Card.Body>
-              <div style={{ height: '400px', width: '60%', position: 'relative' }}>
+              <div style={{ height: '400px', width: '100%', position: 'relative' }}>
                 <LineChart
                   name="Players online"
                   data={data.values}
@@ -164,7 +173,7 @@ function Component() {
               </div>
             </Card.Body>
           </Card>
-          <Card style={{ height: '100%', width: '40%', position: 'relative' }}>
+          <Card>
             <Card.Title label="Module errors" />
             <Card.Body>
               <EventFeed>
