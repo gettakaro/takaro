@@ -12,6 +12,25 @@
   ],
   "packageRules": [
     {
+      "matchPackageNames": [
+        "/@jsonforms/"
+      ],
+      "groupName": "@jsonforms"
+    },
+    {
+      "matchPackageNames": [
+        "/@sentry/"
+      ],
+      "groupName": "@sentry"
+    },
+    {
+      "matchPackageNames": [
+        "/@opentelemetry/"
+      ],
+      "groupName": "@opentelemetry",
+      "automerge": true
+    },
+    {
       "matchDepTypes": [
         "devDependencies"
       ],
