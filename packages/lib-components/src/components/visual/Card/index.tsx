@@ -1,5 +1,7 @@
-import { forwardRef, HTMLProps } from 'react';
+import { FC, HTMLProps, PropsWithChildren } from 'react';
 import { styled } from '../../../styled';
+import { CardTitle } from './CardTitle';
+import { CardBody } from './CardBody';
 
 type Variant = 'default' | 'outline';
 
@@ -8,8 +10,8 @@ const Container = styled.div<{ canClick: boolean; variant: Variant }>`
   background-color: ${({ theme, variant }) =>
     variant === 'outline' ? theme.colors.background : theme.colors.backgroundAlt};
   border: 0.1rem solid ${({ theme }) => theme.colors.backgroundAccent};
-  padding: ${({ theme }) => theme.spacing[2]};
   cursor: ${({ canClick }) => (canClick ? 'pointer' : 'default')};
+  height: fit-content;
 
   &:focus-within {
     border-color: none;
@@ -31,22 +33,27 @@ export interface CardProps extends HTMLProps<HTMLDivElement> {
   variant?: Variant;
 }
 
-// Forward ref and spread all props to the Container
-export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
-  { children, variant = 'default', ...props },
-  ref,
-) {
-  const canClick = 'onClick' in props;
+interface SubComponentTypes {
+  Title: typeof CardTitle;
+  Body: typeof CardBody;
+}
 
-  // Extract the className prop, if present
+export const Card: FC<PropsWithChildren<CardProps>> & SubComponentTypes = function Card({
+  children,
+  variant = 'default',
+  ...props
+}) {
+  const canClick = 'onClick' in props;
   const { className, ...restProps } = props;
 
   return (
-    // TODO: type this properly
-    //eslint-disable-next-line
-    //@ts-ignore
-    <Container ref={ref} canClick={canClick} variant={variant} className={className} {...restProps}>
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    <Container canClick={canClick} variant={variant} className={className} {...restProps}>
       {children}
     </Container>
   );
-});
+};
+
+Card.Title = CardTitle;
+Card.Body = CardBody;

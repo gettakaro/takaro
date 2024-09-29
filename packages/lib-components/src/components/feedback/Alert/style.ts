@@ -12,7 +12,8 @@ export const Container = styled(motion.div)<{
   $elevation: Elevation;
 }>`
   width: 100%;
-  padding: ${({ theme }) => `${theme.spacing['0_75']} ${theme.spacing[1]}`};
+  padding: ${({ theme }) =>
+    `${theme.spacing['0_75']} ${theme.spacing['0_75']} ${theme.spacing['0_75']} ${theme.spacing['0']}`};
   border-radius: ${({ theme }) => theme.borderRadius.large};
   box-shadow: ${({ theme, $elevation }) => theme.elevation[$elevation]};
   margin: ${({ theme }) => `${theme.spacing['1_5']} auto`};
@@ -58,24 +59,21 @@ export const Container = styled(motion.div)<{
   }}
 `;
 
-export const Grid = styled.div<{ hasTitle: boolean; showIcon: boolean }>`
+export const Grid = styled.div`
   display: grid;
-  grid-template-columns: ${({ theme, hasTitle, showIcon }) => {
-    const result = '';
-    if (showIcon) result.concat(`${theme.spacing[5]}`);
-    result.concat(' 1fr');
-    if (hasTitle) result.concat(' fit-content(100px)');
-    return result;
-  }}
+  grid-template-columns: 40px 1fr;
   align-items: center;
-  gap: ${({ theme, hasTitle }) => (hasTitle ? 0 : theme.spacing['0_5'])};
+
+  p,
+  .action {
+    grid-column: 2;
+  }
 `;
 
 export const IconContainer = styled.div<{ variant: AlertVariants }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: ${({ theme }) => theme.spacing['1']};
   svg {
     fill: ${({ variant, theme }): string => theme.colors[variant]};
   }
