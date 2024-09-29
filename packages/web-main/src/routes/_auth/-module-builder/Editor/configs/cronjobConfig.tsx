@@ -54,7 +54,7 @@ export const CronJobConfigForm: FC<CronJobConfigFormProps> = ({ cronjob, readOnl
         control={control}
         name="temporalValue"
         label="temporalValue"
-        description="This controls when the cronjob triggers, you can use https://crontab.guru/ to help you with the syntax."
+        description="This controls when the cronjob triggers, you can use https://crontab.guru/ to help you with the syntax. Note that this is a default value, you can override this per-gameserver when you install this module"
         readOnly={readOnly}
       />
       {!readOnly && (
