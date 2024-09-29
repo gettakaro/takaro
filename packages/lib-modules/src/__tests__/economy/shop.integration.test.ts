@@ -122,30 +122,11 @@ const tests = [
       );
     },
   }),
-
   new IntegrationTest<IShopSetup>({
     group,
     snapshot: false,
     setup: shopSetup,
     name: 'Can buy an item',
-    test: async function () {
-      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(HookEvents.CHAT_MESSAGE, 1);
-      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
-        msg: '/shop 1 1 buy',
-        playerId: this.setupData.players[0].id,
-      });
-
-      expect(await events).to.have.length(1);
-      expect((await events)[0].data.meta.msg).to.equal(
-        'You have purchased Test item for 100 test coin. You can now claim your items.',
-      );
-    },
-  }),
-  new IntegrationTest<IShopSetup>({
-    group,
-    snapshot: false,
-    setup: shopSetup,
-    name: 'Buying an item automatically claims it',
     test: async function () {
       const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(HookEvents.CHAT_MESSAGE, 2);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
