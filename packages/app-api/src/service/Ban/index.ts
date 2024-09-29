@@ -110,7 +110,7 @@ export class BanService extends TakaroService<BanModel, BanOutputDTO, BanCreateD
 
     const currentGameserverBans = await gameServerService.listBans(gameServerId);
 
-    const allBanInputs = await Promise.all(
+    const banPromises = await Promise.allSettled(
       currentGameserverBans.map(async (ban) => {
         const { player } = await playerService.resolveRef(ban.player, gameServerId);
         if (!player) {
@@ -126,8 +126,12 @@ export class BanService extends TakaroService<BanModel, BanOutputDTO, BanCreateD
       }),
     );
 
-    const banInputs = allBanInputs.filter((b) => b !== null);
+    const failedPromises = banPromises.filter((b) => b.status === 'rejected');
+    if (failedPromises.length > 0) {
+      this.log.warn(`Failed to resolve ${failedPromises.length} bans`, { failedPromises });
+    }
 
+    const banInputs = banPromises.map((b) => (b.status === 'fulfilled' ? b.value : null)).filter((b) => b !== null);
     await this.repo.syncBans(gameServerId, banInputs);
   }
 }
