@@ -24,11 +24,10 @@ export interface AlertProps {
   elevation?: Elevation;
   dismiss?: boolean;
   action?: Action;
-  showIcon?: boolean;
 }
 
 export const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
-  { variant, title, text, dismiss = false, elevation = 4, action, showIcon = true },
+  { variant, title, text, dismiss = false, elevation = 4, action },
   ref,
 ) {
   const [visible, setVisible] = useState(true);
@@ -86,9 +85,7 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
           role="status"
         >
           <Grid>
-            {showIcon && <IconContainer variant={variant}>{getIcon()}</IconContainer>}
-
-            {/* If title is declared set title, otherwise put everything on single line */}
+            <IconContainer variant={variant}>{getIcon()}</IconContainer>
             {title && <h2>{title}</h2>}
             <p>{renderText()}</p>
             <ButtonContainer
