@@ -24,7 +24,7 @@ import {
 } from 'react-icons/ai';
 
 import { useNavigate } from '@tanstack/react-router';
-import { SpacedRow, ActionIconsContainer, CardBody } from '../style';
+import { SpacedRow, ActionIconsContainer, InnerBody } from '../style';
 import { useGameServerModuleInstall, useGameServerModuleUninstall } from 'queries/gameserver';
 
 interface IModuleCardProps {
@@ -108,69 +108,73 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
   return (
     <>
       <Card data-testid={`module-${mod.id}`}>
-        <CardBody>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <h2 style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>{mod.name}</h2>
-            {installation && (
-              <Dropdown>
-                <Dropdown.Trigger asChild>
-                  <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
-                </Dropdown.Trigger>
-                <Dropdown.Menu>
-                  <Dropdown.Menu.Group label="Actions">
-                    <PermissionsGuard requiredPermissions={[[PERMISSIONS.ManageModules]]}>
-                      <Dropdown.Menu.Item
-                        icon={<ViewIcon />}
-                        onClick={handleOnViewModuleConfigClick}
-                        label="View module config"
-                      />
-                      <Dropdown.Menu.Item
-                        icon={<ConfigIcon />}
-                        onClick={handleInstallConfigureClick}
-                        label="Configure module "
-                      />
-                      <Dropdown.Menu.Item
-                        icon={isModuleInstallationEnabled ? <DisableIcon fill={theme.colors.error} /> : <EnableIcon />}
-                        onClick={handleOnModuleEnableDisableClick}
-                        label={isModuleInstallationEnabled ? 'Disable module' : 'Enable module'}
-                      />
+        <Card.Body>
+          <InnerBody>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <h2 style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>{mod.name}</h2>
+              {installation && (
+                <Dropdown>
+                  <Dropdown.Trigger asChild>
+                    <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
+                  </Dropdown.Trigger>
+                  <Dropdown.Menu>
+                    <Dropdown.Menu.Group label="Actions">
+                      <PermissionsGuard requiredPermissions={[[PERMISSIONS.ManageModules]]}>
+                        <Dropdown.Menu.Item
+                          icon={<ViewIcon />}
+                          onClick={handleOnViewModuleConfigClick}
+                          label="View module config"
+                        />
+                        <Dropdown.Menu.Item
+                          icon={<ConfigIcon />}
+                          onClick={handleInstallConfigureClick}
+                          label="Configure module "
+                        />
+                        <Dropdown.Menu.Item
+                          icon={
+                            isModuleInstallationEnabled ? <DisableIcon fill={theme.colors.error} /> : <EnableIcon />
+                          }
+                          onClick={handleOnModuleEnableDisableClick}
+                          label={isModuleInstallationEnabled ? 'Disable module' : 'Enable module'}
+                        />
 
+                        <Dropdown.Menu.Item
+                          icon={<DeleteIcon fill={theme.colors.error} />}
+                          onClick={handleOnDeleteClick}
+                          label="Uninstall module"
+                        />
+                      </PermissionsGuard>
+                    </Dropdown.Menu.Group>
+                    <Dropdown.Menu.Group>
                       <Dropdown.Menu.Item
-                        icon={<DeleteIcon fill={theme.colors.error} />}
-                        onClick={handleOnDeleteClick}
-                        label="Uninstall module"
+                        icon={<LinkIcon />}
+                        onClick={handleOnOpenClick}
+                        label="Open in Module Builder"
                       />
-                    </PermissionsGuard>
-                  </Dropdown.Menu.Group>
-                  <Dropdown.Menu.Group>
-                    <Dropdown.Menu.Item
-                      icon={<LinkIcon />}
-                      onClick={handleOnOpenClick}
-                      label="Open in Module Builder"
-                    />
-                  </Dropdown.Menu.Group>
-                </Dropdown.Menu>
-              </Dropdown>
-            )}
-          </div>
-          <p>{mod.description}</p>
+                    </Dropdown.Menu.Group>
+                  </Dropdown.Menu>
+                </Dropdown>
+              )}
+            </div>
+            <p>{mod.description}</p>
 
-          <SpacedRow>
-            {installation && !installation.systemConfig['enabled'] ? (
-              <Chip label="disabled" variant="outline" color="error" />
-            ) : (
-              <span style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                {mod.commands.length > 0 && <p>Commands: {mod.commands.length}</p>}
-                {mod.hooks.length > 0 && <p>Hooks: {mod.hooks.length}</p>}
-                {mod.cronJobs.length > 0 && <p>Cronjobs: {mod.cronJobs.length}</p>}
-                {mod.permissions.length > 0 && <p>Permissions: {mod.permissions.length}</p>}
-              </span>
-            )}
-            <ActionIconsContainer>
-              {!installation && <Button text="Install" onClick={handleInstallConfigureClick} />}
-            </ActionIconsContainer>
-          </SpacedRow>
-        </CardBody>
+            <SpacedRow>
+              {installation && !installation.systemConfig['enabled'] ? (
+                <Chip label="disabled" variant="outline" color="error" />
+              ) : (
+                <span style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                  {mod.commands.length > 0 && <p>Commands: {mod.commands.length}</p>}
+                  {mod.hooks.length > 0 && <p>Hooks: {mod.hooks.length}</p>}
+                  {mod.cronJobs.length > 0 && <p>Cronjobs: {mod.cronJobs.length}</p>}
+                  {mod.permissions.length > 0 && <p>Permissions: {mod.permissions.length}</p>}
+                </span>
+              )}
+              <ActionIconsContainer>
+                {!installation && <Button text="Install" onClick={handleInstallConfigureClick} />}
+              </ActionIconsContainer>
+            </SpacedRow>
+          </InnerBody>
+        </Card.Body>
       </Card>
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <Dialog.Content>

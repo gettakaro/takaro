@@ -26,7 +26,7 @@ import {
 import { Header, TitleContainer, DetailsContainer } from './style';
 import { useGameServerRemove } from 'queries/gameserver';
 import { PermissionsGuard } from 'components/PermissionsGuard';
-import { CardBody } from '../style';
+import { InnerBody } from '../style';
 import { useSocket } from 'hooks/useSocket';
 import { playersOnGameServersQueryOptions } from 'queries/pog';
 import { useQuery } from '@tanstack/react-query';
@@ -102,81 +102,86 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
         }}
         data-testid={`gameserver-${id}-card`}
       >
-        <CardBody>
-          <Header>
-            <StatusChip reachable={reachable} enabled={enabled} />
-            <PermissionsGuard requiredPermissions={[[PERMISSIONS.ManageGameservers]]}>
-              <Dropdown>
-                <Dropdown.Trigger asChild>
-                  <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
-                </Dropdown.Trigger>
-                <Dropdown.Menu>
-                  <Dropdown.Menu.Group label="Actions">
-                    <Dropdown.Menu.Item icon={<CopyIcon />} onClick={handleOnCopyClick} label="Copy gameserverID" />
-                    <Dropdown.Menu.Item icon={<EditIcon />} onClick={handleOnEditClick} label="Edit gameserver" />
-                    <Dropdown.Menu.Item
-                      icon={<DeleteIcon fill={theme.colors.error} />}
-                      onClick={handleOnDeleteClick}
-                      label="Delete gameserver"
-                    />
-                  </Dropdown.Menu.Group>
-                  <Dropdown.Menu.Group label="Navigation">
-                    <Dropdown.Menu.Item
-                      icon={<DashboardIcon />}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate({ to: '/gameserver/$gameServerId/dashboard/overview', params: { gameServerId: id } });
-                      }}
-                      label="go to dashboard"
-                    />
-                    <Dropdown.Menu.Item
-                      icon={<ModulesIcon />}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate({ to: '/gameserver/$gameServerId/modules', params: { gameServerId: id } });
-                      }}
-                      label="go to modules"
-                    />
-                    <Dropdown.Menu.Item
-                      icon={<ModulesIcon />}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate({ to: '/gameserver/$gameServerId/shop', params: { gameServerId: id } });
-                      }}
-                      label="go to shop"
-                    />
-                    <Dropdown.Menu.Item
-                      icon={<SettingsIcon />}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate({ to: '/gameserver/$gameServerId/settings', params: { gameServerId: id } });
-                      }}
-                      label="go to settings"
-                    />
-                  </Dropdown.Menu.Group>
-                </Dropdown.Menu>
-              </Dropdown>
-            </PermissionsGuard>
-          </Header>
-          <DetailsContainer>
-            <TitleContainer>
-              <h3>{name}</h3>
+        <Card.Body>
+          <InnerBody>
+            <Header>
+              <StatusChip reachable={reachable} enabled={enabled} />
+              <PermissionsGuard requiredPermissions={[[PERMISSIONS.ManageGameservers]]}>
+                <Dropdown>
+                  <Dropdown.Trigger asChild>
+                    <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
+                  </Dropdown.Trigger>
+                  <Dropdown.Menu>
+                    <Dropdown.Menu.Group label="Actions">
+                      <Dropdown.Menu.Item icon={<CopyIcon />} onClick={handleOnCopyClick} label="Copy gameserverID" />
+                      <Dropdown.Menu.Item icon={<EditIcon />} onClick={handleOnEditClick} label="Edit gameserver" />
+                      <Dropdown.Menu.Item
+                        icon={<DeleteIcon fill={theme.colors.error} />}
+                        onClick={handleOnDeleteClick}
+                        label="Delete gameserver"
+                      />
+                    </Dropdown.Menu.Group>
+                    <Dropdown.Menu.Group label="Navigation">
+                      <Dropdown.Menu.Item
+                        icon={<DashboardIcon />}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate({
+                            to: '/gameserver/$gameServerId/dashboard/overview',
+                            params: { gameServerId: id },
+                          });
+                        }}
+                        label="go to dashboard"
+                      />
+                      <Dropdown.Menu.Item
+                        icon={<ModulesIcon />}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate({ to: '/gameserver/$gameServerId/modules', params: { gameServerId: id } });
+                        }}
+                        label="go to modules"
+                      />
+                      <Dropdown.Menu.Item
+                        icon={<ModulesIcon />}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate({ to: '/gameserver/$gameServerId/shop', params: { gameServerId: id } });
+                        }}
+                        label="go to shop"
+                      />
+                      <Dropdown.Menu.Item
+                        icon={<SettingsIcon />}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate({ to: '/gameserver/$gameServerId/settings', params: { gameServerId: id } });
+                        }}
+                        label="go to settings"
+                      />
+                    </Dropdown.Menu.Group>
+                  </Dropdown.Menu>
+                </Dropdown>
+              </PermissionsGuard>
+            </Header>
+            <DetailsContainer>
+              <TitleContainer>
+                <h3>{name}</h3>
+                <div>
+                  <Tooltip placement="bottom">
+                    <Tooltip.Trigger asChild>
+                      <p>{type}</p>
+                    </Tooltip.Trigger>
+                    <Tooltip.Content>Game server type</Tooltip.Content>
+                  </Tooltip>
+                </div>
+              </TitleContainer>
               <div>
-                <Tooltip placement="bottom">
-                  <Tooltip.Trigger asChild>
-                    <p>{type}</p>
-                  </Tooltip.Trigger>
-                  <Tooltip.Content>Game server type</Tooltip.Content>
-                </Tooltip>
+                {isLoadingPogs && <Skeleton variant="rectangular" width="100px" height="15px" />}
+                {!isLoadingPogs && !onlinePogs && <p>Online players: unknown</p>}
+                {onlinePogs && <p>Online players: {onlinePogs?.data.length}</p>}
               </div>
-            </TitleContainer>
-            <div>
-              {isLoadingPogs && <Skeleton variant="rectangular" width="100px" height="15px" />}
-              {!isLoadingPogs && !onlinePogs && <p>Online players: unknown</p>}
-              {onlinePogs && <p>Online players: {onlinePogs?.data.length}</p>}
-            </div>
-          </DetailsContainer>
-        </CardBody>
+            </DetailsContainer>
+          </InnerBody>
+        </Card.Body>
       </Card>
       <Dialog open={openDeleteDialog} onOpenChange={setOpenDeleteDialog}>
         <Dialog.Content>

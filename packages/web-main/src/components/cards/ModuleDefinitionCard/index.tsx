@@ -15,7 +15,7 @@ import { PERMISSIONS, ModuleOutputDTO } from '@takaro/apiclient';
 import { moduleExportOptions, useModuleRemove } from 'queries/module';
 import { FC, useState, MouseEvent, useEffect } from 'react';
 import { useNavigate } from '@tanstack/react-router';
-import { SpacedRow, ActionIconsContainer, CardBody } from '../style';
+import { SpacedRow, ActionIconsContainer, InnerBody } from '../style';
 import { PermissionsGuard } from 'components/PermissionsGuard';
 import {
   AiOutlineMenu as MenuIcon,
@@ -106,68 +106,70 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
   return (
     <>
       <Card data-testid={`${mod.name}`}>
-        <CardBody>
-          <SpacedRow>
-            <h2>{mod.name}</h2>
-            <ActionIconsContainer>
-              {mod.builtin && (
-                <Tooltip>
-                  <Tooltip.Trigger>
-                    <Company
-                      key={`builtin-module-icon-${mod.id}`}
-                      textVisible={false}
-                      size="tiny"
-                      iconColor="secondary"
-                    />
-                  </Tooltip.Trigger>
-                  <Tooltip.Content>
-                    This is a built-in module, you cannot edit or delete it.
-                    <br />
-                    You can however copy it and edit the copy.
-                    <br />
-                    Open the module by clicking on it.
-                  </Tooltip.Content>
-                </Tooltip>
-              )}
-              <Dropdown>
-                <Dropdown.Trigger asChild>
-                  <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
-                </Dropdown.Trigger>
-                <Dropdown.Menu>
-                  {!mod.builtin && (
-                    <Dropdown.Menu.Group label="Actions">
-                      <PermissionsGuard requiredPermissions={[[PERMISSIONS.ManageModules]]}>
-                        <Dropdown.Menu.Item icon={<ViewIcon />} onClick={handleOnViewClick} label="View module" />
-                        <Dropdown.Menu.Item icon={<EditIcon />} onClick={handleOnEditClick} label="Edit module" />
-                        <Dropdown.Menu.Item
-                          icon={<DeleteIcon fill={theme.colors.error} />}
-                          onClick={handleOnDeleteClick}
-                          label="Delete module"
-                        />
-                      </PermissionsGuard>
+        <Card.Body>
+          <InnerBody>
+            <SpacedRow>
+              <h2>{mod.name}</h2>
+              <ActionIconsContainer>
+                {mod.builtin && (
+                  <Tooltip>
+                    <Tooltip.Trigger>
+                      <Company
+                        key={`builtin-module-icon-${mod.id}`}
+                        textVisible={false}
+                        size="tiny"
+                        iconColor="secondary"
+                      />
+                    </Tooltip.Trigger>
+                    <Tooltip.Content>
+                      This is a built-in module, you cannot edit or delete it.
+                      <br />
+                      You can however copy it and edit the copy.
+                      <br />
+                      Open the module by clicking on it.
+                    </Tooltip.Content>
+                  </Tooltip>
+                )}
+                <Dropdown>
+                  <Dropdown.Trigger asChild>
+                    <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
+                  </Dropdown.Trigger>
+                  <Dropdown.Menu>
+                    {!mod.builtin && (
+                      <Dropdown.Menu.Group label="Actions">
+                        <PermissionsGuard requiredPermissions={[[PERMISSIONS.ManageModules]]}>
+                          <Dropdown.Menu.Item icon={<ViewIcon />} onClick={handleOnViewClick} label="View module" />
+                          <Dropdown.Menu.Item icon={<EditIcon />} onClick={handleOnEditClick} label="Edit module" />
+                          <Dropdown.Menu.Item
+                            icon={<DeleteIcon fill={theme.colors.error} />}
+                            onClick={handleOnDeleteClick}
+                            label="Delete module"
+                          />
+                        </PermissionsGuard>
+                      </Dropdown.Menu.Group>
+                    )}
+                    <Dropdown.Menu.Group>
+                      <Dropdown.Menu.Item icon={<CopyIcon />} onClick={handleOnCopyClick} label="Copy module" />
+                      <Dropdown.Menu.Item
+                        icon={<LinkIcon />}
+                        onClick={handleOnOpenClick}
+                        label="Open in Module Builder"
+                      />
+                      <Dropdown.Menu.Item icon={<ExportIcon />} onClick={handleOnExportClick} label="Export to file" />
                     </Dropdown.Menu.Group>
-                  )}
-                  <Dropdown.Menu.Group>
-                    <Dropdown.Menu.Item icon={<CopyIcon />} onClick={handleOnCopyClick} label="Copy module" />
-                    <Dropdown.Menu.Item
-                      icon={<LinkIcon />}
-                      onClick={handleOnOpenClick}
-                      label="Open in Module Builder"
-                    />
-                    <Dropdown.Menu.Item icon={<ExportIcon />} onClick={handleOnExportClick} label="Export to file" />
-                  </Dropdown.Menu.Group>
-                </Dropdown.Menu>
-              </Dropdown>
-            </ActionIconsContainer>
-          </SpacedRow>
-          <p>{mod.description}</p>
-          <span style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-            {mod.commands.length > 0 && <p>Commands: {mod.commands.length}</p>}
-            {mod.hooks.length > 0 && <p>Hooks: {mod.hooks.length}</p>}
-            {mod.cronJobs.length > 0 && <p>Cronjobs: {mod.cronJobs.length}</p>}
-            {mod.permissions.length > 0 && <p>Permissions: {mod.permissions.length}</p>}
-          </span>
-        </CardBody>
+                  </Dropdown.Menu>
+                </Dropdown>
+              </ActionIconsContainer>
+            </SpacedRow>
+            <p>{mod.description}</p>
+            <span style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+              {mod.commands.length > 0 && <p>Commands: {mod.commands.length}</p>}
+              {mod.hooks.length > 0 && <p>Hooks: {mod.hooks.length}</p>}
+              {mod.cronJobs.length > 0 && <p>Cronjobs: {mod.cronJobs.length}</p>}
+              {mod.permissions.length > 0 && <p>Permissions: {mod.permissions.length}</p>}
+            </span>
+          </InnerBody>
+        </Card.Body>
       </Card>
       <Dialog open={openDeleteDialog} onOpenChange={setOpenDeleteDialog}>
         <Dialog.Content>

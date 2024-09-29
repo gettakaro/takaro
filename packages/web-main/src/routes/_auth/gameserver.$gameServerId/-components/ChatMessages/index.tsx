@@ -8,9 +8,9 @@ import { useSocket } from 'hooks/useSocket';
 import { eventsQueryOptions } from 'queries/event';
 import { getApiClient } from 'util/getApiClient';
 import { FC, useEffect } from 'react';
-import { Skeleton } from '@takaro/lib-components';
+import { Card, Skeleton } from '@takaro/lib-components';
 import { CardBody } from './style';
-import { StyledCard, Scrollable } from '../style';
+import { Scrollable } from '../style';
 import { ChatMessage } from './ChatMessage';
 import { ChatInput } from './ChatInput';
 import { useQuery } from '@tanstack/react-query';
@@ -56,18 +56,20 @@ export const ChatMessagesCard: FC = () => {
   const events = data?.data;
 
   return (
-    <StyledCard variant={'outline'}>
-      <CardBody>
-        <Scrollable>{events?.reverse().map((event) => <ChatMessage key={event.id} event={event} />)}</Scrollable>
-        <ChatInput
-          onSubmit={async (msg) => {
-            await apiClient.gameserver.gameServerControllerSendMessage(gameServerId, {
-              message: msg,
-            });
-            refetch();
-          }}
-        />
-      </CardBody>
-    </StyledCard>
+    <Card variant="outline">
+      <Card.Body>
+        <CardBody>
+          <Scrollable>{events?.reverse().map((event) => <ChatMessage key={event.id} event={event} />)}</Scrollable>
+          <ChatInput
+            onSubmit={async (msg) => {
+              await apiClient.gameserver.gameServerControllerSendMessage(gameServerId, {
+                message: msg,
+              });
+              refetch();
+            }}
+          />
+        </CardBody>
+      </Card.Body>
+    </Card>
   );
 };

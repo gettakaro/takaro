@@ -1,4 +1,4 @@
-import { Avatar, Card, Chip, getInitials, Tooltip } from '@takaro/lib-components';
+import { Avatar, Card, Chip, getInitials } from '@takaro/lib-components';
 import { FC } from 'react';
 import { Header, CardBody } from './style';
 import { GameServerOutputDTOTypeEnum, ShopListingOutputDTO } from '@takaro/apiclient';
@@ -33,58 +33,58 @@ export const ShopListingCard: FC<ShopListingCard> = ({
   return (
     <>
       <Card data-testid={`shoplisting-${shopListing.id}-card`}>
-        <CardBody>
-          <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <Header hasMultipleChildren={shopListing.draft}>
-              {hasPermission && shopListing.draft && <Chip color="primary" label="Draft" />}
-              {hasPermission && (
-                <ShopListingActions
-                  shopListingName={shopListingName}
-                  shopListingId={shopListing.id}
-                  gameServerId={gameServerId}
+        <Card.Body>
+          <CardBody>
+            <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <Header hasMultipleChildren={shopListing.draft}>
+                {hasPermission && shopListing.draft && <Chip color="primary" label="Draft" />}
+                {hasPermission && (
+                  <ShopListingActions
+                    shopListingName={shopListingName}
+                    shopListingId={shopListing.id}
+                    gameServerId={gameServerId}
+                  />
+                )}
+              </Header>
+              <Avatar size="huge">
+                <Avatar.Image
+                  src={`/icons/${gameServerTypeToIconFolderMap[gameServerType]}/${shopListing.items[0].item.code}.png`}
+                  alt={`Item icon of ${shopListing.items[0].item.name}`}
                 />
-              )}
-            </Header>
-            <Avatar size="huge">
-              <Avatar.Image
-                src={`/icons/${gameServerTypeToIconFolderMap[gameServerType]}/${shopListing.items[0].item.code}.png`}
-                alt={`Item icon of ${shopListing.items[0].item.name}`}
-              />
-              <Avatar.FallBack>{getInitials(shopListingName)}</Avatar.FallBack>
-            </Avatar>
-            <h2>{shopListingName}</h2>
-            <div
-              style={{ display: 'flex', flexWrap: 'wrap', textAlign: 'left', width: '100%', marginBottom: '1.5rem' }}
-            >
-              {shopListing.items.map((itemMeta) => {
-                return (
-                  <Tooltip key={itemMeta.id}>
-                    <Tooltip.Trigger>
-                      <Avatar size="small">
-                        <Avatar.Image
-                          src={`/icons/${gameServerTypeToIconFolderMap[gameServerType]}/${itemMeta.item.code}.png`}
-                          alt={`Item icon of ${itemMeta.item.name}`}
-                        />
-                        <Avatar.FallBack>{getInitials(shopListingName)}</Avatar.FallBack>
-                      </Avatar>
-                    </Tooltip.Trigger>
-                    <Tooltip.Content>
-                      {itemMeta.amount} of {itemMeta.item.name}
-                      {itemMeta.quality && itemMeta.quality !== '0' ? `, quality: ${itemMeta.quality}` : ''}
-                    </Tooltip.Content>
-                  </Tooltip>
-                );
-              })}
+                <Avatar.FallBack>{getInitials(shopListingName)}</Avatar.FallBack>
+              </Avatar>
+              <h2>{shopListingName}</h2>
+              <div style={{ textAlign: 'left', width: '100%', marginBottom: '1.5rem' }}>
+                {' '}
+                {shopListing.items.map((itemMeta, index) => {
+                  return (
+                    <>
+                      <strong
+                        style={{
+                          maxWidth: '100%',
+                          lineBreak: 'anywhere',
+                          display: 'inline-block',
+                          marginBottom: '.5rem',
+                        }}
+                      >
+                        {itemMeta.amount}x {itemMeta.item.name}
+                        {itemMeta.quality ? `, quality: ${itemMeta.quality}` : ''}
+                      </strong>
+                      {shopListing.items.length > 1 && index < shopListing.items.length - 1 && ', '}
+                    </>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-          <ShopListingBuyForm
-            isDraft={shopListing.draft}
-            currencyName={currencyName}
-            shopListingId={shopListing.id}
-            playerCurrencyAmount={playerCurrencyAmount}
-            price={shopListing.price}
-          />
-        </CardBody>
+            <ShopListingBuyForm
+              isDraft={shopListing.draft}
+              currencyName={currencyName}
+              shopListingId={shopListing.id}
+              playerCurrencyAmount={playerCurrencyAmount}
+              price={shopListing.price}
+            />
+          </CardBody>
+        </Card.Body>
       </Card>
     </>
   );

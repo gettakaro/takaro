@@ -10,10 +10,6 @@ const StyledFloatingOverlay = styled(FloatingOverlay)`
   place-items: center;
 `;
 
-const CardBody = styled.div`
-  min-width: 300px;
-`;
-
 export const DialogContent = forwardRef<HTMLDivElement, React.HTMLProps<HTMLDivElement>>(
   function DialogContent(props, propRef) {
     const { context: floatingContext, ...context } = useDialogContext();
@@ -37,7 +33,7 @@ export const DialogContent = forwardRef<HTMLDivElement, React.HTMLProps<HTMLDivE
                   ...props,
                 })}
               >
-                <CardBody>{props.children}</CardBody>
+                <Card.Body>{props.children}</Card.Body>
               </Card>
             </FloatingFocusManager>
           </StyledFloatingOverlay>
