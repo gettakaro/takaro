@@ -3,6 +3,7 @@ import { HttpError } from 'routing-controllers';
 import { logger, errors } from '@takaro/util';
 import { apiResponse } from '../util/apiResponse.js';
 import { ValidationError } from 'class-validator';
+import { MulterError } from 'multer';
 
 const log = logger('errorHandler');
 
@@ -22,6 +23,15 @@ export async function ErrorHandler(
       const validationErrors = originalError['errors'] as ValidationError[];
       parsedError = new errors.ValidationError('Validation error', validationErrors);
       log.warn('⚠️ Validation errror', { details: validationErrors.map((e) => JSON.stringify(e.target, null, 2)) });
+    }
+  }
+
+  if (originalError instanceof MulterError) {
+    status = 400;
+    parsedError = new errors.BadRequestError('Invalid file');
+    if (originalError.code === 'LIMIT_FIELD_VALUE') {
+      status = 400;
+      parsedError = new errors.BadRequestError('File too large');
     }
   }
 
