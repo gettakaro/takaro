@@ -14,7 +14,7 @@ import { Header, TitleContainer } from './style';
 import { useNavigate } from '@tanstack/react-router';
 import { useRoleRemove } from 'queries/role';
 import { RoleOutputDTO } from '@takaro/apiclient';
-import { CardBody } from '../style';
+import { InnerBody } from '../style';
 
 import {
   AiOutlineMenu as MenuIcon,
@@ -63,47 +63,49 @@ export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
   return (
     <>
       <Card data-testid={`role-${name}`}>
-        <CardBody>
-          <Header>
-            {system ? (
-              <Tooltip placement="top">
-                <Tooltip.Trigger asChild>
-                  <Chip label="system" color="backgroundAccent" variant="outline" />
-                </Tooltip.Trigger>
-                <Tooltip.Content>System roles are managed by Takaro and cannot be deleted.</Tooltip.Content>
-              </Tooltip>
-            ) : (
-              <span />
-            )}
+        <Card.Body>
+          <InnerBody>
+            <Header>
+              {system ? (
+                <Tooltip placement="top">
+                  <Tooltip.Trigger asChild>
+                    <Chip label="system" color="backgroundAccent" variant="outline" />
+                  </Tooltip.Trigger>
+                  <Tooltip.Content>System roles are managed by Takaro and cannot be deleted.</Tooltip.Content>
+                </Tooltip>
+              ) : (
+                <span />
+              )}
 
-            <Dropdown>
-              <Dropdown.Trigger asChild>
-                <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
-              </Dropdown.Trigger>
-              <Dropdown.Menu>
-                <Dropdown.Menu.Group label="Actions">
-                  <Dropdown.Menu.Item onClick={handleOnViewClick} icon={<ViewIcon />} label="View role" />
-                  {name !== 'root' && (
-                    <Dropdown.Menu.Item onClick={handleOnEditClick} icon={<EditIcon />} label="Edit role" />
-                  )}
-                  {!system && (
-                    <Dropdown.Menu.Item
-                      onClick={handleOnDeleteClick}
-                      icon={<DeleteIcon fill={theme.colors.error} />}
-                      label="Delete role"
-                    />
-                  )}
-                </Dropdown.Menu.Group>
+              <Dropdown>
+                <Dropdown.Trigger asChild>
+                  <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
+                </Dropdown.Trigger>
+                <Dropdown.Menu>
+                  <Dropdown.Menu.Group label="Actions">
+                    <Dropdown.Menu.Item onClick={handleOnViewClick} icon={<ViewIcon />} label="View role" />
+                    {name !== 'root' && (
+                      <Dropdown.Menu.Item onClick={handleOnEditClick} icon={<EditIcon />} label="Edit role" />
+                    )}
+                    {!system && (
+                      <Dropdown.Menu.Item
+                        onClick={handleOnDeleteClick}
+                        icon={<DeleteIcon fill={theme.colors.error} />}
+                        label="Delete role"
+                      />
+                    )}
+                  </Dropdown.Menu.Group>
 
-                <Dropdown.Menu.Item onClick={() => {}} label="Manage users (coming soon)" disabled />
-                <Dropdown.Menu.Item onClick={() => {}} label="Manage players (coming soon)" disabled />
-              </Dropdown.Menu>
-            </Dropdown>
-          </Header>
-          <TitleContainer>
-            <h3>Role: {name}</h3>
-          </TitleContainer>
-        </CardBody>
+                  <Dropdown.Menu.Item onClick={() => {}} label="Manage users (coming soon)" disabled />
+                  <Dropdown.Menu.Item onClick={() => {}} label="Manage players (coming soon)" disabled />
+                </Dropdown.Menu>
+              </Dropdown>
+            </Header>
+            <TitleContainer>
+              <h3>Role: {name}</h3>
+            </TitleContainer>
+          </InnerBody>
+        </Card.Body>
       </Card>
 
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>

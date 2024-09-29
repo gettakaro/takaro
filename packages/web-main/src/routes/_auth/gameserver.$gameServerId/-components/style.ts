@@ -1,9 +1,4 @@
-import { styled, Card as CardBase } from '@takaro/lib-components';
-
-export const StyledCard = styled(CardBase)`
-  height: 100%;
-  width: 100%;
-`;
+import { styled } from '@takaro/lib-components';
 
 export const Scrollable = styled.div`
   overflow-y: auto;

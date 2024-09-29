@@ -11,7 +11,7 @@ export const SpacedButton = styled(Button)`
   margin-left: ${({ theme }) => theme.spacing[1]};
 `;
 
-export const CardBody = styled.div`
+export const InnerBody = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;

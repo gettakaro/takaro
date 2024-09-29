@@ -150,23 +150,29 @@ function Component() {
         </Stats>
 
         <div style={{ display: 'flex', flexFlow: 'flex-wrap', gap: '2rem', marginTop: '40px' }}>
-          <Card style={{ height: '400px', width: '60%', position: 'relative' }} variant="outline">
-            <h2>Players online</h2>
-            <LineChart
-              name="Players online"
-              data={data.values}
-              xAccessor={(d) => new Date(d[0] * 1000)}
-              yAccessor={(d) => d[1]}
-              curveType="curveBasis"
-            />
+          <Card variant="outline">
+            <Card.Title label="Players online" />
+            <Card.Body>
+              <div style={{ height: '400px', width: '60%', position: 'relative' }}>
+                <LineChart
+                  name="Players online"
+                  data={data.values}
+                  xAccessor={(d) => new Date(d[0] * 1000)}
+                  yAccessor={(d) => d[1]}
+                  curveType="curveBasis"
+                />
+              </div>
+            </Card.Body>
           </Card>
           <Card style={{ height: '100%', width: '40%', position: 'relative' }}>
-            <h2>Module errors</h2>
-            <EventFeed>
-              {failedFunctions?.data.flatMap((event) => (
-                <EventItem key={event.id} event={event} onDetailClick={() => {}} />
-              ))}
-            </EventFeed>
+            <Card.Title label="Module errors" />
+            <Card.Body>
+              <EventFeed>
+                {failedFunctions?.data.flatMap((event) => (
+                  <EventItem key={event.id} event={event} onDetailClick={() => {}} />
+                ))}
+              </EventFeed>
+            </Card.Body>
           </Card>
         </div>
       </Container>

@@ -1,4 +1,4 @@
-import { Card, styled, useTheme } from '@takaro/lib-components';
+import { Card, styled } from '@takaro/lib-components';
 import { gameServerQueryOptions } from 'queries/gameserver';
 import { useGameServerDocumentTitle } from 'hooks/useDocumentTitle';
 import { OnlinePlayersCard } from './-components/OnlinePlayers';
@@ -17,7 +17,6 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/dashboard/
 
 const GridContainer = styled.div`
   display: grid;
-
   grid-template-columns: 1fr 0.4fr;
   grid-template-rows: minmax(auto, 40%) 1fr;
 
@@ -28,16 +27,9 @@ const GridContainer = styled.div`
   gap: ${({ theme }) => theme.spacing[1]};
 `;
 
-const SpanCell = styled.div`
-  height: 100%;
-  width: 100%;
-  grid-row: 1 / span 2;
-`;
-
 function Component() {
   const loaderData = Route.useLoaderData();
   const { gameServerId } = Route.useParams();
-  const theme = useTheme();
 
   const { data: gameServer } = useQuery({
     ...gameServerQueryOptions(gameServerId),
@@ -72,22 +64,22 @@ function Component() {
 
   return (
     <GridContainer>
-      <SpanCell>
-        <ChatMessagesCard />
-      </SpanCell>
+      <ChatMessagesCard />
       <OnlinePlayersCard />
       <Card variant="outline">
-        <h2 style={{ marginBottom: theme.spacing[2] }}>Module Events</h2>
-        <Scrollable>
-          <EventFeedWidget
-            query={{
-              filters: {
-                gameserverId: [gameServer.id],
-                eventName: subscribedEvents,
-              },
-            }}
-          />
-        </Scrollable>
+        <Card.Title label="Module events" />
+        <Card.Body>
+          <Scrollable>
+            <EventFeedWidget
+              query={{
+                filters: {
+                  gameserverId: [gameServer.id],
+                  eventName: subscribedEvents,
+                },
+              }}
+            />
+          </Scrollable>
+        </Card.Body>
       </Card>
     </GridContainer>
   );
