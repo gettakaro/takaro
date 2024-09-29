@@ -10,6 +10,7 @@ import {
   Dialog,
   Dropdown,
   IconButton,
+  Skeleton,
   Table,
   useTableActions,
 } from '@takaro/lib-components';
@@ -24,6 +25,8 @@ import {
   AiOutlineCheck as ClaimOrderIcon,
 } from 'react-icons/ai';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
+import { userQueryOptions } from 'queries/user';
+import { PlayerContainer } from 'components/Player';
 
 interface ShopOrderTableView {
   gameServerId: string;
@@ -110,6 +113,13 @@ export const ShopOrderTableView: FC<ShopOrderTableView> = ({ gameServerId }) => 
       meta: {
         dataType: 'datetime',
       },
+    }),
+    columnHelper.accessor('userId', {
+      header: 'Player',
+      id: 'userId',
+      enableSorting: true,
+      cell: (info) => <UserToPlayer userId={info.getValue()} />,
+      meta: { dataType: 'string' },
     }),
     columnHelper.display({
       header: 'Actions',
@@ -208,4 +218,18 @@ const ShopOrderActions: FC<ShopOrderActionsProps> = ({ shopOrder }) => {
       </Dialog>
     </>
   );
+};
+
+export const UserToPlayer: FC<{ userId: string }> = ({ userId }) => {
+  const { data, isPending } = useQuery(userQueryOptions(userId));
+
+  if (isPending) {
+    return <Skeleton variant="rectangular" />;
+  }
+
+  if (data === undefined) {
+    return 'unknown';
+  }
+
+  return <PlayerContainer playerId={data.playerId!} />;
 };

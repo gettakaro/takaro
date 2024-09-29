@@ -10,7 +10,7 @@ import { Type } from 'class-transformer';
 import { PlayerRoleAssignmentOutputDTO, RoleService } from './RoleService.js';
 import { EVENT_TYPES, EventCreateDTO, EventOutputDTO, EventService } from './EventService.js';
 import { IGamePlayer, TakaroEventCurrencyAdded, TakaroEventCurrencyDeducted, TakaroEvents } from '@takaro/modules';
-import { PlayerService } from './PlayerService.js';
+import { PlayerService, PlayerUpdateDTO } from './PlayerService.js';
 
 export class PlayerOnGameserverOutputDTO extends TakaroModelDTO<PlayerOnGameserverOutputDTO> {
   @IsString()
@@ -367,6 +367,11 @@ export class PlayerOnGameServerService extends TakaroService<
     const difference = new Date(disconnectedEvent.createdAt).getTime() - new Date(connectedEvent.createdAt).getTime();
     const seconds = Math.floor(difference / 1000);
     await this.update(pog.id, new PlayerOnGameServerUpdateDTO({ playtimeSeconds: pog.playtimeSeconds + seconds }));
+
+    // Calculate total and update the global player record
+    const currentPogs = await this.find({ filters: { playerId: [player.id] } });
+    const totalPlaytime = currentPogs.results.reduce((acc, pog) => acc + pog.playtimeSeconds, 0);
+    await playerService.update(player.id, new PlayerUpdateDTO({ playtimeSeconds: totalPlaytime }));
 
     return;
   }

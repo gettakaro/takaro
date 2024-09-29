@@ -162,6 +162,18 @@ const tests = [
           `Playtime should be greater than 0 after disconnecting, current playtime: ${pog.playtimeSeconds}`,
         );
       });
+
+      // The global player playtime should be updated as well
+      const players = await this.client.player.playerControllerSearch({
+        filters: { id: updatedPogs.data.data.map((pog) => pog.playerId) },
+      });
+      expect(players.data.data).to.have.lengthOf(5);
+      players.data.data.forEach((player) => {
+        expect(player.playtimeSeconds).to.be.greaterThan(
+          0,
+          `Playtime should be greater than 0 after disconnecting, current playtime: ${player.playtimeSeconds}`,
+        );
+      });
     },
   }),
 ];

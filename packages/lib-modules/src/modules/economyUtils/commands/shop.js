@@ -60,14 +60,13 @@ async function main() {
   if (action === 'buy') {
     if (!user) throw new TakaroUserError('You must link your account to Takaro to use this command.');
 
-    await takaro.shopOrder.shopOrderControllerCreate({
+    const orderRes = await takaro.shopOrder.shopOrderControllerCreate({
       amount: 1,
       listingId: selectedItem.id,
       userId: user.id,
     });
-    await player.pm(
-      `You have purchased ${selectedItem.name} for ${selectedItem.price} ${currencyName.value}. You can now claim your items.`,
-    );
+    await player.pm(`You have purchased ${selectedItem.name} for ${selectedItem.price} ${currencyName.value}.`);
+    await takaro.shopOrder.shopOrderControllerClaim(orderRes.data.data.id);
     return;
   }
 

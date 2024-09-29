@@ -78,6 +78,9 @@ export class PlayerOutputDTO extends TakaroModelDTO<PlayerOutputDTO> {
   @IsOptional()
   steamLevel?: number;
 
+  @IsNumber()
+  playtimeSeconds: number;
+
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => PlayerOnGameserverOutputDTO)
@@ -145,6 +148,9 @@ export class PlayerUpdateDTO extends TakaroDTO<PlayerUpdateDTO> {
   @IsString()
   @IsOptional()
   epicOnlineServicesId?: string;
+  @IsNumber()
+  @IsOptional()
+  playtimeSeconds?: number;
 }
 
 @traceableClass('service:player')
