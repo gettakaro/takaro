@@ -19,7 +19,7 @@ To allow players to use the shop, they need to be linked to both Takaro and your
 
 ### Prerequisites
 1. **Enable the economy** for your game server.
-2. Ensure **players are linked** to both Takaro and your game community (see [players](./players.mdx) for details).
+2. Ensure **players are linked** to both Takaro and your game community (see [players](./players.md) for details).
 3. Install the built-in module, [EconomyUtils](./built-in-modules.mdx), on your game server.
 
 ### Shop Functionalities
