@@ -18,13 +18,9 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/dashboard/
 const GridContainer = styled.div`
   display: grid;
   grid-template-columns: 1fr 0.4fr;
-  grid-template-rows: minmax(auto, 40%) 1fr;
-
   width: 100%;
   height: 100%;
-  max-height: calc(100% - 60px);
-
-  gap: ${({ theme }) => theme.spacing[1]};
+  gap: ${({ theme }) => theme.spacing[2]};
 `;
 
 function Component() {

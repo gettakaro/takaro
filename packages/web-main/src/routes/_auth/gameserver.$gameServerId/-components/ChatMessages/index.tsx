@@ -57,19 +57,18 @@ export const ChatMessagesCard: FC = () => {
 
   return (
     <Card variant="outline">
-      <Card.Body>
-        <CardBody>
-          <Scrollable>{events?.reverse().map((event) => <ChatMessage key={event.id} event={event} />)}</Scrollable>
-          <ChatInput
-            onSubmit={async (msg) => {
-              await apiClient.gameserver.gameServerControllerSendMessage(gameServerId, {
-                message: msg,
-              });
-              refetch();
-            }}
-          />
-        </CardBody>
-      </Card.Body>
+      <Card.Title label="Chat messages" />
+      <CardBody>
+        <Scrollable>{events?.reverse().map((event) => <ChatMessage key={event.id} event={event} />)}</Scrollable>
+      </CardBody>
+      <ChatInput
+        onSubmit={async (msg) => {
+          await apiClient.gameserver.gameServerControllerSendMessage(gameServerId, {
+            message: msg,
+          });
+          refetch();
+        }}
+      />
     </Card>
   );
 };

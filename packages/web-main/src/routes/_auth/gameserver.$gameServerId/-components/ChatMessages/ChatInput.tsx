@@ -29,6 +29,7 @@ export const ChatInput: FC<ChatInputProps> = ({ onSubmit }) => {
       onKeyDown={handleOnKeyDown}
       value={input}
       ref={inputRef}
+      style={{ width: '100%' }}
     />
   );
 };
