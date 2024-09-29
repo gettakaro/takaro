@@ -75,6 +75,8 @@ export class PlayerModel extends TakaroModel {
   steamsDaysSinceLastBan: number;
   steamNumberOfVACBans: number;
 
+  playtimeSeconds: number;
+
   static get relationMappings() {
     return {
       gameServers: {

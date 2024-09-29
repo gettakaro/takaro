@@ -145,6 +145,9 @@ export class PlayerUpdateDTO extends TakaroDTO<PlayerUpdateDTO> {
   @IsString()
   @IsOptional()
   epicOnlineServicesId?: string;
+  @IsNumber()
+  @IsOptional()
+  playtimeSeconds?: number;
 }
 
 @traceableClass('service:player')

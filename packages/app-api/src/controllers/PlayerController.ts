@@ -1,4 +1,4 @@
-import { IsBoolean, IsISO8601, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsBoolean, IsISO8601, IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { PlayerOutputDTO, PlayerOutputWithRolesDTO, PlayerService } from '../service/PlayerService.js';
@@ -12,7 +12,7 @@ import { TakaroDTO, errors } from '@takaro/util';
 import { UserService } from '../service/User/index.js';
 import { PlayerOnGameserverOutputArrayDTOAPI } from './PlayerOnGameserverController.js';
 import { ParamId, ParamIdAndRoleId } from '../lib/validators.js';
-import { AllowedFilters } from './shared.js';
+import { AllowedFilters, RangeFilterCreatedAndUpdatedAt } from './shared.js';
 
 export class PlayerOutputDTOAPI extends APIOutput<PlayerOutputWithRolesDTO> {
   @Type(() => PlayerOutputWithRolesDTO)
@@ -56,14 +56,37 @@ class PlayerSearchInputAllowedFilters extends AllowedFilters {
   roleId?: string[] | undefined;
 }
 
+class PlayerSearchInputAllowedRangeFilter extends RangeFilterCreatedAndUpdatedAt {
+  @IsOptional()
+  @IsISO8601()
+  steamAccountCreated?: string | undefined;
+  @IsOptional()
+  @IsNumber()
+  steamDaysSinceLastBan?: number | undefined;
+  @IsOptional()
+  @IsNumber()
+  steamNumberOfVACBans?: number | undefined;
+  @IsOptional()
+  @IsNumber()
+  steamLevel?: number | undefined;
+  @IsOptional()
+  @IsNumber()
+  playtimeSeconds?: number | undefined;
+}
+
 export class PlayerSearchInputDTO extends ITakaroQuery<PlayerSearchInputAllowedFilters> {
   @ValidateNested()
   @Type(() => PlayerSearchInputAllowedFilters)
   declare filters: PlayerSearchInputAllowedFilters;
-
   @ValidateNested()
   @Type(() => PlayerSearchInputAllowedFilters)
   declare search: PlayerSearchInputAllowedFilters;
+  @ValidateNested()
+  @Type(() => PlayerSearchInputAllowedRangeFilter)
+  declare greaterThan: PlayerSearchInputAllowedRangeFilter;
+  @ValidateNested()
+  @Type(() => PlayerSearchInputAllowedRangeFilter)
+  declare lessThan: Partial<PlayerSearchInputAllowedRangeFilter>;
 }
 
 class PlayerRoleAssignChangeDTO {
