@@ -1,6 +1,6 @@
 {
   "name": "@takaro/db",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "An opinionated data layer",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
@@ -17,11 +17,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "convict": "^6.2.3",
-    "objection": "^3.0.1",
-    "pg": "^8.8.0"
+    "convict": "6.2.4",
+    "objection": "3.1.5",
+    "pg": "8.13.0"
   },
   "devDependencies": {
-    "@types/convict": "^6.1.1"
+    "@types/convict": "6.1.6"
   }
 }

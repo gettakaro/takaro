@@ -30,5 +30,4 @@ async function main() {
   await writeFile('../e2e/src/web-main/fixtures/community-modules.json', communityModulesJson);
 }
 
-// eslint-disable-next-line no-console
 main().catch(console.error);

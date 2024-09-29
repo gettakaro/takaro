@@ -328,4 +328,12 @@ export class SevenDaysToDie implements IGameServer {
 
     return resp;
   }
+
+  async shutdown(): Promise<void> {
+    if (this.connectionInfo.useCPM) {
+      await this.executeConsoleCommand('shutdownba 0');
+    } else {
+      await this.executeConsoleCommand('shutdown');
+    }
+  }
 }

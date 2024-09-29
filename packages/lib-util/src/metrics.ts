@@ -19,7 +19,6 @@ export function addCounter(fn: CallableFunction, counterConfiguration: CounterCo
     );
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const counter = counters.get(counterConfiguration.name)!;
 
   return async (...args: unknown[]) => {
@@ -59,7 +58,7 @@ function sanitizeUrl(cfg?: InternalAxiosRequestConfig) {
 
   try {
     urlObj = new URL(url);
-  } catch (_error) {
+  } catch {
     return undefined;
   }
 
@@ -91,7 +90,6 @@ export function addCounterToAxios(axiosInstance: Axios, counterConfiguration: Co
         );
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const counter = counters.get(counterConfiguration.name)!;
 
       counter.inc({
@@ -116,7 +114,6 @@ export function addCounterToAxios(axiosInstance: Axios, counterConfiguration: Co
         );
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const counter = counters.get(counterConfiguration.name)!;
 
       if (isAxiosError(error)) {

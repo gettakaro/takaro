@@ -12,7 +12,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
-import { TakaroDTO } from '@takaro/util';
+import { errors, logger, TakaroDTO } from '@takaro/util';
 import {
   TestReachabilityOutputDTO,
   CommandOutput,
@@ -30,26 +30,26 @@ import {
   ModuleInstallDTO,
 } from '../service/GameServerService.js';
 import { AuthenticatedRequest, AuthService, checkPermissions } from '../service/AuthService.js';
-import {
-  Body,
-  Get,
-  Post,
-  Delete,
-  JsonController,
-  UseBefore,
-  Req,
-  Put,
-  Params,
-  Res,
-  UploadedFile,
-} from 'routing-controllers';
+import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Put, Params, Res } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId, PogParam } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 import { PlayerOnGameserverOutputDTOAPI } from './PlayerOnGameserverController.js';
-import { UserService } from '../service/UserService.js';
+import { UserService } from '../service/User/index.js';
+import { AllowedFilters } from './shared.js';
+import multer from 'multer';
+
+const storage = multer.memoryStorage();
+const upload = multer({
+  storage,
+  limits: {
+    // 25MB
+    fileSize: 25 * 1024 * 1024,
+    fieldSize: 25 * 1024 * 1024,
+  },
+});
 
 class GameServerTypesOutputDTOAPI extends APIOutput<GameServerOutputDTO[]> {
   @Type(() => GameServerOutputDTO)
@@ -75,11 +75,7 @@ class GameServerTestReachabilityDTOAPI extends APIOutput<TestReachabilityOutputD
   declare data: TestReachabilityOutputDTO;
 }
 
-class GameServerSearchInputAllowedFilters {
-  @IsOptional()
-  @IsUUID(4, { each: true })
-  id!: string[];
-
+class GameServerSearchInputAllowedFilters extends AllowedFilters {
   @IsOptional()
   @IsString({ each: true })
   name!: string[];
@@ -203,6 +199,33 @@ class BanPlayerOutputDTO extends APIOutput<BanDTO[]> {
   @Type(() => BanDTO)
   @ValidateNested({ each: true })
   declare data: BanDTO[];
+}
+
+export class ImportInputDTO extends TakaroDTO<ImportInputDTO> {
+  @IsBoolean()
+  roles: boolean;
+  @IsBoolean()
+  players: boolean;
+  @IsBoolean()
+  currency: boolean;
+  @IsBoolean()
+  shop: boolean;
+}
+
+export class ImportStatusOutputDTO extends TakaroDTO<ImportStatusOutputDTO> {
+  @IsString()
+  id!: string;
+  @IsEnum(['pending', 'completed', 'failed'])
+  status: 'pending' | 'completed' | 'failed';
+  @IsOptional()
+  @IsString()
+  failedReason?: string;
+}
+
+export class ImportStatusOutputDTOAPI extends APIOutput<ImportStatusOutputDTO> {
+  @Type(() => ImportStatusOutputDTO)
+  @ValidateNested()
+  declare data: ImportStatusOutputDTO;
 }
 
 class ImportOutputDTO extends TakaroDTO<ImportOutputDTO> {
@@ -483,6 +506,19 @@ export class GameServerController {
     return apiResponse();
   }
 
+  @Post('/gameserver/:id/shutdown')
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
+  @OpenAPI({
+    description:
+      // eslint-disable-next-line quotes
+      "Shuts down the gameserver. This is a 'soft' shutdown, meaning the gameserver will be stopped gracefully. If the gameserver is not reachable, this will have no effect. Note that most hosting providers will automatically restart the gameserver after a shutdown, which makes this operation act as a 'restart' instead.",
+  })
+  async shutdown(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
+    const service = new GameServerService(req.domainId);
+    await service.shutdown(params.id);
+    return apiResponse();
+  }
+
   @Get('/gameserver/:id/players')
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_PLAYERS]))
   @OpenAPI({
@@ -497,7 +533,7 @@ export class GameServerController {
 
   @Get('/gameserver/import/:id')
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
-  @ResponseSchema(ImportOutputDTOAPI)
+  @ResponseSchema(ImportStatusOutputDTOAPI)
   @OpenAPI({
     description: 'Fetch status of an import from CSMM',
   })
@@ -508,14 +544,45 @@ export class GameServerController {
   }
 
   @Post('/gameserver/import')
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
+  @UseBefore(
+    AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]),
+    upload.fields([
+      { name: 'import', maxCount: 1 },
+      { name: 'options', maxCount: 1 },
+    ]),
+  )
   @OpenAPI({
     description: 'Import a gameserver from CSMM.',
   })
   @ResponseSchema(ImportOutputDTOAPI)
-  async importFromCSMM(@Req() req: AuthenticatedRequest, @UploadedFile('import.json') _file: Express.Multer.File) {
+  async importFromCSMM(@Req() req: AuthenticatedRequest) {
+    const log = logger('importFromCSMM');
     const service = new GameServerService(req.domainId);
-    const result = await service.import(_file);
+
+    const rawImportData = req.body.import;
+    const rawOptions = req.body.options;
+
+    let validatedOptions: ImportInputDTO | null = null;
+    let parsedImportData: Record<string, unknown> | null = null;
+
+    try {
+      validatedOptions = new ImportInputDTO(JSON.parse(rawOptions));
+      await validatedOptions.validate();
+    } catch (error) {
+      log.warn('Invalid options', error);
+      throw new errors.BadRequestError('Invalid options');
+    }
+
+    try {
+      parsedImportData = JSON.parse(rawImportData);
+    } catch (error) {
+      log.warn('Invalid import data', error);
+      throw new errors.BadRequestError('Invalid import data');
+    }
+
+    if (!parsedImportData) throw new errors.BadRequestError('Invalid import data');
+
+    const result = await service.import(parsedImportData, validatedOptions);
     return apiResponse(result);
   }
 }

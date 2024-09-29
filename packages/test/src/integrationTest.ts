@@ -52,7 +52,7 @@ before(async () => {
         `Removed ${danglingDomains.data.data.length} dangling domains. Your previous test run probably failed to clean up properly.`,
       );
     }
-  } catch (_error) {
+  } catch {
     console.warn('Failed to clean up dangling domains');
   }
 });
@@ -149,7 +149,7 @@ export class IntegrationTest<SetupData> {
                 console.log(`Function with name "${name}" failed with messages: ${msgs}`);
               }
             }
-          } catch (_error) {
+          } catch {
             // Ignore, just reporting
           }
 

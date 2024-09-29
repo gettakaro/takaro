@@ -71,7 +71,7 @@ async function getRateLimiter(domainId: string) {
     throw new errors.NotFoundError();
   }
 
-  const redisClient = await Redis.getClient('worker:rateLimiter', { legacyMode: true });
+  const redisClient = await Redis.getClient('worker:rateLimiter');
   const rateLimiter = new RateLimiterRedis({
     storeClient: redisClient,
     keyPrefix: 'worker:rateLimiter',
@@ -216,6 +216,8 @@ export async function executeFunction(
     const hookService = new HookService(domainId);
     const hook = await hookService.findOne(data.itemId);
     if (!hook) throw new errors.InternalServerError();
+
+    if (data.player) eventData.playerId = data.player.id;
 
     (meta as TakaroEventHookExecuted).hook = new TakaroEventHookDetails({
       id: hook.id,

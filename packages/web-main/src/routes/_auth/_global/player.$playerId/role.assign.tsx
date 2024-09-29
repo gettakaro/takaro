@@ -9,7 +9,6 @@ import {
   DrawerSkeleton,
   styled,
 } from '@takaro/lib-components';
-import { rolesQueryOptions } from 'queries/role';
 import { usePlayerRoleAssign } from 'queries/player';
 import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -39,14 +38,11 @@ type IFormInputs = z.infer<typeof roleAssignValidationSchema>;
 
 export const Route = createFileRoute('/_auth/_global/player/$playerId/role/assign')({
   loader: async ({ context }) => {
-    const p1 = context.queryClient.ensureQueryData(rolesQueryOptions());
-    const p2 = context.queryClient.ensureQueryData(gameServersQueryOptions());
-    const [roles, gameservers] = await Promise.all([p1, p2]);
     const gameServerOptions = [
       { name: 'Global - applies to all gameservers', id: 'null' } as GameServerOutputDTO,
-      ...gameservers,
+      ...(await context.queryClient.ensureQueryData(gameServersQueryOptions())),
     ];
-    return { roles: roles.data, gameServers: gameServerOptions };
+    return { gameServers: gameServerOptions };
   },
   component: Component,
   pendingComponent: DrawerSkeleton,
@@ -57,7 +53,7 @@ function Component() {
   const { mutateAsync, isPending, error } = usePlayerRoleAssign();
   const navigate = useNavigate();
   const { playerId } = Route.useParams();
-  const { gameServers, roles } = Route.useLoaderData();
+  const { gameServers } = Route.useLoaderData();
 
   useEffect(() => {
     if (!open) {
@@ -70,7 +66,6 @@ function Component() {
     resolver: zodResolver(roleAssignValidationSchema),
     defaultValues: {
       playerId,
-      roleId: roles[0].id,
       gameServerId: gameServers[0].id,
     },
   });

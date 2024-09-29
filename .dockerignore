@@ -8,4 +8,6 @@ build
 docker-compose.yml
 .husky
 
+_data
+
 .docusaurus

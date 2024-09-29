@@ -20,7 +20,7 @@ const configSchema = {
     port: {
       doc: 'The port to bind.',
       // This value can be ANYTHING because it is user provided
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       format: (value: unknown) => {
         if (process.env.NODE_ENV === 'test') {
           // This allows us to pass 'undefined' as the port

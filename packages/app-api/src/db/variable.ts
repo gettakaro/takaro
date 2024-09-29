@@ -64,9 +64,9 @@ export class VariableRepo extends ITakaroRepo<VariablesModel, VariableOutputDTO,
     // We filter out any vars that are past the expiry date AND are not null
     const subquery = query.clone().whereNotNull('expiresAt').where('expiresAt', '<', new Date().toISOString());
 
-    const result = await new QueryBuilder<VariablesModel, VariableOutputDTO>(filters)
-      .build(query)
-      .whereNotIn('id', subquery.select('id'));
+    const qry = new QueryBuilder<VariablesModel, VariableOutputDTO>(filters).build(query);
+
+    const result = await qry.whereNotIn('id', subquery.select('id'));
 
     return {
       total: result.total,

@@ -1,6 +1,6 @@
 {
   "name": "@takaro/queues",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "An opinionated BullMQ queues handler",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
@@ -16,7 +16,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@bull-board/express": "^5.0.1"
+    "@bull-board/express": "5.23.0"
   },
   "devDependencies": {}
 }

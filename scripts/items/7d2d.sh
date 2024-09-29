@@ -31,7 +31,7 @@ done
 docker stop $CONTAINER_NAME
 docker rm $CONTAINER_NAME
 
-RESULT=$(node ./scripts/items/parse-7d2d.js)
+RESULT=$(node ./scripts/items/parse-7d2d.mjs)
 
 mkdir -p ./packages/web-docs/pages/data
 echo "$RESULT" >./packages/web-docs/pages/data/items-7d2d.json

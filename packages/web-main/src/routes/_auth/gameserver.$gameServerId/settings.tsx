@@ -137,7 +137,7 @@ function Component() {
       }
       enqueueSnackbar('Settings updated!', { variant: 'default', type: 'success' });
       reset({}, { keepValues: true });
-    } catch (_error) {
+    } catch {
       enqueueSnackbar('An error occurred while saving settings', { variant: 'default', type: 'error' });
       return;
     }
@@ -148,39 +148,41 @@ function Component() {
     // in case the value is not set, we want to use the global value
     // otherwise we want to use the value from the gameserver
     if (gameServerSettings && globalGameServerSettings) {
-      gameServerSettings.forEach(({ key, value, type }) => {
-        if (booleanFields.includes(key)) {
-          // to make sure we only append the fields once
-          // All fields are strings, however, the Switch component requires a boolean value.
-          if (fields.length !== Object.keys(gameServerSettings).length) {
-            if (type === SettingsOutputDTOTypeEnum.Override) {
-              append({ key, type: SettingsOutputDTOTypeEnum.Override, value: value === 'true' ? true : false });
-            } else {
-              append({ key, type: SettingsOutputDTOTypeEnum.Inherit, value: value === 'true' ? true : false });
+      gameServerSettings
+        .filter((gameServerSetting) => gameServerSetting.key !== 'developerMode')
+        .forEach(({ key, value, type }) => {
+          if (booleanFields.includes(key)) {
+            // to make sure we only append the fields once
+            // All fields are strings, however, the Switch component requires a boolean value.
+            if (fields.length !== Object.keys(gameServerSettings).length) {
+              if (type === SettingsOutputDTOTypeEnum.Override) {
+                append({ key, type: SettingsOutputDTOTypeEnum.Override, value: value === 'true' ? true : false });
+              } else {
+                append({ key, type: SettingsOutputDTOTypeEnum.Inherit, value: value === 'true' ? true : false });
+              }
             }
-          }
-          settingsComponents[key] = (fieldName: string, disabled: boolean) => (
-            <NoSpacing>
-              <Switch readOnly={readOnly} control={control} name={fieldName} key={key} disabled={disabled} />
-            </NoSpacing>
-          );
-        } else {
-          if (fields.length !== Object.keys(gameServerSettings).length) {
-            if (type === SettingsOutputDTOTypeEnum.Override) {
-              append({ key, type: SettingsOutputDTOTypeEnum.Override, value: value });
-            } else {
-              append({ key, type: SettingsOutputDTOTypeEnum.Inherit, value: value });
+            settingsComponents[key] = (fieldName: string, disabled: boolean) => (
+              <NoSpacing>
+                <Switch readOnly={readOnly} control={control} name={fieldName} key={key} disabled={disabled} />
+              </NoSpacing>
+            );
+          } else {
+            if (fields.length !== Object.keys(gameServerSettings).length) {
+              if (type === SettingsOutputDTOTypeEnum.Override) {
+                append({ key, type: SettingsOutputDTOTypeEnum.Override, value: value });
+              } else {
+                append({ key, type: SettingsOutputDTOTypeEnum.Inherit, value: value });
+              }
             }
+            settingsComponents[key] = (fieldName: string, disabled: boolean) => (
+              <NoSpacing>
+                <TextField readOnly={readOnly} control={control} name={fieldName} key={key} disabled={disabled} />
+              </NoSpacing>
+            );
           }
-          settingsComponents[key] = (fieldName: string, disabled: boolean) => (
-            <NoSpacing>
-              <TextField readOnly={readOnly} control={control} name={fieldName} key={key} disabled={disabled} />
-            </NoSpacing>
-          );
-        }
-        // By default `append` is considered as dirty, since we rely on the dirty state to define the required requests, we need to reset it.
-        reset({}, { keepValues: true });
-      });
+          // By default `append` is considered as dirty, since we rely on the dirty state to define the required requests, we need to reset it.
+          reset({}, { keepValues: true });
+        });
     }
     return settingsComponents;
   }, [gameServerSettings, globalGameServerSettings]);

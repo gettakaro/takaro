@@ -38,9 +38,10 @@ interface IFormInputs {
   serverChatName: string;
   economyEnabled: boolean;
   currencyName: string;
+  developerMode: boolean;
 }
 
-export const booleanFields = ['economyEnabled'];
+export const booleanFields = ['economyEnabled', 'developerMode'];
 
 export function mapSettings<T extends Promise<unknown>>(
   data: Settings,
@@ -103,7 +104,7 @@ function Component() {
 
       enqueueSnackbar('Settings has been successfully saved', { variant: 'default' });
       reset({}, { keepValues: true });
-    } catch (_error) {
+    } catch {
       enqueueSnackbar('An error occurred while saving settings', { variant: 'default', type: 'error' });
       return;
     }

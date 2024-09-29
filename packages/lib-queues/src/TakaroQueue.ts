@@ -24,8 +24,12 @@ export class TakaroQueue<T extends Record<string, unknown>> {
 
   add(data: T, extra: JobsOptions = {}) {
     const jobId = extra.jobId ?? this.getJobId(data);
-
-    return this.bullQueue.add(this.name, data, { jobId, ...extra });
+    const isRepeatable = extra.repeat ? true : false;
+    if (isRepeatable) {
+      return this.bullQueue.add(this.name, data, extra);
+    } else {
+      return this.bullQueue.add(this.name, data, { jobId, ...extra });
+    }
   }
 
   getRepeatableJobs() {

@@ -1,6 +1,5 @@
 import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '../dto/index.js';
-import { sleep } from '@takaro/util';
 
 const group = 'Server messages';
 
@@ -77,24 +76,39 @@ const tests = [
 
       // We should see each of our test messages at least once
 
-      const numberOfEvents = 10;
-      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(
-        GameEvents.CHAT_MESSAGE,
-        numberOfEvents,
-      );
+      const firstEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
-      for (let i = 0; i < numberOfEvents; i++) {
-        await sleep(Math.floor(Math.random() * 10) + 1);
-        await this.client.cronjob.cronJobControllerTrigger({
-          cronjobId: this.setupData.serverMessagesModule.cronJobs[0].id,
-          gameServerId: this.setupData.gameserver.id,
-          moduleId: this.setupData.serverMessagesModule.id,
-        });
-      }
+      await this.client.cronjob.cronJobControllerTrigger({
+        cronjobId: this.setupData.serverMessagesModule.cronJobs[0].id,
+        gameServerId: this.setupData.gameserver.id,
+        moduleId: this.setupData.serverMessagesModule.id,
+      });
 
-      const messages = (await events).map((e) => e.data.meta.msg);
-      expect(messages).to.include('Test message 1');
-      expect(messages).to.include('Test message 2');
+      expect((await firstEvents).length).to.be.eq(1);
+      expect((await firstEvents)[0].data.meta.msg).to.be.eq('Test message 1');
+
+      const secondEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+
+      await this.client.cronjob.cronJobControllerTrigger({
+        cronjobId: this.setupData.serverMessagesModule.cronJobs[0].id,
+        gameServerId: this.setupData.gameserver.id,
+        moduleId: this.setupData.serverMessagesModule.id,
+      });
+
+      expect((await secondEvents).length).to.be.eq(1);
+      expect((await secondEvents)[0].data.meta.msg).to.be.eq('Test message 2');
+
+      // After this, it should loop back to the first message
+      const thirdEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+
+      await this.client.cronjob.cronJobControllerTrigger({
+        cronjobId: this.setupData.serverMessagesModule.cronJobs[0].id,
+        gameServerId: this.setupData.gameserver.id,
+        moduleId: this.setupData.serverMessagesModule.id,
+      });
+
+      expect((await thirdEvents).length).to.be.eq(1);
+      expect((await thirdEvents)[0].data.meta.msg).to.be.eq('Test message 1');
     },
   }),
 ];

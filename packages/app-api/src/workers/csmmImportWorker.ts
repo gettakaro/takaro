@@ -1,13 +1,21 @@
 import { Job } from 'bullmq';
-import { TakaroWorker, ICSMMImportData } from '@takaro/queues';
-import { ctx, errors, logger } from '@takaro/util';
+import { TakaroWorker, ICSMMImportData, queueService } from '@takaro/queues';
+import { ctx, logger } from '@takaro/util';
 import { config } from '../config.js';
-import { GameServerCreateDTO, GameServerService, GameServerUpdateDTO } from '../service/GameServerService.js';
+import {
+  GameServerCreateDTO,
+  GameServerOutputDTO,
+  GameServerService,
+  GameServerUpdateDTO,
+} from '../service/GameServerService.js';
 import { GAME_SERVER_TYPE } from '@takaro/gameserver';
 import { RoleCreateInputDTO, RoleService } from '../service/RoleService.js';
 import { PlayerService } from '../service/PlayerService.js';
 import { PlayerOnGameServerService } from '../service/PlayerOnGameserverService.js';
 import { IGamePlayer } from '@takaro/modules';
+import { ShopListingService } from '../service/Shop/index.js';
+import { ItemsService } from '../service/ItemsService.js';
+import { ShopListingCreateDTO, ShopListingItemMetaInputDTO } from '../service/Shop/dto.js';
 
 const log = logger('worker:csmmImport');
 
@@ -27,6 +35,14 @@ interface ICSMMRole {
   name: string;
 }
 
+interface ICSMMShopListing {
+  name: string;
+  friendlyName: string;
+  price: number;
+  amount: number;
+  quality: string;
+}
+
 interface ICSMMData {
   server: {
     name: string;
@@ -37,6 +53,7 @@ interface ICSMMData {
   };
   players: ICSMMPlayer[];
   roles: ICSMMRole[];
+  shopListings: ICSMMShopListing[];
 }
 
 export class CSMMImportWorker extends TakaroWorker<ICSMMImportData> {
@@ -62,6 +79,10 @@ async function process(job: Job<ICSMMImportData>) {
   const roleService = new RoleService(job.data.domainId);
   const playerService = new PlayerService(job.data.domainId);
   const pogService = new PlayerOnGameServerService(job.data.domainId);
+  const shopListingService = new ShopListingService(job.data.domainId);
+  const itemService = new ItemsService(job.data.domainId);
+
+  let server: GameServerOutputDTO | null;
 
   // Check if the server already exists
   const existingServer = await gameserverService.find({
@@ -71,111 +92,161 @@ async function process(job: Job<ICSMMImportData>) {
   });
 
   if (existingServer.total) {
-    throw new errors.BadRequestError(`Server with name ${data.server.name} already exists`);
-  }
-
-  const server = await gameserverService.create(
-    new GameServerCreateDTO({
-      name: data.server.name,
-      type: GAME_SERVER_TYPE.SEVENDAYSTODIE,
-      connectionInfo: JSON.stringify({
-        host: `${data.server.ip}:${data.server.webPort.toString()}`,
-        adminUser: data.server.authName,
-        adminToken: data.server.authToken,
-        useTls: data.server.webPort === 443,
+    server = existingServer.results[0];
+  } else {
+    server = await gameserverService.create(
+      new GameServerCreateDTO({
+        name: data.server.name,
+        type: GAME_SERVER_TYPE.SEVENDAYSTODIE,
+        connectionInfo: JSON.stringify({
+          host: `${data.server.ip}:${data.server.webPort.toString()}`,
+          adminUser: data.server.authName,
+          adminToken: data.server.authToken,
+          useTls: data.server.webPort === 443,
+        }),
       }),
-    }),
-  );
+    );
+  }
 
   ctx.addData({
     gameServer: server.id,
   });
 
   // Sync the roles
-  for (const role of data.roles) {
-    const existing = await roleService.find({
-      filters: {
-        name: [role.name],
-      },
-    });
+  if (job.data.options.roles) {
+    for (const role of data.roles) {
+      const existing = await roleService.find({
+        filters: {
+          name: [role.name],
+        },
+      });
 
-    if (existing.total) {
-      continue;
+      if (existing.total) {
+        continue;
+      }
+
+      await roleService.create(
+        new RoleCreateInputDTO({
+          name: role.name,
+          permissions: [],
+        }),
+      );
     }
-
-    await roleService.create(
-      new RoleCreateInputDTO({
-        name: role.name,
-        permissions: [],
-      }),
-    );
   }
 
   const roles = await roleService.find({});
 
   // Sync the players
-  for (const csmmPlayer of data.players) {
-    if (!csmmPlayer.crossId) {
-      log.warn(`Player ${csmmPlayer.name} has no crossId, skipping player resolving`);
-      continue;
-    }
-    const createData = new IGamePlayer({
-      name: csmmPlayer.name,
-      gameId: csmmPlayer.crossId.replace('EOS_', ''),
-      epicOnlineServicesId: csmmPlayer.crossId.replace('EOS_', ''),
-    });
+  if (job.data.options.players) {
+    for (const csmmPlayer of data.players) {
+      if (!csmmPlayer.crossId) {
+        log.warn(`Player ${csmmPlayer.name} has no crossId, skipping player resolving`);
+        continue;
+      }
+      const createData = new IGamePlayer({
+        name: csmmPlayer.name,
+        gameId: csmmPlayer.crossId.replace('EOS_', ''),
+        epicOnlineServicesId: csmmPlayer.crossId.replace('EOS_', ''),
+      });
 
-    if (csmmPlayer.steamId.startsWith('XBL_')) {
-      createData.xboxLiveId = csmmPlayer.steamId.replace('XBL_', '');
-    } else {
-      createData.steamId = csmmPlayer.steamId;
-    }
+      if (csmmPlayer.steamId.startsWith('XBL_')) {
+        createData.xboxLiveId = csmmPlayer.steamId.replace('XBL_', '');
+      } else {
+        createData.steamId = csmmPlayer.steamId;
+      }
 
-    const { player, pog } = await playerService.resolveRef(new IGamePlayer(createData), server.id);
+      const { player, pog } = await playerService.resolveRef(new IGamePlayer(createData), server.id);
 
-    if (!csmmPlayer.crossId) {
-      log.warn(`Player ${csmmPlayer.name} has no crossId, skipping role assignment`);
-      continue;
-    }
+      if (!csmmPlayer.crossId) {
+        log.warn(`Player ${csmmPlayer.name} has no crossId, skipping role assignment`);
+        continue;
+      }
 
-    const CSMMRole = data.roles.find((r) => r.id === csmmPlayer.role);
-    if (!CSMMRole) {
-      log.warn(`Player ${csmmPlayer.name} has no role with id ${csmmPlayer.role.toString()}, skipping role assignment`);
-      continue;
-    }
+      if (job.data.options.roles) {
+        const CSMMRole = data.roles.find((r) => r.id === csmmPlayer.role);
+        if (!CSMMRole) {
+          log.warn(
+            `Player ${csmmPlayer.name} has no role with id ${csmmPlayer.role.toString()}, skipping role assignment`,
+          );
+          continue;
+        }
 
-    const takaroRole = roles.results.find((r) => r.name === CSMMRole.name);
+        const takaroRole = roles.results.find((r) => r.name === CSMMRole.name);
 
-    if (!takaroRole) {
-      log.warn(`Player ${csmmPlayer.name} has no role with name ${CSMMRole.name}, skipping role assignment`);
-      continue;
-    }
+        if (!takaroRole) {
+          log.warn(`Player ${csmmPlayer.name} has no role with name ${CSMMRole.name}, skipping role assignment`);
+          continue;
+        }
 
-    if (!takaroRole.system) {
-      log.info(`Assigning role ${takaroRole.name} to player ${csmmPlayer.name}`);
-      await playerService.assignRole(takaroRole.id, player.id, server.id);
-    }
+        if (!takaroRole.system) {
+          log.info(`Assigning role ${takaroRole.name} to player ${csmmPlayer.name}`);
+          await playerService.assignRole(takaroRole.id, player.id, server.id);
+        }
+      }
 
-    if (csmmPlayer.currency) {
-      await pogService.setCurrency(pog.id, Math.floor(csmmPlayer.currency));
+      if (job.data.options.currency) {
+        if (csmmPlayer.currency) {
+          await pogService.setCurrency(pog.id, Math.floor(csmmPlayer.currency));
+        }
+      }
     }
   }
 
-  const res = await gameserverService.executeCommand(server.id, 'version');
-  if (res.rawResult.includes('1CSMM_Patrons')) {
-    await gameserverService.update(
-      server.id,
-      new GameServerUpdateDTO({
-        connectionInfo: JSON.stringify({
-          host: `${data.server.ip}:${data.server.webPort.toString()}`,
-          adminUser: data.server.authName,
-          adminToken: data.server.authToken,
-          useTls: data.server.webPort === 443,
-          useCPM: true,
+  const isReachable = await gameserverService.testReachability(server.id);
+
+  if (isReachable) {
+    const res = await gameserverService.executeCommand(server.id, 'version');
+    if (res.rawResult.includes('1CSMM_Patrons')) {
+      await gameserverService.update(
+        server.id,
+        new GameServerUpdateDTO({
+          connectionInfo: JSON.stringify({
+            host: `${data.server.ip}:${data.server.webPort.toString()}`,
+            adminUser: data.server.authName,
+            adminToken: data.server.authToken,
+            useTls: data.server.webPort === 443,
+            useCPM: true,
+          }),
         }),
-      }),
-    );
+      );
+    }
   }
 
-  await job.update({} as ICSMMImportData);
+  // Poll the item sync job until it's done
+  let isFinished = false;
+  while (!isFinished) {
+    const itemSyncJob = await queueService.queues.itemsSync.queue.bullQueue.getJob(
+      `itemsSync-${job.data.domainId}-${server.id}-init`,
+    );
+    if (!itemSyncJob) {
+      log.warn('Item sync job not found, skipping');
+      break;
+    }
+    if ((await itemSyncJob.isFailed()) || (await itemSyncJob.isCompleted())) {
+      isFinished = true;
+    }
+  }
+
+  // Import shop listings
+  if (job.data.options.shop) {
+    for (const listing of data.shopListings) {
+      const item = await itemService.find({ filters: { code: [listing.name] } });
+      await shopListingService.create(
+        new ShopListingCreateDTO({
+          gameServerId: server.id,
+          name: listing.friendlyName || listing.name,
+          price: listing.price,
+          items: [
+            new ShopListingItemMetaInputDTO({
+              amount: listing.amount,
+              itemId: item.results[0].id,
+              quality: listing.quality,
+            }),
+          ],
+        }),
+      );
+    }
+  }
+
+  await job.updateData({} as ICSMMImportData);
 }

@@ -1,4 +1,4 @@
-import { IsBoolean, IsISO8601, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsBoolean, IsISO8601, IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { PlayerOutputDTO, PlayerOutputWithRolesDTO, PlayerService } from '../service/PlayerService.js';
@@ -9,9 +9,10 @@ import { Type } from 'class-transformer';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 import { TakaroDTO, errors } from '@takaro/util';
-import { UserService } from '../service/UserService.js';
+import { UserService } from '../service/User/index.js';
 import { PlayerOnGameserverOutputArrayDTOAPI } from './PlayerOnGameserverController.js';
 import { ParamId, ParamIdAndRoleId } from '../lib/validators.js';
+import { AllowedFilters, RangeFilterCreatedAndUpdatedAt } from './shared.js';
 
 export class PlayerOutputDTOAPI extends APIOutput<PlayerOutputWithRolesDTO> {
   @Type(() => PlayerOutputWithRolesDTO)
@@ -31,44 +32,61 @@ export class PlayerOutputWithRolesDTOAPI extends APIOutput<PlayerOutputWithRoles
   declare data: PlayerOutputWithRolesDTO;
 }
 
-class PlayerSearchInputAllowedFilters {
+class PlayerSearchInputAllowedFilters extends AllowedFilters {
+  @IsOptional()
+  @IsString({ each: true })
+  name?: string[];
+  @IsOptional()
+  @IsString({ each: true })
+  steamId?: string[];
+  @IsOptional()
+  @IsString({ each: true })
+  epicOnlineServicesId?: string[];
+  @IsOptional()
+  @IsString({ each: true })
+  xboxLiveId?: string[];
+  @IsOptional()
+  @IsBoolean({ each: true })
+  steamCommunityBanned?: boolean[];
+  @IsOptional()
+  @IsBoolean({ each: true })
+  steamVacBanned?: boolean[];
   @IsOptional()
   @IsUUID(4, { each: true })
-  id!: string[];
-
-  @IsOptional()
-  @IsString({ each: true })
-  name!: string[];
-
-  @IsOptional()
-  @IsString({ each: true })
-  steamId!: string[];
-
-  @IsOptional()
-  @IsString({ each: true })
-  epicOnlineServicesId!: string[];
-
-  @IsOptional()
-  @IsString({ each: true })
-  xboxLiveId!: string[];
-
-  @IsOptional()
-  @IsBoolean({ each: true })
-  steamCommunityBanned!: boolean[];
-
-  @IsOptional()
-  @IsBoolean({ each: true })
-  steamVacBanned!: boolean[];
+  roleId?: string[] | undefined;
 }
 
-class PlayerSearchInputDTO extends ITakaroQuery<PlayerSearchInputAllowedFilters> {
+class PlayerSearchInputAllowedRangeFilter extends RangeFilterCreatedAndUpdatedAt {
+  @IsOptional()
+  @IsISO8601()
+  steamAccountCreated?: string | undefined;
+  @IsOptional()
+  @IsNumber()
+  steamDaysSinceLastBan?: number | undefined;
+  @IsOptional()
+  @IsNumber()
+  steamNumberOfVACBans?: number | undefined;
+  @IsOptional()
+  @IsNumber()
+  steamLevel?: number | undefined;
+  @IsOptional()
+  @IsNumber()
+  playtimeSeconds?: number | undefined;
+}
+
+export class PlayerSearchInputDTO extends ITakaroQuery<PlayerSearchInputAllowedFilters> {
   @ValidateNested()
   @Type(() => PlayerSearchInputAllowedFilters)
   declare filters: PlayerSearchInputAllowedFilters;
-
   @ValidateNested()
   @Type(() => PlayerSearchInputAllowedFilters)
   declare search: PlayerSearchInputAllowedFilters;
+  @ValidateNested()
+  @Type(() => PlayerSearchInputAllowedRangeFilter)
+  declare greaterThan: PlayerSearchInputAllowedRangeFilter;
+  @ValidateNested()
+  @Type(() => PlayerSearchInputAllowedRangeFilter)
+  declare lessThan: Partial<PlayerSearchInputAllowedRangeFilter>;
 }
 
 class PlayerRoleAssignChangeDTO {

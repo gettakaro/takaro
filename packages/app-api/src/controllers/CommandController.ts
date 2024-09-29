@@ -33,6 +33,7 @@ import { Response } from 'express';
 import { builtinModuleModificationMiddleware } from '../middlewares/builtinModuleModification.js';
 import { EventService, EVENT_TYPES } from '../service/EventService.js';
 import { EventOutputArrayDTOAPI, EventSearchInputDTO } from './EventController.js';
+import { AllowedFilters } from './shared.js';
 
 export class CommandOutputDTOAPI extends APIOutput<CommandOutputDTO> {
   @Type(() => CommandOutputDTO)
@@ -52,11 +53,7 @@ export class CommandOutputArrayDTOAPI extends APIOutput<CommandOutputDTO[]> {
   declare data: CommandOutputDTO[];
 }
 
-class CommandSearchInputAllowedFilters {
-  @IsOptional()
-  @IsUUID(4, { each: true })
-  id!: string[];
-
+class CommandSearchInputAllowedFilters extends AllowedFilters {
   @IsOptional()
   @IsUUID(4, { each: true })
   moduleId!: string[];

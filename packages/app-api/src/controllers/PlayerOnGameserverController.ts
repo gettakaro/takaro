@@ -14,7 +14,7 @@ import {
   PlayerOnGameserverOutputWithRolesDTO,
 } from '../service/PlayerOnGameserverService.js';
 import { onlyIfEconomyEnabledMiddleware } from '../middlewares/onlyIfEconomyEnabled.js';
-import { RangeFilterCreatedAndUpdatedAt } from './shared.js';
+import { AllowedFilters, RangeFilterCreatedAndUpdatedAt } from './shared.js';
 
 export class PlayerOnGameserverOutputDTOAPI extends APIOutput<PlayerOnGameserverOutputWithRolesDTO> {
   @Type(() => PlayerOnGameserverOutputWithRolesDTO)
@@ -28,22 +28,18 @@ export class PlayerOnGameserverOutputArrayDTOAPI extends APIOutput<PlayerOnGames
   declare data: PlayerOnGameserverOutputWithRolesDTO[];
 }
 
-class PlayerOnGameServerSearchInputAllowedFilters {
-  @IsOptional()
-  @IsUUID(4, { each: true })
-  id!: string[];
-
+class PlayerOnGameServerSearchInputAllowedFilters extends AllowedFilters {
   @IsOptional()
   @IsString({ each: true })
-  gameId!: string;
+  gameId!: string[];
 
   @IsUUID(4, { each: true })
   @IsOptional()
-  gameServerId!: string;
+  gameServerId!: string[];
 
   @IsUUID(4, { each: true })
   @IsOptional()
-  playerId!: string;
+  playerId!: string[];
 
   @IsOptional()
   @IsBoolean({ each: true })
@@ -54,6 +50,9 @@ class PlayerOnGameServerSearchInputAllowedRangeFilter extends RangeFilterCreated
   @IsOptional()
   @IsISO8601()
   lastSeen!: string;
+  @IsOptional()
+  @IsNumber()
+  playtimeSeconds: number;
 }
 
 class PlayerOnGameServerSearchInputDTO extends ITakaroQuery<PlayerOnGameserverOutputDTO> {

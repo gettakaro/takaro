@@ -30,6 +30,7 @@ import { Response } from 'express';
 import { builtinModuleModificationMiddleware } from '../middlewares/builtinModuleModification.js';
 import { EventService, EVENT_TYPES } from '../service/EventService.js';
 import { EventOutputArrayDTOAPI, EventSearchInputDTO } from './EventController.js';
+import { AllowedFilters } from './shared.js';
 
 export class CronJobOutputDTOAPI extends APIOutput<CronJobOutputDTO> {
   @Type(() => CronJobOutputDTO)
@@ -43,11 +44,7 @@ export class CronJobOutputArrayDTOAPI extends APIOutput<CronJobOutputDTO[]> {
   declare data: CronJobOutputDTO[];
 }
 
-class CronJobSearchInputAllowedFilters {
-  @IsOptional()
-  @IsUUID(4, { each: true })
-  id!: string[];
-
+class CronJobSearchInputAllowedFilters extends AllowedFilters {
   @IsOptional()
   @IsUUID(4, { each: true })
   moduleId!: string[];

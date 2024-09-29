@@ -34,17 +34,20 @@ export async function getKnex(): Promise<KnexClient> {
   const knex = createKnex(getKnexOptions());
   cachedKnex = knex;
 
-  health.registerHook('db', async () => {
-    try {
-      await knex.raw('SELECT 1');
-      return true;
-    } catch (error) {
-      log.error(error);
-      return false;
-    }
-  });
+  health.registerHook('db', isDbAvailable);
 
   return cachedKnex;
+}
+
+export async function isDbAvailable(): Promise<boolean> {
+  try {
+    const knex = await getKnex();
+    await knex.raw('SELECT 1');
+    return true;
+  } catch (error) {
+    log.error(error);
+    return false;
+  }
 }
 
 export async function disconnectKnex(): Promise<void> {

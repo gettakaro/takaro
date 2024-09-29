@@ -1,6 +1,6 @@
 {
   "name": "@takaro/apiclient",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "API client for Takaro",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
@@ -19,6 +19,6 @@
   "license": "ISC",
   "dependencies": {},
   "devDependencies": {
-    "@openapitools/openapi-generator-cli": "^2.5.2"
+    "@openapitools/openapi-generator-cli": "2.13.12"
   }
 }

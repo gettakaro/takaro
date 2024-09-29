@@ -42,7 +42,7 @@ class DiscordBot {
 
     try {
       await this.client.login(config.get('discord.botToken'));
-    } catch (_error) {
+    } catch {
       throw new errors.InternalServerError();
     }
   }

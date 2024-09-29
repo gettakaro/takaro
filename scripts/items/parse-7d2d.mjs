@@ -1,10 +1,9 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-const { parseString } = require('xml2js');
-const { promisify } = require('node:util');
-const { readFile, readdir } = require('fs/promises');
-const { parse } = require('csv/sync');
-const { mkdir, copyFile } = require('node:fs/promises');
-const sharp = require('sharp');
+import { parseString } from 'xml2js';
+import { promisify } from 'node:util';
+import { readFile, readdir } from 'fs/promises';
+import { parse } from 'csv/sync';
+import { mkdir, copyFile } from 'node:fs/promises';
+import sharp from 'sharp';
 
 const parseXml = promisify(parseString);
 

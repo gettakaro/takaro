@@ -60,9 +60,9 @@ export class IMessageOptsDTO extends TakaroDTO<IMessageOptsDTO> {
 }
 
 export class BanDTO extends TakaroDTO<BanDTO> {
-  @Type(() => IPlayerReferenceDTO)
+  @Type(() => IGamePlayer)
   @ValidateNested()
-  player: IPlayerReferenceDTO;
+  player: IGamePlayer;
 
   @IsString()
   reason: string;
@@ -99,4 +99,5 @@ export interface IGameServer {
   banPlayer(options: BanDTO): Promise<void>;
   unbanPlayer(player: IPlayerReferenceDTO): Promise<void>;
   listBans(): Promise<BanDTO[]>;
+  shutdown(): Promise<void>;
 }

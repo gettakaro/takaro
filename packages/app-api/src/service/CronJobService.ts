@@ -9,7 +9,7 @@ import { TakaroDTO, errors, TakaroModelDTO, traceableClass } from '@takaro/util'
 import { PaginatedOutput } from '../db/base.js';
 import { ITakaroQuery } from '@takaro/db';
 import { ModuleService } from './ModuleService.js';
-import { GameServerService, ModuleInstallationOutputDTO } from './GameServerService.js';
+import { GameServerService, ModuleInstallationOutputDTO, ModuleInstallDTO } from './GameServerService.js';
 import { randomUUID } from 'crypto';
 
 export class CronJobOutputDTO extends TakaroModelDTO<CronJobOutputDTO> {
@@ -136,6 +136,23 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
 
     const gameServerService = new GameServerService(this.domainId);
     const installedModules = await gameServerService.getInstalledModules({ moduleId: updated.moduleId });
+    await Promise.all(
+      installedModules.map((i) => {
+        const newSystemConfig = i.systemConfig;
+        const cmdCfg = newSystemConfig.cronJobs[existing.name];
+        delete newSystemConfig.cronJobs[existing.name];
+        newSystemConfig.cronJobs[updated.name] = cmdCfg;
+        return gameServerService.installModule(
+          i.gameserverId,
+          i.moduleId,
+          new ModuleInstallDTO({
+            userConfig: JSON.stringify(i.userConfig),
+            systemConfig: JSON.stringify(newSystemConfig),
+          }),
+        );
+      }),
+    );
+
     await Promise.all(installedModules.map((mod) => this.syncModuleCronjobs(mod)));
 
     return updated;
@@ -153,7 +170,7 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
     return id;
   }
 
-  public getJobId(modInstallation: ModuleInstallationOutputDTO, cronJob: CronJobOutputDTO) {
+  public getJobKey(modInstallation: ModuleInstallationOutputDTO, cronJob: CronJobOutputDTO) {
     return `${modInstallation.gameserverId}-${cronJob.id}`;
   }
 
@@ -192,7 +209,7 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
   }
 
   private async addCronjobToQueue(cronJob: CronJobOutputDTO, modInstallation: ModuleInstallationOutputDTO) {
-    const jobId = this.getJobId(modInstallation, cronJob);
+    const key = this.getJobKey(modInstallation, cronJob);
     const systemConfig = modInstallation.systemConfig.cronJobs;
 
     const gameServerService = new GameServerService(this.domainId);
@@ -210,26 +227,25 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
         module: mod,
       },
       {
-        jobId,
         repeat: {
+          key: key,
           pattern: systemConfig
             ? modInstallation.systemConfig.cronJobs[cronJob.name].temporalValue
             : cronJob.temporalValue,
-          jobId,
         },
       },
     );
-    this.log.debug(`Added repeatable job ${jobId}`);
+    this.log.debug(`Added repeatable job ${key}`);
   }
 
   private async removeCronjobFromQueue(cronJob: CronJobOutputDTO, modInstallation: ModuleInstallationOutputDTO) {
     const repeatables = await queueService.queues.cronjobs.queue.getRepeatableJobs();
-    const jobId = this.getJobId(modInstallation, cronJob);
+    const key = this.getJobKey(modInstallation, cronJob);
 
-    const repeatable = repeatables.find((r) => r.id === jobId);
+    const repeatable = repeatables.find((r) => r.key === key);
     if (repeatable) {
       await queueService.queues.cronjobs.queue.removeRepeatableByKey(repeatable.key);
-      this.log.debug(`Removed repeatable job ${jobId}`);
+      this.log.debug(`Removed repeatable job ${key}`);
     }
   }
 

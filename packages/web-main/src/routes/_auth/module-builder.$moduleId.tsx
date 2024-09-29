@@ -9,8 +9,9 @@ import { hasPermission } from 'hooks/useHasPermission';
 import { ModuleBuilderInner } from './-module-builder/ModuleBuilderInner';
 import { ModuleOnboarding } from './-module-builder/ModuleOnboarding';
 import { FileMap, FileType, ModuleBuilderProvider } from './-module-builder/useModuleBuilderStore';
-import { getApiClient } from 'util/getApiClient';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
+import { globalGameServerSetingQueryOptions } from 'queries/setting';
+import { userMeQueryOptions } from 'queries/user';
 
 const Flex = styled.div`
   display: flex;
@@ -29,13 +30,13 @@ const LoadingContainer = styled.div`
 `;
 
 export const Route = createFileRoute('/_auth/module-builder/$moduleId')({
-  beforeLoad: async () => {
-    try {
-      const session = (await getApiClient().user.userControllerMe()).data.data;
-      if (!hasPermission(session, ['MANAGE_MODULES'])) {
-        throw redirect({ to: '/forbidden' });
-      }
-    } catch {
+  beforeLoad: async ({ context }) => {
+    const session = await context.queryClient.ensureQueryData(userMeQueryOptions());
+    const developerModeEnabled = await context.queryClient.ensureQueryData(
+      globalGameServerSetingQueryOptions('developerMode'),
+    );
+
+    if (!hasPermission(session, ['MANAGE_MODULES']) && developerModeEnabled.value == 'true') {
       throw redirect({ to: '/forbidden' });
     }
   },

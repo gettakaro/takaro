@@ -33,7 +33,6 @@ export class MockGameserver implements IMockGameServer {
     return `${REDIS_PREFIX}${this.name}:${key}`;
   }
 
-  // eslint-disable-next-line
   emitEvent(
     type:
       | 'log'
@@ -206,6 +205,25 @@ export class MockGameserver implements IMockGameServer {
       output.success = true;
     }
 
+    if (rawCommand.startsWith('ban')) {
+      const [_, playerId, reason] = rawCommand.split(' ');
+      await this.banPlayer(
+        new BanDTO({
+          player: new IPlayerReferenceDTO({ gameId: playerId }),
+          reason,
+        }),
+      );
+      output.rawResult = `Banned player ${playerId} with reason: ${reason}`;
+      output.success = true;
+    }
+
+    if (rawCommand.startsWith('unban')) {
+      const [_, playerId] = rawCommand.split(' ');
+      await this.unbanPlayer(new IPlayerReferenceDTO({ gameId: playerId }));
+      output.rawResult = `Unbanned player ${playerId}`;
+      output.success = true;
+    }
+
     await this.sendLog(`${output.success ? '🟢' : '🔴'} Command executed: ${rawCommand}`);
 
     return output;
@@ -303,6 +321,7 @@ export class MockGameserver implements IMockGameServer {
 
   async listBans(): Promise<BanDTO[]> {
     const keys = await (await this.redis).keys(this.getRedisKey('ban:*'));
+    if (!keys.length) return [];
     const banData = await (await this.redis).mGet(keys);
 
     const banDataWithPlayer = await Promise.all(
@@ -354,6 +373,10 @@ export class MockGameserver implements IMockGameServer {
         amount: faker.number.int({ max: 99 }),
       }),
     ];
+  }
+
+  async shutdown() {
+    await this.sendLog('Shutting down');
   }
 }
 

@@ -1,10 +1,10 @@
-import { TakaroModel, ITakaroQuery, QueryBuilder, SortDirection } from '@takaro/db';
+import { TakaroModel, QueryBuilder } from '@takaro/db';
 import { Model } from 'objection';
 import { PermissionOnRoleModel, ROLE_TABLE_NAME, RoleModel } from './role.js';
 import { errors, traceableClass } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
-import { UserOutputDTO, UserCreateInputDTO, UserUpdateDTO, UserOutputWithRolesDTO } from '../service/UserService.js';
-import { PaginationParams } from '../controllers/shared.js';
+import { UserOutputDTO, UserCreateInputDTO, UserUpdateDTO, UserOutputWithRolesDTO } from '../service/User/dto.js';
+import { UserSearchInputDTO } from '../controllers/UserController.js';
 
 export const USER_TABLE_NAME = 'users';
 const ROLE_ON_USER_TABLE_NAME = 'roleOnUser';
@@ -71,12 +71,23 @@ export class UserRepo extends ITakaroRepo<UserModel, UserOutputDTO, UserCreateIn
     };
   }
 
-  async find(filters: ITakaroQuery<UserOutputDTO>) {
+  async find(filters: Partial<UserSearchInputDTO>) {
     const { query } = await this.getModel();
-    const result = await new QueryBuilder<UserModel, UserOutputDTO>({
+
+    const qry = new QueryBuilder<UserModel, UserOutputDTO>({
       ...filters,
       extend: ['roles.role.permissions.permission'],
     }).build(query);
+
+    if (filters.filters?.roleId) {
+      qry
+        .withGraphFetched('roles.role')
+        .whereExists(
+          RoleOnUserModel.query().where('userId', UserModel.ref('id')).whereIn('roleId', filters.filters.roleId),
+        );
+    }
+
+    const result = await qry;
 
     return {
       total: result.total,
@@ -141,26 +152,6 @@ export class UserRepo extends ITakaroRepo<UserModel, UserOutputDTO, UserCreateIn
     const knex = await this.getKnex();
     const roleOnUserModel = RoleOnUserModel.bindKnex(knex);
     await roleOnUserModel.query().delete().where({ userId, roleId });
-  }
-
-  async getRoleMembers(roleId: string, pagination: PaginationParams) {
-    const knex = await this.getKnex();
-    const roleOnUserModel = RoleOnUserModel.bindKnex(knex);
-
-    const res = await roleOnUserModel.query().where({ roleId }).select('userId');
-    const ids = res.map((item) => item.userId);
-    if (!ids.length)
-      return {
-        total: 0,
-        results: [],
-      };
-    return this.find({
-      filters: { id: ids },
-      limit: pagination.limit,
-      page: pagination.page,
-      sortBy: 'name',
-      sortDirection: SortDirection.asc,
-    });
   }
 
   async NOT_DOMAIN_SCOPED_resolveDomainByIdpId(idpId: string): Promise<string[]> {

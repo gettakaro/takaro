@@ -3,7 +3,7 @@ import { TakaroService } from './Base.js';
 import { ISteamData, PlayerModel, PlayerRepo } from '../db/player.js';
 import { IsBoolean, IsISO8601, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { TakaroDTO, TakaroModelDTO, errors, traceableClass } from '@takaro/util';
-import { ITakaroQuery, Redis } from '@takaro/db';
+import { Redis } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import {
   PlayerOnGameServerService,
@@ -28,6 +28,7 @@ import maxmind, { CityResponse } from 'maxmind';
 import { humanId } from 'human-id';
 import { GameServerService } from './GameServerService.js';
 import { IMessageOptsDTO } from '@takaro/gameserver';
+import { PlayerSearchInputDTO } from '../controllers/PlayerController.js';
 
 const ipLookup = await open(GeoIpDbName.City, (path) => maxmind.open<CityResponse>(path));
 
@@ -76,6 +77,9 @@ export class PlayerOutputDTO extends TakaroModelDTO<PlayerOutputDTO> {
   @IsNumber()
   @IsOptional()
   steamLevel?: number;
+
+  @IsNumber()
+  playtimeSeconds: number;
 
   @IsOptional()
   @ValidateNested({ each: true })
@@ -144,6 +148,9 @@ export class PlayerUpdateDTO extends TakaroDTO<PlayerUpdateDTO> {
   @IsString()
   @IsOptional()
   epicOnlineServicesId?: string;
+  @IsNumber()
+  @IsOptional()
+  playtimeSeconds?: number;
 }
 
 @traceableClass('service:player')
@@ -179,7 +186,17 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     return this.handleRoleExpiry(player);
   }
 
-  async find(filters: ITakaroQuery<PlayerOutputDTO>): Promise<PaginatedOutput<PlayerOutputWithRolesDTO>> {
+  async find(filters: Partial<PlayerSearchInputDTO>): Promise<PaginatedOutput<PlayerOutputWithRolesDTO>> {
+    // Everyone has the User and Player roles by default
+    // Filtering by these roles would be redundant
+    if (filters.filters?.roleId) {
+      const roleService = new RoleService(this.domainId);
+      const role = await roleService.findOne(filters.filters.roleId[0]);
+      if ((role?.name === 'Player' || role?.name === 'User') && role.system) {
+        delete filters.filters.roleId;
+      }
+    }
+
     const players = await this.repo.find(filters);
     players.results = await Promise.all(players.results.map((item) => this.extend(item)));
     return players;
@@ -294,6 +311,10 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     const roleService = new RoleService(this.domainId);
 
     const role = await roleService.findOne(roleId);
+
+    if ((role?.name === 'Player' || role?.name === 'User') && role.system) {
+      throw new errors.BadRequestError('Cannot assign Player or User role, everyone has these by default');
+    }
 
     this.log.info('Assigning role to player', { roleId, player: targetId, gameserverId, expiresAt });
     await this.repo.assignRole(targetId, roleId, gameserverId, expiresAt);

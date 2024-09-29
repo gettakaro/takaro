@@ -69,8 +69,11 @@ const tests = [
       const allRepeatables = await queue.getRepeatableJobs();
       const repeatables = allRepeatables.filter((job) => {
         return (
-          job.id ===
-          service.getJobId(assignment as ServiceModuleInstallationOutputDTO, mod.cronJobs[0] as ServiceCronJobOutputDTO)
+          job.key ===
+          service.getJobKey(
+            assignment as ServiceModuleInstallationOutputDTO,
+            mod.cronJobs[0] as ServiceCronJobOutputDTO,
+          )
         );
       });
 
@@ -95,8 +98,11 @@ const tests = [
       const allRepeatables = await queue.getRepeatableJobs();
       const repeatables = allRepeatables.filter((job) => {
         return (
-          job.id ===
-          service.getJobId(assignment as ServiceModuleInstallationOutputDTO, mod.cronJobs[0] as ServiceCronJobOutputDTO)
+          job.key ===
+          service.getJobKey(
+            assignment as ServiceModuleInstallationOutputDTO,
+            mod.cronJobs[0] as ServiceCronJobOutputDTO,
+          )
         );
       });
 
@@ -117,8 +123,11 @@ const tests = [
       const allRepeatables = await queue.getRepeatableJobs();
       const repeatables = allRepeatables.filter((job) => {
         return (
-          job.id ===
-          service.getJobId(assignment as ServiceModuleInstallationOutputDTO, mod.cronJobs[0] as ServiceCronJobOutputDTO)
+          job.key ===
+          service.getJobKey(
+            assignment as ServiceModuleInstallationOutputDTO,
+            mod.cronJobs[0] as ServiceCronJobOutputDTO,
+          )
         );
       });
 
@@ -139,8 +148,11 @@ const tests = [
       const allRepeatables = await queue.getRepeatableJobs();
       const repeatables = allRepeatables.filter((job) => {
         return (
-          job.id ===
-          service.getJobId(assignment as ServiceModuleInstallationOutputDTO, mod.cronJobs[0] as ServiceCronJobOutputDTO)
+          job.key ===
+          service.getJobKey(
+            assignment as ServiceModuleInstallationOutputDTO,
+            mod.cronJobs[0] as ServiceCronJobOutputDTO,
+          )
         );
       });
 
@@ -161,8 +173,11 @@ const tests = [
       const allRepeatables = await queue.getRepeatableJobs();
       const repeatables = allRepeatables.filter((job) => {
         return (
-          job.id ===
-          service.getJobId(assignment as ServiceModuleInstallationOutputDTO, mod.cronJobs[0] as ServiceCronJobOutputDTO)
+          job.key ===
+          service.getJobKey(
+            assignment as ServiceModuleInstallationOutputDTO,
+            mod.cronJobs[0] as ServiceCronJobOutputDTO,
+          )
         );
       });
 
