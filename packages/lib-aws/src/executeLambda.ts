@@ -68,6 +68,13 @@ async function tryExecuteLambda({ data, fn, token, domainId }: executeLambdaOpts
           msg: 'Task timed out',
         },
       ];
+    } else if (parsedRes.body.includes('Unexpected end of input')) {
+      returnVal['success'] = false;
+      returnVal['logs'] = [
+        {
+          msg: 'Syntax error, your javascript code is invalid',
+        },
+      ];
     } else {
       returnVal = JSON.parse(parsedRes.body);
     }
