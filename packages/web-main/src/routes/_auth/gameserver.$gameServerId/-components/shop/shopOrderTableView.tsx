@@ -66,9 +66,11 @@ export const ShopOrderTableView: FC<ShopOrderTableView> = ({ gameServerId }) => 
       id: 'listingId',
       cell: (info) => (
         <Link
+          disabled={!!info.row.original.listing?.deletedAt}
           to="/gameserver/$gameServerId/shop/listing/$shopListingId/view"
           params={{ gameServerId, shopListingId: info.getValue() }}
         >
+          {info.row.original.listing?.deletedAt ? '[Deleted] ' : ''}
           {info.row.original.listing?.name ?? info.row.original.listing?.items[0].item.name}
         </Link>
       ),
