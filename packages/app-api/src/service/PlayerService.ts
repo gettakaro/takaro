@@ -78,6 +78,9 @@ export class PlayerOutputDTO extends TakaroModelDTO<PlayerOutputDTO> {
   @IsOptional()
   steamLevel?: number;
 
+  @IsNumber()
+  playtimeSeconds: number;
+
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => PlayerOnGameserverOutputDTO)

@@ -2,13 +2,13 @@
   "body": {
     "meta": {},
     "data": {
-      "createdAt": "2024-07-20T14:50:07.363Z",
-      "updatedAt": "2024-07-20T14:50:07.579Z",
-      "id": "03a543be-0ef8-48f3-a5a9-a045cfe28dc2",
-      "name": "Bradly.Schowalter4",
-      "steamId": "kyts1il9aa0n3stu",
-      "xboxLiveId": "kmu3dseopvoorrv6",
-      "epicOnlineServicesId": "fqpk20fnpvxe0efl",
+      "createdAt": "2024-09-29T10:31:00.204Z",
+      "updatedAt": "2024-09-29T10:31:00.526Z",
+      "id": "0c0935e8-146e-4eaf-9a64-d96c9be81eb5",
+      "name": "Maia_McCullough9",
+      "steamId": "5GgrUzqUCnbfcpgy",
+      "xboxLiveId": "zwcXT0Ws9zrNQ25p",
+      "epicOnlineServicesId": "Zijzs14cnMgSnzpF",
       "steamAvatar": null,
       "steamLastFetch": null,
       "steamAccountCreated": null,
@@ -18,14 +18,15 @@
       "steamsDaysSinceLastBan": null,
       "steamNumberOfVACBans": null,
       "steamLevel": null,
+      "playtimeSeconds": 0,
       "roleAssignments": [
         {
-          "playerId": "03a543be-0ef8-48f3-a5a9-a045cfe28dc2",
-          "roleId": "a3f6364d-9486-49e1-8b80-8f31391663d8",
+          "playerId": "0c0935e8-146e-4eaf-9a64-d96c9be81eb5",
+          "roleId": "113b3eeb-407e-4c27-a3d2-c2ed923d4d93",
           "role": {
-            "createdAt": "2024-07-20T14:50:07.064Z",
-            "updatedAt": "2024-07-20T14:50:07.064Z",
-            "id": "a3f6364d-9486-49e1-8b80-8f31391663d8",
+            "createdAt": "2024-09-29T10:30:59.880Z",
+            "updatedAt": "2024-09-29T10:30:59.880Z",
+            "id": "113b3eeb-407e-4c27-a3d2-c2ed923d4d93",
             "name": "Player",
             "system": true,
             "permissions": []

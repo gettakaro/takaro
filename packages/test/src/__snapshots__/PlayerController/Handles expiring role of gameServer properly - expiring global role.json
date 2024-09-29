@@ -2,15 +2,15 @@
   "body": {
     "meta": {},
     "data": {
-      "id": "3939b6e4-b78b-43b5-b7e5-d8f51b81cb53",
-      "createdAt": "2023-12-23T10:21:14.688Z",
-      "updatedAt": "2023-12-23T10:21:14.688Z",
-      "name": "Jarred_Ledner",
-      "steamId": "9e1nw6ydnfz3qo04",
-      "xboxLiveId": null,
-      "epicOnlineServicesId": null,
-      "ipHistory": [],
+      "createdAt": "2024-09-29T10:31:02.033Z",
+      "updatedAt": "2024-09-29T10:31:02.351Z",
+      "id": "108b66ab-1843-4c01-bf91-6593a0bcd2bd",
+      "name": "Ole.Jacobi50",
+      "steamId": "AQWZe3gZE7AjevpT",
+      "xboxLiveId": "JLsfFUrwovd5lFns",
+      "epicOnlineServicesId": "TDlL0LLW5hpAubQf",
       "steamAvatar": null,
+      "steamLastFetch": null,
       "steamAccountCreated": null,
       "steamCommunityBanned": null,
       "steamEconomyBan": null,
@@ -18,47 +18,48 @@
       "steamsDaysSinceLastBan": null,
       "steamNumberOfVACBans": null,
       "steamLevel": null,
+      "playtimeSeconds": 0,
       "roleAssignments": [
         {
-          "id": "980732ab-1f33-4c5d-898e-200777e6435c",
-          "createdAt": "2023-12-23T10:21:16.283Z",
-          "updatedAt": "2023-12-23T10:21:16.283Z",
-          "playerId": "3939b6e4-b78b-43b5-b7e5-d8f51b81cb53",
-          "roleId": "e76c228c-5196-4259-976e-3882d57d6b00",
-          "gameServerId": "5fd76cb9-f54a-453c-a726-5f93d743b1a5",
+          "createdAt": "2024-09-29T10:31:02.553Z",
+          "updatedAt": "2024-09-29T10:31:02.553Z",
+          "id": "300b96ee-3d95-4017-bddc-a1f048cf1d94",
+          "playerId": "108b66ab-1843-4c01-bf91-6593a0bcd2bd",
+          "roleId": "cf85e41d-8b5b-4cdf-8c3d-c69e5712ff4f",
+          "gameServerId": "c23e6159-9c2e-47ae-93e6-b5a7f0758f59",
           "expiresAt": null,
           "role": {
-            "id": "e76c228c-5196-4259-976e-3882d57d6b00",
-            "createdAt": "2023-12-23T10:21:16.205Z",
-            "updatedAt": "2023-12-23T10:21:16.205Z",
+            "createdAt": "2024-09-29T10:31:02.517Z",
+            "updatedAt": "2024-09-29T10:31:02.517Z",
+            "id": "cf85e41d-8b5b-4cdf-8c3d-c69e5712ff4f",
             "name": "GameServer role",
             "system": false,
             "permissions": [
               {
-                "id": "7a125568-571b-4c21-8e9a-0468813edb9a",
-                "createdAt": "2023-12-23T10:21:16.209Z",
-                "updatedAt": "2023-12-23T10:21:16.210Z",
-                "permissionId": "dbba72fe-22bc-4683-af84-cbc1c352fbac",
-                "roleId": "e76c228c-5196-4259-976e-3882d57d6b00",
-                "count": 0
+                "createdAt": "2024-09-29T10:31:02.519Z",
+                "updatedAt": "2024-09-29T10:31:02.519Z",
+                "id": "e916d79e-71d7-44f5-a441-ac81515367ac",
+                "roleId": "cf85e41d-8b5b-4cdf-8c3d-c69e5712ff4f",
+                "count": 0,
+                "permissionId": "3b7f6e7e-14fa-48b2-9b62-2aff6575350f"
               }
             ]
           }
         },
         {
-          "playerId": "3939b6e4-b78b-43b5-b7e5-d8f51b81cb53",
-          "roleId": "99d159d5-bca9-4091-a334-6ecd828e60c3",
+          "playerId": "108b66ab-1843-4c01-bf91-6593a0bcd2bd",
+          "roleId": "d08b0028-dd03-4a8a-89a3-f982dc076aa4",
           "role": {
-            "id": "99d159d5-bca9-4091-a334-6ecd828e60c3",
-            "createdAt": "2023-12-23T10:21:14.327Z",
-            "updatedAt": "2023-12-23T10:21:14.328Z",
+            "createdAt": "2024-09-29T10:31:01.742Z",
+            "updatedAt": "2024-09-29T10:31:01.742Z",
+            "id": "d08b0028-dd03-4a8a-89a3-f982dc076aa4",
             "name": "Player",
-            "permissions": [],
-            "system": true
+            "system": true,
+            "permissions": []
           }
         }
       ],
-      "steamLastFetch": null
+      "ipHistory": []
     }
   },
   "status": 200,

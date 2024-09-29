@@ -2,13 +2,13 @@
   "body": {
     "meta": {},
     "data": {
-      "createdAt": "2024-08-17T14:54:58.892Z",
-      "updatedAt": "2024-08-17T14:54:59.406Z",
-      "id": "0bc2831c-42fb-4bc8-876d-37a7f789cf63",
-      "name": "Candice_Berge",
-      "steamId": "xf5eryn8r1gs02tu",
-      "xboxLiveId": "ne67y6p9cmjncz8m",
-      "epicOnlineServicesId": "x606jagm8uou2go9",
+      "createdAt": "2024-09-29T10:31:03.076Z",
+      "updatedAt": "2024-09-29T10:31:03.264Z",
+      "id": "0eb7239b-5536-49c3-88dc-c593d446d7b1",
+      "name": "Lulu55",
+      "steamId": "cEmah9cJ3djRGGBd",
+      "xboxLiveId": "0VC9zeKJkjqdZnvR",
+      "epicOnlineServicesId": "vdx4k8GRlsea1fci",
       "steamAvatar": null,
       "steamLastFetch": null,
       "steamAccountCreated": null,
@@ -18,27 +18,28 @@
       "steamsDaysSinceLastBan": null,
       "steamNumberOfVACBans": null,
       "steamLevel": null,
+      "playtimeSeconds": 0,
       "roleAssignments": [
         {
-          "createdAt": "2024-08-17T14:54:59.664Z",
-          "updatedAt": "2024-08-17T14:54:59.690Z",
-          "id": "0a6d9fe7-e80a-410a-bf12-7095eac25143",
-          "playerId": "0bc2831c-42fb-4bc8-876d-37a7f789cf63",
-          "roleId": "e6de15d8-f192-4a90-a663-c5322f2e2d6f",
+          "createdAt": "2024-09-29T10:31:03.447Z",
+          "updatedAt": "2024-09-29T10:31:03.463Z",
+          "id": "10dcf63f-fb98-4ecf-ae02-5183efe7b100",
+          "playerId": "0eb7239b-5536-49c3-88dc-c593d446d7b1",
+          "roleId": "a5cb2216-8107-4fa4-a14a-3c986757925a",
           "gameServerId": null,
-          "expiresAt": "2024-08-17T15:54:59.646Z",
+          "expiresAt": "2024-09-29T11:31:03.433Z",
           "role": {
-            "createdAt": "2024-08-17T14:54:59.638Z",
-            "updatedAt": "2024-08-17T14:54:59.639Z",
-            "id": "e6de15d8-f192-4a90-a663-c5322f2e2d6f",
+            "createdAt": "2024-09-29T10:31:03.426Z",
+            "updatedAt": "2024-09-29T10:31:03.426Z",
+            "id": "a5cb2216-8107-4fa4-a14a-3c986757925a",
             "name": "Test role",
             "system": false,
             "permissions": [
               {
-                "createdAt": "2024-08-17T14:54:59.641Z",
-                "updatedAt": "2024-08-17T14:54:59.641Z",
-                "id": "95ca3c75-4659-4be8-a1a9-3784cf84f0ea",
-                "roleId": "e6de15d8-f192-4a90-a663-c5322f2e2d6f",
+                "createdAt": "2024-09-29T10:31:03.428Z",
+                "updatedAt": "2024-09-29T10:31:03.428Z",
+                "id": "18ac09be-2d77-4e97-8bab-6d5a33848324",
+                "roleId": "a5cb2216-8107-4fa4-a14a-3c986757925a",
                 "count": 0,
                 "permissionId": "3b7f6e7e-14fa-48b2-9b62-2aff6575350f"
               }
@@ -46,12 +47,12 @@
           }
         },
         {
-          "playerId": "0bc2831c-42fb-4bc8-876d-37a7f789cf63",
-          "roleId": "7b6d0471-cc33-4226-8155-d5584d559601",
+          "playerId": "0eb7239b-5536-49c3-88dc-c593d446d7b1",
+          "roleId": "de767808-e419-479d-be86-85c3f4165232",
           "role": {
-            "createdAt": "2024-08-17T14:54:58.381Z",
-            "updatedAt": "2024-08-17T14:54:58.382Z",
-            "id": "7b6d0471-cc33-4226-8155-d5584d559601",
+            "createdAt": "2024-09-29T10:31:02.645Z",
+            "updatedAt": "2024-09-29T10:31:02.645Z",
+            "id": "de767808-e419-479d-be86-85c3f4165232",
             "name": "Player",
             "system": true,
             "permissions": []
