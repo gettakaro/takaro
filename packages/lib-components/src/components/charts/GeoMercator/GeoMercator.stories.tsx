@@ -10,8 +10,7 @@ interface Shape {
   name: string;
 }
 
-// 3 letter country codes
-const data: Shape[] = [
+const alpha3: Shape[] = [
   { code: 'BEL', amount: 10, name: 'Belgium' },
   { code: 'CAN', amount: 20, name: 'Canada' },
   { code: 'DEU', amount: 30, name: 'Germany' },
@@ -60,7 +59,7 @@ export const Default: StoryFn<GeoMercatorProps<Shape>> = (args) => {
               xAccessor={getCountry}
               yAccessor={getAmount}
               tooltipAccessor={tooltipAccessor}
-              data={data}
+              data={alpha3}
               showZoomControls={args.showZoomControls}
               allowZoomAndDrag={args.allowZoomAndDrag}
             />

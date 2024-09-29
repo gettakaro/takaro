@@ -147,7 +147,7 @@ function Component() {
               <GeoMercator
                 name="Player countries"
                 xAccessor={(d) => d.country}
-                yAccessor={(d) => d.playerCount}
+                yAccessor={(d) => parseInt(d.playerCount)}
                 tooltipAccessor={(d) => `${d.country}:${d.playerCount}`}
                 data={countryStats}
                 allowZoomAndDrag={false}
