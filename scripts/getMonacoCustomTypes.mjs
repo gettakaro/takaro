@@ -4,11 +4,14 @@
 import fs from 'fs-extra';
 import path from 'path';
 
-async function getDts({ nodeModulesPath, packages }: { nodeModulesPath: string; packages: string[] }) {
-  const typings: Record<string, string> = {};
-  const parsedPackages: Record<string, boolean> = {};
+import * as url from 'url';
+const __dirname = url.fileURLToPath(new url.URL('.', import.meta.url));
 
-  async function getTypingsForPackages(packages: string[] = []) {
+async function getDts({ nodeModulesPath, packages }) {
+  const typings = {};
+  const parsedPackages = {};
+
+  async function getTypingsForPackages(packages = []) {
     for (const packageName of packages) {
       console.log(`Getting typings for package: ${packageName}`);
       if (!parsedPackages[packageName]) {
@@ -35,7 +38,7 @@ async function getDts({ nodeModulesPath, packages }: { nodeModulesPath: string; 
     }
   }
 
-  async function getTypingsInDir(path: string) {
+  async function getTypingsInDir(path) {
     const dts = await fs.readdir(`${nodeModulesPath}/${path}`);
     for (const fileName of dts) {
       if (fileName.endsWith('.d.ts')) {
