@@ -13,16 +13,7 @@ export default {
 
 export const Default: StoryFn<AlertProps> = (args) => <Alert {...args} />;
 
-export const Success: StoryObj<AlertProps> = {
-  args: {
-    title: 'Order complete',
-    text: 'Your order has been sucessfully processed. We are completing the report.',
-    variant: 'success',
-    dismiss: true,
-  },
-};
-
-export const Error: StoryObj<AlertProps> = {
+export const WithList: StoryObj<AlertProps> = {
   args: {
     title: 'There were errors with your submission',
     text: [
