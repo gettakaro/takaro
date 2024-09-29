@@ -42,7 +42,14 @@ import { AllowedFilters } from './shared.js';
 import multer from 'multer';
 
 const storage = multer.memoryStorage();
-const upload = multer({ storage });
+const upload = multer({
+  storage,
+  limits: {
+    // 25MB
+    fileSize: 25 * 1024 * 1024,
+    fieldSize: 25 * 1024 * 1024,
+  },
+});
 
 class GameServerTypesOutputDTOAPI extends APIOutput<GameServerOutputDTO[]> {
   @Type(() => GameServerOutputDTO)
