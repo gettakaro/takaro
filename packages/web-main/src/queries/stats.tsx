@@ -94,7 +94,7 @@ export const ActivityStatsQueryOptions = (options: ActivityInputDTO) => {
   });
 };
 
-type CountryValue = { country: string; playerCount: number };
+type CountryValue = { country: string; playerCount: string };
 export const CountriesStatsQueryOptions = ({ gameServerId }: { gameServerId: string }) => {
   return queryOptions<CountryValue[], AxiosError<CountryValue[]>, CountryValue[]>({
     queryKey: [statsKeys.countries(gameServerId)],
