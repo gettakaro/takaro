@@ -136,7 +136,7 @@ function Component() {
             variant="info"
             title="Importing CSMM data"
             text={`In CSMM, go to your server settings and scroll to the experimental section. 
-            Export your server there, you will get a big blob of JSON. Paste that JSON into the box below and click submit.
+            Export your server there, you will get a big blob of JSON. Upload the JSON with the box below and click submit.
             
             You can select what will be imported, like players, role configs, currency, shop listings. It will also assign roles to players.
             
