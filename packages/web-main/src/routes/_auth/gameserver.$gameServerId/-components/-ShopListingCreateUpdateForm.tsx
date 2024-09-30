@@ -147,8 +147,8 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
                   elevation={3}
                 />
                 {fields.length > 0 &&
-                  fields.map((_field, index) => (
-                    <Field key={'shoplistingfield-' + index}>
+                  fields.map((field, index) => (
+                    <Field key={field.id}>
                       <div
                         style={{
                           display: 'flex',
