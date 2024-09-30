@@ -16,7 +16,7 @@
   },
   "devDependencies": {
     "@hookform/devtools": "4.3.1",
-    "@mdx-js/react": "2.3.0",
+    "@mdx-js/react": "3.0.1",
     "@types/jest": "29.5.13",
     "@types/react-window": "1.8.8",
     "@types/styled-components": "5.1.34",
