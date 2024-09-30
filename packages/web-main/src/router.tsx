@@ -1,6 +1,6 @@
 import { queryClient } from './queryClient';
 import { routeTree } from './routeTree.gen';
-import { createRouter } from '@tanstack/react-router';
+import { createRouter, Router } from '@tanstack/react-router';
 import { QueryClient } from '@tanstack/react-query';
 import { DefaultErrorComponent } from 'components/ErrorComponent';
 import { IAuthContext } from 'hooks/useAuth';
@@ -11,7 +11,7 @@ export interface RouterContext {
   auth: IAuthContext;
 }
 
-export const router = createRouter({
+export const router: Router<typeof routeTree, 'never'> = createRouter({
   routeTree,
   context: {
     auth: {
