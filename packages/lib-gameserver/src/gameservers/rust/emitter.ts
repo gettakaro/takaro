@@ -155,8 +155,8 @@ export class RustEmitter extends TakaroEmitter {
     return event;
   }
 
-  private async handleChatMessage(data: Record<string, unknown>): Promise<EventChatMessage> {
-    delete data.channel;
+  private async handleChatMessage(data: Record<string, string>): Promise<EventChatMessage> {
+    data.channel = data.channel.toLowerCase();
     const event = new EventChatMessage(data);
     if (event.player) {
       if (event.player.steamId) {

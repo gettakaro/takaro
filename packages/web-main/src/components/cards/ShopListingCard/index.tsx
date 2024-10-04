@@ -67,7 +67,7 @@ export const ShopListingCard: FC<ShopListingCard> = ({
                       }}
                     >
                       {itemMeta.amount}x {itemMeta.item.name}
-                      {itemMeta.quality ? `, quality: ${itemMeta.quality}` : ''}
+                      {itemMeta.quality && itemMeta.quality !== '0' ? `, quality: ${itemMeta.quality}` : ''}
                     </strong>
                     {shopListing.items.length > 1 && index < shopListing.items.length - 1 && ', '}
                   </>

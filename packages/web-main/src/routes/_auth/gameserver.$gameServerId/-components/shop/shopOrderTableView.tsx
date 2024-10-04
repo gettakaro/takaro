@@ -10,10 +10,12 @@ import {
   Dialog,
   Dropdown,
   IconButton,
+  Skeleton,
   Table,
+  useTheme,
   useTableActions,
 } from '@takaro/lib-components';
-import { Link } from '@tanstack/react-router';
+import { Link, useParams } from '@tanstack/react-router';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useQuery } from '@tanstack/react-query';
 import { shopOrdersQueryOptions, useShopOrderCancel, useShopOrderClaim } from 'queries/shopOrder';
@@ -24,6 +26,9 @@ import {
   AiOutlineCheck as ClaimOrderIcon,
 } from 'react-icons/ai';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
+import { userQueryOptions } from 'queries/user';
+import { PlayerContainer } from 'components/Player';
+import { playerOnGameServerQueryOptions } from 'queries/pog';
 
 interface ShopOrderTableView {
   gameServerId: string;
@@ -61,9 +66,11 @@ export const ShopOrderTableView: FC<ShopOrderTableView> = ({ gameServerId }) => 
       id: 'listingId',
       cell: (info) => (
         <Link
+          disabled={!!info.row.original.listing?.deletedAt}
           to="/gameserver/$gameServerId/shop/listing/$shopListingId/view"
           params={{ gameServerId, shopListingId: info.getValue() }}
         >
+          {info.row.original.listing?.deletedAt ? '[Deleted] ' : ''}
           {info.row.original.listing?.name ?? info.row.original.listing?.items[0].item.name}
         </Link>
       ),
@@ -111,6 +118,13 @@ export const ShopOrderTableView: FC<ShopOrderTableView> = ({ gameServerId }) => 
         dataType: 'datetime',
       },
     }),
+    columnHelper.accessor('userId', {
+      header: 'Player',
+      id: 'userId',
+      enableSorting: true,
+      cell: (info) => <UserToPlayer userId={info.getValue()} />,
+      meta: { dataType: 'string' },
+    }),
     columnHelper.display({
       header: 'Actions',
       id: 'actions',
@@ -121,7 +135,7 @@ export const ShopOrderTableView: FC<ShopOrderTableView> = ({ gameServerId }) => 
       enableGlobalFilter: false,
       enableResizing: false,
       maxSize: 50,
-      cell: (info) => <ShopOrderActions shopOrder={info.row.original} />,
+      cell: (info) => <ShopOrderActionsDataQueryWrapper shopOrder={info.row.original} />,
     }),
   ];
 
@@ -151,12 +165,30 @@ export const ShopOrderTableView: FC<ShopOrderTableView> = ({ gameServerId }) => 
 
 interface ShopOrderActionsProps {
   shopOrder: ShopOrderOutputDTO;
+  playerId: string;
+  gameServerId: string;
 }
+// This is only needed until user is replaced with player in shoporder.
+const ShopOrderActionsDataQueryWrapper: FC<{ shopOrder: ShopOrderOutputDTO }> = ({ shopOrder }) => {
+  const { gameServerId } = useParams({ from: '/_auth/gameserver/$gameServerId/shop/orders' });
+  const { isPending, data } = useQuery(userQueryOptions(shopOrder.userId));
 
-const ShopOrderActions: FC<ShopOrderActionsProps> = ({ shopOrder }) => {
+  if (isPending) {
+    return <span>Loading actions...</span>;
+  }
+  if (!data) {
+    return '';
+  }
+
+  return <ShopOrderActions shopOrder={shopOrder} gameServerId={gameServerId} playerId={data.playerId!} />;
+};
+
+const ShopOrderActions: FC<ShopOrderActionsProps> = ({ shopOrder, gameServerId, playerId }) => {
   const [openCancelOrderDialog, setOpenCancelOrderDialog] = useState(false);
   const { mutate: cancelShopOrder, isPending: isPendingShopOrderCancel } = useShopOrderCancel();
+  const { data } = useQuery(playerOnGameServerQueryOptions(gameServerId, playerId));
   const { mutateAsync: claimShopOrder } = useShopOrderClaim();
+  const theme = useTheme();
 
   const handleCancelOrderClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
@@ -177,18 +209,22 @@ const ShopOrderActions: FC<ShopOrderActionsProps> = ({ shopOrder }) => {
           <IconButton icon={<ActionIcon />} ariaLabel="shop-order-actions" />
         </Dropdown.Trigger>
         <Dropdown.Menu>
-          <Dropdown.Menu.Item
-            disabled={shopOrder.status !== ShopOrderOutputDTOStatusEnum.Paid}
-            label="Claim order"
-            icon={<ClaimOrderIcon />}
-            onClick={handleClaimShopOrderClick}
-          />
-          <Dropdown.Menu.Item
-            disabled={shopOrder.status !== ShopOrderOutputDTOStatusEnum.Paid}
-            label="Cancel order"
-            icon={<CancelOrderIcon />}
-            onClick={handleCancelOrderClick}
-          />
+          <Dropdown.Menu.Group>
+            {shopOrder.status == ShopOrderOutputDTOStatusEnum.Paid && (
+              <Dropdown.Menu.Item
+                label={data?.online ? 'Claim order' : 'Claim order (player offline)'}
+                icon={<ClaimOrderIcon />}
+                onClick={handleClaimShopOrderClick}
+                disabled={data?.online === false}
+              />
+            )}
+            <Dropdown.Menu.Item
+              disabled={shopOrder.status !== ShopOrderOutputDTOStatusEnum.Paid}
+              label="Cancel order"
+              icon={<CancelOrderIcon fill={theme.colors.error} />}
+              onClick={handleCancelOrderClick}
+            />
+          </Dropdown.Menu.Group>
         </Dropdown.Menu>
       </Dropdown>
       <Dialog open={openCancelOrderDialog} onOpenChange={setOpenCancelOrderDialog}>
@@ -208,4 +244,18 @@ const ShopOrderActions: FC<ShopOrderActionsProps> = ({ shopOrder }) => {
       </Dialog>
     </>
   );
+};
+
+export const UserToPlayer: FC<{ userId: string }> = ({ userId }) => {
+  const { data, isPending } = useQuery(userQueryOptions(userId));
+
+  if (isPending) {
+    return <Skeleton variant="rectangular" />;
+  }
+
+  if (data === undefined) {
+    return 'unknown';
+  }
+
+  return <PlayerContainer playerId={data.playerId!} />;
 };
