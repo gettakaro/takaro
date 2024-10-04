@@ -8,17 +8,22 @@ const tests = [
     group,
     snapshot: false,
     setup: shopSetup,
-    name: 'Can view the first page of shop items',
+    name: 'Calling /shop without arguments displays help information',
     test: async function () {
-      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(HookEvents.CHAT_MESSAGE, 2);
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(HookEvents.CHAT_MESSAGE, 5);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/shop',
         playerId: this.setupData.players[0].id,
       });
 
-      expect(await events).to.have.length(2);
-      expect((await events)[0].data.meta.msg).to.eq('- Test item - 100 test coin. 1x Stone');
-      expect((await events)[1].data.meta.msg).to.eq('- Test item 2 - 33 test coin. 1x Wood');
+      expect(await events).to.have.length(5);
+      expect((await events)[0].data.meta.msg).to.eq(
+        'This command allows you to browse the shop and view available items.',
+      );
+      expect((await events)[1].data.meta.msg).to.eq('Usage: /shop [page] [item] [action]');
+      expect((await events)[2].data.meta.msg).to.eq('/shop 2 - View the second page of shop items');
+      expect((await events)[3].data.meta.msg).to.eq('/shop 1 3 - View details about the third item on the first page');
+      expect((await events)[4].data.meta.msg).to.eq('/shop 1 3 buy - Purchase the third item on the first page');
     },
   }),
   new IntegrationTest<IShopSetup>({
@@ -30,7 +35,7 @@ const tests = [
       await this.setupData.createListings(this.client, { gameServerId: this.setupData.gameserver.id, amount: 5 });
       const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(HookEvents.CHAT_MESSAGE, 5);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
-        msg: '/shop',
+        msg: '/shop 1',
         playerId: this.setupData.players[0].id,
       });
 
