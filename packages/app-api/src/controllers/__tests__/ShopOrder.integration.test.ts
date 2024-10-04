@@ -62,6 +62,10 @@ interface IShopSetup extends SetupGameServerPlayers.ISetupData {
   client1: Client;
   user2: UserOutputDTO;
   client2: Client;
+  user3: UserOutputDTO;
+  client3: Client;
+  user4: UserOutputDTO;
+  client4: Client;
 }
 
 const shopSetup = async function (this: IntegrationTest<IShopSetup>): Promise<IShopSetup> {
@@ -72,6 +76,11 @@ const shopSetup = async function (this: IntegrationTest<IShopSetup>): Promise<IS
   await this.client.settings.settingsControllerSet('economyEnabled', {
     value: 'true',
     gameServerId: setupData.gameServer1.id,
+  });
+
+  await this.client.settings.settingsControllerSet('economyEnabled', {
+    value: 'true',
+    gameServerId: setupData.gameServer2.id,
   });
 
   await this.client.settings.settingsControllerSet('currencyName', {
@@ -107,6 +116,18 @@ const shopSetup = async function (this: IntegrationTest<IShopSetup>): Promise<IS
     { currency: 250 },
   );
 
+  await this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(
+    setupData.gameServer2.id,
+    setupData.pogs2[0].playerId,
+    { currency: 250 },
+  );
+
+  await this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(
+    setupData.gameServer2.id,
+    setupData.pogs2[1].playerId,
+    { currency: 250 },
+  );
+
   const { client: user1Client, user: user1 } = await createUserForPlayer(
     this.client,
     setupData.pogs1[0].playerId,
@@ -119,6 +140,18 @@ const shopSetup = async function (this: IntegrationTest<IShopSetup>): Promise<IS
     setupData.gameServer1.id,
   );
 
+  const { client: user3Client, user: user3 } = await createUserForPlayer(
+    this.client,
+    setupData.pogs2[0].playerId,
+    setupData.gameServer2.id,
+  );
+
+  const { client: user4Client, user: user4 } = await createUserForPlayer(
+    this.client,
+    setupData.pogs2[1].playerId,
+    setupData.gameServer2.id,
+  );
+
   return {
     ...setupData,
     items,
@@ -128,6 +161,10 @@ const shopSetup = async function (this: IntegrationTest<IShopSetup>): Promise<IS
     client1: user1Client,
     user2,
     client2: user2Client,
+    user3,
+    client3: user3Client,
+    user4,
+    client4: user4Client,
   };
 };
 
@@ -674,6 +711,53 @@ const tests = [
       const res = await this.client.shopOrder.shopOrderControllerClaim(order.id);
       expect(res.data.data.status).to.be.eq(ShopOrderOutputDTOStatusEnum.Completed);
       return res;
+    },
+  }),
+  new IntegrationTest<IShopSetup>({
+    group,
+    snapshot: false,
+    name: 'Can filter shop orders by gameserver ID',
+    setup: shopSetup,
+    test: async function () {
+      /**
+       * Setup listings on both gameservers
+       * Create orders for both listings
+       * Then, filter orders by gameserver ID
+       * Expect to only get orders for that gameserver
+       */
+      const listingGameserver1 = (
+        await this.client.shopListing.shopListingControllerCreate({
+          gameServerId: this.setupData.gameServer1.id,
+          items: [{ itemId: this.setupData.items[0].id, amount: 1 }],
+          price: 1,
+          name: 'Test item 1',
+        })
+      ).data.data;
+
+      const listingGameserver2 = (
+        await this.client.shopListing.shopListingControllerCreate({
+          gameServerId: this.setupData.gameServer2.id,
+          items: [{ itemId: this.setupData.items[0].id, amount: 1 }],
+          price: 1,
+          name: 'Test item 2',
+        })
+      ).data.data;
+
+      await this.setupData.client1.shopOrder.shopOrderControllerCreate({
+        listingId: listingGameserver1.id,
+        amount: 1,
+      });
+
+      await this.setupData.client3.shopOrder.shopOrderControllerCreate({
+        listingId: listingGameserver2.id,
+        amount: 1,
+      });
+
+      const filteredOrders = await this.client.shopOrder.shopOrderControllerSearch({
+        filters: { gameServerId: [this.setupData.gameServer1.id] },
+      });
+
+      expect(filteredOrders.data.data).to.have.length(1);
     },
   }),
 ];

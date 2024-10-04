@@ -53,9 +53,18 @@ export class ShopOrderRepo extends ITakaroRepo<
 
   async find(filters: ITakaroQuery<ShopOrderOutputDTO>) {
     const { query } = await this.getModel();
-    const result = await new QueryBuilder<ShopOrderModel, ShopOrderOutputDTO>({
+    const qry = new QueryBuilder<ShopOrderModel, ShopOrderOutputDTO>({
       ...filters,
     }).build(query);
+
+    if (filters.filters?.gameServerId && Array.isArray(filters.filters.gameServerId)) {
+      qry
+        .join(ShopListingModel.tableName, `${ShopListingModel.tableName}.id`, `${ShopOrderModel.tableName}.listingId`)
+        .whereIn(`${ShopListingModel.tableName}.gameServerId`, filters.filters.gameServerId as string[]);
+    }
+
+    const result = await qry;
+
     return {
       total: result.total,
       results: await Promise.all(result.results.map((item) => new ShopOrderOutputDTO(item))),
