@@ -1,5 +1,6 @@
 import { cloneElement, forwardRef, ReactElement } from 'react';
 import { Color, Size } from '../../../styled/types';
+import { Badge } from '../../../components';
 import { Default } from './style';
 
 export interface IconButtonProps {
@@ -35,7 +36,7 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(functio
   return (
     <Default type="button" color={color} onClick={onClick} ref={ref} disabled={disabled} aria-label={ariaLabel}>
       {cloneElement(icon, { size: getSize(size) })}
-      {badge && <div>{badge}</div>}
+      {badge && <Badge>{badge}</Badge>}
     </Default>
   );
 });
