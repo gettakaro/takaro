@@ -6,11 +6,14 @@ import { Link, Outlet, createFileRoute } from '@tanstack/react-router';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { shopOrdersQueryOptions } from 'queries/shopOrder';
 
-const shopOrdersQuery = shopOrdersQueryOptions({ filters: { status: [ShopOrderUpdateDTOStatusEnum.Paid] } });
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop')({
   component: Component,
-  loader: async ({ context }) => {
-    return await context.queryClient.ensureQueryData(shopOrdersQuery);
+  loader: async ({ context, params }) => {
+    return await context.queryClient.ensureQueryData(
+      shopOrdersQueryOptions({
+        filters: { status: [ShopOrderUpdateDTOStatusEnum.Paid], gameServerId: [params.gameServerId] },
+      }),
+    );
   },
   pendingComponent: () => <div>Loading...</div>,
 });
@@ -27,7 +30,9 @@ function Component() {
   const loaderData = Route.useLoaderData();
 
   const { data: shopOrders } = useQuery({
-    ...shopOrdersQuery,
+    ...shopOrdersQueryOptions({
+      filters: { status: [ShopOrderUpdateDTOStatusEnum.Paid], gameServerId: [gameServerId] },
+    }),
     initialData: loaderData,
   });
 
