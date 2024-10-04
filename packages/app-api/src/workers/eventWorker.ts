@@ -68,6 +68,7 @@ async function processJob(job: Job<IEventQueueData>) {
 
     if (type === EVENT_TYPES.PLAYER_CONNECTED) {
       await playerOnGameServerService.update(pog.id, new PlayerOnGameServerUpdateDTO({ online: true }));
+      if (player.steamId) await playerService.syncSingleSteamAccount(player.steamId);
 
       await eventService.create(
         new EventCreateDTO({

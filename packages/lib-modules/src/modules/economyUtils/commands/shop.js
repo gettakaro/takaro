@@ -2,8 +2,19 @@ import { takaro, data, TakaroUserError } from '@takaro/helpers';
 
 async function main() {
   const { arguments: args, player, gameServerId, user } = data;
-
   const { page, item, action } = args;
+  const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data.value;
+
+  // If command is called without any arguments
+  const messageWithoutPrefix = data.chatMessage.msg.slice(prefix.length).trim();
+  if (!messageWithoutPrefix.includes(' ')) {
+    await player.pm('This command allows you to browse the shop and view available items.');
+    await player.pm(`Usage: ${prefix}shop [page] [item] [action]`);
+    await player.pm(`${prefix}shop 2 - View the second page of shop items`);
+    await player.pm(`${prefix}shop 1 3 - View details about the third item on the first page`);
+    await player.pm(`${prefix}shop 1 3 buy - Purchase the third item on the first page`);
+    return;
+  }
 
   const shopItems = await takaro.shopListing.shopListingControllerSearch({
     limit: 5,
