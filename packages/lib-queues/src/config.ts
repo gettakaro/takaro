@@ -189,7 +189,7 @@ export const queuesConfigSchema = {
       interval: {
         doc: 'The interval to run the steam sync',
         format: Number,
-        default: ms('10minutes'),
+        default: ms('60minutes'),
         env: 'STEAM_SYNC_QUEUE_INTERVAL',
       },
     },

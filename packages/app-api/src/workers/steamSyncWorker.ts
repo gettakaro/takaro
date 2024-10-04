@@ -4,6 +4,7 @@ import { Job } from 'bullmq';
 import { logger, ctx } from '@takaro/util';
 import { DomainService } from '../service/DomainService.js';
 import { PlayerService } from '../service/PlayerService.js';
+import { steamApi } from '../lib/steamApi.js';
 
 const log = logger('worker:steamSync');
 
@@ -31,6 +32,14 @@ export async function processJob(job: Job<IGameServerQueueData>) {
 
   if (job.data.domainId === 'all') {
     log.info('Processing steamSync job for all domains');
+
+    await steamApi.refreshRateLimitedStatus();
+
+    const remainingCalls = await steamApi.getRemainingCalls();
+    if (remainingCalls < 10000) {
+      log.warn('Less than 10k calls remaining, skipping job so realtime updates are not affected');
+      return;
+    }
 
     const domainsService = new DomainService();
     const domains = await domainsService.find({});

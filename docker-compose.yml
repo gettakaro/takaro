@@ -21,7 +21,7 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       
   redis:
-    image: redis:alpine
+    image: redis:7.2-alpine
     # enables memory overcommit on reboot
     # echo "vm.overcommit_memory = 1" | sudo tee /etc/sysctl.d/takaro-aio-memory-overcommit.conf
     # sudo sysctl -w vm.overcommit_memory=1 (enables on-the-fly temporary)
@@ -30,6 +30,13 @@ services:
     command: redis-server --maxmemory-policy noeviction
     ports:
       - 6379:6379
+
+  redis-insight:
+    image: redis/redisinsight:2.58
+    ports:
+      - "5540:5540"
+    volumes:
+      - ./_data/redis-insight:/data
 
   takaro:
     build:

@@ -134,3 +134,7 @@ services:
         subtitle: "Mail server"
         url: "http://127.0.0.1:8025"
         target: "_blank"
+      - name: "Redis Insight"
+        icon: "fas fa-database"
+        subtitle: "Redis UI"
+        url: "http://127.0.0.1:5540"
