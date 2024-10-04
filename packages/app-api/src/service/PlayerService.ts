@@ -351,8 +351,8 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
    * @returns Number of players synced
    */
   async handleSteamSync(): Promise<number> {
-    if (!config.get('steam.apiKey')) {
-      this.log.warn('Steam API key not set, skipping sync');
+    if (steamApi.isRateLimited) {
+      this.log.error('Rate limited, skipping steam sync');
       return 0;
     }
     const toRefresh = await this.repo.getPlayersToRefreshSteam();
@@ -392,6 +392,38 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
 
     await this.repo.setSteamData(fullData);
     return toRefresh.length;
+  }
+
+  async syncSingleSteamAccount(steamId: string) {
+    if (steamApi.isRateLimited) {
+      this.log.error('Rate limited, skipping steam sync');
+      return;
+    }
+
+    // If this is a real steam ID
+    if (!/^7[0-9]{16}$/.test(steamId)) {
+      this.log.error('Invalid steam ID', { steamId });
+      return;
+    }
+
+    const [summary, ban] = await Promise.all([
+      steamApi.getPlayerSummaries([steamId]),
+      steamApi.getPlayerBans([steamId]),
+    ]);
+
+    const fullData = {
+      steamId,
+      steamAvatar: summary[0].avatarfull,
+      steamAccountCreated: summary[0].timecreated,
+      steamCommunityBanned: ban[0].CommunityBanned,
+      steamEconomyBan: ban[0].EconomyBan,
+      steamVacBanned: ban[0].VACBanned,
+      steamsDaysSinceLastBan: ban[0].DaysSinceLastBan,
+      steamNumberOfVACBans: ban[0].NumberOfVACBans,
+      steamLevel: summary ? await steamApi.getLevel(steamId) : null,
+    };
+
+    await this.repo.setSteamData([fullData]);
   }
 
   async observeIp(playerId: string, gameServerId: string, ip: string) {

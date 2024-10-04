@@ -299,6 +299,10 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
       .andWhere(function () {
         this.where('steamLastFetch', '<', refreshOlderThanDate).orWhere('steamLastFetch', 'is', null);
       })
+      // Ensure we only get valid steam IDs
+      // The mock server returns bad IDs and we don't want to send these to Steam
+      // Check for 17 digits, only numeric and starting with 7
+      .andWhere('steamId', '~', '^7[0-9]{16}$')
       .orderBy('steamLastFetch', 'asc')
       .limit(config.get('steam.refreshBatchSize'));
 
