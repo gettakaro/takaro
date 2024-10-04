@@ -29,6 +29,7 @@ export const ControlledDatePicker: FC<ControlledDatePickerProps> = (props) => {
     description,
     allowFutureDates = true,
     allowPastDates = true,
+    canClear,
     customDateFilter,
   } = defaultsApplier(props);
 
@@ -91,6 +92,7 @@ export const ControlledDatePicker: FC<ControlledDatePickerProps> = (props) => {
             format={format}
             placeholder={placeholder}
             mode={mode}
+            canClear={canClear}
           />
         )}
         {showError && error?.message && <ErrorMessage message={error.message} />}
