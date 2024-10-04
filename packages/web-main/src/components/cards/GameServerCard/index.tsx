@@ -94,12 +94,12 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
     <>
       <Card
         role="link"
-        onClick={() =>
+        onClick={() => {
           navigate({
             to: '/gameserver/$gameServerId/dashboard/overview',
             params: { gameServerId: id },
-          })
-        }
+          });
+        }}
         data-testid={`gameserver-${id}-card`}
       >
         <CardBody>
@@ -123,28 +123,34 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
                   <Dropdown.Menu.Group label="Navigation">
                     <Dropdown.Menu.Item
                       icon={<DashboardIcon />}
-                      onClick={() =>
-                        navigate({ to: '/gameserver/$gameServerId/dashboard/overview', params: { gameServerId: id } })
-                      }
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate({ to: '/gameserver/$gameServerId/dashboard/overview', params: { gameServerId: id } });
+                      }}
                       label="go to dashboard"
                     />
                     <Dropdown.Menu.Item
                       icon={<ModulesIcon />}
-                      onClick={() =>
-                        navigate({ to: '/gameserver/$gameServerId/modules', params: { gameServerId: id } })
-                      }
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate({ to: '/gameserver/$gameServerId/modules', params: { gameServerId: id } });
+                      }}
                       label="go to modules"
                     />
                     <Dropdown.Menu.Item
                       icon={<ModulesIcon />}
-                      onClick={() => navigate({ to: '/gameserver/$gameServerId/shop', params: { gameServerId: id } })}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate({ to: '/gameserver/$gameServerId/shop', params: { gameServerId: id } });
+                      }}
                       label="go to shop"
                     />
                     <Dropdown.Menu.Item
                       icon={<SettingsIcon />}
-                      onClick={() =>
-                        navigate({ to: '/gameserver/$gameServerId/settings', params: { gameServerId: id } })
-                      }
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate({ to: '/gameserver/$gameServerId/settings', params: { gameServerId: id } });
+                      }}
                       label="go to settings"
                     />
                   </Dropdown.Menu.Group>
