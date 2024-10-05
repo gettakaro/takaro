@@ -122,7 +122,13 @@ export class VariableRepo extends ITakaroRepo<VariablesModel, VariableOutputDTO,
     if (!existing) throw new errors.NotFoundError();
 
     const { query } = await this.getModel();
-    const res = await query.updateAndFetchById(id, data.toJSON()).returning('*');
+
+    const updateData = data.toJSON();
+    if (!updateData.expiresAt) {
+      updateData.expiresAt = null;
+    }
+
+    const res = await query.updateAndFetchById(id, updateData).returning('*');
     return new VariableOutputDTO(res);
   }
 }
