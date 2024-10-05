@@ -1,4 +1,10 @@
-import { queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  infiniteQueryOptions,
+  keepPreviousData,
+  queryOptions,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { getApiClient } from 'util/getApiClient';
 import {
   APIOutput,
@@ -8,7 +14,7 @@ import {
   PlayerSearchInputDTO,
 } from '@takaro/apiclient';
 import { AxiosError } from 'axios';
-import { mutationWrapper, queryParamsToArray } from 'queries/util';
+import { getNextPage, mutationWrapper, queryParamsToArray } from 'queries/util';
 import { useSnackbar } from 'notistack';
 
 export const playerKeys = {
@@ -27,6 +33,16 @@ export const playersQueryOptions = (queryParams: PlayerSearchInputDTO = {}) =>
   queryOptions<PlayerOutputArrayDTOAPI, AxiosError<PlayerOutputArrayDTOAPI>>({
     queryKey: [...playerKeys.list(), ...queryParamsToArray(queryParams)],
     queryFn: async () => (await getApiClient().player.playerControllerSearch(queryParams)).data,
+  });
+
+export const playersInfiniteQueryOptions = (queryParams: PlayerSearchInputDTO = {}) =>
+  infiniteQueryOptions<PlayerOutputArrayDTOAPI, AxiosError<PlayerOutputArrayDTOAPI>>({
+    queryKey: [...playerKeys.list(), 'infinite', ...queryParamsToArray(queryParams)],
+    queryFn: async ({ pageParam }) =>
+      (await getApiClient().player.playerControllerSearch({ ...queryParams, page: pageParam as number })).data,
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => getNextPage(lastPage.meta),
+    placeholderData: keepPreviousData,
   });
 
 interface IPlayerRoleAssign extends PlayerRoleAssignChangeDTO {

@@ -16,9 +16,15 @@ import {
   ModuleInstallDTO,
   TestReachabilityOutputDTO,
 } from '@takaro/apiclient';
-import { useMutation, useQueryClient, queryOptions, infiniteQueryOptions } from '@tanstack/react-query';
+import {
+  useMutation,
+  useQueryClient,
+  queryOptions,
+  infiniteQueryOptions,
+  keepPreviousData,
+} from '@tanstack/react-query';
 import { getApiClient } from 'util/getApiClient';
-import { hasNextPage, mutationWrapper, queryParamsToArray } from './util';
+import { getNextPage, mutationWrapper, queryParamsToArray } from './util';
 import { AxiosError } from 'axios';
 import { ErrorMessageMapping } from '@takaro/lib-components/src/errors';
 import { useSnackbar } from 'notistack';
@@ -51,9 +57,11 @@ export const gameServersQueryOptions = (queryParams: GameServerSearchInputDTO = 
 export const gameServersInfiniteQueryOptions = (queryParams: GameServerSearchInputDTO = {}) => {
   return infiniteQueryOptions<GameServerOutputArrayDTOAPI, AxiosError<GameServerOutputArrayDTOAPI>>({
     queryKey: [...gameServerKeys.list(), 'infinite', ...queryParamsToArray(queryParams)],
-    queryFn: async () => (await getApiClient().gameserver.gameServerControllerSearch(queryParams)).data,
+    queryFn: async ({ pageParam }) =>
+      (await getApiClient().gameserver.gameServerControllerSearch({ ...queryParams, page: pageParam as number })).data,
     initialPageParam: 0,
-    getNextPageParam: (lastPage) => hasNextPage(lastPage.meta),
+    getNextPageParam: (lastPage) => getNextPage(lastPage.meta),
+    placeholderData: keepPreviousData,
   });
 };
 

@@ -1,7 +1,7 @@
 import { DrawerSkeleton } from '@takaro/lib-components';
 import { createFileRoute, notFound, redirect, useNavigate } from '@tanstack/react-router';
 import { useVariableUpdate, variableQueryOptions } from 'queries/variable';
-import { VariablesForm, ExecutionType, IFormInputs } from './-variables/VariableCreateUpdateForm';
+import { VariablesForm, IFormInputs } from './-variables/VariablesForm';
 import { useSnackbar } from 'notistack';
 import { queryClient } from 'queryClient';
 import { hasPermission } from 'hooks/useHasPermission';
@@ -57,5 +57,5 @@ function Component() {
     data.moduleId = undefined;
   }
 
-  return <VariablesForm isLoading={isPending} variable={data} submit={updateVariable} type={ExecutionType.UPDATE} />;
+  return <VariablesForm isLoading={isPending} variable={data} onSubmit={updateVariable} />;
 }

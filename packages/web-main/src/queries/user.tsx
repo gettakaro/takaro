@@ -1,4 +1,10 @@
-import { useMutation, useQueryClient, queryOptions } from '@tanstack/react-query';
+import {
+  useMutation,
+  useQueryClient,
+  queryOptions,
+  infiniteQueryOptions,
+  keepPreviousData,
+} from '@tanstack/react-query';
 import { getApiClient } from 'util/getApiClient';
 import {
   APIOutput,
@@ -8,7 +14,7 @@ import {
   UserOutputWithRolesDTO,
   UserSearchInputDTO,
 } from '@takaro/apiclient';
-import { queryParamsToArray, mutationWrapper } from './util';
+import { queryParamsToArray, mutationWrapper, getNextPage } from './util';
 import { AxiosError } from 'axios';
 import { useSnackbar } from 'notistack';
 
@@ -28,6 +34,16 @@ export const usersQueryOptions = (queryParams: UserSearchInputDTO) =>
   queryOptions<UserOutputArrayDTOAPI, AxiosError<UserOutputArrayDTOAPI>>({
     queryKey: [...userKeys.list(), ...queryParamsToArray(queryParams)],
     queryFn: async () => (await getApiClient().user.userControllerSearch(queryParams)).data,
+  });
+
+export const usersInfiniteQueryOptions = (queryParams: UserSearchInputDTO) =>
+  infiniteQueryOptions<UserOutputArrayDTOAPI, AxiosError<UserOutputArrayDTOAPI>>({
+    queryKey: [...userKeys.list(), 'infinite', ...queryParamsToArray(queryParams)],
+    queryFn: async ({ pageParam }) =>
+      (await getApiClient().user.userControllerSearch({ ...queryParams, page: pageParam as number })).data,
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => getNextPage(lastPage.meta),
+    placeholderData: keepPreviousData,
   });
 
 export const userQueryOptions = (userId: string) =>

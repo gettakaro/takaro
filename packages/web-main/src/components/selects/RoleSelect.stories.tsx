@@ -1,6 +1,5 @@
-import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
-import { RoleSelectView, RoleSelectViewProps } from './RoleSelect';
+import { RoleSelectView, RoleSelectViewProps } from './RoleSelectQueryField';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { RoleOutputDTO } from '@takaro/apiclient';
 
@@ -41,7 +40,16 @@ export const Default: StoryFn<RoleSelectViewProps> = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <RoleSelectView control={control} name="roleId" roles={roles} />
+      <RoleSelectView
+        hasNextPage={false}
+        fetchNextPage={() => {}}
+        isFetching={false}
+        isFetchingNextPage={false}
+        control={control}
+        name="roleId"
+        setRoleName={() => {}}
+        roles={roles}
+      />
     </form>
   );
 };

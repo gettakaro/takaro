@@ -1,11 +1,11 @@
 import { FC } from 'react';
 import { useForm } from 'react-hook-form';
 import { EventOutputDTOEventNameEnum as EventName } from '@takaro/apiclient';
-import { EventNameSelect } from 'components/selects/EventNameSelect';
-import { GameServerSelect, ModuleSelect, PlayerSelectQuery } from 'components/selects';
+import { GameServerSelectQueryField, PlayerSelectQueryField, EventNameSelectField } from 'components/selects';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { DateRangePicker, Button, styled } from '@takaro/lib-components';
+import { ModuleSelectQueryField } from 'components/selects/ModuleSelectQueryField';
 
 const Form = styled.form`
   display: grid;
@@ -55,7 +55,7 @@ export const EventFilter: FC<EventFilterProps> = ({ defaultValues, onSubmit, isL
 
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
-      <PlayerSelectQuery
+      <PlayerSelectQueryField
         multiple={true}
         loading={isLoading}
         name="playerIds"
@@ -63,7 +63,7 @@ export const EventFilter: FC<EventFilterProps> = ({ defaultValues, onSubmit, isL
         control={control}
         label="Players"
       />
-      <GameServerSelect
+      <GameServerSelectQueryField
         multiple={true}
         name="gameServerIds"
         canClear={true}
@@ -71,8 +71,8 @@ export const EventFilter: FC<EventFilterProps> = ({ defaultValues, onSubmit, isL
         label="Gameservers"
         loading={isLoading}
       />
-      <ModuleSelect multiple={true} name="moduleIds" canClear={true} control={control} loading={isLoading} />
-      <EventNameSelect multiple={true} name="eventNames" canClear={true} control={control} label="Event names" />
+      <ModuleSelectQueryField multiple={true} name="moduleIds" canClear={true} control={control} loading={isLoading} />
+      <EventNameSelectField multiple={true} name="eventNames" canClear={true} control={control} label="Event names" />
       <DateRangePicker
         control={control}
         name="dateRange"

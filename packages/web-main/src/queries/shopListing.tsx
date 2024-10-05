@@ -6,10 +6,16 @@ import {
   ShopListingSearchInputDTO,
   ShopListingUpdateDTO,
 } from '@takaro/apiclient';
-import { infiniteQueryOptions, queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  infiniteQueryOptions,
+  keepPreviousData,
+  queryOptions,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { getApiClient } from 'util/getApiClient';
-import { hasNextPage, mutationWrapper, queryParamsToArray } from './util';
+import { getNextPage, mutationWrapper, queryParamsToArray } from './util';
 import { useSnackbar } from 'notistack';
 
 export const shopListingKeys = {
@@ -33,9 +39,12 @@ export const shopListingsQueryOptions = (queryParams: ShopListingSearchInputDTO)
 export const shopListingInfiniteQueryOptions = (queryParams: ShopListingSearchInputDTO = {}) => {
   return infiniteQueryOptions<ShopListingOutputArrayDTOAPI, AxiosError<ShopListingOutputArrayDTOAPI>>({
     queryKey: [...shopListingKeys.list(), 'infinite', ...queryParamsToArray(queryParams)],
-    queryFn: async () => (await getApiClient().shopListing.shopListingControllerSearch(queryParams)).data,
+    queryFn: async ({ pageParam }) =>
+      (await getApiClient().shopListing.shopListingControllerSearch({ ...queryParams, page: pageParam as number }))
+        .data,
     initialPageParam: 0,
-    getNextPageParam: (lastPage) => hasNextPage(lastPage.meta),
+    getNextPageParam: (lastPage) => getNextPage(lastPage.meta),
+    placeholderData: keepPreviousData,
   });
 };
 
