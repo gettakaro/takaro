@@ -370,6 +370,25 @@ const tests = [
     },
     expectedStatus: 404,
   }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Can remove expiration date of existing var',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      const createRes = await this.client.variable.variableControllerCreate({
+        key: 'Test variable',
+        value: 'Test value',
+        expiresAt: new Date(Date.now() + 5000).toISOString(),
+      });
+
+      const updateRes = await this.client.variable.variableControllerUpdate(createRes.data.data.id, {
+        value: 'Updated value',
+      });
+
+      expect(updateRes.data.data.expiresAt).to.be.null;
+    },
+  }),
 ];
 
 describe(group, function () {
