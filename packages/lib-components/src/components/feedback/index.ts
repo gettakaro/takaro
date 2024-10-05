@@ -31,3 +31,6 @@ export type { ErrorPageProps } from './ErrorPage';
 
 export { FormError } from './FormError';
 export type { FormErrorProps } from './FormError';
+
+export { Badge } from './Badge';
+export type { BadgeProps } from './Badge';

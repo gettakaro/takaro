@@ -33,6 +33,14 @@ class PogStatsInputDTO extends BaseStatsInputDTO {
   playerId!: string;
 }
 
+class OptionalPogStatsInputDTO extends BaseStatsInputDTO {
+  @IsUUID('4')
+  gameServerId: string;
+  @IsUUID('4')
+  @IsOptional()
+  playerId?: string;
+}
+
 class PlayersOnlineInputDTO extends BaseStatsInputDTO {
   @IsOptional()
   @IsUUID('4')
@@ -100,9 +108,9 @@ export class StatsController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_PLAYERS]))
   @ResponseSchema(StatsOutputDTOAPI)
   @Get('/stats/currency')
-  async getCurrencyStats(@Req() req: AuthenticatedRequest, @QueryParams() query: PogStatsInputDTO) {
+  async getCurrencyStats(@Req() req: AuthenticatedRequest, @QueryParams() query: OptionalPogStatsInputDTO) {
     const service = new StatsService(req.domainId);
-    return apiResponse(await service.getCurrency(query.playerId, query.gameServerId, query.startDate, query.endDate));
+    return apiResponse(await service.getCurrency(query.gameServerId, query.playerId, query.startDate, query.endDate));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([]))

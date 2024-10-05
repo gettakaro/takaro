@@ -77,7 +77,17 @@ export class StatsService extends TakaroService<TakaroModel, TakaroDTO<void>, Ta
     return { values: data };
   }
 
-  async getCurrency(playerId: string, gameserverId: string, startTime?: string, endTime?: string) {
+  async getCurrency(gameserverId: string, playerId?: string, startTime?: string, endTime?: string) {
+    if (!playerId) {
+      // Return global currency count
+      const data = await this.prometheusQuery(
+        `sum by(gameserver) (takaro_player_currency{domain="${this.domainId}", gameserver="${gameserverId}"})`,
+        startTime,
+        endTime,
+      );
+      return { values: data };
+    }
+
     const data = await this.prometheusQuery(
       `takaro_player_currency{job="worker", domain="${this.domainId}", player="${playerId}", gameserver="${gameserverId}"}`,
       startTime,

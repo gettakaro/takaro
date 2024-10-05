@@ -40,7 +40,14 @@
       "matchPackageNames": [
         "/@opentelemetry/"
       ],
-      "groupName": "@opentelemetry",
+      "groupName": "opentelemetry",
+      "automerge": true
+    },
+    {
+      "matchPackageNames": [
+        "/eslint/"
+      ],
+      "groupName": "eslint",
       "automerge": true
     },
     {
