@@ -1,6 +1,6 @@
 services:
   postgresql:
-    image: postgres:15
+    image: postgres:17
 #    ports:
 #      - '5432:5432'
     environment:
@@ -38,7 +38,7 @@ services:
       service: kratos-migrate   
 
   postgresql_kratos:
-    image: postgres:15
+    image: postgres:17
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
