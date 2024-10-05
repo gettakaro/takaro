@@ -147,7 +147,7 @@ export async function handlePlayerSync(gameServerId: string, domainId: string) {
           ping: gamePlayer.ping,
         }),
       );
-      await log.debug(`Synced player ${gamePlayer.gameId} on game server ${gameServerId}`);
+      log.debug(`Synced player ${gamePlayer.gameId} on game server ${gameServerId}`);
     }),
   );
 
