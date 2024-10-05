@@ -22,7 +22,7 @@
   },
   "scripts": {
     "start:dev": "vite dev --port 13001 --host 0.0.0.0",
-    "build": "NODE_OPTIONS=--max-old-space-size=8195 vite build && tsc --noemit",
+    "build": "NODE_OPTIONS=--max-old-space-size=12195 vite build && tsc --noemit",
     "test": "npm run test:unit",
     "test:unit": "CI=true vitest",
     "test:watch": "vitest --watch"
