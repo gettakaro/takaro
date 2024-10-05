@@ -375,7 +375,6 @@ const tests = [
     snapshot: false,
     name: 'Can remove expiration date of existing var',
     setup: SetupGameServerPlayers.setup,
-    filteredFields: ['expiresAt'],
     test: async function () {
       const createRes = await this.client.variable.variableControllerCreate({
         key: 'Test variable',
@@ -389,7 +388,6 @@ const tests = [
 
       expect(updateRes.data.data.expiresAt).to.be.null;
     },
-    expectedStatus: 404,
   }),
 ];
 
