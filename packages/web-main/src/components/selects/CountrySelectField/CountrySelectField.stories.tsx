@@ -1,41 +1,42 @@
+import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { EvenntNameSelectProps, EventNameSelect } from '.';
+import { CountrySelectField, CountrySelectProps } from '.';
 
 export default {
-  title: 'EventNameSelect',
-  component: EventNameSelect,
+  title: 'CountrySelectField',
+  component: CountrySelectField,
   args: {
     multiple: false,
     required: false,
     canClear: false,
     disabled: false,
     readOnly: false,
-    description: 'this is the interesting description about the event names select field',
+    description: 'The country will be used to determine the correct currency for your account.',
   },
-} as Meta<EvenntNameSelectProps>;
+} as Meta<CountrySelectProps>;
 
 interface IFormInputs {
-  eventNames: string[];
+  countryCode: string;
 }
 
-export const Default: StoryFn<EvenntNameSelectProps> = (args) => {
+export const Default: StoryFn<CountrySelectProps> = (args) => {
   const { control, handleSubmit } = useForm<IFormInputs>();
-  const onSubmit: SubmitHandler<IFormInputs> = ({ eventNames }) => {
-    console.log(eventNames);
+  const onSubmit: SubmitHandler<IFormInputs> = ({ countryCode }) => {
+    console.log(countryCode);
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <EventNameSelect
+      <CountrySelectField
         control={control}
-        multiple={true}
+        multiple={args.multiple}
         required={args.required}
         canClear={args.canClear}
         disabled={args.disabled}
         readOnly={args.readOnly}
         description={args.description}
-        name="eventNames"
+        name="countryCode"
       />
     </form>
   );

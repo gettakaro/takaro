@@ -12,7 +12,7 @@ import {
   styled,
 } from '@takaro/lib-components';
 import { useRouter } from '@tanstack/react-router';
-import { ItemSelect } from 'components/selects/ItemSelectQuery';
+import { ItemSelectQueryField } from 'components/selects/ItemSelectQueryField';
 import { FC, useEffect, useState } from 'react';
 import { useForm, SubmitHandler, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
@@ -165,7 +165,7 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
                           ariaLabel="Remove field"
                         />
                       </div>
-                      <ItemSelect
+                      <ItemSelectQueryField
                         gameServerId={gameServerId}
                         control={control}
                         name={`items.${index}.itemId`}

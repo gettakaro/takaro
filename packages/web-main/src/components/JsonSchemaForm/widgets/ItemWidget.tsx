@@ -8,10 +8,10 @@ import {
   getInitials,
   Skeleton,
 } from '@takaro/lib-components';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { getRouteApi } from '@tanstack/react-router';
 import { gameServerQueryOptions } from 'queries/gameserver';
-import { itemsQueryOptions } from 'queries/item';
+import { ItemsInfiniteQueryOptions, itemsQueryOptions } from 'queries/item';
 import { useState } from 'react';
 
 const gameServerTypeToIconFolderMap = {
@@ -56,13 +56,20 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
   const shouldPreviousItemsBeLoaded = shouldFilter(value, multiple as boolean);
 
   const { data: gameServer, isLoading: isLoadingGameServer } = useQuery(gameServerQueryOptions(gameServerId));
-  const { data: prev, isLoading: isLoadingPreviousItems } = useQuery(
-    itemsQueryOptions({
+  const {
+    data: prev,
+    isLoading: isLoadingPreviousItems,
+    isFetchingNextPage,
+    isFetching,
+    hasNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery(
+    ItemsInfiniteQueryOptions({
       filters: { gameserverId: [gameServerId], ...(shouldPreviousItemsBeLoaded && { id: multiple ? value : [value] }) },
     }),
   );
 
-  const previousItems = prev?.data ?? [];
+  const previousItems = prev?.pages.flatMap((page) => page.data) ?? [];
 
   const { data, isLoading: isLoadingItems } = useQuery(
     itemsQueryOptions({
@@ -114,6 +121,10 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
       isLoadingData={!enabled ? false : isLoadingItems}
       multiple={multiple}
       hasDescription={!!schema.description}
+      isFetching={isFetching}
+      hasNextPage={hasNextPage}
+      isFetchingNextPage={isFetchingNextPage}
+      fetchNextPage={fetchNextPage}
       render={(selectedItems) => {
         if (selectedItems.length === 0) {
           return <div>Select item...</div>;

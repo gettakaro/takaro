@@ -9,7 +9,7 @@ import {
 import { AxiosError } from 'axios';
 import { getApiClient } from 'util/getApiClient';
 import _ from 'lodash';
-import { hasNextPage, queryParamsToArray } from './util';
+import { getNextPage, queryParamsToArray } from './util';
 import { useSocket } from 'hooks/useSocket';
 import { useEffect } from 'react';
 import { ShouldIncludeEvent } from 'components/events/shouldIncludeEvent';
@@ -38,7 +38,7 @@ export const eventsInfiniteQueryOptions = (queryParams: EventSearchInputDTO) =>
     queryKey: [eventKeys.list(), queryParamsToArray(queryParams)],
     queryFn: async () => (await getApiClient().event.eventControllerSearch(queryParams)).data,
     initialPageParam: 0,
-    getNextPageParam: (lastPage) => hasNextPage(lastPage.meta),
+    getNextPageParam: (lastPage) => getNextPage(lastPage.meta),
     placeholderData: keepPreviousData,
   });
 

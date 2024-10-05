@@ -1,11 +1,11 @@
-import { SelectField } from '@takaro/lib-components';
-import { FC } from 'react';
+import { PaginationProps, SelectQueryField } from '@takaro/lib-components';
+import { FC, useState } from 'react';
 import { CustomSelectProps } from '.';
-import { modulesQueryOptions } from 'queries/module';
+import { modulesInfiniteQueryOptions } from 'queries/module';
 import { ModuleOutputDTO } from '@takaro/apiclient';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 
-export const ModuleSelect: FC<CustomSelectProps> = ({
+export const ModuleSelectQueryField: FC<CustomSelectProps> = ({
   control,
   name: selectName,
   loading,
@@ -20,16 +20,24 @@ export const ModuleSelect: FC<CustomSelectProps> = ({
   canClear,
   multiple,
 }) => {
-  const { data, isLoading: isLoadingData } = useQuery(modulesQueryOptions());
+  const [moduleName, setModuleName] = useState('');
+  const {
+    data,
+    isLoading: isLoadingData,
+    isFetching,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery(modulesInfiniteQueryOptions({ search: { name: [moduleName] }, limit: 20 }));
 
   if (isLoadingData) {
+    console.log('this triggered', isLoadingData);
     // TODO: better loading state
     return <div>loading...</div>;
   }
 
-  const modules = data?.data ?? [];
-
-  if (!modules?.length) {
+  const modules = data?.pages.flatMap((page) => page.data);
+  if (!modules || modules.length === 0) {
     return <div>no modules found</div>;
   }
 
@@ -49,11 +57,20 @@ export const ModuleSelect: FC<CustomSelectProps> = ({
       modules={modules}
       canClear={canClear}
       multiple={multiple}
+      fetchNextPage={fetchNextPage}
+      isFetching={isFetching}
+      hasNextPage={hasNextPage}
+      isFetchingNextPage={isFetchingNextPage}
+      setModuleName={setModuleName}
     />
   );
 };
 
-export type ModuleSelectViewProps = CustomSelectProps & { modules: ModuleOutputDTO[] };
+export type ModuleSelectViewProps = CustomSelectProps &
+  PaginationProps & {
+    modules: ModuleOutputDTO[];
+    setModuleName: (value: string) => void;
+  };
 export const ModuleSelectView: FC<ModuleSelectViewProps> = ({
   control,
   modules,
@@ -69,9 +86,14 @@ export const ModuleSelectView: FC<ModuleSelectViewProps> = ({
   label,
   canClear,
   multiple,
+  setModuleName,
+  isFetching,
+  hasNextPage,
+  isFetchingNextPage,
+  fetchNextPage,
 }) => {
   return (
-    <SelectField
+    <SelectQueryField
       control={control}
       name={selectName}
       label={label}
@@ -85,6 +107,11 @@ export const ModuleSelectView: FC<ModuleSelectViewProps> = ({
       loading={loading}
       canClear={canClear}
       multiple={multiple}
+      handleInputValueChange={setModuleName}
+      isFetching={isFetching}
+      hasNextPage={hasNextPage}
+      isFetchingNextPage={isFetchingNextPage}
+      fetchNextPage={fetchNextPage}
       render={(selectedModules) => {
         if (selectedModules.length === 0) {
           return <p>Select module...</p>;
@@ -92,13 +119,13 @@ export const ModuleSelectView: FC<ModuleSelectViewProps> = ({
         return selectedModules.map((gameServer) => gameServer.label).join(', ');
       }}
     >
-      <SelectField.OptionGroup>
+      <SelectQueryField.OptionGroup>
         {modules.map(({ id, name }) => (
-          <SelectField.Option key={`select-${selectName}-${id}`} value={id} label={name}>
+          <SelectQueryField.Option key={`select-${selectName}-${id}`} value={id} label={name}>
             <span>{name}</span>
-          </SelectField.Option>
+          </SelectQueryField.Option>
         ))}
-      </SelectField.OptionGroup>
-    </SelectField>
+      </SelectQueryField.OptionGroup>
+    </SelectQueryField>
   );
 };
