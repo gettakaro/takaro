@@ -1,15 +1,13 @@
 import 'reflect-metadata';
 
 import { HTTP } from '@takaro/http';
-import { ctx, errors, logger } from '@takaro/util';
+import { errors, logger } from '@takaro/util';
 import { DomainController } from './controllers/DomainController.js';
 import { Server as HttpServer } from 'http';
 import { config } from './config.js';
 import { UserController } from './controllers/UserController.js';
 import { RoleController } from './controllers/Rolecontroller.js';
 import { GameServerController } from './controllers/GameServerController.js';
-import { DomainOutputDTO, DomainService } from './service/DomainService.js';
-import { GameServerService } from './service/GameServerService.js';
 import { FunctionController } from './controllers/FunctionController.js';
 import { CronJobController } from './controllers/CronJobController.js';
 import { ModuleController } from './controllers/ModuleController.js';
@@ -19,9 +17,7 @@ import { HookController } from './controllers/HookController.js';
 import { PlayerController } from './controllers/PlayerController.js';
 import { SettingsController } from './controllers/SettingsController.js';
 import { CommandController } from './controllers/CommandController.js';
-import { ModuleService } from './service/ModuleService.js';
 import { VariableController } from './controllers/VariableController.js';
-import { CronJobService } from './service/CronJobService.js';
 import { ExternalAuthController } from './controllers/ExternalAuthController.js';
 import { AuthService } from './service/AuthService.js';
 import { DiscordController } from './controllers/DiscordController.js';
@@ -137,43 +133,9 @@ async function main() {
   log.info('🚀 Server started');
 
   await discordBot.start();
-
-  const domainService = new DomainService();
-  const domains = await domainService.find({});
-
-  const results = await Promise.allSettled(domains.results.map(ctx.wrap('domainInit', domainInit)));
-  const rejected = results.map((r) => (r.status === 'rejected' ? r.reason : null)).filter(Boolean);
-  if (rejected.length) {
-    log.error('Failed to initialize some domains', { errors: rejected });
-  }
 }
 
 main();
-
-async function domainInit(domain: DomainOutputDTO) {
-  ctx.addData({ domain: domain.id });
-  log.info('🌱 Seeding database with builtin modules');
-  const moduleService = new ModuleService(domain.id);
-  await moduleService.seedBuiltinModules();
-
-  log.info('🔌 Starting all game servers');
-  const gameServerService = new GameServerService(domain.id);
-  const cronjobService = new CronJobService(domain.id);
-  const gameServers = await gameServerService.find({});
-
-  await Promise.all(
-    gameServers.results.map(async (gameserver) => {
-      const installedModules = await gameServerService.getInstalledModules({
-        gameserverId: gameserver.id,
-      });
-      await Promise.all(
-        installedModules.map(async (mod) => {
-          await cronjobService.syncModuleCronjobs(mod);
-        }),
-      );
-    }),
-  );
-}
 
 process.on('unhandledRejection', (reason) => {
   if (reason instanceof AxiosError) {
