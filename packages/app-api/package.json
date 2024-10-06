@@ -15,7 +15,8 @@
     "test:unit": "mocha --config ../../.mocharc.js src/**/*.unit.test.ts --exit",
     "test:integration": "mocha --file ../test/dist/waitUntilReady.js --config ../../.mocharc.js src/**/*.integration.test.ts --exit",
     "db:migrate": "node scripts/migrate-up.mjs",
-    "db:rollback": "node scripts/migrate-down.mjs"
+    "db:rollback": "node scripts/migrate-down.mjs",
+    "domainInit": "node --experimental-vm-modules --loader ../../node_modules/@takaro/util/dist/tracing.js dist/domainInit.js"
   },
   "keywords": [],
   "author": "",
