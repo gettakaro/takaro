@@ -24,7 +24,7 @@
     "release:patch": "npm version patch --no-git-tag-version --workspaces && git add **/package.json; npm version patch --include-workspace-root --force"
   },
   "engines": {
-    "node": "20.17.0",
+    "node": "20.18.0",
     "npm": "10.8.3"
   },
   "contributors": [
