@@ -27,8 +27,8 @@ export abstract class TakaroWorker<T> {
     this.bullWorker = new Worker(name, instrumentedProcessor as Processor, {
       connection: getRedisConnectionOptions(),
       concurrency,
-      removeOnComplete: { count: 100 },
-      removeOnFail: { count: 5000 },
+      removeOnComplete: { count: 10 },
+      removeOnFail: { count: 10 },
       ...extraBullOpts,
     });
   }
