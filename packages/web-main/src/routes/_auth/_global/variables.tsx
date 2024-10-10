@@ -8,11 +8,17 @@ import {
   Divider,
   DateFormatter,
   CopyId,
+  useTheme,
 } from '@takaro/lib-components';
 import { VariableOutputDTO, VariableSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
 import { variablesQueryOptions } from 'queries/variable';
-import { AiOutlineEdit as EditIcon, AiOutlineDelete as DeleteIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
+import {
+  AiOutlineEdit as EditIcon,
+  AiOutlineEye as ViewIcon,
+  AiOutlineDelete as DeleteIcon,
+  AiOutlineRight as ActionIcon,
+} from 'react-icons/ai';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { VariableValueDetail } from './-variables/VariableValueDetail';
 import { VariableDeleteDialog } from './-variables/VariableDeleteDialog';
@@ -225,6 +231,7 @@ function Component() {
 }
 
 const VariableMenu: FC<{ variable: VariableOutputDTO }> = ({ variable }) => {
+  const theme = useTheme();
   const [openVariableDialog, setOpenVariableDialog] = useState<boolean>(false);
   const navigate = useNavigate();
 
@@ -236,13 +243,18 @@ const VariableMenu: FC<{ variable: VariableOutputDTO }> = ({ variable }) => {
         </Dropdown.Trigger>
         <Dropdown.Menu>
           <Dropdown.Menu.Item
+            label="View variable"
+            icon={<ViewIcon />}
+            onClick={() => navigate({ to: '/variables/view/$variableId', params: { variableId: variable.id } })}
+          />
+          <Dropdown.Menu.Item
             label="Edit variable"
             icon={<EditIcon />}
             onClick={() => navigate({ to: '/variables/update/$variableId', params: { variableId: variable.id } })}
           />
           <Dropdown.Menu.Item
             label="Delete variable"
-            icon={<DeleteIcon />}
+            icon={<DeleteIcon fill={theme.colors.error} />}
             onClick={() => {
               setOpenVariableDialog(true);
             }}

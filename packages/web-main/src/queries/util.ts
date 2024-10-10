@@ -2,14 +2,14 @@ import { MetadataOutput } from '@takaro/apiclient';
 import { ErrorMessageMapping, getErrorUserMessage } from '@takaro/lib-components/src/errors';
 import { UseMutationResult } from '@tanstack/react-query';
 
-export function hasNextPage(pageInfo: MetadataOutput) {
+export function getNextPage(pageInfo: MetadataOutput) {
   if (pageInfo.total === undefined || pageInfo.limit === undefined || pageInfo.page === undefined) {
     throw new Error('Expected query to have paginated metadata');
   }
-  if (pageInfo.page < Math.floor(pageInfo.total / pageInfo.limit)) {
+  if (pageInfo.page < Math.ceil(pageInfo.total / pageInfo.limit)) {
     return pageInfo.page + 1;
   }
-  return undefined;
+  return null;
 }
 
 export function mutationWrapper<I, O>(

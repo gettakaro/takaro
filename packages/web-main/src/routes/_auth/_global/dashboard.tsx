@@ -5,7 +5,7 @@ import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { eventsFailedFunctionsQueryOptions, eventsQueryOptions } from 'queries/event';
 import { DateTime } from 'luxon';
 import { useForm, useWatch } from 'react-hook-form';
-import { TimePeriodSelect } from 'components/selects';
+import { TimePeriodSelectField } from 'components/selects';
 import { useQuery } from '@tanstack/react-query';
 import { hasPermission } from 'hooks/useHasPermission';
 import { PlayersOnlineStatsQueryOptions, ActivityStatsQueryOptions } from 'queries/stats';
@@ -120,7 +120,7 @@ function Component() {
     <>
       <Container>
         <div style={{ width: '200px', marginLeft: 'auto' }}>
-          <TimePeriodSelect control={control} name="period" />
+          <TimePeriodSelectField control={control} name="period" />
         </div>
         <Stats border={false} direction="horizontal">
           <Stats.Stat

@@ -9,10 +9,16 @@ import {
   PermissionOutputDTO,
   APIOutput,
 } from '@takaro/apiclient';
-import { infiniteQueryOptions, queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  infiniteQueryOptions,
+  keepPreviousData,
+  queryOptions,
+  useMutation,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import { getApiClient } from 'util/getApiClient';
-import { hasNextPage, mutationWrapper, queryParamsToArray } from 'queries/util';
+import { getNextPage, mutationWrapper, queryParamsToArray } from 'queries/util';
 import { userKeys } from './user';
 import { ErrorMessageMapping } from '@takaro/lib-components/src/errors';
 import { useSnackbar } from 'notistack';
@@ -44,9 +50,11 @@ export const rolesQueryOptions = (opts: RoleSearchInputDTO = {}) => {
 export const rolesInfiniteQueryOptions = (opts: RoleSearchInputDTO = {}) => {
   return infiniteQueryOptions<RoleOutputArrayDTOAPI, AxiosError<RoleOutputArrayDTOAPI>>({
     queryKey: [...roleKeys.list(), 'infinite', ...queryParamsToArray(opts)],
-    queryFn: async () => (await getApiClient().role.roleControllerSearch(opts)).data,
+    queryFn: async ({ pageParam }) =>
+      (await getApiClient().role.roleControllerSearch({ ...opts, page: pageParam as number })).data,
     initialPageParam: 0,
-    getNextPageParam: (lastPage) => hasNextPage(lastPage.meta),
+    getNextPageParam: (lastPage) => getNextPage(lastPage.meta),
+    placeholderData: keepPreviousData,
   });
 };
 

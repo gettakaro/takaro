@@ -9,7 +9,7 @@ function cleanEventName(eventName: string) {
   return eventName.replaceAll('-', ' ').toLowerCase();
 }
 
-export const EventNameSelect: FC<CustomSelectProps> = ({
+export const EventNameSelectField: FC<CustomSelectProps> = ({
   control,
   name: selectName,
   loading,

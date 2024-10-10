@@ -30,7 +30,7 @@ interface TimePeriodSelectProps extends CustomSelectProps {
   options?: TimeOption[];
 }
 
-export const TimePeriodSelect: FC<TimePeriodSelectProps> = ({
+export const TimePeriodSelectField: FC<TimePeriodSelectProps> = ({
   label = 'Time period',
   control,
   name,

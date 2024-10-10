@@ -3,7 +3,6 @@ import {
   CollapseList,
   FormError,
   Button,
-  SelectField,
   TextField,
   DatePicker,
   DrawerSkeleton,
@@ -13,12 +12,10 @@ import { usePlayerRoleAssign } from 'queries/player';
 import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { GameServerOutputDTO } from '@takaro/apiclient';
 import { DateTime, Settings } from 'luxon';
-import { RoleSelect } from 'components/selects';
+import { GameServerSelectQueryField, RoleSelectQueryField } from 'components/selects';
 import { z } from 'zod';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { gameServersQueryOptions } from 'queries/gameserver';
 
 Settings.throwOnInvalid = true;
 
@@ -37,13 +34,6 @@ const roleAssignValidationSchema = z.object({
 type IFormInputs = z.infer<typeof roleAssignValidationSchema>;
 
 export const Route = createFileRoute('/_auth/_global/player/$playerId/role/assign')({
-  loader: async ({ context }) => {
-    const gameServerOptions = [
-      { name: 'Global - applies to all gameservers', id: 'null' } as GameServerOutputDTO,
-      ...(await context.queryClient.ensureQueryData(gameServersQueryOptions())),
-    ];
-    return { gameServers: gameServerOptions };
-  },
   component: Component,
   pendingComponent: DrawerSkeleton,
 });
@@ -53,7 +43,6 @@ function Component() {
   const { mutateAsync, isPending, error } = usePlayerRoleAssign();
   const navigate = useNavigate();
   const { playerId } = Route.useParams();
-  const { gameServers } = Route.useLoaderData();
 
   useEffect(() => {
     if (!open) {
@@ -66,7 +55,6 @@ function Component() {
     resolver: zodResolver(roleAssignValidationSchema),
     defaultValues: {
       playerId,
-      gameServerId: gameServers[0].id,
     },
   });
 
@@ -85,29 +73,8 @@ function Component() {
             <form onSubmit={handleSubmit(onSubmit)} id="assign-player-role-form">
               <CollapseList.Item title="General">
                 <TextField readOnly control={control} name="playerId" label="Player" />
-                <RoleSelect control={control} name="roleId" />
-                <SelectField
-                  canClear={true}
-                  control={control}
-                  name="gameServerId"
-                  label="Gameserver"
-                  render={(selectedItems) => {
-                    if (selectedItems.length === 0) {
-                      // in case nothing is selected, we default to global
-                      return <div>Global - applies to all gameservers</div>;
-                    }
-                    return <div>{selectedItems[0].label}</div>;
-                  }}
-                >
-                  <SelectField.OptionGroup label="gameservers">
-                    {gameServers.map((server) => (
-                      <SelectField.Option key={server.id} value={server.id} label={server.name}>
-                        {server.name}
-                      </SelectField.Option>
-                    ))}
-                  </SelectField.OptionGroup>
-                </SelectField>
-
+                <RoleSelectQueryField control={control} name="roleId" />
+                <GameServerSelectQueryField canClear={true} control={control} name="gameServerId" label="Gameserver" />
                 <DatePicker
                   mode="absolute"
                   control={control}

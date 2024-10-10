@@ -1,9 +1,9 @@
 import { PlayerOutputDTO } from '@takaro/apiclient';
-import { Avatar, getInitials, SelectQueryField, styled } from '@takaro/lib-components';
+import { Avatar, getInitials, PaginationProps, SelectQueryField, styled } from '@takaro/lib-components';
 import { FC, useState } from 'react';
-import { CustomQuerySelectProps } from '.';
-import { useQuery } from '@tanstack/react-query';
-import { playersQueryOptions } from 'queries/player';
+import { CustomSelectQueryProps } from '.';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { playersInfiniteQueryOptions } from 'queries/player';
 
 const Inner = styled.div`
   display: flex;
@@ -16,7 +16,7 @@ const Inner = styled.div`
   }
 `;
 
-export const PlayerSelectQuery: FC<CustomQuerySelectProps> = ({
+export const PlayerSelectQueryField: FC<CustomSelectQueryProps> = ({
   control,
   name,
   hint,
@@ -28,13 +28,21 @@ export const PlayerSelectQuery: FC<CustomQuerySelectProps> = ({
   readOnly,
   required,
   description,
-  placeholder = 'Select a player',
+  placeholder,
   multiple,
 }) => {
   const [playerName, setPlayerName] = useState<string>('');
 
-  const { data, isLoading: isLoadingPlayers } = useQuery(playersQueryOptions({ search: { name: [playerName] } }));
-  const players = data?.data ?? [];
+  const {
+    data,
+    isLoading: isLoadingPlayers,
+    hasNextPage,
+    isFetching,
+    isFetchingNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery(playersInfiniteQueryOptions({ search: { name: [playerName] }, limit: 20 }));
+
+  const players = data?.pages.flatMap((page) => page.data) ?? [];
 
   return (
     <PlayerSelectQueryView
@@ -54,15 +62,20 @@ export const PlayerSelectQuery: FC<CustomQuerySelectProps> = ({
       label={label}
       setPlayerName={setPlayerName}
       isLoadingData={isLoadingPlayers}
+      isFetchingNextPage={isFetchingNextPage}
+      isFetching={isFetching}
+      hasNextPage={hasNextPage}
+      fetchNextPage={fetchNextPage}
     />
   );
 };
 
-export type PlayerSelectQueryViewProps = CustomQuerySelectProps & {
-  players: PlayerOutputDTO[];
-  isLoadingData?: boolean;
-  setPlayerName: (value: string) => void;
-};
+export type PlayerSelectQueryViewProps = CustomSelectQueryProps &
+  PaginationProps & {
+    players: PlayerOutputDTO[];
+    isLoadingData?: boolean;
+    setPlayerName: (value: string) => void;
+  };
 export const PlayerSelectQueryView: FC<PlayerSelectQueryViewProps> = ({
   control,
   players,
@@ -79,6 +92,10 @@ export const PlayerSelectQueryView: FC<PlayerSelectQueryViewProps> = ({
   loading,
   isLoadingData = false,
   setPlayerName,
+  isFetching,
+  hasNextPage,
+  fetchNextPage,
+  isFetchingNextPage,
   label,
 }) => {
   return (
@@ -96,6 +113,10 @@ export const PlayerSelectQueryView: FC<PlayerSelectQueryViewProps> = ({
       required={required}
       multiple={multiple}
       description={description}
+      isFetching={isFetching}
+      hasNextPage={hasNextPage}
+      fetchNextPage={fetchNextPage}
+      isFetchingNextPage={isFetchingNextPage}
       render={(selectedPlayers) => {
         if (selectedPlayers.length === 0) {
           return <div>Select Player...</div>;

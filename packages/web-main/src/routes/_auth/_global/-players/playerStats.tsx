@@ -4,7 +4,7 @@ import { DateTime } from 'luxon';
 import { PlayersOnlineStatsQueryOptions, ActivityStatsQueryOptions } from 'queries/stats';
 import { useMemo } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
-import { TimePeriodSelect } from 'components/selects';
+import { TimePeriodSelectField } from 'components/selects';
 import { eventsQueryOptions } from 'queries/event';
 
 const Container = styled.div`
@@ -82,7 +82,7 @@ export function PlayerStats() {
   return (
     <>
       <div style={{ width: '200px', marginLeft: 'auto' }}>
-        <TimePeriodSelect control={control} name="period" />
+        <TimePeriodSelectField control={control} name="period" />
       </div>
       <Container>
         <StatCard variant="outline">

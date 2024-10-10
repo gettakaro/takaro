@@ -1,16 +1,23 @@
 import { SelectFieldProps, SelectQueryFieldProps } from '@takaro/lib-components';
 
-// TODO: implement multiSelect
 export type CustomSelectProps = Omit<SelectFieldProps, 'render' | 'children' | 'enableFilter'>;
-export type CustomQuerySelectProps = Omit<
+export type CustomSelectQueryProps = Omit<
   SelectQueryFieldProps,
-  'children' | 'handleInputValueChange' | 'isLoadingData' | 'debounce'
+  | 'children'
+  | 'handleInputValueChange'
+  | 'isLoadingData'
+  | 'debounce'
+  | 'isFetchingNextPage'
+  | 'isFetching'
+  | 'fetchNextPage'
+  | 'hasNextPage'
 >;
 
-export { GameServerSelect } from './GameServerSelect';
-export { RoleSelect } from './RoleSelect';
-export { PlayerSelect } from './PlayerSelect';
-export { PlayerSelectQuery } from './PlayerSelectQuery';
-export { ModuleSelect } from './ModuleSelect';
-export { TimePeriodSelect } from './TimePeriodSelect';
-export { CountrySelect } from './CountrySelect';
+export { GameServerSelectQueryField } from './GameServerSelectQueryField';
+export { RoleSelectQueryField } from './RoleSelectQueryField';
+export { PlayerSelectQueryField } from './PlayerSelectQueryField';
+export { ModuleSelectQueryField } from './ModuleSelectQueryField';
+
+export { TimePeriodSelectField } from './TimePeriodSelectField';
+export { CountrySelectField } from './CountrySelectField';
+export { EventNameSelectField } from './EventNameSelectField';

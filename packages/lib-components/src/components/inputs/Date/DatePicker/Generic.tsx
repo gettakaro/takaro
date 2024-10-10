@@ -174,8 +174,8 @@ export const GenericDatePicker: FC<GenericDatePickerProps> = ({
 
   return (
     <Popover placement={popOverPlacement} open={open} onOpenChange={setOpen}>
-      <Popover.Trigger asChild>
-        <ResultContainer readOnly={readOnly} hasError={hasError} onClick={() => setOpen(!open)}>
+      <Popover.Trigger asChild readOnly={readOnly}>
+        <ResultContainer readOnly={readOnly} hasError={hasError} onClick={readOnly ? () => {} : () => setOpen(!open)}>
           {renderResult()}
         </ResultContainer>
       </Popover.Trigger>
