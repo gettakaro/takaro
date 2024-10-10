@@ -1,5 +1,5 @@
-import { FC, useLayoutEffect, useMemo, useState } from 'react';
-import { Button, Popover } from '../../../../components';
+import { FC, MouseEvent, useLayoutEffect, useMemo, useState } from 'react';
+import { Button, IconButton, Popover } from '../../../../components';
 import { DateTime, DateTimeFormatOptions, Settings } from 'luxon';
 import { dateFormats, timeFormats } from './formats';
 import { GenericInputProps } from '../../InputProps';
@@ -8,6 +8,7 @@ import { TimePicker } from '../subcomponents/TimePicker';
 import { Calendar } from '../subcomponents/Calendar';
 import { RelativePicker, timeDirection } from '../subcomponents/RelativePicker';
 import { Placement } from '@floating-ui/react';
+import { AiOutlineClose as ClearIcon } from 'react-icons/ai';
 
 interface TimePickerOptions {
   /// Determines the interval between time options
@@ -51,6 +52,9 @@ export interface DatePickerProps {
 
   /// Placeholder text for the input
   placeholder?: string;
+
+  /// Can set field back to undefined
+  canClear?: boolean;
 }
 
 export type GenericDatePickerProps = GenericInputProps<string, HTMLInputElement> & DatePickerProps;
@@ -71,6 +75,7 @@ export const GenericDatePicker: FC<GenericDatePickerProps> = ({
   format = DateTime.DATE_SHORT,
   allowPastDates = true,
   allowFutureDates = true,
+  canClear = false,
   customDateFilter,
   mode,
 }) => {
@@ -148,6 +153,8 @@ export const GenericDatePicker: FC<GenericDatePickerProps> = ({
     } as unknown as React.FocusEvent<HTMLInputElement>;
   }, []);
 
+  console.log('value', value);
+
   useLayoutEffect(() => {
     if (onFocus && onBlur) {
       if (open) {
@@ -172,11 +179,23 @@ export const GenericDatePicker: FC<GenericDatePickerProps> = ({
     return renderPlaceholder();
   };
 
+  const handleClear = (e: MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (onChange) {
+      console.log('onChange triggered');
+      onChange(null as any);
+    }
+  };
+
   return (
     <Popover placement={popOverPlacement} open={open} onOpenChange={setOpen}>
       <Popover.Trigger asChild>
         <ResultContainer readOnly={readOnly} hasError={hasError} onClick={() => setOpen(!open)}>
-          {renderResult()}
+          <span>{renderResult()}</span>
+          {!readOnly && canClear && value && !open && (
+            <IconButton size="tiny" icon={<ClearIcon />} ariaLabel="clear" onClick={handleClear} />
+          )}
         </ResultContainer>
       </Popover.Trigger>
       <Popover.Content>
@@ -197,6 +216,9 @@ export const GenericDatePicker: FC<GenericDatePickerProps> = ({
                       setFriendlyName(undefined);
                     }
                     if (isDateOnly) {
+                      {
+                        console.log('this is triggered');
+                      }
                       handleOnChange(date);
                     }
                   }}
