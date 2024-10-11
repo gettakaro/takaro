@@ -39,6 +39,8 @@ const config: Config = {
     ],
   ],
 
+  scripts: [{ src: 'https://plausible.io/js/script.js', defer: true, 'data-domain': 'takaro.io' }],
+
   themeConfig: {
     colorMode: {
       defaultMode: 'dark',
