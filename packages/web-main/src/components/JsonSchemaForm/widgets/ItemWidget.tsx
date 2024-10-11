@@ -109,6 +109,7 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
       readOnly={readonly}
       value={value}
       onChange={onChange}
+      inPortal={true}
       handleInputValueChange={(value) => setItemName(value)}
       isLoadingData={!enabled ? false : isLoadingItems}
       multiple={multiple}
