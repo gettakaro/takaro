@@ -1,4 +1,4 @@
-FROM node:20.17.0-bullseye
+FROM node:20.18.0-bullseye
 
 ENV NODE_ENV=development
 
@@ -32,4 +32,4 @@ ENV TAKARO_COMMIT=${TAKARO_COMMIT}
 ENV TAKARO_BUILD_DATE=${TAKARO_BUILD_DATE}
 ENV TAKARO_FULL_VERSION=${TAKARO_VERSION}-${TAKARO_COMMIT}-${TAKARO_BUILD_DATE}
 
-CMD ["npm", "run", "-w", "packages/app-api", "domainInit", "&&", "npm", "run", "start:dev"]
+CMD ["npm", "run", "start:dev"]
