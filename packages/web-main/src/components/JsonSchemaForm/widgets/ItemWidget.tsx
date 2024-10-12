@@ -11,7 +11,7 @@ import {
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { getRouteApi } from '@tanstack/react-router';
 import { gameServerQueryOptions } from 'queries/gameserver';
-import { ItemsInfiniteQueryOptions, itemsQueryOptions } from 'queries/item';
+import { ItemsInfiniteQueryOptions } from 'queries/item';
 import { useState } from 'react';
 
 const gameServerTypeToIconFolderMap = {
@@ -26,7 +26,7 @@ const Inner = styled.div`
   justify-content: flex-start;
   width: 100%;
 
-  span {
+  & > span {
     margin-left: ${({ theme }) => theme.spacing['1']};
   }
 `;
@@ -51,19 +51,13 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
   onChange,
 }: WidgetProps<T, S, F>) {
   const { gameServerId } = getRouteApi('/_auth/gameserver/$gameServerId/modules/$moduleId/install/').useParams();
-  const [itemName, setItemName] = useState<string>('');
-  const enabled = itemName !== '';
+  const [filterInput, setFilterInput] = useState<string>('');
+  const enabled = filterInput !== '';
   const shouldPreviousItemsBeLoaded = shouldFilter(value, multiple as boolean);
 
   const { data: gameServer, isLoading: isLoadingGameServer } = useQuery(gameServerQueryOptions(gameServerId));
-  const {
-    data: prev,
-    isLoading: isLoadingPreviousItems,
-    isFetchingNextPage,
-    isFetching,
-    hasNextPage,
-    fetchNextPage,
-  } = useInfiniteQuery(
+
+  const { data: prev, isLoading: isLoadingPreviousItems } = useInfiniteQuery(
     ItemsInfiniteQueryOptions({
       filters: { gameserverId: [gameServerId], ...(shouldPreviousItemsBeLoaded && { id: multiple ? value : [value] }) },
     }),
@@ -71,23 +65,30 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
 
   const previousItems = prev?.pages.flatMap((page) => page.data) ?? [];
 
-  const { data, isLoading: isLoadingItems } = useQuery(
-    itemsQueryOptions({
-      ...(itemName !== '' && { search: { name: [itemName] } }),
+  const {
+    data,
+    isLoading: isLoadingItems,
+    isFetchingNextPage,
+    isFetching,
+    hasNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery(
+    ItemsInfiniteQueryOptions({
+      ...(filterInput !== '' && { search: { name: [filterInput] } }),
       filters: { gameserverId: [gameServerId] },
     }),
   );
-  const searchedItems = data?.data ?? [];
+  const searchedItems = data?.pages.flatMap((page) => page.data) ?? [];
 
   // get rid of duplicates
-  const items = [...searchedItems, ...previousItems].filter(
+  const items = [...previousItems, ...searchedItems].filter(
     (item, index, self) => self.findIndex((i) => i.id === item.id) === index,
   );
 
   const renderIcon = (gameServer: GameServerOutputDTO, item: ItemsOutputDTO) => {
     if (item.code && gameServer && gameServerTypeToIconFolderMap[gameServer.type] !== 'Mock') {
       return (
-        <Avatar size="tiny">
+        <Avatar size="small">
           <Avatar.Image
             src={`/icons/${gameServerTypeToIconFolderMap[gameServer.type]}/${item.code}.png`}
             alt={`Item icon of ${item.name}`}
@@ -116,15 +117,15 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
       readOnly={readonly}
       value={value}
       onChange={onChange}
-      inPortal={true}
-      handleInputValueChange={(value) => setItemName(value)}
+      handleInputValueChange={(value) => setFilterInput(value)}
       isLoadingData={!enabled ? false : isLoadingItems}
       multiple={multiple}
       hasDescription={!!schema.description}
       isFetching={isFetching}
       hasNextPage={hasNextPage}
       isFetchingNextPage={isFetchingNextPage}
-      optionCount={data?.meta.total}
+      optionCount={data?.pages[0].meta.total}
+      inPortal={true}
       fetchNextPage={fetchNextPage}
       render={(selectedItems) => {
         if (selectedItems.length === 0) {
