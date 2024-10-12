@@ -7,6 +7,7 @@ import {
   UnControlledSelectQueryField,
   getInitials,
   Skeleton,
+  ToggleButtonGroup,
 } from '@takaro/lib-components';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { getRouteApi } from '@tanstack/react-router';
@@ -54,6 +55,7 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
   const [filterInput, setFilterInput] = useState<string>('');
   const enabled = filterInput !== '';
   const shouldPreviousItemsBeLoaded = shouldFilter(value, multiple as boolean);
+  const [searchFields, setSearchFields] = useState<Map<string, boolean>>(new Map());
 
   const { data: gameServer, isLoading: isLoadingGameServer } = useQuery(gameServerQueryOptions(gameServerId));
 
@@ -74,7 +76,13 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
     fetchNextPage,
   } = useInfiniteQuery(
     ItemsInfiniteQueryOptions({
-      ...(filterInput !== '' && { search: { name: [filterInput] } }),
+      ...(filterInput !== '' &&
+        (searchFields.get('name') || searchFields.get('code')) && {
+          search: {
+            ...(searchFields.get('name') && { name: [filterInput] }),
+            ...(searchFields.get('code') && { code: [filterInput] }),
+          },
+        }),
       filters: { gameserverId: [gameServerId] },
     }),
   );
@@ -107,6 +115,25 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
     return <div>unable to show items</div>;
   }
 
+  function renderToggleButtonGroup() {
+    return (
+      <ToggleButtonGroup
+        exclusive={false}
+        orientation="horizontal"
+        canSelectNone={false}
+        defaultValue="name"
+        onChange={(changedSearchFieldMap) => setSearchFields(() => changedSearchFieldMap as Map<string, boolean>)}
+      >
+        <ToggleButtonGroup.Button value="code" tooltip="Search by item code">
+          code
+        </ToggleButtonGroup.Button>
+        <ToggleButtonGroup.Button value="name" tooltip="Search by item name">
+          name
+        </ToggleButtonGroup.Button>
+      </ToggleButtonGroup>
+    );
+  }
+
   return (
     <UnControlledSelectQueryField
       id={id}
@@ -117,6 +144,7 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
       readOnly={readonly}
       value={value}
       onChange={onChange}
+      placeholder="Search for item"
       handleInputValueChange={(value) => setFilterInput(value)}
       isLoadingData={!enabled ? false : isLoadingItems}
       multiple={multiple}
@@ -128,25 +156,37 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
       inPortal={true}
       fetchNextPage={fetchNextPage}
       render={(selectedItems) => {
-        if (selectedItems.length === 0) {
-          return <div>Select item...</div>;
-        }
-
-        // multiselect with 1 item and single select
-        if (selectedItems.length === 1) {
-          // find item in list of items
-          const item = items.find((item) => item.id === selectedItems[0].value);
-          if (!item) {
-            return <div>{selectedItems[0].label}</div>;
-          }
-          return (
-            <Inner>
-              {renderIcon(gameServer, item)} {selectedItems[0].label}
-            </Inner>
-          );
-        }
-
-        return <div>{selectedItems.map((item) => item.label).join(',')}</div>;
+        return (
+          <div
+            style={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'flex-start',
+              paddingRight: '10px',
+              overflowWrap: 'break-word',
+              justifyContent: 'space-between',
+            }}
+          >
+            <div style={{ flex: '1 1 auto', overflow: 'hidden', marginRight: '10px', textOverflow: 'ellipsis' }}>
+              {selectedItems.length === 0 && <div>Select item...</div>}
+              {selectedItems.length === 1 &&
+                // Find item in list of items
+                (() => {
+                  const item = items.find((item) => item.id === selectedItems[0].value);
+                  if (!item) {
+                    return <div>{selectedItems[0].label}</div>;
+                  }
+                  return (
+                    <Inner>
+                      {renderIcon(gameServer, item)} {selectedItems[0].label}
+                    </Inner>
+                  );
+                })()}
+              {selectedItems.length > 1 && <>{selectedItems.map((item) => item.label).join(',')}</>}
+            </div>
+            {renderToggleButtonGroup()}
+          </div>
+        );
       }}
     >
       <SelectQueryField.OptionGroup label="options">
