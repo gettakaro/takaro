@@ -43,10 +43,13 @@ export interface TableProps<DataType extends object> {
   id: string;
   data: DataType[];
   isLoading?: boolean;
+
+  /// Condition for row to be expandable
+  canExpand?: (row: Row<DataType>) => boolean;
+  /// What to render when row can be expanded
   renderDetailPanel?: (row: Row<DataType>) => JSX.Element;
 
-  // currently not possible to type this properly: https://github.com/TanStack/table/issues/4241
-
+  /// currently not possible to type this properly: https://github.com/TanStack/table/issues/4241
   columns: ColumnDef<DataType, any>[];
 
   /// Renders actions that are always visible
@@ -93,6 +96,7 @@ export function Table<DataType extends object>({
   columnSearch,
   renderDetailPanel,
   renderToolbar,
+  canExpand = () => false,
   renderRowSelectionActions,
   isLoading = false,
 }: TableProps<DataType>) {
@@ -124,7 +128,8 @@ export function Table<DataType extends object>({
   const [columnPinning, setColumnPinning] = useState<ColumnPinningState>({});
   const { storedValue: density, setValue: setDensity } = useLocalStorage<Density>(`table-density-${id}`, 'tight');
 
-  const canExpand = renderDetailPanel ? true : false;
+  // Might because potentially none fullfil the canExpand condtion.
+  const rowsMightExpand = renderDetailPanel ? true : false;
   const [expanded, setExpanded] = useState<ExpandedState>({});
   const [openColumnVisibilityTooltip, setOpenColumnVisibilityTooltip] = useState<boolean>(false);
   const [hasShownColumnVisibilityTooltip, setHasShownColumnVisibilityTooltip] = useState<boolean>(false);
@@ -138,7 +143,7 @@ export function Table<DataType extends object>({
   );
 
   const ROW_SELECTION_COL_SPAN = rowSelection ? 1 : 0;
-  const EXPAND_ROW_COL_SPAN = canExpand ? 1 : 0;
+  const EXPAND_ROW_COL_SPAN = rowsMightExpand ? 1 : 0;
   const MINIMUM_ROW_COUNT_FOR_PAGINATION = 5;
 
   // handles the column visibility tooltip (shows tooltip when the first column is hidden)
@@ -183,7 +188,7 @@ export function Table<DataType extends object>({
     enablePinning: true,
     enableHiding: !!columnVisibility,
     enableRowSelection: !!rowSelection,
-    getRowCanExpand: () => canExpand,
+    getRowCanExpand: canExpand,
     autoResetPageIndex: false,
 
     columnResizeMode: 'onChange',
@@ -294,7 +299,7 @@ export function Table<DataType extends object>({
                       </div>
                     </Th>
                   )}
-                  {canExpand && tableHasData && (
+                  {rowsMightExpand && tableHasData && (
                     <Th
                       isActive={false}
                       isRight={false}
@@ -354,24 +359,28 @@ export function Table<DataType extends object>({
                 table.getRowModel().rows.map((row) => (
                   <>
                     <tr key={row.id}>
-                      {row.getCanExpand() && (
+                      {row.getCanExpand() ? (
                         <td style={{ paddingRight: '10px', width: '15px' }}>
                           {row.getIsExpanded() ? (
                             <IconButton
-                              size="small"
+                              size="tiny"
                               icon={<CollapseIcon />}
                               ariaLabel="Collapse expanded row"
                               onClick={() => row.toggleExpanded(false)}
                             />
                           ) : (
                             <IconButton
-                              size="small"
+                              size="tiny"
                               icon={<ExpandIcon />}
                               ariaLabel="expand row"
                               onClick={() => row.toggleExpanded(true)}
                             />
                           )}
                         </td>
+                      ) : rowsMightExpand ? (
+                        <td />
+                      ) : (
+                        <></>
                       )}
                       {row.getCanSelect() && (
                         <td style={{ paddingRight: '10px', width: '15px' }}>
@@ -391,13 +400,7 @@ export function Table<DataType extends object>({
                         <td key={id}>{flexRender(column.columnDef.cell, getContext())}</td>
                       ))}
                     </tr>
-                    {row.getIsExpanded() && (
-                      <tr>
-                        <td className="subrow" colSpan={row.getAllCells().length}>
-                          {renderDetailPanel!(row)}
-                        </td>
-                      </tr>
-                    )}
+                    {row.getIsExpanded() && renderDetailPanel!(row)}
                   </>
                 ))}
             </tbody>

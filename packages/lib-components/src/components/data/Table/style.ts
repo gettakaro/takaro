@@ -46,6 +46,27 @@ export const StyledTable = styled.table<{ density: Density }>`
     border-bottom: none;
   }
 
+  tr.subrow {
+    border-bottom: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
+
+    &:nth-child(even) {
+      background-color: ${({ theme }) => theme.colors.background};
+    }
+
+    &:nth-child(odd) {
+      background-color: ${({ theme }) => theme.colors.backgroundAlt};
+    }
+
+    td {
+      &:first-child {
+        padding-left: 0;
+        padding-bottom: 0;
+      }
+      padding: ${({ theme, density }) =>
+        density === 'tight' ? `${theme.spacing['0_5']} 0` : `${theme.spacing['0_5']} 0`};
+    }
+  }
+
   td {
     border-right: none;
     border-bottom: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
@@ -54,13 +75,6 @@ export const StyledTable = styled.table<{ density: Density }>`
 
     &:first-child {
       padding-left: ${({ theme }) => theme.spacing['1']};
-    }
-
-    &.subrow {
-      &:first-child {
-        padding-left: 0;
-        padding-bottom: 0;
-      }
     }
   }
 

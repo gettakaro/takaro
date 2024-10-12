@@ -172,19 +172,20 @@ export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, g
 
   const detailsPanel = (row: Row<ShopListingOutputDTO>) => {
     return (
-      <div>
-        <ul>
-          <MetaItemListItemContainer>
-            <h3></h3>
-            <h3>Name</h3>
-            <h3>Amount</h3>
-            <h3>Quality</h3>
-          </MetaItemListItemContainer>
-          {row.original.items.map((item) => (
-            <ShopListingMetaItem key={'shoplisting-table-' + item.id} gameServerType={gameServerType} metaItem={item} />
-          ))}
-        </ul>
-      </div>
+      <>
+        <tr className="subrow">
+          <th></th>
+          <th></th>
+          <th>Icon</th>
+          <th>Name</th>
+          <th>Amount</th>
+          <th>Quality</th>
+          <th></th>
+        </tr>
+        {row.original.items.map((item) => (
+          <ShopListingMetaItem key={'shoplisting-table-' + item.id} gameServerType={gameServerType} metaItem={item} />
+        ))}
+      </>
     );
   };
 
@@ -196,28 +197,6 @@ export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, g
           pageOptions: pagination.getPageOptions(data),
         }
       : undefined;
-
-  //columnHelper.display({
-  //      header: 'Icon',
-  //      id: 'icon',
-  //      cell: (info) => {
-  //        const shopListingName = info.row.original.name || info.row.original.items[0].item.name;
-  //
-  //        return (
-  //
-  //
-  //
-  //
-  //
-  //
-  //
-  //        );
-  //      },
-  //      maxSize: 30,
-  //      enableColumnFilter: false,
-  //      enableGlobalFilter: false,
-  //      enableMultiSort: false,
-  //    }),
 
   return (
     <Table
@@ -232,6 +211,7 @@ export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, g
       columnFiltering={columnFilters}
       columnSearch={columnSearch}
       sorting={sorting}
+      canExpand={() => true}
       renderDetailPanel={(row) => detailsPanel(row)}
       isLoading={isLoading}
     />
@@ -245,44 +225,22 @@ interface ShopListingMetaItemProps {
 
 const ShopListingMetaItem: FC<ShopListingMetaItemProps> = ({ gameServerType, metaItem }) => {
   return (
-    <MetaItemListItemContainer>
-      <Avatar size="small">
-        <Avatar.Image
-          src={`/icons/${gameServerTypeToIconFolderMap[gameServerType]}/${metaItem.item.code}.png`}
-          alt={`Item icon of ${metaItem.item.name}`}
-        />
-        <Avatar.FallBack>{getInitials(metaItem.item.name)}</Avatar.FallBack>
-      </Avatar>
-      <h3>{metaItem.item.name}</h3>
-      <span>{metaItem.amount}</span>
-      <span>{metaItem.quality ? metaItem.quality : 'Not assigned'}</span>
-    </MetaItemListItemContainer>
+    <tr className="subrow">
+      <td />
+      <td></td>
+      <td>
+        <Avatar size="small">
+          <Avatar.Image
+            src={`/icons/${gameServerTypeToIconFolderMap[gameServerType]}/${metaItem.item.code}.png`}
+            alt={`Item icon of ${metaItem.item.name}`}
+          />
+          <Avatar.FallBack>{getInitials(metaItem.item.name)}</Avatar.FallBack>
+        </Avatar>
+      </td>
+      <td>{metaItem.item.name}</td>
+      <td>{metaItem.amount}</td>
+      <td>{metaItem.quality ? metaItem.quality : 'Not assigned'}</td>
+      <td></td>
+    </tr>
   );
 };
-
-const MetaItemListItemContainer = styled.li`
-  display: grid;
-  margin: 0 auto;
-  grid-template-columns: 0.5fr 1fr 1fr 1fr;
-  height: 40px;
-  align-items: center;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
-  padding-left: ${({ theme }) => theme.spacing[2]};
-
-  &:nth-child(even) {
-    background-color: ${({ theme }) => theme.colors.backgroundAlt};
-  }
-
-  &:nth-child(odd) {
-    background-color: ${({ theme }) => theme.colors.background};
-  }
-
-  &:last-child {
-    border-bottom: none;
-  }
-
-  &:first-child {
-    border-bottom: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
-    height: 25px;
-  }
-`;
