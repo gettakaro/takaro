@@ -1,13 +1,4 @@
-import {
-  Drawer,
-  CollapseList,
-  FormError,
-  Button,
-  TextField,
-  DatePicker,
-  DrawerSkeleton,
-  styled,
-} from '@takaro/lib-components';
+import { Drawer, FormError, Button, TextField, DatePicker, DrawerSkeleton, styled } from '@takaro/lib-components';
 import { usePlayerRoleAssign } from 'queries/player';
 import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -69,29 +60,31 @@ function Component() {
       <Drawer.Content>
         <Drawer.Heading>Assign role</Drawer.Heading>
         <Drawer.Body>
-          <CollapseList>
-            <form onSubmit={handleSubmit(onSubmit)} id="assign-player-role-form">
-              <CollapseList.Item title="General">
-                <TextField readOnly control={control} name="playerId" label="Player" />
-                <RoleSelectQueryField control={control} name="roleId" />
-                <GameServerSelectQueryField canClear={true} control={control} name="gameServerId" label="Gameserver" />
-                <DatePicker
-                  mode="absolute"
-                  control={control}
-                  label="Expiration date"
-                  name="expiresAt"
-                  required={false}
-                  loading={isPending}
-                  description="The role will be automatically removed after this date"
-                  popOverPlacement="bottom"
-                  allowPastDates={false}
-                  timePickerOptions={{ interval: 30 }}
-                  format={DateTime.DATETIME_SHORT}
-                />
-              </CollapseList.Item>
-              {error && <FormError error={error} />}
-            </form>
-          </CollapseList>
+          <form onSubmit={handleSubmit(onSubmit)} id="assign-player-role-form">
+            <TextField readOnly control={control} name="playerId" label="Player" />
+            <RoleSelectQueryField control={control} name="roleId" />
+            <GameServerSelectQueryField
+              addGlobalGameServerOption={true}
+              canClear={true}
+              control={control}
+              name="gameServerId"
+              label="Gameserver"
+            />
+            <DatePicker
+              mode="absolute"
+              control={control}
+              label="Expiration date"
+              name="expiresAt"
+              required={false}
+              loading={isPending}
+              description="The role will be automatically removed after this date."
+              popOverPlacement="bottom"
+              allowPastDates={false}
+              timePickerOptions={{ interval: 30 }}
+              format={DateTime.DATETIME_SHORT}
+            />
+            {error && <FormError error={error} />}
+          </form>
         </Drawer.Body>
         <Drawer.Footer>
           <ButtonContainer>

@@ -86,7 +86,7 @@ function Component() {
                   name={'expiresAt'}
                   required={false}
                   loading={isPending}
-                  description={'The role will be automatically removed after this date'}
+                  description={'The role will be automatically removed after this date.'}
                   popOverPlacement={'bottom'}
                   timePickerOptions={{ interval: 30 }}
                   allowPastDates={false}

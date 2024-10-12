@@ -61,9 +61,13 @@ export const GameServerSelectQueryField: FC<CustomSelectQueryProps & GameServerS
 
   let gameServers = data.pages.flatMap((page) => page.data);
 
-  if (addGlobalGameServerOption)
+  if (addGlobalGameServerOption) {
     gameServers = [{ name: 'Global - applies to all gameservers', id: 'null' } as GameServerOutputDTO, ...gameServers];
-  if (filter) gameServers = gameServers.filter(filter);
+  }
+
+  if (filter) {
+    gameServers = gameServers.filter(filter);
+  }
 
   return (
     <GameServerSelectView
@@ -85,6 +89,7 @@ export const GameServerSelectQueryField: FC<CustomSelectQueryProps & GameServerS
       isFetching={isFetching}
       hasNextPage={hasNextPage}
       isFetchingNextPage={isFetchingNextPage}
+      groupByGameServerType={addGlobalGameServerOption ? false : true}
       fetchNextPage={fetchNextPage}
     />
   );
@@ -94,6 +99,7 @@ export type GameServerSelectQueryViewProps = CustomSelectQueryProps &
   PaginationProps & {
     gameServers: GameServerOutputDTO[];
     setGameServerName: (value: string) => void;
+    groupByGameServerType?: boolean;
   };
 export const GameServerSelectView: FC<GameServerSelectQueryViewProps> = ({
   control,
@@ -114,6 +120,7 @@ export const GameServerSelectView: FC<GameServerSelectQueryViewProps> = ({
   isFetching,
   hasNextPage,
   fetchNextPage,
+  groupByGameServerType,
   isFetchingNextPage,
 }) => {
   const renderOptionGroup = (groupLabel: string, typeEnum: GameServerOutputDTOTypeEnum) => {
@@ -185,6 +192,9 @@ export const GameServerSelectView: FC<GameServerSelectQueryViewProps> = ({
 
           if (selected === undefined) return <div>Could not find server</div>;
 
+          console.log(selected);
+          if (selected.id === 'null') return <div>{selected.name}</div>;
+
           return (
             <Inner>
               {gameTypeMap[selected.type].icon}
@@ -194,12 +204,34 @@ export const GameServerSelectView: FC<GameServerSelectQueryViewProps> = ({
         }
       }}
     >
-      {/* IMPORTANT: make sure the types are ordered alphabetically
-      otherwise the selected index will be wrong * since it uses the original array to select.
-      */}
-      {renderOptionGroup('Mock', GameServerOutputDTOTypeEnum.Mock)}
-      {renderOptionGroup('Rust', GameServerOutputDTOTypeEnum.Rust)}
-      {renderOptionGroup('7 Days to Die', GameServerOutputDTOTypeEnum.Sevendaystodie)}
+      {groupByGameServerType ? (
+        <>
+          {/* IMPORTANT: make sure the types are ordered alphabetically otherwise the selected index will be wrong * since it uses the original array to select.*/}
+          {renderOptionGroup('Mock', GameServerOutputDTOTypeEnum.Mock)}
+          {renderOptionGroup('Rust', GameServerOutputDTOTypeEnum.Rust)}
+          {renderOptionGroup('7 Days to Die', GameServerOutputDTOTypeEnum.Sevendaystodie)}
+        </>
+      ) : (
+        <>
+          {gameServers.map(({ id, name: serverName, reachable }) => {
+            return (
+              <SelectQueryField.Option key={`select-${selectName}-${serverName}`} value={id} label={serverName}>
+                <Inner>
+                  <span>{serverName}</span>
+                  {reachable !== undefined && (
+                    <Tooltip placement="right">
+                      <Tooltip.Trigger asChild>
+                        <StatusDot isReachable={reachable} />
+                      </Tooltip.Trigger>
+                      <Tooltip.Content>{reachable ? 'Server online' : 'Server offline'}</Tooltip.Content>
+                    </Tooltip>
+                  )}
+                </Inner>
+              </SelectQueryField.Option>
+            );
+          })}
+        </>
+      )}
     </SelectQueryField>
   );
 };
