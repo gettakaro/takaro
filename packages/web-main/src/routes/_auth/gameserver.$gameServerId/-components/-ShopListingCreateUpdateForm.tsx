@@ -9,6 +9,7 @@ import {
   IconButton,
   Switch,
   TextField,
+  Tooltip,
   styled,
 } from '@takaro/lib-components';
 import { useRouter } from '@tanstack/react-router';
@@ -17,7 +18,12 @@ import { FC, useEffect, useState } from 'react';
 import { useForm, SubmitHandler, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
 
-import { AiOutlineClose as RemoveFieldIcon, AiOutlinePlus as AddFieldIcon } from 'react-icons/ai';
+import {
+  AiOutlineClose as RemoveFieldIcon,
+  AiOutlinePlus as AddFieldIcon,
+  AiOutlineCaretUp as FieldUpIcon,
+  AiOutlineCaretDown as FieldDownIcon,
+} from 'react-icons/ai';
 
 const ButtonContainer = styled.div`
   display: flex;
@@ -95,6 +101,7 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
     fields,
     append: addItem,
     remove: removeItem,
+    swap: moveItem,
   } = useFieldArray({
     control: control,
     name: 'items',
@@ -158,12 +165,45 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
                         }}
                       >
                         <h3>Item {index + 1}</h3>
-                        <IconButton
-                          size="tiny"
-                          onClick={() => !readOnly && removeItem(index)}
-                          icon={<RemoveFieldIcon />}
-                          ariaLabel="Remove field"
-                        />
+
+                        <div>
+                          <Tooltip placement="top">
+                            <Tooltip.Trigger asChild>
+                              <IconButton
+                                disabled={index === fields.length - 1}
+                                onClick={() => moveItem(index, index + 1)}
+                                icon={<FieldDownIcon size={16} cursor="pointer" />}
+                                ariaLabel="Move down"
+                              />
+                            </Tooltip.Trigger>
+                            <Tooltip.Content>Move down</Tooltip.Content>
+                          </Tooltip>
+
+                          <Tooltip placement="top">
+                            <Tooltip.Trigger asChild>
+                              <IconButton
+                                disabled={index === 0}
+                                onClick={() => {
+                                  moveItem(index, index - 1);
+                                }}
+                                icon={<FieldUpIcon size={16} cursor="pointer" />}
+                                ariaLabel="Move up"
+                              />
+                            </Tooltip.Trigger>
+                            <Tooltip.Content>Move up</Tooltip.Content>
+                          </Tooltip>
+                          <Tooltip placement="top">
+                            <Tooltip.Trigger asChild>
+                              <IconButton
+                                size="tiny"
+                                onClick={() => !readOnly && removeItem(index)}
+                                icon={<RemoveFieldIcon />}
+                                ariaLabel="Remove field"
+                              />
+                            </Tooltip.Trigger>
+                            <Tooltip.Content>Remove item</Tooltip.Content>
+                          </Tooltip>
+                        </div>
                       </div>
                       <ItemSelectQueryField
                         gameServerId={gameServerId}
