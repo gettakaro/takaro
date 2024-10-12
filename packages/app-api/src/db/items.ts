@@ -42,7 +42,17 @@ export class ItemRepo extends ITakaroRepo<ItemsModel, ItemsOutputDTO, ItemCreate
   }
   async find(filters: ITakaroQuery<ItemsOutputDTO>) {
     const { query } = await this.getModel();
-    const result = await new QueryBuilder<ItemsModel, ItemsOutputDTO>(filters).build(query);
+
+    if (!filters.sortBy) {
+      // Add a sort by length of `code` so that short codes are up front
+      // This provides much better search results for users. Eg the difference between `resourceWood` vs `awningWoodShapes:woodDebris07`
+      query.orderByRaw('LENGTH("code") ASC');
+    }
+
+    const qry = new QueryBuilder<ItemsModel, ItemsOutputDTO>(filters).build(query);
+
+    const result = await qry;
+
     return {
       total: result.total,
       results: await Promise.all(result.results.map((item) => new ItemsOutputDTO(item))),
