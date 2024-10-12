@@ -11,6 +11,7 @@ import { useQuery } from '@tanstack/react-query';
 
 const gameTypeMap = {
   [GameServerOutputDTOTypeEnum.Mock]: { icon: <TakaroIcon /> },
+  [GameServerOutputDTOTypeEnum.Minecraft]: { icon: <TakaroIcon /> },
   [GameServerOutputDTOTypeEnum.Rust]: { icon: <img width="5px" height="5px" src={iconRust} /> },
   [GameServerOutputDTOTypeEnum.Sevendaystodie]: { icon: <img width="20px" height="20px" src={icon7d2d} /> },
 };
