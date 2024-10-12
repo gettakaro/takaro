@@ -67,8 +67,8 @@ export const ItemSelectQueryField: FC<ItemSelectQueryFieldProps> = ({
   });
 
   const items = data?.pages.flatMap((page) => page.data) ?? [];
-  const includingInitialItem =
-    initialItem && !items.some((item) => item.id === initialItem.id) ? [initialItem, ...items] : items;
+  const itemsDoesNotHaveInitialItem = initialItem && !items.some((item) => item.id === initialItem.id);
+  const includingInitialItem = itemsDoesNotHaveInitialItem ? [initialItem, ...items] : items;
 
   if (isLoadingGameServer) {
     return <Skeleton variant="rectangular" width="100%" height="40px" />;
@@ -96,6 +96,7 @@ export const ItemSelectQueryField: FC<ItemSelectQueryFieldProps> = ({
       label={label}
       canClear={canClear}
       gameServer={gameServer}
+      optionCount={data?.pages[0].meta.total}
       setItemName={setItemName}
       isLoadingData={isLoadingItems}
       fetchNextPage={fetchNextPage}
@@ -112,6 +113,7 @@ export type ItemSelectQueryViewProps = CustomSelectQueryProps &
     gameServer: GameServerOutputDTO;
     isLoadingData?: boolean;
     setItemName: (value: string) => void;
+    optionCount?: number;
   };
 export const ItemSelectQueryView: FC<ItemSelectQueryViewProps> = ({
   control,
@@ -135,6 +137,7 @@ export const ItemSelectQueryView: FC<ItemSelectQueryViewProps> = ({
   isFetching,
   hasNextPage,
   fetchNextPage,
+  optionCount,
   isFetchingNextPage,
 }) => {
   const renderIcon = useCallback((gameServer: GameServerOutputDTO, item: ItemsOutputDTO) => {
@@ -170,6 +173,7 @@ export const ItemSelectQueryView: FC<ItemSelectQueryViewProps> = ({
       hasNextPage={hasNextPage}
       fetchNextPage={fetchNextPage}
       isFetchingNextPage={isFetchingNextPage}
+      optionCount={optionCount}
       canClear={canClear}
       render={(selectedItems) => {
         if (selectedItems.length === 0) {

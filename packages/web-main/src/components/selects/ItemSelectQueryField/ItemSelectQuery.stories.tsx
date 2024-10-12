@@ -87,6 +87,7 @@ export const Default: StoryFn<ItemSelectQueryViewProps> = (args) => {
           hasNextPage={false}
           isFetchingNextPage={false}
           isFetching={false}
+          optionCount={items.length + 1}
           fetchNextPage={() => {}}
           items={items}
         />

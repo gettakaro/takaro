@@ -11,6 +11,7 @@ export type CustomSelectQueryProps = Omit<
   | 'isFetching'
   | 'fetchNextPage'
   | 'hasNextPage'
+  | 'optionCount'
 >;
 
 export { GameServerSelectQueryField } from './GameServerSelectQueryField';

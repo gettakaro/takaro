@@ -54,6 +54,9 @@ interface SharedSelectQueryFieldProps extends PaginationProps {
 
   /// The selected items shown in the select field
   render?: (selectedItems: SelectItem[]) => React.ReactNode;
+
+  /// The total options that will be visible when fully loaded
+  optionCount?: number;
 }
 
 interface SingleSelectQueryFieldProps extends SharedSelectQueryFieldProps {
@@ -111,6 +114,7 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
       debounce = 250,
       isLoadingData: isLoading = false,
       handleInputValueChange,
+      optionCount,
     } = defaultsApplier(props);
 
     const [open, setOpen] = useState<boolean>(false);
@@ -206,6 +210,7 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
               name={`${name}-input`}
               hasDescription={false}
               icon={<SearchIcon />}
+              suffix={isLoading ? 'Loading' : optionCount !== undefined ? `Result: ${optionCount}` : undefined}
               hasError={hasError}
               value={inputValue.value}
               onChange={onInputChange}
