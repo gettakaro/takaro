@@ -43,6 +43,8 @@ export const PlayerInventoryTable: FC<IPlayerInventoryProps> = ({ pog }) => {
         return 'rust';
       case GameServerOutputDTOTypeEnum.Sevendaystodie:
         return '7d2d';
+      case GameServerOutputDTOTypeEnum.Minecraft:
+        return 'minecraft';
       default:
         break;
     }

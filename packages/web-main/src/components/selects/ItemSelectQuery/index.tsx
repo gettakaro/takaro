@@ -26,6 +26,7 @@ const gameServerTypeToIconFolderMap = {
   [GameServerOutputDTOTypeEnum.Mock]: 'rust',
   [GameServerOutputDTOTypeEnum.Rust]: 'rust',
   [GameServerOutputDTOTypeEnum.Sevendaystodie]: '7d2d',
+  [GameServerOutputDTOTypeEnum.Minecraft]: 'minecraft',
 };
 
 export const ItemSelect: FC<ItemSelectProps> = ({

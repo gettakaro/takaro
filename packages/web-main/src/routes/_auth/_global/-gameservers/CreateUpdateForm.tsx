@@ -41,6 +41,10 @@ const gameTypeSelectOptions = [
     name: '7 Days to die',
     value: GameServerCreateDTOTypeEnum.Sevendaystodie,
   },
+  {
+    name: 'Minecraft',
+    value: GameServerCreateDTOTypeEnum.Minecraft,
+  },
 ];
 
 const ButtonContainer = styled.div`
