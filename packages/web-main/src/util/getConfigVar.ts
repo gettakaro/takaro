@@ -3,6 +3,7 @@ const envMap: Record<keyof TakaroConfig, string> = {
   oryUrl: 'VITE_ORY_URL',
   posthogApiUrl: 'VITE_POSTHOG_API_URL',
   posthogPublicApiKey: 'VITE_POSTHOG_PUBLIC_API_KEY',
+  takaroVersion: 'VITE_TAKARO_VERSION',
 } as const;
 
 export interface TakaroConfig {
@@ -10,6 +11,7 @@ export interface TakaroConfig {
   oryUrl: string;
   posthogApiUrl: string;
   posthogPublicApiKey: string;
+  takaroVersion: string;
 }
 
 declare global {
@@ -29,4 +31,13 @@ export function getConfigVar(name: keyof typeof envMap) {
     return metaEnvVar;
   }
   throw new Error(`Environment variable ${envVarKey} is not defined`);
+}
+
+export function getTakaroVersionComponents(takaroVersionString: string) {
+  const parts = takaroVersionString.split('-');
+  return {
+    version: parts[0],
+    commitHash: parts[1],
+    buildData: parts[2],
+  };
 }
