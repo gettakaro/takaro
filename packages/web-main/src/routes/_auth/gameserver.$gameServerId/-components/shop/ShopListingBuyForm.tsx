@@ -46,7 +46,7 @@ export const ShopListingBuyForm: FC<ShopListingBuyFormProps> = ({
       enqueueSnackbar({
         variant: 'default',
         type: 'success',
-        message: `successfully bought listing for ! ${price} ${currencyName}`,
+        message: `successfully bought listing for ${amount * price} ${currencyName}!`,
       });
     } catch {
       enqueueSnackbar({ variant: 'default', type: 'error', message: 'Failed to buy listing ${}' });
