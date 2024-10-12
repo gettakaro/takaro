@@ -55,6 +55,13 @@ export const StyledTable = styled.table<{ density: Density }>`
     &:first-child {
       padding-left: ${({ theme }) => theme.spacing['1']};
     }
+
+    &.subrow {
+      &:first-child {
+        padding-left: 0;
+        padding-bottom: 0;
+      }
+    }
   }
 
   tfoot {
