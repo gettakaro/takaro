@@ -170,7 +170,7 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
                           <Tooltip placement="top">
                             <Tooltip.Trigger asChild>
                               <IconButton
-                                disabled={index === fields.length - 1}
+                                disabled={readOnly || index === fields.length - 1}
                                 onClick={() => moveItem(index, index + 1)}
                                 icon={<FieldDownIcon size={16} cursor="pointer" />}
                                 ariaLabel="Move down"
@@ -182,7 +182,7 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
                           <Tooltip placement="top">
                             <Tooltip.Trigger asChild>
                               <IconButton
-                                disabled={index === 0}
+                                disabled={readOnly || index === 0}
                                 onClick={() => {
                                   moveItem(index, index - 1);
                                 }}
@@ -196,8 +196,9 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
                             <Tooltip.Trigger asChild>
                               <IconButton
                                 size="tiny"
-                                onClick={() => !readOnly && removeItem(index)}
+                                onClick={() => removeItem(index)}
                                 icon={<RemoveFieldIcon />}
+                                disabled={readOnly}
                                 ariaLabel="Remove field"
                               />
                             </Tooltip.Trigger>
