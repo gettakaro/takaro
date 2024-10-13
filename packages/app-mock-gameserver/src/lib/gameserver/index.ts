@@ -13,6 +13,7 @@ import {
   IPosition,
   HookEvents,
   ChatChannel,
+  EventEntityKilled,
 } from '@takaro/modules';
 import { faker } from '@faker-js/faker';
 import { config } from '../../config.js';
@@ -221,6 +222,21 @@ export class MockGameserver implements IMockGameServer {
       const [_, playerId] = rawCommand.split(' ');
       await this.unbanPlayer(new IPlayerReferenceDTO({ gameId: playerId }));
       output.rawResult = `Unbanned player ${playerId}`;
+      output.success = true;
+    }
+
+    if (rawCommand.startsWith('triggerKill')) {
+      const [_, playerId] = rawCommand.split(' ');
+      const player = await this.getPlayer(new IPlayerReferenceDTO({ gameId: playerId }));
+      this.emitEvent(
+        GameEvents.ENTITY_KILLED,
+        new EventEntityKilled({
+          entity: 'zombie',
+          player,
+          weapon: 'knife',
+        }),
+      );
+      output.rawResult = `Triggered kill for player ${playerId}`;
       output.success = true;
     }
 
