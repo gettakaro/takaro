@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto';
-import { upMany, logs, upAll, down, run, pullAll, buildOne } from 'docker-compose/dist/v2.js';
+import { upMany, logs, upAll, down, run, pullAll, buildOne } from 'docker-compose/v2';
 import { $ } from 'zx';
 import { writeFile, mkdir } from 'fs/promises';
 
@@ -13,7 +13,7 @@ async function waitUntilHealthyHttp(url, maxRetries = 5) {
     if (stdout === '200') {
       return;
     }
-  } catch (err) {}
+  } catch (err) { }
 
   if (maxRetries > 0) {
     await sleep(1000);
