@@ -55,7 +55,7 @@ export const ShopOrderTableView: FC<ShopOrderTableView> = ({ gameServerId }) => 
         listingId: columnSearch.columnSearchState.find((search) => search.id === 'listingId')?.value,
         status: columnSearch.columnSearchState.find((search) => search.id === 'status')?.value,
       },
-      extend: ['listing'],
+      extend: ['listing', 'listing.items.item'],
     }),
   });
 
