@@ -69,6 +69,11 @@ export const ServerSideSubmit: StoryFn<SelectQueryFieldProps> = (args) => {
           handleInputValueChange={mockAPICall}
           isLoadingData={loading}
           required={false}
+          hasNextPage={false}
+          optionCount={10}
+          isFetching={false}
+          isFetchingNextPage={false}
+          fetchNextPage={() => {}}
           name="film"
         >
           {/* In this case the label is the same as the value but ofcourse that can differ*/}
@@ -124,6 +129,11 @@ export const ClientSideSubmit: StoryFn<SelectQueryFieldProps> = (args) => {
           handleInputValueChange={handleInputChange}
           required={false}
           debounce={0}
+          hasNextPage={false}
+          optionCount={10}
+          isFetching={false}
+          isFetchingNextPage={false}
+          fetchNextPage={() => {}}
           name="film"
         >
           {/* In this case the label is the same as the value but ofcourse that can differ*/}
@@ -186,6 +196,11 @@ export const ClientSideMultiSelectSubmit: StoryFn<SelectQueryFieldProps> = (args
           required={false}
           canClear={args.canClear}
           debounce={0}
+          hasNextPage={false}
+          optionCount={10}
+          isFetching={false}
+          isFetchingNextPage={false}
+          fetchNextPage={() => {}}
           multiple
           name="films"
         >
@@ -240,6 +255,11 @@ export const Generic: StoryFn<SelectQueryFieldProps> = () => {
         hasDescription={false}
         value={result}
         name="film"
+        hasNextPage={false}
+        optionCount={10}
+        isFetching={false}
+        isFetchingNextPage={false}
+        fetchNextPage={() => {}}
       >
         {/* In this case the label is the same as the value but ofcourse that can differ*/}
         <SelectQueryField.OptionGroup>

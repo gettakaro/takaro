@@ -47,7 +47,12 @@ export const ToggleButtonGroup: FC<ToggleButtonGroupProps> & SubComponents = ({
     const m = new Map<string, boolean>();
     Children.forEach(children, (child) => {
       if (isValidElement(child)) {
-        m.set(child.props.value, false);
+        console.log(child.props.value, defaultValue);
+        if (child.props.value === defaultValue) {
+          m.set(child.props.value, true);
+        } else {
+          m.set(child.props.value, false);
+        }
       }
     });
     return m;
@@ -65,7 +70,16 @@ export const ToggleButtonGroup: FC<ToggleButtonGroupProps> & SubComponents = ({
       }
       return setSelected(value);
     }
-    // handle case that each button has a seperate state
+
+    // In case there always has to be one value selected, the clicked value is true and there is currently only one value selected then we don't do anything
+    if (
+      !canSelectNone &&
+      (selected as Map<string, boolean>).get(value) === true &&
+      Array.from((selected as Map<string, boolean>).values()).filter(Boolean).length === 1
+    ) {
+      return;
+    }
+
     setSelected(new Map((selected as Map<string, boolean>).set(value, !(selected as Map<string, boolean>).get(value))));
   };
 

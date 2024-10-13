@@ -17,7 +17,9 @@ export const ToggleButton = forwardRef<HTMLButtonElement, ToggleButtonProps>(fun
   { selected = false, disabled = false, onClick = undefined, value, parentClickEvent = () => {}, children, tooltip },
   ref,
 ) {
-  const handleOnClick = () => {
+  const handleOnClick = (m: MouseEvent) => {
+    m.preventDefault();
+    m.stopPropagation();
     if (disabled) return;
     parentClickEvent(value);
     if (onClick) {

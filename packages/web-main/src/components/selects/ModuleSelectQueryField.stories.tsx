@@ -1,11 +1,10 @@
-import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
-import { ModuleSelectView, ModuleSelectViewProps } from './ModuleSelect';
+import { ModuleSelectView, ModuleSelectViewProps } from './ModuleSelectQueryField';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { ModuleOutputDTO } from '@takaro/apiclient';
 
 export default {
-  title: 'ModuleSelect',
+  title: 'ModuleSelectQueryField',
   component: ModuleSelectView,
 } as Meta<ModuleSelectViewProps>;
 
@@ -41,7 +40,16 @@ export const Default: StoryFn<ModuleSelectViewProps> = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <ModuleSelectView control={control} name="moduleId" modules={modules} />
+      <ModuleSelectView
+        control={control}
+        name="moduleId"
+        modules={modules}
+        fetchNextPage={() => {}}
+        isFetchingNextPage={false}
+        hasNextPage={false}
+        isFetching={false}
+        setModuleName={() => {}}
+      />
     </form>
   );
 };

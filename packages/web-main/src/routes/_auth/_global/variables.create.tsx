@@ -1,5 +1,5 @@
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
-import { ExecutionType, IFormInputs, VariablesForm } from './-variables/VariableCreateUpdateForm';
+import { IFormInputs, VariablesForm } from './-variables/VariablesForm';
 import { useVariableCreate } from 'queries/variable';
 import { hasPermission } from 'hooks/useHasPermission';
 import { VariableCreateDTO } from '@takaro/apiclient';
@@ -34,5 +34,5 @@ function Component() {
     mutate(createdVariable);
   }
 
-  return <VariablesForm isLoading={isPending} submit={createVariable} type={ExecutionType.CREATE} error={error} />;
+  return <VariablesForm isLoading={isPending} onSubmit={createVariable} error={error} />;
 }

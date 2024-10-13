@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { Currency } from './-PlayerCurrency';
-import { GameServerSelect } from 'components/selects';
+import { GameServerSelectQueryField } from 'components/selects';
 import { useForm } from 'react-hook-form';
 import { playersOnGameServersQueryOptions } from 'queries/pog';
 import { gameServerSettingQueryOptions } from 'queries/setting';
@@ -52,7 +52,7 @@ function Component() {
           dismiss
         />
       )}
-      <GameServerSelect
+      <GameServerSelectQueryField
         control={control}
         name="gameServerId"
         filter={(gameServer) => gameServerIds.includes(gameServer.id)}

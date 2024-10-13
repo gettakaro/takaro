@@ -1,4 +1,10 @@
-import { useMutation, useQueryClient, queryOptions, infiniteQueryOptions } from '@tanstack/react-query';
+import {
+  useMutation,
+  useQueryClient,
+  queryOptions,
+  infiniteQueryOptions,
+  keepPreviousData,
+} from '@tanstack/react-query';
 import { getApiClient } from 'util/getApiClient';
 import {
   APIOutput,
@@ -28,7 +34,7 @@ import {
   ModuleUpdateDTO,
 } from '@takaro/apiclient';
 
-import { queryParamsToArray, hasNextPage, mutationWrapper } from './util';
+import { queryParamsToArray, getNextPage, mutationWrapper } from './util';
 import { AxiosError, AxiosResponse } from 'axios';
 import { ErrorMessageMapping } from '@takaro/lib-components/src/errors';
 import { queryClient } from 'queryClient';
@@ -87,9 +93,11 @@ export const modulesQueryOptions = (queryParams: ModuleSearchInputDTO = {}) =>
 export const modulesInfiniteQueryOptions = (queryParams: ModuleSearchInputDTO = {}) =>
   infiniteQueryOptions<ModuleOutputArrayDTOAPI, AxiosError<ModuleOutputArrayDTOAPI>>({
     queryKey: [...moduleKeys.list(), 'infinite', ...queryParamsToArray(queryParams)],
-    queryFn: async () => (await getApiClient().module.moduleControllerSearch(queryParams)).data,
+    queryFn: async ({ pageParam }) =>
+      (await getApiClient().module.moduleControllerSearch({ ...queryParams, page: pageParam as number })).data,
     initialPageParam: 0,
-    getNextPageParam: (lastPage) => hasNextPage(lastPage.meta),
+    getNextPageParam: (lastPage) => getNextPage(lastPage.meta),
+    placeholderData: keepPreviousData,
   });
 
 export const moduleQueryOptions = (moduleId: string) =>
