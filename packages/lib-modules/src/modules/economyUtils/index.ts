@@ -73,7 +73,7 @@ export class EconomyUtils extends BuiltinModule<EconomyUtils> {
         function: this.loadFn('commands', 'revokeCurrency'),
         name: 'revokeCurrency',
         trigger: 'revokecurrency',
-        helpText: 'Grant money to a player. The money is not taken from your own balance but is new currency.',
+        helpText: 'Revokes money from a player. The money disappears.',
         arguments: [
           {
             name: 'receiver',
