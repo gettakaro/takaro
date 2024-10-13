@@ -180,7 +180,11 @@ const ShopOrderActionsDataQueryWrapper: FC<{ shopOrder: ShopOrderOutputDTO }> = 
     return '';
   }
 
-  return <ShopOrderActions shopOrder={shopOrder} gameServerId={gameServerId} playerId={data.playerId!} />;
+  if (!data.playerId) {
+    return '';
+  }
+
+  return <ShopOrderActions shopOrder={shopOrder} gameServerId={gameServerId} playerId={data.playerId} />;
 };
 
 const ShopOrderActions: FC<ShopOrderActionsProps> = ({ shopOrder, gameServerId, playerId }) => {
@@ -257,5 +261,9 @@ export const UserToPlayer: FC<{ userId: string }> = ({ userId }) => {
     return 'unknown';
   }
 
-  return <PlayerContainer playerId={data.playerId!} />;
+  if (!data.playerId) {
+    return `user: ${data.name}`;
+  }
+
+  return <PlayerContainer playerId={data.playerId} />;
 };
