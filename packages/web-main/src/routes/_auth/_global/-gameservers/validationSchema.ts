@@ -66,13 +66,20 @@ export const validationSchema = baseShape.and(
     z.object({
       type: z.literal(GameServerCreateDTOTypeEnum.Minecraft.valueOf()),
       connectionInfo: z.object({
-        host: z
-          .string()
-          .regex(FQDN_REGEX, 'The provided value is not a valid FQDN')
-          .min(1, { message: 'Host cannot be empty' })
-          .optional(),
-        useTls: z.boolean().optional(),
+        host: z.union([
+          z
+            .string()
+            .regex(FQDN_REGEX, 'The provided value is not a valid FQDN')
+            .min(1, { message: 'Host cannot be empty' })
+            .optional(),
+          z
+            .string()
+            .regex(IPV4_AND_PORT_REGEX, 'The provided value is not of the format ipv4:port')
+            .min(1, { message: 'Host cannot not be empty' })
+            .optional(),
+        ]),
       }),
+      useTls: z.boolean().optional(),
     }),
   ]),
 );

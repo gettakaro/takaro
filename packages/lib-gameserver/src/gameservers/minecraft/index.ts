@@ -10,75 +10,84 @@ import {
   TestReachabilityOutputDTO,
 } from '../../interfaces/GameServer.js';
 import { MinecraftEmitter } from './emitter.js';
-import { Socket, io } from 'socket.io-client';
 import assert from 'assert';
 import { MinecraftConnectionInfo } from './connectionInfo.js';
 import { Settings } from '@takaro/apiclient';
+import WebSocket from 'ws';
+import { randomUUID } from 'crypto';
+
+const log = logger('minecraft');
 
 @traceableClass('game:minecraft')
 export class Minecraft implements IGameServer {
-  private logger = logger('Minecraft');
   connectionInfo: MinecraftConnectionInfo;
   emitter: MinecraftEmitter;
-  io: Socket;
+  private client: WebSocket | null;
 
   constructor(
     config: MinecraftConnectionInfo,
     private settings: Partial<Settings> = {},
   ) {
     this.connectionInfo = config;
-    this.io = io(this.connectionInfo.host, {});
-    this.emitter = new MinecraftEmitter(this.connectionInfo, this.io);
+    this.emitter = new MinecraftEmitter(this.connectionInfo);
   }
 
   getEventEmitter() {
     return this.emitter;
   }
 
-  private async getClient(timeout = 2500): Promise<Socket> {
-    if (this.io.connected) {
-      return this.io;
+  private async getClient() {
+    if (this.client && this.client.readyState === WebSocket.OPEN) {
+      return this.client;
     }
 
-    return Promise.race([
-      new Promise<Socket>((resolve, reject) => {
-        const onConnect = () => {
-          this.io.off('connect_error', onConnectError);
-          resolve(this.io);
-        };
-
-        const onConnectError = (err: Error) => {
-          this.io.off('connect', onConnect);
-          reject(err);
-        };
-
-        this.io.on('connect', onConnect);
-        this.io.on('connect_error', onConnectError);
-      }),
-      new Promise<Socket>((_, reject) => {
-        setTimeout(() => {
-          this.io.off('connect');
-          this.io.off('connect_error');
-          reject(new Error(`Connection timed out after ${timeout}ms`));
-        }, timeout);
-      }),
-    ]);
+    this.client = await MinecraftEmitter.getClient(this.connectionInfo);
+    return this.client;
   }
 
-  private async requestFromServer(event: string, ...args: any[]) {
+  private async requestFromServer(rawCommand: string, ..._args: any[]) {
     const client = await this.getClient();
-    return client.timeout(30000).emitWithAck(event, ...args);
+    return new Promise<CommandOutput>((resolve, reject) => {
+      const command = rawCommand.trim();
+      const requestId = randomUUID();
+
+      const timeout = setTimeout(() => reject(), 5000);
+
+      client.on('message', (data) => {
+        const parsed = JSON.parse(data.toString());
+
+        if (parsed.Identifier !== requestId) {
+          return;
+        }
+
+        const commandResult = parsed.Message;
+        clearTimeout(timeout);
+        return resolve(new CommandOutput({ rawResult: commandResult }));
+      });
+
+      log.debug('requestFromServer - sending command', { command });
+      client.send(
+        JSON.stringify({
+          Message: command,
+          Identifier: requestId,
+          Name: 'Takaro',
+        }),
+      );
+    });
   }
 
   async getPlayer(player: IPlayerReferenceDTO): Promise<IGamePlayer | null> {
+    // @ts-expect-error TODO, fix this properly :)
     return this.requestFromServer('getPlayer', player);
   }
 
   async getPlayers(): Promise<IGamePlayer[]> {
+    // @ts-expect-error TODO, fix this properly :)
     return this.requestFromServer('getPlayers');
   }
 
   async getPlayerLocation(player: IPlayerReferenceDTO): Promise<IPosition | null> {
+    // @ts-expect-error TODO, fix this properly :)
     return this.requestFromServer('getPlayerLocation', player);
   }
 
@@ -86,6 +95,7 @@ export class Minecraft implements IGameServer {
     const start = Date.now();
     try {
       const data = await this.requestFromServer('ping');
+      // @ts-expect-error TODO, fix this properly :)
       assert(data === 'pong');
     } catch (error) {
       if (!error || !(error instanceof Error)) {
@@ -119,43 +129,53 @@ export class Minecraft implements IGameServer {
     return this.requestFromServer('executeConsoleCommand', rawCommand);
   }
 
+  // @ts-expect-error TODO, fix this properly :)
   async sendMessage(message: string, opts: IMessageOptsDTO) {
     return this.requestFromServer('sendMessage', message, opts);
   }
 
+  // @ts-expect-error TODO, fix this properly :)
   async teleportPlayer(player: IGamePlayer, x: number, y: number, z: number) {
     return this.requestFromServer('teleportPlayer', player, x, y, z);
   }
 
+  // @ts-expect-error TODO, fix this properly :)
   async kickPlayer(player: IGamePlayer, reason: string) {
     return this.requestFromServer('kickPlayer', player, reason);
   }
 
+  // @ts-expect-error TODO, fix this properly :)
   async banPlayer(options: BanDTO) {
     return this.requestFromServer('banPlayer', options);
   }
 
+  // @ts-expect-error TODO, fix this properly :)
   async unbanPlayer(player: IGamePlayer) {
     return this.requestFromServer('unbanPlayer', player);
   }
 
   async listBans(): Promise<BanDTO[]> {
+    // @ts-expect-error TODO, fix this properly :)
     return this.requestFromServer('listBans');
   }
 
   async giveItem(player: IPlayerReferenceDTO, item: string, amount: number, quality: number): Promise<void> {
+    // @ts-expect-error TODO, fix this properly :)
     return this.requestFromServer('giveItem', player, item, amount, quality);
   }
 
   async listItems(): Promise<IItemDTO[]> {
+    // @ts-expect-error TODO, fix this properly :)
     return this.requestFromServer('listItems');
   }
 
   async getPlayerInventory(player: IPlayerReferenceDTO): Promise<IItemDTO[]> {
+    // @ts-expect-error TODO, fix this properly :)
     return this.requestFromServer('getPlayerInventory', player);
   }
 
   async shutdown(): Promise<void> {
+    // @ts-expect-error TODO, fix this properly :)
     return this.requestFromServer('shutdown');
   }
 }

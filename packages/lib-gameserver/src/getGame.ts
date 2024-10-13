@@ -30,6 +30,7 @@ export async function getGame(
     case GAME_SERVER_TYPE.MOCK:
       return new Mock(new MockConnectionInfo(connectionInfo), settings);
     case GAME_SERVER_TYPE.MINECRAFT:
+      // @ts-expect-error TODO, fix this properly :)
       return new Minecraft(new MinecraftConnectionInfo(connectionInfo), settings);
     default:
       throw new errors.NotImplementedError();

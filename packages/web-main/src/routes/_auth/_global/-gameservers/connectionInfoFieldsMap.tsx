@@ -120,7 +120,7 @@ export const connectionInfoFieldsMap = (isLoading: boolean, control: Control<any
         label="Host"
         name="connectionInfo.host"
         description="Where the minecraft server is running"
-        placeholder="http://127.0.0.1:3002"
+        placeholder="minecraft.example.com:3002"
         key="minecraft-event-host"
         loading={isLoading}
         required
