@@ -26,7 +26,7 @@ import {
   AiOutlineCheck as ClaimOrderIcon,
 } from 'react-icons/ai';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { userQueryOptions } from 'queries/user';
+import { userMeQueryOptions, userQueryOptions } from 'queries/user';
 import { PlayerContainer } from 'components/Player';
 import { playerOnGameServerQueryOptions } from 'queries/pog';
 
@@ -42,10 +42,12 @@ export const ShopOrderTableView: FC<ShopOrderTableView> = ({ gameServerId }) => 
     ...shopOrdersQueryOptions({
       page: pagination.paginationState.pageIndex,
       limit: pagination.paginationState.pageSize,
-      sortBy: sorting.sortingState[0]?.id,
-      sortDirection: sorting.sortingState[0]?.desc
-        ? ShopOrderSearchInputDTOSortDirectionEnum.Desc
-        : ShopOrderSearchInputDTOSortDirectionEnum.Asc,
+      sortBy: sorting.sortingState[0] ? sorting.sortingState[0].id : 'createdAt',
+      sortDirection: sorting.sortingState[0]
+        ? sorting.sortingState[0]?.desc
+          ? ShopOrderSearchInputDTOSortDirectionEnum.Desc
+          : ShopOrderSearchInputDTOSortDirectionEnum.Asc
+        : ShopOrderSearchInputDTOSortDirectionEnum.Desc,
       filters: {
         listingId: columnFilters.columnFiltersState.find((filter) => filter.id === 'listingId')?.value,
         status: columnFilters.columnFiltersState.find((filter) => filter.id === 'status')?.value,
@@ -62,7 +64,7 @@ export const ShopOrderTableView: FC<ShopOrderTableView> = ({ gameServerId }) => 
   const columnHelper = createColumnHelper<ShopOrderOutputDTO>();
   const columnDefs = [
     columnHelper.accessor('listingId', {
-      header: 'Listing ID',
+      header: 'Listing',
       id: 'listingId',
       cell: (info) => (
         <Link
@@ -142,10 +144,10 @@ export const ShopOrderTableView: FC<ShopOrderTableView> = ({ gameServerId }) => 
   const p =
     !isLoading && data
       ? {
-          paginationState: pagination.paginationState,
-          setPaginationState: pagination.setPaginationState,
-          pageOptions: pagination.getPageOptions(data),
-        }
+        paginationState: pagination.paginationState,
+        setPaginationState: pagination.setPaginationState,
+        pageOptions: pagination.getPageOptions(data),
+      }
       : undefined;
 
   return (
@@ -167,33 +169,39 @@ interface ShopOrderActionsProps {
   shopOrder: ShopOrderOutputDTO;
   playerId: string;
   gameServerId: string;
+  currentUserId: string;
 }
 // This is only needed until user is replaced with player in shoporder.
 const ShopOrderActionsDataQueryWrapper: FC<{ shopOrder: ShopOrderOutputDTO }> = ({ shopOrder }) => {
   const { gameServerId } = useParams({ from: '/_auth/gameserver/$gameServerId/shop/orders' });
-  const { isPending, data } = useQuery(userQueryOptions(shopOrder.userId));
+  const { isPending: isPendingUser, data: user } = useQuery(userQueryOptions(shopOrder.userId));
+  const { data: me, isPending: isPendingMe } = useQuery(userMeQueryOptions());
 
-  if (isPending) {
+  if (isPendingMe || isPendingUser) {
     return <span>Loading actions...</span>;
   }
-  if (!data) {
+  if (!user || !user.playerId || !me) {
     return '';
   }
 
-  if (!data.playerId) {
-    return '';
-  }
-
-  return <ShopOrderActions shopOrder={shopOrder} gameServerId={gameServerId} playerId={data.playerId} />;
+  return (
+    <ShopOrderActions
+      currentUserId={me.user.id}
+      shopOrder={shopOrder}
+      gameServerId={gameServerId}
+      playerId={user.playerId}
+    />
+  );
 };
 
-const ShopOrderActions: FC<ShopOrderActionsProps> = ({ shopOrder, gameServerId, playerId }) => {
+const ShopOrderActions: FC<ShopOrderActionsProps> = ({ shopOrder, gameServerId, playerId, currentUserId }) => {
   const [openCancelOrderDialog, setOpenCancelOrderDialog] = useState(false);
   const { mutate: cancelShopOrder, isPending: isPendingShopOrderCancel } = useShopOrderCancel();
-  const { data } = useQuery(playerOnGameServerQueryOptions(gameServerId, playerId));
+  const { data: pog } = useQuery(playerOnGameServerQueryOptions(gameServerId, playerId));
   const { mutateAsync: claimShopOrder } = useShopOrderClaim();
   const theme = useTheme();
 
+  const orderOfCurrentUser = shopOrder.userId === currentUserId;
   const handleCancelOrderClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
     setOpenCancelOrderDialog(true);
@@ -216,10 +224,16 @@ const ShopOrderActions: FC<ShopOrderActionsProps> = ({ shopOrder, gameServerId, 
           <Dropdown.Menu.Group>
             {shopOrder.status == ShopOrderOutputDTOStatusEnum.Paid && (
               <Dropdown.Menu.Item
-                label={data?.online ? 'Claim order' : 'Claim order (player offline)'}
+                label={
+                  orderOfCurrentUser
+                    ? pog?.online
+                      ? 'Claim order'
+                      : 'Claim order (you are offline)'
+                    : 'Claim order (not your order)'
+                }
                 icon={<ClaimOrderIcon />}
                 onClick={handleClaimShopOrderClick}
-                disabled={data?.online === false}
+                disabled={pog?.online === undefined || pog?.online === false}
               />
             )}
             <Dropdown.Menu.Item
