@@ -124,12 +124,10 @@ export const GameServerSelectView: FC<GameServerSelectQueryViewProps> = ({
   isFetchingNextPage,
 }) => {
   const renderOptionGroup = (groupLabel: string, typeEnum: GameServerOutputDTOTypeEnum) => {
-    const gameServersPerType = gameServers.filter((gameServer) => {
-      return gameServer.type === typeEnum;
-    });
+    const gameServersPerType = gameServers.filter((gameServer) => gameServer.type === typeEnum);
 
     if (gameServersPerType.length === 0) {
-      return undefined;
+      return <SelectQueryField.OptionGroup />;
     }
 
     return (
@@ -192,7 +190,6 @@ export const GameServerSelectView: FC<GameServerSelectQueryViewProps> = ({
 
           if (selected === undefined) return <div>Could not find server</div>;
 
-          console.log(selected);
           if (selected.id === 'null') return <div>{selected.name}</div>;
 
           return (
@@ -204,34 +201,28 @@ export const GameServerSelectView: FC<GameServerSelectQueryViewProps> = ({
         }
       }}
     >
-      {groupByGameServerType ? (
-        <>
-          {/* IMPORTANT: make sure the types are ordered alphabetically otherwise the selected index will be wrong * since it uses the original array to select.*/}
-          {renderOptionGroup('Mock', GameServerOutputDTOTypeEnum.Mock)}
-          {renderOptionGroup('Rust', GameServerOutputDTOTypeEnum.Rust)}
-          {renderOptionGroup('7 Days to Die', GameServerOutputDTOTypeEnum.Sevendaystodie)}
-        </>
-      ) : (
-        <>
-          {gameServers.map(({ id, name: serverName, reachable }) => {
-            return (
-              <SelectQueryField.Option key={`select-${selectName}-${serverName}`} value={id} label={serverName}>
-                <Inner>
-                  <span>{serverName}</span>
-                  {reachable !== undefined && (
-                    <Tooltip placement="right">
-                      <Tooltip.Trigger asChild>
-                        <StatusDot isReachable={reachable} />
-                      </Tooltip.Trigger>
-                      <Tooltip.Content>{reachable ? 'Server online' : 'Server offline'}</Tooltip.Content>
-                    </Tooltip>
-                  )}
-                </Inner>
-              </SelectQueryField.Option>
-            );
-          })}
-        </>
-      )}
+      {groupByGameServerType && renderOptionGroup('Mock', GameServerOutputDTOTypeEnum.Mock)}
+      {groupByGameServerType && renderOptionGroup('Rust', GameServerOutputDTOTypeEnum.Rust)}
+      {groupByGameServerType && renderOptionGroup('7 Days to Die', GameServerOutputDTOTypeEnum.Sevendaystodie)}
+
+      {!groupByGameServerType &&
+        gameServers.map(({ id, name: serverName, reachable }) => {
+          return (
+            <SelectQueryField.Option key={`select-${selectName}-${serverName}`} value={id} label={serverName}>
+              <Inner>
+                <span>{serverName}</span>
+                {reachable !== undefined && (
+                  <Tooltip placement="right">
+                    <Tooltip.Trigger asChild>
+                      <StatusDot isReachable={reachable} />
+                    </Tooltip.Trigger>
+                    <Tooltip.Content>{reachable ? 'Server online' : 'Server offline'}</Tooltip.Content>
+                  </Tooltip>
+                )}
+              </Inner>
+            </SelectQueryField.Option>
+          );
+        })}
     </SelectQueryField>
   );
 };

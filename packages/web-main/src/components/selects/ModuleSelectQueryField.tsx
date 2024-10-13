@@ -31,7 +31,6 @@ export const ModuleSelectQueryField: FC<CustomSelectProps> = ({
   } = useInfiniteQuery(modulesInfiniteQueryOptions({ search: { name: [moduleName] }, limit: 20 }));
 
   if (isLoadingData) {
-    console.log('this triggered', isLoadingData);
     // TODO: better loading state
     return <div>loading...</div>;
   }

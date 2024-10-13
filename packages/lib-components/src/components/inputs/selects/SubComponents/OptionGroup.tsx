@@ -6,10 +6,12 @@ export interface OptionGroupProps extends PropsWithChildren {
 }
 
 export const OptionGroup: FC<OptionGroupProps> = ({ children, label }) => {
-  /* Currently this is actually never rendered. in Select.index.tsx the OptionGroup is built based on the props*/
+  {
+    /* This is actually never rendered, the optiongroup is build in the select fields themself*/
+  }
   return (
     <li>
-      {label} && <div>{label}</div>
+      {label && <div>{label}</div>}
       <ul>{children}</ul>
     </li>
   );

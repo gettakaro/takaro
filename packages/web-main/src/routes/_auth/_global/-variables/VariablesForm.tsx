@@ -114,7 +114,7 @@ export const VariablesForm: FC<CreateAndUpdateVariableformProps> = ({ variable, 
               loading={isLoading}
               description="If a different value needs to be stored for each module, select the module here."
               readOnly={readOnly}
-            />
+            />{' '}
             {error && <FormError error={error} />}
           </form>
         </Drawer.Body>
