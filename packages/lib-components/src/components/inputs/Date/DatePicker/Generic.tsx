@@ -102,8 +102,8 @@ export const GenericDatePicker: FC<GenericDatePickerProps> = ({
   const initialSelectedDateTime = value
     ? DateTime.fromISO(value)
     : isDateAllowed(DateTime.local().startOf('day'))
-    ? DateTime.local().startOf('day')
-    : findFirstAllowedDate();
+      ? DateTime.local().startOf('day')
+      : findFirstAllowedDate();
 
   const [selectedDateTime, setSelectedDateTime] = useState<DateTime>(initialSelectedDateTime);
   const [friendlyName, setFriendlyName] = useState<string | undefined>(undefined);
