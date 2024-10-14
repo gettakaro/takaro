@@ -32,7 +32,7 @@ export const ShopListingCard: FC<ShopListingCard> = ({
 
   return (
     <>
-      <Card>
+      <Card data-testid={`shoplisting-${shopListing.id}-card`}>
         <CardBody>
           <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <Header hasMultipleChildren={shopListing.draft}>
