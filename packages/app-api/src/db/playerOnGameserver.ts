@@ -120,7 +120,9 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
 
   async findOne(id: string): Promise<PlayerOnGameserverOutputWithRolesDTO> {
     const { query } = await this.getModel();
-    const data = (await query.findById(id)) as unknown as PlayerOnGameserverOutputWithRolesDTO;
+    const data = (await query
+      .findById(id)
+      .withGraphFetched('player')) as unknown as PlayerOnGameserverOutputWithRolesDTO;
 
     if (!data) {
       throw new errors.NotFoundError();

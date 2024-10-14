@@ -6,21 +6,39 @@ slug: /
 
 # Introduction
 
-Takaro is a web-based, multi-gameserver manager. It features a web interface to manage your gameservers, and a REST API to interact with them.
+Takaro is a platform that unites gamers with their communities across different games. It features a web interface to manage your game servers, and a REST API to interact with them.
+<iframe className="aspect-video w-full" src="https://www.youtube.com/embed/mbdXSR_p-i8" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" width="100%" height="500px" allowFullScreen />
 
-## Concrete
+## Modules  
+Takaro is centered around modules. You can choose from built-in modules or create custom ones to meet your community's unique needs. Modules come with customizable permissions that can be assigned to roles. You can install them globally or per game server, as well as across games.
 
-Takaro offers a versatile collection of [modules](./advanced/modules.md), simplifying your gameserver management tasks while also extending game functionality.
-Each module can be enabled/disabled per game server you manage. Each module has its own configuration which you can further fine tune to your own needs.
+### Built-in Modules  
+Takaro comes with several [built-in Modules](./built-in-modules.mdx) that can be installed on each server of each game. Each module is configurable, allowing you to tailor it to your specific requirements. Here are a few examples of built-in modules: 
 
-Here are some examples of modules that are available:
+- **AFK-Kick Module**: This module automatically monitors player activity and removes players from the server if they have been inactive for a specified period. The duration of inactivity is configurable, enabling community managers to set different thresholds based on server preferences. This is useful for keeping the server active and freeing up space for other players.
+  
+- **Teleport Module**: The teleport module enables players to create teleportation points within the game and travel between them using specific in-game commands. You can configure the module to limit the number of teleport points a player can create or set cooldowns to prevent players from escaping certain situations unfairly. This helps manage player movement and maintain balance within the game.
 
-- **AFK-kick module**:
-  incorporates a time-bound tracking system to monitor player activity and act accordingly;
-  When enabling the module, the module configuration allows you to set a specific duration of inactivity after which a player should be removed from the game.
+### Custom Modules  
+Takaro allows you to build your own [Custom Modules](./advanced/modules.md) through the [Module Builder](./advanced/custom-modules.md). Creating custom modules requires some coding knowledge, but it offers great flexibility to extend and enhance the platform’s functionality.
 
-- **Teleport module**:
-  offers set of in-game commands enabling players to create their own teleport points and teleport to them. Again, the module configuration can be adjusted to e.g. limit the number of teleport points per player or set a waiting period before teleporting, to prevent escaping from certain situations.
+## Game Support  
+Takaro currently supports popular games like _Rust_ and _7 Days to Die_, with _Minecraft_ support coming soon. Our platform is designed to support more games in the future.
 
-The above modules represent only a tiny fraction of the [modules maintained by the Takaro team](./built-in-modules).
-If however the current modules provided by Takaro don't cater to your specific needs, don't worry. Takaro also provides a development environment to create your [own custom modules](./advanced/custom-modules.md).
+## Unified Player Profile  
+Takaro unifies your [players](./players.md) across games and servers into one profile, tracking their roles, inventory, history, and activities. 
+
+## Permissions and roles
+You can control access to modules by assigning [roles and permissions](./roles-and-permissions.md) to your [players](./players.md) and users.
+
+## Discord
+Takaro seamlessly integrates with Discord, linking communication between your game servers and communities.
+
+## Economy and Shop  
+You can enable [economy](./economy.md) for each game server. This allows you to monetize your community through an in-game shop, where players can make purchases directly linked to their profiles.
+
+## How to get started?
+Takaro is built to support communities of all sizes with powerful, scalable tools for managing game servers, players, and monetization. Dive into the [How-To Guides](./how-to-guides/connect-7dtd-server.md) for step-by-step instructions on setting up and customizing your platform.
+
+## Feature requests
+Have ideas for new features? Submit or vote on existing feature requests at [roadmap.takaro.io](https://roadmap.takaro.io/).
