@@ -29,6 +29,11 @@ export const ControlledSelectQueryField: FC<ControlledSelectQueryFieldProps> & S
     inPortal,
     debounce,
     isLoadingData,
+    hasNextPage,
+    fetchNextPage,
+    isFetching,
+    isFetchingNextPage,
+    optionCount,
     handleInputValueChange,
   } = defaultsApplier(props);
 
@@ -85,7 +90,12 @@ export const ControlledSelectQueryField: FC<ControlledSelectQueryFieldProps> & S
           onFocus={handleOnFocus}
           value={field.value}
           debounce={debounce}
+          optionCount={optionCount}
           handleInputValueChange={handleInputValueChange}
+          isFetching={isFetching}
+          isFetchingNextPage={isFetchingNextPage}
+          hasNextPage={hasNextPage}
+          fetchNextPage={fetchNextPage}
         >
           {children}
         </GenericSelectQueryField>

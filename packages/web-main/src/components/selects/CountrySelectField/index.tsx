@@ -15,7 +15,7 @@ const Flag = styled.img`
 
 export type CountrySelectProps = CustomSelectProps;
 
-export const CountrySelect: FC<CountrySelectProps> = ({
+export const CountrySelectField: FC<CountrySelectProps> = ({
   label = 'Countries',
   control,
   name: selectName,

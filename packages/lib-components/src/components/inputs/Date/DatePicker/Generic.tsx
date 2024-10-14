@@ -153,8 +153,6 @@ export const GenericDatePicker: FC<GenericDatePickerProps> = ({
     } as unknown as React.FocusEvent<HTMLInputElement>;
   }, []);
 
-  console.log('value', value);
-
   useLayoutEffect(() => {
     if (onFocus && onBlur) {
       if (open) {
@@ -183,14 +181,13 @@ export const GenericDatePicker: FC<GenericDatePickerProps> = ({
     e.preventDefault();
     e.stopPropagation();
     if (onChange) {
-      console.log('onChange triggered');
       onChange(null as any);
     }
   };
 
   return (
     <Popover placement={popOverPlacement} open={open} onOpenChange={setOpen}>
-      <Popover.Trigger asChild>
+      <Popover.Trigger asChild readOnly={readOnly}>
         <ResultContainer readOnly={readOnly} hasError={hasError} onClick={() => setOpen(!open)}>
           <span>{renderResult()}</span>
           {!readOnly && canClear && value && !open && (
@@ -216,9 +213,6 @@ export const GenericDatePicker: FC<GenericDatePickerProps> = ({
                       setFriendlyName(undefined);
                     }
                     if (isDateOnly) {
-                      {
-                        console.log('this is triggered');
-                      }
                       handleOnChange(date);
                     }
                   }}

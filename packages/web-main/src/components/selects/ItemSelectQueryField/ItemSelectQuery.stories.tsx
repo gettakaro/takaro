@@ -84,6 +84,11 @@ export const Default: StoryFn<ItemSelectQueryViewProps> = (args) => {
           size={args.size}
           setItemName={setSelectedItem}
           gameServer={gameServer}
+          hasNextPage={false}
+          isFetchingNextPage={false}
+          isFetching={false}
+          optionCount={items.length + 1}
+          fetchNextPage={() => {}}
           items={items}
         />
         <Button type="submit" text="submit" />

@@ -14,6 +14,7 @@ export const PageSizeSelect: FC<PageSizeSelectProps> = ({ onPageSizeChange, page
       id="page-size"
       multiple={false}
       name="pageSize"
+      inPortal={true}
       value={pageSize.toString() || '10'}
       onChange={onPageSizeChange}
       render={(selectedItems) => {

@@ -48,22 +48,22 @@ services:
     env_file:
       - .env 
     environment:
-      POSTGRES_HOST: postgresql      
+      POSTGRES_HOST: postgresql
   takaro_connector:
     image: ghcr.io/gettakaro/takaro-app-connector:latest
     container_name: takaro_connector
     environment:
       REDIS_HOST: "redis"
-      TAKARO_SERVICE: "app-connector"  
+      TAKARO_SERVICE: "app-connector"
       TAKARO_HOST: http://takaro_api:3000
     env_file:
-      - .env      
+      - .env
     restart: unless-stopped
 
   takaro_web:
     image: ghcr.io/gettakaro/takaro-web-main:latest
     ports:
-      - 13001:80        
+      - 13001:80
     environment:
       VITE_API: http://127.0.0.1:13000
       VITE_ORY_URL: http://127.0.0.1:4433

@@ -347,7 +347,7 @@
         "function": "import { takaro, data, checkPermission, TakaroUserError } from '@takaro/helpers';\nasync function main() {\n    const { pog: revoker, arguments: args, gameServerId } = data;\n    // args.receiver has an argument type of \"player\". Arguments of this type are automatically resolved to the player's id.\n    // If the player doesn't exist or multiple players with the same name where found, it will have thrown an error before this command is executed.\n    const receiver = args.receiver;\n    if (!checkPermission(revoker, 'ECONOMY_UTILS_MANAGE_CURRENCY')) {\n        throw new TakaroUserError('You do not have permission to use revoke currency command.');\n    }\n    const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data.value;\n    const revokerName = (await takaro.player.playerControllerGetOne(revoker.playerId)).data.data.name;\n    const receiverName = (await takaro.player.playerControllerGetOne(receiver.playerId)).data.data.name;\n    await takaro.playerOnGameserver.playerOnGameServerControllerDeductCurrency(receiver.gameServerId, receiver.playerId, {\n        currency: args.amount,\n    });\n    const messageToReceiver = takaro.gameserver.gameServerControllerSendMessage(gameServerId, {\n        message: `${args.amount} ${currencyName} were revoked by ${revokerName}`,\n        opts: {\n            recipient: {\n                gameId: receiver.gameId,\n            },\n        },\n    });\n    await Promise.all([\n        revoker.pm(`You successfully revoked ${args.amount} ${currencyName} of ${receiverName}'s balance`),\n        messageToReceiver,\n    ]);\n    return;\n}\nawait main();\n//# sourceMappingURL=revokeCurrency.js.map",
         "name": "revokeCurrency",
         "trigger": "revokecurrency",
-        "helpText": "Grant money to a player. The money is not taken from your own balance but is new currency.",
+        "helpText": "Revokes money from a player. The money disappears.",
         "arguments": [
           {
             "name": "receiver",
@@ -440,7 +440,13 @@
       }
     ],
     "hooks": [],
-    "cronJobs": [],
+    "cronJobs": [
+      {
+        "function": "import { data, takaro, checkPermission } from '@takaro/helpers';\nconst VARIABLE_KEY = 'lastZombieKillReward';\nasync function main() {\n    const { gameServerId, module: mod } = data;\n    const lastRunRes = (await takaro.variable.variableControllerSearch({\n        filters: {\n            key: [VARIABLE_KEY],\n            gameServerId: [gameServerId],\n            moduleId: [mod.moduleId],\n        },\n    })).data.data;\n    // We last ran the rewards script at this time\n    // If this is the first time we run it, just get the last 5 minutes\n    const lastRun = lastRunRes.length ? new Date(JSON.parse(lastRunRes[0].value)) : new Date(Date.now() - 5 * 60 * 1000);\n    // Fetch all the kill events since the last time we gave out rewards\n    const killEvents = (await takaro.event.eventControllerSearch({\n        filters: { eventName: ['entity-killed'], gameserverId: [gameServerId] },\n        greaterThan: { createdAt: lastRun.toISOString() },\n        limit: 1000,\n    })).data.data;\n    console.log(`Found ${killEvents.length} kill events since ${lastRun.toISOString()}`);\n    // Group the events by player\n    const playerKills = {};\n    for (const killEvent of killEvents) {\n        if (!playerKills[killEvent.playerId]) {\n            playerKills[killEvent.playerId] = [];\n        }\n        playerKills[killEvent.playerId].push(killEvent);\n    }\n    // Give each player their reward\n    // We use Promise.allSettled to run this concurrently\n    const results = await Promise.allSettled(Object.entries(playerKills).map(async ([playerId, kills]) => {\n        const pog = (await takaro.playerOnGameserver.playerOnGameServerControllerGetOne(gameServerId, playerId)).data\n            .data;\n        const hasPermission = checkPermission(pog, 'ZOMBIE_KILL_REWARD_OVERRIDE');\n        const defaultReward = mod.userConfig.zombieKillReward;\n        const reward = hasPermission && hasPermission.count != null ? hasPermission.count : defaultReward;\n        const totalReward = reward * kills.length;\n        return takaro.playerOnGameserver.playerOnGameServerControllerAddCurrency(gameServerId, playerId, {\n            currency: totalReward,\n        });\n    }));\n    // Log any errors\n    for (const result of results) {\n        if (result.status === 'rejected') {\n            console.error(result.reason);\n            throw new Error(`Failed to give rewards: ${result.reason}`);\n        }\n    }\n    // Update the last run time\n    if (lastRunRes.length) {\n        await takaro.variable.variableControllerUpdate(lastRunRes[0].id, {\n            value: JSON.stringify(new Date()),\n        });\n    }\n    else {\n        await takaro.variable.variableControllerCreate({\n            key: VARIABLE_KEY,\n            value: JSON.stringify(new Date()),\n            moduleId: mod.moduleId,\n            gameServerId,\n        });\n    }\n}\nawait main();\n//# sourceMappingURL=zombieKillReward.js.map",
+        "name": "zombieKillReward",
+        "temporalValue": "*/5 * * * *"
+      }
+    ],
     "functions": [],
     "permissions": [
       {
@@ -448,11 +454,17 @@
         "friendlyName": "Manage currency",
         "description": "Allows players to manage currency of other players. This includes granting and revoking currency.",
         "canHaveCount": false
+      },
+      {
+        "permission": "ZOMBIE_KILL_REWARD_OVERRIDE",
+        "friendlyName": "Zombie kill reward override",
+        "description": "Allows a role to override the amount of currency a player receives for killing a entity.",
+        "canHaveCount": true
       }
     ],
     "name": "economyUtils",
     "description": "A set of commands to allow players to manage their currency.",
-    "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"pendingAmount\":{\"title\":\"Pending amount\",\"type\":\"number\",\"description\":\"When a player transfers money, they must confirm the transfer when the amount is equal or above this value. Set to 0 to disable.\",\"default\":0}},\"required\":[],\"additionalProperties\":false}",
+    "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"pendingAmount\":{\"title\":\"Pending amount\",\"type\":\"number\",\"description\":\"When a player transfers money, they must confirm the transfer when the amount is equal or above this value. Set to 0 to disable.\",\"default\":0},\"zombieKillReward\":{\"title\":\"Zombie kill reward\",\"type\":\"number\",\"description\":\"The default amount of currency a player receives for killing a zombie. This can be overridden by roles.\",\"default\":1}},\"required\":[],\"additionalProperties\":false}",
     "uiSchema": "{}"
   },
   {

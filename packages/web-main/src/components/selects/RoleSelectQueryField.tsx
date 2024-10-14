@@ -1,9 +1,9 @@
-import { SelectField, styled } from '@takaro/lib-components';
-import { FC } from 'react';
+import { PaginationProps, SelectQueryField, styled } from '@takaro/lib-components';
+import { FC, useState } from 'react';
 import { CustomSelectProps } from '.';
-import { rolesQueryOptions } from 'queries/role';
+import { rolesInfiniteQueryOptions } from 'queries/role';
 import { RoleOutputDTO } from '@takaro/apiclient';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
 
 const Inner = styled.div`
   display: flex;
@@ -12,7 +12,7 @@ const Inner = styled.div`
   width: 100%;
 `;
 
-export const RoleSelect: FC<CustomSelectProps> = ({
+export const RoleSelectQueryField: FC<CustomSelectProps> = ({
   control,
   name,
   loading,
@@ -27,8 +27,21 @@ export const RoleSelect: FC<CustomSelectProps> = ({
   canClear,
   multiple,
 }) => {
-  const { data: roles, isLoading: isLoadingData } = useQuery(
-    rolesQueryOptions({ sortBy: 'system', sortDirection: 'asc' }),
+  const [roleName, setRoleName] = useState<string>('');
+  const {
+    data,
+    isLoading: isLoadingData,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isFetching,
+  } = useInfiniteQuery(
+    rolesInfiniteQueryOptions({
+      sortBy: 'system',
+      sortDirection: 'asc',
+      limit: 20,
+      search: { name: [roleName] },
+    }),
   );
 
   if (isLoadingData) {
@@ -36,11 +49,12 @@ export const RoleSelect: FC<CustomSelectProps> = ({
     return <div>loading...</div>;
   }
 
-  if (!roles || roles.data.length === 0) {
-    return <div>no game servers</div>;
+  if (!data || data.pages.length === 0) {
+    return <div>no roles</div>;
   }
 
-  const filteredRoles = roles.data.filter((role) => role.name !== 'User' && role.name !== 'Player');
+  const roles = data.pages.flatMap((page) => page.data);
+  const filteredRoles = roles.filter((role) => role.name !== 'User' && role.name !== 'Player');
 
   return (
     <RoleSelectView
@@ -58,11 +72,21 @@ export const RoleSelect: FC<CustomSelectProps> = ({
       label={label}
       canClear={canClear}
       multiple={multiple}
+      setRoleName={setRoleName}
+      fetchNextPage={fetchNextPage}
+      hasNextPage={hasNextPage}
+      isFetchingNextPage={isFetchingNextPage}
+      isFetching={isFetching}
     />
   );
 };
 
-export type RoleSelectViewProps = CustomSelectProps & { roles: RoleOutputDTO[] };
+export type RoleSelectViewProps = CustomSelectProps &
+  PaginationProps & {
+    roles: RoleOutputDTO[];
+    isLoadingData?: boolean;
+    setRoleName: (roleName: string) => void;
+  };
 export const RoleSelectView: FC<RoleSelectViewProps> = ({
   control,
   roles,
@@ -78,11 +102,17 @@ export const RoleSelectView: FC<RoleSelectViewProps> = ({
   loading,
   label,
   multiple,
+  isFetching,
+  hasNextPage,
+  isFetchingNextPage,
+  fetchNextPage,
+  setRoleName,
 }) => {
   return (
-    <SelectField
-      control={control}
+    <SelectQueryField
       name={selectName}
+      control={control}
+      debounce={500}
       label={label}
       readOnly={readOnly}
       hint={hint}
@@ -91,13 +121,17 @@ export const RoleSelectView: FC<RoleSelectViewProps> = ({
       inPortal={inPortal}
       description={description}
       required={required}
-      enableFilter={roles.length > 10}
       loading={loading}
       canClear={canClear}
       multiple={multiple}
+      isFetching={isFetching}
+      hasNextPage={hasNextPage}
+      isFetchingNextPage={isFetchingNextPage}
+      fetchNextPage={fetchNextPage}
+      handleInputValueChange={(value) => setRoleName(value)}
       render={(selectedItems) => {
         if (selectedItems.length === 0) {
-          return <div>Select...</div>;
+          return <div>Select role...</div>;
         }
 
         if (multiple) {
@@ -111,29 +145,29 @@ export const RoleSelectView: FC<RoleSelectViewProps> = ({
         return <div>{selectedRole.name}</div>;
       }}
     >
-      <SelectField.OptionGroup label="Custom">
+      <SelectQueryField.OptionGroup label="Custom">
         {roles
           .filter((role) => !role.system)
           .map(({ name, id }) => (
-            <SelectField.Option key={`select-${name}`} value={id} label={name}>
+            <SelectQueryField.Option key={`select-${name}`} value={id} label={name}>
               <Inner>
                 <span>{name}</span>
               </Inner>
-            </SelectField.Option>
+            </SelectQueryField.Option>
           ))}
-      </SelectField.OptionGroup>
+      </SelectQueryField.OptionGroup>
 
-      <SelectField.OptionGroup label="System">
+      <SelectQueryField.OptionGroup label="System">
         {roles
           .filter((role) => role.system)
           .map(({ name, id }) => (
-            <SelectField.Option key={`select-${name}`} value={id} label={name}>
+            <SelectQueryField.Option key={`select-${name}`} value={id} label={name}>
               <Inner>
                 <span>{name}</span>
               </Inner>
-            </SelectField.Option>
+            </SelectQueryField.Option>
           ))}
-      </SelectField.OptionGroup>
-    </SelectField>
+      </SelectQueryField.OptionGroup>
+    </SelectQueryField>
   );
 };

@@ -13,7 +13,7 @@ import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { DateTime, Settings } from 'luxon';
-import { RoleSelect } from 'components/selects';
+import { RoleSelectQueryField } from 'components/selects';
 import { createFileRoute, redirect, useRouter } from '@tanstack/react-router';
 import { z } from 'zod';
 import { hasPermission } from 'hooks/useHasPermission';
@@ -78,7 +78,7 @@ function Component() {
             <form onSubmit={handleSubmit(onSubmit)} id="assign-user-role-form">
               <CollapseList.Item title="General">
                 <TextField readOnly control={control} name="id" label="User" />
-                <RoleSelect control={control} name="roleId" label="Role" />
+                <RoleSelectQueryField control={control} name="roleId" label="Role" />
                 <DatePicker
                   mode="absolute"
                   control={control}
@@ -86,7 +86,7 @@ function Component() {
                   name={'expiresAt'}
                   required={false}
                   loading={isPending}
-                  description={'The role will be automatically removed after this date'}
+                  description={'The role will be automatically removed after this date.'}
                   popOverPlacement={'bottom'}
                   timePickerOptions={{ interval: 30 }}
                   allowPastDates={false}

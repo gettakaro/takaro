@@ -1,13 +1,13 @@
 import { GameServerOutputDTO, GameServerOutputDTOTypeEnum, ItemsOutputDTO } from '@takaro/apiclient';
-import { Avatar, getInitials, SelectQueryField, Skeleton, styled } from '@takaro/lib-components';
+import { Avatar, getInitials, PaginationProps, SelectQueryField, Skeleton, styled } from '@takaro/lib-components';
 import { gameServerQueryOptions } from 'queries/gameserver';
-import { itemQueryOptions, itemsQueryOptions } from 'queries/item';
+import { itemQueryOptions, ItemsInfiniteQueryOptions } from 'queries/item';
 import { FC, useState, useCallback } from 'react';
-import { CustomQuerySelectProps } from '..';
-import { useQuery } from '@tanstack/react-query';
+import { CustomSelectQueryProps } from '..';
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useController } from 'react-hook-form';
 
-export interface ItemSelectProps extends CustomQuerySelectProps {
+export interface ItemSelectQueryFieldProps extends CustomSelectQueryProps {
   gameServerId: string;
 }
 
@@ -28,7 +28,7 @@ const gameServerTypeToIconFolderMap = {
   [GameServerOutputDTOTypeEnum.Sevendaystodie]: '7d2d',
 };
 
-export const ItemSelect: FC<ItemSelectProps> = ({
+export const ItemSelectQueryField: FC<ItemSelectQueryFieldProps> = ({
   control,
   name,
   hint,
@@ -50,8 +50,15 @@ export const ItemSelect: FC<ItemSelectProps> = ({
 
   const { data: gameServer, isLoading: isLoadingGameServer } = useQuery(gameServerQueryOptions(gameServerId));
 
-  const { data, isLoading: isLoadingItems } = useQuery(
-    itemsQueryOptions({ search: { name: [itemName] }, filters: { gameserverId: [gameServerId] } }),
+  const {
+    data,
+    isLoading: isLoadingItems,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+    isFetching,
+  } = useInfiniteQuery(
+    ItemsInfiniteQueryOptions({ search: { name: [itemName] }, filters: { gameserverId: [gameServerId] } }),
   );
 
   const { data: initialItem } = useQuery({
@@ -59,9 +66,9 @@ export const ItemSelect: FC<ItemSelectProps> = ({
     enabled: !!field.value,
   });
 
-  const items = data?.data ?? [];
-  const includingInitialItem =
-    initialItem && !items.some((item) => item.id === initialItem.id) ? [initialItem, ...items] : items;
+  const items = data?.pages.flatMap((page) => page.data) ?? [];
+  const itemsDoesNotHaveInitialItem = initialItem && !items.some((item) => item.id === initialItem.id);
+  const includingInitialItem = itemsDoesNotHaveInitialItem ? [initialItem, ...items] : items;
 
   if (isLoadingGameServer) {
     return <Skeleton variant="rectangular" width="100%" height="40px" />;
@@ -89,18 +96,25 @@ export const ItemSelect: FC<ItemSelectProps> = ({
       label={label}
       canClear={canClear}
       gameServer={gameServer}
+      optionCount={data?.pages[0].meta.total}
       setItemName={setItemName}
       isLoadingData={isLoadingItems}
+      fetchNextPage={fetchNextPage}
+      hasNextPage={hasNextPage}
+      isFetchingNextPage={isFetchingNextPage}
+      isFetching={isFetching}
     />
   );
 };
 
-export type ItemSelectQueryViewProps = CustomQuerySelectProps & {
-  items: ItemsOutputDTO[];
-  gameServer: GameServerOutputDTO;
-  isLoadingData?: boolean;
-  setItemName: (value: string) => void;
-};
+export type ItemSelectQueryViewProps = CustomSelectQueryProps &
+  PaginationProps & {
+    items: ItemsOutputDTO[];
+    gameServer: GameServerOutputDTO;
+    isLoadingData?: boolean;
+    setItemName: (value: string) => void;
+    optionCount?: number;
+  };
 export const ItemSelectQueryView: FC<ItemSelectQueryViewProps> = ({
   control,
   items,
@@ -120,6 +134,11 @@ export const ItemSelectQueryView: FC<ItemSelectQueryViewProps> = ({
   setItemName,
   canClear,
   label,
+  isFetching,
+  hasNextPage,
+  fetchNextPage,
+  optionCount,
+  isFetchingNextPage,
 }) => {
   const renderIcon = useCallback((gameServer: GameServerOutputDTO, item: ItemsOutputDTO) => {
     if (item.code && gameServer && gameServerTypeToIconFolderMap[gameServer.type] !== 'Mock') {
@@ -150,6 +169,11 @@ export const ItemSelectQueryView: FC<ItemSelectQueryViewProps> = ({
       required={required}
       multiple={multiple}
       description={description}
+      isFetching={isFetching}
+      hasNextPage={hasNextPage}
+      fetchNextPage={fetchNextPage}
+      isFetchingNextPage={isFetchingNextPage}
+      optionCount={optionCount}
       canClear={canClear}
       render={(selectedItems) => {
         if (selectedItems.length === 0) {

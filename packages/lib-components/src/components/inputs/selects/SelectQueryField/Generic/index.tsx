@@ -28,14 +28,15 @@ import { useDebounce } from '../../../../../hooks';
 import { setAriaDescribedBy } from '../../../layout';
 import { FeedBackContainer } from '../style';
 import { SelectItem, SelectContext, getLabelFromChildren } from '../../';
+import { PaginationProps } from '../../../';
 
 /* The SearchField depends on a few things of <Select/> */
 import { GroupLabel } from '../../SelectField/style';
 import { SelectContainer, SelectButton, StyledArrowIcon, StyledFloatingOverlay } from '../../sharedStyle';
-import { IconButton, Spinner } from '../../../../../components';
+import { IconButton, InfiniteScroll, Spinner } from '../../../../../components';
 import { GenericTextField } from '../../../TextField/Generic';
 
-interface SharedSelectQueryFieldProps {
+interface SharedSelectQueryFieldProps extends PaginationProps {
   // Enables loading data feedback for user
   isLoadingData?: boolean;
   /// The placeholder text to show when the input is empty
@@ -53,6 +54,9 @@ interface SharedSelectQueryFieldProps {
 
   /// The selected items shown in the select field
   render?: (selectedItems: SelectItem[]) => React.ReactNode;
+
+  /// The total options that will be visible when fully loaded
+  optionCount?: number;
 }
 
 interface SingleSelectQueryFieldProps extends SharedSelectQueryFieldProps {
@@ -100,12 +104,17 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
       hasError,
       children,
       readOnly,
+      isFetchingNextPage,
+      isFetching,
+      fetchNextPage,
+      hasNextPage,
       render,
       multiple = false,
       canClear = false,
       debounce = 250,
       isLoadingData: isLoading = false,
       handleInputValueChange,
+      optionCount,
     } = defaultsApplier(props);
 
     const [open, setOpen] = useState<boolean>(false);
@@ -201,6 +210,7 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
               name={`${name}-input`}
               hasDescription={false}
               icon={<SearchIcon />}
+              suffix={isLoading ? 'Loading' : optionCount !== undefined ? `Result: ${optionCount}` : undefined}
               hasError={hasError}
               value={inputValue.value}
               onChange={onInputChange}
@@ -215,6 +225,14 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
               </FeedBackContainer>
             )}
             {hasOptions && options}
+            {hasOptions && !isLoading && (
+              <InfiniteScroll
+                isFetching={isFetching}
+                hasNextPage={hasNextPage}
+                fetchNextPage={fetchNextPage}
+                isFetchingNextPage={isFetchingNextPage}
+              />
+            )}
             {/* Basically first interaction */}
             {!hasOptions && inputValue.value === '' && <FeedBackContainer>Start typing to search</FeedBackContainer>}
             {/* When there is no result */}
