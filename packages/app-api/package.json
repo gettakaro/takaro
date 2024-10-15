@@ -28,7 +28,7 @@
     "geolite2-redist": "3.1.1",
     "human-id": "4.1.1",
     "jsonwebtoken": "9.0.2",
-    "maxmind": "4.3.21",
+    "maxmind": "4.3.22",
     "passport": "0.7.0",
     "passport-oauth2": "1.8.0",
     "pg": "8.13.0"
