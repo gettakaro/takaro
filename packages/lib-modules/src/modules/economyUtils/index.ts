@@ -1,4 +1,4 @@
-import { BuiltinModule, ICommand, IPermission } from '../../BuiltinModule.js';
+import { BuiltinModule, ICommand, ICronJob, IPermission } from '../../BuiltinModule.js';
 
 export class EconomyUtils extends BuiltinModule<EconomyUtils> {
   constructor() {
@@ -16,6 +16,13 @@ export class EconomyUtils extends BuiltinModule<EconomyUtils> {
               'When a player transfers money, they must confirm the transfer when the amount is equal or above this value. Set to 0 to disable.',
             default: 0,
           },
+          zombieKillReward: {
+            title: 'Zombie kill reward',
+            type: 'number',
+            description:
+              'The default amount of currency a player receives for killing a zombie. This can be overridden by roles.',
+            default: 1,
+          },
         },
         required: [],
         additionalProperties: false,
@@ -29,6 +36,20 @@ export class EconomyUtils extends BuiltinModule<EconomyUtils> {
         description:
           'Allows players to manage currency of other players. This includes granting and revoking currency.',
         canHaveCount: false,
+      }),
+      new IPermission({
+        permission: 'ZOMBIE_KILL_REWARD_OVERRIDE',
+        friendlyName: 'Zombie kill reward override',
+        description: 'Allows a role to override the amount of currency a player receives for killing a entity.',
+        canHaveCount: true,
+      }),
+    ];
+
+    this.cronJobs = [
+      new ICronJob({
+        function: this.loadFn('cronJobs', 'zombieKillReward'),
+        name: 'zombieKillReward',
+        temporalValue: '*/5 * * * *',
       }),
     ];
 
@@ -73,7 +94,7 @@ export class EconomyUtils extends BuiltinModule<EconomyUtils> {
         function: this.loadFn('commands', 'revokeCurrency'),
         name: 'revokeCurrency',
         trigger: 'revokecurrency',
-        helpText: 'Grant money to a player. The money is not taken from your own balance but is new currency.',
+        helpText: 'Revokes money from a player. The money disappears.',
         arguments: [
           {
             name: 'receiver',

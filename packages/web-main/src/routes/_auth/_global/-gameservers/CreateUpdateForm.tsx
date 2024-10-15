@@ -128,7 +128,7 @@ export const CreateUpdateForm: FC<CreateUpdateFormProps> = ({ initialData, isLoa
                 <SelectField
                   control={control}
                   name="type"
-                  label="Game Server"
+                  label="Game Server Type"
                   required
                   loading={isLoading}
                   render={(selectedItems) => {

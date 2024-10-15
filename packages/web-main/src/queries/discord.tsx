@@ -10,7 +10,7 @@ import {
 import { AxiosError } from 'axios';
 import { getApiClient } from 'util/getApiClient';
 import { infiniteQueryOptions, queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
-import { hasNextPage, mutationWrapper } from './util';
+import { getNextPage, mutationWrapper } from './util';
 import { useSnackbar } from 'notistack';
 
 export const discordKeys = {
@@ -27,9 +27,10 @@ export const discordGuildQueryOptions = (opts: GuildSearchInputDTO) =>
 export const discordGuildInfiniteQueryOptions = (opts: GuildSearchInputDTO) =>
   infiniteQueryOptions<GuildOutputArrayDTOAPI, AxiosError<GuildOutputDTOAPI>>({
     queryKey: [...discordKeys.guilds, opts],
-    queryFn: async () => (await getApiClient().discord.discordControllerSearch(opts)).data,
+    queryFn: async ({ pageParam }) =>
+      (await getApiClient().discord.discordControllerSearch({ ...opts, page: pageParam as number })).data,
     initialPageParam: 0,
-    getNextPageParam: (lastPage) => hasNextPage(lastPage.meta),
+    getNextPageParam: (lastPage) => getNextPage(lastPage.meta),
   });
 
 export const discordInviteQueryOptions = () =>

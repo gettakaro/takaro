@@ -22,6 +22,7 @@ export default {
   args: {
     exclusive: true,
     orientation: 'horizontal',
+    defaultValue: 'left',
     fullWidth: false,
   },
 } as Meta<ToggleButtonGroupProps>;

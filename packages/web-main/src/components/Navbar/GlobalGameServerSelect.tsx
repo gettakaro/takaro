@@ -1,7 +1,7 @@
 import { FC, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { styled } from '@takaro/lib-components';
-import { GameServerSelect } from 'components/selects';
+import { GameServerSelectQueryField } from 'components/selects';
 import { useMatchRoute, useNavigate } from '@tanstack/react-router';
 
 const Container = styled.div`
@@ -50,7 +50,7 @@ export const GlobalGameServerSelect: FC<GameServerSelectNavProps> = ({
 
   return (
     <Container>
-      <GameServerSelect control={control} name="gameServerId" label="" />
+      <GameServerSelectQueryField control={control} name="gameServerId" label="" />
     </Container>
   );
 };

@@ -25,6 +25,7 @@ import { PermissionsGuard } from 'components/PermissionsGuard';
 import { GameServerNav } from './GameServerNav';
 import { TAKARO_DOMAIN_COOKIE_REGEX } from 'routes/_auth/domain.select';
 import { DeveloperModeGuard } from 'components/DeveloperModeGuard';
+import { getConfigVar, getTakaroVersionComponents } from 'util/getConfigVar';
 
 const domainLinks: NavbarLink[] = [
   {
@@ -146,6 +147,7 @@ interface NavbarProps {
 
 export const Navbar: FC<NavbarProps> = ({ showGameServerNav }) => {
   const theme = useTheme();
+  const { version } = getTakaroVersionComponents(getConfigVar('takaroVersion'));
 
   return (
     <Container animate={{ width: 325 }} transition={{ duration: 1, type: 'spring', bounce: 0.5 }}>
@@ -167,7 +169,11 @@ export const Navbar: FC<NavbarProps> = ({ showGameServerNav }) => {
             label={`${document.cookie.replace(TAKARO_DOMAIN_COOKIE_REGEX, '$1')}`}
           />
         </div>
-
+        <div
+          style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: theme.spacing['0_75'] }}
+        >
+          Version: <Chip showIcon="hover" color="secondary" variant="outline" label={version} />
+        </div>
         <IconNav>
           <Tooltip>
             <Tooltip.Trigger asChild>

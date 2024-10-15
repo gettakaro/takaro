@@ -1,19 +1,19 @@
 import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
-import { GameServerSelectView, GameServerSelectViewProps } from '.';
+import { GameServerSelectView as GameServerSelectQueryView, GameServerSelectQueryViewProps } from '.';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { GameServerOutputDTO, GameServerOutputDTOTypeEnum } from '@takaro/apiclient';
 
 export default {
-  title: 'GameServerSelect',
-  component: GameServerSelectView,
-} as Meta<GameServerSelectViewProps>;
+  title: 'GameServerSelectQueryField',
+  component: GameServerSelectQueryView,
+} as Meta<GameServerSelectQueryViewProps>;
 
 interface IFormInputs {
   gameServerId: string;
 }
 
-export const Default: StoryFn<GameServerSelectViewProps> = () => {
+export const Default: StoryFn<GameServerSelectQueryViewProps> = () => {
   const { control, handleSubmit } = useForm<IFormInputs>();
 
   const gameServers: GameServerOutputDTO[] = [
@@ -45,7 +45,16 @@ export const Default: StoryFn<GameServerSelectViewProps> = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <GameServerSelectView control={control} name="gameServerId" gameServers={gameServers} />
+      <GameServerSelectQueryView
+        fetchNextPage={() => {}}
+        isFetchingNextPage={false}
+        hasNextPage={false}
+        isFetching={false}
+        control={control}
+        setGameServerName={() => {}}
+        name="gameServerId"
+        gameServers={gameServers}
+      />
     </form>
   );
 };

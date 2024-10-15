@@ -1,4 +1,10 @@
-import { useMutation, useQueryClient, queryOptions } from '@tanstack/react-query';
+import {
+  useMutation,
+  useQueryClient,
+  queryOptions,
+  infiniteQueryOptions,
+  keepPreviousData,
+} from '@tanstack/react-query';
 import { getApiClient } from 'util/getApiClient';
 import {
   APIOutput,
@@ -8,7 +14,7 @@ import {
   VariableSearchInputDTO,
   VariableUpdateDTO,
 } from '@takaro/apiclient';
-import { mutationWrapper } from './util';
+import { getNextPage, mutationWrapper, queryParamsToArray } from './util';
 import { AxiosError } from 'axios';
 import { ErrorMessageMapping } from '@takaro/lib-components/src/errors';
 import { useSnackbar } from 'notistack';
@@ -36,6 +42,16 @@ export const variablesQueryOptions = (queryParams: VariableSearchInputDTO) =>
   queryOptions<VariableOutputArrayDTOAPI, AxiosError<VariableOutputArrayDTOAPI>>({
     queryKey: [...variableKeys.list(), queryParams],
     queryFn: async () => (await getApiClient().variable.variableControllerSearch(queryParams)).data,
+  });
+
+export const variablesInfiniteQueryOptions = (queryParams: VariableSearchInputDTO) =>
+  infiniteQueryOptions<VariableOutputArrayDTOAPI, AxiosError<VariableOutputArrayDTOAPI>>({
+    queryKey: [...variableKeys.list(), 'infinite', ...queryParamsToArray(queryParams)],
+    queryFn: async ({ pageParam }) =>
+      (await getApiClient().variable.variableControllerSearch({ ...queryParams, page: pageParam as number })).data,
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => getNextPage(lastPage.meta),
+    placeholderData: keepPreviousData,
   });
 
 export const useVariableCreate = () => {

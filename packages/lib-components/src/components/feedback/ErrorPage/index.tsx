@@ -128,7 +128,7 @@ const defaultListItems = [
     icon: <AiOutlineMenu />,
     title: 'Api reference',
     description: 'A complete API reference for our libraries',
-    to: 'https://api.stg.takaro.dev/api.html',
+    to: 'https://api.takaro.io/api.html',
   },
   /*
   {

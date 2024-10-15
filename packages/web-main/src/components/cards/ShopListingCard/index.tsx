@@ -1,4 +1,4 @@
-import { Avatar, Card, Chip, getInitials } from '@takaro/lib-components';
+import { Avatar, Card, Chip, getInitials, Tooltip } from '@takaro/lib-components';
 import { FC } from 'react';
 import { Header, CardBody } from './style';
 import { GameServerOutputDTOTypeEnum, ShopListingOutputDTO } from '@takaro/apiclient';
@@ -54,24 +54,26 @@ export const ShopListingCard: FC<ShopListingCard> = ({
               <Avatar.FallBack>{getInitials(shopListingName)}</Avatar.FallBack>
             </Avatar>
             <h2>{shopListingName}</h2>
-            <div style={{ textAlign: 'left', width: '100%', marginBottom: '1.5rem' }}>
-              {' '}
-              {shopListing.items.map((itemMeta, index) => {
+            <div
+              style={{ display: 'flex', flexWrap: 'wrap', textAlign: 'left', width: '100%', marginBottom: '1.5rem' }}
+            >
+              {shopListing.items.map((itemMeta) => {
                 return (
-                  <>
-                    <strong
-                      style={{
-                        maxWidth: '100%',
-                        lineBreak: 'anywhere',
-                        display: 'inline-block',
-                        marginBottom: '.5rem',
-                      }}
-                    >
-                      {itemMeta.amount}x {itemMeta.item.name}
+                  <Tooltip key={itemMeta.id}>
+                    <Tooltip.Trigger>
+                      <Avatar size="small">
+                        <Avatar.Image
+                          src={`/icons/${gameServerTypeToIconFolderMap[gameServerType]}/${itemMeta.item.code}.png`}
+                          alt={`Item icon of ${itemMeta.item.name}`}
+                        />
+                        <Avatar.FallBack>{getInitials(shopListingName)}</Avatar.FallBack>
+                      </Avatar>
+                    </Tooltip.Trigger>
+                    <Tooltip.Content>
+                      {itemMeta.amount} of {itemMeta.item.name}
                       {itemMeta.quality && itemMeta.quality !== '0' ? `, quality: ${itemMeta.quality}` : ''}
-                    </strong>
-                    {shopListing.items.length > 1 && index < shopListing.items.length - 1 && ', '}
-                  </>
+                    </Tooltip.Content>
+                  </Tooltip>
                 );
               })}
             </div>

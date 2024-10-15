@@ -11,7 +11,7 @@ if (process.env.TRACING_ENABLED === 'true') {
   });
 
   const TracingSDK = new NodeSDK({
-    traceExporter,
+    traceExporter: process.env.TRACING_ENDPOINT ? traceExporter : undefined,
     instrumentations: [getNodeAutoInstrumentations()],
     resource: new resources.Resource({
       [ATTR_SERVICE_NAME]: process.env.TAKARO_SERVICE,

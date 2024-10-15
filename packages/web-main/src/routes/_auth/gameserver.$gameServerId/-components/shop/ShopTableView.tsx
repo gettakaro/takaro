@@ -1,5 +1,6 @@
 import {
   GameServerOutputDTOTypeEnum,
+  ShopListingItemMetaOutputDTO,
   ShopListingOutputDTO,
   ShopListingSearchInputDTOSortDirectionEnum,
 } from '@takaro/apiclient';
@@ -8,6 +9,7 @@ import {
   Button,
   Chip,
   DateFormatter,
+  Popover,
   Table,
   getInitials,
   styled,
@@ -15,7 +17,7 @@ import {
 } from '@takaro/lib-components';
 import { useQuery } from '@tanstack/react-query';
 import { FC } from 'react';
-import { createColumnHelper } from '@tanstack/react-table';
+import { createColumnHelper, Row } from '@tanstack/react-table';
 import { shopListingsQueryOptions } from 'queries/shopListing';
 import { useNavigate } from '@tanstack/react-router';
 import { useHasPermission } from 'hooks/useHasPermission';
@@ -31,6 +33,7 @@ const gameServerTypeToIconFolderMap = {
 };
 
 const ShopListingBuyFormContainer = styled.div`
+  padding: 1rem;
   form {
     display: flex;
     flex-direction: row;
@@ -78,45 +81,29 @@ export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, g
       enableSorting: true,
       meta: { hideColumn: true },
     }),
-    columnHelper.display({
-      header: 'Icon',
-      id: 'icon',
-      cell: (info) => {
-        const shopListingName = info.row.original.name || info.row.original.items[0].item.name;
-
-        return (
-          <Avatar size="medium">
-            <Avatar.Image
-              src={`/icons/${gameServerTypeToIconFolderMap[gameServerType]}/${info.row.original.items[0].item.code}.png`}
-              alt={`Item icon of ${info.row.original.items[0].item.name}`}
-            />
-            <Avatar.FallBack>{getInitials(shopListingName)}</Avatar.FallBack>
-          </Avatar>
-        );
-      },
-      maxSize: 30,
-      enableColumnFilter: false,
-      enableGlobalFilter: false,
-      enableMultiSort: false,
-    }),
     columnHelper.accessor('name', {
       header: 'Name',
       id: 'name',
       cell: (info) => info.getValue() ?? 'None',
     }),
-    columnHelper.accessor('items', {
-      header: 'Items',
-      id: 'items',
-      cell: (info) =>
-        info
-          .getValue()
-          .map((shoplistingMeta) => `${shoplistingMeta.amount}x ${shoplistingMeta.item.name}`)
-          .join(', '),
-    }),
     columnHelper.accessor('draft', {
       header: 'Status',
       id: 'draft',
       cell: (info) => (info.getValue() ? <Chip color="primary" label="Draft" /> : 'Available'),
+    }),
+    columnHelper.accessor('items', {
+      header: 'Amount of items',
+      id: 'items',
+      cell: (info) => info.getValue().length,
+    }),
+    columnHelper.accessor('price', {
+      header: 'Price per unit',
+      id: 'price',
+      cell: (info) => (
+        <strong>
+          {info.getValue()} {currencyName}
+        </strong>
+      ),
     }),
 
     columnHelper.accessor('createdAt', {
@@ -133,10 +120,10 @@ export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, g
       cell: (info) => <DateFormatter ISODate={info.getValue()} />,
       enableSorting: true,
     }),
+
     columnHelper.display({
       header: '',
       id: 'buy',
-      maxSize: 30,
       enableSorting: false,
       enableColumnFilter: false,
       enableHiding: false,
@@ -145,15 +132,22 @@ export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, g
       enableResizing: false,
 
       cell: (info) => (
-        <ShopListingBuyFormContainer>
-          <ShopListingBuyForm
-            isDraft={info.row.original.draft}
-            currencyName={currencyName}
-            price={info.row.original.price}
-            playerCurrencyAmount={currency || 0}
-            shopListingId={info.row.original.id}
-          />
-        </ShopListingBuyFormContainer>
+        <Popover>
+          <Popover.Trigger asChild>
+            <Button size="small" text="Buy listing" />
+          </Popover.Trigger>
+          <Popover.Content>
+            <ShopListingBuyFormContainer>
+              <ShopListingBuyForm
+                isDraft={info.row.original.draft}
+                currencyName={currencyName}
+                price={info.row.original.price}
+                playerCurrencyAmount={currency || 0}
+                shopListingId={info.row.original.id}
+              />
+            </ShopListingBuyFormContainer>
+          </Popover.Content>
+        </Popover>
       ),
     }),
     columnHelper.display({
@@ -177,6 +171,25 @@ export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, g
     }),
   ];
 
+  const detailsPanel = (row: Row<ShopListingOutputDTO>) => {
+    return (
+      <>
+        <tr className="subrow">
+          <th></th>
+          <th></th>
+          <th>Icon</th>
+          <th>Name</th>
+          <th>Amount</th>
+          <th>Quality</th>
+          <th></th>
+        </tr>
+        {row.original.items.map((item) => (
+          <ShopListingMetaItem key={'shoplisting-table-' + item.id} gameServerType={gameServerType} metaItem={item} />
+        ))}
+      </>
+    );
+  };
+
   const p =
     !isLoading && data
       ? {
@@ -199,7 +212,36 @@ export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, g
       columnFiltering={columnFilters}
       columnSearch={columnSearch}
       sorting={sorting}
+      canExpand={() => true}
+      renderDetailPanel={(row) => detailsPanel(row)}
       isLoading={isLoading}
     />
+  );
+};
+
+interface ShopListingMetaItemProps {
+  gameServerType: GameServerOutputDTOTypeEnum;
+  metaItem: ShopListingItemMetaOutputDTO;
+}
+
+const ShopListingMetaItem: FC<ShopListingMetaItemProps> = ({ gameServerType, metaItem }) => {
+  return (
+    <tr className="subrow">
+      <td />
+      <td></td>
+      <td>
+        <Avatar size="small">
+          <Avatar.Image
+            src={`/icons/${gameServerTypeToIconFolderMap[gameServerType]}/${metaItem.item.code}.png`}
+            alt={`Item icon of ${metaItem.item.name}`}
+          />
+          <Avatar.FallBack>{getInitials(metaItem.item.name)}</Avatar.FallBack>
+        </Avatar>
+      </td>
+      <td>{metaItem.item.name}</td>
+      <td>{metaItem.amount}</td>
+      <td>{metaItem.quality ? metaItem.quality : 'Not assigned'}</td>
+      <td></td>
+    </tr>
   );
 };

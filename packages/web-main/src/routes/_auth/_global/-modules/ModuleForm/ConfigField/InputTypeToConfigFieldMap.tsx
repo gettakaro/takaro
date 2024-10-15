@@ -2,7 +2,7 @@ import { InputType } from '../../schemaConversion/inputTypes';
 import { TextField, TagField, SelectField, Switch, DurationField } from '@takaro/lib-components';
 import { IFormInputs } from '..';
 import { Control, useWatch } from 'react-hook-form';
-import { CountrySelect } from 'components/selects/CountrySelect';
+import { CountrySelectField } from 'components/selects/CountrySelectField';
 
 export const InputTypeToConfigFieldMap = (
   control: Control<IFormInputs>,
@@ -195,7 +195,7 @@ export const InputTypeToConfigFieldMap = (
         label="Multiple countries?"
         description="If you want to allow the user to select multiple countries"
       />,
-      <CountrySelect
+      <CountrySelectField
         name={getName('default')}
         key={`${InputType.country}-values-${id}`}
         label="Default selected"

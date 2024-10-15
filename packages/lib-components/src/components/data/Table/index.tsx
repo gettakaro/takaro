@@ -17,11 +17,18 @@ import {
   VisibilityState,
   ColumnPinningState,
   RowSelectionState,
+  ExpandedState,
+  getExpandedRowModel,
+  Row,
 } from '@tanstack/react-table';
 import { Wrapper, StyledTable, Toolbar, Flex, TableWrapper } from './style';
-import { Button, Empty, Spinner, ToggleButtonGroup } from '../../../components';
-import { AiOutlinePicCenter as RelaxedDensityIcon, AiOutlinePicRight as TightDensityIcon } from 'react-icons/ai';
-
+import { Button, Empty, IconButton, Spinner, ToggleButtonGroup } from '../../../components';
+import {
+  AiOutlinePicCenter as RelaxedDensityIcon,
+  AiOutlinePicRight as TightDensityIcon,
+  AiOutlineRight as ExpandIcon,
+  AiOutlineUp as CollapseIcon,
+} from 'react-icons/ai';
 import { ColumnHeader } from './subcomponents/ColumnHeader';
 import { ColumnVisibility } from './subcomponents/ColumnVisibility';
 import { Filter } from './subcomponents/Filter';
@@ -37,8 +44,12 @@ export interface TableProps<DataType extends object> {
   data: DataType[];
   isLoading?: boolean;
 
-  // currently not possible to type this properly: https://github.com/TanStack/table/issues/4241
+  /// Condition for row to be expandable
+  canExpand?: (row: Row<DataType>) => boolean;
+  /// What to render when row can be expanded
+  renderDetailPanel?: (row: Row<DataType>) => JSX.Element;
 
+  /// currently not possible to type this properly: https://github.com/TanStack/table/issues/4241
   columns: ColumnDef<DataType, any>[];
 
   /// Renders actions that are always visible
@@ -83,7 +94,9 @@ export function Table<DataType extends object>({
   title,
   rowSelection,
   columnSearch,
+  renderDetailPanel,
   renderToolbar,
+  canExpand = () => false,
   renderRowSelectionActions,
   isLoading = false,
 }: TableProps<DataType>) {
@@ -111,9 +124,13 @@ export function Table<DataType extends object>({
       {} as Record<string, boolean>,
     );
   });
+
   const [columnPinning, setColumnPinning] = useState<ColumnPinningState>({});
   const { storedValue: density, setValue: setDensity } = useLocalStorage<Density>(`table-density-${id}`, 'tight');
 
+  // Might because potentially none fullfil the canExpand condtion.
+  const rowsMightExpand = renderDetailPanel ? true : false;
+  const [expanded, setExpanded] = useState<ExpandedState>({});
   const [openColumnVisibilityTooltip, setOpenColumnVisibilityTooltip] = useState<boolean>(false);
   const [hasShownColumnVisibilityTooltip, setHasShownColumnVisibilityTooltip] = useState<boolean>(false);
   const [columnOrder, setColumnOrder] = useState<ColumnOrderState>(
@@ -126,6 +143,7 @@ export function Table<DataType extends object>({
   );
 
   const ROW_SELECTION_COL_SPAN = rowSelection ? 1 : 0;
+  const EXPAND_ROW_COL_SPAN = rowsMightExpand ? 1 : 0;
   const MINIMUM_ROW_COUNT_FOR_PAGINATION = 5;
 
   // handles the column visibility tooltip (shows tooltip when the first column is hidden)
@@ -154,6 +172,7 @@ export function Table<DataType extends object>({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
     pageCount: pagination?.pageOptions.pageCount ?? -1,
     manualPagination: true,
     paginateExpandedRows: true, // Expanded rows will be paginated this means that rows that take up more space will be shown on next page.
@@ -169,6 +188,7 @@ export function Table<DataType extends object>({
     enablePinning: true,
     enableHiding: !!columnVisibility,
     enableRowSelection: !!rowSelection,
+    getRowCanExpand: canExpand,
     autoResetPageIndex: false,
 
     columnResizeMode: 'onChange',
@@ -180,6 +200,7 @@ export function Table<DataType extends object>({
     onColumnOrderChange: setColumnOrder,
     onColumnPinningChange: setColumnPinning,
     onRowSelectionChange: rowSelection ? rowSelection?.setRowSelectionState : undefined,
+    onExpandedChange: setExpanded,
 
     initialState: {
       columnVisibility,
@@ -194,6 +215,7 @@ export function Table<DataType extends object>({
     state: {
       columnVisibility,
       columnOrder,
+      expanded,
       sorting: sorting.sortingState,
       columnFilters: columnFiltering.columnFiltersState,
       globalFilter: columnSearch.columnSearchState,
@@ -204,6 +226,7 @@ export function Table<DataType extends object>({
   });
 
   const tableHasNoData = isLoading === false && table.getRowModel().rows.length === 0;
+  const tableHasData = isLoading === false && table.getRowModel().rows.length !== 0;
 
   // rowSelection.rowSelectionState has the following shape: { [rowId: string]: boolean }
   const hasRowSelection = useMemo(() => {
@@ -254,7 +277,7 @@ export function Table<DataType extends object>({
             <thead>
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id}>
-                  {rowSelection && table.getRowModel().rows.length !== 0 && !isLoading && (
+                  {rowSelection && tableHasData && (
                     <Th
                       isActive={false}
                       isRight={false}
@@ -276,6 +299,17 @@ export function Table<DataType extends object>({
                       </div>
                     </Th>
                   )}
+                  {rowsMightExpand && tableHasData && (
+                    <Th
+                      isActive={false}
+                      isRight={false}
+                      isDragging={false}
+                      canDrag={false}
+                      isRowSelection={true}
+                      width={15}
+                    />
+                  )}
+
                   {headerGroup.headers.map((header) => (
                     <ColumnHeader
                       header={header}
@@ -291,7 +325,7 @@ export function Table<DataType extends object>({
               {/* loading state */}
               {isLoading && (
                 <tr>
-                  <td colSpan={table.getAllColumns().length + ROW_SELECTION_COL_SPAN}>
+                  <td colSpan={table.getAllColumns().length + ROW_SELECTION_COL_SPAN + EXPAND_ROW_COL_SPAN}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '15px' }}>
                       <Spinner size="small" />
                     </div>
@@ -302,7 +336,7 @@ export function Table<DataType extends object>({
               {/* empty state */}
               {tableHasNoData && (
                 <tr>
-                  <td colSpan={table.getAllColumns().length + ROW_SELECTION_COL_SPAN}>
+                  <td colSpan={table.getAllColumns().length + ROW_SELECTION_COL_SPAN + EXPAND_ROW_COL_SPAN}>
                     <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <Empty
                         header=""
@@ -323,30 +357,51 @@ export function Table<DataType extends object>({
 
               {!isLoading &&
                 table.getRowModel().rows.map((row) => (
-                  <tr key={row.id}>
-                    {row.getCanSelect() && (
-                      <td style={{ paddingRight: '10px', width: '15px' }}>
-                        <CheckBox
-                          value={row.getIsSelected()}
-                          id={row.id}
-                          name={row.id}
-                          hasError={false}
-                          disabled={!row.getCanSelect()}
-                          onChange={() => row.toggleSelected()}
-                          hasDescription={false}
-                          size="small"
-                        />
-                      </td>
-                    )}
-                    {row.getVisibleCells().map(({ column, id, getContext }) => (
-                      <td key={id}>{flexRender(column.columnDef.cell, getContext())}</td>
-                    ))}
-                    {row.getIsExpanded() && (
-                      <tr>
-                        <td colSpan={table.getVisibleLeafColumns().length} />
-                      </tr>
-                    )}
-                  </tr>
+                  <>
+                    <tr key={row.id}>
+                      {row.getCanExpand() ? (
+                        <td style={{ paddingRight: '10px', width: '15px' }}>
+                          {row.getIsExpanded() ? (
+                            <IconButton
+                              size="tiny"
+                              icon={<CollapseIcon />}
+                              ariaLabel="Collapse expanded row"
+                              onClick={() => row.toggleExpanded(false)}
+                            />
+                          ) : (
+                            <IconButton
+                              size="tiny"
+                              icon={<ExpandIcon />}
+                              ariaLabel="expand row"
+                              onClick={() => row.toggleExpanded(true)}
+                            />
+                          )}
+                        </td>
+                      ) : rowsMightExpand ? (
+                        <td />
+                      ) : (
+                        <></>
+                      )}
+                      {row.getCanSelect() && (
+                        <td style={{ paddingRight: '10px', width: '15px' }}>
+                          <CheckBox
+                            value={row.getIsSelected()}
+                            id={row.id}
+                            name={row.id}
+                            hasError={false}
+                            disabled={!row.getCanSelect()}
+                            onChange={() => row.toggleSelected()}
+                            hasDescription={false}
+                            size="small"
+                          />
+                        </td>
+                      )}
+                      {row.getVisibleCells().map(({ column, id, getContext }) => (
+                        <td key={id}>{flexRender(column.columnDef.cell, getContext())}</td>
+                      ))}
+                    </tr>
+                    {row.getIsExpanded() && renderDetailPanel!(row)}
+                  </>
                 ))}
             </tbody>
 
@@ -355,9 +410,15 @@ export function Table<DataType extends object>({
                 <tr>
                   {/* This is the row selection */}
                   {ROW_SELECTION_COL_SPAN ? <td colSpan={1} /> : null}
+                  {/* This is for the row expansion icon */}
+                  {EXPAND_ROW_COL_SPAN ? <td colSpan={1} /> : null}
                   {pagination && (
                     <>
-                      <td colSpan={table.getVisibleLeafColumns().length - 3 - ROW_SELECTION_COL_SPAN} />
+                      <td
+                        colSpan={
+                          table.getVisibleLeafColumns().length - 3 - ROW_SELECTION_COL_SPAN - EXPAND_ROW_COL_SPAN
+                        }
+                      />
                       <td colSpan={1}>
                         <span>
                           showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}-

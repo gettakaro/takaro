@@ -13,7 +13,7 @@ import {
   Chip,
 } from '@takaro/lib-components';
 import { PlayerOutputDTO, PERMISSIONS, PlayerSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
-import { createColumnHelper } from '@tanstack/react-table';
+import { createColumnHelper, Row } from '@tanstack/react-table';
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import {
   AiOutlineUser as ProfileIcon,
@@ -21,6 +21,7 @@ import {
   AiOutlineRight as ActionIcon,
   AiOutlineUndo as UnBanIcon,
 } from 'react-icons/ai';
+import { DateTime, Duration } from 'luxon';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { hasPermission, useHasPermission } from 'hooks/useHasPermission';
 import { useBanPlayerOnGameServer, useUnbanPlayerOnGameServer } from 'queries/gameserver';
@@ -35,6 +36,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getApiClient } from 'util/getApiClient';
 import { PlayerStats } from './-players/playerStats';
 import { userMeQueryOptions } from 'queries/user';
+import { GameServerContainer } from 'components/GameServer';
 
 export const StyledDialogBody = styled(Dialog.Body)`
   h2 {
@@ -58,6 +60,7 @@ function Component() {
     playersQueryOptions({
       page: pagination.paginationState.pageIndex,
       limit: pagination.paginationState.pageSize,
+      extend: ['playerOnGameServers'],
       sortBy: sorting.sortingState[0]?.id,
       sortDirection: sorting.sortingState[0]?.desc
         ? PlayerSearchInputDTOSortDirectionEnum.Desc
@@ -79,7 +82,60 @@ function Component() {
     }),
   );
 
-  // IMPORTANT: id should be identical to data object key.
+  const detailPanel = (row: Row<PlayerOutputDTO>) => {
+    return (
+      <>
+        <tr className="subrow">
+          <th></th>
+          <th>Game Server</th>
+          <th>Playtime</th>
+          <th>Currency</th>
+          <th>Ping</th>
+          <th>First Seen</th>
+          <th>Last seen</th>
+          <th>Online</th>
+          <th>IP address</th>
+          <th />
+        </tr>
+        {row.original.playerOnGameServers?.map((pog) => {
+          return (
+            <tr key={'row-' + pog.playerId + pog.gameServerId} className="subrow">
+              <td></td>
+              <td>
+                <GameServerContainer gameServerId={pog.gameServerId} />
+              </td>
+              <td>{Duration.fromObject({ seconds: pog.playtimeSeconds }).toHuman()}</td>
+              <td>{pog.currency}</td>
+              <td>{pog.ping}</td>
+              <td>
+                {DateTime.fromISO(pog.createdAt).toLocaleString({
+                  month: 'numeric',
+                  day: 'numeric',
+                  year: 'numeric',
+                  hour: 'numeric',
+                  minute: 'numeric',
+                })}
+              </td>
+              <td>
+                {DateTime.fromISO(pog.lastSeen).toLocaleString({
+                  month: 'numeric',
+                  day: 'numeric',
+                  year: 'numeric',
+                  hour: 'numeric',
+                  minute: 'numeric',
+                })}
+              </td>
+              <td>
+                <Chip color="secondary" label={pog.online ? 'Online' : 'Offline'} />
+              </td>
+              <td>{pog.ip ? pog.ip : 'Unknown'}</td>
+            </tr>
+          );
+        })}
+      </>
+    );
+  };
+
   const columnHelper = createColumnHelper<PlayerOutputDTO>();
   const columnDefs = [
     columnHelper.accessor('name', {
@@ -209,6 +265,8 @@ function Component() {
         columns={columnDefs}
         data={data?.data as PlayerOutputDTO[]}
         pagination={p}
+        renderDetailPanel={(row) => detailPanel(row)}
+        canExpand={(row) => (row.original.playerOnGameServers ? row.original.playerOnGameServers.length > 0 : false)}
         columnFiltering={columnFilters}
         columnSearch={columnSearch}
         sorting={sorting}
@@ -230,7 +288,7 @@ const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
   const [openBanDialog, setOpenBanDialog] = useState<boolean>(false);
   const [openUnbanDialog, setOpenUnbanDialog] = useState<boolean>(false);
   const hasManageRoles = useHasPermission([PERMISSIONS.ManageRoles]);
-  const hasManagePlayers = useHasPermission([PERMISSIONS.ManagePlayers]);
+  // const hasManagePlayers = useHasPermission([PERMISSIONS.ManagePlayers]);
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -316,7 +374,7 @@ const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
             onClick={async () => {
               setOpenBanDialog(true);
             }}
-            disabled={!hasManagePlayers}
+            disabled={true /*|| !hasManagePlayers*/}
           />
           <Dropdown.Menu.Item
             label="Unban from ALL game servers (coming soon)"
@@ -324,7 +382,7 @@ const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
             onClick={async () => {
               setOpenUnbanDialog(true);
             }}
-            disabled={!hasManagePlayers}
+            disabled={true /*|| !hasManagePlayers */}
           />
         </Dropdown.Menu>
       </Dropdown>
