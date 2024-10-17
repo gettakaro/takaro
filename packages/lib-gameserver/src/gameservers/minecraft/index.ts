@@ -94,7 +94,7 @@ export class Minecraft implements IGameServer {
   async testReachability(): Promise<TestReachabilityOutputDTO> {
     const start = Date.now();
     try {
-      const data = await this.requestFromServer('ping');
+      const data = await this.requestFromServer('TPS');
       // @ts-expect-error TODO, fix this properly :)
       assert(data === 'pong');
     } catch (error) {

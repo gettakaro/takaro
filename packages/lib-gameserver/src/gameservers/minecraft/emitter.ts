@@ -34,6 +34,9 @@ export class MinecraftEmitter extends TakaroEmitter {
         });
         client?.on('open', () => {
           log.debug('Connection opened');
+
+          client.send(JSON.stringify({ command: 'LOGIN', params: config.password }));
+
           if (client) {
             return resolve(client);
           }

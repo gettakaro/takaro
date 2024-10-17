@@ -125,6 +125,15 @@ export const connectionInfoFieldsMap = (isLoading: boolean, control: Control<any
         loading={isLoading}
         required
       />,
+      <TextField
+        control={control}
+        label="Password"
+        name="connectionInfo.password"
+        key="minecraft-event-password"
+        type="password"
+        loading={isLoading}
+        required
+      />,
       <Switch
         label="Use TLS"
         name="connectionInfo.useTls"

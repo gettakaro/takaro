@@ -4,6 +4,8 @@ import { TakaroDTO } from '@takaro/util';
 export class MinecraftConnectionInfo extends TakaroDTO<MinecraftConnectionInfo> {
   @IsString()
   public host: string;
+  @IsString()
+  public password: string;
   @IsBoolean()
   public readonly useTls: boolean;
 }
@@ -16,10 +18,13 @@ export const mockJsonSchema = {
     host: {
       type: 'string',
     },
+    password: {
+      type: 'string',
+    },
     useTls: {
       type: 'boolean',
       default: false,
     },
   },
-  required: ['host'],
+  required: ['host', 'password'],
 };
