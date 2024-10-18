@@ -74,7 +74,7 @@ export const CreateUpdateForm: FC<CreateUpdateFormProps> = ({ initialData, isLoa
     }),
   });
 
-  const { type, connectionInfo } = watch();
+  const { type, connectionInfo, enabled } = watch();
 
   useEffect(() => {
     if (!open) {
@@ -163,7 +163,7 @@ export const CreateUpdateForm: FC<CreateUpdateFormProps> = ({ initialData, isLoa
               onClick={clickTestReachability}
               text="Test connection"
             />
-            {connectionOk && (
+            {(connectionOk || !enabled) && (
               <Button type="submit" fullWidth onClick={() => trigger()} text="Save changes" form={formId} />
             )}
           </ButtonContainer>
