@@ -6,7 +6,7 @@
       "updatedAt": "2024-06-29T19:06:25.357Z",
       "id": "2c799156-95c7-4663-bbbc-541b17faf368",
       "listingId": "bb274ae6-b21a-4216-ae4c-61375f58a12b",
-      "userId": "fa3f657a-b3be-4f04-b4dc-606bb5304bc2",
+      "playerId": "fa3f657a-b3be-4f04-b4dc-606bb5304bc2",
       "amount": 1,
       "status": "CANCELED"
     }
@@ -18,7 +18,7 @@
     "name": "Cancel order",
     "filteredFields": [
       "listingId",
-      "userId"
+      "playerId"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true

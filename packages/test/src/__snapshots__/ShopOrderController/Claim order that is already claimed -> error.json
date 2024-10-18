@@ -15,7 +15,7 @@
     "name": "Claim order that is already claimed -> error",
     "filteredFields": [
       "listingId",
-      "userId"
+      "playerId"
     ],
     "expectedStatus": 400,
     "standardEnvironment": true

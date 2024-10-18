@@ -17,7 +17,8 @@ export class ShopOrderModel extends TakaroModel {
 
   id: string;
   listingId: string;
-  userId: string;
+  playerId: string;
+  gameServerId: string;
   amount: number;
   status: ShopOrderStatus;
 
@@ -85,7 +86,8 @@ export class ShopOrderRepo extends ITakaroRepo<
     const order = await query
       .insert({
         listingId: data.listingId,
-        userId: data.userId,
+        playerId: data.playerId,
+        gameServerId: data.gameServerId,
         amount: data.amount,
         status: ShopOrderStatus.PAID,
         domain: this.domainId,
