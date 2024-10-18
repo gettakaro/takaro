@@ -67,7 +67,7 @@ export class Rust implements IGameServer {
     );
   }
 
-  async giveItem(player: IPlayerReferenceDTO, item: string, amount: number = 1, _quality?: number): Promise<void> {
+  async giveItem(player: IPlayerReferenceDTO, item: string, amount: number = 1, _quality?: string): Promise<void> {
     await this.executeConsoleCommand(`inventory.giveid ${player.gameId} ${item} ${amount}`);
   }
 
