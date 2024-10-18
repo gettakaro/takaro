@@ -55,9 +55,9 @@ export class Minecraft implements IGameServer {
     return this.client;
   }
 
-  private async requestFromServer(command: MINECRAFT_COMMANDS, params: any[] = []) {
+  private async requestFromServer(command: MINECRAFT_COMMANDS, params: any[] = []): Promise<Record<string, unknown>> {
     const client = await this.getClient();
-    return new Promise<CommandOutput>((resolve, reject) => {
+    return new Promise<Record<string, unknown>>((resolve, reject) => {
       const requestId = randomUUID();
 
       const responseListener = (data: any) => {
@@ -66,10 +66,9 @@ export class Minecraft implements IGameServer {
           return;
         }
 
-        const commandResult = parsed.message;
         clearTimeout(timeout);
         client.off('message', responseListener);
-        return resolve(new CommandOutput({ rawResult: commandResult }));
+        return resolve(parsed);
       };
 
       const timeout = setTimeout(() => {
@@ -99,7 +98,19 @@ export class Minecraft implements IGameServer {
 
   async getPlayers(): Promise<IGamePlayer[]> {
     const response = await this.requestFromServer(MINECRAFT_COMMANDS.PLAYERS);
-    return response as unknown as IGamePlayer[];
+    assert(typeof response.players === 'string');
+    const players = JSON.parse(response.players);
+
+    return players.map(
+      (p: any) =>
+        new IGamePlayer({
+          gameId: p.uuid,
+          ping: p.ping,
+          name: p.name,
+          platformId: p.uuid,
+          ip: p.ip,
+        }),
+    );
   }
 
   async getPlayerLocation(player: IPlayerReferenceDTO): Promise<IPosition | null> {
@@ -111,8 +122,10 @@ export class Minecraft implements IGameServer {
     const start = Date.now();
     try {
       const data = await this.requestFromServer(MINECRAFT_COMMANDS.TPS);
+      // assert that data.message is a string
+      assert(typeof data.message === 'string');
       // Assert that it matches 'xx.x ticks'
-      assert(data.rawResult.match(/\d+\.\d+ ticks/));
+      assert(data.message.match(/\d+\.\d+ ticks/));
     } catch (error) {
       if (!error || !(error instanceof Error)) {
         return new TestReachabilityOutputDTO({
