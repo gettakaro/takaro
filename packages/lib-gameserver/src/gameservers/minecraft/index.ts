@@ -18,11 +18,19 @@ import { randomUUID } from 'crypto';
 
 const log = logger('minecraft');
 
+export enum MINECRAFT_COMMANDS {
+  LOGIN = 'LOGIN',
+  EXEC = 'EXEC',
+  PLAYERS = 'PLAYERS',
+  TPS = 'TPS',
+}
+
 @traceableClass('game:minecraft')
 export class Minecraft implements IGameServer {
   connectionInfo: MinecraftConnectionInfo;
   emitter: MinecraftEmitter;
   private client: WebSocket | null;
+  private token: string | null = null;
 
   constructor(
     config: MinecraftConnectionInfo,
@@ -41,38 +49,46 @@ export class Minecraft implements IGameServer {
       return this.client;
     }
 
-    this.client = await MinecraftEmitter.getClient(this.connectionInfo);
+    const { client, token } = await MinecraftEmitter.getClient(this.connectionInfo);
+    this.client = client;
+    this.token = token;
     return this.client;
   }
 
-  private async requestFromServer(rawCommand: string, ..._args: any[]) {
+  private async requestFromServer(command: MINECRAFT_COMMANDS, params: any[] = []) {
     const client = await this.getClient();
     return new Promise<CommandOutput>((resolve, reject) => {
-      const command = rawCommand.trim();
       const requestId = randomUUID();
 
-      const timeout = setTimeout(() => reject(), 5000);
-
-      client.on('message', (data) => {
+      const responseListener = (data: any) => {
         const parsed = JSON.parse(data.toString());
-
-        if (parsed.Identifier !== requestId) {
+        if (parsed.requestId !== requestId) {
           return;
         }
 
-        const commandResult = parsed.Message;
+        const commandResult = parsed.message;
         clearTimeout(timeout);
+        client.off('message', responseListener);
         return resolve(new CommandOutput({ rawResult: commandResult }));
-      });
+      };
 
-      log.debug('requestFromServer - sending command', { command });
-      client.send(
-        JSON.stringify({
-          Message: command,
-          Identifier: requestId,
-          Name: 'Takaro',
-        }),
-      );
+      const timeout = setTimeout(() => {
+        client.off('message', responseListener);
+        return reject();
+      }, 5000);
+
+      client.on('message', responseListener);
+
+      if (!params.length) params = ['dummy'];
+
+      const toSend = JSON.stringify({
+        command,
+        params,
+        requestId,
+        token: this.token,
+      });
+      log.debug('requestFromServer - sending command', { toSend });
+      client.send(toSend);
     });
   }
 
@@ -82,8 +98,8 @@ export class Minecraft implements IGameServer {
   }
 
   async getPlayers(): Promise<IGamePlayer[]> {
-    // @ts-expect-error TODO, fix this properly :)
-    return this.requestFromServer('getPlayers');
+    const response = await this.requestFromServer(MINECRAFT_COMMANDS.PLAYERS);
+    return response as unknown as IGamePlayer[];
   }
 
   async getPlayerLocation(player: IPlayerReferenceDTO): Promise<IPosition | null> {
@@ -94,9 +110,9 @@ export class Minecraft implements IGameServer {
   async testReachability(): Promise<TestReachabilityOutputDTO> {
     const start = Date.now();
     try {
-      const data = await this.requestFromServer('TPS');
-      // @ts-expect-error TODO, fix this properly :)
-      assert(data === 'pong');
+      const data = await this.requestFromServer(MINECRAFT_COMMANDS.TPS);
+      // Assert that it matches 'xx.x ticks'
+      assert(data.rawResult.match(/\d+\.\d+ ticks/));
     } catch (error) {
       if (!error || !(error instanceof Error)) {
         return new TestReachabilityOutputDTO({
@@ -126,31 +142,37 @@ export class Minecraft implements IGameServer {
   }
 
   async executeConsoleCommand(rawCommand: string): Promise<CommandOutput> {
+    // @ts-expect-error TODO, fix this properly :)
     return this.requestFromServer('executeConsoleCommand', rawCommand);
   }
 
   // @ts-expect-error TODO, fix this properly :)
   async sendMessage(message: string, opts: IMessageOptsDTO) {
+    // @ts-expect-error TODO, fix this properly :)
     return this.requestFromServer('sendMessage', message, opts);
   }
 
   // @ts-expect-error TODO, fix this properly :)
   async teleportPlayer(player: IGamePlayer, x: number, y: number, z: number) {
+    // @ts-expect-error TODO, fix this properly :)
     return this.requestFromServer('teleportPlayer', player, x, y, z);
   }
 
   // @ts-expect-error TODO, fix this properly :)
   async kickPlayer(player: IGamePlayer, reason: string) {
+    // @ts-expect-error TODO, fix this properly :)
     return this.requestFromServer('kickPlayer', player, reason);
   }
 
   // @ts-expect-error TODO, fix this properly :)
   async banPlayer(options: BanDTO) {
+    // @ts-expect-error TODO, fix this properly :)
     return this.requestFromServer('banPlayer', options);
   }
 
   // @ts-expect-error TODO, fix this properly :)
   async unbanPlayer(player: IGamePlayer) {
+    // @ts-expect-error TODO, fix this properly :)
     return this.requestFromServer('unbanPlayer', player);
   }
 

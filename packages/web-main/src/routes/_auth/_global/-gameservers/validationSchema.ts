@@ -78,8 +78,9 @@ export const validationSchema = baseShape.and(
             .min(1, { message: 'Host cannot not be empty' })
             .optional(),
         ]),
+        password: z.string().min(1, { message: 'Password cannot be empty' }).optional(),
+        useTls: z.boolean().optional(),
       }),
-      useTls: z.boolean().optional(),
     }),
   ]),
 );
