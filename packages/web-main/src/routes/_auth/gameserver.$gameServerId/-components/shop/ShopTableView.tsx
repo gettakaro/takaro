@@ -29,6 +29,7 @@ const gameServerTypeToIconFolderMap = {
   [GameServerOutputDTOTypeEnum.Mock]: 'rust',
   [GameServerOutputDTOTypeEnum.Rust]: 'rust',
   [GameServerOutputDTOTypeEnum.Sevendaystodie]: '7d2d',
+  [GameServerOutputDTOTypeEnum.Minecraft]: 'minecraft',
 };
 
 const ShopListingBuyFormContainer = styled.div`

@@ -7,11 +7,14 @@ import { Mock } from './gameservers/mock/index.js';
 import { RustConnectionInfo } from './gameservers/rust/connectionInfo.js';
 import { Rust } from './gameservers/rust/index.js';
 import { IGameServer } from './interfaces/GameServer.js';
+import { Minecraft } from './gameservers/minecraft/index.js';
+import { MinecraftConnectionInfo } from './gameservers/minecraft/connectionInfo.js';
 
 export enum GAME_SERVER_TYPE {
   'MOCK' = 'MOCK',
   'SEVENDAYSTODIE' = 'SEVENDAYSTODIE',
   'RUST' = 'RUST',
+  'MINECRAFT' = 'MINECRAFT',
 }
 
 export async function getGame(
@@ -26,6 +29,8 @@ export async function getGame(
       return new Rust(new RustConnectionInfo(connectionInfo), settings);
     case GAME_SERVER_TYPE.MOCK:
       return new Mock(new MockConnectionInfo(connectionInfo), settings);
+    case GAME_SERVER_TYPE.MINECRAFT:
+      return new Minecraft(new MinecraftConnectionInfo(connectionInfo), settings);
     default:
       throw new errors.NotImplementedError();
   }

@@ -5,6 +5,7 @@ import { GameServerOutputDTO, GameServerOutputDTOTypeEnum } from '@takaro/apicli
 import { CustomSelectQueryProps } from '..';
 import icon7d2d from './7d2d-icon.png';
 import iconRust from './rust-icon.png';
+import iconMinecraft from './minecraft-icon.png';
 import { FaLeaf as TakaroIcon } from 'react-icons/fa';
 import { Inner, StatusDot } from './style';
 import { useInfiniteQuery } from '@tanstack/react-query';
@@ -13,6 +14,7 @@ const gameTypeMap = {
   [GameServerOutputDTOTypeEnum.Mock]: { icon: <TakaroIcon /> },
   [GameServerOutputDTOTypeEnum.Rust]: { icon: <img width="5px" height="5px" src={iconRust} /> },
   [GameServerOutputDTOTypeEnum.Sevendaystodie]: { icon: <img width="20px" height="20px" src={icon7d2d} /> },
+  [GameServerOutputDTOTypeEnum.Minecraft]: { icon: <img width="20px" height="20px" src={iconMinecraft} /> },
 };
 
 interface GameServerSelectQueryFieldProps {
@@ -204,6 +206,7 @@ export const GameServerSelectView: FC<GameServerSelectQueryViewProps> = ({
       {groupByGameServerType && renderOptionGroup('Mock', GameServerOutputDTOTypeEnum.Mock)}
       {groupByGameServerType && renderOptionGroup('Rust', GameServerOutputDTOTypeEnum.Rust)}
       {groupByGameServerType && renderOptionGroup('7 Days to Die', GameServerOutputDTOTypeEnum.Sevendaystodie)}
+      {groupByGameServerType && renderOptionGroup('Minecraft', GameServerOutputDTOTypeEnum.Minecraft)}
 
       {!groupByGameServerType &&
         gameServers.map(({ id, name: serverName, reachable }) => {
