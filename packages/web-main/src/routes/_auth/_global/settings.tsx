@@ -26,7 +26,8 @@ function Component() {
     <Container>
       <HorizontalNav variant="underline">
         <Link to="/settings/gameservers">Global Game Server Settings</Link>
-        <Link to="/settings/discord">Discord</Link>
+        <Link to="/settings/discord">Discord integration</Link>
+        <Link to="/settings/billing">Billing</Link>
       </HorizontalNav>
       <ContentContainer>
         <ErrorBoundary>
