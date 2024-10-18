@@ -7,6 +7,7 @@ import { SubmitHandler } from 'react-hook-form';
 import { useShopListingCreate } from 'queries/shopListing';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { userMeQueryOptions } from 'queries/user';
+import { DrawerSkeleton } from '@takaro/lib-components';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/listing/create')({
   beforeLoad: async ({ context }) => {
@@ -21,6 +22,7 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/listi
     );
   },
   component: Component,
+  pendingComponent: DrawerSkeleton,
 });
 
 function Component() {
