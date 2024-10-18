@@ -162,7 +162,7 @@ export class Minecraft implements IGameServer {
   }
 
   async sendMessage(message: string, opts: IMessageOptsDTO) {
-    if (opts.recipient) {
+    if (opts && opts.recipient) {
       await this.requestFromServer(MINECRAFT_COMMANDS.EXEC, ['tell', opts.recipient, message]);
     } else {
       await this.requestFromServer(MINECRAFT_COMMANDS.EXEC, ['say', message]);
@@ -194,13 +194,11 @@ export class Minecraft implements IGameServer {
   }
 
   async listItems(): Promise<IItemDTO[]> {
-    // @ts-expect-error TODO, fix this properly :)
-    return this.requestFromServer('listItems');
+    throw new errors.NotImplementedError();
   }
 
-  async getPlayerInventory(player: IPlayerReferenceDTO): Promise<IItemDTO[]> {
-    // @ts-expect-error TODO, fix this properly :)
-    return this.requestFromServer('getPlayerInventory', player);
+  async getPlayerInventory(_player: IPlayerReferenceDTO): Promise<IItemDTO[]> {
+    throw new errors.NotImplementedError();
   }
 
   async shutdown(): Promise<void> {
