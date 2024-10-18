@@ -163,26 +163,26 @@ export class Minecraft implements IGameServer {
 
   async sendMessage(message: string, opts: IMessageOptsDTO) {
     if (opts && opts.recipient) {
-      await this.requestFromServer(MINECRAFT_COMMANDS.EXEC, [`tell ${opts.recipient.gameId} "${message}"`]);
+      await this.executeConsoleCommand(`tell ${opts.recipient.gameId} "${message}"`);
     } else {
-      await this.requestFromServer(MINECRAFT_COMMANDS.EXEC, [`say "${message}"`]);
+      await this.executeConsoleCommand(`say "${message}"`);
     }
   }
 
   async teleportPlayer(player: IGamePlayer, x: number, y: number, z: number) {
-    await this.requestFromServer(MINECRAFT_COMMANDS.EXEC, [`teleport ${player.gameId} ${x},${y},${z}`]);
+    await this.executeConsoleCommand(`tp ${player.gameId} ${x} ${y} ${z}`);
   }
 
   async kickPlayer(player: IGamePlayer, reason: string) {
-    await this.requestFromServer(MINECRAFT_COMMANDS.EXEC, [`kick ${player.gameId} ${reason}`]);
+    await this.executeConsoleCommand(`kick ${player.gameId} ${reason}`);
   }
 
   async banPlayer(options: BanDTO) {
-    await this.requestFromServer(MINECRAFT_COMMANDS.EXEC, [`ban ${options.player.gameId} ${options.reason}`]);
+    await this.executeConsoleCommand(`ban ${options.player.gameId} ${options.reason}`);
   }
 
   async unbanPlayer(player: IGamePlayer) {
-    await this.requestFromServer(MINECRAFT_COMMANDS.EXEC, [`pardon ${player.gameId}`]);
+    await this.executeConsoleCommand(`pardon ${player.gameId}`);
   }
 
   async listBans(): Promise<BanDTO[]> {
@@ -190,7 +190,7 @@ export class Minecraft implements IGameServer {
   }
 
   async giveItem(player: IPlayerReferenceDTO, item: string, amount: number, _quality: string): Promise<void> {
-    await this.requestFromServer(MINECRAFT_COMMANDS.EXEC, [`give ${player.gameId} ${item} ${amount}`]);
+    await this.executeConsoleCommand(`give ${player.gameId} ${item} ${amount}`);
   }
 
   async listItems(): Promise<IItemDTO[]> {
@@ -202,6 +202,6 @@ export class Minecraft implements IGameServer {
   }
 
   async shutdown(): Promise<void> {
-    await this.requestFromServer(MINECRAFT_COMMANDS.EXEC, ['stop']);
+    await this.executeConsoleCommand('stop');
   }
 }
