@@ -98,7 +98,7 @@ export const CreateUpdateForm: FC<CreateUpdateFormProps> = ({ initialData, isLoa
 
   const formId = 'gameserver-form';
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
+    <Drawer open={open} onOpenChange={setOpen} promptCloseConfirmation={formState.isDirty}>
       <Drawer.Content>
         <Drawer.Heading>{initialData ? 'Update' : 'Create'} Game Server</Drawer.Heading>
         <Drawer.Body>

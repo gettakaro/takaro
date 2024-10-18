@@ -41,7 +41,7 @@ function Component() {
     }
   }, [open, navigate]);
 
-  const { control, handleSubmit } = useForm<IFormInputs>({
+  const { control, handleSubmit, formState } = useForm<IFormInputs>({
     mode: 'onSubmit',
     resolver: zodResolver(roleAssignValidationSchema),
     defaultValues: {
@@ -56,7 +56,7 @@ function Component() {
   };
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
+    <Drawer open={open} onOpenChange={setOpen} promptCloseConfirmation={formState.isDirty}>
       <Drawer.Content>
         <Drawer.Heading>Assign role</Drawer.Heading>
         <Drawer.Body>
