@@ -1,4 +1,4 @@
-import { logger, traceableClass } from '@takaro/util';
+import { errors, logger, traceableClass } from '@takaro/util';
 import { IGamePlayer, IPosition } from '@takaro/modules';
 import {
   BanDTO,
@@ -113,9 +113,8 @@ export class Minecraft implements IGameServer {
     );
   }
 
-  async getPlayerLocation(player: IPlayerReferenceDTO): Promise<IPosition | null> {
-    // @ts-expect-error TODO, fix this properly :)
-    return this.requestFromServer('getPlayerLocation', player);
+  async getPlayerLocation(_player: IPlayerReferenceDTO): Promise<IPosition | null> {
+    throw new errors.NotImplementedError();
   }
 
   async testReachability(): Promise<TestReachabilityOutputDTO> {
@@ -155,48 +154,43 @@ export class Minecraft implements IGameServer {
   }
 
   async executeConsoleCommand(rawCommand: string): Promise<CommandOutput> {
-    // @ts-expect-error TODO, fix this properly :)
-    return this.requestFromServer('executeConsoleCommand', rawCommand);
+    const res = await this.requestFromServer(MINECRAFT_COMMANDS.EXEC, [rawCommand]);
+    return new CommandOutput({
+      success: true,
+      rawResult: JSON.stringify(res),
+    });
   }
 
-  // @ts-expect-error TODO, fix this properly :)
   async sendMessage(message: string, opts: IMessageOptsDTO) {
-    // @ts-expect-error TODO, fix this properly :)
-    return this.requestFromServer('sendMessage', message, opts);
+    if (opts.recipient) {
+      await this.requestFromServer(MINECRAFT_COMMANDS.EXEC, ['tell', opts.recipient, message]);
+    } else {
+      await this.requestFromServer(MINECRAFT_COMMANDS.EXEC, ['say', message]);
+    }
   }
 
-  // @ts-expect-error TODO, fix this properly :)
   async teleportPlayer(player: IGamePlayer, x: number, y: number, z: number) {
-    // @ts-expect-error TODO, fix this properly :)
-    return this.requestFromServer('teleportPlayer', player, x, y, z);
+    await this.requestFromServer(MINECRAFT_COMMANDS.EXEC, ['teleport', player.gameId, `${x},${y},${z}`]);
   }
 
-  // @ts-expect-error TODO, fix this properly :)
   async kickPlayer(player: IGamePlayer, reason: string) {
-    // @ts-expect-error TODO, fix this properly :)
-    return this.requestFromServer('kickPlayer', player, reason);
+    await this.requestFromServer(MINECRAFT_COMMANDS.EXEC, ['kick', player.gameId, reason]);
   }
 
-  // @ts-expect-error TODO, fix this properly :)
   async banPlayer(options: BanDTO) {
-    // @ts-expect-error TODO, fix this properly :)
-    return this.requestFromServer('banPlayer', options);
+    await this.requestFromServer(MINECRAFT_COMMANDS.EXEC, ['ban', options.player.gameId, options.reason]);
   }
 
-  // @ts-expect-error TODO, fix this properly :)
   async unbanPlayer(player: IGamePlayer) {
-    // @ts-expect-error TODO, fix this properly :)
-    return this.requestFromServer('unbanPlayer', player);
+    await this.requestFromServer(MINECRAFT_COMMANDS.EXEC, ['pardon', player.gameId]);
   }
 
   async listBans(): Promise<BanDTO[]> {
-    // @ts-expect-error TODO, fix this properly :)
-    return this.requestFromServer('listBans');
+    throw new errors.NotImplementedError();
   }
 
-  async giveItem(player: IPlayerReferenceDTO, item: string, amount: number, quality: number): Promise<void> {
-    // @ts-expect-error TODO, fix this properly :)
-    return this.requestFromServer('giveItem', player, item, amount, quality);
+  async giveItem(player: IPlayerReferenceDTO, item: string, amount: number, _quality: string): Promise<void> {
+    await this.requestFromServer(MINECRAFT_COMMANDS.EXEC, ['give', player.gameId, item, amount]);
   }
 
   async listItems(): Promise<IItemDTO[]> {
@@ -210,7 +204,6 @@ export class Minecraft implements IGameServer {
   }
 
   async shutdown(): Promise<void> {
-    // @ts-expect-error TODO, fix this properly :)
-    return this.requestFromServer('shutdown');
+    await this.requestFromServer(MINECRAFT_COMMANDS.EXEC, ['stop']);
   }
 }
