@@ -24,6 +24,10 @@ jobs:
         with:
           ref: main
           token: ${{ steps.generate_token.outputs.token }}
+      - uses: release-drafter/release-drafter@v6
+        id: release-drafter
+        env:
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
       - name: Reset promotion branch
         run: |
           git fetch origin development:development
@@ -38,6 +42,8 @@ jobs:
           body: |
             This PR merges the development branch into the main branch.
             It is created automatically by the Takaro CI bot.
+
+            ${{ steps.release-drafter.outputs.body }}
 
   updateDevelopment:
     runs-on: ubuntu-latest
