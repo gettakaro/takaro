@@ -1,8 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { Plan } from '@takaro/lib-components';
-
-const STRIPE_HOBBY_URI = 'https://buy.stripe.com/test_6oEbJO1zXfcZ84E3cn';
-const STRIPE_PRO_URI = 'https://buy.stripe.com/test_00g4hm4M99SFacMbIK';
+import { getConfigVar } from 'util/getConfigVar';
 
 export const Route = createFileRoute('/_auth/_global/settings/billing/plan')({
   component: Component,
@@ -13,7 +11,7 @@ function Component() {
     <>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
         <Plan
-          to={STRIPE_HOBBY_URI}
+          to={getConfigVar('paymentLinkPlan0Url')}
           title="Hobby plan"
           price="10"
           description="Perfect for managing a server with your friends!"
@@ -28,7 +26,7 @@ function Component() {
           buttonText="Get started"
         />
         <Plan
-          to={STRIPE_PRO_URI}
+          to={getConfigVar('paymentLinkPlan1Url')}
           title="Pro plan"
           price="20"
           description="Ideal for dedicated gamers and small communities."
