@@ -12,8 +12,6 @@ export class SdtdConnectionInfo extends TakaroDTO<SdtdConnectionInfo> {
   public readonly useTls!: boolean;
   @IsBoolean()
   public readonly useCPM!: boolean;
-  @IsBoolean()
-  public readonly useV1!: boolean;
 }
 
 export const sdtdJsonSchema = {
@@ -34,10 +32,6 @@ export const sdtdJsonSchema = {
       type: 'boolean',
     },
     useCPM: {
-      type: 'boolean',
-      default: false,
-    },
-    useV1: {
       type: 'boolean',
       default: false,
     },
