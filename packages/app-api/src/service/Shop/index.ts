@@ -251,7 +251,7 @@ export class ShopListingService extends TakaroService<
       for (let i = 0; i < order.amount; i++) {
         await Promise.allSettled(
           listing.items.map((item) =>
-            gameServerService.giveItem(gameServerId, pog.playerId, item.item.code, item.amount),
+            gameServerService.giveItem(gameServerId, pog.playerId, item.item.code, item.amount, item.quality),
           ),
         );
       }

@@ -29,6 +29,7 @@ export const InstallModuleForm: FC<InstallModuleFormProps> = ({
   const [open, setOpen] = useState<boolean>(true);
   const [userConfigSubmitted, setUserConfigSubmitted] = useState<boolean>(false);
   const [systemConfigSubmitted, setSystemConfigSubmitted] = useState<boolean>(false);
+  const [isDirty, setisDirty] = useState<boolean>(false);
   const navigate = useNavigate();
   const { mutate, isPending, error, isSuccess } = useGameServerModuleInstall();
   const { enqueueSnackbar } = useSnackbar();
@@ -84,7 +85,7 @@ export const InstallModuleForm: FC<InstallModuleFormProps> = ({
   }, [userConfigSubmitted, systemConfigSubmitted, userConfig, systemConfig]);
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
+    <Drawer open={open} onOpenChange={setOpen} promptCloseConfirmation={isDirty}>
       <Drawer.Content>
         <Drawer.Heading>Install module</Drawer.Heading>
         <Drawer.Body>
@@ -98,6 +99,9 @@ export const InstallModuleForm: FC<InstallModuleFormProps> = ({
                 hideSubmitButton
                 onSubmit={onUserConfigSubmit}
                 ref={userConfigFormRef}
+                onChange={() => {
+                  setisDirty(true);
+                }}
               />
             </CollapseList.Item>
             <CollapseList.Item title="System config">
@@ -108,6 +112,9 @@ export const InstallModuleForm: FC<InstallModuleFormProps> = ({
                 initialData={modInstallation?.systemConfig || systemConfig}
                 hideSubmitButton
                 onSubmit={onSystemConfigSubmit}
+                onChange={() => {
+                  setisDirty(true);
+                }}
                 ref={systemConfigFormRef}
               />
             </CollapseList.Item>

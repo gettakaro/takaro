@@ -5,6 +5,7 @@ import { InstallModuleForm } from './-InstallModuleForm';
 import { hasPermission } from 'hooks/useHasPermission';
 import { PERMISSIONS } from '@takaro/apiclient';
 import { userMeQueryOptions } from 'queries/user';
+import { DrawerSkeleton } from '@takaro/lib-components';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/modules/$moduleId/install/view')({
   beforeLoad: async ({ context }) => {
@@ -21,6 +22,7 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/modules/$m
     return { mod, modInstallation };
   },
   component: Component,
+  pendingComponent: DrawerSkeleton,
 });
 
 function Component() {

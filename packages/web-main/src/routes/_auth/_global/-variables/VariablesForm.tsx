@@ -42,7 +42,7 @@ export const VariablesForm: FC<CreateAndUpdateVariableformProps> = ({ variable, 
     }
   }, [open, navigate]);
 
-  const { control, handleSubmit } = useForm<IFormInputs>({
+  const { control, handleSubmit, formState } = useForm<IFormInputs>({
     mode: 'onSubmit',
     resolver: zodResolver(validationSchema),
     ...(variable && {
@@ -58,7 +58,7 @@ export const VariablesForm: FC<CreateAndUpdateVariableformProps> = ({ variable, 
   });
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
+    <Drawer open={open} onOpenChange={setOpen} promptCloseConfirmation={formState.isDirty}>
       <Drawer.Content>
         <Drawer.Heading>{variable ? (readOnly ? 'View' : 'Update') : 'Create'} variable</Drawer.Heading>
         <Drawer.Body>

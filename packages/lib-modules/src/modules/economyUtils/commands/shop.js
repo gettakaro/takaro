@@ -35,12 +35,14 @@ async function main() {
   const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', data.gameServerId)).data.data;
 
   if (!item) {
-    // List the shop items
+    // List the shop items with index
+    let index = 1;
     for (const listing of shopItems.data.data) {
       const items = listing.items.slice(0, 3).map((item) => {
         return `${item.amount}x ${item.item.name}`;
       });
-      await player.pm(`- ${listing.name} - ${listing.price} ${currencyName.value}. ${items.join(', ')}`);
+      await player.pm(`${index} - ${listing.name} - ${listing.price} ${currencyName.value}. ${items.join(', ')}`);
+      index++;
     }
     return;
   }

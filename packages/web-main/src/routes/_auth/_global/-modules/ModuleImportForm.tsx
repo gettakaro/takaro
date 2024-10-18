@@ -36,7 +36,7 @@ export const ModuleImportForm: FC<ModuleFormProps> = ({ isSuccess = false, onSub
     }
   }, [open, navigate]);
 
-  const { handleSubmit, control } = useForm<IFormInputs>({
+  const { handleSubmit, control, formState } = useForm<IFormInputs>({
     mode: 'onChange',
     defaultValues: {},
     resolver: zodResolver(
@@ -62,7 +62,7 @@ export const ModuleImportForm: FC<ModuleFormProps> = ({ isSuccess = false, onSub
   };
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
+    <Drawer open={open} onOpenChange={setOpen} promptCloseConfirmation={formState.isDirty}>
       <Drawer.Content>
         <Drawer.Heading>{'Import module'}</Drawer.Heading>
         <Drawer.Body>

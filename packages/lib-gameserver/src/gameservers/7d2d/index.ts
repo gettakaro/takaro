@@ -98,9 +98,9 @@ export class SevenDaysToDie implements IGameServer {
     };
   }
 
-  async giveItem(player: IPlayerReferenceDTO, item: string, amount: number = 1, quality?: number): Promise<void> {
+  async giveItem(player: IPlayerReferenceDTO, item: string, amount: number = 1, quality?: string): Promise<void> {
     const command = this.connectionInfo.useCPM
-      ? `giveplus EOS_${player.gameId} ${item} ${amount} ${quality ?? ''}`
+      ? `giveplus EOS_${player.gameId} ${item} ${amount} ${quality ?? ''} 0`
       : `give EOS_${player.gameId} ${item} ${amount} ${quality ?? ''}`;
     const res = await this.executeConsoleCommand(command);
 
@@ -151,9 +151,9 @@ export class SevenDaysToDie implements IGameServer {
 
   async executeConsoleCommand(rawCommand: string) {
     const encodedCommand = encodeURIComponent(rawCommand);
-    this.logger.debug(`Executing command: "${rawCommand}"`);
     const result = await this.apiClient.executeConsoleCommand(encodedCommand);
 
+    this.logger.debug(`Executed command: "${rawCommand}"`, { rawCommand, result });
     return new CommandOutput({
       rawResult: result.data.result,
       success: true,

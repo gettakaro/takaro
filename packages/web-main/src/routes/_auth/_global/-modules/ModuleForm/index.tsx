@@ -66,7 +66,7 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, onSubmit, isLoading = fal
     return { initialConfigFields: [], configFieldErrors: [] };
   }, [mod]);
 
-  const { handleSubmit, control, resetField } = useForm<IFormInputs>({
+  const { handleSubmit, control, resetField, formState } = useForm<IFormInputs>({
     mode: 'onChange',
     defaultValues: {
       name: mod?.name ?? undefined,
@@ -115,7 +115,7 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, onSubmit, isLoading = fal
   }
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
+    <Drawer open={open} onOpenChange={setOpen} promptCloseConfirmation={formState.isDirty}>
       <Drawer.Content>
         <Drawer.Heading>{getTitle()}</Drawer.Heading>
         <Drawer.Body>

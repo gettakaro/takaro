@@ -4,6 +4,7 @@ import { createFileRoute, redirect } from '@tanstack/react-router';
 import { InstallModuleForm } from './-InstallModuleForm';
 import { hasPermission } from 'hooks/useHasPermission';
 import { userMeQueryOptions } from 'queries/user';
+import { DrawerSkeleton } from '@takaro/lib-components';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/modules/$moduleId/install/')({
   beforeLoad: async ({ context }) => {
@@ -20,6 +21,7 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/modules/$m
     return { mod, modInstallation };
   },
   component: Component,
+  pendingComponent: DrawerSkeleton,
 });
 
 export function Component() {

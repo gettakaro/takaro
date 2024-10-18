@@ -78,7 +78,7 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
   const readOnly = onSubmit === undefined;
   const { history } = useRouter();
 
-  const { control, handleSubmit } = useForm<FormValues>({
+  const { control, handleSubmit, formState } = useForm<FormValues>({
     mode: 'onSubmit',
     resolver: zodResolver(validationSchema),
     ...(initialData && {
@@ -115,7 +115,7 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
   }, [open]);
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
+    <Drawer open={open} onOpenChange={setOpen} promptCloseConfirmation={formState.isDirty}>
       <Drawer.Content>
         <Drawer.Heading>{initialData ? (readOnly ? 'View' : 'Update') : 'Create'} Shop listing</Drawer.Heading>
         <Drawer.Body>

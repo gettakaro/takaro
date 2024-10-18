@@ -6,17 +6,20 @@ export interface DrawerOptions {
   initialOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
   canDrag?: boolean;
+  promptCloseConfirmation?: boolean;
 }
 
 export function useDrawer({
   initialOpen = false,
   canDrag = false,
   open: controlledOpen,
+  promptCloseConfirmation = false,
   onOpenChange: setControlledOpen,
 }: DrawerOptions) {
   const [uncontrolledOpen, setUncontrolledOpen] = useState(initialOpen);
   const [labelId, setLabelId] = useState<string | undefined>();
   const [descriptionId, setDescriptionId] = useState<string | undefined>();
+  const [showConfirmDialog, setShowConfirmDialog] = useState<boolean>(false);
 
   const open = controlledOpen ?? uncontrolledOpen;
   const setOpen = setControlledOpen ?? setUncontrolledOpen;
@@ -32,13 +35,24 @@ export function useDrawer({
     useClick(context, {
       enabled: controlledOpen == null,
     }),
-    useDismiss(context, { outsidePressEvent: 'mousedown' }),
+    useDismiss(context, {
+      outsidePressEvent: 'mousedown',
+      outsidePress: (_mouseEvent) => {
+        if (promptCloseConfirmation === true) {
+          setShowConfirmDialog(true);
+          return false;
+        }
+        return true;
+      },
+    }),
   ]);
 
   return useMemo(
     () => ({
       open,
       setOpen,
+      showConfirmDialog,
+      setShowConfirmDialog,
       ...interactions,
       ...data,
       labelId,
@@ -47,6 +61,6 @@ export function useDrawer({
       setDescriptionId,
       canDrag,
     }),
-    [open, setOpen, interactions, data, labelId, descriptionId],
+    [open, setOpen, interactions, data, labelId, descriptionId, showConfirmDialog],
   );
 }
