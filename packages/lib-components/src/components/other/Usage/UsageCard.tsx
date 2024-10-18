@@ -1,6 +1,8 @@
 import { styled } from '../../../styled';
 import { useTheme } from '../../../hooks';
-import { Card, ProgressBar, QuestionTooltip } from '../../../components';
+import { Card, ProgressBar, IconTooltip } from '../../../components';
+
+import { AiOutlineQuestion as QuestionIcon } from 'react-icons/ai';
 import { FC } from 'react';
 import { UsageProps } from './Usage';
 

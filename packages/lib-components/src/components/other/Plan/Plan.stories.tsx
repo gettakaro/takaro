@@ -10,7 +10,7 @@ export default {
     description:
       'Lorem ipsum dolor sit amet consect etur adipisicing elit. Itaque amet indis perferendis blanditiis repellendus etur quidem assumenda.',
     price: '20',
-    items: ['Lorem ipsum', 'dolor sit amet', 'etur adipisicing elit', 'Itaque amet indis perferendis blanditiis '],
+    features: ['Lorem ipsum', 'dolor sit amet', 'etur adipisicing elit', 'Itaque amet indis perferendis blanditiis '],
     buttonText: 'Get access',
     to: 'https://takaro.io',
   },
