@@ -23,7 +23,7 @@ Takaro comes with several [built-in Modules](./built-in-modules.mdx) that can be
 Takaro allows you to build your own [Custom Modules](./advanced/modules.md) through the [Module Builder](./advanced/custom-modules.md). Creating custom modules requires some coding knowledge, but it offers great flexibility to extend and enhance the platform’s functionality.
 
 ## Game Support  
-Takaro currently supports [popular games](./supported-games) like _Rust_ and _7 Days to Die_, with _Minecraft_ support coming soon. Our platform is designed to support more games in the future.
+Takaro currently supports popular games like _Rust_ and _7 Days to Die_, with _Minecraft_ support coming soon. Our platform is designed to support more games in the future.
 
 ## Unified Player Profile  
 Takaro unifies your [players](./players.md) across games and servers into one profile, tracking their roles, inventory, history, and activities. 
@@ -38,7 +38,7 @@ Takaro seamlessly integrates with Discord, linking communication between your ga
 You can enable [economy](./economy.md) for each game server. This allows you to monetize your community through an in-game shop, where players can make purchases directly linked to their profiles.
 
 ## How to get started?
-Takaro is built to support communities of all sizes with powerful, scalable tools for managing game servers, players, and monetization. Dive into the [How-To Guides](./how-to-guides) for step-by-step instructions on setting up and customizing your platform.
+Takaro is built to support communities of all sizes with powerful, scalable tools for managing game servers, players, and monetization. Dive into the [How-To Guides](./how-to-guides/connect-7dtd-server.md) for step-by-step instructions on setting up and customizing your platform.
 
 ## Feature requests
 Have ideas for new features? Submit or vote on existing feature requests at [roadmap.takaro.io](https://roadmap.takaro.io/).
