@@ -36,3 +36,24 @@ template: |
   ## Changes
 
   $CHANGES
+autolabeler:
+  - label: 'docs'
+    files:
+      - '*.md'
+    branch:
+      - '/docs/i'
+  - label: 'bug'
+    branch:
+      - '/fix/i'
+    title:
+      - '/fix/i'
+  - label: 'chore'
+    branch:
+      - '/chore/i'
+    title:
+      - '/chore/i'
+  - label: 'enhancement'
+    branch:
+      - '/feat/'
+    title:
+      - '/feat/i'
