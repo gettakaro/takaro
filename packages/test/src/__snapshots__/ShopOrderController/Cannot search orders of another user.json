@@ -14,7 +14,7 @@
     "name": "Cannot search orders of another user",
     "filteredFields": [
       "listingId",
-      "userId"
+      "playerId"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true

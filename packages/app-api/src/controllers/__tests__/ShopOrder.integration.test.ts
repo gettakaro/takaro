@@ -174,7 +174,7 @@ const tests = [
     snapshot: true,
     name: 'Create a new order',
     setup: shopSetup,
-    filteredFields: ['listingId', 'userId'],
+    filteredFields: ['listingId', 'playerId'],
     test: async function () {
       const res = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
         listingId: this.setupData.listing100.id,
@@ -191,7 +191,7 @@ const tests = [
     snapshot: true,
     name: 'Create a new order when not enough money',
     setup: shopSetup,
-    filteredFields: ['listingId', 'userId'],
+    filteredFields: ['listingId', 'playerId'],
     expectedStatus: 400,
     test: async function () {
       try {
@@ -214,7 +214,7 @@ const tests = [
     snapshot: true,
     name: 'Get order by ID',
     setup: shopSetup,
-    filteredFields: ['listingId', 'userId'],
+    filteredFields: ['listingId', 'playerId'],
     test: async function () {
       const order = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
         listingId: this.setupData.listing100.id,
@@ -230,7 +230,7 @@ const tests = [
     snapshot: true,
     name: 'Get order by ID that is not yours -> error',
     setup: shopSetup,
-    filteredFields: ['listingId', 'userId'],
+    filteredFields: ['listingId', 'playerId'],
     expectedStatus: 404,
     test: async function () {
       const order = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
@@ -254,7 +254,7 @@ const tests = [
     snapshot: true,
     name: 'Get order by ID that is not yours but you have high privileges -> success',
     setup: shopSetup,
-    filteredFields: ['listingId', 'userId'],
+    filteredFields: ['listingId', 'playerId'],
     test: async function () {
       const order = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
         listingId: this.setupData.listing100.id,
@@ -270,7 +270,7 @@ const tests = [
     snapshot: true,
     name: 'Search orders',
     setup: shopSetup,
-    filteredFields: ['listingId', 'userId'],
+    filteredFields: ['listingId', 'playerId'],
     test: async function () {
       await this.setupData.client1.shopOrder.shopOrderControllerCreate({
         listingId: this.setupData.listing100.id,
@@ -286,7 +286,7 @@ const tests = [
     snapshot: true,
     name: 'Search orders returns only own orders',
     setup: shopSetup,
-    filteredFields: ['listingId', 'userId'],
+    filteredFields: ['listingId', 'playerId'],
     test: async function () {
       await this.setupData.client1.shopOrder.shopOrderControllerCreate({
         listingId: this.setupData.listing100.id,
@@ -303,7 +303,7 @@ const tests = [
     snapshot: true,
     name: 'Cannot search orders of another user',
     setup: shopSetup,
-    filteredFields: ['listingId', 'userId'],
+    filteredFields: ['listingId', 'playerId'],
     test: async function () {
       await this.setupData.client1.shopOrder.shopOrderControllerCreate({
         listingId: this.setupData.listing100.id,
@@ -322,7 +322,7 @@ const tests = [
     snapshot: true,
     name: 'Search orders returns all orders when called by high privileged user',
     setup: shopSetup,
-    filteredFields: ['listingId', 'userId'],
+    filteredFields: ['listingId', 'playerId'],
     test: async function () {
       await this.setupData.client1.shopOrder.shopOrderControllerCreate({
         listingId: this.setupData.listing100.id,
@@ -344,7 +344,7 @@ const tests = [
     snapshot: true,
     name: 'Claim order',
     setup: shopSetup,
-    filteredFields: ['listingId', 'userId'],
+    filteredFields: ['listingId', 'playerId'],
     test: async function () {
       const order = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
         listingId: this.setupData.listing100.id,
@@ -361,7 +361,7 @@ const tests = [
     snapshot: true,
     name: 'Claim order that is not yours -> error',
     setup: shopSetup,
-    filteredFields: ['listingId', 'userId'],
+    filteredFields: ['listingId', 'playerId'],
     expectedStatus: 404,
     test: async function () {
       const order = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
@@ -385,7 +385,7 @@ const tests = [
     snapshot: true,
     name: 'Claim order that is already claimed -> error',
     setup: shopSetup,
-    filteredFields: ['listingId', 'userId'],
+    filteredFields: ['listingId', 'playerId'],
     expectedStatus: 400,
     test: async function () {
       const order = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
@@ -414,7 +414,7 @@ const tests = [
     snapshot: true,
     name: 'Claim order that is canceled -> error',
     setup: shopSetup,
-    filteredFields: ['listingId', 'userId'],
+    filteredFields: ['listingId', 'playerId'],
     expectedStatus: 400,
     test: async function () {
       const order = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
@@ -443,7 +443,7 @@ const tests = [
     snapshot: true,
     name: 'Cancel order',
     setup: shopSetup,
-    filteredFields: ['listingId', 'userId'],
+    filteredFields: ['listingId', 'playerId'],
     test: async function () {
       const order = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
         listingId: this.setupData.listing100.id,
@@ -460,7 +460,7 @@ const tests = [
     snapshot: true,
     name: 'Cancel order that is not yours -> error',
     setup: shopSetup,
-    filteredFields: ['listingId', 'userId'],
+    filteredFields: ['listingId', 'playerId'],
     expectedStatus: 404,
     test: async function () {
       const order = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
@@ -484,7 +484,7 @@ const tests = [
     snapshot: true,
     name: 'High priv user cancel order that is not yours -> success',
     setup: shopSetup,
-    filteredFields: ['listingId', 'userId'],
+    filteredFields: ['listingId', 'playerId'],
     test: async function () {
       const order = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
         listingId: this.setupData.listing100.id,
@@ -501,7 +501,7 @@ const tests = [
     snapshot: true,
     name: 'Cancel order that is already canceled -> error',
     setup: shopSetup,
-    filteredFields: ['listingId', 'userId'],
+    filteredFields: ['listingId', 'playerId'],
     expectedStatus: 400,
     test: async function () {
       const order = await this.setupData.client1.shopOrder.shopOrderControllerCreate({

@@ -6,7 +6,7 @@
       "updatedAt": "2024-06-29T14:53:24.924Z",
       "id": "2e50062d-8bb0-4632-a5ce-5752f927ac10",
       "listingId": "66c306ea-0cb5-4e53-90c5-ec7aaaa55969",
-      "userId": "0a34727e-419c-4388-819f-6da1f3b6bed4",
+      "playerId": "0a34727e-419c-4388-819f-6da1f3b6bed4",
       "amount": 1,
       "status": "PAID"
     }
@@ -18,7 +18,7 @@
     "name": "Get order by ID that is not yours but you have high privileges -> success",
     "filteredFields": [
       "listingId",
-      "userId"
+      "playerId"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true

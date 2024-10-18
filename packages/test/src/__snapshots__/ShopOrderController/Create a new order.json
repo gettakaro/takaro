@@ -6,7 +6,7 @@
       "updatedAt": "2024-06-29T14:53:10.503Z",
       "id": "765a9691-9c0f-4058-beee-7208a740ef97",
       "listingId": "80e5c3c5-e24c-4c97-bafc-ee32a1b84296",
-      "userId": "d3c26c48-002c-44c3-aae7-ec2036e505cd",
+      "playerId": "d3c26c48-002c-44c3-aae7-ec2036e505cd",
       "amount": 1,
       "status": "PAID"
     }
@@ -18,7 +18,7 @@
     "name": "Create a new order",
     "filteredFields": [
       "listingId",
-      "userId"
+      "playerId"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true
