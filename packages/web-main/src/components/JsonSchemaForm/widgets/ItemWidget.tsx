@@ -59,11 +59,12 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
 
   const { data: gameServer, isLoading: isLoadingGameServer } = useQuery(gameServerQueryOptions(gameServerId));
 
-  const { data: prev, isLoading: isLoadingPreviousItems } = useInfiniteQuery(
-    ItemsInfiniteQueryOptions({
-      filters: { gameserverId: [gameServerId], ...(shouldPreviousItemsBeLoaded && { id: multiple ? value : [value] }) },
+  const { data: prev, isLoading: isLoadingPreviousItems } = useInfiniteQuery({
+    ...ItemsInfiniteQueryOptions({
+      filters: { gameserverId: [gameServerId], id: multiple ? value : [value] },
     }),
-  );
+    enabled: shouldPreviousItemsBeLoaded,
+  });
 
   const previousItems = prev?.pages.flatMap((page) => page.data) ?? [];
 

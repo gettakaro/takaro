@@ -63,17 +63,19 @@ export function inputsToUiSchema(inputs: Array<AnyInput>): UiSchema {
     if (input.type === InputType.item) {
       if (input.multiple) {
         uiSchema[input.name] = {
-          items: {
-            item: {
+          Items: {
+            'Item Name': {
               'ui:widget': InputType.item,
             },
           },
         };
       } else {
         uiSchema[input.name] = {
-          item: {
-            'ui:widget': InputType.item,
-          },
+          Item: {
+            'Item Name': {
+              'ui:widget': InputType.item,
+            },
+          }
         };
       }
     }
