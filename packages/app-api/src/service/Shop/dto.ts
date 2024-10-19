@@ -131,3 +131,14 @@ export class ShopOrderUpdateDTO extends TakaroDTO<ShopOrderUpdateDTO> {
   @IsEnum(Object.values(ShopOrderStatus))
   status: ShopOrderStatus;
 }
+
+export class ShopImportOptions extends TakaroDTO<ShopImportOptions> {
+  @IsOptional()
+  @IsBoolean()
+  replace: boolean;
+  @IsOptional()
+  @IsBoolean()
+  draft: boolean;
+  @IsUUID('4')
+  gameServerId: string;
+}

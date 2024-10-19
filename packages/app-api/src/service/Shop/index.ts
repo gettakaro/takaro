@@ -12,6 +12,7 @@ import {
   ShopOrderUpdateDTO,
   ShopOrderStatus,
   ShopOrderCreateInternalDTO,
+  ShopImportOptions,
 } from './dto.js';
 import { UserService } from '../User/index.js';
 import { checkPermissions } from '../AuthService.js';
@@ -334,5 +335,27 @@ export class ShopListingService extends TakaroService<
     );
 
     return updatedOrder;
+  }
+
+  async import(data: ShopListingCreateDTO[], options: ShopImportOptions) {
+    if (options.replace) {
+      this.log.info('Replacing all shop listings');
+      await this.repo.deleteMany(options.gameServerId);
+    }
+
+    const promises = await Promise.allSettled(
+      data.map((item) => {
+        item.draft = options.draft;
+        item.gameServerId = options.gameServerId;
+        return this.create(item);
+      }),
+    );
+
+    const failed = promises.filter((p) => p.status === 'rejected');
+    if (failed.length) {
+      this.log.warn('Failed to import shop listings', { failed });
+    }
+
+    return promises;
   }
 }
