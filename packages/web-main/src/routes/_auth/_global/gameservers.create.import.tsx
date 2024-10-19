@@ -86,7 +86,7 @@ function Component() {
     }
   }, [jobStatus]);
 
-  const { control, handleSubmit } = useForm<z.infer<typeof validationSchema>>({
+  const { control, handleSubmit, formState } = useForm<z.infer<typeof validationSchema>>({
     mode: 'onChange',
     resolver: zodResolver(validationSchema),
     defaultValues: {
@@ -128,7 +128,7 @@ function Component() {
   };
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
+    <Drawer open={open} onOpenChange={setOpen} promptCloseConfirmation={formState.isDirty}>
       <Drawer.Content>
         <Drawer.Heading>Create Game Server</Drawer.Heading>
         <Drawer.Body>

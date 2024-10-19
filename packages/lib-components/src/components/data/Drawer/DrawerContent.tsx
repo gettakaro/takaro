@@ -1,5 +1,6 @@
 import { forwardRef, HTMLProps, useState } from 'react';
 import { styled } from '../../../styled';
+import { Button } from '../../../components';
 import { AnimatePresence, motion, PanInfo } from 'framer-motion';
 import SimpleBar from 'simplebar-react';
 
@@ -13,6 +14,39 @@ const Container = styled(motion.div)`
   height: 100%;
   z-index: ${({ theme }) => theme.zIndex.drawer};
   border-left: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: ${({ theme }) => theme.spacing[1]};
+`;
+
+const CloseConfirmationWrapper = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+`;
+
+const CloseConfirmationContainer = styled.div`
+  height: 150px;
+  padding: ${({ theme }) => theme.spacing[2]};
+  width: calc(100% - 200px);
+  background-color: ${({ theme }) => theme.colors.background};
+  border: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+
+  h2,
+  p {
+    margin-bottom: ${({ theme }) => theme.spacing[1]};
+  }
 `;
 
 export const HandleContainer = styled.div`
@@ -35,7 +69,16 @@ export const HandleContainer = styled.div`
 `;
 
 export const DrawerContent = forwardRef<HTMLElement, HTMLProps<HTMLDivElement>>(function DrawerContent(props, propRef) {
-  const { context, labelId, descriptionId, getFloatingProps, setOpen, canDrag } = useDrawerContext();
+  const {
+    context,
+    labelId,
+    descriptionId,
+    getFloatingProps,
+    setOpen,
+    canDrag,
+    showConfirmDialog,
+    setShowConfirmDialog,
+  } = useDrawerContext();
 
   const ref = useMergeRefs([context.refs.setFloating, propRef]);
   const [dragPosition, setDragPosition] = useState<number>(0);
@@ -100,6 +143,18 @@ export const DrawerContent = forwardRef<HTMLElement, HTMLProps<HTMLDivElement>>(
                   </HandleContainer>
                 )}
                 <SimpleBar style={{ maxHeight: '92vh' }}>{props.children}</SimpleBar>
+                {showConfirmDialog && (
+                  <CloseConfirmationWrapper>
+                    <CloseConfirmationContainer>
+                      <h2>Your progress will be lost</h2>
+                      <p>Are you sure you want to exit? Your progress will not be saved.</p>
+                      <ButtonContainer>
+                        <Button text="Cancel" color="secondary" onClick={() => setShowConfirmDialog(false)} />
+                        <Button text="Discard changes" onClick={() => setOpen(false)} color="error" />
+                      </ButtonContainer>
+                    </CloseConfirmationContainer>
+                  </CloseConfirmationWrapper>
+                )}
               </Container>
             </FloatingFocusManager>
           </FloatingOverlay>

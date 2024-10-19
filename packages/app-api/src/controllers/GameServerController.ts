@@ -161,8 +161,8 @@ class GiveItemInputDTO extends TakaroDTO<GiveItemInputDTO> {
 
   @IsNumber({ allowNaN: false, allowInfinity: false })
   amount: number;
-  @IsNumber({ allowNaN: false, allowInfinity: false })
-  quality: number;
+  @IsString()
+  quality: string;
 }
 
 class TeleportPlayerInputDTO extends TakaroDTO<TeleportPlayerInputDTO> {

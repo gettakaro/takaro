@@ -5,6 +5,7 @@ import { styled } from '../../../styled';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { DrawerOptions } from './useDrawer';
 
 const ButtonContainer = styled.div`
   display: flex;
@@ -18,7 +19,10 @@ const Status = styled.div`
 export default {
   title: 'data/Drawer',
   component: Drawer,
-} as Meta;
+  args: {
+    promptCloseConfirmation: false,
+  },
+} as Meta<DrawerOptions>;
 
 export const Loading: StoryFn = () => {
   return <DrawerSkeleton />;
@@ -33,7 +37,7 @@ interface FormFields {
   onStoreFront: boolean;
 }
 
-export const Default: StoryFn = () => {
+export const Default: StoryFn<DrawerOptions> = ({ promptCloseConfirmation }) => {
   const [open, setOpen] = useState<boolean>(false);
 
   const validationSchema = useMemo(
@@ -57,7 +61,7 @@ export const Default: StoryFn = () => {
   return (
     <>
       <Button onClick={() => setOpen(true)} text="Open drawer" />
-      <Drawer open={open} onOpenChange={setOpen}>
+      <Drawer open={open} onOpenChange={setOpen} promptCloseConfirmation={promptCloseConfirmation}>
         <Drawer.Content>
           <Drawer.Heading>Product Details</Drawer.Heading>
           <Drawer.Body>
@@ -85,11 +89,8 @@ export const Default: StoryFn = () => {
                   />
                 </CollapseList.Item>
                 <CollapseList.Item title="Pricing">
-                  <RadioGroup
-                    control={control}
-                    label="Selection a price type"
-                    name="priceType"
-                    options={[
+                  <RadioGroup control={control} label="Selection a price type" name="priceType">
+                    {[
                       {
                         label: 'Fixed',
                         labelPosition: 'left',
@@ -100,8 +101,16 @@ export const Default: StoryFn = () => {
                         labelPosition: 'left',
                         value: 'variable',
                       },
-                    ]}
-                  />
+                    ].map(({ value, label }) => (
+                      <div
+                        key={`gender-${value}`}
+                        style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}
+                      >
+                        <RadioGroup.Item value={value} id={value} />
+                        <label htmlFor={value}>{label}</label>
+                      </div>
+                    ))}
+                  </RadioGroup>
                 </CollapseList.Item>
               </CollapseList>
               <CollapseList.Item title="Settings">
