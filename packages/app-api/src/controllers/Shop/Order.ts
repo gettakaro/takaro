@@ -32,6 +32,9 @@ class ShopOrderSearchInputAllowedFilters extends AllowedFilters {
   gameServerId: string[];
   @IsOptional()
   @IsUUID(4, { each: true })
+  playerId: string[];
+  @IsOptional()
+  @IsUUID(4, { each: true })
   userId: string[];
   @IsOptional()
   @IsNumber({}, { each: true })
