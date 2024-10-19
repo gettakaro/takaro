@@ -50,6 +50,7 @@ export const ShopOrderTableView: FC<ShopOrderTableView> = ({ gameServerId }) => 
       filters: {
         listingId: columnFilters.columnFiltersState.find((filter) => filter.id === 'listingId')?.value,
         status: columnFilters.columnFiltersState.find((filter) => filter.id === 'status')?.value,
+        gameServerId: [gameServerId],
       },
       search: {
         // playerId: columnSearch.columnSearchState.find((search) => search.id === 'playerId')?.value,
