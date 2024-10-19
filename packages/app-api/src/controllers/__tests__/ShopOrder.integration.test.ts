@@ -755,9 +755,116 @@ const tests = [
 
       const filteredOrders = await this.client.shopOrder.shopOrderControllerSearch({
         filters: { gameServerId: [this.setupData.gameServer1.id] },
+        extend: ['listing'],
       });
 
+      const allOrders = await this.client.shopOrder.shopOrderControllerSearch();
+
       expect(filteredOrders.data.data).to.have.length(1);
+      expect(filteredOrders.data.data[0].listing?.gameServerId).to.be.eq(this.setupData.gameServer1.id);
+      expect(allOrders.data.data).to.have.length(2);
+    },
+  }),
+  new IntegrationTest<IShopSetup>({
+    group,
+    snapshot: false,
+    name: 'Can filter shop orders by user ID',
+    setup: shopSetup,
+    test: async function () {
+      /**
+       * Setup listings on both gameservers
+       * Create orders for both listings
+       * Then, filter orders by user ID
+       * Expect to only get orders for that user
+       */
+      const listingGameserver1 = (
+        await this.client.shopListing.shopListingControllerCreate({
+          gameServerId: this.setupData.gameServer1.id,
+          items: [{ itemId: this.setupData.items[0].id, amount: 1 }],
+          price: 1,
+          name: 'Test item 1',
+        })
+      ).data.data;
+
+      const listingGameserver2 = (
+        await this.client.shopListing.shopListingControllerCreate({
+          gameServerId: this.setupData.gameServer2.id,
+          items: [{ itemId: this.setupData.items[0].id, amount: 1 }],
+          price: 1,
+          name: 'Test item 2',
+        })
+      ).data.data;
+
+      await this.setupData.client1.shopOrder.shopOrderControllerCreate({
+        listingId: listingGameserver1.id,
+        amount: 1,
+      });
+
+      await this.setupData.client3.shopOrder.shopOrderControllerCreate({
+        listingId: listingGameserver2.id,
+        amount: 1,
+      });
+
+      const filteredOrders = await this.client.shopOrder.shopOrderControllerSearch({
+        filters: { userId: [this.setupData.user1.id] },
+      });
+
+      const allOrders = await this.client.shopOrder.shopOrderControllerSearch();
+
+      expect(filteredOrders.data.data).to.have.length(1);
+      expect(filteredOrders.data.data[0].playerId).to.be.eq(this.setupData.pogs1[0].playerId);
+      expect(allOrders.data.data).to.have.length(2);
+    },
+  }),
+  new IntegrationTest<IShopSetup>({
+    group,
+    snapshot: false,
+    name: 'Can filter shop orders by player ID',
+    setup: shopSetup,
+    test: async function () {
+      /**
+       * Setup listings on both gameservers
+       * Create orders for both listings
+       * Then, filter orders by player ID
+       * Expect to only get orders for that player
+       */
+      const listingGameserver1 = (
+        await this.client.shopListing.shopListingControllerCreate({
+          gameServerId: this.setupData.gameServer1.id,
+          items: [{ itemId: this.setupData.items[0].id, amount: 1 }],
+          price: 1,
+          name: 'Test item 1',
+        })
+      ).data.data;
+
+      const listingGameserver2 = (
+        await this.client.shopListing.shopListingControllerCreate({
+          gameServerId: this.setupData.gameServer2.id,
+          items: [{ itemId: this.setupData.items[0].id, amount: 1 }],
+          price: 1,
+          name: 'Test item 2',
+        })
+      ).data.data;
+
+      await this.setupData.client1.shopOrder.shopOrderControllerCreate({
+        listingId: listingGameserver1.id,
+        amount: 1,
+      });
+
+      await this.setupData.client3.shopOrder.shopOrderControllerCreate({
+        listingId: listingGameserver2.id,
+        amount: 1,
+      });
+
+      const filteredOrders = await this.client.shopOrder.shopOrderControllerSearch({
+        filters: { playerId: [this.setupData.pogs1[0].playerId] },
+      });
+
+      const allOrders = await this.client.shopOrder.shopOrderControllerSearch();
+
+      expect(filteredOrders.data.data).to.have.length(1);
+      expect(filteredOrders.data.data[0].playerId).to.be.eq(this.setupData.pogs1[0].playerId);
+      expect(allOrders.data.data).to.have.length(2);
     },
   }),
 ];

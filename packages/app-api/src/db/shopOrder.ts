@@ -9,6 +9,8 @@ import {
   ShopOrderCreateInternalDTO,
   ShopOrderUpdateDTO,
 } from '../service/Shop/dto.js';
+import { PLAYER_TABLE_NAME } from './player.js';
+import { USER_TABLE_NAME } from './user.js';
 
 export const SHOP_LISTING_ORDER_TABLE_NAME = 'shopOrder';
 
@@ -62,6 +64,14 @@ export class ShopOrderRepo extends ITakaroRepo<
       qry
         .join(ShopListingModel.tableName, `${ShopListingModel.tableName}.id`, `${ShopOrderModel.tableName}.listingId`)
         .whereIn(`${ShopListingModel.tableName}.gameServerId`, filters.filters.gameServerId as string[]);
+    }
+
+    if (filters.filters?.userId && Array.isArray(filters.filters.userId)) {
+      // We need to lookup the user from order.playerId -> player.id -> user.playerId
+      qry
+        .join(PLAYER_TABLE_NAME, `${PLAYER_TABLE_NAME}.id`, 'shopOrder.playerId')
+        .join(USER_TABLE_NAME, `${USER_TABLE_NAME}.playerId`, `${PLAYER_TABLE_NAME}.id`)
+        .whereIn(`${USER_TABLE_NAME}.id`, filters.filters.userId as string[]);
     }
 
     const result = await qry;
