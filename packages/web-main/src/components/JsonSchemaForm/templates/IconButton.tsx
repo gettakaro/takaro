@@ -1,4 +1,4 @@
-import { IconButton, Tooltip } from '@takaro/lib-components';
+import { IconButton, Tooltip, useTheme } from '@takaro/lib-components';
 import {
   AiOutlineArrowUp as ArrowUpIcon,
   AiOutlineArrowDown as ArrowDownIcon,
@@ -6,14 +6,6 @@ import {
   AiOutlineDelete as DeleteIcon,
 } from 'react-icons/ai';
 import { FormContextType, IconButtonProps, RJSFSchema, StrictRJSFSchema, TranslatableString } from '@rjsf/utils';
-import { ReactElement } from 'react';
-
-export function TakaroButton<T = any, S extends StrictRJSFSchema = RJSFSchema, F extends FormContextType = any>(
-  props: IconButtonProps<T, S, F>,
-) {
-  const { icon, color: _color, ...otherProps } = props;
-  return <IconButton icon={icon as ReactElement} ariaLabel="" {...otherProps} color="primary" />;
-}
 
 export function CopyButton<T = any, S extends StrictRJSFSchema = RJSFSchema, F extends FormContextType = any>(
   props: IconButtonProps<T, S, F>,
@@ -22,9 +14,9 @@ export function CopyButton<T = any, S extends StrictRJSFSchema = RJSFSchema, F e
     registry: { translateString },
   } = props;
   return (
-    <Tooltip>
+    <Tooltip placement="left">
       <Tooltip.Trigger asChild>
-        <TakaroButton {...props} icon={<CopyIcon />} />
+        <IconButton {...props} icon={<CopyIcon />} ariaLabel="Copy item" color="primary" />
       </Tooltip.Trigger>
       <Tooltip.Content>{translateString(TranslatableString.CopyButton)}</Tooltip.Content>
     </Tooltip>
@@ -38,9 +30,9 @@ export function MoveDownButton<T = any, S extends StrictRJSFSchema = RJSFSchema,
     registry: { translateString },
   } = props;
   return (
-    <Tooltip>
+    <Tooltip placement="left">
       <Tooltip.Trigger asChild>
-        <TakaroButton {...props} icon={<ArrowDownIcon />} />
+        <IconButton {...props} icon={<ArrowDownIcon />} ariaLabel="Move Item down" color="primary" />
       </Tooltip.Trigger>
       <Tooltip.Content>{translateString(TranslatableString.MoveDownButton)}</Tooltip.Content>
     </Tooltip>
@@ -54,9 +46,9 @@ export function MoveUpButton<T = any, S extends StrictRJSFSchema = RJSFSchema, F
     registry: { translateString },
   } = props;
   return (
-    <Tooltip>
+    <Tooltip placement="left">
       <Tooltip.Trigger asChild>
-        <TakaroButton {...props} icon={<ArrowUpIcon />} />
+        <IconButton {...props} icon={<ArrowUpIcon />} ariaLabel="Move Item up" color="primary" />
       </Tooltip.Trigger>
       <Tooltip.Content>{translateString(TranslatableString.MoveUpButton)}</Tooltip.Content>
     </Tooltip>
@@ -67,17 +59,18 @@ export function RemoveButton<T = any, S extends StrictRJSFSchema = RJSFSchema, F
   props: IconButtonProps<T, S, F>,
 ) {
   const { ...otherProps } = props;
+  const theme = useTheme();
   const {
     registry: { translateString },
   } = otherProps;
   return (
-    <Tooltip>
+    <Tooltip placement="left">
       <Tooltip.Trigger asChild>
-        <TakaroButton
-          title={translateString(TranslatableString.RemoveButton)}
-          {...otherProps}
-          color="secondary"
-          icon={<DeleteIcon />}
+        <IconButton
+          {...props}
+          icon={<DeleteIcon fill={theme.colors.error} />}
+          ariaLabel="Remove Item"
+          color="primary"
         />
       </Tooltip.Trigger>
       <Tooltip.Content>{translateString(TranslatableString.RemoveButton)}</Tooltip.Content>
