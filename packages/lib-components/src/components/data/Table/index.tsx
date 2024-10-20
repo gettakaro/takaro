@@ -340,7 +340,7 @@ export function Table<DataType extends object>({
                     <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       <Empty
                         header=""
-                        description="Items will appear here. Add your first item to begin!"
+                        description="Data will appear here."
                         actions={[
                           <Button
                             key={id + '-learn-more-button'}
