@@ -81,7 +81,7 @@ export interface IGameServer {
   getPlayerLocation(player: IPlayerReferenceDTO): Promise<IPosition | null>;
   getPlayerInventory(player: IPlayerReferenceDTO): Promise<IItemDTO[]>;
 
-  giveItem(player: IPlayerReferenceDTO, item: string, amount: number, quality?: number): Promise<void>;
+  giveItem(player: IPlayerReferenceDTO, item: string, amount: number, quality?: string): Promise<void>;
   listItems(): Promise<IItemDTO[]>;
 
   executeConsoleCommand(rawCommand: string): Promise<CommandOutput>;

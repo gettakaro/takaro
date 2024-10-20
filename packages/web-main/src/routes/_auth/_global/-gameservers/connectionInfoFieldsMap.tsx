@@ -47,14 +47,6 @@ export const connectionInfoFieldsMap = (isLoading: boolean, control: Control<any
         loading={isLoading}
         description="CPM is a helper mod for 7 Days to Die. Download at https://cpm.7d2d.download"
       />,
-      <Switch
-        label="Use V1"
-        name="connectionInfo.useV1"
-        key="seven-days-to-die-use-v1"
-        control={control}
-        loading={isLoading}
-        description="Use the experimental 7D2D V1 connection method"
-      />,
     ],
     [GameServerCreateDTOTypeEnum.Mock]: [
       <TextField

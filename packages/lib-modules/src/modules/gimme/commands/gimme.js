@@ -18,7 +18,7 @@ async function main() {
     await takaro.gameserver.gameServerControllerGiveItem(data.gameServerId, data.player.id, {
       name: randomOption,
       amount: 1,
-      quality: 0,
+      quality: '0',
     });
     await data.player.pm(`You received ${randomOption}!`);
   } else {

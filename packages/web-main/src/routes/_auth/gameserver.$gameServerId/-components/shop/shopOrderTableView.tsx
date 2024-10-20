@@ -10,7 +10,6 @@ import {
   Dialog,
   Dropdown,
   IconButton,
-  Skeleton,
   Table,
   useTheme,
   useTableActions,
@@ -26,7 +25,7 @@ import {
   AiOutlineCheck as ClaimOrderIcon,
 } from 'react-icons/ai';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { userQueryOptions } from 'queries/user';
+import { userMeQueryOptions } from 'queries/user';
 import { PlayerContainer } from 'components/Player';
 import { playerOnGameServerQueryOptions } from 'queries/pog';
 
@@ -42,16 +41,19 @@ export const ShopOrderTableView: FC<ShopOrderTableView> = ({ gameServerId }) => 
     ...shopOrdersQueryOptions({
       page: pagination.paginationState.pageIndex,
       limit: pagination.paginationState.pageSize,
-      sortBy: sorting.sortingState[0]?.id,
-      sortDirection: sorting.sortingState[0]?.desc
-        ? ShopOrderSearchInputDTOSortDirectionEnum.Desc
-        : ShopOrderSearchInputDTOSortDirectionEnum.Asc,
+      sortBy: sorting.sortingState[0] ? sorting.sortingState[0].id : 'createdAt',
+      sortDirection: sorting.sortingState[0]
+        ? sorting.sortingState[0]?.desc
+          ? ShopOrderSearchInputDTOSortDirectionEnum.Desc
+          : ShopOrderSearchInputDTOSortDirectionEnum.Asc
+        : ShopOrderSearchInputDTOSortDirectionEnum.Desc,
       filters: {
         listingId: columnFilters.columnFiltersState.find((filter) => filter.id === 'listingId')?.value,
         status: columnFilters.columnFiltersState.find((filter) => filter.id === 'status')?.value,
+        gameServerId: [gameServerId],
       },
       search: {
-        userId: columnSearch.columnSearchState.find((search) => search.id === 'userId')?.value,
+        // playerId: columnSearch.columnSearchState.find((search) => search.id === 'playerId')?.value,
         listingId: columnSearch.columnSearchState.find((search) => search.id === 'listingId')?.value,
         status: columnSearch.columnSearchState.find((search) => search.id === 'status')?.value,
       },
@@ -62,7 +64,7 @@ export const ShopOrderTableView: FC<ShopOrderTableView> = ({ gameServerId }) => 
   const columnHelper = createColumnHelper<ShopOrderOutputDTO>();
   const columnDefs = [
     columnHelper.accessor('listingId', {
-      header: 'Listing ID',
+      header: 'Listing',
       id: 'listingId',
       cell: (info) => (
         <Link
@@ -118,11 +120,11 @@ export const ShopOrderTableView: FC<ShopOrderTableView> = ({ gameServerId }) => 
         dataType: 'datetime',
       },
     }),
-    columnHelper.accessor('userId', {
+    columnHelper.accessor('playerId', {
       header: 'Player',
-      id: 'userId',
+      id: 'playerId',
       enableSorting: true,
-      cell: (info) => <UserToPlayer userId={info.getValue()} />,
+      cell: (info) => <PlayerContainer playerId={info.getValue()} />,
       meta: { dataType: 'string' },
     }),
     columnHelper.display({
@@ -163,37 +165,43 @@ export const ShopOrderTableView: FC<ShopOrderTableView> = ({ gameServerId }) => 
   );
 };
 
+// This is only needed until user is replaced with player in shoporder.
+const ShopOrderActionsDataQueryWrapper: FC<{ shopOrder: ShopOrderOutputDTO }> = ({ shopOrder }) => {
+  const { gameServerId } = useParams({ from: '/_auth/gameserver/$gameServerId/shop/orders' });
+  const { data: me, isPending: isPendingMe } = useQuery(userMeQueryOptions());
+
+  if (isPendingMe) {
+    return <span>Loading actions...</span>;
+  }
+  if (!me) {
+    return '';
+  }
+
+  return (
+    <ShopOrderActions
+      currentPlayerId={me?.player?.id}
+      shopOrder={shopOrder}
+      gameServerId={gameServerId}
+      playerId={shopOrder.playerId}
+    />
+  );
+};
+
 interface ShopOrderActionsProps {
   shopOrder: ShopOrderOutputDTO;
   playerId: string;
   gameServerId: string;
+  currentPlayerId?: string;
 }
-// This is only needed until user is replaced with player in shoporder.
-const ShopOrderActionsDataQueryWrapper: FC<{ shopOrder: ShopOrderOutputDTO }> = ({ shopOrder }) => {
-  const { gameServerId } = useParams({ from: '/_auth/gameserver/$gameServerId/shop/orders' });
-  const { isPending, data } = useQuery(userQueryOptions(shopOrder.userId));
 
-  if (isPending) {
-    return <span>Loading actions...</span>;
-  }
-  if (!data) {
-    return '';
-  }
-
-  if (!data.playerId) {
-    return '';
-  }
-
-  return <ShopOrderActions shopOrder={shopOrder} gameServerId={gameServerId} playerId={data.playerId} />;
-};
-
-const ShopOrderActions: FC<ShopOrderActionsProps> = ({ shopOrder, gameServerId, playerId }) => {
+const ShopOrderActions: FC<ShopOrderActionsProps> = ({ shopOrder, gameServerId, playerId, currentPlayerId }) => {
   const [openCancelOrderDialog, setOpenCancelOrderDialog] = useState(false);
   const { mutate: cancelShopOrder, isPending: isPendingShopOrderCancel } = useShopOrderCancel();
-  const { data } = useQuery(playerOnGameServerQueryOptions(gameServerId, playerId));
+  const { data: pog } = useQuery(playerOnGameServerQueryOptions(gameServerId, playerId));
   const { mutateAsync: claimShopOrder } = useShopOrderClaim();
   const theme = useTheme();
 
+  const orderOfCurrentUser = shopOrder.playerId === currentPlayerId;
   const handleCancelOrderClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
     setOpenCancelOrderDialog(true);
@@ -216,10 +224,16 @@ const ShopOrderActions: FC<ShopOrderActionsProps> = ({ shopOrder, gameServerId, 
           <Dropdown.Menu.Group>
             {shopOrder.status == ShopOrderOutputDTOStatusEnum.Paid && (
               <Dropdown.Menu.Item
-                label={data?.online ? 'Claim order' : 'Claim order (player offline)'}
+                label={
+                  orderOfCurrentUser
+                    ? pog?.online
+                      ? 'Claim order'
+                      : 'Claim order (you are offline)'
+                    : 'Claim order (not your order)'
+                }
                 icon={<ClaimOrderIcon />}
                 onClick={handleClaimShopOrderClick}
-                disabled={data?.online === false}
+                disabled={pog?.online === undefined || pog?.online === false}
               />
             )}
             <Dropdown.Menu.Item
@@ -248,22 +262,4 @@ const ShopOrderActions: FC<ShopOrderActionsProps> = ({ shopOrder, gameServerId, 
       </Dialog>
     </>
   );
-};
-
-export const UserToPlayer: FC<{ userId: string }> = ({ userId }) => {
-  const { data, isPending } = useQuery(userQueryOptions(userId));
-
-  if (isPending) {
-    return <Skeleton variant="rectangular" />;
-  }
-
-  if (data === undefined) {
-    return 'unknown';
-  }
-
-  if (!data.playerId) {
-    return `user: ${data.name}`;
-  }
-
-  return <PlayerContainer playerId={data.playerId} />;
 };
