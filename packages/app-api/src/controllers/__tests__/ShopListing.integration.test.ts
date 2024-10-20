@@ -167,6 +167,175 @@ const tests = [
       return res;
     },
   }),
+  new IntegrationTest<IShopSetup>({
+    group,
+    snapshot: false,
+    name: 'import-export: Can export and import listings, replacing existing listings',
+    setup: shopSetup,
+    test: async function () {
+      // First, create a few listings with dynamic data
+      const items = (await this.client.item.itemControllerSearch()).data.data;
+      const listingsToMake = 10;
+      await Promise.all(
+        Array.from({ length: listingsToMake }).map(async (_, i) => {
+          return this.client.shopListing.shopListingControllerCreate({
+            gameServerId: this.setupData.gameServer1.id,
+            items: [{ itemId: items[0].id, amount: 1 }],
+            price: 100 + i,
+            name: `Test item ${i}`,
+          });
+        }),
+      );
+
+      const shop1Listings = (
+        await this.client.shopListing.shopListingControllerSearch({
+          filters: { gameServerId: [this.setupData.gameServer1.id] },
+        })
+      ).data.data;
+      const shop2ListingsBefore = (
+        await this.client.shopListing.shopListingControllerSearch({
+          filters: { gameServerId: [this.setupData.gameServer2.id] },
+        })
+      ).data.data;
+      // Export the listings
+      const exportRes = await this.client.shopListing.shopListingControllerSearch();
+
+      // Import the listings
+      const formData = new FormData();
+      formData.append('import', JSON.stringify(exportRes.data.data));
+      formData.append(
+        'options',
+        JSON.stringify({
+          replace: true,
+          gameServerId: this.setupData.gameServer2.id,
+        }),
+      );
+
+      // API client doesn't play nicely with file uploads, so we drop down to axios directly
+      await this.client.axiosInstance.post('/shop/listing/import', formData);
+
+      const shop2Listings = (
+        await this.client.shopListing.shopListingControllerSearch({
+          filters: { gameServerId: [this.setupData.gameServer2.id] },
+        })
+      ).data.data;
+      expect(shop2Listings).to.have.length(shop1Listings.length);
+      // Check createdAt and compare to before to ensure these are new listings
+      expect(shop2ListingsBefore.every((l) => shop2Listings.some((l2) => l2.createdAt < l.createdAt))).to.be.true;
+    },
+  }),
+  new IntegrationTest<IShopSetup>({
+    group,
+    snapshot: false,
+    name: 'import-export: can export and import listings, adding to existing listings',
+    setup: shopSetup,
+    test: async function () {
+      // First, create a few listings with dynamic data
+      const items = (await this.client.item.itemControllerSearch()).data.data;
+      const listingsToMake = 10;
+      await Promise.all(
+        Array.from({ length: listingsToMake }).map(async (_, i) => {
+          return this.client.shopListing.shopListingControllerCreate({
+            gameServerId: this.setupData.gameServer1.id,
+            items: [{ itemId: items[0].id, amount: 1 }],
+            price: 100 + i,
+            name: `Test item ${i}`,
+          });
+        }),
+      );
+
+      const shop1Listings = (
+        await this.client.shopListing.shopListingControllerSearch({
+          filters: { gameServerId: [this.setupData.gameServer1.id] },
+        })
+      ).data.data;
+      const shop2ListingsBefore = (
+        await this.client.shopListing.shopListingControllerSearch({
+          filters: { gameServerId: [this.setupData.gameServer2.id] },
+        })
+      ).data.data;
+      // Export the listings
+      const exportRes = await this.client.shopListing.shopListingControllerSearch();
+
+      // Import the listings
+      const formData = new FormData();
+      formData.append('import', JSON.stringify(exportRes.data.data));
+      formData.append(
+        'options',
+        JSON.stringify({
+          replace: false,
+          gameServerId: this.setupData.gameServer2.id,
+        }),
+      );
+
+      // API client doesn't play nicely with file uploads, so we drop down to axios directly
+      await this.client.axiosInstance.post('/shop/listing/import', formData);
+
+      const shop2Listings = (
+        await this.client.shopListing.shopListingControllerSearch({
+          filters: { gameServerId: [this.setupData.gameServer2.id] },
+        })
+      ).data.data;
+      expect(shop2Listings).to.have.length(shop1Listings.length + shop2ListingsBefore.length);
+    },
+  }),
+  new IntegrationTest<IShopSetup>({
+    group,
+    snapshot: false,
+    name: 'import-export: can export and import listings, importing as draft',
+    setup: shopSetup,
+    test: async function () {
+      // First, create a few listings with dynamic data
+      const items = (await this.client.item.itemControllerSearch()).data.data;
+      const listingsToMake = 10;
+      await Promise.all(
+        Array.from({ length: listingsToMake }).map(async (_, i) => {
+          return this.client.shopListing.shopListingControllerCreate({
+            gameServerId: this.setupData.gameServer1.id,
+            items: [{ itemId: items[0].id, amount: 1 }],
+            price: 100 + i,
+            name: `Test item ${i}`,
+          });
+        }),
+      );
+
+      const shop1Listings = (
+        await this.client.shopListing.shopListingControllerSearch({
+          filters: { gameServerId: [this.setupData.gameServer1.id] },
+        })
+      ).data.data;
+      const shop2ListingsBefore = (
+        await this.client.shopListing.shopListingControllerSearch({
+          filters: { gameServerId: [this.setupData.gameServer2.id] },
+        })
+      ).data.data;
+      // Export the listings
+      const exportRes = await this.client.shopListing.shopListingControllerSearch();
+
+      // Import the listings
+      const formData = new FormData();
+      formData.append('import', JSON.stringify(exportRes.data.data));
+      formData.append(
+        'options',
+        JSON.stringify({
+          replace: false,
+          gameServerId: this.setupData.gameServer2.id,
+          draft: true,
+        }),
+      );
+
+      // API client doesn't play nicely with file uploads, so we drop down to axios directly
+      await this.client.axiosInstance.post('/shop/listing/import', formData);
+
+      const shop2Listings = (
+        await this.client.shopListing.shopListingControllerSearch({
+          filters: { gameServerId: [this.setupData.gameServer2.id] },
+        })
+      ).data.data;
+      expect(shop2Listings).to.have.length(shop1Listings.length + shop2ListingsBefore.length);
+      expect(shop2Listings.every((l) => l.draft)).to.be.true;
+    },
+  }),
 ];
 
 describe(group, function () {
