@@ -1,7 +1,7 @@
 import { takaro, data, TakaroUserError } from '@takaro/helpers';
 
 async function main() {
-  const { arguments: args, player, gameServerId, user } = data;
+  const { arguments: args, player, gameServerId } = data;
   const { page, item, action } = args;
   const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data.value;
 
@@ -71,12 +71,10 @@ async function main() {
   }
 
   if (action === 'buy') {
-    if (!user) throw new TakaroUserError('You must link your account to Takaro to use this command.');
-
     const orderRes = await takaro.shopOrder.shopOrderControllerCreate({
       amount: 1,
       listingId: selectedItem.id,
-      userId: user.id,
+      playerId: player.id,
     });
     await player.pm(`You have purchased ${selectedItem.name} for ${selectedItem.price} ${currencyName.value}.`);
     await takaro.shopOrder.shopOrderControllerClaim(orderRes.data.data.id);
