@@ -1,6 +1,7 @@
-import axios, { AxiosError, AxiosInstance } from 'axios';
+import { AxiosError, AxiosInstance } from 'axios';
 import { config } from '../config.js';
 import { addCounterToAxios, errors, logger } from '@takaro/util';
+import { createAxios } from '@takaro/apiclient';
 import { Redis } from '@takaro/db';
 import ms from 'ms';
 
@@ -45,7 +46,7 @@ class SteamApi {
 
   get client() {
     if (!this._client) {
-      this._client = axios.create({
+      this._client = createAxios({
         baseURL: 'https://api.steampowered.com',
         timeout: 10000,
       });

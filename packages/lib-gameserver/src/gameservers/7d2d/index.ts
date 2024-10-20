@@ -122,17 +122,18 @@ export class SevenDaysToDie implements IGameServer {
       let reason = 'Unexpected error, this might be a bug';
       this.logger.warn('Reachability test requests failed', error);
 
-      if (error instanceof Object && 'details' in error) {
+      if (error instanceof Object && !('status' in error)) {
         reason =
           'Did not receive a response, please check that the server is running, the IP/port is correct and that it is not firewalled';
-        if (error.details instanceof Object) {
-          if ('status' in error.details) {
-            if (error.details.status === 403 || error.details.status === 401) {
-              reason = 'Unauthorized, please check that the admin user and token are correct';
-            }
-          }
+      }
+
+      if (error instanceof Object && 'status' in error) {
+        if (error.status === 403 || error.status === 401) {
+          reason = 'Unauthorized, please check that the admin user and token are correct';
         }
-      } else if (error instanceof Object && 'message' in error && error.message === 'Request timed out') {
+      }
+
+      if (error instanceof Object && 'message' in error && error.message === 'Request timed out') {
         reason = 'Request timed out, the server did not respond in the allocated time';
       }
 

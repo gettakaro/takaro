@@ -1,10 +1,11 @@
-import axios, { AxiosError } from 'axios';
+import { AxiosError } from 'axios';
 import { addCounterToAxios, errors, logger } from '@takaro/util';
+import { createAxios } from '@takaro/apiclient';
 
 const log = logger('ory:http');
 
 export function createAxiosClient(baseURL: string) {
-  const client = axios.create({
+  const client = createAxios({
     baseURL,
     headers: {
       'Content-Type': 'application/json',
