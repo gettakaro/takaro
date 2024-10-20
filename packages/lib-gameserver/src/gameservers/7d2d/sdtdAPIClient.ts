@@ -1,4 +1,4 @@
-import axios, { Axios, AxiosResponse } from 'axios';
+import { Axios, AxiosResponse } from 'axios';
 import { SdtdConnectionInfo } from './connectionInfo.js';
 import {
   CommandResponse,
@@ -7,13 +7,14 @@ import {
   PlayerLocation,
   StatsResponse,
 } from './apiResponses.js';
-import { addCounterToAxios, errors } from '@takaro/util';
+import { addCounterToAxios } from '@takaro/util';
+import { createAxios } from '@takaro/apiclient';
 
 export class SdtdApiClient {
   private client: Axios;
 
   constructor(private config: SdtdConnectionInfo) {
-    this.client = axios.create({
+    this.client = createAxios({
       baseURL: this.url,
     });
 
@@ -28,30 +29,6 @@ export class SdtdApiClient {
 
       return req;
     });
-
-    this.client.interceptors.response.use(
-      function (response) {
-        return response;
-      },
-      function (error) {
-        // Any status codes that falls outside the range of 2xx cause this function to trigger
-        if (error.response) {
-          const simplifiedError = new errors.BadRequestError('Axios error', {
-            extra: 'A request to the 7D2D server failed',
-            status: error.response.status,
-            statusText: error.response.statusText,
-            url: error.config.url,
-          });
-          return Promise.reject(simplifiedError);
-        }
-        const simplifiedError = new errors.BadRequestError('Axios error', {
-          extra: 'A request to the 7D2D server failed',
-          message: error.message,
-          url: error.config.url,
-        });
-        return Promise.reject(simplifiedError);
-      },
-    );
   }
 
   private get url() {

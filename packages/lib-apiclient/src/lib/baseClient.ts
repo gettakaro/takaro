@@ -1,5 +1,6 @@
 import { MetaApi } from '../generated/api.js';
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
+import { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
+import { createAxios } from './baseAxios.js';
 
 export interface IBaseApiClientConfig {
   url: string;
@@ -31,7 +32,7 @@ export class BaseApiClient<T extends IBaseApiClientConfig> {
       },
       withCredentials: true,
     };
-    this.axios = this.addLoggers(axios.create(axiosConfig));
+    this.axios = this.addLoggers(createAxios(axiosConfig));
 
     if (this.config.log) this.log = this.config.log;
   }
