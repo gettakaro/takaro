@@ -9,12 +9,13 @@ import {
 } from '@rjsf/utils';
 import { styled } from '@takaro/lib-components';
 
-const Container = styled.div`
-  border: 1px solid ${({ theme }) => theme.colors.backgroundAlt};
-  padding: ${({ theme }) => theme.spacing['2']};
-`;
+const Container = styled.div``;
 
-const ItemListContainer = styled.div``;
+const ItemListContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[1]};
+`;
 
 /** The `ArrayFieldTemplate` component is the template used to render all items in an array.
  *

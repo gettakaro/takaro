@@ -20,13 +20,28 @@ export class PlayerOnboarding extends BuiltinModule<PlayerOnboarding> {
           },
           starterKitItems: {
             type: 'array',
-            'x-component': 'item',
             title: 'Starter kit items',
+            'x-component': 'item',
             description:
               'List of items a player will receive when they execute the starterkit command for the first time.',
             uniqueItems: true,
             items: {
-              type: 'string',
+              type: 'object',
+              title: 'Item',
+              properties: {
+                item: {
+                  type: 'string',
+                  title: 'Item',
+                },
+                amount: {
+                  type: 'number',
+                  title: 'Amount',
+                },
+                quality: {
+                  type: 'string',
+                  title: 'Quality',
+                },
+              },
             },
           },
         },
@@ -34,7 +49,13 @@ export class PlayerOnboarding extends BuiltinModule<PlayerOnboarding> {
         additionalProperties: false,
       }),
       JSON.stringify({
-        starterKitItems: { 'ui:widget': 'item' },
+        starterKitItems: {
+          items: {
+            item: {
+              'ui:widget': 'item',
+            },
+          },
+        },
       }),
     );
 
