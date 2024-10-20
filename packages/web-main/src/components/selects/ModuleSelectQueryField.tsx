@@ -115,7 +115,7 @@ export const ModuleSelectView: FC<ModuleSelectViewProps> = ({
         if (selectedModules.length === 0) {
           return <p>Select module...</p>;
         }
-        return selectedModules.map((gameServer) => gameServer.label).join(', ');
+        return selectedModules.map((selectedModule) => selectedModule.label).join(', ');
       }}
     >
       <SelectQueryField.OptionGroup>
