@@ -45,8 +45,7 @@ export class ShopListingOutputDTO extends TakaroModelDTO<ShopListingOutputDTO> {
   @IsNumber()
   price!: number;
   @IsString()
-  @IsOptional()
-  name?: string;
+  name: string;
   @IsISO8601()
   @IsOptional()
   deletedAt?: Date;
@@ -63,8 +62,7 @@ export class ShopListingCreateDTO<T = void> extends TakaroDTO<T> {
   @IsNumber()
   price!: number;
   @IsString()
-  @IsOptional()
-  name?: string;
+  name: string;
   @IsBoolean()
   @IsOptional()
   draft?: boolean;
