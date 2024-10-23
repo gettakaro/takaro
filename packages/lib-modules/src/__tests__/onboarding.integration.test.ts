@@ -54,7 +54,6 @@ const tests = [
       });
 
       const resultLogs = (await events)[0].data.meta.result.logs;
-      console.log(JSON.stringify(resultLogs, null, 2));
       expect(resultLogs.some((log: any) => log.msg.match(/giveItem 200 OK/))).to.be.true;
     },
   }),
