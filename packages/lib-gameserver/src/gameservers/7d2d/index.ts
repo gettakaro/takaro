@@ -100,7 +100,7 @@ export class SevenDaysToDie implements IGameServer {
 
   async giveItem(player: IPlayerReferenceDTO, item: string, amount: number = 1, quality?: string): Promise<void> {
     const command = this.connectionInfo.useCPM
-      ? `giveplus EOS_${player.gameId} ${item} ${amount} ${quality ?? ''} 0`
+      ? `giveplus EOS_${player.gameId} ${item} ${amount} ${quality ? quality + ' 0' : ''}`
       : `give EOS_${player.gameId} ${item} ${amount} ${quality ?? ''}`;
     const res = await this.executeConsoleCommand(command);
 

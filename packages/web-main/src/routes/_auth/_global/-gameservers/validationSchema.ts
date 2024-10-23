@@ -38,6 +38,7 @@ export const validationSchema = baseShape.and(
         adminToken: z.string().min(1, { message: 'Admin token cannot be empty' }).optional(),
         useTls: z.boolean().optional(),
         useCPM: z.boolean().optional(),
+        useLegacy: z.boolean().optional(),
       }),
     }),
 
