@@ -15,7 +15,7 @@
     "name": "Get order by ID that is not yours -> error",
     "filteredFields": [
       "listingId",
-      "userId"
+      "playerId"
     ],
     "expectedStatus": 404,
     "standardEnvironment": true

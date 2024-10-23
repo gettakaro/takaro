@@ -15,7 +15,7 @@
     "name": "Cancel order that is already canceled -> error",
     "filteredFields": [
       "listingId",
-      "userId"
+      "playerId"
     ],
     "expectedStatus": 400,
     "standardEnvironment": true

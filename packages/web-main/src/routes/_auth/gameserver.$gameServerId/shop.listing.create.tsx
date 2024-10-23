@@ -40,7 +40,7 @@ function Component() {
 
   const onSubmit: SubmitHandler<FormValues> = ({ name, items, price, draft }) => {
     mutate({
-      name: name ? name : undefined,
+      name: name ? name : 'Unnamed',
       price,
       gameServerId,
       items,

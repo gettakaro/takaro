@@ -14,7 +14,7 @@
     "name": "Search orders returns only own orders",
     "filteredFields": [
       "listingId",
-      "userId"
+      "playerId"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true
