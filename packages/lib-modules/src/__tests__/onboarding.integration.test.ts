@@ -1,11 +1,12 @@
 import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
-import { EventPlayerConnected, GameEvents } from '../dto/gameEvents.js';
+import { GameEvents } from '../dto/gameEvents.js';
 import { HookEvents } from '../main.js';
+import { faker } from '@faker-js/faker';
 
 const group = 'Onboarding';
 const groupStarterkit = 'Onboarding - Starterkit';
 
-const _tests = [
+const tests = [
   new IntegrationTest<IModuleTestsSetupData>({
     group,
     snapshot: false,
@@ -16,21 +17,14 @@ const _tests = [
         this.setupData.gameserver.id,
         this.setupData.onboardingModule.id,
       );
-      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE);
-      await this.client.hook.hookControllerTrigger({
-        gameServerId: this.setupData.gameserver.id,
-        playerId: this.setupData.players[0].id,
-        eventType: GameEvents.PLAYER_CONNECTED,
-        eventMeta: new EventPlayerConnected({
-          player: {
-            gameId: '1',
-          },
-          msg: 'Player connected',
-        }),
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 5);
+      await this.client.gameserver.gameServerControllerExecuteCommand(this.setupData.gameserver.id, {
+        command: 'connectAll',
       });
 
-      expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.meta.msg).to.match(/Welcome .+ to the server!/);
+      expect((await events).length).to.be.eq(5);
+      // Expect all messages to match
+      expect((await events).every((event) => event.data.meta.msg.match(/Welcome .+ to the server!/))).to.be.true;
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -39,12 +33,17 @@ const _tests = [
     setup: modulesTestSetup,
     name: 'Starterkit command gives the player items',
     test: async function () {
+      const items = (await this.client.item.itemControllerSearch()).data.data;
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
         this.setupData.onboardingModule.id,
         {
           userConfig: JSON.stringify({
-            starterKitItems: ['cigar'],
+            starterKitItems: items.map((item) => ({
+              item: item.id,
+              amount: faker.number.int({ min: 1, max: 6 }),
+              quality: faker.number.int({ min: 1, max: 6 }).toString(),
+            })),
           }),
         },
       );
@@ -55,6 +54,7 @@ const _tests = [
       });
 
       const resultLogs = (await events)[0].data.meta.result.logs;
+      console.log(JSON.stringify(resultLogs, null, 2));
       expect(resultLogs.some((log: any) => log.msg.match(/giveItem 200 OK/))).to.be.true;
     },
   }),
@@ -64,12 +64,17 @@ const _tests = [
     setup: modulesTestSetup,
     name: 'Starterkit command can only be used once',
     test: async function () {
+      const items = (await this.client.item.itemControllerSearch()).data.data;
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
         this.setupData.onboardingModule.id,
         {
           userConfig: JSON.stringify({
-            starterKitItems: ['cigar'],
+            starterKitItems: items.map((item) => ({
+              item: item.id,
+              amount: faker.number.int({ min: 1, max: 6 }),
+              quality: faker.number.int({ min: 1, max: 6 }).toString(),
+            })),
           }),
         },
       );
@@ -114,9 +119,8 @@ const _tests = [
   }),
 ];
 
-// Temp disabled...
-/* describe(group, function () {
+describe(group, function () {
   tests.forEach((test) => {
     test.run();
   });
-}); */
+});
