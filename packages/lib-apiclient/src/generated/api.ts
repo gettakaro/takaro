@@ -2873,6 +2873,7 @@ export const GameServerCreateDTOTypeEnum = {
   Mock: 'MOCK',
   Sevendaystodie: 'SEVENDAYSTODIE',
   Rust: 'RUST',
+  Minecraft: 'MINECRAFT',
 } as const;
 
 export type GameServerCreateDTOTypeEnum =
@@ -2957,6 +2958,7 @@ export const GameServerOutputDTOTypeEnum = {
   Mock: 'MOCK',
   Sevendaystodie: 'SEVENDAYSTODIE',
   Rust: 'RUST',
+  Minecraft: 'MINECRAFT',
 } as const;
 
 export type GameServerOutputDTOTypeEnum =
@@ -3023,6 +3025,7 @@ export const GameServerSearchInputAllowedFiltersTypeEnum = {
   Mock: 'MOCK',
   Sevendaystodie: 'SEVENDAYSTODIE',
   Rust: 'RUST',
+  Minecraft: 'MINECRAFT',
 } as const;
 
 export type GameServerSearchInputAllowedFiltersTypeEnum =
@@ -3141,6 +3144,7 @@ export const GameServerTestReachabilityInputDTOTypeEnum = {
   Mock: 'MOCK',
   Sevendaystodie: 'SEVENDAYSTODIE',
   Rust: 'RUST',
+  Minecraft: 'MINECRAFT',
 } as const;
 
 export type GameServerTestReachabilityInputDTOTypeEnum =
@@ -3170,6 +3174,7 @@ export const GameServerTypesOutputDTOTypeEnum = {
   Mock: 'MOCK',
   Sevendaystodie: 'SEVENDAYSTODIE',
   Rust: 'RUST',
+  Minecraft: 'MINECRAFT',
 } as const;
 
 export type GameServerTypesOutputDTOTypeEnum =
@@ -3236,6 +3241,7 @@ export const GameServerUpdateDTOTypeEnum = {
   Mock: 'MOCK',
   Sevendaystodie: 'SEVENDAYSTODIE',
   Rust: 'RUST',
+  Minecraft: 'MINECRAFT',
 } as const;
 
 export type GameServerUpdateDTOTypeEnum =
@@ -5206,6 +5212,25 @@ export interface MetadataOutput {
    * @memberof MetadataOutput
    */
   total?: number;
+}
+/**
+ *
+ * @export
+ * @interface MinecraftConnectionInfo
+ */
+export interface MinecraftConnectionInfo {
+  /**
+   *
+   * @type {string}
+   * @memberof MinecraftConnectionInfo
+   */
+  host: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof MinecraftConnectionInfo
+   */
+  useTls: boolean;
 }
 /**
  *

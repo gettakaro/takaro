@@ -114,5 +114,34 @@ export const connectionInfoFieldsMap = (isLoading: boolean, control: Control<any
         loading={isLoading}
       />,
     ],
+    [GameServerCreateDTOTypeEnum.Minecraft]: [
+      <TextField
+        control={control}
+        label="Host"
+        name="connectionInfo.host"
+        description="Where the minecraft server is running"
+        placeholder="minecraft.example.com:3002"
+        key="minecraft-event-host"
+        loading={isLoading}
+        required
+      />,
+      <TextField
+        control={control}
+        label="Password"
+        name="connectionInfo.password"
+        key="minecraft-event-password"
+        type="password"
+        loading={isLoading}
+        required
+      />,
+      <Switch
+        label="Use TLS"
+        name="connectionInfo.useTls"
+        description="TLS encrypts traffic between Takaro and your gameserver. Before you can use this, you need to have set up TLS on your gameserver! This typically involves setting up a reverse proxy like Nginx"
+        key="use-tls"
+        control={control}
+        loading={isLoading}
+      />,
+    ],
   };
 };
