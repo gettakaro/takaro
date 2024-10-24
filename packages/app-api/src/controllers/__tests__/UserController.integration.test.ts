@@ -8,16 +8,24 @@ const group = 'UserController';
 
 interface IUserSetup {
   user: UserOutputDTO;
+  userClient: Client;
 }
 
 const userSetup = async function (this: IntegrationTest<IUserSetup>) {
+  const password = faker.internet.password();
   const user = await this.client.user.userControllerCreate({
     name: 'Test user',
-    idpId: 'test',
-    email: 'testUser@example.com',
-    password: 'test',
+    email: `test-${faker.internet.email()}`,
+    password,
   });
-  return { user: user.data.data };
+
+  const userClient = new Client({
+    auth: { username: user.data.data.email, password },
+    url: integrationConfig.get('host'),
+  });
+  await userClient.login();
+
+  return { user: user.data.data, userClient };
 };
 
 async function multiRolesSetup(client: Client) {
@@ -99,7 +107,7 @@ const tests = [
 
       return userRes;
     },
-    filteredFields: ['idpId', 'roleId', 'userId', 'lastSeen'],
+    filteredFields: ['idpId', 'roleId', 'userId', 'lastSeen', 'email'],
   }),
   // Repro for https://github.com/gettakaro/takaro/issues/1013
   new IntegrationTest<IUserSetup>({
@@ -245,6 +253,23 @@ const tests = [
           throw error;
         }
       }
+    },
+  }),
+  new IntegrationTest<IUserSetup>({
+    group,
+    snapshot: true,
+    name: 'Can delete a user',
+    setup: userSetup,
+    test: async function () {
+      // This is a bug repro, when you delete a user that has events, a FK constraint error is thrown
+      // So, let's ensure there's an event for this user
+      const role = (await this.client.role.roleControllerSearch({ filters: { name: ['root'] } })).data.data[0];
+      await this.client.user.userControllerAssignRole(this.setupData.user.id, role.id);
+      await this.setupData.userClient.module.moduleControllerCreate({ name: 'blabla', description: 'blabla' });
+
+      // Then delete the user
+      const res = await this.client.user.userControllerRemove(this.setupData.user.id);
+      return res;
     },
   }),
 ];

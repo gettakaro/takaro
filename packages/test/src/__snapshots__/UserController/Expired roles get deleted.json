@@ -36,7 +36,8 @@
       "idpId",
       "roleId",
       "userId",
-      "lastSeen"
+      "lastSeen",
+      "email"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true
