@@ -1,42 +1,92 @@
 import axios, { AxiosError, CreateAxiosDefaults } from 'axios';
 
+interface ILog {
+  error: (message: string, meta: Record<string, any>) => void;
+  debug: (message: string, meta: Record<string, any>) => void;
+  info: (message: string, meta: Record<string, any>) => void;
+  warn: (message: string, meta: Record<string, any>) => void;
+}
+
+interface ITakaroAxiosOptions {
+  logger?: ILog;
+}
+
+export class CleanAxiosError extends AxiosError {
+  constructor(axiosError: AxiosError) {
+    super(axiosError.message, axiosError.code, axiosError.config, axiosError.request, axiosError.response);
+
+    if (axiosError.response) {
+      const { status, statusText } = axiosError.response;
+      this.message = `Request failed with status ${status} ${statusText}`;
+    } else if (axiosError.request) {
+      this.message = 'No response received';
+    } else {
+      this.message = axiosError.message;
+    }
+
+    // Strip down the error to a more manageable size when printing it
+    // By default Axios throws a HUGE error
+    this.toJSON = () => ({
+      message: this.message,
+      name: this.name,
+      method: axiosError.config?.method,
+      url: axiosError.config?.url,
+      status: axiosError.response?.status,
+      data: axiosError.response?.data,
+      requestTraceId: axiosError.response?.headers['x-trace-id'],
+    });
+  }
+}
+
 /**
  * Creates an opinionated axios instance with defaults
- * Includes error handling (Axios by default throws a HUGE error)
  * @param opts CreateAxiosDefaults - Configuration for the axios instance
  */
-export function createAxios(opts: CreateAxiosDefaults) {
+export function createAxios(opts: CreateAxiosDefaults, { logger }: ITakaroAxiosOptions = {}) {
   const axiosInstance = axios.create(opts);
 
-  // Strip down the error to a more manageable size
   axiosInstance.interceptors.response.use(
-    (response) => response,
+    function (response) {
+      return response;
+    },
     (error: AxiosError) => {
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        const { status, statusText, headers, data } = error.response;
-        return Promise.reject({
-          status,
-          statusText,
-          headers,
-          data,
-        });
-      } else if (error.request) {
-        // The request was made but no response was received
-        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-        // http.ClientRequest in node.js
-        return Promise.reject({
-          message: 'No response received',
-        });
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        return Promise.reject({
-          message: error.message,
-        });
-      }
+      return Promise.reject(new CleanAxiosError(error));
     },
   );
+
+  // Add detailed logging
+  if (logger) {
+    axiosInstance.interceptors.request.use((request) => {
+      logger.info(`➡️ ${request.method?.toUpperCase()} ${request.url}`, {
+        method: request.method,
+        url: request.url,
+        requestTraceId: request.headers['x-trace-id'],
+      });
+      return request;
+    });
+
+    axiosInstance.interceptors.response.use(
+      (response) => {
+        logger.info(
+          `⬅️ ${response.request.method?.toUpperCase()} ${response.request.path} ${response.status} ${
+            response.statusText
+          }`,
+          {
+            status: response.status,
+            method: response.request.method,
+            url: response.request.url,
+            requestTraceId: response.headers['x-trace-id'],
+          },
+        );
+
+        return response;
+      },
+      (error: AxiosError) => {
+        logger.error('☠️ Request errored', error.toJSON());
+        return Promise.reject(error);
+      },
+    );
+  }
 
   return axiosInstance;
 }

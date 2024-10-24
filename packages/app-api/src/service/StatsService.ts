@@ -16,9 +16,14 @@ export class StatsOutputDTO extends TakaroDTO<StatsOutputDTO> {
 
 @traceableClass('service:stats')
 export class StatsService extends TakaroService<TakaroModel, TakaroDTO<void>, TakaroDTO<void>, TakaroDTO<void>> {
-  private promClient = createAxios({
-    baseURL: config.get('metrics.prometheusUrl'),
-  });
+  private promClient = createAxios(
+    {
+      baseURL: config.get('metrics.prometheusUrl'),
+    },
+    {
+      logger: this.log,
+    },
+  );
   get repo(): ITakaroRepo<TakaroModel, TakaroDTO<void>, TakaroDTO<void>, TakaroDTO<void>> {
     // Dummy since we're not talking to our DB here
     return {} as ITakaroRepo<TakaroModel, TakaroDTO<void>, TakaroDTO<void>, TakaroDTO<void>>;

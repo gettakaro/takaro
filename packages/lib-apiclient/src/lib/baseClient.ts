@@ -1,5 +1,5 @@
 import { MetaApi } from '../generated/api.js';
-import { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
+import { AxiosInstance, AxiosRequestConfig } from 'axios';
 import { createAxios } from './baseAxios.js';
 
 export interface IBaseApiClientConfig {
@@ -32,9 +32,9 @@ export class BaseApiClient<T extends IBaseApiClientConfig> {
       },
       withCredentials: true,
     };
-    this.axios = this.addLoggers(createAxios(axiosConfig));
 
     if (this.config.log) this.log = this.config.log;
+    this.axios = createAxios(axiosConfig, { logger: this.log });
   }
 
   setHeader(key: string, value: string) {
@@ -47,59 +47,6 @@ export class BaseApiClient<T extends IBaseApiClientConfig> {
 
   isJsonMime(mime: string) {
     return mime === 'application/json';
-  }
-
-  private addLoggers(axios: AxiosInstance): AxiosInstance {
-    if (this.config.log === false) {
-      return axios;
-    }
-
-    axios.interceptors.request.use((request) => {
-      this.log.info(`➡️ ${request.method?.toUpperCase()} ${request.url}`, {
-        method: request.method,
-        url: request.url,
-      });
-      return request;
-    });
-
-    axios.interceptors.response.use(
-      (response) => {
-        this.log.info(
-          `⬅️ ${response.request.method?.toUpperCase()} ${response.request.path} ${response.status} ${
-            response.statusText
-          }`,
-          {
-            status: response.status,
-            statusText: response.statusText,
-            method: response.request.method,
-            url: response.request.url,
-          },
-        );
-
-        return response;
-      },
-      (error: AxiosError) => {
-        let details = {};
-
-        if (error.response?.data) {
-          const data = error.response.data as Record<string, unknown>;
-          details = JSON.stringify(data.meta);
-        }
-
-        this.log.error('☠️ Request errored', {
-          traceId: error.response?.headers['x-trace-id'],
-          details,
-          status: error.response?.status,
-          statusText: error.response?.statusText,
-          method: error.config?.method,
-          url: error.config?.url,
-          response: error.response?.data,
-        });
-        return Promise.reject(error);
-      },
-    );
-
-    return axios;
   }
 
   /**
