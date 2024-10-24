@@ -1,0 +1,15 @@
+{
+  "body": {
+    "meta": {},
+    "data": {}
+  },
+  "status": 200,
+  "test": {
+    "group": "UserController",
+    "snapshot": true,
+    "name": "Can delete a user",
+    "expectedStatus": 200,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}
