@@ -5,18 +5,9 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { CardList } from 'components/cards';
 import { ShopListingCard } from 'components/cards/ShopListingCard';
 
-import { AiOutlinePlus as PlusIcon } from 'react-icons/ai';
-import { Card, Button, Empty, EmptyPage, InfiniteScroll, styled } from '@takaro/lib-components';
+import { Button, Empty, EmptyPage, InfiniteScroll } from '@takaro/lib-components';
 import { useNavigate } from '@tanstack/react-router';
-import { CardBody } from 'components/cards/ShopListingCard/style';
 import { ShopViewProps } from './ShopView';
-
-const AddCardBody = styled(CardBody)`
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: ${({ theme }) => theme.spacing[1]};
-`;
 
 export const ShopCardView: FC<ShopViewProps> = ({ gameServerId, currency, currencyName, gameServerType }) => {
   const hasPermission = useHasPermission(['MANAGE_SHOP_LISTINGS']);
@@ -80,14 +71,6 @@ export const ShopCardView: FC<ShopViewProps> = ({ gameServerId, currency, curren
               gameServerType={gameServerType}
             />
           )),
-        )}
-        {hasPermission && (
-          <Card role="link" onClick={onCreateShopListingClicked} variant="outline">
-            <AddCardBody>
-              <PlusIcon size={24} />
-              <h3>new shop listing</h3>
-            </AddCardBody>
-          </Card>
         )}
       </CardList>
       {shopListings && shopListings.pages && (

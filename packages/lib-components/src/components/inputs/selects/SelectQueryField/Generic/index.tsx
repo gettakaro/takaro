@@ -45,7 +45,7 @@ interface SharedSelectQueryFieldProps extends PaginationProps {
   debounce?: number;
   /// Triggered whenever the input value changes.
   /// This is used to trigger the API call to get the new options
-  handleInputValueChange: (value: string) => void;
+  handleInputValueChange?: (value: string) => void;
   /// render inPortal
   inPortal?: boolean;
 
@@ -126,8 +126,10 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
     const listItemsRef = useRef<Array<HTMLLIElement | null>>([]);
 
     useEffect(() => {
-      if ((inputValue.shouldUpdate && debouncedValue) || (inputValue && debouncedValue === ''))
-        handleInputValueChange(debouncedValue);
+      if (handleInputValueChange) {
+        if ((inputValue.shouldUpdate && debouncedValue) || (inputValue && debouncedValue === ''))
+          handleInputValueChange(debouncedValue);
+      }
     }, [debouncedValue]);
 
     const { refs, strategy, x, y, context } = useFloating<HTMLInputElement>({
@@ -205,18 +207,21 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
               },
             })}
           >
-            <GenericTextField
-              id={`${name}-input`}
-              name={`${name}-input`}
-              hasDescription={false}
-              icon={<SearchIcon />}
-              suffix={isLoading ? 'Loading' : optionCount !== undefined ? `Result: ${optionCount}` : undefined}
-              hasError={hasError}
-              value={inputValue.value}
-              onChange={onInputChange}
-              placeholder={placeholder}
-              ref={ref}
-            />
+            {' '}
+            {handleInputValueChange && (
+              <GenericTextField
+                id={`${name}-input`}
+                name={`${name}-input`}
+                hasDescription={false}
+                icon={<SearchIcon />}
+                suffix={isLoading ? 'Loading' : optionCount !== undefined ? `Result: ${optionCount}` : undefined}
+                hasError={hasError}
+                value={inputValue.value}
+                onChange={onInputChange}
+                placeholder={placeholder}
+                ref={ref}
+              />
+            )}
             {/* it will always contain 1 because of the group label */}
             {isLoading && (
               <FeedBackContainer>

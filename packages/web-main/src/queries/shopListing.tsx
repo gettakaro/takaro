@@ -1,5 +1,6 @@
 import {
   APIOutput,
+  ShopImportOptions,
   ShopListingCreateDTO,
   ShopListingOutputArrayDTOAPI,
   ShopListingOutputDTO,
@@ -107,6 +108,32 @@ export const useShopListingUpdate = () => {
         enqueueSnackbar('Shoplisting updated!', { variant: 'default', type: 'success' });
         await queryClient.invalidateQueries({ queryKey: shopListingKeys.list() });
         queryClient.setQueryData(shopListingKeys.detail(updatedShopListing.id), updatedShopListing);
+      },
+    }),
+    {},
+  );
+};
+
+interface ShopListingImportProps extends ShopImportOptions {
+  shopListings: ShopListingOutputDTO[];
+}
+
+export const useShopListingImport = () => {
+  const apiClient = getApiClient();
+  const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
+
+  return mutationWrapper<APIOutput, ShopListingImportProps>(
+    useMutation<APIOutput, AxiosError<ShopListingImportProps>, ShopListingImportProps>({
+      mutationFn: async ({ gameServerId, replace, shopListings }) => {
+        const formData = new FormData();
+        formData.append('import', JSON.stringify(shopListings));
+        formData.append('options', JSON.stringify({ replace, gameServerId }));
+        return (await apiClient.shopListing.shopListingControllerImportListings({ data: formData })).data;
+      },
+      onSuccess: async () => {
+        enqueueSnackbar('ShopListings imported!', { variant: 'default', type: 'success' });
+        await queryClient.invalidateQueries({ queryKey: shopListingKeys.list() });
       },
     }),
     {},
