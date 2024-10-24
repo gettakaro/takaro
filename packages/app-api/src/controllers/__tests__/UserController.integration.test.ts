@@ -262,10 +262,14 @@ const tests = [
     setup: userSetup,
     test: async function () {
       // This is a bug repro, when you delete a user that has events, a FK constraint error is thrown
-      // So, let's ensure there's an event for this user
       const role = (await this.client.role.roleControllerSearch({ filters: { name: ['root'] } })).data.data[0];
       await this.client.user.userControllerAssignRole(this.setupData.user.id, role.id);
       await this.setupData.userClient.module.moduleControllerCreate({ name: 'blabla', description: 'blabla' });
+      // So, let's ensure there's an event for this user
+      const events = await this.client.event.eventControllerSearch({
+        filters: { actingUserId: [this.setupData.user.id] },
+      });
+      expect(events.data.data.length).to.be.greaterThan(0, 'No events found for user');
 
       // Then delete the user
       const res = await this.client.user.userControllerRemove(this.setupData.user.id);
