@@ -6,6 +6,17 @@ const Container = styled.div`
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: center;
+  gap: ${({ theme }) => theme.spacing[1]};
+  border: 1px solid ${({ theme }) => theme.colors.backgroundAlt};
+  border-radius: ${({ theme }) => theme.borderRadius.small};
+  padding: ${({ theme }) => theme.spacing[1]};
+`;
+
+const FlexContainer = styled.div`
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
 `;
 
 /** The `ArrayFieldItemTemplate` component is the template used to render an items of an array.
@@ -45,7 +56,7 @@ export function ArrayFieldItemTemplate<
     <Container>
       <div>{children}</div>
       {hasToolbar && (
-        <div>
+        <FlexContainer>
           {(hasMoveUp || hasMoveDown) && (
             <MoveUpButton
               style={btnStyle}
@@ -82,7 +93,7 @@ export function ArrayFieldItemTemplate<
               registry={registry}
             />
           )}
-        </div>
+        </FlexContainer>
       )}
     </Container>
   );

@@ -16,7 +16,22 @@ export class Gimme extends BuiltinModule<Gimme> {
             description: 'List of items that a player can receive.',
             uniqueItems: true,
             items: {
-              type: 'string',
+              type: 'object',
+              title: 'Item',
+              properties: {
+                item: {
+                  type: 'string',
+                  title: 'Item',
+                },
+                amount: {
+                  type: 'number',
+                  title: 'Amount',
+                },
+                quality: {
+                  type: 'string',
+                  title: 'Quality',
+                },
+              },
             },
           },
           commands: {
@@ -32,7 +47,13 @@ export class Gimme extends BuiltinModule<Gimme> {
         additionalProperties: false,
       }),
       JSON.stringify({
-        items: { 'ui:widget': 'item' },
+        items: {
+          items: {
+            item: {
+              'ui:widget': 'item',
+            },
+          },
+        },
       }),
     );
 
