@@ -75,11 +75,15 @@ export function schemaToInputs(schema: SchemaObject): SchemaToInputsResult {
           }
           break;
 
-        case 'string':
+        case 'object':
           if (property['x-component'] === InputType.item) {
             input.type = InputType.item;
             input.multiple = false;
-          } else if (property['x-component'] === InputType.country) {
+          }
+          break;
+
+        case 'string':
+          if (property['x-component'] === InputType.country) {
             input.type = InputType.country;
             input.multiple = false;
           } else if (property.enum) {
