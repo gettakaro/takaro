@@ -20,6 +20,7 @@ import { useGradients } from '../useGradients';
 import { Margin, ChartProps, InnerChartProps, getDefaultTooltipStyles } from '../util';
 import { BrushHandle } from '../BrushHandle';
 import { PointHighlight } from '../PointHighlight';
+import { EmptyChart } from '../EmptyChart';
 
 export interface AreaChartProps<T> extends ChartProps {
   data: T[];
@@ -56,7 +57,7 @@ export const AreaChart = <T,>({
   axisYLabel,
 }: AreaChartProps<T>) => {
   // TODO: handle empty data
-  if (!data || data.length === 0) return null;
+  if (!data || data.length === 0) return <EmptyChart />;
 
   // TODO: handle loading state
   return (

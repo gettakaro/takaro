@@ -10,6 +10,7 @@ import { shade } from 'polished';
 
 import { useTheme } from '../../../hooks';
 import { getChartColors, getDefaultTooltipStyles, InnerChartProps, Margin } from '../util';
+import { EmptyChart } from '../EmptyChart';
 
 type PieChartVariant = 'pie' | 'donut';
 
@@ -33,6 +34,8 @@ export const PieChart = <T,>({
   margin = defaultMargin,
   variant,
 }: PieChartProps<T>) => {
+  if (!data || data.length === 0) return <EmptyChart />;
+
   return (
     <>
       <ParentSize>

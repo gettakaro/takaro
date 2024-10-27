@@ -11,6 +11,7 @@ import { ParentSize } from '@visx/responsive';
 import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
 import localPoint from '@visx/event/lib/localPointGeneric';
 import { useGradients } from '../useGradients';
+import { EmptyChart } from '../EmptyChart';
 
 export const defaultMargin = { top: 10, right: 0, bottom: 25, left: 40 };
 export interface RadialBarChartProps<T> {
@@ -30,6 +31,7 @@ export const RadialBarChart = <T,>({
   tooltipAccessor,
   name,
 }: RadialBarChartProps<T>) => {
+  if (!data || data.length === 0) return <EmptyChart />;
   return (
     <>
       <ParentSize>

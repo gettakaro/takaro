@@ -16,6 +16,7 @@ import { useGradients } from '../useGradients';
 import { useTheme } from '../../../hooks';
 import { ChartProps, InnerChartProps, Margin } from '../util';
 import { BrushHandle } from '../BrushHandle';
+import { EmptyChart } from '../EmptyChart';
 
 export interface BarChartProps<T> extends ChartProps {
   data: T[];
@@ -47,7 +48,7 @@ export const BarChart = <T,>({
   axisYLabel,
 }: BarChartProps<T>) => {
   // TODO: handle empty data
-  if (!data || data.length === 0) return null;
+  if (!data || data.length === 0) return <EmptyChart />;
 
   // TODO: handle loading state
 

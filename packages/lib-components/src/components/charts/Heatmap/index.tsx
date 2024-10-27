@@ -7,6 +7,7 @@ import { scaleLinear, scaleBand } from '@visx/scale';
 
 import { InnerChartProps, Margin } from '../util';
 import { useTheme } from '../../../hooks';
+import { EmptyChart } from '../EmptyChart';
 
 interface InnerBin {
   bin: number;
@@ -43,6 +44,8 @@ export const HeatMap = <T,>({
   name,
   margin = defaultMargin,
 }: HeatmapProps<T>) => {
+  if (!data || data.length === 0) return <EmptyChart />;
+
   return (
     <>
       <ParentSize>

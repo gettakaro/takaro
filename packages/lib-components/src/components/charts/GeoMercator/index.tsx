@@ -9,6 +9,7 @@ import { useTooltip, Tooltip } from '@visx/tooltip';
 import { useCallback } from 'react';
 import { localPoint } from '@visx/event';
 import { shade } from 'polished';
+import { EmptyChart } from '../EmptyChart';
 
 interface FeatureShape {
   type: 'Feature';
@@ -42,6 +43,7 @@ export const GeoMercator = <T,>({
   margin = defaultMargin,
   tooltipAccessor,
 }: GeoMercatorProps<T>) => {
+  if (!data || data.length === 0) return <EmptyChart />;
   return (
     <>
       <ParentSize>

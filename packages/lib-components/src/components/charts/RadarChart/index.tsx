@@ -12,6 +12,7 @@ import { Text } from '@visx/text';
 import { getDefaultTooltipStyles, InnerChartProps, Margin } from '../util';
 import { genAngles, genPoints, genPolygonPoints } from './generators';
 import { useTheme } from '../../../hooks';
+import { EmptyChart } from '../EmptyChart';
 
 export interface RadarChartProps<T> {
   name: string;
@@ -33,6 +34,7 @@ export const RadarChart = <T,>({
   levels = 5,
   margin = defaultMargin,
 }: RadarChartProps<T>) => {
+  if (!data || data.length === 0) return <EmptyChart />;
   return (
     <>
       <ParentSize>

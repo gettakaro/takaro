@@ -11,6 +11,7 @@ import { curveBasisOpen } from '@visx/curve';
 import { InnerChartProps, Margin } from '../util';
 import { useTheme } from '../../../hooks';
 import { useGradients } from '../useGradients';
+import { EmptyChart } from '../EmptyChart';
 
 const formatTicks = (val: NumberLike) => String(val);
 
@@ -30,6 +31,7 @@ export const RadialLineChart = <T,>({
   name,
   margin = defaultMargin,
 }: RadialLineChartProps<T>) => {
+  if (!data || data.length === 0) return <EmptyChart />;
   return (
     <>
       <ParentSize>

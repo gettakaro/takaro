@@ -13,6 +13,7 @@ import { useCallback, useMemo } from 'react';
 import { Margin, ChartProps, InnerChartProps, getDefaultTooltipStyles } from '../util';
 import { localPoint } from '@visx/event';
 import { PointHighlight } from '../PointHighlight';
+import { EmptyChart } from '../EmptyChart';
 
 const defaultMargin = { top: 10, right: 0, bottom: 25, left: 40 };
 const defaultShowAxisX = true;
@@ -45,7 +46,7 @@ export const LineChart = <T,>({
   showAxisY = defaultShowAxisY,
   curveType = 'curveBasis',
 }: LineChartProps<T>) => {
-  if (!data || data.length === 0) return null;
+  if (!data || data.length === 0) return <EmptyChart />;
 
   return (
     <ParentSize>
