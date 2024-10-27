@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { Tooltip, styled, Skeleton } from '@takaro/lib-components';
+import { styled, Skeleton } from '@takaro/lib-components';
 import { gameServerQueryOptions } from 'queries/gameserver';
 import { GameServerOutputDTO, GameServerOutputDTOTypeEnum, PlayerOnGameserverOutputDTO } from '@takaro/apiclient';
 import { useQuery } from '@tanstack/react-query';
@@ -54,19 +54,16 @@ export const PlayerInventoryTable: FC<IPlayerInventoryProps> = ({ pog }) => {
   return (
     <Grid>
       {pog.inventory.map((item, index) => (
-        <Tooltip key={'tooltip' + item.name} placement="top">
-          <Tooltip.Trigger asChild>
-            <GridItem key={index}>
-              <ItemIcon
-                src={serverType ? `/icons/${serverType}/${item.code}.png` : placeholderIcon}
-                alt={item.name}
-                onError={(e) => (e.currentTarget.src = placeholderIcon)}
-              />
-              <p>{item.amount}</p>
-            </GridItem>
-          </Tooltip.Trigger>
-          <Tooltip.Content>{item.name}</Tooltip.Content>
-        </Tooltip>
+        <GridItem key={index}>
+          <ItemIcon
+            src={serverType ? `/icons/${serverType}/${item.code}.png` : placeholderIcon}
+            alt={item.name}
+            onError={(e) => (e.currentTarget.src = placeholderIcon)}
+          />
+          <p>
+            {item.amount}x {item.name}
+          </p>
+        </GridItem>
       ))}
     </Grid>
   );

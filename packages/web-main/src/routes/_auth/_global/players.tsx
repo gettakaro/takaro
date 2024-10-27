@@ -355,11 +355,7 @@ const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
           <IconButton icon={<ActionIcon />} ariaLabel="player-actions" />
         </Dropdown.Trigger>
         <Dropdown.Menu>
-          <Dropdown.Menu.Item
-            label="Go to player profile"
-            icon={<ProfileIcon />}
-            onClick={() => navigate({ to: '/player/$playerId/info', params: { playerId: player.id } })}
-          />
+          <Dropdown.Menu.Item label="Go to player profile" icon={<ProfileIcon />} onClick={() => { }} />
 
           <Dropdown.Menu.Item
             label="Edit roles"

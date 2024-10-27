@@ -64,6 +64,7 @@ export const OnlinePlayersCard: FC = () => {
                 name={player.name}
                 showAvatar={true}
                 avatarUrl={player.steamAvatar}
+                gameServerId={gameServerId}
               />
             );
           })}

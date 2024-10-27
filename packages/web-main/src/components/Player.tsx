@@ -11,6 +11,7 @@ interface PlayerProps {
   showAvatar?: boolean;
   isLoading?: boolean;
   hasError?: boolean;
+  gameServerId?: string;
 }
 
 type PlayerContainerProps = Pick<PlayerProps, 'showAvatar' | 'playerId'>;
@@ -29,7 +30,15 @@ export const PlayerContainer: FC<PlayerContainerProps> = ({ playerId, showAvatar
   );
 };
 
-export const Player: FC<PlayerProps> = ({ playerId, name, avatarUrl, showAvatar, isLoading, hasError }) => {
+export const Player: FC<PlayerProps> = ({
+  playerId,
+  name,
+  avatarUrl,
+  showAvatar,
+  isLoading,
+  hasError,
+  gameServerId,
+}) => {
   if (isLoading) {
     return <Chip color="backgroundAccent" isLoading label="" />;
   }
@@ -48,6 +57,7 @@ export const Player: FC<PlayerProps> = ({ playerId, name, avatarUrl, showAvatar,
   return (
     <Link
       to={'/player/$playerId'}
+      search={{ gameServerId }}
       params={{ playerId }}
       style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: 'fit-content' }}
     >
