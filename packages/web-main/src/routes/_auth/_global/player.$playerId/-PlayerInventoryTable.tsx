@@ -1,36 +1,30 @@
-import { FC } from 'react';
-import { styled, Skeleton } from '@takaro/lib-components';
+import { FC, MouseEvent, useState } from 'react';
+import { styled, Skeleton, Table, useTableActions, Button } from '@takaro/lib-components';
 import { gameServerQueryOptions } from 'queries/gameserver';
-import { GameServerOutputDTO, GameServerOutputDTOTypeEnum, PlayerOnGameserverOutputDTO } from '@takaro/apiclient';
+import {
+  GameServerOutputDTO,
+  GameServerOutputDTOTypeEnum,
+  IItemDTO,
+  PlayerOnGameserverOutputDTO,
+} from '@takaro/apiclient';
 import { useQuery } from '@tanstack/react-query';
+import { createColumnHelper } from '@tanstack/react-table';
+import { GiveItemDialog } from 'components/GiveItemDialog';
+import { AiOutlinePlus as GiveItemIcon } from 'react-icons/ai';
 
 interface IPlayerInventoryProps {
   pog: PlayerOnGameserverOutputDTO;
 }
 
-const Grid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  gap: ${(props) => props.theme.spacing[1]};
-  padding: ${(props) => props.theme.spacing[1]};
-`;
-
-const GridItem = styled.div`
-  border: 1px solid ${(props) => props.theme.colors.backgroundAccent};
-  padding: ${(props) => props.theme.spacing[1]};
-  text-align: center;
-  background-color: ${(props) => props.theme.colors.backgroundAlt};
-  color: ${(props) => props.theme.colors.text};
-`;
-
 const ItemIcon = styled.img`
-  width: 50px;
-  height: 50px;
-  margin-bottom: ${(props) => props.theme.spacing[1]};
+  width: 25px;
+  height: 25px;
 `;
 
 export const PlayerInventoryTable: FC<IPlayerInventoryProps> = ({ pog }) => {
   const { data: gameServer, isLoading } = useQuery(gameServerQueryOptions(pog.gameServerId));
+  const [openGiveItemDialog, setOpenGiveItemDialog] = useState<boolean>(false);
+  const { sorting, columnSearch, columnFilters } = useTableActions();
   if (isLoading) return <Skeleton variant="rectangular" width="100%" height="100%" />;
 
   if (pog.inventory.length === 0) return <p>No inventory data</p>;
@@ -51,20 +45,83 @@ export const PlayerInventoryTable: FC<IPlayerInventoryProps> = ({ pog }) => {
   const placeholderIcon = '/favicon.ico';
   const serverType = getServerType(gameServer);
 
+  function handleOnGiveItemClicked(e: MouseEvent) {
+    e.stopPropagation();
+    setOpenGiveItemDialog(true);
+  }
+
+  const columnHelper = createColumnHelper<IItemDTO>();
+  const columnDefs = [
+    columnHelper.display({
+      header: 'icon',
+      id: 'icon',
+      enableSorting: false,
+      enableColumnFilter: false,
+      enableHiding: true,
+      enablePinning: false,
+      enableGlobalFilter: false,
+      enableResizing: false,
+      maxSize: 30,
+      cell: (info) => (
+        <ItemIcon
+          src={serverType ? `/icons/${serverType}/${info.row.original.code}.png` : placeholderIcon}
+          alt={info.row.original.name}
+          onError={(e) => (e.currentTarget.src = placeholderIcon)}
+        />
+      ),
+    }),
+    columnHelper.accessor('name', {
+      header: 'Item name',
+      id: 'name',
+      cell: (info) => info.getValue(),
+      enableSorting: false,
+      enableColumnFilter: false,
+      enableHiding: true,
+      enablePinning: false,
+      enableGlobalFilter: false,
+      enableResizing: false,
+    }),
+    columnHelper.accessor('amount', {
+      header: 'Amount',
+      id: 'amount',
+      cell: (info) => info.getValue(),
+      enableSorting: false,
+      enableColumnFilter: false,
+      enableHiding: true,
+      enablePinning: false,
+      enableGlobalFilter: false,
+      enableResizing: false,
+    }),
+    columnHelper.accessor('quality', {
+      header: 'Quality',
+      id: 'quality',
+      cell: (info) => info.getValue() ?? 'not set',
+      enableSorting: false,
+      enableColumnFilter: false,
+      enableHiding: true,
+      enablePinning: false,
+      enableGlobalFilter: false,
+      enableResizing: false,
+    }),
+  ];
+
   return (
-    <Grid>
-      {pog.inventory.map((item, index) => (
-        <GridItem key={index}>
-          <ItemIcon
-            src={serverType ? `/icons/${serverType}/${item.code}.png` : placeholderIcon}
-            alt={item.name}
-            onError={(e) => (e.currentTarget.src = placeholderIcon)}
-          />
-          <p>
-            {item.amount}x {item.name}
-          </p>
-        </GridItem>
-      ))}
-    </Grid>
+    <>
+      <Table
+        data={pog.inventory}
+        id="inventory"
+        columns={columnDefs}
+        columnSearch={columnSearch}
+        sorting={sorting}
+        columnFiltering={columnFilters}
+        renderToolbar={() => <Button icon={<GiveItemIcon />} text="Give item" onClick={handleOnGiveItemClicked} />}
+      />
+      <GiveItemDialog
+        gameServerId={pog.gameServerId}
+        playerId={pog.playerId}
+        open={openGiveItemDialog}
+        setOpen={setOpenGiveItemDialog}
+      />
+    </>
   );
 };

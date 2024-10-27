@@ -17,11 +17,9 @@ import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { ErrorBoundary } from 'components/ErrorBoundary';
 import { hasPermission } from 'hooks/useHasPermission';
 import { userMeQueryOptions } from 'queries/user';
-import { GameServerSelect } from 'components/selects';
+import { GameServerSelectQueryField } from 'components/selects';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { gameServerSettingQueryOptions } from 'queries/setting';
-import { useQuery } from '@tanstack/react-query';
 
 export const searchSchema = z.object({
   gameServerId: z.string().optional().catch(''),
@@ -70,40 +68,6 @@ function Component() {
   });
   const gameServerId = watch('gameServerId');
 
-  const { data } = useQuery({
-    ...gameServerSettingQueryOptions('economyEnabled', gameServerId!),
-    enabled: gameServerId ? true : false,
-  });
-  const hasEconomyEnabled = data && data.value === 'true' ? true : false;
-
-  const renderEconomyLink = () => {
-    if (!gameServerId) {
-      return (
-        <Tooltip>
-          <Tooltip.Trigger asChild>
-            <div style={{ color: theme.colors.textAlt }}>Economy</div>
-          </Tooltip.Trigger>
-          <Tooltip.Content>Select gameserver to view page</Tooltip.Content>
-        </Tooltip>
-      );
-    } else if (hasEconomyEnabled) {
-      return (
-        <Link to="/player/$playerId/$gameserverId/economy" params={{ playerId, gameserverId: gameServerId! }}>
-          Economy
-        </Link>
-      );
-    } else {
-      return (
-        <Tooltip>
-          <Tooltip.Trigger asChild>
-            <div style={{ color: theme.colors.textAlt }}>Economy</div>
-          </Tooltip.Trigger>
-          <Tooltip.Content>Economy is disabled on this server.</Tooltip.Content>
-        </Tooltip>
-      );
-    }
-  };
-
   return (
     <Container>
       <header style={{ display: 'flex', gap: theme.spacing['1'] }}>
@@ -144,30 +108,28 @@ function Component() {
         {player.steamId && <CopyId id={player.steamId} placeholder={`Steam ID: ${player.steamId}`} />}
         {player.xboxLiveId && <CopyId id={player.xboxLiveId} placeholder={`Steam ID: ${player.xboxLiveId}`} />}
       </div>
-      <GameServerSelect
+      <GameServerSelectQueryField
         name="gameServerId"
-        label=""
         control={control}
         filter={(gameServer) => pogs.data.map((pog) => pog.gameServerId).includes(gameServer.id)}
       />
 
       <HorizontalNav variant="underline">
-        <Link to="/player/$playerId/events" params={{ playerId }}>
-          Events
+        <Link to="/player/$playerId/statistics" params={{ playerId }}>
+          Statistics
         </Link>
         {gameServerId ? (
-          <Link to="/player/$playerId/$gameserverId/inventory" params={{ playerId, gameserverId: gameServerId }}>
-            Inventory
+          <Link to="/player/$playerId/$gameServerId" params={{ playerId, gameServerId: gameServerId }}>
+            player on gameserver
           </Link>
         ) : (
           <Tooltip>
             <Tooltip.Trigger asChild>
-              <div style={{ color: theme.colors.textAlt }}>Inventory</div>
+              <div style={{ color: theme.colors.textAlt }}>player on gameserver</div>
             </Tooltip.Trigger>
             <Tooltip.Content>Select gameserver to view page</Tooltip.Content>
           </Tooltip>
         )}
-        {renderEconomyLink()}
       </HorizontalNav>
       <ErrorBoundary>
         <Outlet />

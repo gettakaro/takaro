@@ -1,16 +1,10 @@
-import { Button, Dialog, styled, TextField } from '@takaro/lib-components';
-import { ItemSelect } from './selects/ItemSelectQuery';
+import { Button, Dialog, TextField } from '@takaro/lib-components';
+import { ItemSelectQueryField } from '../components/selects/ItemSelectQueryField';
 import { FC } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useGiveItem } from 'queries/pog';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-
-const NoMargin = styled.div`
-  div {
-    margin-bottom: 0;
-  }
-`;
 
 interface GiveItemProps {
   gameServerId: string;
@@ -22,7 +16,7 @@ interface GiveItemProps {
 const validationSchema = z.object({
   itemId: z.string().min(1),
   amount: z.number().positive(),
-  quality: z.number(),
+  quality: z.string(),
 });
 
 export const GiveItemDialog: FC<GiveItemProps> = ({ gameServerId, playerId, open, setOpen }) => {
@@ -44,10 +38,8 @@ export const GiveItemDialog: FC<GiveItemProps> = ({ gameServerId, playerId, open
         </Dialog.Heading>
         <Dialog.Body>
           <form onSubmit={handleSubmit(onSubmit)}>
-            <ItemSelect name="itemId" control={control} gameServerId={gameServerId} />
-            <NoMargin>
-              <TextField label="Amount" name="amount" type="number" control={control} />
-            </NoMargin>
+            <ItemSelectQueryField inPortal name="itemId" control={control} gameServerId={gameServerId} />
+            <TextField label="Amount" name="amount" type="number" control={control} />
             <TextField label="Quality" name="quality" type="number" control={control} />
             <Button type="submit" fullWidth text="Give item" />
           </form>

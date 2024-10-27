@@ -1,13 +1,29 @@
 import { FC, MouseEvent, useState } from 'react';
-import { Card, Dropdown, Button, Dialog, TextField, IconButton, LineChart } from '@takaro/lib-components';
+import {
+  Card,
+  Dropdown,
+  Button,
+  Dialog,
+  TextField,
+  IconButton,
+  LineChart,
+  Tooltip,
+  useTheme,
+} from '@takaro/lib-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
 import { playerOnGameServerQueryOptions, useAddCurrency, useDeductCurrency } from 'queries/pog';
-import { AiOutlineMenu as MenuIcon } from 'react-icons/ai';
+import {
+  AiOutlineMenu as MenuIcon,
+  AiOutlinePlus as AddCurrencyIcon,
+  AiOutlineMinus as DeductCurrencyIcon,
+  AiOutlineWarning as WarningIcon,
+} from 'react-icons/ai';
 import { CurrencyStatsQueryOptions } from 'queries/stats';
 import { useQuery } from '@tanstack/react-query';
 import { StatsOutputDTO } from '@takaro/apiclient';
+import { gameServerSettingQueryOptions } from 'queries/setting';
 
 interface CurrencyProps {
   economyEnabled: boolean;
@@ -15,13 +31,16 @@ interface CurrencyProps {
   gameServerId: string;
 }
 
-export const Currency: FC<CurrencyProps> = ({ playerId, gameServerId, economyEnabled }) => {
+export const PlayerCurrency: FC<CurrencyProps> = ({ playerId, gameServerId, economyEnabled }) => {
   const { data: pog, isPending: isPendingPog } = useQuery(playerOnGameServerQueryOptions(gameServerId, playerId));
   const { data: currencyStats, isPending: isPendingCurrencyStats } = useQuery(
     CurrencyStatsQueryOptions(playerId, gameServerId),
   );
+  const { data: currencyName, isPending: isPendingCurrencyName } = useQuery(
+    gameServerSettingQueryOptions('currencyName', gameServerId),
+  );
 
-  if (isPendingPog || isPendingCurrencyStats) {
+  if (isPendingPog || isPendingCurrencyStats || isPendingCurrencyName) {
     return <div>Loading currency data</div>;
   }
 
@@ -35,6 +54,7 @@ export const Currency: FC<CurrencyProps> = ({ playerId, gameServerId, economyEna
       gameServerId={gameServerId}
       currency={pog.currency}
       currencyStats={currencyStats}
+      currencyName={currencyName?.value ?? 'Unknown'}
       economyEnabled={economyEnabled}
     />
   );
@@ -44,6 +64,7 @@ interface CurrencyViewProps {
   playerId: string;
   gameServerId: string;
   currency: number;
+  currencyName: string;
   currencyStats: StatsOutputDTO;
   economyEnabled: boolean;
 }
@@ -54,9 +75,11 @@ export const CurrencyView: FC<CurrencyViewProps> = ({
   gameServerId,
   playerId,
   economyEnabled,
+  currencyName,
 }) => {
   const [openAddCurrencyDialog, setOpenAddCurrencyDialog] = useState<boolean>(false);
   const [openDeductCurrencyDialog, setOpenDeductCurrencyDialog] = useState<boolean>(false);
+  const theme = useTheme();
 
   const { mutate: addCurrency, isPending: isAddingCurrency } = useAddCurrency();
   const { mutate: deductCurrency, isPending: isDeductingCurrency } = useDeductCurrency();
@@ -97,33 +120,51 @@ export const CurrencyView: FC<CurrencyViewProps> = ({
               }}
             >
               {currency}
-            </strong>
+            </strong>{' '}
+            {currencyName}
           </h2>
-          <Dropdown>
-            <Dropdown.Trigger asChild>
-              <IconButton icon={<MenuIcon />} ariaLabel="Currency actions" />
-            </Dropdown.Trigger>
-            <Dropdown.Menu>
-              <Dropdown.Menu.Item disabled={!economyEnabled} onClick={handleAddCurrencyClick} label="Add currency" />
-              <Dropdown.Menu.Item
-                disabled={!economyEnabled}
-                onClick={handleDeductCurrencyClick}
-                label="Deduct currency"
-              />
-            </Dropdown.Menu>
-          </Dropdown>
-        </div>
-        <Card>
-          <div style={{ height: '500px', position: 'relative' }}>
-            <LineChart
-              name="Currency"
-              data={currencyStats.values as [number, number][]}
-              xAccessor={(d) => new Date(d[0] * 1000)}
-              yAccessor={(d) => d[1]}
-              curveType="curveBasis"
-            />
+          <div>
+            {economyEnabled === false && (
+              <Tooltip>
+                <Tooltip.Trigger asChild>
+                  <IconButton
+                    icon={<WarningIcon style={{ fill: theme.colors.warning }} />}
+                    ariaLabel="economyEnabled tooltip"
+                  />
+                </Tooltip.Trigger>
+                <Tooltip.Content>Economy is disabled on this server</Tooltip.Content>
+              </Tooltip>
+            )}
+            <Dropdown>
+              <Dropdown.Trigger asChild>
+                <IconButton icon={<MenuIcon />} ariaLabel="Currency actions" />
+              </Dropdown.Trigger>
+              <Dropdown.Menu>
+                <Dropdown.Menu.Item
+                  disabled={!economyEnabled}
+                  icon={<AddCurrencyIcon />}
+                  onClick={handleAddCurrencyClick}
+                  label="Add currency"
+                />
+                <Dropdown.Menu.Item
+                  disabled={!economyEnabled}
+                  onClick={handleDeductCurrencyClick}
+                  label="Deduct currency"
+                  icon={<DeductCurrencyIcon />}
+                />
+              </Dropdown.Menu>
+            </Dropdown>
           </div>
-        </Card>
+        </div>
+        <div style={{ height: '300px', position: 'relative' }}>
+          <LineChart
+            name="Currency"
+            data={currencyStats.values as [number, number][]}
+            xAccessor={(d) => new Date(d[0] * 1000)}
+            yAccessor={(d) => d[1]}
+            curveType="curveBasis"
+          />
+        </div>
       </Card>
       <CurrencyDialog
         variant="add"
