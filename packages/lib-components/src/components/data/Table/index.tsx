@@ -20,6 +20,7 @@ import {
   ExpandedState,
   getExpandedRowModel,
   Row,
+  getPaginationRowModel,
 } from '@tanstack/react-table';
 import { Wrapper, StyledTable, Toolbar, Flex, TableWrapper } from './style';
 import { Button, Empty, IconButton, Spinner, ToggleButtonGroup } from '../../../components';
@@ -78,7 +79,7 @@ export interface TableProps<DataType extends object> {
     columnFiltersState: ColumnFilter[];
     setColumnFiltersState: Dispatch<SetStateAction<ColumnFilter[]>>;
   };
-  columnSearch: {
+  columnSearch?: {
     columnSearchState: ColumnFilter[];
     setColumnSearchState: OnChangeFn<ColumnFilter[]>;
   };
@@ -133,6 +134,8 @@ export function Table<DataType extends object>({
   const [expanded, setExpanded] = useState<ExpandedState>({});
   const [openColumnVisibilityTooltip, setOpenColumnVisibilityTooltip] = useState<boolean>(false);
   const [hasShownColumnVisibilityTooltip, setHasShownColumnVisibilityTooltip] = useState<boolean>(false);
+  const [clientPagination, setClientPagination] = useState<PaginationState>({ pageIndex: 0, pageSize: 20 });
+
   const [columnOrder, setColumnOrder] = useState<ColumnOrderState>(
     columns.map((column) => {
       if (column.id === undefined) {
@@ -173,8 +176,9 @@ export function Table<DataType extends object>({
     columns,
     getCoreRowModel: getCoreRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
-    pageCount: pagination?.pageOptions.pageCount ?? -1,
-    manualPagination: true,
+    getPaginationRowModel: pagination ? undefined : getPaginationRowModel(),
+    pageCount: pagination?.pageOptions.pageCount ?? undefined,
+    manualPagination: pagination ? true : false,
     paginateExpandedRows: true, // Expanded rows will be paginated this means that rows that take up more space will be shown on next page.
     manualFiltering: true,
     manualSorting: true,
@@ -194,7 +198,7 @@ export function Table<DataType extends object>({
     columnResizeMode: 'onChange',
     onColumnVisibilityChange: setColumnVisibility,
     onSortingChange: sorting?.setSortingState,
-    onPaginationChange: pagination?.setPaginationState,
+    onPaginationChange: pagination?.setPaginationState ?? setClientPagination,
     onColumnFiltersChange: (filters) => columnFiltering?.setColumnFiltersState(filters as ColumnFilter[]),
     onGlobalFilterChange: (filters) => columnSearch?.setColumnSearchState(filters as ColumnFilter[]),
     onColumnOrderChange: setColumnOrder,
@@ -207,8 +211,8 @@ export function Table<DataType extends object>({
       columnOrder,
       sorting: sorting.sortingState,
       columnFilters: columnFiltering.columnFiltersState,
-      globalFilter: columnSearch.columnSearchState,
-      pagination: pagination?.paginationState,
+      globalFilter: columnSearch?.columnSearchState,
+      pagination: pagination?.paginationState ?? clientPagination,
       rowSelection: rowSelection ? rowSelection.rowSelectionState : undefined,
     },
 
@@ -218,8 +222,8 @@ export function Table<DataType extends object>({
       expanded,
       sorting: sorting.sortingState,
       columnFilters: columnFiltering.columnFiltersState,
-      globalFilter: columnSearch.columnSearchState,
-      pagination: pagination?.paginationState,
+      globalFilter: columnSearch?.columnSearchState,
+      pagination: pagination?.paginationState ?? clientPagination,
       rowSelection: rowSelection ? rowSelection.rowSelectionState : undefined,
       columnPinning,
     },
