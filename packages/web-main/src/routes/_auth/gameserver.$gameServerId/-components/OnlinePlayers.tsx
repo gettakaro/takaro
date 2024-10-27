@@ -1,10 +1,9 @@
 import { EventOutputDTO, PlayerOutputDTO } from '@takaro/apiclient';
-import { Skeleton, styled } from '@takaro/lib-components';
+import { Card, Skeleton, styled } from '@takaro/lib-components';
 import { Player } from 'components/Player';
 import { useSocket } from 'hooks/useSocket';
 import { playersOnGameServersQueryOptions } from 'queries/pog';
 import { FC, useEffect } from 'react';
-import { StyledCard } from './style';
 import { useQuery } from '@tanstack/react-query';
 import { getRouteApi } from '@tanstack/react-router';
 
@@ -49,26 +48,30 @@ export const OnlinePlayersCard: FC = () => {
 
   if (isPending) return <Skeleton variant="rectangular" width="100%" height="100%" />;
 
-  const players = data?.data.map((pog) => pog['player'] as PlayerOutputDTO);
+  const players = data?.data.map((pog) => pog['player'] as PlayerOutputDTO) ?? [];
 
   return (
-    <StyledCard variant="outline">
+    <Card variant="outline">
       <Container>
-        <h2>{data?.data.length} Players Online</h2>
-        <Players>
-          {players?.map((player) => {
-            return (
-              <Player
-                key={player.id}
-                playerId={player.id}
-                name={player.name}
-                showAvatar={true}
-                avatarUrl={player.steamAvatar}
-              />
-            );
-          })}
-        </Players>
+        <Card.Title label={`${data?.data.length} Players Online`} />
+        <Card.Body>
+          <Players>
+            {data?.data.map((playerOnGameServer) => {
+              const player = players.find((player) => player.id === playerOnGameServer.playerId);
+              if (!player) return null;
+              return (
+                <Player
+                  key={player.id}
+                  playerId={player.id}
+                  name={player.name}
+                  showAvatar={true}
+                  avatarUrl={player.steamAvatar}
+                />
+              );
+            })}
+          </Players>
+        </Card.Body>
       </Container>
-    </StyledCard>
+    </Card>
   );
 };

@@ -77,11 +77,13 @@ function Component() {
       <Flex>
         <LoginDiscordCard />
         <Card>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '50px' }}>
-            <a href={loaderData.invites?.botInvite} target="_blank" rel="noreferrer">
-              <Button text="Invite Discord bot" />
-            </a>
-          </div>
+          <Card.Body>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: '50px' }}>
+              <a href={loaderData.invites?.botInvite} target="_blank" rel="noreferrer">
+                <Button text="Invite Discord bot" />
+              </a>
+            </div>
+          </Card.Body>
         </Card>
       </Flex>
       <h1> Guilds</h1>
