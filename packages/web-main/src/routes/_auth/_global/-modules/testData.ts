@@ -226,7 +226,7 @@ export const validSchemas: Test[] = [
           type: 'array',
           title: 'array field',
           description: 'array field description',
-          default: ['brunkel', 'cata', 'emiel'],
+          default: ['hendrik', 'niek', 'emiel'],
           items: {
             type: 'string',
           },
@@ -240,7 +240,7 @@ export const validSchemas: Test[] = [
         name: 'array field',
         type: InputType.array,
         required: false,
-        default: ['brunkel', 'cata', 'emiel'],
+        default: ['hendrik', 'niek', 'emiel'],
         description: 'array field description',
       },
     ],
@@ -255,7 +255,7 @@ export const validSchemas: Test[] = [
           type: 'array',
           title: 'array field',
           description: 'array field description',
-          default: ['brunkel', 'cata', 'emiel'],
+          default: ['hendrik', 'cata', 'emiel'],
           items: {
             type: 'string',
           },
@@ -272,7 +272,7 @@ export const validSchemas: Test[] = [
         name: 'array field',
         type: InputType.array,
         required: false,
-        default: ['brunkel', 'cata', 'emiel'],
+        default: ['hendrik', 'cata', 'emiel'],
         uniqueItems: true,
         minItems: 1,
         maxItems: 10,
@@ -290,7 +290,7 @@ export const validSchemas: Test[] = [
           type: 'string',
           title: 'enumeration field',
           description: 'enumeration field description',
-          enum: ['cata', 'brunkel', 'emiel'],
+          enum: ['cata', 'hendrik', 'emiel'],
         },
       },
       required: [],
@@ -304,7 +304,7 @@ export const validSchemas: Test[] = [
         multiple: false,
         default: undefined,
         description: 'enumeration field description',
-        values: ['cata', 'brunkel', 'emiel'],
+        values: ['cata', 'hendrik', 'emiel'],
       },
     ],
   },
@@ -322,7 +322,7 @@ export const validSchemas: Test[] = [
           description: 'enumeration field description',
           items: {
             type: 'string',
-            enum: ['cata', 'brunkel', 'emiel'],
+            enum: ['cata', 'hendrik', 'emiel'],
           },
         },
       },
@@ -337,7 +337,7 @@ export const validSchemas: Test[] = [
         multiple: true,
         default: undefined,
         description: 'enumeration field description',
-        values: ['cata', 'brunkel', 'emiel'],
+        values: ['cata', 'hendrik', 'emiel'],
       },
     ],
   },
@@ -367,45 +367,29 @@ export const validSchemas: Test[] = [
     ],
   },
   {
-    name: 'item field',
+    name: 'item field (v2)',
     schema: {
       $schema: 'http://json-schema.org/draft-07/schema#',
       type: 'object',
       properties: {
         'item field': {
           'x-component': InputType.item,
-          type: 'string',
-          title: 'item field',
+          type: 'object',
+          title: 'Item',
           description: 'item field description',
-        },
-      },
-      required: [],
-      additionalProperties: false,
-    },
-    inputs: [
-      {
-        name: 'item field',
-        type: InputType.item,
-        description: 'item field description',
-        required: false,
-        multiple: false,
-      },
-    ],
-  },
-  {
-    name: 'item field with multiple',
-    schema: {
-      $schema: 'http://json-schema.org/draft-07/schema#',
-      type: 'object',
-      properties: {
-        'item field': {
-          'x-component': InputType.item,
-          type: 'array',
-          title: 'item field',
-          description: 'item field description',
-          uniqueItems: true,
-          items: {
-            type: 'string',
+          properties: {
+            item: {
+              type: 'string',
+              title: 'Item Name',
+            },
+            amount: {
+              type: 'number',
+              title: 'Amount',
+            },
+            quality: {
+              type: 'string',
+              title: 'Quality',
+            },
           },
         },
       },
@@ -418,7 +402,7 @@ export const validSchemas: Test[] = [
         type: InputType.item,
         description: 'item field description',
         required: false,
-        multiple: true,
+        multiple: false,
       },
     ],
   },
@@ -570,7 +554,7 @@ export const invalidSchemas: Test[] = [
           type: 'array',
           title: 'array field',
           description: 'array field description',
-          default: ['brunkel', 'cata', 'emiel'],
+          default: ['hendrik', 'cata', 'emiel'],
           items: {
             type: 'number',
           },
