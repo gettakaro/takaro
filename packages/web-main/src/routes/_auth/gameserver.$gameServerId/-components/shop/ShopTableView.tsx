@@ -19,7 +19,6 @@ import { useQuery } from '@tanstack/react-query';
 import { FC } from 'react';
 import { createColumnHelper, Row } from '@tanstack/react-table';
 import { shopListingsQueryOptions } from 'queries/shopListing';
-import { useNavigate } from '@tanstack/react-router';
 import { useHasPermission } from 'hooks/useHasPermission';
 import { ShopViewProps } from './ShopView';
 import { ShopListingActions } from './ShopListingActions';
@@ -46,7 +45,6 @@ const ShopListingBuyFormContainer = styled.div`
 `;
 
 export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, gameServerType, currency }) => {
-  const navigate = useNavigate();
   const hasPermission = useHasPermission(['MANAGE_SHOP_LISTINGS']);
 
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<ShopListingOutputDTO>({ pageSize: 25 });
@@ -66,10 +64,6 @@ export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, g
       search: {},
     }),
   );
-
-  const handleOnCreateShopListingClicked = () => {
-    navigate({ to: '/gameserver/$gameServerId/shop/listing/create', params: { gameServerId } });
-  };
 
   const columnHelper = createColumnHelper<ShopListingOutputDTO>();
   const columnDefs = [
@@ -202,9 +196,6 @@ export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, g
     <Table
       title="Shop"
       id="shop-table"
-      {...(hasPermission && {
-        renderToolbar: () => <Button onClick={handleOnCreateShopListingClicked} text="Create shop listing" />,
-      })}
       columns={columnDefs}
       data={data?.data as ShopListingOutputDTO[]}
       pagination={p}

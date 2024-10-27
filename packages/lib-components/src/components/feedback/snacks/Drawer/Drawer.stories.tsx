@@ -34,7 +34,7 @@ export const Downloads: StoryFn = () => {
       children: (
         <CustomContent>
           <h4>Pdf Ready</h4>
-          <p>
+          <p style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <CheckMarkIcon /> Download now
           </p>
         </CustomContent>

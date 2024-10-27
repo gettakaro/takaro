@@ -52,11 +52,7 @@ function Component() {
           dismiss
         />
       )}
-      <GameServerSelectQueryField
-        control={control}
-        name="gameServerId"
-        filter={(gameServer) => gameServerIds.includes(gameServer.id)}
-      />
+      <GameServerSelectQueryField control={control} name="gameServerId" filters={{ id: gameServerIds }} />
       {gameServerId && <Currency playerId={playerId} gameServerId={gameServerId} economyEnabled={economyEnabled} />}
     </>
   );
