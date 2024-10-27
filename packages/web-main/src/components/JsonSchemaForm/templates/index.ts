@@ -7,6 +7,8 @@ import { CopyButton, MoveUpButton, RemoveButton, MoveDownButton } from './IconBu
 import { DescriptionFieldTemplate } from './DescriptionFieldTemplate';
 import { ArrayFieldTemplate } from './ArrayFieldTemplate';
 import { ArrayFieldItemTemplate } from './ArrayFieldItemTemplate';
+import { ArrayFieldTitleTemplate } from './ArrayFieldTitleTemplate';
+import { ArrayFieldDescriptionTemplate } from './ArrayFieldDescriptionTemplate';
 import { ObjectFieldTemplate } from './ObjectFieldTemplate';
 import { TitleFieldTemplate } from './TitleFieldTemplate';
 import { BaseInputTemplate } from './BaseInputTemplate';
@@ -16,6 +18,8 @@ export const customTemplates: Partial<TemplatesType> = {
   FieldTemplate,
   FieldErrorTemplate,
   ArrayFieldTemplate,
+  ArrayFieldTitleTemplate,
+  ArrayFieldDescriptionTemplate,
   ArrayFieldItemTemplate,
   DescriptionFieldTemplate,
   ButtonTemplates: {

@@ -3,6 +3,7 @@ import { useModuleImport } from 'queries/module';
 import { ModuleImportForm, IFormInputs } from './-modules/ModuleImportForm';
 import { hasPermission } from 'hooks/useHasPermission';
 import { userMeQueryOptions } from 'queries/user';
+import { DrawerSkeleton } from '@takaro/lib-components';
 
 export const Route = createFileRoute('/_auth/_global/modules/create/import')({
   beforeLoad: async ({ context }) => {
@@ -12,6 +13,7 @@ export const Route = createFileRoute('/_auth/_global/modules/create/import')({
     }
   },
   component: Component,
+  pendingComponent: DrawerSkeleton,
 });
 
 function Component() {

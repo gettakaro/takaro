@@ -78,7 +78,7 @@ export const CreateUpdateForm: FC<CreateUpdateFormProps> = ({ initialData, isLoa
     }),
   });
 
-  const { type, connectionInfo } = watch();
+  const { type, connectionInfo, enabled } = watch();
 
   useEffect(() => {
     if (!open) {
@@ -102,7 +102,7 @@ export const CreateUpdateForm: FC<CreateUpdateFormProps> = ({ initialData, isLoa
 
   const formId = 'gameserver-form';
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
+    <Drawer open={open} onOpenChange={setOpen} promptCloseConfirmation={formState.isDirty}>
       <Drawer.Content>
         <Drawer.Heading>{initialData ? 'Update' : 'Create'} Game Server</Drawer.Heading>
         <Drawer.Body>
@@ -167,7 +167,7 @@ export const CreateUpdateForm: FC<CreateUpdateFormProps> = ({ initialData, isLoa
               onClick={clickTestReachability}
               text="Test connection"
             />
-            {connectionOk && (
+            {(connectionOk || !enabled) && (
               <Button type="submit" fullWidth onClick={() => trigger()} text="Save changes" form={formId} />
             )}
           </ButtonContainer>

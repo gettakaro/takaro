@@ -32,6 +32,9 @@ class ShopOrderSearchInputAllowedFilters extends AllowedFilters {
   gameServerId: string[];
   @IsOptional()
   @IsUUID(4, { each: true })
+  playerId: string[];
+  @IsOptional()
+  @IsUUID(4, { each: true })
   userId: string[];
   @IsOptional()
   @IsNumber({}, { each: true })
@@ -75,7 +78,7 @@ export class ShopOrderController {
   @ResponseSchema(ShopOrderOutputDTOAPI)
   async create(@Req() req: AuthenticatedRequest, @Body() item: ShopOrderCreateDTO) {
     const service = new ShopListingService(req.domainId);
-    const order = await service.createOrder(item.listingId, item.amount, item.userId);
+    const order = await service.createOrder(item.listingId, item.amount, item.playerId);
     return apiResponse(order);
   }
 

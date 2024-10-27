@@ -85,7 +85,7 @@ export const RoleForm: FC<CreateUpdateRoleFormProps> = ({
     }
   }, [open]);
 
-  const { control, handleSubmit } = useForm<IFormInputs>({
+  const { control, handleSubmit, formState } = useForm<IFormInputs>({
     mode: 'onChange',
     resolver: zodResolver(validationSchema),
     defaultValues: initialData && {
@@ -104,7 +104,7 @@ export const RoleForm: FC<CreateUpdateRoleFormProps> = ({
   });
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
+    <Drawer open={open} onOpenChange={setOpen} promptCloseConfirmation={formState.isDirty}>
       <Drawer.Content>
         <Drawer.Heading>{initialData ? (readOnly ? 'View' : 'Update') : 'Create'} role</Drawer.Heading>
         <Drawer.Body>

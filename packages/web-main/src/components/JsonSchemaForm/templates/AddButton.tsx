@@ -15,6 +15,7 @@ export function AddButton<T = any, S extends StrictRJSFSchema = RJSFSchema, F ex
       disabled={props.disabled}
       color="primary"
       size="small"
+      fullWidth
       icon={<AddIcon />}
       text={translateString(TranslatableString.AddItemButton)}
     />

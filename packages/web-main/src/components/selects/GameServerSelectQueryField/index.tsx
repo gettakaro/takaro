@@ -1,7 +1,11 @@
 import { PaginationProps, SelectQueryField, Skeleton, Tooltip } from '@takaro/lib-components';
 import { gameServersInfiniteQueryOptions } from 'queries/gameserver';
 import { FC, useState } from 'react';
-import { GameServerOutputDTO, GameServerOutputDTOTypeEnum } from '@takaro/apiclient';
+import {
+  GameServerOutputDTO,
+  GameServerOutputDTOTypeEnum,
+  GameServerSearchInputAllowedFilters,
+} from '@takaro/apiclient';
 import { CustomSelectQueryProps } from '..';
 import icon7d2d from './7d2d-icon.png';
 import iconRust from './rust-icon.png';
@@ -18,7 +22,7 @@ const gameTypeMap = {
 };
 
 interface GameServerSelectQueryFieldProps {
-  filter?: (server: GameServerOutputDTO) => boolean;
+  filters?: GameServerSearchInputAllowedFilters;
   /// Adds an extra option 'Global - applies to all gameservers', id: 'null'
   /// Because in some situations if no gameserver is selected it is considered for all gameservers.
   addGlobalGameServerOption?: boolean;
@@ -36,7 +40,7 @@ export const GameServerSelectQueryField: FC<CustomSelectQueryProps & GameServerS
   inPortal,
   description,
   required,
-  filter,
+  filters,
   multiple,
   canClear,
   addGlobalGameServerOption = false,
@@ -50,7 +54,7 @@ export const GameServerSelectQueryField: FC<CustomSelectQueryProps & GameServerS
     hasNextPage,
     isFetching,
   } = useInfiniteQuery(
-    gameServersInfiniteQueryOptions({ sortBy: 'type', search: { name: [gameServerName] }, limit: 20 }),
+    gameServersInfiniteQueryOptions({ sortBy: 'type', search: { name: [gameServerName] }, limit: 20, filters }),
   );
 
   if (isLoadingData) {
@@ -65,10 +69,6 @@ export const GameServerSelectQueryField: FC<CustomSelectQueryProps & GameServerS
 
   if (addGlobalGameServerOption) {
     gameServers = [{ name: 'Global - applies to all gameservers', id: 'null' } as GameServerOutputDTO, ...gameServers];
-  }
-
-  if (filter) {
-    gameServers = gameServers.filter(filter);
   }
 
   return (

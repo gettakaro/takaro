@@ -66,10 +66,10 @@ export class SevenDaysToDieEmitter extends TakaroEmitter {
   }
 
   get url() {
-    if (this.config.useV1) {
-      return `${this.config.useTls ? 'https' : 'http'}://${this.config.host}/sse/?events=log`;
+    if (this.config.useLegacy) {
+      return `${this.config.useTls ? 'https' : 'http'}://${this.config.host}/sse/log`;
     }
-    return `${this.config.useTls ? 'https' : 'http'}://${this.config.host}/sse/log`;
+    return `${this.config.useTls ? 'https' : 'http'}://${this.config.host}/sse/?events=log`;
   }
 
   async start(): Promise<void> {

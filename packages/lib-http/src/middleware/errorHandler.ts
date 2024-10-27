@@ -22,7 +22,9 @@ export async function ErrorHandler(
       // @ts-expect-error Error typing is weird in ts... but we validate during runtime so should be OK
       const validationErrors = originalError['errors'] as ValidationError[];
       parsedError = new errors.ValidationError('Validation error', validationErrors);
-      log.warn('⚠️ Validation errror', { details: validationErrors.map((e) => JSON.stringify(e.target, null, 2)) });
+      log.warn('⚠️ Validation errror', {
+        details: validationErrors.map((e) => JSON.stringify(e.constraints, null, 2)),
+      });
     }
   }
 

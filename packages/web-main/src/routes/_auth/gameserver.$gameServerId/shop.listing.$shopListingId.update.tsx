@@ -6,6 +6,7 @@ import { shopListingQueryOptions, useShopListingUpdate } from 'queries/shopListi
 import { SubmitHandler } from 'react-hook-form';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { userMeQueryOptions } from 'queries/user';
+import { DrawerSkeleton } from '@takaro/lib-components';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/listing/$shopListingId/update')({
   beforeLoad: async ({ context }) => {
@@ -26,6 +27,7 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/listi
     };
   },
   component: Component,
+  pendingComponent: DrawerSkeleton,
 });
 
 function Component() {

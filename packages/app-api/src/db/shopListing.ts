@@ -149,6 +149,7 @@ export class ShopListingRepo extends ITakaroRepo<
     const listing = await query
       .insert({
         gameServerId: item.gameServerId,
+        draft: item.draft,
         name: item.name,
         price: item.price,
         domain: this.domainId,
@@ -250,5 +251,10 @@ export class ShopListingRepo extends ITakaroRepo<
 
     const data = await query.deleteById(existing.id);
     return !!data;
+  }
+
+  async deleteMany(gameServerId: string) {
+    const { query } = await this.getModel();
+    await query.where('gameServerId', gameServerId).update({ deletedAt: new Date() });
   }
 }

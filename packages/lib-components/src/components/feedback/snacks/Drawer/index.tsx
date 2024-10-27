@@ -43,6 +43,10 @@ const Content = styled.div<{ expanded: boolean }>`
   border-radius: ${({ theme }) => `0 0 ${theme.borderRadius.large} ${theme.borderRadius.large}`};
   border-radius-top-left: 0;
   border-radius-top-right: 0;
+
+  h4 {
+    margin-bottom: ${({ theme }) => theme.spacing['0_5']};
+  }
 `;
 
 export const DrawerSnack = forwardRef<HTMLDivElement, PropsWithChildren<CustomContentProps>>(function DrawerSnack(
