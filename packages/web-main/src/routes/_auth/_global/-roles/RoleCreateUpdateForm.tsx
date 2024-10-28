@@ -88,7 +88,7 @@ export const RoleForm: FC<CreateUpdateRoleFormProps> = ({
   const { control, handleSubmit, formState } = useForm<IFormInputs>({
     mode: 'onChange',
     resolver: zodResolver(validationSchema),
-    defaultValues: initialData && {
+    values: initialData && {
       name: initialData.name,
       permissions: Object.values(permissions).reduce(
         (acc, permission) => ({
