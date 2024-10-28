@@ -50,6 +50,12 @@ export class ShopListingService extends TakaroService<
     const callingUserId = ctx.data.user;
     if (!callingUserId) throw new errors.UnauthorizedError();
 
+    const userHasHighPrivileges = await this.userHasHighPrivileges();
+    if (userHasHighPrivileges) {
+      this.log.debug(`User ${callingUserId} has high privileges, skipping order ownership check`);
+      return;
+    }
+
     const userRes = await new UserService(this.domainId).find({ filters: { playerId: [order.playerId] } });
     if (!userRes.results.length) throw new errors.NotFoundError('User not found');
     if (userRes.results.length > 1) throw new errors.BadRequestError('Multiple users found for player');
@@ -57,15 +63,11 @@ export class ShopListingService extends TakaroService<
     const belongsToUser = callingUserId && userRes.results[0].id === callingUserId;
 
     if (!belongsToUser) {
-      const userHasHighPrivileges = await this.userHasHighPrivileges();
-
-      if (!userHasHighPrivileges) {
-        this.log.warn(`User ${callingUserId} tried to access order ${order.id} that does not belong to them`, {
-          orderId: order.id,
-          userId: callingUserId,
-        });
-        throw new errors.NotFoundError('Shop order not found');
-      }
+      this.log.warn(`User ${callingUserId} tried to access order ${order.id} that does not belong to them`, {
+        orderId: order.id,
+        userId: callingUserId,
+      });
+      throw new errors.NotFoundError('Shop order not found');
     }
   }
 
