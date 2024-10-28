@@ -85,10 +85,18 @@ export const RoleForm: FC<CreateUpdateRoleFormProps> = ({
     }
   }, [open]);
 
-  const { control, handleSubmit, formState } = useForm<IFormInputs>({
+  const { control, handleSubmit, formState, reset } = useForm<IFormInputs>({
     mode: 'onChange',
     resolver: zodResolver(validationSchema),
     defaultValues: initialData && {
+      name: initialData.name,
+      permissions: {},
+    },
+  });
+
+  useEffect(() => {
+    if (!initialData) return;
+    reset({
       name: initialData.name,
       permissions: Object.values(permissions).reduce(
         (acc, permission) => ({
@@ -100,8 +108,8 @@ export const RoleForm: FC<CreateUpdateRoleFormProps> = ({
         }),
         {},
       ),
-    },
-  });
+    });
+  }, [initialData]);
 
   return (
     <Drawer open={open} onOpenChange={setOpen} promptCloseConfirmation={formState.isDirty}>
