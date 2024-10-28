@@ -3,7 +3,7 @@ import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { BanCreateDTO, BanOutputDTO, BanUpdateDTO } from '../service/Ban/dto.js';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
-import { Body, Get, Post, JsonController, UseBefore, Req, Params, Res, Put } from 'routing-controllers';
+import { Body, Get, Post, JsonController, UseBefore, Req, Params, Res, Put, Delete } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { ParamId } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
@@ -62,11 +62,16 @@ export class BanSearchInputDTO extends ITakaroQuery<BanOutputDTO> {
 
 @OpenAPI({
   security: [{ domainAuth: [] }],
+  tags: ['Player'],
 })
-@JsonController()
+@JsonController('/player')
 export class BanController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_PLAYERS]))
   @ResponseSchema(BanOutputArrayDTOAPI)
+  @OpenAPI({
+    description: 'Search for bans',
+    summary: 'Search for bans',
+  })
   @Post('/ban/search')
   async search(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: BanSearchInputDTO) {
     const service = new BanService(req.domainId);
@@ -84,6 +89,10 @@ export class BanController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_PLAYERS]))
   @ResponseSchema(BanOutputDTOAPI)
+  @OpenAPI({
+    description: 'Get a single ban',
+    summary: 'Get a single ban',
+  })
   @Get('/ban/:id')
   async getOne(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new BanService(req.domainId);
@@ -92,6 +101,10 @@ export class BanController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_PLAYERS]))
   @ResponseSchema(BanOutputDTOAPI)
+  @OpenAPI({
+    description: 'Create a new ban, creating a ban via the API will always make it takaro managed.',
+    summary: 'Ban player',
+  })
   @Post('/ban')
   async create(@Req() req: AuthenticatedRequest, @Body() data: BanCreateDTO) {
     const service = new BanService(req.domainId);
@@ -102,6 +115,10 @@ export class BanController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_PLAYERS]))
   @ResponseSchema(BanOutputDTOAPI)
+  @OpenAPI({
+    description: 'Update an existing ban, updating a ban via the API will always make it takaro managed.',
+    summary: 'Update ban',
+  })
   @Put('/ban/:id')
   async update(@Req() req: AuthenticatedRequest, @Params() params: ParamId, @Body() data: BanUpdateDTO) {
     const service = new BanService(req.domainId);
@@ -112,7 +129,11 @@ export class BanController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_PLAYERS]))
   @ResponseSchema(APIOutput)
-  @Post('/ban/:id/delete')
+  @OpenAPI({
+    description: 'Unban player. This will remove the ban from Takaro and the gameserver(s)',
+    summary: 'Unban player',
+  })
+  @Delete('/ban/:id')
   async delete(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new BanService(req.domainId);
     await service.delete(params.id);
