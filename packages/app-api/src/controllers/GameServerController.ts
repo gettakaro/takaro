@@ -461,6 +461,7 @@ export class GameServerController {
   @ResponseSchema(APIOutput)
   @OpenAPI({
     description: 'Ban a player from a gameserver. Requires gameserver to be online and reachable.',
+    deprecated: true,
   })
   @Post('/gameserver/:gameServerId/player/:playerId/ban')
   async banPlayer(@Req() req: AuthenticatedRequest, @Params() params: PogParam, @Body() data: BanPlayerInputDTO) {
@@ -473,6 +474,7 @@ export class GameServerController {
   @ResponseSchema(APIOutput)
   @OpenAPI({
     description: 'Unban a player from a gameserver. Requires gameserver to be online and reachable.',
+    deprecated: true,
   })
   @Post('/gameserver/:gameServerId/player/:playerId/unban')
   async unbanPlayer(@Req() req: AuthenticatedRequest, @Params() params: PogParam) {
@@ -485,6 +487,7 @@ export class GameServerController {
   @ResponseSchema(BanPlayerOutputDTO)
   @OpenAPI({
     description: 'List bans for a gameserver. Requires gameserver to be online and reachable.',
+    deprecated: true,
   })
   @Get('/gameserver/:id/bans')
   async listBans(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
