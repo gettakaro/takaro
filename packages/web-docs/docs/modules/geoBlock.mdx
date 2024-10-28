@@ -29,21 +29,20 @@ export function Module() {
   "uiSchema": "{\"banDuration\":{\"ui:widget\":\"duration\"}}"
 };
 
-return (
-<div>
-<p>{mod.description}</p>
-<Commands commands={mod.commands} />
-<CronJobs cronJobs={mod.cronJobs} />
-<Hooks hooks={mod.hooks} />
-<Config configSchema={mod.configSchema} />
-</div>
-)
+  return (
+    <div>
+      <p>{mod.description}</p>
+      <Commands commands={mod.commands} />
+      <CronJobs cronJobs={mod.cronJobs} />
+      <Hooks hooks={mod.hooks} />
+      <Config configSchema={mod.configSchema} />
+    </div>
+  )
 }
 
 <Module />
 
 ---
-
 {/* END AUTO-GENERATED CONTENT */}
 
 # How to Install and Configure the Geoblock Module
