@@ -1,0 +1,56 @@
+{/* START AUTO-GENERATED CONTENT */}
+import { Commands, Config, CronJobs, Hooks } from './helpers';
+
+# utils
+
+export function Module() {
+  const mod = {
+  "commands": [
+    {
+      "function": "import { data } from '@takaro/helpers';\nasync function main() {\n    await data.player.pm('Pong!');\n}\nawait main();\n//# sourceMappingURL=ping.js.map",
+      "name": "ping",
+      "trigger": "ping",
+      "helpText": "Replies with pong, useful for testing if the connection works.",
+      "arguments": []
+    },
+    {
+      "function": "import { takaro, data, TakaroUserError } from '@takaro/helpers';\nasync function main() {\n    const enabledModules = await takaro.gameserver.gameServerControllerGetInstalledModules(data.gameServerId);\n    const moduleCommands = await Promise.all(enabledModules.data.data.map(async (mod) => {\n        return (await takaro.module.moduleControllerGetOne(mod.moduleId)).data.data.commands;\n    }));\n    if (data.arguments.command === 'all') {\n        await data.player.pm('Available commands:');\n        for (const mod of moduleCommands) {\n            await Promise.all(mod.map(async (command) => {\n                await data.player.pm(`${command.name}: ${command.helpText}`);\n            }));\n        }\n    }\n    else {\n        const allCommandsFlat = moduleCommands.flat();\n        const requestedCommand = allCommandsFlat.find((c) => {\n            return c.name === data.arguments.command;\n        });\n        if (!requestedCommand) {\n            throw new TakaroUserError(`Unknown command \"${data.arguments.command}\", use this command without arguments to see all available commands.`);\n        }\n        else {\n            await data.player.pm(`${requestedCommand.name}: ${requestedCommand.helpText}`);\n        }\n    }\n}\nawait main();\n//# sourceMappingURL=help.js.map",
+      "name": "help",
+      "trigger": "help",
+      "helpText": "The text you are reading right now, displays information about commands.",
+      "arguments": [
+        {
+          "name": "command",
+          "type": "string",
+          "defaultValue": "all",
+          "helpText": "The command to get help for",
+          "position": 0
+        }
+      ]
+    }
+  ],
+  "hooks": [],
+  "cronJobs": [],
+  "functions": [],
+  "permissions": [],
+  "name": "utils",
+  "description": "A collection of useful commands",
+  "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"additionalProperties\":false}",
+  "uiSchema": "{}"
+};
+
+  return (
+    <div>
+      <p>{mod.description}</p>
+      <Commands commands={mod.commands} />
+      <CronJobs cronJobs={mod.cronJobs} />
+      <Hooks hooks={mod.hooks} />
+      <Config configSchema={mod.configSchema} />
+    </div>
+  )
+}
+
+<Module />
+
+---
+{/* END AUTO-GENERATED CONTENT */}

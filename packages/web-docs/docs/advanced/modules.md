@@ -6,7 +6,7 @@ sidebar_position: 1
 
 The core of Takaro is built around Modules. Modules are a very powerful and flexible way of creating features..
 
-Takaro comes with a set of [built-in modules](../built-in-modules.mdx). When you enable these on a Gameserver, you will be able to change the configuration of the module to customize it but you cannot edit the code. This allows Takaro to automatically keep the built-in modules up-to-date. 
+Takaro comes with a set of [built-in modules](../modules/overview.mdx). When you enable these on a Gameserver, you will be able to change the configuration of the module to customize it but you cannot edit the code. This allows Takaro to automatically keep the built-in modules up-to-date.
 
 Each module consists of one or more of the following components:
 
@@ -44,12 +44,11 @@ These fields offer the flexibility to adjust module functionalities according to
 
 For instance:
 
-- The Geo block module includes a configuration field named `countryList`. This field allows you to specify which countries should be blocked form accessing. 
-By making the country list a configuration field you can dynamically adjust the list for each server you install the module on.
+- The Geo block module includes a configuration field named `countryList`. This field allows you to specify which countries should be blocked form accessing.
+  By making the country list a configuration field you can dynamically adjust the list for each server you install the module on.
 
 - The gimme module features an `itemList` configuration field. This enables the creation of a customizable list of items that can be awarded to players.
-This means the item module remains game agnostic as the module itself has no static list.
-
+  This means the item module remains game agnostic as the module itself has no static list.
 
 ### Example
 
@@ -65,17 +64,15 @@ As a contrived example, a config like the following exists:
 And a Hook on the event `playerConnected`, which fires whenever a Player connects to the Gameserver. The Function code:
 
 ```js
-
 import { getTakaro } from '@takaro/helpers';
 
 async function main() {
-    await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
-      message: `Welcome to the server, ${data.player.name}. ${data.module.userConfig.extraMessage}`,
+  await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
+    message: `Welcome to the server, ${data.player.name}. ${data.module.userConfig.extraMessage}`,
   });
 }
 
 main();
-
 ```
 
 Would result in a message in-game saying `Welcome to the server, John Doe! Don't forget to read the rules :)`
