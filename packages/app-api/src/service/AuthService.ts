@@ -13,7 +13,7 @@ import { Routes, RESTGetAPICurrentUserGuildsResult } from 'discord-api-types/v10
 import oauth from 'passport-oauth2';
 import { DiscordService } from './DiscordService.js';
 import { domainStateMiddleware } from '../middlewares/domainStateMiddleware.js';
-import { DomainService } from './DomainService.js';
+import { DOMAIN_STATES, DomainService } from './DomainService.js';
 
 interface DiscordUserInfo {
   id: string;
@@ -193,7 +193,8 @@ export class AuthService extends DomainScoped {
             log.warn(`No domain found for identity ${identity.id}`);
             throw new errors.UnauthorizedError();
           }
-          domainId = domains[0].id;
+          // Find the first active domain
+          domainId = domains.find((d) => d.state === DOMAIN_STATES.ACTIVE)?.id;
 
           // Set the domain cookie
           if (req.res?.cookie)
