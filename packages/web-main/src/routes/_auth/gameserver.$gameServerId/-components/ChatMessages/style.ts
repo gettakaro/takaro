@@ -30,4 +30,5 @@ export const CardBody = styled.div`
   justify-content: space-between;
   gap: ${({ theme }) => theme.spacing[1]};
   height: 100%;
+  max-height: 400px;
 `;

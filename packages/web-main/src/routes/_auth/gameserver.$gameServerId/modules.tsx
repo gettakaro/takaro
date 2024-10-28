@@ -75,7 +75,7 @@ export function Component() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: theme.spacing[2], overflowY: 'auto' }}>
       {installedModules.length > 0 && (
         <div>
-          <SubHeader>Installed</SubHeader>
+          <SubHeader>Installed Modules</SubHeader>
           <CardList>
             {installedModules.map((mod) => (
               <ModuleInstallCard key={mod.id} mod={mod} installation={mod.installation} gameServerId={gameServerId} />
@@ -84,7 +84,7 @@ export function Component() {
         </div>
       )}
       <div>
-        <SubHeader>Available</SubHeader>
+        <SubHeader>Available Modules</SubHeader>
         <div style={{ overflowY: 'auto', height: '100%' }}>
           <CardList>
             {availableModules.map((mod) => (

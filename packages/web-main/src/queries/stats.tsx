@@ -7,15 +7,17 @@ import { queryParamsToArray } from './util';
 type StatsOutput = { values: Array<[number, number]> };
 
 export const statsKeys = {
+  all: ['stats'] as const,
   ping: (playerId: string, gameServerId: string, startDate?: string, endDate?: string) =>
-    ['ping', playerId, gameServerId, startDate, endDate] as const,
+    [...statsKeys.all, 'ping', playerId, gameServerId, startDate, endDate] as const,
   currency: (playerId: string, gameServerId: string, startDate?: string, endDate?: string) =>
-    ['currency', playerId, gameServerId, startDate, endDate] as const,
+    [...statsKeys.all, 'currency', playerId, gameServerId, startDate, endDate] as const,
   latency: (gameServerId: string, startDate?: string, endDate?: string) =>
-    ['latency', gameServerId, startDate, endDate] as const,
+    [...statsKeys.all, 'latency', gameServerId, startDate, endDate] as const,
   playersOnline: (gameServerId?: string, startDate?: string, endDate?: string) =>
-    ['players-online', gameServerId, startDate, endDate] as const,
-  activity: (gameServerId?: string) => ['activity', gameServerId] as const,
+    [...statsKeys.all, 'players-online', gameServerId, startDate, endDate] as const,
+  activity: (gameServerId?: string) => [...statsKeys.all, 'activity', gameServerId] as const,
+  countries: (gameServerId: string) => [...statsKeys.all, 'countries', gameServerId] as const,
 };
 
 export const PingStatsQueryOptions = (playerId: string, gameServerId: string, startDate?: string, endDate?: string) => {
@@ -89,5 +91,14 @@ export const ActivityStatsQueryOptions = (options: ActivityInputDTO) => {
           options.endDate,
         )
       ).data.data,
+  });
+};
+
+type CountryValue = { country: string; playerCount: string };
+export const CountriesStatsQueryOptions = ({ gameServerId }: { gameServerId: string }) => {
+  return queryOptions<CountryValue[], AxiosError<CountryValue[]>, CountryValue[]>({
+    queryKey: [statsKeys.countries(gameServerId)],
+    queryFn: async () =>
+      (await getApiClient().stats.statsControllerGetCountryStats([gameServerId])).data.data.values as CountryValue[],
   });
 };

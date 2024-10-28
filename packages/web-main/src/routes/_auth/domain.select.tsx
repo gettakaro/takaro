@@ -24,7 +24,7 @@ const DomainCardList = styled.div`
   height: 85vh;
 `;
 
-export const CardBody = styled.div`
+export const InnerBody = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -92,17 +92,19 @@ function DomainCard({ domain, isCurrentDomain }: DomainCardProps) {
 
   return (
     <Card role="link" onClick={handleDomainSelectedClick}>
-      <CardBody>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <DomainIcon size={30} />
-          {isCurrentDomain && <Chip variant="outline" color="primary" label="current domain" />}
-        </div>
-        <h2 style={{ display: 'flex', alignItems: 'center' }}>
-          {domain.name}
-          <ArrowRightIcon size={18} style={{ marginLeft: '10px' }} />
-        </h2>
-        <div></div>
-      </CardBody>
+      <Card.Body>
+        <InnerBody>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <DomainIcon size={30} />
+            {isCurrentDomain && <Chip variant="outline" color="primary" label="current domain" />}
+          </div>
+          <h2 style={{ display: 'flex', alignItems: 'center' }}>
+            {domain.name}
+            <ArrowRightIcon size={18} style={{ marginLeft: '10px' }} />
+          </h2>
+          <div></div>
+        </InnerBody>
+      </Card.Body>
     </Card>
   );
 }

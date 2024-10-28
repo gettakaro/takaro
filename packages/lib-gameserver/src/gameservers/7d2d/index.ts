@@ -105,6 +105,7 @@ export class SevenDaysToDie implements IGameServer {
     const res = await this.executeConsoleCommand(command);
 
     if (this.connectionInfo.useCPM && !res.rawResult.includes('Item(s) given')) {
+      this.logger.error('Failed to give item', { player, item, amount, quality, rawResult: res.rawResult });
       throw new errors.GameServerError('Failed to give item');
     }
   }

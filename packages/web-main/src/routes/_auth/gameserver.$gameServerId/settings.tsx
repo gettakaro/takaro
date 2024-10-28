@@ -33,6 +33,7 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/settings')
   component: Component,
   pendingComponent: () => (
     <div>
+      <h2>Game server Settings</h2>
       <SettingsContainer>
         <div>Setting</div>
         <div>Global setting</div>
@@ -189,6 +190,7 @@ function Component() {
 
   return (
     <>
+      <h2>Game server Settings</h2>
       <p style={{ marginBottom: '15px' }}>
         Game servers use global settings by default, ensuring consistency across servers. However, individual game
         servers can override these global settings with their own custom configurations

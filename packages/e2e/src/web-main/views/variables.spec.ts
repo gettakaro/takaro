@@ -94,11 +94,11 @@ extendedTest('Can delete multiple variables at once', async ({ page, takaro }) =
 
   await page.locator('#select-all-header-0').click();
   await page.getByRole('button', { name: 'Delete variables (2)', exact: false }).click();
-  await page.getByRole('button', { name: 'Delete variables', exact: false }).click();
+  await page.getByRole('button', { name: 'Delete variables', exact: true }).click();
 
   await expect(page.getByRole('cell', { name: variable1Key })).not.toBeVisible();
   await expect(page.getByRole('cell', { name: variable2Key })).not.toBeVisible();
-  await expect(page.getByText('Items will appear here. Add your first item to begin!')).toBeVisible();
+  await expect(page.getByText('Data will appear here.')).toBeVisible();
 });
 
 extendedTest('Should show error when variable with same key exists', async ({ page, takaro }) => {

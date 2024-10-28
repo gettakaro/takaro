@@ -159,31 +159,38 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     return new PlayerRepo(this.domainId);
   }
 
-  private async handleRoleExpiry(player: PlayerOutputWithRolesDTO): Promise<PlayerOutputWithRolesDTO> {
+  private async handleRoleExpiry(players: PlayerOutputWithRolesDTO[]): Promise<PlayerOutputWithRolesDTO[]> {
     const now = new Date();
-    const expired = player.roleAssignments.filter((item) => item.expiresAt && new Date(item.expiresAt) < now);
 
-    if (expired.length) this.log.info('Removing expired roles', { expired: expired.map((item) => item.roleId) });
-    await Promise.all(expired.map((item) => this.removeRole(item.roleId, player.id, item.gameServerId)));
+    for (const player of players) {
+      const expired = player.roleAssignments.filter((item) => item.expiresAt && new Date(item.expiresAt) < now);
 
-    // Delete expired roles from original object
-    player.roleAssignments = player.roleAssignments.filter((item) => !expired.includes(item));
-    return player;
+      if (expired.length) this.log.info('Removing expired roles', { expired: expired.map((item) => item.roleId) });
+      await Promise.all(expired.map((item) => this.removeRole(item.roleId, player.id, item.gameServerId)));
+
+      // Delete expired roles from original object
+      player.roleAssignments = player.roleAssignments.filter((item) => !expired.includes(item));
+    }
+
+    return players;
   }
 
-  private async extend(player: PlayerOutputWithRolesDTO): Promise<PlayerOutputWithRolesDTO> {
+  private async extend(players: PlayerOutputWithRolesDTO[]): Promise<PlayerOutputWithRolesDTO[]> {
     const roleService = new RoleService(this.domainId);
     const roles = await roleService.find({ filters: { name: ['Player'] } });
 
-    player.roleAssignments.push(
-      new PlayerRoleAssignmentOutputDTO({
-        playerId: player.id,
-        roleId: roles.results[0].id,
-        role: roles.results[0],
-      }),
-    );
+    players.map((player) => {
+      player.roleAssignments.push(
+        new PlayerRoleAssignmentOutputDTO({
+          playerId: player.id,
+          roleId: roles.results[0].id,
+          role: roles.results[0],
+        }),
+      );
+      return player;
+    });
 
-    return this.handleRoleExpiry(player);
+    return this.handleRoleExpiry(players);
   }
 
   async find(filters: Partial<PlayerSearchInputDTO>): Promise<PaginatedOutput<PlayerOutputWithRolesDTO>> {
@@ -198,13 +205,13 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     }
 
     const players = await this.repo.find(filters);
-    players.results = await Promise.all(players.results.map((item) => this.extend(item)));
+    players.results = await this.extend(players.results);
     return players;
   }
 
   async findOne(id: string): Promise<PlayerOutputWithRolesDTO> {
     const player = await this.repo.findOne(id);
-    return this.extend(player);
+    return (await this.extend([player]))[0];
   }
 
   async create(item: PlayerCreateDTO): Promise<PlayerOutputWithRolesDTO> {

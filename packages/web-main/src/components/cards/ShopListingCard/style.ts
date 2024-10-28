@@ -13,7 +13,7 @@ export const CardBody = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  width: 200px;
+  width: 250px;
   height: 100%;
 
   h2 {
