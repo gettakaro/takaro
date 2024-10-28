@@ -1,0 +1,339 @@
+{/* START AUTO-GENERATED CONTENT */}
+import { Commands, Config, CronJobs, Hooks } from './helpers';
+
+# teleports
+
+export function Module() {
+  const mod = {
+  "commands": [
+    {
+      "function": "import { takaro, data, checkPermission, TakaroUserError } from '@takaro/helpers';\nimport { findTp } from './utils.js';\nasync function main() {\n    const { pog, gameServerId, arguments: args, module: mod } = data;\n    if (!checkPermission(pog, 'TELEPORTS_USE')) {\n        throw new TakaroUserError('You do not have permission to use teleports.');\n    }\n    const ownedTeleportRes = await findTp(args.tp, pog.playerId);\n    let teleports = ownedTeleportRes.data.data;\n    if (mod.userConfig.allowPublicTeleports) {\n        const publicTeleportRes = await findTp(args.tp, null, true);\n        teleports = teleports.concat(publicTeleportRes.data.data);\n    }\n    if (teleports.length === 0) {\n        throw new TakaroUserError(`Teleport ${args.tp} does not exist.`);\n    }\n    const timeout = mod.userConfig.timeout;\n    if (timeout > 0) {\n        const lastExecuted = await takaro.variable.variableControllerSearch({\n            filters: {\n                key: ['lastExecuted'],\n                gameServerId: [gameServerId],\n                playerId: [pog.playerId],\n                moduleId: [mod.moduleId],\n            },\n        });\n        let lastExecutedRecord = lastExecuted.data.data[0];\n        if (!lastExecutedRecord) {\n            const createRes = await takaro.variable.variableControllerCreate({\n                key: 'lastExecuted',\n                gameServerId,\n                playerId: pog.playerId,\n                moduleId: mod.moduleId,\n                value: new Date().toISOString(),\n            });\n            lastExecutedRecord = createRes.data.data;\n        }\n        else {\n            const lastExecutedTime = new Date(lastExecutedRecord.value);\n            const now = new Date();\n            const diff = now.getTime() - lastExecutedTime.getTime();\n            if (diff < timeout) {\n                throw new TakaroUserError('You cannot teleport yet. Please wait before trying again.');\n            }\n        }\n        const teleport = JSON.parse(teleports[0].value);\n        await takaro.gameserver.gameServerControllerTeleportPlayer(gameServerId, pog.playerId, {\n            x: teleport.x,\n            y: teleport.y,\n            z: teleport.z,\n        });\n        await data.player.pm(`Teleported to ${teleport.name}.`);\n        if (timeout !== 0 && lastExecutedRecord) {\n            await takaro.variable.variableControllerUpdate(lastExecutedRecord.id, {\n                value: new Date().toISOString(),\n            });\n        }\n        return;\n    }\n    const teleport = JSON.parse(teleports[0].value);\n    await takaro.gameserver.gameServerControllerTeleportPlayer(gameServerId, pog.playerId, {\n        x: teleport.x,\n        y: teleport.y,\n        z: teleport.z,\n    });\n    await data.player.pm(`Teleported to ${teleport.name}.`);\n}\nawait main();\n//# sourceMappingURL=teleport.js.map",
+      "name": "teleport",
+      "trigger": "tp",
+      "helpText": "Teleports to one of your set locations.",
+      "arguments": [
+        {
+          "name": "tp",
+          "type": "string",
+          "defaultValue": null,
+          "helpText": "The location to teleport to.",
+          "position": 0
+        }
+      ]
+    },
+    {
+      "function": "import { takaro, data } from '@takaro/helpers';\nimport { getVariableKey } from './utils.js';\nasync function main() {\n    const { pog, gameServerId, module: mod } = data;\n    const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data.value;\n    const ownedTeleports = (await takaro.variable.variableControllerSearch({\n        filters: {\n            gameServerId: [gameServerId],\n            playerId: [pog.playerId],\n            moduleId: [mod.moduleId],\n        },\n        search: {\n            key: [getVariableKey(undefined, false)],\n        },\n        sortBy: 'key',\n        sortDirection: 'asc',\n    })).data.data;\n    const publicTeleports = (await takaro.variable.variableControllerSearch({\n        filters: {\n            gameServerId: [gameServerId],\n            moduleId: [mod.moduleId],\n        },\n        search: {\n            key: [getVariableKey(undefined, true)],\n        },\n        sortBy: 'key',\n        sortDirection: 'asc',\n    })).data.data\n        // Filter out public teleports that are owned by the player\n        // Since we'll be showing them in the owned teleports list\n        .filter((teleport) => {\n        return teleport.playerId !== pog.playerId;\n    });\n    const teleports = [...ownedTeleports, ...publicTeleports];\n    if (teleports.length === 0) {\n        await data.player.pm(`You have no teleports available, use ${prefix}settp <name> to set one.`);\n        return;\n    }\n    await data.player.pm(`You have ${teleports.length} teleport${teleports.length === 1 ? '' : 's'} available`);\n    for (const rawTeleport of teleports) {\n        const teleport = JSON.parse(rawTeleport.value);\n        await data.player.pm(`${teleport.name}: (${teleport.x},${teleport.y},${teleport.z}) ${rawTeleport.key.startsWith('pub') ? '(public)' : ''}`);\n    }\n}\nawait main();\n//# sourceMappingURL=tplist.js.map",
+      "name": "tplist",
+      "trigger": "tplist",
+      "helpText": "Lists all your set locations.",
+      "arguments": []
+    },
+    {
+      "function": "import { takaro, data, checkPermission, TakaroUserError } from '@takaro/helpers';\nimport { getVariableKey, findTp } from './utils.js';\nasync function main() {\n    const { pog, gameServerId, module: mod, arguments: args } = data;\n    const hasPermission = checkPermission(pog, 'TELEPORTS_USE');\n    if (!hasPermission) {\n        throw new TakaroUserError('You do not have permission to use teleports.');\n    }\n    const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data.value;\n    const existingVariable = await findTp(args.tp, pog.playerId);\n    if (existingVariable.data.data.length > 0) {\n        throw new TakaroUserError(`Teleport ${args.tp} already exists, use ${prefix}deletetp ${args.tp} to delete it.`);\n    }\n    const allPlayerTeleports = await takaro.variable.variableControllerSearch({\n        search: {\n            key: [getVariableKey(undefined), getVariableKey(undefined, true)],\n        },\n        filters: {\n            gameServerId: [gameServerId],\n            playerId: [pog.playerId],\n            moduleId: [mod.moduleId],\n        },\n    });\n    if (allPlayerTeleports.data.data.length >= hasPermission.count) {\n        throw new TakaroUserError(`You have reached the maximum number of teleports for your role, maximum allowed is ${hasPermission.count}`);\n    }\n    await takaro.variable.variableControllerCreate({\n        key: getVariableKey(args.tp),\n        value: JSON.stringify({\n            name: args.tp,\n            x: data.pog.positionX,\n            y: data.pog.positionY,\n            z: data.pog.positionZ,\n        }),\n        gameServerId,\n        moduleId: mod.moduleId,\n        playerId: pog.playerId,\n    });\n    await data.player.pm(`Teleport ${args.tp} set.`);\n}\nawait main();\n//# sourceMappingURL=settp.js.map",
+      "name": "settp",
+      "trigger": "settp",
+      "helpText": "Sets a location to teleport to.",
+      "arguments": [
+        {
+          "name": "tp",
+          "type": "string",
+          "defaultValue": null,
+          "helpText": "The location name.",
+          "position": 0
+        }
+      ]
+    },
+    {
+      "function": "import { takaro, data, TakaroUserError } from '@takaro/helpers';\nimport { getVariableKey } from './utils.js';\nasync function main() {\n    const { pog, gameServerId, arguments: args, module: mod } = data;\n    const existingVariable = await takaro.variable.variableControllerSearch({\n        filters: {\n            key: [getVariableKey(args.tp), getVariableKey(args.tp, true)],\n            gameServerId: [gameServerId],\n            playerId: [pog.playerId],\n            moduleId: [mod.moduleId],\n        },\n    });\n    if (existingVariable.data.data.length === 0) {\n        throw new TakaroUserError(`Teleport ${args.tp} does not exist.`);\n    }\n    await takaro.variable.variableControllerDelete(existingVariable.data.data[0].id);\n    await data.player.pm(`Teleport ${args.tp} deleted.`);\n}\nawait main();\n//# sourceMappingURL=deletetp.js.map",
+      "name": "deletetp",
+      "trigger": "deletetp",
+      "helpText": "Deletes a location.",
+      "arguments": [
+        {
+          "name": "tp",
+          "type": "string",
+          "defaultValue": null,
+          "helpText": "The location name.",
+          "position": 0
+        }
+      ]
+    },
+    {
+      "function": "import { takaro, data, checkPermission, TakaroUserError } from '@takaro/helpers';\nimport { getVariableKey } from './utils.js';\nasync function main() {\n    const { pog, gameServerId, module: mod, arguments: args } = data;\n    const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data.value;\n    if (!mod.userConfig.allowPublicTeleports) {\n        throw new TakaroUserError('Public teleports are disabled.');\n    }\n    const hasPermission = checkPermission(pog, 'TELEPORTS_CREATE_PUBLIC');\n    if (!hasPermission) {\n        throw new TakaroUserError('You do not have permission to create public teleports.');\n    }\n    const existingPublicTeleportsForPlayerRes = await takaro.variable.variableControllerSearch({\n        search: {\n            key: ['pubtp_'],\n        },\n        filters: {\n            gameServerId: [gameServerId],\n            playerId: [pog.playerId],\n            moduleId: [mod.moduleId],\n        },\n    });\n    if (existingPublicTeleportsForPlayerRes.data.data.length >= hasPermission.count) {\n        throw new TakaroUserError(`You have reached the maximum number of public teleports for your role, maximum allowed is ${hasPermission.count}`);\n    }\n    const teleports = (await takaro.variable.variableControllerSearch({\n        filters: {\n            gameServerId: [gameServerId],\n            playerId: [pog.playerId],\n            moduleId: [mod.moduleId],\n            key: [getVariableKey(args.tp)],\n        },\n        sortBy: 'key',\n        sortDirection: 'asc',\n    })).data.data;\n    if (teleports.length === 0) {\n        throw new TakaroUserError(`No teleport with name ${args.tp} found, use ${prefix}settp <name> to set one first.`);\n    }\n    const teleportRecord = teleports[0];\n    const teleport = JSON.parse(teleportRecord.value);\n    await takaro.variable.variableControllerUpdate(teleportRecord.id, {\n        key: getVariableKey(args.tp, true),\n        value: JSON.stringify(teleport),\n    });\n    await data.player.pm(`Teleport ${args.tp} is now public.`);\n}\nawait main();\n//# sourceMappingURL=setpublic.js.map",
+      "name": "setpublic",
+      "trigger": "setpublic",
+      "helpText": "Sets a teleport to be public, allowing other players to teleport to it.",
+      "arguments": [
+        {
+          "name": "tp",
+          "type": "string",
+          "defaultValue": null,
+          "helpText": "The location name.",
+          "position": 0
+        }
+      ]
+    },
+    {
+      "function": "import { takaro, data, TakaroUserError } from '@takaro/helpers';\nimport { getVariableKey } from './utils.js';\nasync function main() {\n    const { pog, gameServerId, arguments: args, module: mod } = data;\n    const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data;\n    const teleportRes = await takaro.variable.variableControllerSearch({\n        filters: {\n            gameServerId: [gameServerId],\n            playerId: [pog.playerId],\n            key: [getVariableKey(args.tp, true)],\n            moduleId: [mod.moduleId],\n        },\n        sortBy: 'key',\n        sortDirection: 'asc',\n    });\n    const teleports = teleportRes.data.data;\n    if (teleports.length === 0) {\n        throw new TakaroUserError(`No public teleport with name ${args.tp} found, use ${prefix}settp <name> to set one first.`);\n    }\n    const teleportRecord = teleports[0];\n    const teleport = JSON.parse(teleportRecord.value);\n    await takaro.variable.variableControllerUpdate(teleportRecord.id, {\n        key: getVariableKey(args.tp),\n        value: JSON.stringify(teleport),\n    });\n    await data.player.pm(`Teleport ${args.tp} is now private.`);\n}\nawait main();\n//# sourceMappingURL=setprivate.js.map",
+      "name": "setprivate",
+      "trigger": "setprivate",
+      "helpText": "Sets a teleport to be private, only the teleport owner can teleport to it.",
+      "arguments": [
+        {
+          "name": "tp",
+          "type": "string",
+          "defaultValue": null,
+          "helpText": "The location name.",
+          "position": 0
+        }
+      ]
+    },
+    {
+      "function": "import { takaro, data, checkPermission, TakaroUserError } from '@takaro/helpers';\nfunction getWaypointName(name) {\n    return `waypoint ${name}`;\n}\nasync function main() {\n    const { pog, gameServerId, module: mod, arguments: args } = data;\n    if (!checkPermission(pog, 'TELEPORTS_MANAGE_WAYPOINTS')) {\n        throw new TakaroUserError('You do not have permission to manage waypoints.');\n    }\n    async function ensureWaypointsModule() {\n        let waypointsDefinition = (await takaro.module.moduleControllerSearch({\n            filters: {\n                name: ['Waypoints'],\n            },\n        })).data.data[0];\n        if (!waypointsDefinition) {\n            console.log('Waypoints module definition not found, creating it.');\n            waypointsDefinition = (await takaro.module.moduleControllerCreate({\n                name: 'Waypoints',\n                description: 'Waypoints module for the teleport system.',\n            })).data.data;\n        }\n        let waypointsInstallation = (await takaro.gameserver.gameServerControllerGetInstalledModules(gameServerId)).data.data.find((module) => module.name === 'Waypoints');\n        if (!waypointsInstallation) {\n            console.log('Waypoints module not found, installing it.');\n            waypointsInstallation = (await takaro.gameserver.gameServerControllerInstallModule(gameServerId, waypointsDefinition.id)).data.data;\n        }\n        return { waypointsInstallation, waypointsDefinition };\n    }\n    const { waypointsInstallation, waypointsDefinition } = await ensureWaypointsModule();\n    try {\n        await takaro.variable.variableControllerCreate({\n            moduleId: waypointsInstallation.moduleId,\n            gameServerId,\n            key: getWaypointName(args.waypoint),\n            value: JSON.stringify({\n                x: pog.positionX,\n                y: pog.positionY,\n                z: pog.positionZ,\n            }),\n        });\n    }\n    catch (error) {\n        if (error.message === 'Request failed with status code 409') {\n            throw new TakaroUserError(`Waypoint ${args.waypoint} already exists.`);\n        }\n    }\n    const teleportCommand = await takaro.command.commandControllerSearch({\n        filters: {\n            moduleId: [mod.moduleId],\n            name: ['teleportwaypoint'],\n        },\n    });\n    await takaro.command.commandControllerCreate({\n        moduleId: waypointsInstallation.moduleId,\n        name: `waypoint ${args.waypoint} server ${gameServerId}`,\n        trigger: args.waypoint,\n        helpText: `Teleport to waypoint ${args.waypoint}.`,\n        function: teleportCommand.data.data[0].function.code,\n    });\n    const existingPermissions = waypointsDefinition.permissions || [];\n    const permissionInputDTOs = existingPermissions.map((permission) => ({\n        permission: permission.permission,\n        description: permission.description,\n        friendlyName: permission.friendlyName,\n        canHaveCount: permission.canHaveCount,\n    }));\n    const gameServer = (await takaro.gameserver.gameServerControllerGetOne(gameServerId)).data.data;\n    await takaro.module.moduleControllerUpdate(waypointsInstallation.moduleId, {\n        permissions: [\n            {\n                permission: `WAYPOINTS_USE_${args.waypoint.toUpperCase()}_${gameServerId}`,\n                description: `Use the waypoint ${args.waypoint} on ${gameServer.name}.`,\n                friendlyName: `Use waypoint ${args.waypoint} on ${gameServer.name}`,\n                canHaveCount: false,\n            },\n            ...permissionInputDTOs,\n        ],\n    });\n    // Need to reinstall the module to ensure the new commands systemconfig and permissions are properly in place\n    await takaro.gameserver.gameServerControllerInstallModule(gameServerId, waypointsInstallation.moduleId, {\n        systemConfig: JSON.stringify(waypointsInstallation.systemConfig),\n        userConfig: JSON.stringify(waypointsInstallation.userConfig),\n    });\n    await pog.pm(`Waypoint ${args.waypoint} set.`);\n}\nawait main();\n//# sourceMappingURL=setwaypoint.js.map",
+      "name": "setwaypoint",
+      "trigger": "setwaypoint",
+      "helpText": "Creates a new waypoint.",
+      "arguments": [
+        {
+          "name": "waypoint",
+          "type": "string",
+          "defaultValue": null,
+          "helpText": "The location name.",
+          "position": 0
+        }
+      ]
+    },
+    {
+      "function": "import { takaro, data, checkPermission, TakaroUserError } from '@takaro/helpers';\nfunction getWaypointName(name) {\n    return `waypoint ${name}`;\n}\nasync function main() {\n    const { pog, gameServerId, arguments: args } = data;\n    if (!checkPermission(pog, 'TELEPORTS_MANAGE_WAYPOINTS')) {\n        throw new TakaroUserError('You do not have permission to manage waypoints.');\n    }\n    async function ensureWaypointsModule() {\n        let waypointsDefinition = (await takaro.module.moduleControllerSearch({\n            filters: {\n                name: ['Waypoints'],\n            },\n        })).data.data[0];\n        if (!waypointsDefinition) {\n            console.log('Waypoints module definition not found, creating it.');\n            waypointsDefinition = (await takaro.module.moduleControllerCreate({\n                name: 'Waypoints',\n                description: 'Waypoints module for the teleport system.',\n            })).data.data;\n        }\n        let waypointsInstallation = (await takaro.gameserver.gameServerControllerGetInstalledModules(gameServerId)).data.data.find((module) => module.name === 'Waypoints');\n        if (!waypointsInstallation) {\n            console.log('Waypoints module not found, installing it.');\n            waypointsInstallation = (await takaro.gameserver.gameServerControllerInstallModule(gameServerId, waypointsDefinition.id)).data.data;\n        }\n        return { waypointsInstallation, waypointsDefinition };\n    }\n    const { waypointsInstallation } = await ensureWaypointsModule();\n    const variable = await takaro.variable.variableControllerSearch({\n        filters: {\n            key: [getWaypointName(args.waypoint)],\n            gameServerId: [gameServerId],\n            moduleId: [waypointsInstallation.moduleId],\n        },\n    });\n    if (!variable.data.data.length) {\n        throw new TakaroUserError(`Waypoint ${args.waypoint} doesn't exist.`);\n    }\n    await takaro.variable.variableControllerDelete(variable.data.data[0].id);\n    const teleportCommand = await takaro.command.commandControllerSearch({\n        filters: {\n            moduleId: [waypointsInstallation.moduleId],\n            name: [`waypoint ${args.waypoint} server ${gameServerId}`],\n        },\n    });\n    if (teleportCommand.data.data.length) {\n        await takaro.command.commandControllerRemove(teleportCommand.data.data[0].id);\n    }\n    await pog.pm(`Waypoint ${args.waypoint} deleted.`);\n}\nawait main();\n//# sourceMappingURL=deletewaypoint.js.map",
+      "name": "deletewaypoint",
+      "trigger": "deletewaypoint",
+      "helpText": "Deletes a waypoint.",
+      "arguments": [
+        {
+          "name": "waypoint",
+          "type": "string",
+          "defaultValue": null,
+          "helpText": "The location name.",
+          "position": 0
+        }
+      ]
+    },
+    {
+      "function": "import { takaro, data, checkPermission } from '@takaro/helpers';\nasync function main() {\n    const { pog, gameServerId } = data;\n    async function ensureWaypointsModule() {\n        let waypointsDefinition = (await takaro.module.moduleControllerSearch({\n            filters: {\n                name: ['Waypoints'],\n            },\n        })).data.data[0];\n        if (!waypointsDefinition) {\n            console.log('Waypoints module definition not found, creating it.');\n            waypointsDefinition = (await takaro.module.moduleControllerCreate({\n                name: 'Waypoints',\n                description: 'Waypoints module for the teleport system.',\n            })).data.data;\n        }\n        let waypointsInstallation = (await takaro.gameserver.gameServerControllerGetInstalledModules(gameServerId)).data.data.find((module) => module.name === 'Waypoints');\n        if (!waypointsInstallation) {\n            console.log('Waypoints module not found, installing it.');\n            waypointsInstallation = (await takaro.gameserver.gameServerControllerInstallModule(gameServerId, waypointsDefinition.id)).data.data;\n        }\n        return { waypointsInstallation, waypointsDefinition };\n    }\n    const { waypointsDefinition } = await ensureWaypointsModule();\n    const allWaypoints = waypointsDefinition.commands;\n    const waypointsWithPermission = allWaypoints\n        .filter((waypoint) => checkPermission(pog, `WAYPOINTS_USE_${waypoint.trigger.toUpperCase()}_${gameServerId}`))\n        .sort((a, b) => a.trigger.localeCompare(b.trigger));\n    if (!waypointsWithPermission.length) {\n        await pog.pm('There are no waypoints available.');\n        return;\n    }\n    await pog.pm(`Available waypoints: ${waypointsWithPermission.map((waypoint) => waypoint.trigger).join(', ')}`);\n}\nawait main();\n//# sourceMappingURL=listwaypoints.js.map",
+      "name": "listwaypoints",
+      "trigger": "waypoints",
+      "helpText": "Lists all waypoints.",
+      "arguments": []
+    },
+    {
+      "function": "import { takaro, data, TakaroUserError, checkPermission } from '@takaro/helpers';\nfunction getWaypointName(name) {\n    return `waypoint ${name}`;\n}\nasync function main() {\n    const { pog, gameServerId, trigger, module, itemId } = data;\n    const triggeredCommand = module.module.commands.find((command) => command.id === itemId);\n    if (!triggeredCommand) {\n        throw new Error('Waypoint not found.');\n    }\n    if (!triggeredCommand.name.includes(`server ${gameServerId}`)) {\n        console.log(`Waypoint ${trigger} is not for this server.`);\n        return;\n    }\n    if (!checkPermission(pog, `WAYPOINTS_USE_${trigger.toUpperCase()}_${gameServerId}`)) {\n        throw new TakaroUserError(`You are not allowed to use the waypoint ${trigger}.`);\n    }\n    async function ensureWaypointsModule() {\n        let waypointsDefinition = (await takaro.module.moduleControllerSearch({\n            filters: {\n                name: ['Waypoints'],\n            },\n        })).data.data[0];\n        if (!waypointsDefinition) {\n            console.log('Waypoints module definition not found, creating it.');\n            waypointsDefinition = (await takaro.module.moduleControllerCreate({\n                name: 'Waypoints',\n                description: 'Waypoints module for the teleport system.',\n            })).data.data;\n        }\n        let waypointsInstallation = (await takaro.gameserver.gameServerControllerGetInstalledModules(gameServerId)).data.data.find((module) => module.name === 'Waypoints');\n        if (!waypointsInstallation) {\n            console.log('Waypoints module not found, installing it.');\n            waypointsInstallation = (await takaro.gameserver.gameServerControllerInstallModule(gameServerId, waypointsDefinition.id)).data.data;\n        }\n        return { waypointsInstallation, waypointsDefinition };\n    }\n    const { waypointsInstallation } = await ensureWaypointsModule();\n    const variable = await takaro.variable.variableControllerSearch({\n        filters: {\n            key: [getWaypointName(trigger)],\n            gameServerId: [gameServerId],\n            moduleId: [waypointsInstallation.moduleId],\n        },\n    });\n    if (variable.data.data.length === 0) {\n        throw new TakaroUserError(`Waypoint ${trigger} does not exist.`);\n    }\n    const waypoint = JSON.parse(variable.data.data[0].value);\n    await takaro.gameserver.gameServerControllerTeleportPlayer(gameServerId, pog.playerId, {\n        x: waypoint.x,\n        y: waypoint.y,\n        z: waypoint.z,\n    });\n    await pog.pm(`Teleported to waypoint ${trigger}.`);\n}\nawait main();\n//# sourceMappingURL=teleportwaypoint.js.map",
+      "name": "teleportwaypoint",
+      "trigger": "teleportwaypoint",
+      "arguments": [],
+      "helpText": "Placeholder command, this will not be used directly. The module will install aliases for this command corresponding to the waypoint names."
+    }
+  ],
+  "hooks": [],
+  "cronJobs": [],
+  "functions": [
+    {
+      "name": "utils",
+      "function": "import { takaro, data } from '@takaro/helpers';\nexport function getVariableKey(tpName, pub = false) {\n    if (pub && tpName)\n        return `pubtp_${tpName}`;\n    if (pub && !tpName)\n        return 'pubtp_';\n    if (tpName)\n        return `tp_${tpName}`;\n    return 'tp_';\n}\nexport async function findTp(tpName, playerId, pub = false) {\n    const { gameServerId, module: mod } = data;\n    if (pub) {\n        return takaro.variable.variableControllerSearch({\n            filters: {\n                key: [getVariableKey(tpName, true)],\n                gameServerId: [gameServerId],\n                playerId: [playerId].filter(Boolean),\n                moduleId: [mod.moduleId],\n            },\n            sortBy: 'key',\n            sortDirection: 'asc',\n        });\n    }\n    return takaro.variable.variableControllerSearch({\n        filters: {\n            key: [getVariableKey(tpName)],\n            gameServerId: [gameServerId],\n            playerId: [playerId].filter(Boolean),\n            moduleId: [mod.moduleId],\n        },\n        sortBy: 'key',\n        sortDirection: 'asc',\n    });\n}\n//# sourceMappingURL=utils.js.map"
+    }
+  ],
+  "permissions": [
+    {
+      "permission": "TELEPORTS_CREATE_PUBLIC",
+      "friendlyName": "Create Public Teleports",
+      "description": "Allows the player to create public teleports.",
+      "canHaveCount": true
+    },
+    {
+      "permission": "TELEPORTS_USE",
+      "friendlyName": "Use Teleports",
+      "description": "Allows the player to use teleports modules.",
+      "canHaveCount": true
+    },
+    {
+      "permission": "TELEPORTS_MANAGE_WAYPOINTS",
+      "friendlyName": "Manage waypoints",
+      "description": "Allows creating, deleting, and managing waypoints.",
+      "canHaveCount": false
+    }
+  ],
+  "name": "teleports",
+  "description": "A set of commands to allow players to set their own teleport points and teleport to them.",
+  "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"timeout\":{\"title\":\"Timeout\",\"description\":\"The time one has to wait before teleporting again.\",\"x-component\":\"duration\",\"type\":\"number\",\"minimum\":0,\"default\":1000},\"allowPublicTeleports\":{\"type\":\"boolean\",\"description\":\"Players can create public teleports.\",\"default\":false}},\"required\":[],\"additionalProperties\":false}",
+  "uiSchema": "{\"timeout\":{\"ui:widget\":\"duration\"}}"
+};
+
+  return (
+    <div>
+      <p>{mod.description}</p>
+      <Commands commands={mod.commands} />
+      <CronJobs cronJobs={mod.cronJobs} />
+      <Hooks hooks={mod.hooks} />
+      <Config configSchema={mod.configSchema} />
+    </div>
+  )
+}
+
+<Module />
+
+---
+{/* END AUTO-GENERATED CONTENT */}
+
+# How to add teleports module to your game server
+
+This guide walks you through the process of integrating the Teleports module into your game servers. You'll learn how to set up teleport permissions for different player roles, create custom teleport roles for enhanced privileges, and manage teleport-related features effectively.
+
+<iframe
+  className="aspect-video w-full"
+  src="https://www.youtube.com/embed/uTBEkVOh_RU"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  width="100%"
+  height="500px"
+  allowFullScreen
+/>
+
+## Install the module to your game server
+
+### Step 1: Navigate to game servers
+
+![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrki4hl00e8356vnaco8xn0-annotated.png)
+
+### Step 2: Select the game server you want the module to be installed on
+
+![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrf44cb002d356vzrgud1i3-annotated.png)
+
+### Step 3: Navigate to Modules of the selected game server
+
+![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyr6qier0009356vyv6luu30-annotated.png)
+
+### Step 4: Click the install button
+
+![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrkmfi000eb356vgb4jcsjl-annotated.png)
+
+### Step 5: This opens the module config
+
+You will see a list of settings that you can configure. You will also find the list of commands that are part of this module. $tplist - Lists all your set locations.
+
+![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrfgxmx0030356vcsdn6949-annotated.png)
+
+### Step 6: $teleportwaypoint command
+
+The module will install aliases for this command corresponding to the waypoint names. The $teleportwaypoint command is a base command that won't be used directly. Instead, the module will create custom commands for each waypoint name you set up. This allows players to teleport to specific locations easily.
+
+![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrfh0ch0031356veuthxwdw-annotated.png)
+
+### Step 7: Select the amount of currency one teleport command costs
+
+$teleport command teleports you to one of your set locations.
+
+![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrkn7bf00ee356vec8w2jac-annotated.png)
+
+### Step 8: $setwaypoint creates a new waypoint
+
+![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrfh2zj0032356vxpdnfcao-annotated.png)
+
+### Step 9: $settp sets a location to teleport to
+
+![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrfh6ci0033356v20yp6mlv-annotated.png)
+
+### Step 10: $setpublic sets a teleport to be public, allowing other players to teleport to it
+
+![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrfflru002w356vejuvlnyy-annotated.png)
+
+### Step 11: $setprivate sets a teleport to be private, only the teleport owner can teleport to it
+
+![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrfhf6t0034356v8zo9l6ei-annotated.png)
+
+### Step 12: $listwaypoints lists all waypoints
+
+![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrffrkd002y356vehfrrtgl-annotated.png)
+
+### Step 13: $deletewaypoint deletes a waypoint
+
+![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrfhzvi0037356vdm1sez5x-annotated.png)
+
+### Step 14: Click Install module button when you are finished with the config
+
+![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrkndxi00ef356vjx98hsqg-annotated.png)
+
+## Assign the permission to the right role
+
+### Step 15: Now you need to assign the permission to the right role
+
+Now that you've installed the Teleports module, the next step is to set up the appropriate permissions. Navigate to the "Roles" section in the global navigation to begin assigning teleport-related permissions to player roles.
+
+![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrenji3001q356vs5b8uta8-annotated.png)
+
+### Step 16: Now you need to assign the permission to the right role
+
+You can decide to add this permission to the standard Player role, or you can create a new role dedicated for teleports. In this guide, we are going to do both. We will first start with the Player role. The Player role is the role that all players will have when they join your game server.
+
+![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrejj8w0011356vg8t94k5p-annotated.png)
+
+### Step 17: Teleports Module Permissions Overview
+
+Create Public Teleports: Allows players to create teleport points accessible to others. Use Teleports: Enables players to use existing teleport points. Manage Waypoints: Permits creating, modifying, and deleting personal or shared waypoints.
+
+To activate a permission:
+
+Toggle the switch to the right (on position). Set a cost in the "Amount" field if desired (leave blank or 0 for free use).
+
+![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyre55ge000x356vqh7cq87h-annotated.png)
+
+### Step 18: Click Save changes button
+
+![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrknird00eg356vsmu74np2-annotated.png)
+
+### Step 19: Add a custom role for Teleports
+
+Creating a dedicated teleport role allows for more flexible permission management. This is useful when you want to give enhanced teleport capabilities to certain players without changing permissions for all users.
+
+![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrknlij00eh356v8bmmu32u-annotated.png)
+
+### Step 20: Give your new role a recognizable name
+
+![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrew0c9001v356v6qdqb47a-annotated.png)
+
+### Step 21: Configure teleport permissions for the new role
+
+You'll see the same options as in Step 17: Create Public Teleports Use Teleports Manage Waypoints
+
+![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyreielj0010356vdutepys1-annotated.png)
+
+## Assign the role to the right player
+
+### Step 22: Go to Players to assign the right role
+
+![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrknq0d00ei356vbuve02c5-annotated.png)
+
+### Step 23: Navigate to the player you want to assign the special role to
+
+![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrepqj1001u356v5fepto4w-annotated.png)
+
+### Step 24: Click Assign role button
+
+![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrf8n5a002e356vmyn5b9ee-annotated.png)
+
+### Step 25: Select the right role
+
+![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrknuo400ej356vbbjkv8uh-annotated.png)
+
+### Step 26: Choose extra teleports from the list
+
+![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrf8wcs002f356vacwkzk01-annotated.png)
+
+### Step 27: Choose your preferred game server
+
+Choose to activate the teleport role on individual game servers or globally across all servers, allowing flexible permission management based on your game's structure and needs.
+
+![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrfj6jk0039356vwo9846tm-annotated.png)
+
+### Step 28: Click Save changes button
+
+You made it to the end!
+
+![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrflhpm003a356vkuy7ch54-annotated.png)
