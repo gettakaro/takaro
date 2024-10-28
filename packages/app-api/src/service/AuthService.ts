@@ -196,6 +196,13 @@ export class AuthService extends DomainScoped {
           // Find the first active domain
           domainId = domains.find((d) => d.state === DOMAIN_STATES.ACTIVE)?.id;
 
+          if (!domainId && domains.length) {
+            log.warn(
+              `No active domain found for identity (but domains found: ${domains.map((d) => ({ id: d.id, state: d.state })).join(',')})`,
+            );
+            throw new errors.BadRequestError('Domain is disabled. Please contact support.');
+          }
+
           // Set the domain cookie
           if (req.res?.cookie)
             req.res?.cookie('takaro-domain', domainId, {
@@ -216,6 +223,9 @@ export class AuthService extends DomainScoped {
       } catch (error) {
         // Not an ory session, throw a sanitized error
         log.warn(error);
+        // If we explicitly throw a BadRequestError, we want to pass it through
+        // So the client gets a meaningful error message
+        if (error instanceof errors.BadRequestError) throw error;
         throw new errors.UnauthorizedError();
       }
     }
@@ -251,6 +261,9 @@ export class AuthService extends DomainScoped {
         if (domainStateCheck) return domainStateMiddleware(req, _res, next);
         return next();
       } catch (error) {
+        // If we explicitly throw a BadRequestError, we want to pass it through
+        // So the client gets a meaningful error message
+        if (error instanceof errors.BadRequestError) return next(error);
         log.error('Unexpected error in auth middleware', error);
         return next(new errors.ForbiddenError());
       }
