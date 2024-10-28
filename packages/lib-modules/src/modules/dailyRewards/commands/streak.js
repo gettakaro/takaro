@@ -7,10 +7,10 @@ async function main() {
   const streak = await getPlayerStreak(gameServerId, pog.playerId, mod.moduleId);
   const lastClaim = await getLastClaim(gameServerId, pog.playerId, mod.moduleId);
   const multiplier = await getMultiplier(pog);
+  const prefix = (await takaro.settings.settingsControllerGetOne('commandPrefix', gameServerId)).data.data.value;
 
   if (!streak || !lastClaim) {
-    // eslint-disable-next-line quotes
-    await pog.pm("You haven't claimed any daily rewards yet! Use /daily to get started.");
+    await pog.pm(`You haven't claimed any daily rewards yet! Use ${prefix}daily to get started.`);
     return;
   }
 
@@ -29,7 +29,7 @@ async function main() {
 
   let message = `Current streak: ${streak} days${multiplier > 1 ? ` (${multiplier}x donor bonus!)` : ''}\n`;
   message += canClaim
-    ? 'Your daily reward is available! Use /daily to claim it!\n'
+    ? `Your daily reward is available! Use ${prefix}daily to claim it!\n`
     : `Next reward available at: ${nextClaimTime.toLocaleString()}\n`;
 
   if (nextMilestone) {
