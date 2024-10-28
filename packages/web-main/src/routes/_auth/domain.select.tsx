@@ -82,6 +82,8 @@ function DomainCard({ domain, isCurrentDomain }: DomainCardProps) {
   const handleDomainSelectedClick = () => {
     if (isCurrentDomain === false) {
       mutate({ domainId: domain.id });
+    } else {
+      navigate({ to: '/dashboard' });
     }
   };
 
