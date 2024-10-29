@@ -48,8 +48,8 @@ export const ShopListingCard: FC<ShopListingCard> = ({
               </Header>
               <Avatar size="huge">
                 <Avatar.Image
-                  src={`/icons/${gameServerTypeToIconFolderMap[gameServerType]}/${shopListing.items[0].item.code}.png`}
-                  alt={`Item icon of ${shopListing.items[0].item.name}`}
+                  src={`/icons/${gameServerTypeToIconFolderMap[gameServerType]}/${shopListing.items[0]?.item.code}.png`}
+                  alt={`Item icon of ${shopListing.items[0]?.item.name}`}
                 />
                 <Avatar.FallBack>{getInitials(shopListingName)}</Avatar.FallBack>
               </Avatar>
