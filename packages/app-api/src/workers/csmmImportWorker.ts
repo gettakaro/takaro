@@ -192,24 +192,27 @@ async function process(job: Job<ICSMMImportData>) {
     }
   }
 
-  const isReachable = await gameserverService.testReachability(server.id);
-
-  if (isReachable) {
-    const res = await gameserverService.executeCommand(server.id, 'version');
-    if (res.rawResult.includes('1CSMM_Patrons')) {
-      await gameserverService.update(
-        server.id,
-        new GameServerUpdateDTO({
-          connectionInfo: JSON.stringify({
-            host: `${data.server.ip}:${data.server.webPort.toString()}`,
-            adminUser: data.server.authName,
-            adminToken: data.server.authToken,
-            useTls: data.server.webPort === 443,
-            useCPM: true,
+  try {
+    const isReachable = await gameserverService.testReachability(server.id);
+    if (isReachable) {
+      const res = await gameserverService.executeCommand(server.id, 'version');
+      if (res.rawResult.includes('1CSMM_Patrons')) {
+        await gameserverService.update(
+          server.id,
+          new GameServerUpdateDTO({
+            connectionInfo: JSON.stringify({
+              host: `${data.server.ip}:${data.server.webPort.toString()}`,
+              adminUser: data.server.authName,
+              adminToken: data.server.authToken,
+              useTls: data.server.webPort === 443,
+              useCPM: true,
+            }),
           }),
-        }),
-      );
+        );
+      }
     }
+  } catch (error) {
+    log.warn('Error while determining CPM compatiblity', error);
   }
 
   // Poll the item sync job until it's done
