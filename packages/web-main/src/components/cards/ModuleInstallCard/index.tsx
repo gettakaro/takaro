@@ -90,7 +90,7 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
     e.stopPropagation();
 
     if (installation) {
-      const systemConfig = installation.systemConfig;
+      const systemConfig = structuredClone(installation.systemConfig);
       systemConfig['enabled'] = !systemConfig['enabled'];
       installModule({
         moduleId: mod.id,

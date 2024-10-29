@@ -59,17 +59,13 @@ export const useDeleteGameServerSetting = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
-  let deletedSettingKey: string | undefined;
-  let deletedGameServerId: string | undefined;
-
   return mutationWrapper<SettingsOutputArrayDTOAPI, GameServerDeleteSettingInput>(
     useMutation<APIOutput, AxiosError<APIOutput>, GameServerDeleteSettingInput>({
       mutationFn: async ({ key, gameServerId }) => {
-        deletedGameServerId = gameServerId;
         return (await apiClient.settings.settingsControllerDelete(key, gameServerId)).data;
       },
-      onSuccess: async () => {
-        queryClient.invalidateQueries({ queryKey: settingKeys.detail(deletedSettingKey!, deletedGameServerId!) });
+      onSuccess: async (_, { gameServerId, key }) => {
+        queryClient.invalidateQueries({ queryKey: settingKeys.detail(key!, gameServerId!) });
       },
     }),
     {},
@@ -110,21 +106,15 @@ export const useSetGameServerSetting = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
-  let updatedGameServerId: string | undefined;
-  let updatedSettingKey: string | undefined;
-
   return mutationWrapper<APIOutput, SetGameServerSettingInput>(
     useMutation<APIOutput, AxiosError<APIOutput>, SetGameServerSettingInput>({
       mutationFn: async ({ key, gameServerId, value }) => {
-        updatedGameServerId = gameServerId;
-        updatedSettingKey = key;
-
         return (await apiClient.settings.settingsControllerSet(key, { gameServerId: gameServerId, value: value })).data;
       },
-      onSuccess: async () => {
+      onSuccess: async (_, { gameServerId, key }) => {
         // invalidate the gameserver settings list and the specific setting key of the gameserver
-        queryClient.invalidateQueries({ queryKey: settingKeys.listGameServer(updatedGameServerId!) });
-        queryClient.invalidateQueries({ queryKey: settingKeys.detail(updatedSettingKey!, updatedGameServerId!) });
+        queryClient.invalidateQueries({ queryKey: settingKeys.listGameServer(gameServerId!) });
+        queryClient.invalidateQueries({ queryKey: settingKeys.detail(key!, gameServerId!) });
       },
     }),
     {},

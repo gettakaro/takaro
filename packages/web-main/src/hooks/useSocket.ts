@@ -1,28 +1,24 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { getConfigVar } from 'util/getConfigVar';
 
-let socket: Socket<never, any> | null = null;
-
 export const useSocket = () => {
+  const socketRef = useRef<Socket | null>(null);
+
   useEffect(() => {
-    if (!socket) return;
+    if (!socketRef.current) {
+      socketRef.current = io(getConfigVar('apiUrl'), {
+        withCredentials: true,
+      });
+      socketRef.current.emit('ping');
+    }
 
     return () => {
-      if (!socket) return;
-      socket.off('connect');
-      socket.off('disconnect');
+      if (!socketRef.current) return;
+      socketRef.current.off('connect');
+      socketRef.current.off('disconnect');
     };
   }, []);
 
-  if (socket) {
-    return { socket, isConnected: socket.connected };
-  }
-
-  socket = io(getConfigVar('apiUrl'), {
-    withCredentials: true,
-  });
-
-  socket.emit('ping');
-  return { socket, isConnected: socket.connected };
+  return { socket: socketRef.current, isConnected: socketRef.current?.connected ?? false };
 };

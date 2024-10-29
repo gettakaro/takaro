@@ -47,15 +47,12 @@ function Component() {
   }
 
   // set null values to undefined otherwise zod will complain
-  if (data?.playerId === null) {
-    data.playerId = undefined;
-  }
-  if (data?.gameServerId === null) {
-    data.gameServerId = undefined;
-  }
-  if (data?.moduleId === null) {
-    data.moduleId = undefined;
-  }
+  const sanitizedData = {
+    ...data,
+    playerId: data.playerId === null ? undefined : data.playerId,
+    gameServerId: data.gameServerId === null ? undefined : data.gameServerId,
+    moduleId: data.moduleId === null ? undefined : data.moduleId,
+  };
 
-  return <VariablesForm isLoading={isPending} variable={data} onSubmit={updateVariable} />;
+  return <VariablesForm isLoading={isPending} variable={sanitizedData} onSubmit={updateVariable} />;
 }
