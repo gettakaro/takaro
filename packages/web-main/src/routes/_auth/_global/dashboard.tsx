@@ -36,7 +36,7 @@ const Container = styled.div`
 function Component() {
   useDocumentTitle('Dashboard');
   const loaderData = Route.useLoaderData();
-  const { data } = useQuery({ ...PlayersOnlineStatsQueryOptions(), initialData: loaderData });
+  const { data, isLoading } = useQuery({ ...PlayersOnlineStatsQueryOptions(), initialData: loaderData });
 
   const { control } = useForm({
     defaultValues: {
@@ -163,13 +163,15 @@ function Component() {
             <Card.Title label="Players online" />
             <Card.Body>
               <div style={{ height: '400px', width: '100%', position: 'relative' }}>
-                <LineChart
-                  name="Players online"
-                  data={data.values}
-                  xAccessor={(d) => new Date(d[0] * 1000)}
-                  yAccessor={(d) => d[1]}
-                  curveType="curveBasis"
-                />
+                {!isLoading && (
+                  <LineChart
+                    name="Players online"
+                    data={data.values}
+                    xAccessor={(d) => new Date(d[0] * 1000)}
+                    yAccessor={(d) => d[1]}
+                    curveType="curveBasis"
+                  />
+                )}
               </div>
             </Card.Body>
           </Card>

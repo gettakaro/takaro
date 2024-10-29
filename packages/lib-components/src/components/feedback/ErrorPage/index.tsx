@@ -122,7 +122,7 @@ const defaultListItems = [
     icon: <AiOutlineBook />,
     title: 'Documentation',
     description: 'Learn how to integrate our tools with your app',
-    to: 'docs.takaro.io',
+    to: 'https://docs.takaro.io',
   },
   {
     icon: <AiOutlineMenu />,
