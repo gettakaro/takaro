@@ -144,6 +144,29 @@ const tests = [
       expect((await events)[1].data.meta.msg).to.equal('You have received items from a shop order.');
     },
   }),
+  new IntegrationTest<IShopSetup>({
+    group,
+    snapshot: false,
+    setup: shopSetup,
+    name: 'Can buy an item when not linked to a user',
+    test: async function () {
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(HookEvents.CHAT_MESSAGE, 2);
+      const unlinkedPlayer = this.setupData.players[1];
+      await this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(
+        this.setupData.gameserver.id,
+        unlinkedPlayer.id,
+        { currency: 250 },
+      );
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/shop 1 1 buy',
+        playerId: unlinkedPlayer.id,
+      });
+
+      expect(await events).to.have.length(2);
+      expect((await events)[0].data.meta.msg).to.equal('You have purchased Test item for 100 test coin.');
+      expect((await events)[1].data.meta.msg).to.equal('You have received items from a shop order.');
+    },
+  }),
 ];
 
 describe(group, function () {
