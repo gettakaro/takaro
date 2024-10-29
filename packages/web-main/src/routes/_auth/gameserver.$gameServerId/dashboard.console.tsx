@@ -1,6 +1,6 @@
 import { Console, Message, Skeleton, styled, useLocalStorage } from '@takaro/lib-components';
 import { getApiClient } from 'util/getApiClient';
-import { useSocket } from 'hooks/useSocket';
+import { socket } from 'hooks/useSocket';
 import { gameServerQueryOptions } from 'queries/gameserver';
 import { useGameServerDocumentTitle } from 'hooks/useDocumentTitle';
 import { useSnackbar } from 'notistack';
@@ -38,7 +38,6 @@ function Component() {
 
   useGameServerDocumentTitle('dashboard', gameServer);
   const apiClient = getApiClient();
-  const { socket } = useSocket();
   const { enqueueSnackbar } = useSnackbar();
   const LOCAL_STORAGE_KEY = `console-${gameServer.id}`;
 

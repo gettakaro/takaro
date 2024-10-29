@@ -12,7 +12,7 @@ import { useQuery } from '@tanstack/react-query';
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/dashboard/overview')({
   loader: ({ params, context }) => context.queryClient.ensureQueryData(gameServerQueryOptions(params.gameServerId)),
   component: Component,
-  pendingComponent: () => {},
+  pendingComponent: () => { },
 });
 
 const GridContainer = styled.div`
@@ -60,8 +60,8 @@ function Component() {
 
   return (
     <GridContainer>
-      <ChatMessagesCard />
-      <OnlinePlayersCard />
+      <ChatMessagesCard gameServerId={gameServerId} />
+      <OnlinePlayersCard gameServerId={gameServerId} />
       <Card variant="outline">
         <Card.Title label="Module events" />
         <Card.Body>

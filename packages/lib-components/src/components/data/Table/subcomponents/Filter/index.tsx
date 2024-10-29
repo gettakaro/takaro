@@ -45,7 +45,7 @@ export function Filter<DataType extends object>({ table }: FilterProps<DataType>
       .map((column) => column.id);
 
     return ids;
-  }, [...table.getAllColumns()]);
+  }, [table]);
 
   const basedShape = z.object({
     column: z.string().refine((value) => columnIds.includes(value), {

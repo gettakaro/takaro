@@ -154,11 +154,7 @@ const createModuleBuilderStore = (initProps: ModuleBuilderProps) => {
 const ModuleBuilderContext = createContext<ModuleBuilderStore | null>(null);
 type ModuleBuilderProviderProps = PropsWithChildren<ModuleBuilderProps>;
 export function ModuleBuilderProvider({ children, ...props }: ModuleBuilderProviderProps) {
-  const storeRef = useRef<ModuleBuilderStore>();
-  if (!storeRef.current) {
-    storeRef.current = createModuleBuilderStore(props);
-  }
-
+  const storeRef = useRef<ModuleBuilderStore>(createModuleBuilderStore(props));
   return <ModuleBuilderContext.Provider value={storeRef.current}>{children}</ModuleBuilderContext.Provider>;
 }
 

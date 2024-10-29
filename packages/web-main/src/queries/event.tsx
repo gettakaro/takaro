@@ -10,10 +10,10 @@ import { AxiosError } from 'axios';
 import { getApiClient } from 'util/getApiClient';
 import _ from 'lodash';
 import { getNextPage, queryParamsToArray } from './util';
-import { useSocket } from 'hooks/useSocket';
 import { useEffect } from 'react';
 import { ShouldIncludeEvent } from 'components/events/shouldIncludeEvent';
 import { DateTime } from 'luxon';
+import { socket } from 'hooks/useSocket';
 
 const eventKeys = {
   all: ['events'] as const,
@@ -47,7 +47,6 @@ interface EventSubscriptionOptions extends EventSearchInputDTO {
 }
 
 export const useEventSubscription = ({ enabled = true, ...queryParams }: EventSubscriptionOptions) => {
-  const { socket } = useSocket();
   const queryClient = useQueryClient();
 
   useEffect(() => {

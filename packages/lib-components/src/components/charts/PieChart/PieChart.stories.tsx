@@ -25,9 +25,7 @@ export const Default: StoryFn<PieChartProps<LetterFrequency>> = (args) => {
     return `Tooltip content for '${getLetter(d)}' with frequency ${getLetterFrequency(d)}`;
   };
 
-  // only show the first 5 letters
-  letterFrequency.length = 6;
-
+  const first_5_letters_with_frequency = letterFrequency.slice(0, 5);
   return (
     <Wrapper>
       <PieChart<LetterFrequency>
@@ -35,7 +33,7 @@ export const Default: StoryFn<PieChartProps<LetterFrequency>> = (args) => {
         xAccessor={getLetter}
         yAccessor={getLetterFrequency}
         tooltipAccessor={tooltipAccessor}
-        data={letterFrequency}
+        data={first_5_letters_with_frequency}
         variant={args.variant}
       />
     </Wrapper>

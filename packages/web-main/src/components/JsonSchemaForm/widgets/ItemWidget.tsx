@@ -51,11 +51,11 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
   value,
   onChange,
 }: WidgetProps<T, S, F>) {
-  const { gameServerId } = getRouteApi('/_auth/gameserver/$gameServerId/modules/$moduleId/install/').useParams();
   const [filterInput, setFilterInput] = useState<string>('');
   const enabled = filterInput !== '';
   const shouldPreviousItemsBeLoaded = shouldFilter(value, multiple as boolean);
   const [searchFields, setSearchFields] = useState<Map<string, boolean>>(new Map());
+  const { gameServerId } = getRouteApi('/_auth/gameserver/$gameServerId/modules/$moduleId/install/').useParams();
 
   const { data: gameServer, isLoading: isLoadingGameServer } = useQuery(gameServerQueryOptions(gameServerId));
 
@@ -79,11 +79,11 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
     ItemsInfiniteQueryOptions({
       ...(filterInput !== '' &&
         (searchFields.get('name') || searchFields.get('code')) && {
-          search: {
-            ...(searchFields.get('name') && { name: [filterInput] }),
-            ...(searchFields.get('code') && { code: [filterInput] }),
-          },
-        }),
+        search: {
+          ...(searchFields.get('name') && { name: [filterInput] }),
+          ...(searchFields.get('code') && { code: [filterInput] }),
+        },
+      }),
       filters: { gameserverId: [gameServerId] },
     }),
   );

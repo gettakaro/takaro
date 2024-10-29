@@ -27,9 +27,9 @@ import { Header, TitleContainer, DetailsContainer } from './style';
 import { useGameServerRemove } from 'queries/gameserver';
 import { PermissionsGuard } from 'components/PermissionsGuard';
 import { InnerBody } from '../style';
-import { useSocket } from 'hooks/useSocket';
 import { playersOnGameServersQueryOptions } from 'queries/pog';
 import { useQuery } from '@tanstack/react-query';
+import { socket } from 'socket';
 
 const StatusChip: FC<{ reachable: boolean; enabled: boolean }> = ({ reachable, enabled }) => {
   if (!enabled) return <Chip label="disabled" color="warning" variant="outline" />;
@@ -43,7 +43,6 @@ export const GameServerCard: FC<GameServerOutputDTO> = ({ id, name, type, reacha
   const navigate = useNavigate();
   const theme = useTheme();
   const { mutate, isPending: isDeleting } = useGameServerRemove();
-  const { socket } = useSocket();
   const {
     data: onlinePogs,
     isLoading: isLoadingPogs,

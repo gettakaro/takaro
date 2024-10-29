@@ -23,7 +23,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logOut = useCallback(async () => {
     const logoutFlowRes = await oryClient.createBrowserLogoutFlow();
     queryClient.clear();
-    window.location.href = logoutFlowRes.data.logout_url;
+    window.location.assign(logoutFlowRes.data.logout_url);
     // Extra clean up is done in /logout-return
     return Promise.resolve();
   }, [oryClient, queryClient]);
@@ -36,7 +36,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  const getSession = async function (): Promise<MeOutputDTO> {
+  const getSession = async function(): Promise<MeOutputDTO> {
     try {
       const newSession = (
         await getApiClient().user.userControllerMe({
@@ -49,7 +49,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return newSession;
     } catch {
       queryClient.clear();
-      window.location.href = '/login';
+      window.location.assign('/login');
       throw 'should have no session and should be redirected to login';
     }
   };

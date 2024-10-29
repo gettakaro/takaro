@@ -1,4 +1,4 @@
-import { FC, useLayoutEffect } from 'react';
+import { FC, useLayoutEffect, useMemo } from 'react';
 import { DateTime } from 'luxon';
 import { List, Item } from './style';
 
@@ -13,24 +13,23 @@ export interface TimePickerProps {
 }
 
 export const TimePicker: FC<TimePickerProps> = ({ onChange, selectedDate, interval = 30 }) => {
-  let date = selectedDate.startOf('day');
+  const numberOfSlots = useMemo(() => Math.floor((24 * 60) / interval), [interval]);
+  useLayoutEffect(() => { }, [selectedDate]);
 
-  // calculate number of slots
-  const numberOfSlots = Math.floor((24 * 60) / interval);
-
-  // scroll selected time into view using ref
-  useLayoutEffect(() => {}, [selectedDate]);
+  const timeSlots = useMemo(() => {
+    const startOfDay = selectedDate.startOf('day');
+    return Array.from({ length: numberOfSlots }, (_, index) => {
+      return startOfDay.plus({ minutes: interval * index });
+    });
+  }, [selectedDate, interval, numberOfSlots]);
 
   return (
     <List role="listbox">
-      {Array.from({ length: numberOfSlots }).map(() => {
-        const nextTime = date.plus({ minutes: interval });
-        const formattedTime = date.toFormat('HH:mm');
-        const isSelected = date.hasSame(selectedDate, 'hour') && date.hasSame(selectedDate, 'minute');
-        const returnValue = date;
-        date = nextTime;
+      {timeSlots.map((time) => {
+        const formattedTime = time.toFormat('HH:mm');
+        const isSelected = time.hasSame(selectedDate, 'hour') && time.hasSame(selectedDate, 'minute');
         return (
-          <Item role="option" isSelected={isSelected} key={formattedTime} onClick={() => onChange(returnValue)}>
+          <Item role="option" isSelected={isSelected} key={formattedTime} onClick={() => onChange(time)}>
             {formattedTime}
           </Item>
         );

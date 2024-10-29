@@ -4,7 +4,7 @@ import {
   EventSearchInputDTOSortDirectionEnum,
   EventOutputDTOEventNameEnum as EventName,
 } from '@takaro/apiclient';
-import { useSocket } from 'hooks/useSocket';
+import { socket } from 'hooks/useSocket';
 import { eventsQueryOptions } from 'queries/event';
 import { getApiClient } from 'util/getApiClient';
 import { FC, useEffect } from 'react';
@@ -14,12 +14,13 @@ import { Scrollable } from '../style';
 import { ChatMessage } from './ChatMessage';
 import { ChatInput } from './ChatInput';
 import { useQuery } from '@tanstack/react-query';
-import { getRouteApi } from '@tanstack/react-router';
 
-export const ChatMessagesCard: FC = () => {
+interface ChatMessagesCardProps {
+  gameServerId: string;
+}
+
+export const ChatMessagesCard: FC<ChatMessagesCardProps> = ({ gameServerId }) => {
   const apiClient = getApiClient();
-  const { gameServerId } = getRouteApi('/_auth/gameserver/$gameServerId/dashboard/overview').useParams();
-  const { socket } = useSocket();
 
   const { data, isLoading, refetch } = useQuery(
     eventsQueryOptions({
