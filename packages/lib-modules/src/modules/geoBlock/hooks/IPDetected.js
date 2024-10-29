@@ -9,9 +9,11 @@ async function main() {
     if (ban) {
       const now = new Date();
       const expiresAt = new Date(now.getTime() + banDuration * 1000);
-      await takaro.gameserver.gameServerControllerBanPlayer(gameServerId, player.id, {
+      await takaro.player.banControllerCreate({
+        gameServerId,
+        playerId: player.id,
+        until: expiresAt,
         reason: message,
-        expiresAt,
       });
     } else {
       await takaro.gameserver.gameServerControllerKickPlayer(gameServerId, player.id, {

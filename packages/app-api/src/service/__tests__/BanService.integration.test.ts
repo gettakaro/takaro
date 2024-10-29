@@ -1,6 +1,7 @@
 import { IntegrationTest, SetupGameServerPlayers, expect } from '@takaro/test';
 import { queueService } from '@takaro/queues';
 import { randomUUID } from 'node:crypto';
+import { Client } from '@takaro/apiclient';
 
 async function triggerBanSync(domainId: string, gameServerId: string) {
   const job = await queueService.queues.bansSync.queue.add({ domainId, gameServerId, triggerId: randomUUID() });
@@ -21,6 +22,24 @@ async function triggerBanSync(domainId: string, gameServerId: string) {
   }
 }
 
+/**
+ * This function aims to simulate when an admin bans someone without using Takaro.
+ * So if effect, this creates bans that are not takaroManaged.
+ * @param gameServerId
+ * @param playerId
+ */
+async function banPlayerOutOfBand(client: Client, gameServerId: string, playerId: string, reason?: string) {
+  await client.gameserver.gameServerControllerExecuteCommand(gameServerId, {
+    command: `ban ${playerId} ${reason || 'unknown reason'}`,
+  });
+}
+
+async function unbanPlayerOutOfBand(client: Client, gameServerId: string, playerId: string) {
+  await client.gameserver.gameServerControllerExecuteCommand(gameServerId, {
+    command: `unban ${playerId}`,
+  });
+}
+
 const group = 'BanService';
 
 const tests = [
@@ -31,12 +50,9 @@ const tests = [
     setup: SetupGameServerPlayers.setup,
     test: async function () {
       if (!this.standardDomainId) throw new Error('Standard domain ID not found');
-      await this.client.gameserver.gameServerControllerBanPlayer(
-        this.setupData.gameServer1.id,
-        this.setupData.pogs1[0].playerId,
-      );
+      await banPlayerOutOfBand(this.client, this.setupData.gameServer1.id, this.setupData.pogs1[0].gameId);
       await triggerBanSync(this.standardDomainId, this.setupData.gameServer1.id);
-      const bans = await this.client.ban.banControllerSearch({
+      const bans = await this.client.player.banControllerSearch({
         filters: { gameServerId: [this.setupData.gameServer1.id] },
       });
       expect(bans.data.data.length).to.equal(1);
@@ -50,26 +66,21 @@ const tests = [
     test: async function () {
       if (!this.standardDomainId) throw new Error('Standard domain ID not found');
       // Step 1: Ban the player
-      await this.client.gameserver.gameServerControllerBanPlayer(
-        this.setupData.gameServer1.id,
-        this.setupData.pogs1[0].playerId,
-      );
+      await banPlayerOutOfBand(this.client, this.setupData.gameServer1.id, this.setupData.pogs1[0].gameId);
+
       // Step 2: Trigger ban sync
       await triggerBanSync(this.standardDomainId, this.setupData.gameServer1.id);
       // Step 3: Verify that the player is banned
-      let bans = await this.client.ban.banControllerSearch({
+      let bans = await this.client.player.banControllerSearch({
         filters: { gameServerId: [this.setupData.gameServer1.id] },
       });
       expect(bans.data.data.length).to.equal(1);
       // Step 4: Unban the player
-      await this.client.gameserver.gameServerControllerUnbanPlayer(
-        this.setupData.gameServer1.id,
-        this.setupData.pogs1[0].playerId,
-      );
+      await unbanPlayerOutOfBand(this.client, this.setupData.gameServer1.id, this.setupData.pogs1[0].gameId);
       // Step 5: Trigger ban sync again after unban
       await triggerBanSync(this.standardDomainId, this.setupData.gameServer1.id);
       // Step 6: Verify that the player is no longer banned
-      bans = await this.client.ban.banControllerSearch({
+      bans = await this.client.player.banControllerSearch({
         filters: { gameServerId: [this.setupData.gameServer1.id] },
       });
       expect(bans.data.data.length).to.equal(0);
@@ -83,26 +94,20 @@ const tests = [
     test: async function () {
       if (!this.standardDomainId) throw new Error('Standard domain ID not found');
       // Step 1: Ban the player for the first time
-      await this.client.gameserver.gameServerControllerBanPlayer(
-        this.setupData.gameServer1.id,
-        this.setupData.pogs1[0].playerId,
-      );
+      await banPlayerOutOfBand(this.client, this.setupData.gameServer1.id, this.setupData.pogs1[0].gameId);
       // Step 2: Trigger ban sync
       await triggerBanSync(this.standardDomainId, this.setupData.gameServer1.id);
       // Step 3: Verify that the player is banned
-      let bans = await this.client.ban.banControllerSearch({
+      let bans = await this.client.player.banControllerSearch({
         filters: { gameServerId: [this.setupData.gameServer1.id] },
       });
       expect(bans.data.data.length).to.equal(1);
       // Step 4: Ban the player again (same player, same game server)
-      await this.client.gameserver.gameServerControllerBanPlayer(
-        this.setupData.gameServer1.id,
-        this.setupData.pogs1[0].playerId,
-      );
+      await banPlayerOutOfBand(this.client, this.setupData.gameServer1.id, this.setupData.pogs1[0].gameId);
       // Step 5: Trigger ban sync again after second ban
       await triggerBanSync(this.standardDomainId, this.setupData.gameServer1.id);
       // Step 6: Verify that the player is still banned
-      bans = await this.client.ban.banControllerSearch({
+      bans = await this.client.player.banControllerSearch({
         filters: { gameServerId: [this.setupData.gameServer1.id] },
       });
       expect(bans.data.data.length).to.equal(1);
@@ -116,29 +121,21 @@ const tests = [
     test: async function () {
       if (!this.standardDomainId) throw new Error('Standard domain ID not found');
       // Step 1: Ban the player for the first time with reason1
-      await this.client.gameserver.gameServerControllerBanPlayer(
-        this.setupData.gameServer1.id,
-        this.setupData.pogs1[0].playerId,
-        { reason: 'reason1' },
-      );
+      await banPlayerOutOfBand(this.client, this.setupData.gameServer1.id, this.setupData.pogs1[0].gameId, 'reason1');
       // Step 2: Trigger ban sync
       await triggerBanSync(this.standardDomainId, this.setupData.gameServer1.id);
       // Step 3: Verify that the player is banned with reason1
-      let bans = await this.client.ban.banControllerSearch({
+      let bans = await this.client.player.banControllerSearch({
         filters: { gameServerId: [this.setupData.gameServer1.id] },
       });
       expect(bans.data.data.length).to.equal(1);
       expect(bans.data.data[0].reason).to.equal('reason1');
       // Step 4: Ban the player again with reason2
-      await this.client.gameserver.gameServerControllerBanPlayer(
-        this.setupData.gameServer1.id,
-        this.setupData.pogs1[0].playerId,
-        { reason: 'reason2' },
-      );
+      await banPlayerOutOfBand(this.client, this.setupData.gameServer1.id, this.setupData.pogs1[0].gameId, 'reason2');
       // Step 5: Trigger ban sync again after second ban with a new reason
       await triggerBanSync(this.standardDomainId, this.setupData.gameServer1.id);
       // Step 6: Verify that the player's ban exists with the new reason
-      bans = await this.client.ban.banControllerSearch({
+      bans = await this.client.player.banControllerSearch({
         filters: { gameServerId: [this.setupData.gameServer1.id] },
       });
       expect(bans.data.data.length).to.equal(1);
@@ -153,30 +150,21 @@ const tests = [
     test: async function () {
       if (!this.standardDomainId) throw new Error('Standard domain ID not found');
       // Step 1: Ban player1 and player2
-      await this.client.gameserver.gameServerControllerBanPlayer(
-        this.setupData.gameServer1.id,
-        this.setupData.pogs1[0].playerId,
-      );
-      await this.client.gameserver.gameServerControllerBanPlayer(
-        this.setupData.gameServer1.id,
-        this.setupData.pogs1[1].playerId,
-      );
+      await banPlayerOutOfBand(this.client, this.setupData.gameServer1.id, this.setupData.pogs1[0].gameId);
+      await banPlayerOutOfBand(this.client, this.setupData.gameServer1.id, this.setupData.pogs1[1].gameId);
       // Step 2: Trigger ban sync
       await triggerBanSync(this.standardDomainId, this.setupData.gameServer1.id);
       // Step 3: Verify that both players are banned
-      let bans = await this.client.ban.banControllerSearch({
+      let bans = await this.client.player.banControllerSearch({
         filters: { gameServerId: [this.setupData.gameServer1.id] },
       });
       expect(bans.data.data.length).to.equal(2);
       // Step 4: Unban player1
-      await this.client.gameserver.gameServerControllerUnbanPlayer(
-        this.setupData.gameServer1.id,
-        this.setupData.pogs1[0].playerId,
-      );
+      await unbanPlayerOutOfBand(this.client, this.setupData.gameServer1.id, this.setupData.pogs1[0].gameId);
       // Step 5: Trigger ban sync again after unban
       await triggerBanSync(this.standardDomainId, this.setupData.gameServer1.id);
       // Step 6: Verify that player1 is no longer banned, but player2 is still banned
-      bans = await this.client.ban.banControllerSearch({
+      bans = await this.client.player.banControllerSearch({
         filters: { gameServerId: [this.setupData.gameServer1.id] },
       });
       expect(bans.data.data.length).to.equal(1);
@@ -190,7 +178,7 @@ const tests = [
     setup: SetupGameServerPlayers.setup,
     test: async function () {
       if (!this.standardDomainId) throw new Error('Standard domain ID not found');
-      await this.client.ban.banControllerCreate({
+      await this.client.player.banControllerCreate({
         gameServerId: this.setupData.gameServer1.id,
         playerId: this.setupData.pogs1[0].playerId,
         reason: 'reason',
@@ -203,7 +191,7 @@ const tests = [
 
       await triggerBanSync(this.standardDomainId, this.setupData.gameServer1.id);
 
-      const bans = await this.client.ban.banControllerSearch({
+      const bans = await this.client.player.banControllerSearch({
         filters: { gameServerId: [this.setupData.gameServer1.id] },
       });
 
@@ -218,7 +206,7 @@ const tests = [
     setup: SetupGameServerPlayers.setup,
     test: async function () {
       if (!this.standardDomainId) throw new Error('Standard domain ID not found');
-      await this.client.ban.banControllerCreate({
+      await this.client.player.banControllerCreate({
         gameServerId: this.setupData.gameServer1.id,
         playerId: this.setupData.pogs1[0].playerId,
         reason: 'reason',
@@ -231,7 +219,7 @@ const tests = [
 
       await triggerBanSync(this.standardDomainId, this.setupData.gameServer1.id);
 
-      const bans = await this.client.ban.banControllerSearch({
+      const bans = await this.client.player.banControllerSearch({
         filters: { gameServerId: [this.setupData.gameServer1.id] },
       });
 
@@ -246,7 +234,7 @@ const tests = [
     setup: SetupGameServerPlayers.setup,
     test: async function () {
       if (!this.standardDomainId) throw new Error('Standard domain ID not found');
-      await this.client.ban.banControllerCreate({
+      await this.client.player.banControllerCreate({
         gameServerId: this.setupData.gameServer1.id,
         playerId: this.setupData.pogs1[0].playerId,
         reason: 'reason',
@@ -255,17 +243,17 @@ const tests = [
 
       await triggerBanSync(this.standardDomainId, this.setupData.gameServer1.id);
 
-      let bans = await this.client.ban.banControllerSearch({
+      let bans = await this.client.player.banControllerSearch({
         filters: { gameServerId: [this.setupData.gameServer1.id] },
       });
 
       expect(bans.data.data.length).to.equal(1);
 
-      await this.client.ban.banControllerDelete(bans.data.data[0].id);
+      await this.client.player.banControllerDelete(bans.data.data[0].id);
 
       await triggerBanSync(this.standardDomainId, this.setupData.gameServer1.id);
 
-      bans = await this.client.ban.banControllerSearch({
+      bans = await this.client.player.banControllerSearch({
         filters: { gameServerId: [this.setupData.gameServer1.id] },
       });
 

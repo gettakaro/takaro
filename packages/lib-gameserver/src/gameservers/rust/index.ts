@@ -175,7 +175,7 @@ export class Rust implements IGameServer {
   async listBans(): Promise<BanDTO[]> {
     const response = await this.executeConsoleCommand('banlistex');
 
-    if (!response.success || !response.rawResult) {
+    if (!response.rawResult) {
       return [];
     }
 
@@ -200,8 +200,9 @@ export class Rust implements IGameServer {
 
         const ban = new BanDTO({
           reason: match.groups.reason,
-          player: new IPlayerReferenceDTO({
+          player: new IGamePlayer({
             gameId,
+            steamId: gameId,
           }),
           expiresAt,
         });

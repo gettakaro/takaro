@@ -22,7 +22,8 @@ export class BanOutputDTO extends TakaroModelDTO<BanOutputDTO> {
 
 export class BanCreateDTO extends TakaroDTO<BanCreateDTO> {
   @IsUUID('4')
-  gameServerId: string;
+  @IsOptional()
+  gameServerId?: string;
   @IsUUID('4')
   playerId: string;
   @IsBoolean()
@@ -38,6 +39,7 @@ export class BanCreateDTO extends TakaroDTO<BanCreateDTO> {
   @IsOptional()
   reason?: string;
 }
+
 export class BanUpdateDTO extends TakaroDTO<BanUpdateDTO> {
   @IsUUID('4')
   gameServerId: string;

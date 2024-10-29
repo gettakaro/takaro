@@ -32,7 +32,9 @@ export class BanService extends TakaroService<BanModel, BanOutputDTO, BanCreateD
       // Some game servers still need a date, so we default to 1000 years from now
       const until = item.until || '3021-01-01T00:00:00.000Z';
 
-      await gameServerService.banPlayer(item.gameServerId, item.playerId, reason, until);
+      if (item.gameServerId) {
+        await gameServerService.banPlayer(item.gameServerId, item.playerId, reason, until);
+      }
 
       if (item.isGlobal) {
         const allGameservers = await gameServerService.find({});
@@ -84,7 +86,7 @@ export class BanService extends TakaroService<BanModel, BanOutputDTO, BanCreateD
     const gameServerService = new GameServerService(this.domainId);
     const { player, pogs } = await playerService.resolveFromId(playerId);
 
-    await Promise.allSettled(
+    await Promise.all(
       pogs.map(async (pog) => {
         return gameServerService.banPlayer(pog.gameServerId, player.id, ban.reason, ban.until);
       }),
