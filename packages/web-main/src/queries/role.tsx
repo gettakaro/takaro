@@ -72,9 +72,9 @@ export const useRoleCreate = () => {
   return mutationWrapper<RoleOutputDTO, RoleCreateInputDTO>(
     useMutation<RoleOutputDTO, AxiosError<RoleOutputArrayDTOAPI>, RoleCreateInputDTO>({
       mutationFn: async (role) => (await apiClient.role.roleControllerCreate(role)).data.data,
-      onSuccess: async (newRole) => {
+      onSuccess: (newRole) => {
         enqueueSnackbar('Role created!', { variant: 'default', type: 'success' });
-        await queryClient.invalidateQueries({ queryKey: roleKeys.list() });
+        queryClient.invalidateQueries({ queryKey: roleKeys.list() });
         queryClient.setQueryData(roleKeys.detail(newRole.id), newRole);
       },
     }),
