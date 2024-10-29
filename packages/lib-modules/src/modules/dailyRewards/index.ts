@@ -1,3 +1,4 @@
+/* eslint-disable quotes */
 import { BuiltinModule, ICommand, IFunction, IHook, IPermission } from '../../BuiltinModule.js';
 
 export class DailyRewards extends BuiltinModule<DailyRewards> {
