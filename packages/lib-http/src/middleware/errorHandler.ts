@@ -85,5 +85,5 @@ export async function ErrorHandler(
   }
 
   res.status(status).json(apiResponse({}, { error: parsedError, req, res }));
-  return res.end();
+  res.end();
 }
