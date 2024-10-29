@@ -1,4 +1,4 @@
-import { data } from '@takaro/helpers';
+import { data, takaro } from '@takaro/helpers';
 import { getPlayerStreak, getLastClaim, getMultiplier } from './utils.js';
 
 async function main() {
