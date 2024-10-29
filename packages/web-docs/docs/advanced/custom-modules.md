@@ -6,11 +6,11 @@ sidebar_position: 3
 
 While the Takaro Team is committed to providing a comprehensive set of built-in modules,
 there may be instances where a particular feature you need is unavailable, or perhaps
-there is no existing module for a feature you desire. 
+there is no existing module for a feature you desire.
 
-This is focused on advanced users familiar with JavaScript. 
+This is focused on advanced users familiar with JavaScript.
 If you need support, or if you believe your feature could enrich our suite of built-in modules,
-we encourage you to reach out to our <a href="https://aka.candaele.dev/discord" target="_blank" rel="noopener noreferrer">Discord</a> community.
+we encourage you to reach out to our <a href="https://aka.takaro.io/discord" target="_blank" rel="noopener noreferrer">Discord</a> community.
 
 ## Functions
 
