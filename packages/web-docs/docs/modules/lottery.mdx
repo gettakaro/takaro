@@ -80,3 +80,108 @@ export function Module() {
 
 ---
 {/* END AUTO-GENERATED CONTENT */}
+
+## Overview
+
+The lottery system works by:
+
+- Players can purchase tickets using server currency
+- A scheduled draw determines winners automatically
+- Winners receive a prize pool based on ticket sales
+- Configurable profit margin for the server
+- Daily automated draws
+
+## Commands
+
+|Command|Description|Arguments|
+|---|---|---|
+|`/buyTicket`|Purchase lottery tickets|`amount`: Number of tickets to buy|
+|`/viewTickets`|View your currently held tickets|None|
+|`/nextDraw`|Check when the next lottery draw will occur|None|
+
+## Permissions
+
+The module includes two main permissions that can be assigned to roles:
+
+- **LOTTERY_BUY**: Allows players to purchase lottery tickets
+- **LOTTERY_VIEW_TICKETS**: Allows players to view their currently held tickets
+
+## Configuration
+
+### Module Settings
+
+|Setting|Description|Default|
+|---|---|---|
+|`profitMargin`|Percentage of ticket sales kept by the server (0-1)|0.1 (10%)|
+
+### System Configuration
+
+The lottery draw is scheduled using a cron job that runs at `0 0 * * *` (midnight every day).
+
+## How It Works
+
+1. **Ticket Purchase**:
+    - Players use the `/buyTicket` command to purchase tickets
+    - Each ticket costs a configurable amount of currency
+    - Players can purchase multiple tickets at once
+    - Tickets are tracked per player until the next draw
+2. **Prize Pool**:
+    - Total prize pool = (Total ticket sales) * (1 - profit margin)
+    - Server keeps the profit margin percentage
+    - The remaining amount goes to the winner
+3. **Draw Process**:
+    - Occurs automatically at configured time
+    - One winner is randomly selected from all ticket holders
+    - More tickets = higher chance of winning
+    - Prize is automatically distributed to winner
+    - All tickets are cleared after each draw
+4. **Safeguards**:
+    - Lottery cancels if only one player bought tickets
+    - Players receive refunds if lottery is cancelled
+    - Server announces winner and prize amount to all players
+
+## Setup Guide
+
+1. **Install the Module**:
+    - Navigate to your server's Modules section
+    - Find "lottery" in the module list
+    - Click Install
+    - Configure the profit margin as desired
+2. **Configure Permissions**:
+    - Go to Roles section
+    - Assign LOTTERY_BUY and LOTTERY_VIEW_TICKETS permissions to appropriate roles
+    - Set any cost requirements for permissions if desired
+3. **Verify Installation**:
+    - Check that commands are working using `/help lottery`
+    - Ensure draw schedule is active by using `/nextDraw`
+    - Test ticket purchase with `/buyTicket 1`
+
+## Best Practices
+
+1. **Economy Balance**:
+    - Set appropriate ticket costs based on your server's economy
+    - Adjust profit margin to control prize pool sizes
+    - Monitor ticket sales and adjust parameters as needed
+2. **Player Communication**:
+    - Announce lottery events in advance
+    - Use server messages to remind players about upcoming draws
+    - Celebrate winners to encourage participation
+3. **Permission Management**:
+    - Consider creating specific lottery roles
+    - Use permission costs to prevent abuse
+    - Monitor for unusual buying patterns
+
+## Troubleshooting
+
+
+**Players can't buy tickets**:
+    - Verify LOTTERY_BUY permission is assigned
+    - Check if player has sufficient currency
+    - Ensure economy system is enabled
+
+## Notes
+
+- Tickets do not persist between draws
+- Players must be online to receive win notifications
+- The module requires an active economy system
+- All transactions are logged for administrative review
