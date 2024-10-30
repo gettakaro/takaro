@@ -45,3 +45,69 @@ export function Module() {
 
 ---
 {/* END AUTO-GENERATED CONTENT */}
+
+## Features
+
+### Welcome Messages
+
+- Automatically triggers when a player connects to the server
+- Supports player name variables using {player} placeholder
+- Customizable message content
+- Helps create a welcoming atmosphere for new players
+
+### Starter Kit System
+
+- Players can claim a starter kit using the `/starterkit` command
+- One-time use per player per server
+- Configurable item list with support for:
+    - Item quantities
+    - Item quality levels
+    - Multiple items per kit
+
+## Configuration
+
+### Message Configuration
+
+- **Message**: Customize the welcome message that players receive when joining
+- Default message: "Welcome {player} to the server!"
+- Use {player} to include the player's name in the message
+
+### Starter Kit Configuration
+
+- **Items**: Configure a list of items to be given to players
+- Each item entry supports:
+    - Item name (must match exact game item ID)
+    - Amount
+    - Quality level (where applicable)
+    - Usage percentage
+## Commands
+
+### /starterkit
+
+- **Usage**: `/starterkit`
+- **Description**: Claims the starter kit items
+- **Limitations**:
+    - Can only be used once per player per server
+    - Requires starter kit items to be configured
+- **Response Messages**:
+    - Success: "Gave [X] items, enjoy!"
+    - Already claimed: "You already used starterkit on this server"
+    - No items configured: "No starter kit items configured. Please ask your server administrator to configure this."
+
+## Variables
+
+The module uses Takaro's variable system to track starter kit claims:
+- Creates a variable with key 't_starterkit_lock' when a player claims their kit
+- Checks this variable to prevent multiple claims
+- Variables are server-specific, allowing players to claim starter kits on different servers
+
+## Best Practices
+
+1. **Welcome Message**
+    - Keep messages concise and informative
+    - Include essential server information or rules
+    - Use the {player} placeholder to personalize the message
+2. **Starter Kit Items**
+    - Balance items to help new players without making them overpowered
+    - Consider your server's economy when selecting items
+
