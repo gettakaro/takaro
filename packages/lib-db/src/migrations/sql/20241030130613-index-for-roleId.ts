@@ -25,7 +25,7 @@ export async function down(knex: Knex): Promise<void> {
   });
 
   await knex.schema.alterTable('playerInventory', (table) => {
-    table.dropIndex(['domain', 'playerId', 'itemId']);
+    table.dropIndex(['playerId', 'domain', 'itemId']);
     table.index(['playerId', 'domain']);
   });
 }
