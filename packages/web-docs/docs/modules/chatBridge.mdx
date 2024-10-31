@@ -52,3 +52,59 @@ export function Module() {
 
 ---
 {/* END AUTO-GENERATED CONTENT */}
+
+## Step-by-step guide
+
+### Step 1: Connect Discord in Global Settings
+- Go to **Global Game Server Settings > Discord**
+![ChatBridge Settings](../../assets/images/chatBridge/chatBridge_1_Takaro_settings.png)
+- Click **Add connection**
+- Complete Discord authorization to allow Takaro to:
+    - Access your username, avatar and banner
+    - Access your email address
+    - Know what servers you're in
+![ChatBridge Settings](../../assets/images/chatBridge/chatbridge_2_Takaro_Discord.png)
+### Step 2: Add Takaro Bot to Your Server
+1. Click **Invite Discord bot** in the same Global Settings page
+2. Select your server from the dropdown
+3. Authorize the bot permissions:
+    - Add a bot to a server
+    - Create commands
+![ChatBridge Settings](../../assets/images/chatBridge/chatBridge_3_Discord_bot.png)
+### Step 3: Enable Your Discord Server
+1. Still in Global Settings, find the "Guilds" section
+2. Toggle ON your Discord server (e.g., "Limon's server")
+
+### Step 4: Get Discord Channel ID
+
+1. Go to your Discord server
+2. Right-click on the channel you want to use for the chat bridge
+3. Click **Copy Channel ID** at the bottom of the menu
+    - If you don't see this option, make sure Developer Mode is enabled in Discord settings
+![ChatBridge Settings](../../assets/images/chatBridge/chatBridge_4_DiscordChannelID.png)
+### Step 5: Install and Configure ChatBridge
+
+1. Go to your game server's modules
+2. Find and click "Install" on the ChatBridge module
+3. Configure the settings:
+    
+    #### User Config
+    
+    - **Send Player Connected**: Toggle to announce joins
+    - **Send Player Disconnected**: Toggle to announce leaves
+    - **Only Global Chat**: Toggle to filter private/team chat
+    
+    #### System Config
+    
+    - Enable the module
+    - Set up Hooks:
+        - **DiscordToGame**: Enable and paste your copied Discord Channel ID
+        - **PlayerDisconnected**: Enable to track disconnects
+        - **GameToDiscord**: Enable game-to-Discord chat
+        - **PlayerConnected**: Enable to track connects
+
+![ChatBridge Settings](../../assets/images/chatBridge/chatBridge_5_Module_Channelid.png)
+
+### Step 6: Save Configuration
+
+- Click "Install module" to save all settings

@@ -1,5 +1,5 @@
 import { Card, Chip, Company, styled } from '@takaro/lib-components';
-import { DomainOutputDTO } from '@takaro/apiclient';
+import { DomainOutputDTO, DomainOutputDTOStateEnum } from '@takaro/apiclient';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useUserSetSelectedDomain, userMeQueryOptions } from 'queries/user';
 import { MdDomain as DomainIcon } from 'react-icons/md';
@@ -78,8 +78,12 @@ function DomainCard({ domain, isCurrentDomain }: DomainCardProps) {
   const navigate = useNavigate();
   const { mutate, isSuccess } = useUserSetSelectedDomain();
   const queryClient = useQueryClient();
+  const isDisabled = domain.state === DomainOutputDTOStateEnum.Disabled;
 
   const handleDomainSelectedClick = () => {
+    // Logging into a disabled domain is going to error out
+    if (isDisabled) return;
+
     if (isCurrentDomain === false) {
       mutate({ domainId: domain.id });
     } else {
@@ -99,6 +103,7 @@ function DomainCard({ domain, isCurrentDomain }: DomainCardProps) {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <DomainIcon size={30} />
             {isCurrentDomain && <Chip variant="outline" color="primary" label="current domain" />}
+            {isDisabled && <Chip variant="outline" color="warning" label="disabled" />}
           </div>
           <h2 style={{ display: 'flex', alignItems: 'center' }}>
             {domain.name}

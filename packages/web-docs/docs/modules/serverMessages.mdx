@@ -37,3 +37,106 @@ export function Module() {
 
 ---
 {/* END AUTO-GENERATED CONTENT */}
+
+## Overview
+
+The Server Messages module sends automated messages to players on your server at regular intervals. Messages are broadcast in sequential order from your configured list.
+
+## Configuration
+
+### Basic Setup
+
+1. Install the module from your server's Modules section
+2. Configure at least one message in the messages array
+3. Messages must be between 5 and 1024 characters
+
+### Message Configuration
+
+```json
+{
+  "messages": [
+    "Welcome to our server! Type /help for commands",  // First message
+    "Join our Discord community: discord.gg/example",  // Second message
+    "Vote daily for rewards at /vote",                 // Third message
+    "Check out our shop with /shop"                   // Fourth message, then cycles back to first
+  ]
+}
+```
+
+### Scheduling
+
+- Default: Every 30 minutes (`*/30 * * * *`)
+- Common schedules:
+  ```
+  */30 * * * *    Every 30 minutes
+  0 * * * *       Every hour
+  0 */4 * * *     Every 4 hours
+  0 0 * * *       Daily at midnight
+  0 12 * * *      Daily at noon
+  ```
+
+## How It Works
+
+1. When the cron job triggers (default: every 30 minutes)
+2. The next message in sequence is selected from your list
+3. After reaching the last message, it starts again from the beginning
+4. Example sequence:
+   ```
+   12:00 - First message
+   12:30 - Second message
+   13:00 - Third message
+   13:30 - Fourth message
+   14:00 - First message (cycle repeats)
+   ```
+
+## Best Practices
+
+### Effective Message Examples
+
+**Server Rules & Guidelines (Ordered by Priority)**
+   ```
+	PvP is only allowed in designated zones. Type /pvp for info
+	Protect your base! Use /claim to secure your territory
+	Raiding is allowed, but no griefing. See /rules
+	Be respectful in chat. Toxicity = ban
+   ```
+**Game Tips & Features (Ordered by Progression)**
+   ```
+    New? Type /help to see all commands
+    Ready to trade? Visit /shop for items
+    Want a challenge? Join events with /events
+    Veteran player? Help newbies for rewards!
+   ```
+
+**Community Engagement (Ordered by Importance)**
+   ```
+    Join our Discord for important updates: discord.gg/example
+    Support us by voting at /vote - daily rewards!
+    Follow announcements at @serverName
+    Questions? Our staff team is here to help
+   ```
+
+### Optimization Tips
+
+1. **Message Order**
+   - Arrange messages by priority or logical sequence
+   - Put most important messages first
+   - Group related messages together
+   - Consider time between messages when ordering
+
+2. **Message Categories**
+   - Start with essential information
+   - Follow with gameplay tips
+   - End with community/social messages
+   - Keep consistent themes together
+
+3. **Timing**
+   - Match interval to message count
+   - Consider peak player times
+   - Longer intervals for important messages
+   - Shorter intervals for tips/reminders
+
+4. **Format**
+   - Keep messages concise
+   - Include clear calls to action
+   - Specify commands when relevant

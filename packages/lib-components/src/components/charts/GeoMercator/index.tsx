@@ -1,6 +1,7 @@
 import * as topojson from 'topojson-client';
 import topology from './world.json';
 import { Graticule, Mercator } from '@visx/geo';
+import { scaleLinear } from '@visx/scale';
 import { ParentSize } from '@visx/responsive';
 
 import { getDefaultTooltipStyles, InnerChartProps, Margin } from '../util';
@@ -9,7 +10,6 @@ import { useTooltip, Tooltip } from '@visx/tooltip';
 import { Zoom } from '@visx/zoom';
 import { useCallback } from 'react';
 import { localPoint } from '@visx/event';
-import { shade } from 'polished';
 import { ZoomControls } from '../ZoomControls';
 import { alpha2ToAlpha3 } from './iso3166-alpha2-to-alpha3';
 
@@ -88,6 +88,11 @@ const Chart = <T,>({
   const centerY = height / 2 + 150;
   const scale = (width / 1000) * 100;
 
+  const colorScale = scaleLinear({
+    domain: [Math.min(...data.map((d) => yAccessor(d))), Math.max(...data.map((d) => yAccessor(d)))],
+    range: [theme.colors.backgroundAlt, theme.colors.primary],
+  });
+
   const handleTooltip = useCallback(
     (event: React.TouchEvent<SVGPathElement> | React.MouseEvent<SVGPathElement>, countryData: T | undefined) => {
       const eventSvgCoords = localPoint(event);
@@ -139,13 +144,15 @@ const Chart = <T,>({
                 return xAccessor(d) === feature.id;
               });
 
+              const fillColor = countryData ? colorScale(yAccessor(countryData)) : theme.colors.backgroundAlt;
+
               return (
                 <path
                   key={`map-feature-${i}`}
                   d={path || ''}
-                  stroke={countryData ? theme.colors.primary : theme.colors.backgroundAccent}
-                  strokeWidth={countryData ? 1 : 0.5}
-                  fill={countryData ? shade(0.5, theme.colors.primary) : theme.colors.backgroundAlt}
+                  stroke={theme.colors.backgroundAccent}
+                  strokeWidth={0.35}
+                  fill={fillColor}
                   onMouseLeave={hideTooltip}
                   onMouseMove={(e) => handleTooltip(e, countryData)}
                   onTouchStart={(e) => handleTooltip(e, countryData)}

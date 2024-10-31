@@ -151,7 +151,7 @@ export class UserController {
   }
 
   @Get('/me')
-  @UseBefore(AuthService.getAuthMiddleware([]))
+  @UseBefore(AuthService.getAuthMiddleware([], false))
   @ResponseSchema(MeOutoutDTOAPI)
   @OpenAPI({
     summary: 'Get the current logged in user',
