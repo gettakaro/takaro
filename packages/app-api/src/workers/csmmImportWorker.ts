@@ -234,6 +234,9 @@ async function process(job: Job<ICSMMImportData>) {
   if (job.data.options.shop) {
     for (const listing of data.shopListings) {
       const item = await itemService.find({ filters: { code: [listing.name] } });
+      // CSMM stores quality null as 0...
+      const quality = listing.quality.toString() === '0' ? null : listing.quality;
+
       await shopListingService.create(
         new ShopListingCreateDTO({
           gameServerId: server.id,
@@ -243,7 +246,7 @@ async function process(job: Job<ICSMMImportData>) {
             new ShopListingItemMetaInputDTO({
               amount: listing.amount,
               itemId: item.results[0].id,
-              quality: listing.quality,
+              quality: quality,
             }),
           ],
         }),
