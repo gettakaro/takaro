@@ -99,7 +99,6 @@ export const RelativePicker: FC<RelativePickerProps> = ({ onChange, id, timeDire
         <StyledForm onSubmit={handleSubmit(handleChange)}>
           <InputsContainer>
             <SelectField
-              inPortal
               control={control}
               readOnly={timeDirection !== 'pastAndFuture'}
               name="tense"
@@ -121,7 +120,6 @@ export const RelativePicker: FC<RelativePickerProps> = ({ onChange, id, timeDire
             </SelectField>
             <TextField control={control} type="number" name="step" />
             <SelectField
-              inPortal
               control={control}
               name="unit"
               render={(selectedItems) => (

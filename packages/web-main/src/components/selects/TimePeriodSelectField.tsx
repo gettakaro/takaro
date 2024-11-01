@@ -38,7 +38,6 @@ export const TimePeriodSelectField: FC<TimePeriodSelectProps> = ({
   size,
   loading,
   disabled,
-  inPortal,
   readOnly,
   required,
   description,
@@ -56,7 +55,6 @@ export const TimePeriodSelectField: FC<TimePeriodSelectProps> = ({
       required={required}
       description={description}
       size={size}
-      inPortal={inPortal}
       render={(selectedItems) => {
         if (selectedItems.length === 0) {
           return <div>Select...</div>;

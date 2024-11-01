@@ -99,7 +99,6 @@ export const QuickSelect: FC<QuickSelectProps> = ({ id }) => {
       <StyledForm onSubmit={handleSubmit(onSubmit)}>
         <InputsContainer>
           <SelectField
-            inPortal
             control={control}
             name="tense"
             render={(selectedItems) => (
@@ -120,7 +119,6 @@ export const QuickSelect: FC<QuickSelectProps> = ({ id }) => {
           <TextField control={control} type="number" name="step" />
 
           <SelectField
-            inPortal
             control={control}
             name="unit"
             render={(selectedItems) => (

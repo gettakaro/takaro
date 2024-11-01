@@ -30,7 +30,6 @@ export function SelectWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchem
       readOnly={readonly}
       value={value || defaultValue}
       multiple={multiple}
-      inPortal={true}
       hasDescription={!!schema.description}
       onChange={onChange}
       render={(selectedItems) => {

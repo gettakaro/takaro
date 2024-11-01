@@ -21,7 +21,6 @@ export const RoleSelectQueryField: FC<CustomSelectProps> = ({
   size,
   label = 'Role',
   disabled,
-  inPortal,
   description,
   readOnly,
   canClear,
@@ -65,7 +64,6 @@ export const RoleSelectQueryField: FC<CustomSelectProps> = ({
       description={description}
       size={size}
       disabled={disabled}
-      inPortal={inPortal}
       hint={hint}
       required={required}
       loading={loading}
@@ -95,7 +93,6 @@ export const RoleSelectView: FC<RoleSelectViewProps> = ({
   description,
   size,
   disabled,
-  inPortal,
   hint,
   required,
   canClear,
@@ -118,7 +115,6 @@ export const RoleSelectView: FC<RoleSelectViewProps> = ({
       hint={hint}
       disabled={disabled}
       size={size}
-      inPortal={inPortal}
       description={description}
       required={required}
       loading={loading}

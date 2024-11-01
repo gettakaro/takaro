@@ -26,7 +26,6 @@ export const ControlledSelectQueryField: FC<ControlledSelectQueryFieldProps> & S
     name,
     multiple,
     control,
-    inPortal,
     debounce,
     isLoadingData,
     hasNextPage,
@@ -83,7 +82,6 @@ export const ControlledSelectQueryField: FC<ControlledSelectQueryFieldProps> & S
           multiple={multiple}
           required={required}
           size={componentSize}
-          inPortal={inPortal}
           onChange={field.onChange}
           onBlur={handleOnBlur}
           canClear={canClear}
