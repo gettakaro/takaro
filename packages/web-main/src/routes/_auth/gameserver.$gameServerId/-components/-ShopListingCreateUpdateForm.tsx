@@ -212,7 +212,6 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
                         name={`items.${index}.itemId`}
                         loading={isLoading}
                         readOnly={readOnly}
-                        inPortal
                       />
                       <TextField
                         control={control}

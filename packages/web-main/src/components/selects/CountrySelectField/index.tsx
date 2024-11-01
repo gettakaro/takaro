@@ -23,7 +23,6 @@ export const CountrySelectField: FC<CountrySelectProps> = ({
   size,
   loading,
   disabled,
-  inPortal,
   readOnly,
   canClear = true,
   multiple,
@@ -45,7 +44,6 @@ export const CountrySelectField: FC<CountrySelectProps> = ({
       required={required}
       description={description}
       size={size}
-      inPortal={inPortal}
       render={(selectedItems) => {
         if (selectedItems.length === 0) {
           return <div>{multiple ? 'Select countries' : 'Select country'}</div>;

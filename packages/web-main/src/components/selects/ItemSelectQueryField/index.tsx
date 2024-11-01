@@ -36,7 +36,6 @@ export const ItemSelectQueryField: FC<ItemSelectQueryFieldProps> = ({
   label,
   loading,
   disabled,
-  inPortal,
   readOnly,
   required,
   description,
@@ -87,7 +86,6 @@ export const ItemSelectQueryField: FC<ItemSelectQueryFieldProps> = ({
       description={description}
       size={size}
       disabled={disabled}
-      inPortal={inPortal}
       hint={hint}
       multiple={multiple}
       placeholder={placeholder}
@@ -125,7 +123,6 @@ export const ItemSelectQueryView: FC<ItemSelectQueryViewProps> = ({
   disabled,
   placeholder,
   multiple,
-  inPortal,
   hint,
   required,
   gameServer,
@@ -164,7 +161,6 @@ export const ItemSelectQueryView: FC<ItemSelectQueryViewProps> = ({
       loading={loading}
       isLoadingData={isLoadingData}
       disabled={disabled}
-      inPortal={inPortal}
       readOnly={readOnly}
       required={required}
       multiple={multiple}

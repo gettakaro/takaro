@@ -109,7 +109,6 @@ function Component() {
               description="Shoplistings that will be copied to this game server"
               control={control}
               multiple
-              inPortal
               render={(selectedShopListings) => {
                 if (selectedShopListings.length === 0) {
                   return <p>Select shop listing</p>;

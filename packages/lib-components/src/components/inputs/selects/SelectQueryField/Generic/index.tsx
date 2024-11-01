@@ -16,6 +16,7 @@ import {
   FloatingPortal,
   size,
   useDismiss,
+  flip,
   useFloating,
   useInteractions,
   useRole,
@@ -32,7 +33,7 @@ import { PaginationProps } from '../../../';
 
 /* The SearchField depends on a few things of <Select/> */
 import { GroupLabel } from '../../SelectField/style';
-import { SelectContainer, SelectButton, StyledArrowIcon, StyledFloatingOverlay } from '../../sharedStyle';
+import { SelectContainer, SelectButton, StyledArrowIcon } from '../../sharedStyle';
 import { IconButton, InfiniteScroll, Spinner } from '../../../../../components';
 import { GenericTextField } from '../../../TextField/Generic';
 
@@ -46,8 +47,6 @@ interface SharedSelectQueryFieldProps extends PaginationProps {
   /// Triggered whenever the input value changes.
   /// This is used to trigger the API call to get the new options
   handleInputValueChange?: (value: string) => void;
-  /// render inPortal
-  inPortal?: boolean;
 
   /// When true, The select icon will be replaced by a cross icon to clear the selected value.
   canClear?: boolean;
@@ -100,7 +99,6 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
       id,
       placeholder = 'Search field',
       hasDescription,
-      inPortal = false,
       hasError,
       children,
       readOnly,
@@ -139,13 +137,24 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
       middleware: [
         offset(5),
         size({
-          apply({ rects, elements }) {
+          apply({ availableHeight, elements, availableWidth }) {
+            const refWidth = elements.reference.getBoundingClientRect().width;
+            const floatingContentWidth = elements.floating.scrollWidth;
+
+            const width =
+              availableWidth > refWidth ? `${availableWidth}px` : `${Math.max(refWidth, floatingContentWidth)}px`;
+
             Object.assign(elements.floating.style, {
-              width: `${rects.reference.width}px`,
-              maxHeight: '255px',
+              // Note: we cannot use the rects.reference.width here because if the referenced item is very small compared to the other options, there will be horizontal overflow.
+              // fit-content isn't the perfect solution either, because if there is no space available it might render outside the viewport.
+              width,
+              maxHeight: `${Math.max(150, availableHeight)}px`,
             });
           },
-          padding: 10,
+        }),
+        flip({
+          fallbackStrategy: 'bestFit',
+          fallbackPlacements: ['top', 'bottom'],
         }),
       ],
     });
@@ -312,14 +321,7 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
             <StyledArrowIcon size={16} />
           )}
         </SelectButton>
-        {open &&
-          (!inPortal ? (
-            <StyledFloatingOverlay lockScroll style={{ zIndex: 1000 }}>
-              {renderSelect()}
-            </StyledFloatingOverlay>
-          ) : (
-            <FloatingPortal>{renderSelect()}</FloatingPortal>
-          ))}
+        {open && <FloatingPortal>{renderSelect()}</FloatingPortal>}
       </SelectContext.Provider>
     );
   },

@@ -24,7 +24,6 @@ export const PlayerSelectQueryField: FC<CustomSelectQueryProps> = ({
   label,
   loading,
   disabled,
-  inPortal,
   readOnly,
   required,
   description,
@@ -53,7 +52,6 @@ export const PlayerSelectQueryField: FC<CustomSelectQueryProps> = ({
       description={description}
       size={size}
       disabled={disabled}
-      inPortal={inPortal}
       hint={hint}
       multiple={multiple}
       placeholder={placeholder}
@@ -86,7 +84,6 @@ export const PlayerSelectQueryView: FC<PlayerSelectQueryViewProps> = ({
   disabled,
   placeholder,
   multiple,
-  inPortal,
   hint,
   required,
   loading,
@@ -108,7 +105,6 @@ export const PlayerSelectQueryView: FC<PlayerSelectQueryViewProps> = ({
       loading={loading}
       isLoadingData={isLoadingData}
       disabled={disabled}
-      inPortal={inPortal}
       readOnly={readOnly}
       required={required}
       multiple={multiple}

@@ -15,7 +15,6 @@ export const EventNameSelectField: FC<CustomSelectProps> = ({
   loading,
   description,
   readOnly,
-  inPortal,
   disabled,
   size,
   hint,
@@ -39,7 +38,6 @@ export const EventNameSelectField: FC<CustomSelectProps> = ({
       required={required}
       description={description}
       size={size}
-      inPortal={inPortal}
       render={(selectedItems) => {
         if (selectedItems.length === 0) {
           return <div>select event...</div>;

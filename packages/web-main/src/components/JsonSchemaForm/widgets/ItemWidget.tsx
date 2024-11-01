@@ -154,7 +154,6 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
       hasNextPage={hasNextPage}
       isFetchingNextPage={isFetchingNextPage}
       optionCount={data?.pages[0].meta.total}
-      inPortal={true}
       fetchNextPage={fetchNextPage}
       render={(selectedItems) => {
         return (

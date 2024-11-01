@@ -35,7 +35,6 @@ export const GameServerSelectQueryField: FC<CustomSelectQueryProps & GameServerS
   label = 'Game server',
   control,
   disabled,
-  inPortal,
   description,
   required,
   filters,
@@ -77,7 +76,6 @@ export const GameServerSelectQueryField: FC<CustomSelectQueryProps & GameServerS
       description={description}
       size={size}
       disabled={disabled}
-      inPortal={inPortal}
       hint={hint}
       name={selectName}
       required={required}
@@ -109,7 +107,6 @@ export const GameServerSelectView: FC<GameServerSelectQueryViewProps> = ({
   description,
   size,
   disabled,
-  inPortal,
   hint,
   required,
   loading,
@@ -159,7 +156,6 @@ export const GameServerSelectView: FC<GameServerSelectQueryViewProps> = ({
       description={description}
       size={size}
       disabled={disabled}
-      inPortal={inPortal}
       hint={hint}
       label={label}
       required={required}
