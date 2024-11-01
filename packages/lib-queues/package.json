@@ -1,6 +1,6 @@
 {
   "name": "@takaro/queues",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "description": "An opinionated BullMQ queues handler",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
