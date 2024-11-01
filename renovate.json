@@ -63,6 +63,7 @@
         "prettier",
         "@types",
         "chai",
+        "sinon",
         "mocha"
       ],
       "automerge": true

@@ -1,5 +1,6 @@
 import { BuiltinModule } from './BuiltinModule.js';
 import { ChatBridge } from './modules/chatBridge/index.js';
+import { DailyRewards } from './modules/dailyRewards/index.js';
 import { EconomyUtils } from './modules/economyUtils/index.js';
 import { GeoBlock } from './modules/geoBlock/index.js';
 import { Gimme } from './modules/gimme/index.js';
@@ -30,6 +31,7 @@ export function getModules(): Array<BuiltinModule<unknown>> {
       new Lottery(),
       new GeoBlock(),
       new TimedShutdown(),
+      new DailyRewards(),
     ];
   }
 

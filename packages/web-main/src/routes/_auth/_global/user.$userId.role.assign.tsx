@@ -78,7 +78,7 @@ function Component() {
             <form onSubmit={handleSubmit(onSubmit)} id="assign-user-role-form">
               <CollapseList.Item title="General">
                 <TextField readOnly control={control} name="id" label="User" />
-                <RoleSelectQueryField control={control} name="roleId" label="Role" />
+                <RoleSelectQueryField inPortal control={control} name="roleId" label="Role" />
                 <DatePicker
                   mode="absolute"
                   control={control}

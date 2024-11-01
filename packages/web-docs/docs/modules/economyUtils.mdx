@@ -182,3 +182,149 @@ export function Module() {
 
 ---
 {/* END AUTO-GENERATED CONTENT */}
+
+## Features
+- Balance checking and transfers
+- Administrative currency controls
+- Automated kill rewards
+- Shop integration
+- Currency leaderboard
+
+## Permissions
+
+### ECONOMY_UTILS_MANAGE_CURRENCY
+- Allows granting and revoking currency
+- Typically for admins/moderators
+
+### ZOMBIE_KILL_REWARD_OVERRIDE
+- Overrides default kill reward amount
+- Can set different amounts per role
+- Count value determines reward amount
+
+## Variables
+
+### Currency Related
+- `lastZombieKillReward`
+  - Tracks last reward distribution time
+  - Used by automatic reward system
+  - Scoped to gameserver and module
+
+### Shop Related
+- `lottery_tickets_bought`
+  - Stores ticket quantity
+  - Format: `{ "amount": number }`
+  - Scoped to player, gameserver, and module
+
+### Transfer Related
+- `confirmTransfer`
+  - Stores pending transfer details
+  - Temporary storage for large transfers
+
+## Automatic Rewards
+
+### Kill Rewards System
+- Auto-processes every 5 minutes
+- Awards currency for entity kills
+- Default amount configurable
+- Role-based override example:
+  ```
+  Default Player: 1 coin per kill
+  VIP Role: 3 coins per kill
+  Elite Role: 5 coins per kill
+  ```
+
+### Setting Up Role Rewards
+1. Navigate to Roles
+2. Enable ZOMBIE_KILL_REWARD_OVERRIDE
+3. Set count value for reward amount
+4. Assign role to players
+
+## Commands & Usage Examples
+
+### Basic Currency Commands
+```
+# Check your balance
+/balance
+> balance: 500 coins
+
+# View richest players
+/topcurrency
+> Richest players:
+> 1. PlayerOne - 10000 coins
+> 2. PlayerTwo - 8500 coins
+> [...]
+```
+
+### Transfer System
+```
+# Simple transfer
+/transfer John 100
+> You successfully transferred 100 coins to John
+> (John receives: You received 100 coins from PlayerName)
+
+# Large transfer requiring confirmation
+/transfer Jane 1000
+> You are about to send 1000 coins to Jane. (Please confirm by typing /confirmtransfer)
+/confirmtransfer
+> You successfully transferred 1000 coins to Jane
+```
+
+### Shop System
+```
+# Browse shop
+/shop
+> Available items:
+> 1. Diamond Sword - 500 coins
+> 2. Golden Apple - 100 coins
+> [...]
+
+# View item details
+/shop 1 2
+> Golden Apple - 100 coins
+> Restores health instantly
+> Type '/shop 1 2 buy' to purchase
+
+# Purchase item
+/shop 1 2 buy
+> You have purchased Golden Apple for 100 coins
+
+# Claim purchased items
+/claim
+> Claimed all pending orders: 3 items
+```
+
+### Admin Commands
+```
+# Grant currency
+/grantcurrency PlayerName 500
+> You successfully granted 500 coins to PlayerName
+
+# Remove currency
+/revokecurrency PlayerName 200
+> You successfully revoked 200 coins from PlayerName's balance
+```
+
+
+## Best Practices
+
+### Economy Management
+- Set reasonable transfer confirmation thresholds
+- Monitor currency circulation
+- Adjust reward values based on server activity
+
+### Role Configuration
+- Create clear reward tiers
+- Balance rewards across different roles
+- Consider server economy when setting values
+## Troubleshooting
+1. Transfer Failed
+   - Check sender's balance
+   - Verify player names
+   - Confirm if confirmation needed
+   - Check for pending transfer variable
+
+2. Rewards Not Processing
+   - Verify kill events recording
+   - Check role permissions
+   - Confirm cron job running
+   - Check lastZombieKillReward timestamp

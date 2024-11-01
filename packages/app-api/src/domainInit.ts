@@ -40,7 +40,7 @@ async function main() {
   const results = await Promise.allSettled(domains.results.map(ctx.wrap('domainInit', domainInit)));
   const rejected = results.map((r) => (r.status === 'rejected' ? r.reason : null)).filter(Boolean);
   if (rejected.length) {
-    log.error('Failed to initialize some domains', { errors: rejected });
+    log.error('Failed to initialize some domains', { errors: JSON.stringify(rejected) });
   }
 
   process.exit(0);

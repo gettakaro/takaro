@@ -195,7 +195,7 @@ export class SevenDaysToDie implements IGameServer {
 
   async banPlayer(options: BanDTO) {
     // If no expiresAt is provided, assume 'permanent'. 500 years is pretty long ;)
-    const expiresAt = options.expiresAt ?? '2521-01-01 00:00:00';
+    const expiresAt = options.expiresAt ?? '2521-01-01T00:00:00.000';
 
     const expiresAtDate = DateTime.fromISO(expiresAt);
     const now = DateTime.local();
@@ -258,10 +258,13 @@ export class SevenDaysToDie implements IGameServer {
       if (match) {
         const [, date, gameId, _displayName, reason] = match;
         const expiresAt = date.replace(' ', 'T') + '.000Z'; // Keep the time in its original form
+        // If the saved ban isn't saved with EOS, we cannot resolve to gameId, so skip these.
+        if (!gameId.includes('EOS_')) continue;
         bans.push(
           new BanDTO({
-            player: new IPlayerReferenceDTO({
-              gameId,
+            player: new IGamePlayer({
+              gameId: gameId.replace('EOS_', ''),
+              epicOnlineServicesId: gameId.replace('EOS_', ''),
             }),
             reason,
             expiresAt,

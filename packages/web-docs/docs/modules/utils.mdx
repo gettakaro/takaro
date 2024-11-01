@@ -54,3 +54,49 @@ export function Module() {
 
 ---
 {/* END AUTO-GENERATED CONTENT */}
+
+## Features
+
+### Commands
+
+## 1. Ping Command
+
+- **Trigger**: `/ping`
+- **Description**: A simple command that replies with "Pong!". This command is useful for:
+    - Testing if the server connection is working
+    - Verifying command functionality
+    - Checking player permissions
+    - Basic latency testing
+
+## 2. Help Command
+
+- **Trigger**: `/help [command]`
+- **Description**: Provides information about available commands and their usage
+- **Arguments**:
+    - `command` (optional): The specific command to get help for
+    - Default: Shows all available commands if no specific command is specified
+
+### Usage Examples
+
+
+`/ping > Response: "Pong!" /help > Response: Lists all available commands`
+`/help ping > Response: Shows detailed help for the ping command`
+
+## Technical Details
+
+### Module Configuration
+
+The Utils module has a minimal configuration schema with no required settings, making it simple to deploy and maintain.
+
+### Permissions
+
+The Utils module's commands are typically available to all players by default, as they provide essential functionality for server interaction.
+
+## Best Practices
+
+1. **Server Setup**
+    - Install the Utils module first when setting up a new server
+    - Keep it enabled to ensure players can always access basic commands
+3. **Troubleshooting**
+    - Use the ping command as a first step in diagnosing connection issues
+    - Refer players to the help command when they're unsure about command usage

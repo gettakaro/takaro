@@ -42,3 +42,76 @@ export function Module() {
 
 ---
 {/* END AUTO-GENERATED CONTENT */}
+
+The Timed Shutdown module provides automated server shutdown functionality with configurable warning messages to players. This guide explains how to configure and use the module effectively.
+
+## Overview
+
+The Timed Shutdown module performs two main functions:
+
+1. Sends a warning message to all players before shutdown
+2. Automatically shuts down the server at a specified time
+
+## Configuration
+
+### Warning Message
+
+- **Setting**: `warningMessage`
+- **Default**: "Server is shutting down in 5 minutes!"
+- **Description**: The message that will be broadcast to all players 5 minutes before shutdown
+- **Length Limits**: 1-1024 characters
+
+### Timing
+
+The module operates by default on a fixed schedule:
+
+- **Warning Time**: 3:25 AM (server time)
+- **Shutdown Time**: 3:30 AM (server time)
+
+These times are set using cron expressions:
+
+- Warning message: `3 25 * * *`
+- Server shutdown: `3 30 * * *`
+
+You can change the cron jobs to your liking.
+
+## Installation Steps
+
+1. Navigate to your game server's Modules section
+2. Click "Install New Module"
+3. Search for "timedShutdown"
+4. Configure your warning message
+5. Click Install
+
+## Best Practices
+
+### Warning Message Format
+
+Consider including:
+
+- Specific time remaining until shutdown
+- Reason for shutdown (e.g., maintenance, daily restart)
+- When the server will be back online
+
+Example message:
+
+`Server is shutting down in 5 minutes for daily maintenance. We'll be back online in ~10 minutes. Please find a safe spot!`
+
+### Server Time Considerations
+
+- Ensure your server's time zone is correctly set
+- Choose shutdown times during low-activity periods
+- Account for regular maintenance windows
+
+## Troublesh ooting
+
+Common issues and solutions:
+
+1. **Shutdown not occurring**
+    - Verify server time matches expected shutdown time
+    - Check module installation status
+    - Review server logs for errors
+2. **Warning message not displaying**
+    - Confirm message is properly configured
+    - Check chat/message system functionality
+    - Verify module permissions

@@ -183,7 +183,108 @@ export function Module() {
 ---
 {/* END AUTO-GENERATED CONTENT */}
 
-# How to add teleports module to your game server
+## Features
+
+- Personal teleport points
+- Public/private teleport management
+- Waypoint system
+- Configurable cooldowns
+- Permission-based access control
+
+## Configuration Options
+
+When installing the module, administrators can configure:
+
+- **Timeout**: The cooldown period between teleports (in seconds)
+- **Allow Public Teleports**: Toggle whether players can create public teleport points
+- **Command Costs**: Set currency costs for teleport commands
+
+## Permissions System
+
+### Core Permissions
+
+1. **Use Teleports** (`TELEPORTS_USE`)
+    - Allows basic teleport functionality
+    - Can be configured with a count limit
+    - Required for using `/tp` and `/tplist` commands
+2. **Create Public Teleports** (`TELEPORTS_CREATE_PUBLIC`)
+    - Allows creation of public teleport points
+    - Can be configured with a count limit
+    - Required for `/setpublic` command
+3. **Manage Waypoints** (`TELEPORTS_MANAGE_WAYPOINTS`)
+    - Administrative permission for waypoint management
+    - Required for `/setwaypoint` and `/deletewaypoint` commands
+    - No count limit applicable
+
+### Setting Up Role Permissions
+
+## Basic Player Access
+
+1. Edit the default "Player" role
+2. Enable "Use Teleports" permission
+3. Set maximum number of teleports (recommended: 3-5)
+4. Save changes
+
+## VIP/Donor Setup
+
+1. Create a new role (e.g., "VIP")
+2. Enable both "Use Teleports" and "Create Public Teleports"
+3. Set higher teleport limits (recommended: 10-15)
+4. Assign to VIP players
+
+## Admin Configuration
+
+1. Edit admin role or create dedicated teleport admin role
+2. Enable all teleport permissions
+3. Enable "Manage Waypoints" permission
+4. No need to set count limits
+
+## Command examples
+
+| Command                  | Description                        | Example                 |
+| ------------------------ | ---------------------------------- | ----------------------- |
+| `/tp <location>`         | Teleport to a saved location       | `/tp home`              |
+| `/tplist`                | List all available teleport points | `/tplist`               |
+| `/settp <name>`          | Create a new teleport point        | `/settp base`           |
+| `/deletetp <name>`       | Remove a teleport point            | `/deletetp base`        |
+| `/setpublic <name>`      | Make a teleport point public       | `/setpublic shop`       |
+| `/setprivate <name>`     | Make a teleport point private      | `/setprivate base`      |
+| `/setwaypoint <name>`    | Create a waypoint (admin only)     | `/setwaypoint spawn`    |
+| `/deletewaypoint <name>` | Delete a waypoint (admin only)     | `/deletewaypoint spawn` |
+| `/waypoints`             | List all available waypoints       | `/waypoints`            |
+|                          |                                    |                         |
+
+
+## Best Practices
+
+1. **Permission Hierarchy**
+    - Start with basic permissions for all players
+    - Add additional capabilities for trusted/VIP players
+    - Reserve waypoint management for administrators
+2. **Teleport Limits**
+    - Set reasonable limits based on server size
+    - Consider increasing limits for loyal players
+    - Monitor usage patterns and adjust as needed
+3. **Public Teleports**
+    - Consider restricting public teleport creation to trusted players
+    - Monitor public teleport locations for abuse
+    - Use waypoints for essential server locations
+
+## Troubleshooting
+
+- If players cannot teleport, check their permission setup
+- Verify timeout settings if teleports seem unresponsive
+- Check currency requirements if teleports fail
+- Ensure waypoint permissions are properly configured for administrators
+
+## Security Considerations
+
+- Regularly review public teleport locations
+- Monitor for teleport abuse or exploitation
+- Consider implementing stricter timeout periods in PvP areas
+- Use waypoints instead of public teleports for crucial locations like traders
+
+## How to add teleports module to your game server
 
 This guide walks you through the process of integrating the Teleports module into your game servers. You'll learn how to set up teleport permissions for different player roles, create custom teleport roles for enhanced privileges, and manage teleport-related features effectively.
 
@@ -196,85 +297,85 @@ This guide walks you through the process of integrating the Teleports module int
   allowFullScreen
 />
 
-## Install the module to your game server
+### step-by-step guide to install the module to your game server
 
-### Step 1: Navigate to game servers
+#### Step 1: Navigate to game servers
 
 ![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrki4hl00e8356vnaco8xn0-annotated.png)
 
-### Step 2: Select the game server you want the module to be installed on
+#### Step 2: Select the game server you want the module to be installed on
 
 ![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrf44cb002d356vzrgud1i3-annotated.png)
 
-### Step 3: Navigate to Modules of the selected game server
+#### Step 3: Navigate to Modules of the selected game server
 
 ![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyr6qier0009356vyv6luu30-annotated.png)
 
-### Step 4: Click the install button
+#### Step 4: Click the install button
 
 ![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrkmfi000eb356vgb4jcsjl-annotated.png)
 
-### Step 5: This opens the module config
+#### Step 5: This opens the module config
 
 You will see a list of settings that you can configure. You will also find the list of commands that are part of this module. $tplist - Lists all your set locations.
 
 ![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrfgxmx0030356vcsdn6949-annotated.png)
 
-### Step 6: $teleportwaypoint command
+#### Step 6: $teleportwaypoint command
 
 The module will install aliases for this command corresponding to the waypoint names. The $teleportwaypoint command is a base command that won't be used directly. Instead, the module will create custom commands for each waypoint name you set up. This allows players to teleport to specific locations easily.
 
 ![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrfh0ch0031356veuthxwdw-annotated.png)
 
-### Step 7: Select the amount of currency one teleport command costs
+#### Step 7: Select the amount of currency one teleport command costs
 
 $teleport command teleports you to one of your set locations.
 
 ![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrkn7bf00ee356vec8w2jac-annotated.png)
 
-### Step 8: $setwaypoint creates a new waypoint
+#### Step 8: $setwaypoint creates a new waypoint
 
 ![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrfh2zj0032356vxpdnfcao-annotated.png)
 
-### Step 9: $settp sets a location to teleport to
+#### Step 9: $settp sets a location to teleport to
 
 ![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrfh6ci0033356v20yp6mlv-annotated.png)
 
-### Step 10: $setpublic sets a teleport to be public, allowing other players to teleport to it
+#### Step 10: $setpublic sets a teleport to be public, allowing other players to teleport to it
 
 ![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrfflru002w356vejuvlnyy-annotated.png)
 
-### Step 11: $setprivate sets a teleport to be private, only the teleport owner can teleport to it
+#### Step 11: $setprivate sets a teleport to be private, only the teleport owner can teleport to it
 
 ![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrfhf6t0034356v8zo9l6ei-annotated.png)
 
-### Step 12: $listwaypoints lists all waypoints
+#### Step 12: $listwaypoints lists all waypoints
 
 ![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrffrkd002y356vehfrrtgl-annotated.png)
 
-### Step 13: $deletewaypoint deletes a waypoint
+#### Step 13: $deletewaypoint deletes a waypoint
 
 ![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrfhzvi0037356vdm1sez5x-annotated.png)
 
-### Step 14: Click Install module button when you are finished with the config
+#### Step 14: Click Install module button when you are finished with the config
 
 ![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrkndxi00ef356vjx98hsqg-annotated.png)
 
-## Assign the permission to the right role
+### Assign the permission to the right role
 
-### Step 15: Now you need to assign the permission to the right role
+#### Step 15: Now you need to assign the permission to the right role
 
 Now that you've installed the Teleports module, the next step is to set up the appropriate permissions. Navigate to the "Roles" section in the global navigation to begin assigning teleport-related permissions to player roles.
 
 ![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrenji3001q356vs5b8uta8-annotated.png)
 
-### Step 16: Now you need to assign the permission to the right role
+#### Step 16: Now you need to assign the permission to the right role
 
 You can decide to add this permission to the standard Player role, or you can create a new role dedicated for teleports. In this guide, we are going to do both. We will first start with the Player role. The Player role is the role that all players will have when they join your game server.
 
 ![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrejj8w0011356vg8t94k5p-annotated.png)
 
-### Step 17: Teleports Module Permissions Overview
+#### Step 17: Teleports Module Permissions Overview
 
 Create Public Teleports: Allows players to create teleport points accessible to others. Use Teleports: Enables players to use existing teleport points. Manage Waypoints: Permits creating, modifying, and deleting personal or shared waypoints.
 
@@ -284,55 +385,55 @@ Toggle the switch to the right (on position). Set a cost in the "Amount" field i
 
 ![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyre55ge000x356vqh7cq87h-annotated.png)
 
-### Step 18: Click Save changes button
+#### Step 18: Click Save changes button
 
 ![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrknird00eg356vsmu74np2-annotated.png)
 
-### Step 19: Add a custom role for Teleports
+#### Step 19: Add a custom role for Teleports
 
 Creating a dedicated teleport role allows for more flexible permission management. This is useful when you want to give enhanced teleport capabilities to certain players without changing permissions for all users.
 
 ![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrknlij00eh356v8bmmu32u-annotated.png)
 
-### Step 20: Give your new role a recognizable name
+#### Step 20: Give your new role a recognizable name
 
 ![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrew0c9001v356v6qdqb47a-annotated.png)
 
-### Step 21: Configure teleport permissions for the new role
+#### Step 21: Configure teleport permissions for the new role
 
 You'll see the same options as in Step 17: Create Public Teleports Use Teleports Manage Waypoints
 
 ![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyreielj0010356vdutepys1-annotated.png)
 
-## Assign the role to the right player
+### Assign the role to the right player
 
-### Step 22: Go to Players to assign the right role
+#### Step 22: Go to Players to assign the right role
 
 ![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrknq0d00ei356vbuve02c5-annotated.png)
 
-### Step 23: Navigate to the player you want to assign the special role to
+#### Step 23: Navigate to the player you want to assign the special role to
 
 ![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrepqj1001u356v5fepto4w-annotated.png)
 
-### Step 24: Click Assign role button
+#### Step 24: Click Assign role button
 
 ![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrf8n5a002e356vmyn5b9ee-annotated.png)
 
-### Step 25: Select the right role
+#### Step 25: Select the right role
 
 ![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrknuo400ej356vbbjkv8uh-annotated.png)
 
-### Step 26: Choose extra teleports from the list
+#### Step 26: Choose extra teleports from the list
 
 ![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrf8wcs002f356vacwkzk01-annotated.png)
 
-### Step 27: Choose your preferred game server
+#### Step 27: Choose your preferred game server
 
 Choose to activate the teleport role on individual game servers or globally across all servers, allowing flexible permission management based on your game's structure and needs.
 
 ![](https://layerpath-recording-prod.s3-accelerate.amazonaws.com/clyr0pthc0008ju0cpgk6zvy7/clyr4po6b0065l90ch2iwjbq3/clyrfj6jk0039356vwo9846tm-annotated.png)
 
-### Step 28: Click Save changes button
+#### Step 28: Click Save changes button
 
 You made it to the end!
 

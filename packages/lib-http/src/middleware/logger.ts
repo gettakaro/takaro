@@ -10,7 +10,7 @@ const log = logger('http');
  * This middleware is called very early in the request lifecycle, so it's
  * we leverage this fact to inject the context tracking at this stage
  */
-export const LoggingMiddleware = ctx.wrap('HTTP', loggingMiddleware);
+export const LoggingMiddleware = ctx.wrap('HTTP', loggingMiddleware) as typeof loggingMiddleware;
 
 async function loggingMiddleware(req: Request, res: Response, next: NextFunction) {
   if (HIDDEN_ROUTES.some((route) => req.originalUrl.startsWith(route))) {
