@@ -10,6 +10,7 @@ import { useSnackbar } from 'notistack';
 import { hasPermission, useHasPermission } from 'hooks/useHasPermission';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { userMeQueryOptions } from 'queries/user';
+import { useQuery } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/_global/settings/gameservers')({
   beforeLoad: async ({ context }) => {
@@ -68,7 +69,7 @@ function Component() {
   const { mutateAsync: setGlobalSetting, isPending } = useSetGlobalSetting();
   const hasPermission = useHasPermission([PERMISSIONS.ManageSettings]);
   const readOnly = !hasPermission;
-  const data = Route.useLoaderData();
+  const { data } = useQuery({ ...globalGameServerSettingsQueryOptions(), initialData: Route.useLoaderData() });
 
   const validationSchema = useMemo(() => {
     if (data) {
