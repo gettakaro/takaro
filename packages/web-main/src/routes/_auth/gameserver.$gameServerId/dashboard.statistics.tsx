@@ -1,4 +1,13 @@
-import { LineChart, Card, styled, Loading, QuestionTooltip, GeoMercator, Chip } from '@takaro/lib-components';
+import {
+  LineChart,
+  Card,
+  styled,
+  Loading,
+  QuestionTooltip,
+  GeoMercator,
+  Chip,
+  AreaChart,
+} from '@takaro/lib-components';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { DateTime } from 'luxon';
@@ -7,6 +16,7 @@ import {
   LatencyStatsQueryOptions,
   EventsCountQueryOptions,
   CountriesStatsQueryOptions,
+  CurrencyStatsQueryOptions,
 } from 'queries/stats';
 import { useMemo } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
@@ -15,11 +25,11 @@ import { EventsCountInputDTOEventNameEnum } from '@takaro/apiclient';
 
 const Container = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 2fr 1fr;
+  align-items: stretch;
   flex-wrap: wrap;
   height: 100%;
   width: 100%;
-  grid-template-rows: 500px;
   gap: ${({ theme }) => theme.spacing[2]};
 `;
 
@@ -68,6 +78,7 @@ function Component() {
     return { startDate, now };
   }, [selectedPeriod]);
 
+  const { data: currencyInRotationData } = useQuery(CurrencyStatsQueryOptions(gameServerId));
   const { data: countryStats } = useQuery(CountriesStatsQueryOptions({ gameServerId }));
   const { data: playersOnlineData } = useQuery(PlayersOnlineStatsQueryOptions(gameServerId, startDate, now));
   const { data: latencyData } = useQuery(LatencyStatsQueryOptions(gameServerId, startDate, now));
@@ -82,7 +93,7 @@ function Component() {
     }),
   );
 
-  if (!playersOnlineData || !latencyData || !chatMessagesData || !countryStats) {
+  if (!playersOnlineData || !latencyData || !chatMessagesData || !countryStats || !currencyInRotationData) {
     return <Loading />;
   }
   return (
@@ -92,13 +103,13 @@ function Component() {
       </div>
       <Container>
         <Card variant="outline">
-          <Card.Title label="Players online">
-            <QuestionTooltip>Number of players online on the server</QuestionTooltip>
+          <Card.Title label="Latency">
+            <QuestionTooltip>Roundtrip time between Takaro and your server in ms</QuestionTooltip>
           </Card.Title>
           <div style={{ position: 'relative', height: '425px' }}>
             <LineChart
-              name="Players online"
-              data={playersOnlineData.values}
+              name="Latency"
+              data={latencyData.values}
               xAccessor={(d) => new Date(d[0] * 1000)}
               yAccessor={(d) => d[1]}
               curveType="curveStep"
@@ -107,13 +118,13 @@ function Component() {
         </Card>
 
         <Card variant="outline">
-          <Card.Title label="Latency">
-            <QuestionTooltip>Roundtrip time between Takaro and your server in ms</QuestionTooltip>
+          <Card.Title label="Players online">
+            <QuestionTooltip>Number of players online on the server</QuestionTooltip>
           </Card.Title>
           <div style={{ position: 'relative', height: '425px' }}>
             <LineChart
-              name="Latency"
-              data={latencyData.values}
+              name="Players online"
+              data={playersOnlineData.values}
               xAccessor={(d) => new Date(d[0] * 1000)}
               yAccessor={(d) => d[1]}
               curveType="curveStep"
@@ -135,7 +146,7 @@ function Component() {
           />
         </StatCard>
         */}
-        <Card variant="outline" style={{ gridColumn: '1 / 3' }}>
+        <Card variant="outline">
           <Card.Title label="Player Demographics">
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <Chip variant="outline" color="warning" label="Beta" />
@@ -152,6 +163,21 @@ function Component() {
                 data={countryStats}
                 allowZoomAndDrag={false}
                 showZoomControls={false}
+              />
+            </div>
+          </Card.Body>
+        </Card>
+
+        <Card variant="outline">
+          <Card.Title label="Currency in rotation"></Card.Title>
+          <Card.Body>
+            <div style={{ width: '100%', height: '500px' }}>
+              <AreaChart
+                name="currency rotation"
+                data={currencyInRotationData.values}
+                xAccessor={(d) => new Date(d[0] * 1000)}
+                yAccessor={(d) => d[1]}
+                showBrush={false}
               />
             </div>
           </Card.Body>
