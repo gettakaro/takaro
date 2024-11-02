@@ -16,7 +16,7 @@ import {
   useTableActions,
 } from '@takaro/lib-components';
 import { useQuery } from '@tanstack/react-query';
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import { createColumnHelper, Row } from '@tanstack/react-table';
 import { shopListingsQueryOptions } from 'queries/shopListing';
 import { useHasPermission } from 'hooks/useHasPermission';
@@ -46,6 +46,7 @@ const ShopListingBuyFormContainer = styled.div`
 
 export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, gameServerType, currency }) => {
   const hasPermission = useHasPermission(['MANAGE_SHOP_LISTINGS']);
+  const [quickSearchInput, setQuickSearchInput] = useState<string>('');
 
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<ShopListingOutputDTO>({ pageSize: 25 });
   const { data, isLoading } = useQuery(
@@ -61,7 +62,12 @@ export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, g
         name: columnFilters.columnFiltersState.find((filter) => filter.id === 'name')?.value,
         gameServerId: [gameServerId],
       },
-      search: {},
+      search: {
+        name: [
+          ...(columnFilters.columnFiltersState.find((filter) => filter.id === 'name')?.value ?? []),
+          quickSearchInput,
+        ],
+      },
     }),
   );
 
@@ -83,6 +89,10 @@ export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, g
       header: 'Status',
       id: 'draft',
       cell: (info) => (info.getValue() ? <Chip color="primary" label="Draft" /> : 'Available'),
+      enableColumnFilter: false,
+      meta: {
+        dataType: 'boolean',
+      },
     }),
     columnHelper.accessor('items', {
       header: 'Amount of items',
@@ -97,6 +107,9 @@ export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, g
           {info.getValue()} {currencyName}
         </strong>
       ),
+      meta: {
+        dataType: 'number',
+      },
     }),
 
     columnHelper.accessor('createdAt', {
@@ -197,6 +210,8 @@ export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, g
       title="Shop"
       id="shop-table"
       columns={columnDefs}
+      searchInputPlaceholder="Search shop listing by name"
+      onSearchInputChanged={setQuickSearchInput}
       data={data?.data as ShopListingOutputDTO[]}
       pagination={p}
       columnFiltering={columnFilters}

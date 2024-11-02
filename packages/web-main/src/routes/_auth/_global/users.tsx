@@ -19,7 +19,7 @@ import { useUserRemove, useInviteUser, usersQueryOptions, userMeQueryOptions } f
 import { UserOutputWithRolesDTO, UserSearchInputDTOSortDirectionEnum, PERMISSIONS } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
 import {
-  AiOutlinePlus as PlusIcon,
+  AiOutlineSolution as InviteUserIcon,
   AiOutlineDelete as DeleteIcon,
   AiOutlineUser as ProfileIcon,
   AiOutlineEdit as EditIcon,
@@ -45,6 +45,7 @@ export const Route = createFileRoute('/_auth/_global/users')({
 function Component() {
   useDocumentTitle('Users');
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<UserOutputWithRolesDTO>();
+  const [quickSearchInput, setQuickSearchInput] = useState<string>('');
 
   const { data, isLoading } = useQuery({
     ...usersQueryOptions({
@@ -60,7 +61,10 @@ function Component() {
         playerId: columnFilters.columnFiltersState.find((filter) => filter.id === 'playerId')?.value,
       },
       search: {
-        name: columnSearch.columnSearchState.find((search) => search.id === 'name')?.value,
+        name: [
+          ...(columnSearch.columnSearchState.find((search) => search.id === 'name')?.value ?? []),
+          quickSearchInput,
+        ],
         discordId: columnSearch.columnSearchState.find((search) => search.id === 'discordId')?.value,
         playerId: columnSearch.columnSearchState.find((search) => search.id === 'playerId')?.value,
       },
@@ -152,6 +156,8 @@ function Component() {
       columnFiltering={columnFilters}
       columnSearch={columnSearch}
       sorting={sorting}
+      onSearchInputChanged={setQuickSearchInput}
+      searchInputPlaceholder="Search by user name..."
     />
   );
 }
@@ -193,7 +199,7 @@ const InviteUser: FC = () => {
       <Button
         onClick={() => setOpen(true)}
         text="Invite user"
-        icon={<PlusIcon />}
+        icon={<InviteUserIcon />}
         disabled={!hasManageUsersPermission}
       />
       <Dialog open={open} onOpenChange={setOpen}>
