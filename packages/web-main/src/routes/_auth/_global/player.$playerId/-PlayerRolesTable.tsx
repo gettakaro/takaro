@@ -74,7 +74,7 @@ export const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId, 
       header: 'Gameserver',
       id: 'gameServerId',
       cell: (info) => {
-        const gameServer = gameServers.find((server) => server.id === info.getValue());
+        const gameServer = gameServers.data.find((server) => server.id === info.getValue());
         return gameServer?.name;
       },
       enableColumnFilter: true,

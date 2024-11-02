@@ -12,6 +12,7 @@ import {
   DateFormatter,
   CopyId,
   useTheme,
+  Tooltip,
 } from '@takaro/lib-components';
 
 import { Player } from 'components/Player';
@@ -88,9 +89,14 @@ function Component() {
       cell: (info) => {
         const user = info.row.original;
         return (
-          <Link to="/user/$userId" params={{ userId: user.id }}>
-            {info.getValue()}
-          </Link>
+          <Tooltip placement="right">
+            <Tooltip.Trigger asChild>
+              <Link className="underline" to="/user/$userId" params={{ userId: user.id }}>
+                {info.getValue()}
+              </Link>
+            </Tooltip.Trigger>
+            <Tooltip.Content>Open user profile</Tooltip.Content>
+          </Tooltip>
         );
       },
     }),
