@@ -14,9 +14,6 @@ test('Can create gameserver', async ({ page, takaro }) => {
   const hostInput = page.getByPlaceholder('Http://127.0.0.1:3002');
   await hostInput.click();
   await hostInput.fill(integrationConfig.get('mockGameserver.host'));
-
-  // test connection
-  await GameServersPage.clickTestConnection();
   await GameServersPage.clickSave();
 
   await expect(page.getByRole('heading', { name: serverName })).toBeVisible();
@@ -32,7 +29,6 @@ test('Should show error when creating a gameserver with name that already exists
   const hostInputs1 = page.getByPlaceholder('Http://127.0.0.1:3002');
   await hostInputs1.click();
   await hostInputs1.fill(integrationConfig.get('mockGameserver.host'));
-  await GameServersPage.clickTestConnection();
   await GameServersPage.clickSave();
   await expect(page.getByRole('heading', { name: serverName })).toBeVisible();
 
@@ -42,7 +38,6 @@ test('Should show error when creating a gameserver with name that already exists
   const hostInputs2 = page.getByPlaceholder('Http://127.0.0.1:3002');
   await hostInputs2.click();
   await hostInputs2.fill(integrationConfig.get('mockGameserver.host'));
-  await GameServersPage.clickTestConnection();
   await GameServersPage.clickSave();
   await expect(page.getByText('Game server with this name already exists')).toBeVisible();
 });
@@ -58,14 +53,12 @@ test('Should show error when updating a gameserver with name that already exists
   const hostInputs1 = page.getByPlaceholder('Http://127.0.0.1:3002');
   await hostInputs1.click();
   await hostInputs1.fill(integrationConfig.get('mockGameserver.host'));
-  await GameServersPage.clickTestConnection();
   await GameServersPage.clickSave();
   await expect(page.getByRole('heading', { name: serverName })).toBeVisible();
 
   // this will edit the first server and try to set the name to the same as the second server
   await GameServersPage.action('Edit');
   await GameServersPage.nameCreateEdit(serverName);
-  await GameServersPage.clickTestConnection();
   await GameServersPage.clickSave();
   await expect(page.getByText('Game server with this name already exists')).toBeVisible();
 });
@@ -82,7 +75,6 @@ test('Can edit gameserver', async ({ page, takaro }) => {
 
   const newGameServerName = 'My edited mock server';
   await GameServersPage.nameCreateEdit(newGameServerName);
-  await GameServersPage.clickTestConnection();
   await GameServersPage.clickSave();
   await expect(page.getByText(newGameServerName)).toBeVisible();
 });

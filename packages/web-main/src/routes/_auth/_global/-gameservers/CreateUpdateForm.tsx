@@ -11,12 +11,7 @@ import {
 } from '@takaro/lib-components';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { IFormInputs, validationSchema } from './validationSchema';
-import {
-  GameServerOutputDTO,
-  GameServerTestReachabilityInputDTOTypeEnum,
-  GameServerCreateDTOTypeEnum,
-} from '@takaro/apiclient';
-import { useGameServerReachabilityByConfig } from 'queries/gameserver';
+import { GameServerOutputDTO, GameServerCreateDTOTypeEnum } from '@takaro/apiclient';
 import { connectionInfoFieldsMap } from './connectionInfoFieldsMap';
 import { useNavigate } from '@tanstack/react-router';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -51,9 +46,6 @@ const ButtonContainer = styled.div`
 
 export const CreateUpdateForm: FC<CreateUpdateFormProps> = ({ initialData, isLoading = false, onSubmit, error }) => {
   const [open, setOpen] = useState(true);
-  const [connectionOk, setConnectionOk] = useState<boolean>(false);
-  const [connectionError, setConnectionError] = useState<string | null>(null);
-  const { mutateAsync: testReachabilityMutation, isPending: testingConnection } = useGameServerReachabilityByConfig();
   const navigate = useNavigate();
 
   const { control, handleSubmit, watch, trigger, formState } = useForm<IFormInputs>({
@@ -74,27 +66,13 @@ export const CreateUpdateForm: FC<CreateUpdateFormProps> = ({ initialData, isLoa
     }),
   });
 
-  const { type, connectionInfo, enabled } = watch();
+  const { type } = watch();
 
   useEffect(() => {
     if (!open) {
       navigate({ to: '/gameservers' });
     }
   }, [open]);
-
-  const clickTestReachability = async () => {
-    const response = await testReachabilityMutation({
-      type: type as GameServerTestReachabilityInputDTOTypeEnum,
-      connectionInfo: JSON.stringify(connectionInfo),
-    });
-
-    if (response.connectable) {
-      setConnectionOk(true);
-      setConnectionError(null);
-    } else {
-      setConnectionError(response.reason || 'Connection error');
-    }
-  };
 
   const formId = 'gameserver-form';
   return (
@@ -150,22 +128,12 @@ export const CreateUpdateForm: FC<CreateUpdateFormProps> = ({ initialData, isLoa
               </CollapseList.Item>
             </form>
           </CollapseList>
-          {connectionError && <FormError error={connectionError} />}
           {error && <FormError error={error} />}
         </Drawer.Body>
         <Drawer.Footer>
           <ButtonContainer>
             <Button text="Cancel" onClick={() => setOpen(false)} color="background" type="button" />
-            <Button
-              fullWidth
-              disabled={!formState.isValid}
-              isLoading={testingConnection}
-              onClick={clickTestReachability}
-              text="Test connection"
-            />
-            {(connectionOk || !enabled) && (
-              <Button type="submit" fullWidth onClick={() => trigger()} text="Save changes" form={formId} />
-            )}
+            <Button type="submit" fullWidth onClick={() => trigger()} text="Save changes" form={formId} />
           </ButtonContainer>
         </Drawer.Footer>
       </Drawer.Content>
