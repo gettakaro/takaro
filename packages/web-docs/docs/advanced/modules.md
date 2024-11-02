@@ -36,43 +36,43 @@ Arguments can have different types, such as `string`, `number`, `boolean` and `p
 
 The `player` type is a special type that allows you to pass a player as an argument. This is useful for commands that require a player to be passed, such as `/kick John Doe`. The `player` type can be a partial name, so `/kick John` would also work. It also supports case insensitivity, so `/kick john` would also work. You can also pass IDs to be most precise. If multiple players match the name, the user will get an error message.
 
-# Configuration
+## Configuration
 
-Every Module can have a certain configuration which can be created using configuration fields.
-Configuration fields enable the creation of more versatile and reusable modules by providing a way to dynamically customize certain parts of a module.
-These fields offer the flexibility to adjust module functionalities according to specific needs.
+Takaro modules have two types of configuration:
 
-For instance:
+### User Configuration
 
-- The Geo block module includes a configuration field named `countryList`. This field allows you to specify which countries should be blocked form accessing.
-  By making the country list a configuration field you can dynamically adjust the list for each server you install the module on.
+User configuration (`userConfig`) is what you define for your module. These are settings that server owners can adjust through the Takaro dashboard. Examples might include:
 
-- The gimme module features an `itemList` configuration field. This enables the creation of a customizable list of items that can be awarded to players.
-  This means the item module remains game agnostic as the module itself has no static list.
+- Welcome messages
+- Maximum allowed items
+- Feature toggles
+- Custom thresholds
 
-### Example
+Access user configuration like this:
 
-The configuration fields are accessible in the module's code to customize the behavior of the hooks, cronjobs, and commands.
-As a contrived example, a config like the following exists:
-
-```json
-{
-  "extraMessage": "Don't forget to read the rules :)"
-}
-```
-
-And a Hook on the event `playerConnected`, which fires whenever a Player connects to the Gameserver. The Function code:
-
-```js
-import { getTakaro } from '@takaro/helpers';
+```javascript
+import { takaro, data } from '@takaro/helpers';
 
 async function main() {
-  await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
-    message: `Welcome to the server, ${data.player.name}. ${data.module.userConfig.extraMessage}`,
-  });
+  const { module: mod } = data;
+
+  // Access your custom config values
+  const welcomeMessage = mod.userConfig.welcomeMessage;
+  const maxItems = mod.userConfig.maxItems;
+  const isFeatureEnabled = mod.userConfig.enableAdvancedFeatures;
 }
 
-main();
+await main();
 ```
 
-Would result in a message in-game saying `Welcome to the server, John Doe! Don't forget to read the rules :)`
+### System Configuration
+
+System configuration (`systemConfig`) is automatically managed by Takaro and includes settings that apply to all module components. You don't need to handle these in your code - Takaro takes care of applying them automatically. Examples include:
+
+- Command costs
+- Command cooldowns
+- Hook filters
+- Channel IDs for Discord integrations
+
+The key difference is that you control userConfig through your module's configuration schema, while systemConfig is managed by Takaro itself.
