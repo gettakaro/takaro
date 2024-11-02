@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { useMemo } from 'react';
-import { Stats, styled, LineChart, Card } from '@takaro/lib-components';
+import { Stats, styled, LineChart, Card, GeoMercator, QuestionTooltip, Chip } from '@takaro/lib-components';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { eventsFailedFunctionsQueryOptions, eventsQueryOptions } from 'queries/event';
 import { DateTime } from 'luxon';
@@ -8,7 +8,7 @@ import { useForm, useWatch } from 'react-hook-form';
 import { TimePeriodSelectField } from 'components/selects';
 import { useQuery } from '@tanstack/react-query';
 import { hasPermission } from 'hooks/useHasPermission';
-import { PlayersOnlineStatsQueryOptions, ActivityStatsQueryOptions } from 'queries/stats';
+import { PlayersOnlineStatsQueryOptions, ActivityStatsQueryOptions, CountriesStatsQueryOptions } from 'queries/stats';
 import { EventFeed, EventItem } from 'components/events/EventFeed';
 import { PERMISSIONS } from '@takaro/apiclient';
 import { userMeQueryOptions } from 'queries/user';
@@ -21,7 +21,11 @@ export const Route = createFileRoute('/_auth/_global/dashboard')({
     }
   },
   loader: async ({ context }) => {
-    return context.queryClient.ensureQueryData(PlayersOnlineStatsQueryOptions());
+    const [playerOnlineStats, countriesStats] = await Promise.all([
+      context.queryClient.ensureQueryData(PlayersOnlineStatsQueryOptions()),
+      context.queryClient.ensureQueryData(CountriesStatsQueryOptions({ gameServerIds: [] })),
+    ]);
+    return { playerOnlineStats, countriesStats };
   },
   component: Component,
 });
@@ -36,7 +40,16 @@ const Container = styled.div`
 function Component() {
   useDocumentTitle('Dashboard');
   const loaderData = Route.useLoaderData();
-  const { data, isLoading } = useQuery({ ...PlayersOnlineStatsQueryOptions(), initialData: loaderData });
+  const { data: playerOnlineStatsData, isPending: isPendingPlayerOnlineStats } = useQuery({
+    ...PlayersOnlineStatsQueryOptions(),
+    initialData: loaderData.playerOnlineStats,
+  });
+  const { data: countriesStatsData, isPending: isPendingCountriesStats } = useQuery({
+    ...CountriesStatsQueryOptions({ gameServerIds: [] }),
+    initialData: loaderData.countriesStats,
+  });
+
+  console.log('countriesStatsData', countriesStatsData);
 
   const { control } = useForm({
     defaultValues: {
@@ -153,7 +166,7 @@ function Component() {
           style={{
             width: '100%',
             display: 'grid',
-            gridTemplateColumns: '3fr 1fr ',
+            gridTemplateColumns: '2fr 1fr',
             gap: '2rem',
             marginTop: '40px',
             gridTemplateRows: 'auto',
@@ -163,10 +176,10 @@ function Component() {
             <Card.Title label="Players online" />
             <Card.Body>
               <div style={{ height: '400px', width: '100%', position: 'relative' }}>
-                {!isLoading && (
+                {!isPendingPlayerOnlineStats && (
                   <LineChart
                     name="Players online"
-                    data={data.values}
+                    data={playerOnlineStatsData.values}
                     xAccessor={(d) => new Date(d[0] * 1000)}
                     yAccessor={(d) => d[1]}
                     curveType="curveBasis"
@@ -183,6 +196,29 @@ function Component() {
                   <EventItem key={event.id} event={event} onDetailClick={() => {}} />
                 ))}
               </EventFeed>
+            </Card.Body>
+          </Card>
+          <Card variant="outline">
+            <Card.Title label="Global Player Map">
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <Chip variant="outline" color="warning" label="Beta" />
+                <QuestionTooltip>Shows where your players are from</QuestionTooltip>
+              </div>
+            </Card.Title>
+            <Card.Body>
+              <div style={{ height: '600px', width: '100%', position: 'relative' }}>
+                {!isPendingCountriesStats && (
+                  <GeoMercator
+                    name="Countries"
+                    data={countriesStatsData}
+                    xAccessor={(d) => d.country}
+                    yAccessor={(d) => parseInt(d.playerCount)}
+                    tooltipAccessor={(d) => `${d.country}:${d.playerCount}`}
+                    allowZoomAndDrag={false}
+                    showZoomControls={false}
+                  />
+                )}
+              </div>
             </Card.Body>
           </Card>
         </div>

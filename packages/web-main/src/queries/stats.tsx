@@ -17,7 +17,8 @@ export const statsKeys = {
   playersOnline: (gameServerId?: string, startDate?: string, endDate?: string) =>
     [...statsKeys.all, 'players-online', gameServerId, startDate, endDate] as const,
   activity: (gameServerId?: string) => [...statsKeys.all, 'activity', gameServerId] as const,
-  countries: (gameServerId: string) => [...statsKeys.all, 'countries', gameServerId] as const,
+  countries: (gameServerIds: string[]) => [...statsKeys.all, 'countries', ...gameServerIds] as const,
+  countriesGlobal: () => [...statsKeys.all, 'countries', 'global'] as const,
 };
 
 export const PingStatsQueryOptions = (playerId: string, gameServerId: string, startDate?: string, endDate?: string) => {
@@ -95,10 +96,10 @@ export const ActivityStatsQueryOptions = (options: ActivityInputDTO) => {
 };
 
 type CountryValue = { country: string; playerCount: string };
-export const CountriesStatsQueryOptions = ({ gameServerId }: { gameServerId: string }) => {
+export const CountriesStatsQueryOptions = ({ gameServerIds = [] }: { gameServerIds?: string[] }) => {
   return queryOptions<CountryValue[], AxiosError<CountryValue[]>, CountryValue[]>({
-    queryKey: [statsKeys.countries(gameServerId)],
+    queryKey: [statsKeys.countries(gameServerIds)],
     queryFn: async () =>
-      (await getApiClient().stats.statsControllerGetCountryStats([gameServerId])).data.data.values as CountryValue[],
+      (await getApiClient().stats.statsControllerGetCountryStats(gameServerIds)).data.data.values as CountryValue[],
   });
 };

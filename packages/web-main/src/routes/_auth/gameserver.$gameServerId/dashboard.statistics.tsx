@@ -79,7 +79,7 @@ function Component() {
   }, [selectedPeriod]);
 
   const { data: currencyInRotationData } = useQuery(CurrencyStatsQueryOptions(gameServerId));
-  const { data: countryStats } = useQuery(CountriesStatsQueryOptions({ gameServerId }));
+  const { data: countryStats } = useQuery(CountriesStatsQueryOptions({ gameServerIds: [gameServerId] }));
   const { data: playersOnlineData } = useQuery(PlayersOnlineStatsQueryOptions(gameServerId, startDate, now));
   const { data: latencyData } = useQuery(LatencyStatsQueryOptions(gameServerId, startDate, now));
   const { data: chatMessagesData } = useQuery(
