@@ -53,7 +53,7 @@ message:
 links:
   - name: "Github"
     icon: "fab fa-github"
-    url: "https://github.com/gettakaro/takaro"
+    url: "https://aka.takaro.io/github"
     target: "_blank"
   - name: "Docs"
     icon: "fa fa-book"

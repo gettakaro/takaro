@@ -56,7 +56,7 @@ const config: Config = {
       },
       items: [
         {
-          href: 'https://github.com/gettakaro/takaro',
+          href: 'https://aka.takaro.io/github',
           label: 'GitHub',
           position: 'right',
         },
@@ -74,11 +74,11 @@ const config: Config = {
             },
             {
               label: 'Github',
-              href: 'https://github.com/gettakaro/takaro',
+              href: 'https://aka.takaro.io/github',
             },
             {
               label: 'Discord',
-              href: 'https://catalysm.net/discord',
+              href: 'https://aka.takaro.io/discord',
             },
           ],
         },
