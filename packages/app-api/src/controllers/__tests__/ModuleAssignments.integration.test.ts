@@ -3,11 +3,11 @@ import { ModuleOutputDTO, GameServerOutputDTO, HookCreateDTOEventTypeEnum } from
 
 const group = 'Module Assignments';
 
-const mockHook = (moduleId: string) => ({
+const mockHook = (versionId: string) => ({
   name: 'Test hook',
   regex: '/this (is) a [regex]/g',
   eventType: HookCreateDTOEventTypeEnum.Log,
-  moduleId,
+  versionId,
 });
 
 interface ISetupData {
@@ -54,7 +54,7 @@ const tests = [
     test: async function () {
       return this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.utilsModule.id,
+        this.setupData.utilsModule.latestVersion.id,
       );
     },
   }),
@@ -67,12 +67,12 @@ const tests = [
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.utilsModule.id,
+        this.setupData.utilsModule.latestVersion.id,
       );
 
       return this.client.gameserver.gameServerControllerUninstallModule(
         this.setupData.gameserver.id,
-        this.setupData.utilsModule.id,
+        this.setupData.utilsModule.latestVersion.id,
       );
     },
   }),
@@ -85,12 +85,12 @@ const tests = [
     test: async function () {
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id,
+        this.setupData.teleportsModule.latestVersion.id,
       );
 
       await this.client.gameserver.gameServerControllerInstallModule(
         this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id,
+        this.setupData.teleportsModule.latestVersion.id,
         {
           userConfig: JSON.stringify({ timeout: 1337 }),
         },
@@ -98,7 +98,7 @@ const tests = [
 
       const res = await this.client.gameserver.gameServerControllerGetModuleInstallation(
         this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id,
+        this.setupData.teleportsModule.latestVersion.id,
       );
 
       expect(res.data.data.userConfig).to.deep.equal({
@@ -120,11 +120,11 @@ const tests = [
       ).data.data;
 
       await this.client.hook.hookControllerCreate({
-        ...mockHook(mod.id),
+        ...mockHook(mod.latestVersion.id),
         eventType: HookCreateDTOEventTypeEnum.DiscordMessage,
       });
 
-      return this.client.gameserver.gameServerControllerInstallModule(this.setupData.gameserver.id, mod.id, {
+      return this.client.gameserver.gameServerControllerInstallModule(this.setupData.gameserver.id, mod.latestVersion.id, {
         userConfig: JSON.stringify({}),
       });
     },
@@ -144,13 +144,13 @@ const tests = [
       ).data.data;
 
       const createdHookRes = await this.client.hook.hookControllerCreate({
-        ...mockHook(mod.id),
+        ...mockHook(mod.latestVersion.id),
         eventType: HookCreateDTOEventTypeEnum.DiscordMessage,
       });
 
       const hookName = createdHookRes.data.data.name;
 
-      return this.client.gameserver.gameServerControllerInstallModule(this.setupData.gameserver.id, mod.id, {
+      return this.client.gameserver.gameServerControllerInstallModule(this.setupData.gameserver.id, mod.latestVersion.id, {
         userConfig: JSON.stringify({}),
         systemConfig: JSON.stringify({
           hooks: {

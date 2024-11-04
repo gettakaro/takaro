@@ -6,6 +6,7 @@ export class PlayerOnboarding extends BuiltinModule<PlayerOnboarding> {
     super(
       'playerOnboarding',
       'Collection of functions that are executed when a player joins the server. Helps with onboarding new players, like sending a welcome message.',
+      '0.0.1',
       JSON.stringify({
         $schema: 'http://json-schema.org/draft-07/schema#',
         type: 'object',

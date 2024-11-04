@@ -3,11 +3,11 @@ import { HookOutputDTOAPI, HookCreateDTOEventTypeEnum } from '@takaro/apiclient'
 
 const group = 'HookController';
 
-const mockHook = (moduleId: string) => ({
+const mockHook = (versionId: string) => ({
   name: 'Test hook',
   regex: '/this (is) a [regex]/g',
   eventType: HookCreateDTOEventTypeEnum.Log,
-  moduleId,
+  versionId,
 });
 
 const tests = [
@@ -21,7 +21,7 @@ const tests = [
           name: 'Test module',
         })
       ).data.data;
-      return (await this.client.hook.hookControllerCreate(mockHook(module.id))).data;
+      return (await this.client.hook.hookControllerCreate(mockHook(module.latestVersion.id))).data;
     },
     test: async function () {
       return this.client.hook.hookControllerGetOne(this.setupData.data.id);
@@ -38,7 +38,7 @@ const tests = [
           name: 'Test module',
         })
       ).data.data;
-      return this.client.hook.hookControllerCreate(mockHook(module.id));
+      return this.client.hook.hookControllerCreate(mockHook(module.latestVersion.id));
     },
     filteredFields: ['moduleId', 'functionId'],
   }),
@@ -52,7 +52,7 @@ const tests = [
           name: 'Test module',
         })
       ).data.data;
-      return (await this.client.hook.hookControllerCreate(mockHook(module.id))).data;
+      return (await this.client.hook.hookControllerCreate(mockHook(module.latestVersion.id))).data;
     },
     test: async function () {
       return this.client.hook.hookControllerUpdate(this.setupData.data.id, {
@@ -72,7 +72,7 @@ const tests = [
           name: 'Test module',
         })
       ).data.data;
-      return (await this.client.hook.hookControllerCreate(mockHook(module.id))).data;
+      return (await this.client.hook.hookControllerCreate(mockHook(module.latestVersion.id))).data;
     },
     test: async function () {
       return this.client.hook.hookControllerRemove(this.setupData.data.id);
@@ -89,7 +89,7 @@ const tests = [
         })
       ).data.data;
       return this.client.hook.hookControllerCreate({
-        ...mockHook(module.id),
+        ...mockHook(module.latestVersion.id),
         regex: '/(x+x+)+y/',
       });
     },
@@ -107,7 +107,7 @@ const tests = [
         })
       ).data.data;
 
-      await this.client.hook.hookControllerCreate(mockHook(module.id));
+      await this.client.hook.hookControllerCreate(mockHook(module.latestVersion.id));
 
       return module;
     },

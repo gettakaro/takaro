@@ -105,7 +105,7 @@ export class Meta {
           const operation = pathItem[method];
           if (operation.operationId === operationId) {
             // Update the description with required permissions
-            operation.description = (operation.description || '') + ` Required permissions: ${requiredPerms}`;
+            operation.description = (operation.description || '') + `\n\n Required permissions: ${requiredPerms}`;
           }
         });
       });

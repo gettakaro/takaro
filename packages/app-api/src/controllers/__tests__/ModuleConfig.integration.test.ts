@@ -49,7 +49,7 @@ const setup = async function (this: IntegrationTest<ISetupData>): Promise<ISetup
   });
 
   await this.client.cronjob.cronJobControllerCreate({
-    moduleId: cronjobModuleCreateRes.data.data.id,
+    versionId: cronjobModuleCreateRes.data.data.latestVersion.id,
     name: 'Test cron job',
     temporalValue: '1 * * * *',
     function: 'test',
@@ -200,7 +200,7 @@ const tests = [
         {
           systemConfig: JSON.stringify({
             cronJobs: {
-              [this.setupData.cronJobsModule.cronJobs[0].name]: { temporalValue: '5 * * * *' },
+              [this.setupData.cronJobsModule.latestVersion.cronJobs[0].name]: { temporalValue: '5 * * * *' },
             },
           }),
         },
@@ -215,7 +215,7 @@ const tests = [
     setup,
     test: async function () {
       await this.client.cronjob.cronJobControllerCreate({
-        moduleId: this.setupData.cronJobsModule.id,
+        versionId: this.setupData.cronJobsModule.latestVersion.id,
         name: 'Test cron job 2',
         temporalValue: '42 * * * *',
         function: 'test',
@@ -229,8 +229,8 @@ const tests = [
         {
           systemConfig: JSON.stringify({
             cronJobs: {
-              [updatedModuleRes.data.data.cronJobs[0].name]: { temporalValue: '5 * * * *' },
-              [updatedModuleRes.data.data.cronJobs[1].name]: { temporalValue: '13 * * * *' },
+              [updatedModuleRes.data.data.latestVersion.cronJobs[0].name]: { temporalValue: '5 * * * *' },
+              [updatedModuleRes.data.data.latestVersion.cronJobs[1].name]: { temporalValue: '13 * * * *' },
             },
           }),
         },
@@ -252,9 +252,9 @@ const tests = [
       expect(installRes.data.data.systemConfig).to.deep.equal({
         enabled: true,
         cronJobs: {
-          [this.setupData.cronJobsModule.cronJobs[0].name]: {
+          [this.setupData.cronJobsModule.latestVersion.cronJobs[0].name]: {
             enabled: true,
-            temporalValue: this.setupData.cronJobsModule.cronJobs[0].temporalValue,
+            temporalValue: this.setupData.cronJobsModule.latestVersion.cronJobs[0].temporalValue,
           },
         },
       });

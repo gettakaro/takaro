@@ -5,6 +5,7 @@ export class Lottery extends BuiltinModule<Lottery> {
     super(
       'lottery',
       'Players can buy tickets for a lottery, and the winner is chosen at random.',
+      '0.0.1',
       JSON.stringify({
         $schema: 'http://json-schema.org/draft-07/schema#',
         type: 'object',

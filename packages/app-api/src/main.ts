@@ -10,7 +10,6 @@ import { RoleController } from './controllers/Rolecontroller.js';
 import { GameServerController } from './controllers/GameServerController.js';
 import { FunctionController } from './controllers/FunctionController.js';
 import { CronJobController } from './controllers/CronJobController.js';
-import { ModuleController } from './controllers/ModuleController.js';
 import { EventsWorker } from './workers/eventWorker.js';
 import { getSocketServer } from './lib/socketServer.js';
 import { HookController } from './controllers/HookController.js';
@@ -40,6 +39,9 @@ import { ShopOrderController } from './controllers/Shop/Order.js';
 import { ShopListingController } from './controllers/Shop/Listing.js';
 import { SystemWorker } from './workers/systemWorker.js';
 import { BanController } from './controllers/BanController.js';
+import { ModuleController } from './controllers/Module/modules.js';
+import { ModuleVersionController } from './controllers/Module/versions.js';
+import { ModuleInstallationsController } from './controllers/Module/installations.js';
 
 export const server = new HTTP(
   {
@@ -51,6 +53,8 @@ export const server = new HTTP(
       FunctionController,
       CronJobController,
       ModuleController,
+      ModuleVersionController,
+      ModuleInstallationsController,
       HookController,
       PlayerController,
       SettingsController,

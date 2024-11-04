@@ -2,7 +2,7 @@ import { IntegrationTest, expect, integrationConfig } from '@takaro/test';
 import { GameServerOutputDTO, ModuleOutputDTO, CronJobOutputDTO, ModuleInstallationOutputDTO } from '@takaro/apiclient';
 import { queueService } from '@takaro/queues';
 import { CronJobService, CronJobOutputDTO as ServiceCronJobOutputDTO } from '../CronJobService.js';
-import { ModuleInstallationOutputDTO as ServiceModuleInstallationOutputDTO } from '../GameServerService.js';
+import { ModuleInstallationOutputDTO as ServiceModuleInstallationOutputDTO } from '../Module/dto.js';
 
 const group = 'CronJobService';
 
@@ -24,7 +24,7 @@ async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStanda
   const cronjob = (
     await this.client.cronjob.cronJobControllerCreate({
       name: 'Test cronjob',
-      moduleId: modCreate.id,
+      versionId: modCreate.latestVersion.id,
       temporalValue: '0 0 * * *',
     })
   ).data.data;
@@ -72,7 +72,7 @@ const tests = [
           job.key ===
           service.getJobKey(
             assignment as ServiceModuleInstallationOutputDTO,
-            mod.cronJobs[0] as ServiceCronJobOutputDTO,
+            mod.latestVersion.cronJobs[0] as ServiceCronJobOutputDTO,
           )
         );
       });
@@ -101,7 +101,7 @@ const tests = [
           job.key ===
           service.getJobKey(
             assignment as ServiceModuleInstallationOutputDTO,
-            mod.cronJobs[0] as ServiceCronJobOutputDTO,
+            mod.latestVersion.cronJobs[0] as ServiceCronJobOutputDTO,
           )
         );
       });
@@ -126,7 +126,7 @@ const tests = [
           job.key ===
           service.getJobKey(
             assignment as ServiceModuleInstallationOutputDTO,
-            mod.cronJobs[0] as ServiceCronJobOutputDTO,
+            mod.latestVersion.cronJobs[0] as ServiceCronJobOutputDTO,
           )
         );
       });
@@ -151,7 +151,7 @@ const tests = [
           job.key ===
           service.getJobKey(
             assignment as ServiceModuleInstallationOutputDTO,
-            mod.cronJobs[0] as ServiceCronJobOutputDTO,
+            mod.latestVersion.cronJobs[0] as ServiceCronJobOutputDTO,
           )
         );
       });
@@ -176,7 +176,7 @@ const tests = [
           job.key ===
           service.getJobKey(
             assignment as ServiceModuleInstallationOutputDTO,
-            mod.cronJobs[0] as ServiceCronJobOutputDTO,
+            mod.latestVersion.cronJobs[0] as ServiceCronJobOutputDTO,
           )
         );
       });

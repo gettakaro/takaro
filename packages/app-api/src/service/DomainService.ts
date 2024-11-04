@@ -12,7 +12,7 @@ import { Type } from 'class-transformer';
 import { GameServerService, GameServerUpdateDTO } from './GameServerService.js';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
-import { ModuleService } from './ModuleService.js';
+import { ModuleService } from './Module/index.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { config } from '../config.js';
 import { EXECUTION_MODE } from '@takaro/config';

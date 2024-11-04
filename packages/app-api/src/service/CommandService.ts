@@ -12,11 +12,11 @@ import { ITakaroQuery, Redis } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { SettingsService, SETTINGS_KEYS } from './SettingsService.js';
 import { parseCommand } from '../lib/commandParser.js';
-import { GameServerService, ModuleInstallDTO } from './GameServerService.js';
+import { GameServerService } from './GameServerService.js';
 import { PlayerService } from './PlayerService.js';
 import { PlayerOnGameServerService } from './PlayerOnGameserverService.js';
-import { ModuleService } from './ModuleService.js';
 import { UserService } from './User/index.js';
+import { ModuleService } from './Module/index.js';
 
 export function commandsRunningKey(data: ICommandJobData) {
   return `commands-running:${data.pog.id}`;
@@ -25,23 +25,17 @@ export function commandsRunningKey(data: ICommandJobData) {
 export class CommandOutputDTO extends TakaroModelDTO<CommandOutputDTO> {
   @IsString()
   name: string;
-
   @IsString()
   trigger: string;
-
   @IsString()
   helpText: string;
-
   @Type(() => FunctionOutputDTO)
   @ValidateNested()
   function: FunctionOutputDTO;
-
   @IsUUID()
   functionId: string;
-
   @IsUUID()
-  moduleId: string;
-
+  versionId: string;
   @Type(() => CommandArgumentOutputDTO)
   @ValidateNested({ each: true })
   arguments: CommandArgumentOutputDTO[];
@@ -69,21 +63,16 @@ export class CommandCreateDTO extends TakaroDTO<CommandCreateDTO> implements ICo
   @IsString()
   @Length(1, 150)
   name: string;
-
   @IsString()
   trigger: string;
-
   @IsString()
   @IsOptional()
   helpText?: string;
-
   @IsUUID()
-  moduleId: string;
-
+  versionId: string;
   @IsOptional()
   @IsString()
   function: string;
-
   @Type(() => CommandArgumentCreateDTO)
   @ValidateNested({ each: true })
   @IsOptional()
@@ -170,6 +159,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
   private playerService = new PlayerService(this.domainId);
   private gameServerService = new GameServerService(this.domainId);
   private pogService = new PlayerOnGameServerService(this.domainId);
+  private moduleService = new ModuleService(this.domainId);
 
   get repo() {
     return new CommandRepo(this.domainId);
@@ -209,9 +199,6 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
         }),
       );
     }
-
-    const moduleService = new ModuleService(this.domainId);
-    await moduleService.refreshInstallations(item.moduleId);
 
     return created;
   }
@@ -256,26 +243,6 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
     }
 
     const updated = await this.repo.update(id, item);
-
-    const gameServerService = new GameServerService(this.domainId);
-    const installations = await gameServerService.getInstalledModules({ moduleId: updated.moduleId });
-    await Promise.all(
-      installations.map((i) => {
-        const newSystemConfig = i.systemConfig;
-        const cmdCfg = newSystemConfig.commands[existing.name];
-        delete newSystemConfig.commands[existing.name];
-        newSystemConfig.commands[updated.name] = cmdCfg;
-        return gameServerService.installModule(
-          i.gameserverId,
-          i.moduleId,
-          new ModuleInstallDTO({
-            userConfig: JSON.stringify(i.userConfig),
-            systemConfig: JSON.stringify(newSystemConfig),
-          }),
-        );
-      }),
-    );
-
     return updated;
   }
 
@@ -339,7 +306,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
               timestamp: chatMessage.timestamp,
               ...parsedCommand,
               player: pog,
-              module: await gameServerService.getModuleInstallation(gameServerId, c.moduleId),
+              modules: await this.moduleService.getInstalledModules({ gameserverId: gameServerId, versionId: c.versionId }),
             },
           };
         }),
@@ -349,41 +316,44 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
         if (!command) return;
         const { data, db } = command;
 
-        const commandConfig = data.module.systemConfig.commands[db.name];
-        if (!data.module.systemConfig.enabled) return;
-        if (!commandConfig.enabled) return;
+        for (const mod of data.modules) {
+          const commandConfig = mod.systemConfig.commands[db.name];
+          if (!mod.systemConfig.enabled) return;
+          if (!commandConfig.enabled) return;
 
-        const delay = commandConfig ? commandConfig.delay * 1000 : 0;
+          const delay = commandConfig ? commandConfig.delay * 1000 : 0;
 
-        if (delay) {
-          await gameServerService.sendMessage(
+          if (delay) {
+            await gameServerService.sendMessage(
+              gameServerId,
+              `Your command will be executed in ${delay / 1000} seconds.`,
+              new IMessageOptsDTO({
+                recipient: chatMessage.player,
+              }),
+            );
+          }
+
+          const jobData = {
+            timestamp: data.timestamp,
+            domainId: this.domainId,
+            functionId: db.function.id,
+            itemId: db.id,
+            pog,
+            arguments: data.arguments,
+            module: mod,
             gameServerId,
-            `Your command will be executed in ${delay / 1000} seconds.`,
-            new IMessageOptsDTO({
-              recipient: chatMessage.player,
-            }),
-          );
+            player,
+            user,
+            chatMessage,
+            trigger: commandName,
+          };
+
+          const redisClient = await Redis.getClient('worker:command-lock');
+          await redisClient.incr(commandsRunningKey(jobData));
+          await queueService.queues.commands.queue.add(jobData, { delay });
         }
 
-        const jobData = {
-          timestamp: data.timestamp,
-          domainId: this.domainId,
-          functionId: db.function.id,
-          itemId: db.id,
-          pog,
-          arguments: data.arguments,
-          module: data.module,
-          gameServerId,
-          player,
-          user,
-          chatMessage,
-          trigger: commandName,
-        };
 
-        const redisClient = await Redis.getClient('worker:command-lock');
-        await redisClient.incr(commandsRunningKey(jobData));
-
-        return queueService.queues.commands.queue.add(jobData, { delay });
       });
 
       await Promise.all(promises);

@@ -38,7 +38,7 @@ async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStanda
   const normalCommand = (
     await this.client.command.commandControllerCreate({
       name: 'Test command',
-      moduleId: mod.id,
+      versionId: mod.latestVersion.id,
       trigger: 'test',
     })
   ).data.data;
@@ -265,7 +265,7 @@ const tests = [
 
       await this.client.command.commandControllerCreate({
         name: 'Test command 2',
-        moduleId: this.setupData.mod.id,
+        versionId: this.setupData.mod.latestVersion.id,
         trigger: 'test2',
       });
 

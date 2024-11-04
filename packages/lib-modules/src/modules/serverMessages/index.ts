@@ -5,6 +5,7 @@ export class ServerMessages extends BuiltinModule<ServerMessages> {
     super(
       'serverMessages',
       'Send automated, rotated, configurable messages to players on the server.',
+      '0.0.1',
       JSON.stringify({
         $schema: 'http://json-schema.org/draft-07/schema#',
         type: 'object',

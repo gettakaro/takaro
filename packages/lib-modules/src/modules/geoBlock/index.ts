@@ -257,6 +257,7 @@ export class GeoBlock extends BuiltinModule<GeoBlock> {
     super(
       'geoBlock',
       'Block players from certain countries from joining the server.',
+      '0.0.1',
       JSON.stringify({
         $schema: 'http://json-schema.org/draft-07/schema#',
         type: 'object',

@@ -18,7 +18,7 @@ import {
 import { PaginatedOutput } from '../db/base.js';
 import { RoleModel, RoleRepo } from '../db/role.js';
 import { TakaroService } from './Base.js';
-import { ModuleService } from './ModuleService.js';
+import { ModuleService } from './Module/index.js';
 import { EventService, EventCreateDTO, EVENT_TYPES } from './EventService.js';
 import { TakaroEventRoleCreated, TakaroEventRoleDeleted, TakaroEventRoleUpdated } from '@takaro/modules';
 import { PlayerOutputWithRolesDTO } from './PlayerService.js';
@@ -354,6 +354,7 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
     const moduleService = new ModuleService(this.domainId);
     const modules = await moduleService.find({ limit: 1000 });
     const modulePermissions = modules.results.flatMap((mod) =>
+      // @ts-expect-error
       mod.permissions.map((permission) => ({
         ...permission, // Spread the permission object if it's an object, otherwise wrap the permission in an object
         module: {

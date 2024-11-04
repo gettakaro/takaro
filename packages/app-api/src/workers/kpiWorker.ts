@@ -8,6 +8,7 @@ import { DomainRepo } from '../db/domain.js';
 import { UserService } from '../service/User/index.js';
 import { kpiGateway, metrics } from '../lib/metrics.js';
 import { PlayerOnGameServerService } from '../service/PlayerOnGameserverService.js';
+import { ModuleService } from '../service/Module/index.js';
 
 const log = logger('worker:kpi');
 
@@ -46,6 +47,7 @@ export async function processJob(_job: Job<unknown>) {
       const playerService = new PlayerService(domainId);
       const pogService = new PlayerOnGameServerService(domainId);
       const userService = new UserService(domainId);
+      const moduleService = new ModuleService(domainId);
 
       const gameServers = await gameServerService.find({});
       metrics.gameServers.set({ domain: domainId }, gameServers.total);
@@ -103,7 +105,7 @@ export async function processJob(_job: Job<unknown>) {
       let domainInstalledModules = 0;
 
       for (const server of gameServers.results) {
-        const installedModules = await gameServerService.getInstalledModules({ gameserverId: server.id });
+        const installedModules = await moduleService.getInstalledModules({ gameserverId: server.id });
         metrics.installedModules.set({ domain: domainId, gameServer: server.id }, installedModules.length);
         domainInstalledModules += installedModules.length;
       }

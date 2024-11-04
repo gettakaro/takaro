@@ -25,7 +25,7 @@ async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStanda
   const normalHook = (
     await this.client.hook.hookControllerCreate({
       name: 'Test hook',
-      moduleId: mod.id,
+      versionId: mod.latestVersion.id,
       regex: '.*',
       eventType: 'player-connected',
     })
@@ -41,7 +41,7 @@ async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStanda
     })
   ).data.data;
 
-  const assignment = (await this.client.gameserver.gameServerControllerInstallModule(gameserver.id, mod.id)).data.data;
+  const assignment = (await this.client.module.moduleInstallationsControllerInstallModule({ gameServerId: gameserver.id, versionId: mod.latestVersion.id, moduleId: mod.id })).data.data;
 
   const queueAddStub = sandbox.stub(queueService.queues.hooks.queue, 'add');
 
@@ -113,7 +113,7 @@ const tests = [
       // Create a new hook that only matches on "bar"
       await this.client.hook.hookControllerCreate({
         name: 'Test hook with regex',
-        moduleId: this.setupData.mod.id,
+        versionId: this.setupData.mod.latestVersion.id,
         regex: 'bar',
         eventType: 'player-connected',
       });

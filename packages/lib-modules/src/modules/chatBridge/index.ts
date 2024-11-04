@@ -6,6 +6,7 @@ export class ChatBridge extends BuiltinModule<ChatBridge> {
     super(
       'chatBridge',
       'Connect chat to other services like Discord.',
+      '0.0.1',
       JSON.stringify({
         $schema: 'http://json-schema.org/draft-07/schema#',
         type: 'object',

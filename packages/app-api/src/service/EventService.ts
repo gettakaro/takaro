@@ -9,7 +9,7 @@ import { getSocketServer } from '../lib/socketServer.js';
 import { PlayerOutputDTO } from './PlayerService.js';
 import { Type } from 'class-transformer';
 import { GameServerOutputDTO } from './GameServerService.js';
-import { ModuleOutputDTO } from './ModuleService.js';
+import { ModuleOutputDTO } from './Module/dto.js';
 import { UserOutputDTO } from './User/index.js';
 import { BaseEvent, EventMapping, EventPayload, TakaroEvents } from '@takaro/modules';
 import { ValueOf } from 'type-fest';
@@ -114,7 +114,7 @@ export class EventCreateDTO extends TakaroDTO<EventCreateDTO> {
   meta: BaseEvent<any>;
 }
 
-export class EventUpdateDTO extends TakaroDTO<EventUpdateDTO> {}
+export class EventUpdateDTO extends TakaroDTO<EventUpdateDTO> { }
 
 @traceableClass('service:event')
 export class EventService extends TakaroService<EventModel, EventOutputDTO, EventCreateDTO, EventUpdateDTO> {

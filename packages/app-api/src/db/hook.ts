@@ -116,9 +116,9 @@ export class HookRepo extends ITakaroRepo<HookModel, HookOutputDTO, HookCreateDT
       await query
         .select('hooks.id as hookId')
         .innerJoin('functions', 'hooks.functionId', 'functions.id')
-        .innerJoin('modules', 'hooks.moduleId', 'modules.id')
-        .innerJoin('moduleAssignments', 'moduleAssignments.moduleId', 'modules.id')
-        .innerJoin('gameservers', 'moduleAssignments.gameserverId', 'gameservers.id')
+        .innerJoin('moduleVersions', 'hooks.versionId', 'moduleVersions.id')
+        .innerJoin('moduleInstallations', 'moduleInstallations.versionId', 'moduleVersions.id')
+        .innerJoin('gameservers', 'moduleInstallations.gameserverId', 'gameservers.id')
         .where(whereClause)
     )
       // @ts-expect-error Knex is confused because we start from the 'normal' query object

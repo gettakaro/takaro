@@ -5,6 +5,7 @@ export class TimedShutdown extends BuiltinModule<TimedShutdown> {
     super(
       'timedShutdown',
       'Automatically shut down the server at a specific time.',
+      '0.0.1',
       JSON.stringify({
         $schema: 'http://json-schema.org/draft-07/schema#',
         type: 'object',

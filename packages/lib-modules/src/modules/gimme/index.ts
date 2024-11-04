@@ -5,6 +5,7 @@ export class Gimme extends BuiltinModule<Gimme> {
     super(
       'gimme',
       'Randomly selects an item from a list of items.',
+      '0.0.1',
       JSON.stringify({
         $schema: 'http://json-schema.org/draft-07/schema#',
         type: 'object',

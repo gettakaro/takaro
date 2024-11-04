@@ -184,8 +184,10 @@ export class CommandRepo extends ITakaroRepo<CommandModel, CommandOutputDTO, Com
 
   async createArgument(commandId: string, data: CommandArgumentCreateDTO) {
     const { argumentQuery } = await this.getModel();
+    const toInsert = data.toJSON();
+    delete toInsert.id;
     const item = await argumentQuery.insert({
-      ...data.toJSON(),
+      ...toInsert,
       commandId,
       domain: this.domainId,
     });

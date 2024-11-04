@@ -5,6 +5,7 @@ export class HighPingKicker extends BuiltinModule<HighPingKicker> {
     super(
       'highPingKicker',
       'Automatically kick players with high ping, with warnings and configurable thresholds.',
+      '0.0.1',
       JSON.stringify({
         $schema: 'http://json-schema.org/draft-07/schema#',
         type: 'object',

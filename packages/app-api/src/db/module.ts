@@ -4,23 +4,29 @@ import { errors, traceableClass } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import { CronJobModel, CRONJOB_TABLE_NAME } from './cronjob.js';
 import { HookModel, HOOKS_TABLE_NAME } from './hook.js';
-import { ModuleCreateDTO, ModuleOutputDTO, ModuleUpdateDTO } from '../service/ModuleService.js';
+import { InstallModuleDTO, ModuleInstallationOutputDTO, ModuleUpdateDTO, ModuleVersionUpdateDTO } from '../service/Module/dto.js';
 import { CommandModel, COMMANDS_TABLE_NAME } from './command.js';
 import { CronJobOutputDTO } from '../service/CronJobService.js';
 import { HookOutputDTO } from '../service/HookService.js';
 import { CommandOutputDTO } from '../service/CommandService.js';
 import { FunctionOutputDTO } from '../service/FunctionService.js';
-import { getSystemConfigSchema } from '../lib/systemConfig.js';
 import { PERMISSION_TABLE_NAME, PermissionModel } from './role.js';
 import { FunctionModel } from './function.js';
+import { ModuleCreateDTO, ModuleOutputDTO, ModuleVersionOutputDTO } from '../service/Module/dto.js';
+import { GameServerModel } from './gameserver.js';
 
 export const MODULE_TABLE_NAME = 'modules';
 export class ModuleModel extends TakaroModel {
   static tableName = MODULE_TABLE_NAME;
   name!: string;
   builtin: string;
-  description: string;
+}
 
+export class ModuleVersion extends TakaroModel {
+  static tableName = 'moduleVersions';
+  moduleId: string;
+  tag: string;
+  description: string;
   configSchema: string;
   uiSchema: string;
 
@@ -31,36 +37,44 @@ export class ModuleModel extends TakaroModel {
 
   static get relationMappings() {
     return {
+      module: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: ModuleModel,
+        join: {
+          from: 'moduleVersions.moduleId',
+          to: 'modules.id',
+        },
+      },
       cronJobs: {
         relation: Model.HasManyRelation,
         modelClass: CronJobModel,
         join: {
-          from: `${MODULE_TABLE_NAME}.id`,
-          to: `${CRONJOB_TABLE_NAME}.moduleId`,
+          from: `${ModuleVersion.tableName}.id`,
+          to: `${CRONJOB_TABLE_NAME}.versionId`,
         },
       },
       hooks: {
         relation: Model.HasManyRelation,
         modelClass: HookModel,
         join: {
-          from: `${MODULE_TABLE_NAME}.id`,
-          to: `${HOOKS_TABLE_NAME}.moduleId`,
+          from: `${ModuleVersion.tableName}.id`,
+          to: `${HOOKS_TABLE_NAME}.versionId`,
         },
       },
       commands: {
         relation: Model.HasManyRelation,
         modelClass: CommandModel,
         join: {
-          from: `${MODULE_TABLE_NAME}.id`,
-          to: `${COMMANDS_TABLE_NAME}.moduleId`,
+          from: `${ModuleVersion.tableName}.id`,
+          to: `${COMMANDS_TABLE_NAME}.versionId`,
         },
       },
       functions: {
         relation: Model.HasManyRelation,
         modelClass: FunctionModel,
         join: {
-          from: `${MODULE_TABLE_NAME}.id`,
-          to: 'functions.moduleId',
+          from: `${ModuleVersion.tableName}.id`,
+          to: 'functions.versionId',
         },
       },
 
@@ -68,8 +82,38 @@ export class ModuleModel extends TakaroModel {
         relation: Model.HasManyRelation,
         modelClass: PermissionModel,
         join: {
-          from: `${MODULE_TABLE_NAME}.id`,
-          to: `${PERMISSION_TABLE_NAME}.moduleId`,
+          from: `${ModuleVersion.tableName}.id`,
+          to: `${PERMISSION_TABLE_NAME}.moduleVersionId`,
+        },
+      },
+    };
+  }
+}
+
+class ModuleInstallationModel extends TakaroModel {
+  static tableName = 'moduleInstallations';
+  gameserverId: string;
+  moduleId: string;
+  versionId: string;
+  userConfig: string;
+  systemConfig: string;
+
+  static get relationMappings() {
+    return {
+      version: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: ModuleVersion,
+        join: {
+          from: `${ModuleInstallationModel.tableName}.versionId`,
+          to: `${ModuleVersion.tableName}.id`,
+        },
+      },
+      gameserver: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: GameServerModel,
+        join: {
+          from: `${ModuleInstallationModel.tableName}.gameserverId`,
+          to: `${GameServerModel.tableName}.id`,
         },
       },
     };
@@ -85,15 +129,30 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
   async getModel() {
     const knex = await this.getKnex();
     const model = ModuleModel.bindKnex(knex);
+    const versionModel = ModuleVersion.bindKnex(knex);
+    const installationsModel = ModuleInstallationModel.bindKnex(knex);
+
     return {
       model,
       query: model.query().modify('domainScoped', this.domainId),
+      queryVersion: versionModel.query().modify('domainScoped', this.domainId),
+      queryInstallations: installationsModel.query().modify('domainScoped', this.domainId),
     };
   }
 
   async find(filters: ITakaroQuery<ModuleOutputDTO>) {
     const { query } = await this.getModel();
-    const result = await new QueryBuilder<ModuleModel, ModuleOutputDTO>({
+    const result = await new QueryBuilder<ModuleModel, ModuleOutputDTO>(filters).build(query);
+
+    return {
+      total: result.total,
+      results: result.results.map(_ => new ModuleOutputDTO(_)),
+    };
+  }
+
+  async findVersions(filters: ITakaroQuery<ModuleVersionOutputDTO>) {
+    const { queryVersion } = await this.getModel();
+    const result = await new QueryBuilder<ModuleVersion, ModuleVersionOutputDTO>({
       ...filters,
       extend: [
         'cronJobs',
@@ -106,98 +165,66 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
         'commands.arguments',
         'permissions',
       ],
-    }).build(query);
-
-    const toSend = await Promise.all(
-      result.results.map(async (item) => {
-        // Parse commands, hooks and cronjobs into their DTOs
-        const parsed = {
-          ...item,
-          cronJobs: await Promise.all(
-            item.cronJobs.map(
-              async (cronJob) =>
-                new CronJobOutputDTO({
-                  ...cronJob,
-                  function: new FunctionOutputDTO(cronJob.function),
-                }),
-            ),
-          ),
-          hooks: await Promise.all(
-            item.hooks.map(
-              async (hook) =>
-                new HookOutputDTO({
-                  ...hook,
-                  function: new FunctionOutputDTO(hook.function),
-                }),
-            ),
-          ),
-          commands: await Promise.all(
-            item.commands.map(
-              async (command) =>
-                new CommandOutputDTO({
-                  ...command,
-                  function: new FunctionOutputDTO(command.function),
-                }),
-            ),
-          ),
-          functions: await Promise.all(item.functions.map((func) => new FunctionOutputDTO(func))),
-        };
-
-        return new ModuleOutputDTO(parsed);
-      }),
-    );
+    }).build(queryVersion);
 
     return {
       total: result.total,
-      results: toSend.map((item) => {
-        item.systemConfigSchema = getSystemConfigSchema(item);
-        return item;
-      }),
+      results: result.results.map(_ => new ModuleVersionOutputDTO(_)),
     };
+  }
+
+  async findInstallations(filters: ITakaroQuery<ModuleInstallationOutputDTO>) {
+    const { queryInstallations } = await this.getModel();
+
+    const result = await new QueryBuilder<ModuleInstallationModel, ModuleInstallationOutputDTO>({
+      ...filters,
+      extend: ['version', 'module'],
+    }).build(queryInstallations);
+
+    return {
+      total: result.total,
+      results: result.results.map(_ => new ModuleInstallationOutputDTO(_ as unknown as ModuleInstallationOutputDTO)),
+    };
+
   }
 
   async findOne(id: string): Promise<ModuleOutputDTO> {
     const { query } = await this.getModel();
     const data = await query
-      .findById(id)
-      .withGraphJoined('cronJobs.function')
-      .withGraphJoined('hooks.function')
-      .withGraphJoined('commands.function')
-      .withGraphJoined('commands.arguments')
-      .withGraphJoined('functions')
-      .withGraphJoined('permissions')
-      .orderBy('commands.name', 'DESC');
+      .findById(id);
 
     if (!data) {
       throw new errors.NotFoundError(`Record with id ${id} not found`);
     }
 
-    const toSend = new ModuleOutputDTO(data);
-    toSend.systemConfigSchema = getSystemConfigSchema(toSend);
-    return toSend;
+    return new ModuleOutputDTO(data);
+  }
+
+  async findOneVersion(id: string): Promise<ModuleVersionOutputDTO> {
+    const { queryVersion } = await this.getModel();
+    const data = await queryVersion.findById(id)
+      .withGraphJoined('hooks')
+      .withGraphJoined('commands')
+      .withGraphJoined('cronJobs')
+      .withGraphJoined('functions')
+      .withGraphJoined('permissions')
+      .withGraphJoined('hooks.function')
+      .withGraphJoined('cronJobs.function')
+      .withGraphJoined('commands.function')
+      .withGraphJoined('commands.arguments');
+
+
+    return new ModuleVersionOutputDTO(data);
   }
 
   async create(item: ModuleCreateDTO): Promise<ModuleOutputDTO> {
     const { query } = await this.getModel();
 
     const data = await query.insert({
-      ...item.toJSON(),
+      name: item.name,
+      builtin: item.builtin,
       domain: this.domainId,
     });
-
-    if (item.permissions && item.permissions.length > 0) {
-      const knex = await this.getKnex();
-      const permissionModel = PermissionModel.bindKnex(knex);
-      await permissionModel.query().insert(
-        item.permissions.map((permission) => ({
-          moduleId: data.id,
-          permission: permission.permission,
-          friendlyName: permission.friendlyName,
-          description: permission.description,
-          canHaveCount: permission.canHaveCount,
-        })),
-      );
-    }
 
     return this.findOne(data.id);
   }
@@ -208,15 +235,27 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
     return !!data;
   }
 
+  async deleteVersion(id: string): Promise<boolean> {
+    const { queryVersion } = await this.getModel();
+    const data = await queryVersion.deleteById(id);
+    return !!data;
+  }
+
   async update(id: string, data: ModuleUpdateDTO): Promise<ModuleOutputDTO> {
     const { query } = await this.getModel();
     const item = await query.updateAndFetchById(id, data.toJSON());
+    return this.findOne(item.id);
+  }
+
+  async updateVersion(id: string, data: ModuleVersionUpdateDTO): Promise<ModuleVersionOutputDTO> {
+    const { queryVersion } = await this.getModel();
+    const item = await queryVersion.updateAndFetchById(id, data.toJSON());
 
     if (data.permissions) {
       const knex = await this.getKnex();
       const permissionModel = PermissionModel.bindKnex(knex);
 
-      const existingPermissions = await permissionModel.query().where('moduleId', id);
+      const existingPermissions = await permissionModel.query().where('moduleVersionId', id);
       const existingPermissionsMap = existingPermissions.reduce(
         (acc, permission) => {
           acc[permission.permission] = permission;
@@ -255,49 +294,50 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
         await permissionModel
           .query()
           .update({ friendlyName, canHaveCount, description })
-          .where('moduleId', id)
+          .where('moduleVersionId', id)
           .andWhere('permission', permission.permission);
       }
 
       if (toInsert.length) {
         await permissionModel.query().insert(
           toInsert.map((permission) => ({
-            moduleId: id,
+            moduleVersionId: id,
             permission: permission.permission,
             friendlyName: permission.friendlyName,
             description: permission.description,
+            canHaveCount: permission.canHaveCount,
           })),
         );
       }
     }
 
-    return this.findOne(item.id);
+    return this.findOneVersion(item.id);
   }
 
-  async findByCommand(commandId: string): Promise<ModuleOutputDTO> {
-    const { query } = await this.getModel();
-    const item = await query.withGraphJoined('commands').findOne('commands.id', commandId);
+  async findByCommand(commandId: string): Promise<ModuleVersionOutputDTO> {
+    const { queryVersion } = await this.getModel();
+    const item = await queryVersion.withGraphJoined('commands').findOne('commands.id', commandId);
 
-    return new ModuleOutputDTO(item);
+    return new ModuleVersionOutputDTO(item);
   }
 
-  async findByHook(hookId: string): Promise<ModuleOutputDTO> {
-    const { query } = await this.getModel();
-    const item = await query.withGraphJoined('hooks').findOne('hooks.id', hookId);
+  async findByHook(hookId: string): Promise<ModuleVersionOutputDTO> {
+    const { queryVersion } = await this.getModel();
+    const item = await queryVersion.withGraphJoined('hooks').findOne('hooks.id', hookId);
 
-    return new ModuleOutputDTO(item);
+    return new ModuleVersionOutputDTO(item);
   }
 
-  async findByCronJob(cronJobId: string): Promise<ModuleOutputDTO> {
-    const { query } = await this.getModel();
-    const item = await query.withGraphJoined('cronJobs').findOne('cronJobs.id', cronJobId);
+  async findByCronJob(cronJobId: string): Promise<ModuleVersionOutputDTO> {
+    const { queryVersion } = await this.getModel();
+    const item = await queryVersion.withGraphJoined('cronJobs').findOne('cronJobs.id', cronJobId);
 
-    return new ModuleOutputDTO(item);
+    return new ModuleVersionOutputDTO(item);
   }
 
-  async findByFunction(functionId: string): Promise<ModuleOutputDTO> {
-    const { query } = await this.getModel();
-    const item = await query
+  async findByFunction(functionId: string): Promise<ModuleVersionOutputDTO> {
+    const { queryVersion } = await this.getModel();
+    const item = await queryVersion
       .withGraphJoined('hooks')
       .withGraphJoined('commands')
       .withGraphJoined('cronJobs')
@@ -305,6 +345,102 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
       .orWhere('commands.functionId', functionId)
       .orWhere('cronJobs.functionId', functionId);
 
-    return new ModuleOutputDTO(item);
+    return new ModuleVersionOutputDTO(item);
+  }
+
+  async getVersion(id: string): Promise<ModuleVersionOutputDTO> {
+    const { queryVersion } = await this.getModel();
+    const item = await queryVersion
+      .findById(id)
+      .withGraphJoined('cronJobs')
+      .withGraphJoined('hooks')
+      .withGraphJoined('commands')
+      .withGraphJoined('functions');
+
+    return new ModuleVersionOutputDTO(item);
+  }
+
+  async createVersion(moduleId: string, tag: string): Promise<ModuleVersionOutputDTO> {
+    const { queryVersion } = await this.getModel();
+
+    const item = await queryVersion.insert({
+      moduleId,
+      tag,
+      domain: this.domainId,
+    });
+
+    return this.findOneVersion(item.id);
+  }
+
+
+  async getLatestVersion(moduleId: string): Promise<ModuleVersionOutputDTO> {
+    const { queryVersion } = await this.getModel();
+    const item = await queryVersion
+      .where('moduleId', moduleId)
+      .andWhere('version', 'latest')
+      .first()
+      .withGraphJoined('cronJobs')
+      .withGraphJoined('hooks')
+      .withGraphJoined('commands')
+      .withGraphJoined('permissions')
+      .withGraphJoined('functions');
+
+    if (!item) {
+      const latest = await this.createVersion(moduleId, 'latest');
+      return this.findOneVersion(latest.id);
+    }
+
+    return new ModuleVersionOutputDTO(item);
+  }
+
+
+  async findOneInstallation(installationId: string) {
+    const { queryInstallations } = await this.getModel();
+    const res = await queryInstallations.findById(installationId);
+    return new ModuleInstallationOutputDTO(res as unknown as ModuleInstallationOutputDTO);
+  }
+
+  async getInstalledModules({ gameserverId, moduleId, versionId }: { gameserverId?: string; moduleId?: string, versionId?: string }) {
+    const { queryInstallations } = await this.getModel();
+    const qry = queryInstallations.modify('domainScoped', this.domainId);
+
+    if (gameserverId) {
+      qry.where({ gameserverId });
+    }
+
+    if (moduleId) {
+      qry.where({ moduleId });
+    }
+
+    if (versionId) {
+      qry.where({ versionId });
+    }
+
+    const res = await qry;
+
+    return Promise.all(
+      res.map((item) => new ModuleInstallationOutputDTO(item as unknown as ModuleInstallationOutputDTO)),
+    );
+  }
+
+  async installModule(installDto: InstallModuleDTO) {
+    const { queryInstallations } = await this.getModel();
+    const data: Partial<ModuleInstallationModel> = {
+      gameserverId: installDto.gameServerId,
+      versionId: installDto.versionId,
+      moduleId: installDto.moduleId,
+      userConfig: installDto.userConfig,
+      systemConfig: installDto.systemConfig,
+      domain: this.domainId,
+    };
+
+    const created = await queryInstallations.insert(data);
+    return this.findOneInstallation(created.id);
+  }
+
+  async uninstallModule(installationId: string) {
+    const { query } = await this.getModel();
+    const res = await query.deleteById(installationId);
+    return !!res;
   }
 }
