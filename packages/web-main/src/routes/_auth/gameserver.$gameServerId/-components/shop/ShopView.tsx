@@ -2,6 +2,7 @@ import { FC } from 'react';
 import { GameServerOutputDTOTypeEnum } from '@takaro/apiclient';
 import { Alert, Button, Chip, Dropdown, styled, useLocalStorage } from '@takaro/lib-components';
 import {
+  AiOutlineMenu as MenuIcon,
   AiOutlinePlus as CreateNewShopListingIcon,
   AiOutlineSplitCells as ImportShopListingFromGameServerIcon,
   AiOutlineUpload as ImportShopListingsFromFileIcon,
@@ -110,7 +111,7 @@ export const ShopView: FC<ShopViewProps> = ({ gameServerId, currency, currencyNa
         <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'row', gap: '10px' }}>
           <Dropdown>
             <Dropdown.Trigger asChild>
-              <Button icon={<CreateNewShopListingIcon />} text="New shoplisting" />
+              <Button icon={<MenuIcon />} text="Shop actions" />
             </Dropdown.Trigger>
             <Dropdown.Menu>
               <DropdownMenu.Group divider>

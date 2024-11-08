@@ -49,8 +49,6 @@ function Component() {
     initialData: loaderData.countriesStats,
   });
 
-  console.log('countriesStatsData', countriesStatsData);
-
   const { control } = useForm({
     defaultValues: {
       period: 'last24Hours',

@@ -75,10 +75,10 @@ export const GameServerNav: FC = () => {
 
   return (
     <Nav data-testid="server-nav">
-      {gameServerId && gameServerId !== '' && gameservers && gameservers.length > 0 ? (
+      {gameServerId && gameServerId !== '' && gameservers && gameservers.data.length > 0 ? (
         <>
           <h3>Game Server</h3>
-          {gameservers.length > 1 && <GlobalGameServerSelect currentSelectedGameServerId={gameServerId} />}
+          {gameservers.data.length > 1 && <GlobalGameServerSelect currentSelectedGameServerId={gameServerId} />}
           {gameServerLinks.map((link) => renderLink(link))}
         </>
       ) : (
