@@ -90,7 +90,7 @@ export class ModuleVersion extends TakaroModel {
   }
 }
 
-class ModuleInstallationModel extends TakaroModel {
+export class ModuleInstallationModel extends TakaroModel {
   static tableName = 'moduleInstallations';
   gameserverId: string;
   moduleId: string;
@@ -116,6 +116,14 @@ class ModuleInstallationModel extends TakaroModel {
           to: `${GameServerModel.tableName}.id`,
         },
       },
+      module: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: ModuleModel,
+        join: {
+          from: `${ModuleInstallationModel.tableName}.moduleId`,
+          to: `${ModuleModel.tableName}.id`,
+        },
+      }
     };
   }
 }
@@ -377,7 +385,7 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
     const { queryVersion } = await this.getModel();
     const item = await queryVersion
       .where('moduleId', moduleId)
-      .andWhere('version', 'latest')
+      .andWhere('tag', 'latest')
       .first()
       .withGraphJoined('cronJobs')
       .withGraphJoined('hooks')
@@ -396,7 +404,13 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
 
   async findOneInstallation(installationId: string) {
     const { queryInstallations } = await this.getModel();
-    const res = await queryInstallations.findById(installationId);
+    const res = await queryInstallations.findById(installationId)
+      .withGraphJoined('version')
+      .withGraphJoined('version.cronJobs')
+      .withGraphJoined('version.hooks')
+      .withGraphJoined('version.commands')
+      .withGraphJoined('version.permissions')
+      .withGraphJoined('version.functions');
     return new ModuleInstallationOutputDTO(res as unknown as ModuleInstallationOutputDTO);
   }
 
@@ -416,7 +430,7 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
       qry.where({ versionId });
     }
 
-    const res = await qry;
+    const res = await qry.withGraphJoined('version');
 
     return Promise.all(
       res.map((item) => new ModuleInstallationOutputDTO(item as unknown as ModuleInstallationOutputDTO)),
@@ -425,10 +439,11 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
 
   async installModule(installDto: InstallModuleDTO) {
     const { queryInstallations } = await this.getModel();
+    const versionToInstall = await this.findOneVersion(installDto.versionId);
     const data: Partial<ModuleInstallationModel> = {
       gameserverId: installDto.gameServerId,
       versionId: installDto.versionId,
-      moduleId: installDto.moduleId,
+      moduleId: versionToInstall.moduleId,
       userConfig: installDto.userConfig,
       systemConfig: installDto.systemConfig,
       domain: this.domainId,

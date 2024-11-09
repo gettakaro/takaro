@@ -10,7 +10,7 @@ interface IStandardSetupData {
   service: CronJobService;
   gameserver: GameServerOutputDTO;
   mod: ModuleOutputDTO;
-  assignment: ModuleInstallationOutputDTO;
+  installation: ModuleInstallationOutputDTO;
   cronjob: CronJobOutputDTO;
 }
 
@@ -41,7 +41,10 @@ async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStanda
     })
   ).data.data;
 
-  const assignment = (await this.client.gameserver.gameServerControllerInstallModule(gameserver.id, mod.id)).data.data;
+  const installation = (await this.client.module.moduleInstallationsControllerInstallModule({
+    gameServerId: gameserver.id,
+    versionId: mod.latestVersion.id,
+  })).data.data;
 
   if (!this.standardDomainId) throw new Error('No standard domain id set!');
 
@@ -49,7 +52,7 @@ async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStanda
     service: new CronJobService(this.standardDomainId),
     mod,
     gameserver,
-    assignment,
+    installation,
     cronjob,
   };
 }
@@ -61,9 +64,12 @@ const tests = [
     name: 'Installing a module enables cron jobs in the queue',
     setup,
     test: async function (this: IntegrationTest<IStandardSetupData>) {
-      const { service, gameserver, mod, assignment, cronjob } = this.setupData;
+      const { service, gameserver, mod, installation: assignment, cronjob } = this.setupData;
 
-      await this.client.gameserver.gameServerControllerInstallModule(gameserver.id, mod.id);
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: gameserver.id,
+        versionId: mod.latestVersion.id
+      });
 
       const queue = queueService.queues.cronjobs.queue;
       const allRepeatables = await queue.getRepeatableJobs();
@@ -90,9 +96,9 @@ const tests = [
     name: 'Uninstalling a module disables cron jobs in the queue',
     setup,
     test: async function (this: IntegrationTest<IStandardSetupData>) {
-      const { service, gameserver, mod, assignment } = this.setupData;
+      const { service, mod, installation: assignment } = this.setupData;
 
-      await this.client.gameserver.gameServerControllerUninstallModule(gameserver.id, mod.id);
+      await this.client.module.moduleInstallationsControllerUninstallModule(assignment.id);
 
       const queue = queueService.queues.cronjobs.queue;
       const allRepeatables = await queue.getRepeatableJobs();
@@ -115,7 +121,7 @@ const tests = [
     name: 'Deleting a domain deletes all cron jobs in the queue',
     setup,
     test: async function (this: IntegrationTest<IStandardSetupData>) {
-      const { service, mod, assignment } = this.setupData;
+      const { service, mod, installation: assignment } = this.setupData;
 
       await this.adminClient.domain.domainControllerRemove(this.standardDomainId as string);
 
@@ -140,7 +146,7 @@ const tests = [
     name: 'Deleting a module deletes all cron jobs in the queue',
     setup,
     test: async function (this: IntegrationTest<IStandardSetupData>) {
-      const { service, mod, assignment } = this.setupData;
+      const { service, mod, installation: assignment } = this.setupData;
 
       await this.client.module.moduleControllerRemove(mod.id);
 
@@ -165,7 +171,7 @@ const tests = [
     name: 'Deleting a gameserver deletes all cron jobs in the queue',
     setup,
     test: async function (this: IntegrationTest<IStandardSetupData>) {
-      const { service, mod, assignment, gameserver } = this.setupData;
+      const { service, mod, installation: assignment, gameserver } = this.setupData;
 
       await this.client.gameserver.gameServerControllerRemove(gameserver.id);
 

@@ -192,8 +192,6 @@ export class InstallModuleDTO extends TakaroDTO<InstallModuleDTO> {
   @IsUUID('4')
   versionId: string;
   @IsUUID('4')
-  moduleId: string;
-  @IsUUID('4')
   gameServerId: string;
   @IsJSON()
   @IsOptional()

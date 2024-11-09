@@ -93,7 +93,7 @@ export class ModuleInstallationsController {
   @OpenAPI({
     description: 'Install a module on a gameserver. You can have multiple installations of the same module on the same gameserver.',
   })
-  @Post('')
+  @Post('/')
   async installModule(
     @Req() req: AuthenticatedRequest,
     @Body() data: InstallModuleDTO,

@@ -5,6 +5,7 @@ import { ITakaroRepo } from './base.js';
 import { FUNCTION_TABLE_NAME, FunctionModel } from './function.js';
 import { EventTypes } from '@takaro/modules';
 import { HookCreateDTO, HookOutputDTO, HookUpdateDTO } from '../service/HookService.js';
+import { ModuleInstallationModel } from './module.js';
 
 export const HOOKS_TABLE_NAME = 'hooks';
 
@@ -102,7 +103,9 @@ export class HookRepo extends ITakaroRepo<HookModel, HookOutputDTO, HookCreateDT
   }
 
   async getTriggeredHooks(eventType: EventTypes, gameServerId?: string): Promise<HookOutputDTO[]> {
-    const { query } = await this.getModel();
+    const knex = await this.getKnex();
+    const model = ModuleInstallationModel.bindKnex(knex);
+    const query = model.query().modify('domainScoped', this.domainId);
 
     const whereClause: Record<string, string> = {
       'hooks.eventType': eventType,
@@ -111,19 +114,20 @@ export class HookRepo extends ITakaroRepo<HookModel, HookOutputDTO, HookCreateDT
     if (gameServerId) {
       whereClause['gameservers.id'] = gameServerId;
     }
-
-    const hookIds: string[] = (
-      await query
-        .select('hooks.id as hookId')
-        .innerJoin('functions', 'hooks.functionId', 'functions.id')
-        .innerJoin('moduleVersions', 'hooks.versionId', 'moduleVersions.id')
-        .innerJoin('moduleInstallations', 'moduleInstallations.versionId', 'moduleVersions.id')
-        .innerJoin('gameservers', 'moduleInstallations.gameserverId', 'gameservers.id')
-        .where(whereClause)
-    )
-      // @ts-expect-error Knex is confused because we start from the 'normal' query object
-      // but we create a query that does NOT produce a Model
-      .map((x) => x.hookId);
+    const hookIds: string[] = [];
+    /*     const hookIds: string[] = (
+          await query
+            .select('hooks.id as hookId')
+            .innerJoin('functions', 'hooks.functionId', 'functions.id')
+            .innerJoin('moduleVersions', 'hooks.versionId', 'moduleVersions.id')
+            .innerJoin('hooks', 'hooks.versionId', 'moduleVersions.id')
+            .innerJoin('moduleInstallations', 'moduleInstallations.versionId', 'moduleVersions.id')
+            .innerJoin('gameservers', 'moduleInstallations.gameserverId', 'gameservers.id')
+            .where(whereClause)
+        )
+          // @ts-expect-error Knex is confused because we start from the 'normal' query object
+          // but we create a query that does NOT produce a Model
+          .map((x) => x.hookId); */
 
     const hooksMatchingEvent = await Promise.all(hookIds.map((id) => this.findOne(id)));
     return hooksMatchingEvent;

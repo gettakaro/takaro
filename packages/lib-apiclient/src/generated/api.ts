@@ -4588,12 +4588,6 @@ export interface InstallModuleDTO {
      * @type {string}
      * @memberof InstallModuleDTO
      */
-    'moduleId': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof InstallModuleDTO
-     */
     'gameServerId': string;
     /**
      * 
@@ -16427,7 +16421,7 @@ export const ModuleApiAxiosParamCreator = function (configuration?: Configuratio
          * @throws {RequiredError}
          */
         moduleInstallationsControllerInstallModule: async (installModuleDTO?: InstallModuleDTO, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/module/installation`;
+            const localVarPath = `/module/installation/`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;

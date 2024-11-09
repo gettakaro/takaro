@@ -45,11 +45,11 @@ ajv.addKeyword('x-component');
 
 @traceableClass('service:module')
 export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, ModuleCreateDTO, ModuleUpdateDTO> {
-  commandService = new CommandService(this.domainId);
-  hookService = new HookService(this.domainId);
-  cronjobService = new CronJobService(this.domainId);
-  functionService = new FunctionService(this.domainId);
-  eventsService = new EventService(this.domainId);
+  commandService = () => new CommandService(this.domainId);
+  hookService = () => new HookService(this.domainId);
+  cronjobService = () => new CronJobService(this.domainId);
+  functionService = () => new FunctionService(this.domainId);
+  eventsService = () => new EventService(this.domainId);
 
   get repo() {
     return new ModuleRepo(this.domainId);
@@ -118,7 +118,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
       permissions: await Promise.all((mod.permissions ?? []).map((p) => new PermissionCreateDTO({ ...p, canHaveCount: p.canHaveCount ?? false }))),
     }));
 
-    await this.eventsService.create(
+    await this.eventsService().create(
       new EventCreateDTO({
         eventName: EVENT_TYPES.MODULE_CREATED,
         moduleId: created.id,
@@ -139,7 +139,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
       const updated = await this.repo.update(id, mod);
 
       if (!updated.builtin) {
-        await this.eventsService.create(
+        await this.eventsService().create(
           new EventCreateDTO({
             eventName: EVENT_TYPES.MODULE_UPDATED,
             moduleId: id,
@@ -172,7 +172,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     await Promise.all(installations.results.map((i) => this.uninstallModule(i.id)));
     await this.repo.delete(id);
 
-    await this.eventsService.create(
+    await this.eventsService().create(
       new EventCreateDTO({
         eventName: EVENT_TYPES.MODULE_DELETED,
         moduleId: id,
@@ -240,7 +240,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
           ...c,
           versionId: latestVersion.id,
         });
-        return this.commandService.create(data);
+        return this.commandService().create(data);
       }),
     );
 
@@ -251,7 +251,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
           eventType: h.eventType,
           versionId: latestVersion.id,
         });
-        return this.hookService.create(data);
+        return this.hookService().create(data);
       }),
     );
     const cronjobs = Promise.all(
@@ -260,7 +260,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
           ...c,
           versionId: latestVersion.id,
         });
-        return this.cronjobService.create(data);
+        return this.cronjobService().create(data);
       }),
     );
 
@@ -271,7 +271,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
           code: f.function,
           versionId: latestVersion.id,
         });
-        return this.functionService.create(data);
+        return this.functionService().create(data);
       }),
     );
     await Promise.all([commands, hooks, cronjobs, commands, functions]);
@@ -311,13 +311,13 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     const newVersion = await this.repo.createVersion(moduleId, version);
     const latestVersion = await this.getLatestVersion(moduleId);
 
-    const commands = await this.commandService.find({ filters: { versionId: [latestVersion.id] } });
-    const hooks = await this.hookService.find({ filters: { versionId: [latestVersion.id] } });
-    const cronjobs = await this.cronjobService.find({ filters: { versionId: [latestVersion.id] } });
-    const functions = await this.functionService.find({ filters: { versionId: [latestVersion.id] } });
+    const commands = await this.commandService().find({ filters: { versionId: [latestVersion.id] } });
+    const hooks = await this.hookService().find({ filters: { versionId: [latestVersion.id] } });
+    const cronjobs = await this.cronjobService().find({ filters: { versionId: [latestVersion.id] } });
+    const functions = await this.functionService().find({ filters: { versionId: [latestVersion.id] } });
 
     const commandPromises = commands.results.map((c) =>
-      this.commandService.create(
+      this.commandService().create(
         new CommandCreateDTO({
           versionId: newVersion.id,
           function: c.function.code,
@@ -329,7 +329,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
       ),
     );
     const hookPromises = hooks.results.map((h) =>
-      this.hookService.create(
+      this.hookService().create(
         new HookCreateDTO({
           versionId: newVersion.id,
           function: h.function.code,
@@ -340,7 +340,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
       ),
     );
     const cronjobPromises = cronjobs.results.map((c) =>
-      this.cronjobService.create(
+      this.cronjobService().create(
         new CronJobCreateDTO({
           versionId: newVersion.id,
           function: c.function.code,
@@ -350,7 +350,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
       ),
     );
     const functionPromises = functions.results.map((f) =>
-      this.functionService.create(new FunctionCreateDTO({ versionId: newVersion.id, code: f.code, name: f.name })),
+      this.functionService().create(new FunctionCreateDTO({ versionId: newVersion.id, code: f.code, name: f.name })),
     );
 
     await Promise.all([...commandPromises, ...hookPromises, ...cronjobPromises, ...functionPromises]);
@@ -366,12 +366,10 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
   }
 
   async installModule(installDto: InstallModuleDTO) {
-    const mod = await this.findOne(installDto.moduleId);
     const versionToInstall = await this.findOneVersion(installDto.versionId);
-
-    if (!mod) throw new errors.NotFoundError('Module not found');
     if (!versionToInstall) throw new errors.NotFoundError('Version not found');
-
+    const mod = await this.findOne(versionToInstall.moduleId);
+    if (!mod) throw new errors.NotFoundError('Module not found');
     if (!installDto.userConfig) installDto.userConfig = '{}';
     if (!installDto.systemConfig) installDto.systemConfig = '{}';
 
@@ -403,9 +401,9 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     installDto.systemConfig = JSON.stringify(modSystemConfig);
 
     const installation = await this.repo.installModule(installDto);
-    await this.cronjobService.syncModuleCronjobs(installation);
+    await this.cronjobService().syncModuleCronjobs(installation);
 
-    await this.eventsService.create(
+    await this.eventsService().create(
       new EventCreateDTO({
         eventName: EVENT_TYPES.MODULE_INSTALLED,
         gameserverId: installation.gameserverId,
@@ -422,9 +420,9 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
 
   async uninstallModule(installationId: string) {
     const installation = await this.repo.findOneInstallation(installationId);
-    await this.cronjobService.uninstallCronJobs(installation);
+    await this.cronjobService().uninstallCronJobs(installation);
     await this.repo.uninstallModule(installationId);
-    await this.eventsService.create(
+    await this.eventsService().create(
       new EventCreateDTO({
         eventName: EVENT_TYPES.MODULE_UNINSTALLED,
         gameserverId: installation.gameserverId,
@@ -443,5 +441,41 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
    */
   async getInstalledModules(filters: { gameserverId?: string; moduleId?: string, versionId?: string }) {
     return this.repo.getInstalledModules(filters);
+  }
+
+  /**
+    * After creating a hook, command, cronjob or function, the systemConfig may be outdated
+    * This method will refresh all installations of a module, updating the systemConfig
+    * @param versionId
+    */
+  async refreshInstallations(versionId: string) {
+    const installations = await this.getInstalledModules({ versionId });
+
+    for (const installation of installations) {
+      if (installation.version.tag !== 'latest') {
+        this.log.error('This should not happen! Everything except "latest" tag is immutable', { versionId });
+        throw new errors.BadRequestError('Cannot refresh latest version');
+      }
+      try {
+        await this.uninstallModule(installation.id);
+        await this.installModule(
+          new InstallModuleDTO({
+            gameServerId: installation.gameserverId,
+            versionId,
+            systemConfig: JSON.stringify(installation.systemConfig),
+            userConfig: JSON.stringify(installation.userConfig),
+          }),
+        );
+      } catch (error) {
+        if ((error as Error).message === 'Invalid config schema') {
+          this.log.warn('Invalid config schema, leaving as-is', {
+            versionId,
+            gameserverId: installation.gameserverId,
+          });
+        } else {
+          throw error;
+        }
+      }
+    }
   }
 }

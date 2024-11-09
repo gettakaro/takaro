@@ -138,6 +138,7 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
     }
 
     const created = await this.repo.create(new HookCreateDTO({ ...item, function: fnIdToAdd }));
+    await this.moduleService.refreshInstallations(created.versionId);
     return created;
   }
   async update(id: string, item: HookUpdateDTO) {
@@ -177,6 +178,8 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
 
     const triggeredHooks = await this.repo.getTriggeredHooks(eventType, gameServerId);
 
+    console.log(JSON.stringify(triggeredHooks, null, 2));
+    console.log('------------');
     const hooksAfterFilters = triggeredHooks
       // Regex checks
       .filter((hook) => {
@@ -215,7 +218,6 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
           const copiedHookData = { ...hookData };
 
           const moduleInstallations = await this.moduleService.getInstalledModules({ gameserverId: gameServerId, versionId: hook.versionId });
-
           for (const installation of moduleInstallations) {
             if (!installation.systemConfig.enabled) continue;
             if (!installation.systemConfig.hooks[hook.name].enabled) continue;

@@ -42,6 +42,7 @@ export async function up(knex: Knex): Promise<void> {
   // Prepare versionId column in moduleInstallations
   await knex.schema.table('moduleInstallations', (table) => {
     table.uuid('versionId');
+    table.dropUnique(['gameserverId', 'moduleId', 'domain'], 'moduleassignments_gameserverid_moduleid_domain_unique');
   });
 
   // For each module installation, find the latest version and set it as the versionId
@@ -216,6 +217,7 @@ export async function down(knex: Knex): Promise<void> {
   await knex.schema.alterTable('moduleInstallations', (table) => {
     table.dropForeign('versionId');
     table.dropColumn('versionId');
+    table.unique(['gameserverId', 'moduleId', 'domain'], { indexName: 'moduleassignments_gameserverid_moduleid_domain_unique' });
   });
 
   // Rename table moduleInstallations to moduleAssignments

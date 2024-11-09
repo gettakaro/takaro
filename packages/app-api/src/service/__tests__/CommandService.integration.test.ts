@@ -26,7 +26,7 @@ interface IStandardSetupData {
   service: CommandService;
   gameserver: GameServerOutputDTO;
   mod: ModuleOutputDTO;
-  assignment: ModuleInstallationOutputDTO;
+  installation: ModuleInstallationOutputDTO;
 }
 
 async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStandardSetupData> {
@@ -63,7 +63,10 @@ async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStanda
 
   await connectedEvents;
 
-  const assignment = (await this.client.gameserver.gameServerControllerInstallModule(gameserver.id, mod.id)).data.data;
+  const installation = (await this.client.module.moduleInstallationsControllerInstallModule({
+    gameServerId: gameserver.id,
+    versionId: mod.latestVersion.id,
+  })).data.data;
 
   if (!this.standardDomainId) throw new Error('No standard domain id set!');
 
@@ -72,7 +75,7 @@ async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStanda
     normalCommand,
     mod,
     gameserver,
-    assignment,
+    installation,
   };
 }
 
@@ -175,9 +178,8 @@ const tests = [
         z: 0,
       });
 
-      await this.client.gameserver.gameServerControllerUninstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.mod.id,
+      await this.client.module.moduleInstallationsControllerUninstallModule(
+        this.setupData.installation.id
       );
 
       await this.setupData.service.handleChatMessage(
@@ -192,10 +194,10 @@ const tests = [
 
       expect(addStub).to.not.have.been.calledOnce;
 
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.mod.id,
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.mod.latestVersion.id,
+      });
 
       await this.setupData.service.handleChatMessage(
         new EventChatMessage({
@@ -215,10 +217,10 @@ const tests = [
     name: 'Adds a delayed job when delay is configured',
     setup,
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.mod.id,
+      await this.client.module.moduleInstallationsControllerInstallModule(
         {
+          gameServerId: this.setupData.gameserver.id,
+          versionId: this.setupData.mod.latestVersion.id,
           systemConfig: JSON.stringify({
             commands: {
               [this.setupData.normalCommand.name]: {
@@ -258,10 +260,10 @@ const tests = [
     name: 'Bug repro, install module -> create command -> command not active',
     setup,
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.mod.id,
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.mod.latestVersion.id,
+      });
 
       await this.client.command.commandControllerCreate({
         name: 'Test command 2',
@@ -301,10 +303,11 @@ const tests = [
         z: 0,
       });
 
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.mod.id,
+      await this.client.module.moduleInstallationsControllerInstallModule(
         {
+          gameServerId: this.setupData.gameserver.id,
+          versionId: this.setupData.mod.latestVersion.id,
+
           systemConfig: JSON.stringify({
             commands: {
               [this.setupData.normalCommand.name]: {
@@ -327,9 +330,11 @@ const tests = [
 
       expect(addStub).to.not.have.been.calledOnce;
 
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.mod.id,
+      await this.client.module.moduleInstallationsControllerInstallModule(
+        {
+          gameServerId: this.setupData.gameserver.id,
+          versionId: this.setupData.mod.latestVersion.id,
+        }
       );
 
       await this.setupData.service.handleChatMessage(

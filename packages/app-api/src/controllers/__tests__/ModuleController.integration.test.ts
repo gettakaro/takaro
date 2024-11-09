@@ -197,7 +197,7 @@ const tests = [
       ).data.data;
     },
     test: async function () {
-      return this.client.module.moduleControllerUpdateVersion(this.setupData.latestVersion.id, {
+      return this.client.module.moduleVersionControllerUpdateVersion(this.setupData.latestVersion.id, {
         permissions: [testPermission],
       });
     },
@@ -217,7 +217,7 @@ const tests = [
     },
     test: async function () {
       const secondPermission = { permission: 'test2', description: 'test2', friendlyName: 'test2' };
-      const updateRes = await this.client.module.moduleControllerUpdateVersion(this.setupData.latestVersion.id, {
+      const updateRes = await this.client.module.moduleVersionControllerUpdateVersion(this.setupData.latestVersion.id, {
         permissions: [testPermission, secondPermission],
       });
 
@@ -247,7 +247,7 @@ const tests = [
       ).data.data;
     },
     test: async function () {
-      await this.client.module.moduleControllerUpdateVersion(this.setupData.latestVersion.id, {
+      await this.client.module.moduleVersionControllerUpdateVersion(this.setupData.latestVersion.id, {
         permissions: [],
       });
 
@@ -272,7 +272,7 @@ const tests = [
       ).data.data;
     },
     test: async function () {
-      await this.client.module.moduleControllerUpdateVersion(this.setupData.latestVersion.id, {
+      await this.client.module.moduleVersionControllerUpdateVersion(this.setupData.latestVersion.id, {
         permissions: [
           {
             permission: testPermission.permission,
@@ -309,8 +309,8 @@ const tests = [
               },
             })
           ).data.data[0];
-          const versions = (await this.client.module.moduleControllerSearchVersions({ filters: { moduleId: [mod.id], version: [builtin.version] } })).data.data;
-          const exportRes = await this.client.module.moduleControllerExport(mod.id, { version: versions[0].id });
+          const versions = (await this.client.module.moduleVersionControllerSearchVersions({ filters: { moduleId: [mod.id], version: [builtin.version] } })).data.data;
+          const exportRes = await this.client.module.moduleVersionControllerExport({ versionId: versions[0].id });
           expect(exportRes.data.data).to.deep.equalInAnyOrder(builtin);
         },
       }),
@@ -330,10 +330,10 @@ const tests = [
             })
           ).data.data;
           expect(mods).to.have.length(1);
-          const exportRes = await this.client.module.moduleControllerExport(mods[0].id, {
-            version: mods[0].latestVersion.id,
+          const exportRes = await this.client.module.moduleVersionControllerExport({
+            versionId: mods[0].latestVersion.id,
           });
-          await this.client.module.moduleControllerImport(exportRes.data.data);
+          await this.client.module.moduleVersionControllerImport(exportRes.data.data);
           const modsAfter = (
             await this.client.module.moduleControllerSearch({
               filters: {

@@ -200,6 +200,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
       );
     }
 
+    await this.moduleService.refreshInstallations(created.versionId);
     return created;
   }
 

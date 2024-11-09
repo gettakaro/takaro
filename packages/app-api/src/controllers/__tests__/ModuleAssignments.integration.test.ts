@@ -52,10 +52,10 @@ const tests = [
     setup: defaultSetup,
     filteredFields: ['gameserverId', 'moduleId', 'functionId', 'commandId'],
     test: async function () {
-      return this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.utilsModule.latestVersion.id,
-      );
+      return this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.utilsModule.latestVersion.id,
+      });
     },
   }),
   new IntegrationTest<ISetupData>({
@@ -65,14 +65,12 @@ const tests = [
     setup: defaultSetup,
     filteredFields: ['gameserverId', 'moduleId'],
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.utilsModule.latestVersion.id,
-      );
+      const installation = (await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.utilsModule.latestVersion.id,
+      })).data.data;
 
-      return this.client.gameserver.gameServerControllerUninstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.utilsModule.latestVersion.id,
+      return this.client.module.moduleInstallationsControllerUninstallModule(installation.id
       );
     },
   }),
@@ -83,23 +81,20 @@ const tests = [
     setup: defaultSetup,
     filteredFields: ['gameserverId', 'moduleId', 'functionId', 'commandId'],
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.teleportsModule.latestVersion.id,
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.teleportsModule.latestVersion.id,
+      });
 
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.teleportsModule.latestVersion.id,
+      const installation = (await this.client.module.moduleInstallationsControllerInstallModule(
         {
+          gameServerId: this.setupData.gameserver.id,
+          versionId: this.setupData.teleportsModule.latestVersion.id,
           userConfig: JSON.stringify({ timeout: 1337 }),
         },
-      );
+      )).data.data;
 
-      const res = await this.client.gameserver.gameServerControllerGetModuleInstallation(
-        this.setupData.gameserver.id,
-        this.setupData.teleportsModule.latestVersion.id,
-      );
+      const res = await this.client.module.moduleInstallationsControllerGetModuleInstallation(installation.id);
 
       expect(res.data.data.userConfig).to.deep.equal({
         allowPublicTeleports: false,
@@ -124,7 +119,9 @@ const tests = [
         eventType: HookCreateDTOEventTypeEnum.DiscordMessage,
       });
 
-      return this.client.gameserver.gameServerControllerInstallModule(this.setupData.gameserver.id, mod.latestVersion.id, {
+      return this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: mod.latestVersion.id,
         userConfig: JSON.stringify({}),
       });
     },
@@ -150,7 +147,9 @@ const tests = [
 
       const hookName = createdHookRes.data.data.name;
 
-      return this.client.gameserver.gameServerControllerInstallModule(this.setupData.gameserver.id, mod.latestVersion.id, {
+      return this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: mod.latestVersion.id,
         userConfig: JSON.stringify({}),
         systemConfig: JSON.stringify({
           hooks: {
