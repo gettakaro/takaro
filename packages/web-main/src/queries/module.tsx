@@ -362,10 +362,13 @@ export const useCommandUpdate = () => {
             commands: prev.commands.map((c) => (c.id === updatedCommand.id ? updatedCommand : c)),
           };
         });
-        return queryClient.setQueryData<CommandOutputDTO>(
-          moduleKeys.commands.detail(updatedCommand.id),
-          updatedCommand,
-        );
+        return queryClient.invalidateQueries({ queryKey: moduleKeys.commands.detail(updatedCommand.id) });
+        // TODO: Test this again when: https://github.com/gettakaro/takaro/issues/1811 is fixed.
+        // We probably also want to add a test to that.
+        //return queryClient.setQueryData<CommandOutputDTO>(
+        //  moduleKeys.commands.detail(updatedCommand.id),
+        //  updatedCommand,
+        //);
       },
     }),
     defaultCommandErrorMessages,

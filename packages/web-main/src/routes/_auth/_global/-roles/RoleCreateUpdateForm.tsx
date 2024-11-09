@@ -130,18 +130,20 @@ export const RoleForm: FC<CreateUpdateRoleFormProps> = ({
                 {}
                 {Object.values(groupedModulePermissions).map((group: any) => (
                   <Card key={group.module.id} variant="outline" style={{ marginBottom: theme.spacing['2'] }}>
-                    <h3 style={{ marginBottom: theme.spacing['1'], textTransform: 'capitalize' }}>
-                      {group.module.name}
-                    </h3>
-                    {}
-                    {group.permissions.map((permission: any) => (
-                      <PermissionField
-                        key={permission.id}
-                        permission={permission}
-                        control={control}
-                        readOnly={readOnly}
-                      />
-                    ))}
+                    <Card.Body>
+                      <h3 style={{ marginBottom: theme.spacing['1'], textTransform: 'capitalize' }}>
+                        {group.module.name}
+                      </h3>
+                      {}
+                      {group.permissions.map((permission: any) => (
+                        <PermissionField
+                          key={permission.id}
+                          permission={permission}
+                          control={control}
+                          readOnly={readOnly}
+                        />
+                      ))}
+                    </Card.Body>
                   </Card>
                 ))}{' '}
               </CollapseList.Item>

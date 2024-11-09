@@ -47,7 +47,6 @@ export const ToggleButtonGroup: FC<ToggleButtonGroupProps> & SubComponents = ({
     const m = new Map<string, boolean>();
     Children.forEach(children, (child) => {
       if (isValidElement(child)) {
-        console.log(child.props.value, defaultValue);
         if (child.props.value === defaultValue) {
           m.set(child.props.value, true);
         } else {
