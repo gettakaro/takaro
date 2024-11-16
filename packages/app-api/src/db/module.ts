@@ -476,8 +476,8 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
   }
 
   async uninstallModule(installationId: string) {
-    const { query } = await this.getModel();
-    const res = await query.deleteById(installationId);
+    const { queryInstallations } = await this.getModel();
+    const res = await queryInstallations.deleteById(installationId);
     return !!res;
   }
 }
