@@ -19,6 +19,7 @@ import { PERMISSION_TABLE_NAME, PermissionModel } from './role.js';
 import { FunctionModel } from './function.js';
 import { ModuleCreateDTO, ModuleOutputDTO, ModuleVersionOutputDTO } from '../service/Module/dto.js';
 import { GameServerModel } from './gameserver.js';
+import { getSystemConfigSchema } from '../lib/systemConfig.js';
 
 export const MODULE_TABLE_NAME = 'modules';
 export class ModuleModel extends TakaroModel {
@@ -225,7 +226,10 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
       .withGraphJoined('commands.function')
       .withGraphJoined('commands.arguments');
 
-    return new ModuleVersionOutputDTO(data);
+    return new ModuleVersionOutputDTO({
+      ...data,
+      systemConfigSchema: getSystemConfigSchema(data as unknown as ModuleVersionOutputDTO),
+    });
   }
 
   async create(item: ModuleCreateDTO): Promise<ModuleOutputDTO> {
@@ -328,22 +332,22 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
   async findByCommand(commandId: string): Promise<ModuleVersionOutputDTO> {
     const { queryVersion } = await this.getModel();
     const item = await queryVersion.withGraphJoined('commands').findOne('commands.id', commandId);
-
-    return new ModuleVersionOutputDTO(item);
+    if (!item) throw new errors.NotFoundError();
+    return this.findOneVersion(item.id);
   }
 
   async findByHook(hookId: string): Promise<ModuleVersionOutputDTO> {
     const { queryVersion } = await this.getModel();
     const item = await queryVersion.withGraphJoined('hooks').findOne('hooks.id', hookId);
-
-    return new ModuleVersionOutputDTO(item);
+    if (!item) throw new errors.NotFoundError();
+    return this.findOneVersion(item.id);
   }
 
   async findByCronJob(cronJobId: string): Promise<ModuleVersionOutputDTO> {
     const { queryVersion } = await this.getModel();
     const item = await queryVersion.withGraphJoined('cronJobs').findOne('cronJobs.id', cronJobId);
-
-    return new ModuleVersionOutputDTO(item);
+    if (!item) throw new errors.NotFoundError();
+    return this.findOneVersion(item.id);
   }
 
   async findByFunction(functionId: string): Promise<ModuleVersionOutputDTO> {
@@ -355,8 +359,8 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
       .findOne('hooks.functionId', functionId)
       .orWhere('commands.functionId', functionId)
       .orWhere('cronJobs.functionId', functionId);
-
-    return new ModuleVersionOutputDTO(item);
+    if (!item) throw new errors.NotFoundError();
+    return this.findOneVersion(item.id);
   }
 
   async getVersion(id: string): Promise<ModuleVersionOutputDTO> {
@@ -367,8 +371,8 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
       .withGraphJoined('hooks')
       .withGraphJoined('commands')
       .withGraphJoined('functions');
-
-    return new ModuleVersionOutputDTO(item);
+    if (!item) throw new errors.NotFoundError();
+    return this.findOneVersion(item.id);
   }
 
   async createVersion(moduleId: string, tag: string): Promise<ModuleVersionOutputDTO> {
@@ -400,7 +404,7 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
       return this.findOneVersion(latest.id);
     }
 
-    return new ModuleVersionOutputDTO(item);
+    return this.findOneVersion(item.id);
   }
 
   async findOneInstallation(installationId: string) {
