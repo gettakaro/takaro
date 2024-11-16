@@ -21,6 +21,7 @@ const tests = [
     test: async function () {
       return this.client.module.moduleControllerGetOne(this.setupData.id);
     },
+    filteredFields: ['moduleId'],
   }),
   new IntegrationTest<void>({
     group,
@@ -31,6 +32,7 @@ const tests = [
         name: 'Test module',
       });
     },
+    filteredFields: ['moduleId'],
   }),
   new IntegrationTest<ModuleOutputDTO>({
     group,
@@ -183,7 +185,7 @@ const tests = [
         permissions: [testPermission],
       });
     },
-    filteredFields: ['moduleId'],
+    filteredFields: ['moduleId', 'moduleVersionId'],
   }),
   new IntegrationTest<ModuleOutputDTO>({
     group,
@@ -201,7 +203,7 @@ const tests = [
         permissions: [testPermission],
       });
     },
-    filteredFields: ['moduleId'],
+    filteredFields: ['moduleId', 'moduleVersionId'],
   }),
   new IntegrationTest<ModuleOutputDTO>({
     group,
@@ -232,7 +234,7 @@ const tests = [
 
       return updateRes;
     },
-    filteredFields: ['moduleId'],
+    filteredFields: ['moduleId', 'moduleVersionId'],
   }),
   new IntegrationTest<ModuleOutputDTO>({
     group,
@@ -257,7 +259,7 @@ const tests = [
 
       return getRes;
     },
-    filteredFields: ['moduleId'],
+    filteredFields: ['moduleId', 'moduleVersionId'],
   }),
   new IntegrationTest<ModuleOutputDTO>({
     group,
@@ -293,7 +295,7 @@ const tests = [
 
       return getRes;
     },
-    filteredFields: ['moduleId'],
+    filteredFields: ['moduleId', 'moduleVersionId'],
   }),
   ...getModules().map(
     (builtin) =>
@@ -309,8 +311,14 @@ const tests = [
               },
             })
           ).data.data[0];
-          const versions = (await this.client.module.moduleVersionControllerSearchVersions({ filters: { moduleId: [mod.id], version: [builtin.version] } })).data.data;
-          const exportRes = await this.client.module.moduleVersionControllerExport({ versionId: versions[0].id });
+          const versions = (
+            await this.client.module.moduleVersionControllerSearchVersions({
+              filters: { moduleId: [mod.id], version: [builtin.version] },
+            })
+          ).data.data;
+          const version = versions.find((v) => v.tag === builtin.version);
+          if (!version) throw new Error('Version not found');
+          const exportRes = await this.client.module.moduleVersionControllerExport({ versionId: version.id });
           expect(exportRes.data.data).to.deep.equalInAnyOrder(builtin);
         },
       }),

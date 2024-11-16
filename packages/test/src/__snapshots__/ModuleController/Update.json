@@ -6,16 +6,7 @@
       "updatedAt": "2024-07-14T14:37:36.064Z",
       "id": "427827e5-1d7e-4591-b958-2002c0579293",
       "name": "Updated module",
-      "builtin": null,
-      "description": "Updated description",
-      "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{},\"required\":[],\"additionalProperties\":false}",
-      "uiSchema": "{}",
-      "cronJobs": [],
-      "hooks": [],
-      "commands": [],
-      "functions": [],
-      "permissions": [],
-      "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable/disable the module without having to uninstall it.\"}},\"required\":[],\"additionalProperties\":false}"
+      "builtin": null
     }
   },
   "status": 200,
