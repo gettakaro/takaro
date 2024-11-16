@@ -21,7 +21,7 @@ import { PermissionCreateDTO, PermissionOutputDTO } from '../RoleService.js';
 
 // Curse you ESM... :(
 import _Ajv from 'ajv';
-import { getEmptyConfigSchema, getSystemConfigSchema, } from '../../lib/systemConfig.js';
+import { getEmptyConfigSchema, getSystemConfigSchema } from '../../lib/systemConfig.js';
 import { EVENT_TYPES, EventCreateDTO, EventService } from '../EventService.js';
 import { FunctionCreateDTO, FunctionService } from '../FunctionService.js';
 import {
@@ -74,7 +74,9 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     return this.repo.findVersions(filters);
   }
 
-  async findInstallations(filters: ITakaroQuery<ModuleInstallationOutputDTO>): Promise<PaginatedOutput<ModuleInstallationOutputDTO>> {
+  async findInstallations(
+    filters: ITakaroQuery<ModuleInstallationOutputDTO>,
+  ): Promise<PaginatedOutput<ModuleInstallationOutputDTO>> {
     return this.repo.findInstallations(filters);
   }
 
@@ -111,12 +113,17 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     // This ensures that there is a 'latest' version
     const version = await this.getLatestVersion(created.id);
 
-    await this.repo.updateVersion(version.id, new ModuleVersionUpdateDTO({
-      description: mod.description,
-      configSchema: mod.configSchema,
-      uiSchema: mod.uiSchema,
-      permissions: await Promise.all((mod.permissions ?? []).map((p) => new PermissionCreateDTO({ ...p, canHaveCount: p.canHaveCount ?? false }))),
-    }));
+    await this.repo.updateVersion(
+      version.id,
+      new ModuleVersionUpdateDTO({
+        description: mod.description,
+        configSchema: mod.configSchema,
+        uiSchema: mod.uiSchema,
+        permissions: await Promise.all(
+          (mod.permissions ?? []).map((p) => new PermissionCreateDTO({ ...p, canHaveCount: p.canHaveCount ?? false })),
+        ),
+      }),
+    );
 
     await this.eventsService().create(
       new EventCreateDTO({
@@ -167,7 +174,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     const installations = await this.findInstallations({
       filters: {
         moduleId: [id],
-      }
+      },
     });
     await Promise.all(installations.results.map((i) => this.uninstallModule(i.id)));
     await this.repo.delete(id);
@@ -228,12 +235,17 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
 
     const existingVersionRes = await this.findVersions({ filters: { version: [builtin.version], moduleId: [mod.id] } });
 
+    const existingVersions = existingVersionRes.results.filter((v) => v.tag === builtin.version);
+
     // Version already exists, no action needed
-    if (existingVersionRes.total) return;
+    if (existingVersions.length) return;
 
     const latestVersion = await this.getLatestVersion(mod.id);
 
-    this.log.info(`Creating new module version ${builtin.name}-${builtin.version}`, { name: builtin.name, version: builtin.version });
+    this.log.info(`Creating new module version ${builtin.name}-${builtin.version}`, {
+      name: builtin.name,
+      version: builtin.version,
+    });
     const commands = Promise.all(
       builtin.commands.map(async (c) => {
         const data = new CommandCreateDTO({
@@ -355,12 +367,19 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
 
     await Promise.all([...commandPromises, ...hookPromises, ...cronjobPromises, ...functionPromises]);
 
-    await this.repo.updateVersion(newVersion.id, new ModuleVersionUpdateDTO({
-      description: latestVersion.description,
-      configSchema: latestVersion.configSchema,
-      uiSchema: latestVersion.uiSchema,
-      permissions: await Promise.all(latestVersion.permissions.map((p) => new PermissionCreateDTO({ ...p, canHaveCount: p.canHaveCount ?? false }))),
-    }));
+    await this.repo.updateVersion(
+      newVersion.id,
+      new ModuleVersionUpdateDTO({
+        description: latestVersion.description,
+        configSchema: latestVersion.configSchema,
+        uiSchema: latestVersion.uiSchema,
+        permissions: await Promise.all(
+          latestVersion.permissions.map(
+            (p) => new PermissionCreateDTO({ ...p, canHaveCount: p.canHaveCount ?? false }),
+          ),
+        ),
+      }),
+    );
 
     return this.findOneVersion(newVersion.id);
   }
@@ -372,7 +391,6 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     if (!mod) throw new errors.NotFoundError('Module not found');
     if (!installDto.userConfig) installDto.userConfig = '{}';
     if (!installDto.systemConfig) installDto.systemConfig = '{}';
-
 
     const modUserConfig = JSON.parse(installDto.userConfig);
     const validateUserConfig = ajv.compile(JSON.parse(versionToInstall.configSchema));
@@ -436,18 +454,18 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
 
   /**
    * Special helper that AND's all the provided filters
-   * @param filters 
-   * @returns 
+   * @param filters
+   * @returns
    */
-  async getInstalledModules(filters: { gameserverId?: string; moduleId?: string, versionId?: string }) {
+  async getInstalledModules(filters: { gameserverId?: string; moduleId?: string; versionId?: string }) {
     return this.repo.getInstalledModules(filters);
   }
 
   /**
-    * After creating a hook, command, cronjob or function, the systemConfig may be outdated
-    * This method will refresh all installations of a module, updating the systemConfig
-    * @param versionId
-    */
+   * After creating a hook, command, cronjob or function, the systemConfig may be outdated
+   * This method will refresh all installations of a module, updating the systemConfig
+   * @param versionId
+   */
   async refreshInstallations(versionId: string) {
     const installations = await this.getInstalledModules({ versionId });
 
