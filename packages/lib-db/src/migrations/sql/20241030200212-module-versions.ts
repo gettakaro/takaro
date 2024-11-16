@@ -53,7 +53,11 @@ export async function up(knex: Knex): Promise<void> {
   do {
     installs = await knex('moduleInstallations').select('id', 'moduleId').limit(batchSize).offset(offset);
     for (const install of installs) {
-      const latestVersion = await knex('moduleVersions').select('id').where('moduleId', install.moduleId).orderBy('createdAt', 'desc').first();
+      const latestVersion = await knex('moduleVersions')
+        .select('id')
+        .where('moduleId', install.moduleId)
+        .orderBy('createdAt', 'desc')
+        .first();
       await knex('moduleInstallations').where('id', install.id).update({ versionId: latestVersion.id });
     }
     offset += batchSize;
@@ -101,7 +105,11 @@ export async function up(knex: Knex): Promise<void> {
   do {
     commands = await knex('commands').select('id', 'moduleId').limit(batchSize).offset(offset);
     for (const command of commands) {
-      const latestVersion = await knex('moduleVersions').select('id').where('moduleId', command.moduleId).orderBy('createdAt', 'desc').first();
+      const latestVersion = await knex('moduleVersions')
+        .select('id')
+        .where('moduleId', command.moduleId)
+        .orderBy('createdAt', 'desc')
+        .first();
       await knex('commands').where('id', command.id).update({ versionId: latestVersion.id });
     }
     offset += batchSize;
@@ -112,7 +120,11 @@ export async function up(knex: Knex): Promise<void> {
   do {
     hooks = await knex('hooks').select('id', 'moduleId').limit(batchSize).offset(offset);
     for (const hook of hooks) {
-      const latestVersion = await knex('moduleVersions').select('id').where('moduleId', hook.moduleId).orderBy('createdAt', 'desc').first();
+      const latestVersion = await knex('moduleVersions')
+        .select('id')
+        .where('moduleId', hook.moduleId)
+        .orderBy('createdAt', 'desc')
+        .first();
       await knex('hooks').where('id', hook.id).update({ versionId: latestVersion.id });
     }
     offset += batchSize;
@@ -123,7 +135,11 @@ export async function up(knex: Knex): Promise<void> {
   do {
     cronjobs = await knex('cronJobs').select('id', 'moduleId').limit(batchSize).offset(offset);
     for (const cronjob of cronjobs) {
-      const latestVersion = await knex('moduleVersions').select('id').where('moduleId', cronjob.moduleId).orderBy('createdAt', 'desc').first();
+      const latestVersion = await knex('moduleVersions')
+        .select('id')
+        .where('moduleId', cronjob.moduleId)
+        .orderBy('createdAt', 'desc')
+        .first();
       await knex('cronJobs').where('id', cronjob.id).update({ versionId: latestVersion.id });
     }
     offset += batchSize;
@@ -138,7 +154,11 @@ export async function up(knex: Knex): Promise<void> {
         // Not a module scoped permission, so skip
         continue;
       }
-      const latestVersion = await knex('moduleVersions').select('id').where('moduleId', permission.moduleId).orderBy('createdAt', 'desc').first();
+      const latestVersion = await knex('moduleVersions')
+        .select('id')
+        .where('moduleId', permission.moduleId)
+        .orderBy('createdAt', 'desc')
+        .first();
       await knex('permission').where('id', permission.id).update({ moduleVersionId: latestVersion.id });
     }
     offset += batchSize;
@@ -153,7 +173,11 @@ export async function up(knex: Knex): Promise<void> {
         // Not module scoped, so skip
         continue;
       }
-      const latestVersion = await knex('moduleVersions').select('id').where('moduleId', func.moduleId).orderBy('createdAt', 'desc').first();
+      const latestVersion = await knex('moduleVersions')
+        .select('id')
+        .where('moduleId', func.moduleId)
+        .orderBy('createdAt', 'desc')
+        .first();
       await knex('functions').where('id', func.id).update({ versionId: latestVersion.id });
     }
     offset += batchSize;
@@ -189,9 +213,19 @@ export async function up(knex: Knex): Promise<void> {
     table.uuid('versionId').nullable().alter();
     table.foreign('versionId').references('moduleVersions.id').onDelete('CASCADE');
   });
+
+  await knex.schema.alterTable('moduleInstallations', (table) => {
+    table.unique(['moduleId', 'gameserverId', 'domain'], { indexName: 'unique_module_per_gameserver' });
+    table.index(['moduleId', 'gameserverId', 'domain'], 'idx_moduleinstallations_module_gameserver');
+  });
 }
 
 export async function down(knex: Knex): Promise<void> {
+  await knex.schema.alterTable('moduleInstallations', (table) => {
+    table.dropUnique(['moduleId', 'gameserverId', 'domain'], 'unique_module_per_gameserver');
+    table.dropIndex(['moduleId', 'gameserverId', 'domain'], 'idx_moduleinstallations_module_gameserver');
+  });
+
   // Remove the FKs from commands, hooks and cronjobs
   await knex.schema.alterTable('commands', (table) => {
     table.dropForeign('versionId');
@@ -217,7 +251,9 @@ export async function down(knex: Knex): Promise<void> {
   await knex.schema.alterTable('moduleInstallations', (table) => {
     table.dropForeign('versionId');
     table.dropColumn('versionId');
-    table.unique(['gameserverId', 'moduleId', 'domain'], { indexName: 'moduleassignments_gameserverid_moduleid_domain_unique' });
+    table.unique(['gameserverId', 'moduleId', 'domain'], {
+      indexName: 'moduleassignments_gameserverid_moduleid_domain_unique',
+    });
   });
 
   // Rename table moduleInstallations to moduleAssignments
@@ -252,7 +288,10 @@ export async function down(knex: Knex): Promise<void> {
   });
 
   // Copy over the latest version of each module
-  const versions = await knex('moduleVersions').select('id', 'moduleId', 'createdAt', 'description', 'configSchema', 'uiSchema').distinct('moduleId').orderBy('createdAt', 'desc');
+  const versions = await knex('moduleVersions')
+    .select('id', 'moduleId', 'createdAt', 'description', 'configSchema', 'uiSchema')
+    .distinct('moduleId')
+    .orderBy('createdAt', 'desc');
   for (const version of versions) {
     await knex('modules').where('id', version.moduleId).update({
       description: version.description,

@@ -4,7 +4,12 @@ import { errors, traceableClass } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import { CronJobModel, CRONJOB_TABLE_NAME } from './cronjob.js';
 import { HookModel, HOOKS_TABLE_NAME } from './hook.js';
-import { InstallModuleDTO, ModuleInstallationOutputDTO, ModuleUpdateDTO, ModuleVersionUpdateDTO } from '../service/Module/dto.js';
+import {
+  InstallModuleDTO,
+  ModuleInstallationOutputDTO,
+  ModuleUpdateDTO,
+  ModuleVersionUpdateDTO,
+} from '../service/Module/dto.js';
 import { CommandModel, COMMANDS_TABLE_NAME } from './command.js';
 import { CronJobOutputDTO } from '../service/CronJobService.js';
 import { HookOutputDTO } from '../service/HookService.js';
@@ -123,7 +128,7 @@ export class ModuleInstallationModel extends TakaroModel {
           from: `${ModuleInstallationModel.tableName}.moduleId`,
           to: `${ModuleModel.tableName}.id`,
         },
-      }
+      },
     };
   }
 }
@@ -154,7 +159,7 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
 
     return {
       total: result.total,
-      results: result.results.map(_ => new ModuleOutputDTO(_)),
+      results: result.results.map((_) => new ModuleOutputDTO(_)),
     };
   }
 
@@ -177,7 +182,7 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
 
     return {
       total: result.total,
-      results: result.results.map(_ => new ModuleVersionOutputDTO(_)),
+      results: result.results.map((_) => new ModuleVersionOutputDTO(_)),
     };
   }
 
@@ -191,15 +196,13 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
 
     return {
       total: result.total,
-      results: result.results.map(_ => new ModuleInstallationOutputDTO(_ as unknown as ModuleInstallationOutputDTO)),
+      results: result.results.map((_) => new ModuleInstallationOutputDTO(_ as unknown as ModuleInstallationOutputDTO)),
     };
-
   }
 
   async findOne(id: string): Promise<ModuleOutputDTO> {
     const { query } = await this.getModel();
-    const data = await query
-      .findById(id);
+    const data = await query.findById(id);
 
     if (!data) {
       throw new errors.NotFoundError(`Record with id ${id} not found`);
@@ -210,7 +213,8 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
 
   async findOneVersion(id: string): Promise<ModuleVersionOutputDTO> {
     const { queryVersion } = await this.getModel();
-    const data = await queryVersion.findById(id)
+    const data = await queryVersion
+      .findById(id)
       .withGraphJoined('hooks')
       .withGraphJoined('commands')
       .withGraphJoined('cronJobs')
@@ -220,7 +224,6 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
       .withGraphJoined('cronJobs.function')
       .withGraphJoined('commands.function')
       .withGraphJoined('commands.arguments');
-
 
     return new ModuleVersionOutputDTO(data);
   }
@@ -380,7 +383,6 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
     return this.findOneVersion(item.id);
   }
 
-
   async getLatestVersion(moduleId: string): Promise<ModuleVersionOutputDTO> {
     const { queryVersion } = await this.getModel();
     const item = await queryVersion
@@ -401,10 +403,10 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
     return new ModuleVersionOutputDTO(item);
   }
 
-
   async findOneInstallation(installationId: string) {
     const { queryInstallations } = await this.getModel();
-    const res = await queryInstallations.findById(installationId)
+    const res = await queryInstallations
+      .findById(installationId)
       .withGraphJoined('version')
       .withGraphJoined('version.cronJobs')
       .withGraphJoined('version.hooks')
@@ -414,7 +416,15 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
     return new ModuleInstallationOutputDTO(res as unknown as ModuleInstallationOutputDTO);
   }
 
-  async getInstalledModules({ gameserverId, moduleId, versionId }: { gameserverId?: string; moduleId?: string, versionId?: string }) {
+  async getInstalledModules({
+    gameserverId,
+    moduleId,
+    versionId,
+  }: {
+    gameserverId?: string;
+    moduleId?: string;
+    versionId?: string;
+  }) {
     const { queryInstallations } = await this.getModel();
     const qry = queryInstallations.modify('domainScoped', this.domainId);
 
@@ -439,6 +449,7 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
 
   async installModule(installDto: InstallModuleDTO) {
     const { queryInstallations } = await this.getModel();
+
     const versionToInstall = await this.findOneVersion(installDto.versionId);
     const data: Partial<ModuleInstallationModel> = {
       gameserverId: installDto.gameServerId,
@@ -449,8 +460,19 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
       domain: this.domainId,
     };
 
-    const created = await queryInstallations.insert(data);
-    return this.findOneInstallation(created.id);
+    const existingInstallation = await this.getInstalledModules({
+      gameserverId: installDto.gameServerId,
+      versionId: installDto.versionId,
+    });
+
+    if (!existingInstallation.length) {
+      const created = await queryInstallations.insert(data);
+      return this.findOneInstallation(created.id);
+    } else {
+      const installation = existingInstallation[0];
+      await queryInstallations.updateAndFetchById(installation.id, data);
+      return this.findOneInstallation(installation.id);
+    }
   }
 
   async uninstallModule(installationId: string) {
