@@ -409,6 +409,7 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
       .findById(installationId)
       .withGraphJoined('version')
       .withGraphJoined('version.cronJobs')
+      .withGraphJoined('version.cronJobs.function')
       .withGraphJoined('version.hooks')
       .withGraphJoined('version.commands')
       .withGraphJoined('version.permissions')
