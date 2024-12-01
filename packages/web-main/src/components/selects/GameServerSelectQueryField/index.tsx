@@ -21,8 +21,6 @@ const gameTypeMap = {
 
 interface GameServerSelectQueryFieldProps {
   filters?: GameServerSearchInputAllowedFilters;
-  /// Adds an extra option 'Global - applies to all gameservers', id: 'null'
-  /// Because in some situations if no gameserver is selected it is considered for all gameservers.
   addGlobalGameServerOption?: boolean;
 }
 
@@ -35,7 +33,6 @@ export const GameServerSelectQueryField: FC<CustomSelectQueryProps & GameServerS
   label = 'Game server',
   control,
   disabled,
-  inPortal,
   description,
   required,
   filters,
@@ -77,7 +74,6 @@ export const GameServerSelectQueryField: FC<CustomSelectQueryProps & GameServerS
       description={description}
       size={size}
       disabled={disabled}
-      inPortal={inPortal}
       hint={hint}
       name={selectName}
       required={required}
@@ -89,7 +85,7 @@ export const GameServerSelectQueryField: FC<CustomSelectQueryProps & GameServerS
       isFetching={isFetching}
       hasNextPage={hasNextPage}
       isFetchingNextPage={isFetchingNextPage}
-      groupByGameServerType={addGlobalGameServerOption ? false : true}
+      groupByGameServerType={!addGlobalGameServerOption}
       fetchNextPage={fetchNextPage}
     />
   );
@@ -101,6 +97,7 @@ export type GameServerSelectQueryViewProps = CustomSelectQueryProps &
     setGameServerName: (value: string) => void;
     groupByGameServerType?: boolean;
   };
+
 export const GameServerSelectView: FC<GameServerSelectQueryViewProps> = ({
   control,
   gameServers,
@@ -109,7 +106,6 @@ export const GameServerSelectView: FC<GameServerSelectQueryViewProps> = ({
   description,
   size,
   disabled,
-  inPortal,
   hint,
   required,
   loading,
@@ -123,33 +119,31 @@ export const GameServerSelectView: FC<GameServerSelectQueryViewProps> = ({
   groupByGameServerType,
   isFetchingNextPage,
 }) => {
-  const renderOptionGroup = (groupLabel: string, typeEnum: GameServerOutputDTOTypeEnum) => {
-    const gameServersPerType = gameServers.filter((gameServer) => gameServer.type === typeEnum);
+  const renderOptionGroup = (
+    servers: GameServerOutputDTO[],
+    groupLabel: string,
+    typeEnum: GameServerOutputDTOTypeEnum,
+  ) => (
+    <SelectQueryField.OptionGroup key={groupLabel} label={groupLabel} icon={gameTypeMap[typeEnum]?.icon}>
+      {servers.map(({ id, name: serverName, reachable }) => (
+        <SelectQueryField.Option key={`select-${selectName}-${id}`} value={id} label={serverName}>
+          <Inner>
+            <span>{serverName}</span>
+            <Tooltip placement="right">
+              <Tooltip.Trigger asChild>
+                <StatusDot isReachable={reachable} />
+              </Tooltip.Trigger>
+              <Tooltip.Content>{reachable ? 'Server online' : 'Server offline'}</Tooltip.Content>
+            </Tooltip>
+          </Inner>
+        </SelectQueryField.Option>
+      ))}
+    </SelectQueryField.OptionGroup>
+  );
 
-    if (gameServersPerType.length === 0) {
-      return <SelectQueryField.OptionGroup />;
-    }
-
-    return (
-      <SelectQueryField.OptionGroup label={groupLabel} icon={gameTypeMap[typeEnum].icon}>
-        {gameServersPerType.map(({ id, name: serverName, reachable }) => {
-          return (
-            <SelectQueryField.Option key={`select-${selectName}-${serverName}`} value={id} label={serverName}>
-              <Inner>
-                <span>{serverName}</span>
-                <Tooltip placement="right">
-                  <Tooltip.Trigger asChild>
-                    <StatusDot isReachable={reachable} />
-                  </Tooltip.Trigger>
-                  <Tooltip.Content>{reachable ? 'Server online' : 'Server offline'}</Tooltip.Content>
-                </Tooltip>
-              </Inner>
-            </SelectQueryField.Option>
-          );
-        })}
-      </SelectQueryField.OptionGroup>
-    );
-  };
+  const gameServersMock = gameServers.filter((server) => server.type === GameServerOutputDTOTypeEnum.Mock);
+  const gameServersRust = gameServers.filter((server) => server.type === GameServerOutputDTOTypeEnum.Rust);
+  const gameServers7d2d = gameServers.filter((server) => server.type === GameServerOutputDTOTypeEnum.Sevendaystodie);
 
   return (
     <SelectQueryField
@@ -159,7 +153,6 @@ export const GameServerSelectView: FC<GameServerSelectQueryViewProps> = ({
       description={description}
       size={size}
       disabled={disabled}
-      inPortal={inPortal}
       hint={hint}
       label={label}
       required={required}
@@ -187,42 +180,26 @@ export const GameServerSelectView: FC<GameServerSelectQueryViewProps> = ({
 
         if (selectedItems.length === 1) {
           const selected = gameServers.find((server) => server.id === selectedItems[0].value);
-
-          if (selected === undefined) return <div>Could not find server</div>;
-
+          if (!selected) return <div>Could not find server</div>;
           if (selected.id === 'null') return <div>{selected.name}</div>;
-
           return (
             <Inner>
-              {gameTypeMap[selected.type].icon}
+              {gameTypeMap[selected.type]?.icon}
               {selected.name}
             </Inner>
           );
         }
       }}
     >
-      {groupByGameServerType && renderOptionGroup('Mock', GameServerOutputDTOTypeEnum.Mock)}
-      {groupByGameServerType && renderOptionGroup('Rust', GameServerOutputDTOTypeEnum.Rust)}
-      {groupByGameServerType && renderOptionGroup('7 Days to Die', GameServerOutputDTOTypeEnum.Sevendaystodie)}
-
-      {!groupByGameServerType &&
-        gameServers.map(({ id, name: serverName, reachable }) => {
-          return (
-            <SelectQueryField.Option key={`select-${selectName}-${serverName}`} value={id} label={serverName}>
-              <Inner>
-                <span>{serverName}</span>
-                {reachable !== undefined && (
-                  <Tooltip placement="right">
-                    <Tooltip.Trigger asChild>
-                      <StatusDot isReachable={reachable} />
-                    </Tooltip.Trigger>
-                    <Tooltip.Content>{reachable ? 'Server online' : 'Server offline'}</Tooltip.Content>
-                  </Tooltip>
-                )}
-              </Inner>
-            </SelectQueryField.Option>
-          );
-        })}
+      {groupByGameServerType &&
+        gameServersMock.length > 0 &&
+        renderOptionGroup(gameServersMock, 'Mock', GameServerOutputDTOTypeEnum.Mock)}
+      {groupByGameServerType &&
+        gameServersRust.length > 0 &&
+        renderOptionGroup(gameServersRust, 'Rust', GameServerOutputDTOTypeEnum.Rust)}
+      {groupByGameServerType &&
+        gameServers7d2d.length > 0 &&
+        renderOptionGroup(gameServers7d2d, '7 Days to Die', GameServerOutputDTOTypeEnum.Sevendaystodie)}
     </SelectQueryField>
   );
 };

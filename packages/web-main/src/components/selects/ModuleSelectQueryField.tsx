@@ -11,7 +11,6 @@ export const ModuleSelectQueryField: FC<CustomSelectProps> = ({
   loading,
   description,
   readOnly,
-  inPortal,
   disabled,
   size,
   hint,
@@ -49,7 +48,6 @@ export const ModuleSelectQueryField: FC<CustomSelectProps> = ({
       description={description}
       size={size}
       disabled={disabled}
-      inPortal={inPortal}
       hint={hint}
       name={selectName}
       label={label}
@@ -78,7 +76,6 @@ export const ModuleSelectView: FC<ModuleSelectViewProps> = ({
   description,
   size,
   disabled,
-  inPortal,
   hint,
   required,
   loading,
@@ -101,7 +98,6 @@ export const ModuleSelectView: FC<ModuleSelectViewProps> = ({
       hint={hint}
       disabled={disabled}
       size={size}
-      inPortal={inPortal}
       required={required}
       loading={loading}
       canClear={canClear}

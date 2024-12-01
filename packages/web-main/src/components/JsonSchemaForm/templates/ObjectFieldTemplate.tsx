@@ -69,8 +69,6 @@ export function ObjectFieldTemplate<T = any, S extends StrictRJSFSchema = RJSFSc
     return idSchema['$id'] === 'root';
   }
 
-  console.log(schema, uiSchema);
-
   return (
     <div>
       {/* if parent title is commands/cronjobs/hooks then dont render */}

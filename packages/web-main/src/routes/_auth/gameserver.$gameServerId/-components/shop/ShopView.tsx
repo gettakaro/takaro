@@ -1,9 +1,8 @@
 import { FC } from 'react';
 import { GameServerOutputDTOTypeEnum } from '@takaro/apiclient';
-import { Alert, Button, Chip, Dropdown, ToggleButtonGroup, styled, useLocalStorage } from '@takaro/lib-components';
+import { Alert, Button, Chip, Dropdown, styled, useLocalStorage } from '@takaro/lib-components';
 import {
-  AiOutlineTable as TableViewIcon,
-  AiOutlineUnorderedList as ListViewIcon,
+  AiOutlineMenu as MenuIcon,
   AiOutlinePlus as CreateNewShopListingIcon,
   AiOutlineSplitCells as ImportShopListingFromGameServerIcon,
   AiOutlineUpload as ImportShopListingsFromFileIcon,
@@ -17,6 +16,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { useSnackbar } from 'notistack';
 import { useQuery } from '@tanstack/react-query';
 import { shopListingsQueryOptions } from 'queries/shopListing';
+import { TableListToggleButton, ViewType } from 'components/TableListToggleButton';
 
 const Header = styled.div`
   display: flex;
@@ -35,16 +35,14 @@ export interface ShopViewProps {
   currency?: number;
 }
 
-type ViewType = 'list' | 'table';
-
 export const ShopView: FC<ShopViewProps> = ({ gameServerId, currency, currencyName, gameServerType }) => {
-  const { setValue: setView, storedValue: view } = useLocalStorage<ViewType>('shopview', 'list');
   const navigate = useNavigate({ from: '/gameserver/$gameServerId/shop' });
   const { enqueueSnackbar } = useSnackbar();
   const { refetch } = useQuery({
     ...shopListingsQueryOptions({ filters: { gameServerId: [gameServerId] }, limit: 200 }),
     enabled: false,
   });
+  const { setValue: setView, storedValue: view } = useLocalStorage<ViewType>('shop-view-selector', 'list');
 
   // 0 is falsy!
   const hasCurrency = currency !== undefined;
@@ -113,7 +111,7 @@ export const ShopView: FC<ShopViewProps> = ({ gameServerId, currency, currencyNa
         <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'row', gap: '10px' }}>
           <Dropdown>
             <Dropdown.Trigger asChild>
-              <Button icon={<CreateNewShopListingIcon />} text="New shoplisting" />
+              <Button icon={<MenuIcon />} text="Shop actions" />
             </Dropdown.Trigger>
             <Dropdown.Menu>
               <DropdownMenu.Group divider>
@@ -142,19 +140,7 @@ export const ShopView: FC<ShopViewProps> = ({ gameServerId, currency, currencyNa
               </DropdownMenu.Group>
             </Dropdown.Menu>
           </Dropdown>
-          <ToggleButtonGroup
-            onChange={(val) => setView(val as ViewType)}
-            exclusive={true}
-            orientation="horizontal"
-            defaultValue={view}
-          >
-            <ToggleButtonGroup.Button value="list" tooltip="List view">
-              <ListViewIcon size={20} />
-            </ToggleButtonGroup.Button>
-            <ToggleButtonGroup.Button value="table" tooltip="Table view">
-              <TableViewIcon size={20} />
-            </ToggleButtonGroup.Button>
-          </ToggleButtonGroup>
+          <TableListToggleButton value={view} onChange={setView} />
         </div>
       </div>
 

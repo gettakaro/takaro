@@ -28,6 +28,7 @@ import {
   AiOutlinePicRight as TightDensityIcon,
   AiOutlineRight as ExpandIcon,
   AiOutlineUp as CollapseIcon,
+  AiOutlineSearch as SearchIcon,
 } from 'react-icons/ai';
 import { ColumnHeader } from './subcomponents/ColumnHeader';
 import { ColumnVisibility } from './subcomponents/ColumnVisibility';
@@ -37,7 +38,8 @@ import { PageSizeSelect } from './subcomponents/Pagination/PageSizeSelect';
 
 import { ColumnFilter, PageOptions } from '../../../hooks/useTableActions';
 import { GenericCheckBox as CheckBox } from '../../inputs/CheckBox/Generic';
-import { useLocalStorage } from '../../../hooks';
+import { useDebounce, useLocalStorage } from '../../../hooks';
+import { UnControlledTextField } from '../../../components';
 
 export interface TableProps<DataType extends object> {
   id: string;
@@ -57,6 +59,10 @@ export interface TableProps<DataType extends object> {
 
   /// Renders actions that are only visible when one or more rows are selected.
   renderRowSelectionActions?: () => JSX.Element;
+
+  /// When callback is assigned, an input field will appear in the toolbar.
+  onSearchInputChanged?: (input: string) => void;
+  searchInputPlaceholder?: string;
 
   title?: string;
 
@@ -95,6 +101,8 @@ export function Table<DataType extends object>({
   rowSelection,
   columnSearch,
   renderDetailPanel,
+  onSearchInputChanged,
+  searchInputPlaceholder = 'Search...',
   renderToolbar,
   canExpand = () => false,
   renderRowSelectionActions,
@@ -127,6 +135,15 @@ export function Table<DataType extends object>({
 
   const [columnPinning, setColumnPinning] = useState<ColumnPinningState>({});
   const { storedValue: density, setValue: setDensity } = useLocalStorage<Density>(`table-density-${id}`, 'tight');
+  const [searchInput, setSearchInput] = useState<string>('');
+  const debouncedValue = useDebounce(searchInput, 350);
+
+  useEffect(() => {
+    if (onSearchInputChanged) {
+      onSearchInputChanged(debouncedValue);
+      table.resetPagination();
+    }
+  }, [debouncedValue]);
 
   // Might because potentially none fullfil the canExpand condtion.
   const rowsMightExpand = renderDetailPanel ? true : false;
@@ -246,6 +263,18 @@ export function Table<DataType extends object>({
         </Flex>
         <Flex>
           {renderToolbar && renderToolbar()}
+          {onSearchInputChanged && (
+            <UnControlledTextField
+              name="search-input"
+              value={searchInput}
+              placeholder={searchInputPlaceholder}
+              id={id + '-search-input'}
+              hasDescription={false}
+              hasError={false}
+              icon={<SearchIcon />}
+              onChange={(e) => setSearchInput(e.currentTarget.value)}
+            />
+          )}
           {!isLoading && <Filter table={table} />}
           <ColumnVisibility
             table={table}

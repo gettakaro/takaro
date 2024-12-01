@@ -43,6 +43,7 @@ function Component() {
   const { pagination, columnFilters, sorting, columnSearch, rowSelection } = useTableActions<VariableOutputDTO>();
   const navigate = useNavigate();
   const [openVariablesDialog, setOpenVariablesDialog] = useState<boolean>(false);
+  const [quickSearchInput, setQuickSearchInput] = useState<string>('');
 
   const { data, isLoading } = useQuery({
     ...variablesQueryOptions({
@@ -62,7 +63,7 @@ function Component() {
         moduleId: columnFilters.columnFiltersState.find((filter) => filter.id === 'moduleId')?.value,
       },
       search: {
-        key: columnSearch.columnSearchState.find((search) => search.id === 'key')?.value,
+        key: [...(columnSearch.columnSearchState.find((search) => search.id === 'key')?.value ?? []), quickSearchInput],
         gameServerId: columnSearch.columnSearchState.find((search) => search.id === 'gameServerId')?.value,
         playerId: columnSearch.columnSearchState.find((search) => search.id === 'playerId')?.value,
         moduleId: columnSearch.columnSearchState.find((search) => search.id === 'moduleId')?.value,
@@ -191,6 +192,8 @@ function Component() {
       <Divider size="large" />
       <Table
         title="List of variables"
+        searchInputPlaceholder="Search by variable key..."
+        onSearchInputChanged={setQuickSearchInput}
         renderToolbar={() => {
           return (
             <Button

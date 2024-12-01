@@ -30,7 +30,6 @@ export const ControlledSelectField: FC<ControlledSelectFieldProps> & SubComponen
     control,
     loading,
     enableFilter,
-    inPortal,
     canClear,
   } = defaultsApplier(props);
 
@@ -114,7 +113,6 @@ export const ControlledSelectField: FC<ControlledSelectFieldProps> & SubComponen
           onFocus={handleOnFocus}
           render={render}
           value={field.value}
-          inPortal={inPortal}
         >
           {children}
         </GenericSelectField>

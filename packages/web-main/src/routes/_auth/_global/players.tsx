@@ -56,6 +56,7 @@ function Component() {
   useDocumentTitle('Players');
 
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<PlayerOutputDTO>({ pageSize: 25 });
+  const [quickSearchInput, setQuickSearchInput] = useState<string>('');
   const { data, isLoading } = useQuery(
     playersQueryOptions({
       page: pagination.paginationState.pageIndex,
@@ -73,7 +74,10 @@ function Component() {
         xboxLiveId: columnFilters.columnFiltersState.find((filter) => filter.id === 'xboxLiveId')?.value,
       },
       search: {
-        name: columnSearch.columnSearchState.find((search) => search.id === 'name')?.value,
+        name: [
+          ...(columnSearch.columnSearchState.find((search) => search.id === 'name')?.value ?? []),
+          quickSearchInput,
+        ],
         steamId: columnSearch.columnSearchState.find((search) => search.id === 'steamId')?.value,
         epicOnlineServicesId: columnSearch.columnSearchState.find((search) => search.id === 'epicOnlineServicesId')
           ?.value,
@@ -271,6 +275,8 @@ function Component() {
         columnSearch={columnSearch}
         sorting={sorting}
         isLoading={isLoading}
+        onSearchInputChanged={setQuickSearchInput}
+        searchInputPlaceholder="Search player by name..."
       />
     </Fragment>
   );

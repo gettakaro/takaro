@@ -52,9 +52,6 @@ export class GameServersPage extends BasePage {
     await this.page.getByRole('option', { name: value }).locator('div').click();
   }
 
-  async clickTestConnection() {
-    await this.page.getByRole('button', { name: 'Test connection' }).click();
-  }
   async clickSave() {
     await this.page.getByRole('button', { name: 'Save changes' }).click();
   }

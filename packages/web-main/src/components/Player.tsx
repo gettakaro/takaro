@@ -1,4 +1,4 @@
-import { Avatar, Chip, getInitials } from '@takaro/lib-components';
+import { Avatar, Chip, getInitials, Tooltip } from '@takaro/lib-components';
 import { playerQueryOptions } from 'queries/player';
 import { FC } from 'react';
 import { Link } from '@tanstack/react-router';
@@ -46,13 +46,19 @@ export const Player: FC<PlayerProps> = ({ playerId, name, avatarUrl, showAvatar,
   );
 
   return (
-    <Link
-      to={'/player/$playerId'}
-      params={{ playerId }}
-      style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: 'fit-content' }}
-    >
-      {showAvatar && avatar}
-      <span>{name}</span>
-    </Link>
+    <Tooltip>
+      <Tooltip.Trigger>
+        <Link
+          className="underline"
+          to={'/player/$playerId'}
+          params={{ playerId }}
+          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: 'fit-content' }}
+        >
+          {showAvatar && avatar}
+          <span>{name}</span>
+        </Link>
+      </Tooltip.Trigger>
+      <Tooltip.Content>Open player profile</Tooltip.Content>
+    </Tooltip>
   );
 };
