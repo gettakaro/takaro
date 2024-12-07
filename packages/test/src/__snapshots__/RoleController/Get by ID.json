@@ -20,7 +20,7 @@
             "friendlyName": "Manage Roles",
             "description": "Can create, update, and delete roles",
             "canHaveCount": false,
-            "moduleId": null
+            "moduleVersionId": null
           },
           "count": 0,
           "roleId": "46812c6f-2935-44c4-b6e6-9df6782df3bd"
