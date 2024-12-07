@@ -5,6 +5,7 @@ import { DomainRepo } from '../db/domain.js';
 import ms from 'ms';
 import { EventService } from '../service/EventService.js';
 import { VariablesService } from '../service/VariablesService.js';
+import { GameServerService } from '../service/GameServerService.js';
 
 export class SystemWorker extends TakaroWorker<IBaseJobData> {
   constructor() {
@@ -35,9 +36,12 @@ export async function processJob(job: Job<IBaseJobData>) {
         },
       );
     }
+  } else if (job.name === 'gameServerDelete') {
+    await deleteGameServers(job.data.domainId);
   } else {
     await cleanEvents(job.data.domainId);
     await cleanExpiringVariables(job.data.domainId);
+    await deleteGameServers(job.data.domainId);
   }
 }
 
@@ -51,4 +55,11 @@ async function cleanEvents(domainId: string) {
 async function cleanExpiringVariables(domainId: string) {
   const variableService = new VariablesService(domainId);
   await variableService.cleanExpiringVariables();
+}
+
+async function deleteGameServers(domainId: string) {
+  const gameserverService = new GameServerService(domainId);
+  const repo = gameserverService.repo;
+  const { query } = await repo.getModel();
+  await query.whereNotNull('deletedAt').delete();
 }
