@@ -43,6 +43,17 @@
   </style>
 
   <script id="global-config" src="/env.js"></script>
+  <script>
+  (function (w, d, f) {
+    var a = d.getElementsByTagName('head')[0];
+    var s = d.createElement('script');
+    s.async = 1;
+    s.src = f;
+    s.setAttribute('id', 'produktlyScript');
+    s.dataset.clientToken = "35fa6a12f75360fb014339bd6e71975367bef5f92f8d1e2fd2e67db7e2daccd5535068f8d95b1befcbb6659a347c8377ea91edd288732ba1338d1ea0d9fa427e8205a59e9c8caa14ec8d8822833d99272d8c986e53de8d4dd139b04425c7e03142ec3ed2";
+    a.appendChild(s);
+  })(window, document, "https://public.produktly.com/js/main.js");
+</script>
 </head>
 
 <body>
