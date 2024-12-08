@@ -47,7 +47,7 @@ const tests = [
           name: 'Test module',
         })
       ).data.data;
-      return this.client.command.commandControllerCreate(mockCommand(module.id));
+      return this.client.command.commandControllerCreate(mockCommand(module.latestVersion.id));
     },
     filteredFields: ['moduleId', 'functionId'],
   }),
