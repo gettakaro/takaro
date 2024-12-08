@@ -24,6 +24,8 @@ const DEFAULT_FILTERED_FIELDS = [
   'url',
   'snapshot',
   'permissionId',
+  'moduleVersionId',
+  'versionId',
 ];
 
 // Helper to get differences between two objects, ignoring filtered fields
@@ -175,7 +177,7 @@ export async function matchSnapshot<SetupData>(
         .map((d) => d.path.join('.'))
         .filter((path) => !filteredFields.includes(path.split('.').pop()!));
 
-      throw new Error(`Snapshot updated: ${snapshotPath}\n` + `Changed fields: ${changedPaths.join(', ')}`);
+      throw new Error(`Snapshot updated: ${snapshotPath}\nChanged fields: ${changedPaths.join(', ')}`);
     }
     throw error;
   }
