@@ -127,7 +127,7 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
 
   async delete(id: string) {
     const existing = await this.repo.findOne(id);
-    const installedModules = await this.moduleService.getInstalledModules({ moduleId: existing.versionId });
+    const installedModules = await this.moduleService.getInstalledModules({ versionId: existing.versionId });
     await Promise.all(installedModules.map((mod) => this.removeCronjobFromQueue(existing, mod)));
 
     await this.repo.delete(id);
@@ -212,18 +212,20 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
       moduleId: data.moduleId,
     });
 
-    await Promise.all(modInstallations.map((installation) => {
-      return queueService.queues.cronjobs.queue.add({
-        functionId: cronJob.function.id,
-        domainId: this.domainId,
-        itemId: cronJob.id,
-        gameServerId: data.gameServerId,
-        module: installation,
-        // We have some job deduplication logic
-        // When manually triggering a cronjob, it will be the exact same each time
-        // Putting this random UUID in the data circumvents that
-        triggerId: randomUUID(),
-      });
-    }));
+    await Promise.all(
+      modInstallations.map((installation) => {
+        return queueService.queues.cronjobs.queue.add({
+          functionId: cronJob.function.id,
+          domainId: this.domainId,
+          itemId: cronJob.id,
+          gameServerId: data.gameServerId,
+          module: installation,
+          // We have some job deduplication logic
+          // When manually triggering a cronjob, it will be the exact same each time
+          // Putting this random UUID in the data circumvents that
+          triggerId: randomUUID(),
+        });
+      }),
+    );
   }
 }
