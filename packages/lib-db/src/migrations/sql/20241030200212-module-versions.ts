@@ -218,9 +218,18 @@ export async function up(knex: Knex): Promise<void> {
     table.unique(['moduleId', 'gameserverId', 'domain'], { indexName: 'unique_module_per_gameserver' });
     table.index(['moduleId', 'gameserverId', 'domain'], 'idx_moduleinstallations_module_gameserver');
   });
+
+  // Hook name must be unique inside a version
+  await knex.schema.alterTable('hooks', (table) => {
+    table.unique(['name', 'versionId']);
+  });
 }
 
 export async function down(knex: Knex): Promise<void> {
+  await knex.schema.alterTable('hooks', (table) => {
+    table.dropUnique(['name', 'versionId']);
+  });
+
   await knex.schema.alterTable('moduleInstallations', (table) => {
     table.dropUnique(['moduleId', 'gameserverId', 'domain'], 'unique_module_per_gameserver');
     table.dropIndex(['moduleId', 'gameserverId', 'domain'], 'idx_moduleinstallations_module_gameserver');

@@ -1,5 +1,5 @@
 import { IntegrationTest, expect } from '@takaro/test';
-import { HookOutputDTOAPI, HookCreateDTOEventTypeEnum } from '@takaro/apiclient';
+import { HookOutputDTOAPI, HookCreateDTOEventTypeEnum, ModuleOutputDTO } from '@takaro/apiclient';
 
 const group = 'HookController';
 
@@ -96,7 +96,7 @@ const tests = [
     expectedStatus: 400,
     filteredFields: ['moduleId'],
   }),
-  new IntegrationTest<{ id: string }>({
+  new IntegrationTest<ModuleOutputDTO>({
     group,
     snapshot: true,
     name: 'Does not allow creating 2 hooks with the same name inside the same module',
@@ -115,7 +115,7 @@ const tests = [
       // Creating a hook with a new name should be fine
       const hook = (
         await this.client.hook.hookControllerCreate({
-          ...mockHook(this.setupData.id),
+          ...mockHook(this.setupData.latestVersion.id),
           name: 'New name',
         })
       ).data.data;
@@ -123,7 +123,7 @@ const tests = [
       expect(hook.name).to.be.eq('New name');
 
       // But using the same name again should fail
-      return this.client.hook.hookControllerCreate(mockHook(this.setupData.id));
+      return this.client.hook.hookControllerCreate(mockHook(this.setupData.latestVersion.id));
     },
     expectedStatus: 409,
     filteredFields: ['moduleId'],
