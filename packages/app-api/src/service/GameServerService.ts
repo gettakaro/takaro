@@ -204,6 +204,13 @@ export class GameServerService extends TakaroService<
       time: new Date().toISOString(),
     });
     await this.repo.delete(id);
+    await queueService.queues.system.queue.add(
+      {
+        domainId: this.domainId,
+      },
+      {},
+      'gameServerDelete',
+    );
     return id;
   }
 
