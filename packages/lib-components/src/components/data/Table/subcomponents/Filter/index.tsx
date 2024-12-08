@@ -45,7 +45,7 @@ export function Filter<DataType extends object>({ table }: FilterProps<DataType>
       .map((column) => column.id);
 
     return ids;
-  }, [table.getAllColumns()]);
+  }, [...table.getAllColumns()]);
 
   const basedShape = z.object({
     column: z.string().refine((value) => columnIds.includes(value), {
@@ -78,7 +78,7 @@ export function Filter<DataType extends object>({ table }: FilterProps<DataType>
               value: z.string().datetime().min(1),
             }),
           ])
-          .and(basedShape),
+          .and(basedShape)
       ),
     });
   }, [columnIds]);
