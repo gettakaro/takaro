@@ -418,7 +418,22 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
       .withGraphJoined('version.commands')
       .withGraphJoined('version.permissions')
       .withGraphJoined('version.functions');
-    return new ModuleInstallationOutputDTO(res as unknown as ModuleInstallationOutputDTO);
+
+    if (!res) {
+      throw new errors.NotFoundError(`Installation with id ${installationId} not found`);
+    }
+
+    const returnVal = new ModuleInstallationOutputDTO(res as unknown as ModuleInstallationOutputDTO);
+
+    // We want to ensure that all sub-objects are sorted deterministically
+    returnVal.version.cronJobs = returnVal.version.cronJobs.sort((a, b) => a.name.localeCompare(b.name));
+    returnVal.version.hooks = returnVal.version.hooks.sort((a, b) => a.name.localeCompare(b.name));
+    returnVal.version.commands = returnVal.version.commands.sort((a, b) => a.name.localeCompare(b.name));
+    returnVal.version.permissions = returnVal.version.permissions.sort((a, b) =>
+      a.permission.localeCompare(b.permission),
+    );
+
+    return returnVal;
   }
 
   async getInstalledModules({

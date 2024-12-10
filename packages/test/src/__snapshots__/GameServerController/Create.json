@@ -11,7 +11,8 @@
         "host": "http://takaro:3002"
       },
       "type": "MOCK",
-      "reachable": true
+      "reachable": true,
+      "deletedAt": null
     }
   },
   "status": 200,

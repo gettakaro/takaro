@@ -63,15 +63,16 @@ const tests = [
     snapshot: true,
     name: 'Uninstall a module',
     setup: defaultSetup,
-    filteredFields: ['gameserverId', 'moduleId'],
+    filteredFields: ['gameserverId', 'moduleId', 'functionId'],
     test: async function () {
-      const installation = (await this.client.module.moduleInstallationsControllerInstallModule({
-        gameServerId: this.setupData.gameserver.id,
-        versionId: this.setupData.utilsModule.latestVersion.id,
-      })).data.data;
+      const installation = (
+        await this.client.module.moduleInstallationsControllerInstallModule({
+          gameServerId: this.setupData.gameserver.id,
+          versionId: this.setupData.utilsModule.latestVersion.id,
+        })
+      ).data.data;
 
-      return this.client.module.moduleInstallationsControllerUninstallModule(installation.id
-      );
+      return this.client.module.moduleInstallationsControllerUninstallModule(installation.id);
     },
   }),
   new IntegrationTest<ISetupData>({
@@ -86,13 +87,13 @@ const tests = [
         versionId: this.setupData.teleportsModule.latestVersion.id,
       });
 
-      const installation = (await this.client.module.moduleInstallationsControllerInstallModule(
-        {
+      const installation = (
+        await this.client.module.moduleInstallationsControllerInstallModule({
           gameServerId: this.setupData.gameserver.id,
           versionId: this.setupData.teleportsModule.latestVersion.id,
           userConfig: JSON.stringify({ timeout: 1337 }),
-        },
-      )).data.data;
+        })
+      ).data.data;
 
       const res = await this.client.module.moduleInstallationsControllerGetModuleInstallation(installation.id);
 
