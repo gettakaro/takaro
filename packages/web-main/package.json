@@ -6,8 +6,8 @@
   "dependencies": {
     "@jsonforms/core": "3.4.0",
     "@jsonforms/react": "3.4.0",
-    "@sentry/integrations": "7.119.0",
-    "@sentry/react": "8.32.0",
+    "@sentry/integrations": "7.120.1",
+    "@sentry/react": "8.43.0",
     "@sentry/tracing": "7.114.0",
     "@tanstack/react-query": "5.56.2",
     "@tanstack/react-query-devtools": "5.58.0",
