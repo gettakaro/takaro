@@ -1,5 +1,5 @@
 import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
-import { Model } from 'objection';
+import Objection, { Model } from 'objection';
 import { errors, traceableClass } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import { CronJobModel, CRONJOB_TABLE_NAME } from './cronjob.js';
@@ -94,6 +94,26 @@ export class ModuleVersion extends TakaroModel {
       },
     };
   }
+
+  static get modifiers() {
+    const baseModifiers = TakaroModel.modifiers;
+    return {
+      ...baseModifiers,
+      // Loads a bunch of related data we always need for the DTO
+      standardExtend(query: Objection.QueryBuilder<Model>) {
+        query
+          .withGraphJoined('hooks')
+          .withGraphJoined('commands')
+          .withGraphJoined('cronJobs')
+          .withGraphJoined('functions')
+          .withGraphJoined('permissions')
+          .withGraphJoined('hooks.function')
+          .withGraphJoined('cronJobs.function')
+          .withGraphJoined('commands.function')
+          .withGraphJoined('commands.arguments');
+      },
+    };
+  }
 }
 
 export class ModuleInstallationModel extends TakaroModel {
@@ -129,6 +149,25 @@ export class ModuleInstallationModel extends TakaroModel {
           from: `${ModuleInstallationModel.tableName}.moduleId`,
           to: `${ModuleModel.tableName}.id`,
         },
+      },
+    };
+  }
+
+  static get modifiers() {
+    const baseModifiers = TakaroModel.modifiers;
+    return {
+      ...baseModifiers,
+      // Loads a bunch of related data we always need for the DTO
+      standardExtend(query: Objection.QueryBuilder<Model>) {
+        query
+          .withGraphJoined('version')
+          .withGraphJoined('version.cronJobs')
+          .withGraphJoined('version.cronJobs.function')
+          .withGraphJoined('version.hooks')
+          .withGraphJoined('version.commands')
+          .withGraphJoined('version.permissions')
+          .withGraphJoined('version.functions')
+          .withGraphJoined('module');
       },
     };
   }
@@ -168,18 +207,7 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
     const { queryVersion } = await this.getModel();
     const result = await new QueryBuilder<ModuleVersion, ModuleVersionOutputDTO>({
       ...filters,
-      extend: [
-        'cronJobs',
-        'hooks',
-        'commands',
-        'functions',
-        'cronJobs.function',
-        'hooks.function',
-        'commands.function',
-        'commands.arguments',
-        'permissions',
-      ],
-    }).build(queryVersion);
+    }).build(queryVersion.modify('standardExtend'));
 
     return {
       total: result.total,
@@ -214,17 +242,7 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
 
   async findOneVersion(id: string): Promise<ModuleVersionOutputDTO> {
     const { queryVersion } = await this.getModel();
-    const data = await queryVersion
-      .findById(id)
-      .withGraphJoined('hooks')
-      .withGraphJoined('commands')
-      .withGraphJoined('cronJobs')
-      .withGraphJoined('functions')
-      .withGraphJoined('permissions')
-      .withGraphJoined('hooks.function')
-      .withGraphJoined('cronJobs.function')
-      .withGraphJoined('commands.function')
-      .withGraphJoined('commands.arguments');
+    const data = await queryVersion.findById(id).modify('standardExtend');
 
     return new ModuleVersionOutputDTO({
       ...data,
@@ -353,24 +371,17 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
   async findByFunction(functionId: string): Promise<ModuleVersionOutputDTO> {
     const { queryVersion } = await this.getModel();
     const item = await queryVersion
-      .withGraphJoined('hooks')
-      .withGraphJoined('commands')
-      .withGraphJoined('cronJobs')
       .findOne('hooks.functionId', functionId)
       .orWhere('commands.functionId', functionId)
-      .orWhere('cronJobs.functionId', functionId);
+      .orWhere('cronJobs.functionId', functionId)
+      .modify('standardExtend');
     if (!item) throw new errors.NotFoundError();
     return this.findOneVersion(item.id);
   }
 
   async getVersion(id: string): Promise<ModuleVersionOutputDTO> {
     const { queryVersion } = await this.getModel();
-    const item = await queryVersion
-      .findById(id)
-      .withGraphJoined('cronJobs')
-      .withGraphJoined('hooks')
-      .withGraphJoined('commands')
-      .withGraphJoined('functions');
+    const item = await queryVersion.findById(id).modify('standardExtend');
     if (!item) throw new errors.NotFoundError();
     return this.findOneVersion(item.id);
   }
@@ -393,11 +404,7 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
       .where('moduleId', moduleId)
       .andWhere('tag', 'latest')
       .first()
-      .withGraphJoined('cronJobs')
-      .withGraphJoined('hooks')
-      .withGraphJoined('commands')
-      .withGraphJoined('permissions')
-      .withGraphJoined('functions');
+      .modify('standardExtend');
 
     if (!item) {
       const latest = await this.createVersion(moduleId, 'latest');
@@ -409,15 +416,7 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
 
   async findOneInstallation(installationId: string) {
     const { queryInstallations } = await this.getModel();
-    const res = await queryInstallations
-      .findById(installationId)
-      .withGraphJoined('version')
-      .withGraphJoined('version.cronJobs')
-      .withGraphJoined('version.cronJobs.function')
-      .withGraphJoined('version.hooks')
-      .withGraphJoined('version.commands')
-      .withGraphJoined('version.permissions')
-      .withGraphJoined('version.functions');
+    const res = await queryInstallations.findById(installationId).modify('standardExtend');
 
     if (!res) {
       throw new errors.NotFoundError(`Installation with id ${installationId} not found`);
@@ -449,18 +448,18 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
     const qry = queryInstallations.modify('domainScoped', this.domainId);
 
     if (gameserverId) {
-      qry.where({ gameserverId });
+      qry.where('moduleInstallations.gameserverId', gameserverId);
     }
 
     if (moduleId) {
-      qry.where({ moduleId });
+      qry.where('moduleInstallations.moduleId', moduleId);
     }
 
     if (versionId) {
-      qry.where({ versionId });
+      qry.where('moduleInstallations.versionId', versionId);
     }
 
-    const res = await qry.withGraphJoined('version');
+    const res = await qry.modify('standardExtend');
 
     return Promise.all(
       res.map((item) => new ModuleInstallationOutputDTO(item as unknown as ModuleInstallationOutputDTO)),
