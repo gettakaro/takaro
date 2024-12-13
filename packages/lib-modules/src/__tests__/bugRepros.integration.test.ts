@@ -30,7 +30,7 @@ const tests = [
       // Add the buggy hooks
       await this.client.hook.hookControllerCreate({
         name: 'Test hook 1',
-        moduleId: mod.id,
+        versionId: mod.latestVersion.id,
         regex: 'test msg',
         eventType: 'chat-message',
         function: genFn('First'),
@@ -38,13 +38,16 @@ const tests = [
 
       await this.client.hook.hookControllerCreate({
         name: 'Test hook 2',
-        moduleId: mod.id,
+        versionId: mod.latestVersion.id,
         regex: 'test msg',
         eventType: 'chat-message',
         function: genFn('Second'),
       });
 
-      await this.client.gameserver.gameServerControllerInstallModule(this.setupData.gameserver.id, mod.id);
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: mod.latestVersion.id,
+      });
 
       const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 2);
 
@@ -79,7 +82,7 @@ const tests = [
       ).data.data;
       await this.client.hook.hookControllerCreate({
         name: 'Test hook 1',
-        moduleId: mod.id,
+        versionId: mod.latestVersion.id,
         regex: 'test msg',
         eventType: 'chat-message',
         function: `import { data, takaro } from '@takaro/helpers';
@@ -91,7 +94,10 @@ const tests = [
         await main();`,
       });
 
-      await this.client.gameserver.gameServerControllerInstallModule(this.setupData.gameserver.id, mod.id);
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: mod.latestVersion.id,
+      });
 
       const listener = (await new EventsAwaiter().connect(this.client)).waitForEvents(HookEvents.HOOK_EXECUTED, 1);
 
@@ -131,7 +137,7 @@ const tests = [
       ).data.data;
       const createdCommand = await this.client.command.commandControllerCreate({
         name: 'testcmd',
-        moduleId: mod.id,
+        versionId: mod.latestVersion.id,
         trigger: 'testpong',
         function: `import { data, takaro } from '@takaro/helpers';
         async function main() {
@@ -143,7 +149,9 @@ const tests = [
         await main();`,
       });
 
-      await this.client.gameserver.gameServerControllerInstallModule(this.setupData.gameserver.id, mod.id, {
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: mod.latestVersion.id,
         userConfig: JSON.stringify({}),
         systemConfig: JSON.stringify({ commands: { testcmd: { aliases: ['foobar'] } } }),
       });
@@ -190,7 +198,7 @@ const tests = [
       ).data.data;
       await this.client.command.commandControllerCreate({
         name: 'testcmd',
-        moduleId: mod.id,
+        versionId: mod.latestVersion.id,
         trigger: 'test',
         // Yes, very bad code! This is what a user might accidentally do
         function: `import { data, takaro } from '@takaro/helpers';
@@ -207,7 +215,9 @@ const tests = [
           `,
       });
 
-      await this.client.gameserver.gameServerControllerInstallModule(this.setupData.gameserver.id, mod.id, {
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: mod.latestVersion.id,
         userConfig: JSON.stringify({}),
         systemConfig: JSON.stringify({}),
       });

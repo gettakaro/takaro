@@ -35,7 +35,10 @@ const setup = async function (this: IntegrationTest<IModuleTestsSetupData>): Pro
     gameServerId: data.gameserver.id,
   });
 
-  await this.client.gameserver.gameServerControllerInstallModule(data.gameserver.id, data.economyUtilsModule.id);
+  await this.client.module.moduleInstallationsControllerInstallModule({
+    gameServerId: data.gameserver.id,
+    versionId: data.economyUtilsModule.latestVersion.id,
+  });
 
   const pogs = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
     filters: {
@@ -51,7 +54,9 @@ const setup = async function (this: IntegrationTest<IModuleTestsSetupData>): Pro
 
   await Promise.allSettled(tasks);
 
-  await this.client.gameserver.gameServerControllerInstallModule(data.gameserver.id, data.lotteryModule.id, {
+  await this.client.module.moduleInstallationsControllerInstallModule({
+    gameServerId: data.gameserver.id,
+    versionId: data.lotteryModule.latestVersion.id,
     systemConfig: JSON.stringify({
       commands: {
         buyTicket: {
@@ -211,16 +216,14 @@ const tests = [
 
       await this.client.cronjob.cronJobControllerTrigger({
         moduleId: this.setupData.lotteryModule.id,
-        cronjobId: this.setupData.lotteryModule.cronJobs[0].id,
+        cronjobId: this.setupData.lotteryModule.latestVersion.cronJobs[0].id,
         gameServerId: this.setupData.gameserver.id,
       });
 
-      const mod = (
-        await this.client.gameserver.gameServerControllerGetModuleInstallation(
-          this.setupData.gameserver.id,
-          this.setupData.lotteryModule.id,
-        )
-      ).data.data;
+      const installationsRes = await this.client.module.moduleInstallationsControllerGetInstalledModules({
+        filters: { gameServerId: [this.setupData.gameserver.id], moduleId: [this.setupData.lotteryModule.id] },
+      });
+      const mod = installationsRes.data.data[0];
 
       const userConfig: Record<string, any> = mod.userConfig;
       const prize = ticketCost * playerAmount * (1 - userConfig.profitMargin);
@@ -252,7 +255,7 @@ const tests = [
 
       await this.client.cronjob.cronJobControllerTrigger({
         moduleId: this.setupData.lotteryModule.id,
-        cronjobId: this.setupData.lotteryModule.cronJobs[0].id,
+        cronjobId: this.setupData.lotteryModule.latestVersion.cronJobs[0].id,
         gameServerId: this.setupData.gameserver.id,
       });
 
@@ -288,7 +291,7 @@ const tests = [
 
       await this.client.cronjob.cronJobControllerTrigger({
         moduleId: this.setupData.lotteryModule.id,
-        cronjobId: this.setupData.lotteryModule.cronJobs[0].id,
+        cronjobId: this.setupData.lotteryModule.latestVersion.cronJobs[0].id,
         gameServerId: this.setupData.gameserver.id,
       });
 

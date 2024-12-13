@@ -120,10 +120,10 @@ export const shopSetup = async function (this: IntegrationTest<IShopSetup>): Pro
     value: 'test coin',
   });
 
-  await this.client.gameserver.gameServerControllerInstallModule(
-    setupData.gameserver.id,
-    setupData.economyUtilsModule.id,
-  );
+  await this.client.module.moduleInstallationsControllerInstallModule({
+    gameServerId: setupData.gameserver.id,
+    versionId: setupData.economyUtilsModule.latestVersion.id,
+  });
 
   const { client: userClient } = await createUserForPlayer(
     this.client,

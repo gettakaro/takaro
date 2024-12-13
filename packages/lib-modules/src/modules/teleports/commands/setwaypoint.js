@@ -31,13 +31,18 @@ async function main() {
     }
 
     let waypointsInstallation = (
-      await takaro.gameserver.gameServerControllerGetInstalledModules(gameServerId)
+      await takaro.module.moduleInstallationsControllerGetInstalledModules({
+        filters: { gameServerId: [gameServerId] },
+      })
     ).data.data.find((module) => module.name === 'Waypoints');
 
     if (!waypointsInstallation) {
       console.log('Waypoints module not found, installing it.');
       waypointsInstallation = (
-        await takaro.gameserver.gameServerControllerInstallModule(gameServerId, waypointsDefinition.id)
+        await takaro.module.moduleInstallationsControllerInstallModule({
+          gameServerId,
+          versionId: waypointsDefinition.latestVersion.id,
+        })
       ).data.data;
     }
 
@@ -101,7 +106,9 @@ async function main() {
   });
 
   // Need to reinstall the module to ensure the new commands systemconfig and permissions are properly in place
-  await takaro.gameserver.gameServerControllerInstallModule(gameServerId, waypointsInstallation.moduleId, {
+  await takaro.module.moduleInstallationsControllerInstallModule({
+    gameServerId,
+    versionId: waypointsInstallation.versionId,
     systemConfig: JSON.stringify(waypointsInstallation.systemConfig),
     userConfig: JSON.stringify(waypointsInstallation.userConfig),
   });

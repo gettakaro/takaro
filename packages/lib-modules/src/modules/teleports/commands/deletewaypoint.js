@@ -31,13 +31,18 @@ async function main() {
     }
 
     let waypointsInstallation = (
-      await takaro.gameserver.gameServerControllerGetInstalledModules(gameServerId)
+      await takaro.module.moduleInstallationsControllerGetInstalledModules({
+        filters: { gameServerId: [gameServerId] },
+      })
     ).data.data.find((module) => module.name === 'Waypoints');
 
     if (!waypointsInstallation) {
       console.log('Waypoints module not found, installing it.');
       waypointsInstallation = (
-        await takaro.gameserver.gameServerControllerInstallModule(gameServerId, waypointsDefinition.id)
+        await takaro.module.moduleInstallationsControllerInstallModule({
+          gameServerId,
+          versionId: waypointsDefinition.latestVersion.id,
+        })
       ).data.data;
     }
 

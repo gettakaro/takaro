@@ -15,10 +15,10 @@ const tests = [
         this.setupData.players.map((p) => this.client.player.playerControllerRemoveRole(p.id, this.setupData.role.id)),
       );
 
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id,
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.teleportsModule.latestVersion.id,
+      });
 
       const eventsBeforeRole = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE);
 

@@ -21,7 +21,10 @@ interface WaypointsSetup extends IModuleTestsSetupData {
 const waypointsSetup = async function (this: IntegrationTest<WaypointsSetup>): Promise<WaypointsSetup> {
   const setupData = await modulesTestSetup.bind(this as unknown as IntegrationTest<IModuleTestsSetupData>)();
 
-  await this.client.gameserver.gameServerControllerInstallModule(setupData.gameserver.id, setupData.teleportsModule.id);
+  await this.client.module.moduleInstallationsControllerInstallModule({
+    gameServerId: setupData.gameserver.id,
+    versionId: setupData.teleportsModule.latestVersion.id,
+  });
 
   const playersRes = await this.client.player.playerControllerSearch();
 
@@ -65,7 +68,7 @@ async function setupSecondServer() {
     type: GameServerTypesOutputDTOTypeEnum.Mock,
   });
 
-  await this.client.gameserver.gameServerControllerInstallModule(
+  await this.client.module.moduleInstallationsControllerInstallModule(
     newGameServer.data.data.id,
     this.setupData.teleportsModule.id,
   );
