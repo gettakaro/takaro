@@ -41,7 +41,12 @@ async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStanda
     })
   ).data.data;
 
-  const assignment = (await this.client.module.moduleInstallationsControllerInstallModule({ gameServerId: gameserver.id, versionId: mod.latestVersion.id })).data.data;
+  const assignment = (
+    await this.client.module.moduleInstallationsControllerInstallModule({
+      gameServerId: gameserver.id,
+      versionId: mod.latestVersion.id,
+    })
+  ).data.data;
 
   const queueAddStub = sandbox.stub(queueService.queues.hooks.queue, 'add');
 

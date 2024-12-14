@@ -23,6 +23,7 @@ export function Module() {
   "permissions": [],
   "name": "timedShutdown",
   "description": "Automatically shut down the server at a specific time.",
+  "version": "0.0.1",
   "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"warningMessage\":{\"type\":\"string\",\"title\":\"Warning message\",\"description\":\"Message to send to players before the server shuts down.\",\"default\":\"Server is shutting down in 5 minutes!\",\"minLength\":1,\"maxLength\":1024}},\"required\":[\"warningMessage\"]}",
   "uiSchema": "{}"
 };

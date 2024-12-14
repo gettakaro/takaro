@@ -307,7 +307,10 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
               timestamp: chatMessage.timestamp,
               ...parsedCommand,
               player: pog,
-              modules: await this.moduleService.getInstalledModules({ gameserverId: gameServerId, versionId: c.versionId }),
+              modules: await this.moduleService.getInstalledModules({
+                gameserverId: gameServerId,
+                versionId: c.versionId,
+              }),
             },
           };
         }),
@@ -353,8 +356,6 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
           await redisClient.incr(commandsRunningKey(jobData));
           await queueService.queues.commands.queue.add(jobData, { delay });
         }
-
-
       });
 
       await Promise.all(promises);

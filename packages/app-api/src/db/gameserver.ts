@@ -4,11 +4,7 @@ import { errors, traceableClass } from '@takaro/util';
 import { GAME_SERVER_TYPE } from '@takaro/gameserver';
 import { ITakaroRepo } from './base.js';
 import { PLAYER_ON_GAMESERVER_TABLE_NAME, PlayerOnGameServerModel } from './playerOnGameserver.js';
-import {
-  GameServerOutputDTO,
-  GameServerCreateDTO,
-  GameServerUpdateDTO,
-} from '../service/GameServerService.js';
+import { GameServerOutputDTO, GameServerCreateDTO, GameServerUpdateDTO } from '../service/GameServerService.js';
 import { ITEMS_TABLE_NAME, ItemsModel } from './items.js';
 
 export const GAMESERVER_TABLE_NAME = 'gameservers';

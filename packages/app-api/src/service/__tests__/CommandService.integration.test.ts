@@ -63,10 +63,12 @@ async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStanda
 
   await connectedEvents;
 
-  const installation = (await this.client.module.moduleInstallationsControllerInstallModule({
-    gameServerId: gameserver.id,
-    versionId: mod.latestVersion.id,
-  })).data.data;
+  const installation = (
+    await this.client.module.moduleInstallationsControllerInstallModule({
+      gameServerId: gameserver.id,
+      versionId: mod.latestVersion.id,
+    })
+  ).data.data;
 
   if (!this.standardDomainId) throw new Error('No standard domain id set!');
 
@@ -178,9 +180,7 @@ const tests = [
         z: 0,
       });
 
-      await this.client.module.moduleInstallationsControllerUninstallModule(
-        this.setupData.installation.id
-      );
+      await this.client.module.moduleInstallationsControllerUninstallModule(this.setupData.installation.id);
 
       await this.setupData.service.handleChatMessage(
         new EventChatMessage({
@@ -217,19 +217,17 @@ const tests = [
     name: 'Adds a delayed job when delay is configured',
     setup,
     test: async function () {
-      await this.client.module.moduleInstallationsControllerInstallModule(
-        {
-          gameServerId: this.setupData.gameserver.id,
-          versionId: this.setupData.mod.latestVersion.id,
-          systemConfig: JSON.stringify({
-            commands: {
-              [this.setupData.normalCommand.name]: {
-                delay: 5,
-              },
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.mod.latestVersion.id,
+        systemConfig: JSON.stringify({
+          commands: {
+            [this.setupData.normalCommand.name]: {
+              delay: 5,
             },
-          }),
-        },
-      );
+          },
+        }),
+      });
 
       const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
       sandbox.stub(EventService.prototype, 'create').resolves();
@@ -303,20 +301,18 @@ const tests = [
         z: 0,
       });
 
-      await this.client.module.moduleInstallationsControllerInstallModule(
-        {
-          gameServerId: this.setupData.gameserver.id,
-          versionId: this.setupData.mod.latestVersion.id,
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.mod.latestVersion.id,
 
-          systemConfig: JSON.stringify({
-            commands: {
-              [this.setupData.normalCommand.name]: {
-                enabled: false,
-              },
+        systemConfig: JSON.stringify({
+          commands: {
+            [this.setupData.normalCommand.name]: {
+              enabled: false,
             },
-          }),
-        },
-      );
+          },
+        }),
+      });
 
       await this.setupData.service.handleChatMessage(
         new EventChatMessage({
@@ -330,12 +326,10 @@ const tests = [
 
       expect(addStub).to.not.have.been.calledOnce;
 
-      await this.client.module.moduleInstallationsControllerInstallModule(
-        {
-          gameServerId: this.setupData.gameserver.id,
-          versionId: this.setupData.mod.latestVersion.id,
-        }
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.mod.latestVersion.id,
+      });
 
       await this.setupData.service.handleChatMessage(
         new EventChatMessage({

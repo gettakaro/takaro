@@ -35,7 +35,6 @@ class ModuleSearchInputAllowedFilters extends AllowedFilters {
   builtin: string[];
 }
 
-
 class ModuleSearchInputDTO extends ITakaroQuery<ModuleSearchInputAllowedFilters> {
   @ValidateNested()
   @Type(() => ModuleSearchInputAllowedFilters)
@@ -50,8 +49,6 @@ class ModuleSearchInputDTO extends ITakaroQuery<ModuleSearchInputAllowedFilters>
   @Type(() => RangeFilterCreatedAndUpdatedAt)
   declare lessThan: RangeFilterCreatedAndUpdatedAt;
 }
-
-
 
 @OpenAPI({
   security: [{ domainAuth: [] }],

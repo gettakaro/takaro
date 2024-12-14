@@ -56,5 +56,4 @@ export async function builtinModuleModificationMiddleware(
     log.error('Unexpected error in builtinModuleModificationMiddleware', error);
     next(new errors.InternalServerError());
   }
-
 }

@@ -40,7 +40,6 @@ export async function processJob(job: Job<IBaseJobData>) {
         },
       );
     }
-
   } else {
     ctx.addData({ domain: job.data.domainId });
     log.info('🧹 Running system tasks for domain');

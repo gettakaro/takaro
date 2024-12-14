@@ -78,7 +78,13 @@ export class IPermission extends TakaroDTO<IPermission> {
 }
 
 export class BuiltinModule<T> extends TakaroDTO<T> {
-  constructor(name: string, description: string, version: string, configSchema: string, uiSchema: string = JSON.stringify({})) {
+  constructor(
+    name: string,
+    description: string,
+    version: string,
+    configSchema: string,
+    uiSchema: string = JSON.stringify({}),
+  ) {
     super();
     this.name = name;
     this.description = description;

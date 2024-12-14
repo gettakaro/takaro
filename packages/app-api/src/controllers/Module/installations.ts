@@ -12,7 +12,6 @@ import { Response } from 'express';
 import { AllowedFilters } from '../shared.js';
 import { InstallModuleDTO, ModuleInstallationOutputDTO } from '../../service/Module/dto.js';
 
-
 class ModuleInstallationOutputDTOAPI extends APIOutput<ModuleInstallationOutputDTO> {
   @Type(() => ModuleInstallationOutputDTO)
   @ValidateNested()
@@ -24,7 +23,6 @@ class ModuleInstallationOutputArrayDTOAPI extends APIOutput<ModuleInstallationOu
   @ValidateNested({ each: true })
   declare data: ModuleInstallationOutputDTO[];
 }
-
 
 class ModuleInstallationSearchInputAllowedFilters extends AllowedFilters {
   @IsOptional()
@@ -48,7 +46,6 @@ class ModuleInstallationSearchInputDTO extends ITakaroQuery<ModuleInstallationSe
   declare search: ModuleInstallationSearchInputAllowedFilters;
 }
 
-
 @OpenAPI({
   security: [{ domainAuth: [] }],
   tags: ['Module'],
@@ -61,7 +58,11 @@ export class ModuleInstallationsController {
     summary: 'Search module installations',
   })
   @Post('/search')
-  async getInstalledModules(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: ModuleInstallationSearchInputDTO) {
+  async getInstalledModules(
+    @Req() req: AuthenticatedRequest,
+    @Res() res: Response,
+    @Body() query: ModuleInstallationSearchInputDTO,
+  ) {
     const service = new ModuleService(req.domainId);
     const result = await service.findInstallations({
       ...query,
@@ -87,17 +88,14 @@ export class ModuleInstallationsController {
     return apiResponse(res);
   }
 
-
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @ResponseSchema(ModuleInstallationOutputDTOAPI)
   @OpenAPI({
-    description: 'Install a module on a gameserver. You can have multiple installations of the same module on the same gameserver.',
+    description:
+      'Install a module on a gameserver. You can have multiple installations of the same module on the same gameserver.',
   })
   @Post('/')
-  async installModule(
-    @Req() req: AuthenticatedRequest,
-    @Body() data: InstallModuleDTO,
-  ) {
+  async installModule(@Req() req: AuthenticatedRequest, @Body() data: InstallModuleDTO) {
     const service = new ModuleService(req.domainId);
     return apiResponse(await service.installModule(data));
   }

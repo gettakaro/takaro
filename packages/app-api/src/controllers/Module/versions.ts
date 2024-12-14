@@ -13,9 +13,13 @@ import { errors } from '@takaro/util';
 import { builtinModuleModificationMiddleware } from '../../middlewares/builtinModuleModification.js';
 import { BuiltinModule, ICommand, ICommandArgument, ICronJob, IFunction, IHook } from '@takaro/modules';
 import { AllowedFilters, RangeFilterCreatedAndUpdatedAt } from '../shared.js';
-import { ModuleExportInputDTO, ModuleVersionCreateAPIDTO, ModuleVersionOutputDTO, ModuleVersionUpdateDTO } from '../../service/Module/dto.js';
+import {
+  ModuleExportInputDTO,
+  ModuleVersionCreateAPIDTO,
+  ModuleVersionOutputDTO,
+  ModuleVersionUpdateDTO,
+} from '../../service/Module/dto.js';
 import { PermissionCreateDTO } from '../../service/RoleService.js';
-
 
 export class ModuleVersionOutputDTOAPI extends APIOutput<ModuleVersionOutputDTO> {
   @Type(() => ModuleVersionOutputDTO)
@@ -38,7 +42,6 @@ class ModuleVersionSearchInputAllowedFilters extends AllowedFilters {
   moduleId: string[];
 }
 
-
 class ModuleVersionSearchInputDTO extends ITakaroQuery<ModuleVersionSearchInputAllowedFilters> {
   @ValidateNested()
   @Type(() => ModuleVersionSearchInputAllowedFilters)
@@ -53,7 +56,6 @@ class ModuleVersionSearchInputDTO extends ITakaroQuery<ModuleVersionSearchInputA
   @Type(() => RangeFilterCreatedAndUpdatedAt)
   declare lessThan: RangeFilterCreatedAndUpdatedAt;
 }
-
 
 class ModuleExportDTOAPI extends APIOutput<BuiltinModule<unknown>> {
   @Type(() => BuiltinModule)
@@ -73,7 +75,11 @@ export class ModuleVersionController {
     summary: 'Search module versions',
   })
   @Post('/search')
-  async searchVersions(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: ModuleVersionSearchInputDTO) {
+  async searchVersions(
+    @Req() req: AuthenticatedRequest,
+    @Res() res: Response,
+    @Body() query: ModuleVersionSearchInputDTO,
+  ) {
     const service = new ModuleService(req.domainId);
     const result = await service.findVersions({
       ...query,
@@ -103,10 +109,15 @@ export class ModuleVersionController {
   @ResponseSchema(ModuleVersionOutputDTOAPI)
   @OpenAPI({
     summary: 'Update a version',
-    description: 'Update a version of a module, note that you can only update the "latest" version. Tagged versions are immutable',
+    description:
+      'Update a version of a module, note that you can only update the "latest" version. Tagged versions are immutable',
   })
   @Put('/:id')
-  async updateVersion(@Req() req: AuthenticatedRequest, @Params() params: ParamId, @Body() data: ModuleVersionUpdateDTO) {
+  async updateVersion(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamId,
+    @Body() data: ModuleVersionUpdateDTO,
+  ) {
     const service = new ModuleService(req.domainId);
     const result = await service.updateVersion(params.id, data);
     return apiResponse(result);
@@ -125,15 +136,19 @@ export class ModuleVersionController {
     return apiResponse();
   }
 
-
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]))
   @ResponseSchema(ModuleVersionOutputDTOAPI)
   @OpenAPI({
     summary: 'Tag a new version',
-    description: 'Creates a new version of a module, copying all config (commands,hooks,cronjobs,...) from the "latest" version into a new, immutable version',
+    description:
+      'Creates a new version of a module, copying all config (commands,hooks,cronjobs,...) from the "latest" version into a new, immutable version',
   })
   @Post('/')
-  async tagVersion(@Req() req: AuthenticatedRequest, @Params() params: ParamId, @Body() data: ModuleVersionCreateAPIDTO) {
+  async tagVersion(
+    @Req() req: AuthenticatedRequest,
+    @Params() params: ParamId,
+    @Body() data: ModuleVersionCreateAPIDTO,
+  ) {
     const service = new ModuleService(req.domainId);
     const result = await service.tagVersion(params.id, data.tag);
     return apiResponse(result);
@@ -154,7 +169,13 @@ export class ModuleVersionController {
     if (!mod) throw new errors.NotFoundError('Module not found');
     if (!version) throw new errors.NotFoundError('Version not found');
 
-    const output = new BuiltinModule(mod.name, version.description, version.tag, version.configSchema, version.uiSchema);
+    const output = new BuiltinModule(
+      mod.name,
+      version.description,
+      version.tag,
+      version.configSchema,
+      version.uiSchema,
+    );
     output.commands = await Promise.all(
       version.commands.map(
         (_) =>
@@ -234,5 +255,4 @@ export class ModuleVersionController {
     const service = new ModuleService(req.domainId);
     return apiResponse(await service.import(data));
   }
-
 }

@@ -1,14 +1,6 @@
 import { TakaroService } from './Base.js';
 import { GameServerModel, GameServerRepo } from '../db/gameserver.js';
-import {
-  IsBoolean,
-  IsEnum,
-  IsJSON,
-  IsObject,
-  IsOptional,
-  IsString,
-  Length,
-} from 'class-validator';
+import { IsBoolean, IsEnum, IsJSON, IsObject, IsOptional, IsString, Length } from 'class-validator';
 import {
   IMessageOptsDTO,
   IGameServer,
@@ -154,9 +146,11 @@ export class GameServerService extends TakaroService<
 
   async delete(id: string) {
     const installedModules = await this.moduleService.findInstallations({
-      filters: { gameserverId: [id], }
+      filters: { gameserverId: [id] },
     });
-    await Promise.all(installedModules.results.map((installation) => this.moduleService.uninstallModule(installation.id)));
+    await Promise.all(
+      installedModules.results.map((installation) => this.moduleService.uninstallModule(installation.id)),
+    );
 
     gameClassCache.delete(id);
 

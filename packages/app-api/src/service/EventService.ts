@@ -114,7 +114,7 @@ export class EventCreateDTO extends TakaroDTO<EventCreateDTO> {
   meta: BaseEvent<any>;
 }
 
-export class EventUpdateDTO extends TakaroDTO<EventUpdateDTO> { }
+export class EventUpdateDTO extends TakaroDTO<EventUpdateDTO> {}
 
 @traceableClass('service:event')
 export class EventService extends TakaroService<EventModel, EventOutputDTO, EventCreateDTO, EventUpdateDTO> {

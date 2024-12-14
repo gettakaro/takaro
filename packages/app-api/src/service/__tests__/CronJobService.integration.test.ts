@@ -41,10 +41,12 @@ async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStanda
     })
   ).data.data;
 
-  const installation = (await this.client.module.moduleInstallationsControllerInstallModule({
-    gameServerId: gameserver.id,
-    versionId: mod.latestVersion.id,
-  })).data.data;
+  const installation = (
+    await this.client.module.moduleInstallationsControllerInstallModule({
+      gameServerId: gameserver.id,
+      versionId: mod.latestVersion.id,
+    })
+  ).data.data;
 
   if (!this.standardDomainId) throw new Error('No standard domain id set!');
 
@@ -68,7 +70,7 @@ const tests = [
 
       await this.client.module.moduleInstallationsControllerInstallModule({
         gameServerId: gameserver.id,
-        versionId: mod.latestVersion.id
+        versionId: mod.latestVersion.id,
       });
 
       const queue = queueService.queues.cronjobs.queue;

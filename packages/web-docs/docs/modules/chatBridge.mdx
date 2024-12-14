@@ -33,6 +33,7 @@ export function Module() {
   "permissions": [],
   "name": "chatBridge",
   "description": "Connect chat to other services like Discord.",
+  "version": "0.0.1",
   "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"sendPlayerConnected\":{\"title\":\"Send player connected\",\"type\":\"boolean\",\"description\":\"Send a message when a player connects.\",\"default\":true},\"sendPlayerDisconnected\":{\"title\":\"Send player disconnected\",\"type\":\"boolean\",\"description\":\"Send a message when a player disconnects.\",\"default\":true},\"onlyGlobalChat\":{\"title\":\"Only global chat\",\"type\":\"boolean\",\"default\":true,\"description\":\"Only relay messages from global chat. (no team chat or private messages)\"}},\"additionalProperties\":false}",
   "uiSchema": "{}"
 };
