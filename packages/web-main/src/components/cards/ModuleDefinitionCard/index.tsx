@@ -48,6 +48,8 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
   const { mutate, isPending: isDeleting, isSuccess } = useModuleRemove();
   const { data: exported, isPending: isExporting } = useQuery(moduleExportOptions(mod.id, openExportDialog));
 
+  const { latestVersion } = mod;
+
   const theme = useTheme();
   const navigate = useNavigate();
 
@@ -161,12 +163,12 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
                 </Dropdown>
               </ActionIconsContainer>
             </SpacedRow>
-            <p>{mod.description}</p>
+            <p>{latestVersion.description}</p>
             <span style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-              {mod.commands.length > 0 && <p>Commands: {mod.commands.length}</p>}
-              {mod.hooks.length > 0 && <p>Hooks: {mod.hooks.length}</p>}
-              {mod.cronJobs.length > 0 && <p>Cronjobs: {mod.cronJobs.length}</p>}
-              {mod.permissions.length > 0 && <p>Permissions: {mod.permissions.length}</p>}
+              {latestVersion.commands.length > 0 && <p>Commands: {latestVersion.commands.length}</p>}
+              {latestVersion.hooks.length > 0 && <p>Hooks: {latestVersion.hooks.length}</p>}
+              {latestVersion.cronJobs.length > 0 && <p>Cronjobs: {latestVersion.cronJobs.length}</p>}
+              {latestVersion.permissions.length > 0 && <p>Permissions: {latestVersion.permissions.length}</p>}
             </span>
           </InnerBody>
         </Card.Body>
