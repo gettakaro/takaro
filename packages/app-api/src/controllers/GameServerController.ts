@@ -30,7 +30,19 @@ import {
   ModuleInstallDTO,
 } from '../service/GameServerService.js';
 import { AuthenticatedRequest, AuthService, checkPermissions } from '../service/AuthService.js';
-import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Put, Params, Res } from 'routing-controllers';
+import {
+  Body,
+  Get,
+  Post,
+  Delete,
+  JsonController,
+  UseBefore,
+  Req,
+  Put,
+  Params,
+  Res,
+  ContentType,
+} from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId, PogParam } from '../lib/validators.js';
@@ -231,6 +243,17 @@ export class ImportStatusOutputDTOAPI extends APIOutput<ImportStatusOutputDTO> {
 class ImportOutputDTO extends TakaroDTO<ImportOutputDTO> {
   @IsString()
   id!: string;
+}
+
+class MapTileInputDTO extends TakaroDTO<MapTileInputDTO> {
+  @IsUUID('4')
+  id: string;
+  @IsNumber()
+  z: number;
+  @IsNumber()
+  x: number;
+  @IsNumber()
+  y: number;
 }
 
 class ImportOutputDTOAPI extends APIOutput<ImportOutputDTO> {
@@ -587,5 +610,27 @@ export class GameServerController {
 
     const result = await service.import(parsedImportData, validatedOptions);
     return apiResponse(result);
+  }
+
+  @Get('/gameserver/:id/map/info')
+  @UseBefore(AuthService.getAuthMiddleware([]))
+  @OpenAPI({
+    description: 'Get map metadata for Leaflet',
+  })
+  async getMapInfo(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
+    const service = new GameServerService(req.domainId);
+    return apiResponse(await service.getMapInfo(params.id));
+  }
+
+  @Get('/gameserver/:id/map/tile/:x/:y/:z')
+  @UseBefore(AuthService.getAuthMiddleware([]))
+  @ContentType('image/png')
+  @OpenAPI({
+    description: 'Get a map tile for Leaflet',
+  })
+  async getMapTile(@Req() req: AuthenticatedRequest, @Params() params: MapTileInputDTO) {
+    const service = new GameServerService(req.domainId);
+    const result = await service.getMapTile(params.id, params.x, params.y, params.z);
+    return result;
   }
 }

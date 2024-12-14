@@ -7,6 +7,7 @@ import {
   IItemDTO,
   IMessageOptsDTO,
   IPlayerReferenceDTO,
+  MapInfoDTO,
   TestReachabilityOutputDTO,
 } from '../../interfaces/GameServer.js';
 import { MockEmitter } from './emitter.js';
@@ -162,5 +163,20 @@ export class Mock implements IGameServer {
 
   async shutdown(): Promise<void> {
     return this.requestFromServer('shutdown');
+  }
+
+  async getMapInfo(): Promise<MapInfoDTO> {
+    return new MapInfoDTO({
+      enabled: false,
+      mapBlockSize: 0,
+      maxZoom: 0,
+      mapSizeX: 0,
+      mapSizeY: 0,
+      mapSizeZ: 0,
+    });
+  }
+
+  async getMapTile(_x: number, _y: number, _z: number): Promise<Buffer> {
+    throw new Error('Not implemented');
   }
 }
