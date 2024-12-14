@@ -98,7 +98,7 @@ export const ModuleOnboarding: FC<ModuleOnboardingProps> = ({ moduleId }) => {
         <InfoCard title="CronJobs" onClick={async () => await createComponent('cronjob')}>
           Cronjobs are triggered based on time. This can be a simple repeating pattern like "Every 5 minutes" or "Every
           day" or you can use raw Cron (opens in a new tab) syntax to define more complex patterns like "Every Monday,
-          Wednesday and Friday at 2 PM";
+          Wednesday and Friday at 2 PM".
         </InfoCard>
       </Grid>
     </Wrapper>
@@ -118,19 +118,21 @@ export const InfoCard: FC<PropsWithChildren<InfoCardProps>> = ({ title, onClick,
 
   return (
     <Card onClick={onClick}>
-      <Flex>
-        <h2>{title}</h2>
-        {children}
-        <a
-          className="underline"
-          href={`https://docs.takaro.io/modules#${title.toLowerCase()}`}
-          target="_blank"
-          rel="noreferrer noopener"
-          onClick={handleClick}
-        >
-          Learn more
-        </a>
-      </Flex>
+      <Card.Title label={title}></Card.Title>
+      <Card.Body>
+        <Flex>
+          {children}
+          <a
+            className="underline"
+            href={`https://docs.takaro.io/advanced/modules#${title.toLowerCase()}`}
+            target="_blank"
+            rel="noreferrer noopener"
+            onClick={handleClick}
+          >
+            Learn more
+          </a>
+        </Flex>
+      </Card.Body>
     </Card>
   );
 };

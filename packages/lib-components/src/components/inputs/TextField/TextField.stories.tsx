@@ -48,7 +48,7 @@ export const OnChange: StoryFn<TextFieldProps> = (args) => {
   return (
     <>
       <TextField
-        type={args.type}
+        type="cron"
         name={args.name}
         description={args.description}
         control={control}
@@ -191,5 +191,25 @@ export const Generic: StoryFn = () => {
       />
       <pre>{value}</pre>
     </>
+  );
+};
+
+export const Cron: StoryFn = () => {
+  const [value, setValue] = useState<string>('');
+
+  return (
+    <GenericTextField
+      type="cron"
+      hasError={false}
+      onChange={(e) => setValue(e.target.value)}
+      placeholder="placeholder"
+      required={false}
+      name="name"
+      value={value}
+      id="generic-text-field"
+      hasDescription={false}
+      disabled={false}
+      readOnly={false}
+    />
   );
 };

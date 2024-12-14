@@ -47,9 +47,9 @@ const defaultGameServerErrorMessages: Partial<ErrorMessageMapping> = {
 };
 
 export const gameServersQueryOptions = (queryParams: GameServerSearchInputDTO = {}) => {
-  return queryOptions<GameServerOutputDTO[], AxiosError<GameServerOutputArrayDTOAPI>>({
-    queryKey: [...gameServerKeys.list(), ...queryParamsToArray(queryParams)],
-    queryFn: async () => (await getApiClient().gameserver.gameServerControllerSearch(queryParams)).data.data,
+  return queryOptions<GameServerOutputArrayDTOAPI, AxiosError<GameServerOutputArrayDTOAPI>>({
+    queryKey: [...gameServerKeys.list(), 'table', ...queryParamsToArray(queryParams)],
+    queryFn: async () => (await getApiClient().gameserver.gameServerControllerSearch(queryParams)).data,
   });
 };
 

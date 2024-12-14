@@ -34,6 +34,7 @@ export const Default = styled.button<{
   span {
     font-size: 1.25rem;
     font-weight: 600;
+    white-space: nowrap;
     color: ${({ theme, color }) => {
       switch (color) {
         case 'white':

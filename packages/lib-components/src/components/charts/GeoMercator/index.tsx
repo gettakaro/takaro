@@ -84,9 +84,9 @@ const Chart = <T,>({
   const theme = useTheme();
   const { hideTooltip, showTooltip, tooltipData, tooltipLeft = 0, tooltipTop = 0 } = useTooltip<T>();
 
-  const centerX = width / 2 + 50;
-  const centerY = height / 2 + 150;
-  const scale = (width / 1000) * 100;
+  const centerX = width / 2;
+  const centerY = height / 2;
+  const scale = Math.min(width, height) * 0.25;
 
   const colorScale = scaleLinear({
     domain: [Math.min(...data.map((d) => yAccessor(d))), Math.max(...data.map((d) => yAccessor(d)))],

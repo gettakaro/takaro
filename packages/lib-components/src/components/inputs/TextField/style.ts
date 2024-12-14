@@ -5,6 +5,8 @@ export const Container = styled.div`
   position: relative;
 `;
 
+export const InputWrapper = styled.div``;
+
 export const InputContainer = styled.div`
   width: 100%;
   position: relative;
@@ -64,6 +66,10 @@ export const SuffixContainer = styled.div<{ hasError: boolean }>`
   border-top-right-radius: 0.25rem;
   border-bottom-right-radius: 0.25rem;
   white-space: nowrap;
+`;
+
+export const HumanReadableCronContainer = styled.div<{ isError: boolean }>`
+  color: ${({ theme, isError }) => (isError ? theme.colors.error : theme.colors.textAlt)};
 `;
 
 export const Input = styled.input<{

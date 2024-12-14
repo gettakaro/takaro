@@ -177,7 +177,7 @@ export const Navbar: FC<NavbarProps> = ({ showGameServerNav }) => {
         <IconNav>
           <Tooltip>
             <Tooltip.Trigger asChild>
-              <a href="https://github.com/gettakaro/takaro" target="_blank" rel="noreferrer">
+              <a href="https://aka.takaro.io/github" target="_blank" rel="noreferrer">
                 <GithubIcon size={18} />
               </a>
             </Tooltip.Trigger>
@@ -193,7 +193,7 @@ export const Navbar: FC<NavbarProps> = ({ showGameServerNav }) => {
           </Tooltip>
           <Tooltip>
             <Tooltip.Trigger asChild>
-              <a href="https://catalysm.net/discord/" target="_blank" rel="noreferrer">
+              <a href="https://aka.takaro.io/discord" target="_blank" rel="noreferrer">
                 <DiscordIcon size={18} />
               </a>
             </Tooltip.Trigger>
