@@ -13,7 +13,7 @@ import {
   KickPlayerInputDTO,
   ModuleInstallationOutputDTO,
   ModuleInstallationOutputDTOAPI,
-  ModuleInstallDTO,
+  InstallModuleDTO,
   TestReachabilityOutputDTO,
 } from '@takaro/apiclient';
 import {
@@ -39,8 +39,7 @@ export const gameServerKeys = {
 export const installedModuleKeys = {
   all: ['installed modules'] as const,
   list: (gameServerId: string) => [...installedModuleKeys.all, 'list', gameServerId] as const,
-  detail: (gameServerId: string, moduleId: string) =>
-    [...installedModuleKeys.all, 'detail', gameServerId, moduleId] as const,
+  detail: (installationId: string) => [...installedModuleKeys.all, 'detail', installationId] as const,
 };
 
 const defaultGameServerErrorMessages: Partial<ErrorMessageMapping> = {
@@ -225,41 +224,36 @@ export const gameServerModuleInstallationsOptions = (gameServerId: string) => {
   return queryOptions<ModuleInstallationOutputDTO[], AxiosError<ModuleInstallationOutputDTOAPI>>({
     queryKey: installedModuleKeys.list(gameServerId),
     queryFn: async () =>
-      (await getApiClient().gameserver.gameServerControllerGetInstalledModules(gameServerId)).data.data,
+      (
+        await getApiClient().module.moduleInstallationsControllerGetInstalledModules({
+          filters: { gameServerId: [gameServerId] },
+        })
+      ).data.data,
   });
 };
 
-export const gameServerModuleInstallationOptions = (gameServerId: string, moduleId: string) => {
+export const gameServerModuleInstallationOptions = (installationId: string) => {
   return queryOptions<ModuleInstallationOutputDTO, AxiosError<ModuleInstallationOutputDTOAPI>>({
-    queryKey: installedModuleKeys.detail(gameServerId, moduleId),
+    queryKey: installedModuleKeys.detail(installationId),
     queryFn: async () =>
-      (await getApiClient().gameserver.gameServerControllerGetModuleInstallation(gameServerId, moduleId)).data.data,
+      (await getApiClient().module.moduleInstallationsControllerGetModuleInstallation(installationId)).data.data,
   });
 };
-
-interface GameServerModuleInstall {
-  gameServerId: string;
-  moduleId: string;
-  moduleInstall: ModuleInstallDTO;
-}
 
 export const useGameServerModuleInstall = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
 
-  return mutationWrapper<ModuleInstallationOutputDTO, GameServerModuleInstall>(
-    useMutation<ModuleInstallationOutputDTO, AxiosError<ModuleInstallationOutputDTOAPI>, GameServerModuleInstall>({
-      mutationFn: async ({ gameServerId, moduleId, moduleInstall }) =>
-        (await apiClient.gameserver.gameServerControllerInstallModule(gameServerId, moduleId, moduleInstall)).data.data,
+  return mutationWrapper<ModuleInstallationOutputDTO, InstallModuleDTO>(
+    useMutation<ModuleInstallationOutputDTO, AxiosError<ModuleInstallationOutputDTOAPI>, InstallModuleDTO>({
+      mutationFn: async (installDTO) =>
+        (await apiClient.module.moduleInstallationsControllerInstallModule(installDTO)).data.data,
       onSuccess: async (moduleInstallation: ModuleInstallationOutputDTO) => {
         // invalidate list of installed modules
         await queryClient.invalidateQueries({ queryKey: installedModuleKeys.list(moduleInstallation.gameserverId) });
 
         // update installed module cache
-        queryClient.setQueryData(
-          installedModuleKeys.detail(moduleInstallation.gameserverId, moduleInstallation.moduleId),
-          moduleInstallation,
-        );
+        queryClient.setQueryData(installedModuleKeys.detail(moduleInstallation.id), moduleInstallation);
       },
     }),
     {},
@@ -267,8 +261,7 @@ export const useGameServerModuleInstall = () => {
 };
 
 interface GameServerModuleUninstall {
-  gameServerId: string;
-  moduleId: string;
+  installationId: string;
 }
 
 export const useGameServerModuleUninstall = () => {
@@ -277,18 +270,18 @@ export const useGameServerModuleUninstall = () => {
 
   return mutationWrapper<ModuleInstallationOutputDTO, GameServerModuleUninstall>(
     useMutation<ModuleInstallationOutputDTO, AxiosError<ModuleInstallationOutputDTOAPI>, GameServerModuleUninstall>({
-      mutationFn: async ({ gameServerId, moduleId }) =>
-        (await apiClient.gameserver.gameServerControllerUninstallModule(gameServerId, moduleId)).data.data,
-      onSuccess: async (_, { moduleId, gameServerId }) => {
-        queryClient.setQueryData<ModuleInstallationOutputDTO[]>(installedModuleKeys.list(gameServerId), (old) => {
+      mutationFn: async ({ installationId }) =>
+        (await apiClient.module.moduleInstallationsControllerUninstallModule(installationId)).data.data,
+      onSuccess: async (data, { installationId }) => {
+        queryClient.setQueryData<ModuleInstallationOutputDTO[]>(installedModuleKeys.list(data.gameserverId), (old) => {
           return old
             ? old.filter((installedModule) => {
-                return installedModule.moduleId !== moduleId;
+                return installedModule.id !== installationId;
               })
             : old;
         });
         await queryClient.invalidateQueries({
-          queryKey: installedModuleKeys.detail(gameServerId, moduleId),
+          queryKey: installedModuleKeys.detail(installationId),
         });
       },
     }),

@@ -5,6 +5,7 @@ export class EconomyUtils extends BuiltinModule<EconomyUtils> {
     super(
       'economyUtils',
       'A set of commands to allow players to manage their currency.',
+      '0.0.1',
       JSON.stringify({
         $schema: 'http://json-schema.org/draft-07/schema#',
         type: 'object',

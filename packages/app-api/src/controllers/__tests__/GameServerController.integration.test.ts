@@ -65,27 +65,6 @@ const tests = [
   new IntegrationTest<GameServerOutputDTO>({
     group,
     snapshot: true,
-    name: 'Get list of installed modules',
-    setup: async function () {
-      return (await this.client.gameserver.gameServerControllerCreate(mockGameServer)).data.data;
-    },
-    test: async function () {
-      const modules = (await this.client.module.moduleControllerSearch()).data.data;
-
-      const utilsModule = modules.find((m) => m.name === 'utils');
-      if (!utilsModule) {
-        throw new Error('Utils module not found');
-      }
-
-      await this.client.gameserver.gameServerControllerInstallModule(this.setupData.id, utilsModule.id);
-
-      return this.client.gameserver.gameServerControllerGetInstalledModules(this.setupData.id);
-    },
-    filteredFields: ['gameserverId', 'moduleId'],
-  }),
-  new IntegrationTest<GameServerOutputDTO>({
-    group,
-    snapshot: true,
     name: 'Can get list of gameserver types',
     test: async function () {
       return this.client.gameserver.gameServerControllerGetTypes();

@@ -6,6 +6,7 @@ export class Teleports extends BuiltinModule<Teleports> {
     super(
       'teleports',
       'A set of commands to allow players to set their own teleport points and teleport to them.',
+      '0.0.1',
       JSON.stringify({
         $schema: 'http://json-schema.org/draft-07/schema#',
         type: 'object',

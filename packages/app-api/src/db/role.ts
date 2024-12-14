@@ -18,7 +18,7 @@ export const PERMISSION_TABLE_NAME = 'permission';
 
 export class PermissionModel extends TakaroModel {
   static tableName = PERMISSION_TABLE_NAME;
-  moduleId?: string;
+  moduleVersionId?: string;
   permission!: string;
   friendlyName!: string;
   description!: string;
@@ -217,7 +217,7 @@ export class RoleRepo extends ITakaroRepo<RoleModel, RoleOutputDTO, ServiceRoleC
     const knex = await this.getKnex();
     const permissionModel = PermissionModel.bindKnex(knex);
 
-    const res = await permissionModel.query().where({ moduleId: null });
+    const res = await permissionModel.query().where({ moduleVersionId: null });
 
     return await Promise.all(res.map((c) => new PermissionOutputDTO(c)));
   }

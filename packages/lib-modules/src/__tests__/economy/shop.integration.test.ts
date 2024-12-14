@@ -49,10 +49,10 @@ const tests = [
     setup: shopSetup,
     name: 'Can view the second page of shop items',
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.utilsModule.id,
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.utilsModule.latestVersion.id,
+      });
       await this.setupData.createListings(this.client, { gameServerId: this.setupData.gameserver.id, amount: 5 });
       const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(HookEvents.CHAT_MESSAGE, 3);
       const commandExecutedEvent = (await new EventsAwaiter().connect(this.client)).waitForEvents(

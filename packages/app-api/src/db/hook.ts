@@ -104,27 +104,20 @@ export class HookRepo extends ITakaroRepo<HookModel, HookOutputDTO, HookCreateDT
   async getTriggeredHooks(eventType: EventTypes, gameServerId?: string): Promise<HookOutputDTO[]> {
     const { query } = await this.getModel();
 
-    const whereClause: Record<string, string> = {
-      'hooks.eventType': eventType,
-    };
+    query
+      .select('hooks.id as id')
+      .innerJoin('functions', 'hooks.functionId', 'functions.id')
+      .innerJoin('moduleVersions', 'hooks.versionId', 'moduleVersions.id')
+      .innerJoin('moduleInstallations', 'moduleInstallations.versionId', 'moduleVersions.id')
+      .innerJoin('gameservers', 'moduleInstallations.gameserverId', 'gameservers.id')
+      .where({
+        'hooks.eventType': eventType,
+        'hooks.domain': this.domainId,
+        ...(gameServerId ? { 'gameservers.id': gameServerId } : {}),
+      });
 
-    if (gameServerId) {
-      whereClause['gameservers.id'] = gameServerId;
-    }
-
-    const hookIds: string[] = (
-      await query
-        .select('hooks.id as hookId')
-        .innerJoin('functions', 'hooks.functionId', 'functions.id')
-        .innerJoin('modules', 'hooks.moduleId', 'modules.id')
-        .innerJoin('moduleAssignments', 'moduleAssignments.moduleId', 'modules.id')
-        .innerJoin('gameservers', 'moduleAssignments.gameserverId', 'gameservers.id')
-        .where(whereClause)
-    )
-      // @ts-expect-error Knex is confused because we start from the 'normal' query object
-      // but we create a query that does NOT produce a Model
-      .map((x) => x.hookId);
-
+    const results = await query;
+    const hookIds = results.map((x) => x.id);
     const hooksMatchingEvent = await Promise.all(hookIds.map((id) => this.findOne(id)));
     return hooksMatchingEvent;
   }

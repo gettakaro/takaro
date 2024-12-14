@@ -43,6 +43,8 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
   const theme = useTheme();
   const { enqueueSnackbar } = useSnackbar();
 
+  const { latestVersion } = mod;
+
   const handleOnDeleteClick = (e: MouseEvent) => {
     e.stopPropagation();
     if (e.shiftKey) {
@@ -55,10 +57,7 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
   const handleUninstall = async (e: MouseEvent) => {
     e.stopPropagation();
     if (!installation) throw new Error('No installation found');
-    await uninstallModule({
-      gameServerId: installation.gameserverId,
-      moduleId: mod.id,
-    });
+    await uninstallModule({ installationId: installation.id });
     setOpenDialog(false);
   };
 
@@ -93,12 +92,10 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
       const systemConfig = installation.systemConfig;
       systemConfig['enabled'] = !systemConfig['enabled'];
       installModule({
-        moduleId: mod.id,
+        versionId: latestVersion.id,
         gameServerId,
-        moduleInstall: {
-          systemConfig: JSON.stringify(systemConfig),
-          userConfig: JSON.stringify(installation.userConfig),
-        },
+        systemConfig: JSON.stringify(systemConfig),
+        userConfig: JSON.stringify(installation.userConfig),
       });
     }
   };
@@ -156,17 +153,17 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
                 </Dropdown>
               )}
             </div>
-            <p>{mod.description}</p>
+            <p>{latestVersion.description}</p>
 
             <SpacedRow>
               {installation && !installation.systemConfig['enabled'] ? (
                 <Chip label="disabled" variant="outline" color="error" />
               ) : (
                 <span style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                  {mod.commands.length > 0 && <p>Commands: {mod.commands.length}</p>}
-                  {mod.hooks.length > 0 && <p>Hooks: {mod.hooks.length}</p>}
-                  {mod.cronJobs.length > 0 && <p>Cronjobs: {mod.cronJobs.length}</p>}
-                  {mod.permissions.length > 0 && <p>Permissions: {mod.permissions.length}</p>}
+                  {latestVersion.commands.length > 0 && <p>Commands: {latestVersion.commands.length}</p>}
+                  {latestVersion.hooks.length > 0 && <p>Hooks: {latestVersion.hooks.length}</p>}
+                  {latestVersion.cronJobs.length > 0 && <p>Cronjobs: {latestVersion.cronJobs.length}</p>}
+                  {latestVersion.permissions.length > 0 && <p>Permissions: {latestVersion.permissions.length}</p>}
                 </span>
               )}
               <ActionIconsContainer>

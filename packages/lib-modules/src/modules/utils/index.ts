@@ -5,6 +5,7 @@ export class Utils extends BuiltinModule<Utils> {
     super(
       'utils',
       'A collection of useful commands',
+      '0.0.1',
       JSON.stringify({
         $schema: 'http://json-schema.org/draft-07/schema#',
         type: 'object',

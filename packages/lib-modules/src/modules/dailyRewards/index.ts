@@ -6,6 +6,7 @@ export class DailyRewards extends BuiltinModule<DailyRewards> {
     super(
       'dailyRewards',
       'Provides daily login rewards with streak tracking',
+      '0.0.1',
       JSON.stringify({
         $schema: 'http://json-schema.org/draft-07/schema#',
         type: 'object',
