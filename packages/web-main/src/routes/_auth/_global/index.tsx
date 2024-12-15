@@ -8,7 +8,7 @@ export const Route = createFileRoute('/_auth/_global/')({
   beforeLoad: async ({ context }) => {
     const session = await context.queryClient.ensureQueryData(userMeQueryOptions());
     if (hasPermission(session, [PERMISSIONS.ReadEvents])) {
-      throw redirect({ to: '/dashboard' });
+      throw redirect({ to: '/dashboard', replace: true });
     }
 
     /* if user has no permissions at all, so can't see any page, redirect to forbidden */
