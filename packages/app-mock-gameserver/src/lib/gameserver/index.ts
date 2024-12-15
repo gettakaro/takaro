@@ -2,7 +2,15 @@ import { errors, logger } from '@takaro/util';
 import { Redis } from '@takaro/db';
 
 import { getSocketServer } from '../socket/index.js';
-import { IPlayerReferenceDTO, IGameServer, IMessageOptsDTO, CommandOutput, BanDTO, IItemDTO } from '@takaro/gameserver';
+import {
+  IPlayerReferenceDTO,
+  IGameServer,
+  IMessageOptsDTO,
+  CommandOutput,
+  BanDTO,
+  IItemDTO,
+  MapInfoDTO,
+} from '@takaro/gameserver';
 import {
   EventLogLine,
   GameEvents,
@@ -393,6 +401,21 @@ export class MockGameserver implements IMockGameServer {
 
   async shutdown() {
     await this.sendLog('Shutting down');
+  }
+
+  async getMapInfo() {
+    return new MapInfoDTO({
+      enabled: false,
+      mapBlockSize: 100,
+      maxZoom: 5,
+      mapSizeX: 1000,
+      mapSizeY: 1000,
+      mapSizeZ: 1000,
+    });
+  }
+
+  async getMapTile(_x: number, _y: number, _z: number) {
+    return Buffer.from('mock-tile');
   }
 }
 
