@@ -34,6 +34,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       email: session.user.email,
       domain: session.domain,
     });
+
+    // @ts-expect-error - We load Produktly via a script tag in the index...
+    window.Produktly.identifyUser(session.user.idpId, {
+      domain: session.domain,
+      createdAt: session.user.createdAt,
+      email: session.user.email,
+      permissions: session.user.roles.map((role) => role.role.permissions.map((p) => p.permission.permission)).flat(),
+    });
   }, []);
 
   const getSession = async function (): Promise<MeOutputDTO> {
