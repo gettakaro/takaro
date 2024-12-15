@@ -144,13 +144,9 @@ export class ModuleVersionController {
       'Creates a new version of a module, copying all config (commands,hooks,cronjobs,...) from the "latest" version into a new, immutable version',
   })
   @Post('/')
-  async tagVersion(
-    @Req() req: AuthenticatedRequest,
-    @Params() params: ParamId,
-    @Body() data: ModuleVersionCreateAPIDTO,
-  ) {
+  async tagVersion(@Req() req: AuthenticatedRequest, @Body() data: ModuleVersionCreateAPIDTO) {
     const service = new ModuleService(req.domainId);
-    const result = await service.tagVersion(params.id, data.tag);
+    const result = await service.tagVersion(data.moduleId, data.tag);
     return apiResponse(result);
   }
 

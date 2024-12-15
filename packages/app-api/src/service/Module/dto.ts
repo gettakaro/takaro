@@ -164,6 +164,8 @@ export class ModuleVersionCreateAPIDTO extends TakaroDTO<ModuleVersionCreateAPID
   @IsString()
   @Length(1, 100)
   tag: string;
+  @IsUUID('4')
+  moduleId: string;
 }
 
 export class ModuleVersionUpdateDTO extends TakaroDTO<ModuleVersionUpdateDTO> {
