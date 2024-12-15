@@ -1,6 +1,6 @@
 import { TakaroDTO, TakaroModelDTO } from '@takaro/util';
 import { Type } from 'class-transformer';
-import { IsString, IsJSON, IsOptional, ValidateNested, IsUUID, IsObject, Length } from 'class-validator';
+import { IsString, IsJSON, IsOptional, ValidateNested, IsUUID, IsObject, Length, IsISO8601 } from 'class-validator';
 import { CommandCreateDTO, CommandOutputDTO } from '../CommandService.js';
 import { CronJobCreateDTO, CronJobOutputDTO } from '../CronJobService.js';
 import { FunctionCreateDTO, FunctionOutputDTO } from '../FunctionService.js';
@@ -37,6 +37,17 @@ export class ModuleVersionOutputDTO extends TakaroModelDTO<ModuleVersionOutputDT
   permissions: PermissionOutputDTO[];
 }
 
+export class SmallModuleVersionOutputDTO extends TakaroDTO<SmallModuleVersionOutputDTO> {
+  @IsUUID('4')
+  id: string;
+  @IsString()
+  tag: string;
+  @IsISO8601()
+  createdAt: string;
+  @IsISO8601()
+  updatedAt: string;
+}
+
 export class ModuleOutputDTO extends TakaroModelDTO<ModuleOutputDTO> {
   @IsString()
   name: string;
@@ -46,6 +57,9 @@ export class ModuleOutputDTO extends TakaroModelDTO<ModuleOutputDTO> {
   @ValidateNested()
   @Type(() => ModuleVersionOutputDTO)
   latestVersion: ModuleVersionOutputDTO;
+  @ValidateNested({ each: true })
+  @Type(() => SmallModuleVersionOutputDTO)
+  versions: SmallModuleVersionOutputDTO[];
 }
 
 export class ModuleInstallationOutputDTO extends TakaroModelDTO<ModuleInstallationOutputDTO> {

@@ -33,7 +33,14 @@
         ],
         "functions": [],
         "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable/disable the module without having to uninstall it.\"}},\"required\":[],\"additionalProperties\":false}"
-      }
+      },
+      "versions": [
+        {
+          "createdAt": "2024-12-15T21:33:13.430Z",
+          "id": "f33721ae-4955-4664-9979-0c695ad43617",
+          "tag": "latest"
+        }
+      ]
     }
   },
   "status": 200,

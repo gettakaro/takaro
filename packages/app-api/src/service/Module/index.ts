@@ -5,7 +5,7 @@ import { ModuleModel, ModuleRepo } from '../../db/module.js';
 import { CronJobCreateDTO, CronJobService } from '../CronJobService.js';
 import { HookCreateDTO, HookService } from '../HookService.js';
 import { errors, traceableClass } from '@takaro/util';
-import { ITakaroQuery } from '@takaro/db';
+import { ITakaroQuery, SortDirection } from '@takaro/db';
 import { PaginatedOutput } from '../../db/base.js';
 import { CommandCreateDTO, CommandService } from '../CommandService.js';
 import {
@@ -34,6 +34,7 @@ import {
   ModuleUpdateDTO,
   ModuleVersionOutputDTO,
   ModuleVersionUpdateDTO,
+  SmallModuleVersionOutputDTO,
 } from './dto.js';
 
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
@@ -55,9 +56,27 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     return new ModuleRepo(this.domainId);
   }
 
-  private async addLatestVersion(mod: ModuleOutputDTO) {
+  private async extendModuleDTO(mod: ModuleOutputDTO): Promise<ModuleOutputDTO> {
     const latestVersion = await this.getLatestVersion(mod.id);
     mod.latestVersion = latestVersion;
+
+    mod.versions = (
+      await this.repo.findVersions({
+        filters: {
+          moduleId: [mod.id],
+        },
+        sortBy: 'updatedAt',
+        sortDirection: SortDirection.desc,
+      })
+    ).results.map(
+      (v) =>
+        new SmallModuleVersionOutputDTO({
+          createdAt: v.createdAt,
+          updatedAt: v.updatedAt,
+          id: v.id,
+          tag: v.tag,
+        }),
+    );
     return mod;
   }
 
@@ -66,7 +85,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
 
     return {
       total: results.total,
-      results: await Promise.all(results.results.map((m) => this.addLatestVersion(m))),
+      results: await Promise.all(results.results.map((m) => this.extendModuleDTO(m))),
     };
   }
 
@@ -82,7 +101,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
 
   async findOne(id: string): Promise<ModuleOutputDTO | undefined> {
     const result = await this.repo.findOne(id);
-    return result ? this.addLatestVersion(result) : undefined;
+    return result ? this.extendModuleDTO(result) : undefined;
   }
 
   async findOneVersion(id: string): Promise<ModuleVersionOutputDTO | undefined> {
