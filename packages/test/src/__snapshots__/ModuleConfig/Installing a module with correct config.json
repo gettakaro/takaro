@@ -25,6 +25,13 @@
         "commands": [],
         "permissions": [],
         "functions": []
+      },
+      "module": {
+        "createdAt": "2024-12-15T21:32:57.746Z",
+        "updatedAt": "2024-12-15T21:32:57.746Z",
+        "id": "de6b89f6-028b-455d-9c56-abe32541ce3c",
+        "name": "Test module",
+        "builtin": null
       }
     }
   },

@@ -68,6 +68,13 @@
         "commands": [],
         "permissions": [],
         "functions": []
+      },
+      "module": {
+        "createdAt": "2024-12-15T21:33:06.398Z",
+        "updatedAt": "2024-12-15T21:33:06.399Z",
+        "id": "ab8be8a4-8919-4a24-b141-94432bfeadcf",
+        "name": "Test module cronjobs",
+        "builtin": null
       }
     }
   },

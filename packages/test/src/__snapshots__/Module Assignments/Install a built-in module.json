@@ -58,6 +58,13 @@
         ],
         "permissions": [],
         "functions": []
+      },
+      "module": {
+        "createdAt": "2024-12-15T21:32:52.087Z",
+        "updatedAt": "2024-12-15T21:32:52.088Z",
+        "id": "c78a9098-c12f-4dd4-83d8-75adf2a14424",
+        "name": "utils",
+        "builtin": "utils"
       }
     }
   },
