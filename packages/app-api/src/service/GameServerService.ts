@@ -589,4 +589,14 @@ export class GameServerService extends TakaroService<
       id: job.id,
     };
   }
+
+  async getMapInfo(gameServerId: string) {
+    const gameInstance = await this.getGame(gameServerId);
+    return gameInstance.getMapInfo();
+  }
+
+  async getMapTile(gameServerId: string, x: number, y: number, z: number) {
+    const gameInstance = await this.getGame(gameServerId);
+    return gameInstance.getMapTile(x, y, z);
+  }
 }

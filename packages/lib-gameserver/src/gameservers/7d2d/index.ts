@@ -340,4 +340,12 @@ export class SevenDaysToDie implements IGameServer {
       await this.executeConsoleCommand('shutdown');
     }
   }
+
+  async getMapInfo() {
+    return this.apiClient.getMapInfo();
+  }
+
+  async getMapTile(x: number, y: number, z: number) {
+    return this.apiClient.getMapTile(x, y, z);
+  }
 }
