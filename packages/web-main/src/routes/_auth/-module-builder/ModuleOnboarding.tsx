@@ -38,9 +38,10 @@ const Wrapper = styled.div`
 
 export type ModuleOnboardingProps = {
   moduleId: string;
+  versionId: string;
 };
 
-export const ModuleOnboarding: FC<ModuleOnboardingProps> = ({ moduleId }) => {
+export const ModuleOnboarding: FC<ModuleOnboardingProps> = ({ versionId, moduleId }) => {
   const { mutateAsync: createHook, isSuccess: createHookIsSuccess } = useHookCreate();
   const { mutateAsync: createCommand, isSuccess: createCommandIsSuccess } = useCommandCreate();
   const { mutateAsync: createCronJob, isSuccess: createCronJobIsSuccess } = useCronJobCreate();
@@ -53,21 +54,21 @@ export const ModuleOnboarding: FC<ModuleOnboardingProps> = ({ moduleId }) => {
           await createHook({
             name: 'my-hook',
             eventType: 'log',
-            moduleId: moduleId!,
+            versionId,
             regex: 'takaro-hook-regex-placeholder',
           });
           break;
         case 'cronjob':
           await createCronJob({
             name: 'my-cronjob',
-            moduleId: moduleId!,
+            versionId,
             temporalValue: '5 4 * * *',
           });
           break;
         case 'command':
           await createCommand({
             name: 'my-command',
-            moduleId: moduleId!,
+            versionId,
             trigger: 'test',
           });
           break;

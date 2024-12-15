@@ -64,18 +64,20 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ moduleId, onSuccess })
     return;
   }
 
+  const { latestVersion } = mod;
+
   const onSubmit: SubmitHandler<z.infer<typeof validationSchema>> = async ({ name }) => {
     const createdModule = await createModule({
       name,
-      configSchema: mod.configSchema,
-      permissions: mod.permissions.map((perm) => ({
+      configSchema: latestVersion.configSchema,
+      permissions: latestVersion.permissions.map((perm) => ({
         description: perm.description,
         permission: perm.permission,
         friendlyName: `${mod.name}_${perm.friendlyName}`,
         canHaveCount: perm.canHaveCount,
       })),
-      uiSchema: mod.uiSchema,
-      description: mod.description,
+      uiSchema: latestVersion.uiSchema,
+      description: latestVersion.description,
     });
 
     if (!createdModule) {
@@ -85,18 +87,18 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ moduleId, onSuccess })
     try {
       if (createdModule) {
         await Promise.all([
-          ...mod.hooks.map((hook) =>
+          ...latestVersion.hooks.map((hook) =>
             createHook({
-              moduleId: createdModule.id,
+              versionId: createdModule.latestVersion.id,
               name: hook.name,
               eventType: hook.eventType,
               regex: hook.regex ?? '',
               function: hook.function.code,
             }),
           ),
-          ...mod.commands.map((command) =>
+          ...latestVersion.commands.map((command) =>
             createCommand({
-              moduleId: createdModule.id,
+              versionId: createdModule.latestVersion.id,
               name: command.name,
               trigger: command.trigger,
               helpText: command.helpText,
@@ -109,16 +111,16 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ moduleId, onSuccess })
               })),
             }),
           ),
-          ...mod.functions.map((f) =>
+          ...latestVersion.functions.map((f) =>
             createFunction({
-              moduleId: createdModule.id,
+              versionId: createdModule.latestVersion.id,
               name: f.name,
               code: f.code,
             }),
           ),
-          ...mod.cronJobs.map((cronJob) =>
+          ...latestVersion.cronJobs.map((cronJob) =>
             createCronJob({
-              moduleId: createdModule.id,
+              versionId: createdModule.latestVersion.id,
               name: cronJob.name,
               temporalValue: cronJob.temporalValue,
               function: cronJob.function.code,

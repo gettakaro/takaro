@@ -36,6 +36,7 @@ type FileWithPath = Omit<File, 'code'> & { path: string; code?: string };
 
 export type ModuleBuilderProps = {
   moduleId: string;
+  versionId: string;
   moduleName: string;
   readOnly: boolean;
   fileMap: FileMap;
