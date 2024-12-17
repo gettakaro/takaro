@@ -2,9 +2,12 @@
 
 import url from 'node:url';
 import eslint from '@eslint/js';
+import { fixupPluginRules } from '@eslint/compat'
 import tseslint from 'typescript-eslint';
-import reactPlugin from 'eslint-plugin-react';
-import storybookPlugin from 'eslint-plugin-storybook';
+import eslintPluginReact from 'eslint-plugin-react';
+import eslintPluginReactCompiler from 'eslint-plugin-react-compiler';
+import eslintPluginStorybook from 'eslint-plugin-storybook';
+import globals from 'globals';
 
 import { FlatCompat } from '@eslint/eslintrc';
 
@@ -12,12 +15,6 @@ const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 const compat = new FlatCompat({ baseDirectory: __dirname });
 
 export default tseslint.config(
-  {
-    plugins: {
-      '@typescript-eslint': tseslint.plugin,
-      'react': reactPlugin,
-    },
-  },
 
   // ignore in all configs
   {
@@ -42,9 +39,17 @@ export default tseslint.config(
     ],
   },
 
+
+
   // extends
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
+
+  {
+    plugins: {
+      '@typescript-eslint': tseslint.plugin,
+    },
+  },
 
   //
   // base config
@@ -52,7 +57,15 @@ export default tseslint.config(
   {
     languageOptions: {
       parserOptions: {
+        globals: {
+          ...globals.browser,
+          ...globals.node,
+        },
         allowAutommaticSingleRunInference: true,
+        ecmaVersion: 'latest',
+        ecmaFeatures: {
+          jsx: true,
+        },
         cacheLiftetime: {
           // We never create/change tsconfig structure - so no need to ever evict the cache
           // In the rare case that we do - just manually restart IDE
@@ -128,9 +141,9 @@ export default tseslint.config(
   // config for storybook
   {
     files: ['**/*.stories.tsx'],
-    extends: [
-      ...compat.config(storybookPlugin.configs.recommended)
-    ],
+    rules: {
+      ...eslintPluginStorybook.configs.recommended.rules
+    }
   },
 
   // config for tests
@@ -149,10 +162,15 @@ export default tseslint.config(
   // config for react packages
   {
     files: ['packages/lib-components/**/*.{ts,tsx,mts,cts,js,jsx}', 'packages/web-main/**/*.{ts,tsx,mts,cts,js,jsx}'],
+    plugins: {
+      'react-compiler': eslintPluginReactCompiler,
+      'react': eslintPluginReact,
+    },
     extends: [
-      ...compat.config(reactPlugin.configs.recommended),
+      eslintPluginReact.configs.flat?.recommended
     ],
     rules: {
+      "react-compiler/react-compiler": "error",
       'import/no-default-export': 'off',
       'react/react-in-jsx-scope': 'off',
       'react/no-unescaped-entities': 'off',
