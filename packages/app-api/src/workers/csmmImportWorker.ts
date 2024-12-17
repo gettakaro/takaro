@@ -14,7 +14,6 @@ import { PlayerService } from '../service/PlayerService.js';
 import { PlayerOnGameServerService } from '../service/PlayerOnGameserverService.js';
 import { IGamePlayer } from '@takaro/modules';
 import { ShopListingService } from '../service/Shop/index.js';
-import { ItemsService } from '../service/ItemsService.js';
 import { ShopListingCreateDTO, ShopListingItemMetaInputDTO } from '../service/Shop/dto.js';
 
 const log = logger('worker:csmmImport');
@@ -80,7 +79,6 @@ async function process(job: Job<ICSMMImportData>) {
   const playerService = new PlayerService(job.data.domainId);
   const pogService = new PlayerOnGameServerService(job.data.domainId);
   const shopListingService = new ShopListingService(job.data.domainId);
-  const itemService = new ItemsService(job.data.domainId);
 
   let server: GameServerOutputDTO | null;
 
@@ -233,7 +231,6 @@ async function process(job: Job<ICSMMImportData>) {
   // Import shop listings
   if (job.data.options.shop) {
     for (const listing of data.shopListings) {
-      const item = await itemService.find({ filters: { code: [listing.name] } });
       // CSMM stores quality null as 0...
       const quality = listing.quality.toString() === '0' ? null : listing.quality;
 
@@ -245,7 +242,7 @@ async function process(job: Job<ICSMMImportData>) {
           items: [
             new ShopListingItemMetaInputDTO({
               amount: listing.amount,
-              itemId: item.results[0].id,
+              code: listing.name,
               quality: quality,
             }),
           ],

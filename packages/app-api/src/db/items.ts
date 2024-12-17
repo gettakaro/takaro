@@ -40,6 +40,18 @@ export class ItemRepo extends ITakaroRepo<ItemsModel, ItemsOutputDTO, ItemCreate
       query: model.query().modify('domainScoped', this.domainId),
     };
   }
+
+  async translateItemCodesToIds(gameserverId: string, codes: string[]): Promise<ItemsOutputDTO[]> {
+    const { query } = await this.getModel();
+    const data = await query.whereIn('code', codes).andWhere('gameserverId', gameserverId);
+
+    if (!data) {
+      throw new errors.NotFoundError();
+    }
+
+    return Promise.all(data.map((item) => new ItemsOutputDTO(item)));
+  }
+
   async find(filters: ITakaroQuery<ItemsOutputDTO>) {
     const { query } = await this.getModel();
 
