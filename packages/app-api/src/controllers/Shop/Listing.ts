@@ -15,6 +15,8 @@ import {
   ShopListingUpdateDTO,
   ShopListingCreateDTO,
   ShopImportOptions,
+  ShopListingItemMetaOutputDTO,
+  ShopListingItemMetaInputDTO,
 } from '../../service/Shop/dto.js';
 import multer from 'multer';
 
@@ -156,7 +158,20 @@ export class ShopListingController {
     const rawImportData = JSON.parse(req.body.import);
     const rawOptions = JSON.parse(req.body.options);
 
-    const importData: ShopListingCreateDTO[] = rawImportData.map((item: any) => new ShopListingCreateDTO(item));
+    const importData: ShopListingCreateDTO[] = rawImportData.map(
+      (listing: any) =>
+        new ShopListingCreateDTO({
+          ...listing,
+          items: listing.items.map(
+            (item: ShopListingItemMetaOutputDTO) =>
+              new ShopListingItemMetaInputDTO({
+                amount: item.amount,
+                quality: item.quality,
+                code: item.item.code,
+              }),
+          ),
+        }),
+    );
     const options = new ShopImportOptions(rawOptions);
 
     await Promise.all(importData.map((item) => item.validate()));

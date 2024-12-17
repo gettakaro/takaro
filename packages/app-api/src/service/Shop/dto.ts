@@ -13,7 +13,7 @@ import { TakaroModelDTO, TakaroDTO } from '@takaro/util';
 import { Type } from 'class-transformer';
 import { ItemsOutputDTO } from '../ItemsService.js';
 
-class ShopListingItemMetaOutputDTO extends TakaroModelDTO<ShopListingItemMetaOutputDTO> {
+export class ShopListingItemMetaOutputDTO extends TakaroModelDTO<ShopListingItemMetaOutputDTO> {
   @IsNumber()
   amount: number;
   @IsString()
@@ -30,8 +30,12 @@ export class ShopListingItemMetaInputDTO extends TakaroDTO<ShopListingItemMetaIn
   @IsString()
   @IsOptional()
   quality?: string;
+  @IsString()
+  @IsOptional()
+  code?: string;
   @IsUUID('4')
-  itemId: string;
+  @IsOptional()
+  itemId?: string;
 }
 
 export class ShopListingOutputDTO extends TakaroModelDTO<ShopListingOutputDTO> {
