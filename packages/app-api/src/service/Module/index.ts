@@ -29,6 +29,7 @@ import {
   ModuleCreateAPIDTO,
   ModuleCreateDTO,
   ModuleCreateInternalDTO,
+  ModuleCreateVersionInputDTO,
   ModuleInstallationOutputDTO,
   ModuleOutputDTO,
   ModuleUpdateDTO,
@@ -119,10 +120,15 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
 
   async init(mod: ModuleCreateAPIDTO): Promise<ModuleOutputDTO> {
     try {
-      if (!mod.configSchema) {
-        mod.configSchema = JSON.stringify(getEmptyConfigSchema());
+      if (!mod.latestVersion) {
+        mod.latestVersion = new ModuleCreateVersionInputDTO({
+          configSchema: JSON.stringify(getEmptyConfigSchema()),
+        });
       }
-      ajv.compile(JSON.parse(mod.configSchema));
+      if (!mod.latestVersion.configSchema) {
+        mod.latestVersion.configSchema = JSON.stringify(getEmptyConfigSchema());
+      }
+      ajv.compile(JSON.parse(mod.latestVersion.configSchema));
     } catch (e) {
       this.log.warn('Invalid config schema', { error: JSON.stringify(e) });
       throw new errors.BadRequestError('Invalid config schema');
@@ -135,11 +141,13 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     await this.repo.updateVersion(
       version.id,
       new ModuleVersionUpdateDTO({
-        description: mod.description,
-        configSchema: mod.configSchema,
-        uiSchema: mod.uiSchema,
+        description: mod.latestVersion?.description,
+        configSchema: mod.latestVersion.configSchema,
+        uiSchema: mod.latestVersion.uiSchema,
         permissions: await Promise.all(
-          (mod.permissions ?? []).map((p) => new PermissionCreateDTO({ ...p, canHaveCount: p.canHaveCount ?? false })),
+          (mod.latestVersion.permissions ?? []).map(
+            (p) => new PermissionCreateDTO({ ...p, canHaveCount: p.canHaveCount ?? false }),
+          ),
         ),
       }),
     );
@@ -161,32 +169,23 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
   }
 
   async update(id: string, mod: ModuleUpdateDTO) {
-    try {
-      const updated = await this.repo.update(id, mod);
-
-      if (!updated.builtin) {
-        await this.eventsService().create(
-          new EventCreateDTO({
-            eventName: EVENT_TYPES.MODULE_UPDATED,
-            moduleId: id,
-            meta: new TakaroEventModuleUpdated(),
-          }),
-        );
-      }
-
-      return updated;
-    } catch {
-      throw new errors.BadRequestError('Invalid config schema');
+    const updated = await this.repo.update(id, new ModuleUpdateDTO({ ...mod, latestVersion: undefined }));
+    if (mod.latestVersion) {
+      const latestVersion = await this.getLatestVersion(id);
+      await this.repo.updateVersion(latestVersion.id, mod.latestVersion);
     }
-  }
 
-  async updateVersion(id: string, mod: ModuleVersionUpdateDTO) {
-    try {
-      const updated = await this.repo.updateVersion(id, mod);
-      return updated;
-    } catch {
-      throw new errors.BadRequestError('Invalid config schema');
+    if (!updated.builtin) {
+      await this.eventsService().create(
+        new EventCreateDTO({
+          eventName: EVENT_TYPES.MODULE_UPDATED,
+          moduleId: id,
+          meta: new TakaroEventModuleUpdated(),
+        }),
+      );
     }
+
+    return updated;
   }
 
   async delete(id: string) {
@@ -207,10 +206,6 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     );
 
     return id;
-  }
-
-  async deleteVersion(id: string) {
-    return this.repo.deleteVersion(id);
   }
 
   async import(mod: BuiltinModule<unknown>) {
@@ -243,11 +238,13 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
       mod = await this.init(
         new ModuleCreateInternalDTO({
           name: builtin.name,
-          description: builtin.description,
-          configSchema: builtin.configSchema,
-          uiSchema: builtin.uiSchema,
           builtin: isImport ? null : builtin.name,
-          permissions: await Promise.all(builtin.permissions.map((p) => new PermissionOutputDTO(p))),
+          latestVersion: new ModuleCreateVersionInputDTO({
+            description: builtin.description,
+            configSchema: builtin.configSchema,
+            uiSchema: builtin.uiSchema,
+            permissions: await Promise.all(builtin.permissions.map((p) => new PermissionOutputDTO(p))),
+          }),
         }),
       );
     }

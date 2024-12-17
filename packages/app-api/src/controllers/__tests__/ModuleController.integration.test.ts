@@ -42,7 +42,9 @@ const tests = [
       return (
         await this.client.module.moduleControllerCreate({
           name: 'Test module',
-          description: 'bla bla',
+          latestVersion: {
+            description: 'bla bla',
+          },
         })
       ).data.data;
     },
@@ -182,7 +184,9 @@ const tests = [
     test: async function () {
       return this.client.module.moduleControllerCreate({
         name: 'Test module',
-        permissions: [testPermission],
+        latestVersion: {
+          permissions: [testPermission],
+        },
       });
     },
     filteredFields: ['moduleId', 'moduleVersionId'],
@@ -199,9 +203,13 @@ const tests = [
       ).data.data;
     },
     test: async function () {
-      return this.client.module.moduleVersionControllerUpdateVersion(this.setupData.latestVersion.id, {
-        permissions: [testPermission],
+      await this.client.module.moduleControllerUpdate(this.setupData.id, {
+        latestVersion: {
+          permissions: [testPermission],
+        },
       });
+
+      return this.client.module.moduleVersionControllerGetModuleVersion(this.setupData.latestVersion.id);
     },
     filteredFields: ['moduleId', 'moduleVersionId'],
   }),
@@ -213,17 +221,25 @@ const tests = [
       return (
         await this.client.module.moduleControllerCreate({
           name: 'Test module',
-          permissions: [testPermission],
+          latestVersion: {
+            permissions: [testPermission],
+          },
         })
       ).data.data;
     },
     test: async function () {
       const secondPermission = { permission: 'test2', description: 'test2', friendlyName: 'test2' };
-      const updateRes = await this.client.module.moduleVersionControllerUpdateVersion(this.setupData.latestVersion.id, {
-        permissions: [testPermission, secondPermission],
+      await this.client.module.moduleControllerUpdate(this.setupData.id, {
+        latestVersion: {
+          permissions: [testPermission, secondPermission],
+        },
       });
 
-      const newPermission = updateRes.data.data.permissions.find((p) => p.permission === 'test');
+      const versionRes = await this.client.module.moduleVersionControllerGetModuleVersion(
+        this.setupData.latestVersion.id,
+      );
+
+      const newPermission = versionRes.data.data.permissions.find((p) => p.permission === 'test');
       const existingPermission = this.setupData.latestVersion.permissions.find((p) => p.permission === 'test');
 
       if (!existingPermission || !newPermission) {
@@ -232,7 +248,7 @@ const tests = [
 
       expect(existingPermission.id).to.equal(newPermission.id);
 
-      return updateRes;
+      return versionRes;
     },
     filteredFields: ['moduleId', 'moduleVersionId'],
   }),
@@ -244,13 +260,15 @@ const tests = [
       return (
         await this.client.module.moduleControllerCreate({
           name: 'Test module',
-          permissions: [testPermission],
+          latestVersion: {
+            permissions: [testPermission],
+          },
         })
       ).data.data;
     },
     test: async function () {
-      await this.client.module.moduleVersionControllerUpdateVersion(this.setupData.latestVersion.id, {
-        permissions: [],
+      await this.client.module.moduleControllerUpdate(this.setupData.id, {
+        latestVersion: { permissions: [] },
       });
 
       const getRes = await this.client.module.moduleControllerGetOne(this.setupData.id);
@@ -269,20 +287,24 @@ const tests = [
       return (
         await this.client.module.moduleControllerCreate({
           name: 'Test module',
-          permissions: [testPermission],
+          latestVersion: {
+            permissions: [testPermission],
+          },
         })
       ).data.data;
     },
     test: async function () {
-      await this.client.module.moduleVersionControllerUpdateVersion(this.setupData.latestVersion.id, {
-        permissions: [
-          {
-            permission: testPermission.permission,
-            description: 'new description',
-            friendlyName: 'new friendly name',
-            canHaveCount: false,
-          },
-        ],
+      await this.client.module.moduleControllerUpdate(this.setupData.id, {
+        latestVersion: {
+          permissions: [
+            {
+              permission: testPermission.permission,
+              description: 'new description',
+              friendlyName: 'new friendly name',
+              canHaveCount: false,
+            },
+          ],
+        },
       });
 
       const getRes = await this.client.module.moduleControllerGetOne(this.setupData.id);

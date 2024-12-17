@@ -3,22 +3,16 @@ import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { ModuleService } from '../../service/Module/index.js';
 import { AuthenticatedRequest, AuthService } from '../../service/AuthService.js';
-import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Put, Params, Res } from 'routing-controllers';
+import { Body, Get, Post, JsonController, UseBefore, Req, Params, Res } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId } from '../../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 import { errors } from '@takaro/util';
-import { builtinModuleModificationMiddleware } from '../../middlewares/builtinModuleModification.js';
 import { BuiltinModule, ICommand, ICommandArgument, ICronJob, IFunction, IHook } from '@takaro/modules';
 import { AllowedFilters, RangeFilterCreatedAndUpdatedAt } from '../shared.js';
-import {
-  ModuleExportInputDTO,
-  ModuleVersionCreateAPIDTO,
-  ModuleVersionOutputDTO,
-  ModuleVersionUpdateDTO,
-} from '../../service/Module/dto.js';
+import { ModuleExportInputDTO, ModuleVersionCreateAPIDTO, ModuleVersionOutputDTO } from '../../service/Module/dto.js';
 import { PermissionCreateDTO } from '../../service/RoleService.js';
 
 export class ModuleVersionOutputDTOAPI extends APIOutput<ModuleVersionOutputDTO> {
@@ -103,37 +97,6 @@ export class ModuleVersionController {
     const service = new ModuleService(req.domainId);
     const res = await service.findOneVersion(params.id);
     return apiResponse(res);
-  }
-
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), builtinModuleModificationMiddleware)
-  @ResponseSchema(ModuleVersionOutputDTOAPI)
-  @OpenAPI({
-    summary: 'Update a version',
-    description:
-      'Update a version of a module, note that you can only update the "latest" version. Tagged versions are immutable',
-  })
-  @Put('/:id')
-  async updateVersion(
-    @Req() req: AuthenticatedRequest,
-    @Params() params: ParamId,
-    @Body() data: ModuleVersionUpdateDTO,
-  ) {
-    const service = new ModuleService(req.domainId);
-    const result = await service.updateVersion(params.id, data);
-    return apiResponse(result);
-  }
-
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), builtinModuleModificationMiddleware)
-  @ResponseSchema(APIOutput)
-  @OpenAPI({
-    summary: 'Remove a version',
-    description: 'Removes a version of a module, including all config that is linked to this version',
-  })
-  @Delete('/:id')
-  async removeVersion(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
-    const service = new ModuleService(req.domainId);
-    await service.deleteVersion(params.id);
-    return apiResponse();
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]))

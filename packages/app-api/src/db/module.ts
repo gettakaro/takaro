@@ -268,12 +268,6 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
     return !!data;
   }
 
-  async deleteVersion(id: string): Promise<boolean> {
-    const { queryVersion } = await this.getModel();
-    const data = await queryVersion.deleteById(id);
-    return !!data;
-  }
-
   async update(id: string, data: ModuleUpdateDTO): Promise<ModuleOutputDTO> {
     const { query } = await this.getModel();
     const item = await query.updateAndFetchById(id, data.toJSON());

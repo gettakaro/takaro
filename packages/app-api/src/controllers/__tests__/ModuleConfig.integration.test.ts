@@ -20,32 +20,36 @@ const setup = async function (this: IntegrationTest<ISetupData>): Promise<ISetup
 
   const moduleRes = await this.client.module.moduleControllerCreate({
     name: 'Test module',
-    description: 'Test description',
-    configSchema: JSON.stringify({
-      $schema: 'http://json-schema.org/draft-07/schema#',
-      type: 'object',
-      properties: {
-        foo: {
-          type: 'string',
-          minLength: 3,
-          maxLength: 10,
+    latestVersion: {
+      description: 'Test description',
+      configSchema: JSON.stringify({
+        $schema: 'http://json-schema.org/draft-07/schema#',
+        type: 'object',
+        properties: {
+          foo: {
+            type: 'string',
+            minLength: 3,
+            maxLength: 10,
+          },
         },
-      },
-      required: ['foo'],
-      additionalProperties: false,
-    }),
+        required: ['foo'],
+        additionalProperties: false,
+      }),
+    },
   });
 
   const cronjobModuleCreateRes = await this.client.module.moduleControllerCreate({
     name: 'Test module cronjobs',
-    description: 'Test description',
-    configSchema: JSON.stringify({
-      $schema: 'http://json-schema.org/draft-07/schema#',
-      type: 'object',
-      properties: {},
-      required: [],
-      additionalProperties: false,
-    }),
+    latestVersion: {
+      description: 'Test description',
+      configSchema: JSON.stringify({
+        $schema: 'http://json-schema.org/draft-07/schema#',
+        type: 'object',
+        properties: {},
+        required: [],
+        additionalProperties: false,
+      }),
+    },
   });
 
   await this.client.cronjob.cronJobControllerCreate({

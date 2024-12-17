@@ -90,7 +90,7 @@ export class ModuleController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]))
   @ResponseSchema(ModuleOutputDTOAPI)
   @OpenAPI({
-    summary: 'Create a new module',
+    summary: 'Create module',
     description: 'Create a new module',
   })
   @Post('')
@@ -101,6 +101,10 @@ export class ModuleController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), builtinModuleModificationMiddleware)
   @ResponseSchema(ModuleOutputDTOAPI)
+  @OpenAPI({
+    summary: 'Update a module',
+    description: 'Update a module',
+  })
   @Put('/:id')
   async update(@Req() req: AuthenticatedRequest, @Params() params: ParamId, @Body() data: ModuleUpdateDTO) {
     const service = new ModuleService(req.domainId);

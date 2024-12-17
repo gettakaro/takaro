@@ -91,10 +91,7 @@ export class ModuleCreateDTO extends TakaroDTO<ModuleCreateDTO> {
   builtin: string;
 }
 
-export class ModuleCreateAPIDTO extends TakaroDTO<ModuleCreateAPIDTO> {
-  @IsString()
-  @Length(3, 50)
-  name!: string;
+export class ModuleCreateVersionInputDTO extends TakaroDTO<ModuleCreateVersionInputDTO> {
   @IsString()
   @IsOptional()
   @Length(1, 5000)
@@ -125,6 +122,16 @@ export class ModuleCreateAPIDTO extends TakaroDTO<ModuleCreateAPIDTO> {
   @ValidateNested({ each: true })
   @Type(() => CronJobCreateDTO)
   cronJobs: CronJobCreateDTO[];
+}
+
+export class ModuleCreateAPIDTO extends TakaroDTO<ModuleCreateAPIDTO> {
+  @IsString()
+  @Length(3, 50)
+  name!: string;
+  @ValidateNested()
+  @Type(() => ModuleCreateVersionInputDTO)
+  @IsOptional()
+  latestVersion?: ModuleCreateVersionInputDTO;
 }
 
 export class ModuleCreateInternalDTO extends TakaroDTO<ModuleCreateInternalDTO> {
@@ -135,51 +142,9 @@ export class ModuleCreateInternalDTO extends TakaroDTO<ModuleCreateInternalDTO> 
   @IsString()
   @Length(3, 50)
   name!: string;
-  @IsString()
-  @IsOptional()
-  @Length(1, 5000)
-  description?: string;
-  @IsJSON()
-  @IsOptional()
-  configSchema: string;
-  @IsJSON()
-  @IsOptional()
-  uiSchema: string;
-  @IsOptional()
-  @ValidateNested({ each: true })
-  @Type(() => PermissionCreateDTO)
-  permissions: PermissionCreateDTO[];
-  @IsOptional()
-  @ValidateNested({ each: true })
-  @Type(() => FunctionCreateDTO)
-  functions: FunctionCreateDTO[];
-  @IsOptional()
-  @ValidateNested({ each: true })
-  @Type(() => CommandCreateDTO)
-  commands: CommandCreateDTO[];
-  @IsOptional()
-  @ValidateNested({ each: true })
-  @Type(() => HookCreateDTO)
-  hooks: HookCreateDTO[];
-  @IsOptional()
-  @ValidateNested({ each: true })
-  @Type(() => CronJobCreateDTO)
-  cronJobs: CronJobCreateDTO[];
-}
-
-export class ModuleUpdateDTO extends TakaroDTO<ModuleUpdateDTO> {
-  @Length(3, 50)
-  @IsOptional()
-  @IsString()
-  name?: string;
-}
-
-export class ModuleVersionCreateAPIDTO extends TakaroDTO<ModuleVersionCreateAPIDTO> {
-  @IsString()
-  @Length(1, 100)
-  tag: string;
-  @IsUUID('4')
-  moduleId: string;
+  @ValidateNested()
+  @Type(() => ModuleCreateVersionInputDTO)
+  latestVersion: ModuleCreateVersionInputDTO;
 }
 
 export class ModuleVersionUpdateDTO extends TakaroDTO<ModuleVersionUpdateDTO> {
@@ -197,6 +162,25 @@ export class ModuleVersionUpdateDTO extends TakaroDTO<ModuleVersionUpdateDTO> {
   @ValidateNested({ each: true })
   @Type(() => PermissionCreateDTO)
   permissions: PermissionCreateDTO[];
+}
+export class ModuleUpdateDTO extends TakaroDTO<ModuleUpdateDTO> {
+  @Length(3, 50)
+  @IsOptional()
+  @IsString()
+  name?: string;
+
+  @ValidateNested()
+  @Type(() => ModuleVersionUpdateDTO)
+  @IsOptional()
+  latestVersion?: ModuleVersionUpdateDTO;
+}
+
+export class ModuleVersionCreateAPIDTO extends TakaroDTO<ModuleVersionCreateAPIDTO> {
+  @IsString()
+  @Length(1, 100)
+  tag: string;
+  @IsUUID('4')
+  moduleId: string;
 }
 
 export class ModuleExportInputDTO extends TakaroDTO<ModuleExportInputDTO> {
