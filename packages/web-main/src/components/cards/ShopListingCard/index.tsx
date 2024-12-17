@@ -27,7 +27,8 @@ export const ShopListingCard: FC<ShopListingCard> = ({
   gameServerType,
   playerCurrencyAmount,
 }) => {
-  const shopListingName = shopListing.name || shopListing.items[0].item.name;
+  const firstItem = shopListing.items[0]?.item || { name: 'Unknown', code: 'unknown' };
+  const shopListingName = shopListing.name || firstItem.name;
   const hasPermission = useHasPermission(['MANAGE_SHOP_LISTINGS']);
 
   return (
@@ -48,8 +49,8 @@ export const ShopListingCard: FC<ShopListingCard> = ({
               </Header>
               <Avatar size="huge">
                 <Avatar.Image
-                  src={`/icons/${gameServerTypeToIconFolderMap[gameServerType]}/${shopListing.items[0].item.code}.png`}
-                  alt={`Item icon of ${shopListing.items[0].item.name}`}
+                  src={`/icons/${gameServerTypeToIconFolderMap[gameServerType]}/${firstItem.code}.png`}
+                  alt={`Item icon of ${firstItem.name}`}
                 />
                 <Avatar.FallBack>{getInitials(shopListingName)}</Avatar.FallBack>
               </Avatar>

@@ -148,7 +148,7 @@ const PlayerCount: FC<{ roleId: string }> = ({ roleId }) => {
     return 'unknown';
   }
 
-  return data.data.length;
+  return data.meta.total;
 };
 
 const UserCount: FC<{ roleId: string }> = ({ roleId }) => {
@@ -164,5 +164,5 @@ const UserCount: FC<{ roleId: string }> = ({ roleId }) => {
     return 'unknown';
   }
 
-  return data.data.length;
+  return data.meta.total;
 };
