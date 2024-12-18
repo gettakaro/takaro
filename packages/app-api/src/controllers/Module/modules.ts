@@ -12,7 +12,12 @@ import { moduleProtectionMiddleware } from '../../middlewares/moduleProtectionMi
 import { AllowedFilters, RangeFilterCreatedAndUpdatedAt } from '../shared.js';
 import { ITakaroQuery } from '@takaro/db';
 import { ModuleService } from '../../service/Module/index.js';
-import { ModuleCreateAPIDTO, ModuleOutputDTO, ModuleUpdateDTO } from '../../service/Module/dto.js';
+import {
+  ModuleCreateAPIDTO,
+  ModuleExportOptionsDTO,
+  ModuleOutputDTO,
+  ModuleUpdateDTO,
+} from '../../service/Module/dto.js';
 
 import { ModuleTransferDTO, ICommand, ICommandArgument, ICronJob, IFunction, IHook } from '@takaro/modules';
 import { PermissionCreateDTO } from '../../service/RoleService.js';
@@ -149,11 +154,15 @@ export class ModuleController {
   })
   @Post('/:id/export')
   @ResponseSchema(ModuleExportDTOAPI)
-  async export(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
+  async export(@Req() req: AuthenticatedRequest, @Params() params: ParamId, @Body() options: ModuleExportOptionsDTO) {
     const service = new ModuleService(req.domainId);
     const mod = await service.findOne(params.id);
     if (!mod) throw new errors.NotFoundError('Module not found');
     const versions = await service.findVersions({ filters: { moduleId: [params.id] } });
+
+    if (options.versionIds) {
+      versions.results = versions.results.filter((_) => options.versionIds?.includes(_.id));
+    }
 
     const preparedVersions = await Promise.all(
       versions.results.map(

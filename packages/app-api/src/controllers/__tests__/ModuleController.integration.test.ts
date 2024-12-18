@@ -367,6 +367,30 @@ const tests = [
         },
       }),
   ),
+  new IntegrationTest<ModuleOutputDTO>({
+    group,
+    snapshot: false,
+    name: 'Can select which versions to export',
+    setup,
+    test: async function () {
+      // Create a module, tag 2 versions, export only one
+      const tagRes = await this.client.module.moduleVersionControllerTagVersion({
+        moduleId: this.setupData.id,
+        tag: '1.0.0',
+      });
+      await this.client.module.moduleVersionControllerTagVersion({
+        moduleId: this.setupData.id,
+        tag: '2.0.0',
+      });
+
+      const exportRes = await this.client.module.moduleControllerExport(this.setupData.id, {
+        versionIds: [tagRes.data.data.id],
+      });
+
+      expect(exportRes.data.data.versions).to.have.length(1);
+      expect(exportRes.data.data.versions[0].tag).to.equal('1.0.0');
+    },
+  }),
   // #endregion Import/export
   // #region Versioning
   new IntegrationTest<ModuleOutputDTO>({

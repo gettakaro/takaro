@@ -195,3 +195,9 @@ export class InstallModuleDTO extends TakaroDTO<InstallModuleDTO> {
   @IsOptional()
   systemConfig?: string;
 }
+
+export class ModuleExportOptionsDTO extends TakaroDTO<ModuleExportOptionsDTO> {
+  @IsUUID('4', { each: true })
+  @IsOptional()
+  versionIds?: string[];
+}
