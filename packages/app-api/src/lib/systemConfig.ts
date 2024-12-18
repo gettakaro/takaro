@@ -14,6 +14,10 @@ export function getEmptyConfigSchema(): Ajv.AnySchemaObject {
   };
 }
 
+export function getEmptyUiSchema() {
+  return {};
+}
+
 export function getSystemConfigSchema(mod: ModuleVersionOutputDTO | ModuleVersionOutputDTOApi): string {
   const systemConfigSchema = getEmptyConfigSchema();
 

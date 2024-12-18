@@ -7,7 +7,7 @@
       "id": "828e664f-6ef4-4cd2-ade3-605b0cefdbfb",
       "description": null,
       "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{},\"required\":[],\"additionalProperties\":false}",
-      "uiSchema": null,
+      "uiSchema": "{}",
       "cronJobs": [],
       "hooks": [],
       "commands": [],

@@ -319,15 +319,23 @@ const tests = [
               },
             })
           ).data.data[0];
-          const versions = (
-            await this.client.module.moduleVersionControllerSearchVersions({
-              filters: { moduleId: [mod.id], version: [builtin.version] },
-            })
-          ).data.data;
-          const version = versions.find((v) => v.tag === builtin.version);
-          if (!version) throw new Error('Version not found');
-          const exportRes = await this.client.module.moduleVersionControllerExport({ versionId: version.id });
-          expect(exportRes.data.data).to.deep.equalInAnyOrder(builtin);
+          const exportRes = await this.client.module.moduleControllerExport(mod.id);
+          expect(exportRes.data.data.name).to.be.equal(builtin.name);
+
+          const expectedTags = builtin.versions.map((v) => v.tag);
+          for (const tag of expectedTags) {
+            const version = exportRes.data.data.versions.find((v) => v.tag === tag);
+            // Check that each builtin version is present in the exported module
+            expect(version).to.exist;
+            // Typescipt doesn't understand that `expect` already checks for existence
+            if (!version) throw new Error(`Version ${tag} not found in exported module`);
+            // Each version should contain hooks,commands,cronjobs,...
+            expect(version.hooks).to.exist;
+            expect(version.commands).to.exist;
+            expect(version.cronJobs).to.exist;
+            expect(version.functions).to.exist;
+            expect(version.permissions).to.exist;
+          }
         },
       }),
   ),
@@ -346,10 +354,8 @@ const tests = [
             })
           ).data.data;
           expect(mods).to.have.length(1);
-          const exportRes = await this.client.module.moduleVersionControllerExport({
-            versionId: mods[0].latestVersion.id,
-          });
-          await this.client.module.moduleVersionControllerImport(exportRes.data.data);
+          const exportRes = await this.client.module.moduleControllerExport(mods[0].id);
+          await this.client.module.moduleControllerImport(exportRes.data.data);
           const modsAfter = (
             await this.client.module.moduleControllerSearch({
               filters: {

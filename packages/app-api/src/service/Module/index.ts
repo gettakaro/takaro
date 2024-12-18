@@ -9,7 +9,7 @@ import { ITakaroQuery, SortDirection } from '@takaro/db';
 import { PaginatedOutput } from '../../db/base.js';
 import { CommandCreateDTO, CommandService } from '../CommandService.js';
 import {
-  BuiltinModule,
+  ModuleTransferDTO,
   TakaroEventModuleCreated,
   TakaroEventModuleUpdated,
   TakaroEventModuleDeleted,
@@ -17,12 +17,12 @@ import {
   TakaroEventModuleInstalled,
   TakaroEventModuleUninstalled,
 } from '@takaro/modules';
-import { PermissionCreateDTO, PermissionOutputDTO } from '../RoleService.js';
+import { PermissionCreateDTO } from '../RoleService.js';
 import * as semver from 'semver';
 
 // Curse you ESM... :(
 import _Ajv from 'ajv';
-import { getEmptyConfigSchema, getSystemConfigSchema } from '../../lib/systemConfig.js';
+import { getEmptyConfigSchema, getEmptyUiSchema, getSystemConfigSchema } from '../../lib/systemConfig.js';
 import { EVENT_TYPES, EventCreateDTO, EventService } from '../EventService.js';
 import { FunctionCreateDTO, FunctionService } from '../FunctionService.js';
 import {
@@ -124,10 +124,14 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
       if (!mod.latestVersion) {
         mod.latestVersion = new ModuleCreateVersionInputDTO({
           configSchema: JSON.stringify(getEmptyConfigSchema()),
+          uiSchema: JSON.stringify(getEmptyUiSchema()),
         });
       }
       if (!mod.latestVersion.configSchema) {
         mod.latestVersion.configSchema = JSON.stringify(getEmptyConfigSchema());
+      }
+      if (!mod.latestVersion.uiSchema) {
+        mod.latestVersion.uiSchema = JSON.stringify(getEmptyUiSchema());
       }
       ajv.compile(JSON.parse(mod.latestVersion.configSchema));
     } catch (e) {
@@ -209,7 +213,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     return id;
   }
 
-  async import(mod: BuiltinModule<unknown>) {
+  async import(mod: ModuleTransferDTO<unknown>) {
     const existing = await this.repo.find({
       filters: { name: [mod.name] },
     });
@@ -226,7 +230,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     await Promise.all(modules.map((m) => this.seedModule(m)));
   }
 
-  async seedModule(builtin: BuiltinModule<unknown>, isImport = false) {
+  async seedModule(builtin: ModuleTransferDTO<unknown>, isImport = false) {
     const existingModule = await this.repo.find({
       filters: { builtin: [builtin.name] },
     });
@@ -240,73 +244,79 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
         new ModuleCreateInternalDTO({
           name: builtin.name,
           builtin: isImport ? null : builtin.name,
-          latestVersion: new ModuleCreateVersionInputDTO({
-            description: builtin.description,
-            configSchema: builtin.configSchema,
-            uiSchema: builtin.uiSchema,
-            permissions: await Promise.all(builtin.permissions.map((p) => new PermissionOutputDTO(p))),
-          }),
         }),
       );
     }
 
-    const existingVersionRes = await this.findVersions({ filters: { version: [builtin.version], moduleId: [mod.id] } });
+    for (const version of builtin.versions) {
+      this.log.info(`Creating new module version ${builtin.name}-${version.tag}`, {
+        name: builtin.name,
+        tag: version.tag,
+      });
+      const existingVersionRes = await this.findVersions({ filters: { tag: [version.tag], moduleId: [mod.id] } });
+      const existingVersions = existingVersionRes.results.filter((v) => v.tag === version.tag);
+      // Version already exists, no action needed
+      if (existingVersions.length) return;
 
-    const existingVersions = existingVersionRes.results.filter((v) => v.tag === builtin.version);
+      const latestVersion = await this.getLatestVersion(mod.id);
 
-    // Version already exists, no action needed
-    if (existingVersions.length) return;
+      const commands = Promise.all(
+        (version.commands || []).map(async (c) => {
+          const data = new CommandCreateDTO({
+            ...c,
+            versionId: latestVersion.id,
+          });
+          return this.commandService().create(data);
+        }),
+      );
 
-    const latestVersion = await this.getLatestVersion(mod.id);
+      const hooks = Promise.all(
+        (version.hooks || []).map(async (h) => {
+          const data = new HookCreateDTO({
+            ...h,
+            eventType: h.eventType,
+            versionId: latestVersion.id,
+          });
+          return this.hookService().create(data);
+        }),
+      );
+      const cronjobs = Promise.all(
+        (version.cronJobs || []).map(async (c) => {
+          const data = new CronJobCreateDTO({
+            ...c,
+            versionId: latestVersion.id,
+          });
+          return this.cronjobService().create(data);
+        }),
+      );
 
-    this.log.info(`Creating new module version ${builtin.name}-${builtin.version}`, {
-      name: builtin.name,
-      version: builtin.version,
-    });
-    const commands = Promise.all(
-      builtin.commands.map(async (c) => {
-        const data = new CommandCreateDTO({
-          ...c,
-          versionId: latestVersion.id,
-        });
-        return this.commandService().create(data);
-      }),
-    );
+      const functions = Promise.all(
+        (version.functions || []).map(async (f) => {
+          const data = new FunctionCreateDTO({
+            name: f.name,
+            code: f.function,
+            versionId: latestVersion.id,
+          });
+          return this.functionService().create(data);
+        }),
+      );
+      await Promise.all([commands, hooks, cronjobs, commands, functions]);
 
-    const hooks = Promise.all(
-      builtin.hooks.map(async (h) => {
-        const data = new HookCreateDTO({
-          ...h,
-          eventType: h.eventType,
-          versionId: latestVersion.id,
-        });
-        return this.hookService().create(data);
-      }),
-    );
-    const cronjobs = Promise.all(
-      builtin.cronJobs.map(async (c) => {
-        const data = new CronJobCreateDTO({
-          ...c,
-          versionId: latestVersion.id,
-        });
-        return this.cronjobService().create(data);
-      }),
-    );
+      await this.update(
+        mod.id,
+        new ModuleUpdateDTO({
+          latestVersion: new ModuleVersionUpdateDTO({
+            configSchema: version.configSchema,
+            description: version.description,
+            uiSchema: version.uiSchema,
+            permissions: (version.permissions as PermissionCreateDTO[]) || [],
+          }),
+        }),
+      );
 
-    const functions = Promise.all(
-      builtin.functions.map(async (f) => {
-        const data = new FunctionCreateDTO({
-          name: f.name,
-          code: f.function,
-          versionId: latestVersion.id,
-        });
-        return this.functionService().create(data);
-      }),
-    );
-    await Promise.all([commands, hooks, cronjobs, commands, functions]);
-
-    // With everything in place, we can now create the version
-    await this.tagVersion(mod.id, builtin.version);
+      // With everything in place, we can now create the version
+      await this.tagVersion(mod.id, version.tag);
+    }
   }
 
   async findOneBy(itemType: string, itemId: string | undefined): Promise<ModuleVersionOutputDTO | undefined> {

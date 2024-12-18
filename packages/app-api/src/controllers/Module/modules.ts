@@ -14,6 +14,10 @@ import { ITakaroQuery } from '@takaro/db';
 import { ModuleService } from '../../service/Module/index.js';
 import { ModuleCreateAPIDTO, ModuleOutputDTO, ModuleUpdateDTO } from '../../service/Module/dto.js';
 
+import { ModuleTransferDTO, ICommand, ICommandArgument, ICronJob, IFunction, IHook } from '@takaro/modules';
+import { PermissionCreateDTO } from '../../service/RoleService.js';
+import { ModuleTransferVersionDTO } from '@takaro/modules';
+
 export class ModuleOutputDTOAPI extends APIOutput<ModuleOutputDTO> {
   @Type(() => ModuleOutputDTO)
   @ValidateNested()
@@ -50,12 +54,19 @@ class ModuleSearchInputDTO extends ITakaroQuery<ModuleSearchInputAllowedFilters>
   declare lessThan: RangeFilterCreatedAndUpdatedAt;
 }
 
+class ModuleExportDTOAPI extends APIOutput<ModuleTransferDTO<unknown>> {
+  @Type(() => ModuleTransferDTO)
+  @ValidateNested()
+  declare data: ModuleTransferDTO<unknown>;
+}
+
 @OpenAPI({
   security: [{ domainAuth: [] }],
   tags: ['Module'],
 })
 @JsonController('/module')
 export class ModuleController {
+  // #region CRUD
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_MODULES]))
   @ResponseSchema(ModuleOutputArrayDTOAPI)
   @OpenAPI({
@@ -127,4 +138,113 @@ export class ModuleController {
     await service.delete(params.id);
     return apiResponse();
   }
+  // #endregion CRUD
+  // #region Export/Import
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_MODULES]))
+  @OpenAPI({
+    summary: 'Export a module',
+    description:
+      'Exports a module to a format that can be imported into another Takaro instance. This endpoint will export all known versions of the module',
+  })
+  @Post('/:id/export')
+  @ResponseSchema(ModuleExportDTOAPI)
+  async export(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
+    const service = new ModuleService(req.domainId);
+    const mod = await service.findOne(params.id);
+    if (!mod) throw new errors.NotFoundError('Module not found');
+    const versions = await service.findVersions({ filters: { moduleId: [params.id] } });
+
+    const preparedVersions = await Promise.all(
+      versions.results.map(
+        async (version) =>
+          new ModuleTransferVersionDTO({
+            tag: version.tag,
+            description: version.description,
+            configSchema: version.configSchema,
+            uiSchema: version.uiSchema,
+            commands: await Promise.all(
+              version.commands.map(
+                (_) =>
+                  new ICommand({
+                    function: _.function.code,
+                    name: _.name,
+                    trigger: _.trigger,
+                    helpText: _.helpText,
+                    arguments: _.arguments.map(
+                      (arg) =>
+                        new ICommandArgument({
+                          name: arg.name,
+                          type: arg.type,
+                          defaultValue: arg.defaultValue,
+                          helpText: arg.helpText,
+                          position: arg.position,
+                        }),
+                    ),
+                  }),
+              ),
+            ),
+            hooks: await Promise.all(
+              version.hooks.map(
+                (_) =>
+                  new IHook({
+                    function: _.function.code,
+                    name: _.name,
+                    eventType: _.eventType,
+                  }),
+              ),
+            ),
+            cronJobs: await Promise.all(
+              version.cronJobs.map(
+                (_) =>
+                  new ICronJob({
+                    function: _.function.code,
+                    name: _.name,
+                    temporalValue: _.temporalValue,
+                  }),
+              ),
+            ),
+            functions: await Promise.all(
+              version.functions.map(
+                (_) =>
+                  new IFunction({
+                    function: _.code,
+                    name: _.name,
+                  }),
+              ),
+            ),
+            permissions: await Promise.all(
+              version.permissions.map(
+                (_) =>
+                  new PermissionCreateDTO({
+                    canHaveCount: _.canHaveCount,
+                    description: _.description,
+                    permission: _.permission,
+                    friendlyName: _.friendlyName,
+                  }),
+              ),
+            ),
+          }),
+      ),
+    );
+
+    const output = new ModuleTransferDTO({
+      name: mod.name,
+      versions: preparedVersions,
+    });
+
+    return apiResponse(output);
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]))
+  @OpenAPI({
+    summary: 'Import a module',
+    description: 'Imports a module from a format that was exported from another Takaro instance',
+  })
+  @Post('/import')
+  async import(@Req() req: AuthenticatedRequest, @Body() data: ModuleTransferDTO<unknown>) {
+    const service = new ModuleService(req.domainId);
+    return apiResponse(await service.import(data));
+  }
+  // #endregion Export/Import
 }

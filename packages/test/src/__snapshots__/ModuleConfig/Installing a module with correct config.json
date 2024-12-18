@@ -19,7 +19,7 @@
         "tag": "latest",
         "description": "Test description",
         "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"foo\":{\"type\":\"string\",\"minLength\":3,\"maxLength\":10}},\"required\":[\"foo\"],\"additionalProperties\":false}",
-        "uiSchema": null,
+        "uiSchema": "{}",
         "cronJobs": [],
         "hooks": [],
         "commands": [],

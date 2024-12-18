@@ -9,11 +9,8 @@ import { Type } from 'class-transformer';
 import { ParamId } from '../../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
-import { errors } from '@takaro/util';
-import { BuiltinModule, ICommand, ICommandArgument, ICronJob, IFunction, IHook } from '@takaro/modules';
 import { AllowedFilters, RangeFilterCreatedAndUpdatedAt } from '../shared.js';
-import { ModuleExportInputDTO, ModuleVersionCreateAPIDTO, ModuleVersionOutputDTO } from '../../service/Module/dto.js';
-import { PermissionCreateDTO } from '../../service/RoleService.js';
+import { ModuleVersionCreateAPIDTO, ModuleVersionOutputDTO } from '../../service/Module/dto.js';
 
 export class ModuleVersionOutputDTOAPI extends APIOutput<ModuleVersionOutputDTO> {
   @Type(() => ModuleVersionOutputDTO)
@@ -49,12 +46,6 @@ class ModuleVersionSearchInputDTO extends ITakaroQuery<ModuleVersionSearchInputA
   @ValidateNested()
   @Type(() => RangeFilterCreatedAndUpdatedAt)
   declare lessThan: RangeFilterCreatedAndUpdatedAt;
-}
-
-class ModuleExportDTOAPI extends APIOutput<BuiltinModule<unknown>> {
-  @Type(() => BuiltinModule)
-  @ValidateNested()
-  declare data: BuiltinModule<unknown>;
 }
 
 @OpenAPI({
@@ -111,107 +102,5 @@ export class ModuleVersionController {
     const service = new ModuleService(req.domainId);
     const result = await service.tagVersion(data.moduleId, data.tag);
     return apiResponse(result);
-  }
-
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_MODULES]))
-  @OpenAPI({
-    summary: 'Export a module version',
-    description: 'Exports a module to a format that can be imported into another Takaro instance',
-  })
-  @Post('/export')
-  @ResponseSchema(ModuleExportDTOAPI)
-  async export(@Req() req: AuthenticatedRequest, @Body() data: ModuleExportInputDTO) {
-    const service = new ModuleService(req.domainId);
-    const version = await service.findOneVersion(data.versionId);
-    if (!version) throw new errors.NotFoundError('Version not found');
-    const mod = await service.findOne(version.moduleId);
-    if (!mod) throw new errors.NotFoundError('Module not found');
-    if (!version) throw new errors.NotFoundError('Version not found');
-
-    const output = new BuiltinModule(
-      mod.name,
-      version.description,
-      version.tag,
-      version.configSchema,
-      version.uiSchema,
-    );
-    output.commands = await Promise.all(
-      version.commands.map(
-        (_) =>
-          new ICommand({
-            function: _.function.code,
-            name: _.name,
-            trigger: _.trigger,
-            helpText: _.helpText,
-            arguments: _.arguments.map(
-              (arg) =>
-                new ICommandArgument({
-                  name: arg.name,
-                  type: arg.type,
-                  defaultValue: arg.defaultValue,
-                  helpText: arg.helpText,
-                  position: arg.position,
-                }),
-            ),
-          }),
-      ),
-    );
-
-    output.hooks = await Promise.all(
-      version.hooks.map(
-        (_) =>
-          new IHook({
-            function: _.function.code,
-            name: _.name,
-            eventType: _.eventType,
-          }),
-      ),
-    );
-
-    output.cronJobs = await Promise.all(
-      version.cronJobs.map(
-        (_) =>
-          new ICronJob({
-            function: _.function.code,
-            name: _.name,
-            temporalValue: _.temporalValue,
-          }),
-      ),
-    );
-
-    output.functions = await Promise.all(
-      version.functions.map(
-        (_) =>
-          new IFunction({
-            function: _.code,
-            name: _.name,
-          }),
-      ),
-    );
-
-    output.permissions = await Promise.all(
-      version.permissions.map(
-        (_) =>
-          new PermissionCreateDTO({
-            canHaveCount: _.canHaveCount,
-            description: _.description,
-            permission: _.permission,
-            friendlyName: _.friendlyName,
-          }),
-      ),
-    );
-
-    return apiResponse(output);
-  }
-
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]))
-  @OpenAPI({
-    summary: 'Import a module version',
-    description: 'Imports a module from a format that was exported from another Takaro instance',
-  })
-  @Post('/import')
-  async import(@Req() req: AuthenticatedRequest, @Body() data: BuiltinModule<unknown>) {
-    const service = new ModuleService(req.domainId);
-    return apiResponse(await service.import(data));
   }
 }

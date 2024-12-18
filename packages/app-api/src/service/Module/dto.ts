@@ -183,11 +183,6 @@ export class ModuleVersionCreateAPIDTO extends TakaroDTO<ModuleVersionCreateAPID
   moduleId: string;
 }
 
-export class ModuleExportInputDTO extends TakaroDTO<ModuleExportInputDTO> {
-  @IsUUID()
-  versionId: string;
-}
-
 export class InstallModuleDTO extends TakaroDTO<InstallModuleDTO> {
   @IsUUID('4')
   versionId: string;
