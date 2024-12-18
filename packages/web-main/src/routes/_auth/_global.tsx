@@ -14,7 +14,11 @@ export const Route = createFileRoute('/_auth/_global')({
     if (location.pathname == '/' && !canManageGameServers) {
       const gameservers = await context.queryClient.ensureQueryData(gameServersQueryOptions());
       if (gameservers.data.length > 0) {
-        throw redirect({ to: '/gameserver/$gameServerId/shop', params: { gameServerId: gameservers.data[0].id } });
+        throw redirect({
+          to: '/gameserver/$gameServerId/shop',
+          params: { gameServerId: gameservers.data[0].id },
+          replace: true,
+        });
       }
     }
   },
