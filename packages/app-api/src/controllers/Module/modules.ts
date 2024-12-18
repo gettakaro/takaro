@@ -8,7 +8,7 @@ import { ParamId } from '../../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 import { errors } from '@takaro/util';
-import { builtinModuleModificationMiddleware } from '../../middlewares/builtinModuleModification.js';
+import { moduleProtectionMiddleware } from '../../middlewares/moduleProtectionMiddleware.js';
 import { AllowedFilters, RangeFilterCreatedAndUpdatedAt } from '../shared.js';
 import { ITakaroQuery } from '@takaro/db';
 import { ModuleService } from '../../service/Module/index.js';
@@ -99,7 +99,7 @@ export class ModuleController {
     return apiResponse(await service.init(data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), builtinModuleModificationMiddleware)
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), moduleProtectionMiddleware)
   @ResponseSchema(ModuleOutputDTOAPI)
   @OpenAPI({
     summary: 'Update a module',
@@ -113,7 +113,7 @@ export class ModuleController {
     return apiResponse(await service.update(params.id, data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), builtinModuleModificationMiddleware)
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), moduleProtectionMiddleware)
   @ResponseSchema(APIOutput)
   @OpenAPI({
     summary: 'Remove a module',

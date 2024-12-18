@@ -6,18 +6,21 @@ const group = 'ModuleController';
 
 const testPermission = { permission: 'test', description: 'test', friendlyName: 'test' };
 
+const setup = async function (this: IntegrationTest<ModuleOutputDTO>) {
+  return (
+    await this.client.module.moduleControllerCreate({
+      name: 'Test module',
+    })
+  ).data.data;
+};
+
 const tests = [
+  // #region CRUD
   new IntegrationTest<ModuleOutputDTO>({
     group,
     snapshot: true,
     name: 'Get by ID',
-    setup: async function () {
-      return (
-        await this.client.module.moduleControllerCreate({
-          name: 'Test module',
-        })
-      ).data.data;
-    },
+    setup,
     test: async function () {
       return this.client.module.moduleControllerGetOne(this.setupData.id);
     },
@@ -38,16 +41,7 @@ const tests = [
     group,
     snapshot: true,
     name: 'Update',
-    setup: async function () {
-      return (
-        await this.client.module.moduleControllerCreate({
-          name: 'Test module',
-          latestVersion: {
-            description: 'bla bla',
-          },
-        })
-      ).data.data;
-    },
+    setup,
     test: async function () {
       return this.client.module.moduleControllerUpdate(this.setupData.id, {
         name: 'Updated module',
@@ -58,13 +52,7 @@ const tests = [
     group,
     snapshot: true,
     name: 'Delete',
-    setup: async function () {
-      return (
-        await this.client.module.moduleControllerCreate({
-          name: 'Test module',
-        })
-      ).data.data;
-    },
+    setup,
     test: async function () {
       return this.client.module.moduleControllerRemove(this.setupData.id);
     },
@@ -177,6 +165,8 @@ const tests = [
     },
     expectedStatus: 400,
   }),
+  // #endregion CRUD
+  // #region Permissions
   new IntegrationTest({
     group,
     snapshot: true,
@@ -195,13 +185,7 @@ const tests = [
     group,
     snapshot: true,
     name: 'Allows passing an array of permissions when updating a module',
-    setup: async function () {
-      return (
-        await this.client.module.moduleControllerCreate({
-          name: 'Test module',
-        })
-      ).data.data;
-    },
+    setup,
     test: async function () {
       await this.client.module.moduleControllerUpdate(this.setupData.id, {
         latestVersion: {
@@ -319,6 +303,8 @@ const tests = [
     },
     filteredFields: ['moduleId', 'moduleVersionId'],
   }),
+  // #endregion Permissions
+  // #region Import/export
   ...getModules().map(
     (builtin) =>
       new IntegrationTest<ModuleOutputDTO>({
@@ -375,6 +361,89 @@ const tests = [
         },
       }),
   ),
+  // #endregion Import/export
+  // #region Versioning
+  new IntegrationTest<ModuleOutputDTO>({
+    group,
+    snapshot: true,
+    name: 'versioning: Can tag a version',
+    setup,
+    filteredFields: ['moduleId'],
+    test: async function () {
+      const tagRes = await this.client.module.moduleVersionControllerTagVersion({
+        moduleId: this.setupData.id,
+        tag: '1.0.0',
+      });
+
+      expect(tagRes.data.data.tag).to.equal('1.0.0');
+      return tagRes;
+    },
+  }),
+  new IntegrationTest<ModuleOutputDTO>({
+    group,
+    snapshot: true,
+    name: 'versioning: Tag a version with non-semver tag -> error',
+    setup,
+    test: async function () {
+      let res;
+      try {
+        res = await this.client.module.moduleVersionControllerTagVersion({
+          moduleId: this.setupData.id,
+          tag: 'not-semver',
+        });
+        throw new Error('Should have errored');
+      } catch (error) {
+        if (!isAxiosError(error)) {
+          throw error;
+        } else {
+          res = error.response;
+          expect(error.response?.status).to.equal(400);
+          expect(error.response?.data.meta.error.code).to.equal('BadRequestError');
+          expect(error.response?.data.meta.error.message).to.equal(
+            'Invalid version tag, please use semver. Eg 1.0.0 or 2.0.4',
+          );
+        }
+      }
+
+      return res;
+    },
+    expectedStatus: 400,
+  }),
+  new IntegrationTest<ModuleOutputDTO>({
+    group,
+    snapshot: false,
+    name: 'versioning: Cannot edit tagged versions',
+    setup,
+    test: async function () {
+      const tagRes = await this.client.module.moduleVersionControllerTagVersion({
+        moduleId: this.setupData.id,
+        tag: '1.0.0',
+      });
+
+      expect(tagRes.data.data.tag).to.equal('1.0.0');
+
+      try {
+        await this.client.hook.hookControllerCreate({
+          versionId: tagRes.data.data.id,
+          name: 'test',
+          eventType: 'player-connected',
+          regex: '.*',
+        });
+        throw new Error('Should have errored');
+      } catch (error) {
+        if (!isAxiosError(error)) {
+          throw error;
+        } else {
+          expect(error.response?.status).to.equal(400);
+          expect(error.response?.data.meta.error.code).to.equal('BadRequestError');
+          expect(error.response?.data.meta.error.message).to.equal(
+            'Cannot modify a tagged version of a module, edit the "latest" version instead',
+          );
+        }
+      }
+    },
+  }),
+  // #endregion Versioning
 ];
 
 describe(group, function () {

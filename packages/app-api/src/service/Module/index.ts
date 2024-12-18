@@ -18,6 +18,7 @@ import {
   TakaroEventModuleUninstalled,
 } from '@takaro/modules';
 import { PermissionCreateDTO, PermissionOutputDTO } from '../RoleService.js';
+import * as semver from 'semver';
 
 // Curse you ESM... :(
 import _Ajv from 'ajv';
@@ -335,8 +336,11 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
   /**
    * Create a new version record and link all the components from 'latest' version to the new version.
    */
-  async tagVersion(moduleId: string, version: string) {
-    const newVersion = await this.repo.createVersion(moduleId, version);
+  async tagVersion(moduleId: string, tag: string) {
+    if (!semver.valid(tag))
+      throw new errors.BadRequestError('Invalid version tag, please use semver. Eg 1.0.0 or 2.0.4');
+
+    const newVersion = await this.repo.createVersion(moduleId, tag);
     const latestVersion = await this.getLatestVersion(moduleId);
 
     const commands = await this.commandService().find({ filters: { versionId: [latestVersion.id] } });

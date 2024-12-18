@@ -2,16 +2,26 @@ import { NextFunction, Response } from 'express';
 import { errors, logger } from '@takaro/util';
 import { AuthenticatedRequest } from '../service/AuthService.js';
 import { ModuleService } from '../service/Module/index.js';
+import { ModuleVersionOutputDTO } from '../service/Module/dto.js';
 
 const log = logger('middleware:module');
 
-export async function builtinModuleModificationMiddleware(
+/**
+ * For several reasons (Builtin module, tagged version) you cannot edit modules
+ * This middleware checks those conditions and blocks the request if necessary
+ * @param req
+ * @param _res
+ * @param next
+ * @returns
+ */
+export async function moduleProtectionMiddleware(
   req: AuthenticatedRequest,
   _res: Response,
   next: NextFunction,
 ): Promise<void> {
   try {
     const moduleService = new ModuleService(req.domainId);
+    let targetedVersion: ModuleVersionOutputDTO | null = null;
 
     const type = req.path.split('/')[1];
 
@@ -33,18 +43,32 @@ export async function builtinModuleModificationMiddleware(
       if (!mod) {
         const moduleVersion = await moduleService.findOneVersion(req.params.id);
         if (moduleVersion) {
+          targetedVersion = moduleVersion;
           mod = await moduleService.findOne(moduleVersion.moduleId);
         }
+      }
+    } else if (req.body.versionId) {
+      const moduleVersion = await moduleService.findOneVersion(req.body.versionId);
+      if (moduleVersion) {
+        targetedVersion = moduleVersion;
+        mod = await moduleService.findOne(moduleVersion.moduleId);
       }
     } else {
       const moduleVersion = await moduleService.findOneBy(type, req.body.commandId || req.params.id);
       if (moduleVersion) {
+        targetedVersion = moduleVersion;
         mod = await moduleService.findOne(moduleVersion.moduleId);
       }
     }
 
     if (mod?.builtin) {
       return next(new errors.BadRequestError('Cannot modify builtin modules'));
+    }
+
+    if (targetedVersion && targetedVersion.tag !== 'latest') {
+      return next(
+        new errors.BadRequestError('Cannot modify a tagged version of a module, edit the "latest" version instead'),
+      );
     }
 
     next();
