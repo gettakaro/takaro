@@ -235,6 +235,94 @@ const tests = [
       expect(result.reason).to.include('SyntaxError: Unexpected end of input.');
     },
   }),
+  /**
+   * Create a module with a version and command that returns a 'hello world' message and tag it
+   * Install the module and trigger the command
+   * Then, edit the command so it returns a 'goodbye world' message and tag the module again
+   * Trigger the command again and check if the message is 'goodbye world'   *
+   */
+  new IntegrationTest<IModuleTestsSetupData>({
+    group,
+    snapshot: false,
+    name: 'Bug repro: command code not updated after tag change',
+    setup: modulesTestSetup,
+    test: async function () {
+      const mod = (
+        await this.client.module.moduleControllerCreate({
+          name: 'Test module',
+        })
+      ).data.data;
+      const createdCommand = await this.client.command.commandControllerCreate({
+        name: 'testcmd',
+        versionId: mod.latestVersion.id,
+        trigger: 'test',
+        function: `import { data, takaro } from '@takaro/helpers';
+        async function main() {
+            const { player } = data;
+            await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
+                message: 'hello world',
+            });
+        }
+        await main();`,
+      });
+
+      const tagRes1 = await this.client.module.moduleVersionControllerTagVersion({
+        moduleId: mod.id,
+        tag: '0.0.1',
+      });
+
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: tagRes1.data.data.id,
+        userConfig: JSON.stringify({}),
+        systemConfig: JSON.stringify({}),
+      });
+
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/test',
+        playerId: this.setupData.players[0].id,
+      });
+
+      expect((await events).length).to.be.eq(1);
+      expect((await events)[0].data.meta.msg).to.be.eq('hello world');
+
+      // Update the command
+      await this.client.command.commandControllerUpdate(createdCommand.data.data.id, {
+        function: `import { data, takaro } from '@takaro/helpers';
+        async function main() {
+            const { player } = data;
+            await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
+              message: 'goodbye world',
+            });
+        }
+        await main();`,
+      });
+
+      const tagRes2 = await this.client.module.moduleVersionControllerTagVersion({
+        moduleId: mod.id,
+        tag: '0.0.2',
+      });
+
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: tagRes2.data.data.id,
+        userConfig: JSON.stringify({}),
+        systemConfig: JSON.stringify({}),
+      });
+
+      const eventsAfter = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/test',
+        playerId: this.setupData.players[0].id,
+      });
+
+      expect((await eventsAfter).length).to.be.eq(1);
+      expect((await eventsAfter)[0].data.meta.msg).to.be.eq('goodbye world');
+    },
+  }),
 ];
 
 describe(group, function () {
