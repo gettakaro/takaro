@@ -190,7 +190,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
       );
     }
 
-    return updated;
+    return this.findOne(id);
   }
 
   async delete(id: string) {
