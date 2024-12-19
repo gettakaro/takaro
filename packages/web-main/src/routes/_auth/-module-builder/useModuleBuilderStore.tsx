@@ -1,4 +1,10 @@
-import { CommandOutputDTO, CronJobOutputDTO, FunctionOutputDTO, HookOutputDTO } from '@takaro/apiclient';
+import {
+  CommandOutputDTO,
+  CronJobOutputDTO,
+  FunctionOutputDTO,
+  HookOutputDTO,
+  SmallModuleVersionOutputDTO,
+} from '@takaro/apiclient';
 import { PropsWithChildren, createContext, useContext, useRef } from 'react';
 import { createStore, useStore } from 'zustand';
 
@@ -36,8 +42,8 @@ type FileWithPath = Omit<File, 'code'> & { path: string; code?: string };
 
 export type ModuleBuilderProps = {
   moduleId: string;
-  versionId: string;
   moduleName: string;
+  moduleVersions: SmallModuleVersionOutputDTO[];
   readOnly: boolean;
   fileMap: FileMap;
   /// File that is currently active in the editor

@@ -16,7 +16,7 @@ export const TableListToggleButton: FC<TableListToggleButtonProps> = ({ value, o
       orientation="horizontal"
       defaultValue={value}
     >
-      <ToggleButtonGroup.Button value="list" tooltip="List view">
+      <ToggleButtonGroup.Button value="list" tooltip="Card view">
         <ListViewIcon size={20} />
       </ToggleButtonGroup.Button>
       <ToggleButtonGroup.Button value="table" tooltip="Table view">

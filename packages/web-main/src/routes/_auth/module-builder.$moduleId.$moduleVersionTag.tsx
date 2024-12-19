@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { CommandOutputDTO, CronJobOutputDTO, FunctionOutputDTO, HookOutputDTO } from '@takaro/apiclient';
 import { z } from 'zod';
-import { moduleQueryOptions } from 'queries/module';
+import { moduleQueryOptions, moduleVersionQueryOptions } from 'queries/module';
 import { styled, Skeleton } from '@takaro/lib-components';
 import { ErrorBoundary } from 'components/ErrorBoundary';
 import { createFileRoute, redirect } from '@tanstack/react-router';
@@ -12,6 +12,7 @@ import { FileMap, FileType, ModuleBuilderProvider } from './-module-builder/useM
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { globalGameServerSetingQueryOptions } from 'queries/setting';
 import { userMeQueryOptions } from 'queries/user';
+import { useQueries } from '@tanstack/react-query';
 
 const Flex = styled.div`
   display: flex;
@@ -29,7 +30,7 @@ const LoadingContainer = styled.div`
   gap: ${({ theme }) => theme.spacing['4']};
 `;
 
-export const Route = createFileRoute('/_auth/module-builder/$moduleId')({
+export const Route = createFileRoute('/_auth/module-builder/$moduleId/$moduleVersionTag')({
   beforeLoad: async ({ context }) => {
     const session = await context.queryClient.ensureQueryData(userMeQueryOptions());
     const developerModeEnabled = await context.queryClient.ensureQueryData(
@@ -43,7 +44,22 @@ export const Route = createFileRoute('/_auth/module-builder/$moduleId')({
   validateSearch: z.object({
     file: z.string().optional(),
   }),
-  loader: ({ params, context }) => context.queryClient.ensureQueryData(moduleQueryOptions(params.moduleId)),
+  loader: async ({ params, context }) => {
+    const data = await context.queryClient.ensureQueryData(moduleQueryOptions(params.moduleId));
+
+    const version = data.versions.find((version) => version.tag === params.moduleVersionTag);
+    if (!version) {
+      throw redirect({
+        to: '/module-builder/$moduleId/$moduleVersionTag',
+        params: { moduleId: params.moduleId, moduleVersionTag: 'latest' },
+      });
+    }
+    return {
+      moduleVersion: await context.queryClient.ensureQueryData(moduleVersionQueryOptions(version.id)),
+      mod: data,
+    };
+  },
+
   component: Component,
   pendingComponent: () => {
     return (
@@ -56,11 +72,18 @@ export const Route = createFileRoute('/_auth/module-builder/$moduleId')({
 });
 
 function Component() {
-  const mod = Route.useLoaderData();
+  const loaderData = Route.useLoaderData();
   const { file: activeFileParam } = Route.useSearch();
+  const params = Route.useParams();
+
+  const [{ data: mod }, { data: moduleVersion }] = useQueries({
+    queries: [
+      { ...moduleQueryOptions(params.moduleId), initialData: loaderData.mod },
+      { ...moduleVersionQueryOptions(loaderData.moduleVersion.id), initialData: loaderData.moduleVersion },
+    ],
+  });
 
   useDocumentTitle(mod.name);
-  // Ideally, we should only block when there are unsaved changes but for that we should first get rid of sandpack.
   useEffect(() => {
     function handleOnBeforeUnload(event: BeforeUnloadEvent) {
       event.preventDefault();
@@ -98,17 +121,17 @@ function Component() {
   const fileMap = useMemo(() => {
     if (mod) {
       // This first sorts
-      const nameToId = mod.hooks
+      const nameToId = mod.latestVersion.hooks
         .sort((a, b) => a.name.localeCompare(b.name))
         .reduce(moduleItemPropertiesReducer(FileType.Hooks), {});
-      mod.cronJobs
+      moduleVersion.cronJobs
         .sort((a, b) => a.name.localeCompare(b.name))
         .reduce(moduleItemPropertiesReducer(FileType.CronJobs), nameToId);
-      mod.commands
+      moduleVersion.commands
         .sort((a, b) => a.name.localeCompare(b.name))
         .reduce(moduleItemPropertiesReducer(FileType.Commands), nameToId);
 
-      mod.functions
+      moduleVersion.functions
         .sort((a, b) => a.name!.localeCompare(b.name!))
         .reduce(moduleItemPropertiesReducer(FileType.Functions), nameToId);
 
@@ -122,8 +145,8 @@ function Component() {
     return fileMap[activeFileParam] ? activeFileParam : undefined;
   }, [fileMap, activeFileParam]);
 
-  if (!mod.hooks.length && !mod.cronJobs.length && !mod.commands.length) {
-    return <ModuleOnboarding moduleId={mod.id} />;
+  if (!moduleVersion.hooks.length && !moduleVersion.cronJobs.length && !moduleVersion.commands.length) {
+    return <ModuleOnboarding moduleId={mod.id} versionId={moduleVersion.id} />;
   }
 
   return (
@@ -131,8 +154,9 @@ function Component() {
       <ModuleBuilderProvider
         moduleId={mod.id}
         moduleName={mod.name}
+        moduleVersions={mod.versions}
         fileMap={fileMap}
-        readOnly={mod.builtin ? true : false}
+        readOnly={(mod.builtin ? true : false) || moduleVersion.tag !== 'latest'}
         visibleFiles={activeFile ? [activeFile] : []}
         activeFile={activeFile}
       >

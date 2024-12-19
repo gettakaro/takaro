@@ -68,7 +68,7 @@ export const GameServersTableView = () => {
         info.getValue() ? (
           <Chip variant="outline" color="success" label="Enabled" />
         ) : (
-          <Chip variant="outline" color="error" label="Disabled" />
+          <Chip variant="outline" color="warning" label="Disabled" />
         ),
     }),
     columnHelper.accessor('reachable', {
@@ -78,7 +78,7 @@ export const GameServersTableView = () => {
         info.getValue() ? (
           <Chip variant="outline" color="success" label="Online" />
         ) : (
-          <Chip variant="outline" color="success" label="Offline" />
+          <Chip variant="outline" color="error" label="Offline" />
         ),
     }),
     columnHelper.display({
@@ -99,10 +99,10 @@ export const GameServersTableView = () => {
   const p =
     !isLoading && data
       ? {
-          paginationState: pagination.paginationState,
-          setPaginationState: pagination.setPaginationState,
-          pageOptions: pagination.getPageOptions(data),
-        }
+        paginationState: pagination.paginationState,
+        setPaginationState: pagination.setPaginationState,
+        pageOptions: pagination.getPageOptions(data),
+      }
       : undefined;
 
   return (

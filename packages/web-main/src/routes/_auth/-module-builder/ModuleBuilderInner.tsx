@@ -21,7 +21,7 @@ const Wrapper = styled.div`
 const Content = styled.div`
   display: flex;
   /* calculates the remaining height of the screen minus the header*/
-  height: calc(100vh - ${({ theme }) => theme.spacing[4]});
+  height: calc(100vh - ${({ theme }) => theme.spacing[5]});
 `;
 
 const StyledResizable = styled(Resizable)`

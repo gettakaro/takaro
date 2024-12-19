@@ -69,15 +69,17 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ moduleId, onSuccess })
   const onSubmit: SubmitHandler<z.infer<typeof validationSchema>> = async ({ name }) => {
     const createdModule = await createModule({
       name,
-      configSchema: latestVersion.configSchema,
-      permissions: latestVersion.permissions.map((perm) => ({
-        description: perm.description,
-        permission: perm.permission,
-        friendlyName: `${mod.name}_${perm.friendlyName}`,
-        canHaveCount: perm.canHaveCount,
-      })),
-      uiSchema: latestVersion.uiSchema,
-      description: latestVersion.description,
+      latestVersion: {
+        configSchema: latestVersion.configSchema,
+        permissions: latestVersion.permissions.map((perm) => ({
+          description: perm.description,
+          permission: perm.permission,
+          friendlyName: `${mod.name}_${perm.friendlyName}`,
+          canHaveCount: perm.canHaveCount,
+        })),
+        uiSchema: latestVersion.uiSchema,
+        description: latestVersion.description,
+      },
     });
 
     if (!createdModule) {
@@ -113,9 +115,12 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ moduleId, onSuccess })
           ),
           ...latestVersion.functions.map((f) =>
             createFunction({
-              versionId: createdModule.latestVersion.id,
-              name: f.name,
-              code: f.code,
+              moduleId: createdModule.id,
+              fn: {
+                versionId: createdModule.latestVersion.id,
+                name: f.name,
+                code: f.code,
+              },
             }),
           ),
           ...latestVersion.cronJobs.map((cronJob) =>
@@ -141,7 +146,7 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ moduleId, onSuccess })
     <>
       <Alert
         variant="warning"
-        text="The new module will have all the same hooks, commands, and cron jobs as the original module. 
+        text="The new module will have all the same versions, hooks, commands, and cron jobs as the original module. 
         Installing the copied module will cause triggers to occur twice, since it has the same command names as the original module."
       />
 

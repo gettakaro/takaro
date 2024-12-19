@@ -4,7 +4,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useUserSetSelectedDomain, userMeQueryOptions } from 'queries/user';
 import { MdDomain as DomainIcon } from 'react-icons/md';
 import { AiOutlineArrowRight as ArrowRightIcon } from 'react-icons/ai';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 export const TAKARO_DOMAIN_COOKIE_REGEX = /(?:(?:^|.*;\s*)takaro-domain\s*=\s*([^;]*).*$)|^.*$/;
 
@@ -40,8 +40,9 @@ export const Route = createFileRoute('/_auth/domain/select')({
 });
 
 function Component() {
-  const me = Route.useLoaderData();
+  const loaderData = Route.useLoaderData();
   const currentDomain = document.cookie.replace(TAKARO_DOMAIN_COOKIE_REGEX, '$1');
+  const { data: me } = useQuery({ ...userMeQueryOptions(), initialData: loaderData });
 
   // Keep current domain at the top
   me.domains.sort((a, b) => {

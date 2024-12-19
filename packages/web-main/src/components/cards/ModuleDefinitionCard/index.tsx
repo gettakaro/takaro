@@ -8,12 +8,11 @@ import {
   Dropdown,
   useTheme,
   ValueConfirmationField,
-  styled,
-  Spinner,
+  Chip,
 } from '@takaro/lib-components';
 import { PERMISSIONS, ModuleOutputDTO } from '@takaro/apiclient';
-import { moduleExportOptions, useModuleRemove } from 'queries/module';
-import { FC, useState, MouseEvent, useEffect } from 'react';
+import { useModuleRemove } from 'queries/module';
+import { FC, useState, MouseEvent } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { SpacedRow, ActionIconsContainer, InnerBody } from '../style';
 import { PermissionsGuard } from 'components/PermissionsGuard';
@@ -25,16 +24,11 @@ import {
   AiOutlineEye as ViewIcon,
   AiOutlineCopy as CopyIcon,
   AiOutlineExport as ExportIcon,
+  AiOutlineTag as TagIcon,
 } from 'react-icons/ai';
-import { useQuery } from '@tanstack/react-query';
-
-const DownloadLink = styled.a`
-  display: block;
-  padding: ${({ theme }) => theme.spacing['0_75']};
-  background-color: ${({ theme }) => theme.colors.primary};
-  color: ${({ theme }) => theme.colors.white};
-  border-radius: ${({ theme }) => theme.borderRadius.small};
-`;
+import { TagModuleDialog } from './TagModuleDialog';
+import { ExportModuleDialog } from './ExportModuleDialog';
+import { DateTime } from 'luxon';
 
 interface IModuleCardProps {
   mod: ModuleOutputDTO;
@@ -42,11 +36,10 @@ interface IModuleCardProps {
 
 export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
+  const [openTagDialog, setOpenTagDialog] = useState<boolean>(false);
   const [openExportDialog, setOpenExportDialog] = useState<boolean>(false);
   const [isValid, setIsValid] = useState<boolean>(false);
-  const [downloadLink, setDownloadLink] = useState<string | null>(null);
-  const { mutate, isPending: isDeleting, isSuccess } = useModuleRemove();
-  const { data: exported, isPending: isExporting } = useQuery(moduleExportOptions(mod.id, openExportDialog));
+  const { mutate: removeModule, isPending: isDeleting, isSuccess: deleteIsSuccess } = useModuleRemove();
 
   const { latestVersion } = mod;
 
@@ -55,21 +48,12 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
 
   const handleOnDelete = (e: MouseEvent) => {
     e.stopPropagation();
-    mutate({ moduleId: mod.id });
+    removeModule({ moduleId: mod.id });
   };
 
-  if (isSuccess) {
+  if (deleteIsSuccess) {
     setOpenDeleteDialog(false);
   }
-
-  useEffect(() => {
-    if (!isExporting && exported) {
-      const blob = new Blob([JSON.stringify(exported)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      setDownloadLink(url);
-      return () => URL.revokeObjectURL(url);
-    }
-  }, [isExporting, exported]);
 
   const handleOnEditClick = (e: MouseEvent) => {
     e.stopPropagation();
@@ -90,6 +74,11 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
     }
   };
 
+  const handleOnTagClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    setOpenTagDialog(true);
+  };
+
   const handleOnCopyClick = (e: MouseEvent) => {
     e.stopPropagation();
     navigate({ to: '/modules/$moduleId/copy', params: { moduleId: mod.id } });
@@ -105,6 +94,10 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
     setOpenExportDialog(true);
   };
 
+  const newestTag = mod.versions
+    .filter((version) => version.tag != 'latest')
+    .sort((a, b) => DateTime.fromISO(a.createdAt).toMillis() < DateTime.fromISO(b.createdAt).toMillis())[0]?.tag;
+
   return (
     <>
       <Card data-testid={`${mod.name}`}>
@@ -113,6 +106,12 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
             <SpacedRow>
               <h2>{mod.name}</h2>
               <ActionIconsContainer>
+                <Tooltip>
+                  <Tooltip.Trigger>
+                    <Chip variant="outline" color={newestTag ? 'primary' : 'secondary'} label={newestTag ?? 'None'} />
+                  </Tooltip.Trigger>
+                  <Tooltip.Content>version</Tooltip.Content>
+                </Tooltip>
                 {mod.builtin && (
                   <Tooltip>
                     <Tooltip.Trigger>
@@ -132,16 +131,24 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
                     </Tooltip.Content>
                   </Tooltip>
                 )}
+
                 <Dropdown>
                   <Dropdown.Trigger asChild>
                     <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
                   </Dropdown.Trigger>
                   <Dropdown.Menu>
+                    {mod.builtin && (
+                      <>
+                        <Dropdown.Menu.Item icon={<ViewIcon />} onClick={handleOnViewClick} label="View module" />
+                      </>
+                    )}
                     {!mod.builtin && (
                       <Dropdown.Menu.Group label="Actions">
                         <PermissionsGuard requiredPermissions={[[PERMISSIONS.ManageModules]]}>
                           <Dropdown.Menu.Item icon={<ViewIcon />} onClick={handleOnViewClick} label="View module" />
                           <Dropdown.Menu.Item icon={<EditIcon />} onClick={handleOnEditClick} label="Edit module" />
+                          <Dropdown.Menu.Item icon={<CopyIcon />} onClick={handleOnCopyClick} label="Copy module" />
+                          <Dropdown.Menu.Item icon={<TagIcon />} onClick={handleOnTagClick} label="Tag module" />
                           <Dropdown.Menu.Item
                             icon={<DeleteIcon fill={theme.colors.error} />}
                             onClick={handleOnDeleteClick}
@@ -151,7 +158,6 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
                       </Dropdown.Menu.Group>
                     )}
                     <Dropdown.Menu.Group>
-                      <Dropdown.Menu.Item icon={<CopyIcon />} onClick={handleOnCopyClick} label="Copy module" />
                       <Dropdown.Menu.Item
                         icon={<LinkIcon />}
                         onClick={handleOnOpenClick}
@@ -200,33 +206,20 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
           </Dialog.Body>
         </Dialog.Content>
       </Dialog>
-      <Dialog open={openExportDialog} onOpenChange={setOpenExportDialog}>
-        <Dialog.Content>
-          <Dialog.Heading size={4}>
-            Module: <span style={{ textTransform: 'capitalize' }}>{mod.name}</span>
-          </Dialog.Heading>
-          <Dialog.Body>
-            {isExporting && (
-              <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <p>preparing {mod.name}.json</p>
-                <Spinner size="tiny" />
-              </div>
-            )}
+      <TagModuleDialog
+        moduleId={mod.id}
+        moduleName={mod.name}
+        openDialog={openTagDialog}
+        setOpenDialog={setOpenTagDialog}
+      />
 
-            {!isExporting && downloadLink && (
-              <DownloadLink
-                href={downloadLink}
-                download={`${mod.name}.json`}
-                onClick={() => {
-                  setOpenExportDialog(false);
-                }}
-              >
-                Download {mod.name}.json
-              </DownloadLink>
-            )}
-          </Dialog.Body>
-        </Dialog.Content>
-      </Dialog>
+      <ExportModuleDialog
+        moduleId={mod.id}
+        moduleName={mod.name}
+        moduleVersions={mod.versions}
+        openDialog={openExportDialog}
+        setOpenDialog={setOpenExportDialog}
+      />
     </>
   );
 };

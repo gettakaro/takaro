@@ -2,11 +2,12 @@ import { CustomContentProps, useSnackbar } from 'notistack';
 import { useState, forwardRef, PropsWithChildren } from 'react';
 import { styled } from '../../../../styled';
 import { AiOutlineClose as CloseIcon, AiOutlineDown as ArrowDownIcon } from 'react-icons/ai';
+import { Tooltip } from '../../../../components';
 
 const Wrapper = styled.div`
   box-shadow: ${({ theme }) => theme.elevation[4]};
   border-radius: ${({ theme }) => theme.borderRadius.large};
-  width: 250px;
+  width: 300px;
   border: 1px solid ${({ theme }) => theme.colors.backgroundAlt};
 `;
 
@@ -51,7 +52,7 @@ const Content = styled.div<{ expanded: boolean }>`
 
 export const DrawerSnack = forwardRef<HTMLDivElement, PropsWithChildren<CustomContentProps>>(function DrawerSnack(
   { id, message, children },
-  ref,
+  ref
 ) {
   const { closeSnackbar } = useSnackbar();
   const [expanded, setExpanded] = useState<boolean>(false);
@@ -64,9 +65,19 @@ export const DrawerSnack = forwardRef<HTMLDivElement, PropsWithChildren<CustomCo
     <Wrapper ref={ref} data-testid={id}>
       <Container expanded={expanded}>
         <h4>{message}</h4>
-        <div>
-          <ArrowDownIcon onClick={() => setExpanded(!expanded)} size={16} />
-          <CloseIcon onClick={handleClose} size={16} />
+        <div style={{ display: 'flex' }}>
+          <Tooltip placement="top">
+            <Tooltip.Trigger>
+              <ArrowDownIcon onClick={() => setExpanded(!expanded)} size={16} />
+            </Tooltip.Trigger>
+            <Tooltip.Content>{expanded ? 'Collapse' : 'Expand'}</Tooltip.Content>
+          </Tooltip>
+          <Tooltip placement="top">
+            <Tooltip.Trigger>
+              <CloseIcon onClick={handleClose} size={16} />
+            </Tooltip.Trigger>
+            <Tooltip.Content>Close</Tooltip.Content>
+          </Tooltip>
         </div>
       </Container>
       <Content expanded={expanded}>{children}</Content>

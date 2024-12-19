@@ -200,7 +200,6 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
           onChange={(value) => {
             if (readOnly) return;
 
-            // update the code in the sandpack
             updateCode(value || '');
 
             if (modelVersionId !== editorInstance.current?.getModel()?.getAlternativeVersionId()) {
@@ -294,7 +293,7 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
           }}
         />
         {dirtyFiles.has(activeFile) && (
-          <div style={{ position: 'fixed', bottom: '20px', right: '40px' }}>
+          <div style={{ position: 'fixed', bottom: '20px', right: '40px', zIndex: 10000 }}>
             <Tooltip>
               <Tooltip.Trigger asChild>
                 <Button
