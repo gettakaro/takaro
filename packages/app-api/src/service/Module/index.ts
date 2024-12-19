@@ -448,6 +448,15 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     installDto.userConfig = JSON.stringify(modUserConfig);
     installDto.systemConfig = JSON.stringify(modSystemConfig);
 
+    // If this module is already installed, we'll uninstall it first
+    const existingInstallation = await this.getInstalledModules({
+      gameserverId: installDto.gameServerId,
+      moduleId: versionToInstall.moduleId,
+    });
+    if (existingInstallation.length) {
+      await this.uninstallModule(existingInstallation[0].id);
+    }
+
     const installation = await this.repo.installModule(installDto);
     await this.cronjobService().syncModuleCronjobs(installation);
 
