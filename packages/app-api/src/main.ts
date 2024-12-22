@@ -1,5 +1,7 @@
 import 'reflect-metadata';
 
+import { randomUUID } from 'crypto';
+import { queueService } from '@takaro/queues';
 import { HTTP } from '@takaro/http';
 import { errors, logger } from '@takaro/util';
 import { DomainController } from './controllers/DomainController.js';
@@ -156,4 +158,14 @@ process.on('unhandledRejection', (reason) => {
 
 process.on('uncaughtException', (error: Error) => {
   log.error(`Caught exception: ${error}\n Exception origin: ${error.stack}`);
+});
+
+/**
+ * Nodemon sends a SIGUSR2 signal when it restarts the process
+ * So we know we're in localdev -> so reload the modules
+ */
+process.on('SIGUSR2', async () => {
+  console.log('Adding job to reload modules');
+  await queueService.queues.system.queue.add({ domainId: 'all' }, { jobId: randomUUID(), delay: 1000 });
+  process.exit(0);
 });

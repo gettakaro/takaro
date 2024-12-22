@@ -341,6 +341,12 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
     return this.findOneVersion(item.id);
   }
 
+  async deleteVersion(id: string): Promise<boolean> {
+    const { queryVersion } = await this.getModel();
+    const data = await queryVersion.deleteById(id);
+    return !!data;
+  }
+
   async findByCommand(commandId: string): Promise<ModuleVersionOutputDTO> {
     const { queryVersion } = await this.getModel();
     const item = await queryVersion.withGraphJoined('commands').findOne('commands.id', commandId);

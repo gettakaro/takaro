@@ -28,12 +28,12 @@ export class TimedShutdown extends ModuleTransferDTO<TimedShutdown> {
         cronJobs: [
           new ICronJob({
             name: 'Shutdown',
-            temporalValue: '3 30 * * *',
+            temporalValue: '30 3 * * *',
             function: this.loadFn('cronJobs', 'Shutdown'),
           }),
           new ICronJob({
             name: 'warning',
-            temporalValue: '3 25 * * *',
+            temporalValue: '25 3 * * *',
             function: this.loadFn('cronJobs', 'warning'),
           }),
         ],
