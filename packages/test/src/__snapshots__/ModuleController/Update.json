@@ -6,7 +6,31 @@
       "updatedAt": "2024-07-14T14:37:36.064Z",
       "id": "427827e5-1d7e-4591-b958-2002c0579293",
       "name": "Updated module",
-      "builtin": null
+      "builtin": null,
+      "latestVersion": {
+        "createdAt": "2024-12-22T16:18:08.269Z",
+        "updatedAt": "2024-12-22T16:18:08.278Z",
+        "id": "e1b44bb7-23e6-43bc-8e64-c36e9b901dfb",
+        "moduleId": "d4a626bd-8e15-4eef-a514-538e76b4be11",
+        "tag": "latest",
+        "description": null,
+        "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{},\"required\":[],\"additionalProperties\":false}",
+        "uiSchema": "{}",
+        "hooks": [],
+        "commands": [],
+        "cronJobs": [],
+        "functions": [],
+        "permissions": [],
+        "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable/disable the module without having to uninstall it.\"}},\"required\":[],\"additionalProperties\":false}"
+      },
+      "versions": [
+        {
+          "createdAt": "2024-12-22T16:18:08.269Z",
+          "updatedAt": "2024-12-22T16:18:08.278Z",
+          "id": "e1b44bb7-23e6-43bc-8e64-c36e9b901dfb",
+          "tag": "latest"
+        }
+      ]
     }
   },
   "status": 200,

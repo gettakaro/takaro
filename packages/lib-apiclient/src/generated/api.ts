@@ -5269,6 +5269,25 @@ export interface ModuleExportOptionsDTO {
 /**
  * 
  * @export
+ * @interface ModuleInstallParamId
+ */
+export interface ModuleInstallParamId {
+    /**
+     * 
+     * @type {string}
+     * @memberof ModuleInstallParamId
+     */
+    'moduleId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ModuleInstallParamId
+     */
+    'gameServerId': string;
+}
+/**
+ * 
+ * @export
  * @interface ModuleInstallationOutputArrayDTOAPI
  */
 export interface ModuleInstallationOutputArrayDTOAPI {
@@ -10917,9 +10936,9 @@ export const CommandApiFp = function(configuration?: Configuration) {
          */
         async commandControllerCreate(commandCreateDTO?: CommandCreateDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CommandOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.commandControllerCreate(commandCreateDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['CommandApi.commandControllerCreate']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['CommandApi.commandControllerCreate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `MANAGE_MODULES`
@@ -10930,9 +10949,9 @@ export const CommandApiFp = function(configuration?: Configuration) {
          */
         async commandControllerCreateArgument(commandArgumentCreateDTO?: CommandArgumentCreateDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CommandArgumentDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.commandControllerCreateArgument(commandArgumentCreateDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['CommandApi.commandControllerCreateArgument']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['CommandApi.commandControllerCreateArgument']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `READ_MODULES`
@@ -10945,9 +10964,9 @@ export const CommandApiFp = function(configuration?: Configuration) {
          */
         async commandControllerGetExecutions(id: string, success?: any, eventSearchInputDTO?: EventSearchInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventOutputArrayDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.commandControllerGetExecutions(id, success, eventSearchInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['CommandApi.commandControllerGetExecutions']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['CommandApi.commandControllerGetExecutions']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `READ_MODULES`
@@ -10958,9 +10977,9 @@ export const CommandApiFp = function(configuration?: Configuration) {
          */
         async commandControllerGetOne(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CommandOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.commandControllerGetOne(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['CommandApi.commandControllerGetOne']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['CommandApi.commandControllerGetOne']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `MANAGE_MODULES`
@@ -10971,9 +10990,9 @@ export const CommandApiFp = function(configuration?: Configuration) {
          */
         async commandControllerRemove(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.commandControllerRemove(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['CommandApi.commandControllerRemove']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['CommandApi.commandControllerRemove']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `MANAGE_MODULES`
@@ -10984,9 +11003,9 @@ export const CommandApiFp = function(configuration?: Configuration) {
          */
         async commandControllerRemoveArgument(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.commandControllerRemoveArgument(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['CommandApi.commandControllerRemoveArgument']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['CommandApi.commandControllerRemoveArgument']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `READ_MODULES`
@@ -10997,9 +11016,9 @@ export const CommandApiFp = function(configuration?: Configuration) {
          */
         async commandControllerSearch(commandSearchInputDTO?: CommandSearchInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CommandOutputArrayDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.commandControllerSearch(commandSearchInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['CommandApi.commandControllerSearch']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['CommandApi.commandControllerSearch']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `MANAGE_MODULES`
@@ -11011,9 +11030,9 @@ export const CommandApiFp = function(configuration?: Configuration) {
          */
         async commandControllerTrigger(id: string, commandTriggerDTO?: CommandTriggerDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.commandControllerTrigger(id, commandTriggerDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['CommandApi.commandControllerTrigger']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['CommandApi.commandControllerTrigger']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `MANAGE_MODULES`
@@ -11025,9 +11044,9 @@ export const CommandApiFp = function(configuration?: Configuration) {
          */
         async commandControllerUpdate(id: string, commandUpdateDTO?: CommandUpdateDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CommandOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.commandControllerUpdate(id, commandUpdateDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['CommandApi.commandControllerUpdate']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['CommandApi.commandControllerUpdate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `MANAGE_MODULES`
@@ -11039,9 +11058,9 @@ export const CommandApiFp = function(configuration?: Configuration) {
          */
         async commandControllerUpdateArgument(id: string, commandArgumentUpdateDTO?: CommandArgumentUpdateDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CommandArgumentDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.commandControllerUpdateArgument(id, commandArgumentUpdateDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['CommandApi.commandControllerUpdateArgument']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['CommandApi.commandControllerUpdateArgument']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
 };
@@ -11060,7 +11079,7 @@ export const CommandApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        commandControllerCreate(commandCreateDTO?: CommandCreateDTO, options?: any): AxiosPromise<CommandOutputDTOAPI> {
+        commandControllerCreate(commandCreateDTO?: CommandCreateDTO, options?: RawAxiosRequestConfig): AxiosPromise<CommandOutputDTOAPI> {
             return localVarFp.commandControllerCreate(commandCreateDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -11070,7 +11089,7 @@ export const CommandApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        commandControllerCreateArgument(commandArgumentCreateDTO?: CommandArgumentCreateDTO, options?: any): AxiosPromise<CommandArgumentDTOAPI> {
+        commandControllerCreateArgument(commandArgumentCreateDTO?: CommandArgumentCreateDTO, options?: RawAxiosRequestConfig): AxiosPromise<CommandArgumentDTOAPI> {
             return localVarFp.commandControllerCreateArgument(commandArgumentCreateDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -11082,7 +11101,7 @@ export const CommandApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        commandControllerGetExecutions(id: string, success?: any, eventSearchInputDTO?: EventSearchInputDTO, options?: any): AxiosPromise<EventOutputArrayDTOAPI> {
+        commandControllerGetExecutions(id: string, success?: any, eventSearchInputDTO?: EventSearchInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<EventOutputArrayDTOAPI> {
             return localVarFp.commandControllerGetExecutions(id, success, eventSearchInputDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -11092,7 +11111,7 @@ export const CommandApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        commandControllerGetOne(id: string, options?: any): AxiosPromise<CommandOutputDTOAPI> {
+        commandControllerGetOne(id: string, options?: RawAxiosRequestConfig): AxiosPromise<CommandOutputDTOAPI> {
             return localVarFp.commandControllerGetOne(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -11102,7 +11121,7 @@ export const CommandApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        commandControllerRemove(id: string, options?: any): AxiosPromise<APIOutput> {
+        commandControllerRemove(id: string, options?: RawAxiosRequestConfig): AxiosPromise<APIOutput> {
             return localVarFp.commandControllerRemove(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -11112,7 +11131,7 @@ export const CommandApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        commandControllerRemoveArgument(id: string, options?: any): AxiosPromise<APIOutput> {
+        commandControllerRemoveArgument(id: string, options?: RawAxiosRequestConfig): AxiosPromise<APIOutput> {
             return localVarFp.commandControllerRemoveArgument(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -11122,7 +11141,7 @@ export const CommandApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        commandControllerSearch(commandSearchInputDTO?: CommandSearchInputDTO, options?: any): AxiosPromise<CommandOutputArrayDTOAPI> {
+        commandControllerSearch(commandSearchInputDTO?: CommandSearchInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<CommandOutputArrayDTOAPI> {
             return localVarFp.commandControllerSearch(commandSearchInputDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -11133,7 +11152,7 @@ export const CommandApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        commandControllerTrigger(id: string, commandTriggerDTO?: CommandTriggerDTO, options?: any): AxiosPromise<void> {
+        commandControllerTrigger(id: string, commandTriggerDTO?: CommandTriggerDTO, options?: RawAxiosRequestConfig): AxiosPromise<void> {
             return localVarFp.commandControllerTrigger(id, commandTriggerDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -11144,7 +11163,7 @@ export const CommandApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        commandControllerUpdate(id: string, commandUpdateDTO?: CommandUpdateDTO, options?: any): AxiosPromise<CommandOutputDTOAPI> {
+        commandControllerUpdate(id: string, commandUpdateDTO?: CommandUpdateDTO, options?: RawAxiosRequestConfig): AxiosPromise<CommandOutputDTOAPI> {
             return localVarFp.commandControllerUpdate(id, commandUpdateDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -11155,7 +11174,7 @@ export const CommandApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        commandControllerUpdateArgument(id: string, commandArgumentUpdateDTO?: CommandArgumentUpdateDTO, options?: any): AxiosPromise<CommandArgumentDTOAPI> {
+        commandControllerUpdateArgument(id: string, commandArgumentUpdateDTO?: CommandArgumentUpdateDTO, options?: RawAxiosRequestConfig): AxiosPromise<CommandArgumentDTOAPI> {
             return localVarFp.commandControllerUpdateArgument(id, commandArgumentUpdateDTO, options).then((request) => request(axios, basePath));
         },
     };
@@ -11588,9 +11607,9 @@ export const CronJobApiFp = function(configuration?: Configuration) {
          */
         async cronJobControllerCreate(cronJobCreateDTO?: CronJobCreateDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CronJobOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.cronJobControllerCreate(cronJobCreateDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['CronJobApi.cronJobControllerCreate']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['CronJobApi.cronJobControllerCreate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `READ_MODULES`
@@ -11603,9 +11622,9 @@ export const CronJobApiFp = function(configuration?: Configuration) {
          */
         async cronJobControllerGetExecutions(id: string, success?: any, eventSearchInputDTO?: EventSearchInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventOutputArrayDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.cronJobControllerGetExecutions(id, success, eventSearchInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['CronJobApi.cronJobControllerGetExecutions']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['CronJobApi.cronJobControllerGetExecutions']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `READ_MODULES`
@@ -11616,9 +11635,9 @@ export const CronJobApiFp = function(configuration?: Configuration) {
          */
         async cronJobControllerGetOne(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CronJobOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.cronJobControllerGetOne(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['CronJobApi.cronJobControllerGetOne']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['CronJobApi.cronJobControllerGetOne']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `MANAGE_MODULES`
@@ -11629,9 +11648,9 @@ export const CronJobApiFp = function(configuration?: Configuration) {
          */
         async cronJobControllerRemove(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.cronJobControllerRemove(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['CronJobApi.cronJobControllerRemove']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['CronJobApi.cronJobControllerRemove']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `READ_MODULES`
@@ -11642,9 +11661,9 @@ export const CronJobApiFp = function(configuration?: Configuration) {
          */
         async cronJobControllerSearch(cronJobSearchInputDTO?: CronJobSearchInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CronJobOutputArrayDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.cronJobControllerSearch(cronJobSearchInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['CronJobApi.cronJobControllerSearch']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['CronJobApi.cronJobControllerSearch']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `MANAGE_MODULES`
@@ -11655,9 +11674,9 @@ export const CronJobApiFp = function(configuration?: Configuration) {
          */
         async cronJobControllerTrigger(cronJobTriggerDTO?: CronJobTriggerDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.cronJobControllerTrigger(cronJobTriggerDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['CronJobApi.cronJobControllerTrigger']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['CronJobApi.cronJobControllerTrigger']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `MANAGE_MODULES`
@@ -11669,9 +11688,9 @@ export const CronJobApiFp = function(configuration?: Configuration) {
          */
         async cronJobControllerUpdate(id: string, cronJobUpdateDTO?: CronJobUpdateDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CronJobOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.cronJobControllerUpdate(id, cronJobUpdateDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['CronJobApi.cronJobControllerUpdate']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['CronJobApi.cronJobControllerUpdate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
 };
@@ -11690,7 +11709,7 @@ export const CronJobApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        cronJobControllerCreate(cronJobCreateDTO?: CronJobCreateDTO, options?: any): AxiosPromise<CronJobOutputDTOAPI> {
+        cronJobControllerCreate(cronJobCreateDTO?: CronJobCreateDTO, options?: RawAxiosRequestConfig): AxiosPromise<CronJobOutputDTOAPI> {
             return localVarFp.cronJobControllerCreate(cronJobCreateDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -11702,7 +11721,7 @@ export const CronJobApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        cronJobControllerGetExecutions(id: string, success?: any, eventSearchInputDTO?: EventSearchInputDTO, options?: any): AxiosPromise<EventOutputArrayDTOAPI> {
+        cronJobControllerGetExecutions(id: string, success?: any, eventSearchInputDTO?: EventSearchInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<EventOutputArrayDTOAPI> {
             return localVarFp.cronJobControllerGetExecutions(id, success, eventSearchInputDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -11712,7 +11731,7 @@ export const CronJobApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        cronJobControllerGetOne(id: string, options?: any): AxiosPromise<CronJobOutputDTOAPI> {
+        cronJobControllerGetOne(id: string, options?: RawAxiosRequestConfig): AxiosPromise<CronJobOutputDTOAPI> {
             return localVarFp.cronJobControllerGetOne(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -11722,7 +11741,7 @@ export const CronJobApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        cronJobControllerRemove(id: string, options?: any): AxiosPromise<APIOutput> {
+        cronJobControllerRemove(id: string, options?: RawAxiosRequestConfig): AxiosPromise<APIOutput> {
             return localVarFp.cronJobControllerRemove(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -11732,7 +11751,7 @@ export const CronJobApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        cronJobControllerSearch(cronJobSearchInputDTO?: CronJobSearchInputDTO, options?: any): AxiosPromise<CronJobOutputArrayDTOAPI> {
+        cronJobControllerSearch(cronJobSearchInputDTO?: CronJobSearchInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<CronJobOutputArrayDTOAPI> {
             return localVarFp.cronJobControllerSearch(cronJobSearchInputDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -11742,7 +11761,7 @@ export const CronJobApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        cronJobControllerTrigger(cronJobTriggerDTO?: CronJobTriggerDTO, options?: any): AxiosPromise<void> {
+        cronJobControllerTrigger(cronJobTriggerDTO?: CronJobTriggerDTO, options?: RawAxiosRequestConfig): AxiosPromise<void> {
             return localVarFp.cronJobControllerTrigger(cronJobTriggerDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -11753,7 +11772,7 @@ export const CronJobApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        cronJobControllerUpdate(id: string, cronJobUpdateDTO?: CronJobUpdateDTO, options?: any): AxiosPromise<CronJobOutputDTOAPI> {
+        cronJobControllerUpdate(id: string, cronJobUpdateDTO?: CronJobUpdateDTO, options?: RawAxiosRequestConfig): AxiosPromise<CronJobOutputDTOAPI> {
             return localVarFp.cronJobControllerUpdate(id, cronJobUpdateDTO, options).then((request) => request(axios, basePath));
         },
     };
@@ -12020,9 +12039,9 @@ export const DiscordApiFp = function(configuration?: Configuration) {
          */
         async discordControllerGetInvite(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DiscordInviteOutputDTO>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.discordControllerGetInvite(options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['DiscordApi.discordControllerGetInvite']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DiscordApi.discordControllerGetInvite']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -12033,9 +12052,9 @@ export const DiscordApiFp = function(configuration?: Configuration) {
          */
         async discordControllerSearch(guildSearchInputDTO?: GuildSearchInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GuildOutputArrayDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.discordControllerSearch(guildSearchInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['DiscordApi.discordControllerSearch']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DiscordApi.discordControllerSearch']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -12047,9 +12066,9 @@ export const DiscordApiFp = function(configuration?: Configuration) {
          */
         async discordControllerSendMessage(id: string, sendMessageInputDTO?: SendMessageInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.discordControllerSendMessage(id, sendMessageInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['DiscordApi.discordControllerSendMessage']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DiscordApi.discordControllerSendMessage']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -12061,9 +12080,9 @@ export const DiscordApiFp = function(configuration?: Configuration) {
          */
         async discordControllerUpdateGuild(id: string, guildApiUpdateDTO?: GuildApiUpdateDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GuildOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.discordControllerUpdateGuild(id, guildApiUpdateDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['DiscordApi.discordControllerUpdateGuild']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DiscordApi.discordControllerUpdateGuild']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
 };
@@ -12081,7 +12100,7 @@ export const DiscordApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        discordControllerGetInvite(options?: any): AxiosPromise<DiscordInviteOutputDTO> {
+        discordControllerGetInvite(options?: RawAxiosRequestConfig): AxiosPromise<DiscordInviteOutputDTO> {
             return localVarFp.discordControllerGetInvite(options).then((request) => request(axios, basePath));
         },
         /**
@@ -12091,7 +12110,7 @@ export const DiscordApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        discordControllerSearch(guildSearchInputDTO?: GuildSearchInputDTO, options?: any): AxiosPromise<GuildOutputArrayDTOAPI> {
+        discordControllerSearch(guildSearchInputDTO?: GuildSearchInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<GuildOutputArrayDTOAPI> {
             return localVarFp.discordControllerSearch(guildSearchInputDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -12102,7 +12121,7 @@ export const DiscordApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        discordControllerSendMessage(id: string, sendMessageInputDTO?: SendMessageInputDTO, options?: any): AxiosPromise<APIOutput> {
+        discordControllerSendMessage(id: string, sendMessageInputDTO?: SendMessageInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<APIOutput> {
             return localVarFp.discordControllerSendMessage(id, sendMessageInputDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -12113,7 +12132,7 @@ export const DiscordApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        discordControllerUpdateGuild(id: string, guildApiUpdateDTO?: GuildApiUpdateDTO, options?: any): AxiosPromise<GuildOutputDTOAPI> {
+        discordControllerUpdateGuild(id: string, guildApiUpdateDTO?: GuildApiUpdateDTO, options?: RawAxiosRequestConfig): AxiosPromise<GuildOutputDTOAPI> {
             return localVarFp.discordControllerUpdateGuild(id, guildApiUpdateDTO, options).then((request) => request(axios, basePath));
         },
     };
@@ -12429,9 +12448,9 @@ export const DomainApiFp = function(configuration?: Configuration) {
          */
         async domainControllerCreate(domainCreateInputDTO?: DomainCreateInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DomainCreateOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.domainControllerCreate(domainCreateInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['DomainApi.domainControllerCreate']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DomainApi.domainControllerCreate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -12442,9 +12461,9 @@ export const DomainApiFp = function(configuration?: Configuration) {
          */
         async domainControllerGetOne(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DomainOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.domainControllerGetOne(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['DomainApi.domainControllerGetOne']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DomainApi.domainControllerGetOne']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -12455,9 +12474,9 @@ export const DomainApiFp = function(configuration?: Configuration) {
          */
         async domainControllerGetToken(tokenInputDTO?: TokenInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<TokenOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.domainControllerGetToken(tokenInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['DomainApi.domainControllerGetToken']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DomainApi.domainControllerGetToken']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -12468,9 +12487,9 @@ export const DomainApiFp = function(configuration?: Configuration) {
          */
         async domainControllerRemove(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.domainControllerRemove(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['DomainApi.domainControllerRemove']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DomainApi.domainControllerRemove']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -12481,9 +12500,9 @@ export const DomainApiFp = function(configuration?: Configuration) {
          */
         async domainControllerSearch(domainSearchInputDTO?: DomainSearchInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DomainOutputArrayDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.domainControllerSearch(domainSearchInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['DomainApi.domainControllerSearch']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DomainApi.domainControllerSearch']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -12495,9 +12514,9 @@ export const DomainApiFp = function(configuration?: Configuration) {
          */
         async domainControllerUpdate(id: string, domainUpdateInputDTO?: DomainUpdateInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DomainOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.domainControllerUpdate(id, domainUpdateInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['DomainApi.domainControllerUpdate']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DomainApi.domainControllerUpdate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
 };
@@ -12516,7 +12535,7 @@ export const DomainApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        domainControllerCreate(domainCreateInputDTO?: DomainCreateInputDTO, options?: any): AxiosPromise<DomainCreateOutputDTOAPI> {
+        domainControllerCreate(domainCreateInputDTO?: DomainCreateInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<DomainCreateOutputDTOAPI> {
             return localVarFp.domainControllerCreate(domainCreateInputDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -12526,7 +12545,7 @@ export const DomainApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        domainControllerGetOne(id: string, options?: any): AxiosPromise<DomainOutputDTOAPI> {
+        domainControllerGetOne(id: string, options?: RawAxiosRequestConfig): AxiosPromise<DomainOutputDTOAPI> {
             return localVarFp.domainControllerGetOne(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -12536,7 +12555,7 @@ export const DomainApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        domainControllerGetToken(tokenInputDTO?: TokenInputDTO, options?: any): AxiosPromise<TokenOutputDTOAPI> {
+        domainControllerGetToken(tokenInputDTO?: TokenInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<TokenOutputDTOAPI> {
             return localVarFp.domainControllerGetToken(tokenInputDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -12546,7 +12565,7 @@ export const DomainApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        domainControllerRemove(id: string, options?: any): AxiosPromise<APIOutput> {
+        domainControllerRemove(id: string, options?: RawAxiosRequestConfig): AxiosPromise<APIOutput> {
             return localVarFp.domainControllerRemove(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -12556,7 +12575,7 @@ export const DomainApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        domainControllerSearch(domainSearchInputDTO?: DomainSearchInputDTO, options?: any): AxiosPromise<DomainOutputArrayDTOAPI> {
+        domainControllerSearch(domainSearchInputDTO?: DomainSearchInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<DomainOutputArrayDTOAPI> {
             return localVarFp.domainControllerSearch(domainSearchInputDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -12567,7 +12586,7 @@ export const DomainApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        domainControllerUpdate(id: string, domainUpdateInputDTO?: DomainUpdateInputDTO, options?: any): AxiosPromise<DomainOutputDTOAPI> {
+        domainControllerUpdate(id: string, domainUpdateInputDTO?: DomainUpdateInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<DomainOutputDTOAPI> {
             return localVarFp.domainControllerUpdate(id, domainUpdateInputDTO, options).then((request) => request(axios, basePath));
         },
     };
@@ -12825,9 +12844,9 @@ export const EventApiFp = function(configuration?: Configuration) {
          */
         async eventControllerCreate(eventCreateDTO?: EventCreateDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventOutputDTO>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.eventControllerCreate(eventCreateDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['EventApi.eventControllerCreate']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['EventApi.eventControllerCreate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Fetches events where cronjob, hook and command failed. Supports all the common query parameters   Required permissions: `READ_MODULES`, `READ_EVENTS`
@@ -12838,9 +12857,9 @@ export const EventApiFp = function(configuration?: Configuration) {
          */
         async eventControllerGetFailedFunctions(eventSearchInputDTO?: EventSearchInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventOutputArrayDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.eventControllerGetFailedFunctions(eventSearchInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['EventApi.eventControllerGetFailedFunctions']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['EventApi.eventControllerGetFailedFunctions']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `READ_EVENTS`
@@ -12851,9 +12870,9 @@ export const EventApiFp = function(configuration?: Configuration) {
          */
         async eventControllerGetOne(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventOutputDTO>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.eventControllerGetOne(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['EventApi.eventControllerGetOne']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['EventApi.eventControllerGetOne']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `READ_EVENTS`
@@ -12864,9 +12883,9 @@ export const EventApiFp = function(configuration?: Configuration) {
          */
         async eventControllerSearch(eventSearchInputDTO?: EventSearchInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventOutputArrayDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.eventControllerSearch(eventSearchInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['EventApi.eventControllerSearch']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['EventApi.eventControllerSearch']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
 };
@@ -12885,7 +12904,7 @@ export const EventApiFactory = function (configuration?: Configuration, basePath
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        eventControllerCreate(eventCreateDTO?: EventCreateDTO, options?: any): AxiosPromise<EventOutputDTO> {
+        eventControllerCreate(eventCreateDTO?: EventCreateDTO, options?: RawAxiosRequestConfig): AxiosPromise<EventOutputDTO> {
             return localVarFp.eventControllerCreate(eventCreateDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -12895,7 +12914,7 @@ export const EventApiFactory = function (configuration?: Configuration, basePath
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        eventControllerGetFailedFunctions(eventSearchInputDTO?: EventSearchInputDTO, options?: any): AxiosPromise<EventOutputArrayDTOAPI> {
+        eventControllerGetFailedFunctions(eventSearchInputDTO?: EventSearchInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<EventOutputArrayDTOAPI> {
             return localVarFp.eventControllerGetFailedFunctions(eventSearchInputDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -12905,7 +12924,7 @@ export const EventApiFactory = function (configuration?: Configuration, basePath
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        eventControllerGetOne(id: string, options?: any): AxiosPromise<EventOutputDTO> {
+        eventControllerGetOne(id: string, options?: RawAxiosRequestConfig): AxiosPromise<EventOutputDTO> {
             return localVarFp.eventControllerGetOne(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -12915,7 +12934,7 @@ export const EventApiFactory = function (configuration?: Configuration, basePath
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        eventControllerSearch(eventSearchInputDTO?: EventSearchInputDTO, options?: any): AxiosPromise<EventOutputArrayDTOAPI> {
+        eventControllerSearch(eventSearchInputDTO?: EventSearchInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<EventOutputArrayDTOAPI> {
             return localVarFp.eventControllerSearch(eventSearchInputDTO, options).then((request) => request(axios, basePath));
         },
     };
@@ -13071,9 +13090,9 @@ export const ExternalAuthApiFp = function(configuration?: Configuration) {
          */
         async externalAuthControllerAuthDiscord(redirect: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.externalAuthControllerAuthDiscord(redirect, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['ExternalAuthApi.externalAuthControllerAuthDiscord']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ExternalAuthApi.externalAuthControllerAuthDiscord']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -13083,9 +13102,9 @@ export const ExternalAuthApiFp = function(configuration?: Configuration) {
          */
         async externalAuthControllerAuthDiscordReturn(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.externalAuthControllerAuthDiscordReturn(options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['ExternalAuthApi.externalAuthControllerAuthDiscordReturn']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ExternalAuthApi.externalAuthControllerAuthDiscordReturn']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
 };
@@ -13104,7 +13123,7 @@ export const ExternalAuthApiFactory = function (configuration?: Configuration, b
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        externalAuthControllerAuthDiscord(redirect: string, options?: any): AxiosPromise<void> {
+        externalAuthControllerAuthDiscord(redirect: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
             return localVarFp.externalAuthControllerAuthDiscord(redirect, options).then((request) => request(axios, basePath));
         },
         /**
@@ -13113,7 +13132,7 @@ export const ExternalAuthApiFactory = function (configuration?: Configuration, b
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        externalAuthControllerAuthDiscordReturn(options?: any): AxiosPromise<void> {
+        externalAuthControllerAuthDiscordReturn(options?: RawAxiosRequestConfig): AxiosPromise<void> {
             return localVarFp.externalAuthControllerAuthDiscordReturn(options).then((request) => request(axios, basePath));
         },
     };
@@ -13361,9 +13380,9 @@ export const FunctionApiFp = function(configuration?: Configuration) {
          */
         async functionControllerCreate(functionCreateDTO?: FunctionCreateDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FunctionOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.functionControllerCreate(functionCreateDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['FunctionApi.functionControllerCreate']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['FunctionApi.functionControllerCreate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `READ_MODULES`
@@ -13374,9 +13393,9 @@ export const FunctionApiFp = function(configuration?: Configuration) {
          */
         async functionControllerGetOne(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FunctionOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.functionControllerGetOne(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['FunctionApi.functionControllerGetOne']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['FunctionApi.functionControllerGetOne']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `MANAGE_MODULES`
@@ -13387,9 +13406,9 @@ export const FunctionApiFp = function(configuration?: Configuration) {
          */
         async functionControllerRemove(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.functionControllerRemove(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['FunctionApi.functionControllerRemove']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['FunctionApi.functionControllerRemove']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `READ_MODULES`
@@ -13400,9 +13419,9 @@ export const FunctionApiFp = function(configuration?: Configuration) {
          */
         async functionControllerSearch(functionSearchInputDTO?: FunctionSearchInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FunctionOutputArrayDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.functionControllerSearch(functionSearchInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['FunctionApi.functionControllerSearch']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['FunctionApi.functionControllerSearch']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `MANAGE_MODULES`
@@ -13414,9 +13433,9 @@ export const FunctionApiFp = function(configuration?: Configuration) {
          */
         async functionControllerUpdate(id: string, functionUpdateDTO?: FunctionUpdateDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FunctionOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.functionControllerUpdate(id, functionUpdateDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['FunctionApi.functionControllerUpdate']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['FunctionApi.functionControllerUpdate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
 };
@@ -13435,7 +13454,7 @@ export const FunctionApiFactory = function (configuration?: Configuration, baseP
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        functionControllerCreate(functionCreateDTO?: FunctionCreateDTO, options?: any): AxiosPromise<FunctionOutputDTOAPI> {
+        functionControllerCreate(functionCreateDTO?: FunctionCreateDTO, options?: RawAxiosRequestConfig): AxiosPromise<FunctionOutputDTOAPI> {
             return localVarFp.functionControllerCreate(functionCreateDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -13445,7 +13464,7 @@ export const FunctionApiFactory = function (configuration?: Configuration, baseP
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        functionControllerGetOne(id: string, options?: any): AxiosPromise<FunctionOutputDTOAPI> {
+        functionControllerGetOne(id: string, options?: RawAxiosRequestConfig): AxiosPromise<FunctionOutputDTOAPI> {
             return localVarFp.functionControllerGetOne(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -13455,7 +13474,7 @@ export const FunctionApiFactory = function (configuration?: Configuration, baseP
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        functionControllerRemove(id: string, options?: any): AxiosPromise<APIOutput> {
+        functionControllerRemove(id: string, options?: RawAxiosRequestConfig): AxiosPromise<APIOutput> {
             return localVarFp.functionControllerRemove(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -13465,7 +13484,7 @@ export const FunctionApiFactory = function (configuration?: Configuration, baseP
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        functionControllerSearch(functionSearchInputDTO?: FunctionSearchInputDTO, options?: any): AxiosPromise<FunctionOutputArrayDTOAPI> {
+        functionControllerSearch(functionSearchInputDTO?: FunctionSearchInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<FunctionOutputArrayDTOAPI> {
             return localVarFp.functionControllerSearch(functionSearchInputDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -13476,7 +13495,7 @@ export const FunctionApiFactory = function (configuration?: Configuration, baseP
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        functionControllerUpdate(id: string, functionUpdateDTO?: FunctionUpdateDTO, options?: any): AxiosPromise<FunctionOutputDTOAPI> {
+        functionControllerUpdate(id: string, functionUpdateDTO?: FunctionUpdateDTO, options?: RawAxiosRequestConfig): AxiosPromise<FunctionOutputDTOAPI> {
             return localVarFp.functionControllerUpdate(id, functionUpdateDTO, options).then((request) => request(axios, basePath));
         },
     };
@@ -14344,9 +14363,9 @@ export const GameServerApiFp = function(configuration?: Configuration) {
          */
         async gameServerControllerBanPlayer(gameServerId: string, playerId: string, banPlayerInputDTO?: BanPlayerInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerBanPlayer(gameServerId, playerId, banPlayerInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['GameServerApi.gameServerControllerBanPlayer']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GameServerApi.gameServerControllerBanPlayer']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Create a gameserver   Required permissions: `MANAGE_GAMESERVERS`
@@ -14357,9 +14376,9 @@ export const GameServerApiFp = function(configuration?: Configuration) {
          */
         async gameServerControllerCreate(gameServerCreateDTO?: GameServerCreateDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GameServerOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerCreate(gameServerCreateDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['GameServerApi.gameServerControllerCreate']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GameServerApi.gameServerControllerCreate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Execute a raw command on a gameserver. Requires gameserver to be online and reachable.   Required permissions: `MANAGE_GAMESERVERS`
@@ -14371,9 +14390,9 @@ export const GameServerApiFp = function(configuration?: Configuration) {
          */
         async gameServerControllerExecuteCommand(id: string, commandExecuteInputDTO?: CommandExecuteInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CommandExecuteDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerExecuteCommand(id, commandExecuteInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['GameServerApi.gameServerControllerExecuteCommand']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GameServerApi.gameServerControllerExecuteCommand']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Fetch status of an import from CSMM   Required permissions: `MANAGE_GAMESERVERS`
@@ -14384,9 +14403,9 @@ export const GameServerApiFp = function(configuration?: Configuration) {
          */
         async gameServerControllerGetImport(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ImportStatusOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerGetImport(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['GameServerApi.gameServerControllerGetImport']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GameServerApi.gameServerControllerGetImport']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Fetch a gameserver by id
@@ -14397,9 +14416,9 @@ export const GameServerApiFp = function(configuration?: Configuration) {
          */
         async gameServerControllerGetOne(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GameServerOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerGetOne(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['GameServerApi.gameServerControllerGetOne']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GameServerApi.gameServerControllerGetOne']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Fetch a list of players on a gameserver. Requires gameserver to be online and reachable.   Required permissions: `READ_PLAYERS`
@@ -14410,9 +14429,9 @@ export const GameServerApiFp = function(configuration?: Configuration) {
          */
         async gameServerControllerGetPlayers(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerOnGameserverOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerGetPlayers(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['GameServerApi.gameServerControllerGetPlayers']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GameServerApi.gameServerControllerGetPlayers']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Fetch gameserver types (7dtd, Rust, ...)
@@ -14422,9 +14441,9 @@ export const GameServerApiFp = function(configuration?: Configuration) {
          */
         async gameServerControllerGetTypes(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GameServerTypesOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerGetTypes(options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['GameServerApi.gameServerControllerGetTypes']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GameServerApi.gameServerControllerGetTypes']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Give an item to a player. Requires gameserver to be online and reachable. Depending on the underlying game implementation, it\'s possible that the item is dropped on the ground instead of placed directly in the player\'s inventory.   Required permissions: `MANAGE_GAMESERVERS`
@@ -14437,9 +14456,9 @@ export const GameServerApiFp = function(configuration?: Configuration) {
          */
         async gameServerControllerGiveItem(gameServerId: string, playerId: string, giveItemInputDTO?: GiveItemInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerGiveItem(gameServerId, playerId, giveItemInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['GameServerApi.gameServerControllerGiveItem']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GameServerApi.gameServerControllerGiveItem']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Import a gameserver from CSMM.   Required permissions: `MANAGE_GAMESERVERS`
@@ -14449,9 +14468,9 @@ export const GameServerApiFp = function(configuration?: Configuration) {
          */
         async gameServerControllerImportFromCSMM(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ImportOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerImportFromCSMM(options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['GameServerApi.gameServerControllerImportFromCSMM']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GameServerApi.gameServerControllerImportFromCSMM']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Kick a player from a gameserver. Requires gameserver to be online and reachable.   Required permissions: `MANAGE_GAMESERVERS`
@@ -14464,9 +14483,9 @@ export const GameServerApiFp = function(configuration?: Configuration) {
          */
         async gameServerControllerKickPlayer(gameServerId: string, playerId: string, kickPlayerInputDTO?: KickPlayerInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerKickPlayer(gameServerId, playerId, kickPlayerInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['GameServerApi.gameServerControllerKickPlayer']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GameServerApi.gameServerControllerKickPlayer']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * List bans for a gameserver. Requires gameserver to be online and reachable.   Required permissions: `MANAGE_GAMESERVERS`
@@ -14478,9 +14497,9 @@ export const GameServerApiFp = function(configuration?: Configuration) {
          */
         async gameServerControllerListBans(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BanPlayerOutputDTO>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerListBans(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['GameServerApi.gameServerControllerListBans']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GameServerApi.gameServerControllerListBans']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Delete a gameserver   Required permissions: `MANAGE_GAMESERVERS`
@@ -14491,9 +14510,9 @@ export const GameServerApiFp = function(configuration?: Configuration) {
          */
         async gameServerControllerRemove(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerRemove(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['GameServerApi.gameServerControllerRemove']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GameServerApi.gameServerControllerRemove']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Fetch gameservers
@@ -14504,9 +14523,9 @@ export const GameServerApiFp = function(configuration?: Configuration) {
          */
         async gameServerControllerSearch(gameServerSearchInputDTO?: GameServerSearchInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GameServerOutputArrayDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerSearch(gameServerSearchInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['GameServerApi.gameServerControllerSearch']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GameServerApi.gameServerControllerSearch']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Send a message in gameserver chat. Requires gameserver to be online and reachable.   Required permissions: `MANAGE_GAMESERVERS`
@@ -14518,9 +14537,9 @@ export const GameServerApiFp = function(configuration?: Configuration) {
          */
         async gameServerControllerSendMessage(id: string, messageSendInputDTO?: MessageSendInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerSendMessage(id, messageSendInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['GameServerApi.gameServerControllerSendMessage']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GameServerApi.gameServerControllerSendMessage']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Shuts down the gameserver. This is a \'soft\' shutdown, meaning the gameserver will be stopped gracefully. If the gameserver is not reachable, this will have no effect. Note that most hosting providers will automatically restart the gameserver after a shutdown, which makes this operation act as a \'restart\' instead.   Required permissions: `MANAGE_GAMESERVERS`
@@ -14531,9 +14550,9 @@ export const GameServerApiFp = function(configuration?: Configuration) {
          */
         async gameServerControllerShutdown(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerShutdown(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['GameServerApi.gameServerControllerShutdown']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GameServerApi.gameServerControllerShutdown']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Teleport a player to a location. Requires gameserver to be online and reachable.   Required permissions: `MANAGE_GAMESERVERS`
@@ -14546,9 +14565,9 @@ export const GameServerApiFp = function(configuration?: Configuration) {
          */
         async gameServerControllerTeleportPlayer(gameServerId: string, playerId: string, teleportPlayerInputDTO?: TeleportPlayerInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerTeleportPlayer(gameServerId, playerId, teleportPlayerInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['GameServerApi.gameServerControllerTeleportPlayer']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GameServerApi.gameServerControllerTeleportPlayer']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Test if Takaro can connect to a gameserver. Will do a thorough check and report details.
@@ -14559,9 +14578,9 @@ export const GameServerApiFp = function(configuration?: Configuration) {
          */
         async gameServerControllerTestReachability(gameServerTestReachabilityInputDTO?: GameServerTestReachabilityInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GameServerTestReachabilityDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerTestReachability(gameServerTestReachabilityInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['GameServerApi.gameServerControllerTestReachability']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GameServerApi.gameServerControllerTestReachability']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Test if Takaro can connect to a gameserver. Will do a thorough check and report details.
@@ -14572,9 +14591,9 @@ export const GameServerApiFp = function(configuration?: Configuration) {
          */
         async gameServerControllerTestReachabilityForId(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GameServerTestReachabilityDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerTestReachabilityForId(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['GameServerApi.gameServerControllerTestReachabilityForId']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GameServerApi.gameServerControllerTestReachabilityForId']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Unban a player from a gameserver. Requires gameserver to be online and reachable.   Required permissions: `MANAGE_GAMESERVERS`
@@ -14587,9 +14606,9 @@ export const GameServerApiFp = function(configuration?: Configuration) {
          */
         async gameServerControllerUnbanPlayer(gameServerId: string, playerId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerUnbanPlayer(gameServerId, playerId, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['GameServerApi.gameServerControllerUnbanPlayer']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GameServerApi.gameServerControllerUnbanPlayer']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Update a gameserver   Required permissions: `MANAGE_GAMESERVERS`
@@ -14601,9 +14620,9 @@ export const GameServerApiFp = function(configuration?: Configuration) {
          */
         async gameServerControllerUpdate(id: string, gameServerUpdateDTO?: GameServerUpdateDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GameServerOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerUpdate(id, gameServerUpdateDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['GameServerApi.gameServerControllerUpdate']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GameServerApi.gameServerControllerUpdate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
 };
@@ -14625,7 +14644,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
          * @deprecated
          * @throws {RequiredError}
          */
-        gameServerControllerBanPlayer(gameServerId: string, playerId: string, banPlayerInputDTO?: BanPlayerInputDTO, options?: any): AxiosPromise<APIOutput> {
+        gameServerControllerBanPlayer(gameServerId: string, playerId: string, banPlayerInputDTO?: BanPlayerInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<APIOutput> {
             return localVarFp.gameServerControllerBanPlayer(gameServerId, playerId, banPlayerInputDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -14635,7 +14654,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        gameServerControllerCreate(gameServerCreateDTO?: GameServerCreateDTO, options?: any): AxiosPromise<GameServerOutputDTOAPI> {
+        gameServerControllerCreate(gameServerCreateDTO?: GameServerCreateDTO, options?: RawAxiosRequestConfig): AxiosPromise<GameServerOutputDTOAPI> {
             return localVarFp.gameServerControllerCreate(gameServerCreateDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -14646,7 +14665,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        gameServerControllerExecuteCommand(id: string, commandExecuteInputDTO?: CommandExecuteInputDTO, options?: any): AxiosPromise<CommandExecuteDTOAPI> {
+        gameServerControllerExecuteCommand(id: string, commandExecuteInputDTO?: CommandExecuteInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<CommandExecuteDTOAPI> {
             return localVarFp.gameServerControllerExecuteCommand(id, commandExecuteInputDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -14656,7 +14675,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        gameServerControllerGetImport(id: string, options?: any): AxiosPromise<ImportStatusOutputDTOAPI> {
+        gameServerControllerGetImport(id: string, options?: RawAxiosRequestConfig): AxiosPromise<ImportStatusOutputDTOAPI> {
             return localVarFp.gameServerControllerGetImport(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -14666,7 +14685,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        gameServerControllerGetOne(id: string, options?: any): AxiosPromise<GameServerOutputDTOAPI> {
+        gameServerControllerGetOne(id: string, options?: RawAxiosRequestConfig): AxiosPromise<GameServerOutputDTOAPI> {
             return localVarFp.gameServerControllerGetOne(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -14676,7 +14695,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        gameServerControllerGetPlayers(id: string, options?: any): AxiosPromise<PlayerOnGameserverOutputDTOAPI> {
+        gameServerControllerGetPlayers(id: string, options?: RawAxiosRequestConfig): AxiosPromise<PlayerOnGameserverOutputDTOAPI> {
             return localVarFp.gameServerControllerGetPlayers(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -14685,7 +14704,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        gameServerControllerGetTypes(options?: any): AxiosPromise<GameServerTypesOutputDTOAPI> {
+        gameServerControllerGetTypes(options?: RawAxiosRequestConfig): AxiosPromise<GameServerTypesOutputDTOAPI> {
             return localVarFp.gameServerControllerGetTypes(options).then((request) => request(axios, basePath));
         },
         /**
@@ -14697,7 +14716,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        gameServerControllerGiveItem(gameServerId: string, playerId: string, giveItemInputDTO?: GiveItemInputDTO, options?: any): AxiosPromise<void> {
+        gameServerControllerGiveItem(gameServerId: string, playerId: string, giveItemInputDTO?: GiveItemInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<void> {
             return localVarFp.gameServerControllerGiveItem(gameServerId, playerId, giveItemInputDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -14706,7 +14725,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        gameServerControllerImportFromCSMM(options?: any): AxiosPromise<ImportOutputDTOAPI> {
+        gameServerControllerImportFromCSMM(options?: RawAxiosRequestConfig): AxiosPromise<ImportOutputDTOAPI> {
             return localVarFp.gameServerControllerImportFromCSMM(options).then((request) => request(axios, basePath));
         },
         /**
@@ -14718,7 +14737,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        gameServerControllerKickPlayer(gameServerId: string, playerId: string, kickPlayerInputDTO?: KickPlayerInputDTO, options?: any): AxiosPromise<APIOutput> {
+        gameServerControllerKickPlayer(gameServerId: string, playerId: string, kickPlayerInputDTO?: KickPlayerInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<APIOutput> {
             return localVarFp.gameServerControllerKickPlayer(gameServerId, playerId, kickPlayerInputDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -14729,7 +14748,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
          * @deprecated
          * @throws {RequiredError}
          */
-        gameServerControllerListBans(id: string, options?: any): AxiosPromise<BanPlayerOutputDTO> {
+        gameServerControllerListBans(id: string, options?: RawAxiosRequestConfig): AxiosPromise<BanPlayerOutputDTO> {
             return localVarFp.gameServerControllerListBans(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -14739,7 +14758,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        gameServerControllerRemove(id: string, options?: any): AxiosPromise<APIOutput> {
+        gameServerControllerRemove(id: string, options?: RawAxiosRequestConfig): AxiosPromise<APIOutput> {
             return localVarFp.gameServerControllerRemove(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -14749,7 +14768,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        gameServerControllerSearch(gameServerSearchInputDTO?: GameServerSearchInputDTO, options?: any): AxiosPromise<GameServerOutputArrayDTOAPI> {
+        gameServerControllerSearch(gameServerSearchInputDTO?: GameServerSearchInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<GameServerOutputArrayDTOAPI> {
             return localVarFp.gameServerControllerSearch(gameServerSearchInputDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -14760,7 +14779,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        gameServerControllerSendMessage(id: string, messageSendInputDTO?: MessageSendInputDTO, options?: any): AxiosPromise<APIOutput> {
+        gameServerControllerSendMessage(id: string, messageSendInputDTO?: MessageSendInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<APIOutput> {
             return localVarFp.gameServerControllerSendMessage(id, messageSendInputDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -14770,7 +14789,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        gameServerControllerShutdown(id: string, options?: any): AxiosPromise<void> {
+        gameServerControllerShutdown(id: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
             return localVarFp.gameServerControllerShutdown(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -14782,7 +14801,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        gameServerControllerTeleportPlayer(gameServerId: string, playerId: string, teleportPlayerInputDTO?: TeleportPlayerInputDTO, options?: any): AxiosPromise<APIOutput> {
+        gameServerControllerTeleportPlayer(gameServerId: string, playerId: string, teleportPlayerInputDTO?: TeleportPlayerInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<APIOutput> {
             return localVarFp.gameServerControllerTeleportPlayer(gameServerId, playerId, teleportPlayerInputDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -14792,7 +14811,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        gameServerControllerTestReachability(gameServerTestReachabilityInputDTO?: GameServerTestReachabilityInputDTO, options?: any): AxiosPromise<GameServerTestReachabilityDTOAPI> {
+        gameServerControllerTestReachability(gameServerTestReachabilityInputDTO?: GameServerTestReachabilityInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<GameServerTestReachabilityDTOAPI> {
             return localVarFp.gameServerControllerTestReachability(gameServerTestReachabilityInputDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -14802,7 +14821,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        gameServerControllerTestReachabilityForId(id: string, options?: any): AxiosPromise<GameServerTestReachabilityDTOAPI> {
+        gameServerControllerTestReachabilityForId(id: string, options?: RawAxiosRequestConfig): AxiosPromise<GameServerTestReachabilityDTOAPI> {
             return localVarFp.gameServerControllerTestReachabilityForId(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -14814,7 +14833,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
          * @deprecated
          * @throws {RequiredError}
          */
-        gameServerControllerUnbanPlayer(gameServerId: string, playerId: string, options?: any): AxiosPromise<APIOutput> {
+        gameServerControllerUnbanPlayer(gameServerId: string, playerId: string, options?: RawAxiosRequestConfig): AxiosPromise<APIOutput> {
             return localVarFp.gameServerControllerUnbanPlayer(gameServerId, playerId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -14825,7 +14844,7 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        gameServerControllerUpdate(id: string, gameServerUpdateDTO?: GameServerUpdateDTO, options?: any): AxiosPromise<GameServerOutputDTOAPI> {
+        gameServerControllerUpdate(id: string, gameServerUpdateDTO?: GameServerUpdateDTO, options?: RawAxiosRequestConfig): AxiosPromise<GameServerOutputDTOAPI> {
             return localVarFp.gameServerControllerUpdate(id, gameServerUpdateDTO, options).then((request) => request(axios, basePath));
         },
     };
@@ -15386,9 +15405,9 @@ export const HookApiFp = function(configuration?: Configuration) {
          */
         async hookControllerCreate(hookCreateDTO?: HookCreateDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<HookOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.hookControllerCreate(hookCreateDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['HookApi.hookControllerCreate']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['HookApi.hookControllerCreate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `READ_MODULES`
@@ -15401,9 +15420,9 @@ export const HookApiFp = function(configuration?: Configuration) {
          */
         async hookControllerGetExecutions(id: string, success?: any, eventSearchInputDTO?: EventSearchInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<EventOutputArrayDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.hookControllerGetExecutions(id, success, eventSearchInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['HookApi.hookControllerGetExecutions']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['HookApi.hookControllerGetExecutions']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `READ_MODULES`
@@ -15414,9 +15433,9 @@ export const HookApiFp = function(configuration?: Configuration) {
          */
         async hookControllerGetOne(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<HookOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.hookControllerGetOne(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['HookApi.hookControllerGetOne']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['HookApi.hookControllerGetOne']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `MANAGE_MODULES`
@@ -15427,9 +15446,9 @@ export const HookApiFp = function(configuration?: Configuration) {
          */
         async hookControllerRemove(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.hookControllerRemove(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['HookApi.hookControllerRemove']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['HookApi.hookControllerRemove']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `READ_MODULES`
@@ -15440,9 +15459,9 @@ export const HookApiFp = function(configuration?: Configuration) {
          */
         async hookControllerSearch(hookSearchInputDTO?: HookSearchInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<HookOutputArrayDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.hookControllerSearch(hookSearchInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['HookApi.hookControllerSearch']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['HookApi.hookControllerSearch']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Trigger a hook. This is used for testing purposes, the event will not actually be created but the hook-logic will be executed.      You can pass any data you want, but it must validate against the corresponding event metadata. Eg to trigger the `chat-message` event, you must pass an object with a `message` property   Required permissions: `MANAGE_MODULES`
@@ -15453,9 +15472,9 @@ export const HookApiFp = function(configuration?: Configuration) {
          */
         async hookControllerTrigger(hookTriggerDTO?: HookTriggerDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.hookControllerTrigger(hookTriggerDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['HookApi.hookControllerTrigger']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['HookApi.hookControllerTrigger']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `MANAGE_MODULES`
@@ -15467,9 +15486,9 @@ export const HookApiFp = function(configuration?: Configuration) {
          */
         async hookControllerUpdate(id: string, hookUpdateDTO?: HookUpdateDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<HookOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.hookControllerUpdate(id, hookUpdateDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['HookApi.hookControllerUpdate']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['HookApi.hookControllerUpdate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
 };
@@ -15488,7 +15507,7 @@ export const HookApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        hookControllerCreate(hookCreateDTO?: HookCreateDTO, options?: any): AxiosPromise<HookOutputDTOAPI> {
+        hookControllerCreate(hookCreateDTO?: HookCreateDTO, options?: RawAxiosRequestConfig): AxiosPromise<HookOutputDTOAPI> {
             return localVarFp.hookControllerCreate(hookCreateDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -15500,7 +15519,7 @@ export const HookApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        hookControllerGetExecutions(id: string, success?: any, eventSearchInputDTO?: EventSearchInputDTO, options?: any): AxiosPromise<EventOutputArrayDTOAPI> {
+        hookControllerGetExecutions(id: string, success?: any, eventSearchInputDTO?: EventSearchInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<EventOutputArrayDTOAPI> {
             return localVarFp.hookControllerGetExecutions(id, success, eventSearchInputDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -15510,7 +15529,7 @@ export const HookApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        hookControllerGetOne(id: string, options?: any): AxiosPromise<HookOutputDTOAPI> {
+        hookControllerGetOne(id: string, options?: RawAxiosRequestConfig): AxiosPromise<HookOutputDTOAPI> {
             return localVarFp.hookControllerGetOne(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -15520,7 +15539,7 @@ export const HookApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        hookControllerRemove(id: string, options?: any): AxiosPromise<APIOutput> {
+        hookControllerRemove(id: string, options?: RawAxiosRequestConfig): AxiosPromise<APIOutput> {
             return localVarFp.hookControllerRemove(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -15530,7 +15549,7 @@ export const HookApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        hookControllerSearch(hookSearchInputDTO?: HookSearchInputDTO, options?: any): AxiosPromise<HookOutputArrayDTOAPI> {
+        hookControllerSearch(hookSearchInputDTO?: HookSearchInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<HookOutputArrayDTOAPI> {
             return localVarFp.hookControllerSearch(hookSearchInputDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -15540,7 +15559,7 @@ export const HookApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        hookControllerTrigger(hookTriggerDTO?: HookTriggerDTO, options?: any): AxiosPromise<void> {
+        hookControllerTrigger(hookTriggerDTO?: HookTriggerDTO, options?: RawAxiosRequestConfig): AxiosPromise<void> {
             return localVarFp.hookControllerTrigger(hookTriggerDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -15551,7 +15570,7 @@ export const HookApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        hookControllerUpdate(id: string, hookUpdateDTO?: HookUpdateDTO, options?: any): AxiosPromise<HookOutputDTOAPI> {
+        hookControllerUpdate(id: string, hookUpdateDTO?: HookUpdateDTO, options?: RawAxiosRequestConfig): AxiosPromise<HookOutputDTOAPI> {
             return localVarFp.hookControllerUpdate(id, hookUpdateDTO, options).then((request) => request(axios, basePath));
         },
     };
@@ -15751,9 +15770,9 @@ export const ItemApiFp = function(configuration?: Configuration) {
          */
         async itemControllerFindOne(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ItemOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.itemControllerFindOne(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['ItemApi.itemControllerFindOne']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ItemApi.itemControllerFindOne']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `READ_ITEMS`
@@ -15764,9 +15783,9 @@ export const ItemApiFp = function(configuration?: Configuration) {
          */
         async itemControllerSearch(itemSearchInputDTO?: ItemSearchInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ItemOutputArrayDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.itemControllerSearch(itemSearchInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['ItemApi.itemControllerSearch']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ItemApi.itemControllerSearch']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
 };
@@ -15785,7 +15804,7 @@ export const ItemApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        itemControllerFindOne(id: string, options?: any): AxiosPromise<ItemOutputDTOAPI> {
+        itemControllerFindOne(id: string, options?: RawAxiosRequestConfig): AxiosPromise<ItemOutputDTOAPI> {
             return localVarFp.itemControllerFindOne(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -15795,7 +15814,7 @@ export const ItemApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        itemControllerSearch(itemSearchInputDTO?: ItemSearchInputDTO, options?: any): AxiosPromise<ItemOutputArrayDTOAPI> {
+        itemControllerSearch(itemSearchInputDTO?: ItemSearchInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<ItemOutputArrayDTOAPI> {
             return localVarFp.itemControllerSearch(itemSearchInputDTO, options).then((request) => request(axios, basePath));
         },
     };
@@ -16009,9 +16028,9 @@ export const MetaApiFp = function(configuration?: Configuration) {
          */
         async metaGetHealth(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<HealthOutputDTO>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.metaGetHealth(options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['MetaApi.metaGetHealth']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['MetaApi.metaGetHealth']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -16021,9 +16040,9 @@ export const MetaApiFp = function(configuration?: Configuration) {
          */
         async metaGetMetrics(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.metaGetMetrics(options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['MetaApi.metaGetMetrics']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['MetaApi.metaGetMetrics']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -16033,9 +16052,9 @@ export const MetaApiFp = function(configuration?: Configuration) {
          */
         async metaGetOpenApi(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.metaGetOpenApi(options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['MetaApi.metaGetOpenApi']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['MetaApi.metaGetOpenApi']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -16045,9 +16064,9 @@ export const MetaApiFp = function(configuration?: Configuration) {
          */
         async metaGetOpenApiHtml(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.metaGetOpenApiHtml(options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['MetaApi.metaGetOpenApiHtml']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['MetaApi.metaGetOpenApiHtml']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -16057,9 +16076,9 @@ export const MetaApiFp = function(configuration?: Configuration) {
          */
         async metaGetReadiness(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<HealthOutputDTO>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.metaGetReadiness(options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['MetaApi.metaGetReadiness']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['MetaApi.metaGetReadiness']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
 };
@@ -16077,7 +16096,7 @@ export const MetaApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        metaGetHealth(options?: any): AxiosPromise<HealthOutputDTO> {
+        metaGetHealth(options?: RawAxiosRequestConfig): AxiosPromise<HealthOutputDTO> {
             return localVarFp.metaGetHealth(options).then((request) => request(axios, basePath));
         },
         /**
@@ -16086,7 +16105,7 @@ export const MetaApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        metaGetMetrics(options?: any): AxiosPromise<void> {
+        metaGetMetrics(options?: RawAxiosRequestConfig): AxiosPromise<void> {
             return localVarFp.metaGetMetrics(options).then((request) => request(axios, basePath));
         },
         /**
@@ -16095,7 +16114,7 @@ export const MetaApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        metaGetOpenApi(options?: any): AxiosPromise<void> {
+        metaGetOpenApi(options?: RawAxiosRequestConfig): AxiosPromise<void> {
             return localVarFp.metaGetOpenApi(options).then((request) => request(axios, basePath));
         },
         /**
@@ -16104,7 +16123,7 @@ export const MetaApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        metaGetOpenApiHtml(options?: any): AxiosPromise<void> {
+        metaGetOpenApiHtml(options?: RawAxiosRequestConfig): AxiosPromise<void> {
             return localVarFp.metaGetOpenApiHtml(options).then((request) => request(axios, basePath));
         },
         /**
@@ -16113,7 +16132,7 @@ export const MetaApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        metaGetReadiness(options?: any): AxiosPromise<HealthOutputDTO> {
+        metaGetReadiness(options?: RawAxiosRequestConfig): AxiosPromise<HealthOutputDTO> {
             return localVarFp.metaGetReadiness(options).then((request) => request(axios, basePath));
         },
     };
@@ -16489,15 +16508,19 @@ export const ModuleApiAxiosParamCreator = function (configuration?: Configuratio
         /**
          *    Required permissions: `READ_MODULES`
          * @summary Get one installation
-         * @param {string} id 
+         * @param {string} moduleId 
+         * @param {string} gameServerId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        moduleInstallationsControllerGetModuleInstallation: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('moduleInstallationsControllerGetModuleInstallation', 'id', id)
-            const localVarPath = `/module/installation/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+        moduleInstallationsControllerGetModuleInstallation: async (moduleId: string, gameServerId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'moduleId' is not null or undefined
+            assertParamExists('moduleInstallationsControllerGetModuleInstallation', 'moduleId', moduleId)
+            // verify required parameter 'gameServerId' is not null or undefined
+            assertParamExists('moduleInstallationsControllerGetModuleInstallation', 'gameServerId', gameServerId)
+            const localVarPath = `/module/{moduleId}/gameserver/{gameServerId}/installation`
+                .replace(`{${"moduleId"}}`, encodeURIComponent(String(moduleId)))
+                .replace(`{${"gameServerId"}}`, encodeURIComponent(String(gameServerId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -16561,15 +16584,19 @@ export const ModuleApiAxiosParamCreator = function (configuration?: Configuratio
         /**
          * Uninstall a module from a gameserver. This will not delete the module from the database.   Required permissions: `MANAGE_GAMESERVERS`
          * @summary Uninstall module
-         * @param {string} id 
+         * @param {string} moduleId 
+         * @param {string} gameServerId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        moduleInstallationsControllerUninstallModule: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'id' is not null or undefined
-            assertParamExists('moduleInstallationsControllerUninstallModule', 'id', id)
-            const localVarPath = `/module/installation/{id}`
-                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+        moduleInstallationsControllerUninstallModule: async (moduleId: string, gameServerId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'moduleId' is not null or undefined
+            assertParamExists('moduleInstallationsControllerUninstallModule', 'moduleId', moduleId)
+            // verify required parameter 'gameServerId' is not null or undefined
+            assertParamExists('moduleInstallationsControllerUninstallModule', 'gameServerId', gameServerId)
+            const localVarPath = `/module/{moduleId}/gameserver/{gameServerId}/installation`
+                .replace(`{${"moduleId"}}`, encodeURIComponent(String(moduleId)))
+                .replace(`{${"gameServerId"}}`, encodeURIComponent(String(gameServerId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -16721,9 +16748,9 @@ export const ModuleApiFp = function(configuration?: Configuration) {
          */
         async moduleControllerCreate(moduleCreateAPIDTO?: ModuleCreateAPIDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ModuleOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.moduleControllerCreate(moduleCreateAPIDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['ModuleApi.moduleControllerCreate']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ModuleApi.moduleControllerCreate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Exports a module to a format that can be imported into another Takaro instance. This endpoint will export all known versions of the module   Required permissions: `READ_MODULES`
@@ -16735,9 +16762,9 @@ export const ModuleApiFp = function(configuration?: Configuration) {
          */
         async moduleControllerExport(id: string, moduleExportOptionsDTO?: ModuleExportOptionsDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ModuleExportDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.moduleControllerExport(id, moduleExportOptionsDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['ModuleApi.moduleControllerExport']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ModuleApi.moduleControllerExport']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `READ_MODULES`
@@ -16748,9 +16775,9 @@ export const ModuleApiFp = function(configuration?: Configuration) {
          */
         async moduleControllerGetOne(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ModuleOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.moduleControllerGetOne(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['ModuleApi.moduleControllerGetOne']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ModuleApi.moduleControllerGetOne']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Imports a module from a format that was exported from another Takaro instance   Required permissions: `MANAGE_MODULES`
@@ -16761,9 +16788,9 @@ export const ModuleApiFp = function(configuration?: Configuration) {
          */
         async moduleControllerImport(moduleTransferDTO?: ModuleTransferDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.moduleControllerImport(moduleTransferDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['ModuleApi.moduleControllerImport']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ModuleApi.moduleControllerImport']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Removes a module, including all versions and config   Required permissions: `MANAGE_MODULES`
@@ -16774,9 +16801,9 @@ export const ModuleApiFp = function(configuration?: Configuration) {
          */
         async moduleControllerRemove(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.moduleControllerRemove(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['ModuleApi.moduleControllerRemove']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ModuleApi.moduleControllerRemove']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `READ_MODULES`
@@ -16787,9 +16814,9 @@ export const ModuleApiFp = function(configuration?: Configuration) {
          */
         async moduleControllerSearch(moduleSearchInputDTO?: ModuleSearchInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ModuleOutputArrayDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.moduleControllerSearch(moduleSearchInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['ModuleApi.moduleControllerSearch']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ModuleApi.moduleControllerSearch']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Update a module   Required permissions: `MANAGE_MODULES`
@@ -16801,9 +16828,9 @@ export const ModuleApiFp = function(configuration?: Configuration) {
          */
         async moduleControllerUpdate(id: string, moduleUpdateDTO?: ModuleUpdateDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ModuleOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.moduleControllerUpdate(id, moduleUpdateDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['ModuleApi.moduleControllerUpdate']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ModuleApi.moduleControllerUpdate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `READ_MODULES`
@@ -16814,22 +16841,23 @@ export const ModuleApiFp = function(configuration?: Configuration) {
          */
         async moduleInstallationsControllerGetInstalledModules(moduleInstallationSearchInputDTO?: ModuleInstallationSearchInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ModuleInstallationOutputArrayDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.moduleInstallationsControllerGetInstalledModules(moduleInstallationSearchInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['ModuleApi.moduleInstallationsControllerGetInstalledModules']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ModuleApi.moduleInstallationsControllerGetInstalledModules']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `READ_MODULES`
          * @summary Get one installation
-         * @param {string} id 
+         * @param {string} moduleId 
+         * @param {string} gameServerId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async moduleInstallationsControllerGetModuleInstallation(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ModuleInstallationOutputDTOAPI>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.moduleInstallationsControllerGetModuleInstallation(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['ModuleApi.moduleInstallationsControllerGetModuleInstallation']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+        async moduleInstallationsControllerGetModuleInstallation(moduleId: string, gameServerId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ModuleInstallationOutputDTOAPI>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.moduleInstallationsControllerGetModuleInstallation(moduleId, gameServerId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ModuleApi.moduleInstallationsControllerGetModuleInstallation']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Install a module on a gameserver. You can have multiple installations of the same module on the same gameserver.   Required permissions: `MANAGE_GAMESERVERS`
@@ -16840,22 +16868,23 @@ export const ModuleApiFp = function(configuration?: Configuration) {
          */
         async moduleInstallationsControllerInstallModule(installModuleDTO?: InstallModuleDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ModuleInstallationOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.moduleInstallationsControllerInstallModule(installModuleDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['ModuleApi.moduleInstallationsControllerInstallModule']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ModuleApi.moduleInstallationsControllerInstallModule']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Uninstall a module from a gameserver. This will not delete the module from the database.   Required permissions: `MANAGE_GAMESERVERS`
          * @summary Uninstall module
-         * @param {string} id 
+         * @param {string} moduleId 
+         * @param {string} gameServerId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async moduleInstallationsControllerUninstallModule(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ModuleInstallationOutputDTOAPI>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.moduleInstallationsControllerUninstallModule(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['ModuleApi.moduleInstallationsControllerUninstallModule']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+        async moduleInstallationsControllerUninstallModule(moduleId: string, gameServerId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ModuleInstallationOutputDTOAPI>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.moduleInstallationsControllerUninstallModule(moduleId, gameServerId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ModuleApi.moduleInstallationsControllerUninstallModule']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `READ_MODULES`
@@ -16866,9 +16895,9 @@ export const ModuleApiFp = function(configuration?: Configuration) {
          */
         async moduleVersionControllerGetModuleVersion(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ModuleVersionOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.moduleVersionControllerGetModuleVersion(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['ModuleApi.moduleVersionControllerGetModuleVersion']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ModuleApi.moduleVersionControllerGetModuleVersion']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `READ_MODULES`
@@ -16879,9 +16908,9 @@ export const ModuleApiFp = function(configuration?: Configuration) {
          */
         async moduleVersionControllerSearchVersions(moduleVersionSearchInputDTO?: ModuleVersionSearchInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ModuleVersionOutputArrayDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.moduleVersionControllerSearchVersions(moduleVersionSearchInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['ModuleApi.moduleVersionControllerSearchVersions']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ModuleApi.moduleVersionControllerSearchVersions']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Creates a new version of a module, copying all config (commands,hooks,cronjobs,...) from the \"latest\" version into a new, immutable version   Required permissions: `MANAGE_MODULES`
@@ -16892,9 +16921,9 @@ export const ModuleApiFp = function(configuration?: Configuration) {
          */
         async moduleVersionControllerTagVersion(moduleVersionCreateAPIDTO?: ModuleVersionCreateAPIDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ModuleVersionOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.moduleVersionControllerTagVersion(moduleVersionCreateAPIDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['ModuleApi.moduleVersionControllerTagVersion']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ModuleApi.moduleVersionControllerTagVersion']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
 };
@@ -16913,7 +16942,7 @@ export const ModuleApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        moduleControllerCreate(moduleCreateAPIDTO?: ModuleCreateAPIDTO, options?: any): AxiosPromise<ModuleOutputDTOAPI> {
+        moduleControllerCreate(moduleCreateAPIDTO?: ModuleCreateAPIDTO, options?: RawAxiosRequestConfig): AxiosPromise<ModuleOutputDTOAPI> {
             return localVarFp.moduleControllerCreate(moduleCreateAPIDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -16924,7 +16953,7 @@ export const ModuleApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        moduleControllerExport(id: string, moduleExportOptionsDTO?: ModuleExportOptionsDTO, options?: any): AxiosPromise<ModuleExportDTOAPI> {
+        moduleControllerExport(id: string, moduleExportOptionsDTO?: ModuleExportOptionsDTO, options?: RawAxiosRequestConfig): AxiosPromise<ModuleExportDTOAPI> {
             return localVarFp.moduleControllerExport(id, moduleExportOptionsDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -16934,7 +16963,7 @@ export const ModuleApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        moduleControllerGetOne(id: string, options?: any): AxiosPromise<ModuleOutputDTOAPI> {
+        moduleControllerGetOne(id: string, options?: RawAxiosRequestConfig): AxiosPromise<ModuleOutputDTOAPI> {
             return localVarFp.moduleControllerGetOne(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -16944,7 +16973,7 @@ export const ModuleApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        moduleControllerImport(moduleTransferDTO?: ModuleTransferDTO, options?: any): AxiosPromise<void> {
+        moduleControllerImport(moduleTransferDTO?: ModuleTransferDTO, options?: RawAxiosRequestConfig): AxiosPromise<void> {
             return localVarFp.moduleControllerImport(moduleTransferDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -16954,7 +16983,7 @@ export const ModuleApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        moduleControllerRemove(id: string, options?: any): AxiosPromise<APIOutput> {
+        moduleControllerRemove(id: string, options?: RawAxiosRequestConfig): AxiosPromise<APIOutput> {
             return localVarFp.moduleControllerRemove(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -16964,7 +16993,7 @@ export const ModuleApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        moduleControllerSearch(moduleSearchInputDTO?: ModuleSearchInputDTO, options?: any): AxiosPromise<ModuleOutputArrayDTOAPI> {
+        moduleControllerSearch(moduleSearchInputDTO?: ModuleSearchInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<ModuleOutputArrayDTOAPI> {
             return localVarFp.moduleControllerSearch(moduleSearchInputDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -16975,7 +17004,7 @@ export const ModuleApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        moduleControllerUpdate(id: string, moduleUpdateDTO?: ModuleUpdateDTO, options?: any): AxiosPromise<ModuleOutputDTOAPI> {
+        moduleControllerUpdate(id: string, moduleUpdateDTO?: ModuleUpdateDTO, options?: RawAxiosRequestConfig): AxiosPromise<ModuleOutputDTOAPI> {
             return localVarFp.moduleControllerUpdate(id, moduleUpdateDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -16985,18 +17014,19 @@ export const ModuleApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        moduleInstallationsControllerGetInstalledModules(moduleInstallationSearchInputDTO?: ModuleInstallationSearchInputDTO, options?: any): AxiosPromise<ModuleInstallationOutputArrayDTOAPI> {
+        moduleInstallationsControllerGetInstalledModules(moduleInstallationSearchInputDTO?: ModuleInstallationSearchInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<ModuleInstallationOutputArrayDTOAPI> {
             return localVarFp.moduleInstallationsControllerGetInstalledModules(moduleInstallationSearchInputDTO, options).then((request) => request(axios, basePath));
         },
         /**
          *    Required permissions: `READ_MODULES`
          * @summary Get one installation
-         * @param {string} id 
+         * @param {string} moduleId 
+         * @param {string} gameServerId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        moduleInstallationsControllerGetModuleInstallation(id: string, options?: any): AxiosPromise<ModuleInstallationOutputDTOAPI> {
-            return localVarFp.moduleInstallationsControllerGetModuleInstallation(id, options).then((request) => request(axios, basePath));
+        moduleInstallationsControllerGetModuleInstallation(moduleId: string, gameServerId: string, options?: RawAxiosRequestConfig): AxiosPromise<ModuleInstallationOutputDTOAPI> {
+            return localVarFp.moduleInstallationsControllerGetModuleInstallation(moduleId, gameServerId, options).then((request) => request(axios, basePath));
         },
         /**
          * Install a module on a gameserver. You can have multiple installations of the same module on the same gameserver.   Required permissions: `MANAGE_GAMESERVERS`
@@ -17005,18 +17035,19 @@ export const ModuleApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        moduleInstallationsControllerInstallModule(installModuleDTO?: InstallModuleDTO, options?: any): AxiosPromise<ModuleInstallationOutputDTOAPI> {
+        moduleInstallationsControllerInstallModule(installModuleDTO?: InstallModuleDTO, options?: RawAxiosRequestConfig): AxiosPromise<ModuleInstallationOutputDTOAPI> {
             return localVarFp.moduleInstallationsControllerInstallModule(installModuleDTO, options).then((request) => request(axios, basePath));
         },
         /**
          * Uninstall a module from a gameserver. This will not delete the module from the database.   Required permissions: `MANAGE_GAMESERVERS`
          * @summary Uninstall module
-         * @param {string} id 
+         * @param {string} moduleId 
+         * @param {string} gameServerId 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        moduleInstallationsControllerUninstallModule(id: string, options?: any): AxiosPromise<ModuleInstallationOutputDTOAPI> {
-            return localVarFp.moduleInstallationsControllerUninstallModule(id, options).then((request) => request(axios, basePath));
+        moduleInstallationsControllerUninstallModule(moduleId: string, gameServerId: string, options?: RawAxiosRequestConfig): AxiosPromise<ModuleInstallationOutputDTOAPI> {
+            return localVarFp.moduleInstallationsControllerUninstallModule(moduleId, gameServerId, options).then((request) => request(axios, basePath));
         },
         /**
          *    Required permissions: `READ_MODULES`
@@ -17025,7 +17056,7 @@ export const ModuleApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        moduleVersionControllerGetModuleVersion(id: string, options?: any): AxiosPromise<ModuleVersionOutputDTOAPI> {
+        moduleVersionControllerGetModuleVersion(id: string, options?: RawAxiosRequestConfig): AxiosPromise<ModuleVersionOutputDTOAPI> {
             return localVarFp.moduleVersionControllerGetModuleVersion(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -17035,7 +17066,7 @@ export const ModuleApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        moduleVersionControllerSearchVersions(moduleVersionSearchInputDTO?: ModuleVersionSearchInputDTO, options?: any): AxiosPromise<ModuleVersionOutputArrayDTOAPI> {
+        moduleVersionControllerSearchVersions(moduleVersionSearchInputDTO?: ModuleVersionSearchInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<ModuleVersionOutputArrayDTOAPI> {
             return localVarFp.moduleVersionControllerSearchVersions(moduleVersionSearchInputDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -17045,7 +17076,7 @@ export const ModuleApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        moduleVersionControllerTagVersion(moduleVersionCreateAPIDTO?: ModuleVersionCreateAPIDTO, options?: any): AxiosPromise<ModuleVersionOutputDTOAPI> {
+        moduleVersionControllerTagVersion(moduleVersionCreateAPIDTO?: ModuleVersionCreateAPIDTO, options?: RawAxiosRequestConfig): AxiosPromise<ModuleVersionOutputDTOAPI> {
             return localVarFp.moduleVersionControllerTagVersion(moduleVersionCreateAPIDTO, options).then((request) => request(axios, basePath));
         },
     };
@@ -17159,13 +17190,14 @@ export class ModuleApi extends BaseAPI {
     /**
      *    Required permissions: `READ_MODULES`
      * @summary Get one installation
-     * @param {string} id 
+     * @param {string} moduleId 
+     * @param {string} gameServerId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ModuleApi
      */
-    public moduleInstallationsControllerGetModuleInstallation(id: string, options?: RawAxiosRequestConfig) {
-        return ModuleApiFp(this.configuration).moduleInstallationsControllerGetModuleInstallation(id, options).then((request) => request(this.axios, this.basePath));
+    public moduleInstallationsControllerGetModuleInstallation(moduleId: string, gameServerId: string, options?: RawAxiosRequestConfig) {
+        return ModuleApiFp(this.configuration).moduleInstallationsControllerGetModuleInstallation(moduleId, gameServerId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -17183,13 +17215,14 @@ export class ModuleApi extends BaseAPI {
     /**
      * Uninstall a module from a gameserver. This will not delete the module from the database.   Required permissions: `MANAGE_GAMESERVERS`
      * @summary Uninstall module
-     * @param {string} id 
+     * @param {string} moduleId 
+     * @param {string} gameServerId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof ModuleApi
      */
-    public moduleInstallationsControllerUninstallModule(id: string, options?: RawAxiosRequestConfig) {
-        return ModuleApiFp(this.configuration).moduleInstallationsControllerUninstallModule(id, options).then((request) => request(this.axios, this.basePath));
+    public moduleInstallationsControllerUninstallModule(moduleId: string, gameServerId: string, options?: RawAxiosRequestConfig) {
+        return ModuleApiFp(this.configuration).moduleInstallationsControllerUninstallModule(moduleId, gameServerId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -17632,9 +17665,9 @@ export const PlayerApiFp = function(configuration?: Configuration) {
          */
         async banControllerCreate(banCreateDTO?: BanCreateDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BanOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.banControllerCreate(banCreateDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['PlayerApi.banControllerCreate']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PlayerApi.banControllerCreate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Unban player. This will remove the ban from Takaro and the gameserver(s)   Required permissions: `MANAGE_PLAYERS`
@@ -17645,9 +17678,9 @@ export const PlayerApiFp = function(configuration?: Configuration) {
          */
         async banControllerDelete(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.banControllerDelete(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['PlayerApi.banControllerDelete']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PlayerApi.banControllerDelete']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Get a single ban   Required permissions: `READ_PLAYERS`
@@ -17658,9 +17691,9 @@ export const PlayerApiFp = function(configuration?: Configuration) {
          */
         async banControllerGetOne(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BanOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.banControllerGetOne(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['PlayerApi.banControllerGetOne']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PlayerApi.banControllerGetOne']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Search for bans   Required permissions: `READ_PLAYERS`
@@ -17671,9 +17704,9 @@ export const PlayerApiFp = function(configuration?: Configuration) {
          */
         async banControllerSearch(banSearchInputDTO?: BanSearchInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BanOutputArrayDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.banControllerSearch(banSearchInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['PlayerApi.banControllerSearch']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PlayerApi.banControllerSearch']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Update an existing ban, updating a ban via the API will always make it takaro managed.   Required permissions: `MANAGE_PLAYERS`
@@ -17685,9 +17718,9 @@ export const PlayerApiFp = function(configuration?: Configuration) {
          */
         async banControllerUpdate(id: string, banUpdateDTO?: BanUpdateDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<BanOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.banControllerUpdate(id, banUpdateDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['PlayerApi.banControllerUpdate']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PlayerApi.banControllerUpdate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `MANAGE_PLAYERS`, `MANAGE_ROLES`
@@ -17700,9 +17733,9 @@ export const PlayerApiFp = function(configuration?: Configuration) {
          */
         async playerControllerAssignRole(id: string, roleId: string, playerRoleAssignChangeDTO?: PlayerRoleAssignChangeDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.playerControllerAssignRole(id, roleId, playerRoleAssignChangeDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['PlayerApi.playerControllerAssignRole']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PlayerApi.playerControllerAssignRole']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Get the player that is currently authenticated. This is a low-privilege route, returning limited data.
@@ -17712,9 +17745,9 @@ export const PlayerApiFp = function(configuration?: Configuration) {
          */
         async playerControllerGetMe(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerMeOutputDTO>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.playerControllerGetMe(options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['PlayerApi.playerControllerGetMe']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PlayerApi.playerControllerGetMe']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `READ_PLAYERS`
@@ -17725,9 +17758,9 @@ export const PlayerApiFp = function(configuration?: Configuration) {
          */
         async playerControllerGetOne(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerOutputWithRolesDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.playerControllerGetOne(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['PlayerApi.playerControllerGetOne']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PlayerApi.playerControllerGetOne']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `MANAGE_PLAYERS`, `MANAGE_ROLES`
@@ -17740,9 +17773,9 @@ export const PlayerApiFp = function(configuration?: Configuration) {
          */
         async playerControllerRemoveRole(id: string, roleId: string, playerRoleAssignChangeDTO?: PlayerRoleAssignChangeDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.playerControllerRemoveRole(id, roleId, playerRoleAssignChangeDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['PlayerApi.playerControllerRemoveRole']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PlayerApi.playerControllerRemoveRole']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `READ_PLAYERS`
@@ -17753,9 +17786,9 @@ export const PlayerApiFp = function(configuration?: Configuration) {
          */
         async playerControllerSearch(playerSearchInputDTO?: PlayerSearchInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerOutputArrayDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.playerControllerSearch(playerSearchInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['PlayerApi.playerControllerSearch']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PlayerApi.playerControllerSearch']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
 };
@@ -17774,7 +17807,7 @@ export const PlayerApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        banControllerCreate(banCreateDTO?: BanCreateDTO, options?: any): AxiosPromise<BanOutputDTOAPI> {
+        banControllerCreate(banCreateDTO?: BanCreateDTO, options?: RawAxiosRequestConfig): AxiosPromise<BanOutputDTOAPI> {
             return localVarFp.banControllerCreate(banCreateDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -17784,7 +17817,7 @@ export const PlayerApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        banControllerDelete(id: string, options?: any): AxiosPromise<APIOutput> {
+        banControllerDelete(id: string, options?: RawAxiosRequestConfig): AxiosPromise<APIOutput> {
             return localVarFp.banControllerDelete(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -17794,7 +17827,7 @@ export const PlayerApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        banControllerGetOne(id: string, options?: any): AxiosPromise<BanOutputDTOAPI> {
+        banControllerGetOne(id: string, options?: RawAxiosRequestConfig): AxiosPromise<BanOutputDTOAPI> {
             return localVarFp.banControllerGetOne(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -17804,7 +17837,7 @@ export const PlayerApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        banControllerSearch(banSearchInputDTO?: BanSearchInputDTO, options?: any): AxiosPromise<BanOutputArrayDTOAPI> {
+        banControllerSearch(banSearchInputDTO?: BanSearchInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<BanOutputArrayDTOAPI> {
             return localVarFp.banControllerSearch(banSearchInputDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -17815,7 +17848,7 @@ export const PlayerApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        banControllerUpdate(id: string, banUpdateDTO?: BanUpdateDTO, options?: any): AxiosPromise<BanOutputDTOAPI> {
+        banControllerUpdate(id: string, banUpdateDTO?: BanUpdateDTO, options?: RawAxiosRequestConfig): AxiosPromise<BanOutputDTOAPI> {
             return localVarFp.banControllerUpdate(id, banUpdateDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -17827,7 +17860,7 @@ export const PlayerApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        playerControllerAssignRole(id: string, roleId: string, playerRoleAssignChangeDTO?: PlayerRoleAssignChangeDTO, options?: any): AxiosPromise<APIOutput> {
+        playerControllerAssignRole(id: string, roleId: string, playerRoleAssignChangeDTO?: PlayerRoleAssignChangeDTO, options?: RawAxiosRequestConfig): AxiosPromise<APIOutput> {
             return localVarFp.playerControllerAssignRole(id, roleId, playerRoleAssignChangeDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -17836,7 +17869,7 @@ export const PlayerApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        playerControllerGetMe(options?: any): AxiosPromise<PlayerMeOutputDTO> {
+        playerControllerGetMe(options?: RawAxiosRequestConfig): AxiosPromise<PlayerMeOutputDTO> {
             return localVarFp.playerControllerGetMe(options).then((request) => request(axios, basePath));
         },
         /**
@@ -17846,7 +17879,7 @@ export const PlayerApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        playerControllerGetOne(id: string, options?: any): AxiosPromise<PlayerOutputWithRolesDTOAPI> {
+        playerControllerGetOne(id: string, options?: RawAxiosRequestConfig): AxiosPromise<PlayerOutputWithRolesDTOAPI> {
             return localVarFp.playerControllerGetOne(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -17858,7 +17891,7 @@ export const PlayerApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        playerControllerRemoveRole(id: string, roleId: string, playerRoleAssignChangeDTO?: PlayerRoleAssignChangeDTO, options?: any): AxiosPromise<APIOutput> {
+        playerControllerRemoveRole(id: string, roleId: string, playerRoleAssignChangeDTO?: PlayerRoleAssignChangeDTO, options?: RawAxiosRequestConfig): AxiosPromise<APIOutput> {
             return localVarFp.playerControllerRemoveRole(id, roleId, playerRoleAssignChangeDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -17868,7 +17901,7 @@ export const PlayerApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        playerControllerSearch(playerSearchInputDTO?: PlayerSearchInputDTO, options?: any): AxiosPromise<PlayerOutputArrayDTOAPI> {
+        playerControllerSearch(playerSearchInputDTO?: PlayerSearchInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<PlayerOutputArrayDTOAPI> {
             return localVarFp.playerControllerSearch(playerSearchInputDTO, options).then((request) => request(axios, basePath));
         },
     };
@@ -18291,9 +18324,9 @@ export const PlayerOnGameServerApiFp = function(configuration?: Configuration) {
          */
         async playerOnGameServerControllerAddCurrency(gameServerId: string, playerId: string, playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerOnGameserverOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.playerOnGameServerControllerAddCurrency(gameServerId, playerId, playerOnGameServerSetCurrencyInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['PlayerOnGameServerApi.playerOnGameServerControllerAddCurrency']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PlayerOnGameServerApi.playerOnGameServerControllerAddCurrency']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `MANAGE_PLAYERS`
@@ -18306,9 +18339,9 @@ export const PlayerOnGameServerApiFp = function(configuration?: Configuration) {
          */
         async playerOnGameServerControllerDeductCurrency(gameServerId: string, playerId: string, playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerOnGameserverOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.playerOnGameServerControllerDeductCurrency(gameServerId, playerId, playerOnGameServerSetCurrencyInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['PlayerOnGameServerApi.playerOnGameServerControllerDeductCurrency']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PlayerOnGameServerApi.playerOnGameServerControllerDeductCurrency']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `READ_PLAYERS`
@@ -18320,9 +18353,9 @@ export const PlayerOnGameServerApiFp = function(configuration?: Configuration) {
          */
         async playerOnGameServerControllerGetOne(gameServerId: string, playerId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerOnGameserverOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.playerOnGameServerControllerGetOne(gameServerId, playerId, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['PlayerOnGameServerApi.playerOnGameServerControllerGetOne']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PlayerOnGameServerApi.playerOnGameServerControllerGetOne']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `READ_PLAYERS`
@@ -18333,9 +18366,9 @@ export const PlayerOnGameServerApiFp = function(configuration?: Configuration) {
          */
         async playerOnGameServerControllerSearch(playerOnGameServerSearchInputDTO?: PlayerOnGameServerSearchInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerOnGameserverOutputArrayDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.playerOnGameServerControllerSearch(playerOnGameServerSearchInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['PlayerOnGameServerApi.playerOnGameServerControllerSearch']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PlayerOnGameServerApi.playerOnGameServerControllerSearch']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `MANAGE_PLAYERS`
@@ -18348,9 +18381,9 @@ export const PlayerOnGameServerApiFp = function(configuration?: Configuration) {
          */
         async playerOnGameServerControllerSetCurrency(gameServerId: string, playerId: string, playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerOnGameserverOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.playerOnGameServerControllerSetCurrency(gameServerId, playerId, playerOnGameServerSetCurrencyInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['PlayerOnGameServerApi.playerOnGameServerControllerSetCurrency']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PlayerOnGameServerApi.playerOnGameServerControllerSetCurrency']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `MANAGE_PLAYERS`
@@ -18364,9 +18397,9 @@ export const PlayerOnGameServerApiFp = function(configuration?: Configuration) {
          */
         async playerOnGameServerControllerTransactBetweenPlayers(gameServerId: string, sender: string, receiver: string, playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PlayerOnGameserverOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.playerOnGameServerControllerTransactBetweenPlayers(gameServerId, sender, receiver, playerOnGameServerSetCurrencyInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['PlayerOnGameServerApi.playerOnGameServerControllerTransactBetweenPlayers']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['PlayerOnGameServerApi.playerOnGameServerControllerTransactBetweenPlayers']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
 };
@@ -18387,7 +18420,7 @@ export const PlayerOnGameServerApiFactory = function (configuration?: Configurat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        playerOnGameServerControllerAddCurrency(gameServerId: string, playerId: string, playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO, options?: any): AxiosPromise<PlayerOnGameserverOutputDTOAPI> {
+        playerOnGameServerControllerAddCurrency(gameServerId: string, playerId: string, playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<PlayerOnGameserverOutputDTOAPI> {
             return localVarFp.playerOnGameServerControllerAddCurrency(gameServerId, playerId, playerOnGameServerSetCurrencyInputDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -18399,7 +18432,7 @@ export const PlayerOnGameServerApiFactory = function (configuration?: Configurat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        playerOnGameServerControllerDeductCurrency(gameServerId: string, playerId: string, playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO, options?: any): AxiosPromise<PlayerOnGameserverOutputDTOAPI> {
+        playerOnGameServerControllerDeductCurrency(gameServerId: string, playerId: string, playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<PlayerOnGameserverOutputDTOAPI> {
             return localVarFp.playerOnGameServerControllerDeductCurrency(gameServerId, playerId, playerOnGameServerSetCurrencyInputDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -18410,7 +18443,7 @@ export const PlayerOnGameServerApiFactory = function (configuration?: Configurat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        playerOnGameServerControllerGetOne(gameServerId: string, playerId: string, options?: any): AxiosPromise<PlayerOnGameserverOutputDTOAPI> {
+        playerOnGameServerControllerGetOne(gameServerId: string, playerId: string, options?: RawAxiosRequestConfig): AxiosPromise<PlayerOnGameserverOutputDTOAPI> {
             return localVarFp.playerOnGameServerControllerGetOne(gameServerId, playerId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -18420,7 +18453,7 @@ export const PlayerOnGameServerApiFactory = function (configuration?: Configurat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        playerOnGameServerControllerSearch(playerOnGameServerSearchInputDTO?: PlayerOnGameServerSearchInputDTO, options?: any): AxiosPromise<PlayerOnGameserverOutputArrayDTOAPI> {
+        playerOnGameServerControllerSearch(playerOnGameServerSearchInputDTO?: PlayerOnGameServerSearchInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<PlayerOnGameserverOutputArrayDTOAPI> {
             return localVarFp.playerOnGameServerControllerSearch(playerOnGameServerSearchInputDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -18432,7 +18465,7 @@ export const PlayerOnGameServerApiFactory = function (configuration?: Configurat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        playerOnGameServerControllerSetCurrency(gameServerId: string, playerId: string, playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO, options?: any): AxiosPromise<PlayerOnGameserverOutputDTOAPI> {
+        playerOnGameServerControllerSetCurrency(gameServerId: string, playerId: string, playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<PlayerOnGameserverOutputDTOAPI> {
             return localVarFp.playerOnGameServerControllerSetCurrency(gameServerId, playerId, playerOnGameServerSetCurrencyInputDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -18445,7 +18478,7 @@ export const PlayerOnGameServerApiFactory = function (configuration?: Configurat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        playerOnGameServerControllerTransactBetweenPlayers(gameServerId: string, sender: string, receiver: string, playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO, options?: any): AxiosPromise<PlayerOnGameserverOutputDTOAPI> {
+        playerOnGameServerControllerTransactBetweenPlayers(gameServerId: string, sender: string, receiver: string, playerOnGameServerSetCurrencyInputDTO?: PlayerOnGameServerSetCurrencyInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<PlayerOnGameserverOutputDTOAPI> {
             return localVarFp.playerOnGameServerControllerTransactBetweenPlayers(gameServerId, sender, receiver, playerOnGameServerSetCurrencyInputDTO, options).then((request) => request(axios, basePath));
         },
     };
@@ -18784,9 +18817,9 @@ export const RoleApiFp = function(configuration?: Configuration) {
          */
         async roleControllerCreate(roleCreateInputDTO?: RoleCreateInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RoleOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.roleControllerCreate(roleCreateInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['RoleApi.roleControllerCreate']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['RoleApi.roleControllerCreate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `READ_ROLES`
@@ -18797,9 +18830,9 @@ export const RoleApiFp = function(configuration?: Configuration) {
          */
         async roleControllerGetOne(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RoleOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.roleControllerGetOne(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['RoleApi.roleControllerGetOne']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['RoleApi.roleControllerGetOne']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -18809,9 +18842,9 @@ export const RoleApiFp = function(configuration?: Configuration) {
          */
         async roleControllerGetPermissions(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<PermissionOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.roleControllerGetPermissions(options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['RoleApi.roleControllerGetPermissions']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['RoleApi.roleControllerGetPermissions']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `MANAGE_ROLES`
@@ -18822,9 +18855,9 @@ export const RoleApiFp = function(configuration?: Configuration) {
          */
         async roleControllerRemove(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.roleControllerRemove(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['RoleApi.roleControllerRemove']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['RoleApi.roleControllerRemove']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `READ_ROLES`
@@ -18835,9 +18868,9 @@ export const RoleApiFp = function(configuration?: Configuration) {
          */
         async roleControllerSearch(roleSearchInputDTO?: RoleSearchInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RoleOutputArrayDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.roleControllerSearch(roleSearchInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['RoleApi.roleControllerSearch']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['RoleApi.roleControllerSearch']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `MANAGE_ROLES`
@@ -18849,9 +18882,9 @@ export const RoleApiFp = function(configuration?: Configuration) {
          */
         async roleControllerUpdate(id: string, roleUpdateInputDTO?: RoleUpdateInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RoleOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.roleControllerUpdate(id, roleUpdateInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['RoleApi.roleControllerUpdate']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['RoleApi.roleControllerUpdate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
 };
@@ -18870,7 +18903,7 @@ export const RoleApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        roleControllerCreate(roleCreateInputDTO?: RoleCreateInputDTO, options?: any): AxiosPromise<RoleOutputDTOAPI> {
+        roleControllerCreate(roleCreateInputDTO?: RoleCreateInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<RoleOutputDTOAPI> {
             return localVarFp.roleControllerCreate(roleCreateInputDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -18880,7 +18913,7 @@ export const RoleApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        roleControllerGetOne(id: string, options?: any): AxiosPromise<RoleOutputDTOAPI> {
+        roleControllerGetOne(id: string, options?: RawAxiosRequestConfig): AxiosPromise<RoleOutputDTOAPI> {
             return localVarFp.roleControllerGetOne(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -18889,7 +18922,7 @@ export const RoleApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        roleControllerGetPermissions(options?: any): AxiosPromise<PermissionOutputDTOAPI> {
+        roleControllerGetPermissions(options?: RawAxiosRequestConfig): AxiosPromise<PermissionOutputDTOAPI> {
             return localVarFp.roleControllerGetPermissions(options).then((request) => request(axios, basePath));
         },
         /**
@@ -18899,7 +18932,7 @@ export const RoleApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        roleControllerRemove(id: string, options?: any): AxiosPromise<APIOutput> {
+        roleControllerRemove(id: string, options?: RawAxiosRequestConfig): AxiosPromise<APIOutput> {
             return localVarFp.roleControllerRemove(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -18909,7 +18942,7 @@ export const RoleApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        roleControllerSearch(roleSearchInputDTO?: RoleSearchInputDTO, options?: any): AxiosPromise<RoleOutputArrayDTOAPI> {
+        roleControllerSearch(roleSearchInputDTO?: RoleSearchInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<RoleOutputArrayDTOAPI> {
             return localVarFp.roleControllerSearch(roleSearchInputDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -18920,7 +18953,7 @@ export const RoleApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        roleControllerUpdate(id: string, roleUpdateInputDTO?: RoleUpdateInputDTO, options?: any): AxiosPromise<RoleOutputDTOAPI> {
+        roleControllerUpdate(id: string, roleUpdateInputDTO?: RoleUpdateInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<RoleOutputDTOAPI> {
             return localVarFp.roleControllerUpdate(id, roleUpdateInputDTO, options).then((request) => request(axios, basePath));
         },
     };
@@ -19198,9 +19231,9 @@ export const SettingsApiFp = function(configuration?: Configuration) {
          */
         async settingsControllerDelete(key: string, gameServerId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.settingsControllerDelete(key, gameServerId, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['SettingsApi.settingsControllerDelete']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['SettingsApi.settingsControllerDelete']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -19212,9 +19245,9 @@ export const SettingsApiFp = function(configuration?: Configuration) {
          */
         async settingsControllerGet(keys?: Array<SettingsControllerGetKeysEnum>, gameServerId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SettingsOutputArrayDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.settingsControllerGet(keys, gameServerId, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['SettingsApi.settingsControllerGet']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['SettingsApi.settingsControllerGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -19226,9 +19259,9 @@ export const SettingsApiFp = function(configuration?: Configuration) {
          */
         async settingsControllerGetOne(key: string, gameServerId?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SettingsOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.settingsControllerGetOne(key, gameServerId, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['SettingsApi.settingsControllerGetOne']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['SettingsApi.settingsControllerGetOne']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `MANAGE_SETTINGS`
@@ -19240,9 +19273,9 @@ export const SettingsApiFp = function(configuration?: Configuration) {
          */
         async settingsControllerSet(key: string, settingsSetDTO?: SettingsSetDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<SettingsOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.settingsControllerSet(key, settingsSetDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['SettingsApi.settingsControllerSet']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['SettingsApi.settingsControllerSet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
 };
@@ -19262,7 +19295,7 @@ export const SettingsApiFactory = function (configuration?: Configuration, baseP
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        settingsControllerDelete(key: string, gameServerId?: string, options?: any): AxiosPromise<APIOutput> {
+        settingsControllerDelete(key: string, gameServerId?: string, options?: RawAxiosRequestConfig): AxiosPromise<APIOutput> {
             return localVarFp.settingsControllerDelete(key, gameServerId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -19273,7 +19306,7 @@ export const SettingsApiFactory = function (configuration?: Configuration, baseP
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        settingsControllerGet(keys?: Array<SettingsControllerGetKeysEnum>, gameServerId?: string, options?: any): AxiosPromise<SettingsOutputArrayDTOAPI> {
+        settingsControllerGet(keys?: Array<SettingsControllerGetKeysEnum>, gameServerId?: string, options?: RawAxiosRequestConfig): AxiosPromise<SettingsOutputArrayDTOAPI> {
             return localVarFp.settingsControllerGet(keys, gameServerId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -19284,7 +19317,7 @@ export const SettingsApiFactory = function (configuration?: Configuration, baseP
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        settingsControllerGetOne(key: string, gameServerId?: string, options?: any): AxiosPromise<SettingsOutputDTOAPI> {
+        settingsControllerGetOne(key: string, gameServerId?: string, options?: RawAxiosRequestConfig): AxiosPromise<SettingsOutputDTOAPI> {
             return localVarFp.settingsControllerGetOne(key, gameServerId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -19295,7 +19328,7 @@ export const SettingsApiFactory = function (configuration?: Configuration, baseP
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        settingsControllerSet(key: string, settingsSetDTO?: SettingsSetDTO, options?: any): AxiosPromise<SettingsOutputDTOAPI> {
+        settingsControllerSet(key: string, settingsSetDTO?: SettingsSetDTO, options?: RawAxiosRequestConfig): AxiosPromise<SettingsOutputDTOAPI> {
             return localVarFp.settingsControllerSet(key, settingsSetDTO, options).then((request) => request(axios, basePath));
         },
     };
@@ -19615,9 +19648,9 @@ export const ShopListingApiFp = function(configuration?: Configuration) {
          */
         async shopListingControllerCreate(shopListingCreateDTO?: ShopListingCreateDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopListingOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.shopListingControllerCreate(shopListingCreateDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['ShopListingApi.shopListingControllerCreate']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ShopListingApi.shopListingControllerCreate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `MANAGE_SHOP_LISTINGS`
@@ -19628,9 +19661,9 @@ export const ShopListingApiFp = function(configuration?: Configuration) {
          */
         async shopListingControllerDelete(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.shopListingControllerDelete(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['ShopListingApi.shopListingControllerDelete']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ShopListingApi.shopListingControllerDelete']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -19641,9 +19674,9 @@ export const ShopListingApiFp = function(configuration?: Configuration) {
          */
         async shopListingControllerGetOne(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopListingOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.shopListingControllerGetOne(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['ShopListingApi.shopListingControllerGetOne']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ShopListingApi.shopListingControllerGetOne']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `MANAGE_SHOP_LISTINGS`
@@ -19653,9 +19686,9 @@ export const ShopListingApiFp = function(configuration?: Configuration) {
          */
         async shopListingControllerImportListings(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.shopListingControllerImportListings(options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['ShopListingApi.shopListingControllerImportListings']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ShopListingApi.shopListingControllerImportListings']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -19666,9 +19699,9 @@ export const ShopListingApiFp = function(configuration?: Configuration) {
          */
         async shopListingControllerSearch(shopListingSearchInputDTO?: ShopListingSearchInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopListingOutputArrayDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.shopListingControllerSearch(shopListingSearchInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['ShopListingApi.shopListingControllerSearch']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ShopListingApi.shopListingControllerSearch']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `MANAGE_SHOP_LISTINGS`
@@ -19680,9 +19713,9 @@ export const ShopListingApiFp = function(configuration?: Configuration) {
          */
         async shopListingControllerUpdate(id: string, shopListingUpdateDTO?: ShopListingUpdateDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopListingOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.shopListingControllerUpdate(id, shopListingUpdateDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['ShopListingApi.shopListingControllerUpdate']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ShopListingApi.shopListingControllerUpdate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
 };
@@ -19701,7 +19734,7 @@ export const ShopListingApiFactory = function (configuration?: Configuration, ba
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        shopListingControllerCreate(shopListingCreateDTO?: ShopListingCreateDTO, options?: any): AxiosPromise<ShopListingOutputDTOAPI> {
+        shopListingControllerCreate(shopListingCreateDTO?: ShopListingCreateDTO, options?: RawAxiosRequestConfig): AxiosPromise<ShopListingOutputDTOAPI> {
             return localVarFp.shopListingControllerCreate(shopListingCreateDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -19711,7 +19744,7 @@ export const ShopListingApiFactory = function (configuration?: Configuration, ba
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        shopListingControllerDelete(id: string, options?: any): AxiosPromise<APIOutput> {
+        shopListingControllerDelete(id: string, options?: RawAxiosRequestConfig): AxiosPromise<APIOutput> {
             return localVarFp.shopListingControllerDelete(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -19721,7 +19754,7 @@ export const ShopListingApiFactory = function (configuration?: Configuration, ba
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        shopListingControllerGetOne(id: string, options?: any): AxiosPromise<ShopListingOutputDTOAPI> {
+        shopListingControllerGetOne(id: string, options?: RawAxiosRequestConfig): AxiosPromise<ShopListingOutputDTOAPI> {
             return localVarFp.shopListingControllerGetOne(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -19730,7 +19763,7 @@ export const ShopListingApiFactory = function (configuration?: Configuration, ba
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        shopListingControllerImportListings(options?: any): AxiosPromise<APIOutput> {
+        shopListingControllerImportListings(options?: RawAxiosRequestConfig): AxiosPromise<APIOutput> {
             return localVarFp.shopListingControllerImportListings(options).then((request) => request(axios, basePath));
         },
         /**
@@ -19740,7 +19773,7 @@ export const ShopListingApiFactory = function (configuration?: Configuration, ba
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        shopListingControllerSearch(shopListingSearchInputDTO?: ShopListingSearchInputDTO, options?: any): AxiosPromise<ShopListingOutputArrayDTOAPI> {
+        shopListingControllerSearch(shopListingSearchInputDTO?: ShopListingSearchInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<ShopListingOutputArrayDTOAPI> {
             return localVarFp.shopListingControllerSearch(shopListingSearchInputDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -19751,7 +19784,7 @@ export const ShopListingApiFactory = function (configuration?: Configuration, ba
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        shopListingControllerUpdate(id: string, shopListingUpdateDTO?: ShopListingUpdateDTO, options?: any): AxiosPromise<ShopListingOutputDTOAPI> {
+        shopListingControllerUpdate(id: string, shopListingUpdateDTO?: ShopListingUpdateDTO, options?: RawAxiosRequestConfig): AxiosPromise<ShopListingOutputDTOAPI> {
             return localVarFp.shopListingControllerUpdate(id, shopListingUpdateDTO, options).then((request) => request(axios, basePath));
         },
     };
@@ -20044,9 +20077,9 @@ export const ShopOrderApiFp = function(configuration?: Configuration) {
          */
         async shopOrderControllerCancel(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopOrderOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.shopOrderControllerCancel(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['ShopOrderApi.shopOrderControllerCancel']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ShopOrderApi.shopOrderControllerCancel']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Claiming an order will mark it as completed and give the user the item in-game
@@ -20057,9 +20090,9 @@ export const ShopOrderApiFp = function(configuration?: Configuration) {
          */
         async shopOrderControllerClaim(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopOrderOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.shopOrderControllerClaim(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['ShopOrderApi.shopOrderControllerClaim']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ShopOrderApi.shopOrderControllerClaim']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -20070,9 +20103,9 @@ export const ShopOrderApiFp = function(configuration?: Configuration) {
          */
         async shopOrderControllerCreate(shopOrderCreateDTO?: ShopOrderCreateDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopOrderOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.shopOrderControllerCreate(shopOrderCreateDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['ShopOrderApi.shopOrderControllerCreate']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ShopOrderApi.shopOrderControllerCreate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Get an order by its ID. This endpoint only returns orders that belong to the caller. When the caller has permission to view all orders, they can get any order.
@@ -20083,9 +20116,9 @@ export const ShopOrderApiFp = function(configuration?: Configuration) {
          */
         async shopOrderControllerGetOne(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopOrderOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.shopOrderControllerGetOne(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['ShopOrderApi.shopOrderControllerGetOne']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ShopOrderApi.shopOrderControllerGetOne']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Search for orders. By default, this endpoint only returns your own orders. When the caller has permission to view all orders, they can search for all orders.
@@ -20096,9 +20129,9 @@ export const ShopOrderApiFp = function(configuration?: Configuration) {
          */
         async shopOrderControllerSearch(shopOrderSearchInputDTO?: ShopOrderSearchInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ShopOrderOutputArrayDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.shopOrderControllerSearch(shopOrderSearchInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['ShopOrderApi.shopOrderControllerSearch']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['ShopOrderApi.shopOrderControllerSearch']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
 };
@@ -20117,7 +20150,7 @@ export const ShopOrderApiFactory = function (configuration?: Configuration, base
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        shopOrderControllerCancel(id: string, options?: any): AxiosPromise<ShopOrderOutputDTOAPI> {
+        shopOrderControllerCancel(id: string, options?: RawAxiosRequestConfig): AxiosPromise<ShopOrderOutputDTOAPI> {
             return localVarFp.shopOrderControllerCancel(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -20127,7 +20160,7 @@ export const ShopOrderApiFactory = function (configuration?: Configuration, base
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        shopOrderControllerClaim(id: string, options?: any): AxiosPromise<ShopOrderOutputDTOAPI> {
+        shopOrderControllerClaim(id: string, options?: RawAxiosRequestConfig): AxiosPromise<ShopOrderOutputDTOAPI> {
             return localVarFp.shopOrderControllerClaim(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -20137,7 +20170,7 @@ export const ShopOrderApiFactory = function (configuration?: Configuration, base
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        shopOrderControllerCreate(shopOrderCreateDTO?: ShopOrderCreateDTO, options?: any): AxiosPromise<ShopOrderOutputDTOAPI> {
+        shopOrderControllerCreate(shopOrderCreateDTO?: ShopOrderCreateDTO, options?: RawAxiosRequestConfig): AxiosPromise<ShopOrderOutputDTOAPI> {
             return localVarFp.shopOrderControllerCreate(shopOrderCreateDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -20147,7 +20180,7 @@ export const ShopOrderApiFactory = function (configuration?: Configuration, base
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        shopOrderControllerGetOne(id: string, options?: any): AxiosPromise<ShopOrderOutputDTOAPI> {
+        shopOrderControllerGetOne(id: string, options?: RawAxiosRequestConfig): AxiosPromise<ShopOrderOutputDTOAPI> {
             return localVarFp.shopOrderControllerGetOne(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -20157,7 +20190,7 @@ export const ShopOrderApiFactory = function (configuration?: Configuration, base
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        shopOrderControllerSearch(shopOrderSearchInputDTO?: ShopOrderSearchInputDTO, options?: any): AxiosPromise<ShopOrderOutputArrayDTOAPI> {
+        shopOrderControllerSearch(shopOrderSearchInputDTO?: ShopOrderSearchInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<ShopOrderOutputArrayDTOAPI> {
             return localVarFp.shopOrderControllerSearch(shopOrderSearchInputDTO, options).then((request) => request(axios, basePath));
         },
     };
@@ -20647,9 +20680,9 @@ export const StatsApiFp = function(configuration?: Configuration) {
          */
         async statsControllerGetActivityStats(timeType: StatsControllerGetActivityStatsTimeTypeEnum, dataType: StatsControllerGetActivityStatsDataTypeEnum, gameServerId?: string, startDate?: StatsControllerGetPingStatsStartDateParameter, endDate?: StatsControllerGetPingStatsStartDateParameter, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<StatsOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.statsControllerGetActivityStats(timeType, dataType, gameServerId, startDate, endDate, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['StatsApi.statsControllerGetActivityStats']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['StatsApi.statsControllerGetActivityStats']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Calculates how many players are from each country. Returns a count per country (ISO3166).   Required permissions: `READ_PLAYERS`
@@ -20660,9 +20693,9 @@ export const StatsApiFp = function(configuration?: Configuration) {
          */
         async statsControllerGetCountryStats(gameServerId?: Array<string>, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<StatsOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.statsControllerGetCountryStats(gameServerId, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['StatsApi.statsControllerGetCountryStats']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['StatsApi.statsControllerGetCountryStats']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `READ_PLAYERS`
@@ -20676,9 +20709,9 @@ export const StatsApiFp = function(configuration?: Configuration) {
          */
         async statsControllerGetCurrencyStats(gameServerId: string, playerId?: string, startDate?: StatsControllerGetPingStatsStartDateParameter, endDate?: StatsControllerGetPingStatsStartDateParameter, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<StatsOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.statsControllerGetCurrencyStats(gameServerId, playerId, startDate, endDate, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['StatsApi.statsControllerGetCurrencyStats']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['StatsApi.statsControllerGetCurrencyStats']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Calculates how many times an event type has occured over `bucketStep` time. Supports different filters and can return multiple series at a time.   Required permissions: `READ_PLAYERS`
@@ -20697,9 +20730,9 @@ export const StatsApiFp = function(configuration?: Configuration) {
          */
         async statsControllerGetEventsCount(eventName: StatsControllerGetEventsCountEventNameEnum, bucketStep: StatsControllerGetEventsCountBucketStepEnum, sumBy?: Array<StatsControllerGetEventsCountSumByEnum>, gameServerId?: string, moduleId?: string, playerId?: string, userId?: string, startDate?: StatsControllerGetPingStatsStartDateParameter, endDate?: StatsControllerGetPingStatsStartDateParameter, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<StatsOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.statsControllerGetEventsCount(eventName, bucketStep, sumBy, gameServerId, moduleId, playerId, userId, startDate, endDate, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['StatsApi.statsControllerGetEventsCount']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['StatsApi.statsControllerGetEventsCount']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * The roundtrip time for reachability tests between Takaro and the game server
@@ -20712,9 +20745,9 @@ export const StatsApiFp = function(configuration?: Configuration) {
          */
         async statsControllerGetLatencyStats(gameServerId: string, startDate?: StatsControllerGetPingStatsStartDateParameter, endDate?: StatsControllerGetPingStatsStartDateParameter, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<StatsOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.statsControllerGetLatencyStats(gameServerId, startDate, endDate, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['StatsApi.statsControllerGetLatencyStats']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['StatsApi.statsControllerGetLatencyStats']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `READ_PLAYERS`
@@ -20728,9 +20761,9 @@ export const StatsApiFp = function(configuration?: Configuration) {
          */
         async statsControllerGetPingStats(gameServerId: string, playerId: string, startDate?: StatsControllerGetPingStatsStartDateParameter, endDate?: StatsControllerGetPingStatsStartDateParameter, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<StatsOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.statsControllerGetPingStats(gameServerId, playerId, startDate, endDate, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['StatsApi.statsControllerGetPingStats']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['StatsApi.statsControllerGetPingStats']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `READ_PLAYERS`
@@ -20743,9 +20776,9 @@ export const StatsApiFp = function(configuration?: Configuration) {
          */
         async statsControllerGetPlayerOnlineStats(gameServerId?: string, startDate?: StatsControllerGetPingStatsStartDateParameter, endDate?: StatsControllerGetPingStatsStartDateParameter, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<StatsOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.statsControllerGetPlayerOnlineStats(gameServerId, startDate, endDate, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['StatsApi.statsControllerGetPlayerOnlineStats']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['StatsApi.statsControllerGetPlayerOnlineStats']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
 };
@@ -20768,7 +20801,7 @@ export const StatsApiFactory = function (configuration?: Configuration, basePath
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        statsControllerGetActivityStats(timeType: StatsControllerGetActivityStatsTimeTypeEnum, dataType: StatsControllerGetActivityStatsDataTypeEnum, gameServerId?: string, startDate?: StatsControllerGetPingStatsStartDateParameter, endDate?: StatsControllerGetPingStatsStartDateParameter, options?: any): AxiosPromise<StatsOutputDTOAPI> {
+        statsControllerGetActivityStats(timeType: StatsControllerGetActivityStatsTimeTypeEnum, dataType: StatsControllerGetActivityStatsDataTypeEnum, gameServerId?: string, startDate?: StatsControllerGetPingStatsStartDateParameter, endDate?: StatsControllerGetPingStatsStartDateParameter, options?: RawAxiosRequestConfig): AxiosPromise<StatsOutputDTOAPI> {
             return localVarFp.statsControllerGetActivityStats(timeType, dataType, gameServerId, startDate, endDate, options).then((request) => request(axios, basePath));
         },
         /**
@@ -20778,7 +20811,7 @@ export const StatsApiFactory = function (configuration?: Configuration, basePath
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        statsControllerGetCountryStats(gameServerId?: Array<string>, options?: any): AxiosPromise<StatsOutputDTOAPI> {
+        statsControllerGetCountryStats(gameServerId?: Array<string>, options?: RawAxiosRequestConfig): AxiosPromise<StatsOutputDTOAPI> {
             return localVarFp.statsControllerGetCountryStats(gameServerId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -20791,7 +20824,7 @@ export const StatsApiFactory = function (configuration?: Configuration, basePath
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        statsControllerGetCurrencyStats(gameServerId: string, playerId?: string, startDate?: StatsControllerGetPingStatsStartDateParameter, endDate?: StatsControllerGetPingStatsStartDateParameter, options?: any): AxiosPromise<StatsOutputDTOAPI> {
+        statsControllerGetCurrencyStats(gameServerId: string, playerId?: string, startDate?: StatsControllerGetPingStatsStartDateParameter, endDate?: StatsControllerGetPingStatsStartDateParameter, options?: RawAxiosRequestConfig): AxiosPromise<StatsOutputDTOAPI> {
             return localVarFp.statsControllerGetCurrencyStats(gameServerId, playerId, startDate, endDate, options).then((request) => request(axios, basePath));
         },
         /**
@@ -20809,7 +20842,7 @@ export const StatsApiFactory = function (configuration?: Configuration, basePath
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        statsControllerGetEventsCount(eventName: StatsControllerGetEventsCountEventNameEnum, bucketStep: StatsControllerGetEventsCountBucketStepEnum, sumBy?: Array<StatsControllerGetEventsCountSumByEnum>, gameServerId?: string, moduleId?: string, playerId?: string, userId?: string, startDate?: StatsControllerGetPingStatsStartDateParameter, endDate?: StatsControllerGetPingStatsStartDateParameter, options?: any): AxiosPromise<StatsOutputDTOAPI> {
+        statsControllerGetEventsCount(eventName: StatsControllerGetEventsCountEventNameEnum, bucketStep: StatsControllerGetEventsCountBucketStepEnum, sumBy?: Array<StatsControllerGetEventsCountSumByEnum>, gameServerId?: string, moduleId?: string, playerId?: string, userId?: string, startDate?: StatsControllerGetPingStatsStartDateParameter, endDate?: StatsControllerGetPingStatsStartDateParameter, options?: RawAxiosRequestConfig): AxiosPromise<StatsOutputDTOAPI> {
             return localVarFp.statsControllerGetEventsCount(eventName, bucketStep, sumBy, gameServerId, moduleId, playerId, userId, startDate, endDate, options).then((request) => request(axios, basePath));
         },
         /**
@@ -20821,7 +20854,7 @@ export const StatsApiFactory = function (configuration?: Configuration, basePath
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        statsControllerGetLatencyStats(gameServerId: string, startDate?: StatsControllerGetPingStatsStartDateParameter, endDate?: StatsControllerGetPingStatsStartDateParameter, options?: any): AxiosPromise<StatsOutputDTOAPI> {
+        statsControllerGetLatencyStats(gameServerId: string, startDate?: StatsControllerGetPingStatsStartDateParameter, endDate?: StatsControllerGetPingStatsStartDateParameter, options?: RawAxiosRequestConfig): AxiosPromise<StatsOutputDTOAPI> {
             return localVarFp.statsControllerGetLatencyStats(gameServerId, startDate, endDate, options).then((request) => request(axios, basePath));
         },
         /**
@@ -20834,7 +20867,7 @@ export const StatsApiFactory = function (configuration?: Configuration, basePath
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        statsControllerGetPingStats(gameServerId: string, playerId: string, startDate?: StatsControllerGetPingStatsStartDateParameter, endDate?: StatsControllerGetPingStatsStartDateParameter, options?: any): AxiosPromise<StatsOutputDTOAPI> {
+        statsControllerGetPingStats(gameServerId: string, playerId: string, startDate?: StatsControllerGetPingStatsStartDateParameter, endDate?: StatsControllerGetPingStatsStartDateParameter, options?: RawAxiosRequestConfig): AxiosPromise<StatsOutputDTOAPI> {
             return localVarFp.statsControllerGetPingStats(gameServerId, playerId, startDate, endDate, options).then((request) => request(axios, basePath));
         },
         /**
@@ -20846,7 +20879,7 @@ export const StatsApiFactory = function (configuration?: Configuration, basePath
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        statsControllerGetPlayerOnlineStats(gameServerId?: string, startDate?: StatsControllerGetPingStatsStartDateParameter, endDate?: StatsControllerGetPingStatsStartDateParameter, options?: any): AxiosPromise<StatsOutputDTOAPI> {
+        statsControllerGetPlayerOnlineStats(gameServerId?: string, startDate?: StatsControllerGetPingStatsStartDateParameter, endDate?: StatsControllerGetPingStatsStartDateParameter, options?: RawAxiosRequestConfig): AxiosPromise<StatsOutputDTOAPI> {
             return localVarFp.statsControllerGetPlayerOnlineStats(gameServerId, startDate, endDate, options).then((request) => request(axios, basePath));
         },
     };
@@ -21578,9 +21611,9 @@ export const UserApiFp = function(configuration?: Configuration) {
          */
         async userControllerAssignRole(id: string, roleId: string, userRoleAssignChangeDTO?: UserRoleAssignChangeDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.userControllerAssignRole(id, roleId, userRoleAssignChangeDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['UserApi.userControllerAssignRole']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['UserApi.userControllerAssignRole']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `MANAGE_USERS`
@@ -21591,9 +21624,9 @@ export const UserApiFp = function(configuration?: Configuration) {
          */
         async userControllerCreate(userCreateInputDTO?: UserCreateInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.userControllerCreate(userCreateInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['UserApi.userControllerCreate']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['UserApi.userControllerCreate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Unset the selected domain for the user, this will clear the domain cookie. On the next request, the backend will set this again.
@@ -21603,9 +21636,9 @@ export const UserApiFp = function(configuration?: Configuration) {
          */
         async userControllerDeleteSelectedDomainCookie(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.userControllerDeleteSelectedDomainCookie(options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['UserApi.userControllerDeleteSelectedDomainCookie']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['UserApi.userControllerDeleteSelectedDomainCookie']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `READ_USERS`
@@ -21616,9 +21649,9 @@ export const UserApiFp = function(configuration?: Configuration) {
          */
         async userControllerGetOne(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.userControllerGetOne(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['UserApi.userControllerGetOne']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['UserApi.userControllerGetOne']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `MANAGE_USERS`
@@ -21629,9 +21662,9 @@ export const UserApiFp = function(configuration?: Configuration) {
          */
         async userControllerInvite(inviteCreateDTO?: InviteCreateDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.userControllerInvite(inviteCreateDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['UserApi.userControllerInvite']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['UserApi.userControllerInvite']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Link your player profile to Takaro, allowing web access for things like shop and stats. To get the code, use the /link command in the game.
@@ -21642,9 +21675,9 @@ export const UserApiFp = function(configuration?: Configuration) {
          */
         async userControllerLinkPlayerProfile(linkPlayerUnauthedInputDTO?: LinkPlayerUnauthedInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.userControllerLinkPlayerProfile(linkPlayerUnauthedInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['UserApi.userControllerLinkPlayerProfile']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['UserApi.userControllerLinkPlayerProfile']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -21655,9 +21688,9 @@ export const UserApiFp = function(configuration?: Configuration) {
          */
         async userControllerLogin(loginDTO?: LoginDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<LoginOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.userControllerLogin(loginDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['UserApi.userControllerLogin']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['UserApi.userControllerLogin']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
@@ -21667,9 +21700,9 @@ export const UserApiFp = function(configuration?: Configuration) {
          */
         async userControllerLogout(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.userControllerLogout(options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['UserApi.userControllerLogout']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['UserApi.userControllerLogout']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * Get the current user and the domains that the user has access to. Note that you can only make requests in the scope of a single domain. In order to switch the domain, you need to use the domain selection endpoints
@@ -21679,9 +21712,9 @@ export const UserApiFp = function(configuration?: Configuration) {
          */
         async userControllerMe(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MeOutoutDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.userControllerMe(options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['UserApi.userControllerMe']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['UserApi.userControllerMe']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `MANAGE_USERS`
@@ -21692,9 +21725,9 @@ export const UserApiFp = function(configuration?: Configuration) {
          */
         async userControllerRemove(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.userControllerRemove(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['UserApi.userControllerRemove']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['UserApi.userControllerRemove']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `MANAGE_USERS`, `MANAGE_ROLES`
@@ -21706,9 +21739,9 @@ export const UserApiFp = function(configuration?: Configuration) {
          */
         async userControllerRemoveRole(id: string, roleId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.userControllerRemoveRole(id, roleId, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['UserApi.userControllerRemoveRole']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['UserApi.userControllerRemoveRole']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `READ_USERS`
@@ -21719,9 +21752,9 @@ export const UserApiFp = function(configuration?: Configuration) {
          */
         async userControllerSearch(userSearchInputDTO?: UserSearchInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserOutputArrayDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.userControllerSearch(userSearchInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['UserApi.userControllerSearch']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['UserApi.userControllerSearch']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * One user can have multiple domains, this endpoint is a helper to set the selected domain for the user
@@ -21732,9 +21765,9 @@ export const UserApiFp = function(configuration?: Configuration) {
          */
         async userControllerSetSelectedDomain(domainId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.userControllerSetSelectedDomain(domainId, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['UserApi.userControllerSetSelectedDomain']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['UserApi.userControllerSetSelectedDomain']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `MANAGE_USERS`
@@ -21746,9 +21779,9 @@ export const UserApiFp = function(configuration?: Configuration) {
          */
         async userControllerUpdate(id: string, userUpdateDTO?: UserUpdateDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.userControllerUpdate(id, userUpdateDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['UserApi.userControllerUpdate']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['UserApi.userControllerUpdate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
 };
@@ -21769,7 +21802,7 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        userControllerAssignRole(id: string, roleId: string, userRoleAssignChangeDTO?: UserRoleAssignChangeDTO, options?: any): AxiosPromise<APIOutput> {
+        userControllerAssignRole(id: string, roleId: string, userRoleAssignChangeDTO?: UserRoleAssignChangeDTO, options?: RawAxiosRequestConfig): AxiosPromise<APIOutput> {
             return localVarFp.userControllerAssignRole(id, roleId, userRoleAssignChangeDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -21779,7 +21812,7 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        userControllerCreate(userCreateInputDTO?: UserCreateInputDTO, options?: any): AxiosPromise<UserOutputDTOAPI> {
+        userControllerCreate(userCreateInputDTO?: UserCreateInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<UserOutputDTOAPI> {
             return localVarFp.userControllerCreate(userCreateInputDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -21788,7 +21821,7 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        userControllerDeleteSelectedDomainCookie(options?: any): AxiosPromise<void> {
+        userControllerDeleteSelectedDomainCookie(options?: RawAxiosRequestConfig): AxiosPromise<void> {
             return localVarFp.userControllerDeleteSelectedDomainCookie(options).then((request) => request(axios, basePath));
         },
         /**
@@ -21798,7 +21831,7 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        userControllerGetOne(id: string, options?: any): AxiosPromise<UserOutputDTOAPI> {
+        userControllerGetOne(id: string, options?: RawAxiosRequestConfig): AxiosPromise<UserOutputDTOAPI> {
             return localVarFp.userControllerGetOne(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -21808,7 +21841,7 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        userControllerInvite(inviteCreateDTO?: InviteCreateDTO, options?: any): AxiosPromise<UserOutputDTOAPI> {
+        userControllerInvite(inviteCreateDTO?: InviteCreateDTO, options?: RawAxiosRequestConfig): AxiosPromise<UserOutputDTOAPI> {
             return localVarFp.userControllerInvite(inviteCreateDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -21818,7 +21851,7 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        userControllerLinkPlayerProfile(linkPlayerUnauthedInputDTO?: LinkPlayerUnauthedInputDTO, options?: any): AxiosPromise<void> {
+        userControllerLinkPlayerProfile(linkPlayerUnauthedInputDTO?: LinkPlayerUnauthedInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<void> {
             return localVarFp.userControllerLinkPlayerProfile(linkPlayerUnauthedInputDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -21828,7 +21861,7 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        userControllerLogin(loginDTO?: LoginDTO, options?: any): AxiosPromise<LoginOutputDTOAPI> {
+        userControllerLogin(loginDTO?: LoginDTO, options?: RawAxiosRequestConfig): AxiosPromise<LoginOutputDTOAPI> {
             return localVarFp.userControllerLogin(loginDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -21837,7 +21870,7 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        userControllerLogout(options?: any): AxiosPromise<APIOutput> {
+        userControllerLogout(options?: RawAxiosRequestConfig): AxiosPromise<APIOutput> {
             return localVarFp.userControllerLogout(options).then((request) => request(axios, basePath));
         },
         /**
@@ -21846,7 +21879,7 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        userControllerMe(options?: any): AxiosPromise<MeOutoutDTOAPI> {
+        userControllerMe(options?: RawAxiosRequestConfig): AxiosPromise<MeOutoutDTOAPI> {
             return localVarFp.userControllerMe(options).then((request) => request(axios, basePath));
         },
         /**
@@ -21856,7 +21889,7 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        userControllerRemove(id: string, options?: any): AxiosPromise<APIOutput> {
+        userControllerRemove(id: string, options?: RawAxiosRequestConfig): AxiosPromise<APIOutput> {
             return localVarFp.userControllerRemove(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -21867,7 +21900,7 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        userControllerRemoveRole(id: string, roleId: string, options?: any): AxiosPromise<APIOutput> {
+        userControllerRemoveRole(id: string, roleId: string, options?: RawAxiosRequestConfig): AxiosPromise<APIOutput> {
             return localVarFp.userControllerRemoveRole(id, roleId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -21877,7 +21910,7 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        userControllerSearch(userSearchInputDTO?: UserSearchInputDTO, options?: any): AxiosPromise<UserOutputArrayDTOAPI> {
+        userControllerSearch(userSearchInputDTO?: UserSearchInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<UserOutputArrayDTOAPI> {
             return localVarFp.userControllerSearch(userSearchInputDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -21887,7 +21920,7 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        userControllerSetSelectedDomain(domainId: string, options?: any): AxiosPromise<void> {
+        userControllerSetSelectedDomain(domainId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
             return localVarFp.userControllerSetSelectedDomain(domainId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -21898,7 +21931,7 @@ export const UserApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        userControllerUpdate(id: string, userUpdateDTO?: UserUpdateDTO, options?: any): AxiosPromise<UserOutputDTOAPI> {
+        userControllerUpdate(id: string, userUpdateDTO?: UserUpdateDTO, options?: RawAxiosRequestConfig): AxiosPromise<UserOutputDTOAPI> {
             return localVarFp.userControllerUpdate(id, userUpdateDTO, options).then((request) => request(axios, basePath));
         },
     };
@@ -22292,9 +22325,9 @@ export const VariableApiFp = function(configuration?: Configuration) {
          */
         async variableControllerCreate(variableCreateDTO?: VariableCreateDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<VariableOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.variableControllerCreate(variableCreateDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['VariableApi.variableControllerCreate']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['VariableApi.variableControllerCreate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `MANAGE_VARIABLES`
@@ -22305,9 +22338,9 @@ export const VariableApiFp = function(configuration?: Configuration) {
          */
         async variableControllerDelete(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.variableControllerDelete(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['VariableApi.variableControllerDelete']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['VariableApi.variableControllerDelete']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `READ_VARIABLES`
@@ -22318,9 +22351,9 @@ export const VariableApiFp = function(configuration?: Configuration) {
          */
         async variableControllerFindOne(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<VariableOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.variableControllerFindOne(id, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['VariableApi.variableControllerFindOne']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['VariableApi.variableControllerFindOne']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `READ_VARIABLES`
@@ -22331,9 +22364,9 @@ export const VariableApiFp = function(configuration?: Configuration) {
          */
         async variableControllerSearch(variableSearchInputDTO?: VariableSearchInputDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<VariableOutputArrayDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.variableControllerSearch(variableSearchInputDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['VariableApi.variableControllerSearch']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['VariableApi.variableControllerSearch']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          *    Required permissions: `MANAGE_VARIABLES`
@@ -22345,9 +22378,9 @@ export const VariableApiFp = function(configuration?: Configuration) {
          */
         async variableControllerUpdate(id: string, variableUpdateDTO?: VariableUpdateDTO, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<VariableOutputDTOAPI>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.variableControllerUpdate(id, variableUpdateDTO, options);
-            const index = configuration?.serverIndex ?? 0;
-            const operationBasePath = operationServerMap['VariableApi.variableControllerUpdate']?.[index]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, operationBasePath || basePath);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['VariableApi.variableControllerUpdate']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
 };
@@ -22366,7 +22399,7 @@ export const VariableApiFactory = function (configuration?: Configuration, baseP
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        variableControllerCreate(variableCreateDTO?: VariableCreateDTO, options?: any): AxiosPromise<VariableOutputDTOAPI> {
+        variableControllerCreate(variableCreateDTO?: VariableCreateDTO, options?: RawAxiosRequestConfig): AxiosPromise<VariableOutputDTOAPI> {
             return localVarFp.variableControllerCreate(variableCreateDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -22376,7 +22409,7 @@ export const VariableApiFactory = function (configuration?: Configuration, baseP
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        variableControllerDelete(id: string, options?: any): AxiosPromise<APIOutput> {
+        variableControllerDelete(id: string, options?: RawAxiosRequestConfig): AxiosPromise<APIOutput> {
             return localVarFp.variableControllerDelete(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -22386,7 +22419,7 @@ export const VariableApiFactory = function (configuration?: Configuration, baseP
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        variableControllerFindOne(id: string, options?: any): AxiosPromise<VariableOutputDTOAPI> {
+        variableControllerFindOne(id: string, options?: RawAxiosRequestConfig): AxiosPromise<VariableOutputDTOAPI> {
             return localVarFp.variableControllerFindOne(id, options).then((request) => request(axios, basePath));
         },
         /**
@@ -22396,7 +22429,7 @@ export const VariableApiFactory = function (configuration?: Configuration, baseP
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        variableControllerSearch(variableSearchInputDTO?: VariableSearchInputDTO, options?: any): AxiosPromise<VariableOutputArrayDTOAPI> {
+        variableControllerSearch(variableSearchInputDTO?: VariableSearchInputDTO, options?: RawAxiosRequestConfig): AxiosPromise<VariableOutputArrayDTOAPI> {
             return localVarFp.variableControllerSearch(variableSearchInputDTO, options).then((request) => request(axios, basePath));
         },
         /**
@@ -22407,7 +22440,7 @@ export const VariableApiFactory = function (configuration?: Configuration, baseP
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        variableControllerUpdate(id: string, variableUpdateDTO?: VariableUpdateDTO, options?: any): AxiosPromise<VariableOutputDTOAPI> {
+        variableControllerUpdate(id: string, variableUpdateDTO?: VariableUpdateDTO, options?: RawAxiosRequestConfig): AxiosPromise<VariableOutputDTOAPI> {
             return localVarFp.variableControllerUpdate(id, variableUpdateDTO, options).then((request) => request(axios, basePath));
         },
     };

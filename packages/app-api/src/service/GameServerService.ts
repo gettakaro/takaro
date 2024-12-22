@@ -149,7 +149,9 @@ export class GameServerService extends TakaroService<
       filters: { gameserverId: [id] },
     });
     await Promise.all(
-      installedModules.results.map((installation) => this.moduleService.uninstallModule(installation.id)),
+      installedModules.results.map((installation) =>
+        this.moduleService.uninstallModule(installation.gameserverId, installation.moduleId),
+      ),
     );
 
     gameClassCache.delete(id);

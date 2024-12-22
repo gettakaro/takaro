@@ -43,9 +43,9 @@ export async function processJob(job: Job<IBaseJobData>) {
   } else {
     ctx.addData({ domain: job.data.domainId });
     log.info('🧹 Running system tasks for domain');
+    await seedModules(job.data.domainId);
     await cleanEvents(job.data.domainId);
     await cleanExpiringVariables(job.data.domainId);
-    await seedModules(job.data.domainId);
     await ensureCronjobsAreScheduled(job.data.domainId);
   }
 }

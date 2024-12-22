@@ -100,7 +100,10 @@ const tests = [
     test: async function (this: IntegrationTest<IStandardSetupData>) {
       const { service, mod, installation: assignment } = this.setupData;
 
-      await this.client.module.moduleInstallationsControllerUninstallModule(assignment.id);
+      await this.client.module.moduleInstallationsControllerUninstallModule(
+        assignment.moduleId,
+        assignment.gameserverId,
+      );
 
       const queue = queueService.queues.cronjobs.queue;
       const allRepeatables = await queue.getRepeatableJobs();

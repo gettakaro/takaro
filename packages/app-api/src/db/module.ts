@@ -341,6 +341,12 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
     return this.findOneVersion(item.id);
   }
 
+  async deleteVersion(id: string): Promise<boolean> {
+    const { queryVersion } = await this.getModel();
+    const data = await queryVersion.deleteById(id);
+    return !!data;
+  }
+
   async findByCommand(commandId: string): Promise<ModuleVersionOutputDTO> {
     const { queryVersion } = await this.getModel();
     const item = await queryVersion.withGraphJoined('commands').findOne('commands.id', commandId);
@@ -408,15 +414,18 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
     return this.findOneVersion(item.id);
   }
 
-  async findOneInstallation(installationId: string) {
+  async findOneInstallation(gameServerId: string, moduleId: string) {
     const { queryInstallations } = await this.getModel();
-    const res = await queryInstallations.findById(installationId).modify('standardExtend');
+    const res = await queryInstallations
+      .where('gameserverId', gameServerId)
+      .andWhere('moduleInstallations.moduleId', moduleId)
+      .modify('standardExtend');
 
-    if (!res) {
-      throw new errors.NotFoundError(`Installation with id ${installationId} not found`);
+    if (!res[0]) {
+      throw new errors.NotFoundError(`Installation with id ${gameServerId}-${moduleId} not found`);
     }
 
-    const returnVal = new ModuleInstallationOutputDTO(res as unknown as ModuleInstallationOutputDTO);
+    const returnVal = new ModuleInstallationOutputDTO(res[0] as unknown as ModuleInstallationOutputDTO);
 
     // We want to ensure that all sub-objects are sorted deterministically
     returnVal.version.cronJobs = returnVal.version.cronJobs.sort((a, b) => a.name.localeCompare(b.name));
@@ -479,18 +488,18 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
     });
 
     if (!existingInstallation.length) {
-      const created = await queryInstallations.insert(data);
-      return this.findOneInstallation(created.id);
+      await queryInstallations.insert(data);
+      return this.findOneInstallation(installDto.gameServerId, versionToInstall.moduleId);
     } else {
       const installation = existingInstallation[0];
       await queryInstallations.updateAndFetchById(installation.id, data);
-      return this.findOneInstallation(installation.id);
+      return this.findOneInstallation(installDto.gameServerId, versionToInstall.moduleId);
     }
   }
 
-  async uninstallModule(installationId: string) {
+  async uninstallModule(gameServerId: string, moduleId: string) {
     const { queryInstallations } = await this.getModel();
-    const res = await queryInstallations.deleteById(installationId);
+    const res = await queryInstallations.delete().where('gameserverId', gameServerId).andWhere('moduleId', moduleId);
     return !!res;
   }
 }

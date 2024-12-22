@@ -6,7 +6,6 @@ import { AuthenticatedRequest, AuthService } from '../../service/AuthService.js'
 import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Params, Res } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
-import { ParamId } from '../../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 import { AllowedFilters } from '../shared.js';
@@ -46,18 +45,25 @@ class ModuleInstallationSearchInputDTO extends ITakaroQuery<ModuleInstallationSe
   declare search: ModuleInstallationSearchInputAllowedFilters;
 }
 
+class ModuleInstallParamId {
+  @IsUUID('4')
+  moduleId: string;
+  @IsUUID('4')
+  gameServerId: string;
+}
+
 @OpenAPI({
   security: [{ domainAuth: [] }],
   tags: ['Module'],
 })
-@JsonController('/module/installation')
+@JsonController('/module')
 export class ModuleInstallationsController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_MODULES]))
   @ResponseSchema(ModuleInstallationOutputArrayDTOAPI)
   @OpenAPI({
     summary: 'Search module installations',
   })
-  @Post('/search')
+  @Post('/installation/search')
   async getInstalledModules(
     @Req() req: AuthenticatedRequest,
     @Res() res: Response,
@@ -81,10 +87,10 @@ export class ModuleInstallationsController {
   @OpenAPI({
     summary: 'Get one installation',
   })
-  @Get('/:id')
-  async getModuleInstallation(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
+  @Get('/:moduleId/gameserver/:gameServerId/installation')
+  async getModuleInstallation(@Req() req: AuthenticatedRequest, @Params() params: ModuleInstallParamId) {
     const service = new ModuleService(req.domainId);
-    const res = await service.findOneInstallation(params.id);
+    const res = await service.findOneInstallation(params.gameServerId, params.moduleId);
     return apiResponse(res);
   }
 
@@ -94,7 +100,7 @@ export class ModuleInstallationsController {
     description:
       'Install a module on a gameserver. You can have multiple installations of the same module on the same gameserver.',
   })
-  @Post('/')
+  @Post('/installation/')
   async installModule(@Req() req: AuthenticatedRequest, @Body() data: InstallModuleDTO) {
     const service = new ModuleService(req.domainId);
     return apiResponse(await service.installModule(data));
@@ -105,9 +111,9 @@ export class ModuleInstallationsController {
   @OpenAPI({
     description: 'Uninstall a module from a gameserver. This will not delete the module from the database.',
   })
-  @Delete('/:id')
-  async uninstallModule(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
+  @Delete('/:moduleId/gameserver/:gameServerId/installation')
+  async uninstallModule(@Req() req: AuthenticatedRequest, @Params() params: ModuleInstallParamId) {
     const service = new ModuleService(req.domainId);
-    return apiResponse(await service.uninstallModule(params.id));
+    return apiResponse(await service.uninstallModule(params.gameServerId, params.moduleId));
   }
 }

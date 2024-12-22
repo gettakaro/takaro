@@ -2,7 +2,7 @@ import { TakaroService } from '../Base.js';
 
 import { ModuleModel, ModuleRepo } from '../../db/module.js';
 
-import { CronJobCreateDTO, CronJobService } from '../CronJobService.js';
+import { CronJobCreateDTO, CronJobService, CronJobUpdateDTO } from '../CronJobService.js';
 import { HookCreateDTO, HookService } from '../HookService.js';
 import { errors, traceableClass } from '@takaro/util';
 import { ITakaroQuery, SortDirection } from '@takaro/db';
@@ -13,9 +13,9 @@ import {
   TakaroEventModuleCreated,
   TakaroEventModuleUpdated,
   TakaroEventModuleDeleted,
-  getModules,
   TakaroEventModuleInstalled,
   TakaroEventModuleUninstalled,
+  getModules,
 } from '@takaro/modules';
 import { PermissionCreateDTO } from '../RoleService.js';
 import * as semver from 'semver';
@@ -24,7 +24,7 @@ import * as semver from 'semver';
 import _Ajv from 'ajv';
 import { getEmptyConfigSchema, getEmptyUiSchema, getSystemConfigSchema } from '../../lib/systemConfig.js';
 import { EVENT_TYPES, EventCreateDTO, EventService } from '../EventService.js';
-import { FunctionCreateDTO, FunctionService } from '../FunctionService.js';
+import { FunctionCreateDTO, FunctionService, FunctionUpdateDTO } from '../FunctionService.js';
 import {
   InstallModuleDTO,
   ModuleCreateAPIDTO,
@@ -110,8 +110,8 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     return this.repo.findOneVersion(id);
   }
 
-  async findOneInstallation(id: string) {
-    return this.repo.findOneInstallation(id);
+  async findOneInstallation(gameServerId: string, moduleId: string) {
+    return this.repo.findOneInstallation(gameServerId, moduleId);
   }
 
   async create(_mod: ModuleCreateDTO): Promise<ModuleOutputDTO> {
@@ -199,7 +199,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
         moduleId: [id],
       },
     });
-    await Promise.all(installations.results.map((i) => this.uninstallModule(i.id)));
+    await Promise.all(installations.results.map((i) => this.uninstallModule(i.gameserverId, i.moduleId)));
     await this.repo.delete(id);
 
     await this.eventsService().create(
@@ -222,85 +222,150 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
       mod.name = `${mod.name}-imported`;
     }
 
-    return this.seedModule(mod, true);
+    return this.seedModule(mod, { isBuiltin: false });
   }
 
   async seedBuiltinModules() {
     const modules = getModules();
-    await Promise.all(modules.map((m) => this.seedModule(m)));
+    await Promise.all(modules.map((m: ModuleTransferDTO<unknown>) => this.seedModule(m, { isBuiltin: true })));
   }
 
-  async seedModule(builtin: ModuleTransferDTO<unknown>, isImport = false) {
+  async seedModule(data: ModuleTransferDTO<unknown>, { isBuiltin } = { isBuiltin: false }) {
     const existingModule = await this.repo.find({
-      filters: { builtin: [builtin.name] },
+      filters: { builtin: [data.name] },
     });
 
     let mod = existingModule.results[0];
 
     // New module, create it
     if (!mod) {
-      this.log.info(`Creating new module ${builtin.name}`, { name: builtin.name });
+      this.log.info(`Creating new module ${data.name}`, { name: data.name });
       mod = await this.init(
         new ModuleCreateInternalDTO({
-          name: builtin.name,
-          builtin: isImport ? null : builtin.name,
+          name: data.name,
+          builtin: isBuiltin ? data.name : null,
         }),
       );
     }
 
-    for (const version of builtin.versions) {
-      this.log.info(`Creating new module version ${builtin.name}-${version.tag}`, {
-        name: builtin.name,
+    for (const version of data.versions) {
+      this.log.info(`Creating new module version ${data.name}-${version.tag}`, {
+        name: data.name,
         tag: version.tag,
       });
+
       const existingVersionRes = await this.findVersions({ filters: { tag: [version.tag], moduleId: [mod.id] } });
       const existingVersions = existingVersionRes.results.filter((v) => v.tag === version.tag);
-      // Version already exists, no action needed
-      if (existingVersions.length) return;
+
+      // Version already exists,
+      // If not builtin -> skip - We will never replace user-created versions
+      // If builtin and in dev mode -> replace - This provides hot-reload for builtin modules
+      // If builtin and in prod -> throw - We will never replace versions in prod, we should be incrementing the version
+      if (existingVersions.length) {
+        if (!isBuiltin) {
+          this.log.info('Version already exists, skipping', { moduleId: mod.id, tag: version.tag });
+          continue;
+        }
+
+        if (process.env.NODE_ENV === 'development') {
+          this.log.info('Version already exists, replacing', { moduleId: mod.id, tag: version.tag });
+          await this.repo.deleteVersion(existingVersions[0].id);
+        }
+
+        if (process.env.NODE_ENV === 'production') {
+          this.log.error('Version already exists, cannot replace in production', {
+            moduleId: mod.id,
+            tag: version.tag,
+          });
+          throw new errors.InternalServerError();
+        }
+      }
 
       const latestVersion = await this.getLatestVersion(mod.id);
 
       const commands = Promise.all(
         (version.commands || []).map(async (c) => {
+          const existing = await this.commandService().find({
+            filters: { name: [c.name], versionId: [latestVersion.id] },
+          });
           const data = new CommandCreateDTO({
             ...c,
             versionId: latestVersion.id,
           });
-          return this.commandService().create(data);
+          if (existing.results.length) {
+            return this.commandService().update(existing.results[0].id, data);
+          } else {
+            return this.commandService().create(data);
+          }
         }),
       );
 
       const hooks = Promise.all(
         (version.hooks || []).map(async (h) => {
+          const existing = await this.hookService().find({
+            filters: { name: [h.name], versionId: [latestVersion.id] },
+          });
           const data = new HookCreateDTO({
             ...h,
-            eventType: h.eventType,
             versionId: latestVersion.id,
           });
-          return this.hookService().create(data);
+          if (existing.results.length) {
+            return this.hookService().update(existing.results[0].id, data);
+          } else {
+            return this.hookService().create(data);
+          }
         }),
       );
+
       const cronjobs = Promise.all(
         (version.cronJobs || []).map(async (c) => {
+          const existing = await this.cronjobService().find({
+            filters: { name: [c.name], versionId: [latestVersion.id] },
+          });
           const data = new CronJobCreateDTO({
             ...c,
             versionId: latestVersion.id,
           });
-          return this.cronjobService().create(data);
+          if (existing.results.length) {
+            return this.cronjobService().update(
+              existing.results[0].id,
+              new CronJobUpdateDTO({
+                function: data.function,
+                name: data.name,
+                temporalValue: data.temporalValue,
+              }),
+            );
+          } else {
+            return this.cronjobService().create(data);
+          }
         }),
       );
 
       const functions = Promise.all(
         (version.functions || []).map(async (f) => {
+          const existing = await this.functionService().find({
+            filters: { name: [f.name], versionId: [latestVersion.id] },
+          });
           const data = new FunctionCreateDTO({
             name: f.name,
             code: f.function,
             versionId: latestVersion.id,
           });
-          return this.functionService().create(data);
+          if (existing.results.length) {
+            return this.functionService().update(
+              existing.results[0].id,
+              new FunctionUpdateDTO({
+                code: data.code,
+                name: data.name,
+              }),
+            );
+          } else {
+            return this.functionService().create(data);
+          }
         }),
       );
-      await Promise.all([commands, hooks, cronjobs, commands, functions]);
+
+      await Promise.all([commands, hooks, cronjobs, functions]);
 
       await this.update(
         mod.id,
@@ -454,7 +519,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
       moduleId: versionToInstall.moduleId,
     });
     if (existingInstallation.length) {
-      await this.uninstallModule(existingInstallation[0].id);
+      await this.uninstallModule(existingInstallation[0].gameserverId, existingInstallation[0].moduleId);
     }
 
     const installation = await this.repo.installModule(installDto);
@@ -475,10 +540,10 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     return installation;
   }
 
-  async uninstallModule(installationId: string) {
-    const installation = await this.repo.findOneInstallation(installationId);
+  async uninstallModule(gameServerId: string, moduleId: string) {
+    const installation = await this.repo.findOneInstallation(gameServerId, moduleId);
     await this.cronjobService().uninstallCronJobs(installation);
-    await this.repo.uninstallModule(installationId);
+    await this.repo.uninstallModule(gameServerId, moduleId);
     await this.eventsService().create(
       new EventCreateDTO({
         eventName: EVENT_TYPES.MODULE_UNINSTALLED,
@@ -514,7 +579,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
         throw new errors.BadRequestError('Cannot refresh latest version');
       }
       try {
-        await this.uninstallModule(installation.id);
+        await this.uninstallModule(installation.gameserverId, installation.moduleId);
         await this.installModule(
           new InstallModuleDTO({
             gameServerId: installation.gameserverId,
