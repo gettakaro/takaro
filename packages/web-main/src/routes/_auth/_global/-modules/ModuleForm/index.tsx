@@ -1,5 +1,5 @@
 import { FC, Fragment, useEffect, useMemo, useState } from 'react';
-import { useForm, useFieldArray, SubmitHandler, use } from 'react-hook-form';
+import { useForm, useFieldArray, SubmitHandler } from 'react-hook-form';
 import {
   Button,
   TextField,
@@ -13,7 +13,7 @@ import {
 } from '@takaro/lib-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { validationSchema } from './validationSchema';
-import { useNavigate, useParams } from '@tanstack/react-router';
+import { useNavigate } from '@tanstack/react-router';
 import { ModuleVersionOutputDTO, PermissionCreateDTO, SmallModuleVersionOutputDTO } from '@takaro/apiclient';
 import { PermissionList, ButtonContainer } from './style';
 import { AiOutlinePlus as PlusIcon } from 'react-icons/ai';
@@ -24,7 +24,6 @@ import { ConfigField } from './ConfigField';
 import { Divider } from '@ory/elements';
 import { PermissionField } from './PermissionField';
 import { ConfigFieldErrorDetail } from './ConfigFieldErrorDetail';
-import { ModuleVersionSelectField } from 'components/selects/ModuleVersionSelectField';
 
 export interface IFormInputs {
   name: string;

@@ -50,11 +50,11 @@ export const ModuleBuilderInner: FC = () => {
   function getConfigComponent(type: FileType, itemId: string) {
     switch (type) {
       case FileType.Hooks:
-        return <HookConfig itemId={itemId} readOnly={readOnly} />;
+        return <HookConfig itemId={itemId} readOnly={readOnly} moduleId={moduleId} />;
       case FileType.Commands:
-        return <CommandConfig itemId={itemId} readOnly={readOnly} />;
+        return <CommandConfig itemId={itemId} readOnly={readOnly} moduleId={moduleId} />;
       case FileType.CronJobs:
-        return <CronJobConfig itemId={itemId} readOnly={readOnly} />;
+        return <CronJobConfig itemId={itemId} readOnly={readOnly} moduleId={moduleId} />;
       default:
         return null;
     }

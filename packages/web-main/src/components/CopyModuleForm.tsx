@@ -6,15 +6,7 @@ import { Button, TextField, FormError, Alert } from '@takaro/lib-components';
 import { FC } from 'react';
 import { AiOutlineCopy as CopyIcon } from 'react-icons/ai';
 
-import {
-  useCommandCreate,
-  useCronJobCreate,
-  useHookCreate,
-  moduleQueryOptions,
-  useModuleCreate,
-  useModuleRemove,
-  useFunctionCreate,
-} from 'queries/module';
+import { moduleQueryOptions, useModuleCreate } from 'queries/module';
 import { moduleNameShape } from 'routes/_auth/_global/-modules/ModuleForm/validationSchema';
 import { useQuery } from '@tanstack/react-query';
 
@@ -28,36 +20,19 @@ interface CopyModuleFormProps {
 }
 
 export const CopyModuleForm: FC<CopyModuleFormProps> = ({ moduleId, onSuccess }) => {
-  const { data: mod, isPending } = useQuery(moduleQueryOptions(moduleId));
+  const { data: mod } = useQuery(moduleQueryOptions(moduleId));
   const { enqueueSnackbar } = useSnackbar();
 
   const { control, handleSubmit } = useForm<z.infer<typeof validationSchema>>({
     resolver: zodResolver(validationSchema),
   });
 
-  const { mutateAsync: createModule, isPending: moduleCreateLoading, error: moduleCreateError } = useModuleCreate();
-  const { mutateAsync: createHook, isPending: hookCreateLoading, error: hookCreateError } = useHookCreate();
-  const { mutateAsync: createCommand, isPending: commandCreateLoading, error: commandCreateError } = useCommandCreate();
-  const { mutateAsync: createCronJob, isPending: cronJobCreateLoading, error: cronJobCreateError } = useCronJobCreate();
   const {
-    mutateAsync: createFunction,
-    isPending: functionCreateLoading,
-    error: functionCreateError,
-  } = useFunctionCreate();
-
-  const { mutateAsync: removeModule, isPending: moduleRemoveLoading } = useModuleRemove();
-
-  const isLoading =
-    moduleCreateLoading ||
-    hookCreateLoading ||
-    commandCreateLoading ||
-    cronJobCreateLoading ||
-    moduleRemoveLoading ||
-    functionCreateLoading;
-
-  if (isPending) {
-    return;
-  }
+    mutate: createModule,
+    isPending: moduleCreateLoading,
+    error: moduleCreateError,
+    isSuccess,
+  } = useModuleCreate();
 
   if (!mod) {
     enqueueSnackbar('Module not found', { variant: 'default', type: 'error' });
@@ -65,11 +40,44 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ moduleId, onSuccess })
   }
 
   const { latestVersion } = mod;
+  if (isSuccess) {
+    onSuccess && onSuccess(moduleId);
+  }
 
   const onSubmit: SubmitHandler<z.infer<typeof validationSchema>> = async ({ name }) => {
-    const createdModule = await createModule({
+    createModule({
       name,
       latestVersion: {
+        hooks: latestVersion.hooks.map((hook) => ({
+          versionId: latestVersion.id,
+          name: hook.name,
+          eventType: hook.eventType,
+          regex: hook.regex,
+          function: hook.function.code,
+        })),
+        commands: latestVersion.commands.map((command) => ({
+          versionId: latestVersion.id,
+          name: command.name,
+          trigger: command.trigger,
+          helpText: command.helpText,
+          function: command.function.code,
+          arguments: command.arguments.map((arg) => ({
+            name: arg.name,
+            type: arg.type,
+            helpText: arg.helpText,
+            position: arg.position,
+          })),
+        })),
+        functions: latestVersion.functions.map((f) => ({
+          name: f.name,
+          code: f.code,
+        })),
+        cronJobs: latestVersion.cronJobs.map((cronJob) => ({
+          versionId: latestVersion.id,
+          name: cronJob.name,
+          temporalValue: cronJob.temporalValue,
+          function: cronJob.function.code,
+        })),
         configSchema: latestVersion.configSchema,
         permissions: latestVersion.permissions.map((perm) => ({
           description: perm.description,
@@ -81,65 +89,6 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ moduleId, onSuccess })
         description: latestVersion.description,
       },
     });
-
-    if (!createdModule) {
-      return;
-    }
-
-    try {
-      if (createdModule) {
-        await Promise.all([
-          ...latestVersion.hooks.map((hook) =>
-            createHook({
-              versionId: createdModule.latestVersion.id,
-              name: hook.name,
-              eventType: hook.eventType,
-              regex: hook.regex ?? '',
-              function: hook.function.code,
-            }),
-          ),
-          ...latestVersion.commands.map((command) =>
-            createCommand({
-              versionId: createdModule.latestVersion.id,
-              name: command.name,
-              trigger: command.trigger,
-              helpText: command.helpText,
-              function: command.function.code,
-              arguments: command.arguments.map((arg) => ({
-                name: arg.name,
-                type: arg.type,
-                helpText: arg.helpText,
-                position: arg.position,
-              })),
-            }),
-          ),
-          ...latestVersion.functions.map((f) =>
-            createFunction({
-              moduleId: createdModule.id,
-              fn: {
-                versionId: createdModule.latestVersion.id,
-                name: f.name,
-                code: f.code,
-              },
-            }),
-          ),
-          ...latestVersion.cronJobs.map((cronJob) =>
-            createCronJob({
-              versionId: createdModule.latestVersion.id,
-              name: cronJob.name,
-              temporalValue: cronJob.temporalValue,
-              function: cronJob.function.code,
-            }),
-          ),
-        ]);
-
-        if (onSuccess) {
-          onSuccess(createdModule.id);
-        }
-      }
-    } catch {
-      await removeModule({ moduleId: createdModule.id });
-    }
   };
 
   return (
@@ -158,17 +107,13 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ moduleId, onSuccess })
           label="Module Name"
           description=""
           required
-          loading={isLoading}
+          loading={moduleCreateLoading}
         />
-        <Button isLoading={isLoading} type="submit" icon={<CopyIcon />} text="Copy Module" fullWidth />
+        <Button isLoading={moduleCreateLoading} type="submit" icon={<CopyIcon />} text="Copy Module" fullWidth />
       </form>
 
       <div style={{ height: '10px' }} />
       {moduleCreateError && <FormError error={moduleCreateError} />}
-      {hookCreateError && <FormError error={hookCreateError} />}
-      {commandCreateError && <FormError error={commandCreateError} />}
-      {cronJobCreateError && <FormError error={cronJobCreateError} />}
-      {functionCreateError && <FormError error={functionCreateError} />}
     </>
   );
 };

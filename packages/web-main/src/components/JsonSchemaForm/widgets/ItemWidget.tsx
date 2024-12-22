@@ -51,7 +51,9 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
   value,
   onChange,
 }: WidgetProps<T, S, F>) {
-  const { gameServerId } = getRouteApi('/_auth/gameserver/$gameServerId/modules/$moduleId/install/').useParams();
+  const { gameServerId } = getRouteApi(
+    '/_auth/gameserver/$gameServerId/modules/$moduleId/$versionId/install/',
+  ).useParams();
   const [filterInput, setFilterInput] = useState<string>('');
   const enabled = filterInput !== '';
   const shouldPreviousItemsBeLoaded = shouldFilter(value, multiple as boolean);
@@ -79,11 +81,11 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
     ItemsInfiniteQueryOptions({
       ...(filterInput !== '' &&
         (searchFields.get('name') || searchFields.get('code')) && {
-          search: {
-            ...(searchFields.get('name') && { name: [filterInput] }),
-            ...(searchFields.get('code') && { code: [filterInput] }),
-          },
-        }),
+        search: {
+          ...(searchFields.get('name') && { name: [filterInput] }),
+          ...(searchFields.get('code') && { code: [filterInput] }),
+        },
+      }),
       filters: { gameserverId: [gameServerId] },
     }),
   );

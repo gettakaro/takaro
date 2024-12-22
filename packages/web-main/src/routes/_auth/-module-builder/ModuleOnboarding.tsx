@@ -52,24 +52,36 @@ export const ModuleOnboarding: FC<ModuleOnboardingProps> = ({ versionId, moduleI
       switch (componentType) {
         case 'hook':
           await createHook({
-            name: 'my-hook',
-            eventType: 'log',
             versionId,
-            regex: 'takaro-hook-regex-placeholder',
+            moduleId,
+            hook: {
+              name: 'my-hook',
+              eventType: 'log',
+              versionId,
+              regex: 'takaro-hook-regex-placeholder',
+            },
           });
           break;
         case 'cronjob':
           await createCronJob({
-            name: 'my-cronjob',
             versionId,
-            temporalValue: '5 4 * * *',
+            moduleId,
+            cronJob: {
+              name: 'my-cronjob',
+              temporalValue: '5 4 * * *',
+              versionId,
+            },
           });
           break;
         case 'command':
           await createCommand({
-            name: 'my-command',
+            moduleId,
             versionId,
-            trigger: 'test',
+            command: {
+              name: 'my-command',
+              versionId,
+              trigger: 'test',
+            },
           });
           break;
       }

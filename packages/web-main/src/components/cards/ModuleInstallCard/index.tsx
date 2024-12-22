@@ -57,7 +57,7 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
   const handleUninstall = async (e: MouseEvent) => {
     e.stopPropagation();
     if (!installation) throw new Error('No installation found');
-    await uninstallModule({ installationId: installation.id });
+    await uninstallModule({ gameServerId, versionId: installation.version.id });
     setOpenDialog(false);
   };
 
@@ -72,16 +72,17 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
   const handleOnViewModuleConfigClick = (e: MouseEvent) => {
     e.stopPropagation();
     navigate({
-      to: '/gameserver/$gameServerId/modules/$moduleId/install/view',
-      params: { gameServerId, moduleId: mod.id },
+      to: '/gameserver/$gameServerId/modules/$moduleId/$versionId/install/view',
+      params: { gameServerId, moduleId: mod.id, versionId: installation!.version.id },
     });
   };
 
   const handleInstallConfigureClick = (e: MouseEvent) => {
     e.stopPropagation();
     navigate({
-      to: '/gameserver/$gameServerId/modules/$moduleId/install',
-      params: { gameServerId, moduleId: mod.id },
+      to: '/gameserver/$gameServerId/modules/$moduleId/$versionId/install',
+      // TODO: this is def wrong, but we still need to add a list to select a specific version
+      params: { gameServerId, moduleId: mod.id, versionId: installation!.version.id },
     });
   };
 

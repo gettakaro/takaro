@@ -16,21 +16,23 @@ type FormInputs = z.infer<typeof validationSchema>;
 interface CronJobConfigProps {
   itemId: string;
   readOnly?: boolean;
+  moduleId: string;
 }
 
-export const CronJobConfig: FC<CronJobConfigProps> = ({ itemId, readOnly = false }) => {
+export const CronJobConfig: FC<CronJobConfigProps> = ({ itemId, readOnly = false, moduleId }) => {
   const { data, isPending, isError } = useQuery(cronjobQueryOptions(itemId));
   if (isPending) return <ConfigLoading />;
   if (isError) return <Alert variant="error" text="Failed to load command config" />;
-  return <CronJobConfigForm cronjob={data} readOnly={readOnly} />;
+  return <CronJobConfigForm cronjob={data} readOnly={readOnly} moduleId={moduleId} />;
 };
 
 interface CronJobConfigFormProps {
   readOnly?: boolean;
   cronjob: CronJobOutputDTO;
+  moduleId: string;
 }
 
-export const CronJobConfigForm: FC<CronJobConfigFormProps> = ({ cronjob, readOnly = false }) => {
+export const CronJobConfigForm: FC<CronJobConfigFormProps> = ({ cronjob, readOnly = false, moduleId }) => {
   const { mutateAsync, isPending } = useCronJobUpdate();
 
   const { control, handleSubmit, formState } = useForm<FormInputs>({
@@ -45,6 +47,8 @@ export const CronJobConfigForm: FC<CronJobConfigFormProps> = ({ cronjob, readOnl
     await mutateAsync({
       cronJobId: cronjob.id,
       cronJob: data,
+      moduleId,
+      versionId: cronjob.versionId,
     });
   };
 

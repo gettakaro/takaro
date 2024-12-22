@@ -47,10 +47,14 @@ import { useSnackbar } from 'notistack';
 export const moduleKeys = {
   all: ['modules'] as const,
   detail: (moduleId: string) => [...moduleKeys.all, 'detail', moduleId] as const,
-  version: (versionId: string) => [...moduleKeys.all, 'version', versionId] as const,
   export: (versionId: string) => [...moduleKeys.all, 'export', versionId] as const,
   list: () => [...moduleKeys.all, 'list'] as const,
-  versionList: () => [...moduleKeys.all, 'versionList'] as const,
+
+  versions: {
+    all: ['versions'] as const,
+    list: (moduleId?: string) => [...moduleKeys.versions.all, 'list', moduleId] as const,
+    detail: (versionId: string) => [...moduleKeys.versions.all, 'detail', versionId] as const,
+  },
 
   hooks: {
     all: ['hooks'] as const,
@@ -60,17 +64,17 @@ export const moduleKeys = {
   commands: {
     all: ['commands'] as const,
     list: () => [...moduleKeys.commands.all, 'list'] as const,
-    detail: (moduleId: string) => [...moduleKeys.commands.all, 'detail', moduleId] as const,
+    detail: (commandId: string) => [...moduleKeys.commands.all, 'detail', commandId] as const,
   },
   cronJobs: {
     all: ['cronjobs'] as const,
     list: () => [...moduleKeys.cronJobs.all, 'list'] as const,
-    detail: (moduleId: string) => [...moduleKeys.cronJobs.all, 'detail', moduleId] as const,
+    detail: (cronjobId: string) => [...moduleKeys.cronJobs.all, 'detail', cronjobId] as const,
   },
   functions: {
     all: ['functions'] as const,
     list: () => [...moduleKeys.functions.all, 'list'] as const,
-    detail: (moduleId: string) => [...moduleKeys.functions.all, 'detail', moduleId] as const,
+    detail: (functionId: string) => [...moduleKeys.functions.all, 'detail', functionId] as const,
   },
 };
 
@@ -114,13 +118,15 @@ export const moduleQueryOptions = (moduleId: string) =>
 
 export const moduleVersionsQueryOptions = (queryParams: ModuleVersionSearchInputDTO) =>
   queryOptions<ModuleVersionOutputArrayDTOAPI, AxiosError<ModuleOutputArrayDTOAPI>>({
-    queryKey: [...moduleKeys.versionList(), ...queryParamsToArray(queryParams)],
+    // TODO: (for now) ideally we always pass a moduleId here,
+    queryKey: [...moduleKeys.versions.list(), ...queryParamsToArray(queryParams)],
     queryFn: async ({ }) => (await getApiClient().module.moduleVersionControllerSearchVersions(queryParams)).data,
   });
 
 export const moduleVersionsInfiniteQueryOptions = (queryParams: ModuleVersionSearchInputDTO = {}) =>
   infiniteQueryOptions<ModuleVersionOutputArrayDTOAPI, AxiosError<ModuleVersionOutputArrayDTOAPI>>({
-    queryKey: [...moduleKeys.versionList(), 'infinite', ...queryParamsToArray(queryParams)],
+    // TODO: (for now) ideally we always pass a moduleId here.
+    queryKey: [...moduleKeys.versions.list(), 'infinite', ...queryParamsToArray(queryParams)],
     queryFn: async ({ pageParam }) =>
       (await getApiClient().module.moduleVersionControllerSearchVersions({ ...queryParams, page: pageParam as number }))
         .data,
@@ -131,7 +137,7 @@ export const moduleVersionsInfiniteQueryOptions = (queryParams: ModuleVersionSea
 
 export const moduleVersionQueryOptions = (versionId: string) =>
   queryOptions<ModuleVersionOutputDTO, AxiosError<ModuleVersionOutputDTO>>({
-    queryKey: moduleKeys.version(versionId),
+    queryKey: moduleKeys.versions.detail(versionId),
     queryFn: async () => (await getApiClient().module.moduleVersionControllerGetModuleVersion(versionId)).data.data,
   });
 
@@ -150,7 +156,7 @@ export const useModuleCreate = () => {
         await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
 
         queryClient.setQueryData<ModuleVersionOutputDTO>(
-          moduleKeys.version(newModule.latestVersion.id),
+          moduleKeys.versions.detail(newModule.latestVersion.id),
           newModule.latestVersion,
         );
 
@@ -179,7 +185,7 @@ export const useTagModule = () => {
         enqueueSnackbar(`Module tagged with version: ${newVersion.tag}!`, { variant: 'default', type: 'success' });
 
         // We don't need to change anything the latest version, since it will still match the latest version.
-        queryClient.setQueryData<ModuleVersionOutputDTO>(moduleKeys.version(newVersion.id), newVersion);
+        queryClient.setQueryData<ModuleVersionOutputDTO>(moduleKeys.versions.detail(newVersion.id), newVersion);
 
         // We get rid of moduleDetail, we would have to update the small versions (change tags)
         // and the latest version.
@@ -205,17 +211,8 @@ export const useModuleRemove = () => {
       onSuccess: async (_, { moduleId }) => {
         enqueueSnackbar('Module successfully deleted!', { variant: 'default', type: 'success' });
 
-        const removedModule = queryClient.getQueryData<ModuleOutputDTO>(moduleKeys.detail(moduleId));
-
-        // remove all versions of the module
-        if (removedModule) {
-          removedModule.versions.forEach((version) => {
-            queryClient.removeQueries({ queryKey: moduleKeys.version(version.id) });
-            //queryClient.removeQueries({ queryKey: moduleKeys.export(version.id) });
-          });
-        }
-
         await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
+        queryClient.removeQueries({ queryKey: moduleKeys.versions.list(moduleId) });
         queryClient.removeQueries({ queryKey: moduleKeys.detail(moduleId) });
       },
     }),
@@ -253,9 +250,6 @@ export const useModuleImport = () => {
   );
 };
 
-// TODO: add a module version update mututation
-// TODO: update export module version, import module version
-// todo: update a version
 interface ModuleUpdate {
   moduleUpdate: ModuleUpdateDTO;
   id: string;
@@ -273,19 +267,12 @@ export const useModuleUpdate = () => {
         enqueueSnackbar('Module updated!', { variant: 'default', type: 'success' });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
 
-        console.log('updated module', updatedModule);
-        // TODO: depends on what export does now;
-        // await queryClient.invalidateQueries({ queryKey: moduleKeys.export(updatedModule.) });
-
         queryClient.setQueryData<ModuleVersionOutputDTO>(
-          moduleKeys.version(updatedModule.latestVersion.id),
+          moduleKeys.versions.detail(updatedModule.latestVersion.id),
           updatedModule.latestVersion,
         );
 
-        console.log('version', queryClient.getQueryData(moduleKeys.version(updatedModule.latestVersion.id)));
         queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(updatedModule.id), updatedModule);
-
-        console.log('module', queryClient.getQueryData(moduleKeys.detail(updatedModule.id)));
       },
     }),
     defaultModuleErrorMessages,
@@ -301,15 +288,21 @@ export const hookQueryOptions = (hookId: string) =>
     queryFn: async () => (await getApiClient().hook.hookControllerGetOne(hookId)).data.data,
   });
 
+interface HookCreate {
+  hook: HookCreateDTO;
+  moduleId: string;
+  versionId: string;
+}
+
 export const useHookCreate = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
   const { enqueueSnackbar } = useSnackbar();
 
-  return mutationWrapper<HookOutputDTO, HookCreateDTO>(
-    useMutation<HookOutputDTO, AxiosError<HookOutputDTOAPI>, HookCreateDTO>({
-      mutationFn: async (hook) => (await apiClient.hook.hookControllerCreate(hook)).data.data,
-      onSuccess: async (newHook: HookOutputDTO): Promise<void> => {
+  return mutationWrapper<HookOutputDTO, HookCreate>(
+    useMutation<HookOutputDTO, AxiosError<HookOutputDTOAPI>, HookCreate>({
+      mutationFn: async ({ hook }) => (await apiClient.hook.hookControllerCreate(hook)).data.data,
+      onSuccess: async (newHook: HookOutputDTO, { moduleId, versionId }): Promise<void> => {
         enqueueSnackbar('Hook created!', { variant: 'default', type: 'success' });
 
         await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
@@ -319,7 +312,19 @@ export const useHookCreate = () => {
         // TODO: Here we somehow need to get the moduleId, so we can update the cache of the specific moduleOutputDTO
         // we really need the moduleId, otherwise need to invalidate all moduleIds
 
-        queryClient.setQueryData<ModuleVersionOutputDTO>(moduleKeys.version(newHook.versionId), (prev) =>
+        queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(moduleId), (prev) =>
+          prev
+            ? {
+              ...prev,
+              latestVersion: {
+                ...prev.latestVersion,
+                hooks: prev.latestVersion.hooks.concat(newHook),
+              },
+            }
+            : undefined,
+        );
+
+        queryClient.setQueryData<ModuleVersionOutputDTO>(moduleKeys.versions.detail(versionId), (prev) =>
           prev
             ? {
               ...prev,
@@ -336,9 +341,11 @@ export const useHookCreate = () => {
 
 interface HookRemove {
   hookId: string;
+  versionId: string;
+  moduleId: string;
 }
 
-export const useHookRemove = ({ versionId }) => {
+export const useHookRemove = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
   const { enqueueSnackbar } = useSnackbar();
@@ -346,21 +353,31 @@ export const useHookRemove = ({ versionId }) => {
   return mutationWrapper<APIOutput, HookRemove>(
     useMutation<APIOutput, AxiosError<APIOutput>, HookRemove>({
       mutationFn: async ({ hookId }) => (await apiClient.hook.hookControllerRemove(hookId)).data,
-      onSuccess: async (_, { hookId }) => {
+      onSuccess: async (_, { hookId, versionId, moduleId }) => {
         enqueueSnackbar('Hook successfully deleted!', { variant: 'default', type: 'success' });
 
         await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.hooks.list() });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.export(versionId) });
-
-        // TODO: need to update the cache of the specific ModuleVersionOutputDTO
-
         queryClient.removeQueries({ queryKey: moduleKeys.hooks.detail(hookId) });
-        queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.version(versionId), (prev) =>
+
+        queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(moduleId), (prev) =>
           prev
             ? {
               ...prev,
-              hooks: prev.latestVersion.hooks.filter((hook) => hook.id !== hookId),
+              latestVersion: {
+                ...prev.latestVersion,
+                hooks: prev.latestVersion.hooks.filter((hook) => hook.id !== hookId),
+              },
+            }
+            : undefined,
+        );
+
+        queryClient.setQueryData<ModuleVersionOutputDTO>(moduleKeys.versions.detail(versionId), (prev) =>
+          prev
+            ? {
+              ...prev,
+              hooks: prev.hooks.filter((hook) => hook.id !== hookId),
             }
             : undefined,
         );
@@ -372,6 +389,8 @@ export const useHookRemove = ({ versionId }) => {
 
 interface HookUpdate {
   hookId: string;
+  moduleId: string;
+  versionId: string;
   hook: HookUpdateDTO;
 }
 export const useHookUpdate = () => {
@@ -382,18 +401,27 @@ export const useHookUpdate = () => {
   return mutationWrapper<HookOutputDTO, HookUpdate>(
     useMutation<HookOutputDTO, AxiosError<HookOutputDTOAPI>, HookUpdate>({
       mutationFn: async ({ hookId, hook }) => (await apiClient.hook.hookControllerUpdate(hookId, hook)).data.data,
-      onSuccess: async (updatedHook: HookOutputDTO) => {
+      onSuccess: async (updatedHook: HookOutputDTO, { hookId, moduleId, versionId }) => {
         enqueueSnackbar('Hook updated!', { variant: 'default', type: 'success' });
 
         await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.hooks.list() });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.export(updatedHook.versionId) });
+        queryClient.setQueryData<HookOutputDTO>(moduleKeys.hooks.detail(hookId), updatedHook);
 
-        // TODO: somehow need the moduleId, so we can update the latest version part of that specific module.
-        // atm we can also not clear the cache of the specific moduleOutputDTO.
+        queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(moduleId), (prev) =>
+          prev
+            ? {
+              ...prev,
+              latestVersion: {
+                ...prev.latestVersion,
+                hooks: prev.latestVersion.hooks.map((h) => (h.id === updatedHook.id ? updatedHook : h)),
+              },
+            }
+            : undefined,
+        );
 
-        queryClient.setQueryData<HookOutputDTO>(moduleKeys.hooks.detail(updatedHook.id), updatedHook);
-        queryClient.setQueryData<ModuleVersionOutputDTO>(moduleKeys.version(updatedHook.versionId), (prev) => {
+        queryClient.setQueryData<ModuleVersionOutputDTO>(moduleKeys.versions.detail(versionId), (prev) => {
           if (!prev) {
             return prev;
           }
@@ -418,15 +446,21 @@ export const commandQueryOptions = (commandId: string) =>
     queryFn: async () => (await getApiClient().command.commandControllerGetOne(commandId)).data.data,
   });
 
+interface CommandCreate {
+  command: CommandCreateDTO;
+  versionId: string;
+  moduleId: string;
+}
+
 export const useCommandCreate = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
   const { enqueueSnackbar } = useSnackbar();
 
-  return mutationWrapper<CommandOutputDTO, CommandCreateDTO>(
-    useMutation<CommandOutputDTO, AxiosError<CommandOutputDTOAPI>, CommandCreateDTO>({
-      mutationFn: async (command) => (await apiClient.command.commandControllerCreate(command)).data.data,
-      onSuccess: async (newCommand: CommandOutputDTO) => {
+  return mutationWrapper<CommandOutputDTO, CommandCreate>(
+    useMutation<CommandOutputDTO, AxiosError<CommandOutputDTOAPI>, CommandCreate>({
+      mutationFn: async ({ command }) => (await apiClient.command.commandControllerCreate(command)).data.data,
+      onSuccess: async (newCommand: CommandOutputDTO, { moduleId, versionId }) => {
         enqueueSnackbar('Command created!', { variant: 'default', type: 'success' });
 
         // TODO: somehow need the moduleId, so we can update the latest version part of that specific module.
@@ -434,10 +468,22 @@ export const useCommandCreate = () => {
 
         await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.commands.list() });
-        await queryClient.invalidateQueries({ queryKey: moduleKeys.export(newCommand.versionId) });
+        await queryClient.invalidateQueries({ queryKey: moduleKeys.export(versionId) });
 
         queryClient.setQueryData<CommandOutputDTO>(moduleKeys.commands.detail(newCommand.id), newCommand);
-        queryClient.setQueryData<ModuleVersionOutputDTO>(moduleKeys.detail(newCommand.versionId), (prev) =>
+
+        queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(moduleId), (prev) =>
+          prev
+            ? {
+              ...prev,
+              latestVersion: {
+                ...prev.latestVersion,
+                commands: prev.latestVersion.commands.concat(newCommand),
+              },
+            }
+            : undefined,
+        );
+        queryClient.setQueryData<ModuleVersionOutputDTO>(moduleKeys.versions.detail(versionId), (prev) =>
           prev
             ? {
               ...prev,
@@ -452,8 +498,10 @@ export const useCommandCreate = () => {
 };
 
 interface CommandUpdate {
-  commandId: string;
   command: CommandUpdateDTO;
+  versionId: string;
+  moduleId: string;
+  commandId: string;
 }
 export const useCommandUpdate = () => {
   const apiClient = getApiClient();
@@ -464,16 +512,27 @@ export const useCommandUpdate = () => {
     useMutation<CommandOutputDTO, AxiosError<CommandOutputDTOAPI>, CommandUpdate>({
       mutationFn: async ({ commandId, command }) =>
         (await apiClient.command.commandControllerUpdate(commandId, command)).data.data,
-      onSuccess: async (updatedCommand: CommandOutputDTO) => {
+      onSuccess: async (updatedCommand: CommandOutputDTO, { versionId, moduleId }) => {
         enqueueSnackbar('Command updated!', { variant: 'default', type: 'success' });
 
         await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.commands.list() });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.export(updatedCommand.versionId) });
 
-        // todo: need to update the cache of the specific ModuleVersionOutputDTO
+        queryClient.setQueryData<CommandOutputDTO>(moduleKeys.commands.detail(updatedCommand.id), updatedCommand);
+        queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(moduleId), (prev) =>
+          prev
+            ? {
+              ...prev,
+              latestVersion: {
+                ...prev.latestVersion,
+                commands: prev.latestVersion.commands.map((c) => (c.id === updatedCommand.id ? updatedCommand : c)),
+              },
+            }
+            : undefined,
+        );
 
-        queryClient.setQueryData<ModuleVersionOutputDTO>(moduleKeys.detail(updatedCommand.versionId), (prev) =>
+        queryClient.setQueryData<ModuleVersionOutputDTO>(moduleKeys.versions.detail(versionId), (prev) =>
           prev
             ? {
               ...prev,
@@ -482,13 +541,7 @@ export const useCommandUpdate = () => {
             : undefined,
         );
 
-        return queryClient.invalidateQueries({ queryKey: moduleKeys.commands.detail(updatedCommand.id) });
-        // TODO: Test this again when: https://github.com/gettakaro/takaro/issues/1811 is fixed.
-        // We probably also want to add a test to that.
-        //return queryClient.setQueryData<CommandOutputDTO>(
-        //  moduleKeys.commands.detail(updatedCommand.id),
-        //  updatedCommand,
-        //);
+        return;
       },
     }),
     defaultCommandErrorMessages,
@@ -497,9 +550,11 @@ export const useCommandUpdate = () => {
 
 interface CommandRemove {
   commandId: string;
+  versionId: string;
+  moduleId: string;
 }
 
-export const useCommandRemove = ({ versionId }) => {
+export const useCommandRemove = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
   const { enqueueSnackbar } = useSnackbar();
@@ -507,16 +562,28 @@ export const useCommandRemove = ({ versionId }) => {
   return mutationWrapper<APIOutput, CommandRemove>(
     useMutation<APIOutput, AxiosError<APIOutput>, CommandRemove>({
       mutationFn: async ({ commandId }) => (await apiClient.command.commandControllerRemove(commandId)).data,
-      onSuccess: async (_, { commandId }) => {
+      onSuccess: async (_, { commandId, versionId, moduleId }) => {
         enqueueSnackbar('Command successfully deleted!', { variant: 'default', type: 'success' });
         // invalidate list of commands
         await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.commands.list() });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.export(versionId) });
+        queryClient.removeQueries({ queryKey: moduleKeys.commands.detail(commandId) });
+
+        queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(moduleId), (prev) =>
+          prev
+            ? {
+              ...prev,
+              latestVersion: {
+                ...prev.latestVersion,
+                commands: prev.latestVersion.commands.filter((command) => command.id !== commandId),
+              },
+            }
+            : undefined,
+        );
 
         // TODO: need to invalidate the query of the specific module
-        queryClient.removeQueries({ queryKey: moduleKeys.commands.detail(commandId) });
-        queryClient.setQueryData<ModuleVersionOutputDTO>(moduleKeys.version(versionId), (prev) =>
+        queryClient.setQueryData<ModuleVersionOutputDTO>(moduleKeys.versions.detail(versionId), (prev) =>
           prev
             ? {
               ...prev,
@@ -539,22 +606,41 @@ export const cronjobQueryOptions = (cronjobId: string) =>
     queryFn: async () => (await getApiClient().cronjob.cronJobControllerGetOne(cronjobId)).data.data,
   });
 
+interface CronJobCreate {
+  cronJob: CronJobCreateDTO;
+  moduleId: string;
+  versionId: string;
+}
+
 export const useCronJobCreate = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
   const { enqueueSnackbar } = useSnackbar();
 
-  return mutationWrapper<CronJobOutputDTO, CronJobCreateDTO>(
-    useMutation<CronJobOutputDTO, AxiosError<CronJobOutputDTOAPI>, CronJobCreateDTO>({
-      mutationFn: async (cronjob: CronJobCreateDTO) =>
-        (await apiClient.cronjob.cronJobControllerCreate(cronjob)).data.data,
-      onSuccess: async (newCronJob: CronJobOutputDTO) => {
+  return mutationWrapper<CronJobOutputDTO, CronJobCreate>(
+    useMutation<CronJobOutputDTO, AxiosError<CronJobOutputDTOAPI>, CronJobCreate>({
+      mutationFn: async ({ cronJob }: CronJobCreate) =>
+        (await apiClient.cronjob.cronJobControllerCreate(cronJob)).data.data,
+      onSuccess: async (newCronJob: CronJobOutputDTO, { moduleId, versionId }) => {
         enqueueSnackbar('Cronjob created!', { variant: 'default', type: 'success' });
 
         await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.cronJobs.list() });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.export(newCronJob.versionId) });
-        queryClient.setQueryData<ModuleVersionOutputDTO>(moduleKeys.version(newCronJob.versionId), (prev) =>
+
+        queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(moduleId), (prev) =>
+          prev
+            ? {
+              ...prev,
+              latestVersion: {
+                ...prev.latestVersion,
+                cronJobs: [...prev.latestVersion.cronJobs, newCronJob],
+              },
+            }
+            : undefined,
+        );
+
+        queryClient.setQueryData<ModuleVersionOutputDTO>(moduleKeys.versions.detail(versionId), (prev) =>
           prev
             ? {
               ...prev,
@@ -563,7 +649,6 @@ export const useCronJobCreate = () => {
             : undefined,
         );
 
-        // add cache entry for new cronjob
         return queryClient.setQueryData<CronJobOutputDTO>(moduleKeys.cronJobs.detail(newCronJob.id), newCronJob);
       },
     }),
@@ -574,6 +659,8 @@ export const useCronJobCreate = () => {
 interface CronJobUpdate {
   cronJobId: string;
   cronJob: CronJobUpdateDTO;
+  moduleId: string;
+  versionId: string;
 }
 export const useCronJobUpdate = () => {
   const apiClient = getApiClient();
@@ -584,7 +671,7 @@ export const useCronJobUpdate = () => {
     useMutation<CronJobOutputDTO, AxiosError<CronJobOutputDTOAPI>, CronJobUpdate>({
       mutationFn: async ({ cronJobId, cronJob }) =>
         (await apiClient.cronjob.cronJobControllerUpdate(cronJobId, cronJob)).data.data,
-      onSuccess: async (updatedCronJob: CronJobOutputDTO) => {
+      onSuccess: async (updatedCronJob: CronJobOutputDTO, { moduleId }) => {
         enqueueSnackbar('Cronjob updated!', { variant: 'default', type: 'success' });
 
         await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
@@ -592,13 +679,27 @@ export const useCronJobUpdate = () => {
         await queryClient.invalidateQueries({ queryKey: moduleKeys.export(updatedCronJob.versionId) });
 
         queryClient.setQueryData<CronJobOutputDTO>(moduleKeys.cronJobs.detail(updatedCronJob.id), updatedCronJob);
-        queryClient.setQueryData<ModuleVersionOutputDTO>(moduleKeys.version(updatedCronJob.versionId), (prev) =>
+
+        queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(moduleId), (prev) =>
           prev
             ? {
               ...prev,
-              cronJobs: prev.cronJobs.map((c) => (c.id === updatedCronJob.id ? updatedCronJob : c)),
+              latestVersion: {
+                ...prev.latestVersion,
+                cronJobs: prev.latestVersion.cronJobs.map((c) => (c.id === updatedCronJob.id ? updatedCronJob : c)),
+              },
             }
             : undefined,
+        );
+        queryClient.setQueryData<ModuleVersionOutputDTO>(
+          moduleKeys.versions.detail(updatedCronJob.versionId),
+          (prev) =>
+            prev
+              ? {
+                ...prev,
+                cronJobs: prev.cronJobs.map((c) => (c.id === updatedCronJob.id ? updatedCronJob : c)),
+              }
+              : undefined,
         );
       },
     }),
@@ -628,10 +729,21 @@ export const useCronJobRemove = () => {
         await queryClient.invalidateQueries({ queryKey: moduleKeys.cronJobs.list() });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.export(versionId) });
 
-        // TODO: Remove cronjob from module latestVersion's cronjob's cache
-
         queryClient.removeQueries({ queryKey: moduleKeys.cronJobs.detail(cronJobId) });
-        queryClient.setQueryData<ModuleVersionOutputDTO>(moduleKeys.version(versionId), (prev) =>
+
+        queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(versionId), (prev) =>
+          prev
+            ? {
+              ...prev,
+              latestVersion: {
+                ...prev.latestVersion,
+                cronJobs: prev.latestVersion.cronJobs.filter((cronJob) => cronJob.id !== cronJobId),
+              },
+            }
+            : undefined,
+        );
+
+        queryClient.setQueryData<ModuleVersionOutputDTO>(moduleKeys.versions.detail(versionId), (prev) =>
           prev
             ? {
               ...prev,
@@ -659,6 +771,7 @@ export const functionQueryOptions = (functionId: string) =>
 
 interface FunctionCreate {
   fn: FunctionCreateDTO;
+  versionId: string;
   moduleId: string;
 }
 
@@ -669,7 +782,7 @@ export const useFunctionCreate = () => {
   return mutationWrapper<FunctionOutputDTO, FunctionCreate>(
     useMutation<FunctionOutputDTO, AxiosError<FunctionOutputDTOAPI>, FunctionCreate>({
       mutationFn: async ({ fn }) => (await apiClient.function.functionControllerCreate(fn)).data.data,
-      onSuccess: async (newFn: FunctionOutputDTO, { moduleId }) => {
+      onSuccess: async (newFn: FunctionOutputDTO, { moduleId, versionId }) => {
         // invalidate list of functions
         await queryClient.invalidateQueries({ queryKey: moduleKeys.functions.list() });
 
@@ -686,7 +799,16 @@ export const useFunctionCreate = () => {
           };
         });
 
-        // add cache entry for new function
+        queryClient.setQueryData<ModuleVersionOutputDTO>(moduleKeys.versions.detail(versionId), (prev) => {
+          if (!prev) {
+            return prev;
+          }
+          return {
+            ...prev,
+            functions: prev.functions.concat(newFn),
+          };
+        });
+
         return queryClient.setQueryData<FunctionOutputDTO>(moduleKeys.functions.detail(newFn.id), newFn);
       },
     }),
@@ -698,6 +820,7 @@ interface FunctionUpdate {
   functionId: string;
   fn: FunctionUpdateDTO;
   moduleId: string;
+  versionId: string;
 }
 export const useFunctionUpdate = () => {
   const apiClient = getApiClient();
@@ -707,16 +830,27 @@ export const useFunctionUpdate = () => {
     useMutation<FunctionOutputDTO, AxiosError<FunctionOutputDTOAPI>, FunctionUpdate>({
       mutationFn: async ({ functionId, fn }) =>
         (await apiClient.function.functionControllerUpdate(functionId, fn)).data.data,
-      onSuccess: async (updatedFn: FunctionOutputDTO, { moduleId }) => {
+      onSuccess: async (updatedFn: FunctionOutputDTO, { functionId, moduleId, versionId }) => {
         // invalidate list of functions
         await queryClient.invalidateQueries({ queryKey: moduleKeys.functions.list() });
 
-        queryClient.setQueryData<FunctionOutputDTO>(moduleKeys.functions.detail(updatedFn.id), updatedFn);
+        queryClient.setQueryData<FunctionOutputDTO>(moduleKeys.functions.detail(functionId), updatedFn);
         queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(moduleId), (prev) => {
           if (prev) {
             return {
               ...prev,
-              functions: prev.latestVersion.functions.map((f) => (f.id === updatedFn.id ? updatedFn : f)),
+              latestVersion: {
+                ...prev.latestVersion,
+                functions: prev.latestVersion.functions.map((f) => (f.id === updatedFn.id ? updatedFn : f)),
+              },
+            };
+          }
+        });
+        queryClient.setQueryData<ModuleVersionOutputDTO>(moduleKeys.versions.detail(versionId), (prev) => {
+          if (prev) {
+            return {
+              ...prev,
+              functions: prev.functions.map((f) => (f.id === updatedFn.id ? updatedFn : f)),
             };
           }
         });
@@ -729,6 +863,7 @@ export const useFunctionUpdate = () => {
 interface FunctionRemove {
   moduleId: string;
   functionId: string;
+  versionId: string;
 }
 
 export const useFunctionRemove = () => {
@@ -738,20 +873,33 @@ export const useFunctionRemove = () => {
   return mutationWrapper<APIOutput, FunctionRemove>(
     useMutation<APIOutput, AxiosError<APIOutput>, FunctionRemove>({
       mutationFn: async ({ functionId }) => (await apiClient.function.functionControllerRemove(functionId)).data,
-      onSuccess: async (_, { functionId, moduleId }) => {
+      onSuccess: async (_, { functionId, moduleId, versionId }) => {
         await queryClient.invalidateQueries({ queryKey: moduleKeys.functions.list() });
+        queryClient.removeQueries({ queryKey: moduleKeys.functions.detail(functionId) });
 
-        // Remove function from module latestVersion's function's cache
+        // Remove function from module latestVersion's function cache
         queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(moduleId), (prev) => {
           if (prev) {
             return {
               ...prev,
-              functions: prev.latestVersion.functions.filter((func) => func.id !== functionId),
+              latestVersion: {
+                ...prev.latestVersion,
+                functions: prev.latestVersion.functions.filter((func) => func.id !== functionId),
+              },
             };
           }
         });
 
-        queryClient.removeQueries({ queryKey: moduleKeys.functions.detail(functionId) });
+        // Remove function from specific module version's function cache
+        queryClient.setQueryData<ModuleVersionOutputDTO>(moduleKeys.versions.detail(versionId), (prev) => {
+          if (prev) {
+            return {
+              ...prev,
+              functions: prev.functions.filter((func) => func.id !== functionId),
+            };
+          }
+          return undefined;
+        });
       },
     }),
     defaultFunctionErrorMessages,

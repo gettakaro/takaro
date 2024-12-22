@@ -62,11 +62,9 @@ export const InstallModuleForm: FC<InstallModuleFormProps> = ({
   const onSubmit = useCallback(async () => {
     mutate({
       gameServerId: gameServerId,
-      moduleId: mod.id,
-      moduleInstall: {
-        systemConfig: JSON.stringify(systemConfig),
-        userConfig: JSON.stringify(userConfig),
-      },
+      versionId: modInstallation.versionId,
+      userConfig: JSON.stringify(userConfig),
+      systemConfig: JSON.stringify(systemConfig),
     });
   }, [mod.id, navigate, gameServerId, systemConfig, userConfig]);
 
@@ -94,9 +92,9 @@ export const InstallModuleForm: FC<InstallModuleFormProps> = ({
             <CollapseList.Item title="User config">
               <JsonSchemaForm
                 readOnly={readOnly}
-                schema={JSON.parse(mod?.latestVersion.configSchema as string)}
-                uiSchema={JSON.parse(mod?.latestVersion.uiSchema as string)}
-                initialData={modInstallation?.userConfig || userConfig}
+                schema={JSON.parse(modInstallation.version.configSchema as string)}
+                uiSchema={JSON.parse(modInstallation.version.uiSchema as string)}
+                initialData={modInstallation.userConfig || userConfig}
                 hideSubmitButton
                 onSubmit={onUserConfigSubmit}
                 ref={userConfigFormRef}
@@ -108,9 +106,9 @@ export const InstallModuleForm: FC<InstallModuleFormProps> = ({
             <CollapseList.Item title="System config">
               <JsonSchemaForm
                 readOnly={readOnly}
-                schema={JSON.parse(mod?.latestVersion.systemConfigSchema as string)}
+                schema={JSON.parse(modInstallation.version.systemConfigSchema as string)}
                 uiSchema={{}} /* System config does not have uiSchema*/
-                initialData={modInstallation?.systemConfig || systemConfig}
+                initialData={modInstallation.systemConfig || systemConfig}
                 hideSubmitButton
                 onSubmit={onSystemConfigSubmit}
                 onChange={() => {
