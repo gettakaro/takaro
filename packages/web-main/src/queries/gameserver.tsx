@@ -36,11 +36,10 @@ export const gameServerKeys = {
   reachability: (gameServerId: string) => [...gameServerKeys.all, 'reachable', gameServerId] as const,
 };
 
-export const installedModuleKeys = {
+export const ModuleInstallationKeys = {
   all: ['installed modules'] as const,
-  list: (gameServerId: string) => [...installedModuleKeys.all, 'list', gameServerId] as const,
-  detail: (gameServerId: string, moduleId: string) =>
-    [...installedModuleKeys.all, 'detail', gameServerId, moduleId] as const,
+  list: () => [...ModuleInstallationKeys.all, 'list'] as const,
+  detail: (moduleInstallationId: string) => [...ModuleInstallationKeys.all, 'detail', moduleInstallationId] as const,
 };
 
 const defaultGameServerErrorMessages: Partial<ErrorMessageMapping> = {
@@ -69,13 +68,6 @@ export const gameServerQueryOptions = (gameServerId: string) => {
   return queryOptions<GameServerOutputDTO, AxiosError<GameServerOutputDTOAPI>>({
     queryKey: gameServerKeys.detail(gameServerId),
     queryFn: async () => (await getApiClient().gameserver.gameServerControllerGetOne(gameServerId)).data.data,
-  });
-};
-
-export const mapInfoQueryOptions = (gameServerId: string) => {
-  return queryOptions({
-    queryKey: [],
-    queryFn: async ({}) => await getApiClient().gameserver.info,
   });
 };
 
@@ -228,9 +220,9 @@ export const useGameServerSendMessage = () => {
   );
 };
 
-export const gameServerModuleInstallationsOptions = (gameServerId: string) => {
+export const moduleInstallationsOptions = () => {
   return queryOptions<ModuleInstallationOutputDTO[], AxiosError<ModuleInstallationOutputDTOAPI>>({
-    queryKey: installedModuleKeys.list(gameServerId),
+    queryKey: ModuleInstallationKeys.list(),
     queryFn: async () =>
       (await getApiClient().gameserver.gameServerControllerGetInstalledModules(gameServerId)).data.data,
   });
@@ -238,9 +230,10 @@ export const gameServerModuleInstallationsOptions = (gameServerId: string) => {
 
 export const gameServerModuleInstallationOptions = (gameServerId: string, moduleId: string) => {
   return queryOptions<ModuleInstallationOutputDTO, AxiosError<ModuleInstallationOutputDTOAPI>>({
-    queryKey: installedModuleKeys.detail(gameServerId, moduleId),
+    queryKey: ModuleInstallationKeys.detail(gameServerId, moduleId),
     queryFn: async () =>
-      (await getApiClient().gameserver.gameServerControllerGetModuleInstallation(gameServerId, moduleId)).data.data,
+      (await getApiClient().module.moduleInstallationsControllerGetModuleInstallation(gameServerId, moduleId)).data
+        .data,
   });
 };
 
@@ -260,11 +253,11 @@ export const useGameServerModuleInstall = () => {
         (await apiClient.gameserver.gameServerControllerInstallModule(gameServerId, moduleId, moduleInstall)).data.data,
       onSuccess: async (moduleInstallation: ModuleInstallationOutputDTO) => {
         // invalidate list of installed modules
-        await queryClient.invalidateQueries({ queryKey: installedModuleKeys.list(moduleInstallation.gameserverId) });
+        await queryClient.invalidateQueries({ queryKey: ModuleInstallationKeys.list(moduleInstallation.gameserverId) });
 
         // update installed module cache
         queryClient.setQueryData(
-          installedModuleKeys.detail(moduleInstallation.gameserverId, moduleInstallation.moduleId),
+          ModuleInstallationKeys.detail(moduleInstallation.gameserverId, moduleInstallation.moduleId),
           moduleInstallation,
         );
       },
@@ -287,15 +280,15 @@ export const useGameServerModuleUninstall = () => {
       mutationFn: async ({ gameServerId, moduleId }) =>
         (await apiClient.gameserver.gameServerControllerUninstallModule(gameServerId, moduleId)).data.data,
       onSuccess: async (_, { moduleId, gameServerId }) => {
-        queryClient.setQueryData<ModuleInstallationOutputDTO[]>(installedModuleKeys.list(gameServerId), (old) => {
+        queryClient.setQueryData<ModuleInstallationOutputDTO[]>(ModuleInstallationKeys.list(gameServerId), (old) => {
           return old
             ? old.filter((installedModule) => {
-                return installedModule.moduleId !== moduleId;
-              })
+              return installedModule.moduleId !== moduleId;
+            })
             : old;
         });
         await queryClient.invalidateQueries({
-          queryKey: installedModuleKeys.detail(gameServerId, moduleId),
+          queryKey: ModuleInstallationKeys.detail(gameServerId, moduleId),
         });
       },
     }),

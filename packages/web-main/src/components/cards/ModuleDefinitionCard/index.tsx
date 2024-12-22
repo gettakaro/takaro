@@ -95,8 +95,8 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
   };
 
   const newestTag = mod.versions
-    .filter((version) => version.tag != 'latest')
-    .sort((a, b) => DateTime.fromISO(a.createdAt).toMillis() < DateTime.fromISO(b.createdAt).toMillis())[0]?.tag;
+    .filter((version) => version.tag !== 'latest')
+    .sort((a, b) => DateTime.fromISO(b.createdAt).toMillis() - DateTime.fromISO(a.createdAt).toMillis())[0]?.tag;
 
   return (
     <>

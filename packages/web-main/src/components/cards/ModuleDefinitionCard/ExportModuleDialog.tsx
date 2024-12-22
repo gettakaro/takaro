@@ -23,6 +23,7 @@ const validationSchema = z.object({
 export const ExportModuleDialog: FC<ExportModuleDialogProps> = ({
   openDialog,
   setOpenDialog,
+  moduleId,
   moduleName,
   moduleVersions,
 }) => {
@@ -41,7 +42,7 @@ export const ExportModuleDialog: FC<ExportModuleDialogProps> = ({
   const onSubmit: SubmitHandler<z.infer<typeof validationSchema>> = async ({ versionIds }) => {
     try {
       setError(null);
-      const data = await mutateAsync({ versionId: versionIds[0] });
+      const data = await mutateAsync({ moduleId, options: { versionIds } });
 
       if (data) {
         const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });

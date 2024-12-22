@@ -11,6 +11,7 @@ interface InstallModuleFormProps {
   gameServerId: string;
   mod: ModuleOutputDTO;
   modInstallation: ModuleInstallationOutputDTO;
+  versionId: string;
   readOnly?: boolean;
 }
 
@@ -93,8 +94,8 @@ export const InstallModuleForm: FC<InstallModuleFormProps> = ({
             <CollapseList.Item title="User config">
               <JsonSchemaForm
                 readOnly={readOnly}
-                schema={JSON.parse(mod?.configSchema as string)}
-                uiSchema={JSON.parse(mod?.uiSchema as string)}
+                schema={JSON.parse(mod?.latestVersion.configSchema as string)}
+                uiSchema={JSON.parse(mod?.latestVersion.uiSchema as string)}
                 initialData={modInstallation?.userConfig || userConfig}
                 hideSubmitButton
                 onSubmit={onUserConfigSubmit}
@@ -107,7 +108,7 @@ export const InstallModuleForm: FC<InstallModuleFormProps> = ({
             <CollapseList.Item title="System config">
               <JsonSchemaForm
                 readOnly={readOnly}
-                schema={JSON.parse(mod?.systemConfigSchema as string)}
+                schema={JSON.parse(mod?.latestVersion.systemConfigSchema as string)}
                 uiSchema={{}} /* System config does not have uiSchema*/
                 initialData={modInstallation?.systemConfig || systemConfig}
                 hideSubmitButton
