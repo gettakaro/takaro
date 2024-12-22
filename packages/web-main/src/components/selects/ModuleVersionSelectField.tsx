@@ -1,4 +1,4 @@
-import { SelectField } from '@takaro/lib-components';
+import { SelectField, UnControlledSelectField } from '@takaro/lib-components';
 import { FC } from 'react';
 import { CustomSelectProps } from '.';
 import { SmallModuleVersionOutputDTO } from '@takaro/apiclient';
@@ -57,5 +57,55 @@ export const ModuleVersionSelectField: FC<ModuleVersionSelectFieldProps> = ({
         ))}
       </SelectField.OptionGroup>
     </SelectField>
+  );
+};
+
+interface UncontrolledModuleVersionTagSelectFieldProps {
+  options: SmallModuleVersionOutputDTO[];
+  onChange: (versionId: string) => void;
+  value: string;
+}
+export const UnControlledModuleVersionTagSelectField: FC<UncontrolledModuleVersionTagSelectFieldProps> = ({
+  onChange,
+  options,
+  value,
+}) => {
+  return (
+    <UnControlledSelectField
+      id="module-version-tag-select"
+      name="module-version-tag-select"
+      onChange={onChange}
+      multiple={false}
+      render={(selectedItems) => {
+        if (selectedItems.length > 0) {
+          if (selectedItems[0].value === 'latest') {
+            return (
+              <div>
+                <span>Latest version</span>
+              </div>
+            );
+          }
+          return (
+            <div>
+              <span>{selectedItems[0].value}</span>
+            </div>
+          );
+        }
+        return <span>Select a version</span>;
+      }}
+      value={value}
+      hasError={false}
+      hasDescription={false}
+    >
+      <UnControlledSelectField.OptionGroup>
+        {options.map((version) => {
+          return (
+            <UnControlledSelectField.Option key={version.id} value={version.tag} label={version.tag}>
+              <div>{version.tag}</div>
+            </UnControlledSelectField.Option>
+          );
+        })}
+      </UnControlledSelectField.OptionGroup>
+    </UnControlledSelectField>
   );
 };

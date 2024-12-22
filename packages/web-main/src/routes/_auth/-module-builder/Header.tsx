@@ -1,7 +1,10 @@
-import { styled, UnControlledSelectField } from '@takaro/lib-components';
+import { styled, Button, Tooltip } from '@takaro/lib-components';
 import { CopyModulePopOver } from './CopyModulePopOver';
 import { useModuleBuilderContext } from './useModuleBuilderStore';
 import { useNavigate, useParams } from '@tanstack/react-router';
+import { UnControlledModuleVersionTagSelectField } from 'components/selects/ModuleVersionSelectField';
+import { useState } from 'react';
+import { TagModuleDialog } from 'components/cards/ModuleDefinitionCard/TagModuleDialog';
 
 const Container = styled.header`
   width: 100%;
@@ -26,12 +29,14 @@ export const Header = () => {
   const moduleId = useModuleBuilderContext((s) => s.moduleId);
   const moduleVersions = useModuleBuilderContext((s) => s.moduleVersions);
   const navigate = useNavigate({ from: '/module-builder/$moduleId/$moduleVersionTag' });
+  const [openTagDialog, setOpenTagDialog] = useState<boolean>(false);
 
-  const { moduleVersionTag: currentModuleVersionTag } = useParams({
+  const { moduleVersionTag } = useParams({
     from: '/_auth/module-builder/$moduleId/$moduleVersionTag',
   });
+  const isLatest: boolean = moduleVersionTag === 'latest';
 
-  const handleOnSelectChanged = (selectedModuleVersionTag: string) => {
+  const handleOnModuleVersionTagChanged = (selectedModuleVersionTag: string) => {
     navigate({
       to: '/module-builder/$moduleId/$moduleVersionTag',
       params: { moduleId, moduleVersionTag: selectedModuleVersionTag },
@@ -41,52 +46,31 @@ export const Header = () => {
   return (
     <Container>
       <Flex>
-        <UnControlledSelectField
-          id="module-version-tag-select"
-          name="module-version-tag-select"
-          onChange={handleOnSelectChanged}
-          multiple={false}
-          render={(selectedItems) => {
-            if (selectedItems.length > 0) {
-              if (selectedItems[0].value === 'latest') {
-                return (
-                  <div>
-                    <span>Latest version</span>
-                  </div>
-                );
-              }
-              return (
-                <div>
-                  <span>{selectedItems[0].value}</span>
-                </div>
-              );
-            }
-            return <span>Select a version</span>;
-          }}
-          value={currentModuleVersionTag}
-          hasError={false}
-          hasDescription={false}
-        >
-          <UnControlledSelectField.OptionGroup>
-            {moduleVersions.map((moduleVersion) => {
-              return (
-                <UnControlledSelectField.Option
-                  key={moduleVersion.id}
-                  value={moduleVersion.tag}
-                  label={moduleVersion.tag}
-                >
-                  <div>{moduleVersion.tag}</div>
-                </UnControlledSelectField.Option>
-              );
-            })}
-          </UnControlledSelectField.OptionGroup>
-        </UnControlledSelectField>
+        <UnControlledModuleVersionTagSelectField
+          options={moduleVersions}
+          value={moduleVersionTag}
+          onChange={handleOnModuleVersionTagChanged}
+        />
       </Flex>
       <Flex>
         <span>{moduleName}</span>
         <CopyModulePopOver moduleId={moduleId} />
       </Flex>
-      <div />
+
+      <Flex>
+        <Tooltip>
+          <Tooltip.Trigger disabled={!isLatest}>
+            <Button text="Tag version" disabled={!isLatest} />
+          </Tooltip.Trigger>
+          <Tooltip.Content>Only the latest version can be used to create a new tagged version</Tooltip.Content>
+        </Tooltip>
+        <TagModuleDialog
+          openDialog={openTagDialog}
+          setOpenDialog={setOpenTagDialog}
+          moduleId={moduleId}
+          moduleName={moduleName}
+        />
+      </Flex>
     </Container>
   );
 };
