@@ -180,7 +180,10 @@ const tests = [
         z: 0,
       });
 
-      await this.client.module.moduleInstallationsControllerUninstallModule(this.setupData.installation.id);
+      await this.client.module.moduleInstallationsControllerUninstallModule(
+        this.setupData.installation.moduleId,
+        this.setupData.installation.gameserverId,
+      );
 
       await this.setupData.service.handleChatMessage(
         new EventChatMessage({

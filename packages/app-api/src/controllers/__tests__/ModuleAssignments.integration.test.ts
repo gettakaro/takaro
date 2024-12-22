@@ -72,7 +72,10 @@ const tests = [
         })
       ).data.data;
 
-      return this.client.module.moduleInstallationsControllerUninstallModule(installation.id);
+      return this.client.module.moduleInstallationsControllerUninstallModule(
+        installation.moduleId,
+        installation.gameserverId,
+      );
     },
   }),
   new IntegrationTest<ISetupData>({
@@ -95,7 +98,10 @@ const tests = [
         })
       ).data.data;
 
-      const res = await this.client.module.moduleInstallationsControllerGetModuleInstallation(installation.id);
+      const res = await this.client.module.moduleInstallationsControllerGetModuleInstallation(
+        installation.moduleId,
+        installation.gameserverId,
+      );
 
       expect(res.data.data.userConfig).to.deep.equal({
         allowPublicTeleports: false,

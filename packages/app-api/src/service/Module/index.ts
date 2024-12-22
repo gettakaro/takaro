@@ -110,8 +110,8 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     return this.repo.findOneVersion(id);
   }
 
-  async findOneInstallation(id: string) {
-    return this.repo.findOneInstallation(id);
+  async findOneInstallation(gameServerId: string, moduleId: string) {
+    return this.repo.findOneInstallation(gameServerId, moduleId);
   }
 
   async create(_mod: ModuleCreateDTO): Promise<ModuleOutputDTO> {
@@ -199,7 +199,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
         moduleId: [id],
       },
     });
-    await Promise.all(installations.results.map((i) => this.uninstallModule(i.id)));
+    await Promise.all(installations.results.map((i) => this.uninstallModule(i.gameserverId, i.moduleId)));
     await this.repo.delete(id);
 
     await this.eventsService().create(
@@ -519,7 +519,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
       moduleId: versionToInstall.moduleId,
     });
     if (existingInstallation.length) {
-      await this.uninstallModule(existingInstallation[0].id);
+      await this.uninstallModule(existingInstallation[0].gameserverId, existingInstallation[0].moduleId);
     }
 
     const installation = await this.repo.installModule(installDto);
@@ -540,10 +540,10 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     return installation;
   }
 
-  async uninstallModule(installationId: string) {
-    const installation = await this.repo.findOneInstallation(installationId);
+  async uninstallModule(gameServerId: string, moduleId: string) {
+    const installation = await this.repo.findOneInstallation(gameServerId, moduleId);
     await this.cronjobService().uninstallCronJobs(installation);
-    await this.repo.uninstallModule(installationId);
+    await this.repo.uninstallModule(gameServerId, moduleId);
     await this.eventsService().create(
       new EventCreateDTO({
         eventName: EVENT_TYPES.MODULE_UNINSTALLED,
@@ -579,7 +579,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
         throw new errors.BadRequestError('Cannot refresh latest version');
       }
       try {
-        await this.uninstallModule(installation.id);
+        await this.uninstallModule(installation.gameserverId, installation.moduleId);
         await this.installModule(
           new InstallModuleDTO({
             gameServerId: installation.gameserverId,
