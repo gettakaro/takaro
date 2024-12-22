@@ -1,7 +1,7 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/_auth/_global/settings/')({
-  beforeLoad: ({ navigate }) => {
-    navigate({ to: '/settings/gameservers' });
+  beforeLoad: () => {
+    throw redirect({ to: '/settings/gameservers', replace: true });
   },
 });
