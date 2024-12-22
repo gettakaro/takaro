@@ -7,6 +7,7 @@ import { queryClient } from 'queryClient';
 import { hasPermission } from 'hooks/useHasPermission';
 import { VariableUpdateDTO } from '@takaro/apiclient';
 import { userMeQueryOptions } from 'queries/user';
+import { useQuery } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/_global/variables/update/$variableId')({
   beforeLoad: async ({ context }) => {
@@ -15,16 +16,22 @@ export const Route = createFileRoute('/_auth/_global/variables/update/$variableI
       throw redirect({ to: '/forbidden' });
     }
   },
-  loader: ({ params }) => queryClient.ensureQueryData(variableQueryOptions(params.variableId)),
+  loader: async ({ params }) => {
+    const variable = await queryClient.ensureQueryData(variableQueryOptions(params.variableId));
+    return { variable };
+  },
   component: Component,
   pendingComponent: DrawerSkeleton,
 });
 
 function Component() {
   const navigate = useNavigate({ from: Route.fullPath });
-  const data = Route.useLoaderData();
+  const loaderData = Route.useLoaderData();
+  const { variableId } = Route.useParams();
   const { enqueueSnackbar } = useSnackbar();
   const { mutate, isPending, isSuccess } = useVariableUpdate();
+
+  const { data } = useQuery({ ...variableQueryOptions(variableId), initialData: loaderData.variable });
 
   if (!data) {
     enqueueSnackbar('Variable not found', { type: 'error' });
