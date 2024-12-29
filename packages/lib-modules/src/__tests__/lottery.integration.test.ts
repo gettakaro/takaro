@@ -221,7 +221,7 @@ const tests = [
       });
 
       const installationsRes = await this.client.module.moduleInstallationsControllerGetInstalledModules({
-        filters: { gameServerId: [this.setupData.gameserver.id], moduleId: [this.setupData.lotteryModule.id] },
+        filters: { gameserverId: [this.setupData.gameserver.id], moduleId: [this.setupData.lotteryModule.id] },
       });
       const mod = installationsRes.data.data[0];
 
