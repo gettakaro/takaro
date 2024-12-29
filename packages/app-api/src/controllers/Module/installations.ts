@@ -32,7 +32,7 @@ class ModuleInstallationSearchInputAllowedFilters extends AllowedFilters {
   moduleId: string[];
   @IsOptional()
   @IsUUID('4', { each: true })
-  gameServerId: string[];
+  gameserverId: string[];
 }
 
 class ModuleInstallationSearchInputDTO extends ITakaroQuery<ModuleInstallationSearchInputAllowedFilters> {

@@ -26,7 +26,7 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/modules')(
       context.queryClient.ensureQueryData(modulesQueryOptions()),
       context.queryClient.ensureQueryData(
         moduleInstallationsOptions({
-          filters: { gameServerId: [params.gameServerId] },
+          filters: { gameserverId: [params.gameServerId] },
         }),
       ),
     ]);
@@ -56,7 +56,7 @@ export function Component() {
       },
       {
         ...moduleInstallationsOptions({
-          filters: { gameServerId: [gameServerId] },
+          filters: { gameserverId: [gameServerId] },
         }),
         initialData: loaderData.installations,
       },

@@ -5413,7 +5413,7 @@ export interface ModuleInstallationSearchInputAllowedFilters {
      * @type {Array<string>}
      * @memberof ModuleInstallationSearchInputAllowedFilters
      */
-    'gameServerId'?: Array<string>;
+    'gameserverId'?: Array<string>;
     /**
      * 
      * @type {Array<string>}
