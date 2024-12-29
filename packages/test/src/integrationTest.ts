@@ -142,7 +142,7 @@ export class IntegrationTest<SetupData> {
             const failedFunctionsRes = await integrationTestContext.client.event.eventControllerGetFailedFunctions();
 
             if (failedFunctionsRes.data.data.length > 0) {
-              console.error(`There were ${failedFunctionsRes.data.data.length} failed functions`);
+              console.warn(`There were ${failedFunctionsRes.data.data.length} failed functions`);
               for (const failedFn of failedFunctionsRes.data.data) {
                 const name = (failedFn.meta as TakaroEventCommandExecuted).command?.name;
                 const msgs = (failedFn.meta as TakaroEventCommandExecuted)?.result.logs.map((l) => l.msg);
