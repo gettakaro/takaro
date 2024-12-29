@@ -16,7 +16,7 @@ export interface ActionMenuProps {
 
 export const ActionMenu = forwardRef<HTMLUListElement, ActionMenuProps>(function ActionMenu(
   { attributes, children, selectedState, elevation = 4 },
-  ref,
+  ref
 ) {
   const [selected, setSelected] = selectedState;
 
@@ -31,7 +31,12 @@ export const ActionMenu = forwardRef<HTMLUListElement, ActionMenuProps>(function
       ref={ref}
     >
       {Children.map(children, (child: ReactElement<ActionProps>, idx) => (
-        <Item onClick={() => setSelected(idx)}>
+        <Item
+          onClick={() => {
+            if (child.props.disabled) return;
+            setSelected(idx);
+          }}
+        >
           {child}
           {selected === idx ? (
             <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -49,8 +54,8 @@ export const ActionMenu = forwardRef<HTMLUListElement, ActionMenuProps>(function
 interface ActionProps {
   onClick: () => unknown;
   text: string;
-  // TODO: implement disabled when needed
+  disabled?: boolean;
 }
-export const Action: FC<PropsWithChildren<ActionProps>> = ({ children }) => {
+export const Action: FC<PropsWithChildren<ActionProps>> = ({ children, disabled = false }) => {
   return <div>{children}</div>;
 };
