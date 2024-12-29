@@ -7,7 +7,7 @@ import {
   CollapseList,
   TextAreaField,
   FormError,
-  QuestionTooltip,
+  IconTooltip,
   useTheme,
   UnControlledSelectField,
 } from '@takaro/lib-components';
@@ -16,7 +16,7 @@ import { validationSchema } from './validationSchema';
 import { useNavigate } from '@tanstack/react-router';
 import { ModuleVersionOutputDTO, PermissionCreateDTO, SmallModuleVersionOutputDTO } from '@takaro/apiclient';
 import { PermissionList, ButtonContainer } from './style';
-import { AiOutlinePlus as PlusIcon } from 'react-icons/ai';
+import { AiOutlinePlus as PlusIcon, AiOutlineQuestion as QuestionIcon } from 'react-icons/ai';
 import { AnyInput, InputType } from '../schemaConversion/inputTypes';
 import { schemaToInputs } from '../schemaConversion/SchemaToInputs';
 import { inputsToSchema, inputsToUiSchema } from '../schemaConversion/inputsToSchema';
@@ -207,13 +207,13 @@ export const ModuleForm: FC<ModuleFormProps> = ({
                 title={
                   <>
                     Permissions
-                    <QuestionTooltip>
+                    <IconTooltip icon={<QuestionIcon />}>
                       Permissions are a way to control who can use the items inside your module or control the behavior
                       of functions inside your module. For example, if you have a command that only admins should be
                       able to use, you can create a permission for it and then check for it to the command. Or, you
                       might want to have different behavior for different groups of players (e.g. regular players vs
                       donators)
-                    </QuestionTooltip>
+                    </IconTooltip>
                   </>
                 }
               >
@@ -263,12 +263,12 @@ export const ModuleForm: FC<ModuleFormProps> = ({
                 title={
                   <>
                     Config
-                    <QuestionTooltip>
+                    <IconTooltip icon={<QuestionIcon />}>
                       Config fields are a way to control the behavior of your module. When a module is installed on a
                       game server, Config fields can be tweaked to change the behavior of the module. For example, if
                       you want to write a module that allows players to teleport to each other, you might want to have a
                       config field that controls the cooldown of the command.
-                    </QuestionTooltip>
+                    </IconTooltip>
                   </>
                 }
               >

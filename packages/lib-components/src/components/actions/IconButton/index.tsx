@@ -14,7 +14,7 @@ export interface IconButtonProps {
   badge?: string;
 }
 
-const getSize = (size: Size) => {
+export const getIconSize = (size: Size) => {
   switch (size) {
     case 'tiny':
       return 15;
@@ -30,12 +30,12 @@ const getSize = (size: Size) => {
 };
 
 export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(function IconButton(
-  { icon, color = 'primary', size = 'medium', disabled, onClick = () => {}, ariaLabel, badge },
-  ref,
+  { icon, color = 'primary', size = 'medium', disabled, onClick = () => { }, ariaLabel, badge },
+  ref
 ) {
   return (
     <Default type="button" color={color} onClick={onClick} ref={ref} disabled={disabled} aria-label={ariaLabel}>
-      {cloneElement(icon, { size: getSize(size) })}
+      {cloneElement(icon, { size: getIconSize(size) })}
       {badge && <Badge>{badge}</Badge>}
     </Default>
   );
