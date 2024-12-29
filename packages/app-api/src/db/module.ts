@@ -220,12 +220,16 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
 
     const result = await new QueryBuilder<ModuleInstallationModel, ModuleInstallationOutputDTO>({
       ...filters,
-      extend: ['version', 'module'],
-    }).build(queryInstallations);
+    }).build(queryInstallations.modify('standardExtend'));
 
     return {
       total: result.total,
-      results: result.results.map((_) => new ModuleInstallationOutputDTO(_ as unknown as ModuleInstallationOutputDTO)),
+      results: result.results
+        .map((_) => new ModuleInstallationOutputDTO(_ as unknown as ModuleInstallationOutputDTO))
+        .map((_) => {
+          _.version.systemConfigSchema = getSystemConfigSchema(_.version as unknown as ModuleVersionOutputDTO);
+          return _;
+        }),
     };
   }
 
@@ -433,6 +437,9 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
     returnVal.version.commands = returnVal.version.commands.sort((a, b) => a.name.localeCompare(b.name));
     returnVal.version.permissions = returnVal.version.permissions.sort((a, b) =>
       a.permission.localeCompare(b.permission),
+    );
+    returnVal.version.systemConfigSchema = getSystemConfigSchema(
+      returnVal.version as unknown as ModuleVersionOutputDTO,
     );
 
     return returnVal;

@@ -42,6 +42,7 @@ const tests = [
     snapshot: true,
     name: 'Update',
     setup,
+    filteredFields: ['moduleId'],
     test: async function () {
       return this.client.module.moduleControllerUpdate(this.setupData.id, {
         name: 'Updated module',

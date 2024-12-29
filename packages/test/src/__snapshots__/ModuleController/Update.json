@@ -39,7 +39,9 @@
     "snapshot": true,
     "name": "Update",
     "expectedStatus": 200,
-    "filteredFields": [],
+    "filteredFields": [
+      "moduleId"
+    ],
     "standardEnvironment": true
   }
 }
