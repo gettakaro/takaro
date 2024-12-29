@@ -1,7 +1,7 @@
 import { data, takaro, TakaroUserError } from '@takaro/helpers';
 async function main() {
   const enabledModules = await takaro.module.moduleInstallationsControllerGetInstalledModules({
-    filters: { gameServerId: [data.gameServerId] },
+    filters: { gameserverId: [data.gameServerId] },
   });
 
   const moduleCommands = await Promise.all(
