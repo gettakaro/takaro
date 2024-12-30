@@ -264,7 +264,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
       }),
     );
 
-    return updated;
+    return this.findOne(id);
   }
 
   async delete(id: string) {
