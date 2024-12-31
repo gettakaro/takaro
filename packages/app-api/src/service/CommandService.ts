@@ -17,6 +17,7 @@ import { PlayerService } from './PlayerService.js';
 import { PlayerOnGameServerService } from './PlayerOnGameserverService.js';
 import { UserService } from './User/index.js';
 import { ModuleService } from './Module/index.js';
+import { InstallModuleDTO } from './Module/dto.js';
 
 export function commandsRunningKey(data: ICommandJobData) {
   return `commands-running:${data.pog.id}`;
@@ -244,7 +245,26 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
     }
 
     const updated = await this.repo.update(id, item);
-    return updated;
+
+    const installations = await this.moduleService.getInstalledModules({ versionId: updated.versionId });
+    await Promise.all(
+      installations.map((i) => {
+        const newSystemConfig = i.systemConfig;
+        const cmdCfg = newSystemConfig.commands[existing.name];
+        delete newSystemConfig.commands[existing.name];
+        newSystemConfig.commands[updated.name] = cmdCfg;
+        return this.moduleService.installModule(
+          new InstallModuleDTO({
+            gameServerId: i.gameserverId,
+            versionId: i.versionId,
+            userConfig: JSON.stringify(i.userConfig),
+            systemConfig: JSON.stringify(newSystemConfig),
+          }),
+        );
+      }),
+    );
+
+    return this.findOne(id);
   }
 
   async delete(id: string) {

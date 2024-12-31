@@ -248,6 +248,8 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
     const { queryVersion } = await this.getModel();
     const data = await queryVersion.findById(id).modify('standardExtend');
 
+    if (!data) throw new errors.NotFoundError(`Record with id ${id} not found`);
+
     return new ModuleVersionOutputDTO({
       ...data,
       systemConfigSchema: getSystemConfigSchema(data as unknown as ModuleVersionOutputDTO),

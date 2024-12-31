@@ -24,6 +24,7 @@ import { HookEvents, isDiscordMessageEvent, EventPayload, EventTypes, EventMappi
 import { PlayerOnGameServerService } from './PlayerOnGameserverService.js';
 import { PlayerService } from './PlayerService.js';
 import { ModuleService } from './Module/index.js';
+import { InstallModuleDTO } from './Module/dto.js';
 
 interface IHandleHookOptions {
   eventType: EventTypes;
@@ -164,6 +165,24 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
     }
 
     const updated = await this.repo.update(id, item);
+
+    const installations = await this.moduleService.getInstalledModules({ versionId: updated.versionId });
+    await Promise.all(
+      installations.map((i) => {
+        const newSystemConfig = i.systemConfig;
+        const cmdCfg = newSystemConfig.hooks[existing.name];
+        delete newSystemConfig.hooks[existing.name];
+        newSystemConfig.hooks[updated.name] = cmdCfg;
+        return this.moduleService.installModule(
+          new InstallModuleDTO({
+            gameServerId: i.gameserverId,
+            versionId: i.versionId,
+            userConfig: JSON.stringify(i.userConfig),
+            systemConfig: JSON.stringify(newSystemConfig),
+          }),
+        );
+      }),
+    );
 
     return updated;
   }

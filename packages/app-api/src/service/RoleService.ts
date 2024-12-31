@@ -353,15 +353,20 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
   async getPermissions() {
     const moduleService = new ModuleService(this.domainId);
     const installedModules = await moduleService.getInstalledModules({});
-    const modulePermissions = installedModules.flatMap((mod) =>
-      mod.version.permissions.map((permission) => ({
-        ...permission,
-        module: {
-          id: mod.id,
-          name: mod.module.name,
-        },
-      })),
-    ) as PermissionOutputDTO[];
+    const modulePermissions = installedModules
+      // Ensure each module only appears once
+      // We fetch the installations above, so module X can be installed on server A and B
+      .filter((mod, index, self) => self.findIndex((m) => m.versionId === mod.versionId) === index)
+      // Then transform the permissions to a flat array
+      .flatMap((mod) =>
+        mod.version.permissions.map((permission) => ({
+          ...permission,
+          module: {
+            id: mod.id,
+            name: mod.module.name,
+          },
+        })),
+      ) as PermissionOutputDTO[];
 
     const systemPermissions = await this.repo.getSystemPermissions();
 
