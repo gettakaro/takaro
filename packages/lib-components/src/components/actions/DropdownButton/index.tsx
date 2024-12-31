@@ -1,9 +1,9 @@
-import { FC, useState, useEffect, ReactElement, useRef } from 'react';
+import { useState, useEffect, ReactElement, useRef, forwardRef } from 'react';
 import { useOutsideAlerter } from '../../../hooks';
 import { MdChevronRight as ArrowIcon } from 'react-icons/md';
 import { ActionMenu } from '../../../components';
 import { styled } from '../../../styled';
-import { useFloating } from '@floating-ui/react';
+import { useFloating, useMergeRefs } from '@floating-ui/react';
 import { shade } from 'polished';
 import { ButtonColor } from '../Button/style';
 
@@ -43,6 +43,7 @@ const CurrentAction = styled.div<{ color: ButtonColor }>`
   min-width: 10rem;
   height: 100%;
   color: ${({ theme }) => theme.colors.text};
+  width: calc(100% - 3.2rem);
 
   background: ${({ theme, color }) => shade(0.5, theme.colors[color])};
   border-top: 0.1rem solid ${({ theme, color }) => theme.colors[color === 'background' ? 'backgroundAccent' : color]};
@@ -57,31 +58,38 @@ const CurrentAction = styled.div<{ color: ButtonColor }>`
   }
 `;
 
-const Container = styled.div`
+const Container = styled.div<{ fullWidth: boolean }>`
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   border-radius: ${({ theme }) => theme.borderRadius.large};
-  width: max-content;
+  width: ${({ fullWidth }) => (fullWidth ? '100%' : 'max-content')};
 `;
 
 export interface DropdownButtonProps {
   children: ReactElement[];
   color?: ButtonColor;
+  onSelectedChanged?: (index: number) => void;
+  fullWidth?: boolean;
 }
 
-export const DropdownButton: FC<DropdownButtonProps> = ({ children, color = 'primary' }) => {
+export const DropdownButton = forwardRef<HTMLDivElement, DropdownButtonProps>(function Dropdown(
+  { children, color = 'primary', onSelectedChanged, fullWidth = false },
+  propRef
+) {
   const [listVisible, setListVisible] = useState<boolean>(false);
   const [selected, setSelected] = useState<number>(0);
   const { x, y, refs, strategy } = useFloating();
 
   const parentRef = useRef<HTMLDivElement>(null);
+  const ref = useMergeRefs([propRef, parentRef]);
 
   useOutsideAlerter(parentRef, () => {
     setListVisible(false);
   });
 
   useEffect(() => {
+    onSelectedChanged && onSelectedChanged(selected);
     setListVisible(false);
   }, [selected]);
 
@@ -91,8 +99,8 @@ export const DropdownButton: FC<DropdownButtonProps> = ({ children, color = 'pri
   };
 
   return (
-    <Wrapper ref={parentRef}>
-      <Container ref={refs.setReference}>
+    <Wrapper ref={ref}>
+      <Container ref={refs.setReference} fullWidth={fullWidth}>
         <CurrentAction color={color} onClick={handleSelectedActionClicked}>
           {children[selected].props.text}
         </CurrentAction>
@@ -100,11 +108,16 @@ export const DropdownButton: FC<DropdownButtonProps> = ({ children, color = 'pri
           <Arrow size={20} />
         </DropdownActionContainer>
         {listVisible && (
-          <ActionMenu selectedState={[selected, setSelected]} attributes={{ x, y, strategy }} ref={refs.setFloating}>
+          <ActionMenu
+            selected={selected}
+            setSelected={(s) => setSelected(s)}
+            attributes={{ x, y, strategy }}
+            ref={refs.setFloating}
+          >
             {children}
           </ActionMenu>
         )}
       </Container>
     </Wrapper>
   );
-};
+});
