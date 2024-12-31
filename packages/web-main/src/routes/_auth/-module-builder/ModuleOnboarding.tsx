@@ -1,7 +1,8 @@
 import { FC, PropsWithChildren } from 'react';
-import { Card, styled } from '@takaro/lib-components';
+import { Card, FormError, styled } from '@takaro/lib-components';
 import { useCommandCreate, useCronJobCreate, useHookCreate } from 'queries/module';
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate, useParams } from '@tanstack/react-router';
+import { ModuleVersionOutputDTO } from '@takaro/apiclient';
 
 const Flex = styled.div<{ justifyContent?: string }>`
   display: flex;
@@ -15,7 +16,9 @@ const Grid = styled.div<{ columns: number }>`
   display: grid;
   grid-template-columns: repeat(${({ columns }) => columns}, 1fr);
   height: 250px;
-  gap: ${({ theme }) => theme.spacing[4]};
+  gap: 0 ${({ theme }) => theme.spacing[4]};
+  margin-top: ${({ theme }) => theme.spacing[4]};
+  margin-bottom: ${({ theme }) => theme.spacing[0]};
 `;
 
 const Title = styled.h1`
@@ -27,7 +30,6 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: ${({ theme }) => theme.spacing[8]};
 
   margin: auto;
   margin-top: -200px;
@@ -37,15 +39,25 @@ const Wrapper = styled.div`
 `;
 
 export type ModuleOnboardingProps = {
-  moduleId: string;
-  versionId: string;
+  moduleVersion: ModuleVersionOutputDTO;
 };
 
-export const ModuleOnboarding: FC<ModuleOnboardingProps> = ({ versionId, moduleId }) => {
-  const { mutateAsync: createHook, isSuccess: createHookIsSuccess } = useHookCreate();
-  const { mutateAsync: createCommand, isSuccess: createCommandIsSuccess } = useCommandCreate();
-  const { mutateAsync: createCronJob, isSuccess: createCronJobIsSuccess } = useCronJobCreate();
+export const ModuleOnboarding: FC<ModuleOnboardingProps> = ({ moduleVersion }) => {
+  const { mutateAsync: createHook, isSuccess: createHookIsSuccess, error: createHookError } = useHookCreate();
+  const {
+    mutateAsync: createCommand,
+    isSuccess: createCommandIsSuccess,
+    error: createCommandError,
+  } = useCommandCreate();
+  const {
+    mutateAsync: createCronJob,
+    isSuccess: createCronJobIsSuccess,
+    error: createCronJobError,
+  } = useCronJobCreate();
   const navigate = useNavigate();
+  const { moduleVersionTag } = useParams({ from: '/_auth/module-builder/$moduleId/$moduleVersionTag' });
+
+  const { moduleId, id: versionId } = moduleVersion;
 
   const createComponent = async (componentType: 'hook' | 'cronjob' | 'command') => {
     try {
@@ -91,7 +103,10 @@ export const ModuleOnboarding: FC<ModuleOnboardingProps> = ({ versionId, moduleI
   };
 
   if (createHookIsSuccess || createCommandIsSuccess || createCronJobIsSuccess) {
-    navigate({ to: '/module-builder/$moduleId', params: { moduleId } });
+    navigate({
+      to: '/module-builder/$moduleId/$moduleVersionTag',
+      params: { moduleId: moduleVersion.moduleId, moduleVersionTag },
+    });
   }
 
   return (
@@ -114,6 +129,9 @@ export const ModuleOnboarding: FC<ModuleOnboardingProps> = ({ versionId, moduleI
           Wednesday and Friday at 2 PM".
         </InfoCard>
       </Grid>
+      {createCronJobError && <FormError error={createCronJobError} />}
+      {createHookError && <FormError error={createHookError} />}
+      {createCommandError && <FormError error={createCommandError} />}
     </Wrapper>
   );
 };

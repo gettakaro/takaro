@@ -110,7 +110,7 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
                   <Tooltip.Trigger>
                     <Chip variant="outline" color={newestTag ? 'primary' : 'secondary'} label={newestTag ?? 'None'} />
                   </Tooltip.Trigger>
-                  <Tooltip.Content>version</Tooltip.Content>
+                  <Tooltip.Content>Latest version</Tooltip.Content>
                 </Tooltip>
                 {mod.builtin && (
                   <Tooltip>

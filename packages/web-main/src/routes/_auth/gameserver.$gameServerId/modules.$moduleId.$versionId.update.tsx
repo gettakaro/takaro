@@ -3,15 +3,14 @@ import { moduleQueryOptions } from 'queries/module';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { InstallModuleForm } from './-InstallModuleForm';
 import { hasPermission } from 'hooks/useHasPermission';
-import { PERMISSIONS } from '@takaro/apiclient';
 import { userMeQueryOptions } from 'queries/user';
 import { DrawerSkeleton } from '@takaro/lib-components';
 import { useQueries } from '@tanstack/react-query';
 
-export const Route = createFileRoute('/_auth/gameserver/$gameServerId/modules/$moduleId/$versionId/install/view')({
+export const Route = createFileRoute('/_auth/gameserver/$gameServerId/modules/$moduleId/$versionId/update')({
   beforeLoad: async ({ context }) => {
     const session = await context.queryClient.ensureQueryData(userMeQueryOptions());
-    if (!hasPermission(session, [PERMISSIONS.ReadModules])) {
+    if (!hasPermission(session, ['READ_MODULES', 'MANAGE_MODULES'])) {
       throw redirect({ to: '/forbidden' });
     }
   },

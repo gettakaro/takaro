@@ -188,8 +188,8 @@ export const useTagModule = () => {
         queryClient.setQueryData<ModuleVersionOutputDTO>(moduleKeys.versions.detail(newVersion.id), newVersion);
 
         // We get rid of moduleDetail, we would have to update the small versions (change tags)
-        // and the latest version.
         await queryClient.invalidateQueries({ queryKey: moduleKeys.detail(moduleId) });
+        await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
       },
     }),
     {},

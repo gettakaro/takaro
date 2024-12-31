@@ -34,7 +34,7 @@ export const ExportModuleDialog: FC<ExportModuleDialogProps> = ({
 
   const { control, handleSubmit } = useForm<z.infer<typeof validationSchema>>({
     resolver: zodResolver(validationSchema),
-    defaultValues: {
+    values: {
       versionIds: [defaultSelectedVersion.id],
     },
   });

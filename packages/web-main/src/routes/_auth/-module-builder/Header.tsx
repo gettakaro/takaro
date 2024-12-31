@@ -1,7 +1,7 @@
 import { styled, Button, Tooltip } from '@takaro/lib-components';
 import { CopyModulePopOver } from './CopyModulePopOver';
 import { useModuleBuilderContext } from './useModuleBuilderStore';
-import { useNavigate, useParams } from '@tanstack/react-router';
+import { useNavigate } from '@tanstack/react-router';
 import { UnControlledModuleVersionTagSelectField } from 'components/selects/ModuleVersionSelectField';
 import { useState } from 'react';
 import { TagModuleDialog } from 'components/cards/ModuleDefinitionCard/TagModuleDialog';
@@ -28,12 +28,9 @@ export const Header = () => {
   const moduleName = useModuleBuilderContext((s) => s.moduleName);
   const moduleId = useModuleBuilderContext((s) => s.moduleId);
   const moduleVersions = useModuleBuilderContext((s) => s.moduleVersions);
+  const moduleVersionTag = useModuleBuilderContext((s) => s.versionTag);
   const navigate = useNavigate({ from: '/module-builder/$moduleId/$moduleVersionTag' });
   const [openTagDialog, setOpenTagDialog] = useState<boolean>(false);
-
-  const { moduleVersionTag } = useParams({
-    from: '/_auth/module-builder/$moduleId/$moduleVersionTag',
-  });
   const isLatest: boolean = moduleVersionTag === 'latest';
 
   const handleOnModuleVersionTagChanged = (selectedModuleVersionTag: string) => {
@@ -60,7 +57,7 @@ export const Header = () => {
       <Flex>
         <Tooltip>
           <Tooltip.Trigger disabled={!isLatest}>
-            <Button text="Tag version" disabled={!isLatest} />
+            <Button text="Tag version" disabled={!isLatest} onClick={() => setOpenTagDialog(true)} />
           </Tooltip.Trigger>
           <Tooltip.Content>Only the latest version can be used to create a new tagged version</Tooltip.Content>
         </Tooltip>

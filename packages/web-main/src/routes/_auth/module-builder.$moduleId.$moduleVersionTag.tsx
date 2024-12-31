@@ -82,8 +82,8 @@ function Component() {
       { ...moduleVersionQueryOptions(loaderData.moduleVersion.id), initialData: loaderData.moduleVersion },
     ],
   });
-
   useDocumentTitle(mod.name);
+
   useEffect(() => {
     function handleOnBeforeUnload(event: BeforeUnloadEvent) {
       event.preventDefault();
@@ -145,18 +145,24 @@ function Component() {
     return fileMap[activeFileParam] ? activeFileParam : undefined;
   }, [fileMap, activeFileParam]);
 
+  const readOnly = useMemo(() => {
+    return (mod.builtin ? true : false) || moduleVersion.tag !== 'latest';
+  }, [moduleVersion]);
+
   if (!moduleVersion.hooks.length && !moduleVersion.cronJobs.length && !moduleVersion.commands.length) {
-    return <ModuleOnboarding moduleId={mod.id} versionId={moduleVersion.id} />;
+    return <ModuleOnboarding moduleVersion={moduleVersion} />;
   }
 
   return (
     <ErrorBoundary>
       <ModuleBuilderProvider
+        key={`${mod.id}-${moduleVersion.id}`}
         moduleId={mod.id}
         moduleName={mod.name}
         moduleVersions={mod.versions}
         fileMap={fileMap}
-        readOnly={(mod.builtin ? true : false) || moduleVersion.tag !== 'latest'}
+        readOnly={readOnly}
+        versionTag={moduleVersion.tag}
         visibleFiles={activeFile ? [activeFile] : []}
         activeFile={activeFile}
         versionId={moduleVersion.id}

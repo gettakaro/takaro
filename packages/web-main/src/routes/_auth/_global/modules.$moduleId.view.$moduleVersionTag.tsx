@@ -4,7 +4,7 @@ import { DrawerSkeleton } from '@takaro/lib-components';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
 import { userMeQueryOptions } from 'queries/user';
-import { useQueries, useQuery } from '@tanstack/react-query';
+import { useQueries } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/_global/modules/$moduleId/view/$moduleVersionTag')({
   beforeLoad: async ({ context }) => {
@@ -45,6 +45,8 @@ function Component() {
       { ...moduleVersionQueryOptions(loaderData.modVersion.id), initialData: loaderData.modVersion },
     ],
   });
+
+  console.log(modVersion);
 
   return (
     <ModuleForm moduleName={mod.name} moduleVersion={modVersion} error={null} smallModuleVersions={mod.versions} />

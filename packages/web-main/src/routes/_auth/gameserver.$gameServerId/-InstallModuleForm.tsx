@@ -4,14 +4,14 @@ import { Button, Drawer, CollapseList, styled, FormError } from '@takaro/lib-com
 import { useGameServerModuleInstall } from 'queries/gameserver';
 import Form from '@rjsf/core';
 import { JsonSchemaForm } from 'components/JsonSchemaForm';
-import { ModuleInstallationOutputDTO, ModuleOutputDTO } from '@takaro/apiclient';
+import { ModuleInstallationOutputDTO, ModuleOutputDTO, ModuleVersionOutputDTO } from '@takaro/apiclient';
 import { useSnackbar } from 'notistack';
 
 interface InstallModuleFormProps {
   gameServerId: string;
   mod: ModuleOutputDTO;
-  modInstallation: ModuleInstallationOutputDTO;
-  versionId: string;
+  modInstallation?: ModuleInstallationOutputDTO;
+  modVersion: ModuleVersionOutputDTO;
   readOnly?: boolean;
 }
 
@@ -24,8 +24,9 @@ const ButtonContainer = styled.div`
 export const InstallModuleForm: FC<InstallModuleFormProps> = ({
   readOnly = false,
   mod,
-  modInstallation,
+  modVersion,
   gameServerId,
+  modInstallation,
 }) => {
   const [open, setOpen] = useState<boolean>(true);
   const [userConfigSubmitted, setUserConfigSubmitted] = useState<boolean>(false);
@@ -62,7 +63,7 @@ export const InstallModuleForm: FC<InstallModuleFormProps> = ({
   const onSubmit = useCallback(async () => {
     mutate({
       gameServerId: gameServerId,
-      versionId: modInstallation.versionId,
+      versionId: modVersion.id,
       userConfig: JSON.stringify(userConfig),
       systemConfig: JSON.stringify(systemConfig),
     });
@@ -92,9 +93,9 @@ export const InstallModuleForm: FC<InstallModuleFormProps> = ({
             <CollapseList.Item title="User config">
               <JsonSchemaForm
                 readOnly={readOnly}
-                schema={JSON.parse(modInstallation.version.configSchema as string)}
-                uiSchema={JSON.parse(modInstallation.version.uiSchema as string)}
-                initialData={modInstallation.userConfig || userConfig}
+                schema={JSON.parse(modVersion.configSchema as string)}
+                uiSchema={JSON.parse(modVersion.uiSchema as string)}
+                initialData={modInstallation?.userConfig || userConfig}
                 hideSubmitButton
                 onSubmit={onUserConfigSubmit}
                 ref={userConfigFormRef}
@@ -106,9 +107,9 @@ export const InstallModuleForm: FC<InstallModuleFormProps> = ({
             <CollapseList.Item title="System config">
               <JsonSchemaForm
                 readOnly={readOnly}
-                schema={JSON.parse(modInstallation.version.systemConfigSchema as string)}
+                schema={JSON.parse(modVersion.systemConfigSchema as string)}
                 uiSchema={{}} /* System config does not have uiSchema*/
-                initialData={modInstallation.systemConfig || systemConfig}
+                initialData={modInstallation?.systemConfig || systemConfig}
                 hideSubmitButton
                 onSubmit={onSystemConfigSubmit}
                 onChange={() => {

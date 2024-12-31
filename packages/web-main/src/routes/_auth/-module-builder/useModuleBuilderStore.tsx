@@ -45,6 +45,7 @@ export type ModuleBuilderProps = {
   moduleName: string;
   moduleVersions: SmallModuleVersionOutputDTO[];
   versionId: string;
+  versionTag: string;
   readOnly: boolean;
   fileMap: FileMap;
   /// File that is currently active in the editor

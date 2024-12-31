@@ -1,5 +1,4 @@
-import { gameServerModuleInstallationOptions } from 'queries/gameserver';
-import { moduleQueryOptions } from 'queries/module';
+import { moduleQueryOptions, moduleVersionQueryOptions } from 'queries/module';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { InstallModuleForm } from './-InstallModuleForm';
 import { hasPermission } from 'hooks/useHasPermission';
@@ -15,11 +14,11 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/modules/$m
     }
   },
   loader: async ({ params, context }) => {
-    const [mod, modInstallation] = await Promise.all([
+    const [mod, modVersion] = await Promise.all([
       context.queryClient.ensureQueryData(moduleQueryOptions(params.moduleId)),
-      context.queryClient.ensureQueryData(gameServerModuleInstallationOptions(params.gameServerId, params.moduleId)),
+      context.queryClient.ensureQueryData(moduleVersionQueryOptions(params.versionId)),
     ]);
-    return { mod, modInstallation };
+    return { mod, modVersion };
   },
   component: Component,
   pendingComponent: DrawerSkeleton,
@@ -29,20 +28,12 @@ export function Component() {
   const { gameServerId, moduleId, versionId } = Route.useParams();
   const loaderData = Route.useLoaderData();
 
-  const [{ data: mod }, { data: modInstallation }] = useQueries({
+  const [{ data: mod }, { data: modVersion }] = useQueries({
     queries: [
       { ...moduleQueryOptions(moduleId), initialData: loaderData.mod },
-      { ...gameServerModuleInstallationOptions(gameServerId, moduleId), initialData: loaderData.modInstallation },
+      { ...moduleVersionQueryOptions(versionId), initialData: loaderData.modVersion },
     ],
   });
 
-  return (
-    <InstallModuleForm
-      versionId={versionId}
-      gameServerId={gameServerId}
-      modInstallation={modInstallation}
-      mod={mod}
-      readOnly={false}
-    />
-  );
+  return <InstallModuleForm modVersion={modVersion} gameServerId={gameServerId} mod={mod} readOnly={false} />;
 }

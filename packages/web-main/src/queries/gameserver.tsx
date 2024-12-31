@@ -229,11 +229,11 @@ export const moduleInstallationsOptions = (queryParams: ModuleInstallationSearch
   });
 };
 
-export const gameServerModuleInstallationOptions = (gameServerId: string, moduleId: string) => {
+export const gameServerModuleInstallationOptions = (moduleId: string, gameServerId: string) => {
   return queryOptions<ModuleInstallationOutputDTO, AxiosError<ModuleInstallationOutputDTOAPI>>({
     queryKey: ModuleInstallationKeys.detail(gameServerId, moduleId),
     queryFn: async () =>
-      (await getApiClient().module.moduleInstallationsControllerGetModuleInstallation(gameServerId, moduleId)).data
+      (await getApiClient().module.moduleInstallationsControllerGetModuleInstallation(moduleId, gameServerId)).data
         .data,
   });
 };
@@ -241,6 +241,7 @@ export const gameServerModuleInstallationOptions = (gameServerId: string, module
 export const useGameServerModuleInstall = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
 
   return mutationWrapper<ModuleInstallationOutputDTO, InstallModuleDTO>(
     useMutation<ModuleInstallationOutputDTO, AxiosError<ModuleInstallationOutputDTOAPI>, InstallModuleDTO>({
@@ -248,7 +249,12 @@ export const useGameServerModuleInstall = () => {
         (await apiClient.module.moduleInstallationsControllerInstallModule(moduleInstallation)).data.data,
       onSuccess: async (moduleInstallation, { versionId, gameServerId }) => {
         // invalidate list of installed modules
-        // TODO: await queryClient.invalidateQueries({ queryKey: ModuleInstallationKeys.list(moduleInstallation.gameserverId) });
+        await queryClient.invalidateQueries({ queryKey: ModuleInstallationKeys.list() });
+
+        enqueueSnackbar(
+          `Successfully installed '${moduleInstallation.module.name}' version ${moduleInstallation.version.tag}!`,
+          { variant: 'default', type: 'success' },
+        );
 
         // update installed module cache
         queryClient.setQueryData<ModuleInstallationOutputDTO>(

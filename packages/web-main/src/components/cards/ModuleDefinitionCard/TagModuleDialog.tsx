@@ -62,7 +62,7 @@ export const TagModuleDialog: FC<TagModuleDialogProps> = ({ openDialog, setOpenD
           <Alert
             variant="info"
             text="Tagging a module creates a new version of the module with the module's current state. Once a module is
-            tagged, any futher changes will not affect the tagged version."
+            tagged, any further changes will not affect the tagged version."
           />
           <p>
             <Chip

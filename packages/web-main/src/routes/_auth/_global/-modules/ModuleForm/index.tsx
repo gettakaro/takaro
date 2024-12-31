@@ -78,10 +78,10 @@ export const ModuleForm: FC<ModuleFormProps> = ({
 
   const { handleSubmit, control, resetField, formState } = useForm<IFormInputs>({
     mode: 'onChange',
-    defaultValues: {
-      name: moduleName ?? undefined,
-      description: moduleVersion?.description ?? undefined,
-      permissions: moduleVersion?.permissions ?? undefined,
+    values: {
+      name: moduleName ?? '',
+      description: moduleVersion?.description ?? '',
+      permissions: moduleVersion?.permissions ?? [],
       configFields: initialConfigFields,
     },
     resolver: zodResolver(validationSchema),
@@ -116,6 +116,8 @@ export const ModuleForm: FC<ModuleFormProps> = ({
       uiSchema: JSON.stringify(uiSchema),
     });
   };
+
+  console.log('moduleVersion', moduleVersion);
 
   function getTitle() {
     if (moduleVersion) {

@@ -95,8 +95,7 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ moduleId, onSuccess })
     <>
       <Alert
         variant="warning"
-        text="The new module will have all the same versions, hooks, commands, and cron jobs as the original module. 
-        Installing the copied module will cause triggers to occur twice, since it has the same command names as the original module."
+        text="The new module will only have the version tagged 'latest'. This includes all hooks, commands, and cron jobs and configuration."
       />
 
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -105,7 +104,7 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ moduleId, onSuccess })
           name="name"
           placeholder="Module Name"
           label="Module Name"
-          description=""
+          description="Name of the new module"
           required
           loading={moduleCreateLoading}
         />
