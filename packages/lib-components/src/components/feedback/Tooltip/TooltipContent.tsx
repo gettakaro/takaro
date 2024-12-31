@@ -19,13 +19,13 @@ const Container = styled.div<{ elevation: Elevation }>`
 
 export const TooltipContent = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElement>>(function TooltipContent(
   { style, ...props },
-  propRef,
+  propRef
 ) {
   const theme = useTheme();
-  const { floatingStyles, open, arrowRef, context, getFloatingProps } = useTooltipContext();
+  const { floatingStyles, open, arrowRef, context, getFloatingProps, disabled } = useTooltipContext();
   const ref = useMergeRefs([context.refs.setFloating, propRef]);
 
-  if (!open) return null;
+  if (!open || disabled) return null;
 
   return (
     <FloatingPortal>

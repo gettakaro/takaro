@@ -20,12 +20,14 @@ export interface TooltipOptions {
   placement?: Placement;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
+  disabled?: boolean;
 }
 
 export function useTooltip({
   initialOpen = false,
   placement = 'top',
   open: controlledOpen,
+  disabled = false,
   onOpenChange: setControlledOpen,
 }: TooltipOptions = {}) {
   const [uncontrolledOpen, setUncontrolledOpen] = useState(initialOpen);
@@ -73,7 +75,8 @@ export function useTooltip({
       arrowRef,
       ...interactions,
       ...data,
+      disabled,
     }),
-    [open, setOpen, interactions, data],
+    [open, setOpen, interactions, data]
   );
 }
