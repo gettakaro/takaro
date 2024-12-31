@@ -1,4 +1,4 @@
-import { Children, forwardRef, Dispatch, FC, ReactElement, SetStateAction, PropsWithChildren } from 'react';
+import { Children, forwardRef, FC, ReactElement, PropsWithChildren } from 'react';
 import { Container, Item } from './style';
 import { AiOutlineCheck as CheckMarkIcon } from 'react-icons/ai';
 import { Elevation } from '../../../styled/';
@@ -9,17 +9,16 @@ export interface ActionMenuProps {
     y: number | null;
     strategy: 'absolute' | 'fixed';
   };
-  selectedState: [number, Dispatch<SetStateAction<number>>];
+  selected: number;
+  setSelected: (selected: number) => void;
   children: ReactElement | ReactElement[];
   elevation?: Elevation;
 }
 
 export const ActionMenu = forwardRef<HTMLUListElement, ActionMenuProps>(function ActionMenu(
-  { attributes, children, selectedState, elevation = 4 },
+  { attributes, children, selected, setSelected, elevation = 4 },
   ref
 ) {
-  const [selected, setSelected] = selectedState;
-
   return (
     <Container
       elevation={elevation}
@@ -32,18 +31,21 @@ export const ActionMenu = forwardRef<HTMLUListElement, ActionMenuProps>(function
     >
       {Children.map(children, (child: ReactElement<ActionProps>, idx) => (
         <Item
+          aria-disabled={child.props.disabled}
           onClick={() => {
-            if (child.props.disabled) return;
+            if (child.props.disabled) {
+              return;
+            }
             setSelected(idx);
           }}
         >
           {child}
           {selected === idx ? (
             <div style={{ display: 'flex', alignItems: 'center' }}>
-              <CheckMarkIcon size={15} />
+              <CheckMarkIcon className="checkmark" size={15} />
             </div>
           ) : (
-            <div className="checkmark-placeholder"></div>
+            <div className="checkmark-placeholder" />
           )}
         </Item>
       ))}
@@ -57,5 +59,5 @@ interface ActionProps {
   disabled?: boolean;
 }
 export const Action: FC<PropsWithChildren<ActionProps>> = ({ children, disabled = false }) => {
-  return <div>{children}</div>;
+  return children;
 };
