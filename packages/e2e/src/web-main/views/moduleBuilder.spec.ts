@@ -81,9 +81,9 @@ extendedTest.describe('filetab', () => {
   });
 
   extendedTest.describe('context menu', () => {
-    extendedTest.fixme('should close all tabs to the right', async () => {});
-    extendedTest.fixme('should close all saved tabs', async () => {});
-    extendedTest.fixme('should close all ohter tabs', async () => {});
+    extendedTest.fixme('should close all tabs to the right', async () => { });
+    extendedTest.fixme('should close all saved tabs', async () => { });
+    extendedTest.fixme('should close all ohter tabs', async () => { });
   });
 });
 
@@ -155,7 +155,7 @@ extendedTest.describe('filetree', () => {
   });
 });
 
-extendedTest('Can copy module', async ({ page, takaro }) => {
+extendedTest('Should copy module', async ({ page, takaro }) => {
   const { moduleBuilderPage, moduleDefinitionsPage } = takaro;
   const copyName = `${moduleBuilderPage.mod.name}-copy`;
 
@@ -189,7 +189,7 @@ extendedTest.describe('Built-in modules', () => {
       moduleBuilderPage.mod = takaro.builtinModule;
       await moduleBuilderPage.goto();
 
-      const treeFile = await moduleBuilderPage.getTreeFile(moduleBuilderPage.mod.commands[0].name);
+      const treeFile = await moduleBuilderPage.getTreeFile(moduleBuilderPage.mod.latestVersion.commands[0].name);
       await treeFile.hover();
       await expect(moduleBuilderPage.page.locator('button[aria-label="Edit file"]')).not.toBeVisible();
       await expect(moduleBuilderPage.page.locator('button[aria-label="Delete file"]')).not.toBeVisible();
@@ -204,7 +204,7 @@ extendedTest.describe('Built-in modules', () => {
     moduleBuilderPage.mod = takaro.builtinModule;
     await moduleBuilderPage.goto();
 
-    const fileName = moduleBuilderPage.mod.commands[0].name;
+    const fileName = moduleBuilderPage.mod.latestVersion.commands[0].name;
     await moduleBuilderPage.openFile(fileName);
 
     const editor = await moduleBuilderPage.getEditor();
@@ -218,13 +218,13 @@ extendedTest.describe('Built-in modules', () => {
     ).toBeVisible();
   });
 
-  extendedTest.fixme('Cannot save command config', async () => {});
-  extendedTest.fixme('Cannot delete command config argument', async () => {});
+  extendedTest.fixme('Cannot save command config', async () => { });
+  extendedTest.fixme('Cannot delete command config argument', async () => { });
 });
 
 extendedTest.describe('Item configuration', () => {
-  extendedTest.describe('Cronjob config', () => {});
-  extendedTest.describe('Hook config', () => {});
+  extendedTest.describe('Cronjob config', () => { });
+  extendedTest.describe('Hook config', () => { });
 
   extendedTest.describe('Command config', () => {
     extendedTest.fixme('Can add argument', async ({ takaro }) => {

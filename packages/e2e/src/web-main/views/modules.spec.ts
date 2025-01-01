@@ -90,8 +90,10 @@ test('Can edit module', async ({ page, takaro }) => {
   // Create a module
   await takaro.rootClient.module.moduleControllerCreate({
     name: oldModuleName,
-    description: 'Modules are the building blocks of your game server',
-    configSchema: JSON.stringify({}),
+    latestVersion: {
+      description: 'Modules are the building blocks of your game server',
+      configSchema: JSON.stringify({}),
+    },
   });
 
   const { moduleDefinitionsPage } = takaro;
@@ -108,8 +110,10 @@ test('Can delete module', async ({ page, takaro }) => {
   const moduleName = 'delete this module';
   await takaro.rootClient.module.moduleControllerCreate({
     name: moduleName,
-    description: 'Modules are the building blocks of your game server.',
-    configSchema: JSON.stringify({}),
+    latestVersion: {
+      description: 'Modules are the building blocks of your game server.',
+      configSchema: JSON.stringify({}),
+    },
   });
 
   const { moduleDefinitionsPage } = takaro;
@@ -142,15 +146,17 @@ test('Can install module with empty config', async ({ page, takaro }) => {
 test('Can install a module with a discord hook', async ({ page, takaro }) => {
   const mod = await takaro.rootClient.module.moduleControllerCreate({
     name: 'Module with Discord hook',
-    configSchema: JSON.stringify({}),
-    description: 'aaa',
+    latestVersion: {
+      configSchema: JSON.stringify({}),
+      description: 'aaa',
+    },
   });
 
   const hookName = 'My hook';
   await takaro.rootClient.hook.hookControllerCreate({
     name: hookName,
     eventType: HookCreateDTOEventTypeEnum.DiscordMessage,
-    moduleId: mod.data.data.id,
+    versionId: mod.data.data.latestVersion.id,
     regex: 'test',
   });
 
