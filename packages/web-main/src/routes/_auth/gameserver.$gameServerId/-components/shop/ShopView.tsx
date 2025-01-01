@@ -104,7 +104,7 @@ export const ShopView: FC<ShopViewProps> = ({ gameServerId, currency, currencyNa
           {hasCurrency ? (
             <Chip variant="outline" color="primary" label={`${currency} ${currencyName}`} />
           ) : (
-            <Alert variant="error" text={<p>You are not linked to this gameserver.</p>} />
+            <Alert variant="error" text={<p>You are not linked to this game server.</p>} />
           )}
         </Header>
 
