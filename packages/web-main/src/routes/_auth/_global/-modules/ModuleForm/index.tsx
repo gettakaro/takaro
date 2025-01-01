@@ -129,7 +129,7 @@ export const ModuleForm: FC<ModuleFormProps> = ({
   const handleOnSelectedVersionChanged = (selectedModuleVersionTag: string) => {
     navigate({
       to: '/modules/$moduleId/view/$moduleVersionTag',
-      params: { moduleId: moduleVersion?.moduleId!, moduleVersionTag: selectedModuleVersionTag },
+      params: { moduleId: moduleVersion!.moduleId, moduleVersionTag: selectedModuleVersionTag },
     });
   };
 
@@ -209,7 +209,7 @@ export const ModuleForm: FC<ModuleFormProps> = ({
                 title={
                   <>
                     Permissions
-                    <IconTooltip icon={<QuestionIcon />}>
+                    <IconTooltip color="background" icon={<QuestionIcon />}>
                       Permissions are a way to control who can use the items inside your module or control the behavior
                       of functions inside your module. For example, if you have a command that only admins should be
                       able to use, you can create a permission for it and then check for it to the command. Or, you
@@ -265,7 +265,7 @@ export const ModuleForm: FC<ModuleFormProps> = ({
                 title={
                   <>
                     Config
-                    <IconTooltip icon={<QuestionIcon />}>
+                    <IconTooltip color="background" icon={<QuestionIcon />}>
                       Config fields are a way to control the behavior of your module. When a module is installed on a
                       game server, Config fields can be tweaked to change the behavior of the module. For example, if
                       you want to write a module that allows players to teleport to each other, you might want to have a

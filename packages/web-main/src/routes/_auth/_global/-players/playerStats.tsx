@@ -90,7 +90,9 @@ export function PlayerStats() {
       <Container>
         <Card variant="outline">
           <Card.Title label="Daily active players">
-            <IconTooltip icon={<QuestionIcon />}>How many players were active on the server each day.</IconTooltip>
+            <IconTooltip color="background" icon={<QuestionIcon />}>
+              How many players were active on the server each day.
+            </IconTooltip>
           </Card.Title>
           <Card.Body>
             <div style={{ height: '200px' }}>

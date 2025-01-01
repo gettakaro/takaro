@@ -192,7 +192,7 @@ function Component() {
             <Card.Body>
               <EventFeed>
                 {failedFunctions?.data.flatMap((event) => (
-                  <EventItem key={event.id} event={event} onDetailClick={() => { }} />
+                  <EventItem key={event.id} event={event} onDetailClick={() => {}} />
                 ))}
               </EventFeed>
             </Card.Body>
@@ -201,7 +201,9 @@ function Component() {
             <Card.Title label="Global Player Map">
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Chip variant="outline" color="warning" label="Beta" />
-                <IconTooltip icon={<QuestionIcon />}>Shows where your players are from</IconTooltip>
+                <IconTooltip color="background" icon={<QuestionIcon />}>
+                  Shows where your players are from
+                </IconTooltip>
               </div>
             </Card.Title>
             <Card.Body>

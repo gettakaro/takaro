@@ -96,7 +96,9 @@ function Component() {
       <Container>
         <Card variant="outline">
           <Card.Title label="Latency">
-            <IconTooltip icon={<QuestionIcon />}>Roundtrip time between Takaro and your server in ms</IconTooltip>
+            <IconTooltip color="background" icon={<QuestionIcon />}>
+              Roundtrip time between Takaro and your server in ms
+            </IconTooltip>
           </Card.Title>
           <div style={{ position: 'relative', height: '425px' }}>
             <LineChart
@@ -142,7 +144,9 @@ function Component() {
           <Card.Title label="Player Demographics">
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <Chip variant="outline" color="warning" label="Beta" />
-              <IconTooltip icon={<QuestionIcon />}>Shows where your players are from</IconTooltip>
+              <IconTooltip color="background" icon={<QuestionIcon />}>
+                Shows where your players are from
+              </IconTooltip>
             </div>
           </Card.Title>
           <Card.Body>
