@@ -126,13 +126,15 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
 
   return (
     <>
-      <ModuleUninstallDialog
-        open={openDialog}
-        onOpenChange={setOpenDialog}
-        gameServerId={gameServerId}
-        versionId={installation!.version.id}
-        moduleName={mod.name}
-      />
+      {installation && (
+        <ModuleUninstallDialog
+          open={openDialog}
+          onOpenChange={setOpenDialog}
+          gameServerId={gameServerId}
+          versionId={installation.version.id}
+          moduleName={mod.name}
+        />
+      )}
       <Card data-testid={`module-${mod.id}`}>
         <Card.Body>
           <InnerBody>
@@ -248,6 +250,7 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
                             .filter((version) => version.tag !== installation.version.tag)
                             .map((version) => (
                               <Action
+                                key={`change-version-${version.id}`}
                                 disabled={version.id === installation.version.id}
                                 onClick={() => handleChangeVersion(version.id)}
                                 text={`${versionGt(version.tag, installation.version.tag) ? 'Upgrade' : 'Downgrade'} to ${version.tag}`}
@@ -283,7 +286,11 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
                         onSelectedChanged={(selectedIdx) => setSelectedVersion(versions[selectedIdx].tag)}
                       >
                         {versions.map((version) => (
-                          <Action onClick={() => handleInstallClick(version.id)} text={`Install ${version.tag}`}>
+                          <Action
+                            key={`not-installed-${version.id}`}
+                            onClick={() => handleInstallClick(version.id)}
+                            text={`Install ${version.tag}`}
+                          >
                             {version.tag.charAt(0).toUpperCase() + version.tag.slice(1)}
                           </Action>
                         ))}
