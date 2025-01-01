@@ -120,6 +120,7 @@ function Component() {
         playerId: search.playerIds.length > 0 ? search.playerIds : undefined,
         gameserverId: search.gameServerIds.length > 0 ? search.gameServerIds : undefined,
         eventName: search.eventNames.length > 0 ? search.eventNames : undefined,
+        moduleId: search.moduleIds.length > 0 ? search.moduleIds : undefined,
       },
       sortBy: 'createdAt',
       sortDirection: 'desc',
@@ -185,7 +186,7 @@ function Component() {
           <EventFilterContainer>
             <ScrollableContainer>
               <EventFeed>
-                {events?.map((event) => <EventItem key={event.id} event={event} onDetailClick={() => {}} />)}
+                {events?.map((event) => <EventItem key={event.id} event={event} onDetailClick={() => { }} />)}
                 <InfiniteScroll
                   isFetching={isFetching}
                   hasNextPage={hasNextPage}
