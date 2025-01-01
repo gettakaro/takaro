@@ -24,7 +24,7 @@ import { useQuery } from '@tanstack/react-query';
 import { PlayerStats } from './-players/playerStats';
 import { userMeQueryOptions } from 'queries/user';
 import { GameServerContainer } from 'components/GameServer';
-import { BanPlayerDialog } from './-players/BanPlayerDialog';
+import { PlayerBanDialog } from 'components/dialogs/PlayerBanDialog';
 
 export const StyledDialogBody = styled(Dialog.Body)`
   h2 {
@@ -270,11 +270,11 @@ function Component() {
   );
 }
 
-interface BanPlayerDialogProps {
+interface PlayerActionsProps {
   player: PlayerOutputDTO;
 }
 
-const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
+const PlayerActions: FC<PlayerActionsProps> = ({ player }) => {
   const [openBanDialog, setOpenBanDialog] = useState<boolean>(false);
   const hasManageRoles = useHasPermission([PERMISSIONS.ManageRoles]);
   const hasManagePlayers = useHasPermission([PERMISSIONS.ManagePlayers]);
@@ -310,10 +310,11 @@ const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
           />
         </Dropdown.Menu>
       </Dropdown>
-      <BanPlayerDialog
-        openDialog={openBanDialog}
-        setOpenDialog={setOpenBanDialog}
-        player={{ name: player.name, id: player.id }}
+      <PlayerBanDialog
+        open={openBanDialog}
+        onOpenChange={setOpenBanDialog}
+        playerId={player.id}
+        playerName={player.name}
       />
     </>
   );

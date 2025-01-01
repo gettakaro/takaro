@@ -1,18 +1,6 @@
-import {
-  Company,
-  Tooltip,
-  Dialog,
-  Button,
-  IconButton,
-  Card,
-  Dropdown,
-  useTheme,
-  ValueConfirmationField,
-  Chip,
-} from '@takaro/lib-components';
+import { Company, Tooltip, IconButton, Card, Dropdown, useTheme, Chip } from '@takaro/lib-components';
 import { PERMISSIONS, ModuleOutputDTO } from '@takaro/apiclient';
-import { useModuleRemove } from 'queries/module';
-import { FC, useState, MouseEvent } from 'react';
+import { FC, useState, MouseEvent, useRef } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { SpacedRow, ActionIconsContainer, InnerBody } from '../style';
 import { PermissionsGuard } from 'components/PermissionsGuard';
@@ -26,8 +14,12 @@ import {
   AiOutlineExport as ExportIcon,
   AiOutlineTag as TagIcon,
 } from 'react-icons/ai';
-import { TagModuleDialog } from './TagModuleDialog';
-import { ExportModuleDialog } from './ExportModuleDialog';
+import { ModuleTagDialog } from 'components/dialogs/ModuleTagDialog';
+import { ModuleCopyDialog } from 'components/dialogs/ModuleCopyDialog';
+import { ModuleExportDialog } from 'components/dialogs/ModuleExportDialog';
+import { ModuleDeleteDialog } from 'components/dialogs/ModuleDeleteDialog';
+import { DeleteImperativeHandle } from 'components/dialogs';
+
 import { DateTime } from 'luxon';
 
 interface IModuleCardProps {
@@ -38,22 +30,13 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const [openTagDialog, setOpenTagDialog] = useState<boolean>(false);
   const [openExportDialog, setOpenExportDialog] = useState<boolean>(false);
-  const [isValid, setIsValid] = useState<boolean>(false);
-  const { mutate: removeModule, isPending: isDeleting, isSuccess: deleteIsSuccess } = useModuleRemove();
+  const [openCopyDialog, setOpenCopyDialog] = useState<boolean>(false);
+  const deleteDialogRef = useRef<DeleteImperativeHandle>(null);
 
   const { latestVersion } = mod;
 
   const theme = useTheme();
   const navigate = useNavigate();
-
-  const handleOnDelete = (e: MouseEvent) => {
-    e.stopPropagation();
-    removeModule({ moduleId: mod.id });
-  };
-
-  if (deleteIsSuccess) {
-    setOpenDeleteDialog(false);
-  }
 
   const handleOnEditClick = (e: MouseEvent) => {
     e.stopPropagation();
@@ -68,7 +51,7 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
   const handleOnDeleteClick = (e: MouseEvent) => {
     e.stopPropagation();
     if (e.shiftKey) {
-      handleOnDelete(e);
+      deleteDialogRef.current?.triggerDelete();
     } else {
       setOpenDeleteDialog(true);
     }
@@ -81,7 +64,7 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
 
   const handleOnCopyClick = (e: MouseEvent) => {
     e.stopPropagation();
-    navigate({ to: '/modules/$moduleId/copy', params: { moduleId: mod.id } });
+    setOpenCopyDialog(true);
   };
 
   const handleOnOpenClick = (e: MouseEvent) => {
@@ -108,9 +91,13 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
               <ActionIconsContainer>
                 <Tooltip>
                   <Tooltip.Trigger>
-                    <Chip variant="outline" color={newestTag ? 'primary' : 'secondary'} label={newestTag ?? 'None'} />
+                    <Chip
+                      variant="outline"
+                      color={newestTag ? 'primary' : 'secondary'}
+                      label={newestTag ?? 'no tags'}
+                    />
                   </Tooltip.Trigger>
-                  <Tooltip.Content>Latest version</Tooltip.Content>
+                  <Tooltip.Content>Latest tag</Tooltip.Content>
                 </Tooltip>
                 {mod.builtin && (
                   <Tooltip>
@@ -179,46 +166,21 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
           </InnerBody>
         </Card.Body>
       </Card>
-      <Dialog open={openDeleteDialog} onOpenChange={setOpenDeleteDialog}>
-        <Dialog.Content>
-          <Dialog.Heading size={4}>
-            Delete Module: <span style={{ textTransform: 'capitalize' }}>{mod.name}</span>{' '}
-          </Dialog.Heading>
-          <Dialog.Body size="medium">
-            <p>
-              Are you sure you want to delete the module <strong>{mod.name}</strong>? To confirm, type the module name
-              below.
-            </p>
-            <ValueConfirmationField
-              id="deleteModuleConfirmation"
-              onValidChange={(valid) => setIsValid(valid)}
-              value={mod.name}
-              label="Module name"
-            />
-            <Button
-              isLoading={isDeleting}
-              onClick={(e) => handleOnDelete(e)}
-              fullWidth
-              disabled={!isValid}
-              text="Delete module"
-              color="error"
-            />
-          </Dialog.Body>
-        </Dialog.Content>
-      </Dialog>
-      <TagModuleDialog
+      <ModuleTagDialog moduleId={mod.id} moduleName={mod.name} open={openTagDialog} onOpenChange={setOpenTagDialog} />
+      <ModuleDeleteDialog
+        ref={deleteDialogRef}
         moduleId={mod.id}
         moduleName={mod.name}
-        openDialog={openTagDialog}
-        setOpenDialog={setOpenTagDialog}
+        open={openDeleteDialog}
+        onOpenChange={setOpenDeleteDialog}
       />
-
-      <ExportModuleDialog
+      <ModuleCopyDialog mod={mod} open={openCopyDialog} onOpenChange={setOpenCopyDialog} />
+      <ModuleExportDialog
         moduleId={mod.id}
         moduleName={mod.name}
         moduleVersions={mod.versions}
-        openDialog={openExportDialog}
-        setOpenDialog={setOpenExportDialog}
+        open={openExportDialog}
+        onOpenChange={setOpenExportDialog}
       />
     </>
   );

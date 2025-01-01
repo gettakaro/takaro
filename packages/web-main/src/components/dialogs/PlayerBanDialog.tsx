@@ -6,6 +6,7 @@ import { FC } from 'react';
 import { Button, DatePicker, Dialog, FormError, TextAreaField } from '@takaro/lib-components';
 import { GameServerSelectQueryField } from 'components/selects';
 import { DateTime } from 'luxon';
+import { RequiredDialogOptions } from '.';
 
 const validationSchema = z.object({
   reason: z.string().min(1).max(100),
@@ -13,13 +14,12 @@ const validationSchema = z.object({
   expiresAt: z.string().optional(),
 });
 
-interface BanPlayerDialogProps {
-  openDialog: boolean;
-  setOpenDialog: (value: boolean) => void;
-  player: { name: string; id: string };
+interface PlayerBanDialogProps extends RequiredDialogOptions {
+  playerId: string;
+  playerName: string;
 }
 
-export const BanPlayerDialog: FC<BanPlayerDialogProps> = ({ openDialog, setOpenDialog, player }) => {
+export const PlayerBanDialog: FC<PlayerBanDialogProps> = ({ playerId, playerName, ...dialogOptions }) => {
   const { handleSubmit, control } = useForm<z.infer<typeof validationSchema>>({
     resolver: zodResolver(validationSchema),
   });
@@ -27,7 +27,7 @@ export const BanPlayerDialog: FC<BanPlayerDialogProps> = ({ openDialog, setOpenD
   const { mutate: mutateBanPlayer, isPending: isLoadingBanPlayer, error: banError, isSuccess } = useBanPlayer();
 
   if (isSuccess) {
-    setOpenDialog(false);
+    dialogOptions.onOpenChange(false);
   }
 
   const handleOnBanPlayer: SubmitHandler<z.infer<typeof validationSchema>> = async ({
@@ -38,13 +38,13 @@ export const BanPlayerDialog: FC<BanPlayerDialogProps> = ({ openDialog, setOpenD
     // If no gameServerId is provided, the ban is considered global. But isGlobal always needs to be set explicitly.
     // No ghosts in the code!
     const isGlobal = !!gameServerId;
-    mutateBanPlayer({ playerId: player.id, reason, gameServerId, isGlobal, until: expiresAt });
+    mutateBanPlayer({ playerId, reason, gameServerId, isGlobal, until: expiresAt });
   };
 
   return (
-    <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+    <Dialog {...dialogOptions}>
       <Dialog.Content>
-        <Dialog.Heading>ban player: {player.name}</Dialog.Heading>
+        <Dialog.Heading>ban player: {playerName}</Dialog.Heading>
         <Dialog.Body size="medium">
           <form onSubmit={handleSubmit(handleOnBanPlayer)}>
             <GameServerSelectQueryField

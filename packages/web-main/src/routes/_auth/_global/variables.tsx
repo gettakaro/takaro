@@ -21,8 +21,8 @@ import {
 } from 'react-icons/ai';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { VariableValueDetail } from './-variables/VariableValueDetail';
-import { VariableDeleteDialog } from './-variables/VariableDeleteDialog';
-import { VariablesDeleteDialog } from './-variables/VariablesDeleteDialog';
+import { VariableDeleteDialog } from 'components/dialogs/VariableDeleteDialog';
+import { VariablesDeleteDialog } from 'components/dialogs/VariablesDeleteDialog';
 import { Outlet, createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
 import { hasPermission } from 'hooks/useHasPermission';
@@ -177,10 +177,10 @@ function Component() {
   const p =
     !isLoading && data
       ? {
-          paginationState: pagination.paginationState,
-          setPaginationState: pagination.setPaginationState,
-          pageOptions: pagination.getPageOptions(data),
-        }
+        paginationState: pagination.paginationState,
+        setPaginationState: pagination.setPaginationState,
+        pageOptions: pagination.getPageOptions(data),
+      }
       : undefined;
 
   return (
@@ -226,8 +226,8 @@ function Component() {
       <Outlet />
       <VariablesDeleteDialog
         variableIds={selectedVariableIds}
-        openDialog={openVariablesDialog}
-        setOpenDialog={setOpenVariablesDialog}
+        open={openVariablesDialog}
+        onOpenChange={setOpenVariablesDialog}
       />
     </Fragment>
   );
@@ -264,7 +264,15 @@ const VariableMenu: FC<{ variable: VariableOutputDTO }> = ({ variable }) => {
           />
         </Dropdown.Menu>
       </Dropdown>
-      <VariableDeleteDialog variable={variable} openDialog={openVariableDialog} setOpenDialog={setOpenVariableDialog} />
+      <VariableDeleteDialog
+        variableId={variable.id}
+        variableKey={variable.key}
+        gameServerName={variable.gameServer?.name}
+        playerName={variable.player?.name}
+        moduleName={variable.module?.name}
+        open={openVariableDialog}
+        onOpenChange={setOpenVariableDialog}
+      />
     </>
   );
 };

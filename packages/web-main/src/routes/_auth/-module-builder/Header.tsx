@@ -1,10 +1,9 @@
 import { styled, Button, Tooltip } from '@takaro/lib-components';
-import { CopyModulePopOver } from './CopyModulePopOver';
 import { useModuleBuilderContext } from './useModuleBuilderStore';
 import { useNavigate } from '@tanstack/react-router';
 import { UnControlledModuleVersionTagSelectField } from 'components/selects/ModuleVersionSelectField';
 import { useState } from 'react';
-import { TagModuleDialog } from 'components/cards/ModuleDefinitionCard/TagModuleDialog';
+import { ModuleTagDialog } from 'components/dialogs/ModuleTagDialog';
 
 const Container = styled.header`
   width: 100%;
@@ -51,19 +50,19 @@ export const Header = () => {
       </Flex>
       <Flex>
         <span>{moduleName}</span>
-        <CopyModulePopOver moduleId={moduleId} />
+        {/*<CopyModulePopOver moduleId={moduleId} />*/}
       </Flex>
 
       <Flex>
-        <Tooltip>
-          <Tooltip.Trigger disabled={!isLatest}>
+        <Tooltip disabled={!isLatest}>
+          <Tooltip.Trigger>
             <Button text="Tag version" disabled={!isLatest} onClick={() => setOpenTagDialog(true)} />
           </Tooltip.Trigger>
           <Tooltip.Content>Only the latest version can be used to create a new tagged version</Tooltip.Content>
         </Tooltip>
-        <TagModuleDialog
-          openDialog={openTagDialog}
-          setOpenDialog={setOpenTagDialog}
+        <ModuleTagDialog
+          open={openTagDialog}
+          onOpenChange={setOpenTagDialog}
           moduleId={moduleId}
           moduleName={moduleName}
         />

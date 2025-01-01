@@ -1,12 +1,9 @@
 import { ModuleInstallationOutputDTO, ModuleOutputDTO, PERMISSIONS } from '@takaro/apiclient';
 import {
-  Dialog,
-  Button,
   IconButton,
   Card,
   useTheme,
   Dropdown,
-  ValueConfirmationField,
   Chip,
   DropdownButton,
   Action,
@@ -15,11 +12,8 @@ import {
   Tooltip,
 } from '@takaro/lib-components';
 import { PermissionsGuard } from 'components/PermissionsGuard';
-import { useSnackbar } from 'notistack';
-
 import { AiOutlineArrowRight as ArrowRightIcon } from 'react-icons/ai';
-
-import { FC, useState, MouseEvent } from 'react';
+import { FC, useState, MouseEvent, useRef } from 'react';
 import {
   AiOutlineDelete as DeleteIcon,
   AiOutlineSetting as ConfigIcon,
@@ -30,13 +24,13 @@ import {
   AiOutlineCheck as EnableIcon,
   AiOutlineExclamation as NewVersionNotifyIcon,
 } from 'react-icons/ai';
-
 import { FaExchangeAlt as ChangeVersionIcon } from 'react-icons/fa';
-
 import { useNavigate } from '@tanstack/react-router';
 import { SpacedRow, ActionIconsContainer, InnerBody } from '../style';
-import { useGameServerModuleInstall, useGameServerModuleUninstall } from 'queries/gameserver';
+import { useGameServerModuleInstall } from 'queries/gameserver';
 import { getNewestVersionExcludingLatestTag, versionGt, versionLt } from 'util/ModuleVersionHelpers';
+import { DeleteImperativeHandle } from 'components/dialogs';
+import { ModuleUninstallDialog } from 'components/dialogs/ModuleUninstallDialog';
 
 interface IModuleCardProps {
   mod: ModuleOutputDTO;
@@ -47,36 +41,23 @@ interface IModuleCardProps {
 
 export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gameServerId }) => {
   const [openDialog, setOpenDialog] = useState<boolean>(false);
-  const [valid, setValid] = useState<boolean>(false);
-  const { mutateAsync: uninstallModule, isPending: isDeleting, isSuccess } = useGameServerModuleUninstall();
   const { mutateAsync: installModule } = useGameServerModuleInstall();
   const navigate = useNavigate();
   const theme = useTheme();
   const [openVersionPopover, setOpenVersionPopover] = useState<boolean>(false);
   const [selectedVersion, setSelectedVersion] = useState<string | null>(null);
-  const { enqueueSnackbar } = useSnackbar();
+  const uninstallImperativeHandle = useRef<DeleteImperativeHandle>();
 
   const { versions, latestVersion } = mod;
 
   const handleOnDeleteClick = (e: MouseEvent) => {
     e.stopPropagation();
     if (e.shiftKey) {
-      handleUninstall(e);
+      uninstallImperativeHandle.current?.triggerDelete();
     } else {
       setOpenDialog(true);
     }
   };
-
-  const handleUninstall = async (e: MouseEvent) => {
-    e.stopPropagation();
-    if (!installation) throw new Error('No installation found');
-    await uninstallModule({ gameServerId, versionId: installation.version.id });
-    setOpenDialog(false);
-  };
-
-  if (isSuccess) {
-    enqueueSnackbar('Module uninstalled!', { variant: 'default', type: 'success' });
-  }
 
   const handleOnOpenClick = () => {
     window.open(`/module-builder/${mod.id}`, '_blank');
@@ -145,6 +126,13 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
 
   return (
     <>
+      <ModuleUninstallDialog
+        open={openDialog}
+        onOpenChange={setOpenDialog}
+        gameServerId={gameServerId}
+        versionId={installation!.version.id}
+        moduleName={mod.name}
+      />
       <Card data-testid={`module-${mod.id}`}>
         <Card.Body>
           <InnerBody>
@@ -313,31 +301,6 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
           </InnerBody>
         </Card.Body>
       </Card>
-      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-        <Dialog.Content>
-          <Dialog.Heading>Module uninstall</Dialog.Heading>
-          <Dialog.Body>
-            <p style={{ alignContent: 'center' }}>
-              Are you sure you want to uninstall the module <strong>{mod.name}</strong>? The module configuration will
-              be lost. To confirm, type the module name below.
-            </p>
-            <ValueConfirmationField
-              id="uninstallModuleConfirmation"
-              onValidChange={(valid) => setValid(valid)}
-              value={mod.name}
-              label="Module name"
-            />
-            <Button
-              isLoading={isDeleting}
-              onClick={(e) => handleUninstall(e)}
-              fullWidth
-              disabled={!valid}
-              text="Uninstall module"
-              color="error"
-            />
-          </Dialog.Body>
-        </Dialog.Content>
-      </Dialog>
     </>
   );
 };

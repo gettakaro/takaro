@@ -7,25 +7,23 @@ import { z } from 'zod';
 import { SmallModuleVersionOutputDTO } from '@takaro/apiclient';
 import { useSnackbar } from 'notistack';
 import { AiOutlineCheck as CheckMarkIcon } from 'react-icons/ai';
+import { RequiredDialogOptions } from '.';
 
-interface ExportModuleDialogProps {
+interface ModuleExportDialogProps extends RequiredDialogOptions {
   moduleId: string;
   moduleName: string;
   moduleVersions: SmallModuleVersionOutputDTO[];
-  openDialog: boolean;
-  setOpenDialog: (open: boolean) => void;
 }
 
 const validationSchema = z.object({
   versionIds: z.array(z.string()),
 });
 
-export const ExportModuleDialog: FC<ExportModuleDialogProps> = ({
-  openDialog,
-  setOpenDialog,
+export const ModuleExportDialog: FC<ModuleExportDialogProps> = ({
   moduleId,
   moduleName,
   moduleVersions,
+  ...dialogOptions
 }) => {
   const { mutateAsync, isPending: isExporting } = exportedModuleOptions();
   const [error, setError] = useState<string | null>(null);
@@ -64,7 +62,7 @@ export const ExportModuleDialog: FC<ExportModuleDialogProps> = ({
             </div>
           ),
         });
-        setOpenDialog(false);
+        dialogOptions.onOpenChange(false);
       }
     } catch (error) {
       setError('Failed to export module!');
@@ -72,7 +70,7 @@ export const ExportModuleDialog: FC<ExportModuleDialogProps> = ({
   };
 
   return (
-    <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+    <Dialog {...dialogOptions}>
       <Dialog.Content>
         <Dialog.Heading size={4}>
           Export module: <span style={{ textTransform: 'capitalize' }}>{moduleName}</span>{' '}

@@ -6,19 +6,18 @@ import { FC } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
 import semver from 'semver';
+import { RequiredDialogOptions } from '.';
 
-interface TagModuleDialogProps {
+interface ModuleTagDialogProps extends RequiredDialogOptions {
   moduleId: string;
   moduleName: string;
-  openDialog: boolean;
-  setOpenDialog: (open: boolean) => void;
 }
 
 const validationSchema = z.object({
   versionLevel: z.enum(['major', 'minor', 'patch']),
 });
 
-export const TagModuleDialog: FC<TagModuleDialogProps> = ({ openDialog, setOpenDialog, moduleId, moduleName }) => {
+export const ModuleTagDialog: FC<ModuleTagDialogProps> = ({ moduleId, moduleName, ...dialogOptions }) => {
   const { mutate: tagModule, isPending: isTagging, isSuccess: tagIsSuccess, error: tagError } = useTagModule();
   const { data: moduleVersions } = useQuery(
     moduleVersionsQueryOptions({
@@ -44,7 +43,7 @@ export const TagModuleDialog: FC<TagModuleDialogProps> = ({ openDialog, setOpenD
   }
 
   if (tagIsSuccess) {
-    setOpenDialog(false);
+    dialogOptions.onOpenChange(false);
   }
 
   const currentVersion = moduleVersions?.data[0].tag;
@@ -53,7 +52,7 @@ export const TagModuleDialog: FC<TagModuleDialogProps> = ({ openDialog, setOpenD
   };
 
   return (
-    <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+    <Dialog {...dialogOptions}>
       <Dialog.Content>
         <Dialog.Heading size={4}>
           Tag Module: <span style={{ textTransform: 'capitalize' }}>{moduleName}</span>{' '}

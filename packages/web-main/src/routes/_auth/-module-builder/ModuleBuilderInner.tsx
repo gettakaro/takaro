@@ -117,7 +117,7 @@ export const ModuleBuilderInner: FC = () => {
         {activeFile ? (
           <Editor readOnly={readOnly} />
         ) : (
-          <EditorPlaceholder>Hi cutie, select a file to start editing :)</EditorPlaceholder>
+          <EditorPlaceholder>Select a file to start editing :)</EditorPlaceholder>
         )}
       </Content>
     </Wrapper>
