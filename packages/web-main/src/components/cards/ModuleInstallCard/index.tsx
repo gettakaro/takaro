@@ -142,9 +142,10 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
               <h2 style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>{mod.name}</h2>
               {installation && (
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-                  {versionGt(getNewestVersionExcludingLatestTag(mod.versions).tag, installation.version.tag) && (
-                    <IconTooltip icon={<NewVersionNotifyIcon />}>New version available</IconTooltip>
-                  )}
+                  {getNewestVersionExcludingLatestTag(mod.versions) &&
+                    versionGt(getNewestVersionExcludingLatestTag(mod.versions).tag, installation.version.tag) && (
+                      <IconTooltip icon={<NewVersionNotifyIcon />}>New version available</IconTooltip>
+                    )}
                   {!installation.systemConfig['enabled'] && (
                     <Tooltip>
                       <Tooltip.Trigger asChild>
