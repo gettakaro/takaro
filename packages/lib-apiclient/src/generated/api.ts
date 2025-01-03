@@ -4982,6 +4982,80 @@ export interface LoginOutputDTOAPI {
 /**
  * 
  * @export
+ * @interface MapInfoDTO
+ */
+export interface MapInfoDTO {
+  /**
+   *
+   * @type {boolean}
+   * @memberof MapInfoDTO
+   */
+  enabled: boolean;
+  /**
+   *
+   * @type {number}
+   * @memberof MapInfoDTO
+   */
+  mapBlockSize: number;
+  /**
+   *
+   * @type {number}
+   * @memberof MapInfoDTO
+   */
+  maxZoom: number;
+  /**
+   *
+   * @type {number}
+   * @memberof MapInfoDTO
+   */
+  mapSizeX: number;
+  /**
+   *
+   * @type {number}
+   * @memberof MapInfoDTO
+   */
+  mapSizeY: number;
+  /**
+   *
+   * @type {number}
+   * @memberof MapInfoDTO
+   */
+  mapSizeZ: number;
+}
+/**
+ *
+ * @export
+ * @interface MapTileInputDTO
+ */
+export interface MapTileInputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof MapTileInputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {number}
+   * @memberof MapTileInputDTO
+   */
+  z: number;
+  /**
+   *
+   * @type {number}
+   * @memberof MapTileInputDTO
+   */
+  x: number;
+  /**
+   *
+   * @type {number}
+   * @memberof MapTileInputDTO
+   */
+  y: number;
+}
+/**
+ *
+ * @export
  * @interface MeOutoutDTOAPI
  */
 export interface MeOutoutDTOAPI {

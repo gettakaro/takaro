@@ -23,11 +23,16 @@ const shopSetup = async function (this: IntegrationTest<IShopSetup>): Promise<IS
     value: 'test coin',
   });
 
-  const items = (await this.client.item.itemControllerSearch({ sortBy: 'name' })).data.data;
+  const items = (
+    await this.client.item.itemControllerSearch({
+      sortBy: 'name',
+      filters: { gameserverId: [setupData.gameServer1.id] },
+    })
+  ).data.data;
 
   const listingRes = await this.client.shopListing.shopListingControllerCreate({
     gameServerId: setupData.gameServer1.id,
-    items: [{ itemId: items[0].id, amount: 1 }],
+    items: [{ code: items[0].code, amount: 1 }],
     price: 100,
     name: 'Test item',
   });
@@ -60,7 +65,7 @@ const tests = [
       const items = (await this.client.item.itemControllerSearch({ filters: { name: ['Stone'] } })).data.data;
       const res = await this.client.shopListing.shopListingControllerCreate({
         gameServerId: this.setupData.gameServer1.id,
-        items: [{ itemId: items[0].id, amount: 1 }],
+        items: [{ code: items[0].code, amount: 1 }],
         price: 150,
         name: 'Test item',
       });
@@ -80,7 +85,7 @@ const tests = [
     test: async function () {
       const res = await this.client.shopListing.shopListingControllerUpdate(this.setupData.listing.id, {
         price: 200,
-        items: [{ itemId: this.setupData.items[1].id, amount: 5 }],
+        items: [{ code: this.setupData.items[1].code, amount: 5 }],
         gameServerId: this.setupData.gameServer1.id,
         name: 'Updated item',
       });
@@ -132,7 +137,7 @@ const tests = [
     test: async function () {
       return this.client.shopListing.shopListingControllerCreate({
         gameServerId: this.setupData.gameServer1.id,
-        items: [{ itemId: this.setupData.items[0].id, amount: 1 }],
+        items: [{ code: this.setupData.items[1].code, amount: 1 }],
         price: -100,
         name: 'Test item',
       });
@@ -148,7 +153,7 @@ const tests = [
     test: async function () {
       return this.client.shopListing.shopListingControllerCreate({
         gameServerId: this.setupData.gameServer1.id,
-        items: [{ itemId: this.setupData.items[0].id, amount: 1 }],
+        items: [{ code: this.setupData.items[1].code, amount: 1 }],
         price: 0,
         name: 'Test item',
       });
@@ -180,7 +185,7 @@ const tests = [
         Array.from({ length: listingsToMake }).map(async (_, i) => {
           return this.client.shopListing.shopListingControllerCreate({
             gameServerId: this.setupData.gameServer1.id,
-            items: [{ itemId: items[0].id, amount: 1 }],
+            items: [{ code: items[0].code, amount: 1 }],
             price: 100 + i,
             name: `Test item ${i}`,
           });
@@ -222,6 +227,8 @@ const tests = [
       expect(shop2Listings).to.have.length(shop1Listings.length);
       // Check createdAt and compare to before to ensure these are new listings
       expect(shop2ListingsBefore.every((l) => shop2Listings.some((l2) => l2.createdAt < l.createdAt))).to.be.true;
+      // Ensure there are items in the listing
+      expect(shop2Listings.every((l) => l.items.length > 0)).to.be.true;
     },
   }),
   new IntegrationTest<IShopSetup>({
@@ -237,7 +244,7 @@ const tests = [
         Array.from({ length: listingsToMake }).map(async (_, i) => {
           return this.client.shopListing.shopListingControllerCreate({
             gameServerId: this.setupData.gameServer1.id,
-            items: [{ itemId: items[0].id, amount: 1 }],
+            items: [{ code: items[0].code, amount: 1 }],
             price: 100 + i,
             name: `Test item ${i}`,
           });
@@ -277,6 +284,8 @@ const tests = [
         })
       ).data.data;
       expect(shop2Listings).to.have.length(shop1Listings.length + shop2ListingsBefore.length);
+      // Ensure there are items in the listing
+      expect(shop2Listings.every((l) => l.items.length > 0)).to.be.true;
     },
   }),
   new IntegrationTest<IShopSetup>({
@@ -292,7 +301,7 @@ const tests = [
         Array.from({ length: listingsToMake }).map(async (_, i) => {
           return this.client.shopListing.shopListingControllerCreate({
             gameServerId: this.setupData.gameServer1.id,
-            items: [{ itemId: items[0].id, amount: 1 }],
+            items: [{ code: items[0].code, amount: 1 }],
             price: 100 + i,
             name: `Test item ${i}`,
           });

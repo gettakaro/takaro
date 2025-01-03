@@ -15,7 +15,7 @@ export class GameServerModel extends TakaroModel {
 
   connectionInfo!: Record<string, unknown>;
   reachable!: boolean;
-
+  deletedAt?: Date;
   type!: GAME_SERVER_TYPE;
 
   static get relationMappings() {
@@ -62,7 +62,10 @@ export class GameServerRepo extends ITakaroRepo<
 
   async find(filters: ITakaroQuery<GameServerOutputDTO>) {
     const { query } = await this.getModel();
-    const result = await new QueryBuilder<GameServerModel, GameServerOutputDTO>(filters).build(query);
+    const qry = new QueryBuilder<GameServerModel, GameServerOutputDTO>(filters).build(query);
+    qry.andWhere('deletedAt', null);
+    const result = await qry;
+
     return {
       total: result.total,
       results: await Promise.all(result.results.map((item) => new GameServerOutputDTO(item))),
@@ -71,7 +74,7 @@ export class GameServerRepo extends ITakaroRepo<
 
   async findOne(id: string, decryptConnectionInfo: boolean): Promise<GameServerOutputDTO> {
     const { query } = await this.getModel();
-    const data = await query.findById(id);
+    const data = await query.findById(id).andWhere('deletedAt', null);
 
     if (!data) {
       throw new errors.NotFoundError(`Record with id ${id} not found`);
@@ -102,7 +105,7 @@ export class GameServerRepo extends ITakaroRepo<
 
   async delete(id: string): Promise<boolean> {
     const { query } = await this.getModel();
-    const data = await query.deleteById(id);
+    const data = await query.update({ deletedAt: new Date() }).where({ id });
     return !!data;
   }
 

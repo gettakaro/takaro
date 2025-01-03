@@ -92,14 +92,14 @@ const shopSetup = async function (this: IntegrationTest<IShopSetup>): Promise<IS
 
   const listing100Res = await this.client.shopListing.shopListingControllerCreate({
     gameServerId: setupData.gameServer1.id,
-    items: [{ itemId: items[0].id, amount: 1 }],
+    items: [{ code: items[0].code, amount: 1 }],
     price: 100,
     name: 'Test item',
   });
 
   const listing33Res = await this.client.shopListing.shopListingControllerCreate({
     gameServerId: setupData.gameServer1.id,
-    items: [{ itemId: items[1].id, amount: 1 }],
+    items: [{ code: items[1].code, amount: 1 }],
     price: 33,
     name: 'Test item 2',
   });
@@ -728,7 +728,7 @@ const tests = [
       const listingGameserver1 = (
         await this.client.shopListing.shopListingControllerCreate({
           gameServerId: this.setupData.gameServer1.id,
-          items: [{ itemId: this.setupData.items[0].id, amount: 1 }],
+          items: [{ code: this.setupData.items[0].code, amount: 1 }],
           price: 1,
           name: 'Test item 1',
         })
@@ -737,7 +737,7 @@ const tests = [
       const listingGameserver2 = (
         await this.client.shopListing.shopListingControllerCreate({
           gameServerId: this.setupData.gameServer2.id,
-          items: [{ itemId: this.setupData.items[0].id, amount: 1 }],
+          items: [{ code: this.setupData.items[0].code, amount: 1 }],
           price: 1,
           name: 'Test item 2',
         })
@@ -780,7 +780,7 @@ const tests = [
       const listingGameserver1 = (
         await this.client.shopListing.shopListingControllerCreate({
           gameServerId: this.setupData.gameServer1.id,
-          items: [{ itemId: this.setupData.items[0].id, amount: 1 }],
+          items: [{ code: this.setupData.items[0].code, amount: 1 }],
           price: 1,
           name: 'Test item 1',
         })
@@ -789,7 +789,7 @@ const tests = [
       const listingGameserver2 = (
         await this.client.shopListing.shopListingControllerCreate({
           gameServerId: this.setupData.gameServer2.id,
-          items: [{ itemId: this.setupData.items[0].id, amount: 1 }],
+          items: [{ code: this.setupData.items[0].code, amount: 1 }],
           price: 1,
           name: 'Test item 2',
         })
@@ -831,7 +831,7 @@ const tests = [
       const listingGameserver1 = (
         await this.client.shopListing.shopListingControllerCreate({
           gameServerId: this.setupData.gameServer1.id,
-          items: [{ itemId: this.setupData.items[0].id, amount: 1 }],
+          items: [{ code: this.setupData.items[0].code, amount: 1 }],
           price: 1,
           name: 'Test item 1',
         })
@@ -840,7 +840,7 @@ const tests = [
       const listingGameserver2 = (
         await this.client.shopListing.shopListingControllerCreate({
           gameServerId: this.setupData.gameServer2.id,
-          items: [{ itemId: this.setupData.items[0].id, amount: 1 }],
+          items: [{ code: this.setupData.items[0].code, amount: 1 }],
           price: 1,
           name: 'Test item 2',
         })

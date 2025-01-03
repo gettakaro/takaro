@@ -166,6 +166,13 @@ export class GameServerService extends TakaroService<
       time: new Date().toISOString(),
     });
     await this.repo.delete(id);
+    await queueService.queues.system.queue.add(
+      {
+        domainId: this.domainId,
+      },
+      {},
+      'gameServerDelete',
+    );
     return id;
   }
 
@@ -443,5 +450,15 @@ export class GameServerService extends TakaroService<
     return {
       id: job.id,
     };
+  }
+
+  async getMapInfo(gameServerId: string) {
+    const gameInstance = await this.getGame(gameServerId);
+    return gameInstance.getMapInfo();
+  }
+
+  async getMapTile(gameServerId: string, x: number, y: number, z: number) {
+    const gameInstance = await this.getGame(gameServerId);
+    return gameInstance.getMapTile(x, y, z);
   }
 }

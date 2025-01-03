@@ -199,7 +199,8 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
     }, [value, children]);
 
     const renderSelect = () => {
-      const hasOptions = options && Children.count(options[0].props.children) > 1;
+      const hasProps = options && options[0].props;
+      const hasOptions = hasProps && Children.count(options[0].props.children) > 1;
 
       // initialFocus=-1 is used to prevent the first item from being focused when the list opens
       return (

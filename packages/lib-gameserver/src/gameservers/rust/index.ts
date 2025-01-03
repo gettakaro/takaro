@@ -7,6 +7,7 @@ import {
   IGameServer,
   IItemDTO,
   IPlayerReferenceDTO,
+  MapInfoDTO,
   TestReachabilityOutputDTO,
 } from '../../interfaces/GameServer.js';
 import { RustConnectionInfo } from './connectionInfo.js';
@@ -76,7 +77,7 @@ export class Rust implements IGameServer {
     const lines = rawResponse.rawResult.split('\n');
 
     for (const line of lines) {
-      const matches = /(\d{17}) \w+\s{4}\(([-\d\.]+), ([-\d\.]+), ([-\d\.]+)\)/.exec(line);
+      const matches = /(\d{17}) \w+\s+\(([-\d\.]+), ([-\d\.]+), ([-\d\.]+)\)/.exec(line);
 
       if (matches) {
         const steamId = matches[1];
@@ -236,5 +237,20 @@ export class Rust implements IGameServer {
 
   async shutdown(): Promise<void> {
     await this.executeConsoleCommand('quit');
+  }
+
+  async getMapInfo(): Promise<MapInfoDTO> {
+    return new MapInfoDTO({
+      enabled: false,
+      mapBlockSize: 0,
+      maxZoom: 0,
+      mapSizeX: 0,
+      mapSizeY: 0,
+      mapSizeZ: 0,
+    });
+  }
+
+  async getMapTile(_x: number, _y: number, _z: number): Promise<Buffer> {
+    throw new Error('Not implemented');
   }
 }

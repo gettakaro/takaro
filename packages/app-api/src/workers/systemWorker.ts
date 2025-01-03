@@ -40,6 +40,8 @@ export async function processJob(job: Job<IBaseJobData>) {
         },
       );
     }
+  } else if (job.name === 'gameServerDelete') {
+    await deleteGameServers(job.data.domainId);
   } else {
     ctx.addData({ domain: job.data.domainId });
     log.info('🧹 Running system tasks for domain');
@@ -47,6 +49,7 @@ export async function processJob(job: Job<IBaseJobData>) {
     await cleanEvents(job.data.domainId);
     await cleanExpiringVariables(job.data.domainId);
     await ensureCronjobsAreScheduled(job.data.domainId);
+    await deleteGameServers(job.data.domainId);
   }
 }
 
@@ -87,4 +90,9 @@ async function ensureCronjobsAreScheduled(domainId: string) {
       }),
     );
   }
+async function deleteGameServers(domainId: string) {
+  const gameserverService = new GameServerService(domainId);
+  const repo = gameserverService.repo;
+  const { query } = await repo.getModel();
+  await query.whereNotNull('deletedAt').delete();
 }

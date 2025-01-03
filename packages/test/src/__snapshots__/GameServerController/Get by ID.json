@@ -5,6 +5,7 @@
       "id": "2600aac2-d5b8-455d-bf6a-12a242f5ee0a",
       "createdAt": "2023-12-24T15:22:57.034Z",
       "updatedAt": "2023-12-24T15:22:57.034Z",
+      "deletedAt": null,
       "name": "Test gameserver",
       "enabled": true,
       "connectionInfo": {
