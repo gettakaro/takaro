@@ -223,7 +223,7 @@ export const useGameServerSendMessage = () => {
 
 export const moduleInstallationsOptions = (queryParams: ModuleInstallationSearchInputDTO = {}) => {
   return queryOptions<ModuleInstallationOutputDTO[], AxiosError<ModuleInstallationOutputDTOAPI>>({
-    queryKey: ModuleInstallationKeys.list(),
+    queryKey: [ModuleInstallationKeys.list(), ...queryParamsToArray(queryParams)],
     queryFn: async () =>
       (await getApiClient().module.moduleInstallationsControllerGetInstalledModules(queryParams)).data.data,
   });
