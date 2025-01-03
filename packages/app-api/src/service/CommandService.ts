@@ -19,7 +19,7 @@ import { ModuleService } from './ModuleService.js';
 import { UserService } from './User/index.js';
 
 export function commandsRunningKey(data: ICommandJobData) {
-  return `commands-running:${data.pog.id}`;
+  return `commands-running:${data.pog.id}:${data.itemId}`;
 }
 
 export class CommandOutputDTO extends TakaroModelDTO<CommandOutputDTO> {
