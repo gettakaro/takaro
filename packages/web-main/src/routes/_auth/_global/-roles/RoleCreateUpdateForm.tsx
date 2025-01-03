@@ -10,6 +10,8 @@ import {
   Switch,
   TextField,
   useTheme,
+  Chip,
+  Tooltip,
 } from '@takaro/lib-components';
 import { PermissionOutputDTO, RoleOutputDTO } from '@takaro/apiclient';
 import { useForm, SubmitHandler, Control } from 'react-hook-form';
@@ -25,7 +27,7 @@ const ButtonContainer = styled.div`
 const PermissionContainer = styled.div<{ hasCount: boolean }>`
   ${({ hasCount, theme }) => hasCount && `border: 1px solid ${theme.colors.backgroundAccent}`};
   padding: ${({ theme }) => ` ${theme.spacing[1]} ${theme.spacing[1]} ${theme.spacing[0]} ${theme.spacing[1]}`};
-  border-radius: ${({ theme }) => theme.borderRadius.large};
+  border-r
   margin-bottom: ${({ theme }) => theme.spacing[1]};
 
   &:focus-within {
@@ -71,6 +73,7 @@ export const RoleForm: FC<CreateUpdateRoleFormProps> = ({
       if (!acc[moduleId]) {
         acc[moduleId] = {
           module: permission.module,
+          moduleVersion: permission.version!,
           permissions: [],
         };
       }
@@ -103,6 +106,14 @@ export const RoleForm: FC<CreateUpdateRoleFormProps> = ({
     },
   });
 
+  const multipleVersionsOfSameModuleInstalled = (groupedModulePermissions: any, currentKey: any): boolean => {
+    const withoutCurrentKey = Object.keys(groupedModulePermissions).filter((key) => key != currentKey);
+    return withoutCurrentKey.some(
+      // NOTE: I expected the moduleIds to be the same, but they are not, so we need to compare the module names instead.
+      (key) => groupedModulePermissions[key].module.name == groupedModulePermissions[currentKey].module.name,
+    );
+  };
+
   return (
     <Drawer open={open} onOpenChange={setOpen} promptCloseConfirmation={formState.isDirty}>
       <Drawer.Content>
@@ -127,15 +138,48 @@ export const RoleForm: FC<CreateUpdateRoleFormProps> = ({
                 ))}
               </CollapseList.Item>
               <CollapseList.Item title="Module permissions">
-                {}
-                {Object.values(groupedModulePermissions).map((group: any) => (
-                  <Card key={group.module.id} variant="outline" style={{ marginBottom: theme.spacing['2'] }}>
+                {Object.keys(groupedModulePermissions).map((key: any) => (
+                  <Card
+                    key={groupedModulePermissions[key].module.id}
+                    variant="outline"
+                    style={{ marginBottom: theme.spacing['2'] }}
+                  >
                     <Card.Body>
-                      <h3 style={{ marginBottom: theme.spacing['1'], textTransform: 'capitalize' }}>
-                        {group.module.name}
+                      <h3
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          marginBottom: theme.spacing['1'],
+                          textTransform: 'capitalize',
+                        }}
+                      >
+                        <span>{groupedModulePermissions[key].module.name}</span>
+                        <div style={{ display: 'flex' }}>
+                          <Tooltip disabled={!multipleVersionsOfSameModuleInstalled(groupedModulePermissions, key)}>
+                            <Tooltip.Trigger>
+                              <Chip
+                                variant="outline"
+                                color={
+                                  multipleVersionsOfSameModuleInstalled(groupedModulePermissions, key)
+                                    ? 'warning'
+                                    : 'primary'
+                                }
+                                label={`${groupedModulePermissions[key].moduleVersion.tag}`}
+                              />
+                            </Tooltip.Trigger>
+                            <Tooltip.Content>
+                              Multiple versions of this module are be installed on your gameservers. Meaning
+                              <br />
+                              permission with the same name can exist. Make sure you are assigning the correct
+                              <br />
+                              permission to the role.
+                            </Tooltip.Content>
+                          </Tooltip>
+                        </div>
                       </h3>
                       {}
-                      {group.permissions.map((permission: any) => (
+                      {groupedModulePermissions[key].permissions.map((permission: any) => (
                         <PermissionField
                           key={permission.id}
                           permission={permission}
