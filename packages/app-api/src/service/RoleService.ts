@@ -80,19 +80,10 @@ export class SearchRoleInputDTO {
   name: string;
 }
 
-class PermissionModuleDTO extends TakaroDTO<PermissionModuleDTO> {
-  @IsUUID()
-  id: string;
-
-  @IsString()
-  name: string;
-}
-
 export class PermissionOutputDTO extends TakaroModelDTO<PermissionOutputDTO> {
   @IsOptional()
-  @ValidateNested()
-  @Type(() => PermissionModuleDTO)
-  module?: PermissionModuleDTO;
+  @IsUUID('4')
+  moduleVersionId: string;
 
   @IsString()
   @IsNotEmpty()
@@ -361,10 +352,6 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
       .flatMap((mod) =>
         mod.version.permissions.map((permission) => ({
           ...permission,
-          module: {
-            id: mod.id,
-            name: mod.module.name,
-          },
         })),
       ) as PermissionOutputDTO[];
 
