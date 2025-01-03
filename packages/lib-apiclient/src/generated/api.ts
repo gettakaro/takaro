@@ -6389,6 +6389,25 @@ export interface PermissionInputDTO {
 /**
  * 
  * @export
+ * @interface PermissionModuleDTO
+ */
+export interface PermissionModuleDTO {
+    /**
+     * 
+     * @type {string}
+     * @memberof PermissionModuleDTO
+     */
+    'id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PermissionModuleDTO
+     */
+    'name': string;
+}
+/**
+ * 
+ * @export
  * @interface PermissionOnRoleDTO
  */
 export interface PermissionOnRoleDTO {
@@ -6435,6 +6454,18 @@ export interface PermissionOnRoleDTO {
  * @interface PermissionOutputDTO
  */
 export interface PermissionOutputDTO {
+    /**
+     * 
+     * @type {PermissionModuleDTO}
+     * @memberof PermissionOutputDTO
+     */
+    'module'?: PermissionModuleDTO;
+    /**
+     * 
+     * @type {PermissionVersionDTO}
+     * @memberof PermissionOutputDTO
+     */
+    'version'?: PermissionVersionDTO;
     /**
      * 
      * @type {string}
@@ -6502,6 +6533,25 @@ export interface PermissionOutputDTOAPI {
      * @memberof PermissionOutputDTOAPI
      */
     'meta': MetadataOutput;
+}
+/**
+ * 
+ * @export
+ * @interface PermissionVersionDTO
+ */
+export interface PermissionVersionDTO {
+    /**
+     * 
+     * @type {string}
+     * @memberof PermissionVersionDTO
+     */
+    'id': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof PermissionVersionDTO
+     */
+    'tag': string;
 }
 /**
  * 
