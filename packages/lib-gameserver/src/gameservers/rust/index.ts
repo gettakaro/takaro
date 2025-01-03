@@ -77,7 +77,7 @@ export class Rust implements IGameServer {
     const lines = rawResponse.rawResult.split('\n');
 
     for (const line of lines) {
-      const matches = /(\d{17}) \w+\s{4}\(([-\d\.]+), ([-\d\.]+), ([-\d\.]+)\)/.exec(line);
+      const matches = /(\d{17}) \w+\s+\(([-\d\.]+), ([-\d\.]+), ([-\d\.]+)\)/.exec(line);
 
       if (matches) {
         const steamId = matches[1];
