@@ -20,6 +20,7 @@ interface EventFilterProps {
     gameServerIds?: string[];
     eventNames?: EventName[];
     dateRange?: { start?: string; end?: string };
+    moduleIds?: string[];
   };
   onSubmit: (data: EventFilterInputs) => void;
   isLoading: boolean;
@@ -45,11 +46,12 @@ export const EventFilter: FC<EventFilterProps> = ({ defaultValues, onSubmit, isL
   const { control, handleSubmit, formState } = useForm<EventFilterInputs>({
     mode: 'onSubmit',
     resolver: zodResolver(eventFilterSchema),
-    defaultValues: {
-      dateRange: defaultValues?.dateRange,
-      playerIds: defaultValues?.playerIds,
-      gameServerIds: defaultValues.gameServerIds,
-      eventNames: defaultValues.eventNames,
+    values: {
+      dateRange: defaultValues?.dateRange ?? { start: undefined, end: undefined },
+      playerIds: defaultValues?.playerIds ?? [],
+      gameServerIds: defaultValues.gameServerIds ?? [],
+      eventNames: defaultValues.eventNames ?? [],
+      moduleIds: defaultValues.moduleIds ?? [],
     },
   });
 
