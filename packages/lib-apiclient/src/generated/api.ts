@@ -4985,76 +4985,76 @@ export interface LoginOutputDTOAPI {
  * @interface MapInfoDTO
  */
 export interface MapInfoDTO {
-  /**
-   *
-   * @type {boolean}
-   * @memberof MapInfoDTO
-   */
-  enabled: boolean;
-  /**
-   *
-   * @type {number}
-   * @memberof MapInfoDTO
-   */
-  mapBlockSize: number;
-  /**
-   *
-   * @type {number}
-   * @memberof MapInfoDTO
-   */
-  maxZoom: number;
-  /**
-   *
-   * @type {number}
-   * @memberof MapInfoDTO
-   */
-  mapSizeX: number;
-  /**
-   *
-   * @type {number}
-   * @memberof MapInfoDTO
-   */
-  mapSizeY: number;
-  /**
-   *
-   * @type {number}
-   * @memberof MapInfoDTO
-   */
-  mapSizeZ: number;
+    /**
+     * 
+     * @type {boolean}
+     * @memberof MapInfoDTO
+     */
+    'enabled': boolean;
+    /**
+     * 
+     * @type {number}
+     * @memberof MapInfoDTO
+     */
+    'mapBlockSize': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof MapInfoDTO
+     */
+    'maxZoom': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof MapInfoDTO
+     */
+    'mapSizeX': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof MapInfoDTO
+     */
+    'mapSizeY': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof MapInfoDTO
+     */
+    'mapSizeZ': number;
 }
 /**
- *
+ * 
  * @export
  * @interface MapTileInputDTO
  */
 export interface MapTileInputDTO {
-  /**
-   *
-   * @type {string}
-   * @memberof MapTileInputDTO
-   */
-  id: string;
-  /**
-   *
-   * @type {number}
-   * @memberof MapTileInputDTO
-   */
-  z: number;
-  /**
-   *
-   * @type {number}
-   * @memberof MapTileInputDTO
-   */
-  x: number;
-  /**
-   *
-   * @type {number}
-   * @memberof MapTileInputDTO
-   */
-  y: number;
+    /**
+     * 
+     * @type {string}
+     * @memberof MapTileInputDTO
+     */
+    'id': string;
+    /**
+     * 
+     * @type {number}
+     * @memberof MapTileInputDTO
+     */
+    'z': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof MapTileInputDTO
+     */
+    'x': number;
+    /**
+     * 
+     * @type {number}
+     * @memberof MapTileInputDTO
+     */
+    'y': number;
 }
 /**
- *
+ * 
  * @export
  * @interface MeOutoutDTOAPI
  */
@@ -6389,25 +6389,6 @@ export interface PermissionInputDTO {
 /**
  * 
  * @export
- * @interface PermissionModuleDTO
- */
-export interface PermissionModuleDTO {
-    /**
-     * 
-     * @type {string}
-     * @memberof PermissionModuleDTO
-     */
-    'id': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof PermissionModuleDTO
-     */
-    'name': string;
-}
-/**
- * 
- * @export
  * @interface PermissionOnRoleDTO
  */
 export interface PermissionOnRoleDTO {
@@ -6456,10 +6437,10 @@ export interface PermissionOnRoleDTO {
 export interface PermissionOutputDTO {
     /**
      * 
-     * @type {PermissionModuleDTO}
+     * @type {string}
      * @memberof PermissionOutputDTO
      */
-    'module'?: PermissionModuleDTO;
+    'moduleVersionId'?: string;
     /**
      * 
      * @type {string}
@@ -8385,7 +8366,13 @@ export interface ShopListingItemMetaInputDTO {
      * @type {string}
      * @memberof ShopListingItemMetaInputDTO
      */
-    'itemId': string;
+    'code'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof ShopListingItemMetaInputDTO
+     */
+    'itemId'?: string;
 }
 /**
  * 
@@ -13810,6 +13797,90 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
             };
         },
         /**
+         * Get map metadata for Leaflet
+         * @summary Get map info
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        gameServerControllerGetMapInfo: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('gameServerControllerGetMapInfo', 'id', id)
+            const localVarPath = `/gameserver/{id}/map/info`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication domainAuth required
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Get a map tile for Leaflet
+         * @summary Get map tile
+         * @param {string} id 
+         * @param {string} x 
+         * @param {string} y 
+         * @param {string} z 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        gameServerControllerGetMapTile: async (id: string, x: string, y: string, z: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'id' is not null or undefined
+            assertParamExists('gameServerControllerGetMapTile', 'id', id)
+            // verify required parameter 'x' is not null or undefined
+            assertParamExists('gameServerControllerGetMapTile', 'x', x)
+            // verify required parameter 'y' is not null or undefined
+            assertParamExists('gameServerControllerGetMapTile', 'y', y)
+            // verify required parameter 'z' is not null or undefined
+            assertParamExists('gameServerControllerGetMapTile', 'z', z)
+            const localVarPath = `/gameserver/{id}/map/tile/{x}/{y}/{z}`
+                .replace(`{${"id"}}`, encodeURIComponent(String(id)))
+                .replace(`{${"x"}}`, encodeURIComponent(String(x)))
+                .replace(`{${"y"}}`, encodeURIComponent(String(y)))
+                .replace(`{${"z"}}`, encodeURIComponent(String(z)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication domainAuth required
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
          * Fetch a gameserver by id
          * @summary Get one
          * @param {string} id 
@@ -14482,6 +14553,35 @@ export const GameServerApiFp = function(configuration?: Configuration) {
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
+         * Get map metadata for Leaflet
+         * @summary Get map info
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async gameServerControllerGetMapInfo(id: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerGetMapInfo(id, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GameServerApi.gameServerControllerGetMapInfo']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Get a map tile for Leaflet
+         * @summary Get map tile
+         * @param {string} id 
+         * @param {string} x 
+         * @param {string} y 
+         * @param {string} z 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async gameServerControllerGetMapTile(id: string, x: string, y: string, z: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerGetMapTile(id, x, y, z, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['GameServerApi.gameServerControllerGetMapTile']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
          * Fetch a gameserver by id
          * @summary Get one
          * @param {string} id 
@@ -14753,6 +14853,29 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
             return localVarFp.gameServerControllerGetImport(id, options).then((request) => request(axios, basePath));
         },
         /**
+         * Get map metadata for Leaflet
+         * @summary Get map info
+         * @param {string} id 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        gameServerControllerGetMapInfo(id: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.gameServerControllerGetMapInfo(id, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Get a map tile for Leaflet
+         * @summary Get map tile
+         * @param {string} id 
+         * @param {string} x 
+         * @param {string} y 
+         * @param {string} z 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        gameServerControllerGetMapTile(id: string, x: string, y: string, z: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.gameServerControllerGetMapTile(id, x, y, z, options).then((request) => request(axios, basePath));
+        },
+        /**
          * Fetch a gameserver by id
          * @summary Get one
          * @param {string} id 
@@ -14981,6 +15104,33 @@ export class GameServerApi extends BaseAPI {
      */
     public gameServerControllerGetImport(id: string, options?: RawAxiosRequestConfig) {
         return GameServerApiFp(this.configuration).gameServerControllerGetImport(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Get map metadata for Leaflet
+     * @summary Get map info
+     * @param {string} id 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof GameServerApi
+     */
+    public gameServerControllerGetMapInfo(id: string, options?: RawAxiosRequestConfig) {
+        return GameServerApiFp(this.configuration).gameServerControllerGetMapInfo(id, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Get a map tile for Leaflet
+     * @summary Get map tile
+     * @param {string} id 
+     * @param {string} x 
+     * @param {string} y 
+     * @param {string} z 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof GameServerApi
+     */
+    public gameServerControllerGetMapTile(id: string, x: string, y: string, z: string, options?: RawAxiosRequestConfig) {
+        return GameServerApiFp(this.configuration).gameServerControllerGetMapTile(id, x, y, z, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
