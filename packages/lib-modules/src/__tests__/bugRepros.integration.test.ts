@@ -114,6 +114,56 @@ const tests = [
     },
   }),
   /**
+   * Repro for `console.log`ging `undefined`
+   */
+  new IntegrationTest<IModuleTestsSetupData>({
+    group,
+    snapshot: false,
+    name: 'Bug repro: console.log in a function works with undefined and null objects',
+    setup: modulesTestSetup,
+    test: async function () {
+      const mod = (
+        await this.client.module.moduleControllerCreate({
+          name: 'Test module',
+        })
+      ).data.data;
+      await this.client.hook.hookControllerCreate({
+        name: 'Test hook 1',
+        moduleId: mod.id,
+        regex: 'test msg',
+        eventType: 'chat-message',
+        function: `import { data, takaro } from '@takaro/helpers';
+        async function main() {
+          console.log(undefined);
+          console.log(null);
+        }
+        await main();`,
+      });
+
+      await this.client.gameserver.gameServerControllerInstallModule(this.setupData.gameserver.id, mod.id);
+
+      const listener = (await new EventsAwaiter().connect(this.client)).waitForEvents(HookEvents.HOOK_EXECUTED, 1);
+
+      await this.client.hook.hookControllerTrigger({
+        eventType: 'chat-message',
+        gameServerId: this.setupData.gameserver.id,
+        moduleId: mod.id,
+        playerId: this.setupData.players[0].id,
+        eventMeta: {
+          msg: 'test msg',
+          channel: EventChatMessageChannelEnum.Global,
+        },
+      });
+
+      const result = (await listener)[0].data.meta.result;
+      expect(result.success).to.be.true;
+      const logs = result.logs;
+      const msgs = logs.map((l: any) => l.msg);
+      expect(msgs[0]).to.be.eq('undefined');
+      expect(msgs[1]).to.be.eq('null');
+    },
+  }),
+  /**
    * Repro for https://github.com/gettakaro/takaro/issues/1047
    * System config uses the names of functions to create structure
    * If a module is installed, and you then rename the function, the system config will be broken
