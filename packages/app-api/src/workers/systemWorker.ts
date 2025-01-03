@@ -90,6 +90,8 @@ async function ensureCronjobsAreScheduled(domainId: string) {
       }),
     );
   }
+}
+
 async function deleteGameServers(domainId: string) {
   const gameserverService = new GameServerService(domainId);
   const repo = gameserverService.repo;
