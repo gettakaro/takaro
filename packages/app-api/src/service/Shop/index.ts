@@ -13,6 +13,7 @@ import {
   ShopOrderStatus,
   ShopOrderCreateInternalDTO,
   ShopImportOptions,
+  ShopListingItemMetaInputDTO,
 } from './dto.js';
 import { UserService } from '../User/index.js';
 import { checkPermissions } from '../AuthService.js';
@@ -29,6 +30,7 @@ import {
   TakaroEventShopOrderStatusChanged,
 } from '@takaro/modules';
 import { IMessageOptsDTO, IPlayerReferenceDTO } from '@takaro/gameserver';
+import { ItemsService } from '../ItemsService.js';
 
 @traceableClass('service:shopListing')
 export class ShopListingService extends TakaroService<
@@ -93,8 +95,28 @@ export class ShopListingService extends TakaroService<
     return listing;
   }
 
-  async create(item: ShopListingCreateDTO): Promise<ShopListingOutputDTO> {
-    const created = await this.repo.create(item);
+  async create(listing: ShopListingCreateDTO): Promise<ShopListingOutputDTO> {
+    const itemCodes = listing.items.map((item) => item.code).filter(Boolean);
+    const itemsService = new ItemsService(this.domainId);
+    const items = await itemsService.find({ filters: { code: itemCodes } });
+    listing.items = listing.items.map((item) => {
+      const code = items.results.find((i) => i.code === item.code);
+      if (!code) {
+        if (!item.itemId)
+          throw new errors.BadRequestError(`Item with code ${item.code} not found and no itemId provided`);
+        return new ShopListingItemMetaInputDTO({
+          amount: item.amount,
+          quality: item.quality,
+          itemId: item.itemId,
+        });
+      }
+      return new ShopListingItemMetaInputDTO({
+        amount: item.amount,
+        quality: item.quality,
+        code: item.code,
+      });
+    });
+    const created = await this.repo.create(listing);
 
     await this.eventService.create(
       new EventCreateDTO({
@@ -344,10 +366,10 @@ export class ShopListingService extends TakaroService<
     }
 
     const promises = await Promise.allSettled(
-      data.map((item) => {
-        item.draft = options.draft;
-        item.gameServerId = options.gameServerId;
-        return this.create(item);
+      data.map((listing) => {
+        listing.draft = options.draft;
+        listing.gameServerId = options.gameServerId;
+        return this.create(listing);
       }),
     );
 

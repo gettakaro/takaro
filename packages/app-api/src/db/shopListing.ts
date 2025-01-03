@@ -2,7 +2,7 @@ import { ITakaroQuery, QueryBuilder, TakaroModel } from '@takaro/db';
 import { Model } from 'objection';
 import { errors, traceableClass } from '@takaro/util';
 import { GameServerModel } from './gameserver.js';
-import { ItemsModel } from './items.js';
+import { ItemRepo, ItemsModel } from './items.js';
 import { RoleModel } from './role.js';
 import { ITakaroRepo } from './base.js';
 import { ShopListingOutputDTO, ShopListingUpdateDTO, ShopListingCreateDTO } from '../service/Shop/dto.js';
@@ -158,12 +158,21 @@ export class ShopListingRepo extends ITakaroRepo<
 
     if (!item.items || !item.items.length) throw new errors.BadRequestError('At least one item is required');
 
-    const itemMetas = item.items.map((i) => ({
-      listingId: listing.id,
-      itemId: i.itemId,
-      amount: i.amount,
-      quality: i.quality,
-    }));
+    const itemRepo = new ItemRepo(this.domainId);
+    const items = await itemRepo.translateItemCodesToIds(
+      item.gameServerId,
+      item.items.map((i) => i.code).filter((code): code is string => code !== undefined),
+    );
+    const itemMetas = item.items
+      .map((i) => ({
+        listingId: listing.id,
+        itemId: items.find((item) => item.code === i.code)?.id || i.itemId,
+        amount: i.amount,
+        quality: i.quality,
+      }))
+      .filter((i) => i.itemId);
+
+    if (!itemMetas.length) throw new errors.BadRequestError('No valid items found');
 
     await Promise.all(
       itemMetas.map(async (i) => {
@@ -205,12 +214,21 @@ export class ShopListingRepo extends ITakaroRepo<
     const res = await query.updateAndFetchById(id, data.toJSON()).returning('*');
 
     if (data.items) {
-      const itemMetas = data.items.map((i) => ({
-        listingId: id,
-        itemId: i.itemId,
-        amount: i.amount,
-        quality: i.quality,
-      }));
+      const itemRepo = new ItemRepo(this.domainId);
+      const items = await itemRepo.translateItemCodesToIds(
+        data.gameServerId,
+        data.items.map((i) => i.code).filter((code): code is string => code !== undefined),
+      );
+      const itemMetas = data.items
+        .map((i) => {
+          return {
+            listingId: id,
+            itemId: items.find((item) => item.code === i.code)?.id || i.itemId,
+            amount: i.amount,
+            quality: i.quality,
+          };
+        })
+        .filter((i) => i.itemId);
 
       await ItemOnShopListingModel.bindKnex(knex).query().delete().where('listingId', id);
 

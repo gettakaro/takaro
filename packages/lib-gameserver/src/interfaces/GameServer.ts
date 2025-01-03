@@ -72,6 +72,21 @@ export class BanDTO extends TakaroDTO<BanDTO> {
   expiresAt: string | null;
 }
 
+export class MapInfoDTO extends TakaroDTO<MapInfoDTO> {
+  @IsBoolean()
+  enabled: boolean;
+  @IsNumber()
+  mapBlockSize: number;
+  @IsNumber()
+  maxZoom: number;
+  @IsNumber()
+  mapSizeX: number;
+  @IsNumber()
+  mapSizeY: number;
+  @IsNumber()
+  mapSizeZ: number;
+}
+
 export interface IGameServer {
   connectionInfo: unknown;
   getEventEmitter(): TakaroEmitter;
@@ -100,4 +115,7 @@ export interface IGameServer {
   unbanPlayer(player: IPlayerReferenceDTO): Promise<void>;
   listBans(): Promise<BanDTO[]>;
   shutdown(): Promise<void>;
+
+  getMapInfo(): Promise<MapInfoDTO>;
+  getMapTile(x: number, y: number, z: number): Promise<Buffer>;
 }

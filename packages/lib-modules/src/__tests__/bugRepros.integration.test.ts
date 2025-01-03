@@ -1,6 +1,7 @@
 import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { GameEvents, HookEvents } from '../dto/index.js';
 import { EventChatMessageChannelEnum } from '@takaro/apiclient';
+import { randomUUID } from 'crypto';
 
 const group = 'Bug repros';
 
@@ -117,6 +118,56 @@ const tests = [
       const logs = result.logs;
       const msgs = logs.map((l: any) => l.msg);
       expect(msgs).to.include.members(['foo', JSON.stringify({ foo: 'bar' }), JSON.stringify(['baz', 1])]);
+    },
+  }),
+  /**
+   * Repro for `console.log`ging `undefined`
+   */
+  new IntegrationTest<IModuleTestsSetupData>({
+    group,
+    snapshot: false,
+    name: 'Bug repro: console.log in a function works with undefined and null objects',
+    setup: modulesTestSetup,
+    test: async function () {
+      const mod = (
+        await this.client.module.moduleControllerCreate({
+          name: 'Test module',
+        })
+      ).data.data;
+      await this.client.hook.hookControllerCreate({
+        name: 'Test hook 1',
+        moduleId: mod.id,
+        regex: 'test msg',
+        eventType: 'chat-message',
+        function: `import { data, takaro } from '@takaro/helpers';
+        async function main() {
+          console.log(undefined);
+          console.log(null);
+        }
+        await main();`,
+      });
+
+      await this.client.gameserver.gameServerControllerInstallModule(this.setupData.gameserver.id, mod.id);
+
+      const listener = (await new EventsAwaiter().connect(this.client)).waitForEvents(HookEvents.HOOK_EXECUTED, 1);
+
+      await this.client.hook.hookControllerTrigger({
+        eventType: 'chat-message',
+        gameServerId: this.setupData.gameserver.id,
+        moduleId: mod.id,
+        playerId: this.setupData.players[0].id,
+        eventMeta: {
+          msg: 'test msg',
+          channel: EventChatMessageChannelEnum.Global,
+        },
+      });
+
+      const result = (await listener)[0].data.meta.result;
+      expect(result.success).to.be.true;
+      const logs = result.logs;
+      const msgs = logs.map((l: any) => l.msg);
+      expect(msgs[0]).to.be.eq('undefined');
+      expect(msgs[1]).to.be.eq('null');
     },
   }),
   /**
@@ -321,6 +372,105 @@ const tests = [
 
       expect((await eventsAfter).length).to.be.eq(1);
       expect((await eventsAfter)[0].data.meta.msg).to.be.eq('goodbye world');
+    },
+  }),
+  new IntegrationTest<IModuleTestsSetupData>({
+    group,
+    snapshot: false,
+    name: 'Bug repro: permissions from old module versions cleanly transfer when upgrading',
+    setup: modulesTestSetup,
+    /**
+     * Scenario:
+     * Module with PermA, v0.0.1 is installed
+     * User then tags v0.0.2 and installs this
+     * Players with permA can still use the module function that requires that permission
+     */
+    test: async function () {
+      const permission = 'USE_TEST_PERMISSION';
+      const module = (
+        await this.client.module.moduleControllerCreate({
+          name: randomUUID(),
+          latestVersion: {
+            permissions: [{ permission, canHaveCount: false, friendlyName: 'test', description: 'blabla test' }],
+          },
+        })
+      ).data.data;
+
+      await this.client.command.commandControllerCreate({
+        name: 'test',
+        versionId: module.latestVersion.id,
+        trigger: 'test',
+        function: `import { data, takaro, checkPermission } from '@takaro/helpers';
+        async function main() {
+            const { player, pog } = data;
+
+              if (!checkPermission(pog, '${permission}')) {
+                await takaro.gameserver.gameServerControllerSendMessage('${this.setupData.gameserver.id}', {
+                    message: 'no permission',
+                });
+              } else {
+                await takaro.gameserver.gameServerControllerSendMessage('${this.setupData.gameserver.id}', {
+                    message: 'yes permission',
+                });               
+              }
+
+        }
+        await main();`,
+      });
+
+      // Create version 0.0.1
+      const v1 = (
+        await this.client.module.moduleVersionControllerTagVersion({
+          moduleId: module.id,
+          tag: '0.0.1',
+        })
+      ).data.data;
+
+      // Install this version
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: v1.id,
+      });
+
+      // Create a role with the permission
+      const permissionCode = await this.client.permissionCodesToInputs([permission]);
+      const role = (await this.client.role.roleControllerCreate({ name: 'testing role', permissions: permissionCode }))
+        .data.data;
+
+      // Assign the role to a player
+      await this.client.player.playerControllerAssignRole(this.setupData.players[0].id, role.id);
+
+      // Firing the command should return 'yes permission'
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/test',
+        playerId: this.setupData.players[0].id,
+      });
+
+      expect((await events)[0].data.meta.msg).to.be.eq('yes permission');
+
+      // Tag a new version
+      const v2 = (
+        await this.client.module.moduleVersionControllerTagVersion({
+          moduleId: module.id,
+          tag: '0.0.2',
+        })
+      ).data.data;
+
+      // Install this version
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: v2.id,
+      });
+
+      // Firing the command should return 'yes permission'
+      const eventsAfter = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/test',
+        playerId: this.setupData.players[0].id,
+      });
+
+      expect((await eventsAfter)[0].data.meta.msg).to.be.eq('yes permission');
     },
   }),
 ];

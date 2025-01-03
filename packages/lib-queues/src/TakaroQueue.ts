@@ -22,13 +22,13 @@ export class TakaroQueue<T extends Record<string, unknown>> {
     return hash;
   }
 
-  add(data: T, extra: JobsOptions = {}) {
+  add(data: T, extra: JobsOptions = {}, name = this.name) {
     const jobId = extra.jobId ?? this.getJobId(data);
     const isRepeatable = extra.repeat ? true : false;
     if (isRepeatable) {
-      return this.bullQueue.add(this.name, data, extra);
+      return this.bullQueue.add(name, data, extra);
     } else {
-      return this.bullQueue.add(this.name, data, { jobId, ...extra });
+      return this.bullQueue.add(name, data, { jobId, ...extra });
     }
   }
 

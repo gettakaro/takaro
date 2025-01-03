@@ -89,6 +89,21 @@ const config: Config = {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
     },
+    algolia: {
+      // The application ID provided by Algolia
+      appId: 'EGKNUF24JA',
+      // Public API key: it is safe to commit it
+      apiKey: 'c346de81a50d15e8653e738f76871c15',
+      indexName: 'takaro',
+      // Optional: see doc section below
+      contextualSearch: true,
+      // Optional: Algolia search parameters
+      searchParameters: {},
+      // Optional: path for search page that enabled by default (`false` to disable it)
+      searchPagePath: 'search',
+      // Optional: whether the insights feature is enabled or not on Docsearch (`false` by default)
+      insights: true,
+    },
   } satisfies Preset.ThemeConfig,
 };
 

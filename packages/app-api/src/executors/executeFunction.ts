@@ -260,12 +260,12 @@ export async function executeFunction(
         cleanMsg = JSON.stringify(cleanMsg);
       }
 
-      if (cleanMsg.length > 1000) {
-        cleanMsg = cleanMsg.substring(0, 1000) + '...';
+      if (cleanMsg === undefined) {
+        cleanMsg = 'undefined';
       }
 
-      if (!cleanMsg.length) {
-        cleanMsg = 'Empty log';
+      if (cleanMsg.length > 1000) {
+        cleanMsg = cleanMsg.substring(0, 1000) + '...';
       }
 
       return new TakaroEventFunctionLog({ ...rawLog, msg: cleanMsg });

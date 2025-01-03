@@ -91,8 +91,8 @@ export interface InputValue {
 export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelectQueryFieldProps>(
   function GenericSelectQueryField(props, ref) {
     const {
-      onBlur = () => { },
-      onFocus = () => { },
+      onBlur = () => {},
+      onFocus = () => {},
       onChange,
       name,
       disabled,
@@ -137,7 +137,7 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
     const { refs, strategy, x, y, context } = useFloating<HTMLInputElement>({
       whileElementsMounted: autoUpdate,
       open,
-      onOpenChange: readOnly || disabled ? () => { } : setOpen,
+      onOpenChange: readOnly || disabled ? () => {} : setOpen,
       middleware: [
         offset(5),
         size({
@@ -230,7 +230,7 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
     }, [value, children]);
 
     const renderSelect = () => {
-      const hasOptions = options.some((option) => Children.count(option.props.children) > 0);
+      const hasOptions = options && options.some((option) => Children.count(option.props?.children) > 0);
 
       // initialFocus=-1 is used to prevent the first item from being focused when the list opens
       return (
