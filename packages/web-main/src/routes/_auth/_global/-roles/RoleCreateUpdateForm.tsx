@@ -114,7 +114,7 @@ export const RoleForm: FC<CreateUpdateRoleFormProps> = ({
   };
 
   return (
-    <Drawer open={open} onOpenChange={setOpen} promptCloseConfirmation={formState.isDirty}>
+    <Drawer open={open} onOpenChange={setOpen} promptCloseConfirmation={readOnly === false && formState.isDirty}>
       <Drawer.Content>
         <Drawer.Heading>{initialData ? (readOnly ? 'View' : 'Update') : 'Create'} role</Drawer.Heading>
         <Drawer.Body>
@@ -150,7 +150,6 @@ export const RoleForm: FC<CreateUpdateRoleFormProps> = ({
                           alignItems: 'center',
                           justifyContent: 'space-between',
                           marginBottom: theme.spacing['1'],
-                          textTransform: 'capitalize',
                         }}
                       >
                         <span>{groupedModulePermissions[key].module.name}</span>

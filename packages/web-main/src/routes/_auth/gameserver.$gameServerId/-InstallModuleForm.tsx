@@ -85,7 +85,7 @@ export const InstallModuleForm: FC<InstallModuleFormProps> = ({
   }, [userConfigSubmitted, systemConfigSubmitted, userConfig, systemConfig]);
 
   return (
-    <Drawer open={open} onOpenChange={setOpen} promptCloseConfirmation={isDirty}>
+    <Drawer open={open} onOpenChange={setOpen} promptCloseConfirmation={readOnly === false && isDirty}>
       <Drawer.Content>
         <Drawer.Heading>Install module</Drawer.Heading>
         <Drawer.Body>
