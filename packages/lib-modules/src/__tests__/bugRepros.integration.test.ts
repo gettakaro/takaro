@@ -136,7 +136,7 @@ const tests = [
       ).data.data;
       await this.client.hook.hookControllerCreate({
         name: 'Test hook 1',
-        moduleId: mod.id,
+        versionId: mod.latestVersion.id,
         regex: 'test msg',
         eventType: 'chat-message',
         function: `import { data, takaro } from '@takaro/helpers';
@@ -147,7 +147,10 @@ const tests = [
         await main();`,
       });
 
-      await this.client.gameserver.gameServerControllerInstallModule(this.setupData.gameserver.id, mod.id);
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: mod.latestVersion.id,
+      });
 
       const listener = (await new EventsAwaiter().connect(this.client)).waitForEvents(HookEvents.HOOK_EXECUTED, 1);
 
@@ -280,7 +283,6 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      console.log(JSON.stringify((await events)[0].data.meta.result, null, 2));
       const result = (await events)[0].data.meta.result;
       expect(result.success).to.be.false;
       expect(result.reason).to.include('SyntaxError: Unexpected end of input.');
