@@ -14,21 +14,23 @@ const Container = styled.div`
 `;
 
 const DomainCardList = styled.div`
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  flex-direction: column;
-  margin: auto;
-  width: 450px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: ${({ theme }) => theme.spacing[2]};
-  height: 85vh;
+  justify-content: center;
+  width: 100%;
+  max-width: 1000px;
+  margin: ${({ theme }) => theme.spacing[2]} auto auto auto;
+
+  @media (max-width: 1500px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 export const InnerBody = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: 500px;
   height: 100px;
 `;
 
@@ -59,11 +61,8 @@ function Component() {
     <Container>
       <Company />
       <DomainCardList>
-        <h2>Select a domain:</h2>
         {me.domains.map((domain) => (
-          <>
-            <DomainCard domain={domain} isCurrentDomain={currentDomain === domain.id} />
-          </>
+          <DomainCard key={domain.id} domain={domain} isCurrentDomain={currentDomain === domain.id} />
         ))}
       </DomainCardList>
     </Container>
