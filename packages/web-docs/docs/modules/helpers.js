@@ -1,5 +1,5 @@
 export function Commands({ commands }) {
-  if (!commands.length) return null;
+  if (!commands || !commands.length) return null;
   return (
     <>
       <h4>Commands</h4>
@@ -15,7 +15,7 @@ export function Commands({ commands }) {
 }
 
 export function Hooks({ hooks }) {
-  if (!hooks.length) return null;
+  if (!hooks || !hooks.length) return null;
   return (
     <>
       <h4>Hooks</h4>
@@ -31,7 +31,7 @@ export function Hooks({ hooks }) {
 }
 
 export function CronJobs({ cronJobs }) {
-  if (!cronJobs.length) return null;
+  if (!cronJobs || !cronJobs.length) return null;
   return (
     <>
       <h4>Cron Jobs</h4>
