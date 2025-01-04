@@ -42,6 +42,9 @@ export const TakaroEvents = {
   SHOP_ORDER_CREATED: 'shop-order-created',
   SHOP_ORDER_STATUS_CHANGED: 'shop-order-status-changed',
   PLAYER_LINKED: 'player-linked',
+  GAMESERVER_CREATED: 'gameserver-created',
+  GAMESERVER_UPDATED: 'gameserver-updated',
+  GAMESERVER_DELETED: 'gameserver-deleted',
 } as const;
 
 export class BaseTakaroEvent<T> extends BaseEvent<T> {
@@ -330,6 +333,21 @@ export class TakaroEventPlayerLinked extends BaseEvent<TakaroEventPlayerLinked> 
   type = TakaroEvents.PLAYER_LINKED;
 }
 
+export class TakaroEventGameserverCreated extends BaseEvent<TakaroEventGameserverCreated> {
+  @IsString()
+  type = TakaroEvents.GAMESERVER_CREATED;
+}
+
+export class TakaroEventGameserverUpdated extends BaseEvent<TakaroEventGameserverUpdated> {
+  @IsString()
+  type = TakaroEvents.GAMESERVER_UPDATED;
+}
+
+export class TakaroEventGameserverDeleted extends BaseEvent<TakaroEventGameserverDeleted> {
+  @IsString()
+  type = TakaroEvents.GAMESERVER_DELETED;
+}
+
 export const TakaroEventsMapping = {
   [TakaroEvents.ROLE_ASSIGNED]: TakaroEventRoleAssigned,
   [TakaroEvents.PLAYER_NEW_IP_DETECTED]: TakaroEventPlayerNewIpDetected,
@@ -356,4 +374,7 @@ export const TakaroEventsMapping = {
   [TakaroEvents.SHOP_ORDER_CREATED]: TakaroEventShopOrderCreated,
   [TakaroEvents.SHOP_ORDER_STATUS_CHANGED]: TakaroEventShopOrderStatusChanged,
   [TakaroEvents.PLAYER_LINKED]: TakaroEventPlayerLinked,
+  [TakaroEvents.GAMESERVER_CREATED]: TakaroEventGameserverCreated,
+  [TakaroEvents.GAMESERVER_UPDATED]: TakaroEventGameserverUpdated,
+  [TakaroEvents.GAMESERVER_DELETED]: TakaroEventGameserverDeleted,
 } as const;

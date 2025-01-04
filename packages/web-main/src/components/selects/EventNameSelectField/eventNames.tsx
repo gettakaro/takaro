@@ -28,6 +28,9 @@ export const categorizedEventNames = [
   {
     category: 'Game Server',
     events: [
+      e.GameserverCreated,
+      e.GameserverUpdated,
+      e.GameserverDeleted,
       e.PlayerConnected,
       e.PlayerDisconnected,
       e.ChatMessage,
