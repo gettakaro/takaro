@@ -44,6 +44,7 @@ const CurrentAction = styled.div<{ color: ButtonColor }>`
   height: 100%;
   color: ${({ theme }) => theme.colors.text};
   width: calc(100% - 3.2rem);
+  white-space: nowrap;
 
   background: ${({ theme, color }) => shade(0.5, theme.colors[color])};
   border-top: 0.1rem solid ${({ theme, color }) => theme.colors[color === 'background' ? 'backgroundAccent' : color]};
@@ -75,7 +76,7 @@ export interface DropdownButtonProps {
 
 export const DropdownButton = forwardRef<HTMLDivElement, DropdownButtonProps>(function Dropdown(
   { children, color = 'primary', onSelectedChanged, fullWidth = false },
-  propRef
+  propRef,
 ) {
   const [listVisible, setListVisible] = useState<boolean>(false);
   const [selected, setSelected] = useState<number>(0);
@@ -89,7 +90,9 @@ export const DropdownButton = forwardRef<HTMLDivElement, DropdownButtonProps>(fu
   });
 
   useEffect(() => {
-    onSelectedChanged && onSelectedChanged(selected);
+    if (onSelectedChanged) {
+      onSelectedChanged(selected);
+    }
     setListVisible(false);
   }, [selected]);
 
