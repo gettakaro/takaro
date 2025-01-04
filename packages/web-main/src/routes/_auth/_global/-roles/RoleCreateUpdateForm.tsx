@@ -68,16 +68,16 @@ export const RoleForm: FC<CreateUpdateRoleFormProps> = ({
 
   const systemPermissions = permissions.filter((p) => !p.module);
   const groupedModulePermissions = permissions.reduce((acc, permission) => {
-    if (permission.module) {
-      const moduleId = permission.module.id;
-      if (!acc[moduleId]) {
-        acc[moduleId] = {
+    if (permission.moduleVersionId) {
+      const versionId = permission.moduleVersionId;
+      if (!acc[versionId]) {
+        acc[versionId] = {
           module: permission.module,
           moduleVersion: permission.version!,
           permissions: [],
         };
       }
-      acc[moduleId].permissions.push(permission);
+      acc[versionId].permissions.push(permission);
     }
     return acc;
   }, {});
@@ -109,8 +109,7 @@ export const RoleForm: FC<CreateUpdateRoleFormProps> = ({
   const multipleVersionsOfSameModuleInstalled = (groupedModulePermissions: any, currentKey: any): boolean => {
     const withoutCurrentKey = Object.keys(groupedModulePermissions).filter((key) => key != currentKey);
     return withoutCurrentKey.some(
-      // NOTE: I expected the moduleIds to be the same, but they are not, so we need to compare the module names instead.
-      (key) => groupedModulePermissions[key].module.name == groupedModulePermissions[currentKey].module.name,
+      (key) => groupedModulePermissions[key].module.id == groupedModulePermissions[currentKey].module.id,
     );
   };
 
