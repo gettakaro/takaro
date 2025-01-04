@@ -33,6 +33,9 @@ import {
   EventChatMessage,
   TakaroEventModuleInstalled,
   TakaroEventModuleUninstalled,
+  TakaroEventGameserverCreated,
+  TakaroEventGameserverUpdated,
+  TakaroEventGameserverDeleted,
   ChatChannel,
 } from '@takaro/modules';
 import { ITakaroQuery } from '@takaro/db';
@@ -156,6 +159,10 @@ export class GameServerService extends TakaroService<
     return new GameServerRepo(this.domainId);
   }
 
+  public refreshGameInstance(id: string) {
+    gameClassCache.delete(id);
+  }
+
   find(filters: ITakaroQuery<GameServerOutputDTO>): Promise<PaginatedOutput<GameServerOutputDTO>> {
     return this.repo.find(filters);
   }
@@ -168,6 +175,14 @@ export class GameServerService extends TakaroService<
     const isReachable = await this.testReachability(undefined, JSON.parse(item.connectionInfo), item.type);
     const createdServer = await this.repo.create(item);
 
+    const eventsService = new EventService(this.domainId);
+    await eventsService.create(
+      new EventCreateDTO({
+        eventName: EVENT_TYPES.GAMESERVER_CREATED,
+        gameserverId: createdServer.id,
+        meta: new TakaroEventGameserverCreated(),
+      }),
+    );
     await queueService.queues.connector.queue.add({
       domainId: this.domainId,
       gameServerId: createdServer.id,
@@ -192,7 +207,7 @@ export class GameServerService extends TakaroService<
     });
     await Promise.all(installedModules.map((mod) => this.uninstallModule(id, mod.moduleId)));
 
-    gameClassCache.delete(id);
+    this.refreshGameInstance(id);
 
     const gateway = new Pushgateway(config.get('metrics.pushgatewayUrl'), {});
     gateway.delete({ jobName: 'worker', groupings: { gameserver: id } });
@@ -204,6 +219,14 @@ export class GameServerService extends TakaroService<
       time: new Date().toISOString(),
     });
     await this.repo.delete(id);
+    const eventsService = new EventService(this.domainId);
+    await eventsService.create(
+      new EventCreateDTO({
+        eventName: EVENT_TYPES.GAMESERVER_DELETED,
+        gameserverId: id,
+        meta: new TakaroEventGameserverDeleted(),
+      }),
+    );
     await queueService.queues.system.queue.add(
       {
         domainId: this.domainId,
@@ -216,7 +239,15 @@ export class GameServerService extends TakaroService<
 
   async update(id: string, item: GameServerUpdateDTO): Promise<GameServerOutputDTO> {
     const updatedServer = await this.repo.update(id, item);
-    gameClassCache.delete(id);
+    this.refreshGameInstance(id);
+    const eventsService = new EventService(this.domainId);
+    await eventsService.create(
+      new EventCreateDTO({
+        eventName: EVENT_TYPES.GAMESERVER_UPDATED,
+        gameserverId: id,
+        meta: new TakaroEventGameserverUpdated(),
+      }),
+    );
     await queueService.queues.connector.queue.add({
       domainId: this.domainId,
       gameServerId: id,
@@ -252,7 +283,7 @@ export class GameServerService extends TakaroService<
 
       // When a user is trying to fix their connection info, it's important we don't cache stale/wrong connection info
       if (!reachability.connectable) {
-        gameClassCache.delete(id);
+        this.refreshGameInstance(id);
       }
 
       return reachability;

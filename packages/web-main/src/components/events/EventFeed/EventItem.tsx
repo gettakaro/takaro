@@ -254,6 +254,15 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
         </>
       );
       break;
+    case EventOutputDTOEventNameEnum.GameserverCreated:
+    case EventOutputDTOEventNameEnum.GameserverUpdated:
+    case EventOutputDTOEventNameEnum.GameserverDeleted:
+      properties = (
+        <>
+          <EventProperty name="gameserver" value={event.gameServer?.name} />
+        </>
+      );
+      break;
   }
 
   return (
