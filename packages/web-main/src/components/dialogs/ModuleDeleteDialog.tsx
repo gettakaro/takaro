@@ -9,7 +9,7 @@ interface ModuleDeleteDialogProps extends RequiredDialogOptions {
 }
 
 export const ModuleDeleteDialog = forwardRef<DeleteImperativeHandle, ModuleDeleteDialogProps>(
-  ({ moduleName, moduleId, ...dialogOptions }, ref) => {
+  function ModuleDeleteDialog({ moduleName, moduleId, ...dialogOptions }, ref) {
     const [isValid, setIsValid] = useState<boolean>(false);
     const {
       mutate: removeModule,

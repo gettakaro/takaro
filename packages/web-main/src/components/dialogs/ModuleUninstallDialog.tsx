@@ -11,7 +11,7 @@ interface ModuleUninstallDialogProps extends RequiredDialogOptions {
 }
 
 export const ModuleUninstallDialog = forwardRef<DeleteImperativeHandle, ModuleUninstallDialogProps>(
-  ({ gameServerId, versionId, moduleName, ...dialogOptions }, ref) => {
+  function ModuleUninstallDialog({ gameServerId, versionId, moduleName, ...dialogOptions }, ref) {
     const { mutate, isPending: isDeleting, isSuccess, error } = useGameServerModuleUninstall();
     const [valid, setValid] = useState<boolean>(false);
     const { enqueueSnackbar } = useSnackbar();

@@ -17,7 +17,7 @@ export interface ActionMenuProps {
 
 export const ActionMenu = forwardRef<HTMLUListElement, ActionMenuProps>(function ActionMenu(
   { attributes, children, selected, setSelected, elevation = 4 },
-  ref
+  ref,
 ) {
   return (
     <Container
@@ -58,6 +58,8 @@ interface ActionProps {
   text: string;
   disabled?: boolean;
 }
+
 export const Action: FC<PropsWithChildren<ActionProps>> = ({ children, disabled = false }) => {
+  const _ = disabled;
   return children;
 };

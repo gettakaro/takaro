@@ -64,7 +64,7 @@ export const ModuleExportDialog: FC<ModuleExportDialogProps> = ({
         });
         dialogOptions.onOpenChange(false);
       }
-    } catch (error) {
+    } catch {
       setError('Failed to export module!');
     }
   };

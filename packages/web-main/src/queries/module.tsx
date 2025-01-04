@@ -117,10 +117,10 @@ export const moduleQueryOptions = (moduleId: string) =>
   });
 
 export const moduleVersionsQueryOptions = (queryParams: ModuleVersionSearchInputDTO) =>
-  queryOptions<ModuleVersionOutputArrayDTOAPI, AxiosError<ModuleOutputArrayDTOAPI>>({
+  queryOptions<ModuleVersionOutputArrayDTOAPI, AxiosError<ModuleVersionOutputArrayDTOAPI>>({
     // TODO: (for now) ideally we always pass a moduleId here,
     queryKey: [...moduleKeys.versions.list(), ...queryParamsToArray(queryParams)],
-    queryFn: async ({ }) => (await getApiClient().module.moduleVersionControllerSearchVersions(queryParams)).data,
+    queryFn: async () => (await getApiClient().module.moduleVersionControllerSearchVersions(queryParams)).data,
   });
 
 export const moduleVersionsInfiniteQueryOptions = (queryParams: ModuleVersionSearchInputDTO = {}) =>
@@ -315,21 +315,21 @@ export const useHookCreate = () => {
         queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(moduleId), (prev) =>
           prev
             ? {
-              ...prev,
-              latestVersion: {
-                ...prev.latestVersion,
-                hooks: prev.latestVersion.hooks.concat(newHook),
-              },
-            }
+                ...prev,
+                latestVersion: {
+                  ...prev.latestVersion,
+                  hooks: prev.latestVersion.hooks.concat(newHook),
+                },
+              }
             : undefined,
         );
 
         queryClient.setQueryData<ModuleVersionOutputDTO>(moduleKeys.versions.detail(versionId), (prev) =>
           prev
             ? {
-              ...prev,
-              hooks: [...prev.hooks, newHook],
-            }
+                ...prev,
+                hooks: [...prev.hooks, newHook],
+              }
             : undefined,
         );
         queryClient.setQueryData(moduleKeys.hooks.detail(newHook.id), newHook);
@@ -364,21 +364,21 @@ export const useHookRemove = () => {
         queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(moduleId), (prev) =>
           prev
             ? {
-              ...prev,
-              latestVersion: {
-                ...prev.latestVersion,
-                hooks: prev.latestVersion.hooks.filter((hook) => hook.id !== hookId),
-              },
-            }
+                ...prev,
+                latestVersion: {
+                  ...prev.latestVersion,
+                  hooks: prev.latestVersion.hooks.filter((hook) => hook.id !== hookId),
+                },
+              }
             : undefined,
         );
 
         queryClient.setQueryData<ModuleVersionOutputDTO>(moduleKeys.versions.detail(versionId), (prev) =>
           prev
             ? {
-              ...prev,
-              hooks: prev.hooks.filter((hook) => hook.id !== hookId),
-            }
+                ...prev,
+                hooks: prev.hooks.filter((hook) => hook.id !== hookId),
+              }
             : undefined,
         );
       },
@@ -412,12 +412,12 @@ export const useHookUpdate = () => {
         queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(moduleId), (prev) =>
           prev
             ? {
-              ...prev,
-              latestVersion: {
-                ...prev.latestVersion,
-                hooks: prev.latestVersion.hooks.map((h) => (h.id === updatedHook.id ? updatedHook : h)),
-              },
-            }
+                ...prev,
+                latestVersion: {
+                  ...prev.latestVersion,
+                  hooks: prev.latestVersion.hooks.map((h) => (h.id === updatedHook.id ? updatedHook : h)),
+                },
+              }
             : undefined,
         );
 
@@ -475,20 +475,20 @@ export const useCommandCreate = () => {
         queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(moduleId), (prev) =>
           prev
             ? {
-              ...prev,
-              latestVersion: {
-                ...prev.latestVersion,
-                commands: prev.latestVersion.commands.concat(newCommand),
-              },
-            }
+                ...prev,
+                latestVersion: {
+                  ...prev.latestVersion,
+                  commands: prev.latestVersion.commands.concat(newCommand),
+                },
+              }
             : undefined,
         );
         queryClient.setQueryData<ModuleVersionOutputDTO>(moduleKeys.versions.detail(versionId), (prev) =>
           prev
             ? {
-              ...prev,
-              commands: prev.commands.concat(newCommand),
-            }
+                ...prev,
+                commands: prev.commands.concat(newCommand),
+              }
             : undefined,
         );
       },
@@ -523,21 +523,21 @@ export const useCommandUpdate = () => {
         queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(moduleId), (prev) =>
           prev
             ? {
-              ...prev,
-              latestVersion: {
-                ...prev.latestVersion,
-                commands: prev.latestVersion.commands.map((c) => (c.id === updatedCommand.id ? updatedCommand : c)),
-              },
-            }
+                ...prev,
+                latestVersion: {
+                  ...prev.latestVersion,
+                  commands: prev.latestVersion.commands.map((c) => (c.id === updatedCommand.id ? updatedCommand : c)),
+                },
+              }
             : undefined,
         );
 
         queryClient.setQueryData<ModuleVersionOutputDTO>(moduleKeys.versions.detail(versionId), (prev) =>
           prev
             ? {
-              ...prev,
-              commands: prev.commands.map((c) => (c.id === updatedCommand.id ? updatedCommand : c)),
-            }
+                ...prev,
+                commands: prev.commands.map((c) => (c.id === updatedCommand.id ? updatedCommand : c)),
+              }
             : undefined,
         );
 
@@ -573,12 +573,12 @@ export const useCommandRemove = () => {
         queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(moduleId), (prev) =>
           prev
             ? {
-              ...prev,
-              latestVersion: {
-                ...prev.latestVersion,
-                commands: prev.latestVersion.commands.filter((command) => command.id !== commandId),
-              },
-            }
+                ...prev,
+                latestVersion: {
+                  ...prev.latestVersion,
+                  commands: prev.latestVersion.commands.filter((command) => command.id !== commandId),
+                },
+              }
             : undefined,
         );
 
@@ -586,9 +586,9 @@ export const useCommandRemove = () => {
         queryClient.setQueryData<ModuleVersionOutputDTO>(moduleKeys.versions.detail(versionId), (prev) =>
           prev
             ? {
-              ...prev,
-              commands: prev.commands.filter((command) => command.id !== commandId),
-            }
+                ...prev,
+                commands: prev.commands.filter((command) => command.id !== commandId),
+              }
             : undefined,
         );
       },
@@ -631,21 +631,21 @@ export const useCronJobCreate = () => {
         queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(moduleId), (prev) =>
           prev
             ? {
-              ...prev,
-              latestVersion: {
-                ...prev.latestVersion,
-                cronJobs: [...prev.latestVersion.cronJobs, newCronJob],
-              },
-            }
+                ...prev,
+                latestVersion: {
+                  ...prev.latestVersion,
+                  cronJobs: [...prev.latestVersion.cronJobs, newCronJob],
+                },
+              }
             : undefined,
         );
 
         queryClient.setQueryData<ModuleVersionOutputDTO>(moduleKeys.versions.detail(versionId), (prev) =>
           prev
             ? {
-              ...prev,
-              cronJobs: [...prev.cronJobs, newCronJob],
-            }
+                ...prev,
+                cronJobs: [...prev.cronJobs, newCronJob],
+              }
             : undefined,
         );
 
@@ -683,12 +683,12 @@ export const useCronJobUpdate = () => {
         queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(moduleId), (prev) =>
           prev
             ? {
-              ...prev,
-              latestVersion: {
-                ...prev.latestVersion,
-                cronJobs: prev.latestVersion.cronJobs.map((c) => (c.id === updatedCronJob.id ? updatedCronJob : c)),
-              },
-            }
+                ...prev,
+                latestVersion: {
+                  ...prev.latestVersion,
+                  cronJobs: prev.latestVersion.cronJobs.map((c) => (c.id === updatedCronJob.id ? updatedCronJob : c)),
+                },
+              }
             : undefined,
         );
         queryClient.setQueryData<ModuleVersionOutputDTO>(
@@ -696,9 +696,9 @@ export const useCronJobUpdate = () => {
           (prev) =>
             prev
               ? {
-                ...prev,
-                cronJobs: prev.cronJobs.map((c) => (c.id === updatedCronJob.id ? updatedCronJob : c)),
-              }
+                  ...prev,
+                  cronJobs: prev.cronJobs.map((c) => (c.id === updatedCronJob.id ? updatedCronJob : c)),
+                }
               : undefined,
         );
       },
@@ -734,21 +734,21 @@ export const useCronJobRemove = () => {
         queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(versionId), (prev) =>
           prev
             ? {
-              ...prev,
-              latestVersion: {
-                ...prev.latestVersion,
-                cronJobs: prev.latestVersion.cronJobs.filter((cronJob) => cronJob.id !== cronJobId),
-              },
-            }
+                ...prev,
+                latestVersion: {
+                  ...prev.latestVersion,
+                  cronJobs: prev.latestVersion.cronJobs.filter((cronJob) => cronJob.id !== cronJobId),
+                },
+              }
             : undefined,
         );
 
         queryClient.setQueryData<ModuleVersionOutputDTO>(moduleKeys.versions.detail(versionId), (prev) =>
           prev
             ? {
-              ...prev,
-              cronJobs: prev.cronJobs.filter((cronJob) => cronJob.id !== cronJobId),
-            }
+                ...prev,
+                cronJobs: prev.cronJobs.filter((cronJob) => cronJob.id !== cronJobId),
+              }
             : undefined,
         );
       },

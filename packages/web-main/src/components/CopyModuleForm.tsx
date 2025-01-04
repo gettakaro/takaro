@@ -29,7 +29,7 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ mod, onSuccess }) => {
 
   const onSubmit: SubmitHandler<z.infer<typeof validationSchema>> = async ({ name }) => {
     try {
-      let newModule = await copyModule({
+      const newModule = await copyModule({
         name,
         latestVersion: {
           hooks: latestVersion.hooks.map((hook) => ({
@@ -74,7 +74,9 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ mod, onSuccess }) => {
         },
       });
 
-      onSuccess && onSuccess(newModule.id);
+      if (onSuccess) {
+        onSuccess(newModule.id);
+      }
     } catch (error) {
       console.error(error);
     }
