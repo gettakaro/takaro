@@ -38,7 +38,6 @@ function Component() {
 
   return (
     <InstallModuleForm
-      readOnly={true}
       gameServerId={gameServerId}
       modVersion={modInstallation.version}
       modInstallation={modInstallation}
