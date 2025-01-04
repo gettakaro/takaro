@@ -9,4 +9,3 @@ export const Route = createFileRoute('/_auth/_global/modules/$moduleId/view/')({
     });
   },
 });
-

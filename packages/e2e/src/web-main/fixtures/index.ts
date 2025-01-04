@@ -17,9 +17,9 @@ import { ModuleDefinitionsPage, ModuleBuilderPage, GameServersPage, UsersPage, R
 import { getAdminClient, login } from '../helpers.js';
 import { PlayerProfilePage } from '../pages/PlayerProfile.js';
 
-global.afterEach = () => { };
-globalThis.afterEach = () => { };
-global.before = () => { };
+global.afterEach = () => {};
+globalThis.afterEach = () => {};
+global.before = () => {};
 
 export interface IBaseFixtures {
   takaro: {

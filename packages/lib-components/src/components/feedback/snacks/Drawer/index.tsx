@@ -52,7 +52,7 @@ const Content = styled.div<{ expanded: boolean }>`
 
 export const DrawerSnack = forwardRef<HTMLDivElement, PropsWithChildren<CustomContentProps>>(function DrawerSnack(
   { id, message, children },
-  ref
+  ref,
 ) {
   const { closeSnackbar } = useSnackbar();
   const [expanded, setExpanded] = useState<boolean>(false);

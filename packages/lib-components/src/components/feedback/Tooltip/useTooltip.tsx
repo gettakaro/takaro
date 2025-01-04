@@ -77,6 +77,6 @@ export function useTooltip({
       ...data,
       disabled,
     }),
-    [open, setOpen, interactions, data]
+    [open, setOpen, interactions, data],
   );
 }

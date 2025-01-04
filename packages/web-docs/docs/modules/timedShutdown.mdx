@@ -14,12 +14,12 @@ export function Module() {
       "cronJobs": [
         {
           "name": "Shutdown",
-          "temporalValue": "3 30 * * *",
+          "temporalValue": "30 3 * * *",
           "function": "import { data, takaro } from '@takaro/helpers';\nasync function main() {\n    const { gameServerId } = data;\n    await takaro.gameserver.gameServerControllerShutdown(gameServerId);\n}\nawait main();\n//# sourceMappingURL=Shutdown.js.map"
         },
         {
           "name": "warning",
-          "temporalValue": "3 25 * * *",
+          "temporalValue": "25 3 * * *",
           "function": "import { data, takaro } from '@takaro/helpers';\nasync function main() {\n    const { gameServerId } = data;\n    const msg = data.module.userConfig.warningMessage;\n    await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {\n        message: msg,\n    });\n}\nawait main();\n//# sourceMappingURL=warning.js.map"
         }
       ]

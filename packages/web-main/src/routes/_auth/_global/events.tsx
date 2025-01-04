@@ -186,7 +186,7 @@ function Component() {
           <EventFilterContainer>
             <ScrollableContainer>
               <EventFeed>
-                {events?.map((event) => <EventItem key={event.id} event={event} onDetailClick={() => { }} />)}
+                {events?.map((event) => <EventItem key={event.id} event={event} onDetailClick={() => {}} />)}
                 <InfiniteScroll
                   isFetching={isFetching}
                   hasNextPage={hasNextPage}

@@ -15,8 +15,8 @@ export const router = createRouter({
   routeTree,
   context: {
     auth: {
-      logOut: async () => { },
-      login: () => { },
+      logOut: async () => {},
+      login: () => {},
       getSession: async () => ({}) as Promise<MeOutputDTO>,
     },
     queryClient: queryClient,

@@ -19,7 +19,7 @@ const Container = styled.div<{ elevation: Elevation }>`
 
 export const TooltipContent = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElement>>(function TooltipContent(
   { style, ...props },
-  propRef
+  propRef,
 ) {
   const theme = useTheme();
   const { floatingStyles, open, arrowRef, context, getFloatingProps, disabled } = useTooltipContext();

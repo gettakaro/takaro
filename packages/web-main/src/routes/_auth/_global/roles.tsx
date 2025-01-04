@@ -120,8 +120,8 @@ export const RoleActions: FC<RoleActionsProps> = ({ roleId, roleName, isSystem }
               />
             )}
           </Dropdown.Menu.Group>
-          <Dropdown.Menu.Item onClick={() => { }} label="Manage users (coming soon)" disabled />
-          <Dropdown.Menu.Item onClick={() => { }} label="Manage players (coming soon)" disabled />
+          <Dropdown.Menu.Item onClick={() => {}} label="Manage users (coming soon)" disabled />
+          <Dropdown.Menu.Item onClick={() => {}} label="Manage players (coming soon)" disabled />
         </Dropdown.Menu>
       </Dropdown>
       <RoleDeleteDialog

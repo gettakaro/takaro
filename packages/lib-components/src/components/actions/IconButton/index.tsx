@@ -30,8 +30,8 @@ export const getIconSize = (size: Size) => {
 };
 
 export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(function IconButton(
-  { icon, color = 'primary', size = 'medium', disabled, onClick = () => { }, ariaLabel, badge },
-  ref
+  { icon, color = 'primary', size = 'medium', disabled, onClick = () => {}, ariaLabel, badge },
+  ref,
 ) {
   return (
     <Default type="button" color={color} onClick={onClick} ref={ref} disabled={disabled} aria-label={ariaLabel}>

@@ -97,26 +97,26 @@ function Component() {
 
   const moduleItemPropertiesReducer =
     (fileType: FileType) =>
-      (prev: FileMap, item: HookOutputDTO | CronJobOutputDTO | CommandOutputDTO | FunctionOutputDTO) => {
-        const path = `/${fileType}/${item.name}`;
+    (prev: FileMap, item: HookOutputDTO | CronJobOutputDTO | CommandOutputDTO | FunctionOutputDTO) => {
+      const path = `/${fileType}/${item.name}`;
 
-        if (fileType === FileType.Functions) {
-          prev[path] = {
-            functionId: item.id,
-            type: fileType,
-            itemId: item.id,
-            code: (item as FunctionOutputDTO).code,
-          };
-        } else {
-          prev[path] = {
-            functionId: (item as CommandOutputDTO).function.id,
-            type: fileType,
-            itemId: item.id,
-            code: (item as CommandOutputDTO).function.code,
-          };
-        }
-        return prev;
-      };
+      if (fileType === FileType.Functions) {
+        prev[path] = {
+          functionId: item.id,
+          type: fileType,
+          itemId: item.id,
+          code: (item as FunctionOutputDTO).code,
+        };
+      } else {
+        prev[path] = {
+          functionId: (item as CommandOutputDTO).function.id,
+          type: fileType,
+          itemId: item.id,
+          code: (item as CommandOutputDTO).function.code,
+        };
+      }
+      return prev;
+    };
 
   const fileMap = useMemo(() => {
     if (mod) {

@@ -36,20 +36,20 @@ export const Default = styled.button<{
     font-weight: 600;
     white-space: nowrap;
     color: ${({ theme, color }) => {
-    switch (color) {
-      case 'white':
-        return theme.colors.primary;
-      case 'background':
-        return theme.colors.text;
-      default:
-        return 'white';
-    }
-  }};
+      switch (color) {
+        case 'white':
+          return theme.colors.primary;
+        case 'background':
+          return theme.colors.text;
+        default:
+          return 'white';
+      }
+    }};
 
     margin-left: ${({ icon, isLoading, iconPosition }): string =>
-    iconPosition === 'left' && (icon || isLoading) ? '10px' : '0px'};
+      iconPosition === 'left' && (icon || isLoading) ? '10px' : '0px'};
     margin-right: ${({ icon, isLoading, iconPosition }): string =>
-    iconPosition === 'right' && (icon || isLoading) ? '10px' : '0px'};
+      iconPosition === 'right' && (icon || isLoading) ? '10px' : '0px'};
   }
 
   &:disabled {
@@ -62,15 +62,15 @@ export const Default = styled.button<{
     display: ${({ icon, isLoading }): string => (icon || isLoading ? 'block' : 'none')};
     cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
     fill: ${({ theme, color }) => {
-    switch (color) {
-      case 'white':
-        return theme.colors.primary;
-      case 'background':
-        return theme.colors.text;
-      default:
-        return 'white';
-    }
-  }};
+      switch (color) {
+        case 'white':
+          return theme.colors.primary;
+        case 'background':
+          return theme.colors.text;
+        default:
+          return 'white';
+      }
+    }};
     stroke: white;
   }
 
@@ -103,7 +103,7 @@ export const Default = styled.button<{
   }}
 `;
 
-export const Outline = styled(Default) <{ color: ButtonColor }>`
+export const Outline = styled(Default)<{ color: ButtonColor }>`
   background: transparent;
   border: 0.1rem solid ${({ theme, color }): string => theme.colors[color]};
   span {

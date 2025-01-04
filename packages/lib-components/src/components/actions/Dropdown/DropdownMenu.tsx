@@ -26,7 +26,7 @@ type DropdownMenuComponent = {
 
 export const DropdownMenu = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElement>>(function DropdownMenu(
   { children, ...props },
-  propRef
+  propRef,
 ) {
   const { context, floatingStyles, elementsRef, labelsRef, getFloatingProps, descriptionId, labelId } =
     useDropdownContext();

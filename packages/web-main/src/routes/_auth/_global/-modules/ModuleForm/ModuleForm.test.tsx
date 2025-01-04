@@ -46,7 +46,7 @@ describe('Render ConfigFields', () => {
 
       const { queryByRole } = render(
         <ModuleForm
-          onSubmit={() => { }}
+          onSubmit={() => {}}
           isLoading={false}
           moduleName={mod.name}
           moduleVersion={mod.latestVersion}
@@ -62,7 +62,7 @@ describe('Render ConfigFields', () => {
       const mod = createModuleDTO({ configSchema: JSON.stringify(test.schema) });
       const { getByText } = render(
         <ModuleForm
-          onSubmit={() => { }}
+          onSubmit={() => {}}
           isLoading={false}
           moduleName={mod.name}
           moduleVersion={mod.latestVersion}
