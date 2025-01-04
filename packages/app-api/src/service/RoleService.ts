@@ -373,11 +373,11 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
       // We fetch the installations above, so module X can be installed on server A and B
       .filter((mod, index, self) => self.findIndex((m) => m.versionId === mod.versionId) === index)
       // Then transform the permissions to a flat array
-      .flatMap((mod) =>
-        mod.version.permissions.map((permission) => ({
+      .flatMap((installation) =>
+        installation.version.permissions.map((permission) => ({
           ...permission,
-          module: { id: mod.id, name: mod.module.name },
-          version: { id: mod.versionId, tag: mod.version.tag },
+          module: { id: installation.moduleId, name: installation.module.name },
+          version: { id: installation.versionId, tag: installation.version.tag },
         })),
       ) as PermissionOutputDTO[];
 
