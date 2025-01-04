@@ -7,6 +7,7 @@
     "start:dev": "COMMAND=\"start:dev\"  ./scripts/run-all-pkgs.sh",
     "shell": "docker compose exec takaro bash",
     "build": "COMMAND=\"build\" ./scripts/run-all-pkgs.sh",
+    "postbuild": "npx typedoc",
     "clean": "npx --workspaces rimraf dist && npx --workspaces rimraf node_modules && npx rimraf node_modules",
     "test": "npm --workspaces --if-present run test",
     "test:unit": "COMMAND=\"--if-present test:unit\"  ./scripts/run-all-pkgs.sh",
