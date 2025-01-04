@@ -223,7 +223,7 @@ export const useGameServerSendMessage = () => {
 
 export const moduleInstallationsOptions = (queryParams: ModuleInstallationSearchInputDTO = {}) => {
   return queryOptions<ModuleInstallationOutputDTO[], AxiosError<ModuleInstallationOutputDTOAPI>>({
-    queryKey: [ModuleInstallationKeys.list(), ...queryParamsToArray(queryParams)],
+    queryKey: [...ModuleInstallationKeys.list(), ...queryParamsToArray(queryParams)],
     queryFn: async () =>
       (await getApiClient().module.moduleInstallationsControllerGetInstalledModules(queryParams)).data.data,
   });
@@ -270,6 +270,7 @@ export const useGameServerModuleInstall = () => {
 interface GameServerModuleUninstall {
   gameServerId: string;
   versionId: string;
+  moduleId: string;
 }
 
 export const useGameServerModuleUninstall = () => {
@@ -278,10 +279,10 @@ export const useGameServerModuleUninstall = () => {
 
   return mutationWrapper<ModuleInstallationOutputDTO, GameServerModuleUninstall>(
     useMutation<ModuleInstallationOutputDTO, AxiosError<ModuleInstallationOutputDTOAPI>, GameServerModuleUninstall>({
-      mutationFn: async ({ gameServerId, versionId }) =>
-        (await apiClient.module.moduleInstallationsControllerUninstallModule(gameServerId, versionId)).data.data,
+      mutationFn: async ({ gameServerId, moduleId }) =>
+        (await apiClient.module.moduleInstallationsControllerUninstallModule(moduleId, gameServerId)).data.data,
       onSuccess: async (_, { versionId, gameServerId }) => {
-        // TODO: update / remove list
+        queryClient.invalidateQueries({ queryKey: ModuleInstallationKeys.list() });
 
         queryClient.removeQueries({
           queryKey: ModuleInstallationKeys.detail(gameServerId, versionId),
