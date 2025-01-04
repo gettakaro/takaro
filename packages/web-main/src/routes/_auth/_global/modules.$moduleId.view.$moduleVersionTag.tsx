@@ -46,8 +46,6 @@ function Component() {
     ],
   });
 
-  console.log(modVersion);
-
   return (
     <ModuleForm moduleName={mod.name} moduleVersion={modVersion} error={null} smallModuleVersions={mod.versions} />
   );

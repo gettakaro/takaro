@@ -25,7 +25,7 @@ import {
 } from '@floating-ui/react';
 import { AiOutlineSearch as SearchIcon, AiOutlineClose as ClearIcon } from 'react-icons/ai';
 import { defaultInputProps, defaultInputPropsFactory, GenericInputPropsFunctionHandlers } from '../../../InputProps';
-import { useDebounce, useTheme } from '../../../../../hooks';
+import { useDebounce } from '../../../../../hooks';
 import { setAriaDescribedBy } from '../../../layout';
 import { FeedBackContainer } from '../style';
 import { SelectItem, SelectContext, getLabelFromChildren } from '../../';
@@ -122,7 +122,6 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
     const [activeIndex, setActiveIndex] = useState<number | null>(null);
     const [currentSelectedItems, setCurrentSelectedItems] = useState<SelectItem[]>([]);
     const [persistedItems, setPersistedItems] = useState<SelectItem[]>([]);
-    const theme = useTheme();
 
     const debouncedValue = useDebounce(inputValue.value, debounce);
     const listItemsRef = useRef<Array<HTMLLIElement | null>>([]);
@@ -208,10 +207,9 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
             }
             return acc;
           },
-          [[], []] as [string[], string[]]
+          [[], []] as [string[], string[]],
         );
 
-        console.log(preserved, toFetch);
         const fetched = toFetch.map(createItem);
         const items = [...persistedItems.filter((item) => preserved.includes(item.value)), ...fetched];
         setPersistedItems(items);
@@ -292,12 +290,12 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
     const options = useMemo(() => {
       return [
         persistedItems.length > 0 ? (
-          <ul key={`selected-items-${name}`} role="group" aria-labelledby={`select-items-list`}>
-            <GroupLabel role="presentation" id={`select-group-label`} aria-hidden="false">
+          <ul key={`selected-items-${name}`} role="group" aria-labelledby={'select-items-list'}>
+            <GroupLabel role="presentation" id={'select-group-label'} aria-hidden="false">
               Selected items
             </GroupLabel>
             {persistedItems.map((item) => (
-              <Option value={item.value} label={item.label} onChange={onChange as any}>
+              <Option key={`${name}-${item.value}`} value={item.value} label={item.label} onChange={onChange as any}>
                 {item.label}
               </Option>
             ))}
@@ -320,7 +318,7 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
                   });
                 })}
               </ul>
-            )
+            ),
         ) ?? []),
 
         // when there are no selected items, the persitedItems.length will be 0 and undefined will be part of the options array.
@@ -372,5 +370,5 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
         {open && <FloatingPortal>{renderSelect()}</FloatingPortal>}
       </SelectContext.Provider>
     );
-  }
+  },
 );
