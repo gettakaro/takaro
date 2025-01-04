@@ -8,25 +8,27 @@ interface ModuleUninstallDialogProps extends RequiredDialogOptions {
   moduleName: string;
   gameServerId: string;
   versionId: string;
+  moduleId: string;
 }
 
 export const ModuleUninstallDialog = forwardRef<DeleteImperativeHandle, ModuleUninstallDialogProps>(
-  function ModuleUninstallDialog({ gameServerId, versionId, moduleName, ...dialogOptions }, ref) {
+  function ModuleUninstallDialog({ gameServerId, versionId, moduleName, moduleId, ...dialogOptions }, ref) {
     const { mutate, isPending: isDeleting, isSuccess, error } = useGameServerModuleUninstall();
     const [valid, setValid] = useState<boolean>(false);
     const { enqueueSnackbar } = useSnackbar();
 
     useImperativeHandle(ref, () => ({
-      triggerDelete: () => mutate({ gameServerId, versionId }),
+      triggerDelete: () => mutate({ gameServerId, moduleId, versionId }),
     }));
 
     const handleUninstall = async (e: MouseEvent) => {
       e.stopPropagation();
-      mutate({ gameServerId, versionId });
+      mutate({ gameServerId, moduleId, versionId });
     };
 
     if (isSuccess) {
       enqueueSnackbar('Module uninstalled!', { variant: 'default', type: 'success' });
+      dialogOptions.onOpenChange(false);
     }
 
     return (
