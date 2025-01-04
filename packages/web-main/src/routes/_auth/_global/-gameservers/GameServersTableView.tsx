@@ -78,7 +78,7 @@ export const GameServersTableView = () => {
         info.getValue() ? (
           <Chip variant="outline" color="success" label="Online" />
         ) : (
-          <Chip variant="outline" color="success" label="Offline" />
+          <Chip variant="outline" color="error" label="Offline" />
         ),
     }),
     columnHelper.display({
