@@ -113,7 +113,9 @@ function Component() {
 
         <Card variant="outline">
           <Card.Title label="Players online">
-            <IconTooltip icon={<QuestionIcon />}>Number of players online on the server</IconTooltip>
+            <IconTooltip color="background" icon={<QuestionIcon />}>
+              Number of players online on the server
+            </IconTooltip>
           </Card.Title>
           <div style={{ position: 'relative', height: '425px' }}>
             <LineChart
