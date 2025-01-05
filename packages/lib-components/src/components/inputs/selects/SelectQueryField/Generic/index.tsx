@@ -278,7 +278,7 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
                 })}
               </ul>
             ),
-        ) ?? []),
+        )?.filter(Boolean) ?? []),
       ];
     }, [children]);
 
