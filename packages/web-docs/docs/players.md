@@ -25,8 +25,10 @@ Players can link to your community and receive login credentials to access it th
 ### How to Link
 
 1. In-game, type the command `/link`.
+![In-game link](img/ingamelink.png)
 2. After entering the command, you'll receive a weblink.
 4. Click the link to be redirected to Takaro, where you can create your user account.
+![Takaro linking](/img/takarolink.png)
 5. Once linked, you'll have access to Takaro and the associated game community.
 
 If you wish to link to another game community, simply repeat the `/link` process. Within Takaro, you can easily switch between game communities by using the domain widgets in the bottom left.
