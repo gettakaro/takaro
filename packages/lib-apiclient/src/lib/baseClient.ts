@@ -54,9 +54,20 @@ export class BaseApiClient<T extends IBaseApiClientConfig> {
     }
 
     axios.interceptors.request.use((request) => {
+      let prettyBody = null;
+
+      if (request.data) {
+        try {
+          prettyBody = JSON.parse(request.data);
+        } catch {
+          prettyBody = 'Could not parse body';
+        }
+      }
+
       this.log.info(`➡️ ${request.method?.toUpperCase()} ${request.url}`, {
         method: request.method,
         url: request.url,
+        body: prettyBody ?? undefined,
       });
       return request;
     });
