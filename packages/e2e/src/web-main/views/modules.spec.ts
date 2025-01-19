@@ -9,6 +9,10 @@ test('Can view module', async ({ takaro, page }) => {
   await expect(page.getByLabel('Name')).not.toBeEditable();
 });
 
+test('Can tag a module', async () => {
+  // todo
+});
+
 test('Can create module', async ({ page, takaro }) => {
   const { moduleDefinitionsPage } = takaro;
   await moduleDefinitionsPage.goto();

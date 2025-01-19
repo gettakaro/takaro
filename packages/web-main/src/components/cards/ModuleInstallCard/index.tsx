@@ -48,8 +48,6 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
   const [selectedVersion, setSelectedVersion] = useState<string | null>(null);
   const uninstallImperativeHandle = useRef<DeleteImperativeHandle>();
 
-  const { versions, latestVersion } = mod;
-
   const handleOnDeleteClick = (e: MouseEvent) => {
     e.stopPropagation();
     if (e.shiftKey) {
@@ -115,7 +113,7 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
     const systemConfig = installation!.systemConfig;
     systemConfig['enabled'] = !systemConfig['enabled'];
     installModule({
-      versionId: latestVersion.id,
+      versionId: installation!.versionId,
       gameServerId,
       systemConfig: JSON.stringify(systemConfig),
       userConfig: JSON.stringify(installation!.userConfig),
@@ -132,10 +130,11 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
           onOpenChange={setOpenDialog}
           gameServerId={gameServerId}
           versionId={installation.version.id}
+          moduleId={mod.id}
           moduleName={mod.name}
         />
       )}
-      <Card data-testid={`module-${mod.id}`}>
+      <Card data-testid={`module-installation-${mod.name}-card`}>
         <Card.Body>
           <InnerBody>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -189,6 +188,7 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
                                   icon={<ChangeVersionIcon />}
                                   onClick={handleChangeVersionClick}
                                   label="Upgrade/Downgrade module version"
+                                  disabled={mod.versions.length < 2}
                                 />
                                 <Dropdown.Menu.Item
                                   icon={
@@ -244,20 +244,25 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
                         )}
                         <DropdownButton
                           color="background"
-                          onSelectedChanged={(selectedIdx) => setSelectedVersion(versions[selectedIdx].tag)}
+                          onSelectedChanged={(selectedIdx) =>
+                            setSelectedVersion(
+                              mod.versions.filter((version) => version.tag !== installation!.version.tag)[selectedIdx]
+                                .tag,
+                            )
+                          }
                           fullWidth
                         >
-                          {versions
-                            .filter((version) => version.tag !== installation.version.tag)
+                          {mod.versions
+                            .filter((version) => version.tag !== installation!.version.tag)
                             .map((version) => (
                               <Action
                                 key={`change-version-${version.id}`}
-                                disabled={version.id === installation.version.id}
+                                disabled={version.id === installation!.version.id}
                                 onClick={() => handleChangeVersion(version.id)}
-                                text={`${versionGt(version.tag, installation.version.tag) ? 'Upgrade' : 'Downgrade'} to ${version.tag}`}
+                                text={`${versionGt(version.tag, installation!.version.tag) ? 'Upgrade' : 'Downgrade'} to ${version.tag}`}
                               >
                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                  <span>{version.tag.charAt(0).toUpperCase() + version.tag.slice(1)}</span>
+                                  <span>{version.tag}</span>
                                 </div>
                               </Action>
                             ))}
@@ -268,14 +273,14 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
                 </div>
               )}
             </div>
-            <p>{latestVersion.description}</p>
+            <p>{mod.latestVersion.description}</p>
 
             <SpacedRow>
               <span style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                {latestVersion.commands.length > 0 && <p>Commands: {latestVersion.commands.length}</p>}
-                {latestVersion.hooks.length > 0 && <p>Hooks: {latestVersion.hooks.length}</p>}
-                {latestVersion.cronJobs.length > 0 && <p>Cronjobs: {latestVersion.cronJobs.length}</p>}
-                {latestVersion.permissions.length > 0 && <p>Permissions: {latestVersion.permissions.length}</p>}
+                {mod.latestVersion.commands.length > 0 && <p>Commands: {mod.latestVersion.commands.length}</p>}
+                {mod.latestVersion.hooks.length > 0 && <p>Hooks: {mod.latestVersion.hooks.length}</p>}
+                {mod.latestVersion.cronJobs.length > 0 && <p>Cronjobs: {mod.latestVersion.cronJobs.length}</p>}
+                {mod.latestVersion.permissions.length > 0 && <p>Permissions: {mod.latestVersion.permissions.length}</p>}
               </span>
 
               <ActionIconsContainer>
@@ -284,15 +289,15 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
                     <Tooltip.Trigger asChild>
                       <DropdownButton
                         color={selectedVersion === 'latest' ? 'warning' : 'primary'}
-                        onSelectedChanged={(selectedIdx) => setSelectedVersion(versions[selectedIdx].tag)}
+                        onSelectedChanged={(selectedIdx) => setSelectedVersion(mod.versions[selectedIdx].tag)}
                       >
-                        {versions.map((version) => (
+                        {mod.versions.map((version) => (
                           <Action
                             key={`not-installed-${version.id}`}
                             onClick={() => handleInstallClick(version.id)}
                             text={`Install ${version.tag}`}
                           >
-                            {version.tag.charAt(0).toUpperCase() + version.tag.slice(1)}
+                            {version.tag}
                           </Action>
                         ))}
                       </DropdownButton>
