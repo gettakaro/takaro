@@ -22,6 +22,9 @@ import {
   GameEvents,
   EventChatMessage,
   ChatChannel,
+  TakaroEventGameserverCreated,
+  TakaroEventGameserverDeleted,
+  TakaroEventGameserverUpdated,
 } from '@takaro/modules';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
@@ -33,7 +36,7 @@ import { PlayerService } from './PlayerService.js';
 import { PlayerOnGameServerService, PlayerOnGameServerUpdateDTO } from './PlayerOnGameserverService.js';
 import { ItemCreateDTO, ItemsService } from './ItemsService.js';
 import { randomUUID } from 'crypto';
-import { EventCreateDTO, EventService } from './EventService.js';
+import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
 import { gameServerLatency } from '../lib/metrics.js';
 import { Pushgateway } from 'prom-client';
 import { config } from '../config.js';
