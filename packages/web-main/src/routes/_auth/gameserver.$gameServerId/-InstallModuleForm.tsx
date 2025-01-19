@@ -87,7 +87,7 @@ export const InstallModuleForm: FC<InstallModuleFormProps> = ({
   return (
     <Drawer open={open} onOpenChange={setOpen} promptCloseConfirmation={readOnly === false && isDirty}>
       <Drawer.Content>
-        <Drawer.Heading>Install module</Drawer.Heading>
+        <Drawer.Heading>{readOnly ? 'View configuration' : 'Install module'}</Drawer.Heading>
         <Drawer.Body>
           <CollapseList>
             <CollapseList.Item title="User config">
