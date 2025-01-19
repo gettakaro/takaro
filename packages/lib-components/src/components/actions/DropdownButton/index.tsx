@@ -101,13 +101,15 @@ export const DropdownButton = forwardRef<HTMLDivElement, DropdownButtonProps>(fu
     children[selected].props.onClick();
   };
 
+  // TODO: this element does not handle the case where there are no children/actions
+
   return (
     <Wrapper ref={ref}>
       <Container ref={refs.setReference} fullWidth={fullWidth}>
-        <CurrentAction color={color} onClick={handleSelectedActionClicked}>
+        <CurrentAction color={color} onClick={handleSelectedActionClicked} role="button">
           {children[selected].props.text}
         </CurrentAction>
-        <DropdownActionContainer color={color} onClick={() => setListVisible(!listVisible)}>
+        <DropdownActionContainer role="button" color={color} onClick={() => setListVisible(!listVisible)}>
           <Arrow size={20} />
         </DropdownActionContainer>
         {listVisible && (
