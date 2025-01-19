@@ -15,7 +15,7 @@ const Form = styled.form`
 `;
 
 interface EventFilterProps {
-  defaultValues: {
+  initialSelectedValues: {
     playerIds?: string[];
     gameServerIds?: string[];
     eventNames?: EventName[];
@@ -42,16 +42,17 @@ export const eventFilterSchema = z.object({
 });
 export type EventFilterInputs = z.infer<typeof eventFilterSchema>;
 
-export const EventFilter: FC<EventFilterProps> = ({ defaultValues, onSubmit, isLoading, isLive }) => {
+export const EventFilter: FC<EventFilterProps> = ({ initialSelectedValues, onSubmit, isLoading, isLive }) => {
+  console.log('defaultvalues', initialSelectedValues);
   const { control, handleSubmit, formState } = useForm<EventFilterInputs>({
     mode: 'onSubmit',
     resolver: zodResolver(eventFilterSchema),
     values: {
-      dateRange: defaultValues?.dateRange ?? { start: undefined, end: undefined },
-      playerIds: defaultValues?.playerIds ?? [],
-      gameServerIds: defaultValues.gameServerIds ?? [],
-      eventNames: defaultValues.eventNames ?? [],
-      moduleIds: defaultValues.moduleIds ?? [],
+      dateRange: initialSelectedValues?.dateRange ?? { start: undefined, end: undefined },
+      playerIds: initialSelectedValues?.playerIds ?? [],
+      gameServerIds: initialSelectedValues.gameServerIds ?? [],
+      eventNames: initialSelectedValues.eventNames ?? [],
+      moduleIds: initialSelectedValues.moduleIds ?? [],
     },
   });
 
@@ -64,6 +65,7 @@ export const EventFilter: FC<EventFilterProps> = ({ defaultValues, onSubmit, isL
         canClear={true}
         control={control}
         label="Players"
+        initialValues={initialSelectedValues.playerIds}
       />
       <GameServerSelectQueryField
         multiple={true}
@@ -72,8 +74,16 @@ export const EventFilter: FC<EventFilterProps> = ({ defaultValues, onSubmit, isL
         control={control}
         label="Gameservers"
         loading={isLoading}
+        initialValues={initialSelectedValues.gameServerIds}
       />
-      <ModuleSelectQueryField multiple={true} name="moduleIds" canClear={true} control={control} loading={isLoading} />
+      <ModuleSelectQueryField
+        multiple={true}
+        name="moduleIds"
+        canClear={true}
+        control={control}
+        loading={isLoading}
+        initialValues={initialSelectedValues.moduleIds}
+      />
       <EventNameSelectField multiple={true} name="eventNames" canClear={true} control={control} label="Event names" />
       <DateRangePicker
         control={control}

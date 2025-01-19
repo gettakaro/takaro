@@ -153,11 +153,12 @@ function Component() {
       <Header>
         <EventFilter
           isLoading={false}
-          defaultValues={{
+          initialSelectedValues={{
             playerIds: search.playerIds ?? [],
             gameServerIds: search.gameServerIds ?? [],
             eventNames: search.eventNames ?? [],
             dateRange: search.dateRange ?? undefined,
+            moduleIds: search.moduleIds ?? [],
           }}
           onSubmit={onFilterChangeSubmit}
           isLive={live}
