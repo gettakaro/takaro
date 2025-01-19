@@ -288,7 +288,7 @@ export class GameServerService extends TakaroService<
 
       return reachability;
     } else if (connectionInfo && type) {
-      const instance = await getGame(type, connectionInfo, {});
+      const instance = await getGame(type, connectionInfo, {}, 'unknown-id');
       return instance.testReachability();
     }
     throw new errors.BadRequestError('Missing required parameters');
@@ -419,7 +419,7 @@ export class GameServerService extends TakaroService<
       return acc;
     }, {});
 
-    gameInstance = await getGame(gameserver.type, gameserver.connectionInfo, settings);
+    gameInstance = await getGame(gameserver.type, gameserver.connectionInfo, settings, id);
 
     gameClassCache.set(id, gameInstance);
 

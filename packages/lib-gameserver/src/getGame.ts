@@ -7,17 +7,21 @@ import { Mock } from './gameservers/mock/index.js';
 import { RustConnectionInfo } from './gameservers/rust/connectionInfo.js';
 import { Rust } from './gameservers/rust/index.js';
 import { IGameServer } from './interfaces/GameServer.js';
+import { GenericConnectionInfo } from './gameservers/generic/connectionInfo.js';
+import { Generic } from './gameservers/generic/index.js';
 
 export enum GAME_SERVER_TYPE {
   'MOCK' = 'MOCK',
   'SEVENDAYSTODIE' = 'SEVENDAYSTODIE',
   'RUST' = 'RUST',
+  'GENERIC' = 'GENERIC',
 }
 
 export async function getGame(
   type: GAME_SERVER_TYPE | GameServerOutputDTOTypeEnum,
   connectionInfo: Record<string, unknown>,
   settings: Partial<Settings>,
+  gameServerId: string,
 ): Promise<IGameServer> {
   switch (type) {
     case GAME_SERVER_TYPE.SEVENDAYSTODIE:
@@ -26,6 +30,8 @@ export async function getGame(
       return new Rust(new RustConnectionInfo(connectionInfo), settings);
     case GAME_SERVER_TYPE.MOCK:
       return new Mock(new MockConnectionInfo(connectionInfo), settings);
+    case GAME_SERVER_TYPE.GENERIC:
+      return new Generic(new GenericConnectionInfo(connectionInfo), settings, gameServerId);
     default:
       throw new errors.NotImplementedError();
   }

@@ -1,7 +1,15 @@
 import { TakaroEmitter, getGame } from '@takaro/gameserver';
 import { GameEvents } from '@takaro/modules';
 import { logger } from '@takaro/util';
-import { AdminClient, Client, DomainOutputDTOStateEnum, GameServerOutputDTO } from '@takaro/apiclient';
+import {
+  AdminClient,
+  Client,
+  DomainOutputDTO,
+  DomainOutputDTOStateEnum,
+  GameServerOutputDTO,
+  GameServerTypesOutputDTOTypeEnum,
+  isAxiosError,
+} from '@takaro/apiclient';
 import { config } from '../config.js';
 import { queueService } from '@takaro/queues';
 
@@ -44,6 +52,59 @@ class GameServerManager {
     await this.syncServers();
     this.syncInterval = setInterval(() => this.syncServers(), SYNC_INTERVAL_MS);
     this.messageTimeoutInterval = setInterval(() => this.handleMessageTimeout(), 5000);
+  }
+
+  /**
+   * When a generic server connects to WS, we want to add it to the list of servers
+   * However, we first will need to check what domain it belongs to
+   * and if the GameServer record already exists in Takaro.
+   * @param identityToken
+   * @param registrationToken
+   */
+  async handleWsIdentify(identityToken: string, registrationToken: string): Promise<string | null> {
+    let domain: DomainOutputDTO;
+    try {
+      domain = (await takaro.domain.domainControllerResolveRegistrationToken({ registrationToken })).data.data;
+    } catch (error) {
+      if (isAxiosError(error) && error.response?.status === 404) {
+        this.log.warn(`No domain found for registrationToken ${registrationToken}`);
+        return null;
+      }
+      throw error;
+    }
+
+    const client = await getDomainClient(domain.id);
+    // Find all 'generic' gameservers and see if any of them have the same identityToken
+    const gameServers = (
+      await client.gameserver.gameServerControllerSearch({
+        filters: { type: [GameServerTypesOutputDTOTypeEnum.Generic] },
+      })
+    ).data.data;
+
+    let existingGameServer: GameServerOutputDTO | null = null;
+
+    for (const gameServer of gameServers) {
+      if ((gameServer.connectionInfo as Record<string, string>).identityToken === identityToken) {
+        existingGameServer = gameServer;
+        break;
+      }
+    }
+
+    // Gameserver does not exist yet, let's register it
+    if (!existingGameServer) {
+      this.log.info(`GameServer ${identityToken} does not exist, creating...`);
+      existingGameServer = (
+        await client.gameserver.gameServerControllerCreate({
+          connectionInfo: JSON.stringify({ identityToken }),
+          type: GameServerTypesOutputDTOTypeEnum.Generic,
+          name: identityToken,
+        })
+      ).data.data;
+    } else {
+      await this.add(domain.id, existingGameServer.id);
+    }
+
+    return existingGameServer.id;
   }
 
   private async getGameServer(gameServerId: string) {
@@ -154,7 +215,7 @@ class GameServerManager {
     }
 
     const emitter = (
-      await getGame(gameServer.type, gameServer.connectionInfo as Record<string, unknown>, {})
+      await getGame(gameServer.type, gameServer.connectionInfo as Record<string, unknown>, {}, gameServerId)
     ).getEventEmitter();
     this.emitterMap.set(gameServer.id, { domainId, emitter });
 
