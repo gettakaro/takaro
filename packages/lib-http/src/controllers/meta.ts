@@ -111,6 +111,20 @@ export class Meta {
       });
     });
 
+    // Add the operationId to the description, this helps users find the corresponding function call in the API client.
+    Object.keys(spec.paths).forEach((pathKey) => {
+      const pathItem = spec?.paths[pathKey];
+      Object.keys(pathItem).forEach((method) => {
+        const operation = pathItem[method];
+        // Api client exposes it as roleControllerSearch
+        // Current value is RoleController.search so lets adjust
+        // Capitalize the part after . and remove the .
+        const split = operation.operationId.split('.');
+        const cleanOperationId = split[0] + split[1].charAt(0).toUpperCase() + split[1].slice(1);
+        operation.description = (operation.description || '') + `<br> OperationId: \`${cleanOperationId}\``;
+      });
+    });
+
     if (spec.components?.schemas) {
       spec.components.schemas.PERMISSIONS = {
         enum: Object.values(PERMISSIONS),

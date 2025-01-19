@@ -319,10 +319,8 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
                 })}
               </ul>
             ),
-        ) ?? []),
-
-        // when there are no selected items, the persitedItems.length will be 0 and undefined will be part of the options array.
-      ].filter((item) => item !== undefined);
+        )?.filter(Boolean) ?? []),
+      ];
     }, [children, persistedItems]);
 
     return (
