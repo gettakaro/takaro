@@ -27,11 +27,11 @@ export function Module() {
 
   return (
     <div>
-      <p>{mod.description}</p>
-      <Commands commands={mod.commands} />
-      <CronJobs cronJobs={mod.cronJobs} />
-      <Hooks hooks={mod.hooks} />
-      <Config configSchema={mod.configSchema} />
+      <p>{mod.versions[0].description}</p>
+      <Commands commands={mod.versions[0].commands} />
+      <CronJobs cronJobs={mod.versions[0].cronJobs} />
+      <Hooks hooks={mod.versions[0].hooks} />
+      <Config configSchema={mod.versions[0].configSchema} />
     </div>
   )
 }

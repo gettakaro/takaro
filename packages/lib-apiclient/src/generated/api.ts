@@ -5357,30 +5357,6 @@ export interface ModuleCreateVersionInputDTO {
    * @memberof ModuleCreateVersionInputDTO
    */
   permissions?: Array<PermissionCreateDTO>;
-  /**
-   *
-   * @type {Array<FunctionCreateDTO>}
-   * @memberof ModuleCreateVersionInputDTO
-   */
-  functions?: Array<FunctionCreateDTO>;
-  /**
-   *
-   * @type {Array<CommandCreateDTO>}
-   * @memberof ModuleCreateVersionInputDTO
-   */
-  commands?: Array<CommandCreateDTO>;
-  /**
-   *
-   * @type {Array<HookCreateDTO>}
-   * @memberof ModuleCreateVersionInputDTO
-   */
-  hooks?: Array<HookCreateDTO>;
-  /**
-   *
-   * @type {Array<CronJobCreateDTO>}
-   * @memberof ModuleCreateVersionInputDTO
-   */
-  cronJobs?: Array<CronJobCreateDTO>;
 }
 /**
  *

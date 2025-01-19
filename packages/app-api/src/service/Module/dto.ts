@@ -1,10 +1,10 @@
 import { TakaroDTO, TakaroModelDTO } from '@takaro/util';
 import { Type } from 'class-transformer';
 import { IsString, IsJSON, IsOptional, ValidateNested, IsUUID, IsObject, Length, IsISO8601 } from 'class-validator';
-import { CommandCreateDTO, CommandOutputDTO } from '../CommandService.js';
-import { CronJobCreateDTO, CronJobOutputDTO } from '../CronJobService.js';
-import { FunctionCreateDTO, FunctionOutputDTO } from '../FunctionService.js';
-import { HookCreateDTO, HookOutputDTO } from '../HookService.js';
+import { CommandOutputDTO } from '../CommandService.js';
+import { CronJobOutputDTO } from '../CronJobService.js';
+import { FunctionOutputDTO } from '../FunctionService.js';
+import { HookOutputDTO } from '../HookService.js';
 import { PermissionCreateDTO, PermissionOutputDTO } from '../RoleService.js';
 
 export class ModuleVersionOutputDTO extends TakaroModelDTO<ModuleVersionOutputDTO> {
@@ -106,22 +106,6 @@ export class ModuleCreateVersionInputDTO extends TakaroDTO<ModuleCreateVersionIn
   @ValidateNested({ each: true })
   @Type(() => PermissionCreateDTO)
   permissions: PermissionCreateDTO[];
-  @IsOptional()
-  @ValidateNested({ each: true })
-  @Type(() => FunctionCreateDTO)
-  functions: FunctionCreateDTO[];
-  @IsOptional()
-  @ValidateNested({ each: true })
-  @Type(() => CommandCreateDTO)
-  commands: CommandCreateDTO[];
-  @IsOptional()
-  @ValidateNested({ each: true })
-  @Type(() => HookCreateDTO)
-  hooks: HookCreateDTO[];
-  @IsOptional()
-  @ValidateNested({ each: true })
-  @Type(() => CronJobCreateDTO)
-  cronJobs: CronJobCreateDTO[];
 }
 
 export class ModuleCreateAPIDTO extends TakaroDTO<ModuleCreateAPIDTO> {

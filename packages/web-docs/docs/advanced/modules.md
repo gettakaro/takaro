@@ -76,3 +76,50 @@ System configuration (`systemConfig`) is automatically managed by Takaro and inc
 - Channel IDs for Discord integrations
 
 The key difference is that you control userConfig through your module's configuration schema, while systemConfig is managed by Takaro itself.
+
+## Module Versioning
+
+Takaro's module versioning system helps you manage changes to your modules while maintaining compatibility with existing installations. This section explains how versioning works and best practices for managing module versions.
+
+### Version Types
+
+#### Latest Version
+
+Every module has a special `latest` version that represents the current development state. When you create or modify module components (hooks, cronjobs, or commands), these changes are always made to the `latest` version. Think of this as your development or staging environment.
+
+#### Tagged Versions
+
+Once you're satisfied with your module's state, you can create a tagged version (e.g., `1.0.0`). Tagged versions are immutable - they cannot be modified after creation. This immutability ensures consistency and reliability for server owners using your module.
+
+### Version Tagging
+
+#### Semantic Versioning
+
+Takaro requires all version tags to follow [Semantic Versioning](https://semver.org/) (SemVer). The format is `MAJOR.MINOR.PATCH`, where:
+
+- MAJOR version changes indicate incompatible API changes
+- MINOR version changes add functionality in a backward-compatible manner
+- PATCH version changes include backward-compatible bug fixes
+
+For example:
+
+- `1.0.0` - Initial stable release
+- `1.1.0` - Added new features
+- `1.1.1` - Bug fixes
+- `2.0.0` - Breaking changes
+
+:::note
+
+While Takaro enforces the SemVer format for tags, it's your responsibility as a module developer to:
+
+1. Choose appropriate version numbers based on the nature of your changes
+2. Maintain backward compatibility when appropriate
+3. Clearly communicate breaking changes to users
+
+:::
+
+### Best Practices
+
+1. **Start with 0.x.x**: For modules in initial development, use `0.x.x` versions to indicate that the module might change
+2. **Test Before Tagging**: Thoroughly test your module in the `latest` version before creating a tagged release
+3. **Migration Guide**: Provide migration instructions when releasing versions with breaking changes
