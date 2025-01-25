@@ -21,6 +21,7 @@ import {
   GAME_SERVER_TYPE,
   getGame,
   BanDTO,
+  TestReachabilityOutputDTO,
 } from '@takaro/gameserver';
 import { errors, TakaroModelDTO, traceableClass, TakaroDTO } from '@takaro/util';
 import { SettingsService } from './SettingsService.js';
@@ -172,7 +173,17 @@ export class GameServerService extends TakaroService<
   }
 
   async create(item: GameServerCreateDTO): Promise<GameServerOutputDTO> {
-    const isReachable = await this.testReachability(undefined, JSON.parse(item.connectionInfo), item.type);
+    let isReachable = new TestReachabilityOutputDTO({ connectable: false, reason: 'Unknown' });
+    // Generic gameservers start the connection, so they are always reachable
+    if (item.type === GAME_SERVER_TYPE.GENERIC) {
+      isReachable = new TestReachabilityOutputDTO({
+        connectable: true,
+        reason: 'Generic gameservers are always reachable',
+      });
+    } else {
+      isReachable = await this.testReachability(undefined, JSON.parse(item.connectionInfo), item.type);
+    }
+
     const createdServer = await this.repo.create(item);
 
     const eventsService = new EventService(this.domainId);
