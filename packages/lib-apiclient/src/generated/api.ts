@@ -2865,23 +2865,29 @@ export interface FunctionUpdateDTO {
  */
 export interface GameServerCreateDTO {
   /**
-   *
+   * 
    * @type {string}
    * @memberof GameServerCreateDTO
    */
-  name: string;
+  'name': string;
   /**
-   *
+   * 
    * @type {string}
    * @memberof GameServerCreateDTO
    */
-  connectionInfo: string;
+  'connectionInfo': string;
   /**
-   *
+   * 
    * @type {string}
    * @memberof GameServerCreateDTO
    */
-  type: GameServerCreateDTOTypeEnum;
+  'type': GameServerCreateDTOTypeEnum;
+  /**
+   * 
+   * @type {string}
+   * @memberof GameServerCreateDTO
+   */
+  'identityToken'?: string;
 }
 
 export const GameServerCreateDTOTypeEnum = {
@@ -2920,53 +2926,59 @@ export interface GameServerOutputArrayDTOAPI {
  */
 export interface GameServerOutputDTO {
   /**
-   *
+   * 
    * @type {string}
    * @memberof GameServerOutputDTO
    */
-  name: string;
+  'name': string;
   /**
-   *
+   * 
    * @type {object}
    * @memberof GameServerOutputDTO
    */
-  connectionInfo: object;
+  'connectionInfo': object;
   /**
-   *
+   * 
    * @type {string}
    * @memberof GameServerOutputDTO
    */
-  type: GameServerOutputDTOTypeEnum;
+  'type': GameServerOutputDTOTypeEnum;
   /**
-   *
+   * 
    * @type {boolean}
    * @memberof GameServerOutputDTO
    */
-  reachable: boolean;
+  'reachable': boolean;
   /**
-   *
+   * 
    * @type {boolean}
    * @memberof GameServerOutputDTO
    */
-  enabled: boolean;
+  'enabled': boolean;
   /**
-   *
+   * 
    * @type {string}
    * @memberof GameServerOutputDTO
    */
-  id: string;
+  'identityToken'?: string;
   /**
-   *
+   * 
+   * @type {string}
+   * @memberof GameServerOutputDTO
+   */
+  'id': string;
+  /**
+   * 
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
    * @memberof GameServerOutputDTO
    */
-  createdAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  'createdAt': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
   /**
-   *
+   * 
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}
    * @memberof GameServerOutputDTO
    */
-  updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+  'updatedAt': NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
 }
 
 export const GameServerOutputDTOTypeEnum = {
@@ -3005,35 +3017,41 @@ export interface GameServerOutputDTOAPI {
  */
 export interface GameServerSearchInputAllowedFilters {
   /**
-   *
+   * 
    * @type {Array<string>}
    * @memberof GameServerSearchInputAllowedFilters
    */
-  name?: Array<string>;
+  'name'?: Array<string>;
   /**
-   *
+   * 
    * @type {Array<string>}
    * @memberof GameServerSearchInputAllowedFilters
    */
-  type?: Array<GameServerSearchInputAllowedFiltersTypeEnum>;
+  'type'?: Array<GameServerSearchInputAllowedFiltersTypeEnum>;
   /**
-   *
+   * 
    * @type {Array<boolean>}
    * @memberof GameServerSearchInputAllowedFilters
    */
-  reachable?: Array<boolean>;
+  'reachable'?: Array<boolean>;
   /**
-   *
+   * 
    * @type {Array<boolean>}
    * @memberof GameServerSearchInputAllowedFilters
    */
-  enabled?: Array<boolean>;
+  'enabled'?: Array<boolean>;
   /**
-   *
+   * 
    * @type {Array<string>}
    * @memberof GameServerSearchInputAllowedFilters
    */
-  id?: Array<string>;
+  'identityToken'?: Array<string>;
+  /**
+   * 
+   * @type {Array<string>}
+   * @memberof GameServerSearchInputAllowedFilters
+   */
+  'id'?: Array<string>;
 }
 
 export const GameServerSearchInputAllowedFiltersTypeEnum = {

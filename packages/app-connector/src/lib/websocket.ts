@@ -4,7 +4,7 @@ import { randomUUID } from 'crypto';
 import { config } from '../config.js';
 import { gameServerManager } from './GameServerManager.js';
 
-interface WebSocketMessage {
+export interface WebSocketMessage {
   type: string;
   payload: Record<string, unknown> | null;
   requestId?: string;
@@ -21,6 +21,7 @@ class WSServer {
   private pingInterval: NodeJS.Timeout;
   private clients: Map<string, WebSocketClient> = new Map();
   private servers: Map<string, WebSocketClient> = new Map();
+  private WsToServerMap: Map<string, string> = new Map();
   private port: number;
 
   constructor(port: number) {
@@ -101,17 +102,26 @@ class WSServer {
           if (!payload.identityToken) throw new errors.BadRequestError('No identityToken provided');
           if (!payload.registrationToken) throw new errors.BadRequestError('No registrationToken provided');
 
-          const { identityToken, registrationToken } = payload;
+          const { identityToken, registrationToken, name } = payload;
           if (typeof identityToken !== 'string') throw new errors.BadRequestError('Invalid identityToken provided');
-          if (typeof registrationToken !== 'string')
-            throw new errors.BadRequestError('Invalid registrationToken provided');
-          const gameServerId = await gameServerManager.handleWsIdentify(identityToken, registrationToken);
+          if (typeof registrationToken !== 'string') throw new errors.BadRequestError('Invalid registrationToken provided');
+          const serverName = typeof name === 'string' ? name : identityToken;
+          const gameServerId = await gameServerManager.handleWsIdentify(identityToken, registrationToken, serverName);
           if (!gameServerId) {
             this.log.warn('Gameserver tried to identify, but we could not resolve it');
             this.sendToClient(ws, { type: 'error', payload: { message: 'Could not identify game server' } });
             return;
           }
           this.servers.set(gameServerId, ws);
+          if (!ws.id) throw new errors.BadRequestError('WS ID is missing, WS not properly identified/connected');
+          this.WsToServerMap.set(ws.id, gameServerId);
+          break;
+        }
+        case 'gameEvent': {
+          if (!ws.id) throw new errors.BadRequestError('WS ID is missing, WS not properly identified/connected');
+          const gameServerId = this.WsToServerMap.get(ws.id);
+          if (!gameServerId) throw new errors.BadRequestError('Game server ID not found for WS ID');
+          gameServerManager.handleGameMessage(gameServerId, message);
           break;
         }
         default:

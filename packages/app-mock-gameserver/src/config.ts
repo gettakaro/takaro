@@ -19,6 +19,7 @@ interface IMockServerConfig extends IBaseConfig {
   mockserver: {
     name: string;
     registrationToken: string;
+    identityToken: string;
   };
 }
 
@@ -92,6 +93,12 @@ const configSchema = {
       format: String,
       default: 'default-token',
       env: 'TAKARO_MOCK_REGISTRATION_TOKEN',
+    },
+    identityToken: {
+      doc: 'The identity token for the mock server',
+      format: String,
+      default: 'default-mock',
+      env: 'TAKARO_MOCK_IDENTITY_TOKEN',
     },
   },
 };

@@ -1,33 +1,25 @@
-import { errors, logger } from '@takaro/util';
+import { logger } from '@takaro/util';
 import { GenericConnectionInfo } from './connectionInfo.js';
 import { TakaroEmitter } from '../../TakaroEmitter.js';
 import { EventMapping, GameEventTypes } from '@takaro/modules';
-import EventEmitter from 'events';
 
 const log = logger('Generic');
 export class GenericEmitter extends TakaroEmitter {
-  private scopedListener = this.listener.bind(this);
-  private nodeEventEmitter: EventEmitter;
+  private scopedListener = this.privateListener.bind(this);
 
   constructor(private config: GenericConnectionInfo) {
     super();
   }
 
-  async start(nodeEventEmitter?: EventEmitter): Promise<void> {
-    if (!nodeEventEmitter) {
-      log.error('No nodeEventEmitter provided, required for generic emitter');
-      throw new errors.InternalServerError();
-    }
-    this.nodeEventEmitter = nodeEventEmitter;
+  async start(): Promise<void> { }
 
-    this.nodeEventEmitter.on('gameEvent', this.scopedListener);
+  async stop(): Promise<void> { }
+
+  get listener() {
+    return this.scopedListener;
   }
 
-  async stop(): Promise<void> {
-    this.nodeEventEmitter.removeAllListeners();
-  }
-
-  private async listener(event: GameEventTypes, args: any) {
+  private async privateListener(event: GameEventTypes, args: any) {
     log.debug(`Transmitting event ${event}`);
     const dto = EventMapping[event];
 

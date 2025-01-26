@@ -29,6 +29,7 @@ export class Generic implements IGameServer {
     private gameServerId: string,
   ) {
     this.connectionInfo = config;
+    this.emitter = new GenericEmitter(config);
   }
 
   getEventEmitter() {
@@ -72,7 +73,8 @@ export class Generic implements IGameServer {
     return this.requestFromServer('executeConsoleCommand', { command: rawCommand });
   }
 
-  async sendMessage(message: string, opts: IMessageOptsDTO) {
+  async sendMessage(message: string, opts?: IMessageOptsDTO) {
+    if (!opts) opts = new IMessageOptsDTO();
     return this.requestFromServer('sendMessage', {
       message,
       ...opts.toJSON(),

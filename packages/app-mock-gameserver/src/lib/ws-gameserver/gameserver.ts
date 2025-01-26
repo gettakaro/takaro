@@ -1,10 +1,9 @@
-import { EventPlayerConnected, IGamePlayer } from '@takaro/modules';
+import { EventPlayerConnected, GameEvents, IGamePlayer } from '@takaro/modules';
 import { config } from '../../config.js';
 import { WSClient } from './wsClient.js';
 import { faker } from '@faker-js/faker';
 import { logger } from '@takaro/util';
 import { IPlayerReferenceDTO } from '@takaro/gameserver';
-import { randomUUID } from 'crypto';
 
 interface IPlayerMeta {
   position: {
@@ -18,14 +17,14 @@ export class GameServer {
   private wsClient = new WSClient(config.get('ws.url'));
   private log = logger('GameServer');
   private players: Map<string, { player: IGamePlayer; meta: IPlayerMeta }> = new Map();
-  private serverId = randomUUID();
+  private serverId = config.get('mockserver.identityToken');
   private tickInterval: NodeJS.Timeout = setInterval(() => this.handleGameServerTick(), 1000);
 
   private handleGameServerTick() {
     this.wsClient.send({
       type: 'gameEvent',
       payload: {
-        type: 'playerConnected',
+        type: GameEvents.PLAYER_CONNECTED,
         data: new EventPlayerConnected({
           player: this.players.get('0')?.player,
         }),
@@ -43,6 +42,14 @@ export class GameServer {
           payload: { identityToken: this.serverId, registrationToken: config.get('mockserver.registrationToken') },
         });
         resolve();
+      });
+
+      this.wsClient.on('message', (message) => {
+        if (message.type === 'request') {
+          const { action, args } = message.payload;
+          // TODO: Implement all the actions...
+        }
+        console.log('Received message:', message);
       });
 
       // Create players

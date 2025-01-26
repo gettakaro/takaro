@@ -103,6 +103,10 @@ class GameServerSearchInputAllowedFilters extends AllowedFilters {
   @IsOptional()
   @IsBoolean({ each: true })
   enabled!: boolean[];
+
+  @IsOptional()
+  @IsString({ each: true })
+  identityToken!: string[];
 }
 
 class GameServerSearchInputDTO extends ITakaroQuery<GameServerOutputDTO> {

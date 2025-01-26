@@ -1,6 +1,6 @@
-import { TakaroEmitter, getGame } from '@takaro/gameserver';
-import { GameEvents } from '@takaro/modules';
-import { logger } from '@takaro/util';
+import { TakaroEmitter, getGame, GenericEmitter } from '@takaro/gameserver';
+import { GameEvents, GameEventTypes } from '@takaro/modules';
+import { errors, logger } from '@takaro/util';
 import {
   AdminClient,
   Client,
@@ -12,6 +12,7 @@ import {
 } from '@takaro/apiclient';
 import { config } from '../config.js';
 import { queueService } from '@takaro/queues';
+import { WebSocketMessage } from './websocket.js';
 
 const RECONNECT_AFTER_MS = config.get('gameServerManager.reconnectAfterMs');
 const SYNC_INTERVAL_MS = config.get('gameServerManager.syncIntervalMs');
@@ -40,7 +41,7 @@ async function getDomainClient(domainId: string) {
 
 class GameServerManager {
   private log = logger('GameServerManager');
-  private emitterMap = new Map<string, { domainId: string; emitter: TakaroEmitter }>();
+  private emitterMap = new Map<string, { domainId: string; emitter: TakaroEmitter | GenericEmitter }>();
   private eventsQueue = queueService.queues.events.queue;
   private lastMessageMap = new Map<string, number>();
   private gameServerDomainMap = new Map<string, string>();
@@ -61,7 +62,7 @@ class GameServerManager {
    * @param identityToken
    * @param registrationToken
    */
-  async handleWsIdentify(identityToken: string, registrationToken: string): Promise<string | null> {
+  async handleWsIdentify(identityToken: string, registrationToken: string, name?: string): Promise<string | null> {
     let domain: DomainOutputDTO;
     try {
       domain = (await takaro.domain.domainControllerResolveRegistrationToken({ registrationToken })).data.data;
@@ -77,14 +78,14 @@ class GameServerManager {
     // Find all 'generic' gameservers and see if any of them have the same identityToken
     const gameServers = (
       await client.gameserver.gameServerControllerSearch({
-        filters: { type: [GameServerTypesOutputDTOTypeEnum.Generic] },
+        filters: { type: [GameServerTypesOutputDTOTypeEnum.Generic], identityToken: [identityToken] },
       })
     ).data.data;
 
     let existingGameServer: GameServerOutputDTO | null = null;
 
     for (const gameServer of gameServers) {
-      if ((gameServer.connectionInfo as Record<string, string>).identityToken === identityToken) {
+      if (gameServer.identityToken === identityToken) {
         existingGameServer = gameServer;
         break;
       }
@@ -93,18 +94,30 @@ class GameServerManager {
     // Gameserver does not exist yet, let's register it
     if (!existingGameServer) {
       this.log.info(`GameServer ${identityToken} does not exist, creating...`);
+      if (!name) name = identityToken;
       existingGameServer = (
         await client.gameserver.gameServerControllerCreate({
           connectionInfo: JSON.stringify({ identityToken }),
           type: GameServerTypesOutputDTOTypeEnum.Generic,
-          name: identityToken,
+          name,
+          identityToken
         })
       ).data.data;
-    } else {
-      await this.add(domain.id, existingGameServer.id);
     }
 
+    await this.add(domain.id, existingGameServer.id);
     return existingGameServer.id;
+  }
+
+  async handleGameMessage(gameServerId: string, msg: WebSocketMessage) {
+    const res = this.emitterMap.get(gameServerId);
+    if (!res) throw new errors.NotFoundError(`GameServer ${gameServerId} not found in active emitters`);
+    const { emitter } = res;
+    if (emitter instanceof GenericEmitter) {
+      if (!msg.payload) throw new errors.BadRequestError('No payload provided');
+      const { type, data } = msg.payload;
+      emitter.listener(type as GameEventTypes, data);
+    }
   }
 
   private async getGameServer(gameServerId: string) {

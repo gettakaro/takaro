@@ -14,4 +14,5 @@ export { RustConnectionInfo, rustJsonSchema } from './gameservers/rust/connectio
 export { getGame, GAME_SERVER_TYPE } from './getGame.js';
 
 export { Generic } from './gameservers/generic/index.js';
+export { GenericEmitter } from './gameservers/generic/emitter.js';
 export { GenericConnectionInfo, genericJsonSchema } from './gameservers/generic/connectionInfo.js';

@@ -88,6 +88,9 @@ export class GameServerOutputDTO extends TakaroModelDTO<GameServerOutputDTO> {
   reachable: boolean;
   @IsBoolean()
   enabled: boolean;
+  @IsString()
+  @IsOptional()
+  identityToken?: string;
 }
 
 export class GameServerCreateDTO extends TakaroDTO<GameServerCreateDTO> {
@@ -99,6 +102,9 @@ export class GameServerCreateDTO extends TakaroDTO<GameServerCreateDTO> {
   @IsString()
   @IsEnum(GAME_SERVER_TYPE)
   type: GAME_SERVER_TYPE;
+  @IsString()
+  @IsOptional()
+  identityToken?: string;
 }
 
 export class GameServerUpdateDTO extends TakaroDTO<GameServerUpdateDTO> {
@@ -180,6 +186,7 @@ export class GameServerService extends TakaroService<
         connectable: true,
         reason: 'Generic gameservers are always reachable',
       });
+      if (!item.identityToken) throw new errors.BadRequestError('Identity token is required for generic gameservers');
     } else {
       isReachable = await this.testReachability(undefined, JSON.parse(item.connectionInfo), item.type);
     }
