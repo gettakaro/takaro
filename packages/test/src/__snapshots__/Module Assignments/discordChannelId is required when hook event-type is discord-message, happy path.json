@@ -39,7 +39,8 @@
         ],
         "commands": [],
         "permissions": [],
-        "functions": []
+        "functions": [],
+        "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable/disable the module without having to uninstall it.\"},\"hooks\":{\"type\":\"object\",\"properties\":{\"Test hook\":{\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable the Test hook hook.\"},\"discordChannelId\":{\"type\":\"string\",\"description\":\"Discord channel ID where Takaro will listen for messages.\"}},\"required\":[\"discordChannelId\"],\"default\":{}}},\"required\":[],\"default\":{}}},\"required\":[\"hooks\"],\"additionalProperties\":false}"
       },
       "module": {
         "createdAt": "2024-12-15T21:32:56.850Z",
