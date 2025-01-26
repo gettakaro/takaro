@@ -200,7 +200,7 @@ extendedTest.describe('Built-in modules', () => {
     moduleBuilderPage.mod = takaro.builtinModule;
     await moduleBuilderPage.goto();
 
-    const fileName = moduleBuilderPage.mod.latestVersion.commands[0].name;
+    const fileName = moduleBuilderPage.mod.latestVersion.cronJobs[0].name;
     await moduleBuilderPage.openFile(fileName);
 
     const editor = await moduleBuilderPage.getEditor();
