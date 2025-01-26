@@ -2,7 +2,7 @@ import { createClient, RedisClientOptions } from 'redis';
 import { config } from './config.js';
 import { logger, health } from '@takaro/util';
 
-type RedisClient = ReturnType<typeof createClient>;
+export type RedisClient = ReturnType<typeof createClient>;
 
 class RedisClass {
   private log = logger('redis');

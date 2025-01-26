@@ -104,7 +104,8 @@ class WSServer {
 
           const { identityToken, registrationToken, name } = payload;
           if (typeof identityToken !== 'string') throw new errors.BadRequestError('Invalid identityToken provided');
-          if (typeof registrationToken !== 'string') throw new errors.BadRequestError('Invalid registrationToken provided');
+          if (typeof registrationToken !== 'string')
+            throw new errors.BadRequestError('Invalid registrationToken provided');
           const serverName = typeof name === 'string' ? name : identityToken;
           const gameServerId = await gameServerManager.handleWsIdentify(identityToken, registrationToken, serverName);
           if (!gameServerId) {
@@ -186,7 +187,7 @@ class WSServer {
     return new Promise((resolve, reject) => {
       const requestId = randomUUID();
       const timeout = setTimeout(() => {
-        reject(new Error('Request timed out'));
+        reject(new Error(`Request timed out: ${action} `));
       }, config.get('ws.requestTimeoutMs'));
 
       client.send(
