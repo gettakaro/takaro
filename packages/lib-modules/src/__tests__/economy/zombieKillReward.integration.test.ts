@@ -38,12 +38,12 @@ const tests = [
       ).data.data;
 
       (
-        await this.client.gameserver.gameServerControllerInstallModule(
-          this.setupData.gameserver.id,
-          this.setupData.economyUtilsModule.id,
-        )
+        await this.client.module.moduleInstallationsControllerInstallModule({
+          gameServerId: this.setupData.gameserver.id,
+          versionId: this.setupData.economyUtilsModule.latestVersion.id,
+        })
       ).data.data;
-      const zombieKillCronjob = this.setupData.economyUtilsModule.cronJobs.find(
+      const zombieKillCronjob = this.setupData.economyUtilsModule.latestVersion.cronJobs.find(
         (cronjob) => cronjob.name === 'zombieKillReward',
       );
       if (!zombieKillCronjob) throw new Error('Cronjob not found');
@@ -86,12 +86,12 @@ const tests = [
       ).data.data;
 
       (
-        await this.client.gameserver.gameServerControllerInstallModule(
-          this.setupData.gameserver.id,
-          this.setupData.economyUtilsModule.id,
-        )
+        await this.client.module.moduleInstallationsControllerInstallModule({
+          gameServerId: this.setupData.gameserver.id,
+          versionId: this.setupData.economyUtilsModule.latestVersion.id,
+        })
       ).data.data;
-      const zombieKillCronjob = this.setupData.economyUtilsModule.cronJobs.find(
+      const zombieKillCronjob = this.setupData.economyUtilsModule.latestVersion.cronJobs.find(
         (cronjob) => cronjob.name === 'zombieKillReward',
       );
       if (!zombieKillCronjob) throw new Error('Cronjob not found');
@@ -152,12 +152,12 @@ const tests = [
       ).data.data;
 
       (
-        await this.client.gameserver.gameServerControllerInstallModule(
-          this.setupData.gameserver.id,
-          this.setupData.economyUtilsModule.id,
-        )
+        await this.client.module.moduleInstallationsControllerInstallModule({
+          gameServerId: this.setupData.gameserver.id,
+          versionId: this.setupData.economyUtilsModule.latestVersion.id,
+        })
       ).data.data;
-      const zombieKillCronjob = this.setupData.economyUtilsModule.cronJobs.find(
+      const zombieKillCronjob = this.setupData.economyUtilsModule.latestVersion.cronJobs.find(
         (cronjob) => cronjob.name === 'zombieKillReward',
       );
       if (!zombieKillCronjob) throw new Error('Cronjob not found');
@@ -201,15 +201,13 @@ const tests = [
         )
       ).data.data;
       (
-        await this.client.gameserver.gameServerControllerInstallModule(
-          this.setupData.gameserver.id,
-          this.setupData.economyUtilsModule.id,
-          {
-            userConfig: JSON.stringify({ zombieKillReward: 5 }),
-          },
-        )
+        await this.client.module.moduleInstallationsControllerInstallModule({
+          gameServerId: this.setupData.gameserver.id,
+          versionId: this.setupData.economyUtilsModule.latestVersion.id,
+          userConfig: JSON.stringify({ zombieKillReward: 5 }),
+        })
       ).data.data;
-      const zombieKillCronjob = this.setupData.economyUtilsModule.cronJobs.find(
+      const zombieKillCronjob = this.setupData.economyUtilsModule.latestVersion.cronJobs.find(
         (cronjob) => cronjob.name === 'zombieKillReward',
       );
       if (!zombieKillCronjob) throw new Error('Cronjob not found');
@@ -255,16 +253,14 @@ const tests = [
         )
       ).data.data;
       (
-        await this.client.gameserver.gameServerControllerInstallModule(
-          this.setupData.gameserver.id,
-          this.setupData.economyUtilsModule.id,
-          {
-            userConfig: JSON.stringify({ zombieKillReward: 5 }),
-          },
-        )
+        await this.client.module.moduleInstallationsControllerInstallModule({
+          gameServerId: this.setupData.gameserver.id,
+          versionId: this.setupData.economyUtilsModule.latestVersion.id,
+          userConfig: JSON.stringify({ zombieKillReward: 5 }),
+        })
       ).data.data;
 
-      const zombieKillCronjob = this.setupData.economyUtilsModule.cronJobs.find(
+      const zombieKillCronjob = this.setupData.economyUtilsModule.latestVersion.cronJobs.find(
         (cronjob) => cronjob.name === 'zombieKillReward',
       );
       if (!zombieKillCronjob) throw new Error('Cronjob not found');

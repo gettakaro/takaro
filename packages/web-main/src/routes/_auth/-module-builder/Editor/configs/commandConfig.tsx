@@ -71,9 +71,10 @@ const argumentTypeSelectOptions = [
 interface CommandConfigProps {
   itemId: string;
   readOnly?: boolean;
+  moduleId: string;
 }
 
-export const CommandConfig: FC<CommandConfigProps> = ({ itemId, readOnly }) => {
+export const CommandConfig: FC<CommandConfigProps> = ({ itemId, readOnly, moduleId }) => {
   const { data: command, isPending: isLoadingCommand, isError } = useQuery(commandQueryOptions(itemId));
   const { data: settings, isPending: isLoadingSetting } = useQuery(globalGameServerSetingQueryOptions('commandPrefix'));
 
@@ -88,16 +89,17 @@ export const CommandConfig: FC<CommandConfigProps> = ({ itemId, readOnly }) => {
   // fallback to `/`
   const prefix = (settings && settings?.value) ?? '/';
 
-  return <CommandConfigForm commandPrefix={prefix} command={command} readOnly={readOnly} />;
+  return <CommandConfigForm commandPrefix={prefix} command={command} readOnly={readOnly} moduleId={moduleId} />;
 };
 
 interface CommandConfigFormProps {
   command: CommandOutputDTO;
   readOnly?: boolean;
   commandPrefix?: string;
+  moduleId: string;
 }
 
-export const CommandConfigForm: FC<CommandConfigFormProps> = ({ command, readOnly, commandPrefix }) => {
+export const CommandConfigForm: FC<CommandConfigFormProps> = ({ command, readOnly, commandPrefix, moduleId }) => {
   const { mutateAsync, error, isPending } = useCommandUpdate();
 
   const { control, handleSubmit, formState, reset } = useForm<z.infer<typeof validationSchema>>({
@@ -146,6 +148,8 @@ export const CommandConfigForm: FC<CommandConfigFormProps> = ({ command, readOnl
     await mutateAsync({
       commandId: command.id,
       command: data as CommandUpdateDTO,
+      versionId: command.versionId,
+      moduleId: moduleId,
     });
     reset({}, { keepValues: true });
   };

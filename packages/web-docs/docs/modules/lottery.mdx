@@ -10,73 +10,75 @@ import { Commands, Config, CronJobs, Hooks } from './helpers';
 
 export function Module() {
   const mod = {
-  "commands": [
+  "name": "lottery",
+  "versions": [
     {
-      "function": "import { takaro, data, checkPermission, TakaroUserError } from '@takaro/helpers';\nasync function main() {\n    const { pog, gameServerId, arguments: args, module: mod } = data;\n    const varKey = 'lottery_tickets_bought';\n    if (!checkPermission(pog, 'LOTTERY_BUY')) {\n        throw new TakaroUserError('You do not have permission to buy lottery tickets.');\n    }\n    if (args.amount < 1) {\n        throw new TakaroUserError('You must buy at least 1 ticket.');\n    }\n    const tickets = (await takaro.variable.variableControllerSearch({\n        filters: {\n            gameServerId: [gameServerId],\n            key: [varKey],\n            moduleId: [mod.moduleId],\n            playerId: [pog.playerId],\n        },\n    })).data.data;\n    // Player already has some tickets bought\n    if (tickets.length > 0) {\n        const ticketsBought = tickets[0];\n        const ticketsBoughtAmount = parseInt(JSON.parse(ticketsBought.value).amount, 10);\n        await takaro.variable.variableControllerUpdate(ticketsBought.id, {\n            key: varKey,\n            playerId: pog.playerId,\n            moduleId: mod.moduleId,\n            gameServerId,\n            value: JSON.stringify({ amount: ticketsBoughtAmount + args.amount }),\n        });\n    }\n    // Player has no tickets bought\n    else {\n        await takaro.variable.variableControllerCreate({\n            key: varKey,\n            value: JSON.stringify({\n                amount: args.amount,\n            }),\n            gameServerId,\n            moduleId: mod.moduleId,\n            playerId: pog.playerId,\n        });\n    }\n    const ticketPrice = args.amount * mod.systemConfig.commands.buyTicket.cost;\n    // The price of the first ticket is deducted by the command execution itself.\n    if (args.amount > 1) {\n        await takaro.playerOnGameserver.playerOnGameServerControllerDeductCurrency(gameServerId, pog.playerId, {\n            currency: ticketPrice - 1,\n        });\n    }\n    const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data.value;\n    await pog.pm(`You have successfully bought ${args.amount} tickets for ${ticketPrice} ${currencyName}. Good luck!`);\n}\nawait main();\n//# sourceMappingURL=buyTicket.js.map",
-      "name": "buyTicket",
-      "trigger": "buyTicket",
-      "helpText": "Buy a lottery ticket.",
-      "arguments": [
+      "tag": "0.0.1",
+      "description": "Players can buy tickets for a lottery, and the winner is chosen at random.",
+      "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"profitMargin\":{\"type\":\"number\",\"maximum\":1,\"minimum\":0,\"description\":\"The profit margin the server takes from the lottery.\",\"default\":0.1}},\"required\":[],\"additionalProperties\":false}",
+      "permissions": [
         {
-          "name": "amount",
-          "type": "number",
-          "helpText": "The amount of tickets to buy.",
-          "position": 0,
-          "defaultValue": null
+          "permission": "LOTTERY_BUY",
+          "friendlyName": "Buy Lottery Tickets",
+          "canHaveCount": false,
+          "description": "Allows the player to buy lottery tickets."
+        },
+        {
+          "permission": "LOTTERY_VIEW_TICKETS",
+          "friendlyName": "View Lottery Tickets",
+          "description": "Allows the player to view his lottery tickets.",
+          "canHaveCount": false
+        }
+      ],
+      "cronJobs": [
+        {
+          "name": "drawLottery",
+          "temporalValue": "0 0 * * *",
+          "function": "import { takaro, data } from '@takaro/helpers';\nfunction getTotalPrize(tickets, ticketPrice, profitMargin) {\n    const amount = tickets.reduce((acc, ticket) => {\n        const ticketAmount = parseInt(JSON.parse(ticket.value).amount, 10);\n        return acc + ticketAmount;\n    }, 0);\n    const rawTotal = amount * ticketPrice;\n    const profit = rawTotal * profitMargin;\n    const totalPrize = rawTotal - profit;\n    return totalPrize;\n}\nasync function drawWinner(takaro, gameServerId, tickets) {\n    const randomIndex = Math.floor(Math.random() * tickets.length);\n    const winnerTicket = tickets[randomIndex];\n    const winner = (await takaro.player.playerControllerGetOne(winnerTicket.playerId)).data.data;\n    const pog = await takaro.playerOnGameserver.playerOnGameServerControllerSearch({\n        filters: {\n            gameServerId: [gameServerId],\n            playerId: [winner.id],\n        },\n    });\n    return {\n        name: winner.name,\n        playerId: pog.data.data[0].playerId,\n    };\n}\nasync function refundPlayer(takaro, gameServerId, playerId, amount, currencyName) {\n    const pog = (await takaro.playerOnGameserver.playerOnGameServerControllerSearch({\n        filters: {\n            gameServerId: [gameServerId],\n            playerId: [playerId],\n        },\n    })).data.data[0];\n    await takaro.playerOnGameserver.playerOnGameServerControllerAddCurrency(gameServerId, pog.playerId, {\n        currency: amount,\n    });\n    await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {\n        message: `You have been refunded ${amount} ${currencyName} because the lottery has been cancelled.`,\n        opts: {\n            recipient: {\n                gameId: pog.gameId,\n            },\n        },\n    });\n}\nasync function cleanUp(takaro, tickets) {\n    const deleteTasks = tickets.map((ticket) => takaro.variable.variableControllerDelete(ticket.id));\n    await Promise.allSettled(deleteTasks);\n}\nasync function main() {\n    const { gameServerId, module: mod } = data;\n    let tickets = [];\n    try {\n        const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data.value;\n        const ticketCost = mod.systemConfig.commands.buyTicket.cost;\n        tickets = (await takaro.variable.variableControllerSearch({\n            filters: {\n                gameServerId: [gameServerId],\n                moduleId: [mod.moduleId],\n                key: ['lottery_tickets_bought'],\n            },\n        })).data.data;\n        if (tickets.length === 0) {\n            await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {\n                message: 'No one has bought any tickets. The lottery has been cancelled.',\n            });\n            return;\n        }\n        if (tickets.length === 1) {\n            await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {\n                message: 'Only one person has bought a ticket. The lottery has been cancelled.',\n            });\n            const amount = parseInt(JSON.parse(tickets[0].value).amount, 10) * ticketCost;\n            await refundPlayer(takaro, gameServerId, tickets[0].playerId, amount, currencyName);\n            return;\n        }\n        const totalPrize = getTotalPrize(tickets, ticketCost, mod.userConfig.profitMargin);\n        const { name: winnerName, playerId } = await drawWinner(takaro, gameServerId, tickets);\n        await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {\n            message: 'The lottery raffle is about to start!',\n        });\n        await takaro.gameserver.gameServerControllerSendMessage(gameServerId, { message: 'drumrolls please...' });\n        await takaro.gameserver.gameServerControllerSendMessage(gameServerId, { message: 'The winner is...' });\n        await takaro.playerOnGameserver.playerOnGameServerControllerAddCurrency(gameServerId, playerId, {\n            currency: totalPrize,\n        });\n        await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {\n            message: `${winnerName}! Congratulations! You have won ${totalPrize} ${currencyName}!`,\n        });\n    }\n    finally {\n        await cleanUp(takaro, tickets);\n    }\n}\nawait main();\n//# sourceMappingURL=drawLottery.js.map"
+        }
+      ],
+      "commands": [
+        {
+          "function": "import { takaro, data, checkPermission, TakaroUserError } from '@takaro/helpers';\nasync function main() {\n    const { pog, gameServerId, arguments: args, module: mod } = data;\n    const varKey = 'lottery_tickets_bought';\n    if (!checkPermission(pog, 'LOTTERY_BUY')) {\n        throw new TakaroUserError('You do not have permission to buy lottery tickets.');\n    }\n    if (args.amount < 1) {\n        throw new TakaroUserError('You must buy at least 1 ticket.');\n    }\n    const tickets = (await takaro.variable.variableControllerSearch({\n        filters: {\n            gameServerId: [gameServerId],\n            key: [varKey],\n            moduleId: [mod.moduleId],\n            playerId: [pog.playerId],\n        },\n    })).data.data;\n    // Player already has some tickets bought\n    if (tickets.length > 0) {\n        const ticketsBought = tickets[0];\n        const ticketsBoughtAmount = parseInt(JSON.parse(ticketsBought.value).amount, 10);\n        await takaro.variable.variableControllerUpdate(ticketsBought.id, {\n            key: varKey,\n            playerId: pog.playerId,\n            moduleId: mod.moduleId,\n            gameServerId,\n            value: JSON.stringify({ amount: ticketsBoughtAmount + args.amount }),\n        });\n    }\n    // Player has no tickets bought\n    else {\n        await takaro.variable.variableControllerCreate({\n            key: varKey,\n            value: JSON.stringify({\n                amount: args.amount,\n            }),\n            gameServerId,\n            moduleId: mod.moduleId,\n            playerId: pog.playerId,\n        });\n    }\n    const ticketPrice = args.amount * mod.systemConfig.commands.buyTicket.cost;\n    // The price of the first ticket is deducted by the command execution itself.\n    if (args.amount > 1) {\n        await takaro.playerOnGameserver.playerOnGameServerControllerDeductCurrency(gameServerId, pog.playerId, {\n            currency: ticketPrice - 1,\n        });\n    }\n    const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data.value;\n    await pog.pm(`You have successfully bought ${args.amount} tickets for ${ticketPrice} ${currencyName}. Good luck!`);\n}\nawait main();\n//# sourceMappingURL=buyTicket.js.map",
+          "name": "buyTicket",
+          "trigger": "buyTicket",
+          "helpText": "Buy a lottery ticket.",
+          "arguments": [
+            {
+              "name": "amount",
+              "type": "number",
+              "helpText": "The amount of tickets to buy.",
+              "position": 0,
+              "defaultValue": null
+            }
+          ]
+        },
+        {
+          "function": "import { takaro, data, checkPermission, TakaroUserError } from '@takaro/helpers';\nasync function main() {\n    const { pog, gameServerId, module: mod } = data;\n    const varKey = 'lottery_tickets_bought';\n    if (!checkPermission(pog, 'LOTTERY_VIEW_TICKETS')) {\n        throw new TakaroUserError('You do not have permission to view lottery tickets.');\n    }\n    const tickets = (await takaro.variable.variableControllerSearch({\n        filters: {\n            gameServerId,\n            key: varKey,\n            moduleId: mod.id,\n            playerId: pog.playerId,\n        },\n    })).data.data;\n    let ticketsBought = 0;\n    if (tickets.length === 1) {\n        ticketsBought = parseInt(JSON.parse(tickets[0].value).amount, 10);\n    }\n    await pog.pm(`You have bought ${ticketsBought} tickets.`);\n}\nawait main();\n//# sourceMappingURL=viewTickets.js.map",
+          "name": "viewTickets",
+          "trigger": "viewTickets",
+          "helpText": "View your lottery tickets.",
+          "arguments": []
+        },
+        {
+          "function": "import { nextCronJobRun, data } from '@takaro/helpers';\nfunction formatTimeToReach(cronJob) {\n    const targetDate = nextCronJobRun(cronJob);\n    // Get the current date and time\n    const currentDate = new Date();\n    // Calculate the time difference in milliseconds\n    const delta = targetDate - currentDate;\n    // Calculate days, hours, minutes, and seconds\n    const days = Math.floor(delta / (1000 * 60 * 60 * 24));\n    const hours = Math.floor((delta % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));\n    const minutes = Math.floor((delta % (1000 * 60 * 60)) / (1000 * 60));\n    const seconds = Math.floor((delta % (1000 * 60)) / 1000);\n    // Build the formatted string\n    let formattedString = '';\n    if (days > 0) {\n        formattedString += `${days} day${days > 1 ? 's' : ''} `;\n    }\n    if (hours > 0) {\n        formattedString += `${hours} hour${hours > 1 ? 's' : ''} `;\n    }\n    if (minutes > 0) {\n        formattedString += `${minutes} minute${minutes > 1 ? 's' : ''} `;\n    }\n    if (seconds > 0) {\n        formattedString += `${seconds} second${seconds > 1 ? 's' : ''} `;\n    }\n    return formattedString.trim();\n}\nasync function main() {\n    const { player, module: mod } = data;\n    await player.pm(`The next lottery draw is in about ${formatTimeToReach(mod.systemConfig.cronJobs.drawLottery.temporalValue)}`);\n}\nawait main();\n//# sourceMappingURL=nextDraw.js.map",
+          "name": "nextDraw",
+          "trigger": "nextDraw",
+          "helpText": "View when the next draw is.",
+          "arguments": []
         }
       ]
-    },
-    {
-      "function": "import { takaro, data, checkPermission, TakaroUserError } from '@takaro/helpers';\nasync function main() {\n    const { pog, gameServerId, module: mod } = data;\n    const varKey = 'lottery_tickets_bought';\n    if (!checkPermission(pog, 'LOTTERY_VIEW_TICKETS')) {\n        throw new TakaroUserError('You do not have permission to view lottery tickets.');\n    }\n    const tickets = (await takaro.variable.variableControllerSearch({\n        filters: {\n            gameServerId,\n            key: varKey,\n            moduleId: mod.id,\n            playerId: pog.playerId,\n        },\n    })).data.data;\n    let ticketsBought = 0;\n    if (tickets.length === 1) {\n        ticketsBought = parseInt(JSON.parse(tickets[0].value).amount, 10);\n    }\n    await pog.pm(`You have bought ${ticketsBought} tickets.`);\n}\nawait main();\n//# sourceMappingURL=viewTickets.js.map",
-      "name": "viewTickets",
-      "trigger": "viewTickets",
-      "helpText": "View your lottery tickets.",
-      "arguments": []
-    },
-    {
-      "function": "import { nextCronJobRun, data } from '@takaro/helpers';\nfunction formatTimeToReach(cronJob) {\n    const targetDate = nextCronJobRun(cronJob);\n    // Get the current date and time\n    const currentDate = new Date();\n    // Calculate the time difference in milliseconds\n    const delta = targetDate - currentDate;\n    // Calculate days, hours, minutes, and seconds\n    const days = Math.floor(delta / (1000 * 60 * 60 * 24));\n    const hours = Math.floor((delta % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));\n    const minutes = Math.floor((delta % (1000 * 60 * 60)) / (1000 * 60));\n    const seconds = Math.floor((delta % (1000 * 60)) / 1000);\n    // Build the formatted string\n    let formattedString = '';\n    if (days > 0) {\n        formattedString += `${days} day${days > 1 ? 's' : ''} `;\n    }\n    if (hours > 0) {\n        formattedString += `${hours} hour${hours > 1 ? 's' : ''} `;\n    }\n    if (minutes > 0) {\n        formattedString += `${minutes} minute${minutes > 1 ? 's' : ''} `;\n    }\n    if (seconds > 0) {\n        formattedString += `${seconds} second${seconds > 1 ? 's' : ''} `;\n    }\n    return formattedString.trim();\n}\nasync function main() {\n    const { player, module: mod } = data;\n    await player.pm(`The next lottery draw is in about ${formatTimeToReach(mod.systemConfig.cronJobs.drawLottery.temporalValue)}`);\n}\nawait main();\n//# sourceMappingURL=nextDraw.js.map",
-      "name": "nextDraw",
-      "trigger": "nextDraw",
-      "helpText": "View when the next draw is.",
-      "arguments": []
     }
-  ],
-  "hooks": [],
-  "cronJobs": [
-    {
-      "name": "drawLottery",
-      "temporalValue": "0 0 * * *",
-      "function": "import { takaro, data } from '@takaro/helpers';\nfunction getTotalPrize(tickets, ticketPrice, profitMargin) {\n    const amount = tickets.reduce((acc, ticket) => {\n        const ticketAmount = parseInt(JSON.parse(ticket.value).amount, 10);\n        return acc + ticketAmount;\n    }, 0);\n    const rawTotal = amount * ticketPrice;\n    const profit = rawTotal * profitMargin;\n    const totalPrize = rawTotal - profit;\n    return totalPrize;\n}\nasync function drawWinner(takaro, gameServerId, tickets) {\n    const randomIndex = Math.floor(Math.random() * tickets.length);\n    const winnerTicket = tickets[randomIndex];\n    const winner = (await takaro.player.playerControllerGetOne(winnerTicket.playerId)).data.data;\n    const pog = await takaro.playerOnGameserver.playerOnGameServerControllerSearch({\n        filters: {\n            gameServerId: [gameServerId],\n            playerId: [winner.id],\n        },\n    });\n    return {\n        name: winner.name,\n        playerId: pog.data.data[0].playerId,\n    };\n}\nasync function refundPlayer(takaro, gameServerId, playerId, amount, currencyName) {\n    const pog = (await takaro.playerOnGameserver.playerOnGameServerControllerSearch({\n        filters: {\n            gameServerId: [gameServerId],\n            playerId: [playerId],\n        },\n    })).data.data[0];\n    await takaro.playerOnGameserver.playerOnGameServerControllerAddCurrency(gameServerId, pog.playerId, {\n        currency: amount,\n    });\n    await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {\n        message: `You have been refunded ${amount} ${currencyName} because the lottery has been cancelled.`,\n        opts: {\n            recipient: {\n                gameId: pog.gameId,\n            },\n        },\n    });\n}\nasync function cleanUp(takaro, tickets) {\n    const deleteTasks = tickets.map((ticket) => takaro.variable.variableControllerDelete(ticket.id));\n    await Promise.allSettled(deleteTasks);\n}\nasync function main() {\n    const { gameServerId, module: mod } = data;\n    let tickets = [];\n    try {\n        const currencyName = (await takaro.settings.settingsControllerGetOne('currencyName', gameServerId)).data.data.value;\n        const ticketCost = mod.systemConfig.commands.buyTicket.cost;\n        tickets = (await takaro.variable.variableControllerSearch({\n            filters: {\n                gameServerId: [gameServerId],\n                moduleId: [mod.moduleId],\n                key: ['lottery_tickets_bought'],\n            },\n        })).data.data;\n        if (tickets.length === 0) {\n            await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {\n                message: 'No one has bought any tickets. The lottery has been cancelled.',\n            });\n            return;\n        }\n        if (tickets.length === 1) {\n            await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {\n                message: 'Only one person has bought a ticket. The lottery has been cancelled.',\n            });\n            const amount = parseInt(JSON.parse(tickets[0].value).amount, 10) * ticketCost;\n            await refundPlayer(takaro, gameServerId, tickets[0].playerId, amount, currencyName);\n            return;\n        }\n        const totalPrize = getTotalPrize(tickets, ticketCost, mod.userConfig.profitMargin);\n        const { name: winnerName, playerId } = await drawWinner(takaro, gameServerId, tickets);\n        await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {\n            message: 'The lottery raffle is about to start!',\n        });\n        await takaro.gameserver.gameServerControllerSendMessage(gameServerId, { message: 'drumrolls please...' });\n        await takaro.gameserver.gameServerControllerSendMessage(gameServerId, { message: 'The winner is...' });\n        await takaro.playerOnGameserver.playerOnGameServerControllerAddCurrency(gameServerId, playerId, {\n            currency: totalPrize,\n        });\n        await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {\n            message: `${winnerName}! Congratulations! You have won ${totalPrize} ${currencyName}!`,\n        });\n    }\n    finally {\n        await cleanUp(takaro, tickets);\n    }\n}\nawait main();\n//# sourceMappingURL=drawLottery.js.map"
-    }
-  ],
-  "functions": [],
-  "permissions": [
-    {
-      "permission": "LOTTERY_BUY",
-      "friendlyName": "Buy Lottery Tickets",
-      "canHaveCount": false,
-      "description": "Allows the player to buy lottery tickets."
-    },
-    {
-      "permission": "LOTTERY_VIEW_TICKETS",
-      "friendlyName": "View Lottery Tickets",
-      "description": "Allows the player to view his lottery tickets.",
-      "canHaveCount": false
-    }
-  ],
-  "name": "lottery",
-  "description": "Players can buy tickets for a lottery, and the winner is chosen at random.",
-  "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"profitMargin\":{\"type\":\"number\",\"maximum\":1,\"minimum\":0,\"description\":\"The profit margin the server takes from the lottery.\",\"default\":0.1}},\"required\":[],\"additionalProperties\":false}",
-  "uiSchema": "{}"
+  ]
 };
 
   return (
     <div>
-      <p>{mod.description}</p>
-      <Commands commands={mod.commands} />
-      <CronJobs cronJobs={mod.cronJobs} />
-      <Hooks hooks={mod.hooks} />
-      <Config configSchema={mod.configSchema} />
+      <p>{mod.versions[0].description}</p>
+      <Commands commands={mod.versions[0].commands} />
+      <CronJobs cronJobs={mod.versions[0].cronJobs} />
+      <Hooks hooks={mod.versions[0].hooks} />
+      <Config configSchema={mod.versions[0].configSchema} />
     </div>
   )
 }

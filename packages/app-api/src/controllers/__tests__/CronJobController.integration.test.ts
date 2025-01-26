@@ -3,11 +3,11 @@ import { CronJobOutputDTOAPI } from '@takaro/apiclient';
 
 const group = 'CronJobController';
 
-const mockCronjob = (moduleId: string) => ({
+const mockCronjob = (versionId: string) => ({
   name: 'Test cronJob',
   temporalValue: '0 * * * *',
   function: 'console.log("test")',
-  moduleId,
+  versionId,
 });
 
 const tests = [
@@ -21,7 +21,7 @@ const tests = [
           name: 'Test module',
         })
       ).data.data;
-      return (await this.client.cronjob.cronJobControllerCreate(mockCronjob(module.id))).data;
+      return (await this.client.cronjob.cronJobControllerCreate(mockCronjob(module.latestVersion.id))).data;
     },
     test: async function () {
       return this.client.cronjob.cronJobControllerGetOne(this.setupData.data.id);
@@ -38,7 +38,7 @@ const tests = [
           name: 'Test module',
         })
       ).data.data;
-      return this.client.cronjob.cronJobControllerCreate(mockCronjob(module.id));
+      return this.client.cronjob.cronJobControllerCreate(mockCronjob(module.latestVersion.id));
     },
     filteredFields: ['moduleId', 'functionId'],
   }),
@@ -52,7 +52,7 @@ const tests = [
           name: 'Test module',
         })
       ).data.data;
-      return (await this.client.cronjob.cronJobControllerCreate(mockCronjob(module.id))).data;
+      return (await this.client.cronjob.cronJobControllerCreate(mockCronjob(module.latestVersion.id))).data;
     },
     test: async function () {
       return this.client.cronjob.cronJobControllerUpdate(this.setupData.data.id, {
@@ -72,7 +72,7 @@ const tests = [
           name: 'Test module',
         })
       ).data.data;
-      return (await this.client.cronjob.cronJobControllerCreate(mockCronjob(module.id))).data;
+      return (await this.client.cronjob.cronJobControllerCreate(mockCronjob(module.latestVersion.id))).data;
     },
     test: async function () {
       return this.client.cronjob.cronJobControllerRemove(this.setupData.data.id);
@@ -88,11 +88,11 @@ const tests = [
           name: 'Test module',
         })
       ).data.data;
-      return (await this.client.cronjob.cronJobControllerCreate(mockCronjob(mod.id))).data;
+      return (await this.client.cronjob.cronJobControllerCreate(mockCronjob(mod.latestVersion.id))).data;
     },
     test: async function () {
       return this.client.cronjob.cronJobControllerSearch({
-        filters: { name: [mockCronjob(this.setupData.data.moduleId).name] },
+        filters: { name: [mockCronjob(this.setupData.data.versionId).name] },
       });
     },
     filteredFields: ['moduleId', 'functionId'],

@@ -21,7 +21,7 @@ const Wrapper = styled.div`
 const Content = styled.div`
   display: flex;
   /* calculates the remaining height of the screen minus the header*/
-  height: calc(100vh - ${({ theme }) => theme.spacing[4]});
+  height: calc(100vh - ${({ theme }) => theme.spacing[5]});
 `;
 
 const StyledResizable = styled(Resizable)`
@@ -50,11 +50,11 @@ export const ModuleBuilderInner: FC = () => {
   function getConfigComponent(type: FileType, itemId: string) {
     switch (type) {
       case FileType.Hooks:
-        return <HookConfig itemId={itemId} readOnly={readOnly} />;
+        return <HookConfig itemId={itemId} readOnly={readOnly} moduleId={moduleId} />;
       case FileType.Commands:
-        return <CommandConfig itemId={itemId} readOnly={readOnly} />;
+        return <CommandConfig itemId={itemId} readOnly={readOnly} moduleId={moduleId} />;
       case FileType.CronJobs:
-        return <CronJobConfig itemId={itemId} readOnly={readOnly} />;
+        return <CronJobConfig itemId={itemId} readOnly={readOnly} moduleId={moduleId} />;
       default:
         return null;
     }
@@ -117,7 +117,7 @@ export const ModuleBuilderInner: FC = () => {
         {activeFile ? (
           <Editor readOnly={readOnly} />
         ) : (
-          <EditorPlaceholder>Hi cutie, select a file to start editing :)</EditorPlaceholder>
+          <EditorPlaceholder>Select a file to start editing :)</EditorPlaceholder>
         )}
       </Content>
     </Wrapper>

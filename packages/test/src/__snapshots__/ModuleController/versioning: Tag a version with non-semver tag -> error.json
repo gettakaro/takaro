@@ -1,0 +1,20 @@
+{
+  "body": {
+    "meta": {
+      "error": {
+        "code": "BadRequestError",
+        "message": "Invalid version tag, please use semver. Eg 1.0.0 or 2.0.4"
+      }
+    },
+    "data": {}
+  },
+  "status": 400,
+  "test": {
+    "group": "ModuleController",
+    "snapshot": true,
+    "name": "versioning: Tag a version with non-semver tag -> error",
+    "expectedStatus": 400,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

@@ -17,20 +17,22 @@ type FormInputs = z.infer<typeof validationSchema>;
 interface HookConfigProps {
   itemId: string;
   readOnly?: boolean;
+  moduleId: string;
 }
-export const HookConfig: FC<HookConfigProps> = ({ itemId, readOnly }) => {
+export const HookConfig: FC<HookConfigProps> = ({ itemId, readOnly, moduleId }) => {
   const { data: hook, isPending, isError } = useQuery(hookQueryOptions(itemId));
   if (isPending) return <ConfigLoading />;
   if (isError) return <Alert variant="error" text="Failed to load hook config" />;
-  return <HookConfigForm hook={hook} readOnly={readOnly} />;
+  return <HookConfigForm hook={hook} readOnly={readOnly} moduleId={moduleId} />;
 };
 
 interface HookConfigFormProps {
   hook: HookOutputDTO;
   readOnly?: boolean;
+  moduleId: string;
 }
 
-export const HookConfigForm: FC<HookConfigFormProps> = ({ readOnly = false, hook }) => {
+export const HookConfigForm: FC<HookConfigFormProps> = ({ readOnly = false, hook, moduleId }) => {
   const { mutateAsync, isPending } = useHookUpdate();
 
   const { control, handleSubmit, formState } = useForm<FormInputs>({
@@ -46,6 +48,8 @@ export const HookConfigForm: FC<HookConfigFormProps> = ({ readOnly = false, hook
     await mutateAsync({
       hookId: hook.id,
       hook: data as HookUpdateDTO,
+      moduleId,
+      versionId: hook.versionId,
     });
   };
 

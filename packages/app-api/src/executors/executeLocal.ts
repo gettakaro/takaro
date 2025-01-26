@@ -49,7 +49,7 @@ export const executeFunctionLocal: FunctionExecutor = async (
     return takaro;
   };
 
-  const userModules = data.module.module.functions
+  const userModules = data.module.version.functions
     .filter((f) => f.name)
     .map((f) => ({ name: f.name, code: f.code })) as { name: string; code: string }[];
 

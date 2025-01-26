@@ -191,6 +191,35 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
         </>
       );
       break;
+
+    case EventOutputDTOEventNameEnum.ShopListingCreated:
+    case EventOutputDTOEventNameEnum.ShopListingUpdated:
+    case EventOutputDTOEventNameEnum.ShopListingDeleted:
+      properties = (
+        <>
+          <EventProperty name="gameserver" value={event.gameServer?.name} />
+          <EventProperty name="user" value={event.actingUserId} />
+        </>
+      );
+      break;
+    case EventOutputDTOEventNameEnum.ShopOrderCreated:
+    case EventOutputDTOEventNameEnum.ShopOrderStatusChanged:
+      properties = (
+        <>
+          <EventProperty name="gameserver" value={event.gameServer?.name} />
+          <EventProperty name="player" value={event.player?.name} />
+        </>
+      );
+      break;
+    case EventOutputDTOEventNameEnum.PlayerLinked:
+      properties = (
+        <>
+          <EventProperty name="player" value={event.player?.name} />
+          <EventProperty name="gameserver" value={event.gameServer?.name} />
+        </>
+      );
+      break;
+
     case EventOutputDTOEventNameEnum.RoleCreated:
     case EventOutputDTOEventNameEnum.RoleDeleted:
     case EventOutputDTOEventNameEnum.RoleUpdated:

@@ -7,7 +7,7 @@ function getWaypointName(name) {
 async function main() {
   const { pog, gameServerId, trigger, module, itemId } = data;
 
-  const triggeredCommand = module.module.commands.find((command) => command.id === itemId);
+  const triggeredCommand = module.version.commands.find((command) => command.id === itemId);
 
   if (!triggeredCommand) {
     throw new Error('Waypoint not found.');
@@ -36,19 +36,23 @@ async function main() {
       waypointsDefinition = (
         await takaro.module.moduleControllerCreate({
           name: 'Waypoints',
-          description: 'Waypoints module for the teleport system.',
         })
       ).data.data;
     }
 
     let waypointsInstallation = (
-      await takaro.gameserver.gameServerControllerGetInstalledModules(gameServerId)
+      await takaro.module.moduleInstallationsControllerGetInstalledModules({
+        filters: { gameserverId: [data.gameServerId] },
+      })
     ).data.data.find((module) => module.name === 'Waypoints');
 
     if (!waypointsInstallation) {
       console.log('Waypoints module not found, installing it.');
       waypointsInstallation = (
-        await takaro.gameserver.gameServerControllerInstallModule(gameServerId, waypointsDefinition.id)
+        await takaro.module.moduleInstallationsControllerInstallModule({
+          gameServerId: data.gameServerId,
+          versionId: waypointsDefinition.latestVersion.id,
+        })
       ).data.data;
     }
 

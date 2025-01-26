@@ -6,8 +6,6 @@ import {
   IconButton,
   Dropdown,
   Dialog,
-  Button,
-  TextField,
   DateFormatter,
   CopyId,
   Chip,
@@ -15,28 +13,18 @@ import {
 import { PlayerOutputDTO, PERMISSIONS, PlayerSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper, Row } from '@tanstack/react-table';
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
-import {
-  AiOutlineUser as ProfileIcon,
-  AiOutlineEdit as EditIcon,
-  AiOutlineRight as ActionIcon,
-  AiOutlineUndo as UnBanIcon,
-} from 'react-icons/ai';
+import { AiOutlineUser as ProfileIcon, AiOutlineEdit as EditIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
 import { DateTime, Duration } from 'luxon';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { hasPermission, useHasPermission } from 'hooks/useHasPermission';
-import { useBanPlayerOnGameServer, useUnbanPlayerOnGameServer } from 'queries/gameserver';
 import { playersQueryOptions } from 'queries/player';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useSnackbar } from 'notistack';
 import { FaBan as BanIcon } from 'react-icons/fa';
 import { Player } from 'components/Player';
 import { useQuery } from '@tanstack/react-query';
-import { getApiClient } from 'util/getApiClient';
 import { PlayerStats } from './-players/playerStats';
 import { userMeQueryOptions } from 'queries/user';
 import { GameServerContainer } from 'components/GameServer';
+import { PlayerBanDialog } from 'components/dialogs/PlayerBanDialog';
 
 export const StyledDialogBody = styled(Dialog.Body)`
   h2 {
@@ -282,77 +270,15 @@ function Component() {
   );
 }
 
-interface BanPlayerDialogProps {
+interface PlayerActionsProps {
   player: PlayerOutputDTO;
 }
 
-interface FormInputs {
-  reason: string;
-}
-
-const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
+const PlayerActions: FC<PlayerActionsProps> = ({ player }) => {
   const [openBanDialog, setOpenBanDialog] = useState<boolean>(false);
-  const [openUnbanDialog, setOpenUnbanDialog] = useState<boolean>(false);
   const hasManageRoles = useHasPermission([PERMISSIONS.ManageRoles]);
-  // const hasManagePlayers = useHasPermission([PERMISSIONS.ManagePlayers]);
-
-  const { enqueueSnackbar } = useSnackbar();
-
+  const hasManagePlayers = useHasPermission([PERMISSIONS.ManagePlayers]);
   const navigate = useNavigate({ from: Route.fullPath });
-
-  const validationSchema = z.object({
-    reason: z.string().min(1).max(100),
-  });
-
-  const { handleSubmit, control } = useForm<FormInputs>({
-    resolver: zodResolver(validationSchema),
-  });
-
-  const { mutateAsync: mutateBanPlayer, isPending: isLoadingBanPlayer } = useBanPlayerOnGameServer();
-  const { mutateAsync: mutateUnbanPlayer, isPending: isLoadingUnbanPlayer } = useUnbanPlayerOnGameServer();
-
-  const handleOnBanPlayer: SubmitHandler<FormInputs> = async ({ reason }) => {
-    const pogs = (
-      await getApiClient().playerOnGameserver.playerOnGameServerControllerSearch({ filters: { playerId: [player.id] } })
-    ).data.data;
-
-    const bans = pogs.map((pog) => {
-      return mutateBanPlayer({
-        playerId: player.id,
-        gameServerId: pog.gameServerId,
-        opts: {
-          reason: reason,
-        },
-      });
-    });
-
-    try {
-      await Promise.all(bans);
-      enqueueSnackbar(`${player.name} is banned from all your game servers.`, { variant: 'default', type: 'info' });
-    } finally {
-      setOpenBanDialog(false);
-    }
-  };
-
-  const handleOnUnbanPlayer = async () => {
-    const pogs = (
-      await getApiClient().playerOnGameserver.playerOnGameServerControllerSearch({ filters: { playerId: [player.id] } })
-    ).data.data;
-
-    const bans = pogs.map((pog) => {
-      return mutateUnbanPlayer({
-        playerId: player.id,
-        gameServerId: pog.gameServerId,
-      });
-    });
-
-    try {
-      await Promise.all(bans);
-      enqueueSnackbar(`${player.name} is unbanned from all your game servers.`, { variant: 'default', type: 'info' });
-    } finally {
-      setOpenBanDialog(false);
-    }
-  };
 
   return (
     <>
@@ -375,56 +301,21 @@ const PlayerActions: FC<BanPlayerDialogProps> = ({ player }) => {
           />
 
           <Dropdown.Menu.Item
-            label="Ban from ALL game servers (coming soon)"
+            label="Ban player"
             icon={<BanIcon />}
             onClick={async () => {
               setOpenBanDialog(true);
             }}
-            disabled={true /*|| !hasManagePlayers*/}
-          />
-          <Dropdown.Menu.Item
-            label="Unban from ALL game servers (coming soon)"
-            icon={<UnBanIcon />}
-            onClick={async () => {
-              setOpenUnbanDialog(true);
-            }}
-            disabled={true /*|| !hasManagePlayers */}
+            disabled={!hasManagePlayers}
           />
         </Dropdown.Menu>
       </Dropdown>
-
-      <Dialog open={openBanDialog} onOpenChange={setOpenBanDialog}>
-        <Dialog.Content>
-          <Dialog.Heading>ban player: {player.name}</Dialog.Heading>
-          <Dialog.Body size="medium">
-            <form onSubmit={handleSubmit(handleOnBanPlayer)}>
-              <p style={{ marginBottom: 0 }}>
-                This will ban <strong>{player.name}</strong> from <strong>all</strong> your game servers?
-              </p>
-              <TextField control={control} name="reason" label="Ban Reason" placeholder="Cheating, Racism, etc." />
-              <Button isLoading={isLoadingBanPlayer} type="submit" fullWidth text={'Ban player'} color="error" />
-            </form>
-          </Dialog.Body>
-        </Dialog.Content>
-      </Dialog>
-      <Dialog open={openUnbanDialog} onOpenChange={setOpenUnbanDialog}>
-        <Dialog.Content>
-          <Dialog.Heading>unban player</Dialog.Heading>
-          <Dialog.Body size="medium">
-            <p>
-              this will unban <strong>{player.name}</strong> from <strong>all</strong> your game servers.
-            </p>
-            <Button
-              isLoading={isLoadingUnbanPlayer}
-              type="submit"
-              fullWidth
-              onClick={() => handleOnUnbanPlayer()}
-              text={'Ban player'}
-              color="error"
-            />
-          </Dialog.Body>
-        </Dialog.Content>
-      </Dialog>
+      <PlayerBanDialog
+        open={openBanDialog}
+        onOpenChange={setOpenBanDialog}
+        playerId={player.id}
+        playerName={player.name}
+      />
     </>
   );
 };

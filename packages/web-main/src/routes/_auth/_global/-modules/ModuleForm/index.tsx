@@ -7,15 +7,16 @@ import {
   CollapseList,
   TextAreaField,
   FormError,
-  QuestionTooltip,
+  IconTooltip,
   useTheme,
+  UnControlledSelectField,
 } from '@takaro/lib-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { validationSchema } from './validationSchema';
 import { useNavigate } from '@tanstack/react-router';
-import { ModuleOutputDTO, PermissionCreateDTO } from '@takaro/apiclient';
+import { ModuleVersionOutputDTO, PermissionCreateDTO, SmallModuleVersionOutputDTO } from '@takaro/apiclient';
 import { PermissionList, ButtonContainer } from './style';
-import { AiOutlinePlus as PlusIcon } from 'react-icons/ai';
+import { AiOutlinePlus as PlusIcon, AiOutlineQuestion as QuestionIcon } from 'react-icons/ai';
 import { AnyInput, InputType } from '../schemaConversion/inputTypes';
 import { schemaToInputs } from '../schemaConversion/SchemaToInputs';
 import { inputsToSchema, inputsToUiSchema } from '../schemaConversion/inputsToSchema';
@@ -26,27 +27,36 @@ import { ConfigFieldErrorDetail } from './ConfigFieldErrorDetail';
 
 export interface IFormInputs {
   name: string;
-  description?: string;
+  description: string;
   permissions: PermissionCreateDTO[];
   configFields: AnyInput[];
 }
 
 export interface ModuleFormSubmitProps {
   name: string;
-  description?: string;
+  description: string;
   permissions: PermissionCreateDTO[];
   schema: string;
   uiSchema: string;
 }
 
 interface ModuleFormProps {
-  mod?: ModuleOutputDTO;
   isLoading?: boolean;
   onSubmit?: (data: ModuleFormSubmitProps) => void;
   error: string | string[] | null;
+  moduleName?: string;
+  smallModuleVersions?: SmallModuleVersionOutputDTO[];
+  moduleVersion?: ModuleVersionOutputDTO;
 }
 
-export const ModuleForm: FC<ModuleFormProps> = ({ mod, onSubmit, isLoading = false, error }) => {
+export const ModuleForm: FC<ModuleFormProps> = ({
+  onSubmit,
+  isLoading = false,
+  error,
+  moduleName,
+  moduleVersion,
+  smallModuleVersions,
+}) => {
   const [open, setOpen] = useState(true);
   const navigate = useNavigate();
   const theme = useTheme();
@@ -59,19 +69,19 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, onSubmit, isLoading = fal
   }, [open, navigate]);
 
   const { initialConfigFields, configFieldErrors } = useMemo(() => {
-    if (mod) {
-      const { inputs, errors } = schemaToInputs(JSON.parse(mod.configSchema));
+    if (moduleVersion) {
+      const { inputs, errors } = schemaToInputs(JSON.parse(moduleVersion.configSchema));
       return { initialConfigFields: inputs, configFieldErrors: errors };
     }
     return { initialConfigFields: [], configFieldErrors: [] };
-  }, [mod]);
+  }, [moduleVersion]);
 
   const { handleSubmit, control, resetField, formState } = useForm<IFormInputs>({
     mode: 'onChange',
-    defaultValues: {
-      name: mod?.name ?? undefined,
-      description: mod?.description ?? undefined,
-      permissions: mod?.permissions ?? undefined,
+    values: {
+      name: moduleName ?? '',
+      description: moduleVersion?.description ?? '',
+      permissions: moduleVersion?.permissions ?? [],
       configFields: initialConfigFields,
     },
     resolver: zodResolver(validationSchema),
@@ -107,18 +117,72 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, onSubmit, isLoading = fal
     });
   };
 
+  console.log('moduleVersion', moduleVersion);
+
   function getTitle() {
-    if (mod) {
+    if (moduleVersion) {
       return readOnly ? 'View module' : 'Edit module';
     }
     return 'Create module';
   }
 
+  const handleOnSelectedVersionChanged = (selectedModuleVersionTag: string) => {
+    navigate({
+      to: '/modules/$moduleId/view/$moduleVersionTag',
+      params: { moduleId: moduleVersion!.moduleId, moduleVersionTag: selectedModuleVersionTag },
+    });
+  };
+
   return (
-    <Drawer open={open} onOpenChange={setOpen} promptCloseConfirmation={formState.isDirty}>
+    <Drawer open={open} onOpenChange={setOpen} promptCloseConfirmation={readOnly === false && formState.isDirty}>
       <Drawer.Content>
         <Drawer.Heading>{getTitle()}</Drawer.Heading>
         <Drawer.Body>
+          {smallModuleVersions && moduleVersion && (
+            <div style={{ marginBottom: '30px' }}>
+              <UnControlledSelectField
+                id="module-version-tag-select"
+                name="module-version-tag-select"
+                onChange={handleOnSelectedVersionChanged}
+                multiple={false}
+                render={(selectedItems) => {
+                  if (selectedItems.length > 0) {
+                    if (selectedItems[0].value === 'latest') {
+                      return (
+                        <div>
+                          <span>Latest version</span>
+                        </div>
+                      );
+                    }
+                    return (
+                      <div>
+                        <span>{selectedItems[0].value}</span>
+                      </div>
+                    );
+                  }
+                  return <span>Select a version</span>;
+                }}
+                value={moduleVersion?.tag}
+                hasError={false}
+                hasDescription={false}
+              >
+                <UnControlledSelectField.OptionGroup>
+                  {smallModuleVersions.map((moduleVersion) => {
+                    return (
+                      <UnControlledSelectField.Option
+                        key={moduleVersion.id}
+                        value={moduleVersion.tag}
+                        label={moduleVersion.tag}
+                      >
+                        <div>{moduleVersion.tag}</div>
+                      </UnControlledSelectField.Option>
+                    );
+                  })}
+                </UnControlledSelectField.OptionGroup>
+              </UnControlledSelectField>
+            </div>
+          )}
+
           <form id="module-definition" onSubmit={handleSubmit(submitHandler)}>
             <CollapseList>
               <CollapseList.Item title="General">
@@ -145,13 +209,13 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, onSubmit, isLoading = fal
                 title={
                   <>
                     Permissions
-                    <QuestionTooltip>
+                    <IconTooltip color="background" icon={<QuestionIcon />}>
                       Permissions are a way to control who can use the items inside your module or control the behavior
                       of functions inside your module. For example, if you have a command that only admins should be
                       able to use, you can create a permission for it and then check for it to the command. Or, you
                       might want to have different behavior for different groups of players (e.g. regular players vs
                       donators)
-                    </QuestionTooltip>
+                    </IconTooltip>
                   </>
                 }
               >
@@ -201,12 +265,12 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, onSubmit, isLoading = fal
                 title={
                   <>
                     Config
-                    <QuestionTooltip>
+                    <IconTooltip color="background" icon={<QuestionIcon />}>
                       Config fields are a way to control the behavior of your module. When a module is installed on a
                       game server, Config fields can be tweaked to change the behavior of the module. For example, if
                       you want to write a module that allows players to teleport to each other, you might want to have a
                       config field that controls the cooldown of the command.
-                    </QuestionTooltip>
+                    </IconTooltip>
                   </>
                 }
               >
@@ -267,7 +331,7 @@ export const ModuleForm: FC<ModuleFormProps> = ({ mod, onSubmit, isLoading = fal
                   </div>
                 )}
                 {/* TODO: There is currently a bug in react-hook-form regarding refine, which in our case breaks the 
-        unique name validation. So for now we just add note to the user that the name must be unique 
+        unique name validation of config fields. So for now we just add note to the user that the name must be unique 
         issue: https://github.com/react-hook-form/resolvers/issues/538#issuecomment-1504222680
         */}
               </CollapseList.Item>

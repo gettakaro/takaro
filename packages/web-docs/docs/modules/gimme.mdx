@@ -10,32 +10,33 @@ import { Commands, Config, CronJobs, Hooks } from './helpers';
 
 export function Module() {
   const mod = {
-  "commands": [
-    {
-      "function": "import { takaro, data, TakaroUserError } from '@takaro/helpers';\nasync function main() {\n    const items = data.module.userConfig.items;\n    const commands = data.module.userConfig.commands;\n    if (items.length + commands.length === 0) {\n        throw new TakaroUserError('No items or commands configured, please ask your server administrator to configure this module.');\n    }\n    // pick a random item between 0 and the length of both the items and commands arrays\n    const randomIndex = Math.floor(Math.random() * (items.length + commands.length));\n    const randomOption = items.concat(commands)[randomIndex];\n    if (randomIndex < items.length) {\n        if (typeof randomOption === 'string') {\n            await takaro.gameserver.gameServerControllerGiveItem(data.gameServerId, data.player.id, {\n                name: randomOption,\n                amount: 1,\n                quality: '0',\n            });\n            await data.player.pm(`You received ${randomOption}!`);\n        }\n        else {\n            const item = (await takaro.item.itemControllerFindOne(randomOption.item)).data.data;\n            await takaro.gameserver.gameServerControllerGiveItem(data.gameServerId, data.player.id, {\n                name: item.code,\n                amount: randomOption.amount,\n                quality: randomOption.quality ?? '',\n            });\n            await data.player.pm(`You received ${randomOption.amount}x ${item.name}!`);\n        }\n    }\n    else {\n        await takaro.gameserver.gameServerControllerExecuteCommand(data.gameServerId, { command: randomOption });\n    }\n}\nawait main();\n//# sourceMappingURL=gimme.js.map",
-      "name": "gimme",
-      "trigger": "gimme",
-      "helpText": "Randomly selects item from a list of items and entities.",
-      "arguments": []
-    }
-  ],
-  "hooks": [],
-  "cronJobs": [],
-  "functions": [],
-  "permissions": [],
   "name": "gimme",
-  "description": "Randomly selects an item from a list of items.",
-  "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"items\":{\"x-component\":\"item\",\"type\":\"array\",\"title\":\"Items\",\"description\":\"List of items that a player can receive.\",\"uniqueItems\":true,\"items\":{\"type\":\"object\",\"title\":\"Item\",\"properties\":{\"item\":{\"type\":\"string\",\"title\":\"Item\"},\"amount\":{\"type\":\"number\",\"title\":\"Amount\"},\"quality\":{\"type\":\"string\",\"title\":\"Quality\"}}}},\"commands\":{\"title\":\"Commands\",\"type\":\"array\",\"default\":[\"say hello from gimme\"],\"items\":{\"type\":\"string\"}}},\"required\":[\"items\"],\"additionalProperties\":false}",
-  "uiSchema": "{\"items\":{\"items\":{\"item\":{\"ui:widget\":\"item\"}}}}"
+  "versions": [
+    {
+      "tag": "0.0.1",
+      "description": "Randomly selects item from a list of items and entities.",
+      "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"items\":{\"x-component\":\"item\",\"type\":\"array\",\"title\":\"Items\",\"description\":\"List of items that a player can receive.\",\"uniqueItems\":true,\"items\":{\"type\":\"object\",\"title\":\"Item\",\"properties\":{\"item\":{\"type\":\"string\",\"title\":\"Item\"},\"amount\":{\"type\":\"number\",\"title\":\"Amount\"},\"quality\":{\"type\":\"string\",\"title\":\"Quality\"}}}},\"commands\":{\"title\":\"Commands\",\"type\":\"array\",\"default\":[\"say hello from gimme\"],\"items\":{\"type\":\"string\"}}},\"required\":[\"items\"],\"additionalProperties\":false}",
+      "uiSchema": "{\"items\":{\"items\":{\"item\":{\"ui:widget\":\"item\"}}}}",
+      "commands": [
+        {
+          "function": "import { takaro, data, TakaroUserError } from '@takaro/helpers';\nasync function main() {\n    const items = data.module.userConfig.items;\n    const commands = data.module.userConfig.commands;\n    if (items.length + commands.length === 0) {\n        throw new TakaroUserError('No items or commands configured, please ask your server administrator to configure this module.');\n    }\n    // pick a random item between 0 and the length of both the items and commands arrays\n    const randomIndex = Math.floor(Math.random() * (items.length + commands.length));\n    const randomOption = items.concat(commands)[randomIndex];\n    if (randomIndex < items.length) {\n        if (typeof randomOption === 'string') {\n            await takaro.gameserver.gameServerControllerGiveItem(data.gameServerId, data.player.id, {\n                name: randomOption,\n                amount: 1,\n                quality: '0',\n            });\n            await data.player.pm(`You received ${randomOption}!`);\n        }\n        else {\n            const item = (await takaro.item.itemControllerFindOne(randomOption.item)).data.data;\n            await takaro.gameserver.gameServerControllerGiveItem(data.gameServerId, data.player.id, {\n                name: item.code,\n                amount: randomOption.amount,\n                quality: randomOption.quality ?? '',\n            });\n            await data.player.pm(`You received ${randomOption.amount}x ${item.name}!`);\n        }\n    }\n    else {\n        await takaro.gameserver.gameServerControllerExecuteCommand(data.gameServerId, { command: randomOption });\n    }\n}\nawait main();\n//# sourceMappingURL=gimme.js.map",
+          "name": "gimme",
+          "trigger": "gimme",
+          "helpText": "Randomly selects item from a list of items and entities.",
+          "arguments": []
+        }
+      ]
+    }
+  ]
 };
 
   return (
     <div>
-      <p>{mod.description}</p>
-      <Commands commands={mod.commands} />
-      <CronJobs cronJobs={mod.cronJobs} />
-      <Hooks hooks={mod.hooks} />
-      <Config configSchema={mod.configSchema} />
+      <p>{mod.versions[0].description}</p>
+      <Commands commands={mod.versions[0].commands} />
+      <CronJobs cronJobs={mod.versions[0].cronJobs} />
+      <Hooks hooks={mod.versions[0].hooks} />
+      <Config configSchema={mod.versions[0].configSchema} />
     </div>
   )
 }

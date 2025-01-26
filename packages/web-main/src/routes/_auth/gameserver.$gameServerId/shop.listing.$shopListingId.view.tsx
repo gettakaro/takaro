@@ -6,6 +6,7 @@ import { shopListingQueryOptions } from 'queries/shopListing';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { userMeQueryOptions } from 'queries/user';
 import { DrawerSkeleton } from '@takaro/lib-components';
+import { useQueries } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/listing/$shopListingId/view')({
   beforeLoad: async ({ context }) => {
@@ -21,7 +22,7 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/listi
     ]);
 
     return {
-      currencyName: currencyNameOutput.value,
+      currencyName: currencyNameOutput,
       shopListing,
     };
   },
@@ -31,14 +32,21 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/listi
 
 function Component() {
   useDocumentTitle('View Listing');
-  const { gameServerId } = Route.useParams();
-  const { currencyName, shopListing } = Route.useLoaderData();
+  const { gameServerId, shopListingId } = Route.useParams();
+  const loaderData = Route.useLoaderData();
+
+  const [{ data: currencyName }, { data: shopListing }] = useQueries({
+    queries: [
+      { ...gameServerSettingQueryOptions('currencyName', gameServerId), initialData: loaderData.currencyName },
+      { ...shopListingQueryOptions(shopListingId), initialData: loaderData.shopListing },
+    ],
+  });
 
   return (
     <ShopListingCreateUpdateForm
       error={null}
       initialData={shopListing}
-      currencyName={currencyName}
+      currencyName={currencyName.value}
       gameServerId={gameServerId}
     />
   );

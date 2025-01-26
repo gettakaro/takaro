@@ -70,6 +70,14 @@ export class ModuleDefinitionsPage extends BasePage {
     await this.page.getByRole('button', { name: 'Copy module' }).click();
   }
 
+  async tag(name: string, semantic: 'patch' | 'minor' | 'major') {
+    await this.openSettings(name);
+    await this.page.getByRole('menuitem', { name: 'Tag module' }).click();
+
+    await this.page.getByLabel('Version level');
+    await this.page.getByRole('button', { name: `Tag as ${semantic}` }).click();
+  }
+
   async view(name: string) {
     await this.openSettings(name);
     await this.page.getByRole('menuitem', { name: 'View module' }).click();

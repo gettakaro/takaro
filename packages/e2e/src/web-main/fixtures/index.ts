@@ -16,6 +16,7 @@ import { humanId } from 'human-id';
 import { ModuleDefinitionsPage, ModuleBuilderPage, GameServersPage, UsersPage, RolesPage } from '../pages/index.js';
 import { getAdminClient, login } from '../helpers.js';
 import { PlayerProfilePage } from '../pages/PlayerProfile.js';
+import { ModuleInstallationsPage } from '../pages/ModuleInstallationsPage.js';
 
 global.afterEach = () => {};
 globalThis.afterEach = () => {};
@@ -27,6 +28,7 @@ export interface IBaseFixtures {
     adminClient: AdminClient;
     moduleBuilderPage: ModuleBuilderPage;
     moduleDefinitionsPage: ModuleDefinitionsPage;
+    moduleInstallationsPage: ModuleInstallationsPage;
     GameServersPage: GameServersPage;
     usersPage: UsersPage;
     builtinModule: ModuleOutputDTO;
@@ -87,16 +89,24 @@ const main = pwTest.extend<IBaseFixtures>({
         // Module creation
         client.module.moduleControllerCreate({
           name: 'Module without functions',
-          configSchema: JSON.stringify({}),
-          description: 'Empty module with no functions',
+          latestVersion: {
+            description: 'Empty module with no functions',
+            configSchema: JSON.stringify({}),
+          },
         }),
 
         // Get builtin module
-        client.module.moduleControllerSearch({ filters: { name: ['utils'] } }),
+        client.module.moduleControllerSearch({ filters: { name: ['highPingKicker'] } }),
       ]);
 
       // enable developer mode by default
       await client.settings.settingsControllerSet('developerMode', { value: 'true' });
+
+      // Install utils module
+      await client.module.moduleInstallationsControllerInstallModule({
+        versionId: mods.data.data[0].versions.find((v) => v.tag === '0.0.1')!.id,
+        gameServerId: gameServer.data.data.id,
+      });
 
       // assign role to user
       await client.user.userControllerAssignRole(user.data.data.id, emptyRole.data.data.id);
@@ -108,6 +118,7 @@ const main = pwTest.extend<IBaseFixtures>({
         gameServer: gameServer.data.data,
         moduleBuilderPage: new ModuleBuilderPage(page, mod.data.data),
         GameServersPage: new GameServersPage(page, gameServer.data.data),
+        moduleInstallationsPage: new ModuleInstallationsPage(page, gameServer.data.data),
         moduleDefinitionsPage: new ModuleDefinitionsPage(page),
         usersPage: new UsersPage(page),
         rolesPage: new RolesPage(page),
@@ -167,41 +178,44 @@ export const extendedTest = main.extend<ExtendedFixture>({
 
       await login(page, rootUser.email, domain.password);
 
-      const mod = await rootClient.module.moduleControllerCreate({
+      const modCreateResult = await rootClient.module.moduleControllerCreate({
         name: 'Module with functions',
-        configSchema: JSON.stringify({}),
-        description: 'Module with functions',
+        latestVersion: {
+          description: 'Module with functions',
+          configSchema: JSON.stringify({}),
+        },
       });
+      const mod = modCreateResult.data.data;
 
       // create command, hook and cronjob and function
       await Promise.all([
         rootClient.command.commandControllerCreate({
-          moduleId: mod.data.data.id,
+          versionId: mod.latestVersion.id,
           name: 'my-command',
           trigger: 'test',
         }),
         rootClient.hook.hookControllerCreate({
-          moduleId: mod.data.data.id,
+          versionId: mod.latestVersion.id,
           name: 'my-hook',
           regex: 'test',
           eventType: HookCreateDTOEventTypeEnum.Log,
         }),
         rootClient.cronjob.cronJobControllerCreate({
-          moduleId: mod.data.data.id,
+          versionId: mod.latestVersion.id,
           name: 'my-cron',
           temporalValue: '* * * * *',
         }),
         rootClient.function.functionControllerCreate({
           name: 'my-function',
-          moduleId: mod.data.data.id,
+          versionId: mod.latestVersion.id,
         }),
       ]);
-      takaro.moduleBuilderPage.mod = mod.data.data;
+      takaro.moduleBuilderPage.mod = mod;
       await connectedEvents;
       const players = (await rootClient.player.playerControllerSearch()).data.data;
 
       await use({
-        mod: mod.data.data,
+        mod,
         PlayerProfilePage: new PlayerProfilePage(page, players[0]),
         players: players,
       });

@@ -18,10 +18,12 @@
           "updatedAt": "2024-03-02T14:34:28.076Z",
           "code": "console.log(\"test\")",
           "name": null,
-          "moduleId": null
+          "moduleId": null,
+          "versionId": null
         },
         "moduleId": "23784955-3911-4759-8dba-d6a8b4e477cf",
-        "functionId": "088b6967-8625-472a-adb6-cb11f4939adf"
+        "functionId": "088b6967-8625-472a-adb6-cb11f4939adf",
+        "versionId": "4a0ef936-a354-4669-a032-77f8ccad8594"
       }
     ]
   },

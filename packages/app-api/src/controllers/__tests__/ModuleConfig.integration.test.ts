@@ -20,36 +20,40 @@ const setup = async function (this: IntegrationTest<ISetupData>): Promise<ISetup
 
   const moduleRes = await this.client.module.moduleControllerCreate({
     name: 'Test module',
-    description: 'Test description',
-    configSchema: JSON.stringify({
-      $schema: 'http://json-schema.org/draft-07/schema#',
-      type: 'object',
-      properties: {
-        foo: {
-          type: 'string',
-          minLength: 3,
-          maxLength: 10,
+    latestVersion: {
+      description: 'Test description',
+      configSchema: JSON.stringify({
+        $schema: 'http://json-schema.org/draft-07/schema#',
+        type: 'object',
+        properties: {
+          foo: {
+            type: 'string',
+            minLength: 3,
+            maxLength: 10,
+          },
         },
-      },
-      required: ['foo'],
-      additionalProperties: false,
-    }),
+        required: ['foo'],
+        additionalProperties: false,
+      }),
+    },
   });
 
   const cronjobModuleCreateRes = await this.client.module.moduleControllerCreate({
     name: 'Test module cronjobs',
-    description: 'Test description',
-    configSchema: JSON.stringify({
-      $schema: 'http://json-schema.org/draft-07/schema#',
-      type: 'object',
-      properties: {},
-      required: [],
-      additionalProperties: false,
-    }),
+    latestVersion: {
+      description: 'Test description',
+      configSchema: JSON.stringify({
+        $schema: 'http://json-schema.org/draft-07/schema#',
+        type: 'object',
+        properties: {},
+        required: [],
+        additionalProperties: false,
+      }),
+    },
   });
 
   await this.client.cronjob.cronJobControllerCreate({
-    moduleId: cronjobModuleCreateRes.data.data.id,
+    versionId: cronjobModuleCreateRes.data.data.latestVersion.id,
     name: 'Test cron job',
     temporalValue: '1 * * * *',
     function: 'test',
@@ -71,11 +75,11 @@ const tests = [
     name: 'Installing a module with correct config',
     setup,
     test: async function () {
-      return this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.module.id,
-        { userConfig: JSON.stringify({ foo: 'bar' }) },
-      );
+      return this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.module.latestVersion.id,
+        userConfig: JSON.stringify({ foo: 'bar' }),
+      });
     },
     filteredFields: ['gameserverId', 'moduleId'],
   }),
@@ -85,11 +89,11 @@ const tests = [
     name: 'Installing a module with incorrect config (value too short)',
     setup,
     test: async function () {
-      return this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.module.id,
-        { userConfig: JSON.stringify({ foo: 'a' }) },
-      );
+      return this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.module.latestVersion.id,
+        userConfig: JSON.stringify({ foo: 'a' }),
+      });
     },
     filteredFields: ['gameserverId', 'moduleId'],
     expectedStatus: 400,
@@ -100,13 +104,12 @@ const tests = [
     name: 'Installing a module with incorrect config (value too long)',
     setup,
     test: async function () {
-      return this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.module.id,
-        {
-          userConfig: JSON.stringify({ foo: 'a'.repeat(11) }),
-        },
-      );
+      return this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.module.latestVersion.id,
+
+        userConfig: JSON.stringify({ foo: 'a'.repeat(11) }),
+      });
     },
     filteredFields: ['gameserverId', 'moduleId'],
     expectedStatus: 400,
@@ -117,10 +120,10 @@ const tests = [
     name: 'Installing a module with incorrect config (missing property)',
     setup,
     test: async function () {
-      return this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.module.id,
-      );
+      return this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.module.latestVersion.id,
+      });
     },
     filteredFields: ['gameserverId', 'moduleId'],
     expectedStatus: 400,
@@ -131,13 +134,12 @@ const tests = [
     name: 'Installing a module with incorrect config (additional property)',
     setup,
     test: async function () {
-      return this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.module.id,
-        {
-          userConfig: JSON.stringify({ foo: 'bar', bar: 'foo' }),
-        },
-      );
+      return this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.module.latestVersion.id,
+
+        userConfig: JSON.stringify({ foo: 'bar', bar: 'foo' }),
+      });
     },
     filteredFields: ['gameserverId', 'moduleId'],
     expectedStatus: 400,
@@ -148,16 +150,15 @@ const tests = [
     name: 'Installing with invalid system config - not json',
     setup,
     test: async function () {
-      return this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.cronJobsModule.id,
-        {
-          userConfig: JSON.stringify({ foo: 'bar' }),
-          systemConfig: 'invalid',
-        },
-      );
+      return this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.cronJobsModule.latestVersion.id,
+
+        userConfig: JSON.stringify({ foo: 'bar' }),
+        systemConfig: 'invalid',
+      });
     },
-    filteredFields: ['gameserverId', 'moduleId'],
+    filteredFields: ['gameServerId', 'moduleId'],
     expectedStatus: 400,
   }),
   new IntegrationTest<ISetupData>({
@@ -167,14 +168,13 @@ const tests = [
     setup,
     test: async function () {
       try {
-        await this.client.gameserver.gameServerControllerInstallModule(
-          this.setupData.gameserver.id,
-          this.setupData.cronJobsModule.id,
-          {
-            userConfig: JSON.stringify({ foo: 'bar' }),
-            systemConfig: JSON.stringify({ foo: 'bar' }),
-          },
-        );
+        await this.client.module.moduleInstallationsControllerInstallModule({
+          gameServerId: this.setupData.gameserver.id,
+          versionId: this.setupData.cronJobsModule.latestVersion.id,
+
+          userConfig: JSON.stringify({ foo: 'bar' }),
+          systemConfig: JSON.stringify({ foo: 'bar' }),
+        });
         throw new Error('Should not be able to install module with invalid system config');
       } catch (error) {
         if (!isAxiosError(error)) {
@@ -194,17 +194,16 @@ const tests = [
     name: 'Installing with correct system config',
     setup,
     test: async function () {
-      return await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.cronJobsModule.id,
-        {
-          systemConfig: JSON.stringify({
-            cronJobs: {
-              [this.setupData.cronJobsModule.cronJobs[0].name]: { temporalValue: '5 * * * *' },
-            },
-          }),
-        },
-      );
+      return await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.cronJobsModule.latestVersion.id,
+
+        systemConfig: JSON.stringify({
+          cronJobs: {
+            [this.setupData.cronJobsModule.latestVersion.cronJobs[0].name]: { temporalValue: '5 * * * *' },
+          },
+        }),
+      });
     },
     filteredFields: ['gameserverId', 'moduleId', 'functionId'],
   }),
@@ -215,7 +214,7 @@ const tests = [
     setup,
     test: async function () {
       await this.client.cronjob.cronJobControllerCreate({
-        moduleId: this.setupData.cronJobsModule.id,
+        versionId: this.setupData.cronJobsModule.latestVersion.id,
         name: 'Test cron job 2',
         temporalValue: '42 * * * *',
         function: 'test',
@@ -223,18 +222,17 @@ const tests = [
 
       const updatedModuleRes = await this.client.module.moduleControllerGetOne(this.setupData.cronJobsModule.id);
 
-      return await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.cronJobsModule.id,
-        {
-          systemConfig: JSON.stringify({
-            cronJobs: {
-              [updatedModuleRes.data.data.cronJobs[0].name]: { temporalValue: '5 * * * *' },
-              [updatedModuleRes.data.data.cronJobs[1].name]: { temporalValue: '13 * * * *' },
-            },
-          }),
-        },
-      );
+      return await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.cronJobsModule.latestVersion.id,
+
+        systemConfig: JSON.stringify({
+          cronJobs: {
+            [updatedModuleRes.data.data.latestVersion.cronJobs[0].name]: { temporalValue: '5 * * * *' },
+            [updatedModuleRes.data.data.latestVersion.cronJobs[1].name]: { temporalValue: '13 * * * *' },
+          },
+        }),
+      });
     },
     filteredFields: ['gameserverId', 'moduleId', 'functionId'],
   }),
@@ -244,17 +242,17 @@ const tests = [
     name: 'Installing with correct system config - should default cronjob values',
     setup,
     test: async function () {
-      const installRes = await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.cronJobsModule.id,
-      );
+      const installRes = await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.cronJobsModule.latestVersion.id,
+      });
 
       expect(installRes.data.data.systemConfig).to.deep.equal({
         enabled: true,
         cronJobs: {
-          [this.setupData.cronJobsModule.cronJobs[0].name]: {
+          [this.setupData.cronJobsModule.latestVersion.cronJobs[0].name]: {
             enabled: true,
-            temporalValue: this.setupData.cronJobsModule.cronJobs[0].temporalValue,
+            temporalValue: this.setupData.cronJobsModule.latestVersion.cronJobs[0].temporalValue,
           },
         },
       });

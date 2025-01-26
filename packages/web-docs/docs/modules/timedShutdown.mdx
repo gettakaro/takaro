@@ -10,35 +10,35 @@ import { Commands, Config, CronJobs, Hooks } from './helpers';
 
 export function Module() {
   const mod = {
-  "commands": [],
-  "hooks": [],
-  "cronJobs": [
-    {
-      "name": "Shutdown",
-      "temporalValue": "3 30 * * *",
-      "function": "import { data, takaro } from '@takaro/helpers';\nasync function main() {\n    const { gameServerId } = data;\n    await takaro.gameserver.gameServerControllerShutdown(gameServerId);\n}\nawait main();\n//# sourceMappingURL=Shutdown.js.map"
-    },
-    {
-      "name": "warning",
-      "temporalValue": "3 25 * * *",
-      "function": "import { data, takaro } from '@takaro/helpers';\nasync function main() {\n    const { gameServerId } = data;\n    const msg = data.module.userConfig.warningMessage;\n    await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {\n        message: msg,\n    });\n}\nawait main();\n//# sourceMappingURL=warning.js.map"
-    }
-  ],
-  "functions": [],
-  "permissions": [],
   "name": "timedShutdown",
-  "description": "Automatically shut down the server at a specific time.",
-  "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"warningMessage\":{\"type\":\"string\",\"title\":\"Warning message\",\"description\":\"Message to send to players before the server shuts down.\",\"default\":\"Server is shutting down in 5 minutes!\",\"minLength\":1,\"maxLength\":1024}},\"required\":[\"warningMessage\"]}",
-  "uiSchema": "{}"
+  "versions": [
+    {
+      "tag": "0.0.1",
+      "description": "Automatically shut down the server at a specific time.",
+      "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"warningMessage\":{\"type\":\"string\",\"title\":\"Warning message\",\"description\":\"Message to send to players before the server shuts down.\",\"default\":\"Server is shutting down in 5 minutes!\",\"minLength\":1,\"maxLength\":1024}},\"required\":[\"warningMessage\"]}",
+      "cronJobs": [
+        {
+          "name": "Shutdown",
+          "temporalValue": "30 3 * * *",
+          "function": "import { data, takaro } from '@takaro/helpers';\nasync function main() {\n    const { gameServerId } = data;\n    await takaro.gameserver.gameServerControllerShutdown(gameServerId);\n}\nawait main();\n//# sourceMappingURL=Shutdown.js.map"
+        },
+        {
+          "name": "warning",
+          "temporalValue": "25 3 * * *",
+          "function": "import { data, takaro } from '@takaro/helpers';\nasync function main() {\n    const { gameServerId } = data;\n    const msg = data.module.userConfig.warningMessage;\n    await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {\n        message: msg,\n    });\n}\nawait main();\n//# sourceMappingURL=warning.js.map"
+        }
+      ]
+    }
+  ]
 };
 
   return (
     <div>
-      <p>{mod.description}</p>
-      <Commands commands={mod.commands} />
-      <CronJobs cronJobs={mod.cronJobs} />
-      <Hooks hooks={mod.hooks} />
-      <Config configSchema={mod.configSchema} />
+      <p>{mod.versions[0].description}</p>
+      <Commands commands={mod.versions[0].commands} />
+      <CronJobs cronJobs={mod.versions[0].cronJobs} />
+      <Hooks hooks={mod.versions[0].hooks} />
+      <Config configSchema={mod.versions[0].configSchema} />
     </div>
   )
 }

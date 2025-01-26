@@ -43,7 +43,7 @@ const MockTeleportCommand = new CommandOutputDTO({
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
   functionId: randomUUID(),
-  moduleId: randomUUID(),
+  versionId: randomUUID(),
   domain: 'mock domain',
   name: 'settele',
   trigger: 'settele',

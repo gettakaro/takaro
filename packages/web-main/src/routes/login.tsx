@@ -188,14 +188,7 @@ function Component() {
             </Link>
           </LinkContainer>
           {error && <FormError error={error} />}
-          <Button
-            icon={<Mail />}
-            isLoading={loading}
-            fullWidth
-            text="Log in with Email"
-            type="submit"
-            variant="default"
-          />
+          <Button icon={<Mail />} isLoading={loading} fullWidth text="Log in" type="submit" variant="default" />
         </form>
       </Container>
     </>
