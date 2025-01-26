@@ -11,7 +11,7 @@ interface ModuleCopyDialogProps extends RequiredDialogOptions {
 export const ModuleCopyDialog: FC<ModuleCopyDialogProps> = ({ mod, ...dialogOptions }) => {
   const { enqueueSnackbar } = useSnackbar();
 
-  const handleOnCopySuccess = async (_moduleId: string) => {
+  const handleOnCopySuccess = async () => {
     enqueueSnackbar('Module successfully copied.', { variant: 'default', type: 'success' });
     dialogOptions.onOpenChange(false);
   };
@@ -26,7 +26,7 @@ export const ModuleCopyDialog: FC<ModuleCopyDialogProps> = ({ mod, ...dialogOpti
           <h2>
             Copy module: <strong>{mod.name}</strong>
           </h2>
-          <CopyModuleForm mod={mod} onSuccess={(e) => handleOnCopySuccess(e)} />
+          <CopyModuleForm mod={mod} onSuccess={handleOnCopySuccess} />
         </Dialog.Body>
       </Dialog.Content>
     </Dialog>

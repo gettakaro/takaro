@@ -224,7 +224,7 @@ interface ModuleExportInput {
   moduleId: string;
   options: ModuleExportOptionsDTO;
 }
-export const exportedModuleOptions = () => {
+export const useModuleExport = () => {
   return mutationWrapper<ModuleTransferDTO, ModuleExportInput>(
     useMutation<ModuleExportDTOAPI, AxiosError<ModuleTransferDTO>, ModuleExportInput>({
       mutationFn: async ({ moduleId, options }) =>

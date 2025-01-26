@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Dialog, FormError, SelectField, UnControlledSelectField } from '@takaro/lib-components';
-import { exportedModuleOptions } from 'queries/module';
+import { useModuleExport } from 'queries/module';
 import { FC, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
@@ -25,7 +25,7 @@ export const ModuleExportDialog: FC<ModuleExportDialogProps> = ({
   moduleVersions,
   ...dialogOptions
 }) => {
-  const { mutateAsync, isPending: isExporting } = exportedModuleOptions();
+  const { mutateAsync, isPending: isExporting } = useModuleExport();
   const [error, setError] = useState<string | null>(null);
   const defaultSelectedVersion = moduleVersions.find((v) => v.tag === 'latest')!;
   const { enqueueSnackbar } = useSnackbar();

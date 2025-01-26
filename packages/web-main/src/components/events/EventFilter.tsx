@@ -65,7 +65,6 @@ export const EventFilter: FC<EventFilterProps> = ({ initialSelectedValues, onSub
         canClear={true}
         control={control}
         label="Players"
-        initialValues={initialSelectedValues.playerIds}
       />
       <GameServerSelectQueryField
         multiple={true}
@@ -74,16 +73,8 @@ export const EventFilter: FC<EventFilterProps> = ({ initialSelectedValues, onSub
         control={control}
         label="Gameservers"
         loading={isLoading}
-        initialValues={initialSelectedValues.gameServerIds}
       />
-      <ModuleSelectQueryField
-        multiple={true}
-        name="moduleIds"
-        canClear={true}
-        control={control}
-        loading={isLoading}
-        initialValues={initialSelectedValues.moduleIds}
-      />
+      <ModuleSelectQueryField multiple={true} name="moduleIds" canClear={true} control={control} loading={isLoading} />
       <EventNameSelectField multiple={true} name="eventNames" canClear={true} control={control} label="Event names" />
       <DateRangePicker
         control={control}

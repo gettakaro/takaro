@@ -5,7 +5,7 @@ import { Button, TextField, FormError, Alert } from '@takaro/lib-components';
 import { FC } from 'react';
 import { AiOutlineCopy as CopyIcon } from 'react-icons/ai';
 
-import { useModuleCreate } from 'queries/module';
+import { useModuleExport, useModuleImport } from 'queries/module';
 import { moduleNameShape } from 'routes/_auth/_global/-modules/ModuleForm/validationSchema';
 import { ModuleOutputDTO } from '@takaro/apiclient';
 
@@ -15,7 +15,7 @@ const validationSchema = z.object({
 
 interface CopyModuleFormProps {
   mod: ModuleOutputDTO;
-  onSuccess?: (moduleId: string) => void;
+  onSuccess?: () => void;
 }
 
 export const CopyModuleForm: FC<CopyModuleFormProps> = ({ mod, onSuccess }) => {
@@ -23,62 +23,27 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ mod, onSuccess }) => {
     resolver: zodResolver(validationSchema),
   });
 
-  const { mutateAsync: copyModule, isPending: moduleCopyLoading, error: moduleCopyError } = useModuleCreate();
+  const { mutateAsync: importModule, isPending: moduleImportLoading, error: moduleImportError } = useModuleImport();
+  const { mutateAsync: exportModule, isPending: moduleExportLoading, error: moduleExportError } = useModuleExport();
 
   const { latestVersion } = mod;
 
   const onSubmit: SubmitHandler<z.infer<typeof validationSchema>> = async ({ name }) => {
     try {
-      const newModule = await copyModule({
-        name,
-        latestVersion: {
-          hooks: latestVersion.hooks.map((hook) => ({
-            versionId: latestVersion.id,
-            name: hook.name,
-            eventType: hook.eventType,
-            regex: hook.regex,
-            function: hook.function.code,
-          })),
-          commands: latestVersion.commands.map((command) => ({
-            versionId: latestVersion.id,
-            name: command.name,
-            trigger: command.trigger,
-            helpText: command.helpText,
-            function: command.function.code,
-            arguments: command.arguments.map((arg) => ({
-              name: arg.name,
-              type: arg.type,
-              helpText: arg.helpText,
-              position: arg.position,
-            })),
-          })),
-          functions: latestVersion.functions.map((f) => ({
-            name: f.name,
-            code: f.code,
-          })),
-          cronJobs: latestVersion.cronJobs.map((cronJob) => ({
-            versionId: latestVersion.id,
-            name: cronJob.name,
-            temporalValue: cronJob.temporalValue,
-            function: cronJob.function.code,
-          })),
-          configSchema: latestVersion.configSchema,
-          permissions: latestVersion.permissions.map((perm) => ({
-            description: perm.description,
-            permission: perm.permission,
-            friendlyName: `${mod.name}_${perm.friendlyName}`,
-            canHaveCount: perm.canHaveCount,
-          })),
-          uiSchema: latestVersion.uiSchema,
-          description: latestVersion.description,
+      const exportedModule = await exportModule({
+        moduleId: mod.id,
+        options: {
+          versionIds: [latestVersion.id],
         },
       });
 
+      exportedModule.name = name;
+      await importModule(exportedModule);
       if (onSuccess) {
-        onSuccess(newModule.id);
+        onSuccess();
       }
-    } catch (error) {
-      console.error(error);
+    } catch (e) {
+      console.error(e);
     }
   };
 
@@ -97,13 +62,20 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ mod, onSuccess }) => {
           label="Module Name"
           description="Name of the new module"
           required
-          loading={moduleCopyLoading}
+          loading={moduleImportLoading || moduleExportLoading}
         />
-        <Button isLoading={moduleCopyLoading} type="submit" icon={<CopyIcon />} text="Copy Module" fullWidth />
+        <Button
+          isLoading={moduleImportLoading || moduleExportLoading}
+          type="submit"
+          icon={<CopyIcon />}
+          text="Copy Module"
+          fullWidth
+        />
       </form>
 
       <div style={{ height: '10px' }} />
-      {moduleCopyError && <FormError error={moduleCopyError} />}
+      {moduleExportError && <FormError error={moduleExportError} />}
+      {moduleImportError && <FormError error={moduleImportError} />}
     </>
   );
 };
