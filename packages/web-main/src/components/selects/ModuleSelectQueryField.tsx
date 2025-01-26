@@ -35,7 +35,7 @@ export const ModuleSelectQueryField: FC<CustomSelectProps> = ({
   }
 
   const modules = data?.pages.flatMap((page) => page.data);
-  if (!modules || modules.length === 0) {
+  if (!modules) {
     return <div>no modules found</div>;
   }
 

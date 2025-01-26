@@ -13,7 +13,8 @@
         "port": 9876
       },
       "type": "MOCK",
-      "reachable": true
+      "reachable": true,
+      "deletedAt": null
     }
   },
   "status": 200,

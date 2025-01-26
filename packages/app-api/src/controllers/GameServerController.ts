@@ -26,8 +26,6 @@ import {
   GameServerOutputDTO,
   GameServerService,
   GameServerUpdateDTO,
-  ModuleInstallationOutputDTO,
-  ModuleInstallDTO,
 } from '../service/GameServerService.js';
 import { AuthenticatedRequest, AuthService, checkPermissions } from '../service/AuthService.js';
 import {
@@ -121,26 +119,6 @@ class GameServerTestReachabilityInputDTO extends TakaroDTO<GameServerTestReachab
   @IsString()
   @IsEnum(GAME_SERVER_TYPE)
   type: GAME_SERVER_TYPE;
-}
-
-class ParamIdAndModuleId {
-  @IsUUID('4')
-  gameServerId!: string;
-
-  @IsUUID('4')
-  moduleId!: string;
-}
-
-class ModuleInstallationOutputDTOAPI extends APIOutput<ModuleInstallationOutputDTO> {
-  @Type(() => ModuleInstallationOutputDTO)
-  @ValidateNested()
-  declare data: ModuleInstallationOutputDTO;
-}
-
-class ModuleInstallationOutputArrayDTOAPI extends APIOutput<ModuleInstallationOutputDTO[]> {
-  @Type(() => ModuleInstallationOutputDTO)
-  @ValidateNested({ each: true })
-  declare data: ModuleInstallationOutputDTO[];
 }
 
 class CommandExecuteDTOAPI extends APIOutput<CommandOutput> {
@@ -367,57 +345,6 @@ export class GameServerController {
     const service = new GameServerService(req.domainId);
     const res = await service.testReachability(undefined, JSON.parse(data.connectionInfo), data.type);
     return apiResponse(res);
-  }
-
-  @UseBefore(AuthService.getAuthMiddleware([]))
-  @ResponseSchema(ModuleInstallationOutputDTOAPI)
-  @OpenAPI({
-    description: 'Get a module installation by id',
-  })
-  @Get('/gameserver/:gameServerId/module/:moduleId')
-  async getModuleInstallation(@Req() req: AuthenticatedRequest, @Params() params: ParamIdAndModuleId) {
-    const service = new GameServerService(req.domainId);
-    const res = await service.getModuleInstallation(params.gameServerId, params.moduleId);
-    return apiResponse(res);
-  }
-
-  @UseBefore(AuthService.getAuthMiddleware([]))
-  @ResponseSchema(ModuleInstallationOutputArrayDTOAPI)
-  @OpenAPI({
-    description: 'Get all module installations for a gameserver',
-  })
-  @Get('/gameserver/:id/modules')
-  async getInstalledModules(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
-    const service = new GameServerService(req.domainId);
-    const res = await service.getInstalledModules({ gameserverId: params.id });
-    return apiResponse(res);
-  }
-
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
-  @ResponseSchema(ModuleInstallationOutputDTOAPI)
-  @OpenAPI({
-    description: 'Install a module on a gameserver. If the module is already installed, it will be updated.',
-  })
-  @Post('/gameserver/:gameServerId/modules/:moduleId')
-  async installModule(
-    @Req() req: AuthenticatedRequest,
-    @Params() params: ParamIdAndModuleId,
-    @Body() data?: ModuleInstallDTO,
-  ) {
-    const service = new GameServerService(req.domainId);
-
-    return apiResponse(await service.installModule(params.gameServerId, params.moduleId, data));
-  }
-
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
-  @ResponseSchema(ModuleInstallationOutputDTOAPI)
-  @OpenAPI({
-    description: 'Uninstall a module from a gameserver. This will not delete the module from the database.',
-  })
-  @Delete('/gameserver/:gameServerId/modules/:moduleId')
-  async uninstallModule(@Req() req: AuthenticatedRequest, @Params() params: ParamIdAndModuleId) {
-    const service = new GameServerService(req.domainId);
-    return apiResponse(await service.uninstallModule(params.gameServerId, params.moduleId));
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))

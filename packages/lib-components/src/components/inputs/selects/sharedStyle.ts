@@ -16,7 +16,6 @@ export const SelectContainer = styled.div`
   border-radius: ${({ theme }) => theme.borderRadius.medium};
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
   box-shadow: ${({ theme }) => theme.elevation[4]};
-  text-transform: capitalize;
   z-index: ${({ theme }) => theme.zIndex.dropdown};
 `;
 
@@ -53,7 +52,6 @@ export const SelectButton = styled.div<{
     }};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
   font-weight: 500;
-  text-transform: capitalize;
 
   &:focus {
     border-color: ${({ theme, hasError, disabled }) =>

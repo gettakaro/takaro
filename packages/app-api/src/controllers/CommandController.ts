@@ -30,7 +30,7 @@ import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
-import { builtinModuleModificationMiddleware } from '../middlewares/builtinModuleModification.js';
+import { moduleProtectionMiddleware } from '../middlewares/moduleProtectionMiddleware.js';
 import { EventService, EVENT_TYPES } from '../service/EventService.js';
 import { EventOutputArrayDTOAPI, EventSearchInputDTO } from './EventController.js';
 import { AllowedFilters } from './shared.js';
@@ -107,7 +107,7 @@ export class CommandController {
     return apiResponse(await service.findOne(params.id));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), builtinModuleModificationMiddleware)
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), moduleProtectionMiddleware)
   @ResponseSchema(CommandOutputDTOAPI)
   @Post('/command')
   async create(@Req() req: AuthenticatedRequest, @Body() data: CommandCreateDTO) {
@@ -115,7 +115,7 @@ export class CommandController {
     return apiResponse(await service.create(data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), builtinModuleModificationMiddleware)
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), moduleProtectionMiddleware)
   @ResponseSchema(CommandOutputDTOAPI)
   @Put('/command/:id')
   async update(@Req() req: AuthenticatedRequest, @Params() params: ParamId, @Body() data: CommandUpdateDTO) {
@@ -123,7 +123,7 @@ export class CommandController {
     return apiResponse(await service.update(params.id, data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), builtinModuleModificationMiddleware)
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), moduleProtectionMiddleware)
   @ResponseSchema(APIOutput)
   @Delete('/command/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
@@ -132,7 +132,7 @@ export class CommandController {
     return apiResponse();
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), builtinModuleModificationMiddleware)
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), moduleProtectionMiddleware)
   @ResponseSchema(CommandArgumentDTOAPI)
   @Post('/command/argument')
   async createArgument(@Req() req: AuthenticatedRequest, @Body() data: CommandArgumentCreateDTO) {
@@ -140,7 +140,7 @@ export class CommandController {
     return apiResponse(await service.createArgument(data.commandId, data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), builtinModuleModificationMiddleware)
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), moduleProtectionMiddleware)
   @ResponseSchema(CommandArgumentDTOAPI)
   @Put('/command/argument/:id')
   async updateArgument(
@@ -152,7 +152,7 @@ export class CommandController {
     return apiResponse(await service.updateArgument(params.id, data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), builtinModuleModificationMiddleware)
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), moduleProtectionMiddleware)
   @ResponseSchema(APIOutput)
   @Delete('/command/argument/:id')
   async removeArgument(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {

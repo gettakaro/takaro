@@ -4,41 +4,6 @@
     "data": {
       "gameserverId": "467705c5-3030-4933-9479-e7178d8017d7",
       "moduleId": "4d45d7ad-4a6b-4b7e-9a30-9038f1d6c231",
-      "module": {
-        "createdAt": "2024-08-15T10:16:55.343Z",
-        "updatedAt": "2024-08-15T10:16:55.344Z",
-        "id": "4d45d7ad-4a6b-4b7e-9a30-9038f1d6c231",
-        "name": "Test module",
-        "builtin": null,
-        "description": "No description provided.",
-        "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{},\"required\":[],\"additionalProperties\":false}",
-        "uiSchema": "{}",
-        "cronJobs": [],
-        "hooks": [
-          {
-            "createdAt": "2024-08-15T10:16:55.411Z",
-            "updatedAt": "2024-08-15T10:16:55.413Z",
-            "id": "80bb3ece-f340-441e-bb28-aedcbc457fe3",
-            "name": "Test hook",
-            "eventType": "discord-message",
-            "regex": "/this (is) a [regex]/g",
-            "moduleId": "4d45d7ad-4a6b-4b7e-9a30-9038f1d6c231",
-            "functionId": "b1d949a2-0dc5-4633-b30d-83c51a2a89e2",
-            "function": {
-              "createdAt": "2024-08-15T10:16:55.410Z",
-              "updatedAt": "2024-08-15T10:16:55.410Z",
-              "id": "b1d949a2-0dc5-4633-b30d-83c51a2a89e2",
-              "code": "import { data, takaro } from '@takaro/helpers';\nasync function main() {\n    const {} = data;\n}\nawait main();",
-              "name": null,
-              "moduleId": null
-            }
-          }
-        ],
-        "commands": [],
-        "functions": [],
-        "permissions": [],
-        "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable/disable the module without having to uninstall it.\"},\"hooks\":{\"type\":\"object\",\"properties\":{\"Test hook\":{\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable the Test hook hook.\"},\"discordChannelId\":{\"type\":\"string\",\"description\":\"Discord channel ID where Takaro will listen for messages.\"}},\"required\":[\"discordChannelId\"],\"default\":{}}},\"required\":[],\"default\":{}}},\"required\":[\"hooks\"],\"additionalProperties\":false}"
-      },
       "userConfig": {},
       "systemConfig": {
         "hooks": {
@@ -48,6 +13,41 @@
           }
         },
         "enabled": true
+      },
+      "versionId": "3556d6cd-8edc-437b-b7ce-447dc5b2b2f2",
+      "version": {
+        "createdAt": "2024-12-07T17:35:59.398Z",
+        "updatedAt": "2024-12-07T17:35:59.406Z",
+        "id": "3556d6cd-8edc-437b-b7ce-447dc5b2b2f2",
+        "moduleId": "471741db-2367-4c25-8854-df2d1261e46b",
+        "tag": "latest",
+        "description": null,
+        "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{},\"required\":[],\"additionalProperties\":false}",
+        "uiSchema": "{}",
+        "cronJobs": [],
+        "hooks": [
+          {
+            "createdAt": "2024-12-07T17:35:59.456Z",
+            "updatedAt": "2024-12-07T17:35:59.457Z",
+            "id": "cc717863-6ac4-415d-a23f-ddb1718041c2",
+            "name": "Test hook",
+            "eventType": "discord-message",
+            "regex": "/this (is) a [regex]/g",
+            "functionId": "424669db-5a88-4ba4-8e39-40f26fca6ed5",
+            "versionId": "3556d6cd-8edc-437b-b7ce-447dc5b2b2f2"
+          }
+        ],
+        "commands": [],
+        "permissions": [],
+        "functions": [],
+        "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable/disable the module without having to uninstall it.\"},\"hooks\":{\"type\":\"object\",\"properties\":{\"Test hook\":{\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable the Test hook hook.\"},\"discordChannelId\":{\"type\":\"string\",\"description\":\"Discord channel ID where Takaro will listen for messages.\"}},\"required\":[\"discordChannelId\"],\"default\":{}}},\"required\":[],\"default\":{}}},\"required\":[\"hooks\"],\"additionalProperties\":false}"
+      },
+      "module": {
+        "createdAt": "2024-12-15T21:32:56.850Z",
+        "updatedAt": "2024-12-15T21:32:56.850Z",
+        "id": "0c1d4403-0bfe-4709-af08-a4305cd8d43c",
+        "name": "Test module",
+        "builtin": null
       }
     }
   },

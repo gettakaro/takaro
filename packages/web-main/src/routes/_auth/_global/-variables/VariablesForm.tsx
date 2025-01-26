@@ -58,7 +58,7 @@ export const VariablesForm: FC<CreateAndUpdateVariableformProps> = ({ variable, 
   });
 
   return (
-    <Drawer open={open} onOpenChange={setOpen} promptCloseConfirmation={formState.isDirty}>
+    <Drawer open={open} onOpenChange={setOpen} promptCloseConfirmation={readOnly === false && formState.isDirty}>
       <Drawer.Content>
         <Drawer.Heading>{variable ? (readOnly ? 'View' : 'Update') : 'Create'} variable</Drawer.Heading>
         <Drawer.Body>

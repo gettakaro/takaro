@@ -9,35 +9,30 @@ import { PaginatedOutput } from '../db/base.js';
 export class FunctionOutputDTO extends TakaroModelDTO<FunctionOutputDTO> {
   @IsString()
   code: string;
-
   @IsString()
   @IsOptional()
   name: string;
-
   @IsUUID()
   @IsOptional()
-  moduleId?: string;
+  versionId?: string;
 }
 
 export class FunctionCreateDTO extends TakaroDTO<FunctionCreateDTO> {
   @IsString()
   @IsOptional()
   code?: string;
-
   @IsString()
   @IsOptional()
   name: string;
-
   @IsUUID()
   @IsOptional()
-  moduleId?: string;
+  versionId?: string;
 }
 
 export class FunctionUpdateDTO extends TakaroDTO<FunctionUpdateDTO> {
   @IsString()
   @IsOptional()
   code: string;
-
   @IsString()
   @IsOptional()
   name: string;

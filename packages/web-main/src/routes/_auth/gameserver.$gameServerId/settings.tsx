@@ -98,7 +98,7 @@ function Component() {
   const { control, handleSubmit, watch, formState, reset } = useForm<IFormInputs>({
     mode: 'onSubmit',
   });
-  const { fields, append } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     name: 'settings',
     control,
   });
@@ -149,6 +149,12 @@ function Component() {
     // in case the value is not set, we want to use the global value
     // otherwise we want to use the value from the gameserver
     if (gameServerSettings && globalGameServerSettings) {
+      // When a new gameserver is selected (in the global gameserver select), this useMemo is called again.
+      // we need to first remove all fields belonging to the previous gameserver.
+      if (fields.length !== 0) {
+        fields.forEach((_, index) => remove(index));
+      }
+
       gameServerSettings
         .filter((gameServerSetting) => gameServerSetting.key !== 'developerMode')
         .forEach(({ key, value, type }) => {

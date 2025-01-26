@@ -2,19 +2,10 @@ import { createFileRoute, Outlet, useNavigate } from '@tanstack/react-router';
 import { useHasPermission } from 'hooks/useHasPermission';
 import { ErrorBoundary } from '@sentry/react';
 import { PERMISSIONS } from '@takaro/apiclient';
-import {
-  Button,
-  Dialog,
-  Dropdown,
-  IconButton,
-  useLocalStorage,
-  useTheme,
-  ValueConfirmationField,
-} from '@takaro/lib-components';
+import { Button, Dropdown, IconButton, useLocalStorage, useTheme } from '@takaro/lib-components';
 import { GameServersCardView } from './-gameservers/GameServersCardView';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { GameServersTableView } from './-gameservers/GameServersTableView';
-import { useGameServerRemove } from 'queries/gameserver';
 
 import {
   AiOutlinePlus as CreateGameServerIcon,
@@ -27,9 +18,11 @@ import {
   AiOutlineFunction as ModulesIcon,
   AiOutlineSetting as SettingsIcon,
 } from 'react-icons/ai';
-import { FC, MouseEvent, useState } from 'react';
+import { FC, MouseEvent, useRef, useState } from 'react';
 import { PermissionsGuard } from 'components/PermissionsGuard';
 import { TableListToggleButton } from 'components/TableListToggleButton';
+import { GameServerDeleteDialog } from 'components/dialogs/GameServerDeleteDialog';
+import { DeleteImperativeHandle } from 'components/dialogs';
 
 type ViewType = 'list' | 'table';
 
@@ -101,9 +94,8 @@ interface GameServerActionsProps {
 }
 export const GameServerActions: FC<GameServerActionsProps> = ({ gameServerId, gameServerName }) => {
   const theme = useTheme();
-  const { mutate, isPending: isDeleting } = useGameServerRemove();
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
-  const [valid, setValid] = useState<boolean>(false);
+  const gameServerDeleteDialogRef = useRef<DeleteImperativeHandle>(null);
 
   const navigate = useNavigate();
 
@@ -114,14 +106,10 @@ export const GameServerActions: FC<GameServerActionsProps> = ({ gameServerId, ga
   const handleOnDeleteClick = (e: MouseEvent) => {
     e.stopPropagation();
     if (e.shiftKey) {
-      handleOnDelete();
+      gameServerDeleteDialogRef.current?.triggerDelete();
     } else {
       setOpenDeleteDialog(true);
     }
-  };
-
-  const handleOnDelete = () => {
-    mutate({ gameServerId });
   };
 
   const handleOnCopyClick = (e: MouseEvent) => {
@@ -132,6 +120,13 @@ export const GameServerActions: FC<GameServerActionsProps> = ({ gameServerId, ga
   return (
     <>
       <PermissionsGuard requiredPermissions={[[PERMISSIONS.ManageGameservers]]}>
+        <GameServerDeleteDialog
+          ref={gameServerDeleteDialogRef}
+          open={openDeleteDialog}
+          onOpenChange={setOpenDeleteDialog}
+          gameServerId={gameServerId}
+          gameServerName={gameServerName}
+        />
         <Dropdown>
           <Dropdown.Trigger asChild>
             <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
@@ -186,31 +181,6 @@ export const GameServerActions: FC<GameServerActionsProps> = ({ gameServerId, ga
           </Dropdown.Menu>
         </Dropdown>
       </PermissionsGuard>
-      <Dialog open={openDeleteDialog} onOpenChange={setOpenDeleteDialog}>
-        <Dialog.Content>
-          <Dialog.Heading>delete: gameserver</Dialog.Heading>
-          <Dialog.Body size="medium">
-            <p>
-              Are you sure you want to delete the gameserver? To confirm, type <strong>{gameServerName}</strong> in the
-              field below.
-            </p>
-            <ValueConfirmationField
-              value={gameServerName}
-              onValidChange={(v) => setValid(v)}
-              label="Game server name"
-              id="deleteGameServerConfirmation"
-            />
-            <Button
-              isLoading={isDeleting}
-              onClick={() => handleOnDelete()}
-              disabled={!valid}
-              fullWidth
-              text="Delete gameserver"
-              color="error"
-            />
-          </Dialog.Body>
-        </Dialog.Content>
-      </Dialog>
     </>
   );
 };

@@ -1,0 +1,32 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "createdAt": "2024-12-18T09:41:53.253Z",
+      "updatedAt": "2024-12-18T09:41:53.264Z",
+      "id": "687a5588-31eb-4bdf-82ce-03dc7f7de025",
+      "moduleId": "93ddca56-03c3-4ba3-97a3-a6b67aa6a770",
+      "tag": "1.0.0",
+      "description": null,
+      "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{},\"required\":[],\"additionalProperties\":false}",
+      "uiSchema": "{}",
+      "hooks": [],
+      "commands": [],
+      "cronJobs": [],
+      "functions": [],
+      "permissions": [],
+      "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable/disable the module without having to uninstall it.\"}},\"required\":[],\"additionalProperties\":false}"
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "ModuleController",
+    "snapshot": true,
+    "name": "versioning: Can tag a version",
+    "expectedStatus": 200,
+    "filteredFields": [
+      "moduleId"
+    ],
+    "standardEnvironment": true
+  }
+}

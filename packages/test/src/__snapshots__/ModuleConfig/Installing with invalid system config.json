@@ -27,7 +27,7 @@
     "snapshot": true,
     "name": "Installing with invalid system config",
     "filteredFields": [
-      "gameserverId",
+      "gameServerId",
       "moduleId"
     ],
     "expectedStatus": 400,

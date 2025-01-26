@@ -35,10 +35,10 @@ const tests = [
     setup: customSetup,
     name: 'Can get balance',
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.economyUtilsModule.id,
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.economyUtilsModule.latestVersion.id,
+      });
 
       const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 2);
 
@@ -79,10 +79,10 @@ const tests = [
     name: 'Can show list of top (max 10) players with highest balance',
     test: async function () {
       // install module
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.economyUtilsModule.id,
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.economyUtilsModule.latestVersion.id,
+      });
 
       const giveCurrencies = this.setupData.players.map(async (player, index) => {
         const playerOnGameServer = (
@@ -124,10 +124,10 @@ const tests = [
     setup: customSetup,
     name: 'Can transfer money to another player',
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.economyUtilsModule.id,
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.economyUtilsModule.latestVersion.id,
+      });
 
       const transferAmount = 500;
 
@@ -182,10 +182,10 @@ const tests = [
     setup: customSetup,
     name: 'Should return friendly user error when not enough currency',
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.economyUtilsModule.id,
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.economyUtilsModule.latestVersion.id,
+      });
 
       const sender = this.setupData.players[0];
       const receiver = this.setupData.players[1];
@@ -211,15 +211,13 @@ const tests = [
     setup: customSetup,
     name: 'Should require confirmation when transfer amount is above pendingAmount',
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.economyUtilsModule.id,
-        {
-          userConfig: JSON.stringify({
-            pendingAmount: 100,
-          }),
-        },
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.economyUtilsModule.latestVersion.id,
+        userConfig: JSON.stringify({
+          pendingAmount: 100,
+        }),
+      });
 
       const transferAmount = 500;
       const prefix = (
@@ -313,15 +311,13 @@ const tests = [
     setup: customSetup,
     name: 'Should return no pending transfers when there are none',
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.economyUtilsModule.id,
-        {
-          userConfig: JSON.stringify({
-            pendingAmount: 100,
-          }),
-        },
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.economyUtilsModule.latestVersion.id,
+        userConfig: JSON.stringify({
+          pendingAmount: 100,
+        }),
+      });
       const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/confirmtransfer',
@@ -342,10 +338,10 @@ const tests = [
       const receiver = this.setupData.players[1];
       const grantAmount = 500;
 
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.economyUtilsModule.id,
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.economyUtilsModule.latestVersion.id,
+      });
 
       // Change permissions of role to only have manageCurrency permission
       const manageCurrencyPermission = await this.client.permissionCodesToInputs(['ECONOMY_UTILS_MANAGE_CURRENCY']);
@@ -405,10 +401,10 @@ const tests = [
         },
       );
 
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.economyUtilsModule.id,
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.economyUtilsModule.latestVersion.id,
+      });
 
       // Change permissions of role to only have manageCurrency permission
       const manageCurrencyPermission = await this.client.permissionCodesToInputs(['ECONOMY_UTILS_MANAGE_CURRENCY']);
@@ -459,10 +455,10 @@ const tests = [
         permissions: [],
       });
 
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.economyUtilsModule.id,
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.economyUtilsModule.latestVersion.id,
+      });
 
       // currency before revoke
       expect(

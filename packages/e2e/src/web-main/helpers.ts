@@ -12,7 +12,7 @@ export async function login(page: Page, username: string, password: string) {
     await emailInput.click();
     await emailInput.fill(username);
     await page.getByLabel('PasswordRequired').fill(password);
-    await page.getByRole('button', { name: 'Log in with Email' }).click();
+    await page.getByRole('button', { name: 'Log in' }).click();
     await page.waitForURL((url) => url.pathname !== '/login', {
       waitUntil: 'domcontentloaded',
     });

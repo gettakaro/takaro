@@ -15,11 +15,12 @@ const Form = styled.form`
 `;
 
 interface EventFilterProps {
-  defaultValues: {
+  initialSelectedValues: {
     playerIds?: string[];
     gameServerIds?: string[];
     eventNames?: EventName[];
     dateRange?: { start?: string; end?: string };
+    moduleIds?: string[];
   };
   onSubmit: (data: EventFilterInputs) => void;
   isLoading: boolean;
@@ -41,15 +42,17 @@ export const eventFilterSchema = z.object({
 });
 export type EventFilterInputs = z.infer<typeof eventFilterSchema>;
 
-export const EventFilter: FC<EventFilterProps> = ({ defaultValues, onSubmit, isLoading, isLive }) => {
+export const EventFilter: FC<EventFilterProps> = ({ initialSelectedValues, onSubmit, isLoading, isLive }) => {
+  console.log('defaultvalues', initialSelectedValues);
   const { control, handleSubmit, formState } = useForm<EventFilterInputs>({
     mode: 'onSubmit',
     resolver: zodResolver(eventFilterSchema),
-    defaultValues: {
-      dateRange: defaultValues?.dateRange,
-      playerIds: defaultValues?.playerIds,
-      gameServerIds: defaultValues.gameServerIds,
-      eventNames: defaultValues.eventNames,
+    values: {
+      dateRange: initialSelectedValues?.dateRange ?? { start: undefined, end: undefined },
+      playerIds: initialSelectedValues?.playerIds ?? [],
+      gameServerIds: initialSelectedValues.gameServerIds ?? [],
+      eventNames: initialSelectedValues.eventNames ?? [],
+      moduleIds: initialSelectedValues.moduleIds ?? [],
     },
   });
 

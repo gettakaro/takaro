@@ -97,10 +97,6 @@ const InnerBody = styled.div`
   grid-template-columns: max-content 1fr;
   gap: ${({ theme }) => theme.spacing['8']};
   grid-row-gap: ${({ theme }) => theme.spacing['0_75']};
-
-  span {
-    text-transform: capitalize;
-  }
 `;
 
 const PlayerInfoCard: FC<{ player: PlayerOutputDTO }> = ({ player }) => {

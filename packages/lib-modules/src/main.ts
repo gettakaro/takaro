@@ -1,4 +1,4 @@
-import { BuiltinModule } from './BuiltinModule.js';
+import { ModuleTransferDTO } from './BuiltinModule.js';
 import { ChatBridge } from './modules/chatBridge/index.js';
 import { DailyRewards } from './modules/dailyRewards/index.js';
 import { EconomyUtils } from './modules/economyUtils/index.js';
@@ -12,12 +12,20 @@ import { Teleports } from './modules/teleports/index.js';
 import { TimedShutdown } from './modules/timedShutdown/index.js';
 import { Utils } from './modules/utils/index.js';
 
-export { BuiltinModule, ICommand, ICommandArgument, ICronJob, IHook, IFunction } from './BuiltinModule.js';
+export {
+  ModuleTransferDTO,
+  ModuleTransferVersionDTO,
+  ICommand,
+  ICommandArgument,
+  ICronJob,
+  IHook,
+  IFunction,
+} from './BuiltinModule.js';
 export * from './dto/index.js';
 
-let cached: Array<BuiltinModule<unknown>> | null = null;
+let cached: Array<ModuleTransferDTO<unknown>> | null = null;
 
-export function getModules(): Array<BuiltinModule<unknown>> {
+export function getModules(): Array<ModuleTransferDTO<unknown>> {
   if (!cached) {
     cached = [
       new Utils(),

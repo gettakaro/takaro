@@ -1,47 +1,11 @@
 import { takaro, data, checkPermission, TakaroUserError } from '@takaro/helpers';
-
-function getWaypointName(name) {
-  return `waypoint ${name}`;
-}
+import { ensureWaypointsModule, getWaypointName } from './utils.js';
 
 async function main() {
   const { pog, gameServerId, arguments: args } = data;
 
   if (!checkPermission(pog, 'TELEPORTS_MANAGE_WAYPOINTS')) {
     throw new TakaroUserError('You do not have permission to manage waypoints.');
-  }
-
-  async function ensureWaypointsModule() {
-    let waypointsDefinition = (
-      await takaro.module.moduleControllerSearch({
-        filters: {
-          name: ['Waypoints'],
-        },
-      })
-    ).data.data[0];
-
-    if (!waypointsDefinition) {
-      console.log('Waypoints module definition not found, creating it.');
-      waypointsDefinition = (
-        await takaro.module.moduleControllerCreate({
-          name: 'Waypoints',
-          description: 'Waypoints module for the teleport system.',
-        })
-      ).data.data;
-    }
-
-    let waypointsInstallation = (
-      await takaro.gameserver.gameServerControllerGetInstalledModules(gameServerId)
-    ).data.data.find((module) => module.name === 'Waypoints');
-
-    if (!waypointsInstallation) {
-      console.log('Waypoints module not found, installing it.');
-      waypointsInstallation = (
-        await takaro.gameserver.gameServerControllerInstallModule(gameServerId, waypointsDefinition.id)
-      ).data.data;
-    }
-
-    return { waypointsInstallation, waypointsDefinition };
   }
 
   const { waypointsInstallation } = await ensureWaypointsModule();
