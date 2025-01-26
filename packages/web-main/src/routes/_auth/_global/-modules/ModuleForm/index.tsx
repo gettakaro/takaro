@@ -27,14 +27,14 @@ import { ConfigFieldErrorDetail } from './ConfigFieldErrorDetail';
 
 export interface IFormInputs {
   name: string;
-  description?: string;
+  description: string;
   permissions: PermissionCreateDTO[];
   configFields: AnyInput[];
 }
 
 export interface ModuleFormSubmitProps {
   name: string;
-  description?: string;
+  description: string;
   permissions: PermissionCreateDTO[];
   schema: string;
   uiSchema: string;

@@ -86,7 +86,7 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
 
   const handleChangeVersionClick = (e: MouseEvent) => {
     e.stopPropagation();
-    setOpenVersionPopover(!openVersionPopover);
+    setOpenVersionPopover(true);
   };
 
   const handleChangeVersion = (versionId: string) => {

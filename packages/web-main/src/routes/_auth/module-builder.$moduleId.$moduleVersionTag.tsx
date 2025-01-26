@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { moduleQueryOptions, moduleVersionQueryOptions } from 'queries/module';
 import { styled, Skeleton } from '@takaro/lib-components';
 import { ErrorBoundary } from 'components/ErrorBoundary';
-import { createFileRoute, redirect } from '@tanstack/react-router';
+import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
 import { hasPermission } from 'hooks/useHasPermission';
 import { ModuleBuilderInner } from './-module-builder/ModuleBuilderInner';
 import { ModuleOnboarding } from './-module-builder/ModuleOnboarding';
@@ -45,19 +45,27 @@ export const Route = createFileRoute('/_auth/module-builder/$moduleId/$moduleVer
     file: z.string().optional(),
   }),
   loader: async ({ params, context }) => {
-    const data = await context.queryClient.ensureQueryData(moduleQueryOptions(params.moduleId));
+    try {
+      const data = await context.queryClient.ensureQueryData(moduleQueryOptions(params.moduleId));
+      const version = data.versions.find((version) => version.tag === params.moduleVersionTag);
 
-    const version = data.versions.find((version) => version.tag === params.moduleVersionTag);
-    if (!version) {
-      throw redirect({
-        to: '/module-builder/$moduleId/$moduleVersionTag',
-        params: { moduleId: params.moduleId, moduleVersionTag: 'latest' },
-      });
+      // TODO: instead of redirecting to latest, we can redirect to a custom not found page
+      // where if the module exists we can show a dropdown with the available versions.
+      if (!version) {
+        throw redirect({
+          to: '/module-builder/$moduleId/$moduleVersionTag',
+          params: { moduleId: params.moduleId, moduleVersionTag: 'latest' },
+        });
+      }
+      return {
+        moduleVersion: await context.queryClient.ensureQueryData(moduleVersionQueryOptions(version.id)),
+        mod: data,
+      };
+    } catch (e) {
+      if ((e as any).response.status === 404) {
+        throw notFound();
+      }
     }
-    return {
-      moduleVersion: await context.queryClient.ensureQueryData(moduleVersionQueryOptions(version.id)),
-      mod: data,
-    };
   },
 
   component: Component,
@@ -72,7 +80,7 @@ export const Route = createFileRoute('/_auth/module-builder/$moduleId/$moduleVer
 });
 
 function Component() {
-  const loaderData = Route.useLoaderData();
+  const loaderData = Route.useLoaderData()!;
   const { file: activeFileParam } = Route.useSearch();
   const params = Route.useParams();
 

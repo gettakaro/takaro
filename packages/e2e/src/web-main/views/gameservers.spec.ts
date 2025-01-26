@@ -28,14 +28,14 @@ test.describe('Module installations', () => {
     await moduleInstallationsPage.goto();
     await moduleInstallationsPage.changeVersion('highPingKicker', 'latest');
 
-    await expect(moduleInstallationsPage.getModuleCard('highPingKicker')).toHaveText('latest');
+    await expect(moduleInstallationsPage.getModuleCard('highPingKicker').locator('div').nth(4)).toHaveText('latest');
   });
 
   test('Can view module installation', async ({ page, takaro }) => {
     const { moduleInstallationsPage } = takaro;
 
     await moduleInstallationsPage.goto();
-    await moduleInstallationsPage.viewConfig('utils');
+    await moduleInstallationsPage.viewConfig('highPingKicker');
     await expect(page.getByText('View configuration')).toBeVisible();
   });
 });

@@ -38,15 +38,9 @@ export class ModuleInstallationsPage extends BasePage {
     await this.openSettings(name);
     await this.page.getByRole('menuitem', { name: 'Upgrade/downgrade module' }).click();
 
-    // todo: now this only supports upgrade, should also support downgrade.
-    await this.page
-      .locator('span')
-      .filter({ hasText: `to ${version}` })
-      .locator('div')
-      .nth(3)
-      .click();
-    await this.page.getByText(version, { exact: true }).click();
-    await this.page.getByRole('button', { name: 'to ${version}' }).click();
+    await this.page.getByRole('dialog').getByRole('button').nth(1).click();
+    await this.page.getByRole('listitem').filter({ hasText: version }).click();
+    await this.page.getByRole('button', { name: `to ${version}`, exact: false }).click();
   }
 
   async viewConfig(name: string) {

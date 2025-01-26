@@ -26,14 +26,12 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ mod, onSuccess }) => {
   const { mutateAsync: importModule, isPending: moduleImportLoading, error: moduleImportError } = useModuleImport();
   const { mutateAsync: exportModule, isPending: moduleExportLoading, error: moduleExportError } = useModuleExport();
 
-  const { latestVersion } = mod;
-
   const onSubmit: SubmitHandler<z.infer<typeof validationSchema>> = async ({ name }) => {
     try {
       const exportedModule = await exportModule({
         moduleId: mod.id,
         options: {
-          versionIds: [latestVersion.id],
+          versionIds: mod.versions.map((v) => v.id),
         },
       });
 
@@ -51,7 +49,7 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ mod, onSuccess }) => {
     <>
       <Alert
         variant="warning"
-        text="The new module will only have the version tagged 'latest'. This includes all hooks, commands, and cron jobs and configuration."
+        text="The new module will only have the version tagged 'latest'. including all hooks, commands, cron jobs and configuration."
       />
 
       <form onSubmit={handleSubmit(onSubmit)}>

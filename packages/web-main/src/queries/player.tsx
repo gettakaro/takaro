@@ -78,7 +78,7 @@ export const usePlayerRoleAssign = () => {
   );
 };
 
-export const usePlayerRoleUnassign = () => {
+export const usePlayerRoleRemove = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
   const { enqueueSnackbar } = useSnackbar();

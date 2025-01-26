@@ -3,7 +3,8 @@ import { CopyModuleForm } from 'components/CopyModuleForm';
 import { AiOutlineCopy as CopyIcon } from 'react-icons/ai';
 import { useSnackbar } from 'notistack';
 import { FC, useState } from 'react';
-import { ModuleOutputDTO } from '@takaro/apiclient';
+import { useQuery } from '@tanstack/react-query';
+import { moduleQueryOptions } from 'queries/module';
 
 const PopoverBody = styled.div`
   max-width: 400px;
@@ -18,12 +19,13 @@ const PopoverHeading = styled.div`
 `;
 
 interface CopyModulePopOverProps {
-  mod: ModuleOutputDTO;
+  moduleId: string;
 }
 
-export const CopyModulePopOver: FC<CopyModulePopOverProps> = ({ mod }) => {
+export const CopyModulePopOver: FC<CopyModulePopOverProps> = ({ moduleId }) => {
   const [open, setOpen] = useState<boolean>(false);
   const { enqueueSnackbar } = useSnackbar();
+  const { data, isPending } = useQuery(moduleQueryOptions(moduleId));
 
   const handleSuccess = () => {
     enqueueSnackbar('Module copied!', {
@@ -50,7 +52,7 @@ export const CopyModulePopOver: FC<CopyModulePopOverProps> = ({ mod }) => {
           <PopoverHeading>
             <h2>Copy module</h2>
           </PopoverHeading>
-          <CopyModuleForm mod={mod} onSuccess={handleSuccess} />
+          {isPending || !data ? <p>Loading...</p> : <CopyModuleForm mod={data} onSuccess={handleSuccess} />}
         </PopoverBody>
       </Popover.Content>
     </Popover>

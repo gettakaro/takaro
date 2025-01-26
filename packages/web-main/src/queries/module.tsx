@@ -25,7 +25,6 @@ import {
   HookOutputDTOAPI,
   HookUpdateDTO,
   ModuleCreateAPIDTO,
-  ModuleExportDTOAPI,
   ModuleExportOptionsDTO,
   ModuleOutputArrayDTOAPI,
   ModuleOutputDTO,
@@ -226,9 +225,9 @@ interface ModuleExportInput {
 }
 export const useModuleExport = () => {
   return mutationWrapper<ModuleTransferDTO, ModuleExportInput>(
-    useMutation<ModuleExportDTOAPI, AxiosError<ModuleTransferDTO>, ModuleExportInput>({
+    useMutation<ModuleTransferDTO, AxiosError<ModuleTransferDTO>, ModuleExportInput>({
       mutationFn: async ({ moduleId, options }) =>
-        (await getApiClient().module.moduleControllerExport(moduleId, options)).data,
+        (await getApiClient().module.moduleControllerExport(moduleId, options)).data.data,
     }),
     {},
   );
@@ -236,13 +235,11 @@ export const useModuleExport = () => {
 
 export const useModuleImport = () => {
   const apiClient = getApiClient();
-  const { enqueueSnackbar } = useSnackbar();
 
   return mutationWrapper<void, ModuleTransferDTO>(
     useMutation<AxiosResponse<void>, AxiosError<void>, ModuleTransferDTO>({
       mutationFn: async (mod) => await apiClient.module.moduleControllerImport(mod),
-      onSuccess: async (_, mod) => {
-        enqueueSnackbar(`Module ${mod.name} imported!`, { variant: 'default', type: 'success' });
+      onSuccess: async (_) => {
         await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
       },
     }),

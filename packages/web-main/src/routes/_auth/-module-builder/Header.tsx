@@ -4,6 +4,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { UnControlledModuleVersionTagSelectField } from 'components/selects/ModuleVersionSelectField';
 import { useState } from 'react';
 import { ModuleTagDialog } from 'components/dialogs/ModuleTagDialog';
+import { CopyModulePopOver } from './CopyModulePopOver';
 
 const Container = styled.header`
   width: 100%;
@@ -50,7 +51,7 @@ export const Header = () => {
       </Flex>
       <Flex>
         <span>{moduleName}</span>
-        {/*<CopyModulePopOver moduleId={moduleId} />*/}
+        <CopyModulePopOver moduleId={moduleId} />
       </Flex>
 
       <Flex>

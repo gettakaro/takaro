@@ -111,12 +111,13 @@ export const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId, 
               }
             />
             <Dropdown.Menu.Item
-              label="Unassign role"
+              label="Remove role"
               icon={<DeleteIcon />}
               onClick={() => {
                 setOpenDialog(true);
                 setDeletingInfo(info);
               }}
+              disabled={info.row.original.role.name === 'Player'}
             />
           </Dropdown.Menu>
         </Dropdown>

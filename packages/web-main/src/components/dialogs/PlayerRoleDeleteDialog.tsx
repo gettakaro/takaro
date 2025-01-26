@@ -1,7 +1,7 @@
 import { Button, Dialog, FormError, styled } from '@takaro/lib-components';
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 import { RequiredDialogOptions } from '.';
-import { usePlayerRoleUnassign } from 'queries/player';
+import { usePlayerRoleRemove } from 'queries/player';
 
 const StyledDialogBody = styled(Dialog.Body)`
   h2 {
@@ -25,9 +25,9 @@ export const PlayerRoleDeleteDialog: FC<PlayerRoleDeleteDialogProps> = ({
   playerId,
   ...dialogOptions
 }) => {
-  const { mutate, isPending, isSuccess, error } = usePlayerRoleUnassign();
+  const { mutate, isPending, isSuccess, error } = usePlayerRoleRemove();
 
-  const handleOnDelete = async () => {
+  const handleOnDelete = () => {
     mutate({
       playerId,
       roleId,
@@ -35,9 +35,11 @@ export const PlayerRoleDeleteDialog: FC<PlayerRoleDeleteDialogProps> = ({
     });
   };
 
-  if (isSuccess) {
-    dialogOptions.onOpenChange(false);
-  }
+  useEffect(() => {
+    if (isSuccess) {
+      dialogOptions.onOpenChange(false);
+    }
+  }, [isSuccess]);
 
   return (
     <Dialog {...dialogOptions}>
@@ -46,17 +48,11 @@ export const PlayerRoleDeleteDialog: FC<PlayerRoleDeleteDialogProps> = ({
           Role: <span style={{ textTransform: 'capitalize' }}>{roleName}</span>{' '}
         </Dialog.Heading>
         <StyledDialogBody size="medium">
-          <h2>Unassign Role</h2>
+          <h2>Remove Role</h2>
           <p>
-            Are you sure you want to unassign <strong>{roleName} </strong> from <strong>{playerName}</strong>?
+            Are you sure you want to remove <strong>{roleName} </strong> from <strong>{playerName}</strong>?
           </p>
-          <Button
-            isLoading={isPending}
-            onClick={() => handleOnDelete()}
-            fullWidth
-            text={'Unassign role'}
-            color="error"
-          />
+          <Button isLoading={isPending} onClick={handleOnDelete} fullWidth text={'Remove role'} color="error" />
           {error && <FormError error={error} />}
         </StyledDialogBody>
       </Dialog.Content>
