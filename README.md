@@ -24,7 +24,7 @@ Here are some examples:
 
 ### Custom modules
 The above modules represent only a **tiny fraction** of the modules maintained by the Takaro team. 
-To explore all the modules we offer, visit our [full List of Built-In Modules](https://docs.takaro.io/built-in-modules)
+To explore all the modules we offer, visit our [full List of Built-In Modules](https://docs.takaro.io/modules/overview)
 
 If however the current modules don't cater to your specific needs, don't worry. Takaro also provides a development environment to create your own custom modules.
 
