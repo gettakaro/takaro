@@ -38,6 +38,8 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const monacoRef = useRef<typeof mon | null>(null);
   const fileMap = useModuleBuilderContext((s) => s.fileMap);
+  const moduleId = useModuleBuilderContext((s) => s.moduleId);
+  const versionId = useModuleBuilderContext((s) => s.versionId);
 
   const activeFile = useModuleBuilderContext((s) => s.activeFile);
   if (!activeFile) {
@@ -73,6 +75,8 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
         }*/
 
         await updateFunction({
+          moduleId,
+          versionId,
           functionId: fileMap[activeFile].functionId,
           fn: { code: model.getValue() },
         });
@@ -200,7 +204,6 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
           onChange={(value) => {
             if (readOnly) return;
 
-            // update the code in the sandpack
             updateCode(value || '');
 
             if (modelVersionId !== editorInstance.current?.getModel()?.getAlternativeVersionId()) {
@@ -294,7 +297,7 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
           }}
         />
         {dirtyFiles.has(activeFile) && (
-          <div style={{ position: 'fixed', bottom: '20px', right: '40px' }}>
+          <div style={{ position: 'fixed', bottom: '20px', right: '40px', zIndex: 10000 }}>
             <Tooltip>
               <Tooltip.Trigger asChild>
                 <Button

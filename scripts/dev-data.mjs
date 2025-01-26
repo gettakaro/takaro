@@ -141,7 +141,11 @@ async function addDataToDomain(domain) {
         continue;
       }
       console.log(`Installing module ${mod.name}`);
-      await client.gameserver.gameServerControllerInstallModule(gameserver.id, mod.id, customConfig);
+      await client.module.moduleInstallationsControllerInstallModule({
+        ...customConfig,
+        gameServerId: gameserver.id,
+        versionId: mod.latestVersion.id,
+      });
       console.log(`Installed module ${mod.name}`, customConfig);
     } catch (error) {
       console.error(`🔴 Error installing module ${mod.builtin}`, {

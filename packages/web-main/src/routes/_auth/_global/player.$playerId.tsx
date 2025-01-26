@@ -7,6 +7,7 @@ import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { ErrorBoundary } from 'components/ErrorBoundary';
 import { hasPermission } from 'hooks/useHasPermission';
 import { userMeQueryOptions } from 'queries/user';
+import { useQueries } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/_global/player/$playerId')({
   beforeLoad: async ({ context }) => {
@@ -43,7 +44,15 @@ const Header = styled.div`
 
 function Component() {
   const { playerId } = Route.useParams();
-  const { player, pogs } = Route.useLoaderData();
+  const loaderData = Route.useLoaderData();
+
+  const [{ data: player }, { data: pogs }] = useQueries({
+    queries: [
+      { ...playerQueryOptions(playerId), initialData: loaderData.player },
+      { ...playersOnGameServersQueryOptions(), initialData: loaderData.pogs },
+    ],
+  });
+
   useDocumentTitle(player.name || 'Player Profile');
   const theme = useTheme();
 

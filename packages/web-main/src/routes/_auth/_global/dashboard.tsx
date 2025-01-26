@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { useMemo } from 'react';
-import { Stats, styled, LineChart, Card, GeoMercator, QuestionTooltip, Chip } from '@takaro/lib-components';
+import { Stats, styled, LineChart, Card, GeoMercator, IconTooltip, Chip } from '@takaro/lib-components';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { eventsFailedFunctionsQueryOptions, eventsQueryOptions } from 'queries/event';
 import { DateTime } from 'luxon';
@@ -12,6 +12,7 @@ import { PlayersOnlineStatsQueryOptions, ActivityStatsQueryOptions, CountriesSta
 import { EventFeed, EventItem } from 'components/events/EventFeed';
 import { PERMISSIONS } from '@takaro/apiclient';
 import { userMeQueryOptions } from 'queries/user';
+import { AiOutlineQuestion as QuestionIcon } from 'react-icons/ai';
 
 export const Route = createFileRoute('/_auth/_global/dashboard')({
   beforeLoad: async ({ context }) => {
@@ -200,7 +201,9 @@ function Component() {
             <Card.Title label="Global Player Map">
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Chip variant="outline" color="warning" label="Beta" />
-                <QuestionTooltip>Shows where your players are from</QuestionTooltip>
+                <IconTooltip color="background" icon={<QuestionIcon />}>
+                  Shows where your players are from
+                </IconTooltip>
               </div>
             </Card.Title>
             <Card.Body>

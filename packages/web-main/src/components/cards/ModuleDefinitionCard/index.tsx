@@ -1,19 +1,6 @@
-import {
-  Company,
-  Tooltip,
-  Dialog,
-  Button,
-  IconButton,
-  Card,
-  Dropdown,
-  useTheme,
-  ValueConfirmationField,
-  styled,
-  Spinner,
-} from '@takaro/lib-components';
+import { Company, Tooltip, IconButton, Card, Dropdown, useTheme, Chip } from '@takaro/lib-components';
 import { PERMISSIONS, ModuleOutputDTO } from '@takaro/apiclient';
-import { moduleExportOptions, useModuleRemove } from 'queries/module';
-import { FC, useState, MouseEvent, useEffect } from 'react';
+import { FC, useState, MouseEvent, useRef } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { SpacedRow, ActionIconsContainer, InnerBody } from '../style';
 import { PermissionsGuard } from 'components/PermissionsGuard';
@@ -25,16 +12,15 @@ import {
   AiOutlineEye as ViewIcon,
   AiOutlineCopy as CopyIcon,
   AiOutlineExport as ExportIcon,
+  AiOutlineTag as TagIcon,
 } from 'react-icons/ai';
-import { useQuery } from '@tanstack/react-query';
+import { ModuleTagDialog } from 'components/dialogs/ModuleTagDialog';
+import { ModuleCopyDialog } from 'components/dialogs/ModuleCopyDialog';
+import { ModuleExportDialog } from 'components/dialogs/ModuleExportDialog';
+import { ModuleDeleteDialog } from 'components/dialogs/ModuleDeleteDialog';
+import { DeleteImperativeHandle } from 'components/dialogs';
 
-const DownloadLink = styled.a`
-  display: block;
-  padding: ${({ theme }) => theme.spacing['0_75']};
-  background-color: ${({ theme }) => theme.colors.primary};
-  color: ${({ theme }) => theme.colors.white};
-  border-radius: ${({ theme }) => theme.borderRadius.small};
-`;
+import { DateTime } from 'luxon';
 
 interface IModuleCardProps {
   mod: ModuleOutputDTO;
@@ -42,32 +28,15 @@ interface IModuleCardProps {
 
 export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
+  const [openTagDialog, setOpenTagDialog] = useState<boolean>(false);
   const [openExportDialog, setOpenExportDialog] = useState<boolean>(false);
-  const [isValid, setIsValid] = useState<boolean>(false);
-  const [downloadLink, setDownloadLink] = useState<string | null>(null);
-  const { mutate, isPending: isDeleting, isSuccess } = useModuleRemove();
-  const { data: exported, isPending: isExporting } = useQuery(moduleExportOptions(mod.id, openExportDialog));
+  const [openCopyDialog, setOpenCopyDialog] = useState<boolean>(false);
+  const deleteDialogRef = useRef<DeleteImperativeHandle>(null);
+
+  const { latestVersion } = mod;
 
   const theme = useTheme();
   const navigate = useNavigate();
-
-  const handleOnDelete = (e: MouseEvent) => {
-    e.stopPropagation();
-    mutate({ moduleId: mod.id });
-  };
-
-  if (isSuccess) {
-    setOpenDeleteDialog(false);
-  }
-
-  useEffect(() => {
-    if (!isExporting && exported) {
-      const blob = new Blob([JSON.stringify(exported)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      setDownloadLink(url);
-      return () => URL.revokeObjectURL(url);
-    }
-  }, [isExporting, exported]);
 
   const handleOnEditClick = (e: MouseEvent) => {
     e.stopPropagation();
@@ -82,15 +51,20 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
   const handleOnDeleteClick = (e: MouseEvent) => {
     e.stopPropagation();
     if (e.shiftKey) {
-      handleOnDelete(e);
+      deleteDialogRef.current?.triggerDelete();
     } else {
       setOpenDeleteDialog(true);
     }
   };
 
+  const handleOnTagClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    setOpenTagDialog(true);
+  };
+
   const handleOnCopyClick = (e: MouseEvent) => {
     e.stopPropagation();
-    navigate({ to: '/modules/$moduleId/copy', params: { moduleId: mod.id } });
+    setOpenCopyDialog(true);
   };
 
   const handleOnOpenClick = (e: MouseEvent) => {
@@ -103,6 +77,10 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
     setOpenExportDialog(true);
   };
 
+  const newestTag = mod.versions
+    .filter((version) => version.tag !== 'latest')
+    .sort((a, b) => DateTime.fromISO(b.createdAt).toMillis() - DateTime.fromISO(a.createdAt).toMillis())[0]?.tag;
+
   return (
     <>
       <Card data-testid={`${mod.name}`}>
@@ -111,6 +89,16 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
             <SpacedRow>
               <h2>{mod.name}</h2>
               <ActionIconsContainer>
+                <Tooltip>
+                  <Tooltip.Trigger>
+                    <Chip
+                      variant="outline"
+                      color={newestTag ? 'primary' : 'secondary'}
+                      label={newestTag ?? 'no tags'}
+                    />
+                  </Tooltip.Trigger>
+                  <Tooltip.Content>Latest tag</Tooltip.Content>
+                </Tooltip>
                 {mod.builtin && (
                   <Tooltip>
                     <Tooltip.Trigger>
@@ -130,16 +118,24 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
                     </Tooltip.Content>
                   </Tooltip>
                 )}
+
                 <Dropdown>
                   <Dropdown.Trigger asChild>
                     <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
                   </Dropdown.Trigger>
                   <Dropdown.Menu>
+                    {mod.builtin && (
+                      <>
+                        <Dropdown.Menu.Item icon={<ViewIcon />} onClick={handleOnViewClick} label="View module" />
+                      </>
+                    )}
                     {!mod.builtin && (
                       <Dropdown.Menu.Group label="Actions">
                         <PermissionsGuard requiredPermissions={[[PERMISSIONS.ManageModules]]}>
                           <Dropdown.Menu.Item icon={<ViewIcon />} onClick={handleOnViewClick} label="View module" />
                           <Dropdown.Menu.Item icon={<EditIcon />} onClick={handleOnEditClick} label="Edit module" />
+                          <Dropdown.Menu.Item icon={<CopyIcon />} onClick={handleOnCopyClick} label="Copy module" />
+                          <Dropdown.Menu.Item icon={<TagIcon />} onClick={handleOnTagClick} label="Tag module" />
                           <Dropdown.Menu.Item
                             icon={<DeleteIcon fill={theme.colors.error} />}
                             onClick={handleOnDeleteClick}
@@ -149,7 +145,6 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
                       </Dropdown.Menu.Group>
                     )}
                     <Dropdown.Menu.Group>
-                      <Dropdown.Menu.Item icon={<CopyIcon />} onClick={handleOnCopyClick} label="Copy module" />
                       <Dropdown.Menu.Item
                         icon={<LinkIcon />}
                         onClick={handleOnOpenClick}
@@ -161,70 +156,32 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
                 </Dropdown>
               </ActionIconsContainer>
             </SpacedRow>
-            <p>{mod.description}</p>
+            <p>{latestVersion.description}</p>
             <span style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-              {mod.commands.length > 0 && <p>Commands: {mod.commands.length}</p>}
-              {mod.hooks.length > 0 && <p>Hooks: {mod.hooks.length}</p>}
-              {mod.cronJobs.length > 0 && <p>Cronjobs: {mod.cronJobs.length}</p>}
-              {mod.permissions.length > 0 && <p>Permissions: {mod.permissions.length}</p>}
+              {latestVersion.commands.length > 0 && <p>Commands: {latestVersion.commands.length}</p>}
+              {latestVersion.hooks.length > 0 && <p>Hooks: {latestVersion.hooks.length}</p>}
+              {latestVersion.cronJobs.length > 0 && <p>Cronjobs: {latestVersion.cronJobs.length}</p>}
+              {latestVersion.permissions.length > 0 && <p>Permissions: {latestVersion.permissions.length}</p>}
             </span>
           </InnerBody>
         </Card.Body>
       </Card>
-      <Dialog open={openDeleteDialog} onOpenChange={setOpenDeleteDialog}>
-        <Dialog.Content>
-          <Dialog.Heading size={4}>
-            Delete Module: <span style={{ textTransform: 'capitalize' }}>{mod.name}</span>{' '}
-          </Dialog.Heading>
-          <Dialog.Body size="medium">
-            <p>
-              Are you sure you want to delete the module <strong>{mod.name}</strong>? To confirm, type the module name
-              below.
-            </p>
-            <ValueConfirmationField
-              id="deleteModuleConfirmation"
-              onValidChange={(valid) => setIsValid(valid)}
-              value={mod.name}
-              label="Module name"
-            />
-            <Button
-              isLoading={isDeleting}
-              onClick={(e) => handleOnDelete(e)}
-              fullWidth
-              disabled={!isValid}
-              text="Delete module"
-              color="error"
-            />
-          </Dialog.Body>
-        </Dialog.Content>
-      </Dialog>
-      <Dialog open={openExportDialog} onOpenChange={setOpenExportDialog}>
-        <Dialog.Content>
-          <Dialog.Heading size={4}>
-            Module: <span style={{ textTransform: 'capitalize' }}>{mod.name}</span>
-          </Dialog.Heading>
-          <Dialog.Body>
-            {isExporting && (
-              <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <p>preparing {mod.name}.json</p>
-                <Spinner size="tiny" />
-              </div>
-            )}
-
-            {!isExporting && downloadLink && (
-              <DownloadLink
-                href={downloadLink}
-                download={`${mod.name}.json`}
-                onClick={() => {
-                  setOpenExportDialog(false);
-                }}
-              >
-                Download {mod.name}.json
-              </DownloadLink>
-            )}
-          </Dialog.Body>
-        </Dialog.Content>
-      </Dialog>
+      <ModuleTagDialog moduleId={mod.id} moduleName={mod.name} open={openTagDialog} onOpenChange={setOpenTagDialog} />
+      <ModuleDeleteDialog
+        ref={deleteDialogRef}
+        moduleId={mod.id}
+        moduleName={mod.name}
+        open={openDeleteDialog}
+        onOpenChange={setOpenDeleteDialog}
+      />
+      <ModuleCopyDialog mod={mod} open={openCopyDialog} onOpenChange={setOpenCopyDialog} />
+      <ModuleExportDialog
+        moduleId={mod.id}
+        moduleName={mod.name}
+        moduleVersions={mod.versions}
+        open={openExportDialog}
+        onOpenChange={setOpenExportDialog}
+      />
     </>
   );
 };

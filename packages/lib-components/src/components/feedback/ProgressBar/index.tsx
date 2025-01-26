@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { styled, Color } from '../../../styled';
-import { darken } from 'polished';
+import { darken, shade } from 'polished';
 import { keyframes } from 'styled-components';
 
 const indeterminateAnimation = keyframes`
@@ -28,12 +28,13 @@ const IndeterminateProgress = styled.div<{ color: Color }>`
     position: absolute;
     content: '';
     width: 100%;
-    height: 100%;
-    background-color: ${({ theme, color }) => theme.colors[color]};
+    top: 1px;
+    height: calc(100% - 4px);
+    background-color: ${({ theme, color }) => shade(0.5, theme.colors[color])};
+    border: 1px solid ${({ theme, color }) => theme.colors[color]};
     animation: ${indeterminateAnimation} 5s infinite linear;
     transform-origin: 0% 50%;
-    border-radius: ${({ theme }) => theme.borderRadius.large};
-    background-color: ${({ theme, color }) => theme.colors[color]};
+    border-radius: ${({ theme }) => theme.borderRadius.small};
   }
 `;
 

@@ -1,4 +1,4 @@
-import { LineChart, Card, styled, Stats, QuestionTooltip, Skeleton } from '@takaro/lib-components';
+import { LineChart, Card, styled, Stats, IconTooltip, Skeleton } from '@takaro/lib-components';
 import { useQuery } from '@tanstack/react-query';
 import { DateTime } from 'luxon';
 import { PlayersOnlineStatsQueryOptions, ActivityStatsQueryOptions } from 'queries/stats';
@@ -6,6 +6,7 @@ import { useMemo } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { TimePeriodSelectField } from 'components/selects';
 import { eventsQueryOptions } from 'queries/event';
+import { AiOutlineQuestion as QuestionIcon } from 'react-icons/ai';
 
 const Container = styled.div`
   display: grid;
@@ -89,7 +90,9 @@ export function PlayerStats() {
       <Container>
         <Card variant="outline">
           <Card.Title label="Daily active players">
-            <QuestionTooltip>How many players were active on the server each day.</QuestionTooltip>
+            <IconTooltip color="background" icon={<QuestionIcon />}>
+              How many players were active on the server each day.
+            </IconTooltip>
           </Card.Title>
           <Card.Body>
             <div style={{ height: '200px' }}>

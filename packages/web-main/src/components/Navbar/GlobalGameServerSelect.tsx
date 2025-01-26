@@ -23,7 +23,7 @@ export const GlobalGameServerSelect: FC<GameServerSelectNavProps> = ({
   const navigate = useNavigate();
   const { control, watch } = useForm<FormFields>({
     mode: 'onChange',
-    defaultValues: {
+    values: {
       gameServerId: selectedGameServerId,
     },
   });

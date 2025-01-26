@@ -120,6 +120,7 @@ function Component() {
         playerId: search.playerIds.length > 0 ? search.playerIds : undefined,
         gameserverId: search.gameServerIds.length > 0 ? search.gameServerIds : undefined,
         eventName: search.eventNames.length > 0 ? search.eventNames : undefined,
+        moduleId: search.moduleIds.length > 0 ? search.moduleIds : undefined,
       },
       sortBy: 'createdAt',
       sortDirection: 'desc',
@@ -152,11 +153,12 @@ function Component() {
       <Header>
         <EventFilter
           isLoading={false}
-          defaultValues={{
+          initialSelectedValues={{
             playerIds: search.playerIds ?? [],
             gameServerIds: search.gameServerIds ?? [],
             eventNames: search.eventNames ?? [],
             dateRange: search.dateRange ?? undefined,
+            moduleIds: search.moduleIds ?? [],
           }}
           onSubmit={onFilterChangeSubmit}
           isLive={live}

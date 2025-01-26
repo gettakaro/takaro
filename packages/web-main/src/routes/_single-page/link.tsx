@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { useSnackbar } from 'notistack';
 import { AiOutlineLogout as LogoutIcon } from 'react-icons/ai';
 import { useAuth } from 'hooks/useAuth';
+import { useQuery } from '@tanstack/react-query';
 
 const Container = styled.div`
   max-width: 800px;
@@ -23,7 +24,7 @@ export const Route = createFileRoute('/_single-page/link')({
     try {
       const session = await context.queryClient.fetchQuery(userMeQueryOptions());
       if (session) {
-        return session.user;
+        return { session: session };
       }
     } catch {
       return undefined;
@@ -41,17 +42,19 @@ const validationSchema = z.object({
 
 function Component() {
   const { code } = Route.useSearch();
-  const user = Route.useLoaderData();
+  const loaderData = Route.useLoaderData();
   const { mutate, isPending, error, isSuccess } = useUserLinkPlayerProfile();
   const { enqueueSnackbar } = useSnackbar();
   const { logOut } = useAuth();
+
+  const { data: session } = useQuery({ ...userMeQueryOptions(), initialData: loaderData?.session });
 
   const { control, handleSubmit, watch } = useForm<z.infer<typeof validationSchema>>({
     mode: 'onChange',
     resolver: zodResolver(validationSchema),
     values: {
       code: code ? code : '',
-      email: user ? user.email : '',
+      email: session ? session.user.email : '',
     },
   });
 
@@ -59,7 +62,7 @@ function Component() {
     mutate({ email, code });
   };
 
-  if (isSuccess && user?.email === watch('email')) {
+  if (isSuccess && session?.user.email === watch('email')) {
     enqueueSnackbar('Player linked successfully!', { variant: 'default', type: 'success' });
     return <Navigate to="/dashboard" />;
   }
@@ -94,9 +97,9 @@ function Component() {
           placeholder="takaro-is-cool"
         />
         <TextField
-          readOnly={user && !!user.email}
+          readOnly={session && !!session.user.email}
           description={
-            user && !!user.email
+            session && !!session.user.email
               ? 'If you want to link a player to a different email, please log out first.'
               : undefined
           }
@@ -109,7 +112,7 @@ function Component() {
           placeholder="email@takaro.io"
         />
         {error && <FormError error={error} />}
-        {user && user.email ? (
+        {session && session.user.email ? (
           <div style={{ display: 'grid', gridTemplateColumns: '3fr 1fr', gap: '1rem' }}>
             <Button fullWidth isLoading={isPending} type="submit" text="Link Player to Account" />
             <Button

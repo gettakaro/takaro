@@ -1,13 +1,4 @@
-import {
-  LineChart,
-  Card,
-  styled,
-  Loading,
-  QuestionTooltip,
-  GeoMercator,
-  Chip,
-  AreaChart,
-} from '@takaro/lib-components';
+import { LineChart, Card, styled, Loading, IconTooltip, GeoMercator, Chip, AreaChart } from '@takaro/lib-components';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { DateTime } from 'luxon';
@@ -22,6 +13,7 @@ import { useMemo } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { TimePeriodSelectField } from 'components/selects';
 import { EventsCountInputDTOEventNameEnum } from '@takaro/apiclient';
+import { AiOutlineQuestion as QuestionIcon } from 'react-icons/ai';
 
 const Container = styled.div`
   display: grid;
@@ -104,7 +96,9 @@ function Component() {
       <Container>
         <Card variant="outline">
           <Card.Title label="Latency">
-            <QuestionTooltip>Roundtrip time between Takaro and your server in ms</QuestionTooltip>
+            <IconTooltip color="background" icon={<QuestionIcon />}>
+              Roundtrip time between Takaro and your server in ms
+            </IconTooltip>
           </Card.Title>
           <div style={{ position: 'relative', height: '425px' }}>
             <LineChart
@@ -119,7 +113,9 @@ function Component() {
 
         <Card variant="outline">
           <Card.Title label="Players online">
-            <QuestionTooltip>Number of players online on the server</QuestionTooltip>
+            <IconTooltip color="background" icon={<QuestionIcon />}>
+              Number of players online on the server
+            </IconTooltip>
           </Card.Title>
           <div style={{ position: 'relative', height: '425px' }}>
             <LineChart
@@ -150,7 +146,9 @@ function Component() {
           <Card.Title label="Player Demographics">
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <Chip variant="outline" color="warning" label="Beta" />
-              <QuestionTooltip>Shows where your players are from</QuestionTooltip>
+              <IconTooltip color="background" icon={<QuestionIcon />}>
+                Shows where your players are from
+              </IconTooltip>
             </div>
           </Card.Title>
           <Card.Body>

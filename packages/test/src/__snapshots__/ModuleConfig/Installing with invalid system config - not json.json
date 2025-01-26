@@ -8,7 +8,9 @@
           {
             "target": {
               "userConfig": "{\"foo\":\"bar\"}",
-              "systemConfig": "invalid"
+              "systemConfig": "invalid",
+              "gameServerId": "da7a1c99-af28-4ae0-88d3-06c71b6c5985",
+              "versionId": "ec39b235-b8b1-4371-9a37-4cbc67d238cd"
             },
             "value": "invalid",
             "property": "systemConfig",
@@ -28,7 +30,7 @@
     "snapshot": true,
     "name": "Installing with invalid system config - not json",
     "filteredFields": [
-      "gameserverId",
+      "gameServerId",
       "moduleId"
     ],
     "expectedStatus": 400,

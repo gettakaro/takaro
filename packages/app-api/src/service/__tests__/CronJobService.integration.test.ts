@@ -2,7 +2,7 @@ import { IntegrationTest, expect, integrationConfig } from '@takaro/test';
 import { GameServerOutputDTO, ModuleOutputDTO, CronJobOutputDTO, ModuleInstallationOutputDTO } from '@takaro/apiclient';
 import { queueService } from '@takaro/queues';
 import { CronJobService, CronJobOutputDTO as ServiceCronJobOutputDTO } from '../CronJobService.js';
-import { ModuleInstallationOutputDTO as ServiceModuleInstallationOutputDTO } from '../GameServerService.js';
+import { ModuleInstallationOutputDTO as ServiceModuleInstallationOutputDTO } from '../Module/dto.js';
 
 const group = 'CronJobService';
 
@@ -10,7 +10,7 @@ interface IStandardSetupData {
   service: CronJobService;
   gameserver: GameServerOutputDTO;
   mod: ModuleOutputDTO;
-  assignment: ModuleInstallationOutputDTO;
+  installation: ModuleInstallationOutputDTO;
   cronjob: CronJobOutputDTO;
 }
 
@@ -24,7 +24,7 @@ async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStanda
   const cronjob = (
     await this.client.cronjob.cronJobControllerCreate({
       name: 'Test cronjob',
-      moduleId: modCreate.id,
+      versionId: modCreate.latestVersion.id,
       temporalValue: '0 0 * * *',
     })
   ).data.data;
@@ -41,7 +41,12 @@ async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStanda
     })
   ).data.data;
 
-  const assignment = (await this.client.gameserver.gameServerControllerInstallModule(gameserver.id, mod.id)).data.data;
+  const installation = (
+    await this.client.module.moduleInstallationsControllerInstallModule({
+      gameServerId: gameserver.id,
+      versionId: mod.latestVersion.id,
+    })
+  ).data.data;
 
   if (!this.standardDomainId) throw new Error('No standard domain id set!');
 
@@ -49,7 +54,7 @@ async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStanda
     service: new CronJobService(this.standardDomainId),
     mod,
     gameserver,
-    assignment,
+    installation,
     cronjob,
   };
 }
@@ -61,9 +66,12 @@ const tests = [
     name: 'Installing a module enables cron jobs in the queue',
     setup,
     test: async function (this: IntegrationTest<IStandardSetupData>) {
-      const { service, gameserver, mod, assignment, cronjob } = this.setupData;
+      const { service, gameserver, mod, installation: assignment, cronjob } = this.setupData;
 
-      await this.client.gameserver.gameServerControllerInstallModule(gameserver.id, mod.id);
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: gameserver.id,
+        versionId: mod.latestVersion.id,
+      });
 
       const queue = queueService.queues.cronjobs.queue;
       const allRepeatables = await queue.getRepeatableJobs();
@@ -72,7 +80,7 @@ const tests = [
           job.key ===
           service.getJobKey(
             assignment as ServiceModuleInstallationOutputDTO,
-            mod.cronJobs[0] as ServiceCronJobOutputDTO,
+            mod.latestVersion.cronJobs[0] as ServiceCronJobOutputDTO,
           )
         );
       });
@@ -90,9 +98,12 @@ const tests = [
     name: 'Uninstalling a module disables cron jobs in the queue',
     setup,
     test: async function (this: IntegrationTest<IStandardSetupData>) {
-      const { service, gameserver, mod, assignment } = this.setupData;
+      const { service, mod, installation: assignment } = this.setupData;
 
-      await this.client.gameserver.gameServerControllerUninstallModule(gameserver.id, mod.id);
+      await this.client.module.moduleInstallationsControllerUninstallModule(
+        assignment.moduleId,
+        assignment.gameserverId,
+      );
 
       const queue = queueService.queues.cronjobs.queue;
       const allRepeatables = await queue.getRepeatableJobs();
@@ -101,7 +112,7 @@ const tests = [
           job.key ===
           service.getJobKey(
             assignment as ServiceModuleInstallationOutputDTO,
-            mod.cronJobs[0] as ServiceCronJobOutputDTO,
+            mod.latestVersion.cronJobs[0] as ServiceCronJobOutputDTO,
           )
         );
       });
@@ -115,7 +126,7 @@ const tests = [
     name: 'Deleting a domain deletes all cron jobs in the queue',
     setup,
     test: async function (this: IntegrationTest<IStandardSetupData>) {
-      const { service, mod, assignment } = this.setupData;
+      const { service, mod, installation: assignment } = this.setupData;
 
       await this.adminClient.domain.domainControllerRemove(this.standardDomainId as string);
 
@@ -126,7 +137,7 @@ const tests = [
           job.key ===
           service.getJobKey(
             assignment as ServiceModuleInstallationOutputDTO,
-            mod.cronJobs[0] as ServiceCronJobOutputDTO,
+            mod.latestVersion.cronJobs[0] as ServiceCronJobOutputDTO,
           )
         );
       });
@@ -140,7 +151,7 @@ const tests = [
     name: 'Deleting a module deletes all cron jobs in the queue',
     setup,
     test: async function (this: IntegrationTest<IStandardSetupData>) {
-      const { service, mod, assignment } = this.setupData;
+      const { service, mod, installation: assignment } = this.setupData;
 
       await this.client.module.moduleControllerRemove(mod.id);
 
@@ -151,7 +162,7 @@ const tests = [
           job.key ===
           service.getJobKey(
             assignment as ServiceModuleInstallationOutputDTO,
-            mod.cronJobs[0] as ServiceCronJobOutputDTO,
+            mod.latestVersion.cronJobs[0] as ServiceCronJobOutputDTO,
           )
         );
       });
@@ -165,7 +176,7 @@ const tests = [
     name: 'Deleting a gameserver deletes all cron jobs in the queue',
     setup,
     test: async function (this: IntegrationTest<IStandardSetupData>) {
-      const { service, mod, assignment, gameserver } = this.setupData;
+      const { service, mod, installation: assignment, gameserver } = this.setupData;
 
       await this.client.gameserver.gameServerControllerRemove(gameserver.id);
 
@@ -176,7 +187,7 @@ const tests = [
           job.key ===
           service.getJobKey(
             assignment as ServiceModuleInstallationOutputDTO,
-            mod.cronJobs[0] as ServiceCronJobOutputDTO,
+            mod.latestVersion.cronJobs[0] as ServiceCronJobOutputDTO,
           )
         );
       });
