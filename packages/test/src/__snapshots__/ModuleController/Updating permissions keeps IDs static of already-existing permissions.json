@@ -5,7 +5,7 @@
       "createdAt": "2024-07-14T14:37:41.062Z",
       "updatedAt": "2024-07-14T14:37:41.119Z",
       "id": "eee2696e-d240-4f31-bac4-00994dd9d0e9",
-      "description": null,
+      "description": "No description",
       "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{},\"required\":[],\"additionalProperties\":false}",
       "uiSchema": "{}",
       "cronJobs": [],
