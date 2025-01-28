@@ -21,7 +21,7 @@
         "id": "3556d6cd-8edc-437b-b7ce-447dc5b2b2f2",
         "moduleId": "471741db-2367-4c25-8854-df2d1261e46b",
         "tag": "latest",
-        "description": null,
+        "description": "No description",
         "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{},\"required\":[],\"additionalProperties\":false}",
         "uiSchema": "{}",
         "cronJobs": [],

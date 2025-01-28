@@ -13,7 +13,7 @@
         "id": "e1b44bb7-23e6-43bc-8e64-c36e9b901dfb",
         "moduleId": "d4a626bd-8e15-4eef-a514-538e76b4be11",
         "tag": "latest",
-        "description": null,
+        "description": "No description",
         "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{},\"required\":[],\"additionalProperties\":false}",
         "uiSchema": "{}",
         "hooks": [],
