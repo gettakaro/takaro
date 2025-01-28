@@ -1,6 +1,10 @@
 import { IntegrationTest, expect, SetupGameServerPlayers, EventsAwaiter } from '@takaro/test';
 import { randomUUID } from 'crypto';
 import { HookCreateDTOEventTypeEnum } from '@takaro/apiclient';
+import { readFile } from 'fs/promises';
+import { join } from 'path';
+import * as url from 'url';
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 const group = 'Bug repros';
 
@@ -129,6 +133,35 @@ const tests = [
         importedModule[0].versions[0].id,
       );
       expect(importedVersions.data.data.hooks.length).to.be.eq(1);
+    },
+  }),
+  /**
+   * This is to ease the transition of the old module system to the new one.
+   * If this test breaks and this commit is months old, you can probably just delete it 🙃
+   */
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Bug repro: importing a module from the old module system should work',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      const oldModule = await readFile(join(__dirname, 'data', 'hvb_serverMessages_v2.json'), 'utf8');
+
+      await this.client.module.moduleControllerImport(JSON.parse(oldModule));
+
+      const importedModule = (
+        await this.client.module.moduleControllerSearch({
+          filters: { name: ['hvb_serverMessages_v2'] },
+        })
+      ).data.data;
+
+      expect(importedModule.length).to.be.eq(1);
+      expect(importedModule[0].versions.length).to.be.eq(1);
+      const importedVersions = await this.client.module.moduleVersionControllerGetModuleVersion(
+        importedModule[0].versions[0].id,
+      );
+
+      expect(importedVersions.data.data.cronJobs.length).to.be.eq(1);
     },
   }),
 ];

@@ -251,7 +251,10 @@ export class ModuleController {
     description: 'Imports a module from a format that was exported from another Takaro instance',
   })
   @Post('/import')
-  async import(@Req() req: AuthenticatedRequest, @Body() data: ModuleTransferDTO<unknown>) {
+  async import(@Req() req: AuthenticatedRequest) {
+    // Bypass routing-controllers here, it always transforms the data to a class instance
+    // We don't want this, as the service will do smarted business-logic checks later and validate.
+    const data = req.body as ModuleTransferDTO<unknown>;
     const service = new ModuleService(req.domainId);
     return apiResponse(await service.import(data));
   }
