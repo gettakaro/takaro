@@ -258,13 +258,19 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
       const existingVersions = existingVersionRes.results.filter((v) => v.tag === version.tag);
 
       // Version already exists,
-      // If not builtin -> skip - We will never replace user-created versions
+      // If not builtin and tagged -> skip - We will never replace user-tagged versions
+      // If not builting and versionTag=latest -> replace
       // If builtin and in dev mode -> replace - This provides hot-reload for builtin modules
       // If builtin and in prod -> throw - We will never replace versions in prod, we should be incrementing the version
       if (existingVersions.length) {
-        if (!isBuiltin) {
+        if (!isBuiltin && version.tag !== 'latest') {
           this.log.info('Version already exists, skipping', { moduleId: mod.id, tag: version.tag });
           continue;
+        }
+
+        if (!isBuiltin && version.tag === 'latest' && existingVersions.length === 1) {
+          this.log.info('Overriding "latest" version', { moduleId: mod.id, tag: version.tag });
+          await this.repo.deleteVersion(existingVersions[0].id);
         }
 
         if (process.env.NODE_ENV === 'development') {
@@ -412,6 +418,8 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
    * Create a new version record and link all the components from 'latest' version to the new version.
    */
   async tagVersion(moduleId: string, tag: string) {
+    if (tag === 'latest') return this.getLatestVersion(moduleId);
+
     if (!semver.valid(tag))
       throw new errors.BadRequestError('Invalid version tag, please use semver. Eg 1.0.0 or 2.0.4');
 
