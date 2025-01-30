@@ -1,6 +1,6 @@
 import { FC } from 'react';
-import { styled, Color } from '../../../styled';
 import { darken, shade } from 'polished';
+import { styled, Color, Size } from '../../../styled';
 import { keyframes } from 'styled-components';
 
 const indeterminateAnimation = keyframes`
@@ -44,15 +44,28 @@ const Container = styled.div`
   align-items: center;
   justify-content: flex-start;
   width: 100%;
-  padding: ${({ theme }) => theme.spacing[1]};
 `;
-const Progress = styled.div<{ color: Color; progress: number }>`
-  width: calc(100% - 50px);
+const Progress = styled.div<{ color: Color; progress: number; size: Size }>`
+  width: 100%;
   position: relative;
   background-color: ${({ theme }) => theme.colors.background};
-  height: ${({ theme }) => theme.spacing[1]};
-  border-radius: ${({ theme }) => theme.borderRadius.large};
+  height: ${({ theme, size }) => {
+    switch (size) {
+      case 'tiny':
+        return theme.spacing['0_5'];
+      case 'small':
+        return theme.spacing['0_75'];
+      case 'medium':
+        return theme.spacing['1_5'];
+      case 'large':
+        return theme.spacing['2_5'];
+      case 'huge':
+        return theme.spacing['4'];
+    }
+  }};
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
   overflow: hidden;
+  border: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
 
   &::after {
     position: absolute;
@@ -61,17 +74,23 @@ const Progress = styled.div<{ color: Color; progress: number }>`
     top: 50%;
     transform: translateY(-50%);
     left: 0;
-    height: ${({ theme }) => theme.spacing[1]};
+    height: ${({ theme, size }) => {
+      switch (size) {
+        case 'tiny':
+          return theme.spacing['0_5'];
+        case 'small':
+          return theme.spacing['0_75'];
+        case 'medium':
+          return theme.spacing['1_5'];
+        case 'large':
+          return theme.spacing['2_5'];
+        case 'huge':
+          return theme.spacing['4'];
+      }
+    }};
     max-width: 100%;
     transition: 0.2s width ease-out;
-    background-color: ${({ theme, color }) => darken(0.2, theme.colors[color])};
-    background-image: ${({ theme, color }): string =>
-      `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23${theme.colors[
-        color
-      ].slice(
-        1,
-        theme.colors[color].length,
-      )}' fill-opacity='1' fill-rule='evenodd'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E")`};
+    background-color: ${({ theme, color }) => theme.colors[color]};
   }
 `;
 
@@ -83,15 +102,22 @@ export interface ProgressBarProps {
   mode: 'determinate' | 'indeterminate';
   value?: number;
   color?: Color;
-  showValue?: boolean;
+  showPercentage?: boolean;
+  size?: Size;
 }
 
-export const ProgressBar: FC<ProgressBarProps> = ({ mode, value = 0, color = 'primary', showValue = false }) => {
+export const ProgressBar: FC<ProgressBarProps> = ({
+  mode,
+  value = 0,
+  color = 'primary',
+  showPercentage = false,
+  size = 'medium',
+}) => {
   if (mode === 'determinate') {
     return (
       <Container>
-        <Progress color={color} progress={value} />
-        {showValue && <Label>{Math.min(value, 100)}%</Label>}
+        <Progress color={color} progress={value} size={size} />
+        {showPercentage && <Label>{Math.min(value, 100)}%</Label>}
       </Container>
     );
   }
