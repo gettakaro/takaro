@@ -1,6 +1,8 @@
 import { styled } from '../../../styled';
 import { useTheme } from '../../../hooks';
-import { Card, ProgressBar, QuestionTooltip } from '../../../components';
+import { Card, ProgressBar, IconTooltip } from '../../../components';
+
+import { AiOutlineQuestion as QuestionIcon } from 'react-icons/ai';
 import { FC } from 'react';
 import { UsageProps } from './Usage';
 
@@ -50,7 +52,11 @@ export const UsageCard: FC<UsageCardProps> = ({ title, value, total, info, unit,
     <Card style={{ maxWidth: '800px' }}>
       <TitleContainer margin={description ? false : true}>
         <h3>{title}</h3>
-        {info && <QuestionTooltip placement="top">{info}</QuestionTooltip>}
+        {info && (
+          <IconTooltip placement="top" color="background" icon={<QuestionIcon />}>
+            {info}
+          </IconTooltip>
+        )}
       </TitleContainer>
       {description && <p style={{ color: theme.colors.textAlt, marginBottom: theme.spacing[2] }}>{description}</p>}
       <DetailsContainer>

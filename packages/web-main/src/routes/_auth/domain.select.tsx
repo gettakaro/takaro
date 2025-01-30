@@ -67,7 +67,12 @@ function Component() {
       <Company />
       <DomainCardList>
         {me.domains.map((domain) => (
-          <DomainCard key={domain.id} domain={domain} isCurrentDomain={currentDomain === domain.id} isDomainOwner={isDomainOwner} />
+          <DomainCard
+            key={domain.id}
+            domain={domain}
+            isCurrentDomain={currentDomain === domain.id}
+            isDomainOwner={isDomainOwner}
+          />
         ))}
       </DomainCardList>
     </Container>
@@ -102,6 +107,7 @@ function DomainCard({ domain, isCurrentDomain, isDomainOwner }: DomainCardProps)
     navigate({ to: '/dashboard' });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   function getDomainChip() {
     switch (domain.state) {
       case DomainOutputDTOStateEnum.Disabled: {
@@ -137,7 +143,10 @@ function DomainCard({ domain, isCurrentDomain, isDomainOwner }: DomainCardProps)
   }
 
   return (
-    <Card role="link" onClick={domain.state === DomainOutputDTOStateEnum.Active ? handleDomainSelectedClick : undefined}
+    <Card
+      role="link"
+      onClick={domain.state === DomainOutputDTOStateEnum.Active ? handleDomainSelectedClick : undefined}
+    >
       <Card.Body>
         <InnerBody>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -149,13 +158,13 @@ function DomainCard({ domain, isCurrentDomain, isDomainOwner }: DomainCardProps)
             {domain.name}
             <ArrowRightIcon size={18} style={{ marginLeft: '10px' }} />
           </h2>
-<div style={{ marginLeft: 'auto' }}>
-          {isDomainOwner && (
-            <a href={getConfigVar('managePlanUrl')} rel="noreferrer">
-              <Button color="primary" text="Manage plan" />
-            </a>
-          )}
-        </div>
+          <div style={{ marginLeft: 'auto' }}>
+            {isDomainOwner && (
+              <a href={getConfigVar('managePlanUrl')} rel="noreferrer">
+                <Button color="primary" text="Manage plan" />
+              </a>
+            )}
+          </div>
         </InnerBody>
       </Card.Body>
     </Card>
