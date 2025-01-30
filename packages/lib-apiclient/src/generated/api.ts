@@ -5952,6 +5952,12 @@ export interface ModuleTransferDTO {
   name: string;
   /**
    *
+   * @type {string}
+   * @memberof ModuleTransferDTO
+   */
+  takaroVersion?: string;
+  /**
+   *
    * @type {Array<ModuleTransferVersionDTO>}
    * @memberof ModuleTransferDTO
    */
@@ -18031,14 +18037,10 @@ export const ModuleApiAxiosParamCreator = function (configuration?: Configuratio
     /**
      * Imports a module from a format that was exported from another Takaro instance   Required permissions: `MANAGE_MODULES`<br> OperationId: `ModuleControllerImport`
      * @summary Import a module
-     * @param {ModuleTransferDTO} [moduleTransferDTO] ModuleTransferDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    moduleControllerImport: async (
-      moduleTransferDTO?: ModuleTransferDTO,
-      options: RawAxiosRequestConfig = {},
-    ): Promise<RequestArgs> => {
+    moduleControllerImport: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
       const localVarPath = `/module/import`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -18053,12 +18055,9 @@ export const ModuleApiAxiosParamCreator = function (configuration?: Configuratio
 
       // authentication domainAuth required
 
-      localVarHeaderParameter['Content-Type'] = 'application/json';
-
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
       localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
-      localVarRequestOptions.data = serializeDataIfNeeded(moduleTransferDTO, localVarRequestOptions, configuration);
 
       return {
         url: toPathString(localVarUrlObj),
@@ -18541,15 +18540,13 @@ export const ModuleApiFp = function (configuration?: Configuration) {
     /**
      * Imports a module from a format that was exported from another Takaro instance   Required permissions: `MANAGE_MODULES`<br> OperationId: `ModuleControllerImport`
      * @summary Import a module
-     * @param {ModuleTransferDTO} [moduleTransferDTO] ModuleTransferDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
     async moduleControllerImport(
-      moduleTransferDTO?: ModuleTransferDTO,
       options?: RawAxiosRequestConfig,
     ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.moduleControllerImport(moduleTransferDTO, options);
+      const localVarAxiosArgs = await localVarAxiosParamCreator.moduleControllerImport(options);
       const index = configuration?.serverIndex ?? 0;
       const operationBasePath = operationServerMap['ModuleApi.moduleControllerImport']?.[index]?.url;
       return (axios, basePath) =>
@@ -18860,12 +18857,11 @@ export const ModuleApiFactory = function (configuration?: Configuration, basePat
     /**
      * Imports a module from a format that was exported from another Takaro instance   Required permissions: `MANAGE_MODULES`<br> OperationId: `ModuleControllerImport`
      * @summary Import a module
-     * @param {ModuleTransferDTO} [moduleTransferDTO] ModuleTransferDTO
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    moduleControllerImport(moduleTransferDTO?: ModuleTransferDTO, options?: any): AxiosPromise<void> {
-      return localVarFp.moduleControllerImport(moduleTransferDTO, options).then((request) => request(axios, basePath));
+    moduleControllerImport(options?: any): AxiosPromise<void> {
+      return localVarFp.moduleControllerImport(options).then((request) => request(axios, basePath));
     },
     /**
      * Removes a module, including all versions and config   Required permissions: `MANAGE_MODULES`<br> OperationId: `ModuleControllerRemove`
@@ -19075,14 +19071,13 @@ export class ModuleApi extends BaseAPI {
   /**
    * Imports a module from a format that was exported from another Takaro instance   Required permissions: `MANAGE_MODULES`<br> OperationId: `ModuleControllerImport`
    * @summary Import a module
-   * @param {ModuleTransferDTO} [moduleTransferDTO] ModuleTransferDTO
    * @param {*} [options] Override http request option.
    * @throws {RequiredError}
    * @memberof ModuleApi
    */
-  public moduleControllerImport(moduleTransferDTO?: ModuleTransferDTO, options?: RawAxiosRequestConfig) {
+  public moduleControllerImport(options?: RawAxiosRequestConfig) {
     return ModuleApiFp(this.configuration)
-      .moduleControllerImport(moduleTransferDTO, options)
+      .moduleControllerImport(options)
       .then((request) => request(this.axios, this.basePath));
   }
 
