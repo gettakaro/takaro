@@ -302,14 +302,6 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
           });
           await this.repo.deleteVersion(existingVersions[0].id);
         }
-
-        if (process.env.NODE_ENV === 'production' && !isBuiltin) {
-          this.log.error('Version already exists, cannot replace in production', {
-            moduleId: mod.id,
-            tag: version.tag,
-          });
-          continue;
-        }
       }
 
       const latestVersion = await this.getLatestVersion(mod.id);
