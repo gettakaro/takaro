@@ -10181,6 +10181,12 @@ export interface UserOutputDTO {
   playerId?: string;
   /**
    *
+   * @type {PlayerOutputWithRolesDTO}
+   * @memberof UserOutputDTO
+   */
+  player: PlayerOutputWithRolesDTO;
+  /**
+   *
    * @type {string}
    * @memberof UserOutputDTO
    */
@@ -10283,6 +10289,12 @@ export interface UserOutputWithRolesDTO {
    * @memberof UserOutputWithRolesDTO
    */
   playerId?: string;
+  /**
+   *
+   * @type {PlayerOutputWithRolesDTO}
+   * @memberof UserOutputWithRolesDTO
+   */
+  player: PlayerOutputWithRolesDTO;
 }
 /**
  *
