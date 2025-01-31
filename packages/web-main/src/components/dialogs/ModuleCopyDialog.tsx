@@ -23,7 +23,7 @@ export const ModuleCopyDialog: FC<ModuleCopyDialogProps> = ({ mod, ...dialogOpti
           Module: <span style={{ textTransform: 'capitalize' }}>{mod.name}</span>
         </Dialog.Heading>
         <Dialog.Body>
-          <h2>
+          <h2 style={{ marginBottom: '15px', minWidth: '300px' }}>
             Copy module: <strong>{mod.name}</strong>
           </h2>
           <CopyModuleForm mod={mod} onSuccess={handleOnCopySuccess} />
