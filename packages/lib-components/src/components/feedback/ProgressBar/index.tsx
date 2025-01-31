@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { darken, shade } from 'polished';
+import { shade } from 'polished';
 import { styled, Color, Size } from '../../../styled';
 import { keyframes } from 'styled-components';
 
