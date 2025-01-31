@@ -293,7 +293,6 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
         if (!isBuiltin && importingLatest) {
           this.log.info('Overriding "latest" version', { moduleId: mod.id, tag: version.tag });
           await this.repo.deleteVersion(existingVersions[0].id);
-          continue;
         }
 
         if (process.env.NODE_ENV === 'development') {
@@ -302,10 +301,9 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
             tag: version.tag,
           });
           await this.repo.deleteVersion(existingVersions[0].id);
-          continue;
         }
 
-        if (process.env.NODE_ENV === 'production') {
+        if (process.env.NODE_ENV === 'production' && !isBuiltin) {
           this.log.error('Version already exists, cannot replace in production', {
             moduleId: mod.id,
             tag: version.tag,
