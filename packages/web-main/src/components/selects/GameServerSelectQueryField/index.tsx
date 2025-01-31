@@ -200,6 +200,8 @@ export const GameServerSelectView: FC<GameServerSelectQueryViewProps> = ({
       {groupByGameServerType &&
         gameServers7d2d.length > 0 &&
         renderOptionGroup(gameServers7d2d, '7 Days to Die', GameServerOutputDTOTypeEnum.Sevendaystodie)}
+
+      {!groupByGameServerType && renderOptionGroup(gameServers, 'Servers', GameServerOutputDTOTypeEnum.Mock)}
     </SelectQueryField>
   );
 };
