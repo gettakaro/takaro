@@ -185,10 +185,9 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
 
     const domain = await this.repo.create(
       new DomainCreateInputDTO({
+        ...input,
         id,
-        name: input.name,
         state: input.state ?? DOMAIN_STATES.ACTIVE,
-        externalReference: input.externalReference,
       }),
     );
 

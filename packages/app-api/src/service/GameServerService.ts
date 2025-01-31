@@ -42,6 +42,7 @@ import { Pushgateway } from 'prom-client';
 import { config } from '../config.js';
 import { handlePlayerSync } from '../workers/playerSyncWorker.js';
 import { ImportInputDTO } from '../controllers/GameServerController.js';
+import { DomainService } from './DomainService.js';
 
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 const ajv = new Ajv({ useDefaults: true, strict: true });
@@ -130,6 +131,12 @@ export class GameServerService extends TakaroService<
   }
 
   async create(item: GameServerCreateDTO): Promise<GameServerOutputDTO> {
+    const domain = await new DomainService().findOne(this.domainId);
+    if (!domain) throw new errors.NotFoundError('Domain not found');
+    const currentServers = await this.find({ limit: 1 });
+    if (currentServers.total >= domain.maxGameservers) {
+      throw new errors.BadRequestError('Max game servers reached');
+    }
     const isReachable = await this.testReachability(undefined, JSON.parse(item.connectionInfo), item.type);
     const createdServer = await this.repo.create(item);
 
