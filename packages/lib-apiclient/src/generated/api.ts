@@ -1430,6 +1430,42 @@ export interface DomainCreateInputDTO {
    * @memberof DomainCreateInputDTO
    */
   externalReference?: string;
+  /**
+   *
+   * @type {number}
+   * @memberof DomainCreateInputDTO
+   */
+  maxGameservers?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof DomainCreateInputDTO
+   */
+  maxUsers?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof DomainCreateInputDTO
+   */
+  eventRetentionDays?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof DomainCreateInputDTO
+   */
+  maxVariables?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof DomainCreateInputDTO
+   */
+  maxModules?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof DomainCreateInputDTO
+   */
+  maxItemsInModule?: number;
 }
 
 export const DomainCreateInputDTOStateEnum = {
@@ -1546,6 +1582,42 @@ export interface DomainOutputDTO {
    * @memberof DomainOutputDTO
    */
   rateLimitDuration: number;
+  /**
+   *
+   * @type {number}
+   * @memberof DomainOutputDTO
+   */
+  maxGameservers: number;
+  /**
+   *
+   * @type {number}
+   * @memberof DomainOutputDTO
+   */
+  maxUsers: number;
+  /**
+   *
+   * @type {number}
+   * @memberof DomainOutputDTO
+   */
+  eventRetentionDays: number;
+  /**
+   *
+   * @type {number}
+   * @memberof DomainOutputDTO
+   */
+  maxVariables: number;
+  /**
+   *
+   * @type {number}
+   * @memberof DomainOutputDTO
+   */
+  maxModules: number;
+  /**
+   *
+   * @type {number}
+   * @memberof DomainOutputDTO
+   */
+  maxItemsInModule: number;
   /**
    *
    * @type {string}
@@ -1728,6 +1800,42 @@ export interface DomainUpdateInputDTO {
    * @memberof DomainUpdateInputDTO
    */
   state?: DomainUpdateInputDTOStateEnum;
+  /**
+   *
+   * @type {number}
+   * @memberof DomainUpdateInputDTO
+   */
+  maxGameservers?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof DomainUpdateInputDTO
+   */
+  maxUsers?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof DomainUpdateInputDTO
+   */
+  eventRetentionDays?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof DomainUpdateInputDTO
+   */
+  maxVariables?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof DomainUpdateInputDTO
+   */
+  maxModules?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof DomainUpdateInputDTO
+   */
+  maxItemsInModule?: number;
 }
 
 export const DomainUpdateInputDTOStateEnum = {
