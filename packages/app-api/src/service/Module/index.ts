@@ -276,21 +276,24 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     for (const version of data.versions) {
       const existingVersionRes = await this.findVersions({ filters: { tag: [version.tag], moduleId: [mod.id] } });
       const existingVersions = existingVersionRes.results.filter((v) => v.tag === version.tag);
+      const importingLatest = version.tag === 'latest';
+      const versionExists = existingVersions.length >= 1;
 
       // Version already exists,
       // If not builtin and tagged -> skip - We will never replace user-tagged versions
       // If not builtin and versionTag=latest -> replace
       // If builtin and in dev mode -> replace - This provides hot-reload for builtin modules
       // If builtin and in prod -> throw - We will never replace versions in prod, we should be incrementing the version
-      if (existingVersions.length) {
-        if (!isBuiltin && version.tag !== 'latest') {
+      if (versionExists) {
+        if (!isBuiltin && !importingLatest) {
           this.log.info('Version already exists, skipping', { moduleId: mod.id, tag: version.tag });
           continue;
         }
 
-        if (!isBuiltin && version.tag === 'latest' && existingVersions.length === 1) {
+        if (!isBuiltin && importingLatest) {
           this.log.info('Overriding "latest" version', { moduleId: mod.id, tag: version.tag });
           await this.repo.deleteVersion(existingVersions[0].id);
+          continue;
         }
 
         if (process.env.NODE_ENV === 'development') {
@@ -299,6 +302,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
             tag: version.tag,
           });
           await this.repo.deleteVersion(existingVersions[0].id);
+          continue;
         }
 
         if (process.env.NODE_ENV === 'production') {
@@ -306,7 +310,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
             moduleId: mod.id,
             tag: version.tag,
           });
-          throw new errors.InternalServerError();
+          continue;
         }
       }
 
