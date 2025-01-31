@@ -1,37 +1,55 @@
 import { describe, it, expect } from 'vitest';
 import { render } from 'test-utils';
 import { ModuleForm } from '.';
-import { ModuleOutputDTO } from '@takaro/apiclient';
+import { ModuleOutputDTO, ModuleVersionOutputDTO } from '@takaro/apiclient';
 import { DateTime } from 'luxon';
 import { validSchemas, invalidSchemas } from '../testData';
 
-function createModuleDTO(overrides: Partial<ModuleOutputDTO> = {}): ModuleOutputDTO {
+function createModuleDTO(moduleVersionOverrides: Partial<ModuleVersionOutputDTO> = {}): ModuleOutputDTO {
   return {
-    id: '123',
+    id: 'module-123',
     name: 'test',
-    description: 'module description',
-    configSchema: JSON.stringify({ type: 'valid' }), // Default to valid schema
+    latestVersion: {
+      createdAt: DateTime.now().toISO(),
+      updatedAt: DateTime.now().toISO(),
+      id: 'version-123',
+      moduleId: 'module-123',
+      description: 'version description',
+      configSchema: JSON.stringify({ type: 'valid' }), // Default to valid schema
+      hooks: [],
+      cronJobs: [],
+      commands: [],
+      functions: [],
+      permissions: [],
+      uiSchema: '',
+      systemConfigSchema: '',
+      tag: 'latest',
+      ...moduleVersionOverrides,
+    },
+    versions: [
+      {
+        createdAt: DateTime.now().toISO(),
+        updatedAt: DateTime.now().toISO(),
+        tag: 'latest',
+        id: 'version-123',
+      },
+    ],
     createdAt: DateTime.now().toISO(),
     updatedAt: DateTime.now().toISO(),
-    hooks: [],
-    cronJobs: [],
-    commands: [],
-    functions: [],
-    permissions: [],
-    uiSchema: '',
-    systemConfigSchema: '',
-    ...overrides, // Allows customization for specific tests
   };
 }
 
 describe('Render ConfigFields', () => {
   validSchemas.forEach((test) => {
     it(`Should render ${test.name} without errors`, () => {
+      const mod = createModuleDTO({ configSchema: JSON.stringify(test.schema) });
+
       const { queryByRole } = render(
         <ModuleForm
           onSubmit={() => {}}
           isLoading={false}
-          mod={createModuleDTO({ configSchema: JSON.stringify(test.schema) })}
+          moduleName={mod.name}
+          moduleVersion={mod.latestVersion}
           error={null}
         />,
       );
@@ -41,11 +59,13 @@ describe('Render ConfigFields', () => {
 
   invalidSchemas.forEach((test) => {
     it('Should show error when schema is invalid', () => {
+      const mod = createModuleDTO({ configSchema: JSON.stringify(test.schema) });
       const { getByText } = render(
         <ModuleForm
           onSubmit={() => {}}
           isLoading={false}
-          mod={createModuleDTO({ configSchema: JSON.stringify(test.schema) })}
+          moduleName={mod.name}
+          moduleVersion={mod.latestVersion}
           error={null}
         />,
       );

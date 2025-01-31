@@ -36,7 +36,7 @@ test('Logging in with invalid credentials shows error message', async ({ page, t
   await emailInput.click();
   await emailInput.fill('invalid+e2e@takaro.dev');
   await page.getByLabel('PasswordRequired').fill('invalid');
-  await page.getByRole('button', { name: 'Log in with Email' }).click();
+  await page.getByRole('button', { name: 'Log in' }).click();
   await expect(
     page.getByText(
       'The provided credentials are invalid, check for spelling mistakes in your password or username, email address, or phone number.',

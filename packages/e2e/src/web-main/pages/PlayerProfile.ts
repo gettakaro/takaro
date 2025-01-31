@@ -28,10 +28,10 @@ export class PlayerProfilePage extends BasePage {
     await this.page.getByRole('option', { name: roleName }).click();
     await this.page.getByRole('button', { name: 'Assign role' }).click();
   }
-  async unassignRole({ roleName }: { roleName: string }) {
+  async RemoveRole({ roleName }: { roleName: string }) {
     await this.page.getByRole('row', { name: roleName }).getByRole('button', { name: 'player-actions' }).click();
-    await this.page.getByRole('menuitem', { name: 'Unassign role' }).click();
-    await this.page.getByRole('button', { name: 'Unassign role' }).click();
+    await this.page.getByRole('menuitem', { name: 'Remove role' }).click();
+    await this.page.getByRole('button', { name: 'Remove role' }).click();
   }
 
   async gotoEvents() {

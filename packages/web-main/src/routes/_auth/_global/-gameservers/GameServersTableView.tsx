@@ -68,7 +68,7 @@ export const GameServersTableView = () => {
         info.getValue() ? (
           <Chip variant="outline" color="success" label="Enabled" />
         ) : (
-          <Chip variant="outline" color="error" label="Disabled" />
+          <Chip variant="outline" color="warning" label="Disabled" />
         ),
     }),
     columnHelper.accessor('reachable', {

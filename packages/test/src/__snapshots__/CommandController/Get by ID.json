@@ -14,11 +14,13 @@
         "updatedAt": "2024-03-09T08:07:29.964Z",
         "code": "import { data, takaro } from '@takaro/helpers';\nasync function main() {\n    const {} = data;\n}\nawait main();",
         "name": null,
-        "moduleId": null
+        "moduleId": null,
+        "versionId": null
       },
       "functionId": "5382eebb-612c-4804-b24b-5cf2a8f0d15f",
       "moduleId": "a1ec7123-27ff-4496-b606-7cdb7a0b5dc1",
-      "arguments": []
+      "arguments": [],
+      "versionId": "f0f64f0c-e7ef-49b1-94b5-9461cb880fa0"
     }
   },
   "status": 200,

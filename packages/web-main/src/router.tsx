@@ -26,9 +26,11 @@ export const router = createRouter({
     return <DefaultErrorComponent />;
   },
   // When a link is hovered, it will start preloading the data for the route.
-  defaultPreload: false,
+  defaultPreload: 'intent',
   // Atleast hover for 500ms before preloading the route.
   defaultPreloadDelay: 500,
+  defaultStaleTime: 0,
+  defaultPendingMs: 1000,
 
   // Since we're using React Query, we don't want loader calls to ever be stale.
   // This will ensure that the loader is always called when the route is preloaded or visisted.

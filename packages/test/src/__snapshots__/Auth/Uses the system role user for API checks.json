@@ -35,11 +35,11 @@
                     "createdAt": "2023-12-08T13:02:04.025Z",
                     "updatedAt": "2023-12-08T13:02:04.025Z",
                     "id": "816593ad-054c-4e80-8d98-56ed91d06ca7",
-                    "moduleId": null,
                     "permission": "READ_USERS",
                     "description": "Can view user details",
                     "friendlyName": "Read Users",
-                    "canHaveCount": false
+                    "canHaveCount": false,
+                    "moduleVersionId": null
                   }
                 }
               ]
@@ -85,11 +85,11 @@
                     "createdAt": "2023-12-08T13:02:04.025Z",
                     "updatedAt": "2023-12-08T13:02:04.025Z",
                     "id": "21229133-4828-4866-8dc5-8f5a9e2eac6c",
-                    "moduleId": null,
                     "permission": "ROOT",
                     "description": "Full access to all systems and resources",
                     "friendlyName": "Root Access",
-                    "canHaveCount": false
+                    "canHaveCount": false,
+                    "moduleVersionId": null
                   }
                 }
               ]
@@ -114,11 +114,11 @@
                     "createdAt": "2023-12-08T13:02:04.025Z",
                     "updatedAt": "2023-12-08T13:02:04.025Z",
                     "id": "816593ad-054c-4e80-8d98-56ed91d06ca7",
-                    "moduleId": null,
                     "permission": "READ_USERS",
                     "description": "Can view user details",
                     "friendlyName": "Read Users",
-                    "canHaveCount": false
+                    "canHaveCount": false,
+                    "moduleVersionId": null
                   }
                 }
               ]

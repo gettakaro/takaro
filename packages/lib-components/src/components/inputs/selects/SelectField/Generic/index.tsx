@@ -114,11 +114,16 @@ export const GenericSelectField: FC<GenericSelectFieldProps> & SubComponentTypes
           const refWidth = elements.reference.getBoundingClientRect().width;
           const floatingContentWidth = elements.floating.scrollWidth;
 
+          const width =
+            availableWidth > refWidth
+              ? `${Math.min(availableWidth, 500)}px`
+              : `${Math.max(refWidth, floatingContentWidth)}px`;
+
           Object.assign(elements.floating.style, {
             // Note: we cannot use the rects.reference.width here because if the referenced item is very small compared to the other options, there will be horizontal overflow.
             // fit-content isn't the perfect solution either, because if there is no space available it might render outside the viewport.
-            minWidth:
-              availableWidth > refWidth ? `${availableWidth}px` : `${Math.max(refWidth, floatingContentWidth)}px`,
+            width: width,
+
             maxHeight: `${Math.max(150, availableHeight)}px`,
           });
         },

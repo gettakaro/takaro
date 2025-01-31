@@ -44,7 +44,7 @@ services:
     depends_on:
       - postgresql
     container_name: takaro_migrator
-    command: npm -w packages/app-api run db:migrate && npm -w packages/app-api run domainInit
+    command: npm -w packages/app-api run db:migrate
     env_file:
       - .env 
     environment:

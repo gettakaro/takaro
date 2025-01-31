@@ -20,7 +20,6 @@ export const CardBody = styled.div`
     max-width: 200px;
     margin-bottom: ${({ theme }) => theme.spacing['1']};
     margin-top: ${({ theme }) => theme.spacing['1']};
-    text-transform: capitalize;
     text-overflow: ellipsis;
     overflow: hidden;
     text-align: center;

@@ -31,13 +31,23 @@ function Component() {
       id: mod.id,
       moduleUpdate: {
         name: fields.name,
-        description: fields.description,
-        configSchema: fields.schema, // already stringified
-        uiSchema: fields.uiSchema, // already stringified
-        permissions: fields.permissions,
+        latestVersion: {
+          description: fields.description,
+          configSchema: fields.schema, // this is already stringified
+          uiSchema: fields.uiSchema, // this is already stringified
+          permissions: fields.permissions,
+        },
       },
     });
   };
 
-  return <ModuleForm mod={mod} onSubmit={onSubmit} isLoading={isSubmitting} error={formError} />;
+  return (
+    <ModuleForm
+      moduleName={mod.name}
+      moduleVersion={mod.latestVersion}
+      onSubmit={onSubmit}
+      isLoading={isSubmitting}
+      error={formError}
+    />
+  );
 }

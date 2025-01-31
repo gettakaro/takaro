@@ -3,6 +3,7 @@ import { HorizontalNav, styled } from '@takaro/lib-components';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { Link, Outlet, createFileRoute } from '@tanstack/react-router';
 import { gameServerQueryOptions } from 'queries/gameserver';
+import { useQuery } from '@tanstack/react-query';
 
 const Container = styled.div`
   display: flex;
@@ -24,8 +25,10 @@ export const Route = createFileRoute('/_auth/_player/shop/$gameServerId')({
 
 function Component() {
   const { gameServerId } = Route.useParams();
-  const gameServer = Route.useLoaderData();
+  const loaderData = Route.useLoaderData();
   useDocumentTitle('shop');
+
+  const { data: gameServer } = useQuery({ ...gameServerQueryOptions(gameServerId), initialData: loaderData });
 
   return (
     <>

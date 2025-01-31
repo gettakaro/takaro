@@ -6,6 +6,7 @@ import { App } from './App';
 //import { registerWebVitalCallbacks } from './reportWebVitals';
 import * as Sentry from '@sentry/react';
 import 'simplebar-react/dist/simplebar.min.css';
+import { StrictMode } from 'react';
 
 const container = document.getElementById('takaro-root');
 if (!container) throw new Error('No root element with id "takaro-root" found');
@@ -40,6 +41,10 @@ Sentry.init({
   ],
 });
 
-root.render(<App />);
+root.render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+);
 
 // registerWebVitalCallbacks();

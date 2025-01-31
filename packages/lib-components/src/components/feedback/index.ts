@@ -21,7 +21,8 @@ export type { ProgressBarProps } from './ProgressBar';
 export { Tooltip } from './Tooltip';
 export type { TooltipProps } from './Tooltip';
 
-export { QuestionTooltip } from './QuestionTooltip';
+export { IconTooltip } from './IconTooltip';
+export type { IconTooltipProps } from './IconTooltip';
 
 export { Popover } from './Popover';
 export type { PopoverProps } from './Popover';

@@ -6,7 +6,9 @@ const group = 'System config - cooldown';
 const customSetup = async function (this: IntegrationTest<IModuleTestsSetupData>): Promise<IModuleTestsSetupData> {
   const setupData = await modulesTestSetup.bind(this)();
 
-  await this.client.gameserver.gameServerControllerInstallModule(setupData.gameserver.id, setupData.utilsModule.id, {
+  await this.client.module.moduleInstallationsControllerInstallModule({
+    gameServerId: setupData.gameserver.id,
+    versionId: setupData.utilsModule.latestVersion.id,
     systemConfig: JSON.stringify({
       commands: {
         ping: {

@@ -154,7 +154,7 @@ export class SevenDaysToDie implements IGameServer {
     const encodedCommand = encodeURIComponent(rawCommand);
     const result = await this.apiClient.executeConsoleCommand(encodedCommand);
 
-    this.logger.debug(`Executed command: "${rawCommand}"`, { rawCommand, result: result.data });
+    this.logger.debug(`Executed command: "${rawCommand}"`, { rawCommand, result: result.data.result.slice(0, 1000) });
     return new CommandOutput({
       rawResult: result.data.result,
       success: true,

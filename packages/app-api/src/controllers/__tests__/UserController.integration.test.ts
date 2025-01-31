@@ -264,7 +264,10 @@ const tests = [
       // This is a bug repro, when you delete a user that has events, a FK constraint error is thrown
       const role = (await this.client.role.roleControllerSearch({ filters: { name: ['root'] } })).data.data[0];
       await this.client.user.userControllerAssignRole(this.setupData.user.id, role.id);
-      await this.setupData.userClient.module.moduleControllerCreate({ name: 'blabla', description: 'blabla' });
+      await this.setupData.userClient.module.moduleControllerCreate({
+        name: 'blabla',
+        latestVersion: { description: 'blabla' },
+      });
       // So, let's ensure there's an event for this user
       const events = await this.client.event.eventControllerSearch({
         filters: { actingUserId: [this.setupData.user.id] },

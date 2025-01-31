@@ -1,8 +1,8 @@
 import Ajv from 'ajv';
 import ms from 'ms';
 import { DiscordEvents } from '@takaro/modules';
-import { ModuleOutputDTO } from '../service/ModuleService.js';
-import { ModuleOutputDTO as ModuleOutputDTOApi } from '@takaro/apiclient';
+import { ModuleVersionOutputDTO } from '../service/Module/dto.js';
+import { ModuleVersionOutputDTO as ModuleVersionOutputDTOApi } from '@takaro/apiclient';
 
 export function getEmptyConfigSchema(): Ajv.AnySchemaObject {
   return {
@@ -14,7 +14,11 @@ export function getEmptyConfigSchema(): Ajv.AnySchemaObject {
   };
 }
 
-export function getSystemConfigSchema(mod: ModuleOutputDTO | ModuleOutputDTOApi): string {
+export function getEmptyUiSchema() {
+  return {};
+}
+
+export function getSystemConfigSchema(mod: ModuleVersionOutputDTO | ModuleVersionOutputDTOApi): string {
   const systemConfigSchema = getEmptyConfigSchema();
 
   systemConfigSchema.properties.enabled = {

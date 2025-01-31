@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query';
 import { Outlet, createFileRoute, redirect } from '@tanstack/react-router';
 import { SessionContext } from 'hooks/useSession';
 import { userMeQueryOptions } from 'queries/user';
@@ -17,7 +18,8 @@ export const Route = createFileRoute('/_auth')({
 });
 
 function Component() {
-  const session = Route.useLoaderData();
+  const loaderData = Route.useLoaderData();
+  const { data: session } = useQuery({ ...userMeQueryOptions(), initialData: loaderData });
 
   return (
     <SessionContext.Provider value={{ session }}>

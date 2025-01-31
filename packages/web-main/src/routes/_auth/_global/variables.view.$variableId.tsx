@@ -5,6 +5,7 @@ import { VariablesForm } from './-variables/VariablesForm';
 import { queryClient } from 'queryClient';
 import { hasPermission } from 'hooks/useHasPermission';
 import { userMeQueryOptions } from 'queries/user';
+import { useQuery } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/_global/variables/view/$variableId')({
   beforeLoad: async ({ context }) => {
@@ -19,6 +20,9 @@ export const Route = createFileRoute('/_auth/_global/variables/view/$variableId'
 });
 
 function Component() {
-  const data = Route.useLoaderData();
+  const loaderData = Route.useLoaderData();
+  const { variableId } = Route.useParams();
+  const { data } = useQuery({ ...variableQueryOptions(variableId), initialData: loaderData });
+
   return <VariablesForm isLoading={false} variable={data} />;
 }

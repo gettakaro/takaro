@@ -48,7 +48,6 @@ const Name = styled.div`
     color: ${({ theme }) => theme.colors.text};
     font-weight: 600;
     margin-bottom: ${({ theme }) => theme.spacing['0_25']};
-    text-transform: capitalize;
   }
   p {
     opacity: 0.8;

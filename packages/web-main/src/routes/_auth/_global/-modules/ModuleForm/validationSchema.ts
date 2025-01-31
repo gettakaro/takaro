@@ -15,12 +15,9 @@ const baseConfigFieldShape = z.object({
       message: 'Name requires a maximum length of 25 characters',
     })
     .min(1, { message: 'Name cannot be empty' }),
-  description: z
-    .string()
-    .max(1000, {
-      message: 'Description requires a maximum length of 1000 characters',
-    })
-    .optional(),
+  description: z.string().max(1000, {
+    message: 'Description requires a maximum length of 1000 characters',
+  }),
 });
 
 export const moduleNameShape = z

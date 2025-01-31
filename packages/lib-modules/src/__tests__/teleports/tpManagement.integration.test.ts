@@ -10,10 +10,10 @@ const tests = [
     setup: modulesTestSetup,
     name: 'Can set a teleport with /settp',
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id,
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.teleportsModule.latestVersion.id,
+      });
       const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
@@ -31,10 +31,10 @@ const tests = [
     setup: modulesTestSetup,
     name: 'Shows an error when setting a teleport with an existing name',
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id,
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.teleportsModule.latestVersion.id,
+      });
 
       const firstEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
@@ -65,10 +65,10 @@ const tests = [
     setup: modulesTestSetup,
     name: 'Cannot set more than the user-defined amount of max teleports',
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id,
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.teleportsModule.latestVersion.id,
+      });
 
       const useTeleportsRole = await this.client.permissionCodesToInputs(['TELEPORTS_USE']);
       await this.client.role.roleControllerUpdate(this.setupData.role.id, {
@@ -115,10 +115,10 @@ const tests = [
     setup: modulesTestSetup,
     name: 'Can remove teleports with /deletetp',
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id,
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.teleportsModule.latestVersion.id,
+      });
       const setEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 3);
 
       await Promise.all(
@@ -151,10 +151,10 @@ const tests = [
     setup: modulesTestSetup,
     name: 'Shows an error when removing a non-existing teleport',
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id,
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.teleportsModule.latestVersion.id,
+      });
       const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/deletetp test',

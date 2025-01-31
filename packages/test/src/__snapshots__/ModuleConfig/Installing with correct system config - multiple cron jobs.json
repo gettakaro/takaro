@@ -4,57 +4,6 @@
     "data": {
       "gameserverId": "8c0e3bb3-80dc-45ed-9f9c-68775317758a",
       "moduleId": "5ef73882-57fc-4935-837f-dfd65b6f6cc6",
-      "module": {
-        "createdAt": "2024-07-14T15:25:51.909Z",
-        "updatedAt": "2024-07-14T15:25:51.910Z",
-        "id": "5ef73882-57fc-4935-837f-dfd65b6f6cc6",
-        "name": "Test module cronjobs",
-        "builtin": null,
-        "description": "Test description",
-        "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{},\"required\":[],\"additionalProperties\":false}",
-        "uiSchema": "{}",
-        "cronJobs": [
-          {
-            "createdAt": "2024-07-14T15:25:51.976Z",
-            "updatedAt": "2024-07-14T15:25:51.977Z",
-            "id": "d1ecc2f8-f1da-4021-bbb8-11d37920f525",
-            "name": "Test cron job",
-            "temporalValue": "1 * * * *",
-            "moduleId": "5ef73882-57fc-4935-837f-dfd65b6f6cc6",
-            "functionId": "1e766912-be9b-46e5-85c0-889c9c91775d",
-            "function": {
-              "createdAt": "2024-07-14T15:25:51.974Z",
-              "updatedAt": "2024-07-14T15:25:51.975Z",
-              "id": "1e766912-be9b-46e5-85c0-889c9c91775d",
-              "code": "test",
-              "name": null,
-              "moduleId": null
-            }
-          },
-          {
-            "createdAt": "2024-07-14T15:25:52.082Z",
-            "updatedAt": "2024-07-14T15:25:52.084Z",
-            "id": "9428dc2f-6b7d-4be6-af74-881c62752e48",
-            "name": "Test cron job 2",
-            "temporalValue": "42 * * * *",
-            "moduleId": "5ef73882-57fc-4935-837f-dfd65b6f6cc6",
-            "functionId": "b6899a05-15bb-4ff8-98e3-33fdfa9cc571",
-            "function": {
-              "createdAt": "2024-07-14T15:25:52.081Z",
-              "updatedAt": "2024-07-14T15:25:52.081Z",
-              "id": "b6899a05-15bb-4ff8-98e3-33fdfa9cc571",
-              "code": "test",
-              "name": null,
-              "moduleId": null
-            }
-          }
-        ],
-        "hooks": [],
-        "commands": [],
-        "functions": [],
-        "permissions": [],
-        "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable/disable the module without having to uninstall it.\"},\"cronJobs\":{\"type\":\"object\",\"properties\":{\"Test cron job\":{\"type\":\"object\",\"required\":[],\"default\":{},\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable the Test cron job cron job.\"},\"temporalValue\":{\"type\":\"string\",\"description\":\"Temporal value for the cron job. Controls when it runs\",\"default\":\"1 * * * *\"}}},\"Test cron job 2\":{\"type\":\"object\",\"required\":[],\"default\":{},\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable the Test cron job 2 cron job.\"},\"temporalValue\":{\"type\":\"string\",\"description\":\"Temporal value for the cron job. Controls when it runs\",\"default\":\"42 * * * *\"}}}},\"required\":[],\"default\":{}}},\"required\":[\"cronJobs\"],\"additionalProperties\":false}"
-      },
       "userConfig": {},
       "systemConfig": {
         "enabled": true,
@@ -68,6 +17,65 @@
             "temporalValue": "13 * * * *"
           }
         }
+      },
+      "versionId": "236fd1c0-66fb-4419-a8ec-0f150383110b",
+      "version": {
+        "createdAt": "2024-12-07T17:36:18.743Z",
+        "updatedAt": "2024-12-07T17:36:18.751Z",
+        "id": "236fd1c0-66fb-4419-a8ec-0f150383110b",
+        "moduleId": "e1201fac-0024-4021-a903-259b673b6df7",
+        "tag": "latest",
+        "description": "Test description",
+        "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{},\"required\":[],\"additionalProperties\":false}",
+        "uiSchema": "{}",
+        "cronJobs": [
+          {
+            "createdAt": "2024-12-07T17:36:18.873Z",
+            "updatedAt": "2024-12-07T17:36:18.875Z",
+            "id": "1f0582b9-0569-4085-827c-cdb12edcd151",
+            "name": "Test cron job",
+            "temporalValue": "1 * * * *",
+            "functionId": "1bb33af0-fa0a-45c8-b83e-4306b06a0f45",
+            "versionId": "236fd1c0-66fb-4419-a8ec-0f150383110b",
+            "function": {
+              "createdAt": "2024-12-07T17:36:18.872Z",
+              "updatedAt": "2024-12-07T17:36:18.872Z",
+              "id": "1bb33af0-fa0a-45c8-b83e-4306b06a0f45",
+              "code": "test",
+              "name": null,
+              "versionId": null
+            }
+          },
+          {
+            "createdAt": "2024-12-07T17:36:18.801Z",
+            "updatedAt": "2024-12-07T17:36:18.802Z",
+            "id": "71ca5323-aa1c-4873-a204-acd558441075",
+            "name": "Test cron job 2",
+            "temporalValue": "42 * * * *",
+            "functionId": "cde52ae3-37ad-490f-ac72-4809562792d8",
+            "versionId": "236fd1c0-66fb-4419-a8ec-0f150383110b",
+            "function": {
+              "createdAt": "2024-12-07T17:36:18.799Z",
+              "updatedAt": "2024-12-07T17:36:18.800Z",
+              "id": "cde52ae3-37ad-490f-ac72-4809562792d8",
+              "code": "test",
+              "name": null,
+              "versionId": null
+            }
+          }
+        ],
+        "hooks": [],
+        "commands": [],
+        "permissions": [],
+        "functions": [],
+        "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable/disable the module without having to uninstall it.\"},\"cronJobs\":{\"type\":\"object\",\"properties\":{\"Test cron job\":{\"type\":\"object\",\"required\":[],\"default\":{},\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable the Test cron job cron job.\"},\"temporalValue\":{\"type\":\"string\",\"description\":\"Temporal value for the cron job. Controls when it runs\",\"default\":\"1 * * * *\"}}},\"Test cron job 2\":{\"type\":\"object\",\"required\":[],\"default\":{},\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable the Test cron job 2 cron job.\"},\"temporalValue\":{\"type\":\"string\",\"description\":\"Temporal value for the cron job. Controls when it runs\",\"default\":\"42 * * * *\"}}}},\"required\":[],\"default\":{}}},\"required\":[\"cronJobs\"],\"additionalProperties\":false}"
+      },
+      "module": {
+        "createdAt": "2024-12-15T21:33:06.398Z",
+        "updatedAt": "2024-12-15T21:33:06.399Z",
+        "id": "ab8be8a4-8919-4a24-b141-94432bfeadcf",
+        "name": "Test module cronjobs",
+        "builtin": null
       }
     }
   },

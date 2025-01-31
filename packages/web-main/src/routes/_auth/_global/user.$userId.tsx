@@ -121,7 +121,7 @@ const UserRolesTable: FC<IUserRolesTableProps> = ({ roles, userId }) => {
             />
 
             <Dropdown.Menu.Item
-              label="Unassign role"
+              label="Remove role"
               icon={<DeleteIcon />}
               onClick={() => {
                 mutate({

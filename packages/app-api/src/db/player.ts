@@ -173,7 +173,7 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
     const extend = filters.extend || [];
     const qry = new QueryBuilder<PlayerModel, PlayerOutputWithRolesDTO>({
       ...filters,
-      extend: ['roleAssignments.role.permissions', ...extend],
+      extend: ['roleAssignments.role.permissions.permission', ...extend],
     }).build(query);
 
     if (filters.filters?.roleId) {
@@ -192,7 +192,7 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
 
   async findOne(id: string): Promise<PlayerOutputWithRolesDTO> {
     const { query } = await this.getModel();
-    const res = await query.findById(id).withGraphFetched('roleAssignments.role.permissions');
+    const res = await query.findById(id).withGraphFetched('roleAssignments.role.permissions.permission');
     const { query: ipQuery } = await this.getIPHistoryModel();
 
     if (!res) {

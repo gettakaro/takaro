@@ -67,10 +67,13 @@ export function checkPermissions(requiredPermissions: PERMISSIONS[], user: UserO
     return [...acc, ...role.role.permissions.map((c) => c.permission.permission)];
   }, [] as string[]);
 
-  const hasAllPermissions = requiredPermissions.every((permission) => allUserPermissions.includes(permission));
+  const allPlayerPermissions = user.player?.roleAssignments.reduce((acc, role) => {
+    return [...acc, ...role.role.permissions.map((c) => c.permission.permission)];
+  }, [] as string[]);
 
-  const userHasRootPermission = allUserPermissions.includes(PERMISSIONS.ROOT);
-
+  const allPermissions = [...allUserPermissions, ...(allPlayerPermissions || [])];
+  const hasAllPermissions = requiredPermissions.every((permission) => allPermissions.includes(permission));
+  const userHasRootPermission = allPermissions.includes(PERMISSIONS.ROOT);
   return hasAllPermissions || userHasRootPermission;
 }
 

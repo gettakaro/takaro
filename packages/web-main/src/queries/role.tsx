@@ -151,7 +151,7 @@ export const useUserRoleAssign = ({ userId }: { userId: string }) => {
   );
 };
 
-export const useUserRoleUnassign = () => {
+export const useUserRoleRemove = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
   return mutationWrapper<APIOutput, IUserRoleAssign>(

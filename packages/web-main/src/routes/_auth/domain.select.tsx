@@ -4,7 +4,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useUserSetSelectedDomain, userMeQueryOptions } from 'queries/user';
 import { MdDomain as DomainIcon } from 'react-icons/md';
 import { AiOutlineArrowRight as ArrowRightIcon } from 'react-icons/ai';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 export const TAKARO_DOMAIN_COOKIE_REGEX = /(?:(?:^|.*;\s*)takaro-domain\s*=\s*([^;]*).*$)|^.*$/;
 
@@ -14,21 +14,23 @@ const Container = styled.div`
 `;
 
 const DomainCardList = styled.div`
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  flex-direction: column;
-  margin: auto;
-  width: 450px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: ${({ theme }) => theme.spacing[2]};
-  height: 85vh;
+  justify-content: center;
+  width: 100%;
+  max-width: 1000px;
+  margin: ${({ theme }) => theme.spacing[2]} auto auto auto;
+
+  @media (max-width: 1500px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 export const InnerBody = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  width: 500px;
   height: 100px;
 `;
 
@@ -40,8 +42,9 @@ export const Route = createFileRoute('/_auth/domain/select')({
 });
 
 function Component() {
-  const me = Route.useLoaderData();
+  const loaderData = Route.useLoaderData();
   const currentDomain = document.cookie.replace(TAKARO_DOMAIN_COOKIE_REGEX, '$1');
+  const { data: me } = useQuery({ ...userMeQueryOptions(), initialData: loaderData });
 
   // Keep current domain at the top
   me.domains.sort((a, b) => {
@@ -58,11 +61,8 @@ function Component() {
     <Container>
       <Company />
       <DomainCardList>
-        <h2>Select a domain:</h2>
         {me.domains.map((domain) => (
-          <>
-            <DomainCard domain={domain} isCurrentDomain={currentDomain === domain.id} />
-          </>
+          <DomainCard key={domain.id} domain={domain} isCurrentDomain={currentDomain === domain.id} />
         ))}
       </DomainCardList>
     </Container>

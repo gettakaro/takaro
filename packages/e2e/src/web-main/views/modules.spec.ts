@@ -9,15 +9,22 @@ test('Can view module', async ({ takaro, page }) => {
   await expect(page.getByLabel('Name')).not.toBeEditable();
 });
 
+test('Can tag a module', async () => {
+  // todo
+});
+
 test('Can create module', async ({ page, takaro }) => {
   const { moduleDefinitionsPage } = takaro;
   await moduleDefinitionsPage.goto();
 
   const newModuleName = 'My new module';
+  const newModuleDescription = 'My module description';
   await moduleDefinitionsPage.create({
     name: newModuleName,
+    description: newModuleDescription,
   });
   await expect(page.getByText(newModuleName)).toBeVisible();
+  await expect(page.getByText(newModuleDescription)).toBeVisible();
 });
 
 test('Can create module with permissions', async ({ page, takaro }) => {
@@ -27,6 +34,7 @@ test('Can create module with permissions', async ({ page, takaro }) => {
   await moduleDefinitionsPage.goto();
   await moduleDefinitionsPage.create({
     name: newModuleName,
+    description: 'This is the description',
     permissions: [
       {
         name: 'MY_PERMISSION',
@@ -41,20 +49,18 @@ test('Can create module with permissions', async ({ page, takaro }) => {
     ],
   });
   await expect(page.getByText(newModuleName)).toBeVisible();
-  /*   
-    await page.getByRole('link', { name: 'My new module Edit module Delete module No description provided.' }).getByRole('button', { name: 'Edit module' }).click();
-    await expect(page.getByText('MY_PERMISSION')).toBeVisible();
-    await expect(page.getByText('MY_PERMISSION2')).toBeVisible(); */
 });
 
 test('Creating module with config, saves the config', async ({ page, takaro }) => {
   const { moduleDefinitionsPage } = takaro;
   await moduleDefinitionsPage.goto();
 
-  const moduleName = 'My new module';
+  const moduleName = 'My new module name';
+  const moduleDescription = 'My new module description';
 
   await moduleDefinitionsPage.create({
     name: moduleName,
+    description: moduleDescription,
     save: false,
   });
 
@@ -90,8 +96,10 @@ test('Can edit module', async ({ page, takaro }) => {
   // Create a module
   await takaro.rootClient.module.moduleControllerCreate({
     name: oldModuleName,
-    description: 'Modules are the building blocks of your game server',
-    configSchema: JSON.stringify({}),
+    latestVersion: {
+      description: 'Modules are the building blocks of your game server',
+      configSchema: JSON.stringify({}),
+    },
   });
 
   const { moduleDefinitionsPage } = takaro;
@@ -108,8 +116,10 @@ test('Can delete module', async ({ page, takaro }) => {
   const moduleName = 'delete this module';
   await takaro.rootClient.module.moduleControllerCreate({
     name: moduleName,
-    description: 'Modules are the building blocks of your game server.',
-    configSchema: JSON.stringify({}),
+    latestVersion: {
+      description: 'Modules are the building blocks of your game server.',
+      configSchema: JSON.stringify({}),
+    },
   });
 
   const { moduleDefinitionsPage } = takaro;
@@ -132,25 +142,34 @@ test('Can install module with empty config', async ({ page, takaro }) => {
   });
 
   const mod = modRes.data.data[0];
+  const testId = `module-installation-${mod.name}-card`;
+
   expect(mod).toBeDefined();
   await page.goto(`/gameserver/${takaro.gameServer.id}/modules`);
-  await page.getByTestId(`module-${mod.id}`).getByRole('button', { name: 'Install' }).click();
+
+  await page.getByTestId(testId).getByRole('button', { name: 'Install' }).click();
   await page.getByRole('button', { name: 'Install module', exact: true }).click();
-  await expect(page.getByTestId(`module-${mod.id}`).getByRole('button', { name: 'Settings' })).toBeVisible();
+  await expect(page.getByTestId(testId).getByRole('button', { name: 'Settings' })).toBeVisible();
 });
 
 test('Can install a module with a discord hook', async ({ page, takaro }) => {
-  const mod = await takaro.rootClient.module.moduleControllerCreate({
-    name: 'Module with Discord hook',
-    configSchema: JSON.stringify({}),
-    description: 'aaa',
-  });
+  const mod = (
+    await takaro.rootClient.module.moduleControllerCreate({
+      name: 'Module with Discord hook',
+      latestVersion: {
+        configSchema: JSON.stringify({}),
+        description: 'aaa',
+      },
+    })
+  ).data.data;
+
+  const { moduleInstallationsPage } = takaro;
 
   const hookName = 'My hook';
   await takaro.rootClient.hook.hookControllerCreate({
     name: hookName,
     eventType: HookCreateDTOEventTypeEnum.DiscordMessage,
-    moduleId: mod.data.data.id,
+    versionId: mod.latestVersion.id,
     regex: 'test',
   });
 
@@ -158,10 +177,10 @@ test('Can install a module with a discord hook', async ({ page, takaro }) => {
   await page.getByText('Test server').click();
   await page.getByTestId('server-nav').getByRole('link', { name: 'Modules' }).click();
 
-  await page.getByTestId(`module-${mod.data.data.id}`).getByRole('button', { name: 'Install' }).click();
+  await moduleInstallationsPage.getModuleCard(mod.name).getByRole('button', { name: 'Install' }).click();
   await page.getByRole('button').filter({ hasText: hookName }).click();
   await page.getByLabel('DiscordChannelId').fill('123');
   await page.getByRole('button', { name: 'Install module' }).click();
 
-  await expect(page.getByTestId(`module-${mod.data.data.id}`).getByRole('button', { name: 'Settings' })).toBeVisible();
+  await expect(moduleInstallationsPage.getModuleCard(mod.name).getByRole('button', { name: 'Settings' })).toBeVisible();
 });

@@ -1,56 +1,61 @@
-{/* START AUTO-GENERATED CONTENT */}
+---
+description: undefined
+---
+
+{/* AUTO-GENERATED CONTENT () */}
+
 import { Commands, Config, CronJobs, Hooks } from './helpers';
 
 # chatBridge
 
 export function Module() {
   const mod = {
-  "commands": [],
-  "hooks": [
-    {
-      "eventType": "discord-message",
-      "name": "DiscordToGame",
-      "function": "import { takaro, data } from '@takaro/helpers';\nasync function main() {\n    try {\n        if (data.eventData.author.isBot)\n            return;\n        await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {\n            message: `[D] ${data.eventData.author.displayName}:  ${data.eventData.msg}`,\n        });\n    }\n    catch (error) {\n        console.error(error);\n        await takaro.discordControllerSendMessage(data.discordChannelId, {\n            message: 'Failed to forward your message to the game. Please try again later.',\n        });\n    }\n}\nawait main();\n//# sourceMappingURL=DiscordToGame.js.map"
-    },
-    {
-      "eventType": "chat-message",
-      "name": "GameToDiscord",
-      "function": "import { takaro, data } from '@takaro/helpers';\nasync function main() {\n    const onlyGlobal = data.module.userConfig.onlyGlobalChat;\n    if (onlyGlobal && data.eventData.channel !== 'global')\n        return;\n    const discordChannel = data.module.systemConfig.hooks['DiscordToGame'].discordChannelId;\n    const sender = data.player ? data.player.name : 'Non-player';\n    const message = `**${sender}**: ${data.eventData.msg}`;\n    await takaro.discord.discordControllerSendMessage(discordChannel, {\n        message: message,\n    });\n}\nawait main();\n//# sourceMappingURL=GameToDiscord.js.map"
-    },
-    {
-      "eventType": "player-connected",
-      "name": "PlayerConnected",
-      "function": "import { takaro, data } from '@takaro/helpers';\nasync function main() {\n    const discordChannel = data.module.systemConfig.hooks['DiscordToGame'].discordChannelId;\n    await takaro.discord.discordControllerSendMessage(discordChannel, {\n        message: `[⚡ Connected]: ${data.player.name}`,\n    });\n}\nawait main();\n//# sourceMappingURL=PlayerConnected.js.map"
-    },
-    {
-      "eventType": "player-disconnected",
-      "name": "PlayerDisconnected",
-      "function": "import { takaro, data } from '@takaro/helpers';\nasync function main() {\n    const discordChannel = data.module.systemConfig.hooks['DiscordToGame'].discordChannelId;\n    await takaro.discord.discordControllerSendMessage(discordChannel, {\n        message: `[👋 Disconnected]: ${data.player.name}`,\n    });\n}\nawait main();\n//# sourceMappingURL=PlayerDisconnected.js.map"
-    }
-  ],
-  "cronJobs": [],
-  "functions": [],
-  "permissions": [],
   "name": "chatBridge",
-  "description": "Connect chat to other services like Discord.",
-  "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"sendPlayerConnected\":{\"title\":\"Send player connected\",\"type\":\"boolean\",\"description\":\"Send a message when a player connects.\",\"default\":true},\"sendPlayerDisconnected\":{\"title\":\"Send player disconnected\",\"type\":\"boolean\",\"description\":\"Send a message when a player disconnects.\",\"default\":true},\"onlyGlobalChat\":{\"title\":\"Only global chat\",\"type\":\"boolean\",\"default\":true,\"description\":\"Only relay messages from global chat. (no team chat or private messages)\"}},\"additionalProperties\":false}",
-  "uiSchema": "{}"
+  "versions": [
+    {
+      "tag": "0.0.1",
+      "description": "Connect chat to other services like Discord.",
+      "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"sendPlayerConnected\":{\"title\":\"Send player connected\",\"type\":\"boolean\",\"description\":\"Send a message when a player connects.\",\"default\":true},\"sendPlayerDisconnected\":{\"title\":\"Send player disconnected\",\"type\":\"boolean\",\"description\":\"Send a message when a player disconnects.\",\"default\":true},\"onlyGlobalChat\":{\"title\":\"Only global chat\",\"type\":\"boolean\",\"default\":true,\"description\":\"Only relay messages from global chat. (no team chat or private messages)\"}},\"additionalProperties\":false}",
+      "hooks": [
+        {
+          "eventType": "discord-message",
+          "name": "DiscordToGame",
+          "function": "import { takaro, data } from '@takaro/helpers';\nasync function main() {\n    try {\n        if (data.eventData.author.isBot)\n            return;\n        await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {\n            message: `[D] ${data.eventData.author.displayName}:  ${data.eventData.msg}`,\n        });\n    }\n    catch (error) {\n        console.error(error);\n        await takaro.discordControllerSendMessage(data.discordChannelId, {\n            message: 'Failed to forward your message to the game. Please try again later.',\n        });\n    }\n}\nawait main();\n//# sourceMappingURL=DiscordToGame.js.map"
+        },
+        {
+          "eventType": "chat-message",
+          "name": "GameToDiscord",
+          "function": "import { takaro, data } from '@takaro/helpers';\nasync function main() {\n    const onlyGlobal = data.module.userConfig.onlyGlobalChat;\n    if (onlyGlobal && data.eventData.channel !== 'global')\n        return;\n    const discordChannel = data.module.systemConfig.hooks['DiscordToGame'].discordChannelId;\n    const sender = data.player ? data.player.name : 'Non-player';\n    const message = `**${sender}**: ${data.eventData.msg}`;\n    await takaro.discord.discordControllerSendMessage(discordChannel, {\n        message: message,\n    });\n}\nawait main();\n//# sourceMappingURL=GameToDiscord.js.map"
+        },
+        {
+          "eventType": "player-connected",
+          "name": "PlayerConnected",
+          "function": "import { takaro, data } from '@takaro/helpers';\nasync function main() {\n    const discordChannel = data.module.systemConfig.hooks['DiscordToGame'].discordChannelId;\n    await takaro.discord.discordControllerSendMessage(discordChannel, {\n        message: `[⚡ Connected]: ${data.player.name}`,\n    });\n}\nawait main();\n//# sourceMappingURL=PlayerConnected.js.map"
+        },
+        {
+          "eventType": "player-disconnected",
+          "name": "PlayerDisconnected",
+          "function": "import { takaro, data } from '@takaro/helpers';\nasync function main() {\n    const discordChannel = data.module.systemConfig.hooks['DiscordToGame'].discordChannelId;\n    await takaro.discord.discordControllerSendMessage(discordChannel, {\n        message: `[👋 Disconnected]: ${data.player.name}`,\n    });\n}\nawait main();\n//# sourceMappingURL=PlayerDisconnected.js.map"
+        }
+      ],
+      "uiSchema": "{}"
+    }
+  ]
 };
 
   return (
     <div>
-      <p>{mod.description}</p>
-      <Commands commands={mod.commands} />
-      <CronJobs cronJobs={mod.cronJobs} />
-      <Hooks hooks={mod.hooks} />
-      <Config configSchema={mod.configSchema} />
+      <p>{mod.versions[0].description}</p>
+      <Commands commands={mod.versions[0].commands} />
+      <CronJobs cronJobs={mod.versions[0].cronJobs} />
+      <Hooks hooks={mod.versions[0].hooks} />
+      <Config configSchema={mod.versions[0].configSchema} />
     </div>
   )
 }
 
 <Module />
 
----
 {/* END AUTO-GENERATED CONTENT */}
 
 ## Step-by-step guide

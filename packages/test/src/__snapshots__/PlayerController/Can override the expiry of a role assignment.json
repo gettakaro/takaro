@@ -41,7 +41,17 @@
                 "id": "18ac09be-2d77-4e97-8bab-6d5a33848324",
                 "roleId": "a5cb2216-8107-4fa4-a14a-3c986757925a",
                 "count": 0,
-                "permissionId": "3b7f6e7e-14fa-48b2-9b62-2aff6575350f"
+                "permissionId": "3b7f6e7e-14fa-48b2-9b62-2aff6575350f",
+                "permission": {
+                  "createdAt": "2025-01-26T18:01:45.299Z",
+                  "updatedAt": "2025-01-26T18:01:45.299Z",
+                  "id": "f6ca94b8-e33c-4579-8e18-23ea816d1d31",
+                  "permission": "MANAGE_GAMESERVERS",
+                  "description": "Can create, update, and delete game servers",
+                  "friendlyName": "Manage Game Servers",
+                  "canHaveCount": false,
+                  "moduleVersionId": null
+                }
               }
             ]
           }

@@ -17,6 +17,37 @@ export abstract class NOT_DOMAIN_SCOPED_TakaroService<
   abstract create(item: CreateInputDTO): Promise<OutputDTO>;
   abstract update(id: string, item: UpdateDTO): Promise<OutputDTO | undefined>;
   abstract delete(id: string): Promise<string>;
+
+  async *getIterator(filters: ITakaroQuery<OutputDTO> = {}): AsyncGenerator<OutputDTO, void, unknown> {
+    let currentPage = 0;
+
+    while (true) {
+      // Get the current page of results
+      const paginatedResults = await this.find({
+        ...filters,
+        page: currentPage,
+        limit: filters.limit,
+      });
+
+      // If no results found, or empty page, stop iteration
+      if (!paginatedResults || !paginatedResults.results.length) {
+        break;
+      }
+
+      // Yield each result in the current page
+      for (const result of paginatedResults.results) {
+        yield result;
+      }
+
+      // If we've reached the last page, stop iteration
+      if (currentPage >= paginatedResults.total) {
+        break;
+      }
+
+      // Move to next page
+      currentPage++;
+    }
+  }
 }
 
 export abstract class TakaroService<

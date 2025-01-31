@@ -11,6 +11,7 @@ import { HookEvents, TakaroEventPlayerLinked, TakaroEventRoleAssigned, TakaroEve
 import { AuthenticatedRequest } from '../AuthService.js';
 import { UserOutputDTO, UserCreateInputDTO, UserUpdateDTO, UserOutputWithRolesDTO, UserUpdateAuthDTO } from './dto.js';
 import { UserSearchInputDTO } from '../../controllers/UserController.js';
+import { PlayerService } from '../PlayerService.js';
 
 export * from './dto.js';
 
@@ -64,9 +65,21 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
       }
     }
     const result = await this.repo.find(filters);
+
+    const withPlayers = await Promise.all(
+      result.results.map(async (item) => {
+        if (item.playerId) {
+          const player = await new PlayerService(this.domainId).findOne(item.playerId);
+          return new UserOutputWithRolesDTO({ ...item, player });
+        } else {
+          return new UserOutputWithRolesDTO(item);
+        }
+      }),
+    );
+
     const extendedWithOry = {
       ...result,
-      results: await Promise.all(result.results.map(this.extend.bind(this))),
+      results: await Promise.all(withPlayers.map(this.extend.bind(this))),
     };
 
     return extendedWithOry;

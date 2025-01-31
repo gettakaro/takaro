@@ -17,6 +17,7 @@ import { useSnackbar } from 'notistack';
 import { useQuery } from '@tanstack/react-query';
 import { shopListingsQueryOptions } from 'queries/shopListing';
 import { TableListToggleButton, ViewType } from 'components/TableListToggleButton';
+import { PermissionsGuard } from 'components/PermissionsGuard';
 
 const Header = styled.div`
   display: flex;
@@ -104,44 +105,46 @@ export const ShopView: FC<ShopViewProps> = ({ gameServerId, currency, currencyNa
           {hasCurrency ? (
             <Chip variant="outline" color="primary" label={`${currency} ${currencyName}`} />
           ) : (
-            <Alert variant="error" text={<p>You are not linked to this gameserver.</p>} />
+            <Alert variant="error" text={<p>You are not linked to this game server.</p>} />
           )}
         </Header>
 
-        <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'row', gap: '10px' }}>
-          <Dropdown>
-            <Dropdown.Trigger asChild>
-              <Button icon={<MenuIcon />} text="Shop actions" />
-            </Dropdown.Trigger>
-            <Dropdown.Menu>
-              <DropdownMenu.Group divider>
-                <DropdownMenu.Item
-                  icon={<CreateNewShopListingIcon />}
-                  label="New shop listing"
-                  onClick={onClickCreateNewShopListing}
-                />
-                <DropdownMenu.Item
-                  icon={<ExportShopListingsToFileIcon />}
-                  label="Export listings to file"
-                  onClick={onClickExportShopListingsToFile}
-                />
-              </DropdownMenu.Group>
-              <DropdownMenu.Group label="Import methods" divider>
-                <DropdownMenu.Item
-                  icon={<ImportShopListingFromGameServerIcon />}
-                  label="Import listings from game server"
-                  onClick={onClickImportShopListingsFromGameServer}
-                />
-                <DropdownMenu.Item
-                  icon={<ImportShopListingsFromFileIcon />}
-                  label="Import listings from file"
-                  onClick={onClickImportShopListingsFromFile}
-                />
-              </DropdownMenu.Group>
-            </Dropdown.Menu>
-          </Dropdown>
-          <TableListToggleButton value={view} onChange={setView} />
-        </div>
+        <PermissionsGuard requiredPermissions={['MANAGE_SHOP_LISTINGS']}>
+          <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'row', gap: '10px' }}>
+            <Dropdown>
+              <Dropdown.Trigger asChild>
+                <Button icon={<MenuIcon />} text="Shop actions" />
+              </Dropdown.Trigger>
+              <Dropdown.Menu>
+                <DropdownMenu.Group divider>
+                  <DropdownMenu.Item
+                    icon={<CreateNewShopListingIcon />}
+                    label="New shop listing"
+                    onClick={onClickCreateNewShopListing}
+                  />
+                  <DropdownMenu.Item
+                    icon={<ExportShopListingsToFileIcon />}
+                    label="Export listings to file"
+                    onClick={onClickExportShopListingsToFile}
+                  />
+                </DropdownMenu.Group>
+                <DropdownMenu.Group label="Import methods" divider>
+                  <DropdownMenu.Item
+                    icon={<ImportShopListingFromGameServerIcon />}
+                    label="Import listings from game server"
+                    onClick={onClickImportShopListingsFromGameServer}
+                  />
+                  <DropdownMenu.Item
+                    icon={<ImportShopListingsFromFileIcon />}
+                    label="Import listings from file"
+                    onClick={onClickImportShopListingsFromFile}
+                  />
+                </DropdownMenu.Group>
+              </Dropdown.Menu>
+            </Dropdown>
+            <TableListToggleButton value={view} onChange={setView} />
+          </div>
+        </PermissionsGuard>
       </div>
 
       {view === 'table' && (
