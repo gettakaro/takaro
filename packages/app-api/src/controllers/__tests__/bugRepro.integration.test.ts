@@ -1,6 +1,6 @@
-import { IntegrationTest, expect, SetupGameServerPlayers, EventsAwaiter } from '@takaro/test';
+import { IntegrationTest, expect, SetupGameServerPlayers, EventsAwaiter, createUserForPlayer } from '@takaro/test';
 import { randomUUID } from 'crypto';
-import { HookCreateDTOEventTypeEnum } from '@takaro/apiclient';
+import { HookCreateDTOEventTypeEnum, PERMISSIONS } from '@takaro/apiclient';
 
 const group = 'Bug repros';
 
@@ -83,6 +83,36 @@ const tests = [
 
       expect((await events).length).to.be.eq(1);
       expect((await events)[0].data.meta.msg).to.be.eq('pong');
+    },
+  }),
+  /**
+   * Create a role with a system permission (like manage modules)
+   * Assign this role to a player, ensure the player has linked their profile to a user
+   * When the player uses the API to do something that requires the permission, it should work
+   */
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Bug repro: assigning permissions to a linked player should work with api checks',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      const manageModulesPerm = await this.client.permissionCodesToInputs([PERMISSIONS.ManageModules]);
+      const role = await this.client.role.roleControllerCreate({
+        name: 'module editor role',
+        permissions: manageModulesPerm,
+      });
+
+      const playerId = this.setupData.pogs1[0].playerId;
+      const { client: userClient } = await createUserForPlayer(
+        this.client,
+        playerId,
+        this.setupData.gameServer1.id,
+        true,
+      );
+      await this.client.player.playerControllerAssignRole(playerId, role.data.data.id);
+
+      const mod = (await userClient.module.moduleControllerCreate({ name: 'testing module' })).data.data;
+      expect(mod.name).to.be.eq('testing module');
     },
   }),
 ];
