@@ -251,7 +251,8 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
             copiedHookData.itemId = hook.id;
             copiedHookData.module = installation;
 
-            return queueService.queues.hooks.queue.add(copiedHookData as IHookJobData);
+            const job = await queueService.queues.hooks.queue.add(copiedHookData as IHookJobData);
+            this.log.debug(`Queued hook ${hook.id} for execution with job ID ${job.id}`);
           }
         }),
       );
