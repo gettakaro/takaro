@@ -1,6 +1,6 @@
 import { IntegrationTest, expect, SetupGameServerPlayers } from '@takaro/test';
 import { VariableOutputDTO } from '@takaro/apiclient';
-import { config } from '../../config.js';
+import { randomUUID } from 'crypto';
 
 const group = 'VariableController';
 
@@ -245,25 +245,23 @@ const tests = [
   new IntegrationTest<void>({
     group,
     snapshot: true,
-    name: `Prevents creating more than config.get('takaro.maxVariables') (${config.get(
-      'takaro.maxVariables',
-    )}) variables`,
+    name: 'Prevents creating more than domain-allowed variables',
     setup: async function (this: IntegrationTest<void>): Promise<void> {
-      const chunkSize = Math.ceil(config.get('takaro.maxVariables') / 10);
+      const MAX_VARIABLES = 10;
+      if (!this.standardDomainId) throw new Error('Standard domain ID not set');
+      await this.adminClient.domain.domainControllerUpdate(this.standardDomainId, {
+        maxVariables: MAX_VARIABLES,
+      });
 
-      // Create vars in batches of 1/10th total size
-      for (let i = 0; i < 10; i++) {
-        await Promise.all(
-          Array(chunkSize)
-            .fill(null)
-            .map((_, j) =>
-              this.client.variable.variableControllerCreate({
-                key: `Test variable ${i * chunkSize + j}`,
-                value: 'Test value',
-              }),
-            ),
-        );
-      }
+      // Create vars up to the limit in parallel
+      await Promise.all(
+        Array.from({ length: MAX_VARIABLES }).map(() =>
+          this.client.variable.variableControllerCreate({
+            key: randomUUID(),
+            value: 'Test value',
+          }),
+        ),
+      );
 
       return;
     },
