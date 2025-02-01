@@ -166,6 +166,38 @@ const tests = [
     },
     expectedStatus: 400,
   }),
+  new IntegrationTest({
+    group,
+    snapshot: false,
+    name: 'Does not allow creating more modules than the domain allows',
+    test: async function () {
+      const MAX_MODULES = 10;
+      if (!this.standardDomainId) throw new Error('Standard domain ID not set');
+      await this.adminClient.domain.domainControllerUpdate(this.standardDomainId, {
+        maxModules: MAX_MODULES,
+      });
+      const moduleRes = await this.client.module.moduleControllerSearch();
+      const currentModules = moduleRes.data.meta.total;
+      if (currentModules == undefined) throw new Error('No modules found');
+
+      // Create modules until we hit the limit
+      for (let i = currentModules; i < MAX_MODULES; i++) {
+        await this.client.module.moduleControllerCreate({
+          name: `Test module ${i}`,
+        });
+      }
+
+      try {
+        await this.client.module.moduleControllerCreate({ name: 'final' });
+        throw new Error('Should have errored');
+      } catch (error) {
+        if (!isAxiosError(error)) throw error;
+        expect(error.response?.status).to.equal(400);
+        expect(error.response?.data.meta.error.code).to.equal('BadRequestError');
+        expect(error.response?.data.meta.error.message).to.equal('Maximum number of modules reached');
+      }
+    },
+  }),
   // #endregion CRUD
   // #region Permissions
   new IntegrationTest({
