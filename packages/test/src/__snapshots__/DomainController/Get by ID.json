@@ -12,7 +12,7 @@
       "rateLimitDuration": 900000,
       "rateLimitPoints": 2500,
       "state": "ACTIVE",
-      "maxGameservers": 1,
+      "maxGameservers": 100,
       "maxUsers": 1,
       "eventRetentionDays": 7,
       "maxVariables": 10000,

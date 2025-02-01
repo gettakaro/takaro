@@ -1,10 +1,10 @@
 import { IntegrationTest, expect, SetupGameServerPlayers, EventsAwaiter, createUserForPlayer } from '@takaro/test';
 import { randomUUID } from 'crypto';
-import { HookCreateDTOEventTypeEnum, PERMISSIONS } from '@takaro/apiclient';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 import * as url from 'url';
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+import { HookCreateDTOEventTypeEnum, isAxiosError, PERMISSIONS } from '@takaro/apiclient';
 
 const group = 'Bug repros';
 
@@ -192,6 +192,143 @@ const tests = [
       );
 
       expect(importedVersions.data.data.cronJobs.length).to.be.eq(1);
+    },
+  }),
+  /**
+   * Create a role with a system permission (like manage modules)
+   * Assign this role to a player, ensure the player has linked their profile to a user
+   * When the player uses the API to do something that requires the permission, it should work
+   */
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Bug repro: assigning permissions to a linked player should work with api checks',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      const manageModulesPerm = await this.client.permissionCodesToInputs([PERMISSIONS.ManageModules]);
+      const role = await this.client.role.roleControllerCreate({
+        name: 'module editor role',
+        permissions: manageModulesPerm,
+      });
+
+      const playerId = this.setupData.pogs1[0].playerId;
+      const { client: userClient } = await createUserForPlayer(
+        this.client,
+        playerId,
+        this.setupData.gameServer1.id,
+        true,
+      );
+      await this.client.player.playerControllerAssignRole(playerId, role.data.data.id);
+
+      const mod = (await userClient.module.moduleControllerCreate({ name: 'testing module' })).data.data;
+      expect(mod.name).to.be.eq('testing module');
+    },
+  }),
+  /**
+   * When creating functions (cronjobs, commands, hooks) in a module, there's a limit to how many functions can be created.
+   * This test sets up a module and fills it with the maximum number of functions, then tries to add one more. It checks every function type.
+   */
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Hitting the function limit should return an error',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      if (!this.standardDomainId) throw new Error('No standard domain id');
+      const domain = (await this.adminClient.domain.domainControllerGetOne(this.standardDomainId)).data.data;
+      if (!domain) throw new Error('No domain');
+      const module = (await this.client.module.moduleControllerCreate({ name: randomUUID() })).data.data;
+
+      // Fill with functions
+      const maxFunctions = domain.maxFunctionsInModule;
+      await Promise.all(
+        Array.from({ length: maxFunctions }, (_, i) =>
+          this.client.hook.hookControllerCreate({
+            name: `hook-${i}`,
+            versionId: module.latestVersion.id,
+            regex: '',
+            eventType: HookCreateDTOEventTypeEnum.ChatMessage,
+            function: `import { data, takaro } from '@takaro/helpers';
+        async function main() {
+            const { } = data;
+        }
+        await main();`,
+          }),
+        ),
+      );
+
+      // Now, every new one we try to create should fail
+      try {
+        await this.client.hook.hookControllerCreate({
+          name: 'hook-should-fail',
+          versionId: module.latestVersion.id,
+          regex: '',
+          eventType: HookCreateDTOEventTypeEnum.ChatMessage,
+          function: `import { data, takaro } from '@takaro/helpers';
+          async function main() {
+              const { } = data;
+          }
+          await main();`,
+        });
+        throw new Error('Should have thrown an error');
+      } catch (error) {
+        if (!isAxiosError(error)) throw error;
+        expect(error.response?.status).to.be.eq(400);
+        expect(error.response?.data.meta.error.message).to.be.eq('This module has reached the limit of 100 functions');
+      }
+
+      try {
+        await this.client.command.commandControllerCreate({
+          name: 'command-should-fail',
+          versionId: module.latestVersion.id,
+          trigger: 'test',
+          function: `import { data, takaro } from '@takaro/helpers';
+          async function main() {
+              const { } = data;
+          }
+          await main();`,
+        });
+        throw new Error('Should have thrown an error');
+      } catch (error) {
+        if (!isAxiosError(error)) throw error;
+        expect(error.response?.status).to.be.eq(400);
+        expect(error.response?.data.meta.error.message).to.be.eq('This module has reached the limit of 100 functions');
+      }
+
+      try {
+        await this.client.cronjob.cronJobControllerCreate({
+          name: 'cronjob-should-fail',
+          versionId: module.latestVersion.id,
+          temporalValue: '0 0 * * *',
+          function: `import { data, takaro } from '@takaro/helpers';
+          async function main() {
+              const { } = data;
+          }
+          await main();`,
+        });
+        throw new Error('Should have thrown an error');
+      } catch (error) {
+        if (!isAxiosError(error)) throw error;
+        expect(error.response?.status).to.be.eq(400);
+        expect(error.response?.data.meta.error.message).to.be.eq('This module has reached the limit of 100 functions');
+      }
+
+      try {
+        await this.client.function.functionControllerCreate({
+          name: 'function-should-fail',
+          versionId: module.latestVersion.id,
+          code: `import { data, takaro } from '@takaro/helpers';
+          async function main() {
+              const { } = data;
+          }
+          await main();`,
+        });
+        throw new Error('Should have thrown an error');
+      } catch (error) {
+        if (!isAxiosError(error)) throw error;
+        expect(error.response?.status).to.be.eq(400);
+        expect(error.response?.data.meta.error.message).to.be.eq('This module has reached the limit of 100 functions');
+      }
     },
   }),
 ];
