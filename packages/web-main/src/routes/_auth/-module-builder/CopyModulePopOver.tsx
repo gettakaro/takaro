@@ -50,7 +50,7 @@ export const CopyModulePopOver: FC<CopyModulePopOverProps> = ({ moduleId }) => {
       <Popover.Content>
         <PopoverBody>
           <PopoverHeading>
-            <h2>Copy module</h2>
+            <h2 style={{ minWidth: '300px', textAlign: 'center' }}>Copy module</h2>
           </PopoverHeading>
           {isPending || !data ? <p>Loading...</p> : <CopyModuleForm mod={data} onSuccess={handleSuccess} />}
         </PopoverBody>
