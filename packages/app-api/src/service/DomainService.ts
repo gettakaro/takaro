@@ -48,7 +48,7 @@ export class DomainCreateInputDTO extends TakaroDTO<DomainCreateInputDTO> {
   maxModules: number;
   @IsNumber()
   @IsOptional()
-  maxItemsInModule: number;
+  maxFunctionsInModule: number;
 }
 
 export class DomainUpdateInputDTO extends TakaroDTO<DomainUpdateInputDTO> {
@@ -78,7 +78,7 @@ export class DomainUpdateInputDTO extends TakaroDTO<DomainUpdateInputDTO> {
   maxModules: number;
   @IsNumber()
   @IsOptional()
-  maxItemsInModule: number;
+  maxFunctionsInModule: number;
 }
 
 export class DomainOutputDTO extends NOT_DOMAIN_SCOPED_TakaroModelDTO<DomainOutputDTO> {
@@ -103,7 +103,7 @@ export class DomainOutputDTO extends NOT_DOMAIN_SCOPED_TakaroModelDTO<DomainOutp
   @IsNumber()
   maxModules: number;
   @IsNumber()
-  maxItemsInModule: number;
+  maxFunctionsInModule: number;
 }
 
 export class DomainCreateOutputDTO extends TakaroDTO<DomainCreateOutputDTO> {

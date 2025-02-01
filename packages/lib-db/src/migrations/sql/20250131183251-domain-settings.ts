@@ -7,7 +7,7 @@ export async function up(knex: Knex): Promise<void> {
     table.integer('eventRetentionDays').defaultTo(7);
     table.integer('maxVariables').defaultTo(10000);
     table.integer('maxModules').defaultTo(1000);
-    table.integer('maxItemsInModule').defaultTo(100);
+    table.integer('maxFunctionsInModule').defaultTo(50);
   });
 }
 
@@ -18,6 +18,6 @@ export async function down(knex: Knex): Promise<void> {
     table.dropColumn('eventRetentionDays');
     table.dropColumn('maxVariables');
     table.dropColumn('maxModules');
-    table.dropColumn('maxItemsInModule');
+    table.dropColumn('maxFunctionsInModule');
   });
 }

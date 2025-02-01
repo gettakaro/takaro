@@ -22,7 +22,7 @@ export class DomainModel extends NOT_DOMAIN_SCOPED_TakaroModel {
   eventRetentionDays: number;
   maxVariables: number;
   maxModules: number;
-  maxItemsInModule: number;
+  maxFunctionsInModule: number;
 
   rateLimitPoints: number;
   rateLimitDuration: number;
