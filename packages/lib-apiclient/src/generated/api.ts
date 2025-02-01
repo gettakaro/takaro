@@ -1465,7 +1465,7 @@ export interface DomainCreateInputDTO {
    * @type {number}
    * @memberof DomainCreateInputDTO
    */
-  maxItemsInModule?: number;
+  maxFunctionsInModule?: number;
 }
 
 export const DomainCreateInputDTOStateEnum = {
@@ -1617,7 +1617,7 @@ export interface DomainOutputDTO {
    * @type {number}
    * @memberof DomainOutputDTO
    */
-  maxItemsInModule: number;
+  maxFunctionsInModule: number;
   /**
    *
    * @type {string}
@@ -1835,7 +1835,7 @@ export interface DomainUpdateInputDTO {
    * @type {number}
    * @memberof DomainUpdateInputDTO
    */
-  maxItemsInModule?: number;
+  maxFunctionsInModule?: number;
 }
 
 export const DomainUpdateInputDTOStateEnum = {
