@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, TextField, FormError, Alert } from '@takaro/lib-components';
+import { Button, TextField, FormError, SelectField } from '@takaro/lib-components';
 import { FC } from 'react';
 import { AiOutlineCopy as CopyIcon } from 'react-icons/ai';
 
@@ -11,6 +11,7 @@ import { ModuleOutputDTO } from '@takaro/apiclient';
 
 const validationSchema = z.object({
   name: moduleNameShape,
+  versions: z.array(z.string()),
 });
 
 interface CopyModuleFormProps {
@@ -20,18 +21,22 @@ interface CopyModuleFormProps {
 
 export const CopyModuleForm: FC<CopyModuleFormProps> = ({ mod, onSuccess }) => {
   const { control, handleSubmit } = useForm<z.infer<typeof validationSchema>>({
+    values: {
+      name: mod.name + ' Copy',
+      versions: mod.versions.map((v) => v.id),
+    },
     resolver: zodResolver(validationSchema),
   });
 
   const { mutateAsync: importModule, isPending: moduleImportLoading, error: moduleImportError } = useModuleImport();
   const { mutateAsync: exportModule, isPending: moduleExportLoading, error: moduleExportError } = useModuleExport();
 
-  const onSubmit: SubmitHandler<z.infer<typeof validationSchema>> = async ({ name }) => {
+  const onSubmit: SubmitHandler<z.infer<typeof validationSchema>> = async ({ name, versions }) => {
     try {
       const exportedModule = await exportModule({
         moduleId: mod.id,
         options: {
-          versionIds: mod.versions.map((v) => v.id),
+          versionIds: versions,
         },
       });
 
@@ -47,21 +52,42 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ mod, onSuccess }) => {
 
   return (
     <>
-      <Alert
-        variant="warning"
-        text="The new module will only have the version tagged 'latest'. including all hooks, commands, cron jobs and configuration."
-      />
-
       <form onSubmit={handleSubmit(onSubmit)}>
         <TextField
           control={control}
           name="name"
           placeholder="Module Name"
           label="Module Name"
-          description="Name of the new module"
           required
           loading={moduleImportLoading || moduleExportLoading}
         />
+        <SelectField
+          control={control}
+          name="versions"
+          label="Versions"
+          multiple
+          required
+          render={(selectedItems) => {
+            if (selectedItems.length === 0) {
+              return <div>Select...</div>;
+            }
+            return <div>{selectedItems[0].label}</div>;
+          }}
+        >
+          <SelectField.OptionGroup>
+            {mod.versions.map((smallVersion) => (
+              <SelectField.Option
+                key={`version-select-${smallVersion.id}`}
+                value={smallVersion.id}
+                label={smallVersion.tag}
+              >
+                <div>
+                  <span>{smallVersion.tag}</span>
+                </div>
+              </SelectField.Option>
+            ))}
+          </SelectField.OptionGroup>
+        </SelectField>
         <Button
           isLoading={moduleImportLoading || moduleExportLoading}
           type="submit"

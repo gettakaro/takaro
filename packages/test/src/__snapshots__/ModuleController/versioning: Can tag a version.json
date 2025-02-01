@@ -7,7 +7,7 @@
       "id": "687a5588-31eb-4bdf-82ce-03dc7f7de025",
       "moduleId": "93ddca56-03c3-4ba3-97a3-a6b67aa6a770",
       "tag": "1.0.0",
-      "description": null,
+      "description": "No description",
       "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{},\"required\":[],\"additionalProperties\":false}",
       "uiSchema": "{}",
       "hooks": [],

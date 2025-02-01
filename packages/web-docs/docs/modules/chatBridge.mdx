@@ -37,7 +37,8 @@ export function Module() {
           "name": "PlayerDisconnected",
           "function": "import { takaro, data } from '@takaro/helpers';\nasync function main() {\n    const discordChannel = data.module.systemConfig.hooks['DiscordToGame'].discordChannelId;\n    await takaro.discord.discordControllerSendMessage(discordChannel, {\n        message: `[👋 Disconnected]: ${data.player.name}`,\n    });\n}\nawait main();\n//# sourceMappingURL=PlayerDisconnected.js.map"
         }
-      ]
+      ],
+      "uiSchema": "{}"
     }
   ]
 };

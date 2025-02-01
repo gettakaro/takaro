@@ -13,7 +13,7 @@
         "id": "d141ea8b-1187-4e06-ac51-03753b4e866c",
         "moduleId": "57aecc77-2054-425d-bbbf-c18be0bcdaa6",
         "tag": "latest",
-        "description": null,
+        "description": "No description",
         "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{},\"required\":[],\"additionalProperties\":false}",
         "uiSchema": "{}",
         "cronJobs": [],

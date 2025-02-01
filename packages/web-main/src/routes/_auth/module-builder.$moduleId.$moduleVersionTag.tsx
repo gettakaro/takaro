@@ -161,10 +161,12 @@ function Component() {
     return <ModuleOnboarding moduleVersion={moduleVersion} />;
   }
 
+  // Zustand will not automatically re-render when the module changes.
+  // To force rerender we need to change the key of the ModuleBuilderProvider.
   return (
     <ErrorBoundary>
       <ModuleBuilderProvider
-        key={`${mod.id}-${moduleVersion.id}`}
+        key={`${mod.id}-${moduleVersion.id}-${mod.versions.length}`}
         moduleId={mod.id}
         moduleName={mod.name}
         moduleVersions={mod.versions}

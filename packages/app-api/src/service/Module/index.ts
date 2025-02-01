@@ -16,6 +16,7 @@ import {
   TakaroEventModuleInstalled,
   TakaroEventModuleUninstalled,
   getModules,
+  ModuleTransferVersionDTO,
 } from '@takaro/modules';
 import { PermissionCreateDTO } from '../RoleService.js';
 import * as semver from 'semver';
@@ -213,7 +214,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     return id;
   }
 
-  async import(mod: ModuleTransferDTO<unknown>) {
+  async import(mod: ModuleTransferDTO<unknown>): Promise<ModuleOutputDTO> {
     const existing = await this.repo.find({
       filters: { name: [mod.name] },
     });
@@ -230,7 +231,31 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     await Promise.all(modules.map((m: ModuleTransferDTO<unknown>) => this.seedModule(m, { isBuiltin: true })));
   }
 
-  async seedModule(data: ModuleTransferDTO<unknown>, { isBuiltin } = { isBuiltin: false }) {
+  async seedModule(data: ModuleTransferDTO<unknown>, { isBuiltin } = { isBuiltin: false }): Promise<ModuleOutputDTO> {
+    /**
+     * Special handling for legacy modules...
+     * This might need to be extended/changed in the future with smarter semver logic
+     * Just a quick fix for now
+     */
+    if (!data.takaroVersion) {
+      // The old system did not have versions, only a 'latest'
+      // So manually fix the data
+      data = new ModuleTransferDTO({
+        ...data,
+        versions: [
+          new ModuleTransferVersionDTO({
+            tag: 'latest',
+            ...data,
+          }),
+        ],
+      });
+    }
+
+    // Always ensure we pass it through the DTO constructor so transformations/logic can happen
+    data = new ModuleTransferDTO({ ...data });
+    // After our data wrangling, let's make sure the input is valid
+    await data.validate();
+
     const existingModule = await this.repo.find({
       filters: { builtin: [data.name] },
     });
@@ -249,35 +274,33 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     }
 
     for (const version of data.versions) {
-      this.log.info(`Creating new module version ${data.name}-${version.tag}`, {
-        name: data.name,
-        tag: version.tag,
-      });
-
       const existingVersionRes = await this.findVersions({ filters: { tag: [version.tag], moduleId: [mod.id] } });
       const existingVersions = existingVersionRes.results.filter((v) => v.tag === version.tag);
+      const importingLatest = version.tag === 'latest';
+      const versionExists = existingVersions.length >= 1;
 
       // Version already exists,
-      // If not builtin -> skip - We will never replace user-created versions
+      // If not builtin and tagged -> skip - We will never replace user-tagged versions
+      // If not builtin and versionTag=latest -> replace
       // If builtin and in dev mode -> replace - This provides hot-reload for builtin modules
       // If builtin and in prod -> throw - We will never replace versions in prod, we should be incrementing the version
-      if (existingVersions.length) {
-        if (!isBuiltin) {
+      if (versionExists) {
+        if (!isBuiltin && !importingLatest) {
           this.log.info('Version already exists, skipping', { moduleId: mod.id, tag: version.tag });
           continue;
         }
 
-        if (process.env.NODE_ENV === 'development') {
-          this.log.info('Version already exists, replacing', { moduleId: mod.id, tag: version.tag });
+        if (!isBuiltin && importingLatest) {
+          this.log.info('Overriding "latest" version', { moduleId: mod.id, tag: version.tag });
           await this.repo.deleteVersion(existingVersions[0].id);
         }
 
-        if (process.env.NODE_ENV === 'production') {
-          this.log.error('Version already exists, cannot replace in production', {
+        if (process.env.NODE_ENV === 'development') {
+          this.log.debug('Version already exists and in dev mode, so replacing', {
             moduleId: mod.id,
             tag: version.tag,
           });
-          throw new errors.InternalServerError();
+          await this.repo.deleteVersion(existingVersions[0].id);
         }
       }
 
@@ -382,6 +405,8 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
       // With everything in place, we can now create the version
       await this.tagVersion(mod.id, version.tag);
     }
+
+    return mod;
   }
 
   async findOneBy(itemType: string, itemId: string | undefined): Promise<ModuleVersionOutputDTO | undefined> {
@@ -412,6 +437,8 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
    * Create a new version record and link all the components from 'latest' version to the new version.
    */
   async tagVersion(moduleId: string, tag: string) {
+    if (tag === 'latest') return this.getLatestVersion(moduleId);
+
     if (!semver.valid(tag))
       throw new errors.BadRequestError('Invalid version tag, please use semver. Eg 1.0.0 or 2.0.4');
 

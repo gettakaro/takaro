@@ -125,9 +125,10 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
                   </Dropdown.Trigger>
                   <Dropdown.Menu>
                     {mod.builtin && (
-                      <>
+                      <Dropdown.Menu.Group label="Actions">
                         <Dropdown.Menu.Item icon={<ViewIcon />} onClick={handleOnViewClick} label="View module" />
-                      </>
+                        <Dropdown.Menu.Item icon={<CopyIcon />} onClick={handleOnCopyClick} label="Copy module" />
+                      </Dropdown.Menu.Group>
                     )}
                     {!mod.builtin && (
                       <Dropdown.Menu.Group label="Actions">
@@ -150,7 +151,11 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
                         onClick={handleOnOpenClick}
                         label="Open in Module Builder"
                       />
-                      <Dropdown.Menu.Item icon={<ExportIcon />} onClick={handleOnExportClick} label="Export to file" />
+                      <Dropdown.Menu.Item
+                        icon={<ExportIcon />}
+                        onClick={handleOnExportClick}
+                        label="Export module to file"
+                      />
                     </Dropdown.Menu.Group>
                   </Dropdown.Menu>
                 </Dropdown>

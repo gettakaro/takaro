@@ -80,8 +80,7 @@ export const ModuleTagDialog: FC<ModuleTagDialogProps> = ({ moduleId, moduleName
             <SelectField
               name="versionLevel"
               control={control}
-              description="Takaro's tagging system is based on semantic versioning. Semantic versioning is a widely adopted system in software development. It is based on three numbers
-          separated by dots to represent versions."
+              description="Takaro's tagging system is based on semantic versioning. Semantic versioning is a widely adopted system in software development. It is based on three numbers separated by dots to represent versions."
               label="Version level"
               multiple={false}
               render={(selectedItems) => {
@@ -92,18 +91,18 @@ export const ModuleTagDialog: FC<ModuleTagDialogProps> = ({ moduleId, moduleName
               }}
             >
               <SelectField.OptionGroup>
-                <SelectField.Option value="patch" label="patch">
+                <SelectField.Option value="patch" label="Patch">
                   <div>
-                    <span>patch</span>
+                    <span>Patch</span>
                     <p>
                       is increased when you make backwards-compatible bug fixes. E.g. Fixing a bug in the hook code that
-                      doesn't require any changes.
+                      doesn't require any changes for the user.
                     </p>
                   </div>
                 </SelectField.Option>
-                <SelectField.Option value="minor" label="minor">
+                <SelectField.Option value="minor" label="Minor">
                   <div>
-                    <span>minor</span>
+                    <span>Minor</span>
                     <p>
                       is increased when you add functionality in a backwards-compatible manner. E.g. Adding a new hook
                       that doesn't require input data.

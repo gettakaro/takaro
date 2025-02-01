@@ -85,7 +85,7 @@ export class ModuleTransferVersionDTO<T> extends TakaroDTO<T> {
   @IsString()
   public configSchema: string;
   @IsString()
-  public uiSchema: string;
+  public uiSchema = '{}';
   @ValidateNested({ each: true })
   @Type(() => ICommand)
   @IsOptional()
@@ -112,6 +112,9 @@ export class ModuleTransferVersionDTO<T> extends TakaroDTO<T> {
 export class ModuleTransferDTO<T> extends TakaroDTO<T> {
   @IsString()
   public name: string;
+  @IsString()
+  @IsOptional()
+  takaroVersion = process.env.TAKARO_VERSION;
 
   @ValidateNested({ each: true })
   @Type(() => ModuleTransferVersionDTO)
