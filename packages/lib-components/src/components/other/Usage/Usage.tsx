@@ -6,11 +6,11 @@ export interface UsageProps {
   unit?: string;
   value: number;
   total: number;
-  color?: Color | AlertVariants;
+  progressBarColor?: Color | AlertVariants;
   minFill?: number;
 }
 
-export const Usage: FC<UsageProps> = ({ value, total, unit, color = 'primary', minFill }) => {
+export const Usage: FC<UsageProps> = ({ value, total, unit, progressBarColor = 'primary', minFill }) => {
   const percentage = (value / total) * 100;
 
   return (
@@ -29,7 +29,7 @@ export const Usage: FC<UsageProps> = ({ value, total, unit, color = 'primary', m
           {value} of {total}
         </p>
       </div>
-      <ProgressBar mode="determinate" value={percentage} size="small" color={color} minFill={minFill} />
+      <ProgressBar mode="determinate" value={percentage} size="small" color={progressBarColor} minFill={minFill} />
     </div>
   );
 };

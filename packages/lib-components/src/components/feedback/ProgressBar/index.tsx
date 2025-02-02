@@ -123,7 +123,7 @@ export const ProgressBar: FC<ProgressBarProps> = ({
   if (mode === 'determinate') {
     return (
       <Container>
-        <Progress color={color} progress={value > minFill ? value : minFill} size={size} />
+        <Progress color={color} progress={value > minFill ? value : value == 0 ? 0 : minFill} size={size} />
         {showPercentage && <Label>{Math.min(value, 100)}%</Label>}
       </Container>
     );

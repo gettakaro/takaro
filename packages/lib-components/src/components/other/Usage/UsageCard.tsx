@@ -38,7 +38,16 @@ export interface UsageCardProps extends UsageProps {
   info?: string;
 }
 
-export const UsageCard: FC<UsageCardProps> = ({ title, value, total, info, unit, description }) => {
+export const UsageCard: FC<UsageCardProps> = ({
+  title,
+  value,
+  total,
+  info,
+  unit,
+  description,
+  progressBarColor,
+  minFill,
+}) => {
   const theme = useTheme();
   const used_percentage = Math.min((value / total) * 100, 100);
   const remaining = Math.max(total - value, 0);
@@ -49,7 +58,7 @@ export const UsageCard: FC<UsageCardProps> = ({ title, value, total, info, unit,
   });
 
   return (
-    <Card style={{ maxWidth: '800px' }}>
+    <Card>
       <Card.Body>
         <TitleContainer margin={description ? false : true}>
           <h3>{title}</h3>
@@ -66,7 +75,13 @@ export const UsageCard: FC<UsageCardProps> = ({ title, value, total, info, unit,
           </h2>
           <span>{formatter.format(remaining)} remaining</span>
         </DetailsContainer>
-        <ProgressBar mode="determinate" value={used_percentage} size="medium" />
+        <ProgressBar
+          mode="determinate"
+          value={used_percentage}
+          size="medium"
+          color={progressBarColor}
+          minFill={minFill}
+        />
       </Card.Body>
     </Card>
   );

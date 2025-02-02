@@ -1,8 +1,14 @@
 import { Button, HorizontalNav, Plan, styled } from '@takaro/lib-components';
+import { useQueries } from '@tanstack/react-query';
 import { createFileRoute, Link, redirect } from '@tanstack/react-router';
+import { MaxUsageCard } from 'components/MaxUsageCard';
 import { hasPermission } from 'hooks/useHasPermission';
-import { userMeQueryOptions } from 'queries/user';
+import { gameServerCountQueryOptions } from 'queries/gameserver';
+import { customModuleCountQueryOptions } from 'queries/module';
+import { userCountQueryOptions, userMeQueryOptions } from 'queries/user';
+import { variableCountQueryOptions } from 'queries/variable';
 import { getConfigVar } from 'util/getConfigVar';
+import { getCurrentDomain } from 'util/getCurrentDomain';
 import { z } from 'zod';
 
 const planSearchSchema = z.object({
@@ -28,31 +34,80 @@ export const Route = createFileRoute('/_auth/_global/settings/billing/')({
     }
   },
   component: Component,
-  loader: async () => {
+  loader: async ({ context }) => {
     const response = await fetch(`${getConfigVar('billingApiUrl')}/products`);
     const data = (await response.json()).data;
-
     data.sort((a: any, b: any) => {
       return a.prices[0].unitAmount - b.prices[0].unitAmount;
     });
 
-    return data;
+    return {
+      products: data,
+      currentUserCount: await context.queryClient.ensureQueryData(userCountQueryOptions()),
+      currentGameServerCount: await context.queryClient.ensureQueryData(gameServerCountQueryOptions()),
+      currentVariableCount: await context.queryClient.ensureQueryData(gameServerCountQueryOptions()),
+      currentModuleCount: await context.queryClient.ensureQueryData(customModuleCountQueryOptions()),
+      me: await context.queryClient.ensureQueryData(userMeQueryOptions()),
+    };
   },
 });
 
 function Component() {
   const { period } = Route.useSearch();
-  const products = Route.useLoaderData();
+  const loaderData = Route.useLoaderData();
+  const [
+    { data: currentUserCount },
+    { data: currentGameServerCount },
+    { data: currentVariableCount },
+    { data: currentModuleCount },
+    { data: me },
+  ] = useQueries({
+    queries: [
+      { ...userCountQueryOptions(), initialData: loaderData.currentUserCount },
+      { ...gameServerCountQueryOptions(), initialData: loaderData.currentGameServerCount },
+      { ...variableCountQueryOptions(), initialData: loaderData.currentVariableCount },
+      { ...customModuleCountQueryOptions(), initialData: loaderData.currentModuleCount },
+      { ...userMeQueryOptions(), initialData: loaderData.me },
+    ],
+  });
+
+  const currentDomain = getCurrentDomain(me);
 
   return (
     <>
       <div>
-        <div style={{ display: 'flex', gap: '1rem', flexDirection: 'row', padding: '1rem' }}>
+        <div
+          style={{
+            display: 'flex',
+            gap: '1rem',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: '2rem',
+          }}
+        >
+          <h1>Current plan usage</h1>
           <a href={getConfigVar('managePlanUrl')} target="_self">
             <Button size="large" text="Manage plan" />
           </a>
         </div>
       </div>
+
+      <div style={{ display: 'grid', gap: '2rem' }}>
+        <MaxUsageCard title="Maximum amount of users" value={currentUserCount} total={currentDomain.maxUsers} />
+        <MaxUsageCard
+          title="Maximum amount of game servers"
+          value={currentGameServerCount}
+          total={currentDomain.maxGameservers}
+        />
+        <MaxUsageCard
+          title="Maximum amount of variables"
+          value={currentVariableCount}
+          total={currentDomain.maxVariables}
+        />
+        <MaxUsageCard title="Maximum amount of modules" value={currentModuleCount} total={currentDomain.maxModules} />
+      </div>
+
       <div style={{ display: 'flex', alignItems: 'center', columnGap: '2rem' }}>
         <div>
           <h1>Choose your plan</h1>
@@ -72,7 +127,7 @@ function Component() {
       </div>
 
       <Container>
-        {products.map((product: any, index: number) => {
+        {loaderData.products.map((product: any, index: number) => {
           return (
             <Plan
               key={product.id}

@@ -6,7 +6,7 @@ interface MaxUsageProps extends UsageProps {
   maxColor?: Color | AlertVariants;
 }
 
-export const MaxUsage: FC<MaxUsageProps> = ({ value, total, unit, color = 'primary' }) => {
+export const MaxUsage: FC<MaxUsageProps> = ({ value, total, unit, progressBarColor = 'primary' }) => {
   const percentage = value / total;
   function getColor(): Color | AlertVariants {
     if (percentage > 0.75 && percentage < 1) {
@@ -14,9 +14,9 @@ export const MaxUsage: FC<MaxUsageProps> = ({ value, total, unit, color = 'prima
     } else if (percentage >= 1) {
       return 'error';
     } else {
-      return color;
+      return progressBarColor;
     }
   }
 
-  return <Usage value={value} total={total} unit={unit} color={getColor()} minFill={5} />;
+  return <Usage value={value} total={total} unit={unit} progressBarColor={getColor()} minFill={5} />;
 };
