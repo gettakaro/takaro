@@ -2,7 +2,7 @@ import { expect } from '@takaro/test';
 import { randomUUID } from 'crypto';
 import { CommandArgumentOutputDTO, CommandOutputDTO } from '../../service/CommandService.js';
 import { parseCommand } from '../commandParser.js';
-import { describe } from 'node:test';
+import { describe, it } from 'node:test';
 
 const MockArgument_name = new CommandArgumentOutputDTO({
   name: 'name',
@@ -55,7 +55,7 @@ const MockTeleportCommand = new CommandOutputDTO({
 const mockGameServerId = randomUUID();
 
 describe('commandParser', () => {
-  before(async () => {
+  it(async () => {
     // Ensure the Mock objects are valid, don't want mocks to drift from reality
     await MockTeleportCommand.validate();
   });

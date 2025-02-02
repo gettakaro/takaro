@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+
 import { TakaroEmitter } from './TakaroEmitter.js';
 import { expect, sandbox } from '@takaro/test';
 import { EventLogLine, GameEvents } from '@takaro/modules';
@@ -89,7 +91,8 @@ describe('TakaroEmitter', () => {
     expect(spy).to.have.been.calledOnce;
   });
 
-  xit('Validates data on emitting', async () => {
+  it('Validates data on emitting', async (t) => {
+    t.skip();
     const emitter = new ExtendedTakaroEmitter();
     const spy = sandbox.spy();
     const errorSpy = sandbox.spy();
