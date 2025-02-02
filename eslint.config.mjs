@@ -35,7 +35,6 @@ export default tseslint.config(
       '**/migrations/**',
       '**/*.d.ts',
       '**/jest.config.js',
-      '**/mocharc.js',
       '**/.storybook/**',
       '**/.docusaurus/**',
       '**/reports/**'

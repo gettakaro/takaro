@@ -11,7 +11,6 @@ COPY tsconfig*.json ./
 
 COPY nodemon.json ./
 COPY jest.config.js ./
-COPY .mocharc.js ./
 
 COPY packages/ ./packages
 COPY scripts ./scripts
