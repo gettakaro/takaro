@@ -2,6 +2,7 @@ import { expect } from '@takaro/test';
 import { randomUUID } from 'crypto';
 import { CommandArgumentOutputDTO, CommandOutputDTO } from '../../service/CommandService.js';
 import { parseCommand } from '../commandParser.js';
+import { describe } from 'node:test';
 
 const MockArgument_name = new CommandArgumentOutputDTO({
   name: 'name',

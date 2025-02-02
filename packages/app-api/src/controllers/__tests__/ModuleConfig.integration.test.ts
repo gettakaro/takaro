@@ -1,5 +1,6 @@
 import { IntegrationTest, expect, integrationConfig } from '@takaro/test';
 import { GameServerCreateDTOTypeEnum, GameServerOutputDTO, isAxiosError, ModuleOutputDTO } from '@takaro/apiclient';
+import { describe } from 'node:test';
 
 const group = 'ModuleConfig';
 

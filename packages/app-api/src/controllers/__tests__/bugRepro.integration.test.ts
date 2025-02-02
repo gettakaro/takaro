@@ -5,6 +5,7 @@ import { join } from 'path';
 import * as url from 'url';
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 import { HookCreateDTOEventTypeEnum, PERMISSIONS } from '@takaro/apiclient';
+import { describe } from 'node:test';
 
 const group = 'Bug repros';
 

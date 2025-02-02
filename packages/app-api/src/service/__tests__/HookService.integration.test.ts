@@ -4,6 +4,7 @@ import { EventPlayerConnected, EventChatMessage, HookEvents, ChatChannel } from 
 import { IntegrationTest, sandbox, expect, integrationConfig } from '@takaro/test';
 import { HookOutputDTO, GameServerOutputDTO, ModuleOutputDTO, ModuleInstallationOutputDTO } from '@takaro/apiclient';
 import { SinonStub } from 'sinon';
+import { describe } from 'node:test';
 
 const group = 'HookService';
 

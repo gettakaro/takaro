@@ -2,6 +2,7 @@ import { TakaroDTO } from '../TakaroDTO.js';
 import { expect } from '@takaro/test';
 import { IsNumber, IsString, Max, Min, ValidateNested } from 'class-validator';
 import { Exclude, Type } from 'class-transformer';
+import { describe, it } from 'node:test';
 
 class TestDTO extends TakaroDTO<TestDTO> {
   @IsString()

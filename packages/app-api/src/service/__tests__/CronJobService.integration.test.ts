@@ -3,6 +3,7 @@ import { GameServerOutputDTO, ModuleOutputDTO, CronJobOutputDTO, ModuleInstallat
 import { queueService } from '@takaro/queues';
 import { CronJobService, CronJobOutputDTO as ServiceCronJobOutputDTO } from '../CronJobService.js';
 import { ModuleInstallationOutputDTO as ServiceModuleInstallationOutputDTO } from '../Module/dto.js';
+import { describe } from 'node:test';
 
 const group = 'CronJobService';
 
