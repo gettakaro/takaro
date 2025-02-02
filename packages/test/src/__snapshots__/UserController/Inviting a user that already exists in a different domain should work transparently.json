@@ -24,7 +24,8 @@
           "userId": "5fed0aee-290f-4723-8325-54b20fc0adbf"
         }
       ],
-      "email": "Lyda_Heaney@gmail.com"
+      "email": "Lyda_Heaney@gmail.com",
+      "isDashboardUser": false
     }
   },
   "status": 200,
