@@ -1,7 +1,10 @@
 import { FC } from 'react';
 import { shade } from 'polished';
-import { styled, Color, Size } from '../../../styled';
+import { styled, Color as C, Size } from '../../../styled';
 import { keyframes } from 'styled-components';
+import { AlertVariants } from '../Alert';
+
+type Color = C | AlertVariants;
 
 const indeterminateAnimation = keyframes`
   0% {
@@ -104,6 +107,9 @@ export interface ProgressBarProps {
   color?: Color;
   showPercentage?: boolean;
   size?: Size;
+  /// To make the progressbar a bit more visually pleasing, you can set a minimum fill value.
+  /// If the actual value is below this value, the progressbar will still show the minimum fill value.
+  minFill?: number;
 }
 
 export const ProgressBar: FC<ProgressBarProps> = ({
@@ -112,11 +118,12 @@ export const ProgressBar: FC<ProgressBarProps> = ({
   color = 'primary',
   showPercentage = false,
   size = 'medium',
+  minFill = 0,
 }) => {
   if (mode === 'determinate') {
     return (
       <Container>
-        <Progress color={color} progress={value} size={size} />
+        <Progress color={color} progress={value > minFill ? value : minFill} size={size} />
         {showPercentage && <Label>{Math.min(value, 100)}%</Label>}
       </Container>
     );
