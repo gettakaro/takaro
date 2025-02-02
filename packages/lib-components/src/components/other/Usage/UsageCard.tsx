@@ -50,22 +50,24 @@ export const UsageCard: FC<UsageCardProps> = ({ title, value, total, info, unit,
 
   return (
     <Card style={{ maxWidth: '800px' }}>
-      <TitleContainer margin={description ? false : true}>
-        <h3>{title}</h3>
-        {info && (
-          <IconTooltip placement="top" color="background" icon={<QuestionIcon />}>
-            {info}
-          </IconTooltip>
-        )}
-      </TitleContainer>
-      {description && <p style={{ color: theme.colors.textAlt, marginBottom: theme.spacing[2] }}>{description}</p>}
-      <DetailsContainer>
-        <h2>
-          {formatter.format(value)} / {formatter.format(total)} {unit}
-        </h2>
-        <span>{formatter.format(remaining)} remaining</span>
-      </DetailsContainer>
-      <ProgressBar mode="determinate" value={used_percentage} size="medium" />
+      <Card.Body>
+        <TitleContainer margin={description ? false : true}>
+          <h3>{title}</h3>
+          {info && (
+            <IconTooltip placement="top" color="background" icon={<QuestionIcon />}>
+              {info}
+            </IconTooltip>
+          )}
+        </TitleContainer>
+        {description && <p style={{ color: theme.colors.textAlt, marginBottom: theme.spacing[2] }}>{description}</p>}
+        <DetailsContainer>
+          <h2>
+            {formatter.format(value)} / {formatter.format(total)} {unit}
+          </h2>
+          <span>{formatter.format(remaining)} remaining</span>
+        </DetailsContainer>
+        <ProgressBar mode="determinate" value={used_percentage} size="medium" />
+      </Card.Body>
     </Card>
   );
 };
