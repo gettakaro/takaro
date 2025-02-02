@@ -120,6 +120,7 @@ export class UserRepo extends ITakaroRepo<UserModel, UserOutputDTO, UserCreateIn
       .insert({
         idpId: data.idpId,
         name: data.name,
+        isDashboardUser: data.isDashboardUser,
         domain: this.domainId,
       })
       .returning('*');

@@ -129,7 +129,7 @@
           }
         ],
         "email": "root@green-times-fly.com",
-        "isDashboardUser": false
+        "isDashboardUser": true
       }
     ]
   },

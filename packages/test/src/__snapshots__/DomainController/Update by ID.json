@@ -13,7 +13,7 @@
       "rateLimitPoints": 2500,
       "state": "ACTIVE",
       "maxGameservers": 100,
-      "maxUsers": 1,
+      "maxUsers": 5,
       "eventRetentionDays": 7,
       "maxVariables": 10000,
       "maxModules": 1000,
