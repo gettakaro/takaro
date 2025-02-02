@@ -9,7 +9,7 @@
     "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json",
     "build": "tsc -p ./tsconfig.build.json",
     "postbuild": "npm run build:builtin-json",
-    "build:builtin-json": "node --loader ts-node/esm ./scripts/buildBuiltinJson.ts"
+    "build:builtin-json": "node --import=ts-node-maintained/register/esm ./scripts/buildBuiltinJson.ts"
   },
   "keywords": [],
   "author": "",
