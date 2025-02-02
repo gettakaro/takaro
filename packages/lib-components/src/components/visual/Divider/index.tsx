@@ -29,7 +29,7 @@ const Label = styled.label<{
 }>`
   position: absolute;
   top: 50%;
-  transform: translateY(-50%);
+  transform: translateY(-50%) translateX(-50%);
   p {
     color: ${({ theme, color }) => theme.colors[color]};
     background-color: ${({ theme }) => theme.colors.backgroundAlt};
