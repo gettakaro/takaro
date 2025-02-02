@@ -1,4 +1,9 @@
-{/* START AUTO-GENERATED CONTENT */}
+---
+description: undefined
+---
+
+{/* AUTO-GENERATED CONTENT () */}
+
 import { Commands, Config, CronJobs, Hooks } from './helpers';
 
 # teleports
@@ -11,7 +16,7 @@ export function Module() {
       "tag": "0.0.1",
       "description": "A set of commands to allow players to set their own teleport points and teleport to them.",
       "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"timeout\":{\"title\":\"Timeout\",\"description\":\"The time one has to wait before teleporting again.\",\"x-component\":\"duration\",\"type\":\"number\",\"minimum\":0,\"default\":1000},\"allowPublicTeleports\":{\"type\":\"boolean\",\"description\":\"Players can create public teleports.\",\"default\":false}},\"required\":[],\"additionalProperties\":false}",
-      "uiSchema": "{\"timeout\":{\"ui:widget\":\"duration\"}}",
+      "uiSchema": "{}",
       "functions": [
         {
           "name": "utils",
@@ -183,7 +188,6 @@ export function Module() {
 
 <Module />
 
----
 {/* END AUTO-GENERATED CONTENT */}
 
 ## Features

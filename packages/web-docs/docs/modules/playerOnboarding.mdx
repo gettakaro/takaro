@@ -1,4 +1,9 @@
-{/* START AUTO-GENERATED CONTENT */}
+---
+description: undefined
+---
+
+{/* AUTO-GENERATED CONTENT () */}
+
 import { Commands, Config, CronJobs, Hooks } from './helpers';
 
 # playerOnboarding
@@ -11,7 +16,7 @@ export function Module() {
       "tag": "0.0.1",
       "description": "Collection of functions that are executed when a player joins the server. Helps with onboarding new players, like sending a welcome message.",
       "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"message\":{\"title\":\"Message\",\"description\":\"The message to send to the player when they join the server.\",\"type\":\"string\",\"minLength\":1,\"maxLength\":256,\"default\":\"Welcome {player} to the server!\"},\"starterKitItems\":{\"type\":\"array\",\"title\":\"Starter kit items\",\"x-component\":\"item\",\"description\":\"List of items a player will receive when they execute the starterkit command for the first time.\",\"uniqueItems\":true,\"items\":{\"type\":\"object\",\"title\":\"Item\",\"properties\":{\"item\":{\"type\":\"string\",\"title\":\"Item\"},\"amount\":{\"type\":\"number\",\"title\":\"Amount\"},\"quality\":{\"type\":\"string\",\"title\":\"Quality\"}}}}},\"required\":[],\"additionalProperties\":false}",
-      "uiSchema": "{\"starterKitItems\":{\"items\":{\"item\":{\"ui:widget\":\"item\"}}}}",
+      "uiSchema": "{}",
       "hooks": [
         {
           "eventType": "player-connected",
@@ -45,7 +50,6 @@ export function Module() {
 
 <Module />
 
----
 {/* END AUTO-GENERATED CONTENT */}
 
 ## Features
