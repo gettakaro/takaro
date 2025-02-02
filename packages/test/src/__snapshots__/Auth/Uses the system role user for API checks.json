@@ -48,7 +48,8 @@
             "userId": "c98d6166-d168-4f1d-97a8-38cf7f13f94a"
           }
         ],
-        "email": "nopermissions@example.com"
+        "email": "nopermissions@example.com",
+        "isDashboardUser": false
       },
       {
         "createdAt": "2024-06-21T19:09:23.782Z",
@@ -127,7 +128,8 @@
             "userId": "3a42017c-a994-4273-aef9-90d553d4430b"
           }
         ],
-        "email": "root@green-times-fly.com"
+        "email": "root@green-times-fly.com",
+        "isDashboardUser": false
       }
     ]
   },

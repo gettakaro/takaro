@@ -17,7 +17,7 @@
       "eventRetentionDays": 7,
       "maxVariables": 10000,
       "maxModules": 1000,
-      "maxFunctionsInModule": 100
+      "maxFunctionsInModule": 50
     }
   },
   "status": 200,
