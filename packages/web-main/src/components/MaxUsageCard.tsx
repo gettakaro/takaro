@@ -15,7 +15,6 @@ export const MaxUsageCard: FC<MaxUsageCardProps> = ({
 }) => {
   const ratio = value / total;
   function getColor(): Color | AlertVariants {
-    console.log(ratio);
     if (ratio > 0.75 && ratio < 1) {
       return 'warning';
     } else if (ratio >= 1) {
