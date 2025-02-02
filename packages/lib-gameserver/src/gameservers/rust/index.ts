@@ -14,7 +14,7 @@ import { RustConnectionInfo } from './connectionInfo.js';
 import { RustEmitter } from './emitter.js';
 import { Settings } from '@takaro/apiclient';
 
-const itemsJson = (await import('./items-rust.json', { assert: { type: 'json' } })).default;
+const itemsJson = (await import('./items-rust.json', { with: { type: 'json' } })).default;
 
 @traceableClass('game:rust')
 export class Rust implements IGameServer {
