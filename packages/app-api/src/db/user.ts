@@ -33,7 +33,7 @@ export class RoleOnUserModel extends TakaroModel {
 export class UserModel extends TakaroModel {
   static tableName = USER_TABLE_NAME;
   name!: string;
-
+  isDashboardUser: boolean;
   idpId: string;
   discordId?: string;
   playerId?: string;
@@ -120,6 +120,7 @@ export class UserRepo extends ITakaroRepo<UserModel, UserOutputDTO, UserCreateIn
       .insert({
         idpId: data.idpId,
         name: data.name,
+        isDashboardUser: data.isDashboardUser,
         domain: this.domainId,
       })
       .returning('*');

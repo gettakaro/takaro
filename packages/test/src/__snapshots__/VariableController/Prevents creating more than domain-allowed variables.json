@@ -1,7 +1,6 @@
 {
   "body": {
     "meta": {
-      "serverTime": "2023-03-19T16:31:18.096Z",
       "error": {
         "code": "BadRequestError",
         "message": "Too many variables"
@@ -13,7 +12,7 @@
   "test": {
     "group": "VariableController",
     "snapshot": true,
-    "name": "Prevents creating more than config.get('takaro.maxVariables') (100) variables",
+    "name": "Prevents creating more than domain-allowed variables",
     "expectedStatus": 400,
     "filteredFields": [],
     "standardEnvironment": true

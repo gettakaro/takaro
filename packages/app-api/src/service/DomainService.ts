@@ -22,63 +22,100 @@ export { DOMAIN_STATES } from '../db/domain.js';
 export class DomainCreateInputDTO extends TakaroDTO<DomainCreateInputDTO> {
   @Length(3, 200)
   name: string;
-
   @Length(3, 200)
   @IsOptional()
   id: string;
-
   @IsEnum(Object.values(DOMAIN_STATES))
   @IsOptional()
   state: DOMAIN_STATES;
-
   @Length(3, 200)
   @IsOptional()
   externalReference: string;
+  @IsNumber()
+  @IsOptional()
+  maxGameservers: number;
+  @IsNumber()
+  @IsOptional()
+  maxUsers: number;
+  @IsNumber()
+  @IsOptional()
+  eventRetentionDays: number;
+  @IsOptional()
+  @IsNumber()
+  maxVariables: number;
+  @IsNumber()
+  @IsOptional()
+  maxModules: number;
+  @IsNumber()
+  @IsOptional()
+  maxFunctionsInModule: number;
 }
 
 export class DomainUpdateInputDTO extends TakaroDTO<DomainUpdateInputDTO> {
   @Length(3, 200)
   @IsOptional()
   name: string;
-
   @Length(3, 200)
   @IsOptional()
   externalReference: string;
-
   @IsEnum(Object.values(DOMAIN_STATES))
   @IsOptional()
   state: DOMAIN_STATES;
+  @IsNumber()
+  @IsOptional()
+  maxGameservers: number;
+  @IsNumber()
+  @IsOptional()
+  maxUsers: number;
+  @IsNumber()
+  @IsOptional()
+  eventRetentionDays: number;
+  @IsOptional()
+  @IsNumber()
+  maxVariables: number;
+  @IsNumber()
+  @IsOptional()
+  maxModules: number;
+  @IsNumber()
+  @IsOptional()
+  maxFunctionsInModule: number;
 }
 
 export class DomainOutputDTO extends NOT_DOMAIN_SCOPED_TakaroModelDTO<DomainOutputDTO> {
   @IsString()
   name: string;
-
   @IsString()
   externalReference: string;
-
   @IsEnum(Object.values(DOMAIN_STATES))
   state: DOMAIN_STATES;
-
   @IsNumber()
   rateLimitPoints: number;
   @IsNumber()
   rateLimitDuration: number;
+  @IsNumber()
+  maxGameservers: number;
+  @IsNumber()
+  maxUsers: number;
+  @IsNumber()
+  eventRetentionDays: number;
+  @IsNumber()
+  maxVariables: number;
+  @IsNumber()
+  maxModules: number;
+  @IsNumber()
+  maxFunctionsInModule: number;
 }
 
 export class DomainCreateOutputDTO extends TakaroDTO<DomainCreateOutputDTO> {
   @Type(() => DomainOutputDTO)
   @ValidateNested()
   createdDomain: DomainOutputDTO;
-
   @Type(() => UserOutputDTO)
   @ValidateNested()
   rootUser: UserOutputDTO;
-
   @Type(() => RoleOutputDTO)
   @ValidateNested()
   rootRole: RoleOutputDTOType;
-
   @IsString()
   password: string;
 }
@@ -148,10 +185,9 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
 
     const domain = await this.repo.create(
       new DomainCreateInputDTO({
+        ...input,
         id,
-        name: input.name,
         state: input.state ?? DOMAIN_STATES.ACTIVE,
-        externalReference: input.externalReference,
       }),
     );
 
@@ -206,6 +242,7 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
         name: 'root',
         password: password,
         email: `root@${domain.id}.com`,
+        isDashboardUser: true,
       }),
     );
 
