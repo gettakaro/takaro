@@ -1,5 +1,6 @@
 import { styled } from '../../../styled';
 import { HorizontalNavVariant } from '.';
+import { shade } from 'polished';
 
 export const NavBar = styled.nav<{ variant: HorizontalNavVariant }>`
   display: flex;
@@ -23,6 +24,8 @@ export const NavBar = styled.nav<{ variant: HorizontalNavVariant }>`
           width: 100%;
           padding-bottom: ${theme.spacing['0_75']};
         `;
+      case 'clear':
+        return '';
     }
   }}
 
@@ -44,6 +47,14 @@ export const NavBar = styled.nav<{ variant: HorizontalNavVariant }>`
             font-weight: 500;
             padding: 0 ${theme.spacing['0_75']};
           `;
+        case 'clear':
+          return `
+          border-radius: ${theme.borderRadius.small};
+          padding: ${theme.spacing['0_5']} ${theme.spacing['0_75']};
+          font-weight: 500;
+          color: ${theme.colors.text};
+          border: 1px solid ${theme.colors.background};
+        `;
       }
     }}
     border-radius: ${({ theme }) => theme.borderRadius.small};
@@ -53,7 +64,11 @@ export const NavBar = styled.nav<{ variant: HorizontalNavVariant }>`
     &.active {
       color: ${({ theme }) => theme.colors.text};
 
-      &:after {
+      ${({ variant, theme }) => {
+        switch (variant) {
+          case 'underline':
+            return `
+                  &:after {
         content: '';
         position: absolute;
         bottom: -8px;
@@ -61,8 +76,18 @@ export const NavBar = styled.nav<{ variant: HorizontalNavVariant }>`
         right: 0;
         height: 1px;
         width: 100%;
-        background-color: ${({ theme }) => theme.colors.primary};
+        background-color: ${theme.colors.primary};
       }
-    }
+      `;
+          case 'clear':
+            return `
+          background-color: ${shade('0.5', theme.colors.primary)};
+          color: white;
+          border-color: ${theme.colors.primary};
+        `;
+          case 'block':
+            return '';
+        }
+      }}
   }
 `;
