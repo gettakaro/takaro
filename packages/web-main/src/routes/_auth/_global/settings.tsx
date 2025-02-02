@@ -27,7 +27,9 @@ function Component() {
       <HorizontalNav variant="underline">
         <Link to="/settings/gameservers">Global Game Server Settings</Link>
         <Link to="/settings/discord">Discord integration</Link>
-        <Link to="/settings/billing">Billing</Link>
+        <Link to="/settings/billing" search={{ period: 'monthly' }}>
+          Billing
+        </Link>
       </HorizontalNav>
       <ContentContainer>
         <ErrorBoundary>
