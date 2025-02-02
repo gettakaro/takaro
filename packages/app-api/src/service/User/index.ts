@@ -148,7 +148,7 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
   async inviteUser(email: string): Promise<UserOutputDTO> {
     const existingIdpProfile = await ory.getIdentityByEmail(email);
 
-    const user = await this.create(new UserCreateInputDTO({ email, name: email }));
+    const user = await this.create(new UserCreateInputDTO({ email, name: email, isDashboardUser: true }));
     if (!existingIdpProfile) {
       const recoveryFlow = await ory.getRecoveryFlow(user.idpId);
 

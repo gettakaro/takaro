@@ -258,6 +258,22 @@ export class AuthService extends DomainScoped {
           return next(new errors.ForbiddenError());
         }
 
+        /**
+         * Check if any requested permissions are a MANAGE_* permission
+         * If so, the user must be a dashboard user to proceed
+         * READ_* permissions are exempt from this check, as player profiles should be able to view and use the shop
+         * This is not a auth error exactly, it's a limit with the domains billing plan
+         * TODO: we should extend this check in the future, API tokens should pass this check too
+         */
+        const isRequestingManagePermission = permissions.some((p) => p.startsWith('MANAGE_'));
+        const isDashboardUser =
+          user.isDashboardUser ||
+          user.roles.some((r) => r.role.permissions.some((p) => p.permission.permission === PERMISSIONS.ROOT));
+        if (isRequestingManagePermission && !isDashboardUser) {
+          log.warn(`User ${user.id} does not have MANAGE_* permissions`);
+          return next(new errors.BadRequestError('You must be a dashboard user to perform this action'));
+        }
+
         req.user = user;
         req.domainId = user.domain;
 

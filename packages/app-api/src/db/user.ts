@@ -33,7 +33,7 @@ export class RoleOnUserModel extends TakaroModel {
 export class UserModel extends TakaroModel {
   static tableName = USER_TABLE_NAME;
   name!: string;
-
+  isDashboardUser: boolean;
   idpId: string;
   discordId?: string;
   playerId?: string;
