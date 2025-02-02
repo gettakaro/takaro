@@ -114,7 +114,7 @@ async function main() {
 
       await $`npm run --workspace=./packages/e2e test:e2e`;
     } else {
-      await run('takaro', 'npm run test', { ...composeOpts, NODE_ENV: 'test' });
+      await $`npm run test:ci`;
     }
   } catch (error) {
     console.error('Tests failed');
