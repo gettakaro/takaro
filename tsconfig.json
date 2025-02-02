@@ -6,7 +6,7 @@
     "declaration": true,
     "sourceMap": true,
     "outDir": "dist",
-    "rootDir": "src",
+    "rootDir": ".",
     "strict": true,
     "noImplicitAny": true,
     "strictPropertyInitialization": false,
@@ -25,7 +25,6 @@
     "resolveJsonModule": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*.ts"],
   "ts-node": {
     "esm": true,
     "compiler": "typescript"
