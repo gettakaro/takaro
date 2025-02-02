@@ -165,7 +165,41 @@ async function main() {
 
 await main();
 ```
+### Variables with an expiration date
+Sometimes you want to add an expiration date to a variable. 
+```javascript
+// Create a variable with expiration
+const expiresAt = new Date(Date.now() + data.module.userConfig.expirationTime);
+await takaro.variable.variableControllerCreate({
+    key: 'variableName',
+    value: 'value',
+    playerId: player.id,        // Optional: Link to player
+    gameServerId: gameServerId, // Optional: Link to server
+    moduleId: mod.moduleId,     // Optional: Link to module
+    expiresAt: expiresAt
+});
 
+// Search for variable
+const existingVariable = await takaro.variable.variableControllerSearch({
+    filters: {
+        key: ['variableName'],
+        playerId: [player.id],
+        gameServerId: [gameServerId],
+        moduleId: [mod.moduleId]
+    }
+});
+
+// Update variable with new expiration, this will be in milliseconds
+const newExpiresAt = new Date(Date.now() + data.module.userConfig.expirationTime);
+await takaro.variable.variableControllerUpdate(existingVariable.data.data[0].id, {
+    value: 'newValue',
+    expiresAt: newExpiresAt
+});
+
+// Delete variable
+await takaro.variable.variableControllerDelete(existingVariable.data.data[0].id);
+```
+await main();
 ## Permissions
 
 As your module grows more complex, you'll want to control who can use certain features. Takaro has a robust permissions system that integrates with the server's role system.
@@ -333,6 +367,23 @@ async function main() {
 }
 
 await main();
+```
+## Recurring Code snippets
+### Checking for online players
+Query online players and exit if none found - prevents running unnecessary code on empty servers
+```javascript
+    // Get online players through PlayerOnGameServer search
+    const currentPlayers = (await takaro.playerOnGameserver.playerOnGameServerControllerSearch({
+        filters: {
+            gameServerId: [gameServerId],
+            online: [true]
+        }
+    })).data.meta;
+
+    // If no players online, exit early
+    if (currentPlayers.total === 0) {
+        return;
+    }
 ```
 
 ## Conclusion
