@@ -4,6 +4,7 @@
     "module": "nodenext",
     "lib": ["ES2022"],
     "declaration": true,
+    "declarationMap": true,
     "sourceMap": true,
     "outDir": "dist",
     "rootDir": ".",
