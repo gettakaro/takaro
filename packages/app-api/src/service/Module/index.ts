@@ -124,7 +124,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
   async init(mod: ModuleCreateAPIDTO): Promise<ModuleOutputDTO> {
     const domain = await new DomainService().findOne(this.domainId);
     if (!domain) throw new errors.NotFoundError('Domain not found');
-    const currentModules = await this.find({ limit: 1 });
+    const currentModules = await this.find({ limit: 1, filters: { builtin: ['null'] } });
     if (domain.maxModules <= currentModules.total)
       throw new errors.BadRequestError('Maximum number of modules reached');
 

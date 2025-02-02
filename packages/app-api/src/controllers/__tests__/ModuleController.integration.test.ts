@@ -177,9 +177,8 @@ const tests = [
         maxModules: MAX_MODULES,
       });
       const moduleRes = await this.client.module.moduleControllerSearch();
-      const currentModules = moduleRes.data.meta.total;
-      if (currentModules == undefined) throw new Error('No modules found');
-
+      // Explicitly filter out built-in modules, as they are not counted towards the limit
+      const currentModules = moduleRes.data.data.filter((m) => !m.builtin).length;
       // Create modules until we hit the limit
       for (let i = currentModules; i < MAX_MODULES; i++) {
         await this.client.module.moduleControllerCreate({
