@@ -22,7 +22,8 @@ export function Module() {
           "temporalValue": "*/30 * * * *",
           "function": "import { data, takaro } from '@takaro/helpers';\nasync function main() {\n    const { module: mod, gameServerId } = data;\n    // Check what the last message we sent was\n    const lastMessageVar = (await takaro.variable.variableControllerSearch({\n        filters: {\n            key: ['lastMessage'],\n            moduleId: [mod.moduleId],\n            gameServerId: [gameServerId],\n        },\n    })).data.data[0];\n    // If we haven't sent any messages yet, start with the first one\n    const lastMessage = lastMessageVar ? parseInt(lastMessageVar.value, 10) : -1;\n    // The next message we should send is the next in the array\n    // However, if we're at the end of the array, we should start over\n    const nextMessage = data.module.userConfig.messages[lastMessage + 1] ? lastMessage + 1 : 0;\n    // The actual text of the message we're going to send\n    const messageToSend = data.module.userConfig.messages[nextMessage];\n    // Send the message to the game server\n    await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {\n        message: messageToSend,\n    });\n    // Update the last message variable so the next time this cron job runs, we know what to send\n    if (lastMessageVar) {\n        // The variable already exists, update it\n        await takaro.variable.variableControllerUpdate(lastMessageVar.id, {\n            value: nextMessage.toString(),\n        });\n    }\n    else {\n        // The variable doesn't exist, create it\n        await takaro.variable.variableControllerCreate({\n            key: 'lastMessage',\n            value: nextMessage.toString(),\n            moduleId: mod.moduleId,\n            gameServerId: gameServerId,\n        });\n    }\n}\nawait main();\n//# sourceMappingURL=Automated%20message.js.map"
         }
-      ]
+      ],
+      "uiSchema": "{}"
     }
   ]
 };
