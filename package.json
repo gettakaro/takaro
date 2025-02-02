@@ -10,7 +10,7 @@
     "postbuild": "npx typedoc",
     "clean": "npx --workspaces rimraf dist && npx --workspaces rimraf node_modules && npx rimraf node_modules",
     "test": "node --test-concurrency 1 --loader ts-node/esm --test 'packages/**/*.test.ts'",
-    "test:ci": "node --test-concurrency 1 --loader ts-node/esm --test --test-reporter=spec --test-reporter-destination=stdout --test-reporter=@reporters/github --test-reporter-destination=stdout 'packages/**/*.test.ts'",
+    "test:ci": "node packages/test/dist/waitUntilReady.js && node --test-concurrency 1 --loader ts-node/esm --test --test-reporter=spec --test-reporter-destination=stdout --test-reporter=@reporters/github --test-reporter-destination=stdout 'packages/**/*.test.ts'",
     "test:unit": "node --test-concurrency 1 --loader ts-node/esm --test 'packages/**/*.unit.test.ts'",
     "test:integration": "node --test-concurrency 1 --loader ts-node/esm --test 'packages/**/*.integration.test.ts'",
     "test:style": "npm run lint && npm run prettier",
