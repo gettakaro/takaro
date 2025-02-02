@@ -10225,6 +10225,12 @@ export interface UserCreateInputDTO {
    * @memberof UserCreateInputDTO
    */
   idpId?: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof UserCreateInputDTO
+   */
+  isDashboardUser?: boolean;
 }
 /**
  *
@@ -10293,6 +10299,12 @@ export interface UserOutputDTO {
    * @memberof UserOutputDTO
    */
   player: PlayerOutputWithRolesDTO;
+  /**
+   *
+   * @type {boolean}
+   * @memberof UserOutputDTO
+   */
+  isDashboardUser: boolean;
   /**
    *
    * @type {string}
@@ -10403,6 +10415,12 @@ export interface UserOutputWithRolesDTO {
    * @memberof UserOutputWithRolesDTO
    */
   player: PlayerOutputWithRolesDTO;
+  /**
+   *
+   * @type {boolean}
+   * @memberof UserOutputWithRolesDTO
+   */
+  isDashboardUser: boolean;
 }
 /**
  *
@@ -10586,6 +10604,12 @@ export interface UserUpdateDTO {
    * @memberof UserUpdateDTO
    */
   name?: string;
+  /**
+   *
+   * @type {boolean}
+   * @memberof UserUpdateDTO
+   */
+  isDashboardUser?: boolean;
 }
 /**
  *

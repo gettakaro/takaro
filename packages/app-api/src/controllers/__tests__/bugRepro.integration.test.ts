@@ -205,7 +205,7 @@ const tests = [
     name: 'Bug repro: assigning permissions to a linked player should work with api checks',
     setup: SetupGameServerPlayers.setup,
     test: async function () {
-      const manageModulesPerm = await this.client.permissionCodesToInputs([PERMISSIONS.ManageModules]);
+      const manageModulesPerm = await this.client.permissionCodesToInputs([PERMISSIONS.ReadModules]);
       const role = await this.client.role.roleControllerCreate({
         name: 'module editor role',
         permissions: manageModulesPerm,
@@ -218,10 +218,22 @@ const tests = [
         this.setupData.gameServer1.id,
         true,
       );
-      await this.client.player.playerControllerAssignRole(playerId, role.data.data.id);
 
-      const mod = (await userClient.module.moduleControllerCreate({ name: 'testing module' })).data.data;
-      expect(mod.name).to.be.eq('testing module');
+      // First try, this should fail
+      try {
+        await userClient.module.moduleControllerSearch();
+        throw new Error('Should have thrown an error');
+      } catch (error) {
+        if (!isAxiosError(error)) throw error;
+        expect(error.response?.status).to.be.eq(403);
+        expect(error.response?.data.meta.error.message).to.be.eq('Forbidden');
+      }
+
+      // Then assign the permission
+      await this.client.player.playerControllerAssignRole(playerId, role.data.data.id);
+      // Next attempt should work
+      const mod = (await userClient.module.moduleControllerSearch()).data.data;
+      expect(mod).to.be.an('array');
     },
   }),
   /**
@@ -274,7 +286,7 @@ const tests = [
       } catch (error) {
         if (!isAxiosError(error)) throw error;
         expect(error.response?.status).to.be.eq(400);
-        expect(error.response?.data.meta.error.message).to.be.eq('This module has reached the limit of 100 functions');
+        expect(error.response?.data.meta.error.message).to.be.eq('This module has reached the limit of 50 functions');
       }
 
       try {
@@ -292,7 +304,7 @@ const tests = [
       } catch (error) {
         if (!isAxiosError(error)) throw error;
         expect(error.response?.status).to.be.eq(400);
-        expect(error.response?.data.meta.error.message).to.be.eq('This module has reached the limit of 100 functions');
+        expect(error.response?.data.meta.error.message).to.be.eq('This module has reached the limit of 50 functions');
       }
 
       try {
@@ -310,7 +322,7 @@ const tests = [
       } catch (error) {
         if (!isAxiosError(error)) throw error;
         expect(error.response?.status).to.be.eq(400);
-        expect(error.response?.data.meta.error.message).to.be.eq('This module has reached the limit of 100 functions');
+        expect(error.response?.data.meta.error.message).to.be.eq('This module has reached the limit of 50 functions');
       }
 
       try {
@@ -327,8 +339,67 @@ const tests = [
       } catch (error) {
         if (!isAxiosError(error)) throw error;
         expect(error.response?.status).to.be.eq(400);
-        expect(error.response?.data.meta.error.message).to.be.eq('This module has reached the limit of 100 functions');
+        expect(error.response?.data.meta.error.message).to.be.eq('This module has reached the limit of 50 functions');
       }
+    },
+  }),
+  /**
+   * Takaro has a system for limiting management-users via billing plans
+   * The system should properly validate if a user can perform management actions based on this
+   * So the test will create a new user via the ingame linking flow
+   * This user should be able to read data (assuming they have the permission for it)
+   * But they cannot edit/create data (even though they have the permission for it!)
+   * After making this user a 'dashboardUser', they should be able to edit/create data
+   */
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Management permissions should respect billing plan limits',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      // Create a role with management permissions
+      const manageModulesPerm = await this.client.permissionCodesToInputs([
+        PERMISSIONS.ManageModules,
+        PERMISSIONS.ReadModules,
+      ]);
+      const role = await this.client.role.roleControllerCreate({
+        name: 'module editor role',
+        permissions: manageModulesPerm,
+      });
+
+      // Create a user via player linking flow
+      const playerId = this.setupData.pogs1[0].playerId;
+      const { client: userClient, user } = await createUserForPlayer(
+        this.client,
+        playerId,
+        this.setupData.gameServer1.id,
+        true,
+      );
+
+      // Assign management role to player
+      await this.client.player.playerControllerAssignRole(playerId, role.data.data.id);
+
+      // Should be able to read modules
+      const modules = await userClient.module.moduleControllerSearch();
+      expect(modules.data.data).to.be.an('array');
+
+      // Should NOT be able to create modules (not a dashboard user)
+      try {
+        await userClient.module.moduleControllerCreate({ name: 'test module' });
+        throw new Error('Should have thrown an error');
+      } catch (error) {
+        if (!isAxiosError(error)) throw error;
+        expect(error.response?.status).to.be.eq(400);
+        expect(error.response?.data.meta.error.message).to.contain('dashboard user');
+      }
+
+      // Make the user a dashboard user
+      if (!this.standardDomainId) throw new Error('No standard domain id');
+      await this.client.user.userControllerUpdate(user.id, { isDashboardUser: true });
+
+      // Now should be able to create modules
+      const newModule = await userClient.module.moduleControllerCreate({ name: 'test module' });
+      expect(newModule.data.data.name).to.equal('test module');
     },
   }),
 ];

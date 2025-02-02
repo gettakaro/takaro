@@ -1,4 +1,4 @@
-import { IsEmail, IsISO8601, IsOptional, IsString, IsUUID, Length, ValidateNested } from 'class-validator';
+import { IsBoolean, IsEmail, IsISO8601, IsOptional, IsString, IsUUID, Length, ValidateNested } from 'class-validator';
 import { TakaroDTO, TakaroModelDTO } from '@takaro/util';
 import { UserAssignmentOutputDTO } from '../RoleService.js';
 import { Type } from 'class-transformer';
@@ -22,6 +22,8 @@ export class UserOutputDTO extends TakaroModelDTO<UserOutputDTO> {
   @Type(() => PlayerOutputWithRolesDTO)
   @ValidateNested()
   player?: PlayerOutputWithRolesDTO;
+  @IsBoolean()
+  isDashboardUser: boolean;
 }
 
 export class UserOutputWithRolesDTO extends UserOutputDTO {
@@ -42,6 +44,10 @@ export class UserCreateInputDTO extends TakaroDTO<UserCreateInputDTO> {
   @IsString()
   @IsOptional()
   idpId?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  isDashboardUser?: boolean;
 }
 
 export class UserUpdateDTO extends TakaroDTO<UserUpdateDTO> {
@@ -49,6 +55,10 @@ export class UserUpdateDTO extends TakaroDTO<UserUpdateDTO> {
   @Length(3, 50)
   @IsOptional()
   name?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  isDashboardUser?: boolean;
 }
 
 export class UserUpdateAuthDTO extends TakaroDTO<UserUpdateAuthDTO> {
