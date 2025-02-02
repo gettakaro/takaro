@@ -10473,6 +10473,12 @@ export interface UserSearchInputAllowedFilters {
   roleId?: Array<string>;
   /**
    *
+   * @type {Array<boolean>}
+   * @memberof UserSearchInputAllowedFilters
+   */
+  isDashboardUser?: Array<boolean>;
+  /**
+   *
    * @type {Array<string>}
    * @memberof UserSearchInputAllowedFilters
    */
