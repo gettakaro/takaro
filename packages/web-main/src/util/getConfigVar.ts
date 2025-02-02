@@ -1,25 +1,21 @@
 const envMap: Record<keyof TakaroConfig, string> = {
   apiUrl: 'VITE_API',
+  billingApiUrl: 'VITE_BILLING_API_URL',
   oryUrl: 'VITE_ORY_URL',
   posthogApiUrl: 'VITE_POSTHOG_API_URL',
   posthogPublicApiKey: 'VITE_POSTHOG_PUBLIC_API_KEY',
   takaroVersion: 'VITE_TAKARO_VERSION',
-  paymentLinkPlan1Url: 'VITE_PAYMENT_LINK_PLAN_0_URL',
-  paymentLinkPlan0Url: 'VITE_PAYMENT_LINK_PLAN_1_URL',
   managePlanUrl: 'VITE_MANAGE_PLAN_URL',
-  stripePublicApiKey: 'VITE_STRIPE_PUBLIC_API_KEY',
 } as const;
 
 export interface TakaroConfig {
   apiUrl: string;
+  billingApiUrl: string;
   oryUrl: string;
   posthogApiUrl: string;
   posthogPublicApiKey: string;
   takaroVersion: string;
-  paymentLinkPlan0Url: string;
-  paymentLinkPlan1Url: string;
   managePlanUrl: string;
-  stripePublicApiKey: string;
 }
 
 declare global {
