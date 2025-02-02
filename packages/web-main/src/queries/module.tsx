@@ -48,6 +48,7 @@ export const moduleKeys = {
   detail: (moduleId: string) => [...moduleKeys.all, 'detail', moduleId] as const,
   export: (versionId: string) => [...moduleKeys.all, 'export', versionId] as const,
   list: () => [...moduleKeys.all, 'list'] as const,
+  count: () => [...moduleKeys.all, 'count'] as const,
 
   versions: {
     all: ['versions'] as const,
@@ -115,6 +116,14 @@ export const moduleQueryOptions = (moduleId: string) =>
     queryFn: async () => (await getApiClient().module.moduleControllerGetOne(moduleId)).data.data,
   });
 
+export const customModuleCountQueryOptions = () =>
+  queryOptions<number, AxiosError<number>>({
+    queryKey: moduleKeys.count(),
+    queryFn: async () =>
+      (await getApiClient().module.moduleControllerSearch({ filters: { builtin: ['null'] }, limit: 1 })).data.meta
+        .total!,
+  });
+
 export const moduleVersionsQueryOptions = (queryParams: ModuleVersionSearchInputDTO) =>
   queryOptions<ModuleVersionOutputArrayDTOAPI, AxiosError<ModuleVersionOutputArrayDTOAPI>>({
     // TODO: (for now) ideally we always pass a moduleId here,
@@ -159,6 +168,10 @@ export const useModuleCreate = () => {
           newModule.latestVersion,
         );
 
+        const currentModuleCount = queryClient.getQueryData<number>(moduleKeys.count());
+        if (currentModuleCount) {
+          queryClient.setQueryData<number>(moduleKeys.count(), currentModuleCount + 1);
+        }
         return queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(newModule.id), newModule);
       },
     }),
@@ -213,6 +226,11 @@ export const useModuleRemove = () => {
         await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
         queryClient.removeQueries({ queryKey: moduleKeys.versions.list(moduleId) });
         queryClient.removeQueries({ queryKey: moduleKeys.detail(moduleId) });
+
+        const currentModuleCount = queryClient.getQueryData<number>(moduleKeys.count());
+        if (currentModuleCount) {
+          queryClient.setQueryData<number>(moduleKeys.count(), currentModuleCount - 1);
+        }
       },
     }),
     {},

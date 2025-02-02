@@ -23,6 +23,7 @@ export const userKeys = {
   list: () => [...userKeys.all, 'list'] as const,
   detail: (id: string) => [...userKeys.all, 'detail', id] as const,
   me: () => [...userKeys.all, 'me'] as const,
+  count: () => [...userKeys.all, 'count'] as const,
 };
 
 interface RoleInput {
@@ -50,6 +51,12 @@ export const userQueryOptions = (userId: string) =>
   queryOptions<UserOutputWithRolesDTO, AxiosError<UserOutputWithRolesDTO>>({
     queryKey: userKeys.detail(userId),
     queryFn: async () => (await getApiClient().user.userControllerGetOne(userId)).data.data,
+  });
+
+export const userCountQueryOptions = () =>
+  queryOptions<number, AxiosError<number>>({
+    queryKey: userKeys.count(),
+    queryFn: async () => (await getApiClient().user.userControllerSearch({ limit: 1 })).data.meta.total!,
   });
 
 export const userMeQueryOptions = () =>
@@ -135,6 +142,11 @@ export const useInviteUser = () => {
       mutationFn: async ({ email }) => (await apiClient.user.userControllerInvite({ email })).data,
       onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: userKeys.list() });
+
+        const currentUserCount = queryClient.getQueryData<number>(userKeys.count());
+        if (currentUserCount) {
+          queryClient.setQueryData<number>(userKeys.count(), currentUserCount + 1);
+        }
       },
     }),
     {},
@@ -155,6 +167,12 @@ export const useUserRemove = () => {
       onSuccess: async (_, { userId }) => {
         await queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
         await queryClient.invalidateQueries({ queryKey: userKeys.list() });
+
+        const currentUserCount = queryClient.getQueryData<number>(userKeys.count());
+        if (currentUserCount) {
+          queryClient.setQueryData<number>(userKeys.count(), currentUserCount - 1);
+        }
+
         enqueueSnackbar('User successfully deleted!', { variant: 'default' });
       },
     }),
