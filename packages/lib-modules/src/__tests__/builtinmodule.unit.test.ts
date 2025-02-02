@@ -1,5 +1,6 @@
 import { expect } from '@takaro/test';
 import { getModules } from '../main.js';
+import { describe } from 'node:test';
 
 describe('BuiltInModule', () => {
   it('Can load module items', async () => {

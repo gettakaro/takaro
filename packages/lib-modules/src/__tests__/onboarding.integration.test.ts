@@ -2,6 +2,7 @@ import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, Event
 import { GameEvents } from '../dto/gameEvents.js';
 import { HookEvents } from '../main.js';
 import { faker } from '@faker-js/faker';
+import { describe } from 'node:test';
 
 const group = 'Onboarding';
 const groupStarterkit = 'Onboarding - Starterkit';
