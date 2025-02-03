@@ -95,8 +95,6 @@ async function main() {
       waitUntilHealthyHttp('http://127.0.0.1:3003/healthz', 60),
     ]);
 
-    console.log('Running tests with config', composeOpts);
-
     if (process.env.IS_E2E) {
       // Environment variables don't seem to propagate to the child processes when using the _normal_ method with zx
       // So we're hacking it like this instead :)
