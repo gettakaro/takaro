@@ -13,6 +13,7 @@ import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { globalGameServerSetingQueryOptions } from 'queries/setting';
 import { userMeQueryOptions } from 'queries/user';
 import { useQueries } from '@tanstack/react-query';
+import { zodValidator } from '@tanstack/zod-adapter';
 
 const Flex = styled.div`
   display: flex;
@@ -41,9 +42,11 @@ export const Route = createFileRoute('/_auth/module-builder/$moduleId/$moduleVer
       throw redirect({ to: '/forbidden' });
     }
   },
-  validateSearch: z.object({
-    file: z.string().optional(),
-  }),
+  validateSearch: zodValidator(
+    z.object({
+      file: z.string().optional(),
+    }),
+  ),
   loader: async ({ params, context }) => {
     try {
       const data = await context.queryClient.ensureQueryData(moduleQueryOptions(params.moduleId));

@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { DateRangePicker, Button, styled } from '@takaro/lib-components';
 import { ModuleSelectQueryField } from 'components/selects/ModuleSelectQueryField';
+import { fallback } from '@tanstack/zod-adapter';
 
 const Form = styled.form`
   display: grid;
@@ -35,10 +36,12 @@ export const eventFilterSchema = z.object({
     })
     .optional()
     .catch(undefined),
-  playerIds: z.array(z.string()).optional().default([]),
-  gameServerIds: z.array(z.string()).optional().default([]),
-  moduleIds: z.array(z.string()).optional().default([]),
-  eventNames: z.array(z.nativeEnum(EventName)).optional().default([]),
+  playerIds: fallback(z.array(z.string()), []).optional().default([]),
+  gameServerIds: fallback(z.array(z.string()), []).optional().default([]),
+  moduleIds: fallback(z.array(z.string()), []).optional().default([]),
+  eventNames: fallback(z.array(z.nativeEnum(EventName)), [])
+    .optional()
+    .default([]),
 });
 export type EventFilterInputs = z.infer<typeof eventFilterSchema>;
 

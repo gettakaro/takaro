@@ -6,14 +6,15 @@ import { UserAuthCard } from '@ory/elements';
 import { useDocumentTitle } from 'hooks/useDocumentTitle';
 import { z } from 'zod';
 import { useOry } from 'hooks/useOry';
-
-const searchSchema = z.object({
-  flowId: z.string().catch(''),
-});
+import { zodValidator, fallback } from '@tanstack/zod-adapter';
 
 export const Route = createFileRoute('/_single-page/account/verification')({
   component: Component,
-  validateSearch: (search) => searchSchema.parse(search),
+  validateSearch: zodValidator(
+    z.object({
+      flowId: fallback(z.string(), '').default(''),
+    }),
+  ),
 });
 
 const Container = styled.div`

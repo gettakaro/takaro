@@ -62,7 +62,6 @@ export const Plan: FC<PlanProps> = ({
           {/* right side*/}
           <PriceContainer highlight={highlight}>
             <div>
-              <h2>For a price of</h2>
               {price && (
                 <p
                   style={{
@@ -84,7 +83,7 @@ export const Plan: FC<PlanProps> = ({
               <a style={{ width: '100%' }} className="button" href={to} target="_blank" rel="noreferrer">
                 <Button fullWidth text={buttonText} />
               </a>
-              <p>Invoices and receipts available for easy company reimbursement</p>
+              <p></p>
             </div>
           </PriceContainer>
         </InnerContainer>
