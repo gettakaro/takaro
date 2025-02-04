@@ -1,5 +1,3 @@
-import 'reflect-metadata';
-
 import { TakaroEmitter } from './TakaroEmitter.js';
 import { expect, sandbox } from '@takaro/test';
 import { EventLogLine, GameEvents } from '@takaro/modules';
@@ -91,29 +89,29 @@ describe('TakaroEmitter', () => {
     expect(spy).to.have.been.calledOnce;
   });
 
-  it('Validates data on emitting', async (t) => {
-    t.skip();
-    const emitter = new ExtendedTakaroEmitter();
-    const spy = sandbox.spy();
-    const errorSpy = sandbox.spy();
+  // it('Validates data on emitting', async (t) => {
+  //   t.skip();
+  //   const emitter = new ExtendedTakaroEmitter();
+  //   const spy = sandbox.spy();
+  //   const errorSpy = sandbox.spy();
 
-    emitter.on(GameEvents.LOG_LINE, spy);
-    emitter.on('error', errorSpy);
+  //   emitter.on(GameEvents.LOG_LINE, spy);
+  //   emitter.on('error', errorSpy);
 
-    await emitter.emit(
-      GameEvents.LOG_LINE,
-      new EventLogLine({
-        msg: 'test',
-        // @ts-expect-error testing validation, our types accurately detect this is invalid
-        unknownProperty: 'this should trip validation',
-      }),
-    );
+  //   await emitter.emit(
+  //     GameEvents.LOG_LINE,
+  //     new EventLogLine({
+  //       msg: 'test',
+  //       // @ts-expect-error testing validation, our types accurately detect this is invalid
+  //       unknownProperty: 'this should trip validation',
+  //     }),
+  //   );
 
-    expect(errorSpy).to.have.been.calledOnce;
-    expect(errorSpy.getCall(0).args[0].message).to.match(
-      /property unknownProperty has failed the following constraints: whitelistValidation/,
-    );
-  });
+  //   expect(errorSpy).to.have.been.calledOnce;
+  //   expect(errorSpy.getCall(0).args[0].message).to.match(
+  //     /property unknownProperty has failed the following constraints: whitelistValidation/,
+  //   );
+  // });
 
   it('Throws when an error occurs and no listeners are attached to the "error" event', async () => {
     const emitter = new ExtendedTakaroEmitter();
