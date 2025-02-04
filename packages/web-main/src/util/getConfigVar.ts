@@ -1,6 +1,7 @@
 const envMap: Record<keyof TakaroConfig, string> = {
   apiUrl: 'VITE_API',
   billingApiUrl: 'VITE_BILLING_API_URL',
+  billingEnabled: 'VITE_BILLING_ENABLED',
   oryUrl: 'VITE_ORY_URL',
   posthogApiUrl: 'VITE_POSTHOG_API_URL',
   posthogPublicApiKey: 'VITE_POSTHOG_PUBLIC_API_KEY',
@@ -16,6 +17,7 @@ export interface TakaroConfig {
   posthogPublicApiKey: string;
   takaroVersion: string;
   managePlanUrl: string;
+  billingEnabled: boolean;
 }
 
 declare global {

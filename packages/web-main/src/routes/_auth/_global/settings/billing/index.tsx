@@ -1,6 +1,6 @@
 import { Button, HorizontalNav, Plan, styled } from '@takaro/lib-components';
 import { useQueries } from '@tanstack/react-query';
-import { createFileRoute, Link, redirect } from '@tanstack/react-router';
+import { createFileRoute, Link, notFound, redirect } from '@tanstack/react-router';
 import { MaxUsageCard } from 'components/MaxUsageCard';
 import { hasPermission } from 'hooks/useHasPermission';
 import { gameServerCountQueryOptions } from 'queries/gameserver';
@@ -29,6 +29,10 @@ export const Route = createFileRoute('/_auth/_global/settings/billing/')({
     }),
   ),
   beforeLoad: async ({ context }) => {
+    if (getConfigVar('billingEnabled') === false) {
+      throw notFound();
+    }
+
     const session = await context.queryClient.ensureQueryData(userMeQueryOptions());
     if (!hasPermission(session, ['ROOT'])) {
       throw redirect({ to: '/forbidden' });

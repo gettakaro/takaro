@@ -3,6 +3,7 @@ import { styled, HorizontalNav } from '@takaro/lib-components';
 import { ErrorBoundary } from 'components/ErrorBoundary';
 import { hasPermission } from 'hooks/useHasPermission';
 import { userMeQueryOptions } from 'queries/user';
+import { getConfigVar } from 'util/getConfigVar';
 
 export const Route = createFileRoute('/_auth/_global/settings')({
   beforeLoad: async ({ context }) => {
@@ -27,7 +28,7 @@ function Component() {
       <HorizontalNav variant="underline">
         <Link to="/settings/gameservers">Global Game Server Settings</Link>
         <Link to="/settings/discord">Discord integration</Link>
-        <Link to="/settings/billing">Billing</Link>
+        {getConfigVar('billingEnabled') === true && <Link to="/settings/billing">Billing</Link>}
       </HorizontalNav>
       <ContentContainer>
         <ErrorBoundary>
