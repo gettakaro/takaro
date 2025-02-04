@@ -1,10 +1,13 @@
-import { HookService } from '../HookService.js';
+import 'reflect-metadata';
+
 import { queueService } from '@takaro/queues';
 import { EventPlayerConnected, EventChatMessage, HookEvents, ChatChannel } from '@takaro/modules';
-import { IntegrationTest, sandbox, expect, integrationConfig } from '@takaro/test';
+import { IntegrationTest, sandbox, expect, integrationConfig, EventsAwaiter } from '@takaro/test';
 import { HookOutputDTO, GameServerOutputDTO, ModuleOutputDTO, ModuleInstallationOutputDTO } from '@takaro/apiclient';
 import { SinonStub } from 'sinon';
 import { describe } from 'node:test';
+import { HookService } from '../HookService.js';
+import { EVENT_TYPES } from '../EventService.js';
 
 const group = 'HookService';
 
@@ -70,15 +73,24 @@ const tests = [
     name: 'Basic hook trigger',
     setup,
     test: async function () {
-      await this.setupData.service.handleEvent({
-        eventData: new EventPlayerConnected({
+      // Set up an events awaiter
+      const eventsAwaiter = new EventsAwaiter();
+      await eventsAwaiter.connect(this.client);
+      const _hookExecutedEvents = eventsAwaiter.waitForEvents(EVENT_TYPES.HOOK_EXECUTED, 20);
+
+      // Trigger the hook
+      await this.client.hook.hookControllerTrigger({
+        gameServerId: this.setupData.gameserver.id,
+        moduleId: this.setupData.mod.id,
+        eventType: HookEvents.PLAYER_CONNECTED,
+        eventMeta: new EventPlayerConnected({
           msg: 'foo connected',
         }),
-        eventType: HookEvents.PLAYER_CONNECTED,
-        gameServerId: this.setupData.gameserver.id,
       });
 
-      expect(this.setupData.queueAddStub).to.have.been.calledOnce;
+      // Then, check that the hook was triggered
+      const hookExecutedEvents = await _hookExecutedEvents;
+      expect(hookExecutedEvents).to.have.length(1);
     },
   }),
   new IntegrationTest<IStandardSetupData>({
