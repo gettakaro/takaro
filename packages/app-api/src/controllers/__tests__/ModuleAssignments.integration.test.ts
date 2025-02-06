@@ -1,5 +1,6 @@
 import { IntegrationTest, expect, integrationConfig } from '@takaro/test';
 import { ModuleOutputDTO, GameServerOutputDTO, HookCreateDTOEventTypeEnum } from '@takaro/apiclient';
+import { describe } from 'node:test';
 
 const group = 'Module Assignments';
 

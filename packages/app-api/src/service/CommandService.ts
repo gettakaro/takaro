@@ -13,7 +13,7 @@ import { PaginatedOutput } from '../db/base.js';
 import { SettingsService, SETTINGS_KEYS } from './SettingsService.js';
 import { parseCommand } from '../lib/commandParser.js';
 import { GameServerService } from './GameServerService.js';
-import { PlayerService } from './PlayerService.js';
+import { PlayerService } from './Player/index.js';
 import { PlayerOnGameServerService } from './PlayerOnGameserverService.js';
 import { UserService } from './User/index.js';
 import { ModuleService } from './Module/index.js';

@@ -32,7 +32,7 @@ import { ModuleService } from './Module/index.js';
 
 // Curse you ESM... :(
 import _Ajv from 'ajv';
-import { PlayerService } from './PlayerService.js';
+import { PlayerService } from './Player/index.js';
 import { PlayerOnGameServerService, PlayerOnGameServerUpdateDTO } from './PlayerOnGameserverService.js';
 import { ItemCreateDTO, ItemsService } from './ItemsService.js';
 import { randomUUID } from 'crypto';

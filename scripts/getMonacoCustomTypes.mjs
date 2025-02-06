@@ -2,13 +2,23 @@
 // And adjusted/integrated into the project
 
 import fs from 'fs-extra';
-import path from 'path';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-async function getDts({ nodeModulesPath, packages }: { nodeModulesPath: string; packages: string[] }) {
-  const typings: Record<string, string> = {};
-  const parsedPackages: Record<string, boolean> = {};
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-  async function getTypingsForPackages(packages: string[] = []) {
+/**
+ * Get TypeScript definition files
+ * @param {Object} params
+ * @param {string} params.nodeModulesPath - Path to node_modules directory
+ * @param {string[]} params.packages - Array of package names
+ * @returns {Promise<Record<string, string>>}
+ */
+async function getDts({ nodeModulesPath, packages }) {
+  const typings = {};
+  const parsedPackages = {};
+
+  async function getTypingsForPackages(packages = []) {
     for (const packageName of packages) {
       console.log(`Getting typings for package: ${packageName}`);
       if (!parsedPackages[packageName]) {
@@ -35,7 +45,7 @@ async function getDts({ nodeModulesPath, packages }: { nodeModulesPath: string; 
     }
   }
 
-  async function getTypingsInDir(path: string) {
+  async function getTypingsInDir(path) {
     const dts = await fs.readdir(`${nodeModulesPath}/${path}`);
     for (const fileName of dts) {
       if (fileName.endsWith('.d.ts')) {

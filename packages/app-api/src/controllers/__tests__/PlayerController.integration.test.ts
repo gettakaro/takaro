@@ -3,6 +3,7 @@ import { PERMISSIONS } from '@takaro/auth';
 import { faker } from '@faker-js/faker';
 import { Client } from '@takaro/apiclient';
 import { AxiosError } from 'axios';
+import { describe } from 'node:test';
 
 const group = 'PlayerController';
 

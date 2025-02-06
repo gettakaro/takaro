@@ -11,6 +11,7 @@ import {
 import { SdtdConnectionInfo } from '../connectionInfo.js';
 import { SevenDaysToDieEmitter } from '../emitter.js';
 import { SevenDaysToDie } from '../index.js';
+import { describe, beforeEach, it } from 'node:test';
 
 const mockConnectionInfo = async (overrides?: Partial<SdtdConnectionInfo>) =>
   new SdtdConnectionInfo({

@@ -4,6 +4,7 @@ import { RustConnectionInfo } from '../connectionInfo.js';
 import { CommandOutput } from '../../../interfaces/GameServer.js';
 import { Rust } from '../index.js';
 import { IGamePlayer } from '@takaro/modules';
+import { describe, it } from 'node:test';
 
 const MOCK_PLAYER = new IGamePlayer({
   ip: '169.169.169.80',

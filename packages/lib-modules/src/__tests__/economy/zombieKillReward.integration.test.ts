@@ -1,6 +1,7 @@
 import { EventsAwaiter, expect, IntegrationTest, IShopSetup, shopSetup } from '@takaro/test';
 import { HookEvents } from '../../dto/index.js';
 import { Client, PlayerOutputDTO } from '@takaro/apiclient';
+import { describe } from 'node:test';
 
 const group = 'EconomyUtils:ZombieKillReward';
 

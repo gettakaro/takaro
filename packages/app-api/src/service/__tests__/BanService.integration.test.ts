@@ -2,6 +2,7 @@ import { IntegrationTest, SetupGameServerPlayers, expect } from '@takaro/test';
 import { queueService } from '@takaro/queues';
 import { randomUUID } from 'node:crypto';
 import { Client } from '@takaro/apiclient';
+import { describe } from 'node:test';
 
 async function triggerBanSync(domainId: string, gameServerId: string) {
   const job = await queueService.queues.bansSync.queue.add({ domainId, gameServerId, triggerId: randomUUID() });

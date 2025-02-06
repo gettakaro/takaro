@@ -42,7 +42,7 @@ npm run-script -w packages/lib-function-helpers build
 
 npm run-script -w packages/test build
 
-npx ts-node scripts/getMonacoCustomTypes.ts
+node scripts/getMonacoCustomTypes.mjs
 
 # npm run-script -w packages/app-api build
 # npm run-script -w packages/app-agent build

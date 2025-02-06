@@ -2,6 +2,7 @@ import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, Event
 import { GameEvents, HookEvents } from '../dto/index.js';
 import { EventChatMessageChannelEnum } from '@takaro/apiclient';
 import { randomUUID } from 'crypto';
+import { describe } from 'node:test';
 
 const group = 'Bug repros';
 

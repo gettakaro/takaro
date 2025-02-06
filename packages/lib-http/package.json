@@ -7,10 +7,7 @@
   "type": "module",
   "scripts": {
     "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json",
-    "build": "tsc -p ./tsconfig.build.json",
-    "test": "npm run test:unit --if-present && npm run test:integration --if-present",
-    "test:unit": "mocha --config ../../.mocharc.js src/**/*.unit.test.ts --exit",
-    "test:integration": "mocha --config ../../.mocharc.js src/**/*.integration.test.ts --exit"
+    "build": "tsc -p ./tsconfig.build.json"
   },
   "keywords": [],
   "author": "",

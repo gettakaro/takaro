@@ -1,5 +1,6 @@
 import { EventsAwaiter, expect, IntegrationTest, IShopSetup, shopSetup } from '@takaro/test';
 import { HookEvents } from '../../dto/index.js';
+import { describe } from 'node:test';
 
 const group = 'EconomyUtils:Shop:Browse';
 

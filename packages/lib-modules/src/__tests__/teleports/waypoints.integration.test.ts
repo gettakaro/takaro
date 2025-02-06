@@ -8,6 +8,7 @@ import {
 } from '@takaro/test';
 import { GameEvents, HookEvents } from '../../dto/index.js';
 import { GameServerTypesOutputDTOTypeEnum, PlayerOutputDTO, RoleOutputDTO } from '@takaro/apiclient';
+import { describe } from 'node:test';
 
 const group = 'Teleports - waypoints';
 

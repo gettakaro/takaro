@@ -14,8 +14,9 @@ import { AllowedFilters, RangeFilterCreatedAndUpdatedAt } from './shared.js';
 import { DomainOutputDTO, DomainService } from '../service/DomainService.js';
 import { TakaroDTO } from '@takaro/util';
 import { config } from '../config.js';
-import { PlayerOutputWithRolesDTO, PlayerService } from '../service/PlayerService.js';
+import { PlayerService } from '../service/Player/index.js';
 import { PlayerOnGameserverOutputDTO } from '../service/PlayerOnGameserverService.js';
+import { PlayerOutputWithRolesDTO } from '../service/Player/dto.js';
 
 export class GetUserDTO {
   @Length(3, 50)

@@ -1,6 +1,7 @@
 import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '../dto/gameEvents.js';
 import { CommandArgumentCreateDTO } from '@takaro/apiclient';
+import { describe } from 'node:test';
 
 const group = 'Command args';
 

@@ -3,7 +3,7 @@ import { config } from '../config.js';
 import { Job } from 'bullmq';
 import { logger } from '@takaro/util';
 import { GameServerService } from '../service/GameServerService.js';
-import { PlayerService } from '../service/PlayerService.js';
+import { PlayerService } from '../service/Player/index.js';
 import { DomainRepo } from '../db/domain.js';
 import { UserService } from '../service/User/index.js';
 import { kpiGateway, metrics } from '../lib/metrics.js';

@@ -4,6 +4,7 @@ import { expect } from '@takaro/test';
 import { adminAuthMiddleware } from '../adminAuth.js';
 import { Request, Response } from 'express';
 import { config } from '../../config.js';
+import { describe, before, after, it } from 'node:test';
 
 describe('adminAuth', () => {
   let http: HTTP;

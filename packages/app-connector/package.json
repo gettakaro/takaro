@@ -8,10 +8,7 @@
   "scripts": {
     "start": "node --loader ../../node_modules/@takaro/util/dist/tracing.js dist/main.js",
     "start:dev": "nodemon --exec 'npm run build && node --inspect=0.0.0.0:12003 --loader ../../node_modules/@takaro/util/dist/tracing.js dist/main.js' --config ../../nodemon.json",
-    "build": "tsc -p ./tsconfig.build.json",
-    "test": "npm run test:unit --if-present && npm run test:integration --if-present",
-    "test:unit": "echo \"No tests\" && exit 0",
-    "test:integration": "echo \"No tests\" && exit 0"
+    "build": "tsc -p ./tsconfig.build.json"
   },
   "keywords": [],
   "author": "",

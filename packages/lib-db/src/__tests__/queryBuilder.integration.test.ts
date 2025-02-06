@@ -4,6 +4,7 @@ import { expect } from '@takaro/test';
 import { TakaroModel } from '../TakaroModel.js';
 import { Model } from 'objection';
 import { sleep } from '@takaro/util';
+import { describe, beforeEach, afterEach, it } from 'node:test';
 
 const TEST_TABLE_USERS_NAME = 'test_users';
 const TEST_TABLE_POSTS_NAME = 'test_posts';

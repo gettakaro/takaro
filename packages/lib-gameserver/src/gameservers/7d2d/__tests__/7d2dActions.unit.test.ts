@@ -2,6 +2,7 @@ import { expect, sandbox } from '@takaro/test';
 import { SevenDaysToDie } from '../index.js';
 import { CommandOutput } from '../../../interfaces/GameServer.js';
 import { SdtdConnectionInfo } from '../connectionInfo.js';
+import { describe, it } from 'node:test';
 
 const testData = {
   oneBan:

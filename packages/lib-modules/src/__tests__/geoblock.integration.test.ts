@@ -2,6 +2,7 @@ import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, Event
 import { HookEvents } from '../dto/index.js';
 import { TakaroEventPlayerNewIpDetected } from '@takaro/modules';
 import { faker } from '@faker-js/faker';
+import { describe } from 'node:test';
 
 const group = 'Geo Block';
 

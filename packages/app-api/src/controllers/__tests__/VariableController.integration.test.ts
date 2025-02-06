@@ -1,6 +1,7 @@
 import { IntegrationTest, expect, SetupGameServerPlayers } from '@takaro/test';
 import { VariableOutputDTO } from '@takaro/apiclient';
 import { config } from '../../config.js';
+import { describe } from 'node:test';
 
 const group = 'VariableController';
 

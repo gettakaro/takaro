@@ -2,8 +2,9 @@ import { EventsAwaiter, IntegrationTest, SetupGameServerPlayers, expect, integra
 import { GameEvents, IGamePlayer } from '@takaro/modules';
 import { GameServerOutputDTO } from '@takaro/apiclient';
 import { v4 as uuid } from 'uuid';
-import { PlayerService } from '../../service/PlayerService.js';
+import { PlayerService } from '../../service/Player/index.js';
 import { sleep } from '@takaro/util';
+import { describe } from 'node:test';
 
 const group = 'Event worker';
 

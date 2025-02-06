@@ -16,10 +16,10 @@ interface Logger {
 export class BaseApiClient<T extends IBaseApiClientConfig> {
   protected axios: AxiosInstance;
   protected log: Logger = {
-    error: console.error,
-    info: console.log,
-    warn: console.warn,
-    debug: console.log,
+    error: () => {},
+    info: () => {},
+    warn: () => {},
+    debug: () => {},
   };
 
   constructor(protected readonly config: T) {

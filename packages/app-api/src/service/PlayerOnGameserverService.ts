@@ -10,7 +10,8 @@ import { Type } from 'class-transformer';
 import { PlayerRoleAssignmentOutputDTO, RoleService } from './RoleService.js';
 import { EVENT_TYPES, EventCreateDTO, EventOutputDTO, EventService } from './EventService.js';
 import { IGamePlayer, TakaroEventCurrencyAdded, TakaroEventCurrencyDeducted, TakaroEvents } from '@takaro/modules';
-import { PlayerService, PlayerUpdateDTO } from './PlayerService.js';
+import { PlayerService } from './Player/index.js';
+import { PlayerUpdateDTO } from './Player/dto.js';
 
 export class PlayerOnGameserverOutputDTO extends TakaroModelDTO<PlayerOnGameserverOutputDTO> {
   @IsString()

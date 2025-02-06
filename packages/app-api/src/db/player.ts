@@ -9,7 +9,7 @@ import {
   PlayerOutputDTO,
   PlayerOutputWithRolesDTO,
   PlayerUpdateDTO,
-} from '../service/PlayerService.js';
+} from '../service/Player/dto.js';
 import { ROLE_TABLE_NAME, RoleModel } from './role.js';
 import { PLAYER_ON_GAMESERVER_TABLE_NAME, PlayerOnGameServerModel } from './playerOnGameserver.js';
 import { config } from '../config.js';

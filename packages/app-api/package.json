@@ -11,9 +11,6 @@
     "prestart:dev": "npm run db:migrate",
     "preload": "node -e \"import('geolite2-redist').then(geolite => geolite.downloadDbs())\"",
     "build": "tsc -p ./tsconfig.build.json",
-    "test": "npm run test:unit --if-present && npm run test:integration --if-present",
-    "test:unit": "mocha --config ../../.mocharc.js src/**/*.unit.test.ts --exit",
-    "test:integration": "mocha --file ../test/dist/waitUntilReady.js --config ../../.mocharc.js src/**/*.integration.test.ts --exit",
     "db:migrate": "node scripts/migrate-up.mjs",
     "db:rollback": "node scripts/migrate-down.mjs"
   },

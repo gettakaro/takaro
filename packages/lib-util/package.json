@@ -7,11 +7,7 @@
   "type": "module",
   "scripts": {
     "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json",
-    "build": "tsc -p ./tsconfig.build.json",
-    "test": "npm run test:unit --if-present && npm run test:integration --if-present",
-    "test:unit": "mocha --config ../../.mocharc.js src/**/*.unit.test.ts",
-    "test:integration": "echo 'No tests (yet :))'",
-    "test:watch": "npm run test -- --watch"
+    "build": "tsc -p ./tsconfig.build.json"
   },
   "keywords": [],
   "author": "",

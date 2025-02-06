@@ -1,5 +1,6 @@
 import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '../dto/index.js';
+import { describe } from 'node:test';
 
 const group = 'Aliases';
 

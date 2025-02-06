@@ -1,5 +1,6 @@
 import { IntegrationTest, expect } from '@takaro/test';
 import { HookOutputDTOAPI, HookCreateDTOEventTypeEnum, ModuleOutputDTO } from '@takaro/apiclient';
+import { describe } from 'node:test';
 
 const group = 'HookController';
 

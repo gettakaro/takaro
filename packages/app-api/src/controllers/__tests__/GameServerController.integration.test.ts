@@ -1,5 +1,6 @@
 import { integrationConfig, IntegrationTest } from '@takaro/test';
 import { GameServerCreateDTOTypeEnum, GameServerOutputDTO } from '@takaro/apiclient';
+import { describe } from 'node:test';
 
 const group = 'GameServerController';
 

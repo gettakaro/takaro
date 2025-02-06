@@ -2,6 +2,7 @@ import { IntegrationTest, expect } from '@takaro/test';
 import { RoleOutputDTO } from '@takaro/apiclient';
 import { PERMISSIONS } from '@takaro/auth';
 import { AxiosError } from 'axios';
+import { describe } from 'node:test';
 
 const group = 'RoleController';
 

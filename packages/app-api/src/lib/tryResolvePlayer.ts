@@ -3,7 +3,7 @@ import {
   PlayerOnGameServerService,
   PlayerOnGameserverOutputWithRolesDTO,
 } from '../service/PlayerOnGameserverService.js';
-import { PlayerService } from '../service/PlayerService.js';
+import { PlayerService } from '../service/Player/index.js';
 
 const log = logger('lib:tryResolvePlayer');
 

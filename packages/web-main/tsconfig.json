@@ -12,10 +12,7 @@
       ]
     }
   },
-  "include": [
-    "src/**/*",
-    "src/**/*.json"
-  ],
+  "include": ["src/**/*.json", "src/**/*.ts", "src/**/*.tsx"],
   "references": [
     {
       "path": "./tsconfig.vite.json"

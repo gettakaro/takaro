@@ -8,9 +8,6 @@
   "scripts": {
     "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json",
     "build": "tsc -p ./tsconfig.build.json",
-    "test": "npm run test:unit --if-present && npm run test:integration --if-present",
-    "test:unit": "echo 'No tests (yet :))'",
-    "test:integration": "mocha --config ../../.mocharc.js src/**/*.integration.test.ts --exit",
     "migrate:create": "run(){ touch ./src/migrations/sql/$(date -u +\"%Y%m%d%H%M%S\")-$1.ts; }; run"
   },
   "keywords": [],

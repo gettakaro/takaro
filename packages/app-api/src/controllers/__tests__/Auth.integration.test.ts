@@ -1,6 +1,7 @@
 import { integrationConfig, IntegrationTest, logInWithPermissions, expect } from '@takaro/test';
 import { Client, RoleSearchInputDTOSortDirectionEnum, isAxiosError } from '@takaro/apiclient';
 import { PERMISSIONS } from '@takaro/auth';
+import { describe } from 'node:test';
 
 const group = 'Auth';
 
