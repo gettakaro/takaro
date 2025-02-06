@@ -6,13 +6,12 @@
     "moduleResolution": "node",
     "noImplicitAny": false,
     "jsx": "react-jsx",
-    "paths": {
-      "test-utils": [
-        "./test-utils.tsx" // <-- based on baseUrl
-      ]
-    }
   },
-  "include": ["src/**/*.json", "src/**/*.ts", "src/**/*.tsx"],
+  "include": [
+    "src/**/*.json",
+    "src/**/*.ts",
+    "src/**/*.tsx"
+  ],
   "references": [
     {
       "path": "./tsconfig.vite.json"

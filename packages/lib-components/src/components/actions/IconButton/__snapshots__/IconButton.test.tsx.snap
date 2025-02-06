@@ -1,0 +1,18 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Should render <IconButton /> 1`] = `
+<div>
+  <button
+    aria-label="test"
+    class="sc-jBeBSR dTACqm"
+    color="primary"
+    type="button"
+  >
+    <div
+      size="18"
+    >
+      icon
+    </div>
+  </button>
+</div>
+`;

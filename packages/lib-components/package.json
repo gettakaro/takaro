@@ -9,10 +9,8 @@
   "scripts": {
     "build": "storybook build -c ../../.storybook",
     "start:dev": "NODE_OPTIONS='' storybook dev -c ../../.storybook -p 13002",
-    "_test": "jest",
     "test:unit": "CI=true vitest",
-    "test:watch": "jest --watch",
-    "test:update": "jest --updateSnapshot"
+    "test:snapshot": "vitest -u"
   },
   "devDependencies": {
     "@hookform/devtools": "4.3.1",
