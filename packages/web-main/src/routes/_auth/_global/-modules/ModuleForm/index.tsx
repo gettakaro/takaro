@@ -117,8 +117,6 @@ export const ModuleForm: FC<ModuleFormProps> = ({
     });
   };
 
-  console.log('moduleVersion', moduleVersion);
-
   function getTitle() {
     if (moduleVersion) {
       return readOnly ? 'View module' : 'Edit module';
