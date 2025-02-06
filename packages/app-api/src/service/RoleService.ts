@@ -21,7 +21,7 @@ import { TakaroService } from './Base.js';
 import { ModuleService } from './Module/index.js';
 import { EventService, EventCreateDTO, EVENT_TYPES } from './EventService.js';
 import { TakaroEventRoleCreated, TakaroEventRoleDeleted, TakaroEventRoleUpdated } from '@takaro/modules';
-import { PlayerOutputWithRolesDTO } from './PlayerService.js';
+import { PlayerOutputWithRolesDTO } from './Player/dto.js';
 import { UserOutputWithRolesDTO } from './User/index.js';
 
 @ValidatorConstraint()

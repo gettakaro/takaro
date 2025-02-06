@@ -7,7 +7,7 @@ import { Axios } from 'axios';
 import { IsObject } from 'class-validator';
 import { config } from '../config.js';
 import { CountryStatsInputDTO, EventsCountInputDTO } from '../controllers/StatsController.js';
-import { PlayerService } from './PlayerService.js';
+import { PlayerService } from './Player/index.js';
 
 export class StatsOutputDTO extends TakaroDTO<StatsOutputDTO> {
   @IsObject()
