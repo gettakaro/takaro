@@ -1,6 +1,6 @@
-import { Button, HorizontalNav, Plan, styled } from '@takaro/lib-components';
+import { Button } from '@takaro/lib-components';
 import { useQueries } from '@tanstack/react-query';
-import { createFileRoute, Link, notFound, redirect } from '@tanstack/react-router';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 import { MaxUsageCard } from 'components/MaxUsageCard';
 import { hasPermission } from 'hooks/useHasPermission';
 import { gameServerCountQueryOptions } from 'queries/gameserver';
@@ -9,30 +9,9 @@ import { userCountQueryOptions, userMeQueryOptions } from 'queries/user';
 import { variableCountQueryOptions } from 'queries/variable';
 import { getConfigVar } from 'util/getConfigVar';
 import { getCurrentDomain } from 'util/getCurrentDomain';
-import { z } from 'zod';
-import { fallback, zodValidator } from '@tanstack/zod-adapter';
-
-const Container = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: ${({ theme }) => theme.spacing[2]};
-
-  @media (max-width: 1200px) {
-    grid-template-columns: 1fr;
-  }
-`;
 
 export const Route = createFileRoute('/_auth/_global/settings/billing/')({
-  validateSearch: zodValidator(
-    z.object({
-      period: fallback(z.enum(['monthly', 'annual']), 'monthly').default('monthly'),
-    }),
-  ),
   beforeLoad: async ({ context }) => {
-    if (getConfigVar('billingEnabled') === false) {
-      throw notFound();
-    }
-
     const session = await context.queryClient.ensureQueryData(userMeQueryOptions());
     if (!hasPermission(session, ['ROOT'])) {
       throw redirect({ to: '/forbidden' });
@@ -58,7 +37,6 @@ export const Route = createFileRoute('/_auth/_global/settings/billing/')({
 });
 
 function Component() {
-  const { period } = Route.useSearch();
   const loaderData = Route.useLoaderData();
   const [
     { data: currentUserCount },
@@ -77,91 +55,41 @@ function Component() {
   });
 
   const currentDomain = getCurrentDomain(me);
-  const domainActive = currentDomain.state === 'ACTIVE';
 
   return (
-    <>
-      {domainActive ? (
-        <div>
-          <div>
-            <div
-              style={{
-                display: 'flex',
-                gap: '1rem',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginBottom: '2rem',
-              }}
-            >
-              <h1>Current plan usage</h1>
-              <a href={getConfigVar('managePlanUrl')} target="_blank" rel="noreferrer">
-                <Button size="large" text="Manage plan" />
-              </a>
-            </div>
-          </div>
-
-          <div style={{ display: 'grid', gap: '2rem' }}>
-            <MaxUsageCard title="Maximum amount of users" value={currentUserCount} total={currentDomain.maxUsers} />
-            <MaxUsageCard
-              title="Maximum amount of game servers"
-              value={currentGameServerCount}
-              total={currentDomain.maxGameservers}
-            />
-            <MaxUsageCard
-              title="Maximum amount of variables"
-              value={currentVariableCount}
-              total={currentDomain.maxVariables}
-            />
-            <MaxUsageCard
-              title="Maximum amount of modules"
-              value={currentModuleCount}
-              total={currentDomain.maxModules}
-            />
-          </div>
+    <div>
+      <div>
+        <div
+          style={{
+            display: 'flex',
+            gap: '1rem',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: '2rem',
+          }}
+        >
+          <h1>Current plan usage</h1>
+          <a href={getConfigVar('billingManageUrl')} target="_blank" rel="noreferrer">
+            <Button size="large" text="Manage plan" />
+          </a>
         </div>
-      ) : (
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', columnGap: '2rem', marginBottom: '3rem' }}>
-            <div>
-              <h1>Choose your plan</h1>
-              <p>Choose the plan that best fits your needs.</p>
-            </div>
+      </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '2rem 0' }}>
-              <HorizontalNav variant="clear">
-                <Link to="/settings/billing" search={{ period: 'monthly' }}>
-                  Monthly{' '}
-                </Link>
-                <Link to="/settings/billing" search={{ period: 'annual' }}>
-                  Annually - 10% off
-                </Link>
-              </HorizontalNav>
-            </div>
-          </div>
-
-          <Container>
-            {loaderData.products.map((product: any, index: number) => {
-              return (
-                <Plan
-                  key={product.id}
-                  highlight={index === 1}
-                  title={`${product.name} plan`}
-                  description="Lorem ipsum dolor sit amet consect etur adipisicing elit. Itaque amet indis perferendis blanditiis repellendus etur quidem assumenda."
-                  buttonText="Select Plan"
-                  to={product.prices[0].url}
-                  currency={product.prices[0].currency}
-                  price={`${product.prices[0].unitAmount / 100}`}
-                  period={period === 'monthly' ? 'month' : 'year'}
-                  features={Object.keys(product.features).map((featureName) => {
-                    return `${featureName}: ${product.features[featureName] ?? 'unlimited'}`;
-                  })}
-                />
-              );
-            })}
-          </Container>
-        </div>
-      )}
-    </>
+      <div style={{ display: 'grid', gap: '2rem' }}>
+        <MaxUsageCard title="Maximum amount of users" value={currentUserCount} total={currentDomain.maxUsers} />
+        <MaxUsageCard
+          title="Maximum amount of game servers"
+          value={currentGameServerCount}
+          total={currentDomain.maxGameservers}
+        />
+        <MaxUsageCard
+          title="Maximum amount of variables"
+          value={currentVariableCount}
+          total={currentDomain.maxVariables}
+        />
+        <MaxUsageCard title="Maximum amount of modules" value={currentModuleCount} total={currentDomain.maxModules} />
+      </div>
+    </div>
   );
 }

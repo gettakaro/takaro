@@ -28,7 +28,7 @@ function Component() {
       <HorizontalNav variant="underline">
         <Link to="/settings/gameservers">Global Game Server Settings</Link>
         <Link to="/settings/discord">Discord integration</Link>
-        {getConfigVar('billingEnabled') === true && <Link to="/settings/billing">Billing</Link>}
+        {getConfigVar('billingEnabled') === 'true' && <Link to="/settings/billing">Billing</Link>}
       </HorizontalNav>
       <ContentContainer>
         <ErrorBoundary>

@@ -160,7 +160,7 @@ function DomainCard({ domain, isCurrentDomain, isDomainOwner }: DomainCardProps)
           </h2>
           <div style={{ marginLeft: 'auto' }}>
             {isDomainOwner && (
-              <a href={getConfigVar('managePlanUrl')} rel="noreferrer">
+              <a href={getConfigVar('billingManageUrl')} rel="noreferrer">
                 <Button color="primary" text="Manage plan" />
               </a>
             )}
