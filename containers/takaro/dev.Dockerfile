@@ -10,7 +10,6 @@ COPY package*.json ./
 COPY tsconfig*.json ./
 
 COPY nodemon.json ./
-COPY jest.config.js ./
 
 COPY packages/ ./packages
 COPY scripts ./scripts
