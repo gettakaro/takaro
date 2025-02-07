@@ -1,9 +1,11 @@
-import { FC } from 'react';
-import { styled } from '@takaro/lib-components';
-import { EventDetail } from './EventDetail';
+import { FC, useState } from 'react';
+import { styled, Dropdown, IconButton } from '@takaro/lib-components';
 import { DateTime } from 'luxon';
 import { EventOutputDTO, EventOutputDTOEventNameEnum } from '@takaro/apiclient';
 import { CountryCodeToEmoji } from 'components/CountryCodeToEmoji';
+import { useCronJobTrigger } from 'queries/module';
+import { AiOutlineMenu as MenuIcon, AiOutlineEye as ViewIcon, AiOutlineSend as TriggerIcon } from 'react-icons/ai';
+import { EventDetailDialog } from 'components/dialogs/EventDetailDialog';
 
 const Header = styled.div`
   display: flex;
@@ -72,6 +74,8 @@ export type EventItemProps = {
 export const EventItem: FC<EventItemProps> = ({ event }) => {
   const timestamp = Date.parse(event.createdAt);
   const timeAgo = DateTime.fromMillis(timestamp).toRelative();
+  const { mutate } = useCronJobTrigger();
+  const [openDetailsDialog, setOpenDetailsDialog] = useState<boolean>(false);
 
   const meta = event.meta as any;
 
@@ -302,7 +306,40 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
           <p>{event.eventName}</p>
           <p>{timeAgo}</p>
         </EventType>
-        <EventDetail eventType={event.eventName} metaData={event} />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <EventDetailDialog
+            open={openDetailsDialog}
+            onOpenChange={setOpenDetailsDialog}
+            eventType={event.eventName}
+            metaData={event}
+          />
+
+          <Dropdown placement="left">
+            <Dropdown.Trigger asChild>
+              <IconButton icon={<MenuIcon />} ariaLabel="click me" />
+            </Dropdown.Trigger>
+            <Dropdown.Menu>
+              <Dropdown.Menu.Item
+                icon={<ViewIcon />}
+                label="View Event details"
+                onClick={() => setOpenDetailsDialog(true)}
+              />
+              {(event.meta as any)?.cronjob && (
+                <Dropdown.Menu.Item
+                  label="Trigger cronjob"
+                  icon={<TriggerIcon />}
+                  onClick={() =>
+                    mutate({
+                      moduleId: event.moduleId!,
+                      gameServerId: event.gameServer!.id,
+                      cronjobId: (event.meta as any).cronjob.id,
+                    })
+                  }
+                />
+              )}
+            </Dropdown.Menu>
+          </Dropdown>
+        </div>
       </Header>
       <Data>{properties}</Data>
     </ListItem>
