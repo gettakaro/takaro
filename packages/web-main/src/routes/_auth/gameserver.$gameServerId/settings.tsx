@@ -4,17 +4,17 @@ import {
   gameServerSettingsQueryOptions,
   globalGameServerSettingsQueryOptions,
   useSetGameServerSetting,
-} from 'queries/setting';
+} from '../../../queries/setting';
 import { ReactElement, useMemo } from 'react';
 import { useForm, SubmitHandler, useFieldArray } from 'react-hook-form';
 import { Switch, TextField, Button, SelectField, styled, Skeleton, camelCaseToSpaces } from '@takaro/lib-components';
 import { useSnackbar } from 'notistack';
 import { PERMISSIONS, SettingsOutputDTOTypeEnum } from '@takaro/apiclient';
-import { hasPermission, useHasPermission } from 'hooks/useHasPermission';
+import { hasPermission, useHasPermission } from '../../../hooks/useHasPermission';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { useQueries } from '@tanstack/react-query';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { userMeQueryOptions } from 'queries/user';
+import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
+import { userMeQueryOptions } from '../../../queries/user';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/settings')({
   beforeLoad: async ({ context }) => {

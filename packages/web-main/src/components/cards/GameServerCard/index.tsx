@@ -5,10 +5,10 @@ import { useNavigate } from '@tanstack/react-router';
 
 import { Header, TitleContainer, DetailsContainer } from './style';
 import { InnerBody } from '../style';
-import { useSocket } from 'hooks/useSocket';
-import { playersOnGameServersQueryOptions } from 'queries/pog';
+import { useSocket } from '../../../hooks/useSocket';
+import { playersOnGameServersQueryOptions } from '../../../queries/pog';
 import { useQuery } from '@tanstack/react-query';
-import { GameServerActions } from 'routes/_auth/_global/gameservers';
+import { GameServerActions } from '../../../routes/_auth/_global/gameservers';
 
 const StatusChip: FC<{ reachable: boolean; enabled: boolean }> = ({ reachable, enabled }) => {
   if (!enabled) return <Chip label="disabled" color="warning" variant="outline" />;

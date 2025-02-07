@@ -1,11 +1,11 @@
 import { LineChart, Card, styled, Stats, IconTooltip, Skeleton } from '@takaro/lib-components';
 import { useQuery } from '@tanstack/react-query';
 import { DateTime } from 'luxon';
-import { PlayersOnlineStatsQueryOptions, ActivityStatsQueryOptions } from 'queries/stats';
+import { PlayersOnlineStatsQueryOptions, ActivityStatsQueryOptions } from '../../../../queries/stats';
 import { useMemo } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
-import { TimePeriodSelectField } from 'components/selects';
-import { eventsQueryOptions } from 'queries/event';
+import { TimePeriodSelectField } from '../../../../components/selects';
+import { eventsQueryOptions } from '../../../../queries/event';
 import { AiOutlineQuestion as QuestionIcon } from 'react-icons/ai';
 
 const Container = styled.div`

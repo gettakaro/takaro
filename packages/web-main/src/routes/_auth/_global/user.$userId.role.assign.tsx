@@ -8,15 +8,15 @@ import {
   DrawerSkeleton,
   styled,
 } from '@takaro/lib-components';
-import { userMeQueryOptions, useUserAssignRole } from 'queries/user';
+import { userMeQueryOptions, useUserAssignRole } from '../../../queries/user';
 import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { DateTime, Settings } from 'luxon';
-import { RoleSelectQueryField } from 'components/selects';
+import { RoleSelectQueryField } from '../../../components/selects';
 import { createFileRoute, redirect, useRouter } from '@tanstack/react-router';
 import { z } from 'zod';
-import { hasPermission } from 'hooks/useHasPermission';
+import { hasPermission } from '../../../hooks/useHasPermission';
 
 Settings.throwOnInvalid = true;
 

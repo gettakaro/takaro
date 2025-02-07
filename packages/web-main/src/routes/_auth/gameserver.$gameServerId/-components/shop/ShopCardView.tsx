@@ -1,9 +1,9 @@
 import { FC, Fragment } from 'react';
-import { shopListingInfiniteQueryOptions } from 'queries/shopListing';
-import { useHasPermission } from 'hooks/useHasPermission';
+import { shopListingInfiniteQueryOptions } from '../../../../../queries/shopListing';
+import { useHasPermission } from '../../../../../hooks/useHasPermission';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { CardList } from 'components/cards';
-import { ShopListingCard } from 'components/cards/ShopListingCard';
+import { CardList } from '../../../../../components/cards';
+import { ShopListingCard } from '../../../../../components/cards/ShopListingCard';
 
 import { Button, Empty, EmptyPage, InfiniteScroll } from '@takaro/lib-components';
 import { useNavigate } from '@tanstack/react-router';

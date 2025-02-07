@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { io, Socket } from 'socket.io-client';
-import { getConfigVar } from 'util/getConfigVar';
+import { getConfigVar } from '../util/getConfigVar';
 
 let socket: Socket<never, any> | null = null;
 

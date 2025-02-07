@@ -5,9 +5,9 @@ import { Resizable } from 're-resizable';
 import { FileExplorer } from './FileExplorer';
 import { CronJobConfig, CommandConfig, HookConfig } from './Editor/configs';
 import { Header } from './Header';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { EventFeedWidget } from 'components/events/EventFeedWidget';
-import { ErrorBoundary } from 'components/ErrorBoundary';
+import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
+import { EventFeedWidget } from '../../../components/events/EventFeedWidget';
+import { ErrorBoundary } from '../../../components/ErrorBoundary';
 import { FileType, useModuleBuilderContext } from './useModuleBuilderStore';
 
 const EventsWrapper = styled.div`

@@ -1,7 +1,7 @@
 import { Button, Dialog, FormError, styled } from '@takaro/lib-components';
 import { FC, useEffect } from 'react';
 import { RequiredDialogOptions } from '.';
-import { usePlayerRoleRemove } from 'queries/player';
+import { usePlayerRoleRemove } from '../../queries/player';
 
 const StyledDialogBody = styled(Dialog.Body)`
   h2 {

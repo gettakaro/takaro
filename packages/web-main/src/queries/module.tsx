@@ -5,7 +5,7 @@ import {
   infiniteQueryOptions,
   keepPreviousData,
 } from '@tanstack/react-query';
-import { getApiClient } from 'util/getApiClient';
+import { getApiClient } from '../util/getApiClient';
 import {
   APIOutput,
   CommandCreateDTO,
@@ -40,7 +40,7 @@ import {
 import { queryParamsToArray, getNextPage, mutationWrapper } from './util';
 import { AxiosError, AxiosResponse } from 'axios';
 import { ErrorMessageMapping } from '@takaro/lib-components/src/errors';
-import { queryClient } from 'queryClient';
+import { queryClient } from '../queryClient';
 import { useSnackbar } from 'notistack';
 
 export const moduleKeys = {

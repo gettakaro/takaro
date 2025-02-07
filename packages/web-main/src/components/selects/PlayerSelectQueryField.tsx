@@ -3,7 +3,7 @@ import { Avatar, getInitials, PaginationProps, SelectQueryField, styled } from '
 import { FC, useState } from 'react';
 import { CustomSelectQueryProps } from '.';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { playersInfiniteQueryOptions } from 'queries/player';
+import { playersInfiniteQueryOptions } from '../../queries/player';
 
 const Inner = styled.div`
   display: flex;

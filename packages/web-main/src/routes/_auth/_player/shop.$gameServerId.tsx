@@ -1,8 +1,8 @@
 import { ErrorBoundary } from '@sentry/react';
 import { HorizontalNav, styled } from '@takaro/lib-components';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
+import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
 import { Link, Outlet, createFileRoute } from '@tanstack/react-router';
-import { gameServerQueryOptions } from 'queries/gameserver';
+import { gameServerQueryOptions } from '../../../queries/gameserver';
 import { useQuery } from '@tanstack/react-query';
 
 const Container = styled.div`

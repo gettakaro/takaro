@@ -3,7 +3,7 @@ import { styled } from '@takaro/lib-components';
 import { EventDetail } from './EventDetail';
 import { DateTime } from 'luxon';
 import { EventOutputDTO, EventOutputDTOEventNameEnum } from '@takaro/apiclient';
-import { CountryCodeToEmoji } from 'components/CountryCodeToEmoji';
+import { CountryCodeToEmoji } from '../../../components/CountryCodeToEmoji';
 
 const Header = styled.div`
   display: flex;

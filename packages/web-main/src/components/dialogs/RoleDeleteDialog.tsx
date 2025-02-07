@@ -1,7 +1,7 @@
 import { Button, Dialog, FormError, ValueConfirmationField } from '@takaro/lib-components';
 import { DeleteImperativeHandle, RequiredDialogOptions } from '.';
 import { forwardRef, MouseEvent, useImperativeHandle, useState } from 'react';
-import { useRoleRemove } from 'queries/role';
+import { useRoleRemove } from '../../queries/role';
 
 interface RoleDeleteDialogProps extends RequiredDialogOptions {
   roleId: string;

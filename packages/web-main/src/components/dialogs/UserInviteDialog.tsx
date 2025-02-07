@@ -4,7 +4,7 @@ import { RequiredDialogOptions } from '.';
 import { z } from 'zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useInviteUser } from 'queries/user';
+import { useInviteUser } from '../../queries/user';
 
 const validationSchema = z.object({
   userEmail: z.string().email('Email is not valid.').min(1),

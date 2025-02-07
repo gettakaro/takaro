@@ -1,5 +1,5 @@
 import { Avatar, Chip, getInitials, Tooltip } from '@takaro/lib-components';
-import { playerQueryOptions } from 'queries/player';
+import { playerQueryOptions } from '../queries/player';
 import { FC } from 'react';
 import { Link } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';

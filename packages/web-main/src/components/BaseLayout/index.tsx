@@ -1,7 +1,7 @@
 import { FC, PropsWithChildren } from 'react';
 import { motion } from 'framer-motion';
-import { Navbar } from 'components/Navbar';
-import { ErrorBoundary } from 'components/ErrorBoundary';
+import { Navbar } from '../../components/Navbar';
+import { ErrorBoundary } from '../../components/ErrorBoundary';
 import { styled, getTransition } from '@takaro/lib-components';
 import { Outlet } from '@tanstack/react-router';
 

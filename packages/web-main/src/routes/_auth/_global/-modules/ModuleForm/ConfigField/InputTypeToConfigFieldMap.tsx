@@ -2,7 +2,7 @@ import { InputType } from '../../schemaConversion/inputTypes';
 import { TextField, TagField, SelectField, Switch, DurationField } from '@takaro/lib-components';
 import { IFormInputs } from '..';
 import { Control, useWatch } from 'react-hook-form';
-import { CountrySelectField } from 'components/selects/CountrySelectField';
+import { CountrySelectField } from '../../../../../../components/selects/CountrySelectField';
 
 export const InputTypeToConfigFieldMap = (
   control: Control<IFormInputs>,

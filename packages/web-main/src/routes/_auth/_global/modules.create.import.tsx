@@ -1,8 +1,8 @@
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
-import { useModuleImport } from 'queries/module';
+import { useModuleImport } from '../../../queries/module';
 import { ModuleImportForm, IFormInputs } from './-modules/ModuleImportForm';
-import { hasPermission } from 'hooks/useHasPermission';
-import { userMeQueryOptions } from 'queries/user';
+import { hasPermission } from '../../../hooks/useHasPermission';
+import { userMeQueryOptions } from '../../../queries/user';
 import { DrawerSkeleton } from '@takaro/lib-components';
 import { useSnackbar } from 'notistack';
 

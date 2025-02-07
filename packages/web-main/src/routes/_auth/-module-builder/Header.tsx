@@ -1,9 +1,9 @@
 import { styled, Button, Tooltip } from '@takaro/lib-components';
 import { useModuleBuilderContext } from './useModuleBuilderStore';
 import { useNavigate } from '@tanstack/react-router';
-import { UnControlledModuleVersionTagSelectField } from 'components/selects/ModuleVersionSelectField';
+import { UnControlledModuleVersionTagSelectField } from '../../../components/selects/ModuleVersionSelectField';
 import { useState } from 'react';
-import { ModuleTagDialog } from 'components/dialogs/ModuleTagDialog';
+import { ModuleTagDialog } from '../../../components/dialogs/ModuleTagDialog';
 import { CopyModulePopOver } from './CopyModulePopOver';
 
 const Container = styled.header`

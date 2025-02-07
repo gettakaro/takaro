@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { itemsQueryOptions } from 'queries/item';
+import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
+import { itemsQueryOptions } from '../../../queries/item';
 import { createColumnHelper, ColumnDef } from '@tanstack/react-table';
 
 import { ItemsOutputDTO, ItemSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';

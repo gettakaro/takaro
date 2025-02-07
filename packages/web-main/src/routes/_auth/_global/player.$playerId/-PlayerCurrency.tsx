@@ -3,9 +3,9 @@ import { Card, Dropdown, Button, Dialog, TextField, IconButton, LineChart } from
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
-import { playerOnGameServerQueryOptions, useAddCurrency, useDeductCurrency } from 'queries/pog';
+import { playerOnGameServerQueryOptions, useAddCurrency, useDeductCurrency } from '../../../../queries/pog';
 import { AiOutlineMenu as MenuIcon } from 'react-icons/ai';
-import { CurrencyStatsQueryOptions } from 'queries/stats';
+import { CurrencyStatsQueryOptions } from '../../../../queries/stats';
 import { useQuery } from '@tanstack/react-query';
 import { StatsOutputDTO } from '@takaro/apiclient';
 

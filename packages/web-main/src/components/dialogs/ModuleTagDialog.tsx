@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Alert, Button, Chip, Dialog, FormError, SelectField } from '@takaro/lib-components';
 import { useQuery } from '@tanstack/react-query';
-import { moduleVersionsQueryOptions, useTagModule } from 'queries/module';
+import { moduleVersionsQueryOptions, useTagModule } from '../../queries/module';
 import { FC } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';

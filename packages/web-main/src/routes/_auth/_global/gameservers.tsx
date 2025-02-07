@@ -1,10 +1,10 @@
 import { createFileRoute, Outlet, useNavigate } from '@tanstack/react-router';
-import { useHasPermission } from 'hooks/useHasPermission';
+import { useHasPermission } from '../../../hooks/useHasPermission';
 import { ErrorBoundary } from '@sentry/react';
 import { PERMISSIONS } from '@takaro/apiclient';
 import { Button, Dropdown, IconButton, useLocalStorage, useTheme } from '@takaro/lib-components';
 import { GameServersCardView } from './-gameservers/GameServersCardView';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
+import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
 import { GameServersTableView } from './-gameservers/GameServersTableView';
 
 import {
@@ -19,10 +19,10 @@ import {
   AiOutlineSetting as SettingsIcon,
 } from 'react-icons/ai';
 import { FC, MouseEvent, useRef, useState } from 'react';
-import { PermissionsGuard } from 'components/PermissionsGuard';
-import { TableListToggleButton } from 'components/TableListToggleButton';
-import { GameServerDeleteDialog } from 'components/dialogs/GameServerDeleteDialog';
-import { DeleteImperativeHandle } from 'components/dialogs';
+import { PermissionsGuard } from '../../../components/PermissionsGuard';
+import { TableListToggleButton } from '../../../components/TableListToggleButton';
+import { GameServerDeleteDialog } from '../../../components/dialogs/GameServerDeleteDialog';
+import { DeleteImperativeHandle } from '../../../components/dialogs';
 
 type ViewType = 'list' | 'table';
 
