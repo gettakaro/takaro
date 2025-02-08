@@ -46,12 +46,13 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
   const theme = useTheme();
   const [openVersionPopover, setOpenVersionPopover] = useState<boolean>(false);
   const [selectedVersion, setSelectedVersion] = useState<string | null>(null);
-  const uninstallImperativeHandle = useRef<DeleteImperativeHandle>();
+  const uninstallModuleDialogRef = useRef<DeleteImperativeHandle>(null);
 
-  const handleOnDeleteClick = (e: MouseEvent) => {
+  const handleOnUninstallClick = (e: MouseEvent) => {
     e.stopPropagation();
     if (e.shiftKey) {
-      uninstallImperativeHandle.current?.triggerDelete();
+      console.log(uninstallModuleDialogRef.current);
+      uninstallModuleDialogRef.current?.triggerDelete();
     } else {
       setOpenDialog(true);
     }
@@ -126,6 +127,7 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
     <>
       {installation && (
         <ModuleUninstallDialog
+          ref={uninstallModuleDialogRef}
           open={openDialog}
           onOpenChange={setOpenDialog}
           gameServerId={gameServerId}
@@ -204,7 +206,7 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
 
                                 <Dropdown.Menu.Item
                                   icon={<DeleteIcon fill={theme.colors.error} />}
-                                  onClick={handleOnDeleteClick}
+                                  onClick={handleOnUninstallClick}
                                   label="Uninstall module"
                                 />
                               </PermissionsGuard>
