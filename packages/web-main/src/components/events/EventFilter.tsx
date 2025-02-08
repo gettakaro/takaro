@@ -43,7 +43,6 @@ export const eventFilterSchema = z.object({
 export type EventFilterInputs = z.infer<typeof eventFilterSchema>;
 
 export const EventFilter: FC<EventFilterProps> = ({ initialSelectedValues, onSubmit, isLoading, isLive }) => {
-  console.log('defaultvalues', initialSelectedValues);
   const { control, handleSubmit, formState } = useForm<EventFilterInputs>({
     mode: 'onSubmit',
     resolver: zodResolver(eventFilterSchema),
