@@ -8,7 +8,6 @@ import { useCronJobTrigger } from '../../../queries/module';
 import { AiOutlineMenu as MenuIcon, AiOutlineEye as ViewIcon, AiOutlineSend as TriggerIcon } from 'react-icons/ai';
 import { EventDetailDialog } from '../../../components/dialogs/EventDetailDialog';
 
-
 const Header = styled.div`
   display: flex;
   justify-content: space-between;
