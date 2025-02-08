@@ -13,6 +13,7 @@ import {
   AiOutlineCopy as CopyIcon,
   AiOutlineExport as ExportIcon,
   AiOutlineTag as TagIcon,
+  AiOutlineBook as DocumentationIcon,
 } from 'react-icons/ai';
 import { ModuleTagDialog } from '../../../components/dialogs/ModuleTagDialog';
 import { ModuleCopyDialog } from '../../../components/dialogs/ModuleCopyDialog';
@@ -75,9 +76,12 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
     navigator.clipboard.writeText(mod.id);
   };
 
-  const handleOnOpenClick = (e: MouseEvent) => {
+  const handleOnOpenInModuleBuilderClick = (e: MouseEvent) => {
     e.stopPropagation();
     window.open(`/module-builder/${mod.id}`, '_blank');
+  };
+  const handleOnOpenInDocumentationClick = () => {
+    window.open('https://docs.takaro.io/advanced/modules', '_blank');
   };
 
   const handleOnExportClick = async (e: MouseEvent) => {
@@ -171,8 +175,13 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
                     <Dropdown.Menu.Group>
                       <Dropdown.Menu.Item
                         icon={<LinkIcon />}
-                        onClick={handleOnOpenClick}
+                        onClick={handleOnOpenInModuleBuilderClick}
                         label="Open in Module Builder"
+                      />
+                      <Dropdown.Menu.Item
+                        icon={<DocumentationIcon />}
+                        label="View module documentation"
+                        onClick={handleOnOpenInDocumentationClick}
                       />
                       <Dropdown.Menu.Item
                         icon={<ExportIcon />}
