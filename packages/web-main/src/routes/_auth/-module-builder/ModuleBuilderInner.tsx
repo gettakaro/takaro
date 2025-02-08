@@ -9,6 +9,7 @@ import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
 import { EventFeedWidget } from '../../../components/events/EventFeedWidget';
 import { ErrorBoundary } from '../../../components/ErrorBoundary';
 import { FileType, useModuleBuilderContext } from './useModuleBuilderStore';
+import { CronjobTrigger } from './Editor/CronjobTrigger';
 
 const EventsWrapper = styled.div`
   padding-right: ${({ theme }) => theme.spacing[1]};
@@ -102,6 +103,13 @@ export const ModuleBuilderInner: FC = () => {
                   <CollapseList.Item title={configTitleMap[activeFile.type]}>
                     <ErrorBoundary>{getConfigComponent(activeFile.type, activeFile.itemId)}</ErrorBoundary>
                   </CollapseList.Item>
+                  {activeFile.type === FileType.CronJobs && (
+                    <CollapseList.Item title="Cronjob Trigger">
+                      <ErrorBoundary>
+                        <CronjobTrigger cronjobId={activeFile.itemId} moduleId={moduleId} />
+                      </ErrorBoundary>
+                    </CollapseList.Item>
+                  )}
                   <CollapseList.Item title={'Last executions'}>
                     <ErrorBoundary>
                       <EventsWrapper>

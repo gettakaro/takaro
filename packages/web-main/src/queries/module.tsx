@@ -15,6 +15,7 @@ import {
   CronJobCreateDTO,
   CronJobOutputDTO,
   CronJobOutputDTOAPI,
+  CronJobTriggerDTO,
   CronJobUpdateDTO,
   FunctionCreateDTO,
   FunctionOutputDTO,
@@ -751,6 +752,21 @@ export const useCronJobRemove = () => {
       },
     }),
     defaultCronJobErrorMessages,
+  );
+};
+
+export const useCronJobTrigger = () => {
+  const apiClient = getApiClient();
+  const { enqueueSnackbar } = useSnackbar();
+
+  return mutationWrapper<void, CronJobTriggerDTO>(
+    useMutation<void, AxiosError<void>, CronJobTriggerDTO>({
+      mutationFn: async (c) => (await apiClient.cronjob.cronJobControllerTrigger(c)).data,
+      onSuccess: () => {
+        enqueueSnackbar('Cronjob triggered!', { variant: 'default', type: 'success' });
+      },
+    }),
+    {},
   );
 };
 
