@@ -96,6 +96,7 @@ export const VariablesForm: FC<CreateAndUpdateVariableformProps> = ({ variable, 
               required={false}
               allowPastDates={false}
               format={DateTime.DATETIME_SHORT}
+              canClear={true}
               readOnly={readOnly}
             />
             <PlayerSelectQueryField canClear={true} control={control} loading={isLoading} name="playerId" />
