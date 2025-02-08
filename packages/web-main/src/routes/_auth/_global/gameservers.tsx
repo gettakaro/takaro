@@ -133,7 +133,7 @@ export const GameServerActions: FC<GameServerActionsProps> = ({ gameServerId, ga
           </Dropdown.Trigger>
           <Dropdown.Menu>
             <Dropdown.Menu.Group label="Actions">
-              <Dropdown.Menu.Item icon={<CopyIcon />} onClick={handleOnCopyClick} label="Copy gameserverID" />
+              <Dropdown.Menu.Item icon={<CopyIcon />} onClick={handleOnCopyClick} label="Copy gameserver id" />
               <Dropdown.Menu.Item icon={<EditIcon />} onClick={handleOnEditClick} label="Edit gameserver" />
               <Dropdown.Menu.Item
                 icon={<DeleteIcon fill={theme.colors.error} />}

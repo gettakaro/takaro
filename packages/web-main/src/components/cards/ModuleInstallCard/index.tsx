@@ -12,7 +12,7 @@ import {
   Tooltip,
 } from '@takaro/lib-components';
 import { PermissionsGuard } from 'components/PermissionsGuard';
-import { AiOutlineArrowRight as ArrowRightIcon } from 'react-icons/ai';
+import { AiOutlineArrowRight as ArrowRightIcon, AiOutlineCopy as CopyIcon } from 'react-icons/ai';
 import { FC, useState, MouseEvent, useRef } from 'react';
 import {
   AiOutlineDelete as DeleteIcon,
@@ -82,6 +82,11 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
       to: '/gameserver/$gameServerId/modules/$moduleId/$versionId/install',
       params: { gameServerId, moduleId: mod.id, versionId },
     });
+  };
+
+  const handleOnCopyClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(mod.id);
   };
 
   const handleChangeVersionClick = (e: MouseEvent) => {
@@ -189,6 +194,11 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
                                   onClick={handleChangeVersionClick}
                                   label="Upgrade/Downgrade module version"
                                   disabled={mod.versions.length < 2}
+                                />
+                                <Dropdown.Menu.Item
+                                  icon={<CopyIcon />}
+                                  onClick={handleOnCopyClick}
+                                  label="Copy module id"
                                 />
                                 <Dropdown.Menu.Item
                                   icon={
