@@ -14,16 +14,17 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { validationSchema } from './validationSchema';
 import { useNavigate } from '@tanstack/react-router';
-import { ModuleVersionOutputDTO, PermissionCreateDTO, SmallModuleVersionOutputDTO } from '@takaro/apiclient';
-import { PermissionList, ButtonContainer } from './style';
+import { PermissionCreateDTO } from '@takaro/apiclient';
+import { PermissionList, ButtonContainer } from '../style';
 import { AiOutlinePlus as PlusIcon, AiOutlineQuestion as QuestionIcon } from 'react-icons/ai';
-import { AnyInput, InputType } from '../schemaConversion/inputTypes';
-import { schemaToInputs } from '../schemaConversion/SchemaToInputs';
-import { inputsToSchema, inputsToUiSchema } from '../schemaConversion/inputsToSchema';
+import { AnyInput, InputType } from '../../schemaConversion/inputTypes';
+import { schemaToInputs } from '../../schemaConversion/SchemaToInputs';
+import { inputsToSchema, inputsToUiSchema } from '../../schemaConversion/inputsToSchema';
 import { ConfigField } from './ConfigField';
 import { Divider } from '@ory/elements';
-import { PermissionField } from './PermissionField';
+import { PermissionField } from '../PermissionField/PermissionField';
 import { ConfigFieldErrorDetail } from './ConfigFieldErrorDetail';
+import { ModuleFormProps } from '..';
 
 export interface IFormInputs {
   name: string;
@@ -32,24 +33,7 @@ export interface IFormInputs {
   configFields: AnyInput[];
 }
 
-export interface ModuleFormSubmitProps {
-  name: string;
-  description: string;
-  permissions: PermissionCreateDTO[];
-  schema: string;
-  uiSchema: string;
-}
-
-interface ModuleFormProps {
-  isLoading?: boolean;
-  onSubmit?: (data: ModuleFormSubmitProps) => void;
-  error: string | string[] | null;
-  moduleName?: string;
-  smallModuleVersions?: SmallModuleVersionOutputDTO[];
-  moduleVersion?: ModuleVersionOutputDTO;
-}
-
-export const ModuleForm: FC<ModuleFormProps> = ({
+export const ModuleFormBuilder: FC<ModuleFormProps> = ({
   onSubmit,
   isLoading = false,
   error,
@@ -61,12 +45,6 @@ export const ModuleForm: FC<ModuleFormProps> = ({
   const navigate = useNavigate();
   const theme = useTheme();
   const readOnly = onSubmit ? false : true;
-
-  useEffect(() => {
-    if (!open) {
-      navigate({ to: '/modules' });
-    }
-  }, [open, navigate]);
 
   const { initialConfigFields, configFieldErrors } = useMemo(() => {
     if (moduleVersion) {
@@ -105,6 +83,12 @@ export const ModuleForm: FC<ModuleFormProps> = ({
     name: 'configFields',
   });
 
+  useEffect(() => {
+    if (!open) {
+      navigate({ to: '/modules' });
+    }
+  }, [open, navigate]);
+
   const submitHandler: SubmitHandler<IFormInputs> = ({ configFields, name, description, permissions }) => {
     const schema = inputsToSchema(configFields);
     const uiSchema = inputsToUiSchema(configFields);
@@ -128,6 +112,7 @@ export const ModuleForm: FC<ModuleFormProps> = ({
     navigate({
       to: '/modules/$moduleId/view/$moduleVersionTag',
       params: { moduleId: moduleVersion!.moduleId, moduleVersionTag: selectedModuleVersionTag },
+      search: { view: 'builder' },
     });
   };
 
