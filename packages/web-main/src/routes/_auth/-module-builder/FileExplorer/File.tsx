@@ -35,7 +35,7 @@ import {
   useFunctionCreate,
   useFunctionRemove,
   useFunctionUpdate,
-} from 'queries/module';
+} from '../../../../queries/module';
 import { FileType, useModuleBuilderContext } from '../useModuleBuilderStore';
 import { useNavigate } from '@tanstack/react-router';
 

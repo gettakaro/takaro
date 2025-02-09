@@ -5,7 +5,7 @@ import {
   useMutation,
   useQueryClient,
 } from '@tanstack/react-query';
-import { getApiClient } from 'util/getApiClient';
+import { getApiClient } from '../util/getApiClient';
 import {
   APIOutput,
   BanCreateDTO,
@@ -18,9 +18,9 @@ import {
   PlayerSearchInputDTO,
 } from '@takaro/apiclient';
 import { AxiosError } from 'axios';
-import { getNextPage, mutationWrapper, queryParamsToArray } from 'queries/util';
+import { getNextPage, mutationWrapper, queryParamsToArray } from '../queries/util';
 import { useSnackbar } from 'notistack';
-import { queryClient } from 'queryClient';
+import { queryClient } from '../queryClient';
 
 export const playerKeys = {
   all: ['players'] as const,

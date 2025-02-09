@@ -1,5 +1,5 @@
 import { PaginationProps, SelectQueryField, Skeleton, Tooltip } from '@takaro/lib-components';
-import { gameServersInfiniteQueryOptions } from 'queries/gameserver';
+import { gameServersInfiniteQueryOptions } from '../../../queries/gameserver';
 import { FC, useState } from 'react';
 import {
   GameServerOutputDTO,

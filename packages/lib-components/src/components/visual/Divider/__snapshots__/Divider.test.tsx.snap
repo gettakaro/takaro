@@ -1,0 +1,13 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Should render <Accordion /> 1`] = `
+<div>
+  <div
+    class="sc-aXZVg ktErGV"
+  >
+    <div
+      class="sc-eqUAAy hsBlKB"
+    />
+  </div>
+</div>
+`;

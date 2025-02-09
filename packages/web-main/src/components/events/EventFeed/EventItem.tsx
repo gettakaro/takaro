@@ -2,10 +2,11 @@ import { FC, useState } from 'react';
 import { styled, Dropdown, IconButton } from '@takaro/lib-components';
 import { DateTime } from 'luxon';
 import { EventOutputDTO, EventOutputDTOEventNameEnum } from '@takaro/apiclient';
-import { CountryCodeToEmoji } from 'components/CountryCodeToEmoji';
-import { useCronJobTrigger } from 'queries/module';
+
+import { CountryCodeToEmoji } from '../../../components/CountryCodeToEmoji';
+import { useCronJobTrigger } from '../../../queries/module';
 import { AiOutlineMenu as MenuIcon, AiOutlineEye as ViewIcon, AiOutlineSend as TriggerIcon } from 'react-icons/ai';
-import { EventDetailDialog } from 'components/dialogs/EventDetailDialog';
+import { EventDetailDialog } from '../../../components/dialogs/EventDetailDialog';
 
 const Header = styled.div`
   display: flex;

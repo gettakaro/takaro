@@ -3,7 +3,7 @@ import { PERMISSIONS, ModuleOutputDTO } from '@takaro/apiclient';
 import { FC, useState, MouseEvent, useRef } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { SpacedRow, ActionIconsContainer, InnerBody } from '../style';
-import { PermissionsGuard } from 'components/PermissionsGuard';
+import { PermissionsGuard } from '../../../components/PermissionsGuard';
 import {
   AiOutlineMenu as MenuIcon,
   AiOutlineEdit as EditIcon,
@@ -14,11 +14,11 @@ import {
   AiOutlineExport as ExportIcon,
   AiOutlineTag as TagIcon,
 } from 'react-icons/ai';
-import { ModuleTagDialog } from 'components/dialogs/ModuleTagDialog';
-import { ModuleCopyDialog } from 'components/dialogs/ModuleCopyDialog';
-import { ModuleExportDialog } from 'components/dialogs/ModuleExportDialog';
-import { ModuleDeleteDialog } from 'components/dialogs/ModuleDeleteDialog';
-import { DeleteImperativeHandle } from 'components/dialogs';
+import { ModuleTagDialog } from '../../../components/dialogs/ModuleTagDialog';
+import { ModuleCopyDialog } from '../../../components/dialogs/ModuleCopyDialog';
+import { ModuleExportDialog } from '../../../components/dialogs/ModuleExportDialog';
+import { ModuleDeleteDialog } from '../../../components/dialogs/ModuleDeleteDialog';
+import { DeleteImperativeHandle } from '../../../components/dialogs';
 
 import { DateTime } from 'luxon';
 

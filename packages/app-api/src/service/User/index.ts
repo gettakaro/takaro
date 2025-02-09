@@ -11,7 +11,7 @@ import { HookEvents, TakaroEventPlayerLinked, TakaroEventRoleAssigned, TakaroEve
 import { AuthenticatedRequest } from '../AuthService.js';
 import { UserOutputDTO, UserCreateInputDTO, UserUpdateDTO, UserOutputWithRolesDTO, UserUpdateAuthDTO } from './dto.js';
 import { UserSearchInputDTO } from '../../controllers/UserController.js';
-import { PlayerService } from '../PlayerService.js';
+import { PlayerService } from '../Player/index.js';
 
 export * from './dto.js';
 

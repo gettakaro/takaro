@@ -1,9 +1,9 @@
 import { DrawerSkeleton } from '@takaro/lib-components';
-import { permissionsQueryOptions, roleQueryOptions } from 'queries/role';
+import { permissionsQueryOptions, roleQueryOptions } from '../../../queries/role';
 import { RoleForm } from './-roles/RoleCreateUpdateForm';
 import { createFileRoute, redirect } from '@tanstack/react-router';
-import { hasPermission } from 'hooks/useHasPermission';
-import { userMeQueryOptions } from 'queries/user';
+import { hasPermission } from '../../../hooks/useHasPermission';
+import { userMeQueryOptions } from '../../../queries/user';
 
 export const Route = createFileRoute('/_auth/_global/roles/view/$roleId')({
   beforeLoad: async ({ context }) => {

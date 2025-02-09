@@ -1,6 +1,6 @@
 import { createRootRouteWithContext, Outlet } from '@tanstack/react-router';
 import { styled, Loading, ErrorPage } from '@takaro/lib-components';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import React, { Suspense } from 'react';
 import { RouterContext } from '../router';
 

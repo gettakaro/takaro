@@ -1,13 +1,13 @@
 import { RoleOutputDTO, RoleSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { Chip, Skeleton, Table, Tooltip, useTableActions } from '@takaro/lib-components';
 import { useQuery } from '@tanstack/react-query';
-import { rolesQueryOptions } from 'queries/role';
+import { rolesQueryOptions } from '../../../../queries/role';
 import { FC, useState } from 'react';
 import { createColumnHelper } from '@tanstack/react-table';
 import { RoleActions } from '../roles';
 import { Link } from '@tanstack/react-router';
-import { playersQueryOptions } from 'queries/player';
-import { usersQueryOptions } from 'queries/user';
+import { playersQueryOptions } from '../../../../queries/player';
+import { usersQueryOptions } from '../../../../queries/user';
 
 export const RolesTableView = () => {
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<RoleOutputDTO>();

@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SelectField, TextField, Button, Alert } from '@takaro/lib-components';
 import { HookCreateDTOEventTypeEnum, HookOutputDTO, HookUpdateDTO } from '@takaro/apiclient';
-import { hookQueryOptions, useHookUpdate } from 'queries/module';
+import { hookQueryOptions, useHookUpdate } from '../../../../../queries/module';
 import { FC } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';

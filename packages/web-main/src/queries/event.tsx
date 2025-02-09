@@ -7,12 +7,12 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import { getApiClient } from 'util/getApiClient';
+import { getApiClient } from '../util/getApiClient';
 import _ from 'lodash';
 import { getNextPage, queryParamsToArray } from './util';
-import { useSocket } from 'hooks/useSocket';
+import { useSocket } from '../hooks/useSocket';
 import { useEffect } from 'react';
-import { ShouldIncludeEvent } from 'components/events/shouldIncludeEvent';
+import { ShouldIncludeEvent } from '../components/events/shouldIncludeEvent';
 import { DateTime } from 'luxon';
 
 const eventKeys = {

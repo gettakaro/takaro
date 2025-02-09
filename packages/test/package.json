@@ -7,8 +7,7 @@
   "type": "module",
   "scripts": {
     "start:dev": "tsc -w --preserveWatchOutput -p ./tsconfig.build.json",
-    "build": "tsc -p tsconfig.build.json",
-    "integration-tests": "ts-mocha -p ./tsconfig.json src/runIntegrationTest.ts"
+    "build": "tsc -p tsconfig.build.json"
   },
   "keywords": [],
   "author": "Takaro Team",

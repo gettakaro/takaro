@@ -1,9 +1,9 @@
-import { moduleQueryOptions, moduleVersionQueryOptions } from 'queries/module';
+import { moduleQueryOptions, moduleVersionQueryOptions } from '../../../queries/module';
 import { ModuleForm } from './-modules/ModuleForm';
 import { DrawerSkeleton } from '@takaro/lib-components';
 import { createFileRoute, redirect } from '@tanstack/react-router';
-import { hasPermission } from 'hooks/useHasPermission';
-import { userMeQueryOptions } from 'queries/user';
+import { hasPermission } from '../../../hooks/useHasPermission';
+import { userMeQueryOptions } from '../../../queries/user';
 import { useQueries } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/_global/modules/$moduleId/view/$moduleVersionTag')({

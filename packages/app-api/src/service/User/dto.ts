@@ -2,7 +2,7 @@ import { IsEmail, IsISO8601, IsOptional, IsString, IsUUID, Length, ValidateNeste
 import { TakaroDTO, TakaroModelDTO } from '@takaro/util';
 import { UserAssignmentOutputDTO } from '../RoleService.js';
 import { Type } from 'class-transformer';
-import { PlayerOutputWithRolesDTO } from '../PlayerService.js';
+import { PlayerOutputWithRolesDTO } from '../Player/dto.js';
 
 export class UserOutputDTO extends TakaroModelDTO<UserOutputDTO> {
   @IsString()

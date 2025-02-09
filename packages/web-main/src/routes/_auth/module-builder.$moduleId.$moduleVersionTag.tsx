@@ -1,17 +1,17 @@
 import { useEffect, useMemo } from 'react';
 import { CommandOutputDTO, CronJobOutputDTO, FunctionOutputDTO, HookOutputDTO } from '@takaro/apiclient';
 import { z } from 'zod';
-import { moduleQueryOptions, moduleVersionQueryOptions } from 'queries/module';
+import { moduleQueryOptions, moduleVersionQueryOptions } from '../../queries/module';
 import { styled, Skeleton } from '@takaro/lib-components';
-import { ErrorBoundary } from 'components/ErrorBoundary';
+import { ErrorBoundary } from '../../components/ErrorBoundary';
 import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
-import { hasPermission } from 'hooks/useHasPermission';
+import { hasPermission } from '../../hooks/useHasPermission';
 import { ModuleBuilderInner } from './-module-builder/ModuleBuilderInner';
 import { ModuleOnboarding } from './-module-builder/ModuleOnboarding';
 import { FileMap, FileType, ModuleBuilderProvider } from './-module-builder/useModuleBuilderStore';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { globalGameServerSetingQueryOptions } from 'queries/setting';
-import { userMeQueryOptions } from 'queries/user';
+import { useDocumentTitle } from '../../hooks/useDocumentTitle';
+import { globalGameServerSetingQueryOptions } from '../../queries/setting';
+import { userMeQueryOptions } from '../../queries/user';
 import { useQueries } from '@tanstack/react-query';
 
 const Flex = styled.div`

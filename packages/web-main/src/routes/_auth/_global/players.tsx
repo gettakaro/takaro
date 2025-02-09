@@ -15,16 +15,16 @@ import { createColumnHelper, Row } from '@tanstack/react-table';
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import { AiOutlineUser as ProfileIcon, AiOutlineEdit as EditIcon, AiOutlineRight as ActionIcon } from 'react-icons/ai';
 import { DateTime, Duration } from 'luxon';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { hasPermission, useHasPermission } from 'hooks/useHasPermission';
-import { playersQueryOptions } from 'queries/player';
+import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
+import { hasPermission, useHasPermission } from '../../../hooks/useHasPermission';
+import { playersQueryOptions } from '../../../queries/player';
 import { FaBan as BanIcon } from 'react-icons/fa';
-import { Player } from 'components/Player';
+import { Player } from '../../../components/Player';
 import { useQuery } from '@tanstack/react-query';
 import { PlayerStats } from './-players/playerStats';
-import { userMeQueryOptions } from 'queries/user';
-import { GameServerContainer } from 'components/GameServer';
-import { PlayerBanDialog } from 'components/dialogs/PlayerBanDialog';
+import { userMeQueryOptions } from '../../../queries/user';
+import { GameServerContainer } from '../../../components/GameServer';
+import { PlayerBanDialog } from '../../../components/dialogs/PlayerBanDialog';
 
 export const StyledDialogBody = styled(Dialog.Body)`
   h2 {

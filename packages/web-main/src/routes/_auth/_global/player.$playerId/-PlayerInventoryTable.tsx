@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { Tooltip, styled, Skeleton } from '@takaro/lib-components';
-import { gameServerQueryOptions } from 'queries/gameserver';
+import { gameServerQueryOptions } from '../../../../queries/gameserver';
 import { GameServerOutputDTO, GameServerOutputDTOTypeEnum, PlayerOnGameserverOutputDTO } from '@takaro/apiclient';
 import { useQuery } from '@tanstack/react-query';
 

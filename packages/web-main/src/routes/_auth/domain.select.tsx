@@ -1,7 +1,7 @@
 import { Card, Chip, Company, styled } from '@takaro/lib-components';
 import { DomainOutputDTO, DomainOutputDTOStateEnum } from '@takaro/apiclient';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { useUserSetSelectedDomain, userMeQueryOptions } from 'queries/user';
+import { useUserSetSelectedDomain, userMeQueryOptions } from '../../queries/user';
 import { MdDomain as DomainIcon } from 'react-icons/md';
 import { AiOutlineArrowRight as ArrowRightIcon } from 'react-icons/ai';
 import { useQuery, useQueryClient } from '@tanstack/react-query';

@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Outlet, createFileRoute, redirect } from '@tanstack/react-router';
-import { SessionContext } from 'hooks/useSession';
-import { userMeQueryOptions } from 'queries/user';
+import { SessionContext } from '../hooks/useSession';
+import { userMeQueryOptions } from '../queries/user';
 
 export const Route = createFileRoute('/_auth')({
   beforeLoad: async ({ context }) => {

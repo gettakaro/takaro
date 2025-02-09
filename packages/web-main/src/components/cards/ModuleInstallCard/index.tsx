@@ -11,7 +11,7 @@ import {
   Popover,
   Tooltip,
 } from '@takaro/lib-components';
-import { PermissionsGuard } from 'components/PermissionsGuard';
+import { PermissionsGuard } from '../../../components/PermissionsGuard';
 import { AiOutlineArrowRight as ArrowRightIcon, AiOutlineCopy as CopyIcon } from 'react-icons/ai';
 import { FC, useState, MouseEvent, useRef } from 'react';
 import {
@@ -27,10 +27,10 @@ import {
 import { FaExchangeAlt as ChangeVersionIcon } from 'react-icons/fa';
 import { useNavigate } from '@tanstack/react-router';
 import { SpacedRow, ActionIconsContainer, InnerBody } from '../style';
-import { useGameServerModuleInstall } from 'queries/gameserver';
-import { getNewestVersionExcludingLatestTag, versionGt, versionLt } from 'util/ModuleVersionHelpers';
-import { DeleteImperativeHandle } from 'components/dialogs';
-import { ModuleUninstallDialog } from 'components/dialogs/ModuleUninstallDialog';
+import { useGameServerModuleInstall } from '../../../queries/gameserver';
+import { getNewestVersionExcludingLatestTag, versionGt, versionLt } from '../../../util/ModuleVersionHelpers';
+import { DeleteImperativeHandle } from '../../../components/dialogs';
+import { ModuleUninstallDialog } from '../../../components/dialogs/ModuleUninstallDialog';
 
 interface IModuleCardProps {
   mod: ModuleOutputDTO;

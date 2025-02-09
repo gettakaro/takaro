@@ -1,5 +1,6 @@
 import { IntegrationTest, expect } from '@takaro/test';
 import { CommandOutputDTOAPI, CommandCreateDTO, CommandArgumentCreateDTO } from '@takaro/apiclient';
+import { describe } from 'node:test';
 
 const group = 'CommandController';
 

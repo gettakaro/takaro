@@ -1,8 +1,8 @@
 import { FC } from 'react';
 import { Card, Button, styled, useTheme } from '@takaro/lib-components';
 import { FaDiscord as DiscordIcon } from 'react-icons/fa';
-import { getConfigVar } from 'util/getConfigVar';
-import { useSession } from 'hooks/useSession';
+import { getConfigVar } from '../../../../../util/getConfigVar';
+import { useSession } from '../../../../../hooks/useSession';
 
 const InnerBody = styled.div`
   display: flex;

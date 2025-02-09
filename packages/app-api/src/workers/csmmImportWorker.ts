@@ -10,7 +10,7 @@ import {
 } from '../service/GameServerService.js';
 import { GAME_SERVER_TYPE } from '@takaro/gameserver';
 import { RoleCreateInputDTO, RoleService } from '../service/RoleService.js';
-import { PlayerService } from '../service/PlayerService.js';
+import { PlayerService } from '../service/Player/index.js';
 import { PlayerOnGameServerService } from '../service/PlayerOnGameserverService.js';
 import { IGamePlayer } from '@takaro/modules';
 import { ShopListingService } from '../service/Shop/index.js';

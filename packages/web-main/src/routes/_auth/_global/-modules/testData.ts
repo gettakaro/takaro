@@ -1,6 +1,6 @@
 import { InputType } from './schemaConversion/inputTypes';
 import { SchemaObject } from 'ajv';
-import { countryCodes } from 'components/selects/CountrySelectField/countryCodes';
+import { countryCodes } from '../../../../components/selects/CountrySelectField/countryCodes';
 
 type Test = {
   name: string;

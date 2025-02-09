@@ -18,8 +18,8 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { FC, useState } from 'react';
 import { createColumnHelper, Row } from '@tanstack/react-table';
-import { shopListingsQueryOptions } from 'queries/shopListing';
-import { useHasPermission } from 'hooks/useHasPermission';
+import { shopListingsQueryOptions } from '../../../../../queries/shopListing';
+import { useHasPermission } from '../../../../../hooks/useHasPermission';
 import { ShopViewProps } from './ShopView';
 import { ShopListingActions } from './ShopListingActions';
 import { ShopListingBuyForm } from './ShopListingBuyForm';

@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, FormError } from '@takaro/lib-components';
-import { GameServerSelectQueryField } from 'components/selects';
-import { useCronJobTrigger as useCronjobTrigger } from 'queries/module';
+import { GameServerSelectQueryField } from '../../../../components/selects';
+import { useCronJobTrigger as useCronjobTrigger } from '../../../../queries/module';
 import { FC } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
