@@ -5,7 +5,7 @@ import {
   globalGameServerSettingsQueryOptions,
   useSetGameServerSetting,
 } from '../../../queries/setting';
-import { ReactElement, useMemo } from 'react';
+import { ReactElement, useEffect, useMemo, useState  } from 'react';
 import { useForm, SubmitHandler, useFieldArray } from 'react-hook-form';
 import { Switch, TextField, Button, SelectField, styled, Skeleton, camelCaseToSpaces } from '@takaro/lib-components';
 import { useSnackbar } from 'notistack';
@@ -84,6 +84,7 @@ function Component() {
 
   const { enqueueSnackbar } = useSnackbar();
   const loaderData = Route.useLoaderData();
+  const [isUpdatingSettings, setIsUpdatingSettings] = useState(false);
 
   const [{ data: gameServerSettings }, { data: globalGameServerSettings }] = useQueries({
     queries: [
@@ -98,14 +99,14 @@ function Component() {
   const { control, handleSubmit, watch, formState, reset } = useForm<IFormInputs>({
     mode: 'onSubmit',
   });
-  const { fields, append, remove } = useFieldArray({
+  const { fields } = useFieldArray({
     name: 'settings',
     control,
   });
 
   const onSubmit: SubmitHandler<IFormInputs> = async ({ settings }) => {
+    setIsUpdatingSettings(true);
     if (!formState.dirtyFields.settings) {
-      // TODO: reset
       return;
     }
 
@@ -137,62 +138,57 @@ function Component() {
         }
       }
       enqueueSnackbar('Settings updated!', { variant: 'default', type: 'success' });
-      reset({}, { keepValues: true });
     } catch {
       enqueueSnackbar('An error occurred while saving settings', { variant: 'default', type: 'error' });
       return;
+    } finally {
+      setIsUpdatingSettings(false);
     }
   };
 
-  const gameServerSettingComponents = useMemo(() => {
-    const settingsComponents: Record<string, (fieldName: string, disabled: boolean) => ReactElement> = {};
-    // in case the value is not set, we want to use the global value
-    // otherwise we want to use the value from the gameserver
-    if (gameServerSettings && globalGameServerSettings) {
-      // When a new gameserver is selected (in the global gameserver select), this useMemo is called again.
-      // we need to first remove all fields belonging to the previous gameserver.
-      if (fields.length !== 0) {
-        fields.forEach((_, index) => remove(index));
-      }
+  useEffect(() => {
+    if (isUpdatingSettings || !gameServerSettings || !globalGameServerSettings) return;
 
+    reset({
+      settings: gameServerSettings.map(({ key, value, type }) => {
+        return {
+          key,
+          type:
+            // There is also a default type, which we map to inherit
+            type === SettingsOutputDTOTypeEnum.Override
+              ? SettingsOutputDTOTypeEnum.Override
+              : SettingsOutputDTOTypeEnum.Inherit,
+          value: booleanFields.includes(key) ? value === 'true' : value,
+        };
+      }),
+    });
+  }, [gameServerSettings, globalGameServerSettings, reset]);
+
+  const settingsComponents: Record<string, (fieldName: string, disabled: boolean) => ReactElement> = useMemo(() => {
+    const components: Record<string, (fieldName: string, disabled: boolean) => ReactElement> = {};
+
+    if (gameServerSettings) {
       gameServerSettings
-        .filter((gameServerSetting) => gameServerSetting.key !== 'developerMode')
-        .forEach(({ key, value, type }) => {
+        .filter(({ key }) => key !== 'developerMode')
+        .forEach(({ key }) => {
           if (booleanFields.includes(key)) {
-            // to make sure we only append the fields once
-            // All fields are strings, however, the Switch component requires a boolean value.
-            if (fields.length !== Object.keys(gameServerSettings).length) {
-              if (type === SettingsOutputDTOTypeEnum.Override) {
-                append({ key, type: SettingsOutputDTOTypeEnum.Override, value: value === 'true' ? true : false });
-              } else {
-                append({ key, type: SettingsOutputDTOTypeEnum.Inherit, value: value === 'true' ? true : false });
-              }
-            }
-            settingsComponents[key] = (fieldName: string, disabled: boolean) => (
+            components[key] = (fieldName: string, disabled: boolean) => (
               <NoSpacing>
                 <Switch readOnly={readOnly} control={control} name={fieldName} key={key} disabled={disabled} />
               </NoSpacing>
             );
           } else {
-            if (fields.length !== Object.keys(gameServerSettings).length) {
-              if (type === SettingsOutputDTOTypeEnum.Override) {
-                append({ key, type: SettingsOutputDTOTypeEnum.Override, value: value });
-              } else {
-                append({ key, type: SettingsOutputDTOTypeEnum.Inherit, value: value });
-              }
-            }
-            settingsComponents[key] = (fieldName: string, disabled: boolean) => (
+            components[key] = (fieldName: string, disabled: boolean) => (
               <NoSpacing>
                 <TextField readOnly={readOnly} control={control} name={fieldName} key={key} disabled={disabled} />
               </NoSpacing>
             );
           }
-          // By default `append` is considered as dirty, since we rely on the dirty state to define the required requests, we need to reset it.
-          reset({}, { keepValues: true });
         });
     }
-    return settingsComponents;
-  }, [gameServerSettings, globalGameServerSettings]);
+
+    return components;
+  }, [gameServerSettings]);
 
   return (
     <>
@@ -247,7 +243,7 @@ function Component() {
                   {globalGameServerSettings.find((setting) => setting.key === watch(`settings.${index}.key`))?.value}
                 </div>
               ) : (
-                gameServerSettingComponents[watch(`settings.${index}.key`)](`settings.${index}.value`, false)
+                settingsComponents[watch(`settings.${index}.key`)](`settings.${index}.value`, false)
               )}
             </SettingsContainer>
           ))}

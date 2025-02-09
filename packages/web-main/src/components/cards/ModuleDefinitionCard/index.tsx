@@ -66,6 +66,10 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
     e.stopPropagation();
     setOpenCopyDialog(true);
   };
+  const handleOnCopyIdClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(mod.id);
+  };
 
   const handleOnOpenClick = (e: MouseEvent) => {
     e.stopPropagation();
@@ -128,6 +132,7 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
                       <Dropdown.Menu.Group label="Actions">
                         <Dropdown.Menu.Item icon={<ViewIcon />} onClick={handleOnViewClick} label="View module" />
                         <Dropdown.Menu.Item icon={<CopyIcon />} onClick={handleOnCopyClick} label="Copy module" />
+                        <Dropdown.Menu.Item icon={<CopyIcon />} onClick={handleOnCopyIdClick} label="Copy module id" />
                       </Dropdown.Menu.Group>
                     )}
                     {!mod.builtin && (
@@ -137,6 +142,11 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
                           <Dropdown.Menu.Item icon={<EditIcon />} onClick={handleOnEditClick} label="Edit module" />
                           <Dropdown.Menu.Item icon={<CopyIcon />} onClick={handleOnCopyClick} label="Copy module" />
                           <Dropdown.Menu.Item icon={<TagIcon />} onClick={handleOnTagClick} label="Tag module" />
+                          <Dropdown.Menu.Item
+                            icon={<CopyIcon />}
+                            onClick={handleOnCopyIdClick}
+                            label="Copy module id"
+                          />
                           <Dropdown.Menu.Item
                             icon={<DeleteIcon fill={theme.colors.error} />}
                             onClick={handleOnDeleteClick}
