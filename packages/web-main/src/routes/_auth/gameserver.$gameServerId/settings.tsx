@@ -5,7 +5,7 @@ import {
   globalGameServerSettingsQueryOptions,
   useSetGameServerSetting,
 } from '../../../queries/setting';
-import { ReactElement, useEffect, useMemo, useState  } from 'react';
+import { ReactElement, useEffect, useMemo, useState } from 'react';
 import { useForm, SubmitHandler, useFieldArray } from 'react-hook-form';
 import { Switch, TextField, Button, SelectField, styled, Skeleton, camelCaseToSpaces } from '@takaro/lib-components';
 import { useSnackbar } from 'notistack';
