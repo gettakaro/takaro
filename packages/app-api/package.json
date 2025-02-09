@@ -11,6 +11,7 @@
     "prestart:dev": "npm run db:migrate",
     "preload": "node -e \"import('geolite2-redist').then(geolite => geolite.downloadDbs())\"",
     "build": "tsc -p ./tsconfig.build.json",
+    "postbuild": "./scripts/prep-ai-context.sh",
     "db:migrate": "node scripts/migrate-up.mjs",
     "db:rollback": "node scripts/migrate-down.mjs"
   },

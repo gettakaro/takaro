@@ -1,7 +1,19 @@
 import { IsOptional, IsString, ValidateNested } from 'class-validator';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { AuthenticatedRequest, AuthService } from '../../service/AuthService.js';
-import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Put, Params, Res } from 'routing-controllers';
+import {
+  Body,
+  Get,
+  Post,
+  Delete,
+  JsonController,
+  UseBefore,
+  Req,
+  Put,
+  Params,
+  Res,
+  QueryParams,
+} from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId } from '../../lib/validators.js';
@@ -22,6 +34,7 @@ import {
 import { ModuleTransferDTO, ICommand, ICommandArgument, ICronJob, IFunction, IHook } from '@takaro/modules';
 import { PermissionCreateDTO } from '../../service/RoleService.js';
 import { ModuleTransferVersionDTO } from '@takaro/modules';
+import { ai, AIOptionsDTO } from '../../lib/AI.js';
 
 export class ModuleOutputDTOAPI extends APIOutput<ModuleOutputDTO> {
   @Type(() => ModuleOutputDTO)
@@ -259,4 +272,34 @@ export class ModuleController {
     return apiResponse(await service.import(data));
   }
   // #endregion Export/Import
+
+  // #region AI
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]))
+  @OpenAPI({
+    summary: 'Ask AI',
+    description: 'Prompt an AI model, Takaro handles the relevant context and sends the response back',
+  })
+  @Get('/ai/:id')
+  async askAi(@Req() req: AuthenticatedRequest, @Params() params: ParamId, @QueryParams() query: AIOptionsDTO) {
+    const service = new ModuleService(req.domainId);
+    const mod = await service.findOne(params.id);
+    if (!mod) throw new errors.NotFoundError('Module not found');
+
+    const response = await ai.prompt(mod, query);
+
+    return apiResponse(response);
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]))
+  @OpenAPI({
+    summary: 'Reset AI chat',
+    description: 'Reset the AI chat context for the current user',
+  })
+  @Delete('/ai/:id/reset')
+  async resetAi(@Req() _req: AuthenticatedRequest, @Params() params: ParamId) {
+    await ai.resetChat(params.id);
+    return apiResponse();
+  }
+
+  // #endregion AI
 }
