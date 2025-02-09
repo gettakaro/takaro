@@ -1,6 +1,7 @@
 import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '../dto/gameEvents.js';
 import { CommandArgumentCreateDTO } from '@takaro/apiclient';
+import { describe } from 'node:test';
 
 const group = 'Command args';
 
@@ -168,8 +169,6 @@ const tests = [
     snapshot: false,
     setup: playerArgSetup,
     test: async function () {
-      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 2);
-
       const pogRes = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
         filters: {
           playerId: [this.setupData.players[0].id],
@@ -177,6 +176,8 @@ const tests = [
         },
       });
       const pog = pogRes.data.data[0];
+
+      const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 2);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: `/test ${this.setupData.players[0].name.substring(0, 3)}`,

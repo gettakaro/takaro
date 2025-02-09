@@ -1,12 +1,12 @@
 import { Stats, styled, Skeleton, useTheme, Avatar, getInitials, HorizontalNav } from '@takaro/lib-components';
 import { Outlet, redirect, createFileRoute, Link } from '@tanstack/react-router';
 import { DateTime } from 'luxon';
-import { playerQueryOptions } from 'queries/player';
-import { playersOnGameServersQueryOptions } from 'queries/pog';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { ErrorBoundary } from 'components/ErrorBoundary';
-import { hasPermission } from 'hooks/useHasPermission';
-import { userMeQueryOptions } from 'queries/user';
+import { playerQueryOptions } from '../../../queries/player';
+import { playersOnGameServersQueryOptions } from '../../../queries/pog';
+import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
+import { ErrorBoundary } from '../../../components/ErrorBoundary';
+import { hasPermission } from '../../../hooks/useHasPermission';
+import { userMeQueryOptions } from '../../../queries/user';
 import { useQueries } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/_global/player/$playerId')({

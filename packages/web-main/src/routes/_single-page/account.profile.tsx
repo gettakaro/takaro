@@ -2,10 +2,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { SettingsFlow, UpdateSettingsFlowBody } from '@ory/client';
 import { styled, Skeleton } from '@takaro/lib-components';
 import { gridStyle, NodeMessages, UserSettingsCard, UserSettingsFlowType } from '@ory/elements';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
+import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { z } from 'zod';
-import { useOry } from 'hooks/useOry';
+import { useOry } from '../../hooks/useOry';
 import { useSnackbar } from 'notistack';
 
 const searchSchema = z.object({

@@ -1,7 +1,7 @@
 import { PaginationProps, SelectQueryField } from '@takaro/lib-components';
 import { FC, useState } from 'react';
 import { CustomSelectProps } from '.';
-import { modulesInfiniteQueryOptions } from 'queries/module';
+import { modulesInfiniteQueryOptions } from '../../queries/module';
 import { ModuleOutputDTO } from '@takaro/apiclient';
 import { useInfiniteQuery } from '@tanstack/react-query';
 

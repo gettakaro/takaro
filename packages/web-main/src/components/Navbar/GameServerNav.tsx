@@ -11,7 +11,7 @@ import {
   AiOutlinePlus as AddServerIcon,
   AiOutlineShopping as ShopIcon,
 } from 'react-icons/ai';
-import { gameServersQueryOptions } from 'queries/gameserver';
+import { gameServersQueryOptions } from '../../queries/gameserver';
 import { Nav, NoServersCallToAction } from './style';
 import { useQuery } from '@tanstack/react-query';
 

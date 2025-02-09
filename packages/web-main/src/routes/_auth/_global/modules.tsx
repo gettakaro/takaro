@@ -1,14 +1,14 @@
 import { Divider, Skeleton, styled, useTheme, InfiniteScroll } from '@takaro/lib-components';
 import { PERMISSIONS } from '@takaro/apiclient';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { PermissionsGuard } from 'components/PermissionsGuard';
-import { AddCard, CardList, ModuleDefinitionCard } from 'components/cards';
+import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
+import { PermissionsGuard } from '../../../components/PermissionsGuard';
+import { AddCard, CardList, ModuleDefinitionCard } from '../../../components/cards';
 import { useNavigate, Outlet, redirect, createFileRoute } from '@tanstack/react-router';
-import { hasPermission } from 'hooks/useHasPermission';
-import { modulesInfiniteQueryOptions } from 'queries/module';
+import { hasPermission } from '../../../hooks/useHasPermission';
+import { modulesInfiniteQueryOptions } from '../../../queries/module';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { userMeQueryOptions } from 'queries/user';
-import { globalGameServerSetingQueryOptions } from 'queries/setting';
+import { userMeQueryOptions } from '../../../queries/user';
+import { globalGameServerSetingQueryOptions } from '../../../queries/setting';
 
 const SubHeader = styled.h2<{ withMargin?: boolean }>`
   font-size: ${({ theme }) => theme.fontSize.mediumLarge};

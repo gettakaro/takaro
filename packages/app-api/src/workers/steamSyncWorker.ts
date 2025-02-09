@@ -3,7 +3,7 @@ import { config } from '../config.js';
 import { Job } from 'bullmq';
 import { logger, ctx } from '@takaro/util';
 import { DomainService } from '../service/DomainService.js';
-import { PlayerService } from '../service/PlayerService.js';
+import { PlayerService } from '../service/Player/index.js';
 import { steamApi } from '../lib/steamApi.js';
 
 const log = logger('worker:steamSync');

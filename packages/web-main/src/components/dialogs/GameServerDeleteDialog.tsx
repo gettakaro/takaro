@@ -1,7 +1,7 @@
 import { forwardRef, MouseEvent, useImperativeHandle, useState } from 'react';
 import { DeleteImperativeHandle, RequiredDialogOptions } from '.';
 import { Button, Dialog, FormError, ValueConfirmationField } from '@takaro/lib-components';
-import { useGameServerRemove } from 'queries/gameserver';
+import { useGameServerRemove } from '../../queries/gameserver';
 
 interface GameServerDeleteDialogProps extends RequiredDialogOptions {
   gameServerName: string;

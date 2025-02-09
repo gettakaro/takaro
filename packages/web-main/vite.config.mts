@@ -13,6 +13,7 @@ export default defineConfig({
     cssMinify: 'lightningcss',
   },
   test: {
+    globals: true,
     environment: 'jsdom',
   },
   server: {

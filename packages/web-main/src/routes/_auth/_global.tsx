@@ -1,8 +1,8 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
-import { BaseLayout } from 'components/BaseLayout';
-import { hasPermission } from 'hooks/useHasPermission';
-import { gameServersQueryOptions } from 'queries/gameserver';
-import { userMeQueryOptions } from 'queries/user';
+import { BaseLayout } from '../../components/BaseLayout';
+import { hasPermission } from '../../hooks/useHasPermission';
+import { gameServersQueryOptions } from '../../queries/gameserver';
+import { userMeQueryOptions } from '../../queries/user';
 
 export const Route = createFileRoute('/_auth/_global')({
   beforeLoad: async ({ context, location }) => {

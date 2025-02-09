@@ -1,5 +1,6 @@
 import { IntegrationTest, expect, SetupGameServerPlayers } from '@takaro/test';
 import { ItemsOutputDTO, ShopListingOutputDTO } from '@takaro/apiclient';
+import { describe } from 'node:test';
 
 const group = 'ShopController';
 

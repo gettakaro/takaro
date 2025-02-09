@@ -1,10 +1,10 @@
 import { Card, styled } from '@takaro/lib-components';
-import { gameServerQueryOptions } from 'queries/gameserver';
-import { useGameServerDocumentTitle } from 'hooks/useDocumentTitle';
+import { gameServerQueryOptions } from '../../../queries/gameserver';
+import { useGameServerDocumentTitle } from '../../../hooks/useDocumentTitle';
 import { OnlinePlayersCard } from './-components/OnlinePlayers';
 import { ChatMessagesCard } from './-components/ChatMessages';
 import { Scrollable } from './-components/style';
-import { EventFeedWidget } from 'components/events/EventFeedWidget';
+import { EventFeedWidget } from '../../../components/events/EventFeedWidget';
 import { EventOutputDTOEventNameEnum as EventName } from '@takaro/apiclient';
 import { createFileRoute } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';

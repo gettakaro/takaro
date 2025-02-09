@@ -7,6 +7,7 @@ import {
   EventsAwaiter,
 } from '@takaro/test';
 import { GameEvents } from '../dto/gameEvents.js';
+import { describe } from 'node:test';
 
 const group = 'Help command';
 

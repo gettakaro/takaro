@@ -1,10 +1,10 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
-import { hasPermission } from 'hooks/useHasPermission';
+import { hasPermission } from '../../../hooks/useHasPermission';
 import { ShopListingCreateUpdateForm } from './-components/-ShopListingCreateUpdateForm';
-import { gameServerSettingQueryOptions } from 'queries/setting';
-import { shopListingQueryOptions } from 'queries/shopListing';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { userMeQueryOptions } from 'queries/user';
+import { gameServerSettingQueryOptions } from '../../../queries/setting';
+import { shopListingQueryOptions } from '../../../queries/shopListing';
+import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
+import { userMeQueryOptions } from '../../../queries/user';
 import { DrawerSkeleton } from '@takaro/lib-components';
 import { useQueries } from '@tanstack/react-query';
 

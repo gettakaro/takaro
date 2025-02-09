@@ -22,7 +22,7 @@ import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { HookEvents, isDiscordMessageEvent, EventPayload, EventTypes, EventMapping } from '@takaro/modules';
 import { PlayerOnGameServerService } from './PlayerOnGameserverService.js';
-import { PlayerService } from './PlayerService.js';
+import { PlayerService } from './Player/index.js';
 import { ModuleService } from './Module/index.js';
 import { InstallModuleDTO } from './Module/dto.js';
 

@@ -8,7 +8,7 @@ import {
   AiOutlineDelete as DeleteIcon,
   AiOutlineEye as ViewIcon,
 } from 'react-icons/ai';
-import { useShopListingDelete } from 'queries/shopListing';
+import { useShopListingDelete } from '../../../../../queries/shopListing';
 
 interface ShopListingActions {
   shopListingId: string;

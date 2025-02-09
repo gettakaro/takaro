@@ -12,21 +12,21 @@ import {
 } from '@takaro/lib-components';
 import { VariableOutputDTO, VariableSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
-import { variablesQueryOptions } from 'queries/variable';
+import { variablesQueryOptions } from '../../../queries/variable';
 import {
   AiOutlineEdit as EditIcon,
   AiOutlineEye as ViewIcon,
   AiOutlineDelete as DeleteIcon,
   AiOutlineRight as ActionIcon,
 } from 'react-icons/ai';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
+import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
 import { VariableValueDetail } from './-variables/VariableValueDetail';
-import { VariableDeleteDialog } from 'components/dialogs/VariableDeleteDialog';
-import { VariablesDeleteDialog } from 'components/dialogs/VariablesDeleteDialog';
+import { VariableDeleteDialog } from '../../../components/dialogs/VariableDeleteDialog';
+import { VariablesDeleteDialog } from '../../../components/dialogs/VariablesDeleteDialog';
 import { Outlet, createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
-import { hasPermission } from 'hooks/useHasPermission';
-import { userMeQueryOptions } from 'queries/user';
+import { hasPermission } from '../../../hooks/useHasPermission';
+import { userMeQueryOptions } from '../../../queries/user';
 
 export const Route = createFileRoute('/_auth/_global/variables')({
   beforeLoad: async ({ context }) => {

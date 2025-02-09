@@ -1,8 +1,8 @@
 import { EventOutputDTO, EventSearchInputDTO } from '@takaro/apiclient';
 import { Skeleton } from '@takaro/lib-components';
 import { useQuery } from '@tanstack/react-query';
-import { EventFeed, EventItem } from 'components/events/EventFeed';
-import { eventsQueryOptions } from 'queries/event';
+import { EventFeed, EventItem } from '../../components/events/EventFeed';
+import { eventsQueryOptions } from '../../queries/event';
 import { FC, useEffect, useState } from 'react';
 
 interface IProps {

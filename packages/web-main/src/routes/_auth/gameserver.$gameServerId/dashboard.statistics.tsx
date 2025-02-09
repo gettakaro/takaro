@@ -8,10 +8,10 @@ import {
   EventsCountQueryOptions,
   CountriesStatsQueryOptions,
   CurrencyStatsQueryOptions,
-} from 'queries/stats';
+} from '../../../queries/stats';
 import { useMemo } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
-import { TimePeriodSelectField } from 'components/selects';
+import { TimePeriodSelectField } from '../../../components/selects';
 import { EventsCountInputDTOEventNameEnum } from '@takaro/apiclient';
 import { AiOutlineQuestion as QuestionIcon } from 'react-icons/ai';
 

@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient, queryOptions } from '@tanstack/react-query';
-import { getApiClient } from 'util/getApiClient';
+import { getApiClient } from '../util/getApiClient';
 import {
   PlayerOnGameServerSearchInputDTO,
   PlayerOnGameserverOutputArrayDTOAPI,
@@ -7,7 +7,7 @@ import {
   PlayerOnGameServerSetCurrencyInputDTO,
 } from '@takaro/apiclient';
 import { AxiosError } from 'axios';
-import { mutationWrapper } from 'queries/util';
+import { mutationWrapper } from '../queries/util';
 import { useSnackbar } from 'notistack';
 import { userKeys } from './user';
 

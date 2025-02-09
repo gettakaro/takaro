@@ -1,11 +1,11 @@
 import { FC } from 'react';
 import { useForm } from 'react-hook-form';
 import { EventOutputDTOEventNameEnum as EventName } from '@takaro/apiclient';
-import { GameServerSelectQueryField, PlayerSelectQueryField, EventNameSelectField } from 'components/selects';
+import { GameServerSelectQueryField, PlayerSelectQueryField, EventNameSelectField } from '../../components/selects';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { DateRangePicker, Button, styled } from '@takaro/lib-components';
-import { ModuleSelectQueryField } from 'components/selects/ModuleSelectQueryField';
+import { ModuleSelectQueryField } from '../../components/selects/ModuleSelectQueryField';
 
 const Form = styled.form`
   display: grid;
@@ -43,7 +43,6 @@ export const eventFilterSchema = z.object({
 export type EventFilterInputs = z.infer<typeof eventFilterSchema>;
 
 export const EventFilter: FC<EventFilterProps> = ({ initialSelectedValues, onSubmit, isLoading, isLive }) => {
-  console.log('defaultvalues', initialSelectedValues);
   const { control, handleSubmit, formState } = useForm<EventFilterInputs>({
     mode: 'onSubmit',
     resolver: zodResolver(eventFilterSchema),

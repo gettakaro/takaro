@@ -3,6 +3,7 @@ import { PERMISSIONS } from '@takaro/auth';
 import { Client, UserOutputDTO } from '@takaro/apiclient';
 import { faker } from '@faker-js/faker';
 import { AxiosError } from 'axios';
+import { describe } from 'node:test';
 
 const group = 'UserController';
 

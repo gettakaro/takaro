@@ -1,16 +1,11 @@
 import { Dialog, styled } from '@takaro/lib-components';
-import { FC, useState } from 'react';
+import { FC } from 'react';
+import { RequiredDialogOptions } from '.';
 
-type EventDetailProps = {
+interface EventDetailDialogProps extends RequiredDialogOptions {
   eventType: string;
   metaData: object;
-};
-
-const Button = styled.a`
-  color: ${({ theme }) => theme.colors.textAlt};
-  text-decoration: underline;
-  cursor: pointer;
-`;
+}
 
 const StyledContent = styled(Dialog.Content)`
   min-width: 600px;
@@ -32,24 +27,19 @@ const CodeBlock = styled.code`
   width: 100%;
 `;
 
-export const EventDetail: FC<EventDetailProps> = ({ eventType, metaData }) => {
-  const [open, setOpen] = useState<boolean>(false);
-
+export const EventDetailDialog: FC<EventDetailDialogProps> = ({ eventType, metaData, ...dialogOptions }) => {
   return (
-    <>
-      <Button onClick={() => setOpen(true)}>details</Button>
-      <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog {...dialogOptions}>
+      <Dialog.Content>
         <StyledContent>
-          <Dialog.Heading>
-            <h3>{eventType}</h3>
-          </Dialog.Heading>
+          <Dialog.Heading size={4}>{eventType}</Dialog.Heading>
           <StyledBody>
             <CodeBlock>
               <pre>{JSON.stringify(metaData, null, 2)}</pre>
             </CodeBlock>
           </StyledBody>
         </StyledContent>
-      </Dialog>
-    </>
+      </Dialog.Content>
+    </Dialog>
   );
 };

@@ -17,8 +17,8 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import { getApiClient } from 'util/getApiClient';
-import { getNextPage, mutationWrapper, queryParamsToArray } from 'queries/util';
+import { getApiClient } from '../util/getApiClient';
+import { getNextPage, mutationWrapper, queryParamsToArray } from '../queries/util';
 import { userKeys } from './user';
 import { ErrorMessageMapping } from '@takaro/lib-components/src/errors';
 import { useSnackbar } from 'notistack';

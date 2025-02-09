@@ -19,8 +19,8 @@ import {
 } from 'react-icons/ai';
 
 import { ArgumentCard, ArgumentList, Column, ContentContainer, Fields, Flex } from './style';
-import { globalGameServerSetingQueryOptions } from 'queries/setting';
-import { commandQueryOptions, useCommandUpdate } from 'queries/module';
+import { globalGameServerSetingQueryOptions } from '../../../../../queries/setting';
+import { commandQueryOptions, useCommandUpdate } from '../../../../../queries/module';
 import { FC } from 'react';
 import { useForm, useFieldArray, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';

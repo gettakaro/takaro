@@ -5,7 +5,7 @@ import { PaginatedOutput } from '../../db/base.js';
 import { BanCreateDTO, BanOutputDTO, BanUpdateDTO } from './dto.js';
 import { BanModel, BanRepo } from '../../db/ban.js';
 import { GameServerService } from '../GameServerService.js';
-import { PlayerService } from '../PlayerService.js';
+import { PlayerService } from '../Player/index.js';
 
 @traceableClass('service:ban')
 export class BanService extends TakaroService<BanModel, BanOutputDTO, BanCreateDTO, BanUpdateDTO> {

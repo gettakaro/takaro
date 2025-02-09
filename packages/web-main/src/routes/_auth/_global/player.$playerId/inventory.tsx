@@ -1,9 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { Section } from './-style';
-import { GameServerSelectQueryField } from 'components/selects';
+import { GameServerSelectQueryField } from '../../../../components/selects';
 import { useForm } from 'react-hook-form';
 import { useQuery } from '@tanstack/react-query';
-import { playerOnGameServerQueryOptions } from 'queries/pog';
+import { playerOnGameServerQueryOptions } from '../../../../queries/pog';
 import { PlayerInventoryTable } from './-PlayerInventoryTable';
 
 export const Route = createFileRoute('/_auth/_global/player/$playerId/inventory')({

@@ -1,11 +1,15 @@
 import { SubmitHandler } from 'react-hook-form';
 import { DrawerSkeleton } from '@takaro/lib-components';
 import { redirect, useNavigate, createFileRoute } from '@tanstack/react-router';
-import { gameServerQueryOptions, useGameServerReachabilityByConfig, useGameServerUpdate } from 'queries/gameserver';
+import {
+  gameServerQueryOptions,
+  useGameServerReachabilityByConfig,
+  useGameServerUpdate,
+} from '../../../queries/gameserver';
 import { CreateUpdateForm } from './-gameservers/CreateUpdateForm';
 import { IFormInputs } from './-gameservers/validationSchema';
-import { hasPermission } from 'hooks/useHasPermission';
-import { userMeQueryOptions } from 'queries/user';
+import { hasPermission } from '../../../hooks/useHasPermission';
+import { userMeQueryOptions } from '../../../queries/user';
 import { GameServerTestReachabilityInputDTOTypeEnum } from '@takaro/apiclient';
 import { useState } from 'react';
 

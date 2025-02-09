@@ -3,12 +3,12 @@ import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { getApiClient } from 'util/getApiClient';
+import { getApiClient } from '../../../util/getApiClient';
 import { useSnackbar } from 'notistack';
-import { gameServerKeys, useGameServerCreateFromCSMMImport } from 'queries/gameserver';
+import { gameServerKeys, useGameServerCreateFromCSMMImport } from '../../../queries/gameserver';
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
-import { hasPermission } from 'hooks/useHasPermission';
-import { userMeQueryOptions } from 'queries/user';
+import { hasPermission } from '../../../hooks/useHasPermission';
+import { userMeQueryOptions } from '../../../queries/user';
 import { useQueryClient } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/_global/gameservers/create/import')({

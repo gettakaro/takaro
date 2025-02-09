@@ -1,5 +1,5 @@
 import { Dropdown, styled, getInitials } from '@takaro/lib-components';
-import { useAuth } from 'hooks/useAuth';
+import { useAuth } from '../../hooks/useAuth';
 import {
   AiOutlineUser as ProfileIcon,
   AiOutlineLogout as LogoutIcon,
@@ -8,7 +8,7 @@ import {
 import { IoSwapHorizontal as SwitchDomainIcon } from 'react-icons/io5';
 import { useNavigate } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
-import { userMeQueryOptions } from 'queries/user';
+import { userMeQueryOptions } from '../../queries/user';
 
 const User = styled.div`
   display: grid;

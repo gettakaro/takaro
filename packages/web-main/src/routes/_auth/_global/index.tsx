@@ -1,8 +1,8 @@
 import { PERMISSIONS } from '@takaro/apiclient';
 import { ErrorPage } from '@takaro/lib-components';
 import { createFileRoute, redirect } from '@tanstack/react-router';
-import { getUserPermissions, hasPermission } from 'hooks/useHasPermission';
-import { userMeQueryOptions } from 'queries/user';
+import { getUserPermissions, hasPermission } from '../../../hooks/useHasPermission';
+import { userMeQueryOptions } from '../../../queries/user';
 
 export const Route = createFileRoute('/_auth/_global/')({
   beforeLoad: async ({ context }) => {
