@@ -1,14 +1,15 @@
 import { Button } from '@takaro/lib-components';
 import { useQueries } from '@tanstack/react-query';
 import { createFileRoute, redirect } from '@tanstack/react-router';
-import { MaxUsageCard } from 'components/MaxUsageCard';
-import { hasPermission } from 'hooks/useHasPermission';
-import { gameServerCountQueryOptions } from 'queries/gameserver';
-import { customModuleCountQueryOptions } from 'queries/module';
-import { userCountQueryOptions, userMeQueryOptions } from 'queries/user';
-import { variableCountQueryOptions } from 'queries/variable';
-import { getConfigVar } from 'util/getConfigVar';
-import { getCurrentDomain } from 'util/getCurrentDomain';
+import { MaxUsageCard } from '../../../../../components/MaxUsageCard';
+import { hasPermission } from '../../../../../hooks/useHasPermission';
+import { gameServerCountQueryOptions } from '../../../../../queries/gameserver';
+import { customModuleCountQueryOptions } from '../../../../../queries/module';
+import { userCountQueryOptions, userMeQueryOptions } from '../../../../../queries/user';
+import { variableCountQueryOptions } from '../../../../../queries/variable';
+
+import { getConfigVar } from '../../../../../util/getConfigVar';
+import { getCurrentDomain } from '../../../../../util/getCurrentDomain';
 
 export const Route = createFileRoute('/_auth/_global/settings/billing/')({
   beforeLoad: async ({ context }) => {

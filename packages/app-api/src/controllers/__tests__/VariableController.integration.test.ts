@@ -1,6 +1,7 @@
 import { IntegrationTest, expect, SetupGameServerPlayers } from '@takaro/test';
 import { VariableOutputDTO } from '@takaro/apiclient';
 import { randomUUID } from 'crypto';
+import { describe } from 'node:test';
 
 const group = 'VariableController';
 

@@ -11,8 +11,8 @@ import {
 } from '@takaro/lib-components';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useParams } from '@tanstack/react-router';
-import { gameServerQueryOptions } from 'queries/gameserver';
-import { ItemsInfiniteQueryOptions } from 'queries/item';
+import { gameServerQueryOptions } from '../../../queries/gameserver';
+import { ItemsInfiniteQueryOptions } from '../../../queries/item';
 import { useState } from 'react';
 
 const gameServerTypeToIconFolderMap = {

@@ -1,7 +1,7 @@
 import { Dialog } from '@takaro/lib-components';
 import { useSnackbar } from 'notistack';
 import { FC } from 'react';
-import { CopyModuleForm } from 'components/CopyModuleForm';
+import { CopyModuleForm } from '../../components/CopyModuleForm';
 import { ModuleOutputDTO } from '@takaro/apiclient';
 import { RequiredDialogOptions } from '.';
 interface ModuleCopyDialogProps extends RequiredDialogOptions {

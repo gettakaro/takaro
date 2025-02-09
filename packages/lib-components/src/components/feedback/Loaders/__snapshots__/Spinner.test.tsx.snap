@@ -1,0 +1,10 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Should render <Spinner/> 1`] = `
+<div>
+  <div
+    class="sc-aXZVg gDGTCm"
+    style="will-change: transform;"
+  />
+</div>
+`;

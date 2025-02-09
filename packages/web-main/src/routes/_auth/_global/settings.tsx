@@ -1,9 +1,9 @@
 import { Link, Outlet, createFileRoute, redirect } from '@tanstack/react-router';
 import { styled, HorizontalNav } from '@takaro/lib-components';
-import { ErrorBoundary } from 'components/ErrorBoundary';
-import { hasPermission } from 'hooks/useHasPermission';
-import { userMeQueryOptions } from 'queries/user';
-import { getConfigVar } from 'util/getConfigVar';
+import { ErrorBoundary } from '../../../components/ErrorBoundary';
+import { hasPermission } from '../../../hooks/useHasPermission';
+import { userMeQueryOptions } from '../../../queries/user';
+import { getConfigVar } from '../../../util/getConfigVar';
 
 export const Route = createFileRoute('/_auth/_global/settings')({
   beforeLoad: async ({ context }) => {

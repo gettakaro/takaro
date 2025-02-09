@@ -1,7 +1,7 @@
 import { GameServerOutputDTO, GameServerSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { Chip, Table, useTableActions } from '@takaro/lib-components';
 import { useQuery } from '@tanstack/react-query';
-import { gameServersQueryOptions } from 'queries/gameserver';
+import { gameServersQueryOptions } from '../../../../queries/gameserver';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useState } from 'react';
 import { Link } from '@tanstack/react-router';

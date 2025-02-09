@@ -1,6 +1,7 @@
 import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '../dto/index.js';
 import { sleep } from '@takaro/util';
+import { describe } from 'node:test';
 
 const group = 'System config - cost';
 

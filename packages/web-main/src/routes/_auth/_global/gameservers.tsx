@@ -1,10 +1,10 @@
 import { createFileRoute, Outlet, useNavigate } from '@tanstack/react-router';
-import { useHasPermission } from 'hooks/useHasPermission';
+import { useHasPermission } from '../../../hooks/useHasPermission';
 import { ErrorBoundary } from '@sentry/react';
 import { PERMISSIONS } from '@takaro/apiclient';
 import { Button, Dropdown, IconButton, useLocalStorage, useTheme } from '@takaro/lib-components';
 import { GameServersCardView } from './-gameservers/GameServersCardView';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
+import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
 import { GameServersTableView } from './-gameservers/GameServersTableView';
 
 export interface GenericGameServersViewProps {
@@ -23,15 +23,15 @@ import {
   AiOutlineSetting as SettingsIcon,
 } from 'react-icons/ai';
 import { FC, MouseEvent, useRef, useState } from 'react';
-import { PermissionsGuard } from 'components/PermissionsGuard';
-import { TableListToggleButton } from 'components/TableListToggleButton';
-import { GameServerDeleteDialog } from 'components/dialogs/GameServerDeleteDialog';
-import { DeleteImperativeHandle } from 'components/dialogs';
-import { userMeQueryOptions } from 'queries/user';
+import { PermissionsGuard } from '../../../components/PermissionsGuard';
+import { TableListToggleButton } from '../../../components/TableListToggleButton';
+import { GameServerDeleteDialog } from '../../../components/dialogs/GameServerDeleteDialog';
+import { DeleteImperativeHandle } from '../../../components/dialogs';
+import { MaxUsage } from '../../../components/MaxUsage';
+import { userMeQueryOptions } from '../../../queries/user';
+import { gameServerCountQueryOptions } from '../../../queries/gameserver';
 import { useQuery } from '@tanstack/react-query';
-import { getCurrentDomain } from 'util/getCurrentDomain';
-import { gameServerCountQueryOptions } from 'queries/gameserver';
-import { MaxUsage } from 'components/MaxUsage';
+import { getCurrentDomain } from '../../../util/getCurrentDomain';
 
 type ViewType = 'list' | 'table';
 
@@ -161,7 +161,7 @@ export const GameServerActions: FC<GameServerActionsProps> = ({ gameServerId, ga
           </Dropdown.Trigger>
           <Dropdown.Menu>
             <Dropdown.Menu.Group label="Actions">
-              <Dropdown.Menu.Item icon={<CopyIcon />} onClick={handleOnCopyClick} label="Copy gameserverID" />
+              <Dropdown.Menu.Item icon={<CopyIcon />} onClick={handleOnCopyClick} label="Copy gameserver id" />
               <Dropdown.Menu.Item icon={<EditIcon />} onClick={handleOnEditClick} label="Edit gameserver" />
               <Dropdown.Menu.Item
                 icon={<DeleteIcon fill={theme.colors.error} />}

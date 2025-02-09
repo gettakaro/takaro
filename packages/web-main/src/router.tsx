@@ -2,8 +2,8 @@ import { queryClient } from './queryClient';
 import { routeTree } from './routeTree.gen';
 import { createRouteMask, createRouter } from '@tanstack/react-router';
 import { QueryClient } from '@tanstack/react-query';
-import { DefaultErrorComponent } from 'components/ErrorComponent';
-import { IAuthContext } from 'hooks/useAuth';
+import { DefaultErrorComponent } from './components/ErrorComponent';
+import { IAuthContext } from './hooks/useAuth';
 import { MeOutputDTO } from '@takaro/apiclient';
 
 export interface RouterContext {

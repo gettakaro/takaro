@@ -1,17 +1,22 @@
 import { IntegrationTest, expect, integrationConfig } from '@takaro/test';
 import { GameServerOutputDTO, ModuleOutputDTO, CronJobOutputDTO, ModuleInstallationOutputDTO } from '@takaro/apiclient';
 import { queueService } from '@takaro/queues';
-import { CronJobService, CronJobOutputDTO as ServiceCronJobOutputDTO } from '../CronJobService.js';
-import { ModuleInstallationOutputDTO as ServiceModuleInstallationOutputDTO } from '../Module/dto.js';
+import { describe } from 'node:test';
 
 const group = 'CronJobService';
 
 interface IStandardSetupData {
-  service: CronJobService;
   gameserver: GameServerOutputDTO;
   mod: ModuleOutputDTO;
   installation: ModuleInstallationOutputDTO;
   cronjob: CronJobOutputDTO;
+}
+
+function getJobKey(
+  modInstallation: ModuleInstallationOutputDTO | { gameserverId: string },
+  cronJob: CronJobOutputDTO | { id: string },
+) {
+  return `${modInstallation.gameserverId}-${cronJob.id}`;
 }
 
 async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStandardSetupData> {
@@ -51,7 +56,6 @@ async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStanda
   if (!this.standardDomainId) throw new Error('No standard domain id set!');
 
   return {
-    service: new CronJobService(this.standardDomainId),
     mod,
     gameserver,
     installation,
@@ -66,7 +70,7 @@ const tests = [
     name: 'Installing a module enables cron jobs in the queue',
     setup,
     test: async function (this: IntegrationTest<IStandardSetupData>) {
-      const { service, gameserver, mod, installation: assignment, cronjob } = this.setupData;
+      const { gameserver, mod, installation: assignment, cronjob } = this.setupData;
 
       await this.client.module.moduleInstallationsControllerInstallModule({
         gameServerId: gameserver.id,
@@ -76,13 +80,7 @@ const tests = [
       const queue = queueService.queues.cronjobs.queue;
       const allRepeatables = await queue.getRepeatableJobs();
       const repeatables = allRepeatables.filter((job) => {
-        return (
-          job.key ===
-          service.getJobKey(
-            assignment as ServiceModuleInstallationOutputDTO,
-            mod.latestVersion.cronJobs[0] as ServiceCronJobOutputDTO,
-          )
-        );
+        return job.key === getJobKey(assignment, mod.latestVersion.cronJobs[0]);
       });
 
       expect(repeatables).to.have.length(1);
@@ -98,7 +96,7 @@ const tests = [
     name: 'Uninstalling a module disables cron jobs in the queue',
     setup,
     test: async function (this: IntegrationTest<IStandardSetupData>) {
-      const { service, mod, installation: assignment } = this.setupData;
+      const { mod, installation: assignment } = this.setupData;
 
       await this.client.module.moduleInstallationsControllerUninstallModule(
         assignment.moduleId,
@@ -108,13 +106,7 @@ const tests = [
       const queue = queueService.queues.cronjobs.queue;
       const allRepeatables = await queue.getRepeatableJobs();
       const repeatables = allRepeatables.filter((job) => {
-        return (
-          job.key ===
-          service.getJobKey(
-            assignment as ServiceModuleInstallationOutputDTO,
-            mod.latestVersion.cronJobs[0] as ServiceCronJobOutputDTO,
-          )
-        );
+        return job.key === getJobKey(assignment, mod.latestVersion.cronJobs[0]);
       });
 
       expect(repeatables).to.have.length(0);
@@ -126,20 +118,14 @@ const tests = [
     name: 'Deleting a domain deletes all cron jobs in the queue',
     setup,
     test: async function (this: IntegrationTest<IStandardSetupData>) {
-      const { service, mod, installation: assignment } = this.setupData;
+      const { mod, installation: assignment } = this.setupData;
 
       await this.adminClient.domain.domainControllerRemove(this.standardDomainId as string);
 
       const queue = queueService.queues.cronjobs.queue;
       const allRepeatables = await queue.getRepeatableJobs();
       const repeatables = allRepeatables.filter((job) => {
-        return (
-          job.key ===
-          service.getJobKey(
-            assignment as ServiceModuleInstallationOutputDTO,
-            mod.latestVersion.cronJobs[0] as ServiceCronJobOutputDTO,
-          )
-        );
+        return job.key === getJobKey(assignment, mod.latestVersion.cronJobs[0]);
       });
 
       expect(repeatables).to.have.length(0);
@@ -151,20 +137,14 @@ const tests = [
     name: 'Deleting a module deletes all cron jobs in the queue',
     setup,
     test: async function (this: IntegrationTest<IStandardSetupData>) {
-      const { service, mod, installation: assignment } = this.setupData;
+      const { mod, installation: assignment } = this.setupData;
 
       await this.client.module.moduleControllerRemove(mod.id);
 
       const queue = queueService.queues.cronjobs.queue;
       const allRepeatables = await queue.getRepeatableJobs();
       const repeatables = allRepeatables.filter((job) => {
-        return (
-          job.key ===
-          service.getJobKey(
-            assignment as ServiceModuleInstallationOutputDTO,
-            mod.latestVersion.cronJobs[0] as ServiceCronJobOutputDTO,
-          )
-        );
+        return job.key === getJobKey(assignment, mod.latestVersion.cronJobs[0]);
       });
 
       expect(repeatables).to.have.length(0);
@@ -176,20 +156,14 @@ const tests = [
     name: 'Deleting a gameserver deletes all cron jobs in the queue',
     setup,
     test: async function (this: IntegrationTest<IStandardSetupData>) {
-      const { service, mod, installation: assignment, gameserver } = this.setupData;
+      const { mod, installation: assignment, gameserver } = this.setupData;
 
       await this.client.gameserver.gameServerControllerRemove(gameserver.id);
 
       const queue = queueService.queues.cronjobs.queue;
       const allRepeatables = await queue.getRepeatableJobs();
       const repeatables = allRepeatables.filter((job) => {
-        return (
-          job.key ===
-          service.getJobKey(
-            assignment as ServiceModuleInstallationOutputDTO,
-            mod.latestVersion.cronJobs[0] as ServiceCronJobOutputDTO,
-          )
-        );
+        return job.key === getJobKey(assignment, mod.latestVersion.cronJobs[0]);
       });
 
       expect(repeatables).to.have.length(0);

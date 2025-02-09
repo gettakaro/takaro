@@ -1,8 +1,8 @@
-import { useModuleCreate } from 'queries/module';
+import { useModuleCreate } from '../../../queries/module';
 import { ModuleForm, ModuleFormSubmitProps } from './-modules/ModuleForm';
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
-import { hasPermission } from 'hooks/useHasPermission';
-import { userMeQueryOptions } from 'queries/user';
+import { hasPermission } from '../../../hooks/useHasPermission';
+import { userMeQueryOptions } from '../../../queries/user';
 import { DrawerSkeleton } from '@takaro/lib-components';
 
 export const Route = createFileRoute('/_auth/_global/modules/create/')({

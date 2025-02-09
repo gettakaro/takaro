@@ -1,11 +1,11 @@
 import { SubmitHandler } from 'react-hook-form';
 import { redirect, useNavigate, createFileRoute } from '@tanstack/react-router';
-import { useGameServerCreate, useGameServerReachabilityByConfig } from 'queries/gameserver';
+import { useGameServerCreate, useGameServerReachabilityByConfig } from '../../../queries/gameserver';
 import { CreateUpdateForm } from './-gameservers/CreateUpdateForm';
 import { IFormInputs } from './-gameservers/validationSchema';
 import { GameServerCreateDTOTypeEnum, GameServerTestReachabilityInputDTOTypeEnum } from '@takaro/apiclient';
-import { hasPermission } from 'hooks/useHasPermission';
-import { userMeQueryOptions } from 'queries/user';
+import { hasPermission } from '../../../hooks/useHasPermission';
+import { userMeQueryOptions } from '../../../queries/user';
 import { useState } from 'react';
 
 export const Route = createFileRoute('/_auth/_global/gameservers/create/')({

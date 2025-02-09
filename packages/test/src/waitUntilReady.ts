@@ -2,6 +2,7 @@ import { Client } from '@takaro/apiclient';
 import ms from 'ms';
 import { integrationConfig } from './test/integrationConfig.js';
 import { logger } from '@takaro/util';
+import { before } from 'node:test';
 
 const log = logger('tests');
 

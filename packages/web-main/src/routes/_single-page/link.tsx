@@ -1,11 +1,11 @@
 import { Alert, Button, Company, FormError, TextField, styled } from '@takaro/lib-components';
 import { Navigate, createFileRoute } from '@tanstack/react-router';
-import { useUserLinkPlayerProfile, userMeQueryOptions } from 'queries/user';
+import { useUserLinkPlayerProfile, userMeQueryOptions } from '../../queries/user';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
 import { useSnackbar } from 'notistack';
 import { AiOutlineLogout as LogoutIcon } from 'react-icons/ai';
-import { useAuth } from 'hooks/useAuth';
+import { useAuth } from '../../hooks/useAuth';
 import { useQuery } from '@tanstack/react-query';
 import { fallback, zodValidator } from '@tanstack/zod-adapter';
 import { zodResolver } from '@hookform/resolvers/zod';

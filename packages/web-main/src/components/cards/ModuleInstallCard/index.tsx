@@ -11,8 +11,8 @@ import {
   Popover,
   Tooltip,
 } from '@takaro/lib-components';
-import { PermissionsGuard } from 'components/PermissionsGuard';
-import { AiOutlineArrowRight as ArrowRightIcon } from 'react-icons/ai';
+import { PermissionsGuard } from '../../../components/PermissionsGuard';
+import { AiOutlineArrowRight as ArrowRightIcon, AiOutlineCopy as CopyIcon } from 'react-icons/ai';
 import { FC, useState, MouseEvent, useRef } from 'react';
 import {
   AiOutlineDelete as DeleteIcon,
@@ -27,10 +27,10 @@ import {
 import { FaExchangeAlt as ChangeVersionIcon } from 'react-icons/fa';
 import { useNavigate } from '@tanstack/react-router';
 import { SpacedRow, ActionIconsContainer, InnerBody } from '../style';
-import { useGameServerModuleInstall } from 'queries/gameserver';
-import { getNewestVersionExcludingLatestTag, versionGt, versionLt } from 'util/ModuleVersionHelpers';
-import { DeleteImperativeHandle } from 'components/dialogs';
-import { ModuleUninstallDialog } from 'components/dialogs/ModuleUninstallDialog';
+import { useGameServerModuleInstall } from '../../../queries/gameserver';
+import { getNewestVersionExcludingLatestTag, versionGt, versionLt } from '../../../util/ModuleVersionHelpers';
+import { DeleteImperativeHandle } from '../../../components/dialogs';
+import { ModuleUninstallDialog } from '../../../components/dialogs/ModuleUninstallDialog';
 
 interface IModuleCardProps {
   mod: ModuleOutputDTO;
@@ -46,12 +46,13 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
   const theme = useTheme();
   const [openVersionPopover, setOpenVersionPopover] = useState<boolean>(false);
   const [selectedVersion, setSelectedVersion] = useState<string | null>(null);
-  const uninstallImperativeHandle = useRef<DeleteImperativeHandle>();
+  const uninstallModuleDialogRef = useRef<DeleteImperativeHandle>(null);
 
-  const handleOnDeleteClick = (e: MouseEvent) => {
+  const handleOnUninstallClick = (e: MouseEvent) => {
     e.stopPropagation();
     if (e.shiftKey) {
-      uninstallImperativeHandle.current?.triggerDelete();
+      console.log(uninstallModuleDialogRef.current);
+      uninstallModuleDialogRef.current?.triggerDelete();
     } else {
       setOpenDialog(true);
     }
@@ -82,6 +83,11 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
       to: '/gameserver/$gameServerId/modules/$moduleId/$versionId/install',
       params: { gameServerId, moduleId: mod.id, versionId },
     });
+  };
+
+  const handleOnCopyClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(mod.id);
   };
 
   const handleChangeVersionClick = (e: MouseEvent) => {
@@ -126,6 +132,7 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
     <>
       {installation && (
         <ModuleUninstallDialog
+          ref={uninstallModuleDialogRef}
           open={openDialog}
           onOpenChange={setOpenDialog}
           gameServerId={gameServerId}
@@ -191,6 +198,11 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
                                   disabled={mod.versions.length < 2}
                                 />
                                 <Dropdown.Menu.Item
+                                  icon={<CopyIcon />}
+                                  onClick={handleOnCopyClick}
+                                  label="Copy module id"
+                                />
+                                <Dropdown.Menu.Item
                                   icon={
                                     isModuleInstallationEnabled ? (
                                       <DisableIcon fill={theme.colors.error} />
@@ -204,7 +216,7 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
 
                                 <Dropdown.Menu.Item
                                   icon={<DeleteIcon fill={theme.colors.error} />}
-                                  onClick={handleOnDeleteClick}
+                                  onClick={handleOnUninstallClick}
                                   label="Uninstall module"
                                 />
                               </PermissionsGuard>

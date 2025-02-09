@@ -7,6 +7,7 @@ import { IGamePlayer, EventChatMessage, HookEvents, ChatChannel } from '@takaro/
 import Sinon from 'sinon';
 import { EventService } from '../EventService.js';
 import { faker } from '@faker-js/faker';
+import { describe } from 'node:test';
 
 export async function getMockPlayer(extra: Partial<IGamePlayer> = {}): Promise<IGamePlayer> {
   const data: Partial<IGamePlayer> = {

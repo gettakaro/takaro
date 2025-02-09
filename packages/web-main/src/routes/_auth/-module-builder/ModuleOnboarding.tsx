@@ -1,6 +1,6 @@
 import { FC, PropsWithChildren } from 'react';
 import { Card, FormError, styled } from '@takaro/lib-components';
-import { useCommandCreate, useCronJobCreate, useHookCreate } from 'queries/module';
+import { useCommandCreate, useCronJobCreate, useHookCreate } from '../../../queries/module';
 import { useNavigate, useParams } from '@tanstack/react-router';
 import { ModuleVersionOutputDTO } from '@takaro/apiclient';
 

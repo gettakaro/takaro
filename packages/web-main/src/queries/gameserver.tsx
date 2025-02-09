@@ -23,7 +23,7 @@ import {
   infiniteQueryOptions,
   keepPreviousData,
 } from '@tanstack/react-query';
-import { getApiClient } from 'util/getApiClient';
+import { getApiClient } from '../util/getApiClient';
 import { getNextPage, mutationWrapper, queryParamsToArray } from './util';
 import { AxiosError } from 'axios';
 import { ErrorMessageMapping } from '@takaro/lib-components/src/errors';

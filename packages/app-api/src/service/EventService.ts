@@ -6,7 +6,7 @@ import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { EventModel, EventRepo, Filter, FilterGroup } from '../db/event.js';
 import { getSocketServer } from '../lib/socketServer.js';
-import { PlayerOutputDTO } from './PlayerService.js';
+import { PlayerOutputDTO } from './Player/dto.js';
 import { Type } from 'class-transformer';
 import { GameServerOutputDTO } from './GameServerService.js';
 import { ModuleOutputDTO } from './Module/dto.js';

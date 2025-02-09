@@ -1,8 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { gameServerSettingQueryOptions } from 'queries/setting';
-import { gameServerQueryOptions } from 'queries/gameserver';
+import { gameServerSettingQueryOptions } from '../../../queries/setting';
+import { gameServerQueryOptions } from '../../../queries/gameserver';
 import { ShopView } from './-components/shop/ShopView';
-import { userMeQueryOptions } from 'queries/user';
+import { userMeQueryOptions } from '../../../queries/user';
 import { useQueries } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/')({

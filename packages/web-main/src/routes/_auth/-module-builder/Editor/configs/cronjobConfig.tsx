@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CronJobOutputDTO } from '@takaro/apiclient';
 import { TextField, Button, Alert } from '@takaro/lib-components';
-import { cronjobQueryOptions, useCronJobUpdate } from 'queries/module';
+import { cronjobQueryOptions, useCronJobUpdate } from '../../../../../queries/module';
 import { FC } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';

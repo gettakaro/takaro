@@ -25,6 +25,7 @@
     "build": "NODE_OPTIONS=--max-old-space-size=8195 vite build && tsc --noemit",
     "test": "npm run test:unit",
     "test:unit": "CI=true vitest",
+    "test:snapshot": "vitest --updateSnapshot",
     "test:watch": "vitest --watch"
   },
   "browserslist": {

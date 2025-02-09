@@ -8,7 +8,7 @@ import {
   InviteOutputDTO,
 } from '@takaro/apiclient';
 import { AxiosError } from 'axios';
-import { getApiClient } from 'util/getApiClient';
+import { getApiClient } from '../util/getApiClient';
 import { infiniteQueryOptions, queryOptions, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getNextPage, mutationWrapper } from './util';
 import { useSnackbar } from 'notistack';

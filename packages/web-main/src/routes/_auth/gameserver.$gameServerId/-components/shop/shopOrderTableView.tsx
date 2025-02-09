@@ -17,17 +17,17 @@ import {
 import { Link, useParams } from '@tanstack/react-router';
 import { createColumnHelper } from '@tanstack/react-table';
 import { useQuery } from '@tanstack/react-query';
-import { shopOrdersQueryOptions, useShopOrderCancel, useShopOrderClaim } from 'queries/shopOrder';
+import { shopOrdersQueryOptions, useShopOrderCancel, useShopOrderClaim } from '../../../../../queries/shopOrder';
 import { FC, useState } from 'react';
 import {
   AiOutlineRight as ActionIcon,
   AiOutlineClose as CancelOrderIcon,
   AiOutlineCheck as ClaimOrderIcon,
 } from 'react-icons/ai';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { userMeQueryOptions } from 'queries/user';
-import { PlayerContainer } from 'components/Player';
-import { playerOnGameServerQueryOptions } from 'queries/pog';
+import { useDocumentTitle } from '../../../../../hooks/useDocumentTitle';
+import { userMeQueryOptions } from '../../../../../queries/user';
+import { PlayerContainer } from '../../../../../components/Player';
+import { playerOnGameServerQueryOptions } from '../../../../../queries/pog';
 
 interface ShopOrderTableView {
   gameServerId: string;

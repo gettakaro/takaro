@@ -3,7 +3,7 @@ import { Card, Chip, Tooltip } from '@takaro/lib-components';
 import { Header, TitleContainer } from './style';
 import { RoleOutputDTO } from '@takaro/apiclient';
 import { InnerBody } from '../style';
-import { RoleActions } from 'routes/_auth/_global/roles';
+import { RoleActions } from '../../../routes/_auth/_global/roles';
 
 export const RoleCard: FC<RoleOutputDTO> = ({ id, name, system }) => {
   return (

@@ -4,7 +4,7 @@ import { integrationConfig, sandbox } from './main.js';
 import { expect } from './test/expect.js';
 import { AdminClient, Client, AxiosResponse, isAxiosError, TakaroEventCommandExecuted } from '@takaro/apiclient';
 import { randomUUID } from 'crypto';
-import { retry } from '@takaro/util';
+import { before, it } from 'node:test';
 
 export class IIntegrationTest<SetupData> {
   snapshot!: boolean;
@@ -108,126 +108,101 @@ export class IntegrationTest<SetupData> {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const integrationTestContext = this;
 
-    describe(`${this.test.group} - ${this.test.name}`, function () {
-      this.retries(integrationConfig.get('mocha.retries'));
+    async function setup(): Promise<void> {
+      sandbox.restore();
 
-      async function setup(): Promise<void> {
-        sandbox.restore();
-
-        if (integrationTestContext.test.standardEnvironment) {
-          await integrationTestContext.setupStandardEnvironment();
-        }
-
-        if (integrationTestContext.test.setup) {
-          try {
-            integrationTestContext.setupData = await integrationTestContext.test.setup.bind(integrationTestContext)();
-          } catch (error) {
-            if (!isAxiosError(error)) {
-              throw error;
-            }
-
-            console.error(error.response?.data);
-            throw new Error(
-              `Setup failed: ${error.config?.method} ${error.config?.url} ${JSON.stringify(error.response?.data)}}`,
-            );
-          }
-        }
+      if (integrationTestContext.test.standardEnvironment) {
+        await integrationTestContext.setupStandardEnvironment();
       }
 
-      async function teardown(): Promise<void> {
-        if (integrationTestContext.test.teardown) {
-          await integrationTestContext.test.teardown.bind(integrationTestContext)();
-        }
-
-        if (integrationTestContext.standardDomainId) {
-          try {
-            const failedFunctionsRes = await integrationTestContext.client.event.eventControllerGetFailedFunctions();
-
-            if (failedFunctionsRes.data.data.length > 0) {
-              console.warn(`There were ${failedFunctionsRes.data.data.length} failed functions`);
-              for (const failedFn of failedFunctionsRes.data.data) {
-                const name = (failedFn.meta as TakaroEventCommandExecuted).command?.name;
-                const msgs = (failedFn.meta as TakaroEventCommandExecuted)?.result.logs.map((l) => l.msg);
-                console.log(`Function with name "${name}" failed with messages: ${msgs}`);
-              }
-            }
-          } catch {
-            // Ignore, just reporting
-          }
-
-          try {
-            await integrationTestContext.adminClient.domain.domainControllerRemove(
-              integrationTestContext.standardDomainId,
-            );
-          } catch (error) {
-            if (!isAxiosError(error)) {
-              throw error;
-            }
-            if (error.response?.status !== 404) {
-              throw error;
-            }
-          }
-        }
-      }
-
-      async function test(): Promise<void> {
-        let response;
-
+      if (integrationTestContext.test.setup) {
         try {
-          response = await integrationTestContext.test.test.bind(integrationTestContext)();
+          integrationTestContext.setupData = await integrationTestContext.test.setup.bind(integrationTestContext)();
         } catch (error) {
           if (!isAxiosError(error)) {
             throw error;
           }
 
-          if (integrationTestContext.test.snapshot) {
-            response = error.response;
-          } else if (error.response?.data) {
-            console.error(error.response?.data);
-            throw new Error(
-              `Test failed: ${error.response.config.method} ${error.response.config.url} ${JSON.stringify(error.response?.data)}}`,
-            );
+          console.error(error.response?.data);
+          throw new Error(
+            `Setup failed: ${error.config?.method} ${error.config?.url} ${JSON.stringify(error.response?.data)}}`,
+          );
+        }
+      }
+    }
+
+    async function teardown(): Promise<void> {
+      if (integrationTestContext.test.teardown) {
+        await integrationTestContext.test.teardown.bind(integrationTestContext)();
+      }
+
+      if (integrationTestContext.standardDomainId) {
+        try {
+          const failedFunctionsRes = await integrationTestContext.client.event.eventControllerGetFailedFunctions();
+
+          if (failedFunctionsRes.data.data.length > 0) {
+            console.warn(`There were ${failedFunctionsRes.data.data.length} failed functions`);
+            for (const failedFn of failedFunctionsRes.data.data) {
+              const name = (failedFn.meta as TakaroEventCommandExecuted).command?.name;
+              const msgs = (failedFn.meta as TakaroEventCommandExecuted)?.result.logs.map((l) => l.msg);
+              console.log(`Function with name "${name}" failed with messages: ${msgs}`);
+            }
           }
+        } catch {
+          // Ignore, just reporting
+        }
+
+        try {
+          await integrationTestContext.adminClient.domain.domainControllerRemove(
+            integrationTestContext.standardDomainId,
+          );
+        } catch (error) {
+          if (!isAxiosError(error)) {
+            throw error;
+          }
+          if (error.response?.status !== 404) {
+            throw error;
+          }
+        }
+      }
+    }
+
+    async function test(): Promise<void> {
+      let response;
+
+      try {
+        response = await integrationTestContext.test.test.bind(integrationTestContext)();
+      } catch (error) {
+        if (!isAxiosError(error)) {
+          throw error;
         }
 
         if (integrationTestContext.test.snapshot) {
-          if (!response) {
-            throw new Error('No response returned from test');
-          }
-          await matchSnapshot(integrationTestContext.test, response);
-          expect(response.status).to.equal(integrationTestContext.test.expectedStatus);
+          response = error.response;
+        } else if (error.response?.data) {
+          console.error(error.response?.data);
+          throw new Error(
+            `Test failed: ${error.response.config.method} ${error.response.config.url} ${JSON.stringify(error.response?.data)}}`,
+          );
         }
       }
 
-      const retryableSetup = () =>
-        retry(
-          setup,
-          integrationConfig.get('mocha.waitBetweenRetries'),
-          integrationConfig.get('mocha.retries'),
-          teardown,
-        );
-      const retryableTeardown = () =>
-        retry(
-          teardown,
-          integrationConfig.get('mocha.waitBetweenRetries'),
-          integrationConfig.get('mocha.retries'),
-          async () => {},
-        );
+      if (integrationTestContext.test.snapshot) {
+        if (!response) {
+          throw new Error('No response returned from test');
+        }
+        await matchSnapshot(integrationTestContext.test, response);
+        expect(response.status).to.equal(integrationTestContext.test.expectedStatus);
+      }
+    }
 
-      beforeEach(retryableSetup);
-      afterEach(retryableTeardown);
-
-      it(integrationTestContext.test.name, () =>
-        retry(
-          test,
-          integrationConfig.get('mocha.waitBetweenRetries'),
-          integrationConfig.get('mocha.retries'),
-          async () => {
-            await retryableTeardown();
-            await retryableSetup();
-          },
-        ),
-      );
+    it(integrationTestContext.test.name, async () => {
+      try {
+        await setup();
+        await test();
+      } finally {
+        await teardown();
+      }
     });
   }
 }

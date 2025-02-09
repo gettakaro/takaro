@@ -1,10 +1,10 @@
 import { Drawer, FormError, Button, TextField, DatePicker, DrawerSkeleton, styled } from '@takaro/lib-components';
-import { usePlayerRoleAssign } from 'queries/player';
+import { usePlayerRoleAssign } from '../../../../queries/player';
 import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { DateTime, Settings } from 'luxon';
-import { GameServerSelectQueryField, RoleSelectQueryField } from 'components/selects';
+import { GameServerSelectQueryField, RoleSelectQueryField } from '../../../../components/selects';
 import { z } from 'zod';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 

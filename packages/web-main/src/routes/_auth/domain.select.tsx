@@ -1,11 +1,11 @@
 import { Card, Chip, Company, styled, Tooltip, Button } from '@takaro/lib-components';
 import { DomainOutputDTO, DomainOutputDTOStateEnum } from '@takaro/apiclient';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { useUserSetSelectedDomain, userMeQueryOptions } from 'queries/user';
+import { useUserSetSelectedDomain, userMeQueryOptions } from '../../queries/user';
 import { MdDomain as DomainIcon } from 'react-icons/md';
 import { AiOutlineArrowRight as ArrowRightIcon } from 'react-icons/ai';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { getConfigVar } from 'util/getConfigVar';
+import { getConfigVar } from '../../util/getConfigVar';
 
 export const TAKARO_DOMAIN_COOKIE_REGEX = /(?:(?:^|.*;\s*)takaro-domain\s*=\s*([^;]*).*$)|^.*$/;
 

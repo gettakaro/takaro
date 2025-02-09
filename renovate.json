@@ -64,8 +64,10 @@
         "@types",
         "chai",
         "sinon",
-        "mocha"
+        "mocha",
+        "@playwright"
       ],
+      "groupName": "devDependencies",
       "automerge": true
     },
     {

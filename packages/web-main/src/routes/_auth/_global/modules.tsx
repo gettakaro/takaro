@@ -1,16 +1,16 @@
 import { Divider, Skeleton, styled, useTheme, InfiniteScroll } from '@takaro/lib-components';
 import { PERMISSIONS } from '@takaro/apiclient';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { PermissionsGuard } from 'components/PermissionsGuard';
-import { AddCard, CardList, ModuleDefinitionCard } from 'components/cards';
+import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
+import { PermissionsGuard } from '../../../components/PermissionsGuard';
+import { AddCard, CardList, ModuleDefinitionCard } from '../../../components/cards';
 import { useNavigate, Outlet, redirect, createFileRoute } from '@tanstack/react-router';
-import { hasPermission } from 'hooks/useHasPermission';
-import { customModuleCountQueryOptions, modulesInfiniteQueryOptions } from 'queries/module';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import { userMeQueryOptions } from 'queries/user';
-import { globalGameServerSetingQueryOptions } from 'queries/setting';
-import { getCurrentDomain } from 'util/getCurrentDomain';
-import { MaxUsage } from 'components/MaxUsage';
+import { hasPermission } from '../../../hooks/useHasPermission';
+import { modulesInfiniteQueryOptions, customModuleCountQueryOptions } from '../../../queries/module';
+import { userMeQueryOptions } from '../../../queries/user';
+import { globalGameServerSetingQueryOptions } from '../../../queries/setting';
+import { getCurrentDomain } from '../../../util/getCurrentDomain';
+import { MaxUsage } from '../../../components/MaxUsage';
 
 const SubHeader = styled.h2<{ withMargin?: boolean }>`
   font-size: ${({ theme }) => theme.fontSize.mediumLarge};

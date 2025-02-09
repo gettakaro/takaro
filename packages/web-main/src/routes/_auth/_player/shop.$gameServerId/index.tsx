@@ -1,9 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { ShopView } from 'routes/_auth/gameserver.$gameServerId/-components/shop/ShopView';
-import { gameServerSettingQueryOptions } from 'queries/setting';
-import { gameServerQueryOptions } from 'queries/gameserver';
-import { userMeQueryOptions } from 'queries/user';
+import { useDocumentTitle } from '../../../../hooks/useDocumentTitle';
+import { ShopView } from '../../../../routes/_auth/gameserver.$gameServerId/-components/shop/ShopView';
+import { gameServerSettingQueryOptions } from '../../../../queries/setting';
+import { gameServerQueryOptions } from '../../../../queries/gameserver';
+import { userMeQueryOptions } from '../../../../queries/user';
 
 export const Route = createFileRoute('/_auth/_player/shop/$gameServerId/')({
   loader: async ({ context, params }) => {

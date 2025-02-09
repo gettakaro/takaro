@@ -3,7 +3,7 @@ import { PERMISSIONS, ModuleOutputDTO } from '@takaro/apiclient';
 import { FC, useState, MouseEvent, useRef } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { SpacedRow, ActionIconsContainer, InnerBody } from '../style';
-import { PermissionsGuard } from 'components/PermissionsGuard';
+import { PermissionsGuard } from '../../../components/PermissionsGuard';
 import {
   AiOutlineMenu as MenuIcon,
   AiOutlineEdit as EditIcon,
@@ -14,11 +14,11 @@ import {
   AiOutlineExport as ExportIcon,
   AiOutlineTag as TagIcon,
 } from 'react-icons/ai';
-import { ModuleTagDialog } from 'components/dialogs/ModuleTagDialog';
-import { ModuleCopyDialog } from 'components/dialogs/ModuleCopyDialog';
-import { ModuleExportDialog } from 'components/dialogs/ModuleExportDialog';
-import { ModuleDeleteDialog } from 'components/dialogs/ModuleDeleteDialog';
-import { DeleteImperativeHandle } from 'components/dialogs';
+import { ModuleTagDialog } from '../../../components/dialogs/ModuleTagDialog';
+import { ModuleCopyDialog } from '../../../components/dialogs/ModuleCopyDialog';
+import { ModuleExportDialog } from '../../../components/dialogs/ModuleExportDialog';
+import { ModuleDeleteDialog } from '../../../components/dialogs/ModuleDeleteDialog';
+import { DeleteImperativeHandle } from '../../../components/dialogs';
 
 import { DateTime } from 'luxon';
 
@@ -66,6 +66,10 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod, canCopyModule 
   const handleOnCopyClick = (e: MouseEvent) => {
     e.stopPropagation();
     setOpenCopyDialog(true);
+  };
+  const handleOnCopyIdClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(mod.id);
   };
 
   const handleOnOpenClick = (e: MouseEvent) => {
@@ -134,6 +138,7 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod, canCopyModule 
                           label="Copy module"
                           disabled={!canCopyModule}
                         />
+                        <Dropdown.Menu.Item icon={<CopyIcon />} onClick={handleOnCopyIdClick} label="Copy module id" />
                       </Dropdown.Menu.Group>
                     )}
                     {!mod.builtin && (
@@ -148,6 +153,11 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod, canCopyModule 
                             disabled={!canCopyModule}
                           />
                           <Dropdown.Menu.Item icon={<TagIcon />} onClick={handleOnTagClick} label="Tag module" />
+                          <Dropdown.Menu.Item
+                            icon={<CopyIcon />}
+                            onClick={handleOnCopyIdClick}
+                            label="Copy module id"
+                          />
                           <Dropdown.Menu.Item
                             icon={<DeleteIcon fill={theme.colors.error} />}
                             onClick={handleOnDeleteClick}

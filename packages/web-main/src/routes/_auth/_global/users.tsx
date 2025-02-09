@@ -11,8 +11,8 @@ import {
   Tooltip,
 } from '@takaro/lib-components';
 
-import { Player } from 'components/Player';
-import { usersQueryOptions, userMeQueryOptions, userCountQueryOptions } from 'queries/user';
+import { Player } from '../../../components/Player';
+import { usersQueryOptions, userMeQueryOptions, userCountQueryOptions } from '../../../queries/user';
 import { UserOutputWithRolesDTO, UserSearchInputDTOSortDirectionEnum, PERMISSIONS } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
 import {
@@ -22,14 +22,14 @@ import {
   AiOutlineEdit as EditIcon,
   AiOutlineRight as ActionIcon,
 } from 'react-icons/ai';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { hasPermission, useHasPermission } from 'hooks/useHasPermission';
+import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
+import { hasPermission, useHasPermission } from '../../../hooks/useHasPermission';
 import { createFileRoute, useNavigate, Link, redirect } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
-import { UserDeleteDialog } from 'components/dialogs/UserDeleteDialog';
-import { UserInviteDialog } from 'components/dialogs/UserInviteDialog';
-import { getCurrentDomain } from 'util/getCurrentDomain';
-import { MaxUsage } from 'components/MaxUsage';
+import { UserDeleteDialog } from '../../../components/dialogs/UserDeleteDialog';
+import { UserInviteDialog } from '../../../components/dialogs/UserInviteDialog';
+import { MaxUsage } from '../../../components/MaxUsage';
+import { getCurrentDomain } from '../../../util/getCurrentDomain';
 
 export const Route = createFileRoute('/_auth/_global/users')({
   beforeLoad: async ({ context }) => {

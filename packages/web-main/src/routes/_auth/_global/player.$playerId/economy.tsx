@@ -1,10 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { Currency } from './-PlayerCurrency';
-import { GameServerSelectQueryField } from 'components/selects';
+import { GameServerSelectQueryField } from '../../../../components/selects';
 import { useForm } from 'react-hook-form';
-import { playersOnGameServersQueryOptions } from 'queries/pog';
-import { gameServerSettingQueryOptions } from 'queries/setting';
+import { playersOnGameServersQueryOptions } from '../../../../queries/pog';
+import { gameServerSettingQueryOptions } from '../../../../queries/setting';
 import { Alert } from '@takaro/lib-components';
 
 export const Route = createFileRoute('/_auth/_global/player/$playerId/economy')({

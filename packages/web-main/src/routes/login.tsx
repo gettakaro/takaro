@@ -7,10 +7,10 @@ import { LoginFlow } from '@ory/client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { isAxiosError } from 'axios';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { useOry } from 'hooks/useOry';
-import { getApiClient } from 'util/getApiClient';
-import { useAuth } from 'hooks/useAuth';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import { useOry } from '../hooks/useOry';
+import { getApiClient } from '../util/getApiClient';
+import { useAuth } from '../hooks/useAuth';
 import { fallback, zodValidator } from '@tanstack/zod-adapter';
 
 export const Route = createFileRoute('/login')({

@@ -1,15 +1,14 @@
-import { TakaroService } from './Base.js';
+import { TakaroService } from '../Base.js';
 
-import { ISteamData, PlayerModel, PlayerRepo } from '../db/player.js';
-import { IsBoolean, IsISO8601, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
-import { TakaroDTO, TakaroModelDTO, errors, traceableClass } from '@takaro/util';
+import { ISteamData, PlayerModel, PlayerRepo } from '../../db/player.js';
+import { errors, traceableClass } from '@takaro/util';
 import { Redis } from '@takaro/db';
-import { PaginatedOutput } from '../db/base.js';
+import { PaginatedOutput } from '../../db/base.js';
 import {
   PlayerOnGameServerService,
   PlayerOnGameserverOutputDTO,
   PlayerOnGameserverOutputWithRolesDTO,
-} from './PlayerOnGameserverService.js';
+} from '../PlayerOnGameserverService.js';
 import {
   IGamePlayer,
   TakaroEventRoleAssigned,
@@ -17,141 +16,20 @@ import {
   TakaroEventPlayerNewIpDetected,
   TakaroEvents,
 } from '@takaro/modules';
-import { Type } from 'class-transformer';
-import { PlayerRoleAssignmentOutputDTO, RoleService } from './RoleService.js';
-import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
-import { steamApi } from '../lib/steamApi.js';
-import { config } from '../config.js';
+import { PlayerRoleAssignmentOutputDTO, RoleService } from '../RoleService.js';
+import { EVENT_TYPES, EventCreateDTO, EventService } from '../EventService.js';
+import { steamApi } from '../../lib/steamApi.js';
+import { config } from '../../config.js';
 
 import { GeoIpDbName, open } from 'geolite2-redist';
 import maxmind, { CityResponse } from 'maxmind';
 import { humanId } from 'human-id';
-import { GameServerService } from './GameServerService.js';
+import { GameServerService } from '../GameServerService.js';
 import { IMessageOptsDTO } from '@takaro/gameserver';
-import { PlayerSearchInputDTO } from '../controllers/PlayerController.js';
+import { PlayerSearchInputDTO } from '../../controllers/PlayerController.js';
+import { PlayerOutputDTO, PlayerCreateDTO, PlayerUpdateDTO, PlayerOutputWithRolesDTO } from './dto.js';
 
 const ipLookup = await open(GeoIpDbName.City, (path) => maxmind.open<CityResponse>(path));
-
-export class PlayerOutputDTO extends TakaroModelDTO<PlayerOutputDTO> {
-  @IsString()
-  name!: string;
-
-  @IsString()
-  @IsOptional()
-  steamId?: string;
-  @IsString()
-  @IsOptional()
-  xboxLiveId?: string;
-  @IsString()
-  @IsOptional()
-  epicOnlineServicesId?: string;
-
-  @IsString()
-  @IsOptional()
-  steamAvatar?: string;
-
-  @IsISO8601()
-  @IsOptional()
-  steamAccountCreated?: string;
-
-  @IsBoolean()
-  @IsOptional()
-  steamCommunityBanned?: boolean;
-
-  @IsString()
-  @IsOptional()
-  steamEconomyBan?: string;
-
-  @IsBoolean()
-  @IsOptional()
-  steamVacBanned?: boolean;
-
-  @IsNumber()
-  @IsOptional()
-  steamsDaysSinceLastBan?: number;
-
-  @IsNumber()
-  @IsOptional()
-  steamNumberOfVACBans?: number;
-
-  @IsNumber()
-  @IsOptional()
-  steamLevel?: number;
-
-  @IsNumber()
-  playtimeSeconds: number;
-
-  @IsOptional()
-  @ValidateNested({ each: true })
-  @Type(() => PlayerOnGameserverOutputDTO)
-  playerOnGameServers?: PlayerOnGameserverOutputDTO[];
-
-  @ValidateNested({ each: true })
-  @Type(() => IpHistoryOutputDTO)
-  ipHistory: IpHistoryOutputDTO[];
-}
-
-export class IpHistoryOutputDTO extends TakaroDTO<IpHistoryOutputDTO> {
-  @IsISO8601()
-  createdAt: string;
-
-  @IsString()
-  ip: string;
-
-  @IsString()
-  @IsOptional()
-  country: string;
-
-  @IsString()
-  @IsOptional()
-  city: string;
-
-  @IsString()
-  @IsOptional()
-  latitude: string;
-
-  @IsString()
-  @IsOptional()
-  longitude: string;
-}
-
-export class PlayerOutputWithRolesDTO extends PlayerOutputDTO {
-  @Type(() => PlayerRoleAssignmentOutputDTO)
-  @ValidateNested({ each: true })
-  roleAssignments: PlayerRoleAssignmentOutputDTO[];
-}
-
-export class PlayerCreateDTO extends TakaroDTO<PlayerCreateDTO> {
-  @IsString()
-  name!: string;
-
-  @IsString()
-  @IsOptional()
-  steamId?: string;
-  @IsString()
-  @IsOptional()
-  xboxLiveId?: string;
-  @IsString()
-  @IsOptional()
-  epicOnlineServicesId?: string;
-}
-
-export class PlayerUpdateDTO extends TakaroDTO<PlayerUpdateDTO> {
-  @IsString()
-  name!: string;
-  @IsString()
-  @IsOptional()
-  steamId?: string;
-  @IsString()
-  @IsOptional()
-  xboxLiveId?: string;
-  @IsString()
-  @IsOptional()
-  epicOnlineServicesId?: string;
-  @IsNumber()
-  @IsOptional()
-  playtimeSeconds?: number;
-}
 
 @traceableClass('service:player')
 export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, PlayerCreateDTO, PlayerUpdateDTO> {

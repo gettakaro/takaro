@@ -1,7 +1,7 @@
 import { ItemOutputArrayDTOAPI, ItemSearchInputDTO, ItemsOutputDTO } from '@takaro/apiclient';
 import { queryOptions, infiniteQueryOptions, keepPreviousData } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import { getApiClient } from 'util/getApiClient';
+import { getApiClient } from '../util/getApiClient';
 import { getNextPage, queryParamsToArray } from './util';
 
 export const itemKeys = {

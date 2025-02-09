@@ -4,6 +4,7 @@ import { Client, UserOutputDTO } from '@takaro/apiclient';
 import { faker } from '@faker-js/faker';
 import { AxiosError, isAxiosError } from 'axios';
 import { randomUUID } from 'crypto';
+import { describe } from 'node:test';
 
 const group = 'UserController';
 

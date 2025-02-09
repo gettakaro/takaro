@@ -3,8 +3,8 @@ import { ShopOrderUpdateDTOStatusEnum } from '@takaro/apiclient';
 import { Badge, HorizontalNav, styled, Tooltip } from '@takaro/lib-components';
 import { useQuery } from '@tanstack/react-query';
 import { Link, Outlet, createFileRoute } from '@tanstack/react-router';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { shopOrdersQueryOptions } from 'queries/shopOrder';
+import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
+import { shopOrdersQueryOptions } from '../../../queries/shopOrder';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop')({
   component: Component,

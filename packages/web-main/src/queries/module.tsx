@@ -5,7 +5,7 @@ import {
   infiniteQueryOptions,
   keepPreviousData,
 } from '@tanstack/react-query';
-import { getApiClient } from 'util/getApiClient';
+import { getApiClient } from '../util/getApiClient';
 import {
   APIOutput,
   CommandCreateDTO,
@@ -15,6 +15,7 @@ import {
   CronJobCreateDTO,
   CronJobOutputDTO,
   CronJobOutputDTOAPI,
+  CronJobTriggerDTO,
   CronJobUpdateDTO,
   FunctionCreateDTO,
   FunctionOutputDTO,
@@ -40,7 +41,7 @@ import {
 import { queryParamsToArray, getNextPage, mutationWrapper } from './util';
 import { AxiosError, AxiosResponse } from 'axios';
 import { ErrorMessageMapping } from '@takaro/lib-components/src/errors';
-import { queryClient } from 'queryClient';
+import { queryClient } from '../queryClient';
 import { useSnackbar } from 'notistack';
 
 export const moduleKeys = {
@@ -769,6 +770,21 @@ export const useCronJobRemove = () => {
       },
     }),
     defaultCronJobErrorMessages,
+  );
+};
+
+export const useCronJobTrigger = () => {
+  const apiClient = getApiClient();
+  const { enqueueSnackbar } = useSnackbar();
+
+  return mutationWrapper<void, CronJobTriggerDTO>(
+    useMutation<void, AxiosError<void>, CronJobTriggerDTO>({
+      mutationFn: async (c) => (await apiClient.cronjob.cronJobControllerTrigger(c)).data,
+      onSuccess: () => {
+        enqueueSnackbar('Cronjob triggered!', { variant: 'default', type: 'success' });
+      },
+    }),
+    {},
   );
 };
 

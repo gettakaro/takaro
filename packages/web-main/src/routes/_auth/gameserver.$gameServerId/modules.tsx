@@ -1,13 +1,13 @@
 import { Skeleton, styled, useTheme } from '@takaro/lib-components';
 import { Outlet, redirect, createFileRoute } from '@tanstack/react-router';
 import { useQueries } from '@tanstack/react-query';
-import { ModuleInstallCard, CardList } from 'components/cards';
-import { moduleInstallationsOptions } from 'queries/gameserver';
-import { modulesQueryOptions } from 'queries/module';
-import { hasPermission } from 'hooks/useHasPermission';
+import { ModuleInstallCard, CardList } from '../../../components/cards';
+import { moduleInstallationsOptions } from '../../../queries/gameserver';
+import { modulesQueryOptions } from '../../../queries/module';
+import { hasPermission } from '../../../hooks/useHasPermission';
 import { PERMISSIONS } from '@takaro/apiclient';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { userMeQueryOptions } from 'queries/user';
+import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
+import { userMeQueryOptions } from '../../../queries/user';
 
 const SubHeader = styled.h2`
   font-size: ${({ theme }) => theme.fontSize.mediumLarge};

@@ -1,6 +1,6 @@
 import { useNavigate, Outlet } from '@tanstack/react-router';
-import { gameServersInfiniteQueryOptions } from 'queries/gameserver';
-import { CardList, GameServerCard } from 'components/cards';
+import { gameServersInfiniteQueryOptions } from '../../../../queries/gameserver';
+import { CardList, GameServerCard } from '../../../../components/cards';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { Button, Empty, EmptyPage, InfiniteScroll, Skeleton } from '@takaro/lib-components';
 import { Fragment } from 'react';

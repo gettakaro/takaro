@@ -1,5 +1,5 @@
 import { Button, TextField } from '@takaro/lib-components';
-import { useShopOrderCreate } from 'queries/shopOrder';
+import { useShopOrderCreate } from '../../../../../queries/shopOrder';
 import { FC } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useSnackbar } from 'notistack';

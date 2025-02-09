@@ -1,5 +1,6 @@
 import { IntegrationTest } from '@takaro/test';
 import { Client, ModuleOutputDTO, ModuleVersionOutputDTO } from '@takaro/apiclient';
+import { describe } from 'node:test';
 
 const group = 'modifyBuiltinModules';
 

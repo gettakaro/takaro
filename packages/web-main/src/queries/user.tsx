@@ -5,7 +5,7 @@ import {
   infiniteQueryOptions,
   keepPreviousData,
 } from '@tanstack/react-query';
-import { getApiClient } from 'util/getApiClient';
+import { getApiClient } from '../util/getApiClient';
 import {
   APIOutput,
   LinkPlayerUnauthedInputDTO,

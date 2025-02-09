@@ -3,9 +3,9 @@ import { MeOutputDTO } from '@takaro/apiclient';
 import { createContext, useCallback, useContext } from 'react';
 import { useOry } from './useOry';
 import * as Sentry from '@sentry/react';
-import { getApiClient } from 'util/getApiClient';
+import { getApiClient } from '../util/getApiClient';
 import { usePostHog } from 'posthog-js/react';
-import { userKeys } from 'queries/user';
+import { userKeys } from '../queries/user';
 
 export interface IAuthContext {
   logOut: () => Promise<void>;

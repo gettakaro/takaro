@@ -1,17 +1,17 @@
 import { Button, styled, InfiniteScroll } from '@takaro/lib-components';
-import { EventFeed, EventItem } from 'components/events/EventFeed';
+import { EventFeed, EventItem } from '../../../components/events/EventFeed';
 import { Settings } from 'luxon';
-import { eventsInfiniteQueryOptions, useEventSubscription } from 'queries/event';
+import { eventsInfiniteQueryOptions, useEventSubscription } from '../../../queries/event';
 import { HiStop as PauseIcon, HiPlay as PlayIcon, HiArrowPath as RefreshIcon } from 'react-icons/hi2';
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { hasPermission } from 'hooks/useHasPermission';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
+import { hasPermission } from '../../../hooks/useHasPermission';
+import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
 import { useMemo, useState } from 'react';
-import { EventFilter, EventFilterInputs, eventFilterSchema } from 'components/events/EventFilter';
+import { EventFilter, EventFilterInputs, eventFilterSchema } from '../../../components/events/EventFilter';
 import { PERMISSIONS } from '@takaro/apiclient';
-import { userMeQueryOptions } from 'queries/user';
 import { zodValidator } from '@tanstack/zod-adapter';
+import { userMeQueryOptions } from '../../../queries/user';
 
 Settings.throwOnInvalid = true;
 
