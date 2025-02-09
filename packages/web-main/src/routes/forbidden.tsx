@@ -1,6 +1,6 @@
 import { ErrorPage } from '@takaro/lib-components';
 import { createFileRoute } from '@tanstack/react-router';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 export const Route = createFileRoute('/forbidden')({
   component: Component,

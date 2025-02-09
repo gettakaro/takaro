@@ -1,7 +1,7 @@
 import { FC, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { styled } from '@takaro/lib-components';
-import { GameServerSelectQueryField } from 'components/selects';
+import { GameServerSelectQueryField } from '../../components/selects';
 import { useMatchRoute, useNavigate } from '@tanstack/react-router';
 
 const Container = styled.div`

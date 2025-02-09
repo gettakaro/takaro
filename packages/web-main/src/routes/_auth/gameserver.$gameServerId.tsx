@@ -1,7 +1,7 @@
 import { ErrorPage } from '@takaro/lib-components';
 import { createFileRoute } from '@tanstack/react-router';
-import { gameServerQueryOptions } from 'queries/gameserver';
-import { BaseLayout } from 'components/BaseLayout';
+import { gameServerQueryOptions } from '../../queries/gameserver';
+import { BaseLayout } from '../../components/BaseLayout';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId')({
   loader: async ({ params, context }) =>

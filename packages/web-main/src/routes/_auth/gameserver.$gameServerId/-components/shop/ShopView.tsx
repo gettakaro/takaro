@@ -15,9 +15,9 @@ import { DropdownMenu } from '@takaro/lib-components/src/components/actions/Drop
 import { useNavigate } from '@tanstack/react-router';
 import { useSnackbar } from 'notistack';
 import { useQuery } from '@tanstack/react-query';
-import { shopListingsQueryOptions } from 'queries/shopListing';
-import { TableListToggleButton, ViewType } from 'components/TableListToggleButton';
-import { PermissionsGuard } from 'components/PermissionsGuard';
+import { shopListingsQueryOptions } from '../../../../../queries/shopListing';
+import { TableListToggleButton, ViewType } from '../../../../../components/TableListToggleButton';
+import { PermissionsGuard } from '../../../../../components/PermissionsGuard';
 
 const Header = styled.div`
   display: flex;

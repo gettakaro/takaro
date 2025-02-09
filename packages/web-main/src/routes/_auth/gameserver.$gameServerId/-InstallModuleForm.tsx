@@ -1,9 +1,9 @@
 import { FC, useCallback, useEffect, useRef, useState, FormEvent } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { Button, Drawer, CollapseList, styled, FormError } from '@takaro/lib-components';
-import { useGameServerModuleInstall } from 'queries/gameserver';
+import { useGameServerModuleInstall } from '../../../queries/gameserver';
 import Form from '@rjsf/core';
-import { JsonSchemaForm } from 'components/JsonSchemaForm';
+import { JsonSchemaForm } from '../../../components/JsonSchemaForm';
 import { ModuleInstallationOutputDTO, ModuleOutputDTO, ModuleVersionOutputDTO } from '@takaro/apiclient';
 import { useSnackbar } from 'notistack';
 

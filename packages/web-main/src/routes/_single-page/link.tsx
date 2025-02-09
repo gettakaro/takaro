@@ -1,12 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Alert, Button, Company, FormError, TextField, styled } from '@takaro/lib-components';
 import { Navigate, createFileRoute } from '@tanstack/react-router';
-import { useUserLinkPlayerProfile, userMeQueryOptions } from 'queries/user';
+import { useUserLinkPlayerProfile, userMeQueryOptions } from '../../queries/user';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
 import { useSnackbar } from 'notistack';
 import { AiOutlineLogout as LogoutIcon } from 'react-icons/ai';
-import { useAuth } from 'hooks/useAuth';
+import { useAuth } from '../../hooks/useAuth';
 import { useQuery } from '@tanstack/react-query';
 
 const Container = styled.div`

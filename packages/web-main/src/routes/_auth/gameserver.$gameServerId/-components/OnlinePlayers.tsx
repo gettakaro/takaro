@@ -1,8 +1,8 @@
 import { EventOutputDTO, PlayerOutputDTO } from '@takaro/apiclient';
 import { Card, Skeleton, styled } from '@takaro/lib-components';
-import { Player } from 'components/Player';
-import { useSocket } from 'hooks/useSocket';
-import { playersOnGameServersQueryOptions } from 'queries/pog';
+import { Player } from '../../../../components/Player';
+import { useSocket } from '../../../../hooks/useSocket';
+import { playersOnGameServersQueryOptions } from '../../../../queries/pog';
 import { FC, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getRouteApi } from '@tanstack/react-router';

@@ -1,17 +1,21 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { useMemo } from 'react';
 import { Stats, styled, LineChart, Card, GeoMercator, IconTooltip, Chip } from '@takaro/lib-components';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { eventsFailedFunctionsQueryOptions, eventsQueryOptions } from 'queries/event';
+import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
+import { eventsFailedFunctionsQueryOptions, eventsQueryOptions } from '../../../queries/event';
 import { DateTime } from 'luxon';
 import { useForm, useWatch } from 'react-hook-form';
-import { TimePeriodSelectField } from 'components/selects';
+import { TimePeriodSelectField } from '../../../components/selects';
 import { useQuery } from '@tanstack/react-query';
-import { hasPermission } from 'hooks/useHasPermission';
-import { PlayersOnlineStatsQueryOptions, ActivityStatsQueryOptions, CountriesStatsQueryOptions } from 'queries/stats';
-import { EventFeed, EventItem } from 'components/events/EventFeed';
+import { hasPermission } from '../../../hooks/useHasPermission';
+import {
+  PlayersOnlineStatsQueryOptions,
+  ActivityStatsQueryOptions,
+  CountriesStatsQueryOptions,
+} from '../../../queries/stats';
+import { EventFeed, EventItem } from '../../../components/events/EventFeed';
 import { PERMISSIONS } from '@takaro/apiclient';
-import { userMeQueryOptions } from 'queries/user';
+import { userMeQueryOptions } from '../../../queries/user';
 import { AiOutlineQuestion as QuestionIcon } from 'react-icons/ai';
 
 export const Route = createFileRoute('/_auth/_global/dashboard')({

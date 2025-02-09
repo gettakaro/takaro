@@ -21,11 +21,11 @@ import {
 } from 'react-icons/ai';
 
 import { FaDiscord as DiscordIcon } from 'react-icons/fa';
-import { PermissionsGuard } from 'components/PermissionsGuard';
+import { PermissionsGuard } from '../../components/PermissionsGuard';
 import { GameServerNav } from './GameServerNav';
-import { TAKARO_DOMAIN_COOKIE_REGEX } from 'routes/_auth/domain.select';
-import { DeveloperModeGuard } from 'components/DeveloperModeGuard';
-import { getConfigVar, getTakaroVersionComponents } from 'util/getConfigVar';
+import { TAKARO_DOMAIN_COOKIE_REGEX } from '../../routes/_auth/domain.select';
+import { DeveloperModeGuard } from '../../components/DeveloperModeGuard';
+import { getConfigVar, getTakaroVersionComponents } from '../../util/getConfigVar';
 
 const domainLinks: NavbarLink[] = [
   {

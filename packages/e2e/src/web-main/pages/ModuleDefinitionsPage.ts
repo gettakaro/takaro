@@ -65,7 +65,7 @@ export class ModuleDefinitionsPage extends BasePage {
 
   async copy(name: string, copyName: string) {
     await this.openSettings(name);
-    await this.page.getByRole('menuitem', { name: 'Copy module' }).click();
+    await this.page.getByRole('menuitem', { name: 'Copy module', exact: true }).click();
     await this.page.getByLabel('Module name').fill(copyName);
     await this.page.getByRole('button', { name: 'Copy module' }).click();
   }
@@ -74,7 +74,7 @@ export class ModuleDefinitionsPage extends BasePage {
     await this.openSettings(name);
     await this.page.getByRole('menuitem', { name: 'Tag module' }).click();
 
-    await this.page.getByLabel('Version level');
+    this.page.getByLabel('Version level');
     await this.page.getByRole('button', { name: `Tag as ${semantic}` }).click();
   }
 

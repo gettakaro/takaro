@@ -1,10 +1,10 @@
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useBanPlayer } from 'queries/player';
+import { useBanPlayer } from '../../queries/player';
 import { FC } from 'react';
 import { Button, DatePicker, Dialog, FormError, TextAreaField } from '@takaro/lib-components';
-import { GameServerSelectQueryField } from 'components/selects';
+import { GameServerSelectQueryField } from '../../components/selects';
 import { DateTime } from 'luxon';
 import { RequiredDialogOptions } from '.';
 

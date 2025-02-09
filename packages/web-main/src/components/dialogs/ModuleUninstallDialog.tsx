@@ -1,5 +1,5 @@
 import { Button, Dialog, FormError, ValueConfirmationField } from '@takaro/lib-components';
-import { useGameServerModuleUninstall } from 'queries/gameserver';
+import { useGameServerModuleUninstall } from '../../queries/gameserver';
 import { forwardRef, MouseEvent, useImperativeHandle, useState } from 'react';
 import { DeleteImperativeHandle, RequiredDialogOptions } from '.';
 import { useSnackbar } from 'notistack';

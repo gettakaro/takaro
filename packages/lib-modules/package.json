@@ -9,10 +9,7 @@
     "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json",
     "build": "tsc -p ./tsconfig.build.json",
     "postbuild": "npm run build:builtin-json",
-    "test": "npm run test:unit --if-present && npm run test:integration --if-present",
-    "test:unit": "mocha --config ../../.mocharc.js src/**/*.unit.test.ts",
-    "test:integration": "mocha --file ../test/dist/waitUntilReady.js --config ../../.mocharc.js 'src/**/*.integration.test.ts' --exit",
-    "build:builtin-json": "node --loader ts-node/esm ./scripts/buildBuiltinJson.ts"
+    "build:builtin-json": "node --import=ts-node-maintained/register/esm ./scripts/buildBuiltinJson.ts"
   },
   "keywords": [],
   "author": "",

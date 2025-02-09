@@ -1,9 +1,9 @@
 import { Outlet, redirect, createFileRoute, useNavigate } from '@tanstack/react-router';
 import { EmptyPage, Empty, Button, useLocalStorage, useTheme, Dropdown, IconButton } from '@takaro/lib-components';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { hasPermission } from 'hooks/useHasPermission';
-import { userMeQueryOptions } from 'queries/user';
-import { TableListToggleButton, ViewType } from 'components/TableListToggleButton';
+import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
+import { hasPermission } from '../../../hooks/useHasPermission';
+import { userMeQueryOptions } from '../../../queries/user';
+import { TableListToggleButton, ViewType } from '../../../components/TableListToggleButton';
 import { RolesCardView } from './-roles/RolesCardView';
 import { RolesTableView } from './-roles/RolesTableView';
 import { FC, MouseEvent, useRef, useState } from 'react';
@@ -15,8 +15,8 @@ import {
   AiOutlineDelete as DeleteRoleIcon,
   AiOutlineEye as ViewRoleIcon,
 } from 'react-icons/ai';
-import { RoleDeleteDialog } from 'components/dialogs/RoleDeleteDialog';
-import { DeleteImperativeHandle } from 'components/dialogs';
+import { RoleDeleteDialog } from '../../../components/dialogs/RoleDeleteDialog';
+import { DeleteImperativeHandle } from '../../../components/dialogs';
 
 export const Route = createFileRoute('/_auth/_global/roles')({
   beforeLoad: async ({ context }) => {

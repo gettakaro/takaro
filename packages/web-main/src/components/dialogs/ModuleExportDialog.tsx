@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Dialog, FormError, SelectField, UnControlledSelectField } from '@takaro/lib-components';
-import { useModuleExport } from 'queries/module';
+import { useModuleExport } from '../../queries/module';
 import { FC, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';

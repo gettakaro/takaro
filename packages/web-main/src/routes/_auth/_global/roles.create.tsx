@@ -2,10 +2,10 @@ import { createFileRoute, redirect } from '@tanstack/react-router';
 import { SubmitHandler } from 'react-hook-form';
 
 import { DrawerSkeleton } from '@takaro/lib-components';
-import { permissionsQueryOptions, useRoleCreate } from 'queries/role';
+import { permissionsQueryOptions, useRoleCreate } from '../../../queries/role';
 import { RoleForm, IFormInputs } from './-roles/RoleCreateUpdateForm';
-import { hasPermission } from 'hooks/useHasPermission';
-import { userMeQueryOptions } from 'queries/user';
+import { hasPermission } from '../../../hooks/useHasPermission';
+import { userMeQueryOptions } from '../../../queries/user';
 
 export const Route = createFileRoute('/_auth/_global/roles/create')({
   beforeLoad: async ({ context }) => {

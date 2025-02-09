@@ -1,0 +1,9 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Should render <Skeleton/> 1`] = `
+<div>
+  <div
+    class="sc-aXZVg dMeLsA"
+  />
+</div>
+`;

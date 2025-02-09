@@ -1,5 +1,5 @@
 import { Button, Dialog, FormError } from '@takaro/lib-components';
-import { useUserRemove } from 'queries/user';
+import { useUserRemove } from '../../queries/user';
 import { FC } from 'react';
 import { RequiredDialogOptions } from '.';
 

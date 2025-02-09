@@ -1,5 +1,5 @@
 import { Button, Dialog, FormError, ValueConfirmationField } from '@takaro/lib-components';
-import { useModuleRemove } from 'queries/module';
+import { useModuleRemove } from '../../queries/module';
 import { forwardRef, MouseEvent, useImperativeHandle, useState } from 'react';
 import { DeleteImperativeHandle, RequiredDialogOptions } from '.';
 

@@ -1,19 +1,23 @@
-import { HookService } from '../HookService.js';
-import { queueService } from '@takaro/queues';
+import 'reflect-metadata';
+
 import { EventPlayerConnected, EventChatMessage, HookEvents, ChatChannel } from '@takaro/modules';
-import { IntegrationTest, sandbox, expect, integrationConfig } from '@takaro/test';
-import { HookOutputDTO, GameServerOutputDTO, ModuleOutputDTO, ModuleInstallationOutputDTO } from '@takaro/apiclient';
-import { SinonStub } from 'sinon';
+import { IntegrationTest, expect, integrationConfig, EventsAwaiter } from '@takaro/test';
+import {
+  HookOutputDTO,
+  GameServerOutputDTO,
+  ModuleOutputDTO,
+  ModuleInstallationOutputDTO,
+  IHookEventTypeEnum,
+} from '@takaro/apiclient';
+import { describe } from 'node:test';
 
 const group = 'HookService';
 
 interface IStandardSetupData {
   normalHook: HookOutputDTO;
-  service: HookService;
   gameserver: GameServerOutputDTO;
   mod: ModuleOutputDTO;
   assignment: ModuleInstallationOutputDTO;
-  queueAddStub: SinonStub;
 }
 
 async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStandardSetupData> {
@@ -48,17 +52,13 @@ async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStanda
     })
   ).data.data;
 
-  const queueAddStub = sandbox.stub(queueService.queues.hooks.queue, 'add');
-
   if (!this.standardDomainId) throw new Error('No standard domain id set');
 
   return {
-    service: new HookService(this.standardDomainId),
     normalHook,
     mod,
     gameserver,
     assignment,
-    queueAddStub,
   };
 }
 
@@ -69,15 +69,24 @@ const tests = [
     name: 'Basic hook trigger',
     setup,
     test: async function () {
-      await this.setupData.service.handleEvent({
-        eventData: new EventPlayerConnected({
+      // Set up an events awaiter
+      const eventsAwaiter = new EventsAwaiter();
+      await eventsAwaiter.connect(this.client);
+      const _hookExecutedEvents = eventsAwaiter.waitForEvents(IHookEventTypeEnum.HookExecuted, 1);
+
+      // Trigger the hook
+      await this.client.hook.hookControllerTrigger({
+        gameServerId: this.setupData.gameserver.id,
+        moduleId: this.setupData.mod.id,
+        eventType: HookEvents.PLAYER_CONNECTED,
+        eventMeta: new EventPlayerConnected({
           msg: 'foo connected',
         }),
-        eventType: HookEvents.PLAYER_CONNECTED,
-        gameServerId: this.setupData.gameserver.id,
       });
 
-      expect(this.setupData.queueAddStub).to.have.been.calledOnce;
+      // Then, check that the hook was triggered
+      const hookExecutedEvents = await _hookExecutedEvents;
+      expect(hookExecutedEvents).to.have.length(1);
     },
   }),
   new IntegrationTest<IStandardSetupData>({
@@ -86,27 +95,34 @@ const tests = [
     name: 'Does not trigger for different event type',
     setup,
     test: async function () {
-      await this.setupData.service.handleEvent({
-        eventData: new EventChatMessage({
+      // Set up events awaiter
+      const eventsAwaiter = new EventsAwaiter();
+      await eventsAwaiter.connect(this.client);
+      const _hookExecutedEvents = eventsAwaiter.waitForEvents(IHookEventTypeEnum.HookExecuted, 1);
+
+      // Trigger with chat message (should not trigger hook)
+      await this.client.hook.hookControllerTrigger({
+        gameServerId: this.setupData.gameserver.id,
+        moduleId: this.setupData.mod.id,
+        eventType: HookEvents.CHAT_MESSAGE,
+        eventMeta: new EventChatMessage({
           msg: 'chat message',
           channel: ChatChannel.GLOBAL,
         }),
-        eventType: HookEvents.CHAT_MESSAGE,
-        gameServerId: this.setupData.gameserver.id,
       });
 
-      expect(this.setupData.queueAddStub).to.not.have.been.called;
-
-      // But a different event type should trigger
-      await this.setupData.service.handleEvent({
-        eventData: new EventPlayerConnected({
+      // Trigger with player connected (should trigger hook)
+      await this.client.hook.hookControllerTrigger({
+        gameServerId: this.setupData.gameserver.id,
+        moduleId: this.setupData.mod.id,
+        eventType: HookEvents.PLAYER_CONNECTED,
+        eventMeta: new EventPlayerConnected({
           msg: 'foo connected',
         }),
-        eventType: HookEvents.PLAYER_CONNECTED,
-        gameServerId: this.setupData.gameserver.id,
       });
 
-      expect(this.setupData.queueAddStub).to.have.been.calledOnce;
+      const hookExecutedEvents = await _hookExecutedEvents;
+      expect(hookExecutedEvents).to.have.length(1);
     },
   }),
   new IntegrationTest<IStandardSetupData>({
@@ -115,6 +131,10 @@ const tests = [
     name: 'Regex filtering works',
     setup,
     test: async function () {
+      // Set up events awaiter
+      const eventsAwaiter = new EventsAwaiter();
+      await eventsAwaiter.connect(this.client);
+
       // Create a new hook that only matches on "bar"
       await this.client.hook.hookControllerCreate({
         name: 'Test hook with regex',
@@ -123,25 +143,30 @@ const tests = [
         eventType: 'player-connected',
       });
 
-      await this.setupData.service.handleEvent({
-        eventData: new EventPlayerConnected({
+      const _hookExecutedEvents = eventsAwaiter.waitForEvents(IHookEventTypeEnum.HookExecuted, 3);
+
+      // Trigger with "foo" (should trigger only the first hook)
+      await this.client.hook.hookControllerTrigger({
+        gameServerId: this.setupData.gameserver.id,
+        moduleId: this.setupData.mod.id,
+        eventType: HookEvents.PLAYER_CONNECTED,
+        eventMeta: new EventPlayerConnected({
           msg: 'foo connected',
         }),
-        eventType: HookEvents.PLAYER_CONNECTED,
-        gameServerId: this.setupData.gameserver.id,
       });
 
-      expect(this.setupData.queueAddStub).to.have.been.calledOnce;
-
-      await this.setupData.service.handleEvent({
-        eventData: new EventPlayerConnected({
+      // Trigger with "bar" (should trigger both hooks)
+      await this.client.hook.hookControllerTrigger({
+        gameServerId: this.setupData.gameserver.id,
+        moduleId: this.setupData.mod.id,
+        eventType: HookEvents.PLAYER_CONNECTED,
+        eventMeta: new EventPlayerConnected({
           msg: 'bar connected',
         }),
-        eventType: HookEvents.PLAYER_CONNECTED,
-        gameServerId: this.setupData.gameserver.id,
       });
 
-      expect(this.setupData.queueAddStub).to.have.been.calledThrice;
+      const hookExecutedEvents = await _hookExecutedEvents;
+      expect(hookExecutedEvents).to.have.length(3); // 1 from first trigger + 2 from second trigger
     },
   }),
 ];

@@ -3,9 +3,9 @@ import { useNavigate, createFileRoute } from '@tanstack/react-router';
 import { UpdateVerificationFlowBody, VerificationFlow } from '@ory/client';
 import { styled, Skeleton } from '@takaro/lib-components';
 import { UserAuthCard } from '@ory/elements';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
+import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import { z } from 'zod';
-import { useOry } from 'hooks/useOry';
+import { useOry } from '../../hooks/useOry';
 
 const searchSchema = z.object({
   flowId: z.string().catch(''),

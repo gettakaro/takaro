@@ -5,7 +5,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from '@tanstack/react-router';
 import { VariableOutputDTO } from '@takaro/apiclient';
 import { z } from 'zod';
-import { GameServerSelectQueryField, ModuleSelectQueryField, PlayerSelectQueryField } from 'components/selects';
+import {
+  GameServerSelectQueryField,
+  ModuleSelectQueryField,
+  PlayerSelectQueryField,
+} from '../../../../components/selects';
 import { DateTime } from 'luxon';
 
 const validationSchema = z.object({
@@ -96,6 +100,7 @@ export const VariablesForm: FC<CreateAndUpdateVariableformProps> = ({ variable, 
               required={false}
               allowPastDates={false}
               format={DateTime.DATETIME_SHORT}
+              canClear={true}
               readOnly={readOnly}
             />
             <PlayerSelectQueryField canClear={true} control={control} loading={isLoading} name="playerId" />

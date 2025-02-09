@@ -1,7 +1,7 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
-import { hasPermission } from 'hooks/useHasPermission';
-import { globalGameServerSetingQueryOptions } from 'queries/setting';
-import { userMeQueryOptions } from 'queries/user';
+import { hasPermission } from '../../hooks/useHasPermission';
+import { globalGameServerSetingQueryOptions } from '../../queries/setting';
+import { userMeQueryOptions } from '../../queries/user';
 
 export const Route = createFileRoute('/_auth/module-builder/$moduleId/')({
   beforeLoad: async ({ context, params }) => {

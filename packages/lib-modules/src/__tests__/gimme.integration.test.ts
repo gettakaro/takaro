@@ -1,6 +1,7 @@
 import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '../dto/index.js';
 import { faker } from '@faker-js/faker';
+import { describe } from 'node:test';
 
 const group = 'gimme suite';
 

@@ -1,13 +1,13 @@
 import { FC, useState } from 'react';
 import { PlayerRoleAssignmentOutputDTO } from '@takaro/apiclient';
 import { createColumnHelper, CellContext } from '@tanstack/react-table';
-import { gameServersQueryOptions } from 'queries/gameserver';
+import { gameServersQueryOptions } from '../../../../queries/gameserver';
 import { AiOutlineDelete as DeleteIcon, AiOutlineRight as ActionIcon, AiOutlineEye as ViewIcon } from 'react-icons/ai';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { useTableActions, Table, Button, Dropdown, IconButton, Skeleton } from '@takaro/lib-components';
 import { DateTime } from 'luxon';
 import { useQuery } from '@tanstack/react-query';
-import { PlayerRoleDeleteDialog } from 'components/dialogs/PlayerRoleDeleteDialog';
+import { PlayerRoleDeleteDialog } from '../../../../components/dialogs/PlayerRoleDeleteDialog';
 
 interface IPlayerRolesTableProps {
   roles: PlayerRoleAssignmentOutputDTO[];

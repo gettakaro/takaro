@@ -1,12 +1,12 @@
 import { DrawerSkeleton } from '@takaro/lib-components';
 import { createFileRoute, notFound, redirect, useNavigate } from '@tanstack/react-router';
-import { useVariableUpdate, variableQueryOptions } from 'queries/variable';
+import { useVariableUpdate, variableQueryOptions } from '../../../queries/variable';
 import { VariablesForm, IFormInputs } from './-variables/VariablesForm';
 import { useSnackbar } from 'notistack';
-import { queryClient } from 'queryClient';
-import { hasPermission } from 'hooks/useHasPermission';
+import { queryClient } from '../../../queryClient';
+import { hasPermission } from '../../../hooks/useHasPermission';
 import { VariableUpdateDTO } from '@takaro/apiclient';
-import { userMeQueryOptions } from 'queries/user';
+import { userMeQueryOptions } from '../../../queries/user';
 import { useQuery } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/_global/variables/update/$variableId')({

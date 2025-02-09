@@ -5,8 +5,8 @@ import { Button, TextField, FormError, SelectField } from '@takaro/lib-component
 import { FC } from 'react';
 import { AiOutlineCopy as CopyIcon } from 'react-icons/ai';
 
-import { useModuleExport, useModuleImport } from 'queries/module';
-import { moduleNameShape } from 'routes/_auth/_global/-modules/ModuleForm/validationSchema';
+import { useModuleExport, useModuleImport } from '../queries/module';
+import { moduleNameShape } from '../routes/_auth/_global/-modules/ModuleForm/validationSchema';
 import { ModuleOutputDTO } from '@takaro/apiclient';
 
 const validationSchema = z.object({

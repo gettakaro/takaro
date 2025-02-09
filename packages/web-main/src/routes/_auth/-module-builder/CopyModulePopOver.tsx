@@ -1,10 +1,10 @@
 import { styled, Popover, IconButton, Tooltip } from '@takaro/lib-components';
-import { CopyModuleForm } from 'components/CopyModuleForm';
+import { CopyModuleForm } from '../../../components/CopyModuleForm';
 import { AiOutlineCopy as CopyIcon } from 'react-icons/ai';
 import { useSnackbar } from 'notistack';
 import { FC, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { moduleQueryOptions } from 'queries/module';
+import { moduleQueryOptions } from '../../../queries/module';
 
 const PopoverBody = styled.div`
   max-width: 400px;
