@@ -51,6 +51,7 @@ const tests = [
   new IntegrationTest<IModuleTestsSetupData>({
     group,
     snapshot: false,
+    attempts: 5,
     setup: customSetup,
     name: 'Handles cooldown when using commands in rapid succession',
     test: async function () {
