@@ -11,11 +11,11 @@ test('can logout', async ({ page, takaro }) => {
 
   await page.getByRole('button').filter({ hasText: user.user.email }).click();
   await page.getByText('Logout').click();
-  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login?redirect=%2F`);
+  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
 
   // try to go to authenticated page
   await page.goto('/gameservers');
-  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login?redirect=%2F`);
+  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
 });
 
 pwTest('should redirect to login when not logged in', async ({ page }) => {
@@ -28,7 +28,7 @@ test('Logging in with invalid credentials shows error message', async ({ page, t
 
   await page.getByRole('button').filter({ hasText: user.user.email }).click();
   await page.getByText('Logout').click();
-  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login?redirect=%2F`);
+  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
   await page.waitForLoadState();
 
   await page.goto('/login');
@@ -55,7 +55,7 @@ test('Invite user - happy path', async ({ page, takaro }) => {
   await page.getByRole('button').filter({ hasText: takaro.rootUser.email }).click();
   await page.getByText('Logout').click();
 
-  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login?redirect=%2F`);
+  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
   await page.waitForLoadState();
   await expect(page.getByPlaceholder('hi cutie')).toBeVisible();
 
@@ -75,7 +75,7 @@ test('Invite user - happy path', async ({ page, takaro }) => {
   const password = randomUUID();
   await page.getByTestId('node/input/password').getByPlaceholder(' ').fill(password);
   await page.getByTestId('password-settings-card').getByRole('button', { name: 'Save' }).click();
-  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login?redirect=%2F`);
+  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
   await page.waitForLoadState();
   await login(page, newUserEmail, password);
   // since the user has no permissions, he should be redirected to an empty shop page.
@@ -88,7 +88,7 @@ test('Recover account and reset password', async ({ page, takaro }) => {
 
   await page.getByRole('button').filter({ hasText: user.user.name }).click();
   await page.getByText('Logout').click();
-  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login?redirect=%2F`);
+  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
   await page.waitForLoadState();
 
   await page.getByRole('link', { name: 'Forgot your password?' }).click();
@@ -127,7 +127,7 @@ test('Recover account and reset password', async ({ page, takaro }) => {
   const newPassword = randomUUID();
   await page.getByTestId('node/input/password').getByPlaceholder(' ').fill(newPassword);
   await page.getByTestId('password-settings-card').getByRole('button', { name: 'Save' }).click();
-  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login?redirect=%2F`);
+  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
   await page.waitForLoadState();
   await login(page, user.user.email, newPassword);
 
