@@ -19,7 +19,7 @@ const tests = [
         userConfig: JSON.stringify({
           items: items.map((item) => ({
             item: item.id,
-            amount: faker.number.int({ min: 1, max: 10 }),
+            amount: faker.number.int({ min: 1, max: 5 }),
             quality: faker.number.int({ min: 1, max: 6 }).toString(),
           })),
           commands: [],
