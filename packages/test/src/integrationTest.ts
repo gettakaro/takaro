@@ -10,6 +10,7 @@ export class IIntegrationTest<SetupData> {
   snapshot!: boolean;
   group!: string;
   name!: string;
+  attempts?: number = 0;
   standardEnvironment?: boolean = true;
   setup?: (this: IntegrationTest<SetupData>) => Promise<SetupData>;
   teardown?: (this: IntegrationTest<SetupData>) => Promise<void>;
@@ -100,11 +101,10 @@ export class IntegrationTest<SetupData> {
     await this.client.login();
   }
 
-  run() {
-    // Mocha has no way to access mocha context from a arrow function
-    // see: https://mochajs.org/#arrow-functions
+  async run() {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const integrationTestContext = this;
+    const maxRetries = this.test.attempts || 0;
 
     async function setup(): Promise<void> {
       sandbox.restore();
@@ -165,39 +165,65 @@ export class IntegrationTest<SetupData> {
       }
     }
 
-    async function test(): Promise<void> {
+    async function executeTest(): Promise<void> {
       let response;
+      let lastError: Error | null = null;
 
-      try {
-        response = await integrationTestContext.test.test.bind(integrationTestContext)();
-      } catch (error) {
-        if (!isAxiosError(error)) {
-          throw error;
-        }
+      for (let attempt = 0; attempt <= maxRetries; attempt++) {
+        try {
+          if (attempt > 0) {
+            console.log(`Retry attempt ${attempt}/${maxRetries} for test: ${integrationTestContext.test.name}`);
+            // Re-run setup for each retry to ensure clean state
+            await setup();
+          }
 
-        if (integrationTestContext.test.snapshot) {
-          response = error.response;
-        } else if (error.response?.data) {
-          console.error(error.response?.data);
-          throw new Error(
-            `Test failed: ${error.response.config.method} ${error.response.config.url} ${JSON.stringify(error.response?.data)}}`,
-          );
-        }
-      }
+          response = await integrationTestContext.test.test.bind(integrationTestContext)();
 
-      if (integrationTestContext.test.snapshot) {
-        if (!response) {
-          throw new Error('No response returned from test');
+          if (integrationTestContext.test.snapshot) {
+            if (!response) {
+              throw new Error('No response returned from test');
+            }
+            await matchSnapshot(integrationTestContext.test, response);
+            expect(response.status).to.equal(integrationTestContext.test.expectedStatus);
+          }
+
+          // If we reach here, test passed
+          return;
+        } catch (error) {
+          lastError = error as Error;
+
+          if (isAxiosError(error)) {
+            if (integrationTestContext.test.snapshot) {
+              response = error.response;
+              try {
+                if (!response) throw new Error('No response returned from test');
+                await matchSnapshot(integrationTestContext.test, response);
+                expect(response?.status).to.equal(integrationTestContext.test.expectedStatus);
+                return; // Snapshot matched, test passed
+              } catch (snapshotError) {
+                console.log(JSON.stringify(snapshotError, null, 2));
+                lastError = snapshotError as Error;
+              }
+            } else if (error.response?.data) {
+              console.error(`Attempt ${attempt + 1} failed:`, error.response?.data);
+            }
+          }
+
+          // Clean up failed attempt
+          await teardown();
+
+          // If this was our last retry, throw the error
+          if (attempt === maxRetries) {
+            throw lastError;
+          }
         }
-        await matchSnapshot(integrationTestContext.test, response);
-        expect(response.status).to.equal(integrationTestContext.test.expectedStatus);
       }
     }
 
     it(integrationTestContext.test.name, async () => {
       try {
         await setup();
-        await test();
+        await executeTest();
       } finally {
         await teardown();
       }
