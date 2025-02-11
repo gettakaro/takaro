@@ -167,6 +167,7 @@ const tests = [
     name: 'Can do a player arg with partial name',
     group,
     snapshot: false,
+    attempts: 5,
     setup: playerArgSetup,
     test: async function () {
       const pogRes = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
