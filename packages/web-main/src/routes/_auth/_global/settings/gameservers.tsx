@@ -11,6 +11,7 @@ import { hasPermission, useHasPermission } from '../../../../hooks/useHasPermiss
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { userMeQueryOptions } from '../../../../queries/user';
 import { useQuery } from '@tanstack/react-query';
+import { booleanFields } from '../../../../util/settings';
 
 export const Route = createFileRoute('/_auth/_global/settings/gameservers')({
   beforeLoad: async ({ context }) => {
@@ -42,12 +43,7 @@ interface IFormInputs {
   developerMode: boolean;
 }
 
-export const booleanFields = ['economyEnabled', 'developerMode'];
-
-export function mapSettings<T extends Promise<unknown>>(
-  data: Settings,
-  fn: (key: keyof IFormInputs, value?: string) => T,
-) {
+function mapSettings<T extends Promise<unknown>>(data: Settings, fn: (key: keyof IFormInputs, value?: string) => T) {
   const promises: Promise<unknown>[] = [];
   for (const key in data) {
     const settingsKey = key as keyof IFormInputs;

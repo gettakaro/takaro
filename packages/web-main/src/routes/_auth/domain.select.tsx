@@ -5,8 +5,7 @@ import { useUserSetSelectedDomain, userMeQueryOptions } from '../../queries/user
 import { MdDomain as DomainIcon } from 'react-icons/md';
 import { AiOutlineArrowRight as ArrowRightIcon } from 'react-icons/ai';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-
-export const TAKARO_DOMAIN_COOKIE_REGEX = /(?:(?:^|.*;\s*)takaro-domain\s*=\s*([^;]*).*$)|^.*$/;
+import { TAKARO_DOMAIN_COOKIE_REGEX } from '../../util/domainCookieRegex';
 
 const Container = styled.div`
   padding: ${({ theme }) => theme.spacing[4]};
@@ -27,7 +26,7 @@ const DomainCardList = styled.div`
   }
 `;
 
-export const InnerBody = styled.div`
+const InnerBody = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;

@@ -8,7 +8,8 @@ import { Header } from './Header';
 import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
 import { EventFeedWidget } from '../../../components/events/EventFeedWidget';
 import { ErrorBoundary } from '../../../components/ErrorBoundary';
-import { FileType, useModuleBuilderContext } from './useModuleBuilderStore';
+import { useModuleBuilderContext } from './useModuleBuilderStore';
+import { FileType } from './types';
 import { CronjobTrigger } from './Editor/CronjobTrigger';
 
 const EventsWrapper = styled.div`

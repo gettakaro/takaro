@@ -29,12 +29,13 @@ export const Header = () => {
   const moduleId = useModuleBuilderContext((s) => s.moduleId);
   const moduleVersions = useModuleBuilderContext((s) => s.moduleVersions);
   const moduleVersionTag = useModuleBuilderContext((s) => s.versionTag);
-  const navigate = useNavigate({ from: '/module-builder/$moduleId/$moduleVersionTag' });
+  const navigate = useNavigate();
   const [openTagDialog, setOpenTagDialog] = useState<boolean>(false);
   const isLatest: boolean = moduleVersionTag === 'latest';
 
   const handleOnModuleVersionTagChanged = (selectedModuleVersionTag: string) => {
     navigate({
+      from: '/module-builder/$moduleId/$moduleVersionTag',
       to: '/module-builder/$moduleId/$moduleVersionTag',
       params: { moduleId, moduleVersionTag: selectedModuleVersionTag },
     });

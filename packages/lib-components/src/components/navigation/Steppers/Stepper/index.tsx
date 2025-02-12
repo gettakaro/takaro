@@ -1,5 +1,5 @@
 import { FC, useEffect, Children, isValidElement, ReactElement, PropsWithChildren } from 'react';
-import { useStepper } from '../context';
+import { useStepper } from '../useStepper';
 import { Container, StepperBody, StepperHeader, StepperHeaderItem, StepCounter, StepName } from './style';
 import { AiOutlineCheck as CheckMark } from 'react-icons/ai';
 import { Spinner } from '../../..';

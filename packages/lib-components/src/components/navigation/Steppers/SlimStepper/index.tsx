@@ -1,6 +1,6 @@
 import { FC, useEffect, Children, isValidElement, PropsWithChildren } from 'react';
 import { Tooltip } from '../../../../components';
-import { useStepper } from '../context';
+import { useStepper } from '../useStepper';
 import { Container, StepperBody, StepperHeader, StepperHeaderItem, Dot } from './style';
 import { StepStates } from '../stepStates';
 

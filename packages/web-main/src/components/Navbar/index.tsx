@@ -1,5 +1,5 @@
-import { FC, cloneElement, ReactElement } from 'react';
-import { Link, LinkProps } from '@tanstack/react-router';
+import { FC, ReactElement } from 'react';
+import { LinkProps } from '@tanstack/react-router';
 import { Chip, RequiredPermissions, Tooltip, useTheme } from '@takaro/lib-components';
 import { UserDropdown } from './UserDropdown';
 import { Nav, IconNav, Container, IconNavContainer } from './style';
@@ -21,11 +21,10 @@ import {
 } from 'react-icons/ai';
 
 import { FaDiscord as DiscordIcon } from 'react-icons/fa';
-import { PermissionsGuard } from '../../components/PermissionsGuard';
 import { GameServerNav } from './GameServerNav';
-import { TAKARO_DOMAIN_COOKIE_REGEX } from '../../routes/_auth/domain.select';
-import { DeveloperModeGuard } from '../../components/DeveloperModeGuard';
+import { TAKARO_DOMAIN_COOKIE_REGEX } from '../../util/domainCookieRegex';
 import { getConfigVar, getTakaroVersionComponents } from '../../util/getConfigVar';
+import { renderLink } from './renderLink';
 
 const domainLinks: NavbarLink[] = [
   {
@@ -119,27 +118,6 @@ export interface NavbarLink {
   requiresDevelopmentModeEnabled?: boolean;
   end?: boolean;
 }
-
-export const renderLink = ({
-  linkProps,
-  icon,
-  label,
-  requiredPermissions,
-  requiresDevelopmentModeEnabled = false,
-}: NavbarLink) => (
-  <DeveloperModeGuard key={`developer-mode-guard-${linkProps.to}`} enabled={requiresDevelopmentModeEnabled}>
-    <PermissionsGuard key={`permissions-guard-${linkProps.to}`} requiredPermissions={requiredPermissions || []}>
-      <div key={`wrapper-${linkProps.to}`}>
-        <Link to={linkProps.to} key={`link-${linkProps.to}`}>
-          <span key={`inner-${linkProps.to}`}>
-            {cloneElement(icon, { size: 20, key: `icon-${linkProps.to}` })}
-            <p key={`label-${linkProps.to}`}>{label}</p>
-          </span>
-        </Link>
-      </div>
-    </PermissionsGuard>
-  </DeveloperModeGuard>
-);
 
 interface NavbarProps {
   showGameServerNav?: boolean;

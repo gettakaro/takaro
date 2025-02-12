@@ -1,7 +1,7 @@
 import { cloneElement, FC, ReactElement } from 'react';
 import { Tooltip, TooltipProps } from '../Tooltip';
 import { Size, styled } from '../../../styled';
-import { getIconSize } from '../../actions/IconButton';
+import { getIconSize } from '../../actions/IconButton/getIconSize';
 import { ButtonColor } from '../../actions/Button/style';
 import { shade } from 'polished';
 

@@ -8,13 +8,7 @@ import { useConsoleLiveModeScrolling } from './useConsoleLiveMode';
 import Autosizer from 'react-virtualized-auto-sizer';
 import { AiOutlineDelete as ClearIcon } from 'react-icons/ai';
 import { Button } from '../../../components';
-
-const DEFAULT_LINE_HEIGHT = 25;
-export const GUTTER_SIZE = 10;
-/*  TODO: this does not work with the scrollitemto because it has no knowledge of the padding.
- *  https://gist.github.com/ValentinJS/4f3738ed426cac183e8446c869b162dd might be an option.
- */
-export const LIST_PADDING_SIZE = 0;
+import { GUTTER_SIZE, LIST_PADDING_SIZE, DEFAULT_LINE_HEIGHT } from './constants';
 
 interface RowState {
   height: number;
