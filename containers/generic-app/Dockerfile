@@ -1,4 +1,4 @@
-FROM node:22.11.0-alpine AS builder
+FROM node:22.13.1-alpine AS builder
 
 ARG PACKAGE
 ENV NODE_ENV=development
@@ -21,7 +21,7 @@ RUN npm run -w packages/${PACKAGE} build
 # So with this command we prebuild library packages and make them available for later
 RUN find packages -type d -name 'lib-*' -exec sh -c 'npm run -w {} build && mkdir -p libraries/{}/ && cp -r {}/dist libraries/{}/ && cp -r {}/package*.json libraries/{}/' \; 
 
-FROM node:22.11.0-alpine AS runner
+FROM node:22.13.1-alpine AS runner
 
 # Version 9+ is required to run npm scripts as root
 RUN npm install -g npm@9
