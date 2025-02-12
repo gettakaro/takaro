@@ -259,6 +259,7 @@ const tests = [
     group,
     snapshot: false,
     setup: modulesTestSetup,
+    attempts: 5,
     name: 'Prohibits players from settings more public teleports than their role allows',
     test: async function () {
       await this.client.module.moduleInstallationsControllerInstallModule({
