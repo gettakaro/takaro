@@ -6,7 +6,7 @@ import { StepStates } from '../stepStates';
 
 /* Dot behavior components */
 // wrapper <StepperSteps/> component around the multiple <step/>
-const StepperSteps: FC<PropsWithChildren<void>> = ({ children }) => {
+const StepperSteps: FC<PropsWithChildren<unknown>> = ({ children }) => {
   const { currentStep, steps, setSteps } = useStepper();
 
   useEffect(() => {
@@ -49,8 +49,8 @@ export interface SlimStepperProps {
 
 // Main <Stepper/> component which contains subcomponents
 export const SlimStepper: FC<PropsWithChildren<SlimStepperProps>> & {
-  Step: FC<StepProps>;
-  Steps: FC<PropsWithChildren<void>>;
+  Step: FC<PropsWithChildren<StepProps>>;
+  Steps: FC<PropsWithChildren<unknown>>;
 } = ({ showTooltip = 'hover', canStepBack = true, children }) => {
   const { currentStep, steps, setCurrentStep } = useStepper();
 
