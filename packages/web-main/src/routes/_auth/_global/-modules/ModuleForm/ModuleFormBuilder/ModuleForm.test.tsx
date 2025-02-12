@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { render } from '../../../../../testUtils';
-import { ModuleForm } from '.';
+import { render } from '../../../../../../testUtils';
+import { ModuleFormBuilder } from '.';
 import { ModuleOutputDTO, ModuleVersionOutputDTO } from '@takaro/apiclient';
 import { DateTime } from 'luxon';
-import { validSchemas, invalidSchemas } from '../testData';
+import { validSchemas, invalidSchemas } from '../ModuleDTOTestData';
 
 function createModuleDTO(moduleVersionOverrides: Partial<ModuleVersionOutputDTO> = {}): ModuleOutputDTO {
   return {
@@ -45,7 +45,7 @@ describe('Render ConfigFields', () => {
       const mod = createModuleDTO({ configSchema: JSON.stringify(test.schema) });
 
       const { queryByRole } = render(
-        <ModuleForm
+        <ModuleFormBuilder
           onSubmit={() => {}}
           isLoading={false}
           moduleName={mod.name}
@@ -61,7 +61,7 @@ describe('Render ConfigFields', () => {
     it.skip(`Should show error when schema is invalid: ${test.schema.id}`, () => {
       const mod = createModuleDTO({ configSchema: JSON.stringify(test.schema) });
       const { getByText } = render(
-        <ModuleForm
+        <ModuleFormBuilder
           onSubmit={() => {}}
           isLoading={false}
           moduleName={mod.name}
