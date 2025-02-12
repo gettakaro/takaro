@@ -140,7 +140,7 @@ export async function matchSnapshot<SetupData>(
   const fullData = {
     body: response.data,
     status: response.status,
-    test: omit(test, 'setup', 'teardown', 'test'),
+    test: omit(test, 'setup', 'teardown', 'test', 'attempts'),
   };
 
   try {
