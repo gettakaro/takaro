@@ -1,12 +1,41 @@
 import { FC } from 'react';
-import { IFormInputs } from '..';
-import { PermissionCard, Title, Fields } from './style';
 import { Control, UseFieldArrayRemove, useWatch } from 'react-hook-form';
 import { Tooltip, IconButton, TextField, Chip, Switch } from '@takaro/lib-components';
 import { AiOutlineDelete as RemoveIcon } from 'react-icons/ai';
 
+import { styled } from '@takaro/lib-components';
+
+const PermissionCard = styled.li`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+`;
+
+const Title = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: ${({ theme }) => theme.spacing[2]};
+  margin-bottom: ${({ theme }) => theme.spacing['0_5']};
+
+  .inner {
+    display: flex;
+    gap: ${({ theme }) => theme.spacing['0_5']};
+  }
+`;
+
+const Fields = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+`;
+
 export interface PermissionFieldProps {
-  control: Control<IFormInputs>;
+  control: Control<any>;
   id: string;
   index: number;
   remove: UseFieldArrayRemove;

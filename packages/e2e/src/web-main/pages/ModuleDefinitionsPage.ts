@@ -41,7 +41,7 @@ export class ModuleDefinitionsPage extends BasePage {
     save?: boolean;
   }) {
     await this.openSettings(oldName);
-    await this.page.getByRole('menuitem', { name: 'Edit module' }).click();
+    await this.page.getByRole('menuitem', { name: 'Edit module (builder)' }).click();
 
     if (name) {
       await this.fillName(name);
@@ -107,7 +107,7 @@ export class ModuleDefinitionsPage extends BasePage {
     permissions?: Permission[];
     save?: boolean;
   }) {
-    await this.page.getByRole('link', { name: 'Module', exact: true }).click();
+    await this.page.getByRole('link', { name: 'Module (builder)', exact: true }).click();
 
     if (name) {
       await this.fillName(name);

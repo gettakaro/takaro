@@ -5,6 +5,7 @@ export const Route = createFileRoute('/_auth/_global/modules/$moduleId/view/')({
     throw redirect({
       to: '/modules/$moduleId/view/$moduleVersionTag',
       params: { moduleId: params.moduleId, moduleVersionTag: 'latest' },
+      search: { view: 'builder' },
       replace: true,
     });
   },

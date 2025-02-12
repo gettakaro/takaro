@@ -6,7 +6,7 @@ import { FC } from 'react';
 import { AiOutlineCopy as CopyIcon } from 'react-icons/ai';
 
 import { useModuleExport, useModuleImport } from '../queries/module';
-import { moduleNameShape } from '../routes/_auth/_global/-modules/ModuleForm/validationSchema';
+import { moduleNameShape } from '../util/validationShapes';
 import { ModuleOutputDTO } from '@takaro/apiclient';
 
 const validationSchema = z.object({

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validSchemas } from '../testData';
+import { validSchemas } from '../ModuleForm/ModuleDTOTestData';
 import { inputsToSchema } from './inputsToSchema';
 import { AnyInput } from './inputTypes';
 

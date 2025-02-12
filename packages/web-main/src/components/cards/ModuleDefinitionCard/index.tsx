@@ -38,9 +38,13 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
   const theme = useTheme();
   const navigate = useNavigate();
 
-  const handleOnEditClick = (e: MouseEvent) => {
+  const handleOnEditBuilderClick = (e: MouseEvent) => {
     e.stopPropagation();
-    navigate({ to: '/modules/$moduleId/update', params: { moduleId: mod.id } });
+    navigate({ to: '/modules/$moduleId/update', params: { moduleId: mod.id }, search: { view: 'builder' } });
+  };
+  const handleOnEditManualClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    navigate({ to: '/modules/$moduleId/update', params: { moduleId: mod.id }, search: { view: 'manual' } });
   };
 
   const handleOnViewClick = (e: MouseEvent) => {
@@ -139,7 +143,16 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
                       <Dropdown.Menu.Group label="Actions">
                         <PermissionsGuard requiredPermissions={[[PERMISSIONS.ManageModules]]}>
                           <Dropdown.Menu.Item icon={<ViewIcon />} onClick={handleOnViewClick} label="View module" />
-                          <Dropdown.Menu.Item icon={<EditIcon />} onClick={handleOnEditClick} label="Edit module" />
+                          <Dropdown.Menu.Item
+                            icon={<EditIcon />}
+                            onClick={handleOnEditBuilderClick}
+                            label="Edit module (builder)"
+                          />
+                          <Dropdown.Menu.Item
+                            icon={<EditIcon />}
+                            onClick={handleOnEditManualClick}
+                            label="Edit module (manual)"
+                          />
                           <Dropdown.Menu.Item icon={<CopyIcon />} onClick={handleOnCopyClick} label="Copy module" />
                           <Dropdown.Menu.Item icon={<TagIcon />} onClick={handleOnTagClick} label="Tag module" />
                           <Dropdown.Menu.Item

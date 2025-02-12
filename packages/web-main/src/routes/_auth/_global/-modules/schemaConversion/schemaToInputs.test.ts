@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { schemaToInputs } from './SchemaToInputs';
-import { validSchemas, invalidSchemas, validSchemasToInputs } from '../testData';
+import { validSchemas, invalidSchemas, validSchemasToInputs } from '../ModuleForm/ModuleDTOTestData';
 
 describe('schemaToInputs', () => {
   [...validSchemas, ...validSchemasToInputs].forEach((test) => {
