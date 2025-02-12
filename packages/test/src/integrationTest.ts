@@ -104,7 +104,7 @@ export class IntegrationTest<SetupData> {
   async run() {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const integrationTestContext = this;
-    const maxRetries = this.test.attempts || 0;
+    const maxRetries = this.test.attempts || integrationConfig.get('testRunner.attempts');
 
     async function setup(): Promise<void> {
       sandbox.restore();

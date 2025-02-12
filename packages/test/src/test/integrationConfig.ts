@@ -1,5 +1,4 @@
 import { Config, IBaseConfig } from '@takaro/config';
-import ms from 'ms';
 
 interface IIntegrationTestConfig extends IBaseConfig {
   host: string;
@@ -17,9 +16,8 @@ interface IIntegrationTestConfig extends IBaseConfig {
   };
   overwriteSnapshots: boolean;
   waitForEventsTimeout: number;
-  mocha: {
-    retries: number;
-    waitBetweenRetries: number;
+  testRunner: {
+    attempts: number;
   };
 }
 
@@ -84,18 +82,12 @@ const configSchema = {
     default: 10000,
     env: 'WAIT_FOR_EVENTS_TIMEOUT',
   },
-  mocha: {
-    retries: {
-      doc: 'The number of retries for each test',
+  testRunner: {
+    attempts: {
+      doc: 'The default number of attempts to run the tests',
       format: Number,
-      default: process.env.CI ? 5 : 0,
-      env: 'MOCHA_RETRIES',
-    },
-    waitBetweenRetries: {
-      doc: 'The number of milliseconds to wait between retries',
-      format: Number,
-      default: ms('5s'),
-      env: 'MOCHA_WAIT_BETWEEN_RETRIES',
+      default: 3,
+      env: 'TAKARO_TEST_RUNNER_ATTEMPTS',
     },
   },
 };
