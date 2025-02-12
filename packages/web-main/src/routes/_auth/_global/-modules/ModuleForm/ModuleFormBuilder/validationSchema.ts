@@ -1,10 +1,16 @@
 import { z } from 'zod';
-import { InputType } from '../schemaConversion/inputTypes';
+import { InputType } from '../../schemaConversion/inputTypes';
+import {
+  moduleDescriptionShape,
+  moduleNameShape,
+  modulePermissionShape,
+} from '../../../../../../util/validationShapes';
 
 // NOTE: nested discriminated unions are not supported by zod
 // https://github.com/colinhacks/zod/issues/1618
 // https://github.com/colinhacks/zod/issues/2106#issuecomment-1836566278
 // based on selected value in select field (with name type)
+
 const baseConfigFieldShape = z.object({
   name: z
     .string()
@@ -20,35 +26,10 @@ const baseConfigFieldShape = z.object({
   }),
 });
 
-export const moduleNameShape = z
-  .string()
-  .min(4, {
-    message: 'Module name requires a minimum length of 4 characters',
-  })
-  .max(35, {
-    message: 'Module name requires a maximum length of 35 characters',
-  })
-  .min(1, { message: 'Module name cannot be empty' });
-
 export const validationSchema = z.object({
   name: moduleNameShape,
-  description: z
-    .string()
-    .max(100, {
-      message: 'Module description requires a maximum length of 100 characters',
-    })
-    .optional(),
-  permissions: z.array(
-    z.object({
-      permission: z
-        .string()
-        .min(1, { message: 'Permission cannot be empty' })
-        .refine((val) => !val.includes(' '), 'Spaces are not allowed.'),
-      description: z.string(),
-      friendlyName: z.string(),
-      canHaveCount: z.boolean().optional(),
-    }),
-  ),
+  description: moduleDescriptionShape,
+  permissions: z.array(modulePermissionShape),
   configFields: z
     .array(
       z
