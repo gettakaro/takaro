@@ -330,3 +330,18 @@ export const useTeleportPlayer = () => {
     {},
   );
 };
+
+export const useGameServerShutdown = () => {
+  const apiClient = getApiClient();
+  const { enqueueSnackbar } = useSnackbar();
+
+  return mutationWrapper<APIOutput, string>(
+    useMutation<void, AxiosError<void>, string>({
+      mutationFn: async (gameServerId) => (await apiClient.gameserver.gameServerControllerShutdown(gameServerId)).data,
+      onSuccess: async () => {
+        enqueueSnackbar('Gameserver shutdown.', { variant: 'default', type: 'info' });
+      },
+    }),
+    {},
+  );
+};
