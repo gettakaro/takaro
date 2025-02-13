@@ -27,6 +27,7 @@ import { Outlet, createFileRoute, redirect, useNavigate } from '@tanstack/react-
 import { useQuery } from '@tanstack/react-query';
 import { hasPermission } from '../../../hooks/useHasPermission';
 import { userMeQueryOptions } from '../../../queries/user';
+import { DocsLink } from '../../../components/DocsLink';
 
 export const Route = createFileRoute('/_auth/_global/variables')({
   beforeLoad: async ({ context }) => {
@@ -196,12 +197,15 @@ function Component() {
         onSearchInputChanged={setQuickSearchInput}
         renderToolbar={() => {
           return (
-            <Button
-              text="Create variable"
-              onClick={() => {
-                navigate({ to: '/variables/create' });
-              }}
-            />
+            <>
+              <Button
+                text="Create variable"
+                onClick={() => {
+                  navigate({ to: '/variables/create' });
+                }}
+              />
+              <DocsLink href="https://docs.takaro.io/advanced/variables" target="_blank" rel="noopener noreferrer" />
+            </>
           );
         }}
         renderRowSelectionActions={() => {

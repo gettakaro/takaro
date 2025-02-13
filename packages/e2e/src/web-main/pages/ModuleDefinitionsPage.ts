@@ -80,7 +80,7 @@ export class ModuleDefinitionsPage extends BasePage {
 
   async view(name: string) {
     await this.openSettings(name);
-    await this.page.getByRole('menuitem', { name: 'View module' }).click();
+    await this.page.getByRole('menuitem', { name: 'View module', exact: true }).click();
   }
 
   private async openSettings(name: string) {
