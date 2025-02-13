@@ -293,10 +293,9 @@ export const useGameServerModuleUninstall = () => {
   );
 };
 
-interface GameServerKickPlayerInput {
+interface GameServerKickPlayerInput extends KickPlayerInputDTO {
   gameServerId: string;
   playerId: string;
-  opts: KickPlayerInputDTO;
 }
 
 export const useKickPlayerOnGameServer = () => {
@@ -304,7 +303,7 @@ export const useKickPlayerOnGameServer = () => {
 
   return mutationWrapper<APIOutput, GameServerKickPlayerInput>(
     useMutation<APIOutput, AxiosError<APIOutput>, GameServerKickPlayerInput>({
-      mutationFn: async ({ gameServerId, playerId, opts }) =>
+      mutationFn: async ({ gameServerId, playerId, ...opts }) =>
         (await apiClient.gameserver.gameServerControllerKickPlayer(gameServerId, playerId, opts)).data,
     }),
     {},
