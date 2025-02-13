@@ -178,6 +178,14 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     const updated = await this.repo.update(id, new ModuleUpdateDTO({ ...mod, latestVersion: undefined }));
     if (mod.latestVersion) {
       const latestVersion = await this.getLatestVersion(id);
+      if (mod.latestVersion.configSchema) {
+        try {
+          ajv.compile(JSON.parse(mod.latestVersion.configSchema));
+        } catch (e) {
+          this.log.warn('Invalid config schema', { error: JSON.stringify(e) });
+          throw new errors.BadRequestError('Invalid config schema');
+        }
+      }
       await this.repo.updateVersion(latestVersion.id, mod.latestVersion);
     }
 
