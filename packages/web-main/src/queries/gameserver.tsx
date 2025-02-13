@@ -14,6 +14,7 @@ import {
   ModuleInstallationOutputDTO,
   ModuleInstallationOutputDTOAPI,
   ModuleInstallationSearchInputDTO,
+  TeleportPlayerInputDTO,
   TestReachabilityOutputDTO,
 } from '@takaro/apiclient';
 import {
@@ -305,6 +306,26 @@ export const useKickPlayerOnGameServer = () => {
     useMutation<APIOutput, AxiosError<APIOutput>, GameServerKickPlayerInput>({
       mutationFn: async ({ gameServerId, playerId, ...opts }) =>
         (await apiClient.gameserver.gameServerControllerKickPlayer(gameServerId, playerId, opts)).data,
+    }),
+    {},
+  );
+};
+
+interface TeleportPlayerInput extends TeleportPlayerInputDTO {
+  gameServerId: string;
+  playerId: string;
+}
+export const useTeleportPlayer = () => {
+  const apiClient = getApiClient();
+  const { enqueueSnackbar } = useSnackbar();
+
+  return mutationWrapper<APIOutput, TeleportPlayerInput>(
+    useMutation<APIOutput, AxiosError<APIOutput>, TeleportPlayerInput>({
+      mutationFn: async ({ gameServerId, playerId, x, y, z }) =>
+        (await apiClient.gameserver.gameServerControllerTeleportPlayer(gameServerId, playerId, { x, y, z })).data,
+      onSuccess: async (_, { x, y, z }) => {
+        enqueueSnackbar(`Teleported player to (${x},${y},${z})`, { variant: 'default', type: 'info' });
+      },
     }),
     {},
   );
