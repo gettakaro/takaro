@@ -67,6 +67,7 @@ interface IUserRoleAssign {
 export const useUserAssignRole = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
 
   return mutationWrapper<APIOutput, IUserRoleAssign>(
     useMutation<APIOutput, AxiosError<APIOutput>, IUserRoleAssign>({
@@ -75,6 +76,7 @@ export const useUserAssignRole = () => {
       onSuccess: async (_, { userId }) => {
         // invalidate user because new role assignment
         queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
+        enqueueSnackbar('Role successfully assigned!', { variant: 'default', type: 'success' });
       },
     }),
     {},
