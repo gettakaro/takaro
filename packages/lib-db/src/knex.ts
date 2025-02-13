@@ -10,6 +10,19 @@ const { knex: createKnex } = knexPkg;
 type KnexClient = knexPkg.Knex<TakaroModel, unknown[]>;
 
 export function getKnexOptions(extra: Record<string, unknown> = {}) {
+  let sslOptions: Record<string, any> | false = {};
+
+  if (config.get('postgres.ssl')) {
+    if (config.get('postgres.ca')) {
+      sslOptions.ca = config.get('postgres.ca');
+    } else {
+      log.warn('Postgres SSL is enabled but no CA is provided, using ssl require');
+      sslOptions.rejectUnauthorized = true;
+    }
+  } else {
+    sslOptions = false;
+  }
+
   const opts = {
     client: 'pg',
     connection: {
@@ -18,7 +31,7 @@ export function getKnexOptions(extra: Record<string, unknown> = {}) {
       user: config.get('postgres.user'),
       password: config.get('postgres.password'),
       database: config.get('postgres.database'),
-      ssl: config.get('postgres.ssl') ? { ca: config.get('postgres.ca') } : false,
+      ssl: sslOptions,
     },
     ...extra,
   };
