@@ -20,7 +20,7 @@ import {
   ExpandIconContainer,
 } from './style';
 import { Message, MessageType } from '../MessageModel';
-import { GUTTER_SIZE, LIST_PADDING_SIZE } from '../Console';
+import { GUTTER_SIZE, LIST_PADDING_SIZE } from '../constants';
 
 const COLLAPSED_LENGTH = 125;
 

@@ -6,7 +6,7 @@ import { queryParamsToArray } from './util';
 
 type StatsOutput = { values: Array<[number, number]> };
 
-export const statsKeys = {
+const statsKeys = {
   all: ['stats'] as const,
   ping: (playerId: string, gameServerId: string, startDate?: string, endDate?: string) =>
     [...statsKeys.all, 'ping', playerId, gameServerId, startDate, endDate] as const,

@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon';
 import { createContext, Dispatch, useContext } from 'react';
-import { Tense, Unit } from './QuickSelect';
+import { Tense, Unit } from '../types';
 
 export interface DateRangePickerState {
   start: DateTime;

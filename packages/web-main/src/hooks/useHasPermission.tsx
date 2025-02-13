@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
-import { RequiredPermissions } from '@takaro/lib-components';
-import { hasPermissionHelper } from '@takaro/lib-components/src/components/other/PermissionsGuard';
+import { RequiredPermissions, hasPermissionHelper } from '@takaro/lib-components';
 import { MeOutputDTO, PERMISSIONS } from '@takaro/apiclient';
 import { useSession } from './useSession';
 

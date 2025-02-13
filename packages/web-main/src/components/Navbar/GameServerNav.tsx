@@ -1,5 +1,6 @@
 import { FC, useMemo } from 'react';
-import { NavbarLink, renderLink } from '.';
+import { NavbarLink } from '.';
+import { renderLink } from './renderLink';
 import { GlobalGameServerSelect } from './GlobalGameServerSelect';
 import { Button, Skeleton } from '@takaro/lib-components';
 import { PERMISSIONS } from '@takaro/apiclient';
