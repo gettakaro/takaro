@@ -35,6 +35,7 @@ export const gameServerKeys = {
   list: () => [...gameServerKeys.all, 'list'] as const,
   detail: (gameServerId: string) => [...gameServerKeys.all, 'detail', gameServerId] as const,
   reachability: (gameServerId: string) => [...gameServerKeys.all, 'reachable', gameServerId] as const,
+  count: () => [...gameServerKeys.all, 'count'] as const,
 };
 
 export const ModuleInstallationKeys = {
@@ -73,6 +74,12 @@ export const gameServerQueryOptions = (gameServerId: string) => {
   });
 };
 
+export const gameServerCountQueryOptions = () =>
+  queryOptions<number, AxiosError<number>>({
+    queryKey: gameServerKeys.count(),
+    queryFn: async () => (await getApiClient().gameserver.gameServerControllerSearch({ limit: 1 })).data.meta.total!,
+  });
+
 export const useGameServerCreateFromCSMMImport = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
@@ -88,8 +95,12 @@ export const useGameServerCreateFromCSMMImport = () => {
             },
           })
         ).data.data,
-      onSettled: async () => {
+      onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: gameServerKeys.list() });
+        const currentGameServerCount = queryClient.getQueryData<number>(gameServerKeys.count());
+        if (currentGameServerCount) {
+          queryClient.setQueryData<number>(gameServerKeys.count(), currentGameServerCount + 1);
+        }
       },
     }),
     {},
@@ -108,6 +119,11 @@ export const useGameServerCreate = () => {
         enqueueSnackbar('Gameserver created!', { variant: 'default', type: 'success' });
         await queryClient.invalidateQueries({ queryKey: gameServerKeys.list() });
         queryClient.setQueryData(gameServerKeys.detail(newGameServer.id), newGameServer);
+
+        const currentGameServerCount = queryClient.getQueryData<number>(gameServerKeys.count());
+        if (currentGameServerCount) {
+          queryClient.setQueryData<number>(gameServerKeys.count(), currentGameServerCount + 1);
+        }
       },
     }),
     defaultGameServerErrorMessages,
@@ -158,6 +174,12 @@ export const useGameServerRemove = () => {
         await queryClient.invalidateQueries({
           queryKey: gameServerKeys.detail(gameServerId),
         });
+
+        const currentGameServerCount = queryClient.getQueryData<number>(gameServerKeys.count());
+        if (currentGameServerCount) {
+          queryClient.setQueryData<number>(gameServerKeys.count(), currentGameServerCount - 1);
+        }
+
         queryClient.removeQueries({
           queryKey: gameServerKeys.reachability(gameServerId),
         });

@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { EventOutputDTOEventNameEnum as EventName } from '@takaro/apiclient';
+import { fallback } from '@tanstack/zod-adapter';
 
 export const eventFilterSchema = z.object({
   dateRange: z
@@ -9,8 +10,10 @@ export const eventFilterSchema = z.object({
     })
     .optional()
     .catch(undefined),
-  playerIds: z.array(z.string()).optional().default([]),
-  gameServerIds: z.array(z.string()).optional().default([]),
-  moduleIds: z.array(z.string()).optional().default([]),
-  eventNames: z.array(z.nativeEnum(EventName)).optional().default([]),
+  playerIds: fallback(z.array(z.string()), []).optional().default([]),
+  gameServerIds: fallback(z.array(z.string()), []).optional().default([]),
+  moduleIds: fallback(z.array(z.string()), []).optional().default([]),
+  eventNames: fallback(z.array(z.nativeEnum(EventName)), [])
+    .optional()
+    .default([]),
 });

@@ -12,7 +12,7 @@ import {
 } from '@takaro/lib-components';
 
 import { Player } from '../../../components/Player';
-import { usersQueryOptions, userMeQueryOptions } from '../../../queries/user';
+import { usersQueryOptions, userMeQueryOptions, userCountQueryOptions } from '../../../queries/user';
 import { UserOutputWithRolesDTO, UserSearchInputDTOSortDirectionEnum, PERMISSIONS } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
 import {
@@ -28,6 +28,8 @@ import { createFileRoute, useNavigate, Link, redirect } from '@tanstack/react-ro
 import { useQuery } from '@tanstack/react-query';
 import { UserDeleteDialog } from '../../../components/dialogs/UserDeleteDialog';
 import { UserInviteDialog } from '../../../components/dialogs/UserInviteDialog';
+import { MaxUsage } from '../../../components/MaxUsage';
+import { getCurrentDomain } from '../../../util/getCurrentDomain';
 
 export const Route = createFileRoute('/_auth/_global/users')({
   beforeLoad: async ({ context }) => {
@@ -36,6 +38,12 @@ export const Route = createFileRoute('/_auth/_global/users')({
       throw redirect({ to: '/forbidden' });
     }
   },
+  loader: async ({ context }) => {
+    return {
+      me: await context.queryClient.ensureQueryData(userMeQueryOptions()),
+      users: await context.queryClient.ensureQueryData(userCountQueryOptions()),
+    };
+  },
   component: Component,
 });
 
@@ -43,6 +51,14 @@ function Component() {
   useDocumentTitle('Users');
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<UserOutputWithRolesDTO>();
   const [quickSearchInput, setQuickSearchInput] = useState<string>('');
+  const loaderData = Route.useLoaderData();
+
+  const { data: currentUserCount } = useQuery({ ...userCountQueryOptions(), initialData: loaderData.users });
+  const { data: me } = useQuery({ ...userMeQueryOptions(), initialData: loaderData.me });
+
+  const currentDomain = getCurrentDomain(me);
+  const maxUserCount = currentDomain.maxUsers;
+  const canInviteUser = currentUserCount < maxUserCount;
 
   const { data, isLoading } = useQuery({
     ...usersQueryOptions({
@@ -153,7 +169,9 @@ function Component() {
       id="users"
       columns={columnDefs}
       data={data ? data?.data : []}
-      renderToolbar={() => <InviteUser />}
+      renderToolbar={() => (
+        <InviteUser currentUserCount={currentUserCount} maxUserCount={maxUserCount} canInviteUser={canInviteUser} />
+      )}
       pagination={p}
       columnFiltering={columnFilters}
       columnSearch={columnSearch}
@@ -164,7 +182,11 @@ function Component() {
   );
 }
 
-const InviteUser: FC = () => {
+const InviteUser: FC<{
+  currentUserCount: number;
+  maxUserCount: number;
+  canInviteUser: boolean;
+}> = ({ canInviteUser, currentUserCount, maxUserCount }) => {
   const [open, setOpen] = useState<boolean>(false);
   const hasManageUsersPermission = useHasPermission([PERMISSIONS.ManageUsers]);
 
@@ -174,8 +196,9 @@ const InviteUser: FC = () => {
         onClick={() => setOpen(true)}
         text="Invite user"
         icon={<InviteUserIcon />}
-        disabled={!hasManageUsersPermission}
+        disabled={!hasManageUsersPermission || !canInviteUser}
       />
+      <MaxUsage value={currentUserCount} total={maxUserCount} unit="Users" />
       <UserInviteDialog open={open} onOpenChange={setOpen} />
     </>
   );
