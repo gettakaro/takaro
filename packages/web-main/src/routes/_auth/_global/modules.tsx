@@ -11,6 +11,7 @@ import { userMeQueryOptions } from '../../../queries/user';
 import { globalGameServerSetingQueryOptions } from '../../../queries/setting';
 import { getCurrentDomain } from '../../../util/getCurrentDomain';
 import { MaxUsage } from '../../../components/MaxUsage';
+import { AiOutlineImport as ImportModuleIcon, AiOutlinePlus as CreateModuleIcon } from 'react-icons/ai';
 
 const SubHeader = styled.h2<{ withMargin?: boolean }>`
   font-size: ${({ theme }) => theme.fontSize.mediumLarge};
@@ -95,39 +96,44 @@ function Component() {
       <PermissionsGuard requiredPermissions={[PERMISSIONS.ManageModules]}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <SubHeader>Custom</SubHeader>
-          <MaxUsage value={customModuleCount} total={maxModulesCount} unit="Modules" />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+            <MaxUsage value={customModuleCount} total={maxModulesCount} unit="Modules" />
+            <PermissionsGuard requiredPermissions={[PERMISSIONS.ManageModules]}>
+              <Dropdown>
+                <Dropdown.Trigger asChild>
+                  <Button text="Module actions" />
+                </Dropdown.Trigger>
+                <Dropdown.Menu>
+                  <Dropdown.Menu.Group>
+                    <Dropdown.Menu.Item
+                      icon={<CreateModuleIcon />}
+                      onClick={() => navigate({ to: '/modules/create', search: { view: 'builder' } })}
+                      label="Create module with builder"
+                      disabled={!canCreateModule}
+                    />
+                    <Dropdown.Menu.Item
+                      icon={<CreateModuleIcon />}
+                      onClick={() => navigate({ to: '/modules/create', search: { view: 'manual' } })}
+                      label="Create module from schema"
+                      disabled={!canCreateModule}
+                    />
+                    <Dropdown.Menu.Item
+                      icon={<ImportModuleIcon />}
+                      onClick={() => navigate({ to: '/modules/create/import' })}
+                      label="Import module from file"
+                      disabled={!canCreateModule}
+                    />
+                  </Dropdown.Menu.Group>
+                </Dropdown.Menu>
+              </Dropdown>
+            </PermissionsGuard>
+          </div>
         </div>
         <SubText>
           You can create your own modules by starting from scratch or by copying a built-in module. To copy a built-in
           module click on a built-in module & inside the editor click on the copy icon next to it's name.
         </SubText>
         <CardList>
-          <PermissionsGuard requiredPermissions={[PERMISSIONS.ManageModules]}>
-            <Dropdown>
-              <Dropdown.Trigger asChild>
-                <Button text="Module actions" />
-              </Dropdown.Trigger>
-              <Dropdown.Menu>
-                <Dropdown.Menu.Group>
-                  <Dropdown.Menu.Item
-                    onClick={() => navigate({ to: '/modules/create', search: { view: 'builder' } })}
-                    label="Create module with builder"
-                    disabled={!canCreateModule}
-                  />
-                  <Dropdown.Menu.Item
-                    onClick={() => navigate({ to: '/modules/create', search: { view: 'manual' } })}
-                    label="Create module with builder"
-                    disabled={!canCreateModule}
-                  />
-                  <Dropdown.Menu.Item
-                    onClick={() => navigate({ to: '/modules/create/import' })}
-                    label="Import module"
-                    disabled={!canCreateModule}
-                  />
-                </Dropdown.Menu.Group>
-              </Dropdown.Menu>
-            </Dropdown>
-          </PermissionsGuard>
           {customModules.map((mod) => (
             <ModuleDefinitionCard key={mod.id} mod={mod} canCopyModule={canCreateModule} />
           ))}
