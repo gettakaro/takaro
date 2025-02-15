@@ -13,6 +13,7 @@ import {
   AiOutlineCopy as CopyIcon,
   AiOutlineExport as ExportIcon,
   AiOutlineTag as TagIcon,
+  AiOutlineBook as DocumentationIcon,
 } from 'react-icons/ai';
 import { ModuleTagDialog } from '../../../components/dialogs/ModuleTagDialog';
 import { ModuleCopyDialog } from '../../../components/dialogs/ModuleCopyDialog';
@@ -39,9 +40,13 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod, canCopyModule 
   const theme = useTheme();
   const navigate = useNavigate();
 
-  const handleOnEditClick = (e: MouseEvent) => {
+  const handleOnEditBuilderClick = (e: MouseEvent) => {
     e.stopPropagation();
-    navigate({ to: '/modules/$moduleId/update', params: { moduleId: mod.id } });
+    navigate({ to: '/modules/$moduleId/update', params: { moduleId: mod.id }, search: { view: 'builder' } });
+  };
+  const handleOnEditManualClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    navigate({ to: '/modules/$moduleId/update', params: { moduleId: mod.id }, search: { view: 'manual' } });
   };
 
   const handleOnViewClick = (e: MouseEvent) => {
@@ -72,9 +77,12 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod, canCopyModule 
     navigator.clipboard.writeText(mod.id);
   };
 
-  const handleOnOpenClick = (e: MouseEvent) => {
+  const handleOnOpenInModuleBuilderClick = (e: MouseEvent) => {
     e.stopPropagation();
     window.open(`/module-builder/${mod.id}`, '_blank');
+  };
+  const handleOnOpenInDocumentationClick = () => {
+    window.open('https://docs.takaro.io/advanced/modules', '_blank');
   };
 
   const handleOnExportClick = async (e: MouseEvent) => {
@@ -145,7 +153,16 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod, canCopyModule 
                       <Dropdown.Menu.Group label="Actions">
                         <PermissionsGuard requiredPermissions={[[PERMISSIONS.ManageModules]]}>
                           <Dropdown.Menu.Item icon={<ViewIcon />} onClick={handleOnViewClick} label="View module" />
-                          <Dropdown.Menu.Item icon={<EditIcon />} onClick={handleOnEditClick} label="Edit module" />
+                          <Dropdown.Menu.Item
+                            icon={<EditIcon />}
+                            onClick={handleOnEditBuilderClick}
+                            label="Edit module (builder)"
+                          />
+                          <Dropdown.Menu.Item
+                            icon={<EditIcon />}
+                            onClick={handleOnEditManualClick}
+                            label="Edit module (manual)"
+                          />
                           <Dropdown.Menu.Item
                             icon={<CopyIcon />}
                             onClick={handleOnCopyClick}
@@ -169,8 +186,13 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod, canCopyModule 
                     <Dropdown.Menu.Group>
                       <Dropdown.Menu.Item
                         icon={<LinkIcon />}
-                        onClick={handleOnOpenClick}
+                        onClick={handleOnOpenInModuleBuilderClick}
                         label="Open in Module Builder"
+                      />
+                      <Dropdown.Menu.Item
+                        icon={<DocumentationIcon />}
+                        label="View module documentation"
+                        onClick={handleOnOpenInDocumentationClick}
                       />
                       <Dropdown.Menu.Item
                         icon={<ExportIcon />}

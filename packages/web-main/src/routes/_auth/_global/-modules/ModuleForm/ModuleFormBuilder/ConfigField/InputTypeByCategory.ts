@@ -1,4 +1,4 @@
-import { InputType } from '../../schemaConversion/inputTypes';
+import { InputType } from '../../../schemaConversion/inputTypes';
 
 interface InputTypeInfo {
   type: InputType;

@@ -1,8 +1,8 @@
-import { Divider, Skeleton, styled, useTheme, InfiniteScroll } from '@takaro/lib-components';
+import { Divider, Skeleton, styled, useTheme, InfiniteScroll, Dropdown, Button } from '@takaro/lib-components';
 import { PERMISSIONS } from '@takaro/apiclient';
 import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
 import { PermissionsGuard } from '../../../components/PermissionsGuard';
-import { AddCard, CardList, ModuleDefinitionCard } from '../../../components/cards';
+import { CardList, ModuleDefinitionCard } from '../../../components/cards';
 import { useNavigate, Outlet, redirect, createFileRoute } from '@tanstack/react-router';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { hasPermission } from '../../../hooks/useHasPermission';
@@ -103,12 +103,30 @@ function Component() {
         </SubText>
         <CardList>
           <PermissionsGuard requiredPermissions={[PERMISSIONS.ManageModules]}>
-            <AddCard title="Module" onClick={() => navigate({ to: '/modules/create' })} disabled={!canCreateModule} />
-            <AddCard
-              title="Import"
-              onClick={() => navigate({ to: '/modules/create/import' })}
-              disabled={!canCreateModule}
-            />
+            <Dropdown>
+              <Dropdown.Trigger asChild>
+                <Button text="Module actions" />
+              </Dropdown.Trigger>
+              <Dropdown.Menu>
+                <Dropdown.Menu.Group>
+                  <Dropdown.Menu.Item
+                    onClick={() => navigate({ to: '/modules/create', search: { view: 'builder' } })}
+                    label="Create module with builder"
+                    disabled={!canCreateModule}
+                  />
+                  <Dropdown.Menu.Item
+                    onClick={() => navigate({ to: '/modules/create', search: { view: 'manual' } })}
+                    label="Create module with builder"
+                    disabled={!canCreateModule}
+                  />
+                  <Dropdown.Menu.Item
+                    onClick={() => navigate({ to: '/modules/create/import' })}
+                    label="Import module"
+                    disabled={!canCreateModule}
+                  />
+                </Dropdown.Menu.Group>
+              </Dropdown.Menu>
+            </Dropdown>
           </PermissionsGuard>
           {customModules.map((mod) => (
             <ModuleDefinitionCard key={mod.id} mod={mod} canCopyModule={canCreateModule} />

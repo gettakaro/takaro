@@ -29,6 +29,7 @@ import { hasPermission } from '../../../hooks/useHasPermission';
 import { userMeQueryOptions } from '../../../queries/user';
 import { getCurrentDomain } from '../../../util/getCurrentDomain';
 import { MaxUsage } from '../../../components/MaxUsage';
+import { DocsLink } from '../../../components/DocsLink';
 
 export const Route = createFileRoute('/_auth/_global/variables')({
   beforeLoad: async ({ context }) => {
@@ -223,6 +224,7 @@ function Component() {
                 }}
                 disabled={!canCreateVariable}
               />
+              <DocsLink href="https://docs.takaro.io/advanced/variables" target="_blank" rel="noopener noreferrer" />
             </div>
           );
         }}

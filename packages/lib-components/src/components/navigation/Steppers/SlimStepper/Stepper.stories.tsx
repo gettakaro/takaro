@@ -1,6 +1,7 @@
+import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../../styled';
-import { useStepper } from '../context';
+import { useStepper } from '../useStepper';
 import { Button, SlimStepper, SlimStepperProps } from '../../../../components';
 
 export default {

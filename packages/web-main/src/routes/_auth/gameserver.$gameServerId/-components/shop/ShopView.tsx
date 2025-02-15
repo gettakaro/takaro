@@ -8,6 +8,7 @@ import {
   AiOutlineUpload as ImportShopListingsFromFileIcon,
   AiOutlineDownload as ExportShopListingsToFileIcon,
   AiOutlineCheck as CheckMarkIcon,
+  AiOutlineBook as DocumentationIcon,
 } from 'react-icons/ai';
 import { ShopTableView } from './ShopTableView';
 import { ShopCardView } from './ShopCardView';
@@ -58,6 +59,9 @@ export const ShopView: FC<ShopViewProps> = ({ gameServerId, currency, currencyNa
 
   const onClickImportShopListingsFromFile = () => {
     navigate({ to: '/gameserver/$gameServerId/shop/listing/import/file' });
+  };
+  const onClickViewDocumentation = () => {
+    window.open('https://docs.takaro.io/economy', '_blank');
   };
 
   const onClickExportShopListingsToFile = async () => {
@@ -122,10 +126,16 @@ export const ShopView: FC<ShopViewProps> = ({ gameServerId, currency, currencyNa
                     label="New shop listing"
                     onClick={onClickCreateNewShopListing}
                   />
+
                   <DropdownMenu.Item
                     icon={<ExportShopListingsToFileIcon />}
                     label="Export listings to file"
                     onClick={onClickExportShopListingsToFile}
+                  />
+                  <DropdownMenu.Item
+                    icon={<DocumentationIcon />}
+                    label="View Economy Documentation"
+                    onClick={onClickViewDocumentation}
                   />
                 </DropdownMenu.Group>
                 <DropdownMenu.Group label="Import methods" divider>

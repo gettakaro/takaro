@@ -36,7 +36,8 @@ import {
   useFunctionRemove,
   useFunctionUpdate,
 } from '../../../../queries/module';
-import { FileType, useModuleBuilderContext } from '../useModuleBuilderStore';
+import { useModuleBuilderContext } from '../useModuleBuilderStore';
+import { FileType } from '../types';
 import { useNavigate } from '@tanstack/react-router';
 
 const Button = styled.button<{ isActive: boolean; depth: number }>`
