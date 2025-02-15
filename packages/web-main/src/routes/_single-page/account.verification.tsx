@@ -5,14 +5,14 @@ import { styled, Skeleton } from '@takaro/lib-components';
 import { UserAuthCard } from '@ory/elements';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import { z } from 'zod';
-import { zodValidator, fallback } from '@tanstack/zod-adapter';
+import { zodValidator } from '@tanstack/zod-adapter';
 import { useOry } from '../../hooks/useOry';
 
 export const Route = createFileRoute('/_single-page/account/verification')({
   component: Component,
   validateSearch: zodValidator(
     z.object({
-      flowId: fallback(z.string(), '').default(''),
+      flowId: z.string().catch(''),
     }),
   ),
 });

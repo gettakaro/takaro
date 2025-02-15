@@ -8,13 +8,13 @@ import { z } from 'zod';
 import { useOry } from '../../hooks/useOry';
 import { AxiosError } from 'axios';
 import { useSnackbar } from 'notistack';
-import { zodValidator, fallback } from '@tanstack/zod-adapter';
+import { zodValidator } from '@tanstack/zod-adapter';
 
 export const Route = createFileRoute('/_single-page/account/recovery')({
   component: Component,
   validateSearch: zodValidator(
     z.object({
-      flowId: fallback(z.string(), '').default(''),
+      flowId: z.string().catch(''),
     }),
   ),
 });

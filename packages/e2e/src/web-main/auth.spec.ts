@@ -11,18 +11,17 @@ test('can logout', async ({ page, takaro }) => {
 
   await page.getByRole('button').filter({ hasText: user.user.email }).click();
   await page.getByText('Logout').click();
-  await page.waitForLoadState('domcontentloaded');
-  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
+  await page.waitForURL(`${integrationConfig.get('frontendHost')}/login`);
 
   // try to go to authenticated page
   await page.goto('/gameservers');
   await page.waitForLoadState('domcontentloaded');
-  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
+  await page.waitForURL(`${integrationConfig.get('frontendHost')}/login`);
 });
 
 pwTest('should redirect to login when not logged in', async ({ page }) => {
   await page.goto('/gameservers');
-  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login?redirect=%2F`);
+  await expect(page).toHaveURL(`${integrationConfig.get('frontendHost')}/login`);
 });
 
 test('Logging in with invalid credentials shows error message', async ({ page, takaro }) => {

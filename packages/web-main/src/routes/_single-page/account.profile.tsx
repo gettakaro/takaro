@@ -7,13 +7,13 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { z } from 'zod';
 import { useOry } from '../../hooks/useOry';
 import { useSnackbar } from 'notistack';
-import { fallback, zodValidator } from '@tanstack/zod-adapter';
+import { zodValidator } from '@tanstack/zod-adapter';
 
 export const Route = createFileRoute('/_single-page/account/profile')({
   component: Component,
   validateSearch: zodValidator(
     z.object({
-      flowId: fallback(z.string(), '').default(''),
+      flowId: z.string().catch(''),
     }),
   ),
 });

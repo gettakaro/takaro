@@ -7,7 +7,7 @@ import { useSnackbar } from 'notistack';
 import { AiOutlineLogout as LogoutIcon } from 'react-icons/ai';
 import { useAuth } from '../../hooks/useAuth';
 import { useQuery } from '@tanstack/react-query';
-import { fallback, zodValidator } from '@tanstack/zod-adapter';
+import { zodValidator } from '@tanstack/zod-adapter';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 const Container = styled.div`
@@ -19,7 +19,7 @@ const Container = styled.div`
 export const Route = createFileRoute('/_single-page/link')({
   validateSearch: zodValidator(
     z.object({
-      code: fallback(z.string(), '').default(''),
+      code: z.string().catch(''),
     }),
   ),
   component: Component,

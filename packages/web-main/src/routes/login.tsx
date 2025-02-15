@@ -11,12 +11,12 @@ import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { useOry } from '../hooks/useOry';
 import { getApiClient } from '../util/getApiClient';
 import { useAuth } from '../hooks/useAuth';
-import { fallback, zodValidator } from '@tanstack/zod-adapter';
+import { zodValidator } from '@tanstack/zod-adapter';
 
 export const Route = createFileRoute('/login')({
   validateSearch: zodValidator(
     z.object({
-      redirect: fallback(z.string(), '/').default('/'),
+      redirect: z.string().catch('/'),
     }),
   ),
   component: Component,
