@@ -190,7 +190,7 @@ export const ModuleFormManual: FC<ModuleFormProps> = ({ moduleName, moduleVersio
                   name="uiSchema"
                   label="UI Schema"
                   readOnly={readOnly}
-                  description="Provides information on how the form should be rendered. Read more about which variants are available (TODO: add documentation about the available variants)"
+                  description="Provides information on how the form should be rendered. Read more on docs.takaro.io/advanced/modules#custom-rendering-fields-uischema"
                   rows={10}
                 />
               </CollapseList.Item>
