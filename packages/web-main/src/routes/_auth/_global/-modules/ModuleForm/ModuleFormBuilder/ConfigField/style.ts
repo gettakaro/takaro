@@ -11,7 +11,6 @@ export const Header = styled.div`
     align-items: center;
     justify-content: flex-start;
     h3 {
-      text-transform: capitalize;
       margin-left: 5px;
     }
   }
