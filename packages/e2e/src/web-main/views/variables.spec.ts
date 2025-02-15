@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test';
 import { extendedTest } from '../fixtures/index.js';
 import { navigateTo } from '../helpers.js';
+import { integrationConfig } from '@takaro/test';
 
 extendedTest('Can view variables', async ({ page, extended, takaro }) => {
   await takaro.rootClient.variable.variableControllerCreate({
@@ -44,6 +45,7 @@ extendedTest('Can create variable', async ({ page, takaro, extended }) => {
   await page.getByRole('option', { name: takaro.builtinModule.name, exact: true }).click();
 
   await page.getByRole('button', { name: 'Save variable' }).click();
+  await page.waitForURL(`${integrationConfig.get('frontendHost')}/variables`);
   await expect(page.getByText(variableName)).toBeVisible();
   await expect(page.getByText(variableValue)).toBeVisible();
 });

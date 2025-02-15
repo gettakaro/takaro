@@ -11,12 +11,13 @@ import { useMemo, useState } from 'react';
 import { EventFilter, EventFilterInputs } from '../../../components/events/EventFilter';
 import { eventFilterSchema } from '../../../components/events/eventFilterSchema';
 import { PERMISSIONS } from '@takaro/apiclient';
+import { zodValidator } from '@tanstack/zod-adapter';
 import { userMeQueryOptions } from '../../../queries/user';
 
 Settings.throwOnInvalid = true;
 
 export const Route = createFileRoute('/_auth/_global/events')({
-  validateSearch: eventFilterSchema,
+  validateSearch: zodValidator(eventFilterSchema),
   beforeLoad: async ({ context }) => {
     const session = await context.queryClient.ensureQueryData(userMeQueryOptions());
     if (

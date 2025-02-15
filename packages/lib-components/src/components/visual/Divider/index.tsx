@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import { Size, styled } from '../../../styled';
+import { Color, Size, styled } from '../../../styled';
 
 const Container = styled.div<{ size: Size; fullWidth: boolean }>`
   position: relative;
@@ -18,21 +18,23 @@ const Container = styled.div<{ size: Size; fullWidth: boolean }>`
       case 'large':
         return `margin: ${theme.spacing['2_5']} auto ${theme.spacing['2_5']} auto`;
       case 'huge':
-        return `margin: ${theme.spacing[8]} auto ${theme.spacing[8]} auto`;
+        return `margin: ${theme.spacing[6]} auto ${theme.spacing[6]} auto`;
     }
   }}
 `;
 
 const Label = styled.label<{
   position: 'left' | 'center' | 'right';
+  color: Color | 'text' | 'textAlt';
 }>`
   position: absolute;
   top: 50%;
-  transform: translateY(-50%);
+  transform: translateY(-50%) translateX(-50%);
   p {
-    color: ${({ theme }) => theme.colors.textAlt};
-    background-color: ${({ theme }) => theme.colors.background};
+    color: ${({ theme, color }) => theme.colors[color]};
+    background-color: ${({ theme }) => theme.colors.backgroundAlt};
     font-size: 1.325rem;
+    font-weight: 500;
     padding: ${({ theme }) => `0 ${theme.spacing['0_5']}`};
   }
 
@@ -62,6 +64,7 @@ const Line = styled.div`
 type LabelProps = {
   text: string;
   labelPosition: 'left' | 'center' | 'right';
+  color?: Color | 'text' | 'textAlt';
 };
 
 export interface DividerProps {
@@ -76,7 +79,7 @@ export const Divider: FC<DividerProps> = ({ label, size = 'medium', fullWidth = 
     <Container fullWidth={fullWidth} size={size}>
       <Line />
       {label && (
-        <Label position={label.labelPosition}>
+        <Label position={label.labelPosition} color={label.color ? label.color : 'textAlt'}>
           <p>{label.text}</p>
         </Label>
       )}

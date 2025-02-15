@@ -13,11 +13,12 @@ const AddCardInnerBody = styled(InnerBody)`
 interface AddCardProps {
   onClick: () => void;
   title: string;
+  disabled?: boolean;
 }
 
-export const AddCard: FC<AddCardProps> = ({ onClick, title }) => {
+export const AddCard: FC<AddCardProps> = ({ onClick, title, disabled }) => {
   return (
-    <Card role="link" onClick={onClick} variant="outline">
+    <Card role="link" onClick={onClick} variant="outline" disabled={disabled}>
       <Card.Body>
         <AddCardInnerBody>
           <PlusIcon size={24} />

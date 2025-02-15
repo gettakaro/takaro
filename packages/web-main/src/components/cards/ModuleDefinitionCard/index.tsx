@@ -25,9 +25,10 @@ import { DateTime } from 'luxon';
 
 interface IModuleCardProps {
   mod: ModuleOutputDTO;
+  canCopyModule: boolean;
 }
 
-export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
+export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod, canCopyModule }) => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const [openTagDialog, setOpenTagDialog] = useState<boolean>(false);
   const [openExportDialog, setOpenExportDialog] = useState<boolean>(false);
@@ -139,7 +140,12 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
                     {mod.builtin && (
                       <Dropdown.Menu.Group label="Actions">
                         <Dropdown.Menu.Item icon={<ViewIcon />} onClick={handleOnViewClick} label="View module" />
-                        <Dropdown.Menu.Item icon={<CopyIcon />} onClick={handleOnCopyClick} label="Copy module" />
+                        <Dropdown.Menu.Item
+                          icon={<CopyIcon />}
+                          onClick={handleOnCopyClick}
+                          label="Copy module"
+                          disabled={!canCopyModule}
+                        />
                         <Dropdown.Menu.Item icon={<CopyIcon />} onClick={handleOnCopyIdClick} label="Copy module id" />
                       </Dropdown.Menu.Group>
                     )}
@@ -157,7 +163,12 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
                             onClick={handleOnEditManualClick}
                             label="Edit module (manual)"
                           />
-                          <Dropdown.Menu.Item icon={<CopyIcon />} onClick={handleOnCopyClick} label="Copy module" />
+                          <Dropdown.Menu.Item
+                            icon={<CopyIcon />}
+                            onClick={handleOnCopyClick}
+                            label="Copy module"
+                            disabled={!canCopyModule}
+                          />
                           <Dropdown.Menu.Item icon={<TagIcon />} onClick={handleOnTagClick} label="Tag module" />
                           <Dropdown.Menu.Item
                             icon={<CopyIcon />}

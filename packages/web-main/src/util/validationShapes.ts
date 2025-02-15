@@ -12,8 +12,8 @@ export const moduleNameShape = z
 
 export const moduleDescriptionShape = z
   .string()
-  .max(100, {
-    message: 'Module description requires a maximum length of 100 characters',
+  .max(5000, {
+    message: 'Module description requires a maximum length of 5000 characters',
   })
   .optional();
 

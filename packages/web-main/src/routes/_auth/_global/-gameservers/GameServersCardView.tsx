@@ -1,11 +1,9 @@
 import { useNavigate, Outlet } from '@tanstack/react-router';
 import { gameServersInfiniteQueryOptions } from '../../../../queries/gameserver';
-import { PermissionsGuard } from '../../../../components/PermissionsGuard';
-import { AddCard, CardList, GameServerCard } from '../../../../components/cards';
+import { CardList, GameServerCard } from '../../../../components/cards';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { Button, Empty, EmptyPage, InfiniteScroll, Skeleton } from '@takaro/lib-components';
 import { Fragment } from 'react';
-import { PERMISSIONS } from '@takaro/apiclient';
 
 export const GameServersCardView = () => {
   const navigate = useNavigate();
@@ -59,12 +57,6 @@ export const GameServersCardView = () => {
           .map((gameServer) => (
             <GameServerCard key={gameServer.id} {...gameServer} />
           ))}
-        <PermissionsGuard requiredPermissions={[PERMISSIONS.ManageGameservers]}>
-          <AddCard title="Gameserver" onClick={() => navigate({ to: '/gameservers/create' })} />
-        </PermissionsGuard>
-        <PermissionsGuard requiredPermissions={[PERMISSIONS.ManageGameservers]}>
-          <AddCard title="Import from CSMM" onClick={() => navigate({ to: '/gameservers/create/import' })} />
-        </PermissionsGuard>
       </CardList>
       <InfiniteScroll
         isFetching={isFetching}

@@ -1,6 +1,6 @@
 import { queryClient } from './queryClient';
 import { routeTree } from './routeTree.gen';
-import { createRouter } from '@tanstack/react-router';
+import { createRouteMask, createRouter } from '@tanstack/react-router';
 import { QueryClient } from '@tanstack/react-query';
 import { DefaultErrorComponent } from './components/ErrorComponent';
 import { IAuthContext } from './hooks/useAuth';
@@ -10,6 +10,12 @@ export interface RouterContext {
   queryClient: QueryClient;
   auth: IAuthContext;
 }
+
+const DomainDisabledMask = createRouteMask({
+  routeTree,
+  from: '/domain/disabled',
+  to: '/',
+});
 
 export const router = createRouter({
   routeTree,
@@ -21,6 +27,7 @@ export const router = createRouter({
     },
     queryClient: queryClient,
   },
+  routeMasks: [DomainDisabledMask],
 
   defaultErrorComponent: () => {
     return <DefaultErrorComponent />;

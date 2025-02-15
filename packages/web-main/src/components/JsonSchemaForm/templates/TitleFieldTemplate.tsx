@@ -3,9 +3,6 @@ import { FormContextType, TitleFieldProps, RJSFSchema, StrictRJSFSchema } from '
 
 const Container = styled.div`
   margin: ${({ theme }) => theme.spacing['0_5']} 0;
-  h4 {
-    text-transform: capitalize;
-  }
 `;
 
 /** The `TitleField` is the template to use to render the title of a field

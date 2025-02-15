@@ -8,14 +8,15 @@ import { z } from 'zod';
 import { useOry } from '../../hooks/useOry';
 import { AxiosError } from 'axios';
 import { useSnackbar } from 'notistack';
-
-const searchSchema = z.object({
-  flowId: z.string().catch(''),
-});
+import { zodValidator } from '@tanstack/zod-adapter';
 
 export const Route = createFileRoute('/_single-page/account/recovery')({
   component: Component,
-  validateSearch: (search) => searchSchema.parse(search),
+  validateSearch: zodValidator(
+    z.object({
+      flowId: z.string().optional(),
+    }),
+  ),
 });
 
 const Container = styled.div`

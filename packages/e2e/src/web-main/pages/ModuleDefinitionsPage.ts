@@ -107,7 +107,8 @@ export class ModuleDefinitionsPage extends BasePage {
     permissions?: Permission[];
     save?: boolean;
   }) {
-    await this.page.getByRole('link', { name: 'Module (builder)', exact: true }).click();
+    await this.page.getByRole('button', { name: 'Module actions', exact: true }).click();
+    await this.page.getByRole('menuitem', { name: 'Create module with builder' }).click();
 
     if (name) {
       await this.fillName(name);
