@@ -13,7 +13,8 @@ export type { ActionMenuProps } from './ActionMenu';
 export { CollapseList } from './CollapseList';
 
 export { PermissionsGuard } from './PermissionsGuard';
-export { hasPermissionHelper, RequiredPermissions } from './PermissionsGuard/hasPermissionsHelper';
+export { hasPermissionHelper } from './PermissionsGuard/hasPermissionsHelper';
+export type { RequiredPermissions } from './PermissionsGuard/hasPermissionsHelper';
 export type { PermissionsGuardProps } from './PermissionsGuard';
 
 export { Plan } from './Plan';
