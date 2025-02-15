@@ -30,7 +30,7 @@ export function getConfigVar(name: keyof typeof envMap) {
   if (metaEnvVar) {
     return metaEnvVar;
   }
-  return null;
+  throw new Error(`Environment variable ${envVarKey} is not defined`);
 }
 
 export function getTakaroVersionComponents(takaroVersionString: string) {
