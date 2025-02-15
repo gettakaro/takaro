@@ -16,7 +16,7 @@ import { zodValidator } from '@tanstack/zod-adapter';
 export const Route = createFileRoute('/login')({
   validateSearch: zodValidator(
     z.object({
-      redirect: z.string().catch('/'),
+      redirect: z.string().optional(),
     }),
   ),
   component: Component,
@@ -186,9 +186,7 @@ function Component() {
             <TextField control={control} label="Password" loading={loading} name="password" required type="password" />
           </LessMargin>
           <LinkContainer>
-            <Link to="/account/recovery" search={{ flowId: '' }}>
-              Forgot your password?
-            </Link>
+            <Link to="/account/recovery">Forgot your password?</Link>
           </LinkContainer>
           {error && <FormError error={error} />}
           <Button icon={<Mail />} isLoading={loading} fullWidth text="Log in" type="submit" variant="default" />

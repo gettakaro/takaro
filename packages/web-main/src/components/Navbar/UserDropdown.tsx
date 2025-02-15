@@ -78,7 +78,7 @@ export const UserDropdown = () => {
       </Dropdown.Trigger>
       <Dropdown.Menu>
         <Dropdown.Menu.Item
-          onClick={() => navigate({ to: '/account/profile', search: { flowId: '' } })}
+          onClick={() => navigate({ to: '/account/profile' })}
           label="Profile"
           icon={<ProfileIcon />}
         />

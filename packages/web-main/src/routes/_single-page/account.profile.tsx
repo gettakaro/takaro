@@ -13,7 +13,7 @@ export const Route = createFileRoute('/_single-page/account/profile')({
   component: Component,
   validateSearch: zodValidator(
     z.object({
-      flowId: z.string().catch(''),
+      flowId: z.string().optional(),
     }),
   ),
 });
