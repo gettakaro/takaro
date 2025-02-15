@@ -14,6 +14,7 @@ import {
   ModuleInstallationOutputDTO,
   ModuleInstallationOutputDTOAPI,
   ModuleInstallationSearchInputDTO,
+  TeleportPlayerInputDTO,
   TestReachabilityOutputDTO,
 } from '@takaro/apiclient';
 import {
@@ -315,10 +316,9 @@ export const useGameServerModuleUninstall = () => {
   );
 };
 
-interface GameServerKickPlayerInput {
+interface GameServerKickPlayerInput extends KickPlayerInputDTO {
   gameServerId: string;
   playerId: string;
-  opts: KickPlayerInputDTO;
 }
 
 export const useKickPlayerOnGameServer = () => {
@@ -326,8 +326,43 @@ export const useKickPlayerOnGameServer = () => {
 
   return mutationWrapper<APIOutput, GameServerKickPlayerInput>(
     useMutation<APIOutput, AxiosError<APIOutput>, GameServerKickPlayerInput>({
-      mutationFn: async ({ gameServerId, playerId, opts }) =>
+      mutationFn: async ({ gameServerId, playerId, ...opts }) =>
         (await apiClient.gameserver.gameServerControllerKickPlayer(gameServerId, playerId, opts)).data,
+    }),
+    {},
+  );
+};
+
+interface TeleportPlayerInput extends TeleportPlayerInputDTO {
+  gameServerId: string;
+  playerId: string;
+}
+export const useTeleportPlayer = () => {
+  const apiClient = getApiClient();
+  const { enqueueSnackbar } = useSnackbar();
+
+  return mutationWrapper<APIOutput, TeleportPlayerInput>(
+    useMutation<APIOutput, AxiosError<APIOutput>, TeleportPlayerInput>({
+      mutationFn: async ({ gameServerId, playerId, x, y, z }) =>
+        (await apiClient.gameserver.gameServerControllerTeleportPlayer(gameServerId, playerId, { x, y, z })).data,
+      onSuccess: async (_, { x, y, z }) => {
+        enqueueSnackbar(`Teleported player to (${x},${y},${z})`, { variant: 'default', type: 'info' });
+      },
+    }),
+    {},
+  );
+};
+
+export const useGameServerShutdown = () => {
+  const apiClient = getApiClient();
+  const { enqueueSnackbar } = useSnackbar();
+
+  return mutationWrapper<APIOutput, string>(
+    useMutation<void, AxiosError<void>, string>({
+      mutationFn: async (gameServerId) => (await apiClient.gameserver.gameServerControllerShutdown(gameServerId)).data,
+      onSuccess: async () => {
+        enqueueSnackbar('Gameserver shutdown.', { variant: 'default', type: 'info' });
+      },
     }),
     {},
   );
