@@ -61,10 +61,6 @@ export async function moduleProtectionMiddleware(
       }
     }
 
-    if (mod?.builtin) {
-      return next(new errors.BadRequestError('Cannot modify builtin modules'));
-    }
-
     if (targetedVersion && targetedVersion.tag !== 'latest') {
       return next(
         new errors.BadRequestError('Cannot modify a tagged version of a module, edit the "latest" version instead'),

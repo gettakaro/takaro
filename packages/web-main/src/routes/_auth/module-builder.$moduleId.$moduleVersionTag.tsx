@@ -154,7 +154,7 @@ function Component() {
   }, [fileMap, activeFileParam]);
 
   const readOnly = useMemo(() => {
-    return (mod.builtin ? true : false) || moduleVersion.tag !== 'latest';
+    return mod.isCore || moduleVersion.tag !== 'latest';
   }, [moduleVersion]);
 
   if (!moduleVersion.hooks.length && !moduleVersion.cronJobs.length && !moduleVersion.commands.length) {

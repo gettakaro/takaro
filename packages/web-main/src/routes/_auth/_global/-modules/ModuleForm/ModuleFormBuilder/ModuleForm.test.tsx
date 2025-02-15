@@ -9,6 +9,8 @@ function createModuleDTO(moduleVersionOverrides: Partial<ModuleVersionOutputDTO>
   return {
     id: 'module-123',
     name: 'test',
+    isCore: false,
+    isPublic: false,
     latestVersion: {
       createdAt: DateTime.now().toISO(),
       updatedAt: DateTime.now().toISO(),

@@ -175,7 +175,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
   }
 
   async update(id: string, mod: ModuleUpdateDTO) {
-    const updated = await this.repo.update(id, new ModuleUpdateDTO({ ...mod, latestVersion: undefined }));
+    await this.repo.update(id, new ModuleUpdateDTO({ ...mod, latestVersion: undefined }));
     if (mod.latestVersion) {
       const latestVersion = await this.getLatestVersion(id);
       if (mod.latestVersion.configSchema) {
@@ -189,15 +189,13 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
       await this.repo.updateVersion(latestVersion.id, mod.latestVersion);
     }
 
-    if (!updated.builtin) {
-      await this.eventsService().create(
-        new EventCreateDTO({
-          eventName: EVENT_TYPES.MODULE_UPDATED,
-          moduleId: id,
-          meta: new TakaroEventModuleUpdated(),
-        }),
-      );
-    }
+    await this.eventsService().create(
+      new EventCreateDTO({
+        eventName: EVENT_TYPES.MODULE_UPDATED,
+        moduleId: id,
+        meta: new TakaroEventModuleUpdated(),
+      }),
+    );
 
     return this.findOne(id);
   }
@@ -276,7 +274,6 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
       mod = await this.init(
         new ModuleCreateInternalDTO({
           name: data.name,
-          builtin: isBuiltin ? data.name : null,
         }),
       );
     }

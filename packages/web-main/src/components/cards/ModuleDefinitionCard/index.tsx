@@ -107,7 +107,7 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
                   </Tooltip.Trigger>
                   <Tooltip.Content>Latest tag</Tooltip.Content>
                 </Tooltip>
-                {mod.builtin && (
+                {mod.isCore && (
                   <Tooltip>
                     <Tooltip.Trigger>
                       <Company
@@ -132,14 +132,14 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
                     <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
                   </Dropdown.Trigger>
                   <Dropdown.Menu>
-                    {mod.builtin && (
+                    {mod.isCore && (
                       <Dropdown.Menu.Group label="Actions">
                         <Dropdown.Menu.Item icon={<ViewIcon />} onClick={handleOnViewClick} label="View module" />
                         <Dropdown.Menu.Item icon={<CopyIcon />} onClick={handleOnCopyClick} label="Copy module" />
                         <Dropdown.Menu.Item icon={<CopyIcon />} onClick={handleOnCopyIdClick} label="Copy module id" />
                       </Dropdown.Menu.Group>
                     )}
-                    {!mod.builtin && (
+                    {!mod.isCore && (
                       <Dropdown.Menu.Group label="Actions">
                         <PermissionsGuard requiredPermissions={[[PERMISSIONS.ManageModules]]}>
                           <Dropdown.Menu.Item icon={<ViewIcon />} onClick={handleOnViewClick} label="View module" />

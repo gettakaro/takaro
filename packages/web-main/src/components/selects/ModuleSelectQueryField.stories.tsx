@@ -45,7 +45,8 @@ export const Default: StoryFn<ModuleSelectViewProps> = () => {
         id: '1',
         moduleId: '1',
       },
-      builtin: '',
+      isCore: true,
+      isPublic: true,
     },
   ];
 

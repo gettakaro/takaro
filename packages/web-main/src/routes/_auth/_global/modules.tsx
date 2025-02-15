@@ -67,8 +67,8 @@ function Component() {
   }
 
   const flattenedModules = modules.pages.flatMap((page) => page.data);
-  const builtinModules = flattenedModules.filter((mod) => mod.builtin);
-  const customModules = flattenedModules.filter((mod) => !mod.builtin);
+  const builtinModules = flattenedModules.filter((mod) => mod.isCore);
+  const customModules = flattenedModules.filter((mod) => !mod.isCore);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: theme.spacing[1] }}>

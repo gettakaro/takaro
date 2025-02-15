@@ -24,7 +24,9 @@ export async function up(knex: Knex): Promise<void> {
       .nullable()
       .defaultTo(null);
 
-    table.text('contact_info');
+    table.text('website').nullable();
+    table.text('discordInvite').nullable();
+    table.text('email').nullable();
   });
 
   await knex.schema.alterTable('moduleVersions', (table) => {
@@ -65,7 +67,9 @@ export async function up(knex: Knex): Promise<void> {
           "isPublic",
           "ownerId",
           "archivedAt",
-          "contact_info"
+          "website",
+          "discordInvite",
+          "email"
         )
         SELECT 
           gen_random_uuid(),
@@ -77,7 +81,9 @@ export async function up(knex: Knex): Promise<void> {
           TRUE,
           NULL,
           NULL,
-          'https://takaro.io'
+          'https://takaro.io',
+          'https://aka.takaro.io/discord',
+          'support@takaro.io'
         FROM distinct_builtins
         RETURNING id, builtin
     ),

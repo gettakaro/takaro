@@ -20,12 +20,18 @@ import { FunctionModel } from './function.js';
 import { ModuleCreateDTO, ModuleOutputDTO, ModuleVersionOutputDTO } from '../service/Module/dto.js';
 import { GameServerModel } from './gameserver.js';
 import { getSystemConfigSchema } from '../lib/systemConfig.js';
+import { isArray } from 'class-validator';
 
 export const MODULE_TABLE_NAME = 'modules';
 export class ModuleModel extends TakaroModel {
   static tableName = MODULE_TABLE_NAME;
   name!: string;
-  builtin: string;
+  isPublic!: boolean;
+  ownerId?: string;
+  archivedAt?: string; // ISO8601
+  website?: string;
+  discordInvite?: string;
+  email?: string;
 }
 
 export class ModuleVersion extends TakaroModel {
@@ -35,6 +41,7 @@ export class ModuleVersion extends TakaroModel {
   description: string;
   configSchema: string;
   uiSchema: string;
+  changelog?: string;
 
   cronJobs: CronJobOutputDTO[];
   hooks: HookOutputDTO[];
@@ -195,7 +202,23 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
 
   async find(filters: ITakaroQuery<ModuleOutputDTO>) {
     const { query } = await this.getModel();
-    const result = await new QueryBuilder<ModuleModel, ModuleOutputDTO>(filters).build(query);
+    const baseQry = new QueryBuilder<ModuleModel, ModuleOutputDTO>(filters).build(query);
+
+    if (filters.filters?.isPublic && isArray(filters.filters.isPublic)) {
+      if (typeof filters.filters.isPublic[0] !== 'boolean')
+        throw new errors.BadRequestError('isPublic filter must be a boolean');
+      const isPublic = filters.filters.isPublic[0];
+      baseQry.orWhere('isPublic', isPublic);
+    }
+
+    if (filters.filters?.isCore && isArray(filters.filters.isCore)) {
+      if (typeof filters.filters.isCore[0] !== 'boolean')
+        throw new errors.BadRequestError('isCore filter must be a boolean');
+      const isCore = filters.filters.isCore[0];
+      if (isCore) baseQry.orWhere('domain', 'takaro-system');
+    }
+
+    const result = await baseQry;
 
     return {
       total: result.total,
@@ -261,7 +284,6 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
 
     const data = await query.insert({
       name: item.name,
-      builtin: item.builtin,
       domain: this.domainId,
     });
 

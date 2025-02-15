@@ -1,4 +1,4 @@
-import { IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsBoolean, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { AuthenticatedRequest, AuthService } from '../../service/AuthService.js';
 import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Put, Params, Res } from 'routing-controllers';
@@ -40,8 +40,11 @@ class ModuleSearchInputAllowedFilters extends AllowedFilters {
   @IsString({ each: true })
   name: string[];
   @IsOptional()
-  @IsString({ each: true })
-  builtin: string[];
+  @IsBoolean({ each: true })
+  isPublic: boolean[];
+  @IsOptional()
+  @IsBoolean({ each: true })
+  isCore: boolean[];
 }
 
 class ModuleSearchInputDTO extends ITakaroQuery<ModuleSearchInputAllowedFilters> {

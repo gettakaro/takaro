@@ -1,6 +1,18 @@
 import { TakaroDTO, TakaroModelDTO } from '@takaro/util';
 import { Type } from 'class-transformer';
-import { IsString, IsJSON, IsOptional, ValidateNested, IsUUID, IsObject, Length, IsISO8601 } from 'class-validator';
+import {
+  IsString,
+  IsJSON,
+  IsOptional,
+  ValidateNested,
+  IsUUID,
+  IsObject,
+  Length,
+  IsISO8601,
+  IsBoolean,
+  IsEmail,
+  IsUrl,
+} from 'class-validator';
 import { CommandOutputDTO } from '../CommandService.js';
 import { CronJobOutputDTO } from '../CronJobService.js';
 import { FunctionOutputDTO } from '../FunctionService.js';
@@ -20,6 +32,9 @@ export class ModuleVersionOutputDTO extends TakaroModelDTO<ModuleVersionOutputDT
   systemConfigSchema: string;
   @IsUUID('4')
   moduleId: string;
+  @IsString()
+  @IsOptional()
+  changelog?: string;
   @Type(() => CronJobOutputDTO)
   @ValidateNested({ each: true })
   cronJobs: CronJobOutputDTO[];
@@ -46,14 +61,33 @@ export class SmallModuleVersionOutputDTO extends TakaroDTO<SmallModuleVersionOut
   createdAt: string;
   @IsISO8601()
   updatedAt: string;
+  @IsString()
+  @IsOptional()
+  changelog?: string;
 }
 
 export class ModuleOutputDTO extends TakaroModelDTO<ModuleOutputDTO> {
   @IsString()
   name: string;
-  @IsString()
+  @IsBoolean()
+  isPublic: boolean;
+  @IsBoolean()
+  isCore: boolean;
+  @IsUUID('4')
   @IsOptional()
-  builtin: string;
+  ownerId?: string;
+  @IsISO8601()
+  @IsOptional()
+  archivedAt?: string;
+  @IsUrl()
+  @IsOptional()
+  website?: string;
+  @IsUrl()
+  @IsOptional()
+  discordInvite?: string;
+  @IsEmail()
+  @IsOptional()
+  email?: string;
   @ValidateNested()
   @Type(() => ModuleVersionOutputDTO)
   latestVersion: ModuleVersionOutputDTO;
@@ -61,7 +95,6 @@ export class ModuleOutputDTO extends TakaroModelDTO<ModuleOutputDTO> {
   @Type(() => SmallModuleVersionOutputDTO)
   versions: SmallModuleVersionOutputDTO[];
 }
-
 export class ModuleInstallationOutputDTO extends TakaroModelDTO<ModuleInstallationOutputDTO> {
   @IsUUID()
   gameserverId: string;
@@ -85,10 +118,18 @@ export class ModuleCreateDTO extends TakaroDTO<ModuleCreateDTO> {
   @IsString()
   @Length(3, 50)
   name!: string;
-
-  @IsString()
+  @IsBoolean()
   @IsOptional()
-  builtin: string;
+  isPublic?: boolean;
+  @IsUrl()
+  @IsOptional()
+  website?: string;
+  @IsUrl()
+  @IsOptional()
+  discordInvite?: string;
+  @IsEmail()
+  @IsOptional()
+  email?: string;
 }
 
 export class ModuleCreateVersionInputDTO extends TakaroDTO<ModuleCreateVersionInputDTO> {
@@ -120,10 +161,6 @@ export class ModuleCreateAPIDTO extends TakaroDTO<ModuleCreateAPIDTO> {
 
 export class ModuleCreateInternalDTO extends TakaroDTO<ModuleCreateInternalDTO> {
   @IsString()
-  @IsOptional()
-  builtin: string;
-
-  @IsString()
   @Length(3, 50)
   name!: string;
   @ValidateNested()
@@ -152,7 +189,18 @@ export class ModuleUpdateDTO extends TakaroDTO<ModuleUpdateDTO> {
   @IsOptional()
   @IsString()
   name?: string;
-
+  @IsBoolean()
+  @IsOptional()
+  isPublic?: boolean;
+  @IsUrl()
+  @IsOptional()
+  website?: string;
+  @IsUrl()
+  @IsOptional()
+  discordInvite?: string;
+  @IsEmail()
+  @IsOptional()
+  email?: string;
   @ValidateNested()
   @Type(() => ModuleVersionUpdateDTO)
   @IsOptional()
