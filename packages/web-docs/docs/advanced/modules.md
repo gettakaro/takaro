@@ -77,6 +77,29 @@ System configuration (`systemConfig`) is automatically managed by Takaro and inc
 
 The key difference is that you control userConfig through your module's configuration schema, while systemConfig is managed by Takaro itself.
 
+
+### User Config
+When create a module you can do that in two ways:
+
+- **Builder Mode**: provides an interactive interface where you can generate config fields by selecting predefined options from dropdown menus.
+
+- **Manual Mode**: offers full control, allowing you to manually describe the config fields. This is useful if you need
+advanced features not yet supported in the schema builder like nested objects.
+
+### Manual Mode
+Both `userConfig` and `systemConfig` are built on the [react-jsonschema-form](https://github.com/rjsf-team/react-jsonschema-form) library. Each of the configs consists outs of two schemas that define which inputs fields are included and how they are displayed:
+
+- **JSON Schema**: specifies the structure of the form data, including which input fields are present.
+- **UI Schema**: controls the presentation of those fields, determining how they are rendered.
+
+#### Custom Rendering Fields (UiSchema)
+
+Explore the [uiSchema object documentation](https://rjsf-team.github.io/react-jsonschema-form/docs/api-reference/uiSchema/) for more information about the structure of the uiSchemas. Takaro currently supports the following custom field types in the UI schema.
+
+- `item`: A dropdown field listing all items of a specific game (depending on the type of game server it is installed on)
+- `duration`: A field allowing the user to select a duration which is then converted to milliseconds
+- `country`: A dropdown listing all countries
+
 ## Module Versioning
 
 Takaro's module versioning system helps you manage changes to your modules while maintaining compatibility with existing installations. This section explains how versioning works and best practices for managing module versions.
