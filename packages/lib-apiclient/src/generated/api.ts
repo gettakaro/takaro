@@ -5801,12 +5801,6 @@ export interface ModuleOutputDTO {
   latestVersion: ModuleVersionOutputDTO;
   /**
    *
-   * @type {Array<SmallModuleVersionOutputDTO>}
-   * @memberof ModuleOutputDTO
-   */
-  versions: Array<SmallModuleVersionOutputDTO>;
-  /**
-   *
    * @type {string}
    * @memberof ModuleOutputDTO
    */
@@ -6209,6 +6203,12 @@ export interface ModuleVersionSearchInputAllowedFilters {
    * @memberof ModuleVersionSearchInputAllowedFilters
    */
   moduleId?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof ModuleVersionSearchInputAllowedFilters
+   */
+  tag?: Array<string>;
   /**
    *
    * @type {Array<string>}
