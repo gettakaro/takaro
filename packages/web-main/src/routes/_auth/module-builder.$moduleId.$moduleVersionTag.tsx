@@ -96,6 +96,8 @@ function Component() {
   });
   useDocumentTitle(mod.name);
 
+  console.log(mod.versions.length);
+
   useEffect(() => {
     function handleOnBeforeUnload(event: BeforeUnloadEvent) {
       event.preventDefault();
@@ -131,9 +133,9 @@ function Component() {
     };
 
   const fileMap = useMemo(() => {
-    if (mod) {
+    if (moduleVersion) {
       // This first sorts
-      const nameToId = mod.latestVersion.hooks
+      const nameToId = moduleVersion.hooks
         .sort((a, b) => a.name.localeCompare(b.name))
         .reduce(moduleItemPropertiesReducer(FileType.Hooks), {});
       moduleVersion.cronJobs
@@ -150,7 +152,7 @@ function Component() {
       return nameToId;
     }
     return {};
-  }, [mod]);
+  }, [moduleVersion]);
 
   const activeFile = useMemo(() => {
     if (activeFileParam === undefined) return undefined;
