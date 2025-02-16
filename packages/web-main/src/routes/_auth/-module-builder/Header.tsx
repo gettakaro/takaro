@@ -1,6 +1,6 @@
 import { styled, Button, Tooltip } from '@takaro/lib-components';
 import { useModuleBuilderContext } from './useModuleBuilderStore';
-import { useNavigate } from '@tanstack/react-router';
+import { useNavigate, useSearch } from '@tanstack/react-router';
 import { UnControlledModuleVersionTagSelectField } from '../../../components/selects/ModuleVersionSelectField';
 import { useState } from 'react';
 import { ModuleTagDialog } from '../../../components/dialogs/ModuleTagDialog';
@@ -32,12 +32,14 @@ export const Header = () => {
   const navigate = useNavigate();
   const [openTagDialog, setOpenTagDialog] = useState<boolean>(false);
   const isLatest: boolean = moduleVersionTag === 'latest';
+  const search = useSearch({ strict: false });
 
   const handleOnModuleVersionTagChanged = (selectedModuleVersionTag: string) => {
     navigate({
       from: '/module-builder/$moduleId/$moduleVersionTag',
       to: '/module-builder/$moduleId/$moduleVersionTag',
       params: { moduleId, moduleVersionTag: selectedModuleVersionTag },
+      search: { file: search.file },
     });
   };
 

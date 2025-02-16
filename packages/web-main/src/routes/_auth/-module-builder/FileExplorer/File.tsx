@@ -171,7 +171,7 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
     if (openFile) {
       openFile(path);
       navigate({
-        from: '/module-builder/$moduleId',
+        from: '/module-builder/$moduleId/$moduleVersionTag',
         search: {
           file: path,
         },
