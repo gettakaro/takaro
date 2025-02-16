@@ -36,7 +36,7 @@ import { GroupLabel } from '../../SelectField/style';
 import { SelectContainer, SelectButton, StyledArrowIcon } from '../../sharedStyle';
 import { IconButton, InfiniteScroll, Spinner } from '../../../../../components';
 import { GenericTextField } from '../../../TextField/Generic';
-import { Option } from '../../SubComponents';
+import { Option, OptionGroup, SubComponentTypes } from '../../SubComponents';
 
 interface SharedSelectQueryFieldProps extends PaginationProps {
   // Enables loading data feedback for user
@@ -88,11 +88,11 @@ export interface InputValue {
   shouldUpdate: boolean;
 }
 
-export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelectQueryFieldProps>(
+export const _GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelectQueryFieldProps>(
   function GenericSelectQueryField(props, ref) {
     const {
-      onBlur = () => {},
-      onFocus = () => {},
+      onBlur = () => { },
+      onFocus = () => { },
       onChange,
       name,
       disabled,
@@ -136,7 +136,7 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
     const { refs, strategy, x, y, context } = useFloating<HTMLInputElement>({
       whileElementsMounted: autoUpdate,
       open,
-      onOpenChange: readOnly || disabled ? () => {} : setOpen,
+      onOpenChange: readOnly || disabled ? () => { } : setOpen,
       middleware: [
         offset(5),
         size({
@@ -207,7 +207,7 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
             }
             return acc;
           },
-          [[], []] as [string[], string[]],
+          [[], []] as [string[], string[]]
         );
 
         const fetched = toFetch.map(createItem);
@@ -318,7 +318,7 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
                   });
                 })}
               </ul>
-            ),
+            )
         )?.filter(Boolean) ?? []),
       ];
     }, [children, persistedItems]);
@@ -368,5 +368,12 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
         {open && <FloatingPortal>{renderSelect()}</FloatingPortal>}
       </SelectContext.Provider>
     );
-  },
+  }
 );
+
+// TODO: type it correctly instead
+type GenericSelectQueryFieldType = typeof _GenericSelectQueryField & SubComponentTypes;
+export const GenericSelectQueryField = _GenericSelectQueryField as GenericSelectQueryFieldType;
+
+GenericSelectQueryField.Option = Option;
+GenericSelectQueryField.OptionGroup = OptionGroup;

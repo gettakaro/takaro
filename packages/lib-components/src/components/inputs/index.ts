@@ -16,6 +16,7 @@ export { GenericSelectField as UnControlledSelectField } from './selects/SelectF
 export { ControlledSelectQueryField as SelectQueryField } from './selects/SelectQueryField';
 export type { ControlledSelectQueryFieldProps as SelectQueryFieldProps } from './selects/SelectQueryField';
 export { GenericSelectQueryField as UnControlledSelectQueryField } from './selects/SelectQueryField/Generic';
+export type { SelectQueryFieldProps as UnControlledSelectQueryFieldProps } from './selects/SelectQueryField/Generic';
 
 export { ControlledSwitch as Switch } from './Switch';
 export type { ControlledSwitchProps as SwitchProps } from './Switch';
