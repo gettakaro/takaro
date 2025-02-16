@@ -8,7 +8,7 @@ import { AiOutlineCopy as CopyIcon } from 'react-icons/ai';
 import { useModuleExport, useModuleImport } from '../queries/module';
 import { moduleNameShape } from '../util/validationShapes';
 import { ModuleOutputDTO } from '@takaro/apiclient';
-import { ModuleVersionSelectField } from './selects/ModuleVersionSelectField';
+import { ModuleVersionSelectQueryField } from './selects/ModuleVersionSelectQueryField';
 
 const validationSchema = z.object({
   name: moduleNameShape,
@@ -24,7 +24,7 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ mod, onSuccess }) => {
   const { control, handleSubmit } = useForm<z.infer<typeof validationSchema>>({
     values: {
       name: mod.name + ' Copy',
-      versions: mod.versions.map((v) => v.id),
+      versions: [],
     },
     resolver: zodResolver(validationSchema),
   });
@@ -62,13 +62,7 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ mod, onSuccess }) => {
           required
           loading={moduleImportLoading || moduleExportLoading}
         />
-        <ModuleVersionSelectField
-          name="versions"
-          label="Versions"
-          control={control}
-          multiple
-          options={mod.versions.map((v) => ({ id: v.id, tag: v.tag, createdAt: v.createdAt, updatedAt: v.updatedAt }))}
-        />
+        <ModuleVersionSelectQueryField name="versions" label="Versions" control={control} multiple moduleId={mod.id} />
         <Button
           isLoading={moduleImportLoading || moduleExportLoading}
           type="submit"

@@ -1,10 +1,10 @@
 import { styled, Button, Tooltip } from '@takaro/lib-components';
 import { useModuleBuilderContext } from './useModuleBuilderStore';
 import { useNavigate, useSearch } from '@tanstack/react-router';
-import { UnControlledModuleVersionTagSelectField } from '../../../components/selects/ModuleVersionSelectField';
 import { useState } from 'react';
 import { ModuleTagDialog } from '../../../components/dialogs/ModuleTagDialog';
 import { CopyModulePopOver } from './CopyModulePopOver';
+import { UncontrolledModuleVersionSelectQueryField as UncontrolledModuleVersionTagSelectQueryField } from '../../../components/selects';
 
 const Container = styled.header`
   width: 100%;
@@ -27,7 +27,6 @@ const Flex = styled.div`
 export const Header = () => {
   const moduleName = useModuleBuilderContext((s) => s.moduleName);
   const moduleId = useModuleBuilderContext((s) => s.moduleId);
-  const moduleVersions = useModuleBuilderContext((s) => s.moduleVersions);
   const moduleVersionTag = useModuleBuilderContext((s) => s.versionTag);
   const navigate = useNavigate();
   const [openTagDialog, setOpenTagDialog] = useState<boolean>(false);
@@ -46,8 +45,10 @@ export const Header = () => {
   return (
     <Container>
       <Flex>
-        <UnControlledModuleVersionTagSelectField
-          options={moduleVersions}
+        <UncontrolledModuleVersionTagSelectQueryField
+          name="moduleVersionTag"
+          moduleId={moduleId}
+          canClear={false}
           value={moduleVersionTag}
           onChange={handleOnModuleVersionTagChanged}
         />

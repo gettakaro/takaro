@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { CommandOutputDTO, CronJobOutputDTO, FunctionOutputDTO, HookOutputDTO } from '@takaro/apiclient';
 import { z } from 'zod';
-import { moduleQueryOptions, moduleVersionQueryOptions } from '../../queries/module';
+import { moduleQueryOptions, moduleVersionQueryOptions, moduleVersionsQueryOptions } from '../../queries/module';
 import { styled, Skeleton } from '@takaro/lib-components';
 import { ErrorBoundary } from '../../components/ErrorBoundary';
 import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
@@ -50,20 +50,23 @@ export const Route = createFileRoute('/_auth/module-builder/$moduleId/$moduleVer
   },
   loader: async ({ params, context }) => {
     try {
-      const data = await context.queryClient.ensureQueryData(moduleQueryOptions(params.moduleId));
-      const version = data.versions.find((version) => version.tag === params.moduleVersionTag);
+      const mod = await context.queryClient.ensureQueryData(moduleQueryOptions(params.moduleId));
+      const response = await context.queryClient.ensureQueryData(
+        moduleVersionsQueryOptions({ filters: { tag: [params.moduleVersionTag], moduleId: [params.moduleId] } }),
+      );
 
-      // TODO: instead of redirecting to latest, we can redirect to a custom not found page
-      // where if the module exists we can show a dropdown with the available versions.
-      if (!version) {
+      if (response.data.length === 0) {
+        // TODO: instead of redirecting to latest, we can redirect to a custom not found page
+        // where if the module exists we can show a dropdown with the available versions.
         throw redirect({
           to: '/module-builder/$moduleId/$moduleVersionTag',
           params: { moduleId: params.moduleId, moduleVersionTag: 'latest' },
         });
       }
+
       return {
-        moduleVersion: await context.queryClient.ensureQueryData(moduleVersionQueryOptions(version.id)),
-        mod: data,
+        moduleVersion: response.data[0],
+        mod: mod,
       };
     } catch (e) {
       if ((e as any).response.status === 404) {
@@ -96,8 +99,6 @@ function Component() {
   });
   useDocumentTitle(mod.name);
 
-  console.log(mod.versions.length);
-
   useEffect(() => {
     function handleOnBeforeUnload(event: BeforeUnloadEvent) {
       event.preventDefault();
@@ -111,26 +112,26 @@ function Component() {
 
   const moduleItemPropertiesReducer =
     (fileType: FileType) =>
-    (prev: FileMap, item: HookOutputDTO | CronJobOutputDTO | CommandOutputDTO | FunctionOutputDTO) => {
-      const path = `/${fileType}/${item.name}`;
+      (prev: FileMap, item: HookOutputDTO | CronJobOutputDTO | CommandOutputDTO | FunctionOutputDTO) => {
+        const path = `/${fileType}/${item.name}`;
 
-      if (fileType === FileType.Functions) {
-        prev[path] = {
-          functionId: item.id,
-          type: fileType,
-          itemId: item.id,
-          code: (item as FunctionOutputDTO).code,
-        };
-      } else {
-        prev[path] = {
-          functionId: (item as CommandOutputDTO).function.id,
-          type: fileType,
-          itemId: item.id,
-          code: (item as CommandOutputDTO).function.code,
-        };
-      }
-      return prev;
-    };
+        if (fileType === FileType.Functions) {
+          prev[path] = {
+            functionId: item.id,
+            type: fileType,
+            itemId: item.id,
+            code: (item as FunctionOutputDTO).code,
+          };
+        } else {
+          prev[path] = {
+            functionId: (item as CommandOutputDTO).function.id,
+            type: fileType,
+            itemId: item.id,
+            code: (item as CommandOutputDTO).function.code,
+          };
+        }
+        return prev;
+      };
 
   const fileMap = useMemo(() => {
     if (moduleVersion) {
@@ -172,10 +173,9 @@ function Component() {
   return (
     <ErrorBoundary>
       <ModuleBuilderProvider
-        key={`${mod.id}-${moduleVersion.id}-${mod.versions.length}`}
+        key={`${mod.id}-${moduleVersion.id}`}
         moduleId={mod.id}
         moduleName={mod.name}
-        moduleVersions={mod.versions}
         fileMap={fileMap}
         readOnly={readOnly}
         versionTag={moduleVersion.tag}

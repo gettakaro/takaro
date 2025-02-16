@@ -26,14 +26,6 @@ function createModuleDTO(moduleVersionOverrides: Partial<ModuleVersionOutputDTO>
       tag: 'latest',
       ...moduleVersionOverrides,
     },
-    versions: [
-      {
-        createdAt: DateTime.now().toISO(),
-        updatedAt: DateTime.now().toISO(),
-        tag: 'latest',
-        id: 'version-123',
-      },
-    ],
     createdAt: DateTime.now().toISO(),
     updatedAt: DateTime.now().toISO(),
   };
@@ -46,7 +38,7 @@ describe('Render ConfigFields', () => {
 
       const { queryByRole } = render(
         <ModuleFormBuilder
-          onSubmit={() => {}}
+          onSubmit={() => { }}
           isLoading={false}
           moduleName={mod.name}
           moduleVersion={mod.latestVersion}
@@ -62,7 +54,7 @@ describe('Render ConfigFields', () => {
       const mod = createModuleDTO({ configSchema: JSON.stringify(test.schema) });
       const { getByText } = render(
         <ModuleFormBuilder
-          onSubmit={() => {}}
+          onSubmit={() => { }}
           isLoading={false}
           moduleName={mod.name}
           moduleVersion={mod.latestVersion}

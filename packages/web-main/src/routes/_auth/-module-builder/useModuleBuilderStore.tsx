@@ -1,4 +1,3 @@
-import { SmallModuleVersionOutputDTO } from '@takaro/apiclient';
 import { PropsWithChildren, createContext, useContext, useRef } from 'react';
 import { createStore, useStore } from 'zustand';
 import { FileWithPath, FileMap } from './types';
@@ -18,7 +17,6 @@ interface FileActions {
 export type ModuleBuilderProps = {
   moduleId: string;
   moduleName: string;
-  moduleVersions: SmallModuleVersionOutputDTO[];
   versionId: string;
   versionTag: string;
   readOnly: boolean;

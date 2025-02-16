@@ -22,6 +22,8 @@ import { ModuleDeleteDialog } from '../../../components/dialogs/ModuleDeleteDial
 import { DeleteImperativeHandle } from '../../../components/dialogs';
 
 import { DateTime } from 'luxon';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { moduleTagsInfiniteQueryOptions } from '../../../queries/module';
 
 interface IModuleCardProps {
   mod: ModuleOutputDTO;
@@ -34,11 +36,14 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod, canCopyModule 
   const [openExportDialog, setOpenExportDialog] = useState<boolean>(false);
   const [openCopyDialog, setOpenCopyDialog] = useState<boolean>(false);
   const deleteDialogRef = useRef<DeleteImperativeHandle>(null);
-
-  const { latestVersion } = mod;
-
+  const { data, isPending } = useInfiniteQuery(moduleTagsInfiniteQueryOptions({ limit: 2, moduleId: mod.id }));
   const theme = useTheme();
   const navigate = useNavigate();
+
+  const tags = data?.pages[0].data ?? [];
+  const newestTag = tags.length > 1 ? tags[1].tag : null;
+
+  const { latestVersion } = mod;
 
   const handleOnEditBuilderClick = (e: MouseEvent) => {
     e.stopPropagation();
@@ -89,10 +94,6 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod, canCopyModule 
     e.stopPropagation();
     setOpenExportDialog(true);
   };
-
-  const newestTag = mod.versions
-    .filter((version) => version.tag !== 'latest')
-    .sort((a, b) => DateTime.fromISO(b.createdAt).toMillis() - DateTime.fromISO(a.createdAt).toMillis())[0]?.tag;
 
   return (
     <>
@@ -226,7 +227,6 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod, canCopyModule 
       <ModuleExportDialog
         moduleId={mod.id}
         moduleName={mod.name}
-        moduleVersions={mod.versions}
         open={openExportDialog}
         onOpenChange={setOpenExportDialog}
       />
