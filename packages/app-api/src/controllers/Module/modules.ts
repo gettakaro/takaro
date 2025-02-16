@@ -1,7 +1,19 @@
 import { IsOptional, IsString, ValidateNested } from 'class-validator';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { AuthenticatedRequest, AuthService } from '../../service/AuthService.js';
-import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Put, Params, Res } from 'routing-controllers';
+import {
+  Body,
+  Get,
+  Post,
+  Delete,
+  JsonController,
+  UseBefore,
+  Req,
+  Put,
+  Params,
+  Res,
+  QueryParams,
+} from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId } from '../../lib/validators.js';
@@ -9,7 +21,7 @@ import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 import { errors } from '@takaro/util';
 import { moduleProtectionMiddleware } from '../../middlewares/moduleProtectionMiddleware.js';
-import { AllowedFilters, RangeFilterCreatedAndUpdatedAt } from '../shared.js';
+import { AllowedFilters, PaginationParams, RangeFilterCreatedAndUpdatedAt } from '../shared.js';
 import { ITakaroQuery } from '@takaro/db';
 import { ModuleService } from '../../service/Module/index.js';
 import {
@@ -17,6 +29,7 @@ import {
   ModuleExportOptionsDTO,
   ModuleOutputDTO,
   ModuleUpdateDTO,
+  SmallModuleVersionOutputDTO,
 } from '../../service/Module/dto.js';
 
 import { ModuleTransferDTO, ICommand, ICommandArgument, ICronJob, IFunction, IHook } from '@takaro/modules';
@@ -33,6 +46,12 @@ export class ModuleOutputArrayDTOAPI extends APIOutput<ModuleOutputDTO[]> {
   @ValidateNested({ each: true })
   @Type(() => ModuleOutputDTO)
   declare data: ModuleOutputDTO[];
+}
+
+export class SmallModuleOutputArrayDTOAPI extends APIOutput<SmallModuleVersionOutputDTO[]> {
+  @ValidateNested({ each: true })
+  @Type(() => SmallModuleVersionOutputDTO)
+  declare data: SmallModuleVersionOutputDTO[];
 }
 
 class ModuleSearchInputAllowedFilters extends AllowedFilters {
@@ -101,6 +120,28 @@ export class ModuleController {
   async getOne(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new ModuleService(req.domainId);
     return apiResponse(await service.findOne(params.id));
+  }
+
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_MODULES]))
+  @ResponseSchema(SmallModuleOutputArrayDTOAPI)
+  @OpenAPI({
+    summary: 'Get tags',
+    description: 'Get a list of all tags for a module, without including all the underlying data',
+  })
+  @Get('/:id/tags')
+  async getTags(
+    @Req() req: AuthenticatedRequest,
+    @Res() res: Response,
+    @Params() params: ParamId,
+    @QueryParams() query: PaginationParams,
+  ) {
+    const service = new ModuleService(req.domainId);
+    const result = await service.getTags(params.id, query);
+    return apiResponse(result.results, {
+      meta: { total: result.total },
+      req,
+      res,
+    });
   }
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]))

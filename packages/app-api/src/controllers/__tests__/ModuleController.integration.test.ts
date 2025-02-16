@@ -198,6 +198,50 @@ const tests = [
       }
     },
   }),
+  new IntegrationTest<ModuleOutputDTO>({
+    group,
+    snapshot: false,
+    name: 'Can get a paginated list of tags',
+    setup,
+    test: async function () {
+      // Copy a builtin module, so we have a module with a lot of commands/hooks/cronjobs
+      // Then, create 20 tags for it 0.0.1, 0.0.2, ...
+      const builtin = (await this.client.module.moduleControllerSearch({ filters: { name: ['teleports'] } })).data
+        .data[0];
+      if (!builtin) throw new Error('Builtin module not found');
+
+      const exportRes = await this.client.module.moduleControllerExport(builtin.id);
+      await this.client.module.moduleControllerImport(exportRes.data.data);
+
+      const imported = (await this.client.module.moduleControllerSearch({ filters: { name: ['teleports-imported'] } }))
+        .data.data[0];
+
+      for (let i = 1; i < 21; i++) {
+        await this.client.module.moduleVersionControllerTagVersion({
+          moduleId: imported.id,
+          tag: `0.${i}.${i}`,
+        });
+      }
+
+      const tagsRes = await this.client.module.moduleControllerGetTags(imported.id, 0, 3);
+
+      console.log(JSON.stringify(tagsRes.data, null, 2));
+
+      expect(tagsRes.data.data).to.have.length(3);
+      expect(tagsRes.data.meta.total).to.equal(22); // 20 tags + 1 latest + 1 from the core module
+
+      expect(tagsRes.data.data[0].tag).to.equal('latest');
+      expect(tagsRes.data.data[1].tag).to.equal('0.20.20');
+      expect(tagsRes.data.data[2].tag).to.equal('0.19.19');
+
+      const secondPage = await this.client.module.moduleControllerGetTags(imported.id, 1, 3);
+      expect(secondPage.data.data).to.have.length(3);
+      expect(secondPage.data.data[0].tag).to.equal('0.18.18');
+      expect(secondPage.data.data[1].tag).to.equal('0.17.17');
+      expect(secondPage.data.data[2].tag).to.equal('0.16.16');
+    },
+    filteredFields: ['moduleId'],
+  }),
   // #endregion CRUD
   // #region Permissions
   new IntegrationTest({

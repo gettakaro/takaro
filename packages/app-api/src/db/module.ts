@@ -9,6 +9,7 @@ import {
   ModuleInstallationOutputDTO,
   ModuleUpdateDTO,
   ModuleVersionUpdateDTO,
+  SmallModuleVersionOutputDTO,
 } from '../service/Module/dto.js';
 import { CommandModel, COMMANDS_TABLE_NAME } from './command.js';
 import { CronJobOutputDTO } from '../service/CronJobService.js';
@@ -20,6 +21,7 @@ import { FunctionModel } from './function.js';
 import { ModuleCreateDTO, ModuleOutputDTO, ModuleVersionOutputDTO } from '../service/Module/dto.js';
 import { GameServerModel } from './gameserver.js';
 import { getSystemConfigSchema } from '../lib/systemConfig.js';
+import { PaginationParams } from '../controllers/shared.js';
 
 export const MODULE_TABLE_NAME = 'modules';
 export class ModuleModel extends TakaroModel {
@@ -254,6 +256,46 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
       ...data,
       systemConfigSchema: getSystemConfigSchema(data as unknown as ModuleVersionOutputDTO),
     });
+  }
+
+  async getTags(moduleId: string, pagination: PaginationParams) {
+    const { queryVersion } = await this.getModel();
+
+    queryVersion.orderByRaw(`
+      CASE WHEN tag = 'latest' THEN 0 ELSE 1 END,
+      CASE 
+        WHEN tag = 'latest' THEN '999999999.999999999.999999999'
+        ELSE regexp_replace(tag, '^v', '')
+      END::varchar ~ '^[0-9]+\.[0-9]+\.[0-9]+$' DESC,
+      string_to_array(
+        CASE 
+          WHEN tag = 'latest' THEN '999999999.999999999.999999999'
+          ELSE regexp_replace(tag, '^v', '')
+        END, 
+        '.'
+      )::int[] DESC NULLS LAST
+    `);
+
+    const qry = new QueryBuilder<ModuleVersion, ModuleVersionOutputDTO>({
+      filters: { moduleId: [moduleId] },
+      limit: pagination.limit,
+      page: pagination.page,
+    }).build(queryVersion);
+
+    const result = await qry;
+
+    return {
+      total: result.total,
+      results: result.results.map(
+        (_) =>
+          new SmallModuleVersionOutputDTO({
+            createdAt: _.createdAt,
+            updatedAt: _.updatedAt,
+            id: _.id,
+            tag: _.tag,
+          }),
+      ),
+    };
   }
 
   async create(item: ModuleCreateDTO): Promise<ModuleOutputDTO> {
