@@ -19,6 +19,7 @@ export const ModuleVersionSelectField: FC<ModuleVersionSelectFieldProps> = ({
   required,
   description,
   options,
+  multiple,
 }) => {
   return (
     <SelectField
@@ -29,6 +30,7 @@ export const ModuleVersionSelectField: FC<ModuleVersionSelectFieldProps> = ({
       loading={loading}
       disabled={disabled}
       readOnly={readOnly}
+      multiple={multiple}
       required={required}
       description={description}
       size={size}
