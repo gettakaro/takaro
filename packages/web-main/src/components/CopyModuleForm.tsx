@@ -1,13 +1,14 @@
 import { z } from 'zod';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, TextField, FormError, SelectField } from '@takaro/lib-components';
+import { Button, TextField, FormError } from '@takaro/lib-components';
 import { FC } from 'react';
 import { AiOutlineCopy as CopyIcon } from 'react-icons/ai';
 
 import { useModuleExport, useModuleImport } from '../queries/module';
 import { moduleNameShape } from '../util/validationShapes';
 import { ModuleOutputDTO } from '@takaro/apiclient';
+import { ModuleVersionSelectField } from './selects/ModuleVersionSelectField';
 
 const validationSchema = z.object({
   name: moduleNameShape,
@@ -61,33 +62,13 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ mod, onSuccess }) => {
           required
           loading={moduleImportLoading || moduleExportLoading}
         />
-        <SelectField
-          control={control}
+        <ModuleVersionSelectField
           name="versions"
           label="Versions"
+          control={control}
           multiple
-          required
-          render={(selectedItems) => {
-            if (selectedItems.length === 0) {
-              return <div>Select...</div>;
-            }
-            return <div>{selectedItems[0].label}</div>;
-          }}
-        >
-          <SelectField.OptionGroup>
-            {mod.versions.map((smallVersion) => (
-              <SelectField.Option
-                key={`version-select-${smallVersion.id}`}
-                value={smallVersion.id}
-                label={smallVersion.tag}
-              >
-                <div>
-                  <span>{smallVersion.tag}</span>
-                </div>
-              </SelectField.Option>
-            ))}
-          </SelectField.OptionGroup>
-        </SelectField>
+          options={mod.versions.map((v) => ({ id: v.id, tag: v.tag, createdAt: v.createdAt, updatedAt: v.updatedAt }))}
+        />
         <Button
           isLoading={moduleImportLoading || moduleExportLoading}
           type="submit"
