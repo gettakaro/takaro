@@ -194,15 +194,19 @@ export const useTagModule = () => {
     useMutation<ModuleVersionOutputDTO, AxiosError<ModuleVersionOutputDTO>, TagModule>({
       mutationFn: async ({ tag, moduleId }) =>
         (await apiClient.module.moduleVersionControllerTagVersion({ tag, moduleId })).data.data,
-      onSuccess: async (newVersion: ModuleVersionOutputDTO, { moduleId }) => {
+      onSuccess: async (newVersion: ModuleVersionOutputDTO) => {
         enqueueSnackbar(`Module tagged with version: ${newVersion.tag}!`, { variant: 'default', type: 'success' });
 
-        // We don't need to change anything the latest version, since it will still match the latest version.
-        queryClient.setQueryData<ModuleVersionOutputDTO>(moduleKeys.versions.detail(newVersion.id), newVersion);
+        // TODO: we could be smarter with deleting specific cache.
+        // The latest version remains its original version ids.
+        await queryClient.invalidateQueries({ queryKey: moduleKeys.all });
+        await queryClient.invalidateQueries({ queryKey: moduleKeys.versions.all });
+
+        //queryClient.setQueryData<ModuleVersionOutputDTO>(moduleKeys.versions.detail(newVersion.id), newVersion);
 
         // We get rid of moduleDetail, we would have to update the small versions (change tags)
-        await queryClient.invalidateQueries({ queryKey: moduleKeys.detail(moduleId) });
-        await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
+        //await queryClient.invalidateQueries({ queryKey: moduleKeys.detail(moduleId) });
+        //await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
       },
     }),
     {},
@@ -865,6 +869,7 @@ export const useFunctionUpdate = () => {
         // invalidate list of functions
         await queryClient.invalidateQueries({ queryKey: moduleKeys.functions.list() });
 
+        // if you pull in specific function, it will have a cache with the updated function data
         queryClient.setQueryData<FunctionOutputDTO>(moduleKeys.functions.detail(functionId), updatedFn);
         queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(moduleId), (prev) => {
           if (prev) {
