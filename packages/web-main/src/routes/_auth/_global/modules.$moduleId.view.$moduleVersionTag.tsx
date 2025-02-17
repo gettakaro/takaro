@@ -21,7 +21,7 @@ export const Route = createFileRoute('/_auth/_global/modules/$moduleId/view/$mod
   loader: async ({ params, context, deps }) => {
     const mod = await context.queryClient.ensureQueryData(moduleQueryOptions(params.moduleId));
     const moduleVersions = await context.queryClient.ensureQueryData(
-      moduleVersionsQueryOptions({ filters: { tag: [params.moduleVersionTag] } }),
+      moduleVersionsQueryOptions({ filters: { tag: [params.moduleVersionTag], moduleId: [params.moduleId] } }),
     );
 
     // todo: this is not very clean, if they fill in a version that doesn't exist.
@@ -60,7 +60,7 @@ function Component() {
     if (canRenderInBuilder(mod.latestVersion.configSchema, mod.latestVersion.uiSchema) === false) {
       enqueueSnackbar('This module could not be viewed in builder mode', { type: 'error', variant: 'default' });
       throw navigate({
-        to: '/modules/$moduleId/update',
+        to: '/modules/$moduleId/view/$moduleVersionTag',
         params: { moduleId: Route.useParams().moduleId },
         search: { view: 'manual' },
         replace: true,
