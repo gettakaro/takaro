@@ -108,7 +108,7 @@ export const Option: FC<OptionProps> = ({ children, index = 0, value, onChange, 
         />
       )}
       <span style={{ marginLeft: multiple ? '10px' : 0 }}>{children}</span>{' '}
-      {!multiple && hasSelectedItem(selectedItems, { value, label }) && <StyledCheckIcon size={22} />}
+      {!multiple && hasSelectedItem(selectedItems, { value, label }) && <StyledCheckIcon size={12} />}
     </OptionContainer>
   );
 };

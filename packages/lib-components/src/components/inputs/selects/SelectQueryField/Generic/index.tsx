@@ -91,8 +91,8 @@ export interface InputValue {
 export const _GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelectQueryFieldProps>(
   function GenericSelectQueryField(props, ref) {
     const {
-      onBlur = () => { },
-      onFocus = () => { },
+      onBlur = () => {},
+      onFocus = () => {},
       onChange,
       name,
       disabled,
@@ -136,7 +136,7 @@ export const _GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSele
     const { refs, strategy, x, y, context } = useFloating<HTMLInputElement>({
       whileElementsMounted: autoUpdate,
       open,
-      onOpenChange: readOnly || disabled ? () => { } : setOpen,
+      onOpenChange: readOnly || disabled ? () => {} : setOpen,
       middleware: [
         offset(5),
         size({
@@ -145,7 +145,9 @@ export const _GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSele
             const floatingContentWidth = elements.floating.scrollWidth;
 
             const width =
-              availableWidth > refWidth ? `${availableWidth}px` : `${Math.max(refWidth, floatingContentWidth)}px`;
+              availableWidth > refWidth
+                ? `${Math.min(availableWidth, 500)}px`
+                : `${Math.max(refWidth, floatingContentWidth)}px`;
 
             Object.assign(elements.floating.style, {
               // Note: we cannot use the rects.reference.width here because if the referenced item is very small compared to the other options, there will be horizontal overflow.
@@ -207,7 +209,7 @@ export const _GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSele
             }
             return acc;
           },
-          [[], []] as [string[], string[]]
+          [[], []] as [string[], string[]],
         );
 
         const fetched = toFetch.map(createItem);
@@ -241,7 +243,6 @@ export const _GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSele
                 top: y ?? 0,
                 left: x ?? 0,
                 overflow: 'auto',
-                borderBottom: '10px solid transparent',
               },
             })}
           >
@@ -289,7 +290,8 @@ export const _GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSele
 
     const options = useMemo(() => {
       return [
-        persistedItems.length > 0 ? (
+        /* this is needed, but we need to get rid of the items that are already present in the options that were actually loaded
+        persistedItems.length > 0 && (
           <ul key={`selected-items-${name}`} role="group" aria-labelledby={'select-items-list'}>
             <GroupLabel role="presentation" id={'select-group-label'} aria-hidden="false">
               Selected items
@@ -300,7 +302,8 @@ export const _GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSele
               </Option>
             ))}
           </ul>
-        ) : undefined,
+        ),
+        */
 
         ...(Children.map(
           children,
@@ -318,7 +321,7 @@ export const _GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSele
                   });
                 })}
               </ul>
-            )
+            ),
         )?.filter(Boolean) ?? []),
       ];
     }, [children, persistedItems]);
@@ -368,7 +371,7 @@ export const _GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSele
         {open && <FloatingPortal>{renderSelect()}</FloatingPortal>}
       </SelectContext.Provider>
     );
-  }
+  },
 );
 
 // TODO: type it correctly instead

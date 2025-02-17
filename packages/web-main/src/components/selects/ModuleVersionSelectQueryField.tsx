@@ -1,12 +1,13 @@
 import { PaginationProps, SelectQueryField, Skeleton, UnControlledSelectQueryField } from '@takaro/lib-components';
 import { FC } from 'react';
-import { CustomSelectProps, CustomUncontrolledSelectQueryFieldProps } from '.';
+import { CustomSelectQueryProps, CustomUncontrolledSelectQueryFieldProps } from '.';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { moduleTagsInfiniteQueryOptions } from '../../queries/module';
 import { SmallModuleVersionOutputDTO } from '@takaro/apiclient';
 
-interface ModuleVersionSelectQueryFieldProps extends CustomSelectProps {
+interface ModuleVersionSelectQueryFieldProps extends CustomSelectQueryProps {
   moduleId: string;
+  filter?: (version: SmallModuleVersionOutputDTO) => boolean;
 }
 
 export const ModuleVersionSelectQueryField: FC<ModuleVersionSelectQueryFieldProps> = ({
@@ -23,6 +24,8 @@ export const ModuleVersionSelectQueryField: FC<ModuleVersionSelectQueryFieldProp
   moduleId,
   multiple,
   canClear,
+  filter,
+  placeholder,
 }) => {
   const {
     data,
@@ -37,9 +40,12 @@ export const ModuleVersionSelectQueryField: FC<ModuleVersionSelectQueryFieldProp
     return <Skeleton variant="rectangular" width="100%" height="25px" />;
   }
 
-  const smallVersions = data?.pages.flatMap((page) => page.data);
+  let smallVersions = data?.pages.flatMap((page) => page.data);
   if (!smallVersions) {
     return <div>no modules found</div>;
+  }
+  if (filter) {
+    smallVersions = smallVersions.filter(filter);
   }
 
   return (
@@ -61,11 +67,12 @@ export const ModuleVersionSelectQueryField: FC<ModuleVersionSelectQueryFieldProp
       hasNextPage={hasNextPage}
       isFetchingNextPage={isFetchingNextPage}
       canClear={canClear}
+      placeholder={placeholder}
     />
   );
 };
 
-type ModuleVersionSelectViewProps = CustomSelectProps &
+type ModuleVersionSelectViewProps = CustomSelectQueryProps &
   PaginationProps & { moduleVersions: SmallModuleVersionOutputDTO[] };
 
 export const ModuleVersionSelectView: FC<ModuleVersionSelectViewProps> = ({
@@ -86,6 +93,7 @@ export const ModuleVersionSelectView: FC<ModuleVersionSelectViewProps> = ({
   fetchNextPage,
   name,
   moduleVersions,
+  placeholder = 'Select version...',
 }) => {
   return (
     <SelectQueryField
@@ -107,7 +115,7 @@ export const ModuleVersionSelectView: FC<ModuleVersionSelectViewProps> = ({
       fetchNextPage={fetchNextPage}
       render={(selectedVersions) => {
         if (selectedVersions.length === 0) {
-          return <div>Select version...</div>;
+          return <div>{placeholder}</div>;
         }
         return <div>{selectedVersions.map((version) => version.label).join(', ')}</div>;
       }}
@@ -126,8 +134,8 @@ export const ModuleVersionSelectView: FC<ModuleVersionSelectViewProps> = ({
 };
 
 export const UnControlledModuleVersionSelectQueryField: FC<
-  CustomUncontrolledSelectQueryFieldProps & { moduleId: string }
-> = ({ value, handleInputValueChange, onChange, canClear, placeholder, name, moduleId }) => {
+  CustomUncontrolledSelectQueryFieldProps & { moduleId: string; returnValue: 'versionId' | 'tag' }
+> = ({ value, handleInputValueChange, onChange, canClear, placeholder, name, moduleId, returnValue }) => {
   const {
     data,
     isLoading: isLoadingData,
@@ -171,7 +179,7 @@ export const UnControlledModuleVersionSelectQueryField: FC<
     >
       <UnControlledSelectQueryField.OptionGroup>
         {moduleVersions.map(({ tag, id }) => (
-          <SelectQueryField.Option key={id} value={id} label={tag}>
+          <SelectQueryField.Option key={id} value={returnValue === 'versionId' ? id : tag} label={tag}>
             <div>
               <span>{tag}</span>
             </div>

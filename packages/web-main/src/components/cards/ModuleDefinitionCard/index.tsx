@@ -21,9 +21,8 @@ import { ModuleExportDialog } from '../../../components/dialogs/ModuleExportDial
 import { ModuleDeleteDialog } from '../../../components/dialogs/ModuleDeleteDialog';
 import { DeleteImperativeHandle } from '../../../components/dialogs';
 
-import { DateTime } from 'luxon';
-import { useInfiniteQuery } from '@tanstack/react-query';
-import { moduleTagsInfiniteQueryOptions } from '../../../queries/module';
+import { useQuery } from '@tanstack/react-query';
+import { moduleTagsQueryOptions } from '../../../queries/module';
 
 interface IModuleCardProps {
   mod: ModuleOutputDTO;
@@ -36,11 +35,11 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod, canCopyModule 
   const [openExportDialog, setOpenExportDialog] = useState<boolean>(false);
   const [openCopyDialog, setOpenCopyDialog] = useState<boolean>(false);
   const deleteDialogRef = useRef<DeleteImperativeHandle>(null);
-  const { data, isPending } = useInfiniteQuery(moduleTagsInfiniteQueryOptions({ limit: 2, moduleId: mod.id }));
+  const { data } = useQuery(moduleTagsQueryOptions({ limit: 2, moduleId: mod.id }));
   const theme = useTheme();
   const navigate = useNavigate();
 
-  const tags = data?.pages[0].data ?? [];
+  const tags = data?.data ?? [];
   const newestTag = tags.length > 1 ? tags[1].tag : null;
 
   const { latestVersion } = mod;

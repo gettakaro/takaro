@@ -93,14 +93,15 @@ export const ModuleFormManual: FC<ModuleFormProps> = ({ moduleName, moduleVersio
       <Drawer.Content>
         <Drawer.Heading>{getTitle()}</Drawer.Heading>
         <Drawer.Body>
-          {!onSubmit && moduleVersion && (
+          {onSubmit == undefined && moduleVersion && (
             <div style={{ marginBottom: '30px' }}>
               <UncontrolledModuleVersionSelectQueryField
                 moduleId={moduleVersion.moduleId}
                 canClear={false}
                 onChange={handleOnSelectedVersionChanged}
                 name="module-version-tag-select"
-                value={moduleVersion.id}
+                value={moduleVersion.tag}
+                returnValue="tag"
               />
             </div>
           )}

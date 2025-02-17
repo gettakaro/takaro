@@ -40,7 +40,7 @@ export function getErrorUserMessage(
   if (err instanceof UniqueConstraintError) {
     if (err.message === 'Unique constraint violation') {
       const messageType = err.constructor.name as keyof ErrorMessageMapping;
-      return errorMessages[messageType] || defaultMesssage;
+      return errorMessages[messageType] || err.message;
     } else {
       return err.message;
     }
