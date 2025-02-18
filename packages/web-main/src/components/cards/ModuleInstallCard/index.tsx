@@ -254,7 +254,7 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
             <form onSubmit={handleSubmit(onSubmit)}>
               <Wrapper style={{ display: 'flex', alignItems: 'center', gap: '5px', justifyContent: 'center' }}>
                 <ModuleVersionSelectQueryField control={control} name="versionId" label="" moduleId={mod.id} />
-                <Button type="submit" text="Install version" />
+                <Button type="submit" text="Install" />
               </Wrapper>
             </form>
           </InnerBody>
