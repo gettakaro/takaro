@@ -147,9 +147,12 @@ test('Can install module with empty config', async ({ page, takaro }) => {
   expect(mod).toBeDefined();
   await page.goto(`/gameserver/${takaro.gameServer.id}/modules`);
 
-  await page.getByTestId(testId).getByRole('button', { name: 'Install' }).click();
-  await page.getByRole('button', { name: 'Install module', exact: true }).click();
-  await expect(page.getByTestId(testId).getByRole('button', { name: 'Settings' })).toBeVisible();
+  const card = page.getByTestId(testId);
+  await card.getByText('Select version...').click();
+  await page.getByRole('option', { name: 'latest' }).click();
+  await card.getByRole('button', { name: 'Install' }).click();
+  // automatically installs
+  await expect(page.getByText('Successfully installed')).toBeVisible();
 });
 
 test('Can install a module with a discord hook', async ({ page, takaro }) => {
@@ -177,7 +180,10 @@ test('Can install a module with a discord hook', async ({ page, takaro }) => {
   await page.getByText('Test server').click();
   await page.getByTestId('server-nav').getByRole('link', { name: 'Modules' }).click();
 
-  await moduleInstallationsPage.getModuleCard(mod.name).getByRole('button', { name: 'Install' }).click();
+  const card = moduleInstallationsPage.getModuleCard(mod.name);
+  await card.getByText('Select version...').click();
+  await page.getByRole('option', { name: 'latest' }).click();
+  await card.getByRole('button', { name: 'Install' }).click();
   await page.getByRole('button').filter({ hasText: hookName }).click();
   await page.getByLabel('DiscordChannelId').fill('123');
   await page.getByRole('button', { name: 'Install module' }).click();

@@ -59,13 +59,13 @@ export class ModuleInstallationsPage extends BasePage {
     return this.page.getByTestId(`module-installation-${moduleName}-card`);
   }
 
-  async openInstall(name: string, version: string) {
+  async openInstall(name: string, tag: string) {
     const card = this.getModuleCard(name);
 
     //await this.page.waitForTimeout(10000);
-    await card.locator('span').filter({ hasText: 'Install' }).locator('div').nth(3).click();
-    await card.getByText(version, { exact: true }).click();
-    await card.getByText(`Install ${version}`).click();
+    await card.getByText('Select version...').click();
+    await this.page.getByRole('option', { name: tag }).click();
+    await card.getByRole('button', { name: 'Install' }).click();
     await this.page.waitForLoadState('domcontentloaded');
   }
 
