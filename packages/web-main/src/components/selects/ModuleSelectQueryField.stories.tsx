@@ -51,11 +51,11 @@ export const Default: StoryFn<ModuleSelectViewProps> = () => {
         control={control}
         name="moduleId"
         modules={modules}
-        fetchNextPage={() => { }}
+        fetchNextPage={() => {}}
         isFetchingNextPage={false}
         hasNextPage={false}
         isFetching={false}
-        setModuleName={() => { }}
+        setModuleName={() => {}}
       />
     </form>
   );
