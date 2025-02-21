@@ -84,6 +84,7 @@ async function resolveCustomModuleConfig(mod) {
 async function main() {
   const domain1Result = await adminClient.domain.domainControllerCreate({
     name: process.env.TAKARO_DEV_DOMAIN_NAME,
+    maxGameservers: 10,
   });
 
   const domain2Result = await adminClient.domain.domainControllerCreate({
