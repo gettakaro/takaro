@@ -11,7 +11,13 @@
       "externalReference": null,
       "rateLimitDuration": 900000,
       "rateLimitPoints": 2500,
-      "state": "ACTIVE"
+      "state": "ACTIVE",
+      "maxGameservers": 100,
+      "maxUsers": 5,
+      "eventRetentionDays": 7,
+      "maxVariables": 10000,
+      "maxModules": 1000,
+      "maxFunctionsInModule": 50
     }
   },
   "status": 200,

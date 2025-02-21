@@ -7,17 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ButtonContainer, Container, FilterActions, FilterContainer } from './style';
 import { FilterRow } from './field';
-
-export enum Operators {
-  is = 'is',
-  contains = 'contains',
-}
-
-export enum FilterInputType {
-  string = 'string',
-  uuid = 'uuid',
-  datetime = 'datetime',
-}
+import { Operators, FilterInputType } from './types';
 
 export interface IFormInputs {
   filters: {

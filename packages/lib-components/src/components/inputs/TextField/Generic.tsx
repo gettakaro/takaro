@@ -11,14 +11,9 @@ import cronstrue from 'cronstrue';
 
 import { Size } from '../../../styled';
 import { AiOutlineEye as ShowPasswordIcon, AiOutlineEyeInvisible as HidePasswordIcon } from 'react-icons/ai';
-import { getFieldType, getInputMode } from './util';
+import { getFieldType, getInputMode, isNumber } from './util';
 import { defaultInputProps, defaultInputPropsFactory, GenericInputProps } from '../InputProps';
 import { setAriaDescribedBy } from '../layout';
-
-export function isNumber(value: unknown) {
-  const number = Number(value);
-  return !isNaN(number) && isFinite(number);
-}
 
 export type TextFieldType = 'text' | 'password' | 'email' | 'number' | 'cron';
 

@@ -48,6 +48,10 @@ const main = pwTest.extend<IBaseFixtures>({
       const domain = (
         await adminClient.domain.domainControllerCreate({
           name: `e2e-${humanId()}`.slice(0, 49),
+          maxGameservers: 10,
+          maxUsers: 10,
+          maxModules: 1000,
+          maxVariables: 1000,
         })
       ).data.data;
 

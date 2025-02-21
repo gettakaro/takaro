@@ -1,5 +1,5 @@
-import { integrationConfig, IntegrationTest } from '@takaro/test';
-import { GameServerCreateDTOTypeEnum, GameServerOutputDTO } from '@takaro/apiclient';
+import { IntegrationTest, expect, SetupGameServerPlayers, integrationConfig } from '@takaro/test';
+import { GameServerCreateDTOTypeEnum, GameServerOutputDTO, isAxiosError } from '@takaro/apiclient';
 import { describe } from 'node:test';
 
 const group = 'GameServerController';
@@ -69,6 +69,33 @@ const tests = [
     name: 'Can get list of gameserver types',
     test: async function () {
       return this.client.gameserver.gameServerControllerGetTypes();
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Cannot create more gameservers than allowed',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      if (!this.standardDomainId) throw new Error('No standard domain id');
+      await this.adminClient.domain.domainControllerUpdate(this.standardDomainId, {
+        maxGameservers: 1,
+      });
+
+      try {
+        await this.client.gameserver.gameServerControllerCreate(mockGameServer);
+        throw new Error('Should have thrown');
+      } catch (error) {
+        if (!isAxiosError(error)) throw error;
+        expect(error.response?.status).to.equal(400);
+        expect(error.response?.data.meta.error.message).to.equal('Max game servers reached');
+      }
+
+      await this.adminClient.domain.domainControllerUpdate(this.standardDomainId, {
+        maxGameservers: 3,
+      });
+
+      await this.client.gameserver.gameServerControllerCreate(mockGameServer);
     },
   }),
 ];

@@ -1,5 +1,5 @@
 import { FC, useEffect, Children, isValidElement, ReactElement, PropsWithChildren } from 'react';
-import { useStepper } from '../context';
+import { useStepper } from '../useStepper';
 import { Container, StepperBody, StepperHeader, StepperHeaderItem, StepCounter, StepName } from './style';
 import { AiOutlineCheck as CheckMark } from 'react-icons/ai';
 import { Spinner } from '../../..';
@@ -7,7 +7,7 @@ import { StepStates } from '../stepStates';
 /* Dot behavior components */
 // wrapper <StepperSteps/> component around the multiple <step/>
 
-const StepperSteps: FC<PropsWithChildren<void>> = ({ children }) => {
+const StepperSteps: FC<PropsWithChildren<unknown>> = ({ children }) => {
   const { currentStep, steps, setSteps } = useStepper();
 
   useEffect(() => {
@@ -52,8 +52,8 @@ export interface StepperProps {
 
 // Main <Stepper/> component which contains subcomponents
 export const Stepper: FC<PropsWithChildren<StepperProps>> & {
-  Step: FC<StepProps>;
-  Steps: FC<PropsWithChildren<void>>;
+  Step: FC<PropsWithChildren<StepProps>>;
+  Steps: FC<PropsWithChildren<unknown>>;
 } = ({ currentStepIsLoading = false, canStepBack = true, children }) => {
   const { currentStep, steps, setCurrentStep } = useStepper();
 

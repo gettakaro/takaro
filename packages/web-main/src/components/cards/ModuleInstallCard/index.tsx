@@ -23,6 +23,7 @@ import {
   AiOutlineStop as DisableIcon,
   AiOutlineCheck as EnableIcon,
   AiOutlineExclamation as NewVersionNotifyIcon,
+  AiOutlineBook as DocumentationIcon,
 } from 'react-icons/ai';
 import { FaExchangeAlt as ChangeVersionIcon } from 'react-icons/fa';
 import { useNavigate } from '@tanstack/react-router';
@@ -58,8 +59,11 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
     }
   };
 
-  const handleOnOpenClick = () => {
+  const handleOnOpenInModuleBuilderClick = () => {
     window.open(`/module-builder/${mod.id}`, '_blank');
+  };
+  const handleOnOpenInDocumentationClick = () => {
+    window.open('https://docs.takaro.io/advanced/modules', '_blank');
   };
 
   const handleOnViewModuleConfigClick = (e: MouseEvent) => {
@@ -224,8 +228,13 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
                             <Dropdown.Menu.Group>
                               <Dropdown.Menu.Item
                                 icon={<LinkIcon />}
-                                onClick={handleOnOpenClick}
+                                onClick={handleOnOpenInModuleBuilderClick}
                                 label="Open in Module Builder"
+                              />
+                              <Dropdown.Menu.Item
+                                icon={<DocumentationIcon />}
+                                label="View module documentation"
+                                onClick={handleOnOpenInDocumentationClick}
                               />
                             </Dropdown.Menu.Group>
                           </Dropdown.Menu>

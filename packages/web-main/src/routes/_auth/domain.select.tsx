@@ -1,12 +1,12 @@
-import { Card, Chip, Company, styled } from '@takaro/lib-components';
+import { Card, Chip, Company, styled, Tooltip, Button } from '@takaro/lib-components';
 import { DomainOutputDTO, DomainOutputDTOStateEnum } from '@takaro/apiclient';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useUserSetSelectedDomain, userMeQueryOptions } from '../../queries/user';
 import { MdDomain as DomainIcon } from 'react-icons/md';
 import { AiOutlineArrowRight as ArrowRightIcon } from 'react-icons/ai';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-
-export const TAKARO_DOMAIN_COOKIE_REGEX = /(?:(?:^|.*;\s*)takaro-domain\s*=\s*([^;]*).*$)|^.*$/;
+import { getConfigVar } from '../../util/getConfigVar';
+import { TAKARO_DOMAIN_COOKIE_REGEX } from '../../util/domainCookieRegex';
 
 const Container = styled.div`
   padding: ${({ theme }) => theme.spacing[4]};
@@ -14,10 +14,12 @@ const Container = styled.div`
 `;
 
 const DomainCardList = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: ${({ theme }) => theme.spacing[2]};
+  display: flex;
+  align-items: center;
   justify-content: center;
+  flex-direction: column;
+  margin: auto;
+  gap: ${({ theme }) => theme.spacing[2]};
   width: 100%;
   max-width: 1000px;
   margin: ${({ theme }) => theme.spacing[2]} auto auto auto;
@@ -27,7 +29,7 @@ const DomainCardList = styled.div`
   }
 `;
 
-export const InnerBody = styled.div`
+const InnerBody = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -56,13 +58,20 @@ function Component() {
     }
     return 0;
   });
+  // TODO: manage plan depends on this functioning correctly
+  const isDomainOwner = false;
 
   return (
     <Container>
       <Company />
       <DomainCardList>
         {me.domains.map((domain) => (
-          <DomainCard key={domain.id} domain={domain} isCurrentDomain={currentDomain === domain.id} />
+          <DomainCard
+            key={domain.id}
+            domain={domain}
+            isCurrentDomain={currentDomain === domain.id}
+            isDomainOwner={isDomainOwner}
+          />
         ))}
       </DomainCardList>
     </Container>
@@ -72,9 +81,10 @@ function Component() {
 interface DomainCardProps {
   domain: DomainOutputDTO;
   isCurrentDomain: boolean;
+  isDomainOwner: boolean;
 }
 
-function DomainCard({ domain, isCurrentDomain }: DomainCardProps) {
+function DomainCard({ domain, isCurrentDomain, isDomainOwner }: DomainCardProps) {
   const navigate = useNavigate();
   const { mutate, isSuccess } = useUserSetSelectedDomain();
   const queryClient = useQueryClient();
@@ -96,8 +106,46 @@ function DomainCard({ domain, isCurrentDomain }: DomainCardProps) {
     navigate({ to: '/dashboard' });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  function getDomainChip() {
+    switch (domain.state) {
+      case DomainOutputDTOStateEnum.Disabled: {
+        return (
+          <Tooltip>
+            <Tooltip.Trigger>
+              <Chip variant="outline" color="error" label="Disabled" />
+            </Tooltip.Trigger>
+            <Tooltip.Content>
+              Domain disabled - this is likely due to an expired plan. Click manage plan to update your payment to
+              restore access.
+            </Tooltip.Content>
+          </Tooltip>
+        );
+      }
+      case DomainOutputDTOStateEnum.Active: {
+        return <Chip variant="outline" color="success" label="Active" />;
+      }
+      case DomainOutputDTOStateEnum.Maintenance: {
+        return (
+          <Tooltip>
+            <Tooltip.Trigger>
+              <Chip variant="outline" color="warning" label="Disabled" />
+            </Tooltip.Trigger>
+            <Tooltip.Content>
+              Domain in maintenance mode - We're likely upgrading our system, and everything should be back up shortly.
+              If not, reach out to us on Discord!
+            </Tooltip.Content>
+          </Tooltip>
+        );
+      }
+    }
+  }
+
   return (
-    <Card role="link" onClick={handleDomainSelectedClick}>
+    <Card
+      role="link"
+      onClick={domain.state === DomainOutputDTOStateEnum.Active ? handleDomainSelectedClick : undefined}
+    >
       <Card.Body>
         <InnerBody>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -109,7 +157,13 @@ function DomainCard({ domain, isCurrentDomain }: DomainCardProps) {
             {domain.name}
             <ArrowRightIcon size={18} style={{ marginLeft: '10px' }} />
           </h2>
-          <div></div>
+          <div style={{ marginLeft: 'auto' }}>
+            {isDomainOwner && (
+              <a href={getConfigVar('billingManageUrl')} rel="noreferrer">
+                <Button color="primary" text="Manage plan" />
+              </a>
+            )}
+          </div>
         </InnerBody>
       </Card.Body>
     </Card>

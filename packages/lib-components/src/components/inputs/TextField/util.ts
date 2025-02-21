@@ -1,5 +1,10 @@
 import { TextFieldType } from './Generic';
 
+export function isNumber(value: unknown) {
+  const number = Number(value);
+  return !isNaN(number) && isFinite(number);
+}
+
 export const getFieldType = (type: TextFieldType, passwordVisible: boolean) => {
   // we only use the type number to transform the output to number
   // so that zod is happy

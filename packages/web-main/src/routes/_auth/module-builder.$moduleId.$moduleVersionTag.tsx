@@ -8,11 +8,13 @@ import { createFileRoute, notFound, redirect } from '@tanstack/react-router';
 import { hasPermission } from '../../hooks/useHasPermission';
 import { ModuleBuilderInner } from './-module-builder/ModuleBuilderInner';
 import { ModuleOnboarding } from './-module-builder/ModuleOnboarding';
-import { FileMap, FileType, ModuleBuilderProvider } from './-module-builder/useModuleBuilderStore';
+import { ModuleBuilderProvider } from './-module-builder/useModuleBuilderStore';
+import { FileMap, FileType } from './-module-builder/types';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import { globalGameServerSetingQueryOptions } from '../../queries/setting';
 import { userMeQueryOptions } from '../../queries/user';
 import { useQueries } from '@tanstack/react-query';
+import { zodValidator } from '@tanstack/zod-adapter';
 
 const Flex = styled.div`
   display: flex;
@@ -31,6 +33,11 @@ const LoadingContainer = styled.div`
 `;
 
 export const Route = createFileRoute('/_auth/module-builder/$moduleId/$moduleVersionTag')({
+  validateSearch: zodValidator(
+    z.object({
+      file: z.string().optional(),
+    }),
+  ),
   beforeLoad: async ({ context }) => {
     const session = await context.queryClient.ensureQueryData(userMeQueryOptions());
     const developerModeEnabled = await context.queryClient.ensureQueryData(
@@ -41,9 +48,6 @@ export const Route = createFileRoute('/_auth/module-builder/$moduleId/$moduleVer
       throw redirect({ to: '/forbidden' });
     }
   },
-  validateSearch: z.object({
-    file: z.string().optional(),
-  }),
   loader: async ({ params, context }) => {
     try {
       const data = await context.queryClient.ensureQueryData(moduleQueryOptions(params.moduleId));

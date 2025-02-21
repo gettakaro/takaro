@@ -1,4 +1,3 @@
-import { zodResolver } from '@hookform/resolvers/zod';
 import { Alert, Button, Company, FormError, TextField, styled } from '@takaro/lib-components';
 import { Navigate, createFileRoute } from '@tanstack/react-router';
 import { useUserLinkPlayerProfile, userMeQueryOptions } from '../../queries/user';
@@ -8,6 +7,8 @@ import { useSnackbar } from 'notistack';
 import { AiOutlineLogout as LogoutIcon } from 'react-icons/ai';
 import { useAuth } from '../../hooks/useAuth';
 import { useQuery } from '@tanstack/react-query';
+import { zodValidator } from '@tanstack/zod-adapter';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 const Container = styled.div`
   max-width: 800px;
@@ -16,9 +17,11 @@ const Container = styled.div`
 `;
 
 export const Route = createFileRoute('/_single-page/link')({
-  validateSearch: z.object({
-    code: z.string().optional().catch(undefined),
-  }),
+  validateSearch: zodValidator(
+    z.object({
+      code: z.string().catch(''),
+    }),
+  ),
   component: Component,
   loader: async ({ context }) => {
     try {
