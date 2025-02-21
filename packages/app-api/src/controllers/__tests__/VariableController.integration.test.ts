@@ -388,6 +388,22 @@ const tests = [
       expect(updateRes.data.data.expiresAt).to.be.null;
     },
   }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: true,
+    name: 'Gracefully errors when providing large variable values',
+    setup: SetupGameServerPlayers.setup,
+    expectedStatus: 400,
+    test: async function () {
+      // Max size is 128kb, so create a string that is larger than that
+      const str = 'a'.repeat(128 * 1024 + 1);
+
+      return this.client.variable.variableControllerCreate({
+        key: 'Test variable',
+        value: str,
+      });
+    },
+  }),
 ];
 
 describe(group, function () {
