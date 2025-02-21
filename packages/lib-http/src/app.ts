@@ -33,6 +33,7 @@ export class HTTP {
     this.app.use(Sentry.Handlers.requestHandler());
     this.app.use(
       bodyParser.json({
+        limit: '1mb',
         verify: (req, res, buf) => {
           (req as any).rawBody = buf.toString();
         },
