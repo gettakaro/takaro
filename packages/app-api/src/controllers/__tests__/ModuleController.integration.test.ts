@@ -225,8 +225,6 @@ const tests = [
 
       const tagsRes = await this.client.module.moduleControllerGetTags(imported.id, 0, 3);
 
-      console.log(JSON.stringify(tagsRes.data, null, 2));
-
       expect(tagsRes.data.data).to.have.length(3);
       expect(tagsRes.data.meta.total).to.equal(22); // 20 tags + 1 latest + 1 from the core module
 
