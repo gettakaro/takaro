@@ -2,10 +2,10 @@ import { ITakaroQuery, QueryBuilder, TakaroModel } from '@takaro/db';
 import { errors, traceableClass } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import { VariableCreateDTO, VariableOutputDTO, VariableUpdateDTO } from '../service/VariablesService.js';
-import { config } from '../config.js';
 import { GameServerModel } from './gameserver.js';
 import { ModuleModel } from './module.js';
 import { PlayerModel } from './player.js';
+import { DomainService } from '../service/DomainService.js';
 
 export const VARIABLES_TABLE_NAME = 'variables';
 
@@ -95,9 +95,9 @@ export class VariableRepo extends ITakaroRepo<VariablesModel, VariableOutputDTO,
     // @ts-expect-error badly typed knex query... :(
     const currentTotal = (await query.count({ count: '*' }))[0].count;
 
-    if (config.get('takaro.maxVariables') <= currentTotal) {
-      throw new errors.BadRequestError('Too many variables');
-    }
+    const domain = await new DomainService().findOne(this.domainId);
+    if (!domain) throw new errors.NotFoundError();
+    if (domain.maxVariables <= currentTotal) throw new errors.BadRequestError('Too many variables');
 
     const data = await query
       .insert({

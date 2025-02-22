@@ -5,7 +5,7 @@ import { TakaroWorker, IEventQueueData } from '@takaro/queues';
 import { EventChatMessage, EventEntityKilled, EventPlayerDeath, HookEvents } from '@takaro/modules';
 import { getSocketServer } from '../lib/socketServer.js';
 import { HookService } from '../service/HookService.js';
-import { PlayerService } from '../service/PlayerService.js';
+import { PlayerService } from '../service/Player/index.js';
 import { CommandService } from '../service/CommandService.js';
 import { EVENT_TYPES, EventCreateDTO, EventService } from '../service/EventService.js';
 import { PlayerOnGameServerService, PlayerOnGameServerUpdateDTO } from '../service/PlayerOnGameserverService.js';

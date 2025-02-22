@@ -1,5 +1,6 @@
 import { FC, useMemo } from 'react';
-import { NavbarLink, renderLink } from '.';
+import { NavbarLink } from '.';
+import { renderLink } from './renderLink';
 import { GlobalGameServerSelect } from './GlobalGameServerSelect';
 import { Button, Skeleton } from '@takaro/lib-components';
 import { PERMISSIONS } from '@takaro/apiclient';
@@ -11,7 +12,7 @@ import {
   AiOutlinePlus as AddServerIcon,
   AiOutlineShopping as ShopIcon,
 } from 'react-icons/ai';
-import { gameServersQueryOptions } from 'queries/gameserver';
+import { gameServersQueryOptions } from '../../queries/gameserver';
 import { Nav, NoServersCallToAction } from './style';
 import { useQuery } from '@tanstack/react-query';
 

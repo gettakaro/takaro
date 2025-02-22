@@ -1,4 +1,4 @@
-FROM node:20.18.0-bullseye
+FROM node:22.13.1-bullseye
 
 ENV NODE_ENV=development
 
@@ -10,8 +10,6 @@ COPY package*.json ./
 COPY tsconfig*.json ./
 
 COPY nodemon.json ./
-COPY jest.config.js ./
-COPY .mocharc.js ./
 
 COPY packages/ ./packages
 COPY scripts ./scripts

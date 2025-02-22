@@ -7,11 +7,17 @@ import {
   EventsAwaiter,
 } from '@takaro/test';
 import { GameEvents } from '../dto/index.js';
+import { describe } from 'node:test';
 
 const group = 'Module permissions role assignments';
 
 async function cleanRoleSetup(this: IntegrationTest<IModuleTestsSetupData>) {
   const defaultSetup = await modulesTestSetup.bind(this)();
+
+  await this.client.module.moduleInstallationsControllerInstallModule({
+    gameServerId: defaultSetup.gameserver.id,
+    versionId: defaultSetup.teleportsModule.latestVersion.id,
+  });
 
   const playersRes = await this.client.player.playerControllerSearch();
 
@@ -22,10 +28,10 @@ async function cleanRoleSetup(this: IntegrationTest<IModuleTestsSetupData>) {
     permissions,
   });
 
-  await this.client.gameserver.gameServerControllerInstallModule(
-    defaultSetup.gameserver.id,
-    defaultSetup.teleportsModule.id,
-  );
+  await this.client.module.moduleInstallationsControllerInstallModule({
+    gameServerId: defaultSetup.gameserver.id,
+    versionId: defaultSetup.teleportsModule.latestVersion.id,
+  });
 
   await Promise.all(
     playersRes.data.data.map(async (player) => {
@@ -128,15 +134,13 @@ const tests = [
     setup: modulesTestSetup,
     name: 'Uses system roles',
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id,
-        {
-          userConfig: JSON.stringify({
-            timeout: 0,
-          }),
-        },
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.teleportsModule.latestVersion.id,
+        userConfig: JSON.stringify({
+          timeout: 0,
+        }),
+      });
 
       await Promise.all(
         this.setupData.players.map(async (player) => {

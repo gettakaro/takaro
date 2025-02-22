@@ -1,6 +1,7 @@
+import React from 'react';
 import { Meta, StoryFn } from '@storybook/react';
 import { styled } from '../../../../styled';
-import { useStepper } from '../context';
+import { useStepper } from '../useStepper';
 import { Button, Stepper } from '../../../../components';
 import { AiFillSafetyCertificate as Safety, AiFillBell as Bell } from 'react-icons/ai';
 import { MdLocalShipping as Shipping } from 'react-icons/md';

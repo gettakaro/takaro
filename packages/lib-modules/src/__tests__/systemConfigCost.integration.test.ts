@@ -1,6 +1,7 @@
 import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '../dto/index.js';
 import { sleep } from '@takaro/util';
+import { describe } from 'node:test';
 
 const group = 'System config - cost';
 
@@ -11,24 +12,22 @@ const customSetup = async function (this: IntegrationTest<IModuleTestsSetupData>
     gameServerId: setupData.gameserver.id,
   });
 
-  await this.client.gameserver.gameServerControllerInstallModule(
-    setupData.gameserver.id,
-    setupData.teleportsModule.id,
-    {
-      userConfig: JSON.stringify({
-        timeout: 0,
-      }),
-      systemConfig: JSON.stringify({
-        commands: {
-          teleport: {
-            delay: 0,
-            aliases: [],
-            cost: 10,
-          },
+  await this.client.module.moduleInstallationsControllerInstallModule({
+    gameServerId: setupData.gameserver.id,
+    versionId: setupData.teleportsModule.latestVersion.id,
+    userConfig: JSON.stringify({
+      timeout: 0,
+    }),
+    systemConfig: JSON.stringify({
+      commands: {
+        teleport: {
+          delay: 0,
+          aliases: [],
+          cost: 10,
         },
-      }),
-    },
-  );
+      },
+    }),
+  });
 
   const setEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
   await this.client.command.commandControllerTrigger(setupData.gameserver.id, {

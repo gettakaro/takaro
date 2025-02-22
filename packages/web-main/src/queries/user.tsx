@@ -5,7 +5,7 @@ import {
   infiniteQueryOptions,
   keepPreviousData,
 } from '@tanstack/react-query';
-import { getApiClient } from 'util/getApiClient';
+import { getApiClient } from '../util/getApiClient';
 import {
   APIOutput,
   LinkPlayerUnauthedInputDTO,
@@ -23,6 +23,7 @@ export const userKeys = {
   list: () => [...userKeys.all, 'list'] as const,
   detail: (id: string) => [...userKeys.all, 'detail', id] as const,
   me: () => [...userKeys.all, 'me'] as const,
+  count: () => [...userKeys.all, 'count'] as const,
 };
 
 interface RoleInput {
@@ -52,6 +53,12 @@ export const userQueryOptions = (userId: string) =>
     queryFn: async () => (await getApiClient().user.userControllerGetOne(userId)).data.data,
   });
 
+export const userCountQueryOptions = () =>
+  queryOptions<number, AxiosError<number>>({
+    queryKey: userKeys.count(),
+    queryFn: async () => (await getApiClient().user.userControllerSearch({ limit: 1 })).data.meta.total!,
+  });
+
 export const userMeQueryOptions = () =>
   queryOptions<MeOutputDTO, AxiosError<MeOutputDTO>>({
     queryKey: userKeys.me(),
@@ -67,6 +74,7 @@ interface IUserRoleAssign {
 export const useUserAssignRole = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
 
   return mutationWrapper<APIOutput, IUserRoleAssign>(
     useMutation<APIOutput, AxiosError<APIOutput>, IUserRoleAssign>({
@@ -75,6 +83,7 @@ export const useUserAssignRole = () => {
       onSuccess: async (_, { userId }) => {
         // invalidate user because new role assignment
         queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
+        enqueueSnackbar('Role successfully assigned!', { variant: 'default', type: 'success' });
       },
     }),
     {},
@@ -135,6 +144,11 @@ export const useInviteUser = () => {
       mutationFn: async ({ email }) => (await apiClient.user.userControllerInvite({ email })).data,
       onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: userKeys.list() });
+
+        const currentUserCount = queryClient.getQueryData<number>(userKeys.count());
+        if (currentUserCount) {
+          queryClient.setQueryData<number>(userKeys.count(), currentUserCount + 1);
+        }
       },
     }),
     {},
@@ -155,6 +169,12 @@ export const useUserRemove = () => {
       onSuccess: async (_, { userId }) => {
         await queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
         await queryClient.invalidateQueries({ queryKey: userKeys.list() });
+
+        const currentUserCount = queryClient.getQueryData<number>(userKeys.count());
+        if (currentUserCount) {
+          queryClient.setQueryData<number>(userKeys.count(), currentUserCount - 1);
+        }
+
         enqueueSnackbar('User successfully deleted!', { variant: 'default' });
       },
     }),

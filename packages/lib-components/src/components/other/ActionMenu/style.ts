@@ -36,12 +36,12 @@ export const Item = styled.li`
       color: white;
     }
 
-    svg {
+    svg.checkmark {
       fill: white;
     }
   }
 
-  svg {
+  svg.checkmark {
     margin-left: ${({ theme }) => theme.spacing[1]};
     fill: ${({ theme }): string => theme.colors.text};
   }

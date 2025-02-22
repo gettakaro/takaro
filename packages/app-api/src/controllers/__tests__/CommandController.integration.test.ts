@@ -1,12 +1,13 @@
 import { IntegrationTest, expect } from '@takaro/test';
 import { CommandOutputDTOAPI, CommandCreateDTO, CommandArgumentCreateDTO } from '@takaro/apiclient';
+import { describe } from 'node:test';
 
 const group = 'CommandController';
 
-const mockCommand = (moduleId: string, name = 'Test command'): CommandCreateDTO => ({
+const mockCommand = (versionId: string, name = 'Test command'): CommandCreateDTO => ({
   name,
   trigger: 'test',
-  moduleId,
+  versionId,
 });
 
 const mockArgument = (commandId: string, name = 'Test argument'): CommandArgumentCreateDTO => ({
@@ -16,13 +17,14 @@ const mockArgument = (commandId: string, name = 'Test argument'): CommandArgumen
   position: 0,
 });
 
-async function setupModuleAndCommand(): Promise<CommandOutputDTOAPI> {
+async function setupModuleAndCommand(this: IntegrationTest<any>): Promise<CommandOutputDTOAPI> {
   const mod = (
     await this.client.module.moduleControllerCreate({
       name: 'Test module',
     })
   ).data.data;
-  return (await this.client.command.commandControllerCreate(mockCommand(mod.id))).data;
+
+  return (await this.client.command.commandControllerCreate(mockCommand(mod.latestVersion.id))).data;
 }
 
 const tests = [
@@ -46,7 +48,7 @@ const tests = [
           name: 'Test module',
         })
       ).data.data;
-      return this.client.command.commandControllerCreate(mockCommand(module.id));
+      return this.client.command.commandControllerCreate(mockCommand(module.latestVersion.id));
     },
     filteredFields: ['moduleId', 'functionId'],
   }),
@@ -117,7 +119,7 @@ const tests = [
 
       // Creating an argument with the same name in a different command should work
       const newCommand = await this.client.command.commandControllerCreate(
-        mockCommand(this.setupData.data.moduleId, 'command 2'),
+        mockCommand(this.setupData.data.versionId, 'command 2'),
       );
 
       const arg2res = await this.client.command.commandControllerCreateArgument(

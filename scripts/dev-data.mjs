@@ -84,6 +84,7 @@ async function resolveCustomModuleConfig(mod) {
 async function main() {
   const domain1Result = await adminClient.domain.domainControllerCreate({
     name: process.env.TAKARO_DEV_DOMAIN_NAME,
+    maxGameservers: 10,
   });
 
   const domain2Result = await adminClient.domain.domainControllerCreate({
@@ -141,7 +142,11 @@ async function addDataToDomain(domain) {
         continue;
       }
       console.log(`Installing module ${mod.name}`);
-      await client.gameserver.gameServerControllerInstallModule(gameserver.id, mod.id, customConfig);
+      await client.module.moduleInstallationsControllerInstallModule({
+        ...customConfig,
+        gameServerId: gameserver.id,
+        versionId: mod.latestVersion.id,
+      });
       console.log(`Installed module ${mod.name}`, customConfig);
     } catch (error) {
       console.error(`🔴 Error installing module ${mod.builtin}`, {

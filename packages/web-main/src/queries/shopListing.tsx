@@ -15,7 +15,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
-import { getApiClient } from 'util/getApiClient';
+import { getApiClient } from '../util/getApiClient';
 import { getNextPage, mutationWrapper, queryParamsToArray } from './util';
 import { useSnackbar } from 'notistack';
 

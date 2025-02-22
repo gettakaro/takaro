@@ -5,10 +5,12 @@ import { Resizable } from 're-resizable';
 import { FileExplorer } from './FileExplorer';
 import { CronJobConfig, CommandConfig, HookConfig } from './Editor/configs';
 import { Header } from './Header';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { EventFeedWidget } from 'components/events/EventFeedWidget';
-import { ErrorBoundary } from 'components/ErrorBoundary';
-import { FileType, useModuleBuilderContext } from './useModuleBuilderStore';
+import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
+import { EventFeedWidget } from '../../../components/events/EventFeedWidget';
+import { ErrorBoundary } from '../../../components/ErrorBoundary';
+import { useModuleBuilderContext } from './useModuleBuilderStore';
+import { FileType } from './types';
+import { CronjobTrigger } from './Editor/CronjobTrigger';
 
 const EventsWrapper = styled.div`
   padding-right: ${({ theme }) => theme.spacing[1]};
@@ -21,7 +23,7 @@ const Wrapper = styled.div`
 const Content = styled.div`
   display: flex;
   /* calculates the remaining height of the screen minus the header*/
-  height: calc(100vh - ${({ theme }) => theme.spacing[4]});
+  height: calc(100vh - ${({ theme }) => theme.spacing[5]});
 `;
 
 const StyledResizable = styled(Resizable)`
@@ -50,11 +52,11 @@ export const ModuleBuilderInner: FC = () => {
   function getConfigComponent(type: FileType, itemId: string) {
     switch (type) {
       case FileType.Hooks:
-        return <HookConfig itemId={itemId} readOnly={readOnly} />;
+        return <HookConfig itemId={itemId} readOnly={readOnly} moduleId={moduleId} />;
       case FileType.Commands:
-        return <CommandConfig itemId={itemId} readOnly={readOnly} />;
+        return <CommandConfig itemId={itemId} readOnly={readOnly} moduleId={moduleId} />;
       case FileType.CronJobs:
-        return <CronJobConfig itemId={itemId} readOnly={readOnly} />;
+        return <CronJobConfig itemId={itemId} readOnly={readOnly} moduleId={moduleId} />;
       default:
         return null;
     }
@@ -102,6 +104,13 @@ export const ModuleBuilderInner: FC = () => {
                   <CollapseList.Item title={configTitleMap[activeFile.type]}>
                     <ErrorBoundary>{getConfigComponent(activeFile.type, activeFile.itemId)}</ErrorBoundary>
                   </CollapseList.Item>
+                  {activeFile.type === FileType.CronJobs && (
+                    <CollapseList.Item title="Cronjob Trigger">
+                      <ErrorBoundary>
+                        <CronjobTrigger cronjobId={activeFile.itemId} moduleId={moduleId} />
+                      </ErrorBoundary>
+                    </CollapseList.Item>
+                  )}
                   <CollapseList.Item title={'Last executions'}>
                     <ErrorBoundary>
                       <EventsWrapper>
@@ -117,7 +126,7 @@ export const ModuleBuilderInner: FC = () => {
         {activeFile ? (
           <Editor readOnly={readOnly} />
         ) : (
-          <EditorPlaceholder>Hi cutie, select a file to start editing :)</EditorPlaceholder>
+          <EditorPlaceholder>Select a file to start editing :)</EditorPlaceholder>
         )}
       </Content>
     </Wrapper>

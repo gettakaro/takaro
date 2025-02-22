@@ -7,6 +7,7 @@ import {
   EventsAwaiter,
 } from '@takaro/test';
 import { GameEvents } from '../dto/gameEvents.js';
+import { describe } from 'node:test';
 
 const group = 'Help command';
 
@@ -17,10 +18,10 @@ const tests = [
     setup: modulesTestSetup,
     name: 'Help command responds with a list of installed commands',
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.utilsModule.id,
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.utilsModule.latestVersion.id,
+      });
       const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 3);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/help',
@@ -45,14 +46,14 @@ const tests = [
     setup: modulesTestSetup,
     name: 'Help command responds with a list of installed commands, picking up commands from multiple modules',
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.utilsModule.id,
-      );
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.teleportsModule.id,
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.utilsModule.latestVersion.id,
+      });
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.teleportsModule.latestVersion.id,
+      });
       const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 13);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/help',
@@ -92,10 +93,10 @@ const tests = [
     setup: modulesTestSetup,
     name: 'Help command responds with detailed info about a specific command',
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.utilsModule.id,
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.utilsModule.latestVersion.id,
+      });
 
       const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
@@ -118,10 +119,10 @@ const tests = [
     setup: modulesTestSetup,
     name: 'Help command responds with unknown command message if command does not exist',
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.utilsModule.id,
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.utilsModule.latestVersion.id,
+      });
 
       const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 

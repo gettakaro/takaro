@@ -1,4 +1,4 @@
-import { FC, HTMLProps, PropsWithChildren } from 'react';
+import { forwardRef, HTMLProps, PropsWithChildren } from 'react';
 import { styled } from '../../../styled';
 import { CardTitle } from './CardTitle';
 import { CardBody } from './CardBody';
@@ -38,22 +38,25 @@ interface SubComponentTypes {
   Body: typeof CardBody;
 }
 
-export const Card: FC<PropsWithChildren<CardProps>> & SubComponentTypes = function Card({
-  children,
-  variant = 'default',
-  ...props
-}) {
+const _Card = forwardRef<HTMLDivElement, PropsWithChildren<CardProps>>(function Card(
+  { children, variant = 'default', ...props },
+  ref,
+) {
   const canClick = 'onClick' in props;
   const { className, ...restProps } = props;
 
   return (
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    <Container canClick={canClick} variant={variant} className={className} {...restProps}>
+    <Container ref={ref} canClick={canClick} variant={variant} className={className} {...restProps}>
       {children}
     </Container>
   );
-};
+});
+
+// TODO: type it correctly instead
+type CardType = typeof _Card & SubComponentTypes;
+export const Card = _Card as CardType;
 
 Card.Title = CardTitle;
 Card.Body = CardBody;

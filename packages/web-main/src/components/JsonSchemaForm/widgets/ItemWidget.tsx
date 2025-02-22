@@ -10,9 +10,9 @@ import {
   ToggleButtonGroup,
 } from '@takaro/lib-components';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
-import { getRouteApi } from '@tanstack/react-router';
-import { gameServerQueryOptions } from 'queries/gameserver';
-import { ItemsInfiniteQueryOptions } from 'queries/item';
+import { useParams } from '@tanstack/react-router';
+import { gameServerQueryOptions } from '../../../queries/gameserver';
+import { ItemsInfiniteQueryOptions } from '../../../queries/item';
 import { useState } from 'react';
 
 const gameServerTypeToIconFolderMap = {
@@ -51,7 +51,7 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
   value,
   onChange,
 }: WidgetProps<T, S, F>) {
-  const { gameServerId } = getRouteApi('/_auth/gameserver/$gameServerId/modules/$moduleId/install/').useParams();
+  const { gameServerId } = useParams({ strict: false }) as { gameServerId: string };
   const [filterInput, setFilterInput] = useState<string>('');
   const enabled = filterInput !== '';
   const shouldPreviousItemsBeLoaded = shouldFilter(value, multiple as boolean);

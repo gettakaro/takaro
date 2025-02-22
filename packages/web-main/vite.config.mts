@@ -13,13 +13,14 @@ export default defineConfig({
     cssMinify: 'lightningcss',
   },
   test: {
+    globals: true,
     environment: 'jsdom',
   },
   server: {
     warmup: {
       clientFiles: [
         // commonly used files to warm up the esbuild cache
-        './src/Router.tsx',
+        './src/router.tsx',
         './src/index.tsx',
       ],
     },
@@ -27,7 +28,7 @@ export default defineConfig({
   css: {
     transformer: 'lightningcss',
   },
-  plugins: [react(), TanStackRouterVite(), checker({ typescript: true }), tsconfigPaths()],
+  plugins: [react(), TanStackRouterVite({ autoCodeSplitting: true }), checker({ typescript: true }), tsconfigPaths()],
 
   envDir: '../../',
 });

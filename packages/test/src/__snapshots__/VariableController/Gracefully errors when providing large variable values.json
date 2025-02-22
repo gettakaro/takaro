@@ -1,0 +1,20 @@
+{
+  "body": {
+    "meta": {
+      "error": {
+        "code": "BadRequestError",
+        "message": "Invalid data provided"
+      }
+    },
+    "data": {}
+  },
+  "status": 400,
+  "test": {
+    "group": "VariableController",
+    "snapshot": true,
+    "name": "Gracefully errors when providing large variable values",
+    "expectedStatus": 400,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

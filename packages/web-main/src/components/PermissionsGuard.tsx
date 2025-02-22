@@ -1,6 +1,6 @@
 import { PERMISSIONS } from '@takaro/apiclient';
 import { PermissionsGuard as Guard, RequiredPermissions } from '@takaro/lib-components';
-import { useSession } from 'hooks/useSession';
+import { useSession } from '../hooks/useSession';
 import { FC, PropsWithChildren, ReactElement, useMemo } from 'react';
 
 interface PermissionsGuardProps {

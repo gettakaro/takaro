@@ -1,5 +1,6 @@
 import { Button } from '.';
-import { render } from 'test-utils';
+import { expect, it } from 'vitest';
+import { render } from '../../../test/testUtils';
 
 it('Should render <Button/>', () => {
   const { container } = render(<Button text="button text" />);

@@ -1,4 +1,4 @@
-import { Size } from 'styled';
+import { Size } from '../../../styled';
 import styled from 'styled-components';
 
 export const Container = styled.div<{ size?: Size; centered?: boolean }>`

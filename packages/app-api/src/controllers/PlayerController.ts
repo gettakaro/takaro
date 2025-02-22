@@ -1,7 +1,7 @@
 import { IsBoolean, IsISO8601, IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
-import { PlayerOutputDTO, PlayerOutputWithRolesDTO, PlayerService } from '../service/PlayerService.js';
+import { PlayerService } from '../service/Player/index.js';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
 import { Body, Get, Post, JsonController, UseBefore, Req, Params, Res, Delete } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
@@ -13,6 +13,7 @@ import { UserService } from '../service/User/index.js';
 import { PlayerOnGameserverOutputArrayDTOAPI } from './PlayerOnGameserverController.js';
 import { ParamId, ParamIdAndRoleId } from '../lib/validators.js';
 import { AllowedFilters, RangeFilterCreatedAndUpdatedAt } from './shared.js';
+import { PlayerOutputDTO, PlayerOutputWithRolesDTO } from '../service/Player/dto.js';
 
 export class PlayerOutputDTOAPI extends APIOutput<PlayerOutputWithRolesDTO> {
   @Type(() => PlayerOutputWithRolesDTO)

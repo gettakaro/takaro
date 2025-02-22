@@ -1,5 +1,5 @@
 import { PaginationProps, SelectQueryField, Skeleton, Tooltip } from '@takaro/lib-components';
-import { gameServersInfiniteQueryOptions } from 'queries/gameserver';
+import { gameServersInfiniteQueryOptions } from '../../../queries/gameserver';
 import { FC, useState } from 'react';
 import {
   GameServerOutputDTO,
@@ -200,6 +200,8 @@ export const GameServerSelectView: FC<GameServerSelectQueryViewProps> = ({
       {groupByGameServerType &&
         gameServers7d2d.length > 0 &&
         renderOptionGroup(gameServers7d2d, '7 Days to Die', GameServerOutputDTOTypeEnum.Sevendaystodie)}
+
+      {!groupByGameServerType && renderOptionGroup(gameServers, 'Servers', GameServerOutputDTOTypeEnum.Mock)}
     </SelectQueryField>
   );
 };

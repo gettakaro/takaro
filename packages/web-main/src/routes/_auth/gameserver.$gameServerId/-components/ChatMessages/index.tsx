@@ -4,9 +4,9 @@ import {
   EventSearchInputDTOSortDirectionEnum,
   EventOutputDTOEventNameEnum as EventName,
 } from '@takaro/apiclient';
-import { useSocket } from 'hooks/useSocket';
-import { eventsQueryOptions } from 'queries/event';
-import { getApiClient } from 'util/getApiClient';
+import { useSocket } from '../../../../../hooks/useSocket';
+import { eventsQueryOptions } from '../../../../../queries/event';
+import { getApiClient } from '../../../../../util/getApiClient';
 import { FC, useEffect } from 'react';
 import { Card, Skeleton } from '@takaro/lib-components';
 import { CardBody } from './style';

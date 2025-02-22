@@ -6,7 +6,8 @@ import {
   AiOutlineArrowRight as ArrowRightIcon,
 } from 'react-icons/ai';
 import { Popover } from '../../../../components';
-import { QuickSelect, Tense, Unit } from './QuickSelect';
+import { QuickSelect } from './QuickSelect';
+import { Tense, Unit } from '../types';
 import { DateRangePickerContainer, QuickSelectContainer, ItemContainer } from './style';
 import { DateSelector } from './DateSelector';
 import { DateRangePickerDispatchContext, DateRangePickerContext, reducer } from './Context';

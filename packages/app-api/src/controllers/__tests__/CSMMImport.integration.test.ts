@@ -4,6 +4,7 @@ import { readFile } from 'fs/promises';
 import { join } from 'path';
 import * as url from 'url';
 import { GAME_SERVER_TYPE } from '@takaro/gameserver';
+import { describe } from 'node:test';
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
@@ -33,7 +34,7 @@ const tests = [
     group,
     name: 'Full import',
     test: async function () {
-      const importFile = await readFile(join(__dirname, 'csmm-export-full.json'), 'utf8');
+      const importFile = await readFile(join(__dirname, 'data', 'csmm-export-full.json'), 'utf8');
       const options: ImportInputDTO = {
         currency: true,
         roles: true,
@@ -62,7 +63,7 @@ const tests = [
     group,
     name: 'Import without roles',
     test: async function () {
-      const importFile = await readFile(join(__dirname, 'csmm-export-full.json'), 'utf8');
+      const importFile = await readFile(join(__dirname, 'data', 'csmm-export-full.json'), 'utf8');
       const options: ImportInputDTO = {
         currency: true,
         roles: false,
@@ -87,7 +88,7 @@ const tests = [
     group,
     name: 'Import without players',
     test: async function () {
-      const importFile = await readFile(join(__dirname, 'csmm-export-full.json'), 'utf8');
+      const importFile = await readFile(join(__dirname, 'data', 'csmm-export-full.json'), 'utf8');
       const options: ImportInputDTO = {
         currency: true,
         roles: true,
@@ -112,7 +113,7 @@ const tests = [
     group,
     name: 'Import existing server skips server creation but allows other data to be imported',
     test: async function () {
-      const importFile = await readFile(join(__dirname, 'csmm-export-full.json'), 'utf8');
+      const importFile = await readFile(join(__dirname, 'data', 'csmm-export-full.json'), 'utf8');
 
       const createdServer = (
         await this.client.gameserver.gameServerControllerCreate({

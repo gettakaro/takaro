@@ -106,7 +106,7 @@ export class SevenDaysToDie implements IGameServer {
 
     if (this.connectionInfo.useCPM && !res.rawResult.includes('Item(s) given')) {
       this.logger.error('Failed to give item', { player, item, amount, quality, rawResult: res.rawResult });
-      throw new errors.GameServerError('Failed to give item');
+      throw new errors.BadRequestError(`Failed to give item. Result: "${res.rawResult}"`);
     }
   }
 
@@ -154,7 +154,7 @@ export class SevenDaysToDie implements IGameServer {
     const encodedCommand = encodeURIComponent(rawCommand);
     const result = await this.apiClient.executeConsoleCommand(encodedCommand);
 
-    this.logger.debug(`Executed command: "${rawCommand}"`, { rawCommand, result: result.data });
+    this.logger.debug(`Executed command: "${rawCommand}"`, { rawCommand, result: result.data.result.slice(0, 1000) });
     return new CommandOutput({
       rawResult: result.data.result,
       success: true,

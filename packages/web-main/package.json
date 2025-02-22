@@ -6,14 +6,14 @@
   "dependencies": {
     "@jsonforms/core": "3.4.0",
     "@jsonforms/react": "3.4.0",
-    "@sentry/integrations": "7.119.0",
-    "@sentry/react": "8.32.0",
-    "@sentry/tracing": "7.114.0",
+    "@sentry/integrations": "7.120.3",
+    "@sentry/react": "8.53.0",
+    "@sentry/tracing": "7.120.3",
     "@tanstack/react-query": "5.56.2",
     "@tanstack/react-query-devtools": "5.58.0",
-    "@tanstack/react-router": "1.79.0",
-    "@tanstack/router-devtools": "1.79.0",
-    "@tanstack/router-vite-plugin": "1.79.0",
+    "@tanstack/react-router": "1.102.1",
+    "@tanstack/router-devtools": "1.102.1",
+    "@tanstack/router-vite-plugin": "1.102.1",
     "luxon": "3.5.0",
     "react-dnd": "16.0.1",
     "react-dnd-html5-backend": "16.0.1",
@@ -25,6 +25,7 @@
     "build": "NODE_OPTIONS=--max-old-space-size=8195 vite build && tsc --noemit",
     "test": "npm run test:unit",
     "test:unit": "CI=true vitest",
+    "test:snapshot": "vitest --updateSnapshot",
     "test:watch": "vitest --watch"
   },
   "browserslist": {
@@ -52,7 +53,7 @@
     "stream-browserify": "3.0.0",
     "stream-http": "3.2.0",
     "url": "0.11.4",
-    "vite": "5.4.8",
+    "vite": "6.0.11",
     "vite-plugin-checker": "0.8.0",
     "zustand": "4.5.5"
   }

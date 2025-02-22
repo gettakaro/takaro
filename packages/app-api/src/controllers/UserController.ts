@@ -1,4 +1,4 @@
-import { IsEmail, IsISO8601, IsOptional, IsString, IsUUID, Length, ValidateNested } from 'class-validator';
+import { IsBoolean, IsEmail, IsISO8601, IsOptional, IsString, IsUUID, Length, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { UserCreateInputDTO, UserOutputDTO, UserOutputWithRolesDTO, UserUpdateDTO } from '../service/User/dto.js';
@@ -14,8 +14,9 @@ import { AllowedFilters, RangeFilterCreatedAndUpdatedAt } from './shared.js';
 import { DomainOutputDTO, DomainService } from '../service/DomainService.js';
 import { TakaroDTO } from '@takaro/util';
 import { config } from '../config.js';
-import { PlayerOutputWithRolesDTO, PlayerService } from '../service/PlayerService.js';
+import { PlayerService } from '../service/Player/index.js';
 import { PlayerOnGameserverOutputDTO } from '../service/PlayerOnGameserverService.js';
+import { PlayerOutputWithRolesDTO } from '../service/Player/dto.js';
 
 export class GetUserDTO {
   @Length(3, 50)
@@ -100,6 +101,9 @@ class UserSearchInputAllowedFilters extends AllowedFilters {
   @IsOptional()
   @IsUUID(4, { each: true })
   roleId?: string[] | undefined;
+  @IsOptional()
+  @IsBoolean({ each: true })
+  isDashboardUser?: boolean[];
 }
 
 class UserSearchInputAllowedRangeFilter extends RangeFilterCreatedAndUpdatedAt {

@@ -34,3 +34,44 @@ export async function findTp(tpName, playerId, pub = false) {
     sortDirection: 'asc',
   });
 }
+
+export async function ensureWaypointsModule() {
+  let waypointsDefinition = (
+    await takaro.module.moduleControllerSearch({
+      filters: {
+        name: ['Waypoints'],
+      },
+    })
+  ).data.data[0];
+
+  if (!waypointsDefinition) {
+    console.log('Waypoints module definition not found, creating it.');
+    waypointsDefinition = (
+      await takaro.module.moduleControllerCreate({
+        name: 'Waypoints',
+      })
+    ).data.data;
+  }
+
+  let waypointsInstallation = (
+    await takaro.module.moduleInstallationsControllerGetInstalledModules({
+      filters: { gameserverId: [data.gameServerId] },
+    })
+  ).data.data.find((module) => module.name === 'Waypoints');
+
+  if (!waypointsInstallation) {
+    console.log('Waypoints module not found, installing it.');
+    waypointsInstallation = (
+      await takaro.module.moduleInstallationsControllerInstallModule({
+        gameServerId: data.gameServerId,
+        versionId: waypointsDefinition.latestVersion.id,
+      })
+    ).data.data;
+  }
+
+  return { waypointsInstallation, waypointsDefinition };
+}
+
+export function getWaypointName(name) {
+  return `waypoint ${name}`;
+}

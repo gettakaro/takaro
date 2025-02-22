@@ -7,26 +7,33 @@
       "id": "9a80e84c-ede1-4e87-9703-e01136a94994",
       "name": "Test module",
       "builtin": null,
-      "description": "No description provided.",
-      "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{},\"required\":[],\"additionalProperties\":false}",
-      "uiSchema": "{}",
-      "cronJobs": [],
-      "hooks": [],
-      "commands": [],
-      "functions": [],
-      "permissions": [
-        {
-          "createdAt": "2024-07-14T14:37:42.568Z",
-          "updatedAt": "2024-07-14T14:37:42.630Z",
-          "id": "831df19f-54e7-4bc5-9743-a9bfbe629804",
-          "moduleId": "9a80e84c-ede1-4e87-9703-e01136a94994",
-          "permission": "test",
-          "description": "new description",
-          "friendlyName": "new friendly name",
-          "canHaveCount": false
-        }
-      ],
-      "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable/disable the module without having to uninstall it.\"}},\"required\":[],\"additionalProperties\":false}"
+      "latestVersion": {
+        "createdAt": "2024-11-16T15:20:09.055Z",
+        "updatedAt": "2024-11-16T15:20:09.115Z",
+        "id": "80e90cc8-cdfb-4467-acbd-d5d0b8ce0f2a",
+        "moduleId": "c530bd0f-c5d1-4fd7-9887-c9b5f9fe34c2",
+        "tag": "latest",
+        "description": "No description",
+        "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{},\"required\":[],\"additionalProperties\":false}",
+        "uiSchema": "{}",
+        "cronJobs": [],
+        "hooks": [],
+        "commands": [],
+        "permissions": [
+          {
+            "createdAt": "2024-11-16T15:20:09.065Z",
+            "updatedAt": "2024-11-16T15:20:09.118Z",
+            "id": "0a646377-881e-4fa7-9437-fbca8ea9f97d",
+            "permission": "test",
+            "description": "new description",
+            "friendlyName": "new friendly name",
+            "canHaveCount": false,
+            "moduleVersionId": "0d7cb7a4-d9dc-4ddb-9b3e-fab48071b7d1"
+          }
+        ],
+        "functions": [],
+        "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable/disable the module without having to uninstall it.\"}},\"required\":[],\"additionalProperties\":false}"
+      }
     }
   },
   "status": 200,
@@ -35,7 +42,8 @@
     "snapshot": true,
     "name": "Updating permission returns updated permission",
     "filteredFields": [
-      "moduleId"
+      "moduleId",
+      "moduleVersionId"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true

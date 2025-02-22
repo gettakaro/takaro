@@ -2,7 +2,9 @@ import { IntegrationTest, expect, integrationConfig, SetupGameServerPlayers } fr
 import { PERMISSIONS } from '@takaro/auth';
 import { Client, UserOutputDTO } from '@takaro/apiclient';
 import { faker } from '@faker-js/faker';
-import { AxiosError } from 'axios';
+import { AxiosError, isAxiosError } from 'axios';
+import { randomUUID } from 'crypto';
+import { describe } from 'node:test';
 
 const group = 'UserController';
 
@@ -142,6 +144,7 @@ const tests = [
 
       const domain2 = await this.adminClient.domain.domainControllerCreate({
         name: 'integration-test-domain-2',
+        maxUsers: 5,
       });
 
       const client2 = new Client({
@@ -264,7 +267,10 @@ const tests = [
       // This is a bug repro, when you delete a user that has events, a FK constraint error is thrown
       const role = (await this.client.role.roleControllerSearch({ filters: { name: ['root'] } })).data.data[0];
       await this.client.user.userControllerAssignRole(this.setupData.user.id, role.id);
-      await this.setupData.userClient.module.moduleControllerCreate({ name: 'blabla', description: 'blabla' });
+      await this.setupData.userClient.module.moduleControllerCreate({
+        name: 'blabla',
+        latestVersion: { description: 'blabla' },
+      });
       // So, let's ensure there's an event for this user
       const events = await this.client.event.eventControllerSearch({
         filters: { actingUserId: [this.setupData.user.id] },
@@ -274,6 +280,51 @@ const tests = [
       // Then delete the user
       const res = await this.client.user.userControllerRemove(this.setupData.user.id);
       return res;
+    },
+  }),
+  new IntegrationTest<IUserSetup>({
+    group,
+    snapshot: false,
+    name: 'Cannot create more dashboard users than allowed',
+    setup: userSetup,
+    test: async function () {
+      if (!this.standardDomainId) throw new Error('No standard domain id set');
+      const domain = await this.adminClient.domain.domainControllerGetOne(this.standardDomainId);
+
+      const maxUsers = domain.data.data.maxUsers;
+
+      const currentDashboardUsers = await this.client.user.userControllerSearch({
+        filters: { isDashboardUser: [true] },
+      });
+      const currentDashboardUsersCount = currentDashboardUsers.data.meta.total;
+      if (currentDashboardUsersCount == undefined) throw new Error('Could not get current dashboard users count');
+
+      // Create the maximum number of dashboard users
+      await Promise.all(
+        Array.from({ length: maxUsers - currentDashboardUsersCount }).map(async () => {
+          const email = faker.internet.email();
+          return this.client.user.userControllerCreate({
+            email,
+            isDashboardUser: true,
+            name: randomUUID(),
+            password: randomUUID(),
+          });
+        }),
+      );
+
+      // Try to create one more
+      try {
+        await this.client.user.userControllerCreate({
+          email: faker.internet.email(),
+          isDashboardUser: true,
+          name: randomUUID(),
+          password: randomUUID(),
+        });
+        throw new Error('Should have thrown');
+      } catch (error) {
+        if (!isAxiosError(error)) throw error;
+        expect(error.response?.data.meta.error.message).to.be.eq('Max users (5) limit reached');
+      }
     },
   }),
 ];

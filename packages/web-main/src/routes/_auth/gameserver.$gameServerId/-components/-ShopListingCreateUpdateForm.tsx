@@ -13,7 +13,7 @@ import {
   styled,
 } from '@takaro/lib-components';
 import { useRouter } from '@tanstack/react-router';
-import { ItemSelectQueryField } from 'components/selects/ItemSelectQueryField';
+import { ItemSelectQueryField } from '../../../../components/selects/ItemSelectQueryField';
 import { FC, useEffect, useState } from 'react';
 import { useForm, SubmitHandler, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
@@ -115,7 +115,7 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
   }, [open]);
 
   return (
-    <Drawer open={open} onOpenChange={setOpen} promptCloseConfirmation={formState.isDirty}>
+    <Drawer open={open} onOpenChange={setOpen} promptCloseConfirmation={readOnly === false && formState.isDirty}>
       <Drawer.Content>
         <Drawer.Heading>{initialData ? (readOnly ? 'View' : 'Update') : 'Create'} Shop listing</Drawer.Heading>
         <Drawer.Body>

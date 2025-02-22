@@ -1,22 +1,12 @@
 import { Outlet, redirect, createFileRoute, useNavigate } from '@tanstack/react-router';
-import {
-  EmptyPage,
-  Empty,
-  Button,
-  useLocalStorage,
-  useTheme,
-  Dropdown,
-  Dialog,
-  IconButton,
-  ValueConfirmationField,
-} from '@takaro/lib-components';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { hasPermission } from 'hooks/useHasPermission';
-import { userMeQueryOptions } from 'queries/user';
-import { TableListToggleButton, ViewType } from 'components/TableListToggleButton';
+import { EmptyPage, Empty, Button, useLocalStorage, useTheme, Dropdown, IconButton } from '@takaro/lib-components';
+import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
+import { hasPermission } from '../../../hooks/useHasPermission';
+import { userMeQueryOptions } from '../../../queries/user';
+import { TableListToggleButton, ViewType } from '../../../components/TableListToggleButton';
 import { RolesCardView } from './-roles/RolesCardView';
 import { RolesTableView } from './-roles/RolesTableView';
-import { FC, MouseEvent, useEffect, useState } from 'react';
+import { FC, MouseEvent, useRef, useState } from 'react';
 
 import {
   AiOutlinePlus as AddRoleIcon,
@@ -25,7 +15,8 @@ import {
   AiOutlineDelete as DeleteRoleIcon,
   AiOutlineEye as ViewRoleIcon,
 } from 'react-icons/ai';
-import { useRoleRemove } from 'queries/role';
+import { RoleDeleteDialog } from '../../../components/dialogs/RoleDeleteDialog';
+import { DeleteImperativeHandle } from '../../../components/dialogs';
 
 export const Route = createFileRoute('/_auth/_global/roles')({
   beforeLoad: async ({ context }) => {
@@ -86,16 +77,9 @@ interface RoleActionsProps {
 export const RoleActions: FC<RoleActionsProps> = ({ roleId, roleName, isSystem }) => {
   const navigate = useNavigate();
   const theme = useTheme();
-  const { mutate, isPending: isDeleting, isSuccess } = useRoleRemove();
-  const [valid, setValid] = useState<boolean>(false);
+  const roleDialogDeleteRef = useRef<DeleteImperativeHandle>(null);
 
-  const [openDialog, setOpenDialog] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (isSuccess) {
-      setOpenDialog(false);
-    }
-  }, []);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
 
   const handleOnEditClick = (e: MouseEvent): void => {
     e.stopPropagation();
@@ -105,15 +89,10 @@ export const RoleActions: FC<RoleActionsProps> = ({ roleId, roleName, isSystem }
     e.stopPropagation();
 
     if (e.shiftKey) {
-      handleOnDelete(e);
+      roleDialogDeleteRef.current?.triggerDelete();
     } else {
-      setOpenDialog(true);
+      setOpenDeleteDialog(true);
     }
-  };
-
-  const handleOnDelete = (e: MouseEvent) => {
-    e.stopPropagation();
-    mutate({ roleId });
   };
 
   const handleOnViewClick = (e: MouseEvent) => {
@@ -141,35 +120,17 @@ export const RoleActions: FC<RoleActionsProps> = ({ roleId, roleName, isSystem }
               />
             )}
           </Dropdown.Menu.Group>
-
           <Dropdown.Menu.Item onClick={() => {}} label="Manage users (coming soon)" disabled />
           <Dropdown.Menu.Item onClick={() => {}} label="Manage players (coming soon)" disabled />
         </Dropdown.Menu>
       </Dropdown>
-      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-        <Dialog.Content>
-          <Dialog.Heading>Delete role</Dialog.Heading>
-          <Dialog.Body size="medium">
-            <p>
-              Are you sure you want to delete the role? To confirm, type <strong>{roleName}</strong>.
-            </p>
-            <ValueConfirmationField
-              value={roleName}
-              onValidChange={(v) => setValid(v)}
-              label="Role name"
-              id="deleteRoleConfirmation"
-            />
-            <Button
-              isLoading={isDeleting}
-              onClick={handleOnDelete}
-              disabled={!valid}
-              fullWidth
-              text="Delete role"
-              color="error"
-            />
-          </Dialog.Body>
-        </Dialog.Content>
-      </Dialog>
+      <RoleDeleteDialog
+        ref={roleDialogDeleteRef}
+        roleId={roleId}
+        roleName={roleName}
+        open={openDeleteDialog}
+        onOpenChange={setOpenDeleteDialog}
+      />
     </>
   );
 };

@@ -1,5 +1,4 @@
 import { FC, CSSProperties } from 'react';
-
 import { styled } from '../../../styled';
 
 const StyledP = styled.p`
@@ -32,8 +31,4 @@ export const Description: FC<DescriptionProps> = ({ description, inputName, styl
       })}
     </StyledP>
   );
-};
-
-export const setAriaDescribedBy = (name: string, hasDescription: boolean) => {
-  return hasDescription ? `${name}-description` : undefined;
 };

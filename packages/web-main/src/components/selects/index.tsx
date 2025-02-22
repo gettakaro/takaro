@@ -1,4 +1,4 @@
-import { SelectFieldProps, SelectQueryFieldProps } from '@takaro/lib-components';
+import { SelectFieldProps, SelectQueryFieldProps, UnControlledSelectQueryFieldProps } from '@takaro/lib-components';
 
 export type CustomSelectProps = Omit<SelectFieldProps, 'render' | 'children' | 'enableFilter'>;
 export type CustomSelectQueryProps = Omit<
@@ -12,12 +12,36 @@ export type CustomSelectQueryProps = Omit<
   | 'fetchNextPage'
   | 'hasNextPage'
   | 'optionCount'
+  | 'render'
 >;
+
+export type CustomUncontrolledSelectQueryFieldProps = Omit<
+  UnControlledSelectQueryFieldProps,
+  | 'hasError'
+  | 'hasDescription'
+  | 'isFetchingNextPage'
+  | 'isFetching'
+  | 'fetchNextPage'
+  | 'hasNextPage'
+  | 'render'
+  | 'isLoadingData'
+  | 'multiple'
+  | 'debounce'
+  | 'optionCount'
+> & {
+  value: string;
+  onChange: (val: string) => void;
+  name: string;
+};
 
 export { GameServerSelectQueryField } from './GameServerSelectQueryField';
 export { RoleSelectQueryField } from './RoleSelectQueryField';
 export { PlayerSelectQueryField } from './PlayerSelectQueryField';
 export { ModuleSelectQueryField } from './ModuleSelectQueryField';
+export {
+  ModuleVersionSelectQueryField,
+  UnControlledModuleVersionSelectQueryField as UncontrolledModuleVersionSelectQueryField,
+} from './ModuleVersionSelectQueryField';
 
 export { TimePeriodSelectField } from './TimePeriodSelectField';
 export { CountrySelectField } from './CountrySelectField';

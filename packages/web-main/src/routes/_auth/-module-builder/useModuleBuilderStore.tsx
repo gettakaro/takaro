@@ -1,6 +1,6 @@
-import { CommandOutputDTO, CronJobOutputDTO, FunctionOutputDTO, HookOutputDTO } from '@takaro/apiclient';
 import { PropsWithChildren, createContext, useContext, useRef } from 'react';
 import { createStore, useStore } from 'zustand';
+import { FileWithPath, FileMap } from './types';
 
 interface FileActions {
   openFile: (path: string) => void;
@@ -14,29 +14,11 @@ interface FileActions {
   deleteFile: (path: string) => void;
 }
 
-export enum FileType {
-  Commands = 'commands',
-  Hooks = 'hooks',
-  CronJobs = 'cronjobs',
-  Functions = 'functions',
-}
-
-export type FileMap = Record<string, File>;
-
-interface File {
-  functionId: FunctionOutputDTO['id'];
-  type: FileType;
-  itemId: CommandOutputDTO['id'] | CronJobOutputDTO['id'] | HookOutputDTO['id'];
-  code: string;
-  hidden?: boolean;
-}
-
-// code is optional here
-type FileWithPath = Omit<File, 'code'> & { path: string; code?: string };
-
 export type ModuleBuilderProps = {
   moduleId: string;
   moduleName: string;
+  versionId: string;
+  versionTag: string;
   readOnly: boolean;
   fileMap: FileMap;
   /// File that is currently active in the editor

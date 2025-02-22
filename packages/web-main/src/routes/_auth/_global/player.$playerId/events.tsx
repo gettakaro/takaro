@@ -1,4 +1,4 @@
-import { EventFeedWidget } from 'components/events/EventFeedWidget';
+import { EventFeedWidget } from '../../../../components/events/EventFeedWidget';
 import { createFileRoute } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/_auth/_global/player/$playerId/events')({

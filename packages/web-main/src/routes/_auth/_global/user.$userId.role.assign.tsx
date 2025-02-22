@@ -8,15 +8,15 @@ import {
   DrawerSkeleton,
   styled,
 } from '@takaro/lib-components';
-import { userMeQueryOptions, useUserAssignRole } from 'queries/user';
+import { userMeQueryOptions, useUserAssignRole } from '../../../queries/user';
 import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { DateTime, Settings } from 'luxon';
-import { RoleSelectQueryField } from 'components/selects';
-import { createFileRoute, redirect, useRouter } from '@tanstack/react-router';
+import { RoleSelectQueryField } from '../../../components/selects';
+import { createFileRoute, redirect } from '@tanstack/react-router';
 import { z } from 'zod';
-import { hasPermission } from 'hooks/useHasPermission';
+import { hasPermission } from '../../../hooks/useHasPermission';
 
 Settings.throwOnInvalid = true;
 
@@ -47,13 +47,14 @@ export const Route = createFileRoute('/_auth/_global/user/$userId/role/assign')(
 
 function Component() {
   const [open, setOpen] = useState(true);
-  const router = useRouter();
   const { userId } = Route.useParams();
   const { mutate, isPending, error } = useUserAssignRole();
+  const navigate = Route.useNavigate();
+  const params = Route.useParams();
 
   useEffect(() => {
     if (!open) {
-      router.history.go(-1);
+      navigate({ to: '/user/$userId', params });
     }
   }, [open]);
 
@@ -66,7 +67,12 @@ function Component() {
   });
 
   const onSubmit: SubmitHandler<IFormInputs> = ({ id, roleId, expiresAt }) => {
-    mutate({ userId: id, roleId, expiresAt });
+    try {
+      mutate({ userId: id, roleId, expiresAt });
+      setOpen(false);
+    } catch {
+      // do nothing
+    }
   };
 
   return (

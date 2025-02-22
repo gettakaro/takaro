@@ -1,6 +1,5 @@
 import {
   APIOutput,
-  BanPlayerInputDTO,
   GameServerCreateDTO,
   GameServerOutputArrayDTOAPI,
   GameServerOutputDTO,
@@ -10,10 +9,12 @@ import {
   GameServerTestReachabilityInputDTOTypeEnum,
   GameServerUpdateDTO,
   ImportOutputDTO,
+  InstallModuleDTO,
   KickPlayerInputDTO,
   ModuleInstallationOutputDTO,
   ModuleInstallationOutputDTOAPI,
-  ModuleInstallDTO,
+  ModuleInstallationSearchInputDTO,
+  TeleportPlayerInputDTO,
   TestReachabilityOutputDTO,
 } from '@takaro/apiclient';
 import {
@@ -23,7 +24,7 @@ import {
   infiniteQueryOptions,
   keepPreviousData,
 } from '@tanstack/react-query';
-import { getApiClient } from 'util/getApiClient';
+import { getApiClient } from '../util/getApiClient';
 import { getNextPage, mutationWrapper, queryParamsToArray } from './util';
 import { AxiosError } from 'axios';
 import { ErrorMessageMapping } from '@takaro/lib-components/src/errors';
@@ -34,13 +35,14 @@ export const gameServerKeys = {
   list: () => [...gameServerKeys.all, 'list'] as const,
   detail: (gameServerId: string) => [...gameServerKeys.all, 'detail', gameServerId] as const,
   reachability: (gameServerId: string) => [...gameServerKeys.all, 'reachable', gameServerId] as const,
+  count: () => [...gameServerKeys.all, 'count'] as const,
 };
 
-export const installedModuleKeys = {
+export const ModuleInstallationKeys = {
   all: ['installed modules'] as const,
-  list: (gameServerId: string) => [...installedModuleKeys.all, 'list', gameServerId] as const,
-  detail: (gameServerId: string, moduleId: string) =>
-    [...installedModuleKeys.all, 'detail', gameServerId, moduleId] as const,
+  list: () => [...ModuleInstallationKeys.all, 'list'] as const,
+  detail: (gameServerId: string, versionId: string) =>
+    [...ModuleInstallationKeys.all, 'detail', gameServerId, versionId] as const,
 };
 
 const defaultGameServerErrorMessages: Partial<ErrorMessageMapping> = {
@@ -72,6 +74,12 @@ export const gameServerQueryOptions = (gameServerId: string) => {
   });
 };
 
+export const gameServerCountQueryOptions = () =>
+  queryOptions<number, AxiosError<number>>({
+    queryKey: gameServerKeys.count(),
+    queryFn: async () => (await getApiClient().gameserver.gameServerControllerSearch({ limit: 1 })).data.meta.total!,
+  });
+
 export const useGameServerCreateFromCSMMImport = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
@@ -87,8 +95,12 @@ export const useGameServerCreateFromCSMMImport = () => {
             },
           })
         ).data.data,
-      onSettled: async () => {
+      onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: gameServerKeys.list() });
+        const currentGameServerCount = queryClient.getQueryData<number>(gameServerKeys.count());
+        if (currentGameServerCount) {
+          queryClient.setQueryData<number>(gameServerKeys.count(), currentGameServerCount + 1);
+        }
       },
     }),
     {},
@@ -107,6 +119,11 @@ export const useGameServerCreate = () => {
         enqueueSnackbar('Gameserver created!', { variant: 'default', type: 'success' });
         await queryClient.invalidateQueries({ queryKey: gameServerKeys.list() });
         queryClient.setQueryData(gameServerKeys.detail(newGameServer.id), newGameServer);
+
+        const currentGameServerCount = queryClient.getQueryData<number>(gameServerKeys.count());
+        if (currentGameServerCount) {
+          queryClient.setQueryData<number>(gameServerKeys.count(), currentGameServerCount + 1);
+        }
       },
     }),
     defaultGameServerErrorMessages,
@@ -157,6 +174,12 @@ export const useGameServerRemove = () => {
         await queryClient.invalidateQueries({
           queryKey: gameServerKeys.detail(gameServerId),
         });
+
+        const currentGameServerCount = queryClient.getQueryData<number>(gameServerKeys.count());
+        if (currentGameServerCount) {
+          queryClient.setQueryData<number>(gameServerKeys.count(), currentGameServerCount - 1);
+        }
+
         queryClient.removeQueries({
           queryKey: gameServerKeys.reachability(gameServerId),
         });
@@ -221,43 +244,44 @@ export const useGameServerSendMessage = () => {
   );
 };
 
-export const gameServerModuleInstallationsOptions = (gameServerId: string) => {
+export const moduleInstallationsOptions = (queryParams: ModuleInstallationSearchInputDTO = {}) => {
   return queryOptions<ModuleInstallationOutputDTO[], AxiosError<ModuleInstallationOutputDTOAPI>>({
-    queryKey: installedModuleKeys.list(gameServerId),
+    queryKey: [...ModuleInstallationKeys.list(), ...queryParamsToArray(queryParams)],
     queryFn: async () =>
-      (await getApiClient().gameserver.gameServerControllerGetInstalledModules(gameServerId)).data.data,
+      (await getApiClient().module.moduleInstallationsControllerGetInstalledModules(queryParams)).data.data,
   });
 };
 
-export const gameServerModuleInstallationOptions = (gameServerId: string, moduleId: string) => {
+export const gameServerModuleInstallationOptions = (moduleId: string, gameServerId: string) => {
   return queryOptions<ModuleInstallationOutputDTO, AxiosError<ModuleInstallationOutputDTOAPI>>({
-    queryKey: installedModuleKeys.detail(gameServerId, moduleId),
+    queryKey: ModuleInstallationKeys.detail(gameServerId, moduleId),
     queryFn: async () =>
-      (await getApiClient().gameserver.gameServerControllerGetModuleInstallation(gameServerId, moduleId)).data.data,
+      (await getApiClient().module.moduleInstallationsControllerGetModuleInstallation(moduleId, gameServerId)).data
+        .data,
   });
 };
-
-interface GameServerModuleInstall {
-  gameServerId: string;
-  moduleId: string;
-  moduleInstall: ModuleInstallDTO;
-}
 
 export const useGameServerModuleInstall = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
+  const { enqueueSnackbar } = useSnackbar();
 
-  return mutationWrapper<ModuleInstallationOutputDTO, GameServerModuleInstall>(
-    useMutation<ModuleInstallationOutputDTO, AxiosError<ModuleInstallationOutputDTOAPI>, GameServerModuleInstall>({
-      mutationFn: async ({ gameServerId, moduleId, moduleInstall }) =>
-        (await apiClient.gameserver.gameServerControllerInstallModule(gameServerId, moduleId, moduleInstall)).data.data,
-      onSuccess: async (moduleInstallation: ModuleInstallationOutputDTO) => {
+  return mutationWrapper<ModuleInstallationOutputDTO, InstallModuleDTO>(
+    useMutation<ModuleInstallationOutputDTO, AxiosError<ModuleInstallationOutputDTOAPI>, InstallModuleDTO>({
+      mutationFn: async (moduleInstallation) =>
+        (await apiClient.module.moduleInstallationsControllerInstallModule(moduleInstallation)).data.data,
+      onSuccess: async (moduleInstallation, { versionId, gameServerId }) => {
         // invalidate list of installed modules
-        await queryClient.invalidateQueries({ queryKey: installedModuleKeys.list(moduleInstallation.gameserverId) });
+        await queryClient.invalidateQueries({ queryKey: ModuleInstallationKeys.list() });
+
+        enqueueSnackbar(
+          `Successfully installed '${moduleInstallation.module.name}' version ${moduleInstallation.version.tag}!`,
+          { variant: 'default', type: 'success' },
+        );
 
         // update installed module cache
-        queryClient.setQueryData(
-          installedModuleKeys.detail(moduleInstallation.gameserverId, moduleInstallation.moduleId),
+        queryClient.setQueryData<ModuleInstallationOutputDTO>(
+          ModuleInstallationKeys.detail(gameServerId, versionId),
           moduleInstallation,
         );
       },
@@ -268,6 +292,7 @@ export const useGameServerModuleInstall = () => {
 
 interface GameServerModuleUninstall {
   gameServerId: string;
+  versionId: string;
   moduleId: string;
 }
 
@@ -278,17 +303,12 @@ export const useGameServerModuleUninstall = () => {
   return mutationWrapper<ModuleInstallationOutputDTO, GameServerModuleUninstall>(
     useMutation<ModuleInstallationOutputDTO, AxiosError<ModuleInstallationOutputDTOAPI>, GameServerModuleUninstall>({
       mutationFn: async ({ gameServerId, moduleId }) =>
-        (await apiClient.gameserver.gameServerControllerUninstallModule(gameServerId, moduleId)).data.data,
-      onSuccess: async (_, { moduleId, gameServerId }) => {
-        queryClient.setQueryData<ModuleInstallationOutputDTO[]>(installedModuleKeys.list(gameServerId), (old) => {
-          return old
-            ? old.filter((installedModule) => {
-                return installedModule.moduleId !== moduleId;
-              })
-            : old;
-        });
-        await queryClient.invalidateQueries({
-          queryKey: installedModuleKeys.detail(gameServerId, moduleId),
+        (await apiClient.module.moduleInstallationsControllerUninstallModule(moduleId, gameServerId)).data.data,
+      onSuccess: async (_, { versionId, gameServerId }) => {
+        queryClient.invalidateQueries({ queryKey: ModuleInstallationKeys.list() });
+
+        queryClient.removeQueries({
+          queryKey: ModuleInstallationKeys.detail(gameServerId, versionId),
         });
       },
     }),
@@ -296,10 +316,9 @@ export const useGameServerModuleUninstall = () => {
   );
 };
 
-interface GameServerKickPlayerInput {
+interface GameServerKickPlayerInput extends KickPlayerInputDTO {
   gameServerId: string;
   playerId: string;
-  opts: KickPlayerInputDTO;
 }
 
 export const useKickPlayerOnGameServer = () => {
@@ -307,43 +326,43 @@ export const useKickPlayerOnGameServer = () => {
 
   return mutationWrapper<APIOutput, GameServerKickPlayerInput>(
     useMutation<APIOutput, AxiosError<APIOutput>, GameServerKickPlayerInput>({
-      mutationFn: async ({ gameServerId, playerId, opts }) =>
+      mutationFn: async ({ gameServerId, playerId, ...opts }) =>
         (await apiClient.gameserver.gameServerControllerKickPlayer(gameServerId, playerId, opts)).data,
     }),
     {},
   );
 };
 
-interface GameServerBanPlayerInput {
+interface TeleportPlayerInput extends TeleportPlayerInputDTO {
   gameServerId: string;
   playerId: string;
-  opts: BanPlayerInputDTO;
 }
-
-export const useBanPlayerOnGameServer = () => {
+export const useTeleportPlayer = () => {
   const apiClient = getApiClient();
+  const { enqueueSnackbar } = useSnackbar();
 
-  return mutationWrapper<APIOutput, GameServerBanPlayerInput>(
-    useMutation<APIOutput, AxiosError<APIOutput>, GameServerBanPlayerInput>({
-      mutationFn: async ({ gameServerId, playerId, opts }) =>
-        (await apiClient.gameserver.gameServerControllerBanPlayer(gameServerId, playerId, opts)).data,
+  return mutationWrapper<APIOutput, TeleportPlayerInput>(
+    useMutation<APIOutput, AxiosError<APIOutput>, TeleportPlayerInput>({
+      mutationFn: async ({ gameServerId, playerId, x, y, z }) =>
+        (await apiClient.gameserver.gameServerControllerTeleportPlayer(gameServerId, playerId, { x, y, z })).data,
+      onSuccess: async (_, { x, y, z }) => {
+        enqueueSnackbar(`Teleported player to (${x},${y},${z})`, { variant: 'default', type: 'info' });
+      },
     }),
     {},
   );
 };
 
-interface GameServerUnbanPlayerInput {
-  gameServerId: string;
-  playerId: string;
-}
-
-export const useUnbanPlayerOnGameServer = () => {
+export const useGameServerShutdown = () => {
   const apiClient = getApiClient();
+  const { enqueueSnackbar } = useSnackbar();
 
-  return mutationWrapper<APIOutput, GameServerUnbanPlayerInput>(
-    useMutation<APIOutput, AxiosError<APIOutput>, GameServerUnbanPlayerInput>({
-      mutationFn: async ({ gameServerId, playerId }) =>
-        (await apiClient.gameserver.gameServerControllerUnbanPlayer(gameServerId, playerId)).data,
+  return mutationWrapper<APIOutput, string>(
+    useMutation<void, AxiosError<void>, string>({
+      mutationFn: async (gameServerId) => (await apiClient.gameserver.gameServerControllerShutdown(gameServerId)).data,
+      onSuccess: async () => {
+        enqueueSnackbar('Gameserver shutdown.', { variant: 'default', type: 'info' });
+      },
     }),
     {},
   );

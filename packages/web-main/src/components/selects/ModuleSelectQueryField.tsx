@@ -1,7 +1,7 @@
 import { PaginationProps, SelectQueryField } from '@takaro/lib-components';
 import { FC, useState } from 'react';
 import { CustomSelectProps } from '.';
-import { modulesInfiniteQueryOptions } from 'queries/module';
+import { modulesInfiniteQueryOptions } from '../../queries/module';
 import { ModuleOutputDTO } from '@takaro/apiclient';
 import { useInfiniteQuery } from '@tanstack/react-query';
 
@@ -35,7 +35,7 @@ export const ModuleSelectQueryField: FC<CustomSelectProps> = ({
   }
 
   const modules = data?.pages.flatMap((page) => page.data);
-  if (!modules || modules.length === 0) {
+  if (!modules) {
     return <div>no modules found</div>;
   }
 

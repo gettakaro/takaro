@@ -1,0 +1,17 @@
+{
+  "commands": [],
+  "hooks": [],
+  "cronJobs": [
+    {
+      "function": "import { data, takaro } from '@takaro/helpers';\n\nasync function main() {\n    const { module: mod, gameServerId } = data;\n\n    // Get online players through PlayerOnGameServer search\n    const currentPlayers = (await takaro.playerOnGameserver.playerOnGameServerControllerSearch({\n        filters: {\n            gameServerId: [gameServerId],\n            online: [true]\n        }\n    })).data.meta;\n\n    // If no players online, exit early\n    if (currentPlayers.total === 0) {\n        return;\n    }\n\n    // Check what the last message we sent was\n    const lastMessageVar = (await takaro.variable.variableControllerSearch({\n        filters: {\n            key: ['lastMessage'],\n            moduleId: [mod.moduleId],\n            gameServerId: [gameServerId],\n        },\n    })).data.data[0];\n\n    // If we haven't sent any messages yet, start with the first one\n    const lastMessage = lastMessageVar ? parseInt(lastMessageVar.value, 10) : -1;\n\n    // The next message we should send is the next in the array\n    // However, if we're at the end of the array, we should start over\n    const nextMessage = data.module.userConfig.messages[lastMessage + 1] ? lastMessage + 1 : 0;\n\n    // The actual text of the message we're going to send\n    const messageToSend = data.module.userConfig.messages[nextMessage];\n\n    // Send the message to the game server\n    await takaro.gameserver.gameServerControllerSendMessage(gameServerId, {\n        message: messageToSend,\n    });\n\n    // Update the last message variable so the next time this cron job runs, we know what to send\n    if (lastMessageVar) {\n        // The variable already exists, update it\n        await takaro.variable.variableControllerUpdate(lastMessageVar.id, {\n            value: nextMessage.toString(),\n        });\n    } else {\n        // The variable doesn't exist, create it\n        await takaro.variable.variableControllerCreate({\n            key: 'lastMessage',\n            value: nextMessage.toString(),\n            moduleId: mod.moduleId,\n            gameServerId: gameServerId,\n        });\n    }\n}\n\nawait main();\n\n",
+      "name": "Automated message",
+      "temporalValue": "*/30 * * * *"
+    }
+  ],
+  "functions": [],
+  "permissions": [],
+  "name": "hvb_serverMessages_v2",
+  "description": "Send automated, rotated, configurable messages to players on the server when players are online.",
+  "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"required\":[\"messages\"],\"additionalProperties\":false,\"properties\":{\"messages\":{\"title\":\"messages\",\"description\":\"List of messages that will be sent to players on the server.\",\"default\":[\"This is an automated message, don't forget to read the server rules!\"],\"type\":\"array\",\"items\":{\"type\":\"string\"},\"minItems\":1}}}",
+  "uiSchema": "{}"
+}

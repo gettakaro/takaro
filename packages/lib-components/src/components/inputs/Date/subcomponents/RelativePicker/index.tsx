@@ -7,21 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Container, StyledForm, InputsContainer, QuickSelectGrid, TenseGrid } from './style';
 
 export type timeDirection = 'past' | 'future' | 'pastAndFuture';
-
-export enum Tense {
-  Last = 'Last',
-  Next = 'Next',
-}
-
-export enum Unit {
-  Seconds = 'Seconds',
-  Minutes = 'Minutes',
-  Hours = 'Hours',
-  Days = 'Days',
-  Weeks = 'Weeks',
-  Months = 'Months',
-  Years = 'Years',
-}
+import { Tense, Unit } from '../../types';
 
 interface RelativePickerProps {
   onChange: (value: DateTime, friendlyName?: string) => void;

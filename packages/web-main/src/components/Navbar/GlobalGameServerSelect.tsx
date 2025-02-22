@@ -1,7 +1,7 @@
 import { FC, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { styled } from '@takaro/lib-components';
-import { GameServerSelectQueryField } from 'components/selects';
+import { GameServerSelectQueryField } from '../../components/selects';
 import { useMatchRoute, useNavigate } from '@tanstack/react-router';
 
 const Container = styled.div`
@@ -23,7 +23,7 @@ export const GlobalGameServerSelect: FC<GameServerSelectNavProps> = ({
   const navigate = useNavigate();
   const { control, watch } = useForm<FormFields>({
     mode: 'onChange',
-    defaultValues: {
+    values: {
       gameServerId: selectedGameServerId,
     },
   });

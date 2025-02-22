@@ -35,7 +35,6 @@ export default tseslint.config(
       '**/migrations/**',
       '**/*.d.ts',
       '**/jest.config.js',
-      '**/mocharc.js',
       '**/.storybook/**',
       '**/.docusaurus/**',
       '**/reports/**'
@@ -58,7 +57,7 @@ export default tseslint.config(
           // In the rare case that we do - just manually restart IDE
           glob: 'infinity',
         },
-        project: ['tsconfig.json', 'tsconfig.esm.json', 'tsconfig.react.json', 'packages/*/tsconfig.json'],
+        project: ['tsconfig.json', 'tsconfig.react.json', 'packages/*/tsconfig.json'],
         tsconfigRootDir: __dirname,
         warnOnUnsupportedTypeScriptVersion: true,
       },

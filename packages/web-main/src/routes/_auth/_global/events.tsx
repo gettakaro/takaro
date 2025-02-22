@@ -1,21 +1,23 @@
 import { Button, styled, InfiniteScroll } from '@takaro/lib-components';
-import { EventFeed, EventItem } from 'components/events/EventFeed';
+import { EventFeed, EventItem } from '../../../components/events/EventFeed';
 import { Settings } from 'luxon';
-import { eventsInfiniteQueryOptions, useEventSubscription } from 'queries/event';
+import { eventsInfiniteQueryOptions, useEventSubscription } from '../../../queries/event';
 import { HiStop as PauseIcon, HiPlay as PlayIcon, HiArrowPath as RefreshIcon } from 'react-icons/hi2';
 import { createFileRoute, redirect, useNavigate } from '@tanstack/react-router';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { hasPermission } from 'hooks/useHasPermission';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
+import { hasPermission } from '../../../hooks/useHasPermission';
+import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
 import { useMemo, useState } from 'react';
-import { EventFilter, EventFilterInputs, eventFilterSchema } from 'components/events/EventFilter';
+import { EventFilter, EventFilterInputs } from '../../../components/events/EventFilter';
+import { eventFilterSchema } from '../../../components/events/eventFilterSchema';
 import { PERMISSIONS } from '@takaro/apiclient';
-import { userMeQueryOptions } from 'queries/user';
+import { zodValidator } from '@tanstack/zod-adapter';
+import { userMeQueryOptions } from '../../../queries/user';
 
 Settings.throwOnInvalid = true;
 
 export const Route = createFileRoute('/_auth/_global/events')({
-  validateSearch: eventFilterSchema,
+  validateSearch: zodValidator(eventFilterSchema),
   beforeLoad: async ({ context }) => {
     const session = await context.queryClient.ensureQueryData(userMeQueryOptions());
     if (
@@ -120,6 +122,7 @@ function Component() {
         playerId: search.playerIds.length > 0 ? search.playerIds : undefined,
         gameserverId: search.gameServerIds.length > 0 ? search.gameServerIds : undefined,
         eventName: search.eventNames.length > 0 ? search.eventNames : undefined,
+        moduleId: search.moduleIds.length > 0 ? search.moduleIds : undefined,
       },
       sortBy: 'createdAt',
       sortDirection: 'desc',
@@ -152,11 +155,12 @@ function Component() {
       <Header>
         <EventFilter
           isLoading={false}
-          defaultValues={{
+          initialSelectedValues={{
             playerIds: search.playerIds ?? [],
             gameServerIds: search.gameServerIds ?? [],
             eventNames: search.eventNames ?? [],
             dateRange: search.dateRange ?? undefined,
+            moduleIds: search.moduleIds ?? [],
           }}
           onSubmit={onFilterChangeSubmit}
           isLive={live}

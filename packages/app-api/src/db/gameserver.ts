@@ -4,18 +4,10 @@ import { errors, traceableClass } from '@takaro/util';
 import { GAME_SERVER_TYPE } from '@takaro/gameserver';
 import { ITakaroRepo } from './base.js';
 import { PLAYER_ON_GAMESERVER_TABLE_NAME, PlayerOnGameServerModel } from './playerOnGameserver.js';
-import {
-  GameServerOutputDTO,
-  GameServerCreateDTO,
-  GameServerUpdateDTO,
-  ModuleInstallDTO,
-  ModuleInstallationOutputDTO,
-} from '../service/GameServerService.js';
-import { ModuleModel, MODULE_TABLE_NAME } from './module.js';
+import { GameServerOutputDTO, GameServerCreateDTO, GameServerUpdateDTO } from '../service/GameServerService.js';
 import { ITEMS_TABLE_NAME, ItemsModel } from './items.js';
 
 export const GAMESERVER_TABLE_NAME = 'gameservers';
-const MODULE_ASSIGNMENTS_TABLE_NAME = 'moduleAssignments';
 
 export class GameServerModel extends TakaroModel {
   static tableName = GAMESERVER_TABLE_NAME;
@@ -48,35 +40,6 @@ export class GameServerModel extends TakaroModel {
   }
 }
 
-class ModuleAssignmentModel extends TakaroModel {
-  static tableName = MODULE_ASSIGNMENTS_TABLE_NAME;
-  gameserverId: string;
-  moduleId: string;
-  userConfig: string;
-  systemConfig: string;
-
-  static get relationMappings() {
-    return {
-      module: {
-        relation: Model.BelongsToOneRelation,
-        modelClass: ModuleModel,
-        join: {
-          from: `${MODULE_ASSIGNMENTS_TABLE_NAME}.moduleId`,
-          to: `${MODULE_TABLE_NAME}.id`,
-        },
-      },
-      gameserver: {
-        relation: Model.BelongsToOneRelation,
-        modelClass: GameServerModel,
-        join: {
-          from: `${MODULE_ASSIGNMENTS_TABLE_NAME}.gameserverId`,
-          to: `${GAMESERVER_TABLE_NAME}.id`,
-        },
-      },
-    };
-  }
-}
-
 @traceableClass('repo:gameserver')
 export class GameServerRepo extends ITakaroRepo<
   GameServerModel,
@@ -91,15 +54,6 @@ export class GameServerRepo extends ITakaroRepo<
   async getModel() {
     const knex = await this.getKnex();
     const model = GameServerModel.bindKnex(knex);
-    return {
-      model,
-      query: model.query().modify('domainScoped', this.domainId),
-    };
-  }
-
-  async getAssignmentsModel() {
-    const knex = await this.getKnex();
-    const model = ModuleAssignmentModel.bindKnex(knex);
     return {
       model,
       query: model.query().modify('domainScoped', this.domainId),
@@ -176,58 +130,5 @@ export class GameServerRepo extends ITakaroRepo<
 
     await query.updateAndFetchById(id, updateData);
     return this.findOne(id, true);
-  }
-
-  async getModuleInstallation(gameserverId: string, moduleId: string) {
-    const { query } = await this.getAssignmentsModel();
-    const res = await query.modify('domainScoped', this.domainId).where({ gameserverId, moduleId });
-    return new ModuleInstallationOutputDTO(res[0] as unknown as ModuleInstallationOutputDTO);
-  }
-
-  async getInstalledModules({ gameserverId, moduleId }: { gameserverId?: string; moduleId?: string }) {
-    const { query } = await this.getAssignmentsModel();
-    const qry = query.modify('domainScoped', this.domainId);
-
-    if (gameserverId) {
-      qry.where({ gameserverId });
-    }
-
-    if (moduleId) {
-      qry.where({ moduleId });
-    }
-
-    const res = await qry;
-
-    return Promise.all(
-      res.map((item) => new ModuleInstallationOutputDTO(item as unknown as ModuleInstallationOutputDTO)),
-    );
-  }
-
-  async installModule(gameserverId: string, moduleId: string, installDto: ModuleInstallDTO) {
-    const { query, model } = await this.getAssignmentsModel();
-    const data: Partial<ModuleAssignmentModel> = {
-      gameserverId,
-      moduleId,
-      userConfig: installDto.userConfig,
-      systemConfig: installDto.systemConfig,
-      domain: this.domainId,
-    };
-
-    const existing = await query.where({ gameserverId, moduleId });
-
-    if (existing.length > 0) {
-      await query.updateAndFetchById(existing[0].id, data);
-    } else {
-      await model.query().insert(data);
-    }
-
-    const res = await query.findOne({ gameserverId, moduleId });
-    return new ModuleInstallationOutputDTO(res as unknown as ModuleInstallationOutputDTO);
-  }
-
-  async uninstallModule(gameserverId: string, moduleId: string) {
-    const { query } = await this.getAssignmentsModel();
-    const res = await query.delete().where({ gameserverId, moduleId });
-    return !!res;
   }
 }

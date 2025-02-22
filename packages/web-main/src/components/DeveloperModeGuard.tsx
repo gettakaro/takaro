@@ -1,5 +1,5 @@
 import { FC, PropsWithChildren } from 'react';
-import { globalGameServerSetingQueryOptions } from 'queries/setting';
+import { globalGameServerSetingQueryOptions } from '../queries/setting';
 import { useQuery } from '@tanstack/react-query';
 
 interface DeveloperModeGuardProps {

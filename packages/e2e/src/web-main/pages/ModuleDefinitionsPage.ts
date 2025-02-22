@@ -41,7 +41,7 @@ export class ModuleDefinitionsPage extends BasePage {
     save?: boolean;
   }) {
     await this.openSettings(oldName);
-    await this.page.getByRole('menuitem', { name: 'Edit module' }).click();
+    await this.page.getByRole('menuitem', { name: 'Edit module (builder)' }).click();
 
     if (name) {
       await this.fillName(name);
@@ -65,14 +65,22 @@ export class ModuleDefinitionsPage extends BasePage {
 
   async copy(name: string, copyName: string) {
     await this.openSettings(name);
-    await this.page.getByRole('menuitem', { name: 'Copy module' }).click();
+    await this.page.getByRole('menuitem', { name: 'Copy module', exact: true }).click();
     await this.page.getByLabel('Module name').fill(copyName);
     await this.page.getByRole('button', { name: 'Copy module' }).click();
   }
 
+  async tag(name: string, semantic: 'patch' | 'minor' | 'major') {
+    await this.openSettings(name);
+    await this.page.getByRole('menuitem', { name: 'Tag module' }).click();
+
+    this.page.getByLabel('Version level');
+    await this.page.getByRole('button', { name: `Tag as ${semantic}` }).click();
+  }
+
   async view(name: string) {
     await this.openSettings(name);
-    await this.page.getByRole('menuitem', { name: 'View module' }).click();
+    await this.page.getByRole('menuitem', { name: 'View module', exact: true }).click();
   }
 
   private async openSettings(name: string) {
@@ -99,7 +107,8 @@ export class ModuleDefinitionsPage extends BasePage {
     permissions?: Permission[];
     save?: boolean;
   }) {
-    await this.page.getByRole('link', { name: 'Module', exact: true }).click();
+    await this.page.getByRole('button', { name: 'Module actions', exact: true }).click();
+    await this.page.getByRole('menuitem', { name: 'Create module with builder' }).click();
 
     if (name) {
       await this.fillName(name);

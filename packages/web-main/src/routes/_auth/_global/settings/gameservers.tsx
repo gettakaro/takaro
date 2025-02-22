@@ -2,15 +2,16 @@ import { Fragment, useMemo, ReactElement } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { Button, Switch, TextField, camelCaseToSpaces } from '@takaro/lib-components';
 import { Settings, PERMISSIONS } from '@takaro/apiclient';
-import { useSetGlobalSetting, globalGameServerSettingsQueryOptions } from 'queries/setting';
+import { useSetGlobalSetting, globalGameServerSettingsQueryOptions } from '../../../../queries/setting';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
+import { useDocumentTitle } from '../../../../hooks/useDocumentTitle';
 import { useSnackbar } from 'notistack';
-import { hasPermission, useHasPermission } from 'hooks/useHasPermission';
+import { hasPermission, useHasPermission } from '../../../../hooks/useHasPermission';
 import { createFileRoute, redirect } from '@tanstack/react-router';
-import { userMeQueryOptions } from 'queries/user';
+import { userMeQueryOptions } from '../../../../queries/user';
 import { useQuery } from '@tanstack/react-query';
+import { booleanFields } from '../../../../util/settings';
 
 export const Route = createFileRoute('/_auth/_global/settings/gameservers')({
   beforeLoad: async ({ context }) => {
@@ -42,12 +43,7 @@ interface IFormInputs {
   developerMode: boolean;
 }
 
-export const booleanFields = ['economyEnabled', 'developerMode'];
-
-export function mapSettings<T extends Promise<unknown>>(
-  data: Settings,
-  fn: (key: keyof IFormInputs, value?: string) => T,
-) {
+function mapSettings<T extends Promise<unknown>>(data: Settings, fn: (key: keyof IFormInputs, value?: string) => T) {
   const promises: Promise<unknown>[] = [];
   for (const key in data) {
     const settingsKey = key as keyof IFormInputs;
