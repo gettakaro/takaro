@@ -18,6 +18,7 @@ export async function up(knex: Knex): Promise<void> {
 
   // Copy over all existing modules
   const modules = await knex('modules').select('id', 'domain', 'description', 'configSchema', 'uiSchema');
+  console.log(`Migrating ${modules.length} modules to moduleVersions`);
   for (const mod of modules) {
     await knex('moduleVersions').insert({
       domain: mod.domain,
@@ -51,7 +52,11 @@ export async function up(knex: Knex): Promise<void> {
   let offset = 0;
   let installs;
   do {
-    installs = await knex('moduleInstallations').select('id', 'moduleId').limit(batchSize).offset(offset);
+    installs = await knex('moduleInstallations')
+      .select('id', 'moduleId')
+      .limit(batchSize)
+      .offset(offset)
+      .orderBy('createdAt');
     for (const install of installs) {
       const latestVersion = await knex('moduleVersions')
         .select('id')
@@ -62,6 +67,8 @@ export async function up(knex: Knex): Promise<void> {
     }
     offset += batchSize;
   } while (installs.length === batchSize);
+
+  await knex('moduleInstallations').whereNull('versionId').delete();
 
   // Set versionId as not nullable and add foreign key constraint
   await knex.schema.alterTable('moduleInstallations', (table) => {
@@ -103,7 +110,7 @@ export async function up(knex: Knex): Promise<void> {
   offset = 0;
   let commands;
   do {
-    commands = await knex('commands').select('id', 'moduleId').limit(batchSize).offset(offset);
+    commands = await knex('commands').select('id', 'moduleId').limit(batchSize).offset(offset).orderBy('createdAt');
     for (const command of commands) {
       const latestVersion = await knex('moduleVersions')
         .select('id')
@@ -118,7 +125,7 @@ export async function up(knex: Knex): Promise<void> {
   offset = 0;
   let hooks;
   do {
-    hooks = await knex('hooks').select('id', 'moduleId').limit(batchSize).offset(offset);
+    hooks = await knex('hooks').select('id', 'moduleId').limit(batchSize).offset(offset).orderBy('createdAt');
     for (const hook of hooks) {
       const latestVersion = await knex('moduleVersions')
         .select('id')
@@ -133,7 +140,7 @@ export async function up(knex: Knex): Promise<void> {
   offset = 0;
   let cronjobs;
   do {
-    cronjobs = await knex('cronJobs').select('id', 'moduleId').limit(batchSize).offset(offset);
+    cronjobs = await knex('cronJobs').select('id', 'moduleId').limit(batchSize).offset(offset).orderBy('createdAt');
     for (const cronjob of cronjobs) {
       const latestVersion = await knex('moduleVersions')
         .select('id')
@@ -148,7 +155,11 @@ export async function up(knex: Knex): Promise<void> {
   offset = 0;
   let permissions;
   do {
-    permissions = await knex('permission').select('id', 'moduleId').limit(batchSize).offset(offset);
+    permissions = await knex('permission')
+      .select('id', 'moduleId')
+      .limit(batchSize)
+      .offset(offset)
+      .orderBy('createdAt');
     for (const permission of permissions) {
       if (!permission.moduleId) {
         // Not a module scoped permission, so skip
@@ -167,7 +178,7 @@ export async function up(knex: Knex): Promise<void> {
   offset = 0;
   let functions;
   do {
-    functions = await knex('functions').select('id', 'moduleId').limit(batchSize).offset(offset);
+    functions = await knex('functions').select('id', 'moduleId').limit(batchSize).offset(offset).orderBy('createdAt');
     for (const func of functions) {
       if (!func.moduleId) {
         // Not module scoped, so skip
@@ -184,6 +195,13 @@ export async function up(knex: Knex): Promise<void> {
   } while (functions.length === batchSize);
 
   // Finally, let's drop old columns and ensure new FK is in place
+  const orphanedCommands = await knex('commands').delete().whereNull('versionId');
+  console.log(`Deleted ${orphanedCommands} orphaned commands`);
+  const orphanedHooks = await knex('hooks').delete().whereNull('versionId');
+  console.log(`Deleted ${orphanedHooks} orphaned hooks`);
+  const orphanedCronjobs = await knex('cronJobs').delete().whereNull('versionId');
+  console.log(`Deleted ${orphanedCronjobs} orphaned cronjobs`);
+
   await knex.schema.alterTable('commands', (table) => {
     table.dropColumn('moduleId');
     table.uuid('versionId').notNullable().alter();
