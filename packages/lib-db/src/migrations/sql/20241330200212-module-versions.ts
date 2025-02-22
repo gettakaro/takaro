@@ -195,6 +195,15 @@ export async function up(knex: Knex): Promise<void> {
   } while (functions.length === batchSize);
 
   // Finally, let's drop old columns and ensure new FK is in place
+  const orphanedCommands = await knex('commands').select('*').whereNull('versionId');
+  if (orphanedCommands.length > 0) {
+    console.log('Orphaned commands found');
+    for (const cmd of orphanedCommands) {
+      console.log(cmd);
+    }
+    throw new Error('Orphaned commands found');
+  }
+
   await knex.schema.alterTable('commands', (table) => {
     table.dropColumn('moduleId');
     table.uuid('versionId').notNullable().alter();
