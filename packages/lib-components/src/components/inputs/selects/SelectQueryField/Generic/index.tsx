@@ -55,6 +55,9 @@ interface SharedSelectQueryFieldProps extends PaginationProps {
   /// The selected items shown in the select field
   render?: (selectedItems: SelectItem[]) => React.ReactNode;
 
+  /// Callback to be called when the select field is opened or closed
+  onOpenChange?: (open: boolean) => void;
+
   /// The total options that will be visible when fully loaded
   optionCount?: number;
 }
@@ -112,8 +115,9 @@ export const _GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSele
       multiple = false,
       canClear = false,
       debounce = 250,
-      isLoadingData: isLoading = false,
+      isLoadingData = false,
       handleInputValueChange,
+      onOpenChange,
       optionCount,
     } = defaultsApplier(props);
 
@@ -132,6 +136,12 @@ export const _GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSele
           handleInputValueChange(debouncedValue);
       }
     }, [debouncedValue]);
+
+    useEffect(() => {
+      if (onOpenChange) {
+        onOpenChange(open);
+      }
+    }, [open]);
 
     const { refs, strategy, x, y, context } = useFloating<HTMLInputElement>({
       whileElementsMounted: autoUpdate,
@@ -230,7 +240,13 @@ export const _GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSele
     }, [value, children]);
 
     const renderSelect = () => {
-      const hasOptions = options && options.some((option) => Children.count(option?.props?.children) > 0);
+      const hasOptions =
+        options &&
+        options.some((optionGroup) =>
+          Children.toArray(optionGroup?.props?.children).some(
+            (option) => isValidElement(option) && option.props?.children,
+          ),
+        );
 
       // initialFocus=-1 is used to prevent the first item from being focused when the list opens
       return (
@@ -253,7 +269,7 @@ export const _GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSele
                 name={`${name}-input`}
                 hasDescription={false}
                 icon={<SearchIcon />}
-                suffix={isLoading ? 'Loading' : optionCount !== undefined ? `Result: ${optionCount}` : undefined}
+                suffix={isLoadingData ? 'Loading' : optionCount !== undefined ? `Result: ${optionCount}` : undefined}
                 hasError={hasError}
                 value={inputValue.value}
                 onChange={onInputChange}
@@ -262,14 +278,16 @@ export const _GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSele
               />
             )}
             {/* it will always contain 1 because of the group label */}
-            {isLoading && (
+            {isLoadingData && (
               <FeedBackContainer>
                 <Spinner size="small" />
                 <span style={{ marginLeft: '10px' }}>loading results</span>
               </FeedBackContainer>
             )}
+            {/* show options if they exist*/}
             {hasOptions && options}
-            {hasOptions && !isLoading && (
+            {/* Add an infinite scroll component add the bottom when there is data, and we are not already loading */}
+            {hasOptions && !isLoadingData && (
               <InfiniteScroll
                 isFetching={isFetching}
                 hasNextPage={hasNextPage}
@@ -278,11 +296,11 @@ export const _GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSele
               />
             )}
             {/* Basically first interaction */}
-            {!hasOptions && inputValue.value === '' && <FeedBackContainer>Start typing to search</FeedBackContainer>}
-            {/* When there is no result */}
-            {!hasOptions && !isLoading && inputValue.value !== '' && (
-              <FeedBackContainer>No results found</FeedBackContainer>
+            {!hasOptions && inputValue.value === '' && handleInputValueChange && (
+              <FeedBackContainer>Start typing to search</FeedBackContainer>
             )}
+            {/* When there is no result */}
+            {!hasOptions && !isLoadingData && <FeedBackContainer>No results found</FeedBackContainer>}
           </SelectContainer>
         </FloatingFocusManager>
       );
@@ -306,6 +324,7 @@ export const _GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSele
         */
 
         ...(Children.map(
+          // children here is an <OptionGroup/>
           children,
           (child) =>
             isValidElement(child) && (

@@ -33,6 +33,7 @@ export const ControlledSelectQueryField: FC<ControlledSelectQueryFieldProps> & S
     isFetching,
     isFetchingNextPage,
     optionCount,
+    onOpenChange,
     handleInputValueChange,
   } = defaultsApplier(props);
 
@@ -90,6 +91,7 @@ export const ControlledSelectQueryField: FC<ControlledSelectQueryFieldProps> & S
           debounce={debounce}
           optionCount={optionCount}
           handleInputValueChange={handleInputValueChange}
+          onOpenChange={onOpenChange}
           isFetching={isFetching}
           isFetchingNextPage={isFetchingNextPage}
           hasNextPage={hasNextPage}
