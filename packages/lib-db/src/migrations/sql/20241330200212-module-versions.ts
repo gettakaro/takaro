@@ -63,6 +63,14 @@ export async function up(knex: Knex): Promise<void> {
     offset += batchSize;
   } while (installs.length === batchSize);
 
+  // Find any installations with versionId still null, log them and then delete the installations
+  const orphanedInstalls = await knex('moduleInstallations').select('*').whereNull('versionId');
+  for (const install of orphanedInstalls) {
+    console.log(`Orphaned module installation found: ${install.domain} ${install.id}`);
+  }
+
+  await knex('moduleInstallations').whereNull('versionId').delete();
+
   // Set versionId as not nullable and add foreign key constraint
   await knex.schema.alterTable('moduleInstallations', (table) => {
     table.uuid('versionId').notNullable().alter();
