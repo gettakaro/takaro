@@ -419,12 +419,16 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
   async findByFunction(functionId: string): Promise<ModuleVersionOutputDTO> {
     const { queryVersion } = await this.getModel();
     const item = await queryVersion
-      .findOne('hooks.functionId', functionId)
+      .withGraphJoined('functions')
+      .withGraphJoined('commands')
+      .withGraphJoined('hooks')
+      .withGraphJoined('cronJobs')
+      .orWhere('hooks.functionId', functionId)
       .orWhere('commands.functionId', functionId)
       .orWhere('cronJobs.functionId', functionId)
-      .modify('standardExtend');
-    if (!item) throw new errors.NotFoundError();
-    return this.findOneVersion(item.id);
+      .orWhere('functions.id', functionId);
+    if (!item[0]) throw new errors.NotFoundError();
+    return this.findOneVersion(item[0].id);
   }
 
   async getVersion(id: string): Promise<ModuleVersionOutputDTO> {
