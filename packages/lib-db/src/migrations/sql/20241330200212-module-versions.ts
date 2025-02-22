@@ -195,14 +195,12 @@ export async function up(knex: Knex): Promise<void> {
   } while (functions.length === batchSize);
 
   // Finally, let's drop old columns and ensure new FK is in place
-  const orphanedCommands = await knex('commands').select('*').whereNull('versionId');
-  if (orphanedCommands.length > 0) {
-    console.log('Orphaned commands found');
-    for (const cmd of orphanedCommands) {
-      console.log(cmd);
-    }
-    throw new Error('Orphaned commands found');
-  }
+  const orphanedCommands = await knex('commands').delete().whereNull('versionId');
+  console.log(`Deleted ${orphanedCommands} orphaned commands`);
+  const orphanedHooks = await knex('hooks').delete().whereNull('versionId');
+  console.log(`Deleted ${orphanedHooks} orphaned hooks`);
+  const orphanedCronjobs = await knex('cronJobs').delete().whereNull('versionId');
+  console.log(`Deleted ${orphanedCronjobs} orphaned cronjobs`);
 
   await knex.schema.alterTable('commands', (table) => {
     table.dropColumn('moduleId');
