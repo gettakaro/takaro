@@ -16,10 +16,9 @@ const validationSchema = z.object({
 
 interface PlayerBanDialogProps extends RequiredDialogOptions {
   playerId: string;
-  playerName: string;
 }
 
-export const PlayerBanDialog: FC<PlayerBanDialogProps> = ({ playerId, playerName, ...dialogOptions }) => {
+export const PlayerBanDialog: FC<PlayerBanDialogProps> = ({ playerId, ...dialogOptions }) => {
   const { handleSubmit, control } = useForm<z.infer<typeof validationSchema>>({
     resolver: zodResolver(validationSchema),
   });
@@ -36,22 +35,29 @@ export const PlayerBanDialog: FC<PlayerBanDialogProps> = ({ playerId, playerName
     expiresAt,
   }) => {
     // If no gameServerId is provided, the ban is considered global. But isGlobal always needs to be set explicitly.
-    // No ghosts in the code!
     const isGlobal = !!gameServerId;
+    // if global is selected, it will have value null, api requires undefined
+    if (gameServerId === 'null') {
+      gameServerId = undefined;
+    }
+
+    console.log(gameServerId);
+
     mutateBanPlayer({ playerId, reason, gameServerId, isGlobal, until: expiresAt });
   };
 
   return (
     <Dialog {...dialogOptions}>
       <Dialog.Content>
-        <Dialog.Heading>ban player: {playerName}</Dialog.Heading>
+        <Dialog.Heading>ban player</Dialog.Heading>
         <Dialog.Body size="medium">
           <form onSubmit={handleSubmit(handleOnBanPlayer)}>
             <GameServerSelectQueryField
               loading={isLoadingBanPlayer}
               name="gameServerId"
               control={control}
-              required={false}
+              required={true}
+              addGlobalGameServerOption
             />
             <TextAreaField
               control={control}
@@ -68,15 +74,16 @@ export const PlayerBanDialog: FC<PlayerBanDialogProps> = ({ playerId, playerName
               required={false}
               label={'Expiration date'}
               loading={isLoadingBanPlayer}
-              description={'The role will be automatically removed after this date.'}
+              description={'The ban will be lifted at this date.'}
               popOverPlacement={'bottom'}
               timePickerOptions={{ interval: 30 }}
               allowPastDates={false}
               format={DateTime.DATETIME_SHORT}
             />
+
+            {banError && <FormError error={banError} />}
             <Button isLoading={isLoadingBanPlayer} type="submit" fullWidth text={'Ban player'} color="error" />
           </form>
-          {banError && <FormError error={banError} />}
         </Dialog.Body>
       </Dialog.Content>
     </Dialog>
