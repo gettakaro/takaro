@@ -104,15 +104,15 @@ export class ModuleVersion extends TakaroModel {
       // Loads a bunch of related data we always need for the DTO
       standardExtend(query: Objection.QueryBuilder<Model>) {
         query
-          .withGraphJoined('hooks')
-          .withGraphJoined('commands')
-          .withGraphJoined('cronJobs')
-          .withGraphJoined('functions')
-          .withGraphJoined('permissions')
-          .withGraphJoined('hooks.function')
-          .withGraphJoined('cronJobs.function')
-          .withGraphJoined('commands.function')
-          .withGraphJoined('commands.arguments');
+          .withGraphFetched('hooks')
+          .withGraphFetched('commands')
+          .withGraphFetched('cronJobs')
+          .withGraphFetched('functions')
+          .withGraphFetched('permissions')
+          .withGraphFetched('hooks.function')
+          .withGraphFetched('cronJobs.function')
+          .withGraphFetched('commands.function')
+          .withGraphFetched('commands.arguments');
       },
     };
   }
@@ -162,14 +162,14 @@ export class ModuleInstallationModel extends TakaroModel {
       // Loads a bunch of related data we always need for the DTO
       standardExtend(query: Objection.QueryBuilder<Model>) {
         query
-          .withGraphJoined('version')
-          .withGraphJoined('version.cronJobs')
-          .withGraphJoined('version.cronJobs.function')
-          .withGraphJoined('version.hooks')
-          .withGraphJoined('version.commands')
-          .withGraphJoined('version.permissions')
-          .withGraphJoined('version.functions')
-          .withGraphJoined('module');
+          .withGraphFetched('version')
+          .withGraphFetched('version.cronJobs')
+          .withGraphFetched('version.cronJobs.function')
+          .withGraphFetched('version.hooks')
+          .withGraphFetched('version.commands')
+          .withGraphFetched('version.permissions')
+          .withGraphFetched('version.functions')
+          .withGraphFetched('module');
       },
     };
   }
