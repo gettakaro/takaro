@@ -1,6 +1,6 @@
 import { FC, useCallback, useEffect, useRef, useState, FormEvent } from 'react';
 import { useNavigate } from '@tanstack/react-router';
-import { Button, Drawer, CollapseList, styled, FormError } from '@takaro/lib-components';
+import { Button, Drawer, CollapseList, styled, FormError, Chip } from '@takaro/lib-components';
 import { useGameServerModuleInstall } from '../../../queries/gameserver';
 import Form from '@rjsf/core';
 import { JsonSchemaForm } from '../../../components/JsonSchemaForm';
@@ -84,7 +84,10 @@ export const InstallModuleForm: FC<InstallModuleFormProps> = ({
   return (
     <Drawer open={open} onOpenChange={setOpen} promptCloseConfirmation={readOnly === false && isDirty}>
       <Drawer.Content>
-        <Drawer.Heading>{readOnly ? 'View configuration' : 'Install module'}</Drawer.Heading>
+        <Drawer.Heading>
+          <span style={{ marginRight: '10px' }}>{readOnly ? 'View configuration' : 'Install module'}</span>
+          <Chip variant="outline" color="primary" label={modVersion.tag} />
+        </Drawer.Heading>
         <Drawer.Body>
           <CollapseList>
             <CollapseList.Item title="User config">
