@@ -5,7 +5,6 @@ import { useGameServerModuleInstall } from '../../../queries/gameserver';
 import Form from '@rjsf/core';
 import { JsonSchemaForm } from '../../../components/JsonSchemaForm';
 import { ModuleInstallationOutputDTO, ModuleOutputDTO, ModuleVersionOutputDTO } from '@takaro/apiclient';
-import { useSnackbar } from 'notistack';
 
 interface InstallModuleFormProps {
   gameServerId: string;
@@ -34,7 +33,6 @@ export const InstallModuleForm: FC<InstallModuleFormProps> = ({
   const [isDirty, setisDirty] = useState<boolean>(false);
   const navigate = useNavigate();
   const { mutate, isPending, error, isSuccess } = useGameServerModuleInstall();
-  const { enqueueSnackbar } = useSnackbar();
 
   const [userConfig, setUserConfig] = useState<Record<string, unknown>>({});
   const [systemConfig, setSystemConfig] = useState<Record<string, unknown>>({});
@@ -72,7 +70,6 @@ export const InstallModuleForm: FC<InstallModuleFormProps> = ({
   useEffect(() => {
     if (isSuccess) {
       navigate({ to: '/gameserver/$gameServerId/modules', params: { gameServerId } });
-      enqueueSnackbar('Module installed!', { variant: 'default', type: 'success' });
     }
   }, [isSuccess]);
 

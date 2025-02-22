@@ -1,4 +1,4 @@
-import { ModuleVersionOutputDTO, PermissionCreateDTO, SmallModuleVersionOutputDTO } from '@takaro/apiclient';
+import { ModuleVersionOutputDTO, PermissionCreateDTO } from '@takaro/apiclient';
 import { z } from 'zod';
 import { schemaToInputs } from '../schemaConversion/SchemaToInputs';
 
@@ -15,7 +15,6 @@ export interface ModuleFormProps {
   onSubmit?: (data: ModuleFormSubmitProps) => void;
   error: string | string[] | null;
   moduleName?: string;
-  smallModuleVersions?: SmallModuleVersionOutputDTO[];
   moduleVersion?: ModuleVersionOutputDTO;
 }
 

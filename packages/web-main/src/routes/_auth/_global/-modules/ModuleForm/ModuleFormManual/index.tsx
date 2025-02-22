@@ -18,6 +18,7 @@ import { AiOutlinePlus as PlusIcon, AiOutlineQuestion as QuestionIcon } from 're
 import { useNavigate } from '@tanstack/react-router';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { validationSchema } from './validationSchema';
+import { UncontrolledModuleVersionSelectQueryField } from '../../../../../../components/selects';
 
 interface IFormInputs {
   name: string;
@@ -77,6 +78,14 @@ export const ModuleFormManual: FC<ModuleFormProps> = ({ moduleName, moduleVersio
     }
   }, [open, navigate]);
 
+  const handleOnSelectedVersionChanged = (selectedModuleVersionTag: string) => {
+    navigate({
+      to: '/modules/$moduleId/view/$moduleVersionTag',
+      params: { moduleId: moduleVersion!.moduleId, moduleVersionTag: selectedModuleVersionTag },
+      search: { view: 'manual' },
+    });
+  };
+
   const formId = 'module-form-manual';
 
   return (
@@ -84,6 +93,19 @@ export const ModuleFormManual: FC<ModuleFormProps> = ({ moduleName, moduleVersio
       <Drawer.Content>
         <Drawer.Heading>{getTitle()}</Drawer.Heading>
         <Drawer.Body>
+          {onSubmit == undefined && moduleVersion && (
+            <div style={{ marginBottom: '30px' }}>
+              <UncontrolledModuleVersionSelectQueryField
+                moduleId={moduleVersion.moduleId}
+                canClear={false}
+                onChange={handleOnSelectedVersionChanged}
+                name="module-version-tag-select"
+                value={moduleVersion.tag}
+                returnValue="tag"
+              />
+            </div>
+          )}
+
           <form id={formId} onSubmit={handleSubmit(submitHandler)}>
             <CollapseList>
               <CollapseList.Item title="General">

@@ -57,9 +57,6 @@ export class ModuleOutputDTO extends TakaroModelDTO<ModuleOutputDTO> {
   @ValidateNested()
   @Type(() => ModuleVersionOutputDTO)
   latestVersion: ModuleVersionOutputDTO;
-  @ValidateNested({ each: true })
-  @Type(() => SmallModuleVersionOutputDTO)
-  versions: SmallModuleVersionOutputDTO[];
 }
 
 export class ModuleInstallationOutputDTO extends TakaroModelDTO<ModuleInstallationOutputDTO> {

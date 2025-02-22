@@ -128,11 +128,11 @@ const tests = [
         })
       ).data.data;
 
+      const tags = (await this.client.module.moduleControllerGetTags(importedModule[0].id)).data.data;
+
       expect(importedModule.length).to.be.eq(1);
-      expect(importedModule[0].versions.length).to.be.eq(1);
-      const importedVersions = await this.client.module.moduleVersionControllerGetModuleVersion(
-        importedModule[0].versions[0].id,
-      );
+      expect(tags.length).to.be.eq(1);
+      const importedVersions = await this.client.module.moduleVersionControllerGetModuleVersion(tags[0].id);
       expect(importedVersions.data.data.hooks.length).to.be.eq(1);
     },
   }),
@@ -155,12 +155,11 @@ const tests = [
           filters: { name: ['hvb_serverMessages_v2'] },
         })
       ).data.data;
+      const tags = (await this.client.module.moduleControllerGetTags(importedModule[0].id)).data.data;
 
       expect(importedModule.length).to.be.eq(1);
-      expect(importedModule[0].versions.length).to.be.eq(1);
-      const importedVersions = await this.client.module.moduleVersionControllerGetModuleVersion(
-        importedModule[0].versions[0].id,
-      );
+      expect(tags.length).to.be.eq(1);
+      const importedVersions = await this.client.module.moduleVersionControllerGetModuleVersion(tags[0].id);
 
       expect(importedVersions.data.data.cronJobs.length).to.be.eq(1);
     },

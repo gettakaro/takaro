@@ -26,14 +26,6 @@ function createModuleDTO(moduleVersionOverrides: Partial<ModuleVersionOutputDTO>
       tag: 'latest',
       ...moduleVersionOverrides,
     },
-    versions: [
-      {
-        createdAt: DateTime.now().toISO(),
-        updatedAt: DateTime.now().toISO(),
-        tag: 'latest',
-        id: 'version-123',
-      },
-    ],
     createdAt: DateTime.now().toISO(),
     updatedAt: DateTime.now().toISO(),
   };
