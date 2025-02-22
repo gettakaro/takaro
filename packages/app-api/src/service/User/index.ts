@@ -156,10 +156,12 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
     );
   }
 
-  async inviteUser(email: string): Promise<UserOutputDTO> {
+  async inviteUser(email: string, opts = { isDashboardUser: true }): Promise<UserOutputDTO> {
     const existingIdpProfile = await ory.getIdentityByEmail(email);
 
-    const user = await this.create(new UserCreateInputDTO({ email, name: email, isDashboardUser: true }));
+    const user = await this.create(
+      new UserCreateInputDTO({ email, name: email, isDashboardUser: opts.isDashboardUser }),
+    );
     if (!existingIdpProfile) {
       const recoveryFlow = await ory.getRecoveryFlow(user.idpId);
 
@@ -220,7 +222,7 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
       }
       user = maybeUser.results[0];
     } else {
-      user = await userService.inviteUser(email);
+      user = await userService.inviteUser(email, { isDashboardUser: false });
     }
 
     await userService.repo.linkPlayer(user.id, resolvedPlayerId);
