@@ -50,7 +50,6 @@ export const Header = () => {
           moduleId={moduleId}
           canClear={false}
           value={moduleVersionTag}
-          returnValue="tag"
           onChange={handleOnModuleVersionTagChanged}
         />
       </Flex>
