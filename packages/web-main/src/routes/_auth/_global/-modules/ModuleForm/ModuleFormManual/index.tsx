@@ -203,7 +203,7 @@ export const ModuleFormManual: FC<ModuleFormProps> = ({ moduleName, moduleVersio
                   label="Config Schema (JSON Schema)"
                   readOnly={readOnly}
                   required
-                  description="Learn more about how to write the JSON Schema (https://json-schema.org/learn)"
+                  description="Learn more about how to write the JSON Schema on https://json-schema.org/learn"
                   rows={10}
                 />
                 <TextAreaField
