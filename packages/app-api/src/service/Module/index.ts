@@ -66,11 +66,6 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     return mod;
   }
 
-  private async extendVersionDTO(version: ModuleVersionOutputDTO): Promise<ModuleVersionOutputDTO> {
-    version.systemConfigSchema = getSystemConfigSchema(version);
-    return version;
-  }
-
   async find(filters: ITakaroQuery<ModuleOutputDTO>): Promise<PaginatedOutput<ModuleOutputDTO>> {
     const results = await this.repo.find(filters);
 
@@ -81,12 +76,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
   }
 
   async findVersions(filters: ITakaroQuery<ModuleVersionOutputDTO>): Promise<PaginatedOutput<ModuleVersionOutputDTO>> {
-    const results = await this.repo.findVersions(filters);
-
-    return {
-      total: results.total,
-      results: await Promise.all(results.results.map((m) => this.extendVersionDTO(m))),
-    };
+    return this.repo.findVersions(filters);
   }
 
   async findInstallations(
@@ -101,7 +91,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
   }
 
   async findOneVersion(id: string): Promise<ModuleVersionOutputDTO | undefined> {
-    return this.extendVersionDTO(await this.repo.findOneVersion(id));
+    return await this.repo.findOneVersion(id);
   }
 
   async findOneInstallation(gameServerId: string, moduleId: string) {
@@ -441,7 +431,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
   }
 
   async getLatestVersion(moduleId: string) {
-    return this.extendVersionDTO(await this.repo.getLatestVersion(moduleId));
+    return this.repo.getLatestVersion(moduleId);
   }
 
   /**
