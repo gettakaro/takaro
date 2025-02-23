@@ -29,6 +29,7 @@ jobs:
           ]
 
     steps:
+      # This voodoo was recommended by Github support to help with random network disconnects... 🤷
       - name: Apply nf_conntrack_tcp_be_liberal kernel change
         run: |
           sudo sh -c "echo 1 > /proc/sys/net/netfilter/nf_conntrack_tcp_be_liberal"
@@ -122,6 +123,7 @@ jobs:
           TEST_LOGGING_LEVEL: debug
           LOGGING_LEVEL: debug
           NODE_ENV: test
+          TAKARO_TEST_RUNNER_ATTEMPTS: 10
           TRACING_ENABLED: false
           GRAFANA_CLOUD_TEMPO_URL: ${{ secrets.GRAFANA_CLOUD_TEMPO_URL }}
           GRAFANA_CLOUD_API_USER: ${{ secrets.GRAFANA_CLOUD_API_USER }}
