@@ -185,7 +185,9 @@ export class AuthService extends DomainScoped {
     if (!user) {
       try {
         let domainId = req.cookies ? req.cookies['takaro-domain'] : null;
-
+        if (req.headers['authorization']?.includes('Basic')) {
+          delete req.headers['authorization'];
+        }
         const identity = await ory.getIdentityFromReq(req);
         if (!identity) return null;
 
