@@ -5,7 +5,6 @@ export const FeedBackContainer = styled.div`
   flex-direciton: row;
   align-items: center;
   justify-content: center;
-  padding-top: ${({ theme }) => theme.spacing['1']};
 
   // loading
   span {

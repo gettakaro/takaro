@@ -32,6 +32,7 @@ export type CustomUncontrolledSelectQueryFieldProps = Omit<
   value: string;
   onChange: (val: string) => void;
   name: string;
+  readOnly?: boolean;
 };
 
 export { GameServerSelectQueryField } from './GameServerSelectQueryField';
