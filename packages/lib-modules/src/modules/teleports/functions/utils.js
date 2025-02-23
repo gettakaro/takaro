@@ -36,6 +36,7 @@ export async function findTp(tpName, playerId, pub = false) {
 }
 
 export async function ensureWaypointsModule() {
+  const { gameServerId } = data;
   let waypointsDefinition = (
     await takaro.module.moduleControllerSearch({
       filters: {
@@ -55,15 +56,15 @@ export async function ensureWaypointsModule() {
 
   let waypointsInstallation = (
     await takaro.module.moduleInstallationsControllerGetInstalledModules({
-      filters: { gameserverId: [data.gameServerId] },
+      filters: { gameserverId: [gameServerId] },
     })
-  ).data.data.find((module) => module.name === 'Waypoints');
+  ).data.data.find((module) => module.module.name === 'Waypoints');
 
   if (!waypointsInstallation) {
-    console.log('Waypoints module not found, installing it.');
+    console.log('Waypoints installation not found, installing it.');
     waypointsInstallation = (
       await takaro.module.moduleInstallationsControllerInstallModule({
-        gameServerId: data.gameServerId,
+        gameServerId,
         versionId: waypointsDefinition.latestVersion.id,
       })
     ).data.data;
@@ -74,4 +75,112 @@ export async function ensureWaypointsModule() {
 
 export function getWaypointName(name) {
   return `waypoint ${name}`;
+}
+
+export function getWaypointId(varName) {
+  const split = varName.split(' ')[1];
+  if (split) return split;
+  return varName;
+}
+
+/**
+ * This function is responsible to read all the configured waypoints (vars)
+ * and then ensuring that the waypoints module has the correct config
+ */
+export async function waypointReconciler() {
+  console.log('Reconciling waypoints');
+  const { waypointsInstallation, waypointsDefinition } = await ensureWaypointsModule();
+  const { gameServerId, module: mod } = data;
+
+  // Get all the installed waypoints
+  const waypointVars = (
+    await takaro.variable.variableControllerSearch({
+      filters: {
+        moduleId: [waypointsInstallation.moduleId],
+        gameServerId: [gameServerId],
+      },
+    })
+  ).data.data;
+
+  const waypointsInModule = waypointsDefinition.latestVersion.commands;
+
+  // Check if any waypoints are missing in module
+  const missingWaypoints = waypointVars.filter((waypointVar) => {
+    const existingWaypointsForServer = waypointsInModule.filter((waypoint) => waypoint.name.includes(gameServerId));
+    return !existingWaypointsForServer.some((waypoint) => waypoint.trigger === getWaypointId(waypointVar.key));
+  });
+
+  // Check if there are waypoints too many in module compared to our vars
+  const toDeleteWaypoints = waypointsInModule.filter((waypoint) => {
+    // We ignore any commands that are not for this game server
+    if (!waypoint.name.includes(gameServerId)) return false;
+    return !waypointVars.some((waypointVar) => getWaypointId(waypointVar.key) === waypoint.trigger);
+  });
+
+  if (!missingWaypoints.length && !toDeleteWaypoints.length) {
+    // No changes in waypoints, exit
+    return;
+  }
+
+  console.log(
+    'Missing waypoints:',
+    missingWaypoints.map((waypoint) => waypoint.key),
+  );
+  console.log(
+    'To delete waypoints:',
+    toDeleteWaypoints.map((waypoint) => waypoint.trigger),
+  );
+
+  // Fetch the teleporting code template
+  const teleportCommand = await takaro.command.commandControllerSearch({
+    filters: {
+      moduleId: [mod.moduleId],
+      name: ['teleportwaypoint'],
+    },
+  });
+
+  // Edit the module accordingly
+  await Promise.all([
+    ...missingWaypoints.map((waypoint) => {
+      return takaro.command.commandControllerCreate({
+        name: `waypoint ${getWaypointId(waypoint.key)} server ${gameServerId}`,
+        trigger: getWaypointId(waypoint.key),
+        helpText: `Teleport to waypoint ${getWaypointId(waypoint.key)}.`,
+        function: teleportCommand.data.data[0].function.code,
+        versionId: waypointsInstallation.versionId,
+      });
+    }),
+    ...toDeleteWaypoints.map((waypointVar) => {
+      return takaro.command.commandControllerRemove(waypointVar.id);
+    }),
+  ]);
+
+  // Update permissions
+  const existingPermissions = waypointsDefinition.latestVersion.permissions || [];
+  const permissionInputDTOs = existingPermissions.map((permission) => ({
+    permission: permission.permission,
+    description: permission.description,
+    friendlyName: permission.friendlyName,
+    canHaveCount: permission.canHaveCount,
+  }));
+  // We need to filter out the permissions we deleted in the above lines
+  const filteredPermissionsInputs = permissionInputDTOs.filter((permission) => {
+    return !toDeleteWaypoints.some(
+      (waypoint) => permission.permission === `WAYPOINTS_USE_${waypoint.trigger.toUpperCase()}_${gameServerId}`,
+    );
+  });
+  const gameServer = (await takaro.gameserver.gameServerControllerGetOne(gameServerId)).data.data;
+  await takaro.module.moduleControllerUpdate(waypointsInstallation.moduleId, {
+    latestVersion: {
+      permissions: [
+        ...filteredPermissionsInputs,
+        ...missingWaypoints.map((waypoint) => ({
+          permission: `WAYPOINTS_USE_${getWaypointId(waypoint.key).toUpperCase()}_${gameServerId}`,
+          description: `Use the waypoint ${getWaypointId(waypoint.key)} on ${gameServer.name}.`,
+          friendlyName: `Use waypoint ${getWaypointId(waypoint.key)} on ${gameServer.name}`,
+          canHaveCount: false,
+        })),
+      ],
+    },
+  });
 }

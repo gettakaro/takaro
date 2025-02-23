@@ -604,18 +604,15 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     for (const installation of installations) {
       if (installation.version.tag !== 'latest') {
         this.log.error('This should not happen! Everything except "latest" tag is immutable', { versionId });
-        throw new errors.BadRequestError('Cannot refresh latest version');
+        throw new errors.BadRequestError('Cannot update tagged versions');
       }
       try {
-        await this.uninstallModule(installation.gameserverId, installation.moduleId);
-        await this.installModule(
-          new InstallModuleDTO({
-            gameServerId: installation.gameserverId,
-            versionId,
-            systemConfig: JSON.stringify(installation.systemConfig),
-            userConfig: JSON.stringify(installation.userConfig),
-          }),
-        );
+        const modSystemConfig = installation.systemConfig;
+        const validateSystemConfig = ajv.compile(JSON.parse(getSystemConfigSchema(installation.version)));
+        validateSystemConfig(modSystemConfig);
+        await this.repo.updateInstallation(installation.gameserverId, installation.moduleId, {
+          systemConfig: JSON.stringify(modSystemConfig),
+        });
       } catch (error) {
         if ((error as Error).message === 'Invalid config schema') {
           this.log.warn('Invalid config schema, leaving as-is', {
