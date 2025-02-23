@@ -1,8 +1,8 @@
 import 'reflect-metadata';
 
 import { randomUUID } from 'crypto';
-import { queueService } from '@takaro/queues';
-import { HTTP } from '@takaro/http';
+import { getBullBoard, queueService } from '@takaro/queues';
+import { getAdminBasicAuth, HTTP } from '@takaro/http';
 import { errors, logger } from '@takaro/util';
 import { DomainController } from './controllers/DomainController.js';
 import { Server as HttpServer } from 'http';
@@ -134,6 +134,8 @@ async function main() {
   }
 
   await getSocketServer(server.server as HttpServer);
+  server.expressInstance.use('/queues', getAdminBasicAuth(config.get('adminClientSecret')), getBullBoard());
+
   await server.start();
 
   log.info('🚀 Server started');
