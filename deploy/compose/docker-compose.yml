@@ -72,7 +72,7 @@ services:
     restart: unless-stopped
 
   postgresql:
-    image: postgres:15
+    image: postgres:17
     ports:
       - 127.0.0.1:15432:5432
     volumes:
@@ -107,7 +107,7 @@ services:
     volumes:
       - ../../containers/ory/kratos:/etc/config/kratos    
   postgresql_kratos:
-    image: postgres:15
+    image: postgres:17
     ports:
       - 127.0.0.1:13101:5432
     volumes:
