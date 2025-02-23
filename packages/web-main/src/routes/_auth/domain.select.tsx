@@ -1,23 +1,20 @@
-import { Card, Chip, Company, styled, Tooltip, Button } from '@takaro/lib-components';
+import { Card, Chip, Company, styled, Tooltip } from '@takaro/lib-components';
 import { DomainOutputDTO, DomainOutputDTOStateEnum } from '@takaro/apiclient';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useUserSetSelectedDomain, userMeQueryOptions } from '../../queries/user';
 import { MdDomain as DomainIcon } from 'react-icons/md';
 import { AiOutlineArrowRight as ArrowRightIcon } from 'react-icons/ai';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { getConfigVar } from '../../util/getConfigVar';
 import { TAKARO_DOMAIN_COOKIE_REGEX } from '../../util/domainCookieRegex';
 
 const Container = styled.div`
   padding: ${({ theme }) => theme.spacing[4]};
-  height: 100vh;
+  min-height: 100vh;
 `;
 
 const DomainCardList = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   margin: auto;
   gap: ${({ theme }) => theme.spacing[2]};
   width: 100%;
@@ -58,20 +55,13 @@ function Component() {
     }
     return 0;
   });
-  // TODO: manage plan depends on this functioning correctly
-  const isDomainOwner = false;
 
   return (
     <Container>
       <Company />
       <DomainCardList>
         {me.domains.map((domain) => (
-          <DomainCard
-            key={domain.id}
-            domain={domain}
-            isCurrentDomain={currentDomain === domain.id}
-            isDomainOwner={isDomainOwner}
-          />
+          <DomainCard key={domain.id} domain={domain} isCurrentDomain={currentDomain === domain.id} />
         ))}
       </DomainCardList>
     </Container>
@@ -81,10 +71,9 @@ function Component() {
 interface DomainCardProps {
   domain: DomainOutputDTO;
   isCurrentDomain: boolean;
-  isDomainOwner: boolean;
 }
 
-function DomainCard({ domain, isCurrentDomain, isDomainOwner }: DomainCardProps) {
+function DomainCard({ domain, isCurrentDomain }: DomainCardProps) {
   const navigate = useNavigate();
   const { mutate, isSuccess } = useUserSetSelectedDomain();
   const queryClient = useQueryClient();
@@ -106,7 +95,6 @@ function DomainCard({ domain, isCurrentDomain, isDomainOwner }: DomainCardProps)
     navigate({ to: '/dashboard' });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   function getDomainChip() {
     switch (domain.state) {
       case DomainOutputDTOStateEnum.Disabled: {
@@ -115,10 +103,7 @@ function DomainCard({ domain, isCurrentDomain, isDomainOwner }: DomainCardProps)
             <Tooltip.Trigger>
               <Chip variant="outline" color="error" label="Disabled" />
             </Tooltip.Trigger>
-            <Tooltip.Content>
-              Domain disabled - this is likely due to an expired plan. Click manage plan to update your payment to
-              restore access.
-            </Tooltip.Content>
+            <Tooltip.Content>Domain disabled - this is likely due to an expired plan.</Tooltip.Content>
           </Tooltip>
         );
       }
@@ -150,20 +135,15 @@ function DomainCard({ domain, isCurrentDomain, isDomainOwner }: DomainCardProps)
         <InnerBody>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <DomainIcon size={30} />
-            {isCurrentDomain && <Chip variant="outline" color="primary" label="current domain" />}
-            {isDisabled && <Chip variant="outline" color="warning" label="disabled" />}
+            <div style={{ display: 'flex', gap: '10px' }}>
+              {isCurrentDomain && <Chip variant="outline" color="primary" label="current domain" />}
+              {getDomainChip()}
+            </div>
           </div>
           <h2 style={{ display: 'flex', alignItems: 'center' }}>
             {domain.name}
             <ArrowRightIcon size={18} style={{ marginLeft: '10px' }} />
           </h2>
-          <div style={{ marginLeft: 'auto' }}>
-            {isDomainOwner && (
-              <a href={getConfigVar('billingManageUrl')} rel="noreferrer">
-                <Button color="primary" text="Manage plan" />
-              </a>
-            )}
-          </div>
         </InnerBody>
       </Card.Body>
     </Card>
