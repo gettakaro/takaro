@@ -1,7 +1,7 @@
 import { IntegrationTest, SetupGameServerPlayers, expect } from '@takaro/test';
 import { queueService } from '@takaro/queues';
 import { randomUUID } from 'node:crypto';
-import { Client } from '@takaro/apiclient';
+import { Client, isAxiosError } from '@takaro/apiclient';
 import { describe } from 'node:test';
 
 async function triggerBanSync(domainId: string, gameServerId: string) {
@@ -208,7 +208,6 @@ const tests = [
     test: async function () {
       if (!this.standardDomainId) throw new Error('Standard domain ID not found');
       await this.client.player.banControllerCreate({
-        gameServerId: this.setupData.gameServer1.id,
         playerId: this.setupData.pogs1[0].playerId,
         reason: 'reason',
         isGlobal: true,
@@ -235,8 +234,7 @@ const tests = [
     setup: SetupGameServerPlayers.setup,
     test: async function () {
       if (!this.standardDomainId) throw new Error('Standard domain ID not found');
-      await this.client.player.banControllerCreate({
-        gameServerId: this.setupData.gameServer1.id,
+      const createRes = await this.client.player.banControllerCreate({
         playerId: this.setupData.pogs1[0].playerId,
         reason: 'reason',
         isGlobal: true,
@@ -250,7 +248,7 @@ const tests = [
 
       expect(bans.data.data.length).to.equal(1);
 
-      await this.client.player.banControllerDelete(bans.data.data[0].id);
+      await this.client.player.banControllerDelete(createRes.data.data.id);
 
       await triggerBanSync(this.standardDomainId, this.setupData.gameServer1.id);
 
@@ -259,6 +257,56 @@ const tests = [
       });
 
       expect(bans.data.data.length).to.equal(0);
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: true,
+    name: 'Creating a global ban and passing a gameserver ID errors',
+    setup: SetupGameServerPlayers.setup,
+    expectedStatus: 400,
+    test: async function () {
+      if (!this.standardDomainId) throw new Error('Standard domain ID not found');
+      try {
+        await this.client.player.banControllerCreate({
+          playerId: this.setupData.pogs1[0].playerId,
+          reason: 'reason',
+          isGlobal: true,
+          gameServerId: this.setupData.gameServer1.id,
+        });
+      } catch (error) {
+        if (!isAxiosError(error)) throw error;
+        expect(error.response?.status).to.equal(400);
+        expect(error.response?.data.meta.error.message).to.equal(
+          'When creating a global ban, gameServerId must be null. When creating a non-global ban, gameServerId must be set.',
+        );
+        return error.response;
+      }
+    },
+  }),
+
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: true,
+    name: 'Creating a non-global ban and not passing a gameserver ID errors',
+    setup: SetupGameServerPlayers.setup,
+    expectedStatus: 400,
+    test: async function () {
+      if (!this.standardDomainId) throw new Error('Standard domain ID not found');
+      try {
+        await this.client.player.banControllerCreate({
+          playerId: this.setupData.pogs1[0].playerId,
+          reason: 'reason',
+          isGlobal: false,
+        });
+      } catch (error) {
+        if (!isAxiosError(error)) throw error;
+        expect(error.response?.status).to.equal(400);
+        expect(error.response?.data.meta.error.message).to.equal(
+          'When creating a global ban, gameServerId must be null. When creating a non-global ban, gameServerId must be set.',
+        );
+        return error.response;
+      }
     },
   }),
 ];
