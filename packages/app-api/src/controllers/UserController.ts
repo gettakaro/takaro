@@ -186,6 +186,20 @@ export class UserController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_USERS], false))
   @ResponseSchema(UserOutputArrayDTOAPI)
+  @OpenAPI({
+    requestBody: {
+      content: {
+        'application/json': {
+          examples: {
+            membersOfRole: {
+              summary: 'Get all users with a specific role',
+              value: { filters: { roleId: ['1ec529af-0f8f-4d8d-b06a-7f83c64f0086'] } },
+            },
+          },
+        },
+      },
+    },
+  })
   @Post('/user/search')
   async search(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: UserSearchInputDTO) {
     const service = new UserService(req.domainId);
