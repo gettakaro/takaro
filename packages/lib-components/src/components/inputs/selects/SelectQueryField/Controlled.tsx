@@ -33,6 +33,7 @@ export const ControlledSelectQueryField: FC<ControlledSelectQueryFieldProps> & S
     isFetching,
     isFetchingNextPage,
     optionCount,
+    selectAll,
     handleInputValueChange,
   } = defaultsApplier(props);
 
@@ -93,6 +94,7 @@ export const ControlledSelectQueryField: FC<ControlledSelectQueryFieldProps> & S
           isFetching={isFetching}
           isFetchingNextPage={isFetchingNextPage}
           hasNextPage={hasNextPage}
+          selectAll={selectAll}
           fetchNextPage={fetchNextPage}
         >
           {children}
