@@ -56,7 +56,15 @@ export const userQueryOptions = (userId: string) =>
 export const userCountQueryOptions = () =>
   queryOptions<number, AxiosError<number>>({
     queryKey: userKeys.count(),
-    queryFn: async () => (await getApiClient().user.userControllerSearch({ limit: 1 })).data.meta.total!,
+    queryFn: async () =>
+      (
+        await getApiClient().user.userControllerSearch({
+          limit: 1,
+          filters: {
+            isDashboardUser: [true],
+          },
+        })
+      ).data.meta.total!,
   });
 
 export const userMeQueryOptions = () =>
