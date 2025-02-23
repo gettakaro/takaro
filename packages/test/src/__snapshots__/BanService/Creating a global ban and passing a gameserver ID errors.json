@@ -1,0 +1,20 @@
+{
+  "body": {
+    "meta": {
+      "error": {
+        "code": "BadRequestError",
+        "message": "When creating a global ban, gameServerId must be null. When creating a non-global ban, gameServerId must be set."
+      }
+    },
+    "data": {}
+  },
+  "status": 400,
+  "test": {
+    "group": "BanService",
+    "snapshot": true,
+    "name": "Creating a global ban and passing a gameserver ID errors",
+    "expectedStatus": 400,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}
