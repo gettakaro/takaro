@@ -10,7 +10,7 @@ import { Type } from 'class-transformer';
 import { ParamId, ParamIdAndRoleId } from '../lib/validators.js';
 import { Request, Response } from 'express';
 import { PERMISSIONS } from '@takaro/auth';
-import { AllowedFilters, RangeFilterCreatedAndUpdatedAt } from './shared.js';
+import { AllowedFilters, AllowedSearch, RangeFilterCreatedAndUpdatedAt } from './shared.js';
 import { DomainOutputDTO, DomainService } from '../service/DomainService.js';
 import { TakaroDTO } from '@takaro/util';
 import { config } from '../config.js';
@@ -106,6 +106,12 @@ class UserSearchInputAllowedFilters extends AllowedFilters {
   isDashboardUser?: boolean[];
 }
 
+class UserSearchInputAllowedSearch extends AllowedSearch {
+  @IsOptional()
+  @IsString({ each: true })
+  name?: string[] | undefined;
+}
+
 class UserSearchInputAllowedRangeFilter extends RangeFilterCreatedAndUpdatedAt {
   @IsOptional()
   @IsISO8601()
@@ -118,8 +124,8 @@ export class UserSearchInputDTO extends ITakaroQuery<UserOutputDTO> {
   declare filters: UserSearchInputAllowedFilters;
 
   @ValidateNested()
-  @Type(() => UserSearchInputAllowedFilters)
-  declare search: UserSearchInputAllowedFilters;
+  @Type(() => UserSearchInputAllowedSearch)
+  declare search: UserSearchInputAllowedSearch;
 
   @ValidateNested()
   @Type(() => UserSearchInputAllowedRangeFilter)
@@ -180,6 +186,20 @@ export class UserController {
 
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_USERS], false))
   @ResponseSchema(UserOutputArrayDTOAPI)
+  @OpenAPI({
+    requestBody: {
+      content: {
+        'application/json': {
+          examples: {
+            membersOfRole: {
+              summary: 'Get all users with a specific role',
+              value: { filters: { roleId: ['1ec529af-0f8f-4d8d-b06a-7f83c64f0086'] } },
+            },
+          },
+        },
+      },
+    },
+  })
   @Post('/user/search')
   async search(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: UserSearchInputDTO) {
     const service = new UserService(req.domainId);

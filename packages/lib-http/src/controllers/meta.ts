@@ -7,6 +7,8 @@ import { getMetrics, health } from '@takaro/util';
 import { OpenAPIObject } from 'openapi3-ts';
 import { PERMISSIONS } from '@takaro/auth';
 import { EventMapping } from '@takaro/modules';
+import { randomUUID } from 'crypto';
+import dedent from 'dedent';
 
 let spec: OpenAPIObject | undefined;
 
@@ -14,6 +16,68 @@ export class HealthOutputDTO {
   @IsBoolean()
   healthy!: boolean;
 }
+
+function addSearchExamples(original: OpenAPIObject): OpenAPIObject {
+  // Copy the spec so we don't mutate the original
+  const spec = JSON.parse(JSON.stringify(original));
+
+  // Add some examples and info to all the POST /search endpoints
+  Object.keys(spec.paths).forEach((pathKey) => {
+    const pathItem = spec?.paths[pathKey];
+    Object.keys(pathItem).forEach((method) => {
+      const operation = pathItem[method];
+      if (method === 'post' && pathKey.endsWith('/search')) {
+        const standardExamples = {
+          list: {
+            summary: 'List all',
+            value: {},
+          },
+          advanced: {
+            summary: 'Advanced search',
+            description: dedent`All /search endpoints allow you to combine different filters, search terms and ranges.
+            Filters are exact matches, search terms are partial matches and ranges are greater than or less than comparisons.
+            Ranges allow you to make queries like "all records created in the last 7 days" or "all records with an age greater than 18".
+
+            In search and filter sections, you pass an array of values for each property 
+            These values are OR'ed together. So we'll get 2 records back in this case, if the IDs exist.
+
+            Eg: \`{"filters": {"id": ["${randomUUID()}", "${randomUUID()}"]}}\`
+
+            Different filters will be AND'ed together.
+            This will return all records where the name is John and the age is 19.
+
+            Eg: \`{"filters": {"name": "John", "age": 19}}\`            
+            `,
+            value: {
+              filters: {
+                id: ['ea85ddf4-2885-482f-adc6-548fbe3fd8af'],
+              },
+              greaterThan: { createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString() },
+            },
+          },
+        };
+
+        if (!operation.requestBody) {
+          operation.requestBody = {
+            content: {
+              'application/json': {
+                examples: standardExamples,
+              },
+            },
+          };
+        }
+
+        operation.requestBody.content['application/json'].examples = {
+          ...standardExamples,
+          ...operation.requestBody.content['application/json'].examples,
+        };
+      }
+    });
+  });
+
+  return spec;
+}
+
 @Controller()
 export class Meta {
   @Get('/healthz')
@@ -143,6 +207,7 @@ export class Meta {
       };
     }
 
+    spec = addSearchExamples(spec);
     return spec;
   }
 

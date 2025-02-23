@@ -17,7 +17,7 @@ import { Type } from 'class-transformer';
 import { ParamId } from '../lib/validators.js';
 import { Response } from 'express';
 import { PERMISSIONS } from '@takaro/auth';
-import { AllowedFilters, PaginationParams } from './shared.js';
+import { AllowedFilters, AllowedSearch, PaginationParams } from './shared.js';
 
 export class RoleOutputDTOAPI extends APIOutput<RoleOutputDTO> {
   @Type(() => RoleOutputDTO)
@@ -37,14 +37,20 @@ export class RoleSearchInputAllowedFilters extends AllowedFilters {
   name!: string[];
 }
 
+export class RoleSearchInputAllowedSearch extends AllowedSearch {
+  @IsOptional()
+  @IsString({ each: true })
+  name!: string[];
+}
+
 export class RoleSearchInputDTO extends ITakaroQuery<SearchRoleInputDTO> {
   @ValidateNested()
   @Type(() => RoleSearchInputAllowedFilters)
   declare filters: RoleSearchInputAllowedFilters;
 
   @ValidateNested()
-  @Type(() => RoleSearchInputAllowedFilters)
-  declare search: RoleSearchInputAllowedFilters;
+  @Type(() => RoleSearchInputAllowedSearch)
+  declare search: RoleSearchInputAllowedSearch;
 }
 
 export class PermissionOutputDTOAPI extends APIOutput<PermissionOutputDTO[]> {

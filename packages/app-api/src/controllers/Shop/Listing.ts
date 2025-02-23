@@ -9,7 +9,7 @@ import { Type } from 'class-transformer';
 import { ParamId } from '../../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
-import { AllowedFilters, RangeFilterCreatedAndUpdatedAt } from '../shared.js';
+import { AllowedFilters, AllowedSearch, RangeFilterCreatedAndUpdatedAt } from '../shared.js';
 import {
   ShopListingOutputDTO,
   ShopListingUpdateDTO,
@@ -59,6 +59,12 @@ class ShopListingSearchInputAllowedFilters extends AllowedFilters {
   draft: boolean;
 }
 
+class ShopListingSearchInputAllowedSearch extends AllowedSearch {
+  @IsOptional()
+  @IsString({ each: true })
+  name: string[];
+}
+
 class ShopSearchInputAllowedRangeFilter extends RangeFilterCreatedAndUpdatedAt {
   @IsOptional()
   @IsNumber()
@@ -74,8 +80,8 @@ class ShopListingSearchInputDTO extends ITakaroQuery<ShopListingSearchInputAllow
   declare filters: ShopListingSearchInputAllowedFilters;
 
   @ValidateNested()
-  @Type(() => ShopListingSearchInputAllowedFilters)
-  declare search: ShopListingSearchInputAllowedFilters;
+  @Type(() => ShopListingSearchInputAllowedSearch)
+  declare search: ShopListingSearchInputAllowedSearch;
 
   @ValidateNested()
   @Type(() => ShopSearchInputAllowedRangeFilter)

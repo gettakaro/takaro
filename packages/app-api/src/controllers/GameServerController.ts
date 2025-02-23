@@ -48,7 +48,7 @@ import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 import { PlayerOnGameserverOutputDTOAPI } from './PlayerOnGameserverController.js';
 import { UserService } from '../service/User/index.js';
-import { AllowedFilters } from './shared.js';
+import { AllowedFilters, AllowedSearch } from './shared.js';
 import multer from 'multer';
 
 const storage = multer.memoryStorage();
@@ -103,14 +103,20 @@ class GameServerSearchInputAllowedFilters extends AllowedFilters {
   enabled!: boolean[];
 }
 
+class GameServerSearchInputAllowedSearch extends AllowedSearch {
+  @IsOptional()
+  @IsString({ each: true })
+  name!: string[];
+}
+
 class GameServerSearchInputDTO extends ITakaroQuery<GameServerOutputDTO> {
   @ValidateNested()
   @Type(() => GameServerSearchInputAllowedFilters)
   declare filters: GameServerSearchInputAllowedFilters;
 
   @ValidateNested()
-  @Type(() => GameServerSearchInputAllowedFilters)
-  declare search: GameServerSearchInputAllowedFilters;
+  @Type(() => GameServerSearchInputAllowedSearch)
+  declare search: GameServerSearchInputAllowedSearch;
 }
 
 class GameServerTestReachabilityInputDTO extends TakaroDTO<GameServerTestReachabilityInputDTO> {

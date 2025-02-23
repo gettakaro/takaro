@@ -61,10 +61,6 @@ class PlayerOnGameServerSearchInputDTO extends ITakaroQuery<PlayerOnGameserverOu
   declare filters: PlayerOnGameServerSearchInputAllowedFilters;
 
   @ValidateNested()
-  @Type(() => PlayerOnGameServerSearchInputAllowedFilters)
-  declare search: PlayerOnGameServerSearchInputAllowedFilters;
-
-  @ValidateNested()
   @Type(() => PlayerOnGameServerSearchInputAllowedRangeFilter)
   declare greaterThan: PlayerOnGameServerSearchInputAllowedRangeFilter;
 
@@ -94,6 +90,28 @@ class ParamSenderReceiver {
 export class PlayerOnGameServerController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_PLAYERS]))
   @ResponseSchema(PlayerOnGameserverOutputArrayDTOAPI)
+  @OpenAPI({
+    requestBody: {
+      content: {
+        'application/json': {
+          examples: {
+            onlinePlayers: {
+              summary: 'Get online players for a specific server',
+              value: { filters: { gameServerId: ['22ed5acb-8d98-4dc9-9328-11d842132e08'], online: [true] } },
+            },
+            richestPlayers: {
+              summary: 'Get top 10 richest players',
+              value: { sortBy: 'currency', sortDirection: 'desc', limit: 10 },
+            },
+            recentlyOnline: {
+              summary: 'Get players who were online in the last 24 hours',
+              value: { greaterThan: { lastSeen: '2021-01-01T00:00:00Z' } },
+            },
+          },
+        },
+      },
+    },
+  })
   @Post('/gameserver/player/search')
   async search(
     @Req() req: AuthenticatedRequest,

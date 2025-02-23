@@ -50,9 +50,6 @@ export class BanSearchInputDTO extends ITakaroQuery<BanOutputDTO> {
   @Type(() => BanSearchInputAllowedFilters)
   declare filters: BanSearchInputAllowedFilters;
   @ValidateNested()
-  @Type(() => BanSearchInputAllowedFilters)
-  declare search: BanSearchInputAllowedFilters;
-  @ValidateNested()
   @Type(() => BanSearchInputAllowedRangeFilter)
   declare greaterThan: BanSearchInputAllowedRangeFilter;
   @ValidateNested()

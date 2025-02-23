@@ -9,7 +9,7 @@ import { ParamId } from '../lib/validators.js';
 import { AuthService, AuthenticatedRequest } from '../service/AuthService.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
-import { AllowedFilters } from './shared.js';
+import { AllowedFilters, AllowedSearch } from './shared.js';
 
 export class ItemOutputDTOAPI extends APIOutput<ItemsOutputDTO> {
   @Type(() => ItemsOutputDTO)
@@ -37,14 +37,23 @@ class ItemSearchInputAllowedFilters extends AllowedFilters {
   gameserverId!: string[];
 }
 
+class ItemSearchInputAllowedSearch extends AllowedSearch {
+  @IsOptional()
+  @IsString({ each: true })
+  name!: string[];
+  @IsOptional()
+  @IsString({ each: true })
+  code!: string[];
+}
+
 class ItemSearchInputDTO extends ITakaroQuery<ItemSearchInputAllowedFilters> {
   @ValidateNested()
   @Type(() => ItemSearchInputAllowedFilters)
   declare filters: ItemSearchInputAllowedFilters;
 
   @ValidateNested()
-  @Type(() => ItemSearchInputAllowedFilters)
-  declare search: ItemSearchInputAllowedFilters;
+  @Type(() => ItemSearchInputAllowedSearch)
+  declare search: ItemSearchInputAllowedSearch;
 }
 
 @OpenAPI({

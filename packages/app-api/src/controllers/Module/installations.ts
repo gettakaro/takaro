@@ -39,10 +39,6 @@ class ModuleInstallationSearchInputDTO extends ITakaroQuery<ModuleInstallationSe
   @ValidateNested()
   @Type(() => ModuleInstallationSearchInputAllowedFilters)
   declare filters: ModuleInstallationSearchInputAllowedFilters;
-
-  @ValidateNested()
-  @Type(() => ModuleInstallationSearchInputAllowedFilters)
-  declare search: ModuleInstallationSearchInputAllowedFilters;
 }
 
 class ModuleInstallParamId {
