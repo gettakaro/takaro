@@ -11,7 +11,7 @@ import cronstrue from 'cronstrue';
 
 import { Size } from '../../../styled';
 import { AiOutlineEye as ShowPasswordIcon, AiOutlineEyeInvisible as HidePasswordIcon } from 'react-icons/ai';
-import { getFieldType, getInputMode, isNumber } from './util';
+import { getFieldType, getInputMode } from './util';
 import { defaultInputProps, defaultInputPropsFactory, GenericInputProps } from '../InputProps';
 import { setAriaDescribedBy } from '../layout';
 
@@ -56,7 +56,8 @@ export const GenericTextField = forwardRef<HTMLInputElement, GenericTextFieldPro
     const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
       // not a perfect solution, but works for now
       if (type === 'number') {
-        if (isNumber(e.target.value) || e.target.value === '-') {
+        const value = e.target.value;
+        if (value === '' || /^-?\d*\.?\d*$/.test(value)) {
           onChange(e);
         }
       } else {

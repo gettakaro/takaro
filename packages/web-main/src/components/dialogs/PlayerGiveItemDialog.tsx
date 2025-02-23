@@ -1,4 +1,4 @@
-import { Button, Dialog, TextField } from '@takaro/lib-components';
+import { Alert, Button, Dialog, TextField } from '@takaro/lib-components';
 import { ItemSelectQueryField } from '../../components/selects/ItemSelectQueryField';
 import { FC } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
@@ -14,18 +14,21 @@ interface PlayerGiveItemDialogProps extends RequiredDialogOptions {
 
 const validationSchema = z.object({
   itemId: z.string().min(1),
-  amount: z.number().positive(),
-  quality: z.string(),
+  amount: z.number().positive().min(1),
+  quality: z.string().optional(),
 });
 
 export const PlayerGiveItemDialog: FC<PlayerGiveItemDialogProps> = ({ gameServerId, playerId, ...dialogOptions }) => {
   const { control, handleSubmit } = useForm<z.infer<typeof validationSchema>>({
     resolver: zodResolver(validationSchema),
+    defaultValues: {
+      amount: 1,
+    },
   });
   const { mutate } = useGiveItem();
 
   const onSubmit: SubmitHandler<z.infer<typeof validationSchema>> = ({ itemId, amount, quality }) => {
-    mutate({ playerId, gameServerId, name: itemId, amount, quality });
+    mutate({ playerId, gameServerId, name: itemId, amount, quality: quality ?? '0' });
     dialogOptions.onOpenChange(false);
   };
 
@@ -37,9 +40,14 @@ export const PlayerGiveItemDialog: FC<PlayerGiveItemDialogProps> = ({ gameServer
         </Dialog.Heading>
         <Dialog.Body>
           <form onSubmit={handleSubmit(onSubmit)}>
+            <Alert
+              variant="warning"
+              text="Takaro currently cannot detetermine whether an item supports quality. If you assign a quality to an item that doesn't support it,
+              the item will not be given."
+            />
             <ItemSelectQueryField name="itemId" control={control} gameServerId={gameServerId} />
-            <TextField label="Amount" name="amount" type="number" control={control} />
-            <TextField label="Quality" name="quality" type="number" control={control} />
+            <TextField label="Amount" name="amount" type="number" control={control} required />
+            <TextField label="Quality" name="quality" control={control} />
             <Button type="submit" fullWidth text="Give item" />
           </form>
         </Dialog.Body>

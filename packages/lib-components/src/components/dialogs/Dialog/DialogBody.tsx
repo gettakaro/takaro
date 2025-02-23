@@ -7,6 +7,7 @@ const Container = styled.div<{ size: Size }>`
   flex-flow: column nowrap;
   align-items: center;
   width: 100%;
+  min-width: 350px;
   margin: 0 auto;
   padding: ${({ theme }) => theme.spacing[4]};
 

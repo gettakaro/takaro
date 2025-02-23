@@ -104,15 +104,15 @@ export class ModuleVersion extends TakaroModel {
       // Loads a bunch of related data we always need for the DTO
       standardExtend(query: Objection.QueryBuilder<Model>) {
         query
-          .withGraphJoined('hooks')
-          .withGraphJoined('commands')
-          .withGraphJoined('cronJobs')
-          .withGraphJoined('functions')
-          .withGraphJoined('permissions')
-          .withGraphJoined('hooks.function')
-          .withGraphJoined('cronJobs.function')
-          .withGraphJoined('commands.function')
-          .withGraphJoined('commands.arguments');
+          .withGraphFetched('hooks')
+          .withGraphFetched('commands')
+          .withGraphFetched('cronJobs')
+          .withGraphFetched('functions')
+          .withGraphFetched('permissions')
+          .withGraphFetched('hooks.function')
+          .withGraphFetched('cronJobs.function')
+          .withGraphFetched('commands.function')
+          .withGraphFetched('commands.arguments');
       },
     };
   }
@@ -162,14 +162,14 @@ export class ModuleInstallationModel extends TakaroModel {
       // Loads a bunch of related data we always need for the DTO
       standardExtend(query: Objection.QueryBuilder<Model>) {
         query
-          .withGraphJoined('version')
-          .withGraphJoined('version.cronJobs')
-          .withGraphJoined('version.cronJobs.function')
-          .withGraphJoined('version.hooks')
-          .withGraphJoined('version.commands')
-          .withGraphJoined('version.permissions')
-          .withGraphJoined('version.functions')
-          .withGraphJoined('module');
+          .withGraphFetched('version')
+          .withGraphFetched('version.cronJobs')
+          .withGraphFetched('version.cronJobs.function')
+          .withGraphFetched('version.hooks')
+          .withGraphFetched('version.commands')
+          .withGraphFetched('version.permissions')
+          .withGraphFetched('version.functions')
+          .withGraphFetched('module');
       },
     };
   }
@@ -419,12 +419,19 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
   async findByFunction(functionId: string): Promise<ModuleVersionOutputDTO> {
     const { queryVersion } = await this.getModel();
     const item = await queryVersion
-      .findOne('hooks.functionId', functionId)
-      .orWhere('commands.functionId', functionId)
-      .orWhere('cronJobs.functionId', functionId)
-      .modify('standardExtend');
-    if (!item) throw new errors.NotFoundError();
-    return this.findOneVersion(item.id);
+      .withGraphJoined('functions')
+      .withGraphJoined('commands')
+      .withGraphJoined('hooks')
+      .withGraphJoined('cronJobs')
+      .where((builder) => {
+        builder
+          .orWhere('hooks.functionId', functionId)
+          .orWhere('commands.functionId', functionId)
+          .orWhere('cronJobs.functionId', functionId)
+          .orWhere('functions.id', functionId);
+      });
+    if (!item[0]) throw new errors.NotFoundError();
+    return this.findOneVersion(item[0].id);
   }
 
   async getVersion(id: string): Promise<ModuleVersionOutputDTO> {

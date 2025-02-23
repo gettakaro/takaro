@@ -1,4 +1,4 @@
-import { Button, Dialog, styled, TextField } from '@takaro/lib-components';
+import { Button, Dialog, FormError, styled, TextField } from '@takaro/lib-components';
 import { FC } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
@@ -43,16 +43,16 @@ interface TeleportPlayerForm {
 }
 const TeleportPlayerForm: FC<TeleportPlayerForm> = ({ gameServerId, playerId, onSuccess }) => {
   const validationSchema = z.object({
-    x: z.number(),
-    y: z.number(),
-    z: z.number(),
+    x: z.number({ required_error: 'x coordinate is required' }).int(),
+    y: z.number({ required_error: 'y coordinate is required' }).int(),
+    z: z.number({ required_error: 'z coordinate is required' }).int(),
   });
   const { control, handleSubmit } = useForm<z.infer<typeof validationSchema>>({
     resolver: zodResolver(validationSchema),
   });
+  const { mutate, error } = useTeleportPlayer();
 
   const onSubmit: SubmitHandler<z.infer<typeof validationSchema>> = ({ x, y, z }) => {
-    const { mutate } = useTeleportPlayer();
     try {
       mutate({ playerId, gameServerId, x, y, z });
       onSuccess();
@@ -68,6 +68,7 @@ const TeleportPlayerForm: FC<TeleportPlayerForm> = ({ gameServerId, playerId, on
         <TextField type="number" label="Y coordinate" name="y" control={control} placeholder="100" />
         <TextField type="number" label="Z coordinate" name="z" control={control} placeholder="100" />
       </Container>
+      {error && <FormError error={error} />}
       <Button type="submit" fullWidth text="Teleport player" />
     </form>
   );
