@@ -210,7 +210,7 @@ const tests = [
   }),
   new IntegrationTest<ISetupData>({
     group,
-    snapshot: true,
+    snapshot: false,
     name: 'Installing with correct system config - multiple cron jobs',
     setup,
     test: async function () {
@@ -223,7 +223,7 @@ const tests = [
 
       const updatedModuleRes = await this.client.module.moduleControllerGetOne(this.setupData.cronJobsModule.id);
 
-      return await this.client.module.moduleInstallationsControllerInstallModule({
+      const res = await this.client.module.moduleInstallationsControllerInstallModule({
         gameServerId: this.setupData.gameserver.id,
         versionId: this.setupData.cronJobsModule.latestVersion.id,
 
@@ -234,6 +234,14 @@ const tests = [
           },
         }),
       });
+
+      const data = res.data.data;
+      expect(
+        (data.systemConfig as Record<string, any>).cronJobs[updatedModuleRes.data.data.latestVersion.cronJobs[0].name],
+      ).to.not.be.undefined;
+      expect(
+        (data.systemConfig as Record<string, any>).cronJobs[updatedModuleRes.data.data.latestVersion.cronJobs[1].name],
+      ).to.not.be.undefined;
     },
     filteredFields: ['gameserverId', 'moduleId', 'functionId'],
   }),
