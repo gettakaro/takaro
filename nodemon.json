@@ -4,5 +4,8 @@
   "watch": [
     "src"
   ],
-  "ext": "ts"
+  "ext": "ts",
+  "ignore": [
+    "**/*.test.ts"
+  ]
 }

@@ -213,7 +213,13 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
 
     return {
       total: result.total,
-      results: result.results.map((_) => new ModuleVersionOutputDTO(_)),
+      results: result.results.map(
+        (_) =>
+          new ModuleVersionOutputDTO({
+            ..._,
+            systemConfigSchema: getSystemConfigSchema(_ as unknown as ModuleVersionOutputDTO),
+          }),
+      ),
     };
   }
 

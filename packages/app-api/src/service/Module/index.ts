@@ -91,7 +91,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
   }
 
   async findOneVersion(id: string): Promise<ModuleVersionOutputDTO | undefined> {
-    return this.repo.findOneVersion(id);
+    return await this.repo.findOneVersion(id);
   }
 
   async findOneInstallation(gameServerId: string, moduleId: string) {
