@@ -40,9 +40,6 @@ export class EventSearchInputDTO extends ITakaroQuery<EventOutputDTO> {
   @Type(() => EventSearchInputAllowedFilters)
   declare filters: EventSearchInputAllowedFilters;
   @ValidateNested()
-  @Type(() => EventSearchInputAllowedFilters)
-  declare search: EventSearchInputAllowedFilters;
-  @ValidateNested()
   @Type(() => RangeFilterCreatedAndUpdatedAt)
   declare greaterThan: RangeFilterCreatedAndUpdatedAt;
   @ValidateNested()

@@ -33,7 +33,7 @@ import { Response } from 'express';
 import { moduleProtectionMiddleware } from '../middlewares/moduleProtectionMiddleware.js';
 import { EventService, EVENT_TYPES } from '../service/EventService.js';
 import { EventOutputArrayDTOAPI, EventSearchInputDTO } from './EventController.js';
-import { AllowedFilters } from './shared.js';
+import { AllowedFilters, AllowedSearch } from './shared.js';
 
 export class CommandOutputDTOAPI extends APIOutput<CommandOutputDTO> {
   @Type(() => CommandOutputDTO)
@@ -57,14 +57,18 @@ class CommandSearchInputAllowedFilters extends AllowedFilters {
   @IsOptional()
   @IsUUID(4, { each: true })
   moduleId!: string[];
-
   @IsOptional()
   @IsString({ each: true })
   name!: string[];
-
   @IsOptional()
   @IsBoolean({ each: true })
   enabled!: boolean[];
+}
+
+class CommandSearchInputAllowedSearch extends AllowedSearch {
+  @IsOptional()
+  @IsString({ each: true })
+  name!: string[];
 }
 
 export class CommandSearchInputDTO extends ITakaroQuery<CommandOutputDTO> {
@@ -73,8 +77,8 @@ export class CommandSearchInputDTO extends ITakaroQuery<CommandOutputDTO> {
   declare filters: CommandSearchInputAllowedFilters;
 
   @ValidateNested()
-  @Type(() => CommandSearchInputAllowedFilters)
-  declare search: CommandSearchInputAllowedFilters;
+  @Type(() => CommandSearchInputAllowedSearch)
+  declare search: CommandSearchInputAllowedSearch;
 }
 
 @OpenAPI({
