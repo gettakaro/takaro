@@ -1,5 +1,5 @@
 import { takaro, data, checkPermission, TakaroUserError } from '@takaro/helpers';
-import { ensureWaypointsModule, getWaypointName } from './utils.js';
+import { ensureWaypointsModule, getWaypointName, waypointReconciler } from './utils.js';
 
 async function main() {
   const { pog, gameServerId, arguments: args } = data;
@@ -23,18 +23,7 @@ async function main() {
   }
 
   await takaro.variable.variableControllerDelete(variable.data.data[0].id);
-
-  const teleportCommand = await takaro.command.commandControllerSearch({
-    filters: {
-      moduleId: [waypointsInstallation.moduleId],
-      name: [`waypoint ${args.waypoint} server ${gameServerId}`],
-    },
-  });
-
-  if (teleportCommand.data.data.length) {
-    await takaro.command.commandControllerRemove(teleportCommand.data.data[0].id);
-  }
-
+  await waypointReconciler();
   await pog.pm(`Waypoint ${args.waypoint} deleted.`);
 }
 
