@@ -423,10 +423,13 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
       .withGraphJoined('commands')
       .withGraphJoined('hooks')
       .withGraphJoined('cronJobs')
-      .orWhere('hooks.functionId', functionId)
-      .orWhere('commands.functionId', functionId)
-      .orWhere('cronJobs.functionId', functionId)
-      .orWhere('functions.id', functionId);
+      .where((builder) => {
+        builder
+          .orWhere('hooks.functionId', functionId)
+          .orWhere('commands.functionId', functionId)
+          .orWhere('cronJobs.functionId', functionId)
+          .orWhere('functions.id', functionId);
+      });
     if (!item[0]) throw new errors.NotFoundError();
     return this.findOneVersion(item[0].id);
   }
