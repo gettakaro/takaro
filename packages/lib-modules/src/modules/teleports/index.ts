@@ -1,4 +1,11 @@
-import { ModuleTransferDTO, ICommand, IFunction, IPermission, ModuleTransferVersionDTO } from '../../BuiltinModule.js';
+import {
+  ModuleTransferDTO,
+  ICommand,
+  IFunction,
+  IPermission,
+  ModuleTransferVersionDTO,
+  ICronJob,
+} from '../../BuiltinModule.js';
 import { Duration } from 'luxon';
 
 export class Teleports extends ModuleTransferDTO<Teleports> {
@@ -8,7 +15,7 @@ export class Teleports extends ModuleTransferDTO<Teleports> {
     this.name = 'teleports';
     this.versions = [
       new ModuleTransferVersionDTO({
-        tag: '0.0.1',
+        tag: '0.0.2',
         description: 'A set of commands to allow players to set their own teleport points and teleport to them.',
         configSchema: JSON.stringify({
           $schema: 'http://json-schema.org/draft-07/schema#',
@@ -187,6 +194,13 @@ export class Teleports extends ModuleTransferDTO<Teleports> {
             arguments: [],
             helpText:
               'Placeholder command, this will not be used directly. The module will install aliases for this command corresponding to the waypoint names.',
+          }),
+        ],
+        cronJobs: [
+          new ICronJob({
+            name: 'Waypoint reconciler',
+            temporalValue: '*/30 * * * *',
+            function: this.loadFn('cronJobs', 'Waypoint reconciler'),
           }),
         ],
       }),
