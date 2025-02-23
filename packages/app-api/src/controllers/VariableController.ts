@@ -14,7 +14,7 @@ import { ParamId } from '../lib/validators.js';
 import { AuthService, AuthenticatedRequest } from '../service/AuthService.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
-import { AllowedFilters } from './shared.js';
+import { AllowedFilters, AllowedSearch } from './shared.js';
 
 export class VariableOutputDTOAPI extends APIOutput<VariableOutputDTO> {
   @Type(() => VariableOutputDTO)
@@ -46,14 +46,20 @@ class VariableSearchInputAllowedFilters extends AllowedFilters {
   moduleId!: string[];
 }
 
+class VariableSearchInputAllowedSearch extends AllowedSearch {
+  @IsOptional()
+  @IsString({ each: true })
+  key!: string[];
+}
+
 class VariableSearchInputDTO extends ITakaroQuery<VariableSearchInputAllowedFilters> {
   @ValidateNested()
   @Type(() => VariableSearchInputAllowedFilters)
   declare filters: VariableSearchInputAllowedFilters;
 
   @ValidateNested()
-  @Type(() => VariableSearchInputAllowedFilters)
-  declare search: VariableSearchInputAllowedFilters;
+  @Type(() => VariableSearchInputAllowedSearch)
+  declare search: VariableSearchInputAllowedSearch;
 }
 
 @OpenAPI({
