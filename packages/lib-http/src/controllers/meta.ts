@@ -1,4 +1,5 @@
-import { Controller, Get, getMetadataArgsStorage } from 'routing-controllers';
+import { Controller, Get, getMetadataArgsStorage, Res } from 'routing-controllers';
+import { Response } from 'express';
 import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
 import { routingControllersToSpec, ResponseSchema } from 'routing-controllers-openapi';
 import { IsBoolean } from 'class-validator';
@@ -143,6 +144,11 @@ export class Meta {
     }
 
     return spec;
+  }
+
+  @Get('/')
+  getRoot(@Res() res: Response) {
+    return res.redirect('/api.html');
   }
 
   @Get('/api.html')
