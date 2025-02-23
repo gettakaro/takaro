@@ -102,7 +102,7 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
       <div style={{ width: '100%', height: '100%', position: 'relative' }}>
         <MonacoEditor
           width="100%"
-          height="100%"
+          height="99%"
           language="typescript"
           theme="takaro"
           path={activeFile}

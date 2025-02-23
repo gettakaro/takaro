@@ -22,15 +22,7 @@
         "functions": [],
         "permissions": [],
         "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable/disable the module without having to uninstall it.\"}},\"required\":[],\"additionalProperties\":false}"
-      },
-      "versions": [
-        {
-          "createdAt": "2024-12-22T16:18:08.269Z",
-          "updatedAt": "2024-12-22T16:18:08.278Z",
-          "id": "e1b44bb7-23e6-43bc-8e64-c36e9b901dfb",
-          "tag": "latest"
-        }
-      ]
+      }
     }
   },
   "status": 200,

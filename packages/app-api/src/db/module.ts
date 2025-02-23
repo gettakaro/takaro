@@ -9,6 +9,7 @@ import {
   ModuleInstallationOutputDTO,
   ModuleUpdateDTO,
   ModuleVersionUpdateDTO,
+  SmallModuleVersionOutputDTO,
 } from '../service/Module/dto.js';
 import { CommandModel, COMMANDS_TABLE_NAME } from './command.js';
 import { CronJobOutputDTO } from '../service/CronJobService.js';
@@ -20,6 +21,7 @@ import { FunctionModel } from './function.js';
 import { ModuleCreateDTO, ModuleOutputDTO, ModuleVersionOutputDTO } from '../service/Module/dto.js';
 import { GameServerModel } from './gameserver.js';
 import { getSystemConfigSchema } from '../lib/systemConfig.js';
+import { PaginationParams } from '../controllers/shared.js';
 
 export const MODULE_TABLE_NAME = 'modules';
 export class ModuleModel extends TakaroModel {
@@ -102,15 +104,15 @@ export class ModuleVersion extends TakaroModel {
       // Loads a bunch of related data we always need for the DTO
       standardExtend(query: Objection.QueryBuilder<Model>) {
         query
-          .withGraphJoined('hooks')
-          .withGraphJoined('commands')
-          .withGraphJoined('cronJobs')
-          .withGraphJoined('functions')
-          .withGraphJoined('permissions')
-          .withGraphJoined('hooks.function')
-          .withGraphJoined('cronJobs.function')
-          .withGraphJoined('commands.function')
-          .withGraphJoined('commands.arguments');
+          .withGraphFetched('hooks')
+          .withGraphFetched('commands')
+          .withGraphFetched('cronJobs')
+          .withGraphFetched('functions')
+          .withGraphFetched('permissions')
+          .withGraphFetched('hooks.function')
+          .withGraphFetched('cronJobs.function')
+          .withGraphFetched('commands.function')
+          .withGraphFetched('commands.arguments');
       },
     };
   }
@@ -160,14 +162,14 @@ export class ModuleInstallationModel extends TakaroModel {
       // Loads a bunch of related data we always need for the DTO
       standardExtend(query: Objection.QueryBuilder<Model>) {
         query
-          .withGraphJoined('version')
-          .withGraphJoined('version.cronJobs')
-          .withGraphJoined('version.cronJobs.function')
-          .withGraphJoined('version.hooks')
-          .withGraphJoined('version.commands')
-          .withGraphJoined('version.permissions')
-          .withGraphJoined('version.functions')
-          .withGraphJoined('module');
+          .withGraphFetched('version')
+          .withGraphFetched('version.cronJobs')
+          .withGraphFetched('version.cronJobs.function')
+          .withGraphFetched('version.hooks')
+          .withGraphFetched('version.commands')
+          .withGraphFetched('version.permissions')
+          .withGraphFetched('version.functions')
+          .withGraphFetched('module');
       },
     };
   }
@@ -211,7 +213,13 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
 
     return {
       total: result.total,
-      results: result.results.map((_) => new ModuleVersionOutputDTO(_)),
+      results: result.results.map(
+        (_) =>
+          new ModuleVersionOutputDTO({
+            ..._,
+            systemConfigSchema: getSystemConfigSchema(_ as unknown as ModuleVersionOutputDTO),
+          }),
+      ),
     };
   }
 
@@ -254,6 +262,46 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
       ...data,
       systemConfigSchema: getSystemConfigSchema(data as unknown as ModuleVersionOutputDTO),
     });
+  }
+
+  async getTags(moduleId: string, pagination: PaginationParams) {
+    const { queryVersion } = await this.getModel();
+
+    queryVersion.orderByRaw(`
+      CASE WHEN tag = 'latest' THEN 0 ELSE 1 END,
+      CASE 
+        WHEN tag = 'latest' THEN '999999999.999999999.999999999'
+        ELSE regexp_replace(tag, '^v', '')
+      END::varchar ~ '^[0-9]+\.[0-9]+\.[0-9]+$' DESC,
+      string_to_array(
+        CASE 
+          WHEN tag = 'latest' THEN '999999999.999999999.999999999'
+          ELSE regexp_replace(tag, '^v', '')
+        END, 
+        '.'
+      )::int[] DESC NULLS LAST
+    `);
+
+    const qry = new QueryBuilder<ModuleVersion, ModuleVersionOutputDTO>({
+      filters: { moduleId: [moduleId] },
+      limit: pagination.limit,
+      page: pagination.page,
+    }).build(queryVersion);
+
+    const result = await qry;
+
+    return {
+      total: result.total,
+      results: result.results.map(
+        (_) =>
+          new SmallModuleVersionOutputDTO({
+            createdAt: _.createdAt,
+            updatedAt: _.updatedAt,
+            id: _.id,
+            tag: _.tag,
+          }),
+      ),
+    };
   }
 
   async create(item: ModuleCreateDTO): Promise<ModuleOutputDTO> {
@@ -377,12 +425,19 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
   async findByFunction(functionId: string): Promise<ModuleVersionOutputDTO> {
     const { queryVersion } = await this.getModel();
     const item = await queryVersion
-      .findOne('hooks.functionId', functionId)
-      .orWhere('commands.functionId', functionId)
-      .orWhere('cronJobs.functionId', functionId)
-      .modify('standardExtend');
-    if (!item) throw new errors.NotFoundError();
-    return this.findOneVersion(item.id);
+      .withGraphJoined('functions')
+      .withGraphJoined('commands')
+      .withGraphJoined('hooks')
+      .withGraphJoined('cronJobs')
+      .where((builder) => {
+        builder
+          .orWhere('hooks.functionId', functionId)
+          .orWhere('commands.functionId', functionId)
+          .orWhere('cronJobs.functionId', functionId)
+          .orWhere('functions.id', functionId);
+      });
+    if (!item[0]) throw new errors.NotFoundError();
+    return this.findOneVersion(item[0].id);
   }
 
   async getVersion(id: string): Promise<ModuleVersionOutputDTO> {
@@ -428,7 +483,8 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
       .modify('standardExtend');
 
     if (!res[0]) {
-      throw new errors.NotFoundError(`Installation with id ${gameServerId}-${moduleId} not found`);
+      this.log.warn('Installation not found', { gameServerId, moduleId });
+      throw new errors.NotFoundError('Installation not found');
     }
 
     const returnVal = new ModuleInstallationOutputDTO(res[0] as unknown as ModuleInstallationOutputDTO);
@@ -510,5 +566,16 @@ export class ModuleRepo extends ITakaroRepo<ModuleModel, ModuleOutputDTO, Module
     const { queryInstallations } = await this.getModel();
     const res = await queryInstallations.delete().where('gameserverId', gameServerId).andWhere('moduleId', moduleId);
     return !!res;
+  }
+
+  async updateInstallation(
+    gameServerId: string,
+    moduleId: string,
+    data: Objection.PartialModelObject<ModuleInstallationModel>,
+  ) {
+    const { queryInstallations } = await this.getModel();
+    const installation = await this.findOneInstallation(gameServerId, moduleId);
+    await queryInstallations.updateAndFetchById(installation.id, data);
+    return this.findOneInstallation(gameServerId, moduleId);
   }
 }

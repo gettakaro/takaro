@@ -36,7 +36,7 @@ import { GroupLabel } from '../../SelectField/style';
 import { SelectContainer, SelectButton, StyledArrowIcon } from '../../sharedStyle';
 import { IconButton, InfiniteScroll, Spinner } from '../../../../../components';
 import { GenericTextField } from '../../../TextField/Generic';
-import { Option } from '../../SubComponents';
+import { Option, OptionGroup, SubComponentTypes } from '../../SubComponents';
 
 interface SharedSelectQueryFieldProps extends PaginationProps {
   // Enables loading data feedback for user
@@ -88,7 +88,7 @@ export interface InputValue {
   shouldUpdate: boolean;
 }
 
-export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelectQueryFieldProps>(
+export const _GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelectQueryFieldProps>(
   function GenericSelectQueryField(props, ref) {
     const {
       onBlur = () => {},
@@ -145,7 +145,9 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
             const floatingContentWidth = elements.floating.scrollWidth;
 
             const width =
-              availableWidth > refWidth ? `${availableWidth}px` : `${Math.max(refWidth, floatingContentWidth)}px`;
+              availableWidth > refWidth
+                ? `${Math.min(availableWidth, 500)}px`
+                : `${Math.max(refWidth, floatingContentWidth)}px`;
 
             Object.assign(elements.floating.style, {
               // Note: we cannot use the rects.reference.width here because if the referenced item is very small compared to the other options, there will be horizontal overflow.
@@ -241,7 +243,6 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
                 top: y ?? 0,
                 left: x ?? 0,
                 overflow: 'auto',
-                borderBottom: '10px solid transparent',
               },
             })}
           >
@@ -289,7 +290,8 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
 
     const options = useMemo(() => {
       return [
-        persistedItems.length > 0 ? (
+        /* this is needed, but we need to get rid of the items that are already present in the options that were actually loaded
+        persistedItems.length > 0 && (
           <ul key={`selected-items-${name}`} role="group" aria-labelledby={'select-items-list'}>
             <GroupLabel role="presentation" id={'select-group-label'} aria-hidden="false">
               Selected items
@@ -300,7 +302,8 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
               </Option>
             ))}
           </ul>
-        ) : undefined,
+        ),
+        */
 
         ...(Children.map(
           children,
@@ -370,3 +373,10 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
     );
   },
 );
+
+// TODO: type it correctly instead
+type GenericSelectQueryFieldType = typeof _GenericSelectQueryField & SubComponentTypes;
+export const GenericSelectQueryField = _GenericSelectQueryField as GenericSelectQueryFieldType;
+
+GenericSelectQueryField.Option = Option;
+GenericSelectQueryField.OptionGroup = OptionGroup;

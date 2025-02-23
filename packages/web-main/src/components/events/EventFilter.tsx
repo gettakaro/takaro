@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { DateRangePicker, Button, styled } from '@takaro/lib-components';
 import { ModuleSelectQueryField } from '../../components/selects/ModuleSelectQueryField';
+import { eventFilterSchema } from './eventFilterSchema';
 
 const Form = styled.form`
   display: grid;
@@ -27,19 +28,6 @@ interface EventFilterProps {
   isLive?: boolean;
 }
 
-export const eventFilterSchema = z.object({
-  dateRange: z
-    .object({
-      start: z.string().optional().catch(undefined),
-      end: z.string().optional().catch(undefined),
-    })
-    .optional()
-    .catch(undefined),
-  playerIds: z.array(z.string()).optional().default([]),
-  gameServerIds: z.array(z.string()).optional().default([]),
-  moduleIds: z.array(z.string()).optional().default([]),
-  eventNames: z.array(z.nativeEnum(EventName)).optional().default([]),
-});
 export type EventFilterInputs = z.infer<typeof eventFilterSchema>;
 
 export const EventFilter: FC<EventFilterProps> = ({ initialSelectedValues, onSubmit, isLoading, isLive }) => {

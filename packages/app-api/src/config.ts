@@ -36,7 +36,6 @@ interface IHttpConfig extends IBaseConfig {
   };
   takaro: {
     clusterMode: CLUSTER_MODE;
-    maxVariables: number;
     url: string;
     startWorkers: boolean;
     kpiInterval: number;
@@ -169,12 +168,6 @@ const configSchema = {
       format: ['single', 'cluster'],
       default: CLUSTER_MODE.SINGLE,
       env: 'CLUSTER_MODE',
-    },
-    maxVariables: {
-      doc: 'The maximum number of variables that can be stored per domain',
-      format: Number,
-      default: 100,
-      env: 'MAX_VARIABLES',
     },
     url: {
       doc: 'The URL of the Takaro server',

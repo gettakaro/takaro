@@ -23,14 +23,6 @@ test.describe('Module installations', () => {
     ).not.toBeVisible();
   });
 
-  test('Can upgrade/downgrade module (automatically)', async ({ takaro }) => {
-    const { moduleInstallationsPage } = takaro;
-    await moduleInstallationsPage.goto();
-    await moduleInstallationsPage.changeVersion('highPingKicker', 'latest');
-
-    await expect(moduleInstallationsPage.getModuleCard('highPingKicker').locator('div').nth(4)).toHaveText('latest');
-  });
-
   test('Can view module installation', async ({ page, takaro }) => {
     const { moduleInstallationsPage } = takaro;
 

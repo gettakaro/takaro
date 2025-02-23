@@ -31,6 +31,9 @@ class ModuleVersionSearchInputAllowedFilters extends AllowedFilters {
   @IsOptional()
   @IsUUID('4', { each: true })
   moduleId: string[];
+  @IsOptional()
+  @IsString({ each: true })
+  tag: string[];
 }
 
 class ModuleVersionSearchInputDTO extends ITakaroQuery<ModuleVersionSearchInputAllowedFilters> {

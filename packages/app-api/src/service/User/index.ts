@@ -11,6 +11,7 @@ import { HookEvents, TakaroEventPlayerLinked, TakaroEventRoleAssigned, TakaroEve
 import { AuthenticatedRequest } from '../AuthService.js';
 import { UserOutputDTO, UserCreateInputDTO, UserUpdateDTO, UserOutputWithRolesDTO, UserUpdateAuthDTO } from './dto.js';
 import { UserSearchInputDTO } from '../../controllers/UserController.js';
+import { DomainService } from '../DomainService.js';
 import { PlayerService } from '../Player/index.js';
 
 export * from './dto.js';
@@ -91,6 +92,16 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
   }
 
   async create(user: UserCreateInputDTO): Promise<UserOutputDTO> {
+    if (user.isDashboardUser) {
+      const domain = await new DomainService().findOne(this.domainId);
+      if (!domain) throw new errors.NotFoundError(`Domain ${this.domainId} not found`);
+
+      const maxUsers = domain.maxUsers;
+      const existingDashboardUsers = await this.repo.find({ filters: { isDashboardUser: [true] } });
+      if (existingDashboardUsers.total >= maxUsers) {
+        throw new errors.BadRequestError(`Max users (${maxUsers}) limit reached`);
+      }
+    }
     const idpUser = await ory.createIdentity(user.email, user.password);
     user.idpId = idpUser.id;
     const createdUser = await this.repo.create(user);
@@ -145,10 +156,12 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
     );
   }
 
-  async inviteUser(email: string): Promise<UserOutputDTO> {
+  async inviteUser(email: string, opts = { isDashboardUser: true }): Promise<UserOutputDTO> {
     const existingIdpProfile = await ory.getIdentityByEmail(email);
 
-    const user = await this.create(new UserCreateInputDTO({ email, name: email }));
+    const user = await this.create(
+      new UserCreateInputDTO({ email, name: email, isDashboardUser: opts.isDashboardUser }),
+    );
     if (!existingIdpProfile) {
       const recoveryFlow = await ory.getRecoveryFlow(user.idpId);
 
@@ -209,7 +222,7 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
       }
       user = maybeUser.results[0];
     } else {
-      user = await userService.inviteUser(email);
+      user = await userService.inviteUser(email, { isDashboardUser: false });
     }
 
     await userService.repo.linkPlayer(user.id, resolvedPlayerId);

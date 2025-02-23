@@ -21,14 +21,6 @@ export const Default: StoryFn<ModuleSelectViewProps> = () => {
       createdAt: '',
       updatedAt: '',
       name: 'Online Mock Server 1',
-      versions: [
-        {
-          createdAt: '',
-          updatedAt: '',
-          id: '1',
-          tag: 'latest',
-        },
-      ],
       latestVersion: {
         description: '',
         hooks: [],

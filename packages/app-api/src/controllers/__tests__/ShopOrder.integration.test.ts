@@ -8,7 +8,6 @@ import {
   isAxiosError,
 } from '@takaro/apiclient';
 import { describe } from 'node:test';
-
 const group = 'ShopOrderController';
 
 interface IShopSetup extends SetupGameServerPlayers.ISetupData {

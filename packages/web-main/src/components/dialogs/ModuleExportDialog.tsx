@@ -1,39 +1,32 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, Dialog, FormError, SelectField, UnControlledSelectField } from '@takaro/lib-components';
+import { Button, Dialog, FormError } from '@takaro/lib-components';
 import { useModuleExport } from '../../queries/module';
 import { FC, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
-import { SmallModuleVersionOutputDTO } from '@takaro/apiclient';
 import { useSnackbar } from 'notistack';
 import { AiOutlineCheck as CheckMarkIcon } from 'react-icons/ai';
 import { RequiredDialogOptions } from '.';
+import { ModuleVersionSelectQueryField } from '../../components/selects/ModuleVersionSelectQueryField';
 
 interface ModuleExportDialogProps extends RequiredDialogOptions {
   moduleId: string;
   moduleName: string;
-  moduleVersions: SmallModuleVersionOutputDTO[];
 }
 
 const validationSchema = z.object({
   versionIds: z.array(z.string()),
 });
 
-export const ModuleExportDialog: FC<ModuleExportDialogProps> = ({
-  moduleId,
-  moduleName,
-  moduleVersions,
-  ...dialogOptions
-}) => {
+export const ModuleExportDialog: FC<ModuleExportDialogProps> = ({ moduleId, moduleName, ...dialogOptions }) => {
   const { mutateAsync, isPending: isExporting } = useModuleExport();
   const [error, setError] = useState<string | null>(null);
-  const defaultSelectedVersion = moduleVersions.find((v) => v.tag === 'latest')!;
   const { enqueueSnackbar } = useSnackbar();
 
   const { control, handleSubmit } = useForm<z.infer<typeof validationSchema>>({
     resolver: zodResolver(validationSchema),
     values: {
-      versionIds: [defaultSelectedVersion.id],
+      versionIds: [],
     },
   });
 
@@ -77,29 +70,14 @@ export const ModuleExportDialog: FC<ModuleExportDialogProps> = ({
         </Dialog.Heading>
         <Dialog.Body size="medium">
           <form onSubmit={handleSubmit(onSubmit)}>
-            <SelectField
+            <ModuleVersionSelectQueryField
               label="Versions"
               description="The module versions you want to be part of the export."
               name="versionIds"
               control={control}
               multiple
-              render={(selectedVersions) => {
-                if (selectedVersions.length === 0) {
-                  return <p>Select module...</p>;
-                }
-                return selectedVersions.map((selectedVersion) => selectedVersion.label).join(', ');
-              }}
-            >
-              <UnControlledSelectField.OptionGroup>
-                {moduleVersions.map((version) => (
-                  <UnControlledSelectField.Option key={version.id} value={version.id} label={version.tag}>
-                    <div>
-                      <span>{version.tag}</span>
-                    </div>
-                  </UnControlledSelectField.Option>
-                ))}
-              </UnControlledSelectField.OptionGroup>
-            </SelectField>
+              moduleId={moduleId}
+            />
             {error && <FormError error={error} />}
             <Button fullWidth type="submit" text="Export module" isLoading={isExporting} />
           </form>

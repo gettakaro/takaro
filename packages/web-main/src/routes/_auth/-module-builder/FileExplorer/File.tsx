@@ -36,7 +36,8 @@ import {
   useFunctionRemove,
   useFunctionUpdate,
 } from '../../../../queries/module';
-import { FileType, useModuleBuilderContext } from '../useModuleBuilderStore';
+import { useModuleBuilderContext } from '../useModuleBuilderStore';
+import { FileType } from '../types';
 import { useNavigate } from '@tanstack/react-router';
 
 const Button = styled.button<{ isActive: boolean; depth: number }>`
@@ -170,7 +171,7 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
     if (openFile) {
       openFile(path);
       navigate({
-        from: '/module-builder/$moduleId',
+        from: '/module-builder/$moduleId/$moduleVersionTag',
         search: {
           file: path,
         },

@@ -5,7 +5,7 @@ import { ModuleModel, ModuleRepo } from '../../db/module.js';
 import { CronJobCreateDTO, CronJobService, CronJobUpdateDTO } from '../CronJobService.js';
 import { HookCreateDTO, HookService } from '../HookService.js';
 import { errors, traceableClass } from '@takaro/util';
-import { ITakaroQuery, SortDirection } from '@takaro/db';
+import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../../db/base.js';
 import { CommandCreateDTO, CommandService } from '../CommandService.js';
 import {
@@ -37,8 +37,9 @@ import {
   ModuleUpdateDTO,
   ModuleVersionOutputDTO,
   ModuleVersionUpdateDTO,
-  SmallModuleVersionOutputDTO,
 } from './dto.js';
+import { DomainService } from '../DomainService.js';
+import { PaginationParams } from '../../controllers/shared.js';
 
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 const ajv = new Ajv({ useDefaults: true, strict: true, allErrors: true });
@@ -62,24 +63,6 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
   private async extendModuleDTO(mod: ModuleOutputDTO): Promise<ModuleOutputDTO> {
     const latestVersion = await this.getLatestVersion(mod.id);
     mod.latestVersion = latestVersion;
-
-    mod.versions = (
-      await this.repo.findVersions({
-        filters: {
-          moduleId: [mod.id],
-        },
-        sortBy: 'updatedAt',
-        sortDirection: SortDirection.desc,
-      })
-    ).results.map(
-      (v) =>
-        new SmallModuleVersionOutputDTO({
-          createdAt: v.createdAt,
-          updatedAt: v.updatedAt,
-          id: v.id,
-          tag: v.tag,
-        }),
-    );
     return mod;
   }
 
@@ -108,7 +91,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
   }
 
   async findOneVersion(id: string): Promise<ModuleVersionOutputDTO | undefined> {
-    return this.repo.findOneVersion(id);
+    return await this.repo.findOneVersion(id);
   }
 
   async findOneInstallation(gameServerId: string, moduleId: string) {
@@ -120,7 +103,17 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     throw new errors.NotImplementedError();
   }
 
+  async getTags(moduleId: string, query: PaginationParams) {
+    return this.repo.getTags(moduleId, query);
+  }
+
   async init(mod: ModuleCreateAPIDTO): Promise<ModuleOutputDTO> {
+    const domain = await new DomainService().findOne(this.domainId);
+    if (!domain) throw new errors.NotFoundError('Domain not found');
+    const currentModules = await this.find({ limit: 1, filters: { builtin: ['null'] } });
+    if (domain.maxModules <= currentModules.total)
+      throw new errors.BadRequestError('Maximum number of modules reached');
+
     try {
       if (!mod.latestVersion) {
         mod.latestVersion = new ModuleCreateVersionInputDTO({
@@ -178,6 +171,14 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     const updated = await this.repo.update(id, new ModuleUpdateDTO({ ...mod, latestVersion: undefined }));
     if (mod.latestVersion) {
       const latestVersion = await this.getLatestVersion(id);
+      if (mod.latestVersion.configSchema) {
+        try {
+          ajv.compile(JSON.parse(mod.latestVersion.configSchema));
+        } catch (e) {
+          this.log.warn('Invalid config schema', { error: JSON.stringify(e) });
+          throw new errors.BadRequestError('Invalid config schema');
+        }
+      }
       await this.repo.updateVersion(latestVersion.id, mod.latestVersion);
     }
 
@@ -603,18 +604,15 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     for (const installation of installations) {
       if (installation.version.tag !== 'latest') {
         this.log.error('This should not happen! Everything except "latest" tag is immutable', { versionId });
-        throw new errors.BadRequestError('Cannot refresh latest version');
+        throw new errors.BadRequestError('Cannot update tagged versions');
       }
       try {
-        await this.uninstallModule(installation.gameserverId, installation.moduleId);
-        await this.installModule(
-          new InstallModuleDTO({
-            gameServerId: installation.gameserverId,
-            versionId,
-            systemConfig: JSON.stringify(installation.systemConfig),
-            userConfig: JSON.stringify(installation.userConfig),
-          }),
-        );
+        const modSystemConfig = installation.systemConfig;
+        const validateSystemConfig = ajv.compile(JSON.parse(getSystemConfigSchema(installation.version)));
+        validateSystemConfig(modSystemConfig);
+        await this.repo.updateInstallation(installation.gameserverId, installation.moduleId, {
+          systemConfig: JSON.stringify(modSystemConfig),
+        });
       } catch (error) {
         if ((error as Error).message === 'Invalid config schema') {
           this.log.warn('Invalid config schema, leaving as-is', {

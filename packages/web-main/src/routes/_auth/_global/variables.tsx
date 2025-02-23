@@ -12,7 +12,7 @@ import {
 } from '@takaro/lib-components';
 import { VariableOutputDTO, VariableSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
-import { variablesQueryOptions } from '../../../queries/variable';
+import { variablesQueryOptions, variableCountQueryOptions } from '../../../queries/variable';
 import {
   AiOutlineEdit as EditIcon,
   AiOutlineEye as ViewIcon,
@@ -27,6 +27,9 @@ import { Outlet, createFileRoute, redirect, useNavigate } from '@tanstack/react-
 import { useQuery } from '@tanstack/react-query';
 import { hasPermission } from '../../../hooks/useHasPermission';
 import { userMeQueryOptions } from '../../../queries/user';
+import { getCurrentDomain } from '../../../util/getCurrentDomain';
+import { MaxUsage } from '../../../components/MaxUsage';
+import { DocsLink } from '../../../components/DocsLink';
 
 export const Route = createFileRoute('/_auth/_global/variables')({
   beforeLoad: async ({ context }) => {
@@ -35,15 +38,31 @@ export const Route = createFileRoute('/_auth/_global/variables')({
       throw redirect({ to: '/forbidden' });
     }
   },
+  loader: async ({ context }) => {
+    return {
+      currentVariableCount: await context.queryClient.ensureQueryData(variableCountQueryOptions()),
+      me: await context.queryClient.ensureQueryData(userMeQueryOptions()),
+    };
+  },
   component: Component,
 });
 
 function Component() {
   useDocumentTitle('Variables');
+  const loaderData = Route.useLoaderData();
   const { pagination, columnFilters, sorting, columnSearch, rowSelection } = useTableActions<VariableOutputDTO>();
   const navigate = useNavigate();
   const [openVariablesDialog, setOpenVariablesDialog] = useState<boolean>(false);
   const [quickSearchInput, setQuickSearchInput] = useState<string>('');
+  const { data: me } = useQuery({ ...userMeQueryOptions(), initialData: loaderData.me });
+  const { data: currentVariableCount } = useQuery({
+    ...variableCountQueryOptions(),
+    initialData: loaderData.currentVariableCount,
+  });
+
+  const currentDomain = getCurrentDomain(me);
+  const maxVariableCount = currentDomain.maxVariables;
+  const canCreateVariable = currentVariableCount < maxVariableCount;
 
   const { data, isLoading } = useQuery({
     ...variablesQueryOptions({
@@ -196,12 +215,17 @@ function Component() {
         onSearchInputChanged={setQuickSearchInput}
         renderToolbar={() => {
           return (
-            <Button
-              text="Create variable"
-              onClick={() => {
-                navigate({ to: '/variables/create' });
-              }}
-            />
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', columnGap: '1rem' }}>
+              <MaxUsage value={loaderData.currentVariableCount} total={maxVariableCount} unit="Variables" />
+              <Button
+                text="Create variable"
+                onClick={() => {
+                  navigate({ to: '/variables/create' });
+                }}
+                disabled={!canCreateVariable}
+              />
+              <DocsLink href="https://docs.takaro.io/advanced/variables" target="_blank" rel="noopener noreferrer" />
+            </div>
           );
         }}
         renderRowSelectionActions={() => {

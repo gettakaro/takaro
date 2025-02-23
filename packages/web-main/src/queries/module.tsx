@@ -36,6 +36,7 @@ import {
   ModuleVersionOutputArrayDTOAPI,
   ModuleVersionOutputDTO,
   ModuleVersionSearchInputDTO,
+  SmallModuleOutputArrayDTOAPI,
 } from '@takaro/apiclient';
 
 import { queryParamsToArray, getNextPage, mutationWrapper } from './util';
@@ -49,6 +50,8 @@ export const moduleKeys = {
   detail: (moduleId: string) => [...moduleKeys.all, 'detail', moduleId] as const,
   export: (versionId: string) => [...moduleKeys.all, 'export', versionId] as const,
   list: () => [...moduleKeys.all, 'list'] as const,
+  count: () => [...moduleKeys.all, 'count'] as const,
+  tags: (moduleId: string) => [...moduleKeys.all, 'tags', moduleId] as const,
 
   versions: {
     all: ['versions'] as const,
@@ -116,6 +119,44 @@ export const moduleQueryOptions = (moduleId: string) =>
     queryFn: async () => (await getApiClient().module.moduleControllerGetOne(moduleId)).data.data,
   });
 
+export const customModuleCountQueryOptions = () =>
+  queryOptions<number, AxiosError<number>>({
+    queryKey: moduleKeys.count(),
+    queryFn: async () =>
+      (await getApiClient().module.moduleControllerSearch({ filters: { builtin: ['null'] }, limit: 1 })).data.meta
+        .total!,
+  });
+
+interface ModuleTagsInput {
+  page?: number;
+  limit?: number;
+  moduleId: string;
+}
+
+export const moduleTagsInfiniteQueryOptions = (queryParams: ModuleTagsInput) => {
+  return infiniteQueryOptions<SmallModuleOutputArrayDTOAPI, AxiosError<SmallModuleOutputArrayDTOAPI>>({
+    queryKey: [...moduleKeys.tags(queryParams.moduleId), 'infinite', queryParams.page, queryParams.limit],
+    queryFn: async ({ pageParam }) =>
+      (
+        await getApiClient().module.moduleControllerGetTags(
+          queryParams.moduleId,
+          pageParam as number,
+          queryParams.limit,
+        )
+      ).data,
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) => getNextPage(lastPage.meta),
+    placeholderData: keepPreviousData,
+  });
+};
+
+export const moduleTagsQueryOptions = (queryParams: { moduleId: string; limit?: number }) =>
+  queryOptions<SmallModuleOutputArrayDTOAPI, AxiosError<SmallModuleOutputArrayDTOAPI>>({
+    queryKey: [...moduleKeys.tags(queryParams.moduleId), 'search', queryParams.limit],
+    queryFn: async () =>
+      (await getApiClient().module.moduleControllerGetTags(queryParams.moduleId, undefined, queryParams.limit)).data,
+  });
+
 export const moduleVersionsQueryOptions = (queryParams: ModuleVersionSearchInputDTO) =>
   queryOptions<ModuleVersionOutputArrayDTOAPI, AxiosError<ModuleVersionOutputArrayDTOAPI>>({
     // TODO: (for now) ideally we always pass a moduleId here,
@@ -160,6 +201,10 @@ export const useModuleCreate = () => {
           newModule.latestVersion,
         );
 
+        const currentModuleCount = queryClient.getQueryData<number>(moduleKeys.count());
+        if (currentModuleCount) {
+          queryClient.setQueryData<number>(moduleKeys.count(), currentModuleCount + 1);
+        }
         return queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(newModule.id), newModule);
       },
     }),
@@ -184,12 +229,13 @@ export const useTagModule = () => {
       onSuccess: async (newVersion: ModuleVersionOutputDTO, { moduleId }) => {
         enqueueSnackbar(`Module tagged with version: ${newVersion.tag}!`, { variant: 'default', type: 'success' });
 
-        // We don't need to change anything the latest version, since it will still match the latest version.
-        queryClient.setQueryData<ModuleVersionOutputDTO>(moduleKeys.versions.detail(newVersion.id), newVersion);
-
-        // We get rid of moduleDetail, we would have to update the small versions (change tags)
+        // TODO: we could be smarter with deleting specific cache.
         await queryClient.invalidateQueries({ queryKey: moduleKeys.detail(moduleId) });
         await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
+        await queryClient.invalidateQueries({ queryKey: moduleKeys.tags(moduleId) });
+        await queryClient.invalidateQueries({ queryKey: moduleKeys.versions.all });
+        await queryClient.invalidateQueries({ queryKey: moduleKeys.versions.list(moduleId) });
+        await queryClient.invalidateQueries({ queryKey: moduleKeys.versions.detail(moduleId) });
       },
     }),
     {},
@@ -214,6 +260,11 @@ export const useModuleRemove = () => {
         await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
         queryClient.removeQueries({ queryKey: moduleKeys.versions.list(moduleId) });
         queryClient.removeQueries({ queryKey: moduleKeys.detail(moduleId) });
+
+        const currentModuleCount = queryClient.getQueryData<number>(moduleKeys.count());
+        if (currentModuleCount) {
+          queryClient.setQueryData<number>(moduleKeys.count(), currentModuleCount - 1);
+        }
       },
     }),
     {},
@@ -244,7 +295,7 @@ export const useModuleImport = () => {
         await queryClient.invalidateQueries({ queryKey: moduleKeys.list() });
       },
     }),
-    {},
+    defaultModuleErrorMessages,
   );
 };
 
@@ -847,6 +898,7 @@ export const useFunctionUpdate = () => {
         // invalidate list of functions
         await queryClient.invalidateQueries({ queryKey: moduleKeys.functions.list() });
 
+        // if you pull in specific function, it will have a cache with the updated function data
         queryClient.setQueryData<FunctionOutputDTO>(moduleKeys.functions.detail(functionId), updatedFn);
         queryClient.setQueryData<ModuleOutputDTO>(moduleKeys.detail(moduleId), (prev) => {
           if (prev) {

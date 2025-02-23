@@ -48,6 +48,10 @@ const main = pwTest.extend<IBaseFixtures>({
       const domain = (
         await adminClient.domain.domainControllerCreate({
           name: `e2e-${humanId()}`.slice(0, 49),
+          maxGameservers: 10,
+          maxUsers: 10,
+          maxModules: 1000,
+          maxVariables: 1000,
         })
       ).data.data;
 
@@ -102,9 +106,14 @@ const main = pwTest.extend<IBaseFixtures>({
       // enable developer mode by default
       await client.settings.settingsControllerSet('developerMode', { value: 'true' });
 
+      // get versionId of the module
+      const versionId = (await client.module.moduleControllerGetTags(mods.data.data[0].id)).data.data.find(
+        (smallVersion) => smallVersion.tag === '0.0.1',
+      )?.id!;
+
       // Install utils module
       await client.module.moduleInstallationsControllerInstallModule({
-        versionId: mods.data.data[0].versions.find((v) => v.tag === '0.0.1')!.id,
+        versionId,
         gameServerId: gameServer.data.data.id,
       });
 

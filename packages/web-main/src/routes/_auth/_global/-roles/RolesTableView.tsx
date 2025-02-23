@@ -8,6 +8,7 @@ import { RoleActions } from '../roles';
 import { Link } from '@tanstack/react-router';
 import { playersQueryOptions } from '../../../../queries/player';
 import { usersQueryOptions } from '../../../../queries/user';
+import { DocsLink } from '../../../../components/DocsLink';
 
 export const RolesTableView = () => {
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<RoleOutputDTO>();
@@ -121,6 +122,9 @@ export const RolesTableView = () => {
 
   return (
     <Table
+      renderToolbar={() => (
+        <DocsLink href="https://docs.takaro.io/roles-and-permissions" target="_blank" rel="noopener noreferrer" />
+      )}
       title="List of roles"
       searchInputPlaceholder="Search by role name..."
       onSearchInputChanged={setQuickSearchInput}

@@ -14,6 +14,7 @@ import {
   ModuleInstallationOutputDTO,
   ModuleInstallationOutputDTOAPI,
   ModuleInstallationSearchInputDTO,
+  TeleportPlayerInputDTO,
   TestReachabilityOutputDTO,
 } from '@takaro/apiclient';
 import {
@@ -34,6 +35,7 @@ export const gameServerKeys = {
   list: () => [...gameServerKeys.all, 'list'] as const,
   detail: (gameServerId: string) => [...gameServerKeys.all, 'detail', gameServerId] as const,
   reachability: (gameServerId: string) => [...gameServerKeys.all, 'reachable', gameServerId] as const,
+  count: () => [...gameServerKeys.all, 'count'] as const,
 };
 
 export const ModuleInstallationKeys = {
@@ -72,6 +74,12 @@ export const gameServerQueryOptions = (gameServerId: string) => {
   });
 };
 
+export const gameServerCountQueryOptions = () =>
+  queryOptions<number, AxiosError<number>>({
+    queryKey: gameServerKeys.count(),
+    queryFn: async () => (await getApiClient().gameserver.gameServerControllerSearch({ limit: 1 })).data.meta.total!,
+  });
+
 export const useGameServerCreateFromCSMMImport = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
@@ -87,8 +95,12 @@ export const useGameServerCreateFromCSMMImport = () => {
             },
           })
         ).data.data,
-      onSettled: async () => {
+      onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: gameServerKeys.list() });
+        const currentGameServerCount = queryClient.getQueryData<number>(gameServerKeys.count());
+        if (currentGameServerCount) {
+          queryClient.setQueryData<number>(gameServerKeys.count(), currentGameServerCount + 1);
+        }
       },
     }),
     {},
@@ -107,6 +119,11 @@ export const useGameServerCreate = () => {
         enqueueSnackbar('Gameserver created!', { variant: 'default', type: 'success' });
         await queryClient.invalidateQueries({ queryKey: gameServerKeys.list() });
         queryClient.setQueryData(gameServerKeys.detail(newGameServer.id), newGameServer);
+
+        const currentGameServerCount = queryClient.getQueryData<number>(gameServerKeys.count());
+        if (currentGameServerCount) {
+          queryClient.setQueryData<number>(gameServerKeys.count(), currentGameServerCount + 1);
+        }
       },
     }),
     defaultGameServerErrorMessages,
@@ -157,6 +174,12 @@ export const useGameServerRemove = () => {
         await queryClient.invalidateQueries({
           queryKey: gameServerKeys.detail(gameServerId),
         });
+
+        const currentGameServerCount = queryClient.getQueryData<number>(gameServerKeys.count());
+        if (currentGameServerCount) {
+          queryClient.setQueryData<number>(gameServerKeys.count(), currentGameServerCount - 1);
+        }
+
         queryClient.removeQueries({
           queryKey: gameServerKeys.reachability(gameServerId),
         });
@@ -293,10 +316,9 @@ export const useGameServerModuleUninstall = () => {
   );
 };
 
-interface GameServerKickPlayerInput {
+interface GameServerKickPlayerInput extends KickPlayerInputDTO {
   gameServerId: string;
   playerId: string;
-  opts: KickPlayerInputDTO;
 }
 
 export const useKickPlayerOnGameServer = () => {
@@ -304,8 +326,43 @@ export const useKickPlayerOnGameServer = () => {
 
   return mutationWrapper<APIOutput, GameServerKickPlayerInput>(
     useMutation<APIOutput, AxiosError<APIOutput>, GameServerKickPlayerInput>({
-      mutationFn: async ({ gameServerId, playerId, opts }) =>
+      mutationFn: async ({ gameServerId, playerId, ...opts }) =>
         (await apiClient.gameserver.gameServerControllerKickPlayer(gameServerId, playerId, opts)).data,
+    }),
+    {},
+  );
+};
+
+interface TeleportPlayerInput extends TeleportPlayerInputDTO {
+  gameServerId: string;
+  playerId: string;
+}
+export const useTeleportPlayer = () => {
+  const apiClient = getApiClient();
+  const { enqueueSnackbar } = useSnackbar();
+
+  return mutationWrapper<APIOutput, TeleportPlayerInput>(
+    useMutation<APIOutput, AxiosError<APIOutput>, TeleportPlayerInput>({
+      mutationFn: async ({ gameServerId, playerId, x, y, z }) =>
+        (await apiClient.gameserver.gameServerControllerTeleportPlayer(gameServerId, playerId, { x, y, z })).data,
+      onSuccess: async (_, { x, y, z }) => {
+        enqueueSnackbar(`Teleported player to (${x},${y},${z})`, { variant: 'default', type: 'info' });
+      },
+    }),
+    {},
+  );
+};
+
+export const useGameServerShutdown = () => {
+  const apiClient = getApiClient();
+  const { enqueueSnackbar } = useSnackbar();
+
+  return mutationWrapper<APIOutput, string>(
+    useMutation<void, AxiosError<void>, string>({
+      mutationFn: async (gameServerId) => (await apiClient.gameserver.gameServerControllerShutdown(gameServerId)).data,
+      onSuccess: async () => {
+        enqueueSnackbar('Gameserver shutdown.', { variant: 'default', type: 'info' });
+      },
     }),
     {},
   );

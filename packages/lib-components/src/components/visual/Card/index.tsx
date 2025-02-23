@@ -38,7 +38,7 @@ interface SubComponentTypes {
   Body: typeof CardBody;
 }
 
-export const _Card = forwardRef<HTMLDivElement, PropsWithChildren<CardProps>>(function Card(
+const _Card = forwardRef<HTMLDivElement, PropsWithChildren<CardProps>>(function Card(
   { children, variant = 'default', ...props },
   ref,
 ) {

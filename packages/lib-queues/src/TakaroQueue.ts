@@ -1,9 +1,11 @@
 import { getRedisConnectionOptions } from './util/redisConnectionOptions.js';
 import { JobsOptions, Queue } from 'bullmq';
 import { createHash } from 'crypto';
+import { logger } from '@takaro/util';
 
 export class TakaroQueue<T extends Record<string, unknown>> {
   public bullQueue: Queue<T>;
+  private log = logger('TakaroQueue');
 
   constructor(public name: string) {
     this.bullQueue = new Queue(name, {
@@ -25,6 +27,7 @@ export class TakaroQueue<T extends Record<string, unknown>> {
   add(data: T, extra: JobsOptions = {}, name = this.name) {
     const jobId = extra.jobId ?? this.getJobId(data);
     const isRepeatable = extra.repeat ? true : false;
+    this.log.debug(`Adding job ${jobId} to queue ${name}`);
     if (isRepeatable) {
       return this.bullQueue.add(name, data, extra);
     } else {

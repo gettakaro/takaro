@@ -1,4 +1,4 @@
-import { moduleQueryOptions, moduleVersionQueryOptions } from '../../../queries/module';
+import { moduleQueryOptions, moduleVersionQueryOptions, moduleVersionsQueryOptions } from '../../../queries/module';
 import { DrawerSkeleton } from '@takaro/lib-components';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { hasPermission } from '../../../hooks/useHasPermission';
@@ -20,10 +20,12 @@ export const Route = createFileRoute('/_auth/_global/modules/$moduleId/view/$mod
   loaderDeps: ({ search }) => ({ view: search.view }),
   loader: async ({ params, context, deps }) => {
     const mod = await context.queryClient.ensureQueryData(moduleQueryOptions(params.moduleId));
-    const modVersionId = mod.versions.find((version) => version.tag === params.moduleVersionTag)?.id;
+    const moduleVersions = await context.queryClient.ensureQueryData(
+      moduleVersionsQueryOptions({ filters: { tag: [params.moduleVersionTag], moduleId: [params.moduleId] } }),
+    );
 
     // todo: this is not very clean, if they fill in a version that doesn't exist.
-    if (!modVersionId) {
+    if (moduleVersions.data.length === 0) {
       throw redirect({
         to: '/modules/$moduleId/view/$moduleVersionTag',
         params: { moduleId: params.moduleId, moduleVersionTag: 'latest' },
@@ -31,10 +33,9 @@ export const Route = createFileRoute('/_auth/_global/modules/$moduleId/view/$mod
       });
     }
 
-    const modVersion = await context.queryClient.ensureQueryData(moduleVersionQueryOptions(modVersionId));
     return {
       mod,
-      modVersion,
+      modVersion: moduleVersions.data[0],
     };
   },
   component: Component,
@@ -59,7 +60,7 @@ function Component() {
     if (canRenderInBuilder(mod.latestVersion.configSchema, mod.latestVersion.uiSchema) === false) {
       enqueueSnackbar('This module could not be viewed in builder mode', { type: 'error', variant: 'default' });
       throw navigate({
-        to: '/modules/$moduleId/update',
+        to: '/modules/$moduleId/view/$moduleVersionTag',
         params: { moduleId: Route.useParams().moduleId },
         search: { view: 'manual' },
         replace: true,
@@ -69,22 +70,8 @@ function Component() {
 
   return (
     <>
-      {view === 'manual' && (
-        <ModuleFormManual
-          moduleName={mod.name}
-          moduleVersion={modVersion}
-          error={null}
-          smallModuleVersions={mod.versions}
-        />
-      )}
-      {view === 'builder' && (
-        <ModuleFormBuilder
-          moduleName={mod.name}
-          moduleVersion={modVersion}
-          error={null}
-          smallModuleVersions={mod.versions}
-        />
-      )}
+      {view === 'manual' && <ModuleFormManual moduleName={mod.name} moduleVersion={modVersion} error={null} />}
+      {view === 'builder' && <ModuleFormBuilder moduleName={mod.name} moduleVersion={modVersion} error={null} />}
     </>
   );
 }

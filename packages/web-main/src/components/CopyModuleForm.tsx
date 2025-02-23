@@ -1,13 +1,14 @@
 import { z } from 'zod';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Button, TextField, FormError, SelectField } from '@takaro/lib-components';
+import { Button, TextField, FormError } from '@takaro/lib-components';
 import { FC } from 'react';
 import { AiOutlineCopy as CopyIcon } from 'react-icons/ai';
 
 import { useModuleExport, useModuleImport } from '../queries/module';
 import { moduleNameShape } from '../util/validationShapes';
 import { ModuleOutputDTO } from '@takaro/apiclient';
+import { ModuleVersionSelectQueryField } from './selects/ModuleVersionSelectQueryField';
 
 const validationSchema = z.object({
   name: moduleNameShape,
@@ -23,7 +24,7 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ mod, onSuccess }) => {
   const { control, handleSubmit } = useForm<z.infer<typeof validationSchema>>({
     values: {
       name: mod.name + ' Copy',
-      versions: mod.versions.map((v) => v.id),
+      versions: [],
     },
     resolver: zodResolver(validationSchema),
   });
@@ -61,33 +62,7 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ mod, onSuccess }) => {
           required
           loading={moduleImportLoading || moduleExportLoading}
         />
-        <SelectField
-          control={control}
-          name="versions"
-          label="Versions"
-          multiple
-          required
-          render={(selectedItems) => {
-            if (selectedItems.length === 0) {
-              return <div>Select...</div>;
-            }
-            return <div>{selectedItems[0].label}</div>;
-          }}
-        >
-          <SelectField.OptionGroup>
-            {mod.versions.map((smallVersion) => (
-              <SelectField.Option
-                key={`version-select-${smallVersion.id}`}
-                value={smallVersion.id}
-                label={smallVersion.tag}
-              >
-                <div>
-                  <span>{smallVersion.tag}</span>
-                </div>
-              </SelectField.Option>
-            ))}
-          </SelectField.OptionGroup>
-        </SelectField>
+        <ModuleVersionSelectQueryField name="versions" label="Versions" control={control} multiple moduleId={mod.id} />
         <Button
           isLoading={moduleImportLoading || moduleExportLoading}
           type="submit"

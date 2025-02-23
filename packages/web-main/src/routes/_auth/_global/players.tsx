@@ -310,12 +310,7 @@ const PlayerActions: FC<PlayerActionsProps> = ({ player }) => {
           />
         </Dropdown.Menu>
       </Dropdown>
-      <PlayerBanDialog
-        open={openBanDialog}
-        onOpenChange={setOpenBanDialog}
-        playerId={player.id}
-        playerName={player.name}
-      />
+      <PlayerBanDialog open={openBanDialog} onOpenChange={setOpenBanDialog} playerId={player.id} />
     </>
   );
 };

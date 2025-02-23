@@ -13,6 +13,7 @@ import {
   AiOutlineCopy as CopyIcon,
   AiOutlineExport as ExportIcon,
   AiOutlineTag as TagIcon,
+  AiOutlineBook as DocumentationIcon,
 } from 'react-icons/ai';
 import { ModuleTagDialog } from '../../../components/dialogs/ModuleTagDialog';
 import { ModuleCopyDialog } from '../../../components/dialogs/ModuleCopyDialog';
@@ -20,23 +21,28 @@ import { ModuleExportDialog } from '../../../components/dialogs/ModuleExportDial
 import { ModuleDeleteDialog } from '../../../components/dialogs/ModuleDeleteDialog';
 import { DeleteImperativeHandle } from '../../../components/dialogs';
 
-import { DateTime } from 'luxon';
+import { useQuery } from '@tanstack/react-query';
+import { moduleTagsQueryOptions } from '../../../queries/module';
 
 interface IModuleCardProps {
   mod: ModuleOutputDTO;
+  canCopyModule: boolean;
 }
 
-export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
+export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod, canCopyModule }) => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
   const [openTagDialog, setOpenTagDialog] = useState<boolean>(false);
   const [openExportDialog, setOpenExportDialog] = useState<boolean>(false);
   const [openCopyDialog, setOpenCopyDialog] = useState<boolean>(false);
   const deleteDialogRef = useRef<DeleteImperativeHandle>(null);
-
-  const { latestVersion } = mod;
-
+  const { data } = useQuery(moduleTagsQueryOptions({ limit: 2, moduleId: mod.id }));
   const theme = useTheme();
   const navigate = useNavigate();
+
+  const tags = data?.data ?? [];
+  const newestTag = tags.length > 1 ? tags[1].tag : null;
+
+  const { latestVersion } = mod;
 
   const handleOnEditBuilderClick = (e: MouseEvent) => {
     e.stopPropagation();
@@ -75,19 +81,18 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
     navigator.clipboard.writeText(mod.id);
   };
 
-  const handleOnOpenClick = (e: MouseEvent) => {
+  const handleOnOpenInModuleBuilderClick = (e: MouseEvent) => {
     e.stopPropagation();
     window.open(`/module-builder/${mod.id}`, '_blank');
+  };
+  const handleOnOpenInDocumentationClick = () => {
+    window.open('https://docs.takaro.io/advanced/modules', '_blank');
   };
 
   const handleOnExportClick = async (e: MouseEvent) => {
     e.stopPropagation();
     setOpenExportDialog(true);
   };
-
-  const newestTag = mod.versions
-    .filter((version) => version.tag !== 'latest')
-    .sort((a, b) => DateTime.fromISO(b.createdAt).toMillis() - DateTime.fromISO(a.createdAt).toMillis())[0]?.tag;
 
   return (
     <>
@@ -135,7 +140,12 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
                     {mod.builtin && (
                       <Dropdown.Menu.Group label="Actions">
                         <Dropdown.Menu.Item icon={<ViewIcon />} onClick={handleOnViewClick} label="View module" />
-                        <Dropdown.Menu.Item icon={<CopyIcon />} onClick={handleOnCopyClick} label="Copy module" />
+                        <Dropdown.Menu.Item
+                          icon={<CopyIcon />}
+                          onClick={handleOnCopyClick}
+                          label="Copy module"
+                          disabled={!canCopyModule}
+                        />
                         <Dropdown.Menu.Item icon={<CopyIcon />} onClick={handleOnCopyIdClick} label="Copy module id" />
                       </Dropdown.Menu.Group>
                     )}
@@ -153,7 +163,12 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
                             onClick={handleOnEditManualClick}
                             label="Edit module (manual)"
                           />
-                          <Dropdown.Menu.Item icon={<CopyIcon />} onClick={handleOnCopyClick} label="Copy module" />
+                          <Dropdown.Menu.Item
+                            icon={<CopyIcon />}
+                            onClick={handleOnCopyClick}
+                            label="Copy module"
+                            disabled={!canCopyModule}
+                          />
                           <Dropdown.Menu.Item icon={<TagIcon />} onClick={handleOnTagClick} label="Tag module" />
                           <Dropdown.Menu.Item
                             icon={<CopyIcon />}
@@ -171,8 +186,13 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
                     <Dropdown.Menu.Group>
                       <Dropdown.Menu.Item
                         icon={<LinkIcon />}
-                        onClick={handleOnOpenClick}
+                        onClick={handleOnOpenInModuleBuilderClick}
                         label="Open in Module Builder"
+                      />
+                      <Dropdown.Menu.Item
+                        icon={<DocumentationIcon />}
+                        label="View module documentation"
+                        onClick={handleOnOpenInDocumentationClick}
                       />
                       <Dropdown.Menu.Item
                         icon={<ExportIcon />}
@@ -206,7 +226,6 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod }) => {
       <ModuleExportDialog
         moduleId={mod.id}
         moduleName={mod.name}
-        moduleVersions={mod.versions}
         open={openExportDialog}
         onOpenChange={setOpenExportDialog}
       />

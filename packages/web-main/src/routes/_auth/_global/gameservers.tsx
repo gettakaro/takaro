@@ -7,6 +7,10 @@ import { GameServersCardView } from './-gameservers/GameServersCardView';
 import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
 import { GameServersTableView } from './-gameservers/GameServersTableView';
 
+export interface GenericGameServersViewProps {
+  setGameServerCount: (count: number) => void;
+}
+
 import {
   AiOutlinePlus as CreateGameServerIcon,
   AiOutlineImport as ImportGameServerIcon,
@@ -23,20 +27,41 @@ import { PermissionsGuard } from '../../../components/PermissionsGuard';
 import { TableListToggleButton } from '../../../components/TableListToggleButton';
 import { GameServerDeleteDialog } from '../../../components/dialogs/GameServerDeleteDialog';
 import { DeleteImperativeHandle } from '../../../components/dialogs';
+import { MaxUsage } from '../../../components/MaxUsage';
+import { userMeQueryOptions } from '../../../queries/user';
+import { gameServerCountQueryOptions } from '../../../queries/gameserver';
+import { useQuery } from '@tanstack/react-query';
+import { getCurrentDomain } from '../../../util/getCurrentDomain';
 
 type ViewType = 'list' | 'table';
 
 export const Route = createFileRoute('/_auth/_global/gameservers')({
+  loader: async ({ context }) => {
+    return {
+      userData: await context.queryClient.ensureQueryData(userMeQueryOptions()),
+      currentGameServerCount: await context.queryClient.ensureQueryData(gameServerCountQueryOptions()),
+    };
+  },
   errorComponent: () => <ErrorBoundary />,
   component: Component,
 });
 
 function Component() {
+  const loaderData = Route.useLoaderData();
   useDocumentTitle('Game Servers');
+  const { data: me } = useQuery({ ...userMeQueryOptions(), initialData: loaderData.userData });
+  const { data: currentGameServerCount } = useQuery({
+    ...gameServerCountQueryOptions(),
+    initialData: loaderData.currentGameServerCount,
+  });
+
   const { setValue: setView, storedValue: view } = useLocalStorage<ViewType>('gameservers-view-select', 'list');
   const navigate = Route.useNavigate();
   const theme = useTheme();
   const hasManageGameServersPermission = useHasPermission(['MANAGE_GAMESERVERS']);
+
+  const maxGameserverCount = getCurrentDomain(me).maxGameservers;
+  const canCreateGameServer = currentGameServerCount < maxGameserverCount;
 
   const onClickCreateGameServer = (e: MouseEvent) => {
     e.preventDefault();
@@ -58,6 +83,7 @@ function Component() {
           gap: theme.spacing[1],
         }}
       >
+        <MaxUsage value={currentGameServerCount} total={maxGameserverCount} unit="Gameservers" />
         {hasManageGameServersPermission && (
           <Dropdown>
             <Dropdown.Trigger asChild>
@@ -69,11 +95,13 @@ function Component() {
                   icon={<CreateGameServerIcon />}
                   label="Create new game server"
                   onClick={onClickCreateGameServer}
+                  disabled={!canCreateGameServer}
                 />
                 <Dropdown.Menu.Item
                   icon={<ImportGameServerIcon />}
                   label="Import game server from CSMM"
                   onClick={onClickImportGameServer}
+                  disabled={!canCreateGameServer}
                 />
               </Dropdown.Menu.Group>
             </Dropdown.Menu>

@@ -12,8 +12,16 @@ export type { ActionMenuProps } from './ActionMenu';
 
 export { CollapseList } from './CollapseList';
 
-export { PermissionsGuard, hasPermissionHelper } from './PermissionsGuard';
-export type { PermissionsGuardProps, RequiredPermissions } from './PermissionsGuard';
+export { PermissionsGuard } from './PermissionsGuard';
+export { hasPermissionHelper } from './PermissionsGuard/hasPermissionsHelper';
+export type { RequiredPermissions } from './PermissionsGuard/hasPermissionsHelper';
+export type { PermissionsGuardProps } from './PermissionsGuard';
+
+export { Plan } from './Plan';
+export type { PlanProps } from './Plan';
+
+export { UsageCard } from './Usage/UsageCard';
+export type { UsageCardProps } from './Usage/UsageCard';
 
 export { Collapsible } from './Collapsible';
 export type { CollapsibleProps } from './Collapsible';

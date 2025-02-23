@@ -262,6 +262,71 @@ const tests = [
     },
     filteredFields: ['gameserverId', 'moduleId', 'functionId'],
   }),
+  new IntegrationTest<ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Creating a module with bad schema throws a proper error',
+    setup,
+    test: async function () {
+      const goodSchema = `{
+                          "$schema": "http://json-schema.org/draft-07/schema",
+                          "type": "object",
+                          "properties": {
+                            "warningMessage": {
+                              "type": "string",
+                              "title": "Warning message",
+                              "description": "Message to send to players before the server shuts down.",
+                              "default": "Server is shutting down in 5 minutes!",
+                              "minLength": 1,
+                              "maxLength": 1024
+                            }
+                          },
+                          "required": [
+                            "warningMessage"
+                          ]
+                        }`;
+      // Note the bad 'minLengt' property
+      const badSchema = `{
+                          "$schema": "http://json-schema.org/draft-07/schema",
+                          "type": "object",
+                          "properties": {
+                            "warningMessage": {
+                              "type": "string",
+                              "title": "Warning message",
+                              "description": "Message to send to players before the server shuts down.",
+                              "default": "Server is shutting down in 5 minutes!",
+                              "minLengt": 1,
+                              "maxLength": 1024
+                            }
+                          },
+                          "required": [
+                            "warningMessage"
+                          ]
+                        }`;
+
+      const mod = (
+        await this.client.module.moduleControllerCreate({
+          name: 'Cool module',
+          latestVersion: {
+            description: 'Test description',
+            configSchema: goodSchema,
+          },
+        })
+      ).data.data;
+
+      try {
+        await this.client.module.moduleControllerUpdate(mod.id, { latestVersion: { configSchema: badSchema } });
+        throw new Error('Should not be able to update module with bad schema');
+      } catch (error) {
+        if (!isAxiosError(error)) {
+          throw error;
+        }
+
+        expect(error.response?.status).to.equal(400);
+        expect(error.response?.data.meta.error.message).to.match(/Invalid config schema/);
+      }
+    },
+  }),
 ];
 
 describe(group, function () {

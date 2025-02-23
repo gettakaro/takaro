@@ -9,7 +9,6 @@ import {
   FormError,
   IconTooltip,
   useTheme,
-  UnControlledSelectField,
 } from '@takaro/lib-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { validationSchema } from './validationSchema';
@@ -25,6 +24,7 @@ import { Divider } from '@ory/elements';
 import { PermissionField } from '../PermissionField/PermissionField';
 import { ConfigFieldErrorDetail } from './ConfigFieldErrorDetail';
 import { ModuleFormProps } from '..';
+import { UncontrolledModuleVersionSelectQueryField } from '../../../../../../components/selects';
 
 export interface IFormInputs {
   name: string;
@@ -39,7 +39,6 @@ export const ModuleFormBuilder: FC<ModuleFormProps> = ({
   error,
   moduleName,
   moduleVersion,
-  smallModuleVersions,
 }) => {
   const [open, setOpen] = useState(true);
   const navigate = useNavigate();
@@ -121,48 +120,16 @@ export const ModuleFormBuilder: FC<ModuleFormProps> = ({
       <Drawer.Content>
         <Drawer.Heading>{getTitle()}</Drawer.Heading>
         <Drawer.Body>
-          {smallModuleVersions && moduleVersion && (
+          {!onSubmit && moduleVersion && (
             <div style={{ marginBottom: '30px' }}>
-              <UnControlledSelectField
-                id="module-version-tag-select"
-                name="module-version-tag-select"
+              <UncontrolledModuleVersionSelectQueryField
+                moduleId={moduleVersion.moduleId}
+                canClear={false}
                 onChange={handleOnSelectedVersionChanged}
-                multiple={false}
-                render={(selectedItems) => {
-                  if (selectedItems.length > 0) {
-                    if (selectedItems[0].value === 'latest') {
-                      return (
-                        <div>
-                          <span>Latest version</span>
-                        </div>
-                      );
-                    }
-                    return (
-                      <div>
-                        <span>{selectedItems[0].value}</span>
-                      </div>
-                    );
-                  }
-                  return <span>Select a version</span>;
-                }}
-                value={moduleVersion?.tag}
-                hasError={false}
-                hasDescription={false}
-              >
-                <UnControlledSelectField.OptionGroup>
-                  {smallModuleVersions.map((moduleVersion) => {
-                    return (
-                      <UnControlledSelectField.Option
-                        key={moduleVersion.id}
-                        value={moduleVersion.tag}
-                        label={moduleVersion.tag}
-                      >
-                        <div>{moduleVersion.tag}</div>
-                      </UnControlledSelectField.Option>
-                    );
-                  })}
-                </UnControlledSelectField.OptionGroup>
-              </UnControlledSelectField>
+                name="module-version-tag-select"
+                value={moduleVersion.tag}
+                returnValue="tag"
+              />
             </div>
           )}
 

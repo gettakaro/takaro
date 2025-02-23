@@ -80,7 +80,7 @@ export class ModuleDefinitionsPage extends BasePage {
 
   async view(name: string) {
     await this.openSettings(name);
-    await this.page.getByRole('menuitem', { name: 'View module' }).click();
+    await this.page.getByRole('menuitem', { name: 'View module', exact: true }).click();
   }
 
   private async openSettings(name: string) {
@@ -107,7 +107,8 @@ export class ModuleDefinitionsPage extends BasePage {
     permissions?: Permission[];
     save?: boolean;
   }) {
-    await this.page.getByRole('link', { name: 'Module (builder)', exact: true }).click();
+    await this.page.getByRole('button', { name: 'Module actions', exact: true }).click();
+    await this.page.getByRole('menuitem', { name: 'Create module with builder' }).click();
 
     if (name) {
       await this.fillName(name);

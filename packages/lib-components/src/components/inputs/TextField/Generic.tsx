@@ -15,11 +15,6 @@ import { getFieldType, getInputMode } from './util';
 import { defaultInputProps, defaultInputPropsFactory, GenericInputProps } from '../InputProps';
 import { setAriaDescribedBy } from '../layout';
 
-export function isNumber(value: unknown) {
-  const number = Number(value);
-  return !isNaN(number) && isFinite(number);
-}
-
 export type TextFieldType = 'text' | 'password' | 'email' | 'number' | 'cron';
 
 export interface TextFieldProps {
@@ -61,7 +56,8 @@ export const GenericTextField = forwardRef<HTMLInputElement, GenericTextFieldPro
     const handleOnChange = (e: ChangeEvent<HTMLInputElement>) => {
       // not a perfect solution, but works for now
       if (type === 'number') {
-        if (isNumber(e.target.value) || e.target.value === '-') {
+        const value = e.target.value;
+        if (value === '' || /^-?\d*\.?\d*$/.test(value)) {
           onChange(e);
         }
       } else {

@@ -167,6 +167,79 @@ const tests = [
     },
     expectedStatus: 400,
   }),
+  new IntegrationTest({
+    group,
+    snapshot: false,
+    name: 'Does not allow creating more modules than the domain allows',
+    test: async function () {
+      const MAX_MODULES = 10;
+      if (!this.standardDomainId) throw new Error('Standard domain ID not set');
+      await this.adminClient.domain.domainControllerUpdate(this.standardDomainId, {
+        maxModules: MAX_MODULES,
+      });
+      const moduleRes = await this.client.module.moduleControllerSearch();
+      // Explicitly filter out built-in modules, as they are not counted towards the limit
+      const currentModules = moduleRes.data.data.filter((m) => !m.builtin).length;
+      // Create modules until we hit the limit
+      for (let i = currentModules; i < MAX_MODULES; i++) {
+        await this.client.module.moduleControllerCreate({
+          name: `Test module ${i}`,
+        });
+      }
+
+      try {
+        await this.client.module.moduleControllerCreate({ name: 'final' });
+        throw new Error('Should have errored');
+      } catch (error) {
+        if (!isAxiosError(error)) throw error;
+        expect(error.response?.status).to.equal(400);
+        expect(error.response?.data.meta.error.code).to.equal('BadRequestError');
+        expect(error.response?.data.meta.error.message).to.equal('Maximum number of modules reached');
+      }
+    },
+  }),
+  new IntegrationTest<ModuleOutputDTO>({
+    group,
+    snapshot: false,
+    name: 'Can get a paginated list of tags',
+    setup,
+    test: async function () {
+      // Copy a builtin module, so we have a module with a lot of commands/hooks/cronjobs
+      // Then, create 20 tags for it 0.0.1, 0.0.2, ...
+      const builtin = (await this.client.module.moduleControllerSearch({ filters: { name: ['teleports'] } })).data
+        .data[0];
+      if (!builtin) throw new Error('Builtin module not found');
+
+      const exportRes = await this.client.module.moduleControllerExport(builtin.id);
+      await this.client.module.moduleControllerImport(exportRes.data.data);
+
+      const imported = (await this.client.module.moduleControllerSearch({ filters: { name: ['teleports-imported'] } }))
+        .data.data[0];
+
+      for (let i = 1; i < 21; i++) {
+        await this.client.module.moduleVersionControllerTagVersion({
+          moduleId: imported.id,
+          tag: `0.${i}.${i}`,
+        });
+      }
+
+      const tagsRes = await this.client.module.moduleControllerGetTags(imported.id, 0, 3);
+
+      expect(tagsRes.data.data).to.have.length(3);
+      expect(tagsRes.data.meta.total).to.equal(22); // 20 tags + 1 latest + 1 from the core module
+
+      expect(tagsRes.data.data[0].tag).to.equal('latest');
+      expect(tagsRes.data.data[1].tag).to.equal('0.20.20');
+      expect(tagsRes.data.data[2].tag).to.equal('0.19.19');
+
+      const secondPage = await this.client.module.moduleControllerGetTags(imported.id, 1, 3);
+      expect(secondPage.data.data).to.have.length(3);
+      expect(secondPage.data.data[0].tag).to.equal('0.18.18');
+      expect(secondPage.data.data[1].tag).to.equal('0.17.17');
+      expect(secondPage.data.data[2].tag).to.equal('0.16.16');
+    },
+    filteredFields: ['moduleId'],
+  }),
   // #endregion CRUD
   // #region Permissions
   new IntegrationTest({

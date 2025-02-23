@@ -24,7 +24,8 @@
           "userId": "5bfc27e9-a33f-4d6f-906b-bc8b4b9dba9f"
         }
       ],
-      "email": "Felix.Legros25@yahoo.com"
+      "email": "Felix.Legros25@yahoo.com",
+      "isDashboardUser": true
     }
   },
   "status": 200,

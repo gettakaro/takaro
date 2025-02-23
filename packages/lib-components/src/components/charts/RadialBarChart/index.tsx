@@ -12,7 +12,7 @@ import { useTooltip, useTooltipInPortal } from '@visx/tooltip';
 import localPoint from '@visx/event/lib/localPointGeneric';
 import { useGradients } from '../useGradients';
 
-export const defaultMargin = { top: 10, right: 0, bottom: 25, left: 40 };
+const defaultMargin = { top: 10, right: 0, bottom: 25, left: 40 };
 export interface RadialBarChartProps<T> {
   name: string;
   data: T[];
