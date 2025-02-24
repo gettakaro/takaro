@@ -79,7 +79,6 @@ function Component() {
           quickSearchInput,
         ],
         discordId: columnSearch.columnSearchState.find((search) => search.id === 'discordId')?.value,
-        playerId: columnSearch.columnSearchState.find((search) => search.id === 'playerId')?.value,
       },
     }),
   });

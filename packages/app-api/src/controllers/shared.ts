@@ -29,3 +29,7 @@ export class AllowedFilters {
   @IsUUID(4, { each: true })
   id?: string[] | undefined;
 }
+
+export class AllowedSearch {
+  [key: string]: unknown[] | string[] | boolean | null | undefined;
+}
