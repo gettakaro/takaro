@@ -67,9 +67,6 @@ function Component() {
           quickSearchInput,
         ],
         steamId: columnSearch.columnSearchState.find((search) => search.id === 'steamId')?.value,
-        epicOnlineServicesId: columnSearch.columnSearchState.find((search) => search.id === 'epicOnlineServicesId')
-          ?.value,
-        xboxLiveId: columnSearch.columnSearchState.find((search) => search.id === 'xboxLiveId')?.value,
       },
     }),
   );
