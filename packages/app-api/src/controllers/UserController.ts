@@ -110,6 +110,9 @@ class UserSearchInputAllowedSearch extends AllowedSearch {
   @IsOptional()
   @IsString({ each: true })
   name?: string[] | undefined;
+  @IsOptional()
+  @IsString({ each: true })
+  discordId?: string[] | undefined;
 }
 
 class UserSearchInputAllowedRangeFilter extends RangeFilterCreatedAndUpdatedAt {
