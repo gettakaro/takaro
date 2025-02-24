@@ -22,50 +22,19 @@ async function main() {
     throw new TakaroUserError(`You are not allowed to use the waypoint ${trigger}.`);
   }
 
-  async function ensureWaypointsModule() {
-    let waypointsDefinition = (
-      await takaro.module.moduleControllerSearch({
-        filters: {
-          name: ['Waypoints'],
-        },
-      })
-    ).data.data[0];
-
-    if (!waypointsDefinition) {
-      console.log('Waypoints module definition not found, creating it.');
-      waypointsDefinition = (
-        await takaro.module.moduleControllerCreate({
-          name: 'Waypoints',
-        })
-      ).data.data;
-    }
-
-    let waypointsInstallation = (
-      await takaro.module.moduleInstallationsControllerGetInstalledModules({
-        filters: { gameserverId: [data.gameServerId] },
-      })
-    ).data.data.find((module) => module.name === 'Waypoints');
-
-    if (!waypointsInstallation) {
-      console.log('Waypoints module not found, installing it.');
-      waypointsInstallation = (
-        await takaro.module.moduleInstallationsControllerInstallModule({
-          gameServerId: data.gameServerId,
-          versionId: waypointsDefinition.latestVersion.id,
-        })
-      ).data.data;
-    }
-
-    return { waypointsInstallation, waypointsDefinition };
-  }
-
-  const { waypointsInstallation } = await ensureWaypointsModule();
+  const teleportsModule = (
+    await takaro.module.moduleControllerSearch({
+      filters: {
+        builtin: ['teleports'],
+      },
+    })
+  ).data.data[0];
 
   const variable = await takaro.variable.variableControllerSearch({
     filters: {
       key: [getWaypointName(trigger)],
       gameServerId: [gameServerId],
-      moduleId: [waypointsInstallation.moduleId],
+      moduleId: [teleportsModule.id],
     },
   });
 

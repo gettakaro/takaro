@@ -96,7 +96,7 @@ export async function waypointReconciler() {
   const waypointVars = (
     await takaro.variable.variableControllerSearch({
       filters: {
-        moduleId: [waypointsInstallation.moduleId],
+        moduleId: [mod.moduleId],
         gameServerId: [gameServerId],
       },
     })
