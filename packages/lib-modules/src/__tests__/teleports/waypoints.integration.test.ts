@@ -647,8 +647,8 @@ const tests = [
     test: async function () {
       // Create a waypoint
       // Delete the waypoints module
-      // Recreate the waypoints module
-      // Check if the waypoint is still there
+      // Create another waypoint
+      // Both should be present in the waypoints module
 
       const setEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
