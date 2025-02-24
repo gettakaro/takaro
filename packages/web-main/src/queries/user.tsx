@@ -11,8 +11,10 @@ import {
   LinkPlayerUnauthedInputDTO,
   MeOutputDTO,
   UserOutputArrayDTOAPI,
+  UserOutputDTO,
   UserOutputWithRolesDTO,
   UserSearchInputDTO,
+  UserUpdateDTO,
 } from '@takaro/apiclient';
 import { queryParamsToArray, mutationWrapper, getNextPage } from './util';
 import { AxiosError } from 'axios';
@@ -134,6 +136,30 @@ export const useUserRemoveRole = ({ userId }: { userId: string }) => {
       onSuccess: async () => {
         // invalidate user because new role assignment
         queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
+      },
+    }),
+    {},
+  );
+};
+
+interface UserUpdateInput extends UserUpdateDTO {
+  userId: string;
+}
+
+export const useUserUpdate = () => {
+  const queryClient = useQueryClient();
+  return mutationWrapper<UserOutputDTO, UserUpdateInput>(
+    useMutation<UserOutputDTO, AxiosError<APIOutput>, UserUpdateInput>({
+      mutationFn: async (user) =>
+        (
+          await getApiClient().user.userControllerUpdate(user.userId, {
+            name: user.name,
+            isDashboardUser: user.isDashboardUser,
+          })
+        ).data.data,
+      onSuccess: async (_, { userId }) => {
+        await queryClient.invalidateQueries({ queryKey: userKeys.list() });
+        await queryClient.invalidateQueries({ queryKey: userKeys.detail(userId) });
       },
     }),
     {},
