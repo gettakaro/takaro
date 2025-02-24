@@ -61,6 +61,9 @@ class PlayerSearchInputAllowedSearch extends AllowedSearch {
   @IsOptional()
   @IsString({ each: true })
   name?: string[];
+  @IsOptional()
+  @IsString({ each: true })
+  steamId?: string[];
 }
 
 class PlayerSearchInputAllowedRangeFilter extends RangeFilterCreatedAndUpdatedAt {

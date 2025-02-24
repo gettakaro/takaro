@@ -83,9 +83,6 @@ function Component() {
       },
       search: {
         key: [...(columnSearch.columnSearchState.find((search) => search.id === 'key')?.value ?? []), quickSearchInput],
-        gameServerId: columnSearch.columnSearchState.find((search) => search.id === 'gameServerId')?.value,
-        playerId: columnSearch.columnSearchState.find((search) => search.id === 'playerId')?.value,
-        moduleId: columnSearch.columnSearchState.find((search) => search.id === 'moduleId')?.value,
       },
     }),
   });
