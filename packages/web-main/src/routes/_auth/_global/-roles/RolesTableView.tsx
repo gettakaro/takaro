@@ -29,7 +29,6 @@ export const RolesTableView = () => {
         name: columnFilters.columnFiltersState.find((filter) => filter.id === 'name')?.value,
       },
       search: {
-        id: columnSearch.columnSearchState.find((search) => search.id === 'id')?.value,
         name: [
           ...(columnSearch.columnSearchState.find((search) => search.id === 'name')?.value ?? []),
           quickSearchInput,

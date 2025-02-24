@@ -10,7 +10,7 @@ import { ResponseSchema } from 'routing-controllers-openapi';
 import { TakaroDTO } from '@takaro/util';
 import { ParamId } from '../lib/validators.js';
 import { discordBot } from '../lib/DiscordBot.js';
-import { AllowedFilters } from './shared.js';
+import { AllowedFilters, AllowedSearch } from './shared.js';
 
 class GuildSearchInputAllowedFilters extends AllowedFilters {
   @IsOptional()
@@ -26,14 +26,20 @@ class GuildSearchInputAllowedFilters extends AllowedFilters {
   takaroEnabled!: boolean[];
 }
 
+class GuildSearchInputAllowedSearch extends AllowedSearch {
+  @IsOptional()
+  @IsString({ each: true })
+  name!: string[];
+}
+
 class GuildSearchInputDTO extends ITakaroQuery<GuildOutputDTO> {
   @ValidateNested()
   @Type(() => GuildSearchInputAllowedFilters)
   declare filters: GuildSearchInputAllowedFilters;
 
   @ValidateNested()
-  @Type(() => GuildSearchInputAllowedFilters)
-  declare search: GuildSearchInputAllowedFilters;
+  @Type(() => GuildSearchInputAllowedSearch)
+  declare search: GuildSearchInputAllowedSearch;
 }
 
 class DiscordParamId {

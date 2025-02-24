@@ -9,7 +9,7 @@ import { Type } from 'class-transformer';
 import { ParamId } from '../../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
-import { AllowedFilters, RangeFilterCreatedAndUpdatedAt } from '../shared.js';
+import { AllowedFilters, AllowedSearch, RangeFilterCreatedAndUpdatedAt } from '../shared.js';
 import { ModuleVersionCreateAPIDTO, ModuleVersionOutputDTO } from '../../service/Module/dto.js';
 
 export class ModuleVersionOutputDTOAPI extends APIOutput<ModuleVersionOutputDTO> {
@@ -36,13 +36,19 @@ class ModuleVersionSearchInputAllowedFilters extends AllowedFilters {
   tag: string[];
 }
 
+class ModuleVersionSearchInputAllowedSearch extends AllowedSearch {
+  @IsOptional()
+  @IsString({ each: true })
+  tag: string[];
+}
+
 class ModuleVersionSearchInputDTO extends ITakaroQuery<ModuleVersionSearchInputAllowedFilters> {
   @ValidateNested()
   @Type(() => ModuleVersionSearchInputAllowedFilters)
   declare filters: ModuleVersionSearchInputAllowedFilters;
   @ValidateNested()
-  @Type(() => ModuleVersionSearchInputAllowedFilters)
-  declare search: ModuleVersionSearchInputAllowedFilters;
+  @Type(() => ModuleVersionSearchInputAllowedSearch)
+  declare search: ModuleVersionSearchInputAllowedSearch;
   @ValidateNested()
   @Type(() => RangeFilterCreatedAndUpdatedAt)
   declare greaterThan: RangeFilterCreatedAndUpdatedAt;

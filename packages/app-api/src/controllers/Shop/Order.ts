@@ -56,10 +56,6 @@ class ShopOrderSearchInputDTO extends ITakaroQuery<ShopOrderSearchInputAllowedFi
   declare filters: ShopOrderSearchInputAllowedFilters;
 
   @ValidateNested()
-  @Type(() => ShopOrderSearchInputAllowedFilters)
-  declare search: ShopOrderSearchInputAllowedFilters;
-
-  @ValidateNested()
   @Type(() => ShopOrderSearchInputAllowedRangeFilter)
   declare greaterThan: ShopOrderSearchInputAllowedRangeFilter;
 
