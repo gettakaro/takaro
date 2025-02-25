@@ -639,6 +639,48 @@ const tests = [
       expect((await teleportEvents2)[0].data.meta.msg).to.be.eq('You are not allowed to use the waypoint A.');
     },
   }),
+  new IntegrationTest<WaypointsSetup>({
+    group,
+    snapshot: false,
+    setup: waypointsSetup,
+    name: 'Reconciler recreates waypoints when deleting the waypoints module',
+    test: async function () {
+      // Create a waypoint
+      // Delete the waypoints module
+      // Create another waypoint
+      // Both should be present in the waypoints module
+
+      const setEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE);
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/setwaypoint A',
+        playerId: this.setupData.moderator.id,
+      });
+      expect((await setEvents)[0].data.meta.msg).to.be.eq('Waypoint A set.');
+
+      const waypointsModuleToRemove = await this.client.module.moduleControllerSearch({
+        filters: { name: ['Waypoints'] },
+      });
+      if (!waypointsModuleToRemove.data.data.length) {
+        throw new Error('Waypoints module not found');
+      }
+
+      await this.client.module.moduleControllerRemove(waypointsModuleToRemove.data.data[0].id);
+
+      const setEvents2 = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE);
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/setwaypoint B',
+        playerId: this.setupData.moderator.id,
+      });
+      expect((await setEvents2)[0].data.meta.msg).to.be.eq('Waypoint B set.');
+
+      const waypointsModule = await this.client.module.moduleControllerSearch({ filters: { name: ['Waypoints'] } });
+      if (!waypointsModule.data.data.length) {
+        throw new Error('Waypoints module not found');
+      }
+
+      expect(waypointsModule.data.data[0].latestVersion.commands).to.be.lengthOf(2);
+    },
+  }),
 ];
 
 describe(group, function () {

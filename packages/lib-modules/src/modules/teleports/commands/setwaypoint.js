@@ -1,18 +1,16 @@
 import { takaro, data, checkPermission, TakaroUserError } from '@takaro/helpers';
-import { ensureWaypointsModule, getWaypointName, waypointReconciler } from './utils.js';
+import { getWaypointName, waypointReconciler } from './utils.js';
 
 async function main() {
-  const { pog, gameServerId, arguments: args } = data;
+  const { pog, gameServerId, arguments: args, module: mod } = data;
 
   if (!checkPermission(pog, 'TELEPORTS_MANAGE_WAYPOINTS')) {
     throw new TakaroUserError('You do not have permission to manage waypoints.');
   }
 
-  const { waypointsInstallation } = await ensureWaypointsModule();
-
   try {
     await takaro.variable.variableControllerCreate({
-      moduleId: waypointsInstallation.moduleId,
+      moduleId: mod.moduleId,
       gameServerId,
       key: getWaypointName(args.waypoint),
       value: JSON.stringify({
@@ -25,6 +23,7 @@ async function main() {
     if (error.message === 'Request failed with status code 409') {
       throw new TakaroUserError(`Waypoint ${args.waypoint} already exists.`);
     }
+    throw error;
   }
 
   await waypointReconciler();
