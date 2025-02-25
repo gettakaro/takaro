@@ -11,11 +11,5 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "eventsource": "2.0.2"
-  },
-  "devDependencies": {
-    "@types/eventsource": "1.1.15"
-  }
+  "license": "ISC"
 }
