@@ -1,6 +1,7 @@
 import { Button, Dialog } from '@takaro/lib-components';
 import { RequiredDialogOptions } from '.';
 import { useGameServerShutdown } from '../../queries/gameserver';
+import { MouseEvent } from 'react';
 
 interface GameServerShutdownDialogProps extends RequiredDialogOptions {
   gameServerId: string;
@@ -14,7 +15,8 @@ export const GameServerShutdownDialog = ({
 }: GameServerShutdownDialogProps) => {
   const { mutate: shutdownGameServer, isPending: isShuttingDown } = useGameServerShutdown();
 
-  const handleOnShutdown = () => {
+  const handleOnShutdown = (e: MouseEvent) => {
+    e.stopPropagation();
     shutdownGameServer(gameServerId);
     dialogOptions.onOpenChange(false);
   };
