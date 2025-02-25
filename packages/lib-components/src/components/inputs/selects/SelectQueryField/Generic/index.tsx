@@ -9,6 +9,7 @@ import {
   cloneElement,
   useMemo,
   MouseEvent,
+  ChangeEvent,
 } from 'react';
 import {
   autoUpdate,
@@ -26,15 +27,14 @@ import {
 import { AiOutlineSearch as SearchIcon, AiOutlineClose as ClearIcon } from 'react-icons/ai';
 import { defaultInputProps, defaultInputPropsFactory, GenericInputPropsFunctionHandlers } from '../../../InputProps';
 import { useDebounce } from '../../../../../hooks';
-import { setAriaDescribedBy } from '../../../layout';
+import { Label, setAriaDescribedBy } from '../../../layout';
 import { FeedBackContainer } from '../style';
 import { SelectItem, SelectContext, getLabelFromChildren } from '../../';
-import { PaginationProps } from '../../../';
 
 /* The SearchField depends on a few things of <Select/> */
 import { GroupLabel } from '../../SelectField/style';
 import { SelectContainer, SelectButton, StyledArrowIcon } from '../../sharedStyle';
-import { IconButton, InfiniteScroll, Spinner } from '../../../../../components';
+import { IconButton, InfiniteScroll, Spinner, PaginationProps, UnControlledCheckBox } from '../../../../../components';
 import { GenericTextField } from '../../../TextField/Generic';
 import { Option, OptionGroup, SubComponentTypes } from '../../SubComponents';
 
@@ -51,6 +51,8 @@ interface SharedSelectQueryFieldProps extends PaginationProps {
 
   /// When true, The select icon will be replaced by a cross icon to clear the selected value.
   canClear?: boolean;
+
+  selectAll?: boolean;
 
   /// The selected items shown in the select field
   render?: (selectedItems: SelectItem[]) => React.ReactNode;
@@ -111,6 +113,7 @@ export const _GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSele
       render,
       multiple = false,
       canClear = false,
+      selectAll = false,
       debounce = 250,
       isLoadingData: isLoading = false,
       handleInputValueChange,
@@ -122,6 +125,7 @@ export const _GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSele
     const [activeIndex, setActiveIndex] = useState<number | null>(null);
     const [currentSelectedItems, setCurrentSelectedItems] = useState<SelectItem[]>([]);
     const [persistedItems, setPersistedItems] = useState<SelectItem[]>([]);
+    const [selectedAll, setSelectedAll] = useState<boolean>(false);
 
     const debouncedValue = useDebounce(inputValue.value, debounce);
     const listItemsRef = useRef<Array<HTMLLIElement | null>>([]);
@@ -186,6 +190,18 @@ export const _GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSele
 
       // the undefined is an expection
       if (onChange) onChange(multiple ? ([] as string[]) : (undefined as any));
+    };
+
+    const onSelectAllClick = (e: ChangeEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (!selectedAll === true) {
+        // todo
+      } else {
+        handleClear({ preventDefault: e.preventDefault, stopPropagation: e.stopPropagation } as MouseEvent);
+      }
+      setSelectedAll(!selectedAll);
     };
 
     /* This handles the case where the value is changed externally (e.g. from a parent component) */
@@ -268,6 +284,36 @@ export const _GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSele
                 <span style={{ marginLeft: '10px' }}>loading results</span>
               </FeedBackContainer>
             )}
+            {hasOptions && multiple && selectAll && (
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginTop: '5px',
+                  marginLeft: '13px',
+                }}
+              >
+                <UnControlledCheckBox
+                  size="small"
+                  value={selectedAll}
+                  onChange={onSelectAllClick}
+                  id={`${name}-select-all`}
+                  name={`${name}-select-all`}
+                  hasDescription={false}
+                  hasError={false}
+                />
+                <Label
+                  htmlFor={`${name}-select-all`}
+                  required={false}
+                  error={false}
+                  size="large"
+                  disabled={false}
+                  text="Select all"
+                  position="right"
+                />
+              </div>
+            )}
             {hasOptions && options}
             {hasOptions && !isLoading && (
               <InfiniteScroll
@@ -296,11 +342,18 @@ export const _GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSele
             <GroupLabel role="presentation" id={'select-group-label'} aria-hidden="false">
               Selected items
             </GroupLabel>
-            {persistedItems.map((item) => (
-              <Option key={`${name}-${item.value}`} value={item.value} label={item.label} onChange={onChange as any}>
-                {item.label}
-              </Option>
-            ))}
+            {persistedItems
+              .filter(
+                (item) =>
+                  !currentSelectedItems.find((selectedItem) => {
+                    return selectedItem.value === item.value;
+                  }),
+              )
+              .map((item) => (
+                <Option key={`${name}-${item.value}`} value={item.value} label={item.label} onChange={onChange as any}>
+                  {item.label}
+                </Option>
+              ))}
           </ul>
         ),
         */

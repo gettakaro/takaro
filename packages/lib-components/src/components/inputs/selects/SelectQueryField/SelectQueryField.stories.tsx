@@ -21,6 +21,7 @@ export default {
     debounce: 250,
     readOnly: false,
     canClear: false,
+    selectAll: false,
   },
 } as Meta<SelectQueryFieldProps>;
 
@@ -202,6 +203,8 @@ export const ClientSideMultiSelectSubmit: StoryFn<SelectQueryFieldProps> = (args
           isFetchingNextPage={false}
           fetchNextPage={() => {}}
           multiple
+          readOnly={args.readOnly}
+          selectAll={args.selectAll}
           name="films"
         >
           {/* In this case the label is the same as the value but ofcourse that can differ*/}
