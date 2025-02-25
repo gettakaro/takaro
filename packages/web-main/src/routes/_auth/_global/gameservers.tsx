@@ -21,6 +21,7 @@ import {
   AiOutlineCopy as CopyIcon,
   AiOutlineFunction as ModulesIcon,
   AiOutlineSetting as SettingsIcon,
+  AiOutlineStop as ShutdownIcon,
 } from 'react-icons/ai';
 import { FC, MouseEvent, useRef, useState } from 'react';
 import { PermissionsGuard } from '../../../components/PermissionsGuard';
@@ -32,6 +33,7 @@ import { userMeQueryOptions } from '../../../queries/user';
 import { gameServerCountQueryOptions } from '../../../queries/gameserver';
 import { useQuery } from '@tanstack/react-query';
 import { getCurrentDomain } from '../../../util/getCurrentDomain';
+import { GameServerShutdownDialog } from '../../../components/dialogs/GameServerShutdownDialog';
 
 type ViewType = 'list' | 'table';
 
@@ -123,21 +125,30 @@ interface GameServerActionsProps {
 export const GameServerActions: FC<GameServerActionsProps> = ({ gameServerId, gameServerName }) => {
   const theme = useTheme();
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
+  const [openShutdownDialog, setOpenShutdownDialog] = useState<boolean>(false);
   const gameServerDeleteDialogRef = useRef<DeleteImperativeHandle>(null);
 
+  const hasManageGameServerPermission = useHasPermission(['MANAGE_GAMESERVERS']);
   const navigate = useNavigate();
 
   const handleOnEditClick = (e: MouseEvent): void => {
     e.stopPropagation();
+    e.preventDefault();
     navigate({ to: '/gameservers/update/$gameServerId', params: { gameServerId } });
   };
   const handleOnDeleteClick = (e: MouseEvent) => {
     e.stopPropagation();
+    e.preventDefault();
     if (e.shiftKey) {
       gameServerDeleteDialogRef.current?.triggerDelete();
     } else {
       setOpenDeleteDialog(true);
     }
+  };
+  const handleOnShutdownClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setOpenShutdownDialog(true);
   };
 
   const handleOnCopyClick = (e: MouseEvent) => {
@@ -155,6 +166,12 @@ export const GameServerActions: FC<GameServerActionsProps> = ({ gameServerId, ga
           gameServerId={gameServerId}
           gameServerName={gameServerName}
         />
+        <GameServerShutdownDialog
+          open={openShutdownDialog}
+          onOpenChange={setOpenShutdownDialog}
+          gameServerId={gameServerId}
+          gameServerName={gameServerName}
+        />
         <Dropdown>
           <Dropdown.Trigger asChild>
             <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
@@ -162,10 +179,22 @@ export const GameServerActions: FC<GameServerActionsProps> = ({ gameServerId, ga
           <Dropdown.Menu>
             <Dropdown.Menu.Group label="Actions">
               <Dropdown.Menu.Item icon={<CopyIcon />} onClick={handleOnCopyClick} label="Copy gameserver id" />
-              <Dropdown.Menu.Item icon={<EditIcon />} onClick={handleOnEditClick} label="Edit gameserver" />
+              <Dropdown.Menu.Item
+                icon={<EditIcon />}
+                onClick={handleOnEditClick}
+                label="Edit gameserver"
+                disabled={!hasManageGameServerPermission}
+              />
+              <Dropdown.Menu.Item
+                icon={<ShutdownIcon fill={theme.colors.error} />}
+                label="Shutdown gameserver"
+                disabled={!hasManageGameServerPermission}
+                onClick={handleOnShutdownClick}
+              />
               <Dropdown.Menu.Item
                 icon={<DeleteIcon fill={theme.colors.error} />}
                 onClick={handleOnDeleteClick}
+                disabled={!hasManageGameServerPermission}
                 label="Delete gameserver"
               />
             </Dropdown.Menu.Group>
