@@ -39,6 +39,7 @@
   "homepage": "https://takaro.app",
   "devDependencies": {
     "@eslint/js": "9.12.0",
+    "@openapitools/openapi-generator-cli": "^2.16.3",
     "@reporters/github": "^1.7.2",
     "@storybook/addon-a11y": "7.6.20",
     "@storybook/addon-essentials": "7.6.20",
@@ -133,6 +134,7 @@
     "convict": "6.2.4",
     "cronstrue": "2.51.0",
     "csv": "6.3.10",
+    "dedent": "^1.5.3",
     "discord-api-types": "0.37.101",
     "discord.js": "14.16.3",
     "express": "4.21.0",

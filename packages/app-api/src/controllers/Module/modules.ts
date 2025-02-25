@@ -21,7 +21,7 @@ import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 import { errors } from '@takaro/util';
 import { moduleProtectionMiddleware } from '../../middlewares/moduleProtectionMiddleware.js';
-import { AllowedFilters, PaginationParams, RangeFilterCreatedAndUpdatedAt } from '../shared.js';
+import { AllowedFilters, AllowedSearch, PaginationParams, RangeFilterCreatedAndUpdatedAt } from '../shared.js';
 import { ITakaroQuery } from '@takaro/db';
 import { ModuleService } from '../../service/Module/index.js';
 import {
@@ -63,13 +63,19 @@ class ModuleSearchInputAllowedFilters extends AllowedFilters {
   builtin: string[];
 }
 
+class ModuleSearchInputAllowedSearch extends AllowedSearch {
+  @IsOptional()
+  @IsString({ each: true })
+  name: string[];
+}
+
 class ModuleSearchInputDTO extends ITakaroQuery<ModuleSearchInputAllowedFilters> {
   @ValidateNested()
   @Type(() => ModuleSearchInputAllowedFilters)
   declare filters: ModuleSearchInputAllowedFilters;
   @ValidateNested()
-  @Type(() => ModuleSearchInputAllowedFilters)
-  declare search: ModuleSearchInputAllowedFilters;
+  @Type(() => ModuleSearchInputAllowedSearch)
+  declare search: ModuleSearchInputAllowedSearch;
   @ValidateNested()
   @Type(() => RangeFilterCreatedAndUpdatedAt)
   declare greaterThan: RangeFilterCreatedAndUpdatedAt;

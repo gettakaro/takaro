@@ -264,7 +264,6 @@ export const gameServerModuleInstallationOptions = (moduleId: string, gameServer
 export const useGameServerModuleInstall = () => {
   const apiClient = getApiClient();
   const queryClient = useQueryClient();
-  const { enqueueSnackbar } = useSnackbar();
 
   return mutationWrapper<ModuleInstallationOutputDTO, InstallModuleDTO>(
     useMutation<ModuleInstallationOutputDTO, AxiosError<ModuleInstallationOutputDTOAPI>, InstallModuleDTO>({
@@ -273,11 +272,6 @@ export const useGameServerModuleInstall = () => {
       onSuccess: async (moduleInstallation, { versionId, gameServerId }) => {
         // invalidate list of installed modules
         await queryClient.invalidateQueries({ queryKey: ModuleInstallationKeys.list() });
-
-        enqueueSnackbar(
-          `Successfully installed '${moduleInstallation.module.name}' version ${moduleInstallation.version.tag}!`,
-          { variant: 'default', type: 'success' },
-        );
 
         // update installed module cache
         queryClient.setQueryData<ModuleInstallationOutputDTO>(

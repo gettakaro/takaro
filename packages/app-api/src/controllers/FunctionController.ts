@@ -15,7 +15,7 @@ import { ParamId } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 import { moduleProtectionMiddleware } from '../middlewares/moduleProtectionMiddleware.js';
-import { AllowedFilters } from './shared.js';
+import { AllowedFilters, AllowedSearch } from './shared.js';
 
 @OpenAPI({
   security: [{ domainAuth: [] }],
@@ -41,14 +41,20 @@ class FunctionSearchInputAllowedFilters extends AllowedFilters {
   name: string[];
 }
 
+class FunctionSearchInputAllowedSearch extends AllowedSearch {
+  @IsOptional()
+  @IsString({ each: true })
+  name: string[];
+}
+
 class FunctionSearchInputDTO extends ITakaroQuery<FunctionOutputDTO> {
   @ValidateNested()
   @Type(() => FunctionSearchInputAllowedFilters)
   declare filters: FunctionSearchInputAllowedFilters;
 
   @ValidateNested()
-  @Type(() => FunctionSearchInputAllowedFilters)
-  declare search: FunctionSearchInputAllowedFilters;
+  @Type(() => FunctionSearchInputAllowedSearch)
+  declare search: FunctionSearchInputAllowedSearch;
 }
 
 @OpenAPI({

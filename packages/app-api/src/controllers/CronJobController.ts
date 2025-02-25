@@ -30,7 +30,7 @@ import { Response } from 'express';
 import { moduleProtectionMiddleware } from '../middlewares/moduleProtectionMiddleware.js';
 import { EventService, EVENT_TYPES } from '../service/EventService.js';
 import { EventOutputArrayDTOAPI, EventSearchInputDTO } from './EventController.js';
-import { AllowedFilters } from './shared.js';
+import { AllowedFilters, AllowedSearch } from './shared.js';
 
 export class CronJobOutputDTOAPI extends APIOutput<CronJobOutputDTO> {
   @Type(() => CronJobOutputDTO)
@@ -54,14 +54,20 @@ class CronJobSearchInputAllowedFilters extends AllowedFilters {
   name!: string[];
 }
 
+class CronJobSearchInputAllowedSearch extends AllowedSearch {
+  @IsOptional()
+  @IsString({ each: true })
+  name!: string[];
+}
+
 class CronJobSearchInputDTO extends ITakaroQuery<CronJobSearchInputAllowedFilters> {
   @ValidateNested()
   @Type(() => CronJobSearchInputAllowedFilters)
   declare filters: CronJobSearchInputAllowedFilters;
 
   @ValidateNested()
-  @Type(() => CronJobSearchInputAllowedFilters)
-  declare search: CronJobSearchInputAllowedFilters;
+  @Type(() => CronJobSearchInputAllowedSearch)
+  declare search: CronJobSearchInputAllowedSearch;
 }
 
 @OpenAPI({
