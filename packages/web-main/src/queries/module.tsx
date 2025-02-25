@@ -133,7 +133,7 @@ interface ModuleTagsInput {
   moduleId: string;
 }
 
-export const moduleTagsInfiniteQueryOptions = (queryParams: ModuleTagsInput) => {
+export const moduleTagsInfiniteQueryOptions = (queryParams: ModuleTagsInput, queryOptions?: { enabled?: boolean }) => {
   return infiniteQueryOptions<SmallModuleOutputArrayDTOAPI, AxiosError<SmallModuleOutputArrayDTOAPI>>({
     queryKey: [...moduleKeys.tags(queryParams.moduleId), 'infinite', queryParams.page, queryParams.limit],
     queryFn: async ({ pageParam }) =>
@@ -147,6 +147,7 @@ export const moduleTagsInfiniteQueryOptions = (queryParams: ModuleTagsInput) => 
     initialPageParam: 0,
     getNextPageParam: (lastPage) => getNextPage(lastPage.meta),
     placeholderData: keepPreviousData,
+    enabled: queryOptions?.enabled,
   });
 };
 
