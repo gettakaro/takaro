@@ -101,7 +101,6 @@ export const ModuleFormManual: FC<ModuleFormProps> = ({ moduleName, moduleVersio
                 onChange={handleOnSelectedVersionChanged}
                 name="module-version-tag-select"
                 value={moduleVersion.tag}
-                returnValue="tag"
               />
             </div>
           )}

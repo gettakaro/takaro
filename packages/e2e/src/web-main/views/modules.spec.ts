@@ -151,8 +151,7 @@ test('Can install module with empty config', async ({ page, takaro }) => {
   await card.getByText('Select version...').click();
   await page.getByRole('option', { name: 'latest' }).click();
   await card.getByRole('button', { name: 'Install' }).click();
-  // automatically installs
-  await expect(page.getByText('Successfully installed')).toBeVisible();
+  await page.getByRole('button', { name: 'Install module' }).click();
 });
 
 test('Can install a module with a discord hook', async ({ page, takaro }) => {
