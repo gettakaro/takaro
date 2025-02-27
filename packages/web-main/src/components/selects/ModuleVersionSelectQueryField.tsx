@@ -115,7 +115,7 @@ export const ModuleVersionSelectView: FC<ModuleVersionSelectViewProps> = ({
     >
       <SelectQueryField.OptionGroup>
         {moduleVersions.map(({ tag, id }) => (
-          <SelectQueryField.Option key={id} value={tag} label={tag}>
+          <SelectQueryField.Option key={id} value={id} label={tag}>
             <div>
               <span>{tag}</span>
             </div>
