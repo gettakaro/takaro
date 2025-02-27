@@ -29,6 +29,7 @@ import { getNextPage, mutationWrapper, queryParamsToArray } from './util';
 import { AxiosError } from 'axios';
 import { ErrorMessageMapping } from '@takaro/lib-components/src/errors';
 import { useSnackbar } from 'notistack';
+import { moduleKeys } from './module';
 
 export const gameServerKeys = {
   all: ['gameservers'] as const,
@@ -269,13 +270,19 @@ export const useGameServerModuleInstall = () => {
     useMutation<ModuleInstallationOutputDTO, AxiosError<ModuleInstallationOutputDTOAPI>, InstallModuleDTO>({
       mutationFn: async (moduleInstallation) =>
         (await apiClient.module.moduleInstallationsControllerInstallModule(moduleInstallation)).data.data,
-      onSuccess: async (moduleInstallation, { versionId, gameServerId }) => {
+      onSuccess: async (moduleInstallation, { gameServerId }) => {
         // invalidate list of installed modules
         await queryClient.invalidateQueries({ queryKey: ModuleInstallationKeys.list() });
 
+        // invalidate the versions query
+        await queryClient.invalidateQueries({ queryKey: moduleKeys.versions.list(moduleInstallation.id) });
+
+        // invalidate the version query
+        await queryClient.invalidateQueries();
+
         // update installed module cache
         queryClient.setQueryData<ModuleInstallationOutputDTO>(
-          ModuleInstallationKeys.detail(gameServerId, versionId),
+          ModuleInstallationKeys.detail(gameServerId, moduleInstallation.moduleId),
           moduleInstallation,
         );
       },
