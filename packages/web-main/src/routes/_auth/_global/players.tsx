@@ -93,7 +93,11 @@ function Component() {
               <td>
                 <GameServerContainer gameServerId={pog.gameServerId} />
               </td>
-              <td>{Duration.fromObject({ seconds: pog.playtimeSeconds }).toHuman()}</td>
+              <td>
+                {Duration.fromObject({ seconds: pog.playtimeSeconds })
+                  .shiftTo('days', 'hours', 'minutes', 'seconds')
+                  .toHuman({ unitDisplay: 'narrow', listStyle: 'narrow' })}
+              </td>
               <td>{pog.currency}</td>
               <td>{pog.ping}</td>
               <td>
