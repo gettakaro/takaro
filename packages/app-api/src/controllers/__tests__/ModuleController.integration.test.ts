@@ -466,6 +466,27 @@ const tests = [
       expect(exportRes.data.data.versions[0].tag).to.equal('1.0.0');
     },
   }),
+  new IntegrationTest<ModuleOutputDTO>({
+    group,
+    snapshot: false,
+    name: 'Not specifying versionIds exports all versions',
+    setup,
+    test: async function () {
+      // Create a module, tag 2 versions, export all
+      await this.client.module.moduleVersionControllerTagVersion({
+        moduleId: this.setupData.id,
+        tag: '1.0.0',
+      });
+      await this.client.module.moduleVersionControllerTagVersion({
+        moduleId: this.setupData.id,
+        tag: '2.0.0',
+      });
+
+      const exportRes = await this.client.module.moduleControllerExport(this.setupData.id);
+
+      expect(exportRes.data.data.versions).to.have.length(3);
+    },
+  }),
   // #endregion Import/export
   // #region Versioning
   new IntegrationTest<ModuleOutputDTO>({
