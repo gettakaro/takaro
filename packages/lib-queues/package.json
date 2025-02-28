@@ -11,9 +11,5 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@bull-board/express": "6.2.3"
-  },
-  "devDependencies": {}
+  "license": "ISC"
 }
