@@ -33,7 +33,9 @@ export const ModuleExportDialog: FC<ModuleExportDialogProps> = ({ moduleId, modu
   const onSubmit: SubmitHandler<z.infer<typeof validationSchema>> = async ({ versionIds }) => {
     try {
       setError(null);
-      const data = await mutateAsync({ moduleId, options: { versionIds } });
+
+      const allVersions = versionIds.includes('null');
+      const data = await mutateAsync({ moduleId, options: { versionIds: allVersions ? undefined : versionIds } });
 
       if (data) {
         const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
@@ -77,6 +79,8 @@ export const ModuleExportDialog: FC<ModuleExportDialogProps> = ({ moduleId, modu
               control={control}
               multiple
               moduleId={moduleId}
+              addAllVersionsOption
+              returnVariant="versionId"
             />
             {error && <FormError error={error} />}
             <Button fullWidth type="submit" text="Export module" isLoading={isExporting} />

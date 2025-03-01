@@ -12,13 +12,5 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "convict": "6.2.4",
-    "objection": "3.1.5",
-    "pg": "8.13.0"
-  },
-  "devDependencies": {
-    "@types/convict": "6.1.6"
-  }
+  "license": "ISC"
 }

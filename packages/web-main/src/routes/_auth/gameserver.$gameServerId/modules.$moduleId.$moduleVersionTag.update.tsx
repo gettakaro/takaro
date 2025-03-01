@@ -32,7 +32,7 @@ function Component() {
   const [{ data: mod }, { data: modInstallation }] = useQueries({
     queries: [
       { ...moduleQueryOptions(moduleId), initialData: loaderData.mod },
-      { ...gameServerModuleInstallationOptions(gameServerId, moduleId), initialData: loaderData.modInstallation },
+      { ...gameServerModuleInstallationOptions(moduleId, gameServerId), initialData: loaderData.modInstallation },
     ],
   });
 
