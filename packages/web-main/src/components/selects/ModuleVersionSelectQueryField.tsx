@@ -5,9 +5,13 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { moduleTagsInfiniteQueryOptions } from '../../queries/module';
 import { SmallModuleVersionOutputDTO } from '@takaro/apiclient';
 
+type returnVariant = 'tag' | 'versionId';
+
 interface ModuleVersionSelectQueryFieldProps extends CustomSelectQueryProps {
   moduleId: string;
   filter?: (version: SmallModuleVersionOutputDTO) => boolean;
+  addAllVersionsOption?: boolean;
+  returnVariant: returnVariant;
 }
 
 export const ModuleVersionSelectQueryField: FC<ModuleVersionSelectQueryFieldProps> = ({
@@ -25,6 +29,8 @@ export const ModuleVersionSelectQueryField: FC<ModuleVersionSelectQueryFieldProp
   canClear,
   filter,
   placeholder,
+  addAllVersionsOption,
+  returnVariant,
 }) => {
   const { data, isFetching, hasNextPage, isFetchingNextPage, fetchNextPage, refetch } = useInfiniteQuery(
     moduleTagsInfiniteQueryOptions({ moduleId, limit: 20 }, { enabled: false }),
@@ -34,6 +40,17 @@ export const ModuleVersionSelectQueryField: FC<ModuleVersionSelectQueryFieldProp
   if (filter) {
     smallVersions = smallVersions.filter(filter);
   }
+
+  smallVersions = [
+    {
+      name: 'Global - applies to all gameservers',
+      id: 'null',
+      tag: 'All versions',
+      createdAt: 'placeholder',
+      updatedAt: 'placeholder',
+    } as SmallModuleVersionOutputDTO,
+    ...smallVersions,
+  ];
 
   const handleOpen = (isOpen: boolean) => {
     if (isOpen) {
@@ -61,12 +78,18 @@ export const ModuleVersionSelectQueryField: FC<ModuleVersionSelectQueryFieldProp
       canClear={canClear}
       onOpenChange={handleOpen}
       placeholder={placeholder}
+      addAllVersionsOption={addAllVersionsOption}
+      returnVariant={returnVariant}
     />
   );
 };
 
 type ModuleVersionSelectViewProps = CustomSelectQueryProps &
-  PaginationProps & { moduleVersions: SmallModuleVersionOutputDTO[] };
+  PaginationProps & {
+    moduleVersions: SmallModuleVersionOutputDTO[];
+    addAllVersionsOption?: boolean;
+    returnVariant: returnVariant;
+  };
 
 export const ModuleVersionSelectView: FC<ModuleVersionSelectViewProps> = ({
   control,
@@ -86,6 +109,7 @@ export const ModuleVersionSelectView: FC<ModuleVersionSelectViewProps> = ({
   onOpenChange,
   name,
   moduleVersions,
+  returnVariant,
   placeholder = 'Select version...',
 }) => {
   return (
@@ -115,7 +139,7 @@ export const ModuleVersionSelectView: FC<ModuleVersionSelectViewProps> = ({
     >
       <SelectQueryField.OptionGroup>
         {moduleVersions.map(({ tag, id }) => (
-          <SelectQueryField.Option key={id} value={tag} label={tag}>
+          <SelectQueryField.Option key={id} value={returnVariant === 'tag' ? tag : id} label={tag}>
             <div>
               <span>{tag}</span>
             </div>
