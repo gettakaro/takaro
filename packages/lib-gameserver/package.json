@@ -7,7 +7,8 @@
   "type": "module",
   "scripts": {
     "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json",
-    "build": "tsc -p ./tsconfig.build.json"
+    "build": "tsc -p ./tsconfig.build.json",
+    "postbuild": "cp src/gameservers/7d2d/items-7d2d.json dist/gameservers/7d2d/items-7d2d.json"
   },
   "keywords": [],
   "author": "",
