@@ -1,5 +1,6 @@
 import { TakaroService } from './Base.js';
 import { IHookJobData, queueService } from '@takaro/queues';
+import { Redis } from '@takaro/db';
 
 import { HookModel, HookRepo } from '../db/hook.js';
 import {
@@ -194,6 +195,7 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
 
   async handleEvent(opts: IHandleHookOptions) {
     const { eventData, eventType, gameServerId, playerId } = opts;
+    const redis = await Redis.getClient('service:hook');
 
     const triggeredHooks = await this.repo.getTriggeredHooks(eventType, gameServerId);
 
@@ -229,32 +231,64 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
         hookData.player = globalPlayer;
       }
 
-      await Promise.all(
-        hooksAfterFilters.map(async (hook) => {
-          // This is to solve a pass-by-reference issue
-          const copiedHookData = { ...hookData };
+      for (const hook of hooksAfterFilters) {
+        // This is to solve a pass-by-reference issue
+        const copiedHookData = { ...hookData };
 
-          const moduleInstallations = await this.moduleService.getInstalledModules({
-            gameserverId: gameServerId,
-            versionId: hook.versionId,
-          });
-          for (const installation of moduleInstallations) {
-            if (!installation.systemConfig.enabled) continue;
-            if (!installation.systemConfig.hooks[hook.name].enabled) continue;
+        const moduleInstallations = await this.moduleService.getInstalledModules({
+          gameserverId: gameServerId,
+          versionId: hook.versionId,
+        });
 
-            if (isDiscordMessageEvent(eventData)) {
-              const configuredChannel = installation.systemConfig.hooks[hook.name].discordChannelId;
-              if (eventData.channel.id !== configuredChannel) continue;
+        for (const installation of moduleInstallations) {
+          if (!installation.systemConfig.enabled) continue;
+          const hookConfig = installation.systemConfig.hooks[hook.name];
+          if (!hookConfig.enabled) continue;
+
+          if (isDiscordMessageEvent(eventData)) {
+            const configuredChannel = hookConfig.discordChannelId;
+            if (eventData.channel.id !== configuredChannel) continue;
+          }
+
+          copiedHookData.functionId = hook.function.id;
+          copiedHookData.itemId = hook.id;
+          copiedHookData.module = installation;
+
+          if (hookConfig.cooldown) {
+            const cooldownType = hookConfig.cooldownType;
+            let cooldownKey = `${this.domainId}:hook:${hook.id}:cooldown`;
+
+            switch (cooldownType) {
+              case 'player':
+                // If no player is attached to this event, we'll assume it's a server cooldown
+                if (!playerId) {
+                  cooldownKey += `:${gameServerId}`;
+                  break;
+                }
+                cooldownKey += `:${playerId}`;
+                break;
+              case 'server':
+                cooldownKey += `:${gameServerId}`;
+                break;
+              default:
+                break;
             }
 
-            copiedHookData.functionId = hook.function.id;
-            copiedHookData.itemId = hook.id;
-            copiedHookData.module = installation;
-
-            return queueService.queues.hooks.queue.add(copiedHookData as IHookJobData);
+            const cooldown = await redis.get(cooldownKey);
+            if (cooldown) {
+              this.log.debug(`Hook ${hook.id} is on cooldown`);
+              continue;
+            }
+            await redis.set(cooldownKey, '1', {
+              EX: hookConfig.cooldown,
+            });
           }
-        }),
-      );
+
+          await queueService.queues.hooks.queue.add(copiedHookData as IHookJobData, {
+            delay: hookConfig.delay * 1000,
+          });
+        }
+      }
     }
   }
 
