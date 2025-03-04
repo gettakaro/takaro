@@ -62,7 +62,14 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ mod, onSuccess }) => {
           required
           loading={moduleImportLoading || moduleExportLoading}
         />
-        <ModuleVersionSelectQueryField name="versions" label="Versions" control={control} multiple moduleId={mod.id} />
+        <ModuleVersionSelectQueryField
+          name="versions"
+          label="Versions"
+          control={control}
+          multiple
+          moduleId={mod.id}
+          returnVariant="versionId"
+        />
         <Button
           isLoading={moduleImportLoading || moduleExportLoading}
           type="submit"

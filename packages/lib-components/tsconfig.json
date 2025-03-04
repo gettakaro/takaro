@@ -4,7 +4,7 @@
     "dist",
     "node_modules",
     "src/**/*.stories.tsx",
-    "src/**/*.stories.mdx",
+    "src/**/*.mdx",
   ],
   "compilerOptions": {
     "rootDir": "./src",

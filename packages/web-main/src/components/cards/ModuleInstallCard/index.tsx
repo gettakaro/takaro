@@ -306,6 +306,7 @@ export const ModuleVersionInstallForm: FC<ModuleVersionInstallFormProps> = ({
           label=""
           moduleId={moduleId}
           filter={filterVersions}
+          returnVariant="tag"
         />
         <Tooltip disabled={!isLatestSelected}>
           <Tooltip.Trigger asChild>
