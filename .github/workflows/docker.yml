@@ -123,7 +123,6 @@ jobs:
           TEST_LOGGING_LEVEL: debug
           LOGGING_LEVEL: debug
           NODE_ENV: test
-          TAKARO_TEST_RUNNER_ATTEMPTS: 10
           TRACING_ENABLED: false
           GRAFANA_CLOUD_TEMPO_URL: ${{ secrets.GRAFANA_CLOUD_TEMPO_URL }}
           GRAFANA_CLOUD_API_USER: ${{ secrets.GRAFANA_CLOUD_API_USER }}
