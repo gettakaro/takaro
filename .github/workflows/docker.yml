@@ -127,7 +127,7 @@ jobs:
           GRAFANA_CLOUD_TEMPO_URL: ${{ secrets.GRAFANA_CLOUD_TEMPO_URL }}
           GRAFANA_CLOUD_API_USER: ${{ secrets.GRAFANA_CLOUD_API_USER }}
           GRAFANA_CLOUD_API_KEY: ${{ secrets.GRAFANA_CLOUD_API_KEY }}
-
+          TAKARO_TEST_RUNNER_ATTEMPTS: 10
       - name: Commit and push if changed
         if: github.ref == 'refs/heads/development'
         run: |
