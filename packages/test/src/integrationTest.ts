@@ -216,6 +216,19 @@ export class IntegrationTest<SetupData> {
 
           // If this was our last retry, throw the error
           if (attempt === maxRetries) {
+            if (isAxiosError(lastError)) {
+              console.log(
+                `Request ${lastError.config?.method} ${lastError.config?.url} failed with status ${lastError.response?.status}`,
+              );
+              console.log('Response data:');
+              console.log(JSON.stringify(lastError.response?.data, null, 2));
+              console.log('Request data:');
+              console.log(JSON.stringify(lastError.config?.data, null, 2));
+              // Throw a sanitized error
+              throw new Error(
+                `Request ${lastError.config?.method} ${lastError.config?.url} failed with status ${lastError.response?.status}`,
+              );
+            }
             throw lastError;
           }
         }
