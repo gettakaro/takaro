@@ -14,7 +14,11 @@ import { ModuleService } from './Module/index.js';
 
 export class CronJobOutputDTO extends TakaroModelDTO<CronJobOutputDTO> {
   @IsString()
-  name!: string;
+  name: string;
+  @IsString()
+  @IsOptional()
+  @Length(1, 131072)
+  description?: string;
   @IsString()
   temporalValue!: string;
   @Type(() => FunctionOutputDTO)
@@ -29,6 +33,10 @@ export class CronJobCreateDTO extends TakaroDTO<CronJobCreateDTO> {
   @Length(1, 50)
   name: string;
   @IsString()
+  @IsOptional()
+  @Length(1, 131072)
+  description?: string;
+  @IsString()
   temporalValue!: string;
   @IsUUID()
   versionId: string;
@@ -42,6 +50,10 @@ export class CronJobUpdateDTO extends TakaroDTO<CronJobUpdateDTO> {
   @IsString()
   @IsOptional()
   name!: string;
+  @IsString()
+  @IsOptional()
+  @Length(1, 131072)
+  description?: string;
   @IsString()
   @IsOptional()
   temporalValue!: string;

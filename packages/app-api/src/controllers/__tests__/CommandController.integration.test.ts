@@ -6,6 +6,7 @@ const group = 'CommandController';
 
 const mockCommand = (versionId: string, name = 'Test command'): CommandCreateDTO => ({
   name,
+  description: 'Cool description',
   trigger: 'test',
   versionId,
 });
@@ -60,6 +61,7 @@ const tests = [
     test: async function () {
       return this.client.command.commandControllerUpdate(this.setupData.data.id, {
         name: 'Updated command',
+        description: 'Updated description',
       });
     },
     filteredFields: ['moduleId', 'functionId'],

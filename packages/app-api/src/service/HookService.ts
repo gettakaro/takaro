@@ -44,6 +44,10 @@ export class HookOutputDTO extends TakaroModelDTO<HookOutputDTO> {
   @IsString()
   name: string;
   @IsString()
+  @IsOptional()
+  @Length(1, 131072)
+  description?: string;
+  @IsString()
   regex: string;
   @Type(() => FunctionOutputDTO)
   @ValidateNested()
@@ -58,6 +62,10 @@ export class HookCreateDTO extends TakaroDTO<HookCreateDTO> {
   @IsString()
   @Length(1, 50)
   name: string;
+  @IsString()
+  @IsOptional()
+  @Length(1, 131072)
+  description?: string;
   @Validate(IsSafeRegex, {
     message:
       'Regex did not pass validation (see the underlying package for more details: https://www.npmjs.com/package/safe-regex)',
@@ -78,6 +86,10 @@ export class HookUpdateDTO extends TakaroDTO<HookUpdateDTO> {
   @IsString()
   @IsOptional()
   name: string;
+  @IsString()
+  @IsOptional()
+  @Length(1, 131072)
+  description?: string;
   @Validate(IsSafeRegex, {
     message:
       'Regex did not pass validation (see the underlying package for more details: https://www.npmjs.com/package/safe-regex)',

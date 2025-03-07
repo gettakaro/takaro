@@ -39,8 +39,10 @@
               "id": "8733f76d-7781-406a-b1bd-7d6ba8d903cf",
               "code": "test",
               "name": null,
-              "versionId": null
-            }
+              "versionId": null,
+              "description": null
+            },
+            "description": null
           }
         ],
         "hooks": [],

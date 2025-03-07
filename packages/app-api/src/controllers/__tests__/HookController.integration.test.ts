@@ -6,6 +6,7 @@ const group = 'HookController';
 
 const mockHook = (versionId: string) => ({
   name: 'Test hook',
+  description: 'Cool description',
   regex: '/this (is) a [regex]/g',
   eventType: HookCreateDTOEventTypeEnum.Log,
   versionId,
@@ -58,6 +59,7 @@ const tests = [
     test: async function () {
       return this.client.hook.hookControllerUpdate(this.setupData.data.id, {
         name: 'Updated hook',
+        description: 'Updated description',
         regex: '/new [regex]/g',
       });
     },

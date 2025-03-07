@@ -6,6 +6,7 @@ const group = 'CronJobController';
 
 const mockCronjob = (versionId: string) => ({
   name: 'Test cronJob',
+  description: 'Cool description',
   temporalValue: '0 * * * *',
   function: 'console.log("test")',
   versionId,
@@ -58,6 +59,7 @@ const tests = [
     test: async function () {
       return this.client.cronjob.cronJobControllerUpdate(this.setupData.data.id, {
         name: 'Updated cronJob',
+        description: 'Updated description',
         temporalValue: '0 * * * *',
       });
     },
