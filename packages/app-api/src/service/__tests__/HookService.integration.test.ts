@@ -1,13 +1,15 @@
 import 'reflect-metadata';
 
 import { EventPlayerConnected, EventChatMessage, HookEvents, ChatChannel } from '@takaro/modules';
-import { IntegrationTest, expect, integrationConfig, EventsAwaiter } from '@takaro/test';
+import { IntegrationTest, expect, integrationConfig, EventsAwaiter, SetupGameServerPlayers } from '@takaro/test';
 import {
   HookOutputDTO,
   GameServerOutputDTO,
   ModuleOutputDTO,
   ModuleInstallationOutputDTO,
   IHookEventTypeEnum,
+  isAxiosError,
+  PlayerOnGameserverOutputDTO,
 } from '@takaro/apiclient';
 import { describe } from 'node:test';
 
@@ -167,6 +169,221 @@ const tests = [
 
       const hookExecutedEvents = await _hookExecutedEvents;
       expect(hookExecutedEvents).to.have.length(3); // 1 from first trigger + 2 from second trigger
+    },
+  }),
+  new IntegrationTest<IStandardSetupData>({
+    group,
+    snapshot: false,
+    name: 'Delays have a max value',
+    setup,
+    test: async function () {
+      try {
+        await this.client.module.moduleInstallationsControllerInstallModule({
+          gameServerId: this.setupData.gameserver.id,
+          versionId: this.setupData.mod.latestVersion.id,
+          systemConfig: JSON.stringify({
+            hooks: {
+              [this.setupData.normalHook.name]: {
+                delay: 10000000000,
+              },
+            },
+          }),
+        });
+        throw new Error('Should have thrown');
+      } catch (error) {
+        if (!isAxiosError(error)) throw error;
+        expect(error.response?.status).to.equal(400);
+        expect(error.response?.data.meta.error.message).to.be.eq(
+          `Invalid config: /hooks/${this.setupData.normalHook.name}/delay must be <= 86400`,
+        );
+      }
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Hooks can have a global-scoped cooldown',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      const eventsAwaiter = new EventsAwaiter();
+      await eventsAwaiter.connect(this.client);
+      const executedEvents = eventsAwaiter.waitForEvents(IHookEventTypeEnum.HookExecuted, 1);
+      const mod = (
+        await this.client.module.moduleControllerCreate({
+          name: 'Module',
+        })
+      ).data.data;
+      const hook = (
+        await this.client.hook.hookControllerCreate({
+          name: 'Test hook',
+          versionId: mod.latestVersion.id,
+          regex: '.*',
+          eventType: HookEvents.PLAYER_CONNECTED,
+        })
+      ).data.data;
+      // Install with a cooldown
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameServer1.id,
+        versionId: mod.latestVersion.id,
+        systemConfig: JSON.stringify({
+          hooks: {
+            [hook.name]: {
+              cooldown: 100,
+              cooldownType: 'player',
+            },
+          },
+        }),
+      });
+
+      // Trigger it twice in quick succession
+      const triggerHook = async (gameServerId: string, pog: PlayerOnGameserverOutputDTO) =>
+        this.client.hook.hookControllerTrigger({
+          gameServerId: gameServerId,
+          moduleId: mod.id,
+          eventType: HookEvents.PLAYER_CONNECTED,
+          eventMeta: new EventPlayerConnected({
+            player: { gameId: pog.gameId, name: pog.id },
+            msg: 'foo connected',
+          }),
+        });
+      await triggerHook(this.setupData.gameServer1.id, this.setupData.pogs1[0]);
+      await triggerHook(this.setupData.gameServer2.id, this.setupData.pogs2[0]);
+      await executedEvents;
+      // Only one should have triggered
+      const hookExecutedEvents = await this.client.event.eventControllerSearch({
+        filters: { eventName: [IHookEventTypeEnum.HookExecuted] },
+      });
+      expect(hookExecutedEvents.data.data).to.have.length(1);
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Hooks can have a player-scoped cooldown',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      const eventsAwaiter = new EventsAwaiter();
+      await eventsAwaiter.connect(this.client);
+      const executedEvents = eventsAwaiter.waitForEvents(IHookEventTypeEnum.HookExecuted, 2);
+      const mod = (
+        await this.client.module.moduleControllerCreate({
+          name: 'Module',
+        })
+      ).data.data;
+      const hook = (
+        await this.client.hook.hookControllerCreate({
+          name: 'Test hook',
+          versionId: mod.latestVersion.id,
+          regex: '.*',
+          eventType: HookEvents.PLAYER_CONNECTED,
+        })
+      ).data.data;
+      // Install with a cooldown
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameServer1.id,
+        versionId: mod.latestVersion.id,
+        systemConfig: JSON.stringify({
+          hooks: {
+            [hook.name]: {
+              cooldown: 100,
+              cooldownType: 'player',
+            },
+          },
+        }),
+      });
+
+      const triggerHook = async (gameServerId: string, pog: PlayerOnGameserverOutputDTO) =>
+        this.client.hook.hookControllerTrigger({
+          gameServerId: gameServerId,
+          moduleId: mod.id,
+          playerId: pog.playerId,
+          eventType: HookEvents.PLAYER_CONNECTED,
+          eventMeta: new EventPlayerConnected({
+            player: { gameId: pog.gameId, name: pog.id },
+            msg: 'foo connected',
+          }),
+        });
+      await triggerHook(this.setupData.gameServer1.id, this.setupData.pogs1[0]);
+      // This should be on cooldown
+      await triggerHook(this.setupData.gameServer1.id, this.setupData.pogs1[0]);
+      // Different player should not be on cooldown
+      await triggerHook(this.setupData.gameServer1.id, this.setupData.pogs1[1]);
+      await executedEvents;
+      // Two should have triggered
+      const hookExecutedEvents = await this.client.event.eventControllerSearch({
+        filters: { eventName: [IHookEventTypeEnum.HookExecuted] },
+      });
+      expect(hookExecutedEvents.data.data).to.have.length(2);
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Hooks can have a server-scoped cooldown',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      const eventsAwaiter = new EventsAwaiter();
+      await eventsAwaiter.connect(this.client);
+      const executedEvents = eventsAwaiter.waitForEvents(IHookEventTypeEnum.HookExecuted, 2);
+      const mod = (
+        await this.client.module.moduleControllerCreate({
+          name: 'Module',
+        })
+      ).data.data;
+      const hook = (
+        await this.client.hook.hookControllerCreate({
+          name: 'Test hook',
+          versionId: mod.latestVersion.id,
+          regex: '.*',
+          eventType: HookEvents.PLAYER_CONNECTED,
+        })
+      ).data.data;
+      // Install with a cooldown
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameServer1.id,
+        versionId: mod.latestVersion.id,
+        systemConfig: JSON.stringify({
+          hooks: {
+            [hook.name]: {
+              cooldown: 100,
+              cooldownType: 'server',
+            },
+          },
+        }),
+      });
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameServer2.id,
+        versionId: mod.latestVersion.id,
+        systemConfig: JSON.stringify({
+          hooks: {
+            [hook.name]: {
+              cooldown: 100,
+              cooldownType: 'server',
+            },
+          },
+        }),
+      });
+
+      const triggerHook = async (gameServerId: string) =>
+        this.client.hook.hookControllerTrigger({
+          gameServerId: gameServerId,
+          moduleId: mod.id,
+          eventType: HookEvents.PLAYER_CONNECTED,
+          eventMeta: new EventPlayerConnected({
+            msg: 'foo connected',
+          }),
+        });
+      await triggerHook(this.setupData.gameServer1.id);
+      // This should be on cooldown
+      await triggerHook(this.setupData.gameServer1.id);
+      // Different server should not be on cooldown
+      await triggerHook(this.setupData.gameServer2.id);
+      await executedEvents;
+      // Two should have triggered
+      const hookExecutedEvents = await this.client.event.eventControllerSearch({
+        filters: { eventName: [IHookEventTypeEnum.HookExecuted] },
+      });
+      expect(hookExecutedEvents.data.data).to.have.length(2);
     },
   }),
 ];
