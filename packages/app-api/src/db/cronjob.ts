@@ -11,6 +11,7 @@ export class CronJobModel extends TakaroModel {
   static tableName = CRONJOB_TABLE_NAME;
   name!: string;
   temporalValue!: string;
+  description?: string;
 
   functionId: string;
 

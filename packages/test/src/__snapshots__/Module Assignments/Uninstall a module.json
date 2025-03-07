@@ -43,7 +43,8 @@
             "functionId": "2436e0a8-2ce7-4875-b32b-dc01da6e9a82",
             "trigger": "help",
             "helpText": "The text you are reading right now, displays information about commands.",
-            "versionId": "a7d4c04d-003a-47ed-8148-87a9986b7ef1"
+            "versionId": "a7d4c04d-003a-47ed-8148-87a9986b7ef1",
+            "description": null
           },
           {
             "createdAt": "2024-12-07T17:35:51.851Z",
@@ -53,7 +54,8 @@
             "functionId": "babe63cc-f80c-4b79-ac27-a01b993f50f3",
             "trigger": "ping",
             "helpText": "Replies with pong, useful for testing if the connection works.",
-            "versionId": "a7d4c04d-003a-47ed-8148-87a9986b7ef1"
+            "versionId": "a7d4c04d-003a-47ed-8148-87a9986b7ef1",
+            "description": null
           }
         ],
         "permissions": [],

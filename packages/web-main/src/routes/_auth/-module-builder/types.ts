@@ -3,7 +3,7 @@ import { CommandOutputDTO, CronJobOutputDTO, FunctionOutputDTO, HookOutputDTO } 
 interface File {
   functionId: FunctionOutputDTO['id'];
   type: FileType;
-  itemId: CommandOutputDTO['id'] | CronJobOutputDTO['id'] | HookOutputDTO['id'];
+  itemId: CommandOutputDTO['id'] | CronJobOutputDTO['id'] | HookOutputDTO['id'] | FunctionOutputDTO['id'];
   code: string;
   hidden?: boolean;
 }

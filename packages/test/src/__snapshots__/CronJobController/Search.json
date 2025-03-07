@@ -19,11 +19,13 @@
           "code": "console.log(\"test\")",
           "name": null,
           "moduleId": null,
-          "versionId": null
+          "versionId": null,
+          "description": null
         },
         "moduleId": "23784955-3911-4759-8dba-d6a8b4e477cf",
         "functionId": "088b6967-8625-472a-adb6-cb11f4939adf",
-        "versionId": "4a0ef936-a354-4669-a032-77f8ccad8594"
+        "versionId": "4a0ef936-a354-4669-a032-77f8ccad8594",
+        "description": "Cool description"
       }
     ]
   },

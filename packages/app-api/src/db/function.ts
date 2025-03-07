@@ -12,6 +12,7 @@ export const FUNCTION_TABLE_NAME = 'functions';
 export class FunctionModel extends TakaroModel {
   static tableName = FUNCTION_TABLE_NAME;
   code!: string;
+  description?: string;
 
   static get relationMappings() {
     return {

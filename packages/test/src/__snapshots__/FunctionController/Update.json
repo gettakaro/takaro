@@ -6,8 +6,9 @@
       "createdAt": "2024-03-02T14:34:35.003Z",
       "updatedAt": "2024-03-02T14:34:35.025Z",
       "code": "console.log(\"Bye world\")",
-      "name": null,
-      "versionId": null
+      "name": "New name",
+      "versionId": null,
+      "description": "New description"
     }
   },
   "status": 200,

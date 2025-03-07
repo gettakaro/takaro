@@ -6,6 +6,7 @@ const group = 'FunctionController';
 
 const mockFunction = {
   code: 'console.log("Hello world")',
+  description: 'Cool description',
 };
 
 const tests = [
@@ -38,6 +39,8 @@ const tests = [
     test: async function () {
       return this.client.function.functionControllerUpdate(this.setupData.id, {
         code: 'console.log("Bye world")',
+        name: 'New name',
+        description: 'New description',
       });
     },
   }),

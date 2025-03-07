@@ -37,7 +37,8 @@
             "eventType": "discord-message",
             "regex": "/this (is) a [regex]/g",
             "functionId": "424669db-5a88-4ba4-8e39-40f26fca6ed5",
-            "versionId": "3556d6cd-8edc-437b-b7ce-447dc5b2b2f2"
+            "versionId": "3556d6cd-8edc-437b-b7ce-447dc5b2b2f2",
+            "description": null
           }
         ],
         "commands": [],
