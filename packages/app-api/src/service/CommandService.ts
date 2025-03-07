@@ -359,7 +359,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
 
           const delay = commandConfig ? commandConfig.delay * 1000 : 0;
 
-          if (delay) {
+          if (delay && commandConfig.announceDelay) {
             await gameServerService.sendMessage(
               gameServerId,
               `Your command will be executed in ${delay / 1000} seconds.`,

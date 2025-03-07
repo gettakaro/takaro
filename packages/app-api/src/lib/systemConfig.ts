@@ -155,6 +155,11 @@ export function getSystemConfigSchema(mod: ModuleVersionOutputDTO | ModuleVersio
             maximum: ms('1 day') / 1000,
             description: 'How many seconds to wait before executing the command.',
           },
+          announceDelay: {
+            type: 'boolean',
+            default: true,
+            description: 'Whether to announce the delay to the user.',
+          },
           cooldown: {
             type: 'number',
             default: 0,
