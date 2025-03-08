@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { SelectField, TextField, Button, Alert } from '@takaro/lib-components';
+import { SelectField, TextField, Button, Alert, TextAreaField } from '@takaro/lib-components';
 import { HookCreateDTOEventTypeEnum, HookOutputDTO, HookUpdateDTO } from '@takaro/apiclient';
 import { hookQueryOptions, useHookUpdate } from '../../../../../queries/module';
 import { FC } from 'react';
@@ -11,6 +11,7 @@ import { useQuery } from '@tanstack/react-query';
 const validationSchema = z.object({
   regex: z.string(),
   eventType: z.string(),
+  description: z.string().optional(),
 });
 type FormInputs = z.infer<typeof validationSchema>;
 
@@ -55,6 +56,13 @@ export const HookConfigForm: FC<HookConfigFormProps> = ({ readOnly = false, hook
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
+      <TextAreaField
+        control={control}
+        name="description"
+        label="Description"
+        description="A description of what this hook does"
+        readOnly={readOnly}
+      />
       <TextField control={control} name="regex" label="Regex" readOnly={readOnly} />
       <SelectField
         control={control}

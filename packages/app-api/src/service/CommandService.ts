@@ -27,6 +27,10 @@ export class CommandOutputDTO extends TakaroModelDTO<CommandOutputDTO> {
   @IsString()
   name: string;
   @IsString()
+  @IsOptional()
+  @Length(1, 131072)
+  description?: string;
+  @IsString()
   trigger: string;
   @IsString()
   helpText: string;
@@ -64,6 +68,10 @@ export class CommandCreateDTO extends TakaroDTO<CommandCreateDTO> implements ICo
   @IsString()
   @Length(1, 150)
   name: string;
+  @IsString()
+  @IsOptional()
+  @Length(1, 131072)
+  description?: string;
   @IsString()
   trigger: string;
   @IsString()
@@ -109,6 +117,10 @@ export class CommandUpdateDTO extends TakaroDTO<CommandUpdateDTO> {
   @IsString()
   @IsOptional()
   name?: string;
+  @IsString()
+  @IsOptional()
+  @Length(1, 131072)
+  description?: string;
 
   @IsString()
   @IsOptional()
@@ -347,7 +359,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
 
           const delay = commandConfig ? commandConfig.delay * 1000 : 0;
 
-          if (delay) {
+          if (delay && commandConfig.announceDelay) {
             await gameServerService.sendMessage(
               gameServerId,
               `Your command will be executed in ${delay / 1000} seconds.`,

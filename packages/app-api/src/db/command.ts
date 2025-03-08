@@ -20,6 +20,7 @@ export class CommandModel extends TakaroModel {
   name!: string;
   trigger: string;
   helpText: string;
+  description?: string;
 
   functionId: string;
 

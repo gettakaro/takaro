@@ -13,6 +13,7 @@ export class HookModel extends TakaroModel {
   name!: string;
   regex!: string;
   eventType!: EventTypes;
+  description?: string;
 
   functionId: string;
 

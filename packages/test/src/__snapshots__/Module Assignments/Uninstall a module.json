@@ -12,13 +12,15 @@
             "cost": 0,
             "delay": 0,
             "enabled": true,
-            "cooldown": 0
+            "cooldown": 0,
+            "announceDelay": true
           },
           "ping": {
             "cost": 0,
             "delay": 0,
             "enabled": true,
-            "cooldown": 0
+            "cooldown": 0,
+            "announceDelay": true
           }
         }
       },
@@ -43,7 +45,8 @@
             "functionId": "2436e0a8-2ce7-4875-b32b-dc01da6e9a82",
             "trigger": "help",
             "helpText": "The text you are reading right now, displays information about commands.",
-            "versionId": "a7d4c04d-003a-47ed-8148-87a9986b7ef1"
+            "versionId": "a7d4c04d-003a-47ed-8148-87a9986b7ef1",
+            "description": null
           },
           {
             "createdAt": "2024-12-07T17:35:51.851Z",
@@ -53,12 +56,13 @@
             "functionId": "babe63cc-f80c-4b79-ac27-a01b993f50f3",
             "trigger": "ping",
             "helpText": "Replies with pong, useful for testing if the connection works.",
-            "versionId": "a7d4c04d-003a-47ed-8148-87a9986b7ef1"
+            "versionId": "a7d4c04d-003a-47ed-8148-87a9986b7ef1",
+            "description": null
           }
         ],
         "permissions": [],
         "functions": [],
-        "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable/disable the module without having to uninstall it.\"},\"commands\":{\"type\":\"object\",\"properties\":{\"help\":{\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable the help command.\"},\"delay\":{\"type\":\"number\",\"default\":0,\"minimum\":0,\"maximum\":86400,\"description\":\"How many seconds to wait before executing the command.\"},\"cooldown\":{\"type\":\"number\",\"default\":0,\"minimum\":0,\"maximum\":604800,\"description\":\"How many seconds a player has to wait before executing the command again.\"},\"cost\":{\"type\":\"number\",\"default\":0,\"minimum\":0,\"description\":\"How much currency to deduct from the player before executing the command.\"},\"aliases\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"description\":\"Trigger the command with other names than the default\"}},\"required\":[],\"default\":{}},\"ping\":{\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable the ping command.\"},\"delay\":{\"type\":\"number\",\"default\":0,\"minimum\":0,\"maximum\":86400,\"description\":\"How many seconds to wait before executing the command.\"},\"cooldown\":{\"type\":\"number\",\"default\":0,\"minimum\":0,\"maximum\":604800,\"description\":\"How many seconds a player has to wait before executing the command again.\"},\"cost\":{\"type\":\"number\",\"default\":0,\"minimum\":0,\"description\":\"How much currency to deduct from the player before executing the command.\"},\"aliases\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"description\":\"Trigger the command with other names than the default\"}},\"required\":[],\"default\":{}}},\"required\":[],\"default\":{}}},\"required\":[\"commands\"],\"additionalProperties\":false}"
+        "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable/disable the module without having to uninstall it.\"},\"commands\":{\"type\":\"object\",\"properties\":{\"help\":{\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable the help command.\"},\"delay\":{\"type\":\"number\",\"default\":0,\"minimum\":0,\"maximum\":86400,\"description\":\"How many seconds to wait before executing the command.\"},\"announceDelay\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Whether to announce the delay to the user.\"},\"cooldown\":{\"type\":\"number\",\"default\":0,\"minimum\":0,\"maximum\":604800,\"description\":\"How many seconds a player has to wait before executing the command again.\"},\"cost\":{\"type\":\"number\",\"default\":0,\"minimum\":0,\"description\":\"How much currency to deduct from the player before executing the command.\"},\"aliases\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"description\":\"Trigger the command with other names than the default\"}},\"required\":[],\"default\":{}},\"ping\":{\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable the ping command.\"},\"delay\":{\"type\":\"number\",\"default\":0,\"minimum\":0,\"maximum\":86400,\"description\":\"How many seconds to wait before executing the command.\"},\"announceDelay\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Whether to announce the delay to the user.\"},\"cooldown\":{\"type\":\"number\",\"default\":0,\"minimum\":0,\"maximum\":604800,\"description\":\"How many seconds a player has to wait before executing the command again.\"},\"cost\":{\"type\":\"number\",\"default\":0,\"minimum\":0,\"description\":\"How much currency to deduct from the player before executing the command.\"},\"aliases\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"description\":\"Trigger the command with other names than the default\"}},\"required\":[],\"default\":{}}},\"required\":[],\"default\":{}}},\"required\":[\"commands\"],\"additionalProperties\":false}"
       },
       "module": {
         "createdAt": "2024-12-15T21:32:53.035Z",
