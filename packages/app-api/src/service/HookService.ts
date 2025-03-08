@@ -297,7 +297,7 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
           }
 
           await queueService.queues.hooks.queue.add(copiedHookData as IHookJobData, {
-            delay: hookConfig.delay * 1000,
+            delay: (hookConfig.delay || 0) * 1000,
           });
         }
       }
