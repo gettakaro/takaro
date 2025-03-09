@@ -137,12 +137,25 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     // This ensures that there is a 'latest' version
     const version = await this.getLatestVersion(created.id);
 
+    if (mod.latestVersion.defaultSystemConfig) {
+      const validator = ajv.compile(JSON.parse(getSystemConfigSchema(version)));
+      const valid = validator(JSON.parse(mod.latestVersion.defaultSystemConfig));
+      if (!valid) {
+        if (validator.errors) {
+          throw new errors.ValidationError('Invalid system config', validator.errors);
+        } else {
+          throw new errors.ValidationError('Invalid system config');
+        }
+      }
+    }
+
     await this.repo.updateVersion(
       version.id,
       new ModuleVersionUpdateDTO({
         description: mod.latestVersion?.description,
         configSchema: mod.latestVersion.configSchema,
         uiSchema: mod.latestVersion.uiSchema,
+        defaultSystemConfig: mod.latestVersion.defaultSystemConfig,
         permissions: await Promise.all(
           (mod.latestVersion.permissions ?? []).map(
             (p) => new PermissionCreateDTO({ ...p, canHaveCount: p.canHaveCount ?? false }),
@@ -177,6 +190,17 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
         } catch (e) {
           this.log.warn('Invalid config schema', { error: JSON.stringify(e) });
           throw new errors.BadRequestError('Invalid config schema');
+        }
+      }
+      if (mod.latestVersion.defaultSystemConfig) {
+        const validator = ajv.compile(JSON.parse(getSystemConfigSchema(latestVersion)));
+        const valid = validator(JSON.parse(mod.latestVersion.defaultSystemConfig));
+        if (!valid) {
+          if (validator.errors) {
+            throw new errors.ValidationError('Invalid system config', validator.errors);
+          } else {
+            throw new errors.ValidationError('Invalid system config');
+          }
         }
       }
       await this.repo.updateVersion(latestVersion.id, mod.latestVersion);
@@ -520,8 +544,10 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
     const isValidUserConfig = validateUserConfig(modUserConfig);
 
     const modSystemConfig = JSON.parse(installDto.systemConfig);
+    const defaultSystemConfig = versionToInstall.defaultSystemConfig || {};
+    const fullConfig = { ...defaultSystemConfig, ...modSystemConfig };
     const validateSystemConfig = ajv.compile(JSON.parse(getSystemConfigSchema(versionToInstall)));
-    const isValidSystemConfig = validateSystemConfig(modSystemConfig);
+    const isValidSystemConfig = validateSystemConfig(fullConfig);
 
     if (!isValidUserConfig || !isValidSystemConfig) {
       const allErrors = [...(validateSystemConfig.errors ?? []), ...(validateUserConfig.errors ?? [])];
@@ -534,12 +560,12 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
           return `${e.instancePath} ${e.message}`;
         })
         .join(', ');
-      throw new errors.BadRequestError(`Invalid config: ${prettyErrors}`);
+      throw new errors.ValidationError(`Invalid config: ${prettyErrors}`, allErrors);
     }
 
     // ajv mutates the object, so we need to stringify it again
     installDto.userConfig = JSON.stringify(modUserConfig);
-    installDto.systemConfig = JSON.stringify(modSystemConfig);
+    installDto.systemConfig = JSON.stringify(fullConfig);
 
     // If this module is already installed, we'll uninstall it first
     const existingInstallation = await this.getInstalledModules({
