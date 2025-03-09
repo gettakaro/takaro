@@ -2,8 +2,19 @@
   "body": {
     "meta": {
       "error": {
-        "code": "BadRequestError",
-        "message": "Invalid config: /foo must NOT have more than 10 characters"
+        "code": "ValidationError",
+        "message": "Invalid config: /foo must NOT have more than 10 characters",
+        "details": [
+          {
+            "instancePath": "/foo",
+            "schemaPath": "#/properties/foo/maxLength",
+            "keyword": "maxLength",
+            "params": {
+              "limit": 10
+            },
+            "message": "must NOT have more than 10 characters"
+          }
+        ]
       }
     },
     "data": {}
