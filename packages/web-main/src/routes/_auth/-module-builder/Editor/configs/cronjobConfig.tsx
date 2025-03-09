@@ -41,6 +41,7 @@ export const CronJobConfigForm: FC<CronJobConfigFormProps> = ({ cronjob, readOnl
     resolver: zodResolver(validationSchema),
     values: {
       temporalValue: cronjob.temporalValue,
+      description: cronjob.description,
     },
   });
 

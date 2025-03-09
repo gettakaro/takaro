@@ -109,6 +109,7 @@ export const CommandConfigForm: FC<CommandConfigFormProps> = ({ command, readOnl
     values: {
       trigger: command.trigger,
       helpText: command.helpText,
+      description: command.description,
       arguments: command.arguments
         .sort((a, b) => a.position - b.position)
         .map((arg) => {
