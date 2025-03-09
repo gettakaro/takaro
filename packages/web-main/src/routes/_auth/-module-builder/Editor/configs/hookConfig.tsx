@@ -42,6 +42,7 @@ export const HookConfigForm: FC<HookConfigFormProps> = ({ readOnly = false, hook
     values: {
       regex: hook.regex,
       eventType: hook.eventType,
+      description: hook.description,
     },
   });
 
