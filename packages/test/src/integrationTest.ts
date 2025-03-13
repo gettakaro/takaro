@@ -175,9 +175,9 @@ export class IntegrationTest<SetupData> {
         try {
           if (attempt > 0) {
             console.log(`Retry attempt ${attempt}/${maxRetries} for test: ${integrationTestContext.test.name}`);
-            // Re-run setup for each retry to ensure clean state
-            await setup();
           }
+
+          await setup();
 
           response = await integrationTestContext.test.test.bind(integrationTestContext)();
 
@@ -237,7 +237,6 @@ export class IntegrationTest<SetupData> {
 
     it(integrationTestContext.test.name, async () => {
       try {
-        await setup();
         await executeTest();
       } finally {
         await teardown();
