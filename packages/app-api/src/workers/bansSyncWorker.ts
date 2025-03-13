@@ -55,7 +55,13 @@ export async function processJob(job: Job<IGameServerQueueData>) {
         }
       });
 
-      await Promise.all(promises);
+      const results = await Promise.allSettled(promises);
+
+      for (const result of results) {
+        if (result.status === 'rejected') {
+          log.error(`Failed to process bans sync job for domain: ${domain.id}`, result.reason);
+        }
+      }
     }
 
     return;
