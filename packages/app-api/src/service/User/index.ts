@@ -98,7 +98,8 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
 
       const maxUsers = domain.maxUsers;
       const existingDashboardUsers = await this.repo.find({ filters: { isDashboardUser: [true] } });
-      if (existingDashboardUsers.total >= maxUsers) {
+      const existingDashboardUsersWithoutRoot = existingDashboardUsers.results.filter((u) => u.name !== 'root');
+      if (existingDashboardUsersWithoutRoot.length >= maxUsers) {
         throw new errors.BadRequestError(`Max users (${maxUsers}) limit reached`);
       }
     }
