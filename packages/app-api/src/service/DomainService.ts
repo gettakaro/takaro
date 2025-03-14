@@ -242,7 +242,7 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
         name: 'root',
         password: password,
         email: `root@${domain.id}.com`,
-        isDashboardUser: true,
+        isDashboardUser: false,
       }),
     );
 
