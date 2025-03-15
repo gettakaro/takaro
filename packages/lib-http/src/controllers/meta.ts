@@ -224,7 +224,7 @@ export class Meta {
         <meta charset="utf-8" />
         <script
           type="module"
-          src="https://unpkg.com/rapidoc/dist/rapidoc-min.js"
+          src="https://cdn.jsdelivr.net/npm/rapidoc@9.3.8"
         ></script>
       </head>
       <body>
