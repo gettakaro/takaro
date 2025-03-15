@@ -56,7 +56,7 @@ export class CommandOutputArrayDTOAPI extends APIOutput<CommandOutputDTO[]> {
 class CommandSearchInputAllowedFilters extends AllowedFilters {
   @IsOptional()
   @IsUUID(4, { each: true })
-  moduleId!: string[];
+  versionId!: string[];
   @IsOptional()
   @IsString({ each: true })
   name!: string[];

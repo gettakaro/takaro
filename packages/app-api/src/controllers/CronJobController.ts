@@ -47,7 +47,7 @@ export class CronJobOutputArrayDTOAPI extends APIOutput<CronJobOutputDTO[]> {
 class CronJobSearchInputAllowedFilters extends AllowedFilters {
   @IsOptional()
   @IsUUID(4, { each: true })
-  moduleId!: string[];
+  versionId!: string[];
 
   @IsOptional()
   @IsString({ each: true })

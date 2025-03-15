@@ -35,7 +35,7 @@ class FunctionOutputArrayDTOAPI extends APIOutput<FunctionOutputDTO[]> {
 class FunctionSearchInputAllowedFilters extends AllowedFilters {
   @IsOptional()
   @IsUUID(4, { each: true })
-  moduleId: string[];
+  versionId: string[];
   @IsOptional()
   @IsString({ each: true })
   name: string[];

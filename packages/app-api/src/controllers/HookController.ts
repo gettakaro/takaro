@@ -42,7 +42,7 @@ export class HookOutputArrayDTOAPI extends APIOutput<HookOutputDTO[]> {
 class HookSearchInputAllowedFilters extends AllowedFilters {
   @IsOptional()
   @IsUUID(4, { each: true })
-  moduleId!: string[];
+  versionId!: string[];
 
   @IsOptional()
   @IsString({ each: true })
