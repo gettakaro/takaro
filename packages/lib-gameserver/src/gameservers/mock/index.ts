@@ -11,7 +11,7 @@ import {
   TestReachabilityOutputDTO,
 } from '../../interfaces/GameServer.js';
 import { MockEmitter } from './emitter.js';
-import { Socket, io } from 'socket.io-client';
+import { Socket } from 'socket.io-client';
 import assert from 'assert';
 import { MockConnectionInfo } from './connectionInfo.js';
 import { Settings } from '@takaro/apiclient';
@@ -29,12 +29,12 @@ export class Mock implements IGameServer {
   ) {
     this.connectionInfo = config;
     if (!this.connectionInfo.name) this.connectionInfo.name = 'default';
-    this.io = io(this.connectionInfo.host, {
-      query: {
-        name: config.name,
-      },
-    });
-    this.emitter = new MockEmitter(this.connectionInfo, this.io);
+    /*     this.io = io(this.connectionInfo.host, {
+          query: {
+            name: config.name,
+          },
+        }); */
+    //this.emitter = new MockEmitter(this.connectionInfo, this.io);
   }
 
   getEventEmitter() {

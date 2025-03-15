@@ -1,9 +1,7 @@
 import { HTTP } from '@takaro/http';
 import { logger, errors } from '@takaro/util';
 import { config } from './config.js';
-import { getSocketServer } from './lib/socket/index.js';
-import { Server as HttpServer } from 'http';
-import { getMockServer } from './lib/gameserver/index.js';
+import { GameServer } from './lib/ws-gameserver/gameserver.js';
 
 const log = logger('agent');
 
@@ -29,11 +27,11 @@ async function main() {
     }
   }
 
-  getSocketServer(server.server as HttpServer);
   await server.start();
   log.info('🚀 HTTP Server started');
 
-  await getMockServer();
+  const gameserver = new GameServer();
+  await gameserver.init();
   log.info('🚀 Mock Server started');
 
   process.on('uncaughtException', (err) => {

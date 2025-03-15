@@ -114,5 +114,16 @@ export const connectionInfoFieldsMap = (isLoading: boolean, control: Control<any
         loading={isLoading}
       />,
     ],
+    [GameServerCreateDTOTypeEnum.Generic]: [
+      <TextField
+        control={control}
+        label="Code"
+        name="connectionInfo.code"
+        placeholder="secret-value-abcdefhijklmnop"
+        key="generic-code"
+        loading={isLoading}
+        required
+      />,
+    ],
   };
 };

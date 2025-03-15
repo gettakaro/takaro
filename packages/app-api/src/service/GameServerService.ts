@@ -11,6 +11,7 @@ import {
   GAME_SERVER_TYPE,
   getGame,
   BanDTO,
+  TestReachabilityOutputDTO,
 } from '@takaro/gameserver';
 import { errors, TakaroModelDTO, traceableClass, TakaroDTO } from '@takaro/util';
 import { SettingsService } from './SettingsService.js';
@@ -73,6 +74,9 @@ export class GameServerOutputDTO extends TakaroModelDTO<GameServerOutputDTO> {
   reachable: boolean;
   @IsBoolean()
   enabled: boolean;
+  @IsString()
+  @IsOptional()
+  identityToken?: string;
 }
 
 export class GameServerCreateDTO extends TakaroDTO<GameServerCreateDTO> {
@@ -84,6 +88,9 @@ export class GameServerCreateDTO extends TakaroDTO<GameServerCreateDTO> {
   @IsString()
   @IsEnum(GAME_SERVER_TYPE)
   type: GAME_SERVER_TYPE;
+  @IsString()
+  @IsOptional()
+  identityToken?: string;
 }
 
 export class GameServerUpdateDTO extends TakaroDTO<GameServerUpdateDTO> {
@@ -137,7 +144,17 @@ export class GameServerService extends TakaroService<
     if (currentServers.total >= domain.maxGameservers) {
       throw new errors.BadRequestError('Max game servers reached');
     }
-    const isReachable = await this.testReachability(undefined, JSON.parse(item.connectionInfo), item.type);
+    let isReachable = new TestReachabilityOutputDTO({ connectable: false, reason: 'Unknown' });
+    // Generic gameservers start the connection, so they are always reachable
+    if (item.type === GAME_SERVER_TYPE.GENERIC) {
+      isReachable = new TestReachabilityOutputDTO({
+        connectable: true,
+        reason: 'Generic gameservers are always reachable',
+      });
+      if (!item.identityToken) throw new errors.BadRequestError('Identity token is required for generic gameservers');
+    } else {
+      isReachable = await this.testReachability(undefined, JSON.parse(item.connectionInfo), item.type);
+    }
     const createdServer = await this.repo.create(item);
 
     const eventsService = new EventService(this.domainId);
@@ -257,7 +274,7 @@ export class GameServerService extends TakaroService<
 
       return reachability;
     } else if (connectionInfo && type) {
-      const instance = await getGame(type, connectionInfo, {});
+      const instance = await getGame(type, connectionInfo, {}, 'unknown-id');
       return instance.testReachability();
     }
     throw new errors.BadRequestError('Missing required parameters');
@@ -281,7 +298,7 @@ export class GameServerService extends TakaroService<
       return acc;
     }, {});
 
-    gameInstance = await getGame(gameserver.type, gameserver.connectionInfo, settings);
+    gameInstance = await getGame(gameserver.type, gameserver.connectionInfo, settings, id);
 
     gameClassCache.set(id, gameInstance);
 
