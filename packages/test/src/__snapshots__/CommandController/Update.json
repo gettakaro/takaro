@@ -14,10 +14,15 @@
         "updatedAt": "2024-03-09T08:07:30.726Z",
         "code": "import { data, takaro } from '@takaro/helpers';\nasync function main() {\n    const {} = data;\n}\nawait main();",
         "name": null,
-        "moduleId": null
+        "moduleId": null,
+        "versionId": null,
+        "description": null
       },
       "functionId": "d92c5038-120c-410f-96ca-628e3ed6ad62",
-      "moduleId": "f1be9c23-2560-44e7-bdee-3d8e2ac062cd"
+      "moduleId": "f1be9c23-2560-44e7-bdee-3d8e2ac062cd",
+      "versionId": "64af489a-e1ba-4b11-86f9-78139c2d0513",
+      "arguments": [],
+      "description": "Updated description"
     }
   },
   "status": 200,

@@ -5,7 +5,7 @@ import { TakaroWorker, IEventQueueData } from '@takaro/queues';
 import { EventChatMessage, EventEntityKilled, EventPlayerDeath, HookEvents } from '@takaro/modules';
 import { getSocketServer } from '../lib/socketServer.js';
 import { HookService } from '../service/HookService.js';
-import { PlayerService } from '../service/PlayerService.js';
+import { PlayerService } from '../service/Player/index.js';
 import { CommandService } from '../service/CommandService.js';
 import { EVENT_TYPES, EventCreateDTO, EventService } from '../service/EventService.js';
 import { PlayerOnGameServerService, PlayerOnGameServerUpdateDTO } from '../service/PlayerOnGameserverService.js';
@@ -68,7 +68,6 @@ async function processJob(job: Job<IEventQueueData>) {
 
     if (type === EVENT_TYPES.PLAYER_CONNECTED) {
       await playerOnGameServerService.update(pog.id, new PlayerOnGameServerUpdateDTO({ online: true }));
-      if (player.steamId) await playerService.syncSingleSteamAccount(player.steamId);
 
       await eventService.create(
         new EventCreateDTO({

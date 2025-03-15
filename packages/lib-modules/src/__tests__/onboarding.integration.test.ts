@@ -2,6 +2,7 @@ import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, Event
 import { GameEvents } from '../dto/gameEvents.js';
 import { HookEvents } from '../main.js';
 import { faker } from '@faker-js/faker';
+import { describe } from 'node:test';
 
 const group = 'Onboarding';
 const groupStarterkit = 'Onboarding - Starterkit';
@@ -13,10 +14,10 @@ const tests = [
     setup: modulesTestSetup,
     name: 'PlayerConnected hook sends a message when a player connects to the server',
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.onboardingModule.id,
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.onboardingModule.latestVersion.id,
+      });
       const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 5);
       await this.client.gameserver.gameServerControllerExecuteCommand(this.setupData.gameserver.id, {
         command: 'connectAll',
@@ -34,19 +35,17 @@ const tests = [
     name: 'Starterkit command gives the player items',
     test: async function () {
       const items = (await this.client.item.itemControllerSearch()).data.data;
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.onboardingModule.id,
-        {
-          userConfig: JSON.stringify({
-            starterKitItems: items.map((item) => ({
-              item: item.id,
-              amount: faker.number.int({ min: 1, max: 6 }),
-              quality: faker.number.int({ min: 1, max: 6 }).toString(),
-            })),
-          }),
-        },
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.onboardingModule.latestVersion.id,
+        userConfig: JSON.stringify({
+          starterKitItems: items.map((item) => ({
+            item: item.id,
+            amount: faker.number.int({ min: 1, max: 6 }),
+            quality: faker.number.int({ min: 1, max: 6 }).toString(),
+          })),
+        }),
+      });
       const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(HookEvents.COMMAND_EXECUTED);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/starterkit',
@@ -64,19 +63,17 @@ const tests = [
     name: 'Starterkit command can only be used once',
     test: async function () {
       const items = (await this.client.item.itemControllerSearch()).data.data;
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.onboardingModule.id,
-        {
-          userConfig: JSON.stringify({
-            starterKitItems: items.map((item) => ({
-              item: item.id,
-              amount: faker.number.int({ min: 1, max: 6 }),
-              quality: faker.number.int({ min: 1, max: 6 }).toString(),
-            })),
-          }),
-        },
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.onboardingModule.latestVersion.id,
+        userConfig: JSON.stringify({
+          starterKitItems: items.map((item) => ({
+            item: item.id,
+            amount: faker.number.int({ min: 1, max: 6 }),
+            quality: faker.number.int({ min: 1, max: 6 }).toString(),
+          })),
+        }),
+      });
       const firstEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(HookEvents.COMMAND_EXECUTED);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/starterkit',
@@ -102,10 +99,10 @@ const tests = [
     setup: modulesTestSetup,
     name: 'Starterkit with nothing configured, shows an error message',
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.onboardingModule.id,
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.onboardingModule.latestVersion.id,
+      });
       const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/starterkit',

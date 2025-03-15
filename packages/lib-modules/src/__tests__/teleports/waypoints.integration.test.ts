@@ -8,6 +8,7 @@ import {
 } from '@takaro/test';
 import { GameEvents, HookEvents } from '../../dto/index.js';
 import { GameServerTypesOutputDTOTypeEnum, PlayerOutputDTO, RoleOutputDTO } from '@takaro/apiclient';
+import { describe } from 'node:test';
 
 const group = 'Teleports - waypoints';
 
@@ -21,7 +22,10 @@ interface WaypointsSetup extends IModuleTestsSetupData {
 const waypointsSetup = async function (this: IntegrationTest<WaypointsSetup>): Promise<WaypointsSetup> {
   const setupData = await modulesTestSetup.bind(this as unknown as IntegrationTest<IModuleTestsSetupData>)();
 
-  await this.client.gameserver.gameServerControllerInstallModule(setupData.gameserver.id, setupData.teleportsModule.id);
+  await this.client.module.moduleInstallationsControllerInstallModule({
+    gameServerId: setupData.gameserver.id,
+    versionId: setupData.teleportsModule.latestVersion.id,
+  });
 
   const playersRes = await this.client.player.playerControllerSearch();
 
@@ -55,7 +59,7 @@ const waypointsSetup = async function (this: IntegrationTest<WaypointsSetup>): P
   };
 };
 
-async function setupSecondServer() {
+async function setupSecondServer(this: IntegrationTest<WaypointsSetup>) {
   const newGameServer = await this.client.gameserver.gameServerControllerCreate({
     name: 'newServer',
     connectionInfo: JSON.stringify({
@@ -65,10 +69,10 @@ async function setupSecondServer() {
     type: GameServerTypesOutputDTOTypeEnum.Mock,
   });
 
-  await this.client.gameserver.gameServerControllerInstallModule(
-    newGameServer.data.data.id,
-    this.setupData.teleportsModule.id,
-  );
+  await this.client.module.moduleInstallationsControllerInstallModule({
+    gameServerId: newGameServer.data.data.id,
+    versionId: this.setupData.teleportsModule.latestVersion.id,
+  });
 
   const connectedEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(
     GameEvents.PLAYER_CONNECTED,
@@ -633,6 +637,48 @@ const tests = [
         playerId: newServerPlayer.playerId,
       });
       expect((await teleportEvents2)[0].data.meta.msg).to.be.eq('You are not allowed to use the waypoint A.');
+    },
+  }),
+  new IntegrationTest<WaypointsSetup>({
+    group,
+    snapshot: false,
+    setup: waypointsSetup,
+    name: 'Reconciler recreates waypoints when deleting the waypoints module',
+    test: async function () {
+      // Create a waypoint
+      // Delete the waypoints module
+      // Create another waypoint
+      // Both should be present in the waypoints module
+
+      const setEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE);
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/setwaypoint A',
+        playerId: this.setupData.moderator.id,
+      });
+      expect((await setEvents)[0].data.meta.msg).to.be.eq('Waypoint A set.');
+
+      const waypointsModuleToRemove = await this.client.module.moduleControllerSearch({
+        filters: { name: ['Waypoints'] },
+      });
+      if (!waypointsModuleToRemove.data.data.length) {
+        throw new Error('Waypoints module not found');
+      }
+
+      await this.client.module.moduleControllerRemove(waypointsModuleToRemove.data.data[0].id);
+
+      const setEvents2 = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE);
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/setwaypoint B',
+        playerId: this.setupData.moderator.id,
+      });
+      expect((await setEvents2)[0].data.meta.msg).to.be.eq('Waypoint B set.');
+
+      const waypointsModule = await this.client.module.moduleControllerSearch({ filters: { name: ['Waypoints'] } });
+      if (!waypointsModule.data.data.length) {
+        throw new Error('Waypoints module not found');
+      }
+
+      expect(waypointsModule.data.data[0].latestVersion.commands).to.be.lengthOf(2);
     },
   }),
 ];

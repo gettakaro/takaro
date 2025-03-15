@@ -10,7 +10,9 @@
               "name": "Test hook",
               "regex": "/(x+x+)+y/",
               "moduleId": "ed9dbdfe-1e69-4838-98b1-f21ede7dfa59",
-              "eventType": "log"
+              "eventType": "log",
+              "versionId": "e642b70b-f9ab-4de5-873d-0c726c489be2",
+              "description": "Cool description"
             },
             "value": "/(x+x+)+y/",
             "property": "regex",

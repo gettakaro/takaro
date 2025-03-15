@@ -33,7 +33,6 @@ process.env = {
   POSTGRES_DB: 'takaro-test-db',
   POSTGRES_PASSWORD,
   POSTGRES_ENCRYPTION_KEY,
-  MOCHA_RETRIES: 5,
 };
 
 const composeOpts = {
@@ -95,8 +94,6 @@ async function main() {
       waitUntilHealthyHttp('http://127.0.0.1:3003/healthz', 60),
     ]);
 
-    console.log('Running tests with config', composeOpts);
-
     if (process.env.IS_E2E) {
       // Environment variables don't seem to propagate to the child processes when using the _normal_ method with zx
       // So we're hacking it like this instead :)
@@ -114,7 +111,7 @@ async function main() {
 
       await $`npm run --workspace=./packages/e2e test:e2e`;
     } else {
-      await run('takaro', 'npm run test', { ...composeOpts, NODE_ENV: 'test' });
+      await run('takaro', 'npm run test:ci', { ...composeOpts, NODE_ENV: 'test' });
     }
   } catch (error) {
     console.error('Tests failed');

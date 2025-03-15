@@ -1,5 +1,6 @@
 import { IntegrationTest, integrationConfig, expect } from '@takaro/test';
 import { DomainOutputDTOStateEnum, Client } from '@takaro/apiclient';
+import { describe } from 'node:test';
 
 const group = 'DomainController';
 

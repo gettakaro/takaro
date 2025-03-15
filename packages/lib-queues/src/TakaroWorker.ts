@@ -31,5 +31,17 @@ export abstract class TakaroWorker<T> {
       removeOnFail: { count: 10 },
       ...extraBullOpts,
     });
+
+    this.bullWorker.on('failed', (job, err) => {
+      if (job) {
+        this.log.error(`Job ${job.id} failed: ${err.message}`);
+      } else {
+        this.log.error(`Job failed: ${err.message}`);
+      }
+    });
+
+    this.bullWorker.on('completed', (job) => {
+      this.log.debug(`Job ${job.id} completed`);
+    });
   }
 }

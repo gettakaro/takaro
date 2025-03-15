@@ -51,7 +51,7 @@ services:
       dockerfile: containers/takaro/dev.Dockerfile
     command: ['sh']
     environment:
-      NODE_OPTIONS: '--loader ts-node/esm'
+      NODE_OPTIONS: '--import=ts-node-maintained/register/esm'
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
@@ -64,7 +64,7 @@ services:
       TEST_HTTP_TARGET: http://takaro_api:3000
       FUNCTIONS_EXECUTION_MODE: 'local'
       MOCK_GAMESERVER_HOST: 'http://takaro_mock_gameserver:3002'
-      MOCHA_RETRIES: ${MOCHA_RETRIES}
+      TAKARO_TEST_RUNNER_ATTEMPTS: ${TAKARO_TEST_RUNNER_ATTEMPTS}
       TRACING_ENABLED: ${TRACING_ENABLED}
       TRACING_ENDPOINT: "http://grafana_agent:4317"        
 

@@ -67,10 +67,13 @@ export function checkPermissions(requiredPermissions: PERMISSIONS[], user: UserO
     return [...acc, ...role.role.permissions.map((c) => c.permission.permission)];
   }, [] as string[]);
 
-  const hasAllPermissions = requiredPermissions.every((permission) => allUserPermissions.includes(permission));
+  const allPlayerPermissions = user.player?.roleAssignments.reduce((acc, role) => {
+    return [...acc, ...role.role.permissions.map((c) => c.permission.permission)];
+  }, [] as string[]);
 
-  const userHasRootPermission = allUserPermissions.includes(PERMISSIONS.ROOT);
-
+  const allPermissions = [...allUserPermissions, ...(allPlayerPermissions || [])];
+  const hasAllPermissions = requiredPermissions.every((permission) => allPermissions.includes(permission));
+  const userHasRootPermission = allPermissions.includes(PERMISSIONS.ROOT);
   return hasAllPermissions || userHasRootPermission;
 }
 
@@ -182,7 +185,9 @@ export class AuthService extends DomainScoped {
     if (!user) {
       try {
         let domainId = req.cookies ? req.cookies['takaro-domain'] : null;
-
+        if (req.headers['authorization']?.includes('Basic')) {
+          delete req.headers['authorization'];
+        }
         const identity = await ory.getIdentityFromReq(req);
         if (!identity) return null;
 
@@ -253,6 +258,22 @@ export class AuthService extends DomainScoped {
         if (!hasAllPermissions) {
           log.warn(`User ${user.id} does not have all permissions`);
           return next(new errors.ForbiddenError());
+        }
+
+        /**
+         * Check if any requested permissions are a MANAGE_* permission
+         * If so, the user must be a dashboard user to proceed
+         * READ_* permissions are exempt from this check, as player profiles should be able to view and use the shop
+         * This is not a auth error exactly, it's a limit with the domains billing plan
+         * TODO: we should extend this check in the future, API tokens should pass this check too
+         */
+        const isRequestingManagePermission = permissions.some((p) => p.startsWith('MANAGE_'));
+        const isDashboardUser =
+          user.isDashboardUser ||
+          user.roles.some((r) => r.role.permissions.some((p) => p.permission.permission === PERMISSIONS.ROOT));
+        if (isRequestingManagePermission && !isDashboardUser) {
+          log.warn(`User ${user.id} does not have MANAGE_* permissions`);
+          return next(new errors.BadRequestError('You must be a dashboard user to perform this action'));
         }
 
         req.user = user;

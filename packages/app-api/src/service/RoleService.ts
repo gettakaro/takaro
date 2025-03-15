@@ -18,10 +18,10 @@ import {
 import { PaginatedOutput } from '../db/base.js';
 import { RoleModel, RoleRepo } from '../db/role.js';
 import { TakaroService } from './Base.js';
-import { ModuleService } from './ModuleService.js';
+import { ModuleService } from './Module/index.js';
 import { EventService, EventCreateDTO, EVENT_TYPES } from './EventService.js';
 import { TakaroEventRoleCreated, TakaroEventRoleDeleted, TakaroEventRoleUpdated } from '@takaro/modules';
-import { PlayerOutputWithRolesDTO } from './PlayerService.js';
+import { PlayerOutputWithRolesDTO } from './Player/dto.js';
 import { UserOutputWithRolesDTO } from './User/index.js';
 
 @ValidatorConstraint()
@@ -83,9 +83,15 @@ export class SearchRoleInputDTO {
 class PermissionModuleDTO extends TakaroDTO<PermissionModuleDTO> {
   @IsUUID()
   id: string;
-
   @IsString()
   name: string;
+}
+
+class PermissionVersionDTO extends TakaroDTO<PermissionVersionDTO> {
+  @IsUUID()
+  id: string;
+  @IsString()
+  tag: string;
 }
 
 export class PermissionOutputDTO extends TakaroModelDTO<PermissionOutputDTO> {
@@ -93,6 +99,15 @@ export class PermissionOutputDTO extends TakaroModelDTO<PermissionOutputDTO> {
   @ValidateNested()
   @Type(() => PermissionModuleDTO)
   module?: PermissionModuleDTO;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => PermissionVersionDTO)
+  version?: PermissionVersionDTO;
+
+  @IsOptional()
+  @IsUUID('4')
+  moduleVersionId: string;
 
   @IsString()
   @IsNotEmpty()
@@ -352,16 +367,19 @@ export class RoleService extends TakaroService<RoleModel, RoleOutputDTO, RoleCre
 
   async getPermissions() {
     const moduleService = new ModuleService(this.domainId);
-    const modules = await moduleService.find({ limit: 1000 });
-    const modulePermissions = modules.results.flatMap((mod) =>
-      mod.permissions.map((permission) => ({
-        ...permission, // Spread the permission object if it's an object, otherwise wrap the permission in an object
-        module: {
-          id: mod.id,
-          name: mod.name,
-        },
-      })),
-    ) as PermissionOutputDTO[];
+    const installedModules = await moduleService.getInstalledModules({});
+    const modulePermissions = installedModules
+      // Ensure each module only appears once
+      // We fetch the installations above, so module X can be installed on server A and B
+      .filter((mod, index, self) => self.findIndex((m) => m.versionId === mod.versionId) === index)
+      // Then transform the permissions to a flat array
+      .flatMap((installation) =>
+        installation.version.permissions.map((permission) => ({
+          ...permission,
+          module: { id: installation.moduleId, name: installation.module.name },
+          version: { id: installation.versionId, tag: installation.version.tag },
+        })),
+      ) as PermissionOutputDTO[];
 
     const systemPermissions = await this.repo.getSystemPermissions();
 

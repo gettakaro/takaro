@@ -1,29 +1,15 @@
 {
   "name": "@takaro/util",
-  "version": "0.0.16",
+  "version": "0.0.18",
   "description": "An opinionated logger",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
   "type": "module",
   "scripts": {
     "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json",
-    "build": "tsc -p ./tsconfig.build.json",
-    "test": "npm run test:unit --if-present && npm run test:integration --if-present",
-    "test:unit": "mocha --config ../../.mocharc.js src/**/*.unit.test.ts",
-    "test:integration": "echo 'No tests (yet :))'",
-    "test:watch": "npm run test -- --watch"
+    "build": "tsc -p ./tsconfig.build.json"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@opentelemetry/api": "1.9.0",
-    "@opentelemetry/auto-instrumentations-node": "0.50.0",
-    "@opentelemetry/exporter-trace-otlp-grpc": "0.53.0",
-    "@opentelemetry/sdk-node": "0.53.0",
-    "@opentelemetry/semantic-conventions": "1.27.0",
-    "@sentry/opentelemetry-node": "7.114.0",
-    "winston": "3.14.2"
-  },
-  "devDependencies": {}
+  "license": "ISC"
 }

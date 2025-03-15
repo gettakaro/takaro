@@ -7,15 +7,22 @@
       "id": "4d965454-3683-4a9e-bf07-2acfb6b08ee4",
       "name": "Test module",
       "builtin": null,
-      "description": "No description provided.",
-      "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{},\"required\":[],\"additionalProperties\":false}",
-      "uiSchema": "{}",
-      "cronJobs": [],
-      "hooks": [],
-      "commands": [],
-      "functions": [],
-      "permissions": [],
-      "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable/disable the module without having to uninstall it.\"}},\"required\":[],\"additionalProperties\":false}"
+      "latestVersion": {
+        "createdAt": "2024-11-16T15:19:53.578Z",
+        "updatedAt": "2024-11-16T15:19:53.585Z",
+        "id": "d141ea8b-1187-4e06-ac51-03753b4e866c",
+        "moduleId": "57aecc77-2054-425d-bbbf-c18be0bcdaa6",
+        "tag": "latest",
+        "description": "No description",
+        "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{},\"required\":[],\"additionalProperties\":false}",
+        "uiSchema": "{}",
+        "cronJobs": [],
+        "hooks": [],
+        "commands": [],
+        "permissions": [],
+        "functions": [],
+        "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable/disable the module without having to uninstall it.\"}},\"required\":[],\"additionalProperties\":false}"
+      }
     }
   },
   "status": 200,
@@ -24,7 +31,9 @@
     "snapshot": true,
     "name": "Create",
     "expectedStatus": 200,
-    "filteredFields": [],
+    "filteredFields": [
+      "moduleId"
+    ],
     "standardEnvironment": true
   }
 }

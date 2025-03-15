@@ -4,73 +4,6 @@
     "data": {
       "gameserverId": "37c2c1f3-ded4-4c92-a9a3-276861b27278",
       "moduleId": "cf43ca0d-4116-449f-aaae-a75511aee8ff",
-      "module": {
-        "createdAt": "2024-07-14T14:37:10.350Z",
-        "updatedAt": "2024-07-14T14:37:10.352Z",
-        "id": "cf43ca0d-4116-449f-aaae-a75511aee8ff",
-        "name": "utils",
-        "builtin": "utils",
-        "description": "A collection of useful commands",
-        "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"additionalProperties\":false}",
-        "uiSchema": "{}",
-        "cronJobs": [],
-        "hooks": [],
-        "commands": [
-          {
-            "createdAt": "2024-07-14T14:37:10.530Z",
-            "updatedAt": "2024-07-14T14:37:10.569Z",
-            "id": "2458c324-4a1d-4f31-8499-34ddca4a8640",
-            "name": "ping",
-            "moduleId": "cf43ca0d-4116-449f-aaae-a75511aee8ff",
-            "functionId": "9c663027-289d-455f-8517-47a521efb2fb",
-            "trigger": "ping",
-            "helpText": "Replies with pong, useful for testing if the connection works.",
-            "function": {
-              "createdAt": "2024-07-14T14:37:10.492Z",
-              "updatedAt": "2024-07-14T14:37:10.520Z",
-              "id": "9c663027-289d-455f-8517-47a521efb2fb",
-              "code": "import { data } from '@takaro/helpers';\nasync function main() {\n    await data.player.pm('Pong!');\n}\nawait main();\n//# sourceMappingURL=ping.js.map",
-              "name": null,
-              "moduleId": null
-            },
-            "arguments": []
-          },
-          {
-            "createdAt": "2024-07-14T14:37:10.532Z",
-            "updatedAt": "2024-07-14T14:37:10.570Z",
-            "id": "7a74866f-5fa4-40c6-a238-bd51559c8f02",
-            "name": "help",
-            "moduleId": "cf43ca0d-4116-449f-aaae-a75511aee8ff",
-            "functionId": "2cc6c994-9d3e-4513-83fe-e3a2fe7615f3",
-            "trigger": "help",
-            "helpText": "The text you are reading right now, displays information about commands.",
-            "function": {
-              "createdAt": "2024-07-14T14:37:10.493Z",
-              "updatedAt": "2024-07-14T14:37:10.521Z",
-              "id": "2cc6c994-9d3e-4513-83fe-e3a2fe7615f3",
-              "code": "import { takaro, data, TakaroUserError } from '@takaro/helpers';\nasync function main() {\n    const enabledModules = await takaro.gameserver.gameServerControllerGetInstalledModules(data.gameServerId);\n    const moduleCommands = await Promise.all(enabledModules.data.data.map(async (mod) => {\n        return (await takaro.module.moduleControllerGetOne(mod.moduleId)).data.data.commands;\n    }));\n    if (data.arguments.command === 'all') {\n        await data.player.pm('Available commands:');\n        for (const mod of moduleCommands) {\n            await Promise.all(mod.map(async (command) => {\n                await data.player.pm(`${command.name}: ${command.helpText}`);\n            }));\n        }\n    }\n    else {\n        const allCommandsFlat = moduleCommands.flat();\n        const requestedCommand = allCommandsFlat.find((c) => {\n            return c.name === data.arguments.command;\n        });\n        if (!requestedCommand) {\n            throw new TakaroUserError(`Unknown command \"${data.arguments.command}\", use this command without arguments to see all available commands.`);\n        }\n        else {\n            await data.player.pm(`${requestedCommand.name}: ${requestedCommand.helpText}`);\n        }\n    }\n}\nawait main();\n//# sourceMappingURL=help.js.map",
-              "name": null,
-              "moduleId": null
-            },
-            "arguments": [
-              {
-                "createdAt": "2024-07-14T14:37:10.676Z",
-                "updatedAt": "2024-07-14T14:37:10.709Z",
-                "id": "b190aa1f-a1a8-453c-a05a-cf487ccfecd7",
-                "name": "command",
-                "type": "string",
-                "helpText": "The command to get help for",
-                "defaultValue": "all",
-                "position": 0,
-                "commandId": "7a74866f-5fa4-40c6-a238-bd51559c8f02"
-              }
-            ]
-          }
-        ],
-        "functions": [],
-        "permissions": [],
-        "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable/disable the module without having to uninstall it.\"},\"commands\":{\"type\":\"object\",\"properties\":{\"ping\":{\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable the ping command.\"},\"delay\":{\"type\":\"number\",\"default\":0,\"minimum\":0,\"maximum\":86400,\"description\":\"How many seconds to wait before executing the command.\"},\"cooldown\":{\"type\":\"number\",\"default\":0,\"minimum\":0,\"maximum\":604800,\"description\":\"How many seconds a player has to wait before executing the command again.\"},\"cost\":{\"type\":\"number\",\"default\":0,\"minimum\":0,\"description\":\"How much currency to deduct from the player before executing the command.\"},\"aliases\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"description\":\"Trigger the command with other names than the default\"}},\"required\":[],\"default\":{}},\"help\":{\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable the help command.\"},\"delay\":{\"type\":\"number\",\"default\":0,\"minimum\":0,\"maximum\":86400,\"description\":\"How many seconds to wait before executing the command.\"},\"cooldown\":{\"type\":\"number\",\"default\":0,\"minimum\":0,\"maximum\":604800,\"description\":\"How many seconds a player has to wait before executing the command again.\"},\"cost\":{\"type\":\"number\",\"default\":0,\"minimum\":0,\"description\":\"How much currency to deduct from the player before executing the command.\"},\"aliases\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"description\":\"Trigger the command with other names than the default\"}},\"required\":[],\"default\":{}}},\"required\":[],\"default\":{}}},\"required\":[\"commands\"],\"additionalProperties\":false}"
-      },
       "userConfig": {},
       "systemConfig": {
         "enabled": true,
@@ -79,15 +12,64 @@
             "cooldown": 0,
             "cost": 0,
             "delay": 0,
-            "enabled": true
+            "enabled": true,
+            "announceDelay": true
           },
           "ping": {
             "cooldown": 0,
             "cost": 0,
             "delay": 0,
-            "enabled": true
+            "enabled": true,
+            "announceDelay": true
           }
         }
+      },
+      "versionId": "4e945c36-208c-4d0c-b94f-12e90ebc959a",
+      "version": {
+        "createdAt": "2024-12-07T17:35:49.621Z",
+        "updatedAt": "2024-12-07T17:35:49.673Z",
+        "id": "4e945c36-208c-4d0c-b94f-12e90ebc959a",
+        "moduleId": "545f4c53-58b4-4008-b54b-ee92d371aa2f",
+        "tag": "latest",
+        "description": "A collection of useful commands",
+        "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"additionalProperties\":false}",
+        "uiSchema": "{}",
+        "cronJobs": [],
+        "hooks": [],
+        "commands": [
+          {
+            "createdAt": "2024-12-07T17:35:49.916Z",
+            "updatedAt": "2024-12-07T17:35:49.948Z",
+            "id": "ef3b79cb-72f1-4f6c-9ec7-745102299839",
+            "name": "help",
+            "functionId": "fa00ad51-aeb2-43ae-a3c3-d69fe71f9ffb",
+            "trigger": "help",
+            "helpText": "The text you are reading right now, displays information about commands.",
+            "versionId": "4e945c36-208c-4d0c-b94f-12e90ebc959a",
+            "description": null
+          },
+          {
+            "createdAt": "2024-12-07T17:35:49.917Z",
+            "updatedAt": "2024-12-07T17:35:49.960Z",
+            "id": "73034023-e1a9-4e25-a398-c6426c00b90f",
+            "name": "ping",
+            "functionId": "b5265cba-219a-4e71-a572-59dbc9608fe2",
+            "trigger": "ping",
+            "helpText": "Replies with pong, useful for testing if the connection works.",
+            "versionId": "4e945c36-208c-4d0c-b94f-12e90ebc959a",
+            "description": null
+          }
+        ],
+        "permissions": [],
+        "functions": [],
+        "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable/disable the module without having to uninstall it.\"},\"commands\":{\"type\":\"object\",\"properties\":{\"help\":{\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable the help command.\"},\"delay\":{\"type\":\"number\",\"default\":0,\"minimum\":0,\"maximum\":86400,\"description\":\"How many seconds to wait before executing the command.\"},\"announceDelay\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Whether to announce the delay to the user.\"},\"cooldown\":{\"type\":\"number\",\"default\":0,\"minimum\":0,\"maximum\":604800,\"description\":\"How many seconds a player has to wait before executing the command again.\"},\"cost\":{\"type\":\"number\",\"default\":0,\"minimum\":0,\"description\":\"How much currency to deduct from the player before executing the command.\"},\"aliases\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"description\":\"Trigger the command with other names than the default\"}},\"required\":[],\"default\":{}},\"ping\":{\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable the ping command.\"},\"delay\":{\"type\":\"number\",\"default\":0,\"minimum\":0,\"maximum\":86400,\"description\":\"How many seconds to wait before executing the command.\"},\"announceDelay\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Whether to announce the delay to the user.\"},\"cooldown\":{\"type\":\"number\",\"default\":0,\"minimum\":0,\"maximum\":604800,\"description\":\"How many seconds a player has to wait before executing the command again.\"},\"cost\":{\"type\":\"number\",\"default\":0,\"minimum\":0,\"description\":\"How much currency to deduct from the player before executing the command.\"},\"aliases\":{\"type\":\"array\",\"items\":{\"type\":\"string\"},\"description\":\"Trigger the command with other names than the default\"}},\"required\":[],\"default\":{}}},\"required\":[],\"default\":{}}},\"required\":[\"commands\"],\"additionalProperties\":false}"
+      },
+      "module": {
+        "createdAt": "2024-12-15T21:32:52.087Z",
+        "updatedAt": "2024-12-15T21:32:52.088Z",
+        "id": "c78a9098-c12f-4dd4-83d8-75adf2a14424",
+        "name": "utils",
+        "builtin": "utils"
       }
     }
   },

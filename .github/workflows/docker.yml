@@ -29,6 +29,7 @@ jobs:
           ]
 
     steps:
+      # This voodoo was recommended by Github support to help with random network disconnects... 🤷
       - name: Apply nf_conntrack_tcp_be_liberal kernel change
         run: |
           sudo sh -c "echo 1 > /proc/sys/net/netfilter/nf_conntrack_tcp_be_liberal"
@@ -93,7 +94,7 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        node-version: [20]
+        node-version: [22]
 
     steps:
       - name: Generate token
@@ -126,7 +127,7 @@ jobs:
           GRAFANA_CLOUD_TEMPO_URL: ${{ secrets.GRAFANA_CLOUD_TEMPO_URL }}
           GRAFANA_CLOUD_API_USER: ${{ secrets.GRAFANA_CLOUD_API_USER }}
           GRAFANA_CLOUD_API_KEY: ${{ secrets.GRAFANA_CLOUD_API_KEY }}
-
+          TAKARO_TEST_RUNNER_ATTEMPTS: 10
       - name: Commit and push if changed
         if: github.ref == 'refs/heads/development'
         run: |
@@ -160,7 +161,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
       - run: ./scripts/dev-init.sh
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps

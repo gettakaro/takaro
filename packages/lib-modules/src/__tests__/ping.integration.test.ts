@@ -1,5 +1,6 @@
 import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { HookEvents } from '../dto/index.js';
+import { describe } from 'node:test';
 
 const group = 'Ping command';
 
@@ -10,10 +11,10 @@ const tests = [
     setup: modulesTestSetup,
     name: 'Ping command replies with pong',
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.utilsModule.id,
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.utilsModule.latestVersion.id,
+      });
 
       const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(HookEvents.CHAT_MESSAGE);
 

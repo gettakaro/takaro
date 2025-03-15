@@ -117,6 +117,23 @@ courier:
     connection_uri: 'smtp://mailhog:1025/?disable_starttls=true'
     from_address: noreply@takaro.io
     from_name: Takaro
+# courier:
+#   delivery_strategy: http
+#   http:
+#     request_config:
+#       #url: https://api.postmarkapp.com/email
+#       url: http://192.168.50.35:9999
+#       method: POST
+#       body: file:///etc/config/kratos/default.template.jsonnet
+#       headers:
+#         Content-Type: application/json
+#         Accept: application/json
+#       auth:
+#         type: api_key
+#         config:
+#           name: X-Postmark-Server-Token
+#           value: xxx
+#           in: header
 
 # https://github.com/ory/kratos/pull/3624
 # SPA flows no longer return a 422 error.

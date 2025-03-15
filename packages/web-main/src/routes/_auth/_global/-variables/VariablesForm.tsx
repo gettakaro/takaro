@@ -5,7 +5,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from '@tanstack/react-router';
 import { VariableOutputDTO } from '@takaro/apiclient';
 import { z } from 'zod';
-import { GameServerSelectQueryField, ModuleSelectQueryField, PlayerSelectQueryField } from 'components/selects';
+import {
+  GameServerSelectQueryField,
+  ModuleSelectQueryField,
+  PlayerSelectQueryField,
+} from '../../../../components/selects';
 import { DateTime } from 'luxon';
 
 const validationSchema = z.object({
@@ -58,7 +62,7 @@ export const VariablesForm: FC<CreateAndUpdateVariableformProps> = ({ variable, 
   });
 
   return (
-    <Drawer open={open} onOpenChange={setOpen} promptCloseConfirmation={formState.isDirty}>
+    <Drawer open={open} onOpenChange={setOpen} promptCloseConfirmation={readOnly === false && formState.isDirty}>
       <Drawer.Content>
         <Drawer.Heading>{variable ? (readOnly ? 'View' : 'Update') : 'Create'} variable</Drawer.Heading>
         <Drawer.Body>
@@ -81,7 +85,7 @@ export const VariablesForm: FC<CreateAndUpdateVariableformProps> = ({ variable, 
               label="Value"
               loading={isLoading}
               name="value"
-              placeholder="My cool role"
+              placeholder="My cool variable"
               description="Value is a string. However the most common use case is to store stringified JSON. You can e.g. use https://jsonformatter.org/json-stringify-online to stringify JSON."
               required
               readOnly={readOnly}
@@ -96,6 +100,7 @@ export const VariablesForm: FC<CreateAndUpdateVariableformProps> = ({ variable, 
               required={false}
               allowPastDates={false}
               format={DateTime.DATETIME_SHORT}
+              canClear={true}
               readOnly={readOnly}
             />
             <PlayerSelectQueryField canClear={true} control={control} loading={isLoading} name="playerId" />

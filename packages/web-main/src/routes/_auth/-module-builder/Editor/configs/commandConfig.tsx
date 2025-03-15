@@ -19,8 +19,8 @@ import {
 } from 'react-icons/ai';
 
 import { ArgumentCard, ArgumentList, Column, ContentContainer, Fields, Flex } from './style';
-import { globalGameServerSetingQueryOptions } from 'queries/setting';
-import { commandQueryOptions, useCommandUpdate } from 'queries/module';
+import { globalGameServerSetingQueryOptions } from '../../../../../queries/setting';
+import { commandQueryOptions, useCommandUpdate } from '../../../../../queries/module';
 import { FC } from 'react';
 import { useForm, useFieldArray, SubmitHandler } from 'react-hook-form';
 import { z } from 'zod';
@@ -30,6 +30,7 @@ import { useQuery } from '@tanstack/react-query';
 
 const validationSchema = z.object({
   trigger: z.string().min(1, { message: 'Trigger is required' }),
+  description: z.string().optional(),
   helpText: z.string(),
   arguments: z.array(
     z.object({
@@ -71,9 +72,10 @@ const argumentTypeSelectOptions = [
 interface CommandConfigProps {
   itemId: string;
   readOnly?: boolean;
+  moduleId: string;
 }
 
-export const CommandConfig: FC<CommandConfigProps> = ({ itemId, readOnly }) => {
+export const CommandConfig: FC<CommandConfigProps> = ({ itemId, readOnly, moduleId }) => {
   const { data: command, isPending: isLoadingCommand, isError } = useQuery(commandQueryOptions(itemId));
   const { data: settings, isPending: isLoadingSetting } = useQuery(globalGameServerSetingQueryOptions('commandPrefix'));
 
@@ -88,16 +90,17 @@ export const CommandConfig: FC<CommandConfigProps> = ({ itemId, readOnly }) => {
   // fallback to `/`
   const prefix = (settings && settings?.value) ?? '/';
 
-  return <CommandConfigForm commandPrefix={prefix} command={command} readOnly={readOnly} />;
+  return <CommandConfigForm commandPrefix={prefix} command={command} readOnly={readOnly} moduleId={moduleId} />;
 };
 
 interface CommandConfigFormProps {
   command: CommandOutputDTO;
   readOnly?: boolean;
   commandPrefix?: string;
+  moduleId: string;
 }
 
-export const CommandConfigForm: FC<CommandConfigFormProps> = ({ command, readOnly, commandPrefix }) => {
+export const CommandConfigForm: FC<CommandConfigFormProps> = ({ command, readOnly, commandPrefix, moduleId }) => {
   const { mutateAsync, error, isPending } = useCommandUpdate();
 
   const { control, handleSubmit, formState, reset } = useForm<z.infer<typeof validationSchema>>({
@@ -106,6 +109,7 @@ export const CommandConfigForm: FC<CommandConfigFormProps> = ({ command, readOnl
     values: {
       trigger: command.trigger,
       helpText: command.helpText,
+      description: command.description,
       arguments: command.arguments
         .sort((a, b) => a.position - b.position)
         .map((arg) => {
@@ -146,12 +150,21 @@ export const CommandConfigForm: FC<CommandConfigFormProps> = ({ command, readOnl
     await mutateAsync({
       commandId: command.id,
       command: data as CommandUpdateDTO,
+      versionId: command.versionId,
+      moduleId: moduleId,
     });
     reset({}, { keepValues: true });
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
+      <TextAreaField
+        control={control}
+        name="description"
+        label="Description"
+        description="A description of what this command does"
+        readOnly={readOnly}
+      />
       <TextField
         control={control}
         name="trigger"

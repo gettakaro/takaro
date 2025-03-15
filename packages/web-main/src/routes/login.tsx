@@ -7,15 +7,18 @@ import { LoginFlow } from '@ory/client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { isAxiosError } from 'axios';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { useOry } from 'hooks/useOry';
-import { getApiClient } from 'util/getApiClient';
-import { useAuth } from 'hooks/useAuth';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import { useOry } from '../hooks/useOry';
+import { getApiClient } from '../util/getApiClient';
+import { useAuth } from '../hooks/useAuth';
+import { zodValidator } from '@tanstack/zod-adapter';
 
 export const Route = createFileRoute('/login')({
-  validateSearch: z.object({
-    redirect: z.string().optional().catch('/'),
-  }),
+  validateSearch: zodValidator(
+    z.object({
+      redirect: z.string().optional(),
+    }),
+  ),
   component: Component,
 });
 
@@ -183,19 +186,10 @@ function Component() {
             <TextField control={control} label="Password" loading={loading} name="password" required type="password" />
           </LessMargin>
           <LinkContainer>
-            <Link to="/account/recovery" search={{ flowId: '' }}>
-              Forgot your password?
-            </Link>
+            <Link to="/account/recovery">Forgot your password?</Link>
           </LinkContainer>
           {error && <FormError error={error} />}
-          <Button
-            icon={<Mail />}
-            isLoading={loading}
-            fullWidth
-            text="Log in with Email"
-            type="submit"
-            variant="default"
-          />
+          <Button icon={<Mail />} isLoading={loading} fullWidth text="Log in" type="submit" variant="default" />
         </form>
       </Container>
     </>

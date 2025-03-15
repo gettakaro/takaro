@@ -1,6 +1,7 @@
 import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '../dto/index.js';
 import { faker } from '@faker-js/faker';
+import { describe } from 'node:test';
 
 const group = 'gimme suite';
 
@@ -12,20 +13,18 @@ const tests = [
     name: 'Can give an item to a player',
     test: async function () {
       const items = (await this.client.item.itemControllerSearch()).data.data;
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.gimmeModule.id,
-        {
-          userConfig: JSON.stringify({
-            items: items.map((item) => ({
-              item: item.id,
-              amount: faker.number.int({ min: 1, max: 10 }),
-              quality: faker.number.int({ min: 1, max: 6 }).toString(),
-            })),
-            commands: [],
-          }),
-        },
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.gimmeModule.latestVersion.id,
+        userConfig: JSON.stringify({
+          items: items.map((item) => ({
+            item: item.id,
+            amount: faker.number.int({ min: 1, max: 5 }),
+            quality: faker.number.int({ min: 1, max: 6 }).toString(),
+          })),
+          commands: [],
+        }),
+      });
       const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
@@ -43,7 +42,7 @@ const tests = [
       setup: modulesTestSetup,
       name: 'Can execute command',
       test: async function () {
-        await this.client.gameserver.gameServerControllerInstallModule(
+        await this.client.module.moduleInstallationsControllerInstallModule(
           this.setupData.gameserver.id,
           this.setupData.gimmeModule.id,
           {
@@ -71,16 +70,14 @@ const tests = [
     setup: modulesTestSetup,
     name: 'When no items or commands configured, displays an error',
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.gimmeModule.id,
-        {
-          userConfig: JSON.stringify({
-            items: [],
-            commands: [],
-          }),
-        },
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.gimmeModule.latestVersion.id,
+        userConfig: JSON.stringify({
+          items: [],
+          commands: [],
+        }),
+      });
 
       const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE);
 

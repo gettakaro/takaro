@@ -6,21 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useDateRangePickerDispatchContext, useDateRangePickerContext } from '../Context';
 import { DateTime, DateTimeUnit } from 'luxon';
 import { Container, StyledForm, InputsContainer, CommonlyUsedGrid } from './style';
-
-export enum Tense {
-  Last = 'Last',
-  Next = 'Next',
-}
-
-export enum Unit {
-  Seconds = 'Seconds',
-  Minutes = 'Minutes',
-  Hours = 'Hours',
-  Days = 'Days',
-  Weeks = 'Weeks',
-  Months = 'Months',
-  Years = 'Years',
-}
+import { Tense, Unit } from '../../types';
 
 interface FormInputs {
   tense: string;

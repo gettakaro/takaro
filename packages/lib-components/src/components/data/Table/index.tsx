@@ -262,7 +262,6 @@ export function Table<DataType extends object>({
           {hasRowSelection && renderRowSelectionActions && renderRowSelectionActions()}
         </Flex>
         <Flex>
-          {renderToolbar && renderToolbar()}
           {onSearchInputChanged && (
             <UnControlledTextField
               name="search-input"
@@ -275,6 +274,7 @@ export function Table<DataType extends object>({
               onChange={(e) => setSearchInput(e.currentTarget.value)}
             />
           )}
+          {renderToolbar && renderToolbar()}
           {!isLoading && <Filter table={table} />}
           <ColumnVisibility
             table={table}

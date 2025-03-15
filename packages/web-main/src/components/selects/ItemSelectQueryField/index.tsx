@@ -1,7 +1,7 @@
 import { GameServerOutputDTO, GameServerOutputDTOTypeEnum, ItemsOutputDTO } from '@takaro/apiclient';
 import { Avatar, getInitials, PaginationProps, SelectQueryField, Skeleton, styled } from '@takaro/lib-components';
-import { gameServerQueryOptions } from 'queries/gameserver';
-import { itemQueryOptions, ItemsInfiniteQueryOptions } from 'queries/item';
+import { gameServerQueryOptions } from '../../../queries/gameserver';
+import { itemQueryOptions, ItemsInfiniteQueryOptions } from '../../../queries/item';
 import { FC, useState, useCallback } from 'react';
 import { CustomSelectQueryProps } from '..';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';

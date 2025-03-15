@@ -1,7 +1,7 @@
 import { IsBoolean, IsISO8601, IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
-import { PlayerOutputDTO, PlayerOutputWithRolesDTO, PlayerService } from '../service/PlayerService.js';
+import { PlayerService } from '../service/Player/index.js';
 import { AuthenticatedRequest, AuthService } from '../service/AuthService.js';
 import { Body, Get, Post, JsonController, UseBefore, Req, Params, Res, Delete } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
@@ -12,7 +12,8 @@ import { TakaroDTO, errors } from '@takaro/util';
 import { UserService } from '../service/User/index.js';
 import { PlayerOnGameserverOutputArrayDTOAPI } from './PlayerOnGameserverController.js';
 import { ParamId, ParamIdAndRoleId } from '../lib/validators.js';
-import { AllowedFilters, RangeFilterCreatedAndUpdatedAt } from './shared.js';
+import { AllowedFilters, AllowedSearch, RangeFilterCreatedAndUpdatedAt } from './shared.js';
+import { PlayerOutputDTO, PlayerOutputWithRolesDTO } from '../service/Player/dto.js';
 
 export class PlayerOutputDTOAPI extends APIOutput<PlayerOutputWithRolesDTO> {
   @Type(() => PlayerOutputWithRolesDTO)
@@ -56,13 +57,22 @@ class PlayerSearchInputAllowedFilters extends AllowedFilters {
   roleId?: string[] | undefined;
 }
 
+class PlayerSearchInputAllowedSearch extends AllowedSearch {
+  @IsOptional()
+  @IsString({ each: true })
+  name?: string[];
+  @IsOptional()
+  @IsString({ each: true })
+  steamId?: string[];
+}
+
 class PlayerSearchInputAllowedRangeFilter extends RangeFilterCreatedAndUpdatedAt {
   @IsOptional()
   @IsISO8601()
   steamAccountCreated?: string | undefined;
   @IsOptional()
   @IsNumber()
-  steamDaysSinceLastBan?: number | undefined;
+  steamsDaysSinceLastBan?: number | undefined;
   @IsOptional()
   @IsNumber()
   steamNumberOfVACBans?: number | undefined;
@@ -79,8 +89,8 @@ export class PlayerSearchInputDTO extends ITakaroQuery<PlayerSearchInputAllowedF
   @Type(() => PlayerSearchInputAllowedFilters)
   declare filters: PlayerSearchInputAllowedFilters;
   @ValidateNested()
-  @Type(() => PlayerSearchInputAllowedFilters)
-  declare search: PlayerSearchInputAllowedFilters;
+  @Type(() => PlayerSearchInputAllowedSearch)
+  declare search: PlayerSearchInputAllowedSearch;
   @ValidateNested()
   @Type(() => PlayerSearchInputAllowedRangeFilter)
   declare greaterThan: PlayerSearchInputAllowedRangeFilter;
@@ -115,6 +125,24 @@ class PlayerMeOutputDTO extends TakaroDTO<PlayerMeOutputDTO> {
 export class PlayerController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.READ_PLAYERS]))
   @ResponseSchema(PlayerOutputArrayDTOAPI)
+  @OpenAPI({
+    requestBody: {
+      content: {
+        'application/json': {
+          examples: {
+            recentVACbans: {
+              summary: 'Recently VAC banned players',
+              value: { lessThan: { steamsDaysSinceLastBan: 365 } },
+            },
+            membersOfRole: {
+              summary: 'Get all players with a specific role',
+              value: { filters: { roleId: ['1ec529af-0f8f-4d8d-b06a-7f83c64f0086'] } },
+            },
+          },
+        },
+      },
+    },
+  })
   @Post('/player/search')
   async search(@Req() req: AuthenticatedRequest, @Res() res: Response, @Body() query: PlayerSearchInputDTO) {
     const service = new PlayerService(req.domainId);

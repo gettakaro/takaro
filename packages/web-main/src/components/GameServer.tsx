@@ -2,7 +2,7 @@ import { Chip } from '@takaro/lib-components';
 import { FC } from 'react';
 import { Link } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
-import { gameServerQueryOptions } from 'queries/gameserver';
+import { gameServerQueryOptions } from '../queries/gameserver';
 
 interface GameServerProps {
   gameServerId: string;

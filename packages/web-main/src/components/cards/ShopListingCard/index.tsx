@@ -2,9 +2,9 @@ import { Avatar, Card, Chip, getInitials, Tooltip } from '@takaro/lib-components
 import { FC } from 'react';
 import { Header, CardBody } from './style';
 import { GameServerOutputDTOTypeEnum, ShopListingOutputDTO } from '@takaro/apiclient';
-import { useHasPermission } from 'hooks/useHasPermission';
-import { ShopListingActions } from 'routes/_auth/gameserver.$gameServerId/-components/shop/ShopListingActions';
-import { ShopListingBuyForm } from 'routes/_auth/gameserver.$gameServerId/-components/shop/ShopListingBuyForm';
+import { useHasPermission } from '../../../hooks/useHasPermission';
+import { ShopListingActions } from '../../../routes/_auth/gameserver.$gameServerId/-components/shop/ShopListingActions';
+import { ShopListingBuyForm } from '../../../routes/_auth/gameserver.$gameServerId/-components/shop/ShopListingBuyForm';
 
 const gameServerTypeToIconFolderMap = {
   [GameServerOutputDTOTypeEnum.Mock]: 'rust',

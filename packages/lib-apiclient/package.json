@@ -1,6 +1,6 @@
 {
   "name": "@takaro/apiclient",
-  "version": "0.0.16",
+  "version": "0.0.18",
   "description": "API client for Takaro",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
@@ -8,17 +8,10 @@
   "scripts": {
     "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json",
     "build": "tsc -p ./tsconfig.build.json",
-    "test": "npm run test:unit --if-present && npm run test:integration --if-present",
-    "test:unit": "echo 'No tests (yet :))'",
-    "test:integration": "mocha --config ../../.mocharc.js src/**/*.integration.test.ts --exit",
     "generate": "node ../../scripts/wait-until-healthy.mjs && npx @openapitools/openapi-generator-cli generate -i ${TAKARO_HOST}/openapi.json -g typescript-axios -o ./src/generated/",
     "postgenerate": "./fix-esm.sh && npm run build"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "dependencies": {},
-  "devDependencies": {
-    "@openapitools/openapi-generator-cli": "2.13.13"
-  }
+  "license": "ISC"
 }

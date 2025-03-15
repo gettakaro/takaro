@@ -1,24 +1,15 @@
 {
   "name": "@takaro/config",
-  "version": "0.0.16",
+  "version": "0.0.18",
   "description": "An opinionated config handler",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
   "type": "module",
   "scripts": {
     "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json",
-    "build": "tsc -p ./tsconfig.build.json",
-    "test": "npm run test:unit --if-present && npm run test:integration --if-present",
-    "test:unit": "mocha --config ../../.mocharc.js src/**/*.unit.test.ts",
-    "test:integration": "echo 'No tests (yet :))'"
+    "build": "tsc -p ./tsconfig.build.json"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "convict": "6.2.4"
-  },
-  "devDependencies": {
-    "@types/convict": "6.1.6"
-  }
+  "license": "ISC"
 }

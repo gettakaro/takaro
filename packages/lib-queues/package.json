@@ -1,22 +1,15 @@
 {
   "name": "@takaro/queues",
-  "version": "0.0.16",
+  "version": "0.0.18",
   "description": "An opinionated BullMQ queues handler",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
   "type": "module",
   "scripts": {
     "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json",
-    "build": "tsc -p ./tsconfig.build.json",
-    "test": "npm run test:unit --if-present && npm run test:integration --if-present",
-    "test:unit": "echo 'No tests (yet :))'",
-    "test:integration": "echo 'No tests (yet :))'"
+    "build": "tsc -p ./tsconfig.build.json"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "@bull-board/express": "6.2.3"
-  },
-  "devDependencies": {}
+  "license": "ISC"
 }

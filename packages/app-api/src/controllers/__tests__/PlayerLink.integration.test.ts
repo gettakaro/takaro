@@ -10,6 +10,7 @@ import { GameEvents } from '@takaro/modules';
 import { faker } from '@faker-js/faker';
 import { randomUUID } from 'crypto';
 import { Client, isAxiosError } from '@takaro/apiclient';
+import { describe } from 'node:test';
 
 const group = 'Player-User linking';
 

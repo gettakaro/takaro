@@ -18,7 +18,7 @@ import {
 import { UserService } from '../User/index.js';
 import { checkPermissions } from '../AuthService.js';
 import { PERMISSIONS } from '@takaro/auth';
-import { PlayerService } from '../PlayerService.js';
+import { PlayerService } from '../Player/index.js';
 import { PlayerOnGameServerService } from '../PlayerOnGameserverService.js';
 import { GameServerService } from '../GameServerService.js';
 import { EVENT_TYPES, EventCreateDTO, EventService } from '../EventService.js';
@@ -275,7 +275,7 @@ export class ShopListingService extends TakaroService<
     const gameServerService = new GameServerService(this.domainId);
     if (listing.items.length) {
       for (let i = 0; i < order.amount; i++) {
-        await Promise.allSettled(
+        await Promise.all(
           listing.items.map((item) =>
             gameServerService.giveItem(gameServerId, pog.playerId, item.item.code, item.amount, item.quality),
           ),

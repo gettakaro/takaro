@@ -1,22 +1,20 @@
-import { FC, useEffect, useMemo, useState } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { FC, useState } from 'react';
 import {
   Table,
   useTableActions,
   IconButton,
   Dropdown,
-  Dialog,
   Button,
-  TextField,
-  FormError,
   DateFormatter,
   CopyId,
   useTheme,
   Tooltip,
+  Chip,
 } from '@takaro/lib-components';
 
-import { Player } from 'components/Player';
-import { useUserRemove, useInviteUser, usersQueryOptions, userMeQueryOptions } from 'queries/user';
+import { useSnackbar } from 'notistack';
+import { Player } from '../../../components/Player';
+import { usersQueryOptions, userMeQueryOptions, userCountQueryOptions, useUserUpdate } from '../../../queries/user';
 import { UserOutputWithRolesDTO, UserSearchInputDTOSortDirectionEnum, PERMISSIONS } from '@takaro/apiclient';
 import { createColumnHelper } from '@tanstack/react-table';
 import {
@@ -25,13 +23,17 @@ import {
   AiOutlineUser as ProfileIcon,
   AiOutlineEdit as EditIcon,
   AiOutlineRight as ActionIcon,
+  AiOutlineUserAdd as DashboardUser,
+  AiOutlineUserDelete as RegularUser,
 } from 'react-icons/ai';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { hasPermission, useHasPermission } from 'hooks/useHasPermission';
+import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
+import { hasPermission, useHasPermission } from '../../../hooks/useHasPermission';
 import { createFileRoute, useNavigate, Link, redirect } from '@tanstack/react-router';
 import { useQuery } from '@tanstack/react-query';
+import { UserDeleteDialog } from '../../../components/dialogs/UserDeleteDialog';
+import { UserInviteDialog } from '../../../components/dialogs/UserInviteDialog';
+import { MaxUsage } from '../../../components/MaxUsage';
+import { getCurrentDomain } from '../../../util/getCurrentDomain';
 
 export const Route = createFileRoute('/_auth/_global/users')({
   beforeLoad: async ({ context }) => {
@@ -40,6 +42,12 @@ export const Route = createFileRoute('/_auth/_global/users')({
       throw redirect({ to: '/forbidden' });
     }
   },
+  loader: async ({ context }) => {
+    return {
+      me: await context.queryClient.ensureQueryData(userMeQueryOptions()),
+      users: await context.queryClient.ensureQueryData(userCountQueryOptions()),
+    };
+  },
   component: Component,
 });
 
@@ -47,6 +55,14 @@ function Component() {
   useDocumentTitle('Users');
   const { pagination, columnFilters, sorting, columnSearch } = useTableActions<UserOutputWithRolesDTO>();
   const [quickSearchInput, setQuickSearchInput] = useState<string>('');
+  const loaderData = Route.useLoaderData();
+
+  const { data: currentUserCount } = useQuery({ ...userCountQueryOptions(), initialData: loaderData.users });
+  const { data: me } = useQuery({ ...userMeQueryOptions(), initialData: loaderData.me });
+
+  const currentDomain = getCurrentDomain(me);
+  const maxUserCount = currentDomain.maxUsers;
+  const canInviteUser = currentUserCount < maxUserCount;
 
   const { data, isLoading } = useQuery({
     ...usersQueryOptions({
@@ -67,7 +83,6 @@ function Component() {
           quickSearchInput,
         ],
         discordId: columnSearch.columnSearchState.find((search) => search.id === 'discordId')?.value,
-        playerId: columnSearch.columnSearchState.find((search) => search.id === 'playerId')?.value,
       },
     }),
   });
@@ -113,6 +128,7 @@ function Component() {
       id: 'discordId',
       cell: (info) => <CopyId placeholder="Discord ID" id={info.getValue()} />,
     }),
+
     columnHelper.accessor('playerId', {
       header: 'Player ID',
       id: 'playerId',
@@ -122,6 +138,21 @@ function Component() {
         ) : (
           'no player assigned'
         ),
+    }),
+    columnHelper.accessor('isDashboardUser', {
+      header: () => {
+        return (
+          <Tooltip>
+            <Tooltip.Trigger asChild>
+              <span>Team member (Dashboard user)</span>
+            </Tooltip.Trigger>
+            <Tooltip.Content>User that has access to the dashboard</Tooltip.Content>
+          </Tooltip>
+        );
+      },
+      id: 'isDashboardUser',
+      cell: (info) => (info.getValue() ? <Chip variant="outline" color="primary" label="Yes" /> : <div>No</div>),
+      enableSorting: true,
     }),
     columnHelper.accessor('createdAt', {
       header: 'Created at',
@@ -157,7 +188,9 @@ function Component() {
       id="users"
       columns={columnDefs}
       data={data ? data?.data : []}
-      renderToolbar={() => <InviteUser />}
+      renderToolbar={() => (
+        <InviteUser currentUserCount={currentUserCount} maxUserCount={maxUserCount} canInviteUser={canInviteUser} />
+      )}
       pagination={p}
       columnFiltering={columnFilters}
       columnSearch={columnSearch}
@@ -168,37 +201,13 @@ function Component() {
   );
 }
 
-interface IFormInputs {
-  userEmail: string;
-}
-
-const InviteUser: FC = () => {
+const InviteUser: FC<{
+  currentUserCount: number;
+  maxUserCount: number;
+  canInviteUser: boolean;
+}> = ({ canInviteUser, currentUserCount, maxUserCount }) => {
   const [open, setOpen] = useState<boolean>(false);
   const hasManageUsersPermission = useHasPermission([PERMISSIONS.ManageUsers]);
-
-  const validationSchema = useMemo(
-    () =>
-      z.object({
-        userEmail: z.string().email('Email is not valid.').min(1),
-      }),
-    [],
-  );
-
-  const { control, handleSubmit } = useForm<IFormInputs>({
-    resolver: zodResolver(validationSchema),
-    mode: 'onSubmit',
-  });
-  const { mutate, isPending, isError, isSuccess, error } = useInviteUser();
-
-  const onSubmit: SubmitHandler<IFormInputs> = (data) => {
-    mutate({ email: data.userEmail });
-  };
-
-  useEffect(() => {
-    if (isSuccess) {
-      setOpen(false);
-    }
-  }, [isSuccess]);
 
   return (
     <>
@@ -206,31 +215,10 @@ const InviteUser: FC = () => {
         onClick={() => setOpen(true)}
         text="Invite user"
         icon={<InviteUserIcon />}
-        disabled={!hasManageUsersPermission}
+        disabled={!hasManageUsersPermission || !canInviteUser}
       />
-      <Dialog open={open} onOpenChange={setOpen}>
-        <Dialog.Content>
-          <Dialog.Heading />
-          <Dialog.Body>
-            <h2>Invite user</h2>
-            <p>
-              Inviting users allows them to login to the Takaro dashboard. The user wil receive an email with a link to
-              set their password.
-            </p>
-            <form onSubmit={handleSubmit(onSubmit)}>
-              <TextField
-                label="User email"
-                name="userEmail"
-                placeholder="example@example.com"
-                control={control}
-                required
-              />
-              {isError && <FormError error={error} />}
-              <Button isLoading={isPending} text="Send invitation" type="submit" fullWidth />
-            </form>
-          </Dialog.Body>
-        </Dialog.Content>
-      </Dialog>
+      <MaxUsage value={currentUserCount} total={maxUserCount} unit="Users" />
+      <UserInviteDialog open={open} onOpenChange={setOpen} />
     </>
   );
 };
@@ -240,7 +228,22 @@ const UserMenu: FC<{ user: UserOutputWithRolesDTO }> = ({ user }) => {
   const theme = useTheme();
   const navigate = useNavigate();
   const hasReadUsersPermission = useHasPermission([PERMISSIONS.ReadUsers]);
+  const hasManageUsersPermission = useHasPermission([PERMISSIONS.ManageUsers]);
   const hasManageRolesPermission = useHasPermission([PERMISSIONS.ManageRoles]);
+  const { mutate } = useUserUpdate();
+  const { enqueueSnackbar } = useSnackbar();
+
+  const onToggleDashboardUser = () => {
+    try {
+      mutate({ userId: user.id, isDashboardUser: !user.isDashboardUser });
+    } catch {
+      if (user.isDashboardUser) {
+        enqueueSnackbar('Failed to downgrade user', { variant: 'default', type: 'error' });
+      } else {
+        enqueueSnackbar('Failed to upgrade user to team member', { variant: 'default', type: 'error' });
+      }
+    }
+  };
 
   return (
     <>
@@ -262,6 +265,12 @@ const UserMenu: FC<{ user: UserOutputWithRolesDTO }> = ({ user }) => {
             disabled={!hasManageRolesPermission}
           />
           <Dropdown.Menu.Item
+            icon={user.isDashboardUser ? <RegularUser /> : <DashboardUser />}
+            label={user.isDashboardUser ? 'Downgrade to regular user' : 'Upgrade to Team member'}
+            onClick={onToggleDashboardUser}
+            disabled={!hasManageUsersPermission}
+          />
+          <Dropdown.Menu.Item
             label="Delete user"
             icon={<DeleteIcon fill={theme.colors.error} />}
             onClick={() => setOpenDeleteUserDialog(true)}
@@ -269,47 +278,12 @@ const UserMenu: FC<{ user: UserOutputWithRolesDTO }> = ({ user }) => {
           />
         </Dropdown.Menu>
       </Dropdown>
-      <UserDeleteDialog openDialog={openDeleteUserDialog} setOpenDialog={setOpenDeleteUserDialog} user={user} />
+      <UserDeleteDialog
+        open={openDeleteUserDialog}
+        onOpenChange={setOpenDeleteUserDialog}
+        userId={user.id}
+        userName={user.name}
+      />
     </>
-  );
-};
-
-interface VariableDeleteProps {
-  user: UserOutputWithRolesDTO;
-  openDialog: boolean;
-  setOpenDialog: (open: boolean) => void;
-}
-
-export const UserDeleteDialog: FC<VariableDeleteProps> = ({ user, openDialog, setOpenDialog }) => {
-  const { mutateAsync, isPending: isDeleting, error } = useUserRemove();
-
-  const handleOnDelete = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    e.preventDefault();
-    await mutateAsync({ userId: user.id });
-    setOpenDialog(false);
-  };
-
-  return (
-    <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-      <Dialog.Content>
-        <Dialog.Heading>
-          <span>Delete: user</span>
-        </Dialog.Heading>
-        <Dialog.Body>
-          <p>
-            Are you sure you want to delete <strong>{user.name}</strong>? This action cannot be undone!
-            <br />
-          </p>
-          {error && <FormError error={error} />}
-          <Button
-            isLoading={isDeleting}
-            onClick={(e) => handleOnDelete(e)}
-            fullWidth
-            text={'Delete user'}
-            color="error"
-          />
-        </Dialog.Body>
-      </Dialog.Content>
-    </Dialog>
   );
 };

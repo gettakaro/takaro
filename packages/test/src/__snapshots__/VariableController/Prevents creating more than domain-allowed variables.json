@@ -1,0 +1,20 @@
+{
+  "body": {
+    "meta": {
+      "error": {
+        "code": "BadRequestError",
+        "message": "Too many variables"
+      }
+    },
+    "data": {}
+  },
+  "status": 400,
+  "test": {
+    "group": "VariableController",
+    "snapshot": true,
+    "name": "Prevents creating more than domain-allowed variables",
+    "expectedStatus": 400,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

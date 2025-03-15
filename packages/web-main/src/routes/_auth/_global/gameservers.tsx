@@ -1,20 +1,15 @@
 import { createFileRoute, Outlet, useNavigate } from '@tanstack/react-router';
-import { useHasPermission } from 'hooks/useHasPermission';
+import { useHasPermission } from '../../../hooks/useHasPermission';
 import { ErrorBoundary } from '@sentry/react';
 import { PERMISSIONS } from '@takaro/apiclient';
-import {
-  Button,
-  Dialog,
-  Dropdown,
-  IconButton,
-  useLocalStorage,
-  useTheme,
-  ValueConfirmationField,
-} from '@takaro/lib-components';
+import { Button, Dropdown, IconButton, useLocalStorage, useTheme } from '@takaro/lib-components';
 import { GameServersCardView } from './-gameservers/GameServersCardView';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
+import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
 import { GameServersTableView } from './-gameservers/GameServersTableView';
-import { useGameServerRemove } from 'queries/gameserver';
+
+export interface GenericGameServersViewProps {
+  setGameServerCount: (count: number) => void;
+}
 
 import {
   AiOutlinePlus as CreateGameServerIcon,
@@ -26,24 +21,49 @@ import {
   AiOutlineCopy as CopyIcon,
   AiOutlineFunction as ModulesIcon,
   AiOutlineSetting as SettingsIcon,
+  AiOutlineStop as ShutdownIcon,
 } from 'react-icons/ai';
-import { FC, MouseEvent, useState } from 'react';
-import { PermissionsGuard } from 'components/PermissionsGuard';
-import { TableListToggleButton } from 'components/TableListToggleButton';
+import { FC, MouseEvent, useRef, useState } from 'react';
+import { PermissionsGuard } from '../../../components/PermissionsGuard';
+import { TableListToggleButton } from '../../../components/TableListToggleButton';
+import { GameServerDeleteDialog } from '../../../components/dialogs/GameServerDeleteDialog';
+import { DeleteImperativeHandle } from '../../../components/dialogs';
+import { MaxUsage } from '../../../components/MaxUsage';
+import { userMeQueryOptions } from '../../../queries/user';
+import { gameServerCountQueryOptions } from '../../../queries/gameserver';
+import { useQuery } from '@tanstack/react-query';
+import { getCurrentDomain } from '../../../util/getCurrentDomain';
+import { GameServerShutdownDialog } from '../../../components/dialogs/GameServerShutdownDialog';
 
 type ViewType = 'list' | 'table';
 
 export const Route = createFileRoute('/_auth/_global/gameservers')({
+  loader: async ({ context }) => {
+    return {
+      userData: await context.queryClient.ensureQueryData(userMeQueryOptions()),
+      currentGameServerCount: await context.queryClient.ensureQueryData(gameServerCountQueryOptions()),
+    };
+  },
   errorComponent: () => <ErrorBoundary />,
   component: Component,
 });
 
 function Component() {
+  const loaderData = Route.useLoaderData();
   useDocumentTitle('Game Servers');
+  const { data: me } = useQuery({ ...userMeQueryOptions(), initialData: loaderData.userData });
+  const { data: currentGameServerCount } = useQuery({
+    ...gameServerCountQueryOptions(),
+    initialData: loaderData.currentGameServerCount,
+  });
+
   const { setValue: setView, storedValue: view } = useLocalStorage<ViewType>('gameservers-view-select', 'list');
   const navigate = Route.useNavigate();
   const theme = useTheme();
   const hasManageGameServersPermission = useHasPermission(['MANAGE_GAMESERVERS']);
+
+  const maxGameserverCount = getCurrentDomain(me).maxGameservers;
+  const canCreateGameServer = currentGameServerCount < maxGameserverCount;
 
   const onClickCreateGameServer = (e: MouseEvent) => {
     e.preventDefault();
@@ -65,6 +85,7 @@ function Component() {
           gap: theme.spacing[1],
         }}
       >
+        <MaxUsage value={currentGameServerCount} total={maxGameserverCount} unit="Gameservers" />
         {hasManageGameServersPermission && (
           <Dropdown>
             <Dropdown.Trigger asChild>
@@ -76,11 +97,13 @@ function Component() {
                   icon={<CreateGameServerIcon />}
                   label="Create new game server"
                   onClick={onClickCreateGameServer}
+                  disabled={!canCreateGameServer}
                 />
                 <Dropdown.Menu.Item
                   icon={<ImportGameServerIcon />}
                   label="Import game server from CSMM"
                   onClick={onClickImportGameServer}
+                  disabled={!canCreateGameServer}
                 />
               </Dropdown.Menu.Group>
             </Dropdown.Menu>
@@ -101,27 +124,31 @@ interface GameServerActionsProps {
 }
 export const GameServerActions: FC<GameServerActionsProps> = ({ gameServerId, gameServerName }) => {
   const theme = useTheme();
-  const { mutate, isPending: isDeleting } = useGameServerRemove();
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
-  const [valid, setValid] = useState<boolean>(false);
+  const [openShutdownDialog, setOpenShutdownDialog] = useState<boolean>(false);
+  const gameServerDeleteDialogRef = useRef<DeleteImperativeHandle>(null);
 
+  const hasManageGameServerPermission = useHasPermission(['MANAGE_GAMESERVERS']);
   const navigate = useNavigate();
 
   const handleOnEditClick = (e: MouseEvent): void => {
     e.stopPropagation();
+    e.preventDefault();
     navigate({ to: '/gameservers/update/$gameServerId', params: { gameServerId } });
   };
   const handleOnDeleteClick = (e: MouseEvent) => {
     e.stopPropagation();
+    e.preventDefault();
     if (e.shiftKey) {
-      handleOnDelete();
+      gameServerDeleteDialogRef.current?.triggerDelete();
     } else {
       setOpenDeleteDialog(true);
     }
   };
-
-  const handleOnDelete = () => {
-    mutate({ gameServerId });
+  const handleOnShutdownClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    setOpenShutdownDialog(true);
   };
 
   const handleOnCopyClick = (e: MouseEvent) => {
@@ -132,17 +159,42 @@ export const GameServerActions: FC<GameServerActionsProps> = ({ gameServerId, ga
   return (
     <>
       <PermissionsGuard requiredPermissions={[[PERMISSIONS.ManageGameservers]]}>
+        <GameServerDeleteDialog
+          ref={gameServerDeleteDialogRef}
+          open={openDeleteDialog}
+          onOpenChange={setOpenDeleteDialog}
+          gameServerId={gameServerId}
+          gameServerName={gameServerName}
+        />
+        <GameServerShutdownDialog
+          open={openShutdownDialog}
+          onOpenChange={setOpenShutdownDialog}
+          gameServerId={gameServerId}
+          gameServerName={gameServerName}
+        />
         <Dropdown>
           <Dropdown.Trigger asChild>
             <IconButton icon={<MenuIcon />} ariaLabel="Settings" />
           </Dropdown.Trigger>
           <Dropdown.Menu>
             <Dropdown.Menu.Group label="Actions">
-              <Dropdown.Menu.Item icon={<CopyIcon />} onClick={handleOnCopyClick} label="Copy gameserverID" />
-              <Dropdown.Menu.Item icon={<EditIcon />} onClick={handleOnEditClick} label="Edit gameserver" />
+              <Dropdown.Menu.Item icon={<CopyIcon />} onClick={handleOnCopyClick} label="Copy gameserver id" />
+              <Dropdown.Menu.Item
+                icon={<EditIcon />}
+                onClick={handleOnEditClick}
+                label="Edit gameserver"
+                disabled={!hasManageGameServerPermission}
+              />
+              <Dropdown.Menu.Item
+                icon={<ShutdownIcon fill={theme.colors.error} />}
+                label="Shutdown gameserver"
+                disabled={!hasManageGameServerPermission}
+                onClick={handleOnShutdownClick}
+              />
               <Dropdown.Menu.Item
                 icon={<DeleteIcon fill={theme.colors.error} />}
                 onClick={handleOnDeleteClick}
+                disabled={!hasManageGameServerPermission}
                 label="Delete gameserver"
               />
             </Dropdown.Menu.Group>
@@ -186,31 +238,6 @@ export const GameServerActions: FC<GameServerActionsProps> = ({ gameServerId, ga
           </Dropdown.Menu>
         </Dropdown>
       </PermissionsGuard>
-      <Dialog open={openDeleteDialog} onOpenChange={setOpenDeleteDialog}>
-        <Dialog.Content>
-          <Dialog.Heading>delete: gameserver</Dialog.Heading>
-          <Dialog.Body size="medium">
-            <p>
-              Are you sure you want to delete the gameserver? To confirm, type <strong>{gameServerName}</strong> in the
-              field below.
-            </p>
-            <ValueConfirmationField
-              value={gameServerName}
-              onValidChange={(v) => setValid(v)}
-              label="Game server name"
-              id="deleteGameServerConfirmation"
-            />
-            <Button
-              isLoading={isDeleting}
-              onClick={() => handleOnDelete()}
-              disabled={!valid}
-              fullWidth
-              text="Delete gameserver"
-              color="error"
-            />
-          </Dialog.Body>
-        </Dialog.Content>
-      </Dialog>
     </>
   );
 };

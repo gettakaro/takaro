@@ -36,6 +36,7 @@ import { GroupLabel } from '../../SelectField/style';
 import { SelectContainer, SelectButton, StyledArrowIcon } from '../../sharedStyle';
 import { IconButton, InfiniteScroll, Spinner } from '../../../../../components';
 import { GenericTextField } from '../../../TextField/Generic';
+import { Option, OptionGroup, SubComponentTypes } from '../../SubComponents';
 
 interface SharedSelectQueryFieldProps extends PaginationProps {
   // Enables loading data feedback for user
@@ -53,6 +54,9 @@ interface SharedSelectQueryFieldProps extends PaginationProps {
 
   /// The selected items shown in the select field
   render?: (selectedItems: SelectItem[]) => React.ReactNode;
+
+  /// Callback to be called when the select field is opened or closed
+  onOpenChange?: (open: boolean) => void;
 
   /// The total options that will be visible when fully loaded
   optionCount?: number;
@@ -87,7 +91,7 @@ export interface InputValue {
   shouldUpdate: boolean;
 }
 
-export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelectQueryFieldProps>(
+export const _GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelectQueryFieldProps>(
   function GenericSelectQueryField(props, ref) {
     const {
       onBlur = () => {},
@@ -95,6 +99,7 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
       onChange,
       name,
       disabled,
+      /// Value are the selected items (most cases these are a list of IDs only)
       value,
       id,
       placeholder = 'Search field',
@@ -110,15 +115,17 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
       multiple = false,
       canClear = false,
       debounce = 250,
-      isLoadingData: isLoading = false,
+      isLoadingData = false,
       handleInputValueChange,
+      onOpenChange,
       optionCount,
     } = defaultsApplier(props);
 
     const [open, setOpen] = useState<boolean>(false);
     const [inputValue, setInputValue] = useState<InputValue>({ value: '', shouldUpdate: false, label: '' });
     const [activeIndex, setActiveIndex] = useState<number | null>(null);
-    const [selectedItems, setSelectedItems] = useState<SelectItem[]>([]);
+    const [currentSelectedItems, setCurrentSelectedItems] = useState<SelectItem[]>([]);
+    const [persistedItems, setPersistedItems] = useState<SelectItem[]>([]);
 
     const debouncedValue = useDebounce(inputValue.value, debounce);
     const listItemsRef = useRef<Array<HTMLLIElement | null>>([]);
@@ -129,6 +136,12 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
           handleInputValueChange(debouncedValue);
       }
     }, [debouncedValue]);
+
+    useEffect(() => {
+      if (onOpenChange) {
+        onOpenChange(open);
+      }
+    }, [open]);
 
     const { refs, strategy, x, y, context } = useFloating<HTMLInputElement>({
       whileElementsMounted: autoUpdate,
@@ -142,7 +155,9 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
             const floatingContentWidth = elements.floating.scrollWidth;
 
             const width =
-              availableWidth > refWidth ? `${availableWidth}px` : `${Math.max(refWidth, floatingContentWidth)}px`;
+              availableWidth > refWidth
+                ? `${Math.min(availableWidth, 500)}px`
+                : `${Math.max(refWidth, floatingContentWidth)}px`;
 
             Object.assign(elements.floating.style, {
               // Note: we cannot use the rects.reference.width here because if the referenced item is very small compared to the other options, there will be horizontal overflow.
@@ -176,7 +191,8 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
     const handleClear = (e: MouseEvent) => {
       e.preventDefault();
       e.stopPropagation();
-      setSelectedItems([]);
+      setCurrentSelectedItems([]);
+      setPersistedItems([]);
 
       // the undefined is an expection
       if (onChange) onChange(multiple ? ([] as string[]) : (undefined as any));
@@ -187,20 +203,50 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
      * which ends up not running this useEffect. Meaning we still need to update the selectedIndex when clicked on an option.
      */
     useEffect(() => {
-      // Function to create an item with a value and label
+      /// Value only contains the ids of the selected items, not their labels, The labels are fetched from the items found in the list of options.
+      /// One caveat is that the list of options might change due to the search query, so the labels might not be found.
       const createItem = (v: string) => ({ value: v, label: getLabelFromChildren(children, v) as unknown as string });
 
       if (Array.isArray(value)) {
-        const items = value.map(createItem);
-        setSelectedItems(items);
+        // first we divide the value array into two arrays, one that are already in preserved (so we don't need to fetch the label again)
+        // and the other one that are not in the preserved array (so we need to fetch the label)
+        const [preserved, toFetch] = value.reduce(
+          (acc, v) => {
+            if (persistedItems.find((item) => item.value === v)) {
+              acc[0].push(v);
+            } else {
+              acc[1].push(v);
+            }
+            return acc;
+          },
+          [[], []] as [string[], string[]],
+        );
+
+        const fetched = toFetch.map(createItem);
+        const items = [...persistedItems.filter((item) => preserved.includes(item.value)), ...fetched];
+        setPersistedItems(items);
+        setCurrentSelectedItems(items);
       } else if (typeof value === 'string' && value !== '') {
-        setSelectedItems([createItem(value)]);
+        // check if value is already part of the persisted items
+        const item = persistedItems.find((item) => item.value === value);
+        // if yes, then we don't need to fetch the label again
+        if (item) {
+          setCurrentSelectedItems([item]);
+        } else {
+          setCurrentSelectedItems([createItem(value)]);
+        }
+        setCurrentSelectedItems([createItem(value)]);
       }
     }, [value, children]);
 
     const renderSelect = () => {
-      const hasProps = options && options[0].props;
-      const hasOptions = hasProps && Children.count(options[0].props.children) > 1;
+      const hasOptions =
+        options &&
+        options.some((optionGroup) =>
+          Children.toArray(optionGroup?.props?.children).some(
+            (option) => isValidElement(option) && option.props?.children,
+          ),
+        );
 
       // initialFocus=-1 is used to prevent the first item from being focused when the list opens
       return (
@@ -213,7 +259,6 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
                 top: y ?? 0,
                 left: x ?? 0,
                 overflow: 'auto',
-                borderBottom: '10px solid transparent',
               },
             })}
           >
@@ -224,7 +269,7 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
                 name={`${name}-input`}
                 hasDescription={false}
                 icon={<SearchIcon />}
-                suffix={isLoading ? 'Loading' : optionCount !== undefined ? `Result: ${optionCount}` : undefined}
+                suffix={isLoadingData ? 'Loading' : optionCount !== undefined ? `Result: ${optionCount}` : undefined}
                 hasError={hasError}
                 value={inputValue.value}
                 onChange={onInputChange}
@@ -233,14 +278,16 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
               />
             )}
             {/* it will always contain 1 because of the group label */}
-            {isLoading && (
+            {isLoadingData && (
               <FeedBackContainer>
                 <Spinner size="small" />
                 <span style={{ marginLeft: '10px' }}>loading results</span>
               </FeedBackContainer>
             )}
+            {/* show options if they exist*/}
             {hasOptions && options}
-            {hasOptions && !isLoading && (
+            {/* Add an infinite scroll component add the bottom when there is data, and we are not already loading */}
+            {hasOptions && !isLoadingData && (
               <InfiniteScroll
                 isFetching={isFetching}
                 hasNextPage={hasNextPage}
@@ -249,11 +296,11 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
               />
             )}
             {/* Basically first interaction */}
-            {!hasOptions && inputValue.value === '' && <FeedBackContainer>Start typing to search</FeedBackContainer>}
-            {/* When there is no result */}
-            {!hasOptions && !isLoading && inputValue.value !== '' && (
-              <FeedBackContainer>No results found</FeedBackContainer>
+            {!hasOptions && inputValue.value === '' && handleInputValueChange && (
+              <FeedBackContainer>Start typing to search</FeedBackContainer>
             )}
+            {/* When there is no result */}
+            {!hasOptions && !isLoadingData && <FeedBackContainer>No results found</FeedBackContainer>}
           </SelectContainer>
         </FloatingFocusManager>
       );
@@ -261,7 +308,23 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
 
     const options = useMemo(() => {
       return [
+        /* this is needed, but we need to get rid of the items that are already present in the options that were actually loaded
+        persistedItems.length > 0 && (
+          <ul key={`selected-items-${name}`} role="group" aria-labelledby={'select-items-list'}>
+            <GroupLabel role="presentation" id={'select-group-label'} aria-hidden="false">
+              Selected items
+            </GroupLabel>
+            {persistedItems.map((item) => (
+              <Option key={`${name}-${item.value}`} value={item.value} label={item.label} onChange={onChange as any}>
+                {item.label}
+              </Option>
+            ))}
+          </ul>
+        ),
+        */
+
         ...(Children.map(
+          // children here is an <OptionGroup/>
           children,
           (child) =>
             isValidElement(child) && (
@@ -280,7 +343,7 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
             ),
         )?.filter(Boolean) ?? []),
       ];
-    }, [children]);
+    }, [children, persistedItems]);
 
     return (
       <SelectContext.Provider
@@ -292,8 +355,8 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
           activeIndex,
           dataRef: context.dataRef,
           multiple,
-          selectedItems,
-          setSelectedItems,
+          selectedItems: currentSelectedItems,
+          setSelectedItems: setCurrentSelectedItems,
           name,
         }}
       >
@@ -311,12 +374,14 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
           {...getReferenceProps()}
         >
           {render ? (
-            render(selectedItems)
+            render(currentSelectedItems)
           ) : (
-            <div>{selectedItems.length === 0 ? 'Select' : selectedItems.map((item) => item.label).join(', ')}</div>
+            <div>
+              {currentSelectedItems.length === 0 ? 'Select' : currentSelectedItems.map((item) => item.label).join(', ')}
+            </div>
           )}
 
-          {!readOnly && canClear && selectedItems.length > 0 && !open ? (
+          {!readOnly && canClear && currentSelectedItems.length > 0 && !open ? (
             <IconButton size="tiny" icon={<ClearIcon />} ariaLabel="clear" onClick={(e) => handleClear(e)} />
           ) : (
             <StyledArrowIcon size={16} />
@@ -327,3 +392,10 @@ export const GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSelec
     );
   },
 );
+
+// TODO: type it correctly instead
+type GenericSelectQueryFieldType = typeof _GenericSelectQueryField & SubComponentTypes;
+export const GenericSelectQueryField = _GenericSelectQueryField as GenericSelectQueryFieldType;
+
+GenericSelectQueryField.Option = Option;
+GenericSelectQueryField.OptionGroup = OptionGroup;

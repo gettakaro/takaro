@@ -22,10 +22,10 @@ import { ParamId } from '../lib/validators.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { Response } from 'express';
 import { EventTypes, HookEvents } from '@takaro/modules';
-import { builtinModuleModificationMiddleware } from '../middlewares/builtinModuleModification.js';
+import { moduleProtectionMiddleware } from '../middlewares/moduleProtectionMiddleware.js';
 import { EventOutputArrayDTOAPI, EventSearchInputDTO } from './EventController.js';
 import { EVENT_TYPES, EventService } from '../service/EventService.js';
-import { AllowedFilters } from './shared.js';
+import { AllowedFilters, AllowedSearch } from './shared.js';
 
 export class HookOutputDTOAPI extends APIOutput<HookOutputDTO> {
   @Type(() => HookOutputDTO)
@@ -53,14 +53,20 @@ class HookSearchInputAllowedFilters extends AllowedFilters {
   eventType!: EventTypes[];
 }
 
+class HookSearchInputAllowedSearch extends AllowedSearch {
+  @IsOptional()
+  @IsString({ each: true })
+  name!: string[];
+}
+
 class HookSearchInputDTO extends ITakaroQuery<HookSearchInputAllowedFilters> {
   @ValidateNested()
   @Type(() => HookSearchInputAllowedFilters)
   declare filters: HookSearchInputAllowedFilters;
 
   @ValidateNested()
-  @Type(() => HookSearchInputAllowedFilters)
-  declare search: HookSearchInputAllowedFilters;
+  @Type(() => HookSearchInputAllowedSearch)
+  declare search: HookSearchInputAllowedSearch;
 }
 
 @OpenAPI({
@@ -93,7 +99,7 @@ export class HookController {
     return apiResponse(await service.findOne(params.id));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), builtinModuleModificationMiddleware)
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), moduleProtectionMiddleware)
   @ResponseSchema(HookOutputDTOAPI)
   @Post('/hook')
   async create(@Req() req: AuthenticatedRequest, @Body() data: HookCreateDTO) {
@@ -101,7 +107,7 @@ export class HookController {
     return apiResponse(await service.create(data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), builtinModuleModificationMiddleware)
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), moduleProtectionMiddleware)
   @ResponseSchema(HookOutputDTOAPI)
   @Put('/hook/:id')
   async update(@Req() req: AuthenticatedRequest, @Params() params: ParamId, @Body() data: HookUpdateDTO) {
@@ -109,7 +115,7 @@ export class HookController {
     return apiResponse(await service.update(params.id, data));
   }
 
-  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), builtinModuleModificationMiddleware)
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_MODULES]), moduleProtectionMiddleware)
   @ResponseSchema(APIOutput)
   @Delete('/hook/:id')
   async remove(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {

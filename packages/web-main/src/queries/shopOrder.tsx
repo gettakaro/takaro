@@ -15,7 +15,7 @@ import {
   ShopOrderUpdateDTOStatusEnum,
 } from '@takaro/apiclient';
 import { AxiosError } from 'axios';
-import { getApiClient } from 'util/getApiClient';
+import { getApiClient } from '../util/getApiClient';
 import { pogKeys } from './pog';
 import { useSnackbar } from 'notistack';
 import { userKeys } from './user';

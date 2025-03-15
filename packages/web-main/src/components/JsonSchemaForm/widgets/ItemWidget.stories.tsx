@@ -1,7 +1,7 @@
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import { JsonSchemaForm } from '..';
 import { Button } from '@takaro/lib-components';
-import { gameServersQueryOptions } from 'queries/gameserver';
+import { gameServersQueryOptions } from '../../../queries/gameserver';
 import { useQuery } from '@tanstack/react-query';
 
 export default {

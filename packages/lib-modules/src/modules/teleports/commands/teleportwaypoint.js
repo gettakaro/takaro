@@ -7,7 +7,7 @@ function getWaypointName(name) {
 async function main() {
   const { pog, gameServerId, trigger, module, itemId } = data;
 
-  const triggeredCommand = module.module.commands.find((command) => command.id === itemId);
+  const triggeredCommand = module.version.commands.find((command) => command.id === itemId);
 
   if (!triggeredCommand) {
     throw new Error('Waypoint not found.');
@@ -22,46 +22,19 @@ async function main() {
     throw new TakaroUserError(`You are not allowed to use the waypoint ${trigger}.`);
   }
 
-  async function ensureWaypointsModule() {
-    let waypointsDefinition = (
-      await takaro.module.moduleControllerSearch({
-        filters: {
-          name: ['Waypoints'],
-        },
-      })
-    ).data.data[0];
-
-    if (!waypointsDefinition) {
-      console.log('Waypoints module definition not found, creating it.');
-      waypointsDefinition = (
-        await takaro.module.moduleControllerCreate({
-          name: 'Waypoints',
-          description: 'Waypoints module for the teleport system.',
-        })
-      ).data.data;
-    }
-
-    let waypointsInstallation = (
-      await takaro.gameserver.gameServerControllerGetInstalledModules(gameServerId)
-    ).data.data.find((module) => module.name === 'Waypoints');
-
-    if (!waypointsInstallation) {
-      console.log('Waypoints module not found, installing it.');
-      waypointsInstallation = (
-        await takaro.gameserver.gameServerControllerInstallModule(gameServerId, waypointsDefinition.id)
-      ).data.data;
-    }
-
-    return { waypointsInstallation, waypointsDefinition };
-  }
-
-  const { waypointsInstallation } = await ensureWaypointsModule();
+  const teleportsModule = (
+    await takaro.module.moduleControllerSearch({
+      filters: {
+        builtin: ['teleports'],
+      },
+    })
+  ).data.data[0];
 
   const variable = await takaro.variable.variableControllerSearch({
     filters: {
       key: [getWaypointName(trigger)],
       gameServerId: [gameServerId],
-      moduleId: [waypointsInstallation.moduleId],
+      moduleId: [teleportsModule.id],
     },
   });
 

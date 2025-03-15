@@ -1,13 +1,15 @@
 import { useMutation, useQueryClient, queryOptions } from '@tanstack/react-query';
-import { getApiClient } from 'util/getApiClient';
+import { getApiClient } from '../util/getApiClient';
 import {
   PlayerOnGameServerSearchInputDTO,
   PlayerOnGameserverOutputArrayDTOAPI,
   PlayerOnGameserverOutputDTO,
   PlayerOnGameServerSetCurrencyInputDTO,
+  APIOutput,
+  GiveItemInputDTO,
 } from '@takaro/apiclient';
 import { AxiosError } from 'axios';
-import { mutationWrapper } from 'queries/util';
+import { mutationWrapper } from '../queries/util';
 import { useSnackbar } from 'notistack';
 import { userKeys } from './user';
 
@@ -134,6 +136,32 @@ export const useTransactBetweenPlayers = () => {
         queryClient.invalidateQueries({ queryKey: pogKeys.detail(senderPlayerId, gameServerId) });
         queryClient.invalidateQueries({ queryKey: pogKeys.detail(receiverPlayerId, gameServerId) });
         queryClient.invalidateQueries({ queryKey: pogKeys.list() });
+      },
+    }),
+    {},
+  );
+};
+
+interface GiveItemInput extends GiveItemInputDTO {
+  gameServerId: string;
+  playerId: string;
+}
+
+export const useGiveItem = () => {
+  const queryClient = useQueryClient();
+
+  return mutationWrapper<APIOutput, GiveItemInput>(
+    useMutation<void, AxiosError<APIOutput>, GiveItemInput>({
+      mutationFn: async ({ name, amount, quality, gameServerId, playerId }) =>
+        (
+          await getApiClient().gameserver.gameServerControllerGiveItem(gameServerId, playerId, {
+            name,
+            amount,
+            quality,
+          })
+        ).data,
+      onSuccess: (_, { playerId, gameServerId }) => {
+        queryClient.invalidateQueries({ queryKey: pogKeys.detail(playerId, gameServerId) });
       },
     }),
     {},

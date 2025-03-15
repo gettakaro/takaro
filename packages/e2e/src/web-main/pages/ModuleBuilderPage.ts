@@ -15,7 +15,7 @@ export class ModuleBuilderPage extends BasePage {
 
   async goto() {
     expect(this.mod.id).toBeTruthy();
-    await this.page.goto(`module-builder/${this.mod.id}`);
+    await this.page.goto(`module-builder/${this.mod.id}/latest`);
   }
 
   async getTreeFile(name: string): Promise<Locator> {

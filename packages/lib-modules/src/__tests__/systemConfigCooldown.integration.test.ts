@@ -1,12 +1,15 @@
 import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { HookEvents } from '../dto/index.js';
+import { describe } from 'node:test';
 
 const group = 'System config - cooldown';
 
 const customSetup = async function (this: IntegrationTest<IModuleTestsSetupData>): Promise<IModuleTestsSetupData> {
   const setupData = await modulesTestSetup.bind(this)();
 
-  await this.client.gameserver.gameServerControllerInstallModule(setupData.gameserver.id, setupData.utilsModule.id, {
+  await this.client.module.moduleInstallationsControllerInstallModule({
+    gameServerId: setupData.gameserver.id,
+    versionId: setupData.utilsModule.latestVersion.id,
     systemConfig: JSON.stringify({
       commands: {
         ping: {
@@ -48,6 +51,7 @@ const tests = [
   new IntegrationTest<IModuleTestsSetupData>({
     group,
     snapshot: false,
+    attempts: 5,
     setup: customSetup,
     name: 'Handles cooldown when using commands in rapid succession',
     test: async function () {

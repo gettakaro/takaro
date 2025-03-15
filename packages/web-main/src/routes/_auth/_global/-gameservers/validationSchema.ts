@@ -1,6 +1,6 @@
 import { GameServerCreateDTOTypeEnum } from '@takaro/apiclient';
 import { z } from 'zod';
-import { IPV4_AND_PORT_REGEX, IPV4_REGEX, FQDN_REGEX } from '@takaro/lib-components';
+import { IPV4_AND_PORT_REGEX, IPV4_REGEX, FQDN_AND_PORT_REGEX } from '@takaro/lib-components';
 
 export type IFormInputs = z.infer<typeof validationSchema>;
 
@@ -25,7 +25,7 @@ export const validationSchema = baseShape.and(
         host: z.union([
           z
             .string()
-            .regex(FQDN_REGEX, 'The provided value is not a valid FQDN')
+            .regex(FQDN_AND_PORT_REGEX, 'The provided value is not a valid FQDN:port')
             .min(1, { message: 'Host cannot be empty' })
             .optional(),
           z
@@ -48,7 +48,7 @@ export const validationSchema = baseShape.and(
         host: z.union([
           z
             .string()
-            .regex(FQDN_REGEX, 'The provided value is not a valid FQDN')
+            .regex(FQDN_AND_PORT_REGEX, 'The provided value is not a valid FQDN')
             .min(1, { message: 'Host cannot be empty' })
             .optional(),
           z

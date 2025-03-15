@@ -20,6 +20,7 @@ export class CommandModel extends TakaroModel {
   name!: string;
   trigger: string;
   helpText: string;
+  description?: string;
 
   functionId: string;
 
@@ -148,15 +149,15 @@ export class CommandRepo extends ITakaroRepo<CommandModel, CommandOutputDTO, Com
       await query
         .select('commands.id as commandId')
         .innerJoin('functions', 'commands.functionId', 'functions.id')
-        .innerJoin('modules', 'commands.moduleId', 'modules.id')
-        .innerJoin('moduleAssignments', 'moduleAssignments.moduleId', 'modules.id')
-        .innerJoin('gameservers', 'moduleAssignments.gameserverId', 'gameservers.id')
+        .innerJoin('moduleVersions', 'commands.versionId', 'moduleVersions.id')
+        .innerJoin('moduleInstallations', 'moduleInstallations.versionId', 'moduleVersions.id')
+        .innerJoin('gameservers', 'moduleInstallations.gameserverId', 'gameservers.id')
         .where('gameservers.id', gameServerId)
         .andWhere(function () {
           this.whereRaw('LOWER("commands"."trigger") = ?', [lowerCaseInput]).orWhereExists(function () {
             this.select(knex.raw('1'))
               .from(
-                knex.raw('jsonb_each("moduleAssignments"."systemConfig" -> \'commands\') as cmds(command, details)'),
+                knex.raw('jsonb_each("moduleInstallations"."systemConfig" -> \'commands\') as cmds(command, details)'),
               )
               .whereRaw('cmds.command = "commands"."name"')
               .andWhereRaw(
@@ -184,8 +185,10 @@ export class CommandRepo extends ITakaroRepo<CommandModel, CommandOutputDTO, Com
 
   async createArgument(commandId: string, data: CommandArgumentCreateDTO) {
     const { argumentQuery } = await this.getModel();
+    const toInsert = data.toJSON();
+    delete toInsert.id;
     const item = await argumentQuery.insert({
-      ...data.toJSON(),
+      ...toInsert,
       commandId,
       domain: this.domainId,
     });

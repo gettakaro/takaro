@@ -1,7 +1,7 @@
 import { PaginationProps, SelectQueryField, styled } from '@takaro/lib-components';
 import { FC, useState } from 'react';
 import { CustomSelectProps } from '.';
-import { rolesInfiniteQueryOptions } from 'queries/role';
+import { rolesInfiniteQueryOptions } from '../../queries/role';
 import { RoleOutputDTO } from '@takaro/apiclient';
 import { useInfiniteQuery } from '@tanstack/react-query';
 

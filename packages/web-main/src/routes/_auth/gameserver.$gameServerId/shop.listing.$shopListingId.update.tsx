@@ -1,12 +1,13 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
-import { hasPermission } from 'hooks/useHasPermission';
+import { hasPermission } from '../../../hooks/useHasPermission';
 import { ShopListingCreateUpdateForm, FormValues } from './-components/-ShopListingCreateUpdateForm';
-import { gameServerSettingQueryOptions } from 'queries/setting';
-import { shopListingQueryOptions, useShopListingUpdate } from 'queries/shopListing';
+import { gameServerSettingQueryOptions } from '../../../queries/setting';
+import { shopListingQueryOptions, useShopListingUpdate } from '../../../queries/shopListing';
 import { SubmitHandler } from 'react-hook-form';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
-import { userMeQueryOptions } from 'queries/user';
+import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
+import { userMeQueryOptions } from '../../../queries/user';
 import { DrawerSkeleton } from '@takaro/lib-components';
+import { useQueries } from '@tanstack/react-query';
 
 export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/listing/$shopListingId/update')({
   beforeLoad: async ({ context }) => {
@@ -22,7 +23,7 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/listi
     ]);
 
     return {
-      currencyName: currencyNameOutput.value,
+      currencyName: currencyNameOutput,
       shopListing,
     };
   },
@@ -32,10 +33,17 @@ export const Route = createFileRoute('/_auth/gameserver/$gameServerId/shop/listi
 
 function Component() {
   useDocumentTitle('Update Listing');
+  const loaderData = Route.useLoaderData();
   const { gameServerId, shopListingId } = Route.useParams();
-  const { currencyName, shopListing } = Route.useLoaderData();
   const navigate = Route.useNavigate();
   const { mutate, error } = useShopListingUpdate();
+
+  const [{ data: currencyName }, { data: shopListing }] = useQueries({
+    queries: [
+      { ...gameServerSettingQueryOptions('currencyName', gameServerId), initialData: loaderData.currencyName },
+      { ...shopListingQueryOptions(shopListingId), initialData: loaderData.shopListing },
+    ],
+  });
 
   const onSubmit: SubmitHandler<FormValues> = ({ items, price, name, draft }) => {
     mutate({
@@ -59,7 +67,7 @@ function Component() {
       error={error}
       initialData={shopListing}
       gameServerId={gameServerId}
-      currencyName={currencyName}
+      currencyName={currencyName.value}
     />
   );
 }

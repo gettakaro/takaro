@@ -13,10 +13,14 @@
         "updatedAt": "2024-03-02T14:34:25.491Z",
         "code": "console.log(\"test\")",
         "name": null,
-        "moduleId": null
+        "moduleId": null,
+        "versionId": null,
+        "description": null
       },
       "moduleId": "66b2ae30-44ab-491e-87b6-94b09e0dcf78",
-      "functionId": "220af3be-3f2f-490d-af1e-dcdaa24ff8ba"
+      "functionId": "220af3be-3f2f-490d-af1e-dcdaa24ff8ba",
+      "versionId": "ca59e81f-a16b-4c6f-b0f7-86d9202cfb0f",
+      "description": "Cool description"
     }
   },
   "status": 200,

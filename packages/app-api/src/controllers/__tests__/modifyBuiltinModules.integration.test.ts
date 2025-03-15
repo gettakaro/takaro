@@ -1,13 +1,14 @@
 import { IntegrationTest } from '@takaro/test';
-import { Client, ModuleOutputDTO } from '@takaro/apiclient';
+import { Client, ModuleOutputDTO, ModuleVersionOutputDTO } from '@takaro/apiclient';
+import { describe } from 'node:test';
 
 const group = 'modifyBuiltinModules';
 
-async function getBuiltinModule(client: Client, type?: keyof ModuleOutputDTO) {
+async function getBuiltinModule(client: Client, type?: keyof ModuleVersionOutputDTO) {
   let condition = (_: ModuleOutputDTO) => true;
 
   if (type) {
-    condition = (m: ModuleOutputDTO) => (m?.[type] ?? []).length > 0;
+    condition = (m: ModuleOutputDTO) => (m?.latestVersion[type] ?? []).length > 0;
   }
 
   const builtinModule = (await client.module.moduleControllerSearch()).data.data.find((m) => m.builtin && condition(m));
@@ -28,7 +29,7 @@ const tests = [
       return getBuiltinModule(this.client, 'commands');
     },
     test: async function () {
-      return this.client.command.commandControllerRemove(this.setupData.commands[0].id);
+      return this.client.command.commandControllerRemove(this.setupData.latestVersion.commands[0].id);
     },
     expectedStatus: 400,
   }),
@@ -40,7 +41,7 @@ const tests = [
       return getBuiltinModule(this.client, 'commands');
     },
     test: async function () {
-      return this.client.command.commandControllerUpdate(this.setupData.commands[0].id, {
+      return this.client.command.commandControllerUpdate(this.setupData.latestVersion.commands[0].id, {
         name: 'Updated command',
       });
     },
@@ -54,7 +55,7 @@ const tests = [
       return getBuiltinModule(this.client, 'commands');
     },
     test: async function () {
-      return this.client.command.commandControllerUpdateArgument(this.setupData.commands[0].id, {
+      return this.client.command.commandControllerUpdateArgument(this.setupData.latestVersion.commands[0].id, {
         name: 'Updated argument',
       });
     },
@@ -68,7 +69,7 @@ const tests = [
       return getBuiltinModule(this.client, 'commands');
     },
     test: async function () {
-      return this.client.command.commandControllerRemoveArgument(this.setupData.commands[0].id);
+      return this.client.command.commandControllerRemoveArgument(this.setupData.latestVersion.commands[0].id);
     },
     expectedStatus: 400,
   }),
@@ -80,7 +81,7 @@ const tests = [
       return getBuiltinModule(this.client, 'hooks');
     },
     test: async function () {
-      return this.client.hook.hookControllerUpdate(this.setupData.hooks[0].id, {
+      return this.client.hook.hookControllerUpdate(this.setupData.latestVersion.hooks[0].id, {
         name: 'Updated hook',
       });
     },
@@ -94,7 +95,7 @@ const tests = [
       return getBuiltinModule(this.client, 'hooks');
     },
     test: async function () {
-      return this.client.hook.hookControllerRemove(this.setupData.hooks[0].id);
+      return this.client.hook.hookControllerRemove(this.setupData.latestVersion.hooks[0].id);
     },
     expectedStatus: 400,
   }),
@@ -106,7 +107,7 @@ const tests = [
       return getBuiltinModule(this.client, 'cronJobs');
     },
     test: async function () {
-      return this.client.cronjob.cronJobControllerUpdate(this.setupData.cronJobs[0].id, {
+      return this.client.cronjob.cronJobControllerUpdate(this.setupData.latestVersion.cronJobs[0].id, {
         name: 'Updated cronJob',
       });
     },
@@ -120,7 +121,7 @@ const tests = [
       return getBuiltinModule(this.client, 'cronJobs');
     },
     test: async function () {
-      return this.client.cronjob.cronJobControllerRemove(this.setupData.cronJobs[0].id);
+      return this.client.cronjob.cronJobControllerRemove(this.setupData.latestVersion.cronJobs[0].id);
     },
     expectedStatus: 400,
   }),
@@ -132,7 +133,7 @@ const tests = [
       return getBuiltinModule(this.client, 'commands');
     },
     test: async function () {
-      return this.client.function.functionControllerRemove(this.setupData.commands[0].functionId);
+      return this.client.function.functionControllerRemove(this.setupData.latestVersion.commands[0].functionId);
     },
     expectedStatus: 400,
   }),
@@ -144,7 +145,7 @@ const tests = [
       return getBuiltinModule(this.client, 'commands');
     },
     test: async function () {
-      return this.client.function.functionControllerUpdate(this.setupData.commands[0].functionId, {
+      return this.client.function.functionControllerUpdate(this.setupData.latestVersion.commands[0].functionId, {
         code: 'updated code',
       });
     },

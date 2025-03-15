@@ -5,9 +5,7 @@
       "createdAt": "2024-07-14T14:37:41.062Z",
       "updatedAt": "2024-07-14T14:37:41.119Z",
       "id": "eee2696e-d240-4f31-bac4-00994dd9d0e9",
-      "name": "Test module",
-      "builtin": null,
-      "description": "No description provided.",
+      "description": "No description",
       "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{},\"required\":[],\"additionalProperties\":false}",
       "uiSchema": "{}",
       "cronJobs": [],
@@ -23,7 +21,8 @@
           "permission": "test",
           "description": "test",
           "friendlyName": "test",
-          "canHaveCount": false
+          "canHaveCount": false,
+          "moduleVersionId": "a19de5b3-764c-495b-97be-06d34e86d75b"
         },
         {
           "createdAt": "2024-07-14T14:37:41.126Z",
@@ -33,9 +32,11 @@
           "permission": "test2",
           "description": "test2",
           "friendlyName": "test2",
-          "canHaveCount": false
+          "canHaveCount": false,
+          "moduleVersionId": "a19de5b3-764c-495b-97be-06d34e86d75b"
         }
       ],
+      "tag": "latest",
       "systemConfigSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"enabled\":{\"type\":\"boolean\",\"default\":true,\"description\":\"Enable/disable the module without having to uninstall it.\"}},\"required\":[],\"additionalProperties\":false}"
     }
   },
@@ -45,7 +46,8 @@
     "snapshot": true,
     "name": "Updating permissions keeps IDs static of already-existing permissions",
     "filteredFields": [
-      "moduleId"
+      "moduleId",
+      "moduleVersionId"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true

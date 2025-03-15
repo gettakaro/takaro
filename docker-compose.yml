@@ -72,7 +72,7 @@ services:
     env_file:
       - .env
     environment:
-      NODE_OPTIONS: '--loader ts-node/esm'
+      NODE_OPTIONS: '--import=ts-node-maintained/register/esm'
       REDIS_HOST: redis
       POSTGRES_HOST: postgresql
 
@@ -120,7 +120,7 @@ services:
       - .env
     environment:
       LOGGING_LEVEL: debug
-      NODE_OPTIONS: '--loader ts-node/esm'
+      NODE_OPTIONS: '--import=ts-node-maintained/register/esm'
       POSTGRES_HOST: postgresql
 
   e2e:

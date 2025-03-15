@@ -2,19 +2,20 @@ import { useCallback, useEffect, useState } from 'react';
 import { SettingsFlow, UpdateSettingsFlowBody } from '@ory/client';
 import { styled, Skeleton } from '@takaro/lib-components';
 import { gridStyle, NodeMessages, UserSettingsCard, UserSettingsFlowType } from '@ory/elements';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
+import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { z } from 'zod';
-import { useOry } from 'hooks/useOry';
+import { useOry } from '../../hooks/useOry';
 import { useSnackbar } from 'notistack';
-
-const searchSchema = z.object({
-  flowId: z.string().catch(''),
-});
+import { zodValidator } from '@tanstack/zod-adapter';
 
 export const Route = createFileRoute('/_single-page/account/profile')({
   component: Component,
-  validateSearch: (search) => searchSchema.parse(search),
+  validateSearch: zodValidator(
+    z.object({
+      flowId: z.string().optional(),
+    }),
+  ),
 });
 
 const Container = styled.div`

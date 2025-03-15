@@ -1,5 +1,6 @@
 import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '../dto/index.js';
+import { describe } from 'node:test';
 
 const group = 'Server messages';
 
@@ -10,15 +11,15 @@ const tests = [
     setup: modulesTestSetup,
     name: 'Default install sends the default message',
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.serverMessagesModule.id,
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.serverMessagesModule.latestVersion.id,
+      });
 
       const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE);
 
       await this.client.cronjob.cronJobControllerTrigger({
-        cronjobId: this.setupData.serverMessagesModule.cronJobs[0].id,
+        cronjobId: this.setupData.serverMessagesModule.latestVersion.cronJobs[0].id,
         gameServerId: this.setupData.gameserver.id,
         moduleId: this.setupData.serverMessagesModule.id,
       });
@@ -36,20 +37,18 @@ const tests = [
     setup: modulesTestSetup,
     name: 'Can override default message via userConfig',
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.serverMessagesModule.id,
-        {
-          userConfig: JSON.stringify({
-            messages: ['This is a custom message'],
-          }),
-        },
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.serverMessagesModule.latestVersion.id,
+        userConfig: JSON.stringify({
+          messages: ['This is a custom message'],
+        }),
+      });
 
       const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE);
 
       await this.client.cronjob.cronJobControllerTrigger({
-        cronjobId: this.setupData.serverMessagesModule.cronJobs[0].id,
+        cronjobId: this.setupData.serverMessagesModule.latestVersion.cronJobs[0].id,
         gameServerId: this.setupData.gameserver.id,
         moduleId: this.setupData.serverMessagesModule.id,
       });
@@ -64,22 +63,20 @@ const tests = [
     setup: modulesTestSetup,
     name: 'Can override default message via userConfig with multiple messages',
     test: async function () {
-      await this.client.gameserver.gameServerControllerInstallModule(
-        this.setupData.gameserver.id,
-        this.setupData.serverMessagesModule.id,
-        {
-          userConfig: JSON.stringify({
-            messages: ['Test message 1', 'Test message 2'],
-          }),
-        },
-      );
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.serverMessagesModule.latestVersion.id,
+        userConfig: JSON.stringify({
+          messages: ['Test message 1', 'Test message 2'],
+        }),
+      });
 
       // We should see each of our test messages at least once
 
       const firstEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
       await this.client.cronjob.cronJobControllerTrigger({
-        cronjobId: this.setupData.serverMessagesModule.cronJobs[0].id,
+        cronjobId: this.setupData.serverMessagesModule.latestVersion.cronJobs[0].id,
         gameServerId: this.setupData.gameserver.id,
         moduleId: this.setupData.serverMessagesModule.id,
       });
@@ -90,7 +87,7 @@ const tests = [
       const secondEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
       await this.client.cronjob.cronJobControllerTrigger({
-        cronjobId: this.setupData.serverMessagesModule.cronJobs[0].id,
+        cronjobId: this.setupData.serverMessagesModule.latestVersion.cronJobs[0].id,
         gameServerId: this.setupData.gameserver.id,
         moduleId: this.setupData.serverMessagesModule.id,
       });
@@ -102,7 +99,7 @@ const tests = [
       const thirdEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
       await this.client.cronjob.cronJobControllerTrigger({
-        cronjobId: this.setupData.serverMessagesModule.cronJobs[0].id,
+        cronjobId: this.setupData.serverMessagesModule.latestVersion.cronJobs[0].id,
         gameServerId: this.setupData.gameserver.id,
         moduleId: this.setupData.serverMessagesModule.id,
       });

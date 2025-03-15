@@ -2,7 +2,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { AxiosError } from 'axios';
 import { createContext, useCallback, useContext } from 'react';
 import { Configuration, FrontendApi } from '@ory/client';
-import { getConfigVar } from 'util/getConfigVar';
+import { getConfigVar } from '../util/getConfigVar';
 
 interface OryContext {
   oryClient: FrontendApi;

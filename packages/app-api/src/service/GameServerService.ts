@@ -1,16 +1,6 @@
 import { TakaroService } from './Base.js';
 import { GameServerModel, GameServerRepo } from '../db/gameserver.js';
-import {
-  IsBoolean,
-  IsEnum,
-  IsJSON,
-  IsObject,
-  IsOptional,
-  IsString,
-  IsUUID,
-  Length,
-  ValidateNested,
-} from 'class-validator';
+import { IsBoolean, IsEnum, IsJSON, IsObject, IsOptional, IsString, Length } from 'class-validator';
 import {
   IMessageOptsDTO,
   IGameServer,
@@ -32,32 +22,28 @@ import {
   TakaroEventServerStatusChanged,
   GameEvents,
   EventChatMessage,
-  TakaroEventModuleInstalled,
-  TakaroEventModuleUninstalled,
-  TakaroEventGameserverCreated,
-  TakaroEventGameserverUpdated,
-  TakaroEventGameserverDeleted,
   ChatChannel,
+  TakaroEventGameserverCreated,
+  TakaroEventGameserverDeleted,
+  TakaroEventGameserverUpdated,
 } from '@takaro/modules';
 import { ITakaroQuery } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
-import type { ModuleOutputDTO as ModuleOutputDTOType } from './ModuleService.js';
-import { ModuleOutputDTO, ModuleService } from './ModuleService.js';
+import { ModuleService } from './Module/index.js';
 
 // Curse you ESM... :(
 import _Ajv from 'ajv';
-import { CronJobService } from './CronJobService.js';
-import { PlayerService } from './PlayerService.js';
+import { PlayerService } from './Player/index.js';
 import { PlayerOnGameServerService, PlayerOnGameServerUpdateDTO } from './PlayerOnGameserverService.js';
 import { ItemCreateDTO, ItemsService } from './ItemsService.js';
 import { randomUUID } from 'crypto';
 import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
-import { Type } from 'class-transformer';
 import { gameServerLatency } from '../lib/metrics.js';
 import { Pushgateway } from 'prom-client';
 import { config } from '../config.js';
 import { handlePlayerSync } from '../workers/playerSyncWorker.js';
 import { ImportInputDTO } from '../controllers/GameServerController.js';
+import { DomainService } from './DomainService.js';
 
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 const ajv = new Ajv({ useDefaults: true, strict: true });
@@ -124,34 +110,6 @@ export class GameServerUpdateDTO extends TakaroDTO<GameServerUpdateDTO> {
   enabled: boolean;
 }
 
-export class ModuleInstallDTO extends TakaroDTO<ModuleInstallDTO> {
-  @IsJSON()
-  @IsOptional()
-  userConfig?: string;
-
-  @IsJSON()
-  @IsOptional()
-  systemConfig?: string;
-}
-
-export class ModuleInstallationOutputDTO extends TakaroModelDTO<ModuleInstallationOutputDTO> {
-  @IsUUID()
-  gameserverId: string;
-
-  @IsUUID()
-  moduleId: string;
-
-  @ValidateNested()
-  @Type(() => ModuleOutputDTO)
-  module: ModuleOutputDTOType;
-
-  @IsObject()
-  userConfig: Record<string, any>;
-
-  @IsObject()
-  systemConfig: Record<string, any>;
-}
-
 @traceableClass('service:gameserver')
 export class GameServerService extends TakaroService<
   GameServerModel,
@@ -161,6 +119,7 @@ export class GameServerService extends TakaroService<
 > {
   private playerService = new PlayerService(this.domainId);
   private pogService = new PlayerOnGameServerService(this.domainId);
+  private moduleService = new ModuleService(this.domainId);
 
   get repo() {
     return new GameServerRepo(this.domainId);
@@ -179,6 +138,12 @@ export class GameServerService extends TakaroService<
   }
 
   async create(item: GameServerCreateDTO): Promise<GameServerOutputDTO> {
+    const domain = await new DomainService().findOne(this.domainId);
+    if (!domain) throw new errors.NotFoundError('Domain not found');
+    const currentServers = await this.find({ limit: 1 });
+    if (currentServers.total >= domain.maxGameservers) {
+      throw new errors.BadRequestError('Max game servers reached');
+    }
     let isReachable = new TestReachabilityOutputDTO({ connectable: false, reason: 'Unknown' });
     // Generic gameservers start the connection, so they are always reachable
     if (item.type === GAME_SERVER_TYPE.GENERIC) {
@@ -190,7 +155,6 @@ export class GameServerService extends TakaroService<
     } else {
       isReachable = await this.testReachability(undefined, JSON.parse(item.connectionInfo), item.type);
     }
-
     const createdServer = await this.repo.create(item);
 
     const eventsService = new EventService(this.domainId);
@@ -220,10 +184,14 @@ export class GameServerService extends TakaroService<
   }
 
   async delete(id: string) {
-    const installedModules = await this.getInstalledModules({
-      gameserverId: id,
+    const installedModules = await this.moduleService.findInstallations({
+      filters: { gameserverId: [id] },
     });
-    await Promise.all(installedModules.map((mod) => this.uninstallModule(id, mod.moduleId)));
+    await Promise.all(
+      installedModules.results.map((installation) =>
+        this.moduleService.uninstallModule(installation.gameserverId, installation.moduleId),
+      ),
+    );
 
     this.refreshGameInstance(id);
 
@@ -310,113 +278,6 @@ export class GameServerService extends TakaroService<
       return instance.testReachability();
     }
     throw new errors.BadRequestError('Missing required parameters');
-  }
-
-  async getModuleInstallation(gameserverId: string, moduleId: string) {
-    const moduleService = new ModuleService(this.domainId);
-    const mod = await moduleService.findOne(moduleId);
-    const installation = await this.repo.getModuleInstallation(gameserverId, moduleId);
-
-    return new ModuleInstallationOutputDTO({
-      gameserverId,
-      moduleId,
-      module: mod,
-      userConfig: installation.userConfig,
-      systemConfig: installation.systemConfig,
-    });
-  }
-
-  async installModule(gameserverId: string, moduleId: string, installDto?: ModuleInstallDTO) {
-    const moduleService = new ModuleService(this.domainId);
-    const cronjobService = new CronJobService(this.domainId);
-    const mod = await moduleService.findOne(moduleId);
-
-    if (!mod) {
-      throw new errors.NotFoundError('Module not found');
-    }
-
-    if (!installDto) {
-      installDto = new ModuleInstallDTO({
-        userConfig: JSON.stringify({}),
-        systemConfig: JSON.stringify({}),
-      });
-    }
-
-    const modUserConfig = JSON.parse(installDto.userConfig ?? '{}');
-    const validateUserConfig = ajv.compile(JSON.parse(mod.configSchema));
-    const isValidUserConfig = validateUserConfig(modUserConfig);
-
-    const modSystemConfig = JSON.parse(installDto.systemConfig ?? '{}');
-    const validateSystemConfig = ajv.compile(JSON.parse(mod.systemConfigSchema));
-    const isValidSystemConfig = validateSystemConfig(modSystemConfig);
-
-    if (!isValidUserConfig || !isValidSystemConfig) {
-      const allErrors = [...(validateSystemConfig.errors ?? []), ...(validateUserConfig.errors ?? [])];
-      const prettyErrors = allErrors
-        .map((e) => {
-          if (e.keyword === 'additionalProperties') {
-            return `${e.message}, invalid: ${e.params.additionalProperty}`;
-          }
-
-          return `${e.instancePath} ${e.message}`;
-        })
-        .join(', ');
-      throw new errors.BadRequestError(`Invalid config: ${prettyErrors}`);
-    }
-
-    // ajv mutates the object, so we need to stringify it again
-    installDto.userConfig = JSON.stringify(modUserConfig);
-    installDto.systemConfig = JSON.stringify(modSystemConfig);
-
-    const installation = await this.repo.installModule(gameserverId, moduleId, installDto);
-    await cronjobService.syncModuleCronjobs(installation);
-
-    const eventsService = new EventService(this.domainId);
-    await eventsService.create(
-      new EventCreateDTO({
-        eventName: EVENT_TYPES.MODULE_INSTALLED,
-        gameserverId,
-        moduleId: moduleId,
-        meta: new TakaroEventModuleInstalled({
-          systemConfig: installDto.systemConfig,
-          userConfig: installDto.userConfig,
-        }),
-      }),
-    );
-
-    return this.getModuleInstallation(gameserverId, moduleId);
-  }
-
-  async uninstallModule(gameserverId: string, moduleId: string) {
-    const installation = await this.repo.getModuleInstallation(gameserverId, moduleId);
-
-    const cronjobService = new CronJobService(this.domainId);
-    await cronjobService.uninstallCronJobs(installation);
-
-    await this.repo.uninstallModule(gameserverId, moduleId);
-
-    const eventsService = new EventService(this.domainId);
-    await eventsService.create(
-      new EventCreateDTO({
-        eventName: EVENT_TYPES.MODULE_UNINSTALLED,
-        gameserverId,
-        moduleId: moduleId,
-        meta: await new TakaroEventModuleUninstalled(),
-      }),
-    );
-
-    return new ModuleInstallationOutputDTO({
-      gameserverId,
-      moduleId,
-    });
-  }
-
-  async getInstalledModules({ gameserverId, moduleId }: { gameserverId?: string; moduleId?: string }) {
-    const installations = await this.repo.getInstalledModules({
-      gameserverId,
-      moduleId,
-    });
-    return installations;
   }
 
   async getGame(id: string): Promise<IGameServer> {

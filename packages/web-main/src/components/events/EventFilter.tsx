@@ -1,11 +1,12 @@
 import { FC } from 'react';
 import { useForm } from 'react-hook-form';
 import { EventOutputDTOEventNameEnum as EventName } from '@takaro/apiclient';
-import { GameServerSelectQueryField, PlayerSelectQueryField, EventNameSelectField } from 'components/selects';
+import { GameServerSelectQueryField, PlayerSelectQueryField, EventNameSelectField } from '../../components/selects';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { DateRangePicker, Button, styled } from '@takaro/lib-components';
-import { ModuleSelectQueryField } from 'components/selects/ModuleSelectQueryField';
+import { ModuleSelectQueryField } from '../../components/selects/ModuleSelectQueryField';
+import { eventFilterSchema } from './eventFilterSchema';
 
 const Form = styled.form`
   display: grid;
@@ -15,41 +16,30 @@ const Form = styled.form`
 `;
 
 interface EventFilterProps {
-  defaultValues: {
+  initialSelectedValues: {
     playerIds?: string[];
     gameServerIds?: string[];
     eventNames?: EventName[];
     dateRange?: { start?: string; end?: string };
+    moduleIds?: string[];
   };
   onSubmit: (data: EventFilterInputs) => void;
   isLoading: boolean;
   isLive?: boolean;
 }
 
-export const eventFilterSchema = z.object({
-  dateRange: z
-    .object({
-      start: z.string().optional().catch(undefined),
-      end: z.string().optional().catch(undefined),
-    })
-    .optional()
-    .catch(undefined),
-  playerIds: z.array(z.string()).optional().default([]),
-  gameServerIds: z.array(z.string()).optional().default([]),
-  moduleIds: z.array(z.string()).optional().default([]),
-  eventNames: z.array(z.nativeEnum(EventName)).optional().default([]),
-});
 export type EventFilterInputs = z.infer<typeof eventFilterSchema>;
 
-export const EventFilter: FC<EventFilterProps> = ({ defaultValues, onSubmit, isLoading, isLive }) => {
+export const EventFilter: FC<EventFilterProps> = ({ initialSelectedValues, onSubmit, isLoading, isLive }) => {
   const { control, handleSubmit, formState } = useForm<EventFilterInputs>({
     mode: 'onSubmit',
     resolver: zodResolver(eventFilterSchema),
-    defaultValues: {
-      dateRange: defaultValues?.dateRange,
-      playerIds: defaultValues?.playerIds,
-      gameServerIds: defaultValues.gameServerIds,
-      eventNames: defaultValues.eventNames,
+    values: {
+      dateRange: initialSelectedValues?.dateRange ?? { start: undefined, end: undefined },
+      playerIds: initialSelectedValues?.playerIds ?? [],
+      gameServerIds: initialSelectedValues.gameServerIds ?? [],
+      eventNames: initialSelectedValues.eventNames ?? [],
+      moduleIds: initialSelectedValues.moduleIds ?? [],
     },
   });
 

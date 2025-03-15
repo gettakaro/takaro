@@ -35,8 +35,9 @@ import {
   useFunctionCreate,
   useFunctionRemove,
   useFunctionUpdate,
-} from 'queries/module';
-import { FileType, useModuleBuilderContext } from '../useModuleBuilderStore';
+} from '../../../../queries/module';
+import { useModuleBuilderContext } from '../useModuleBuilderStore';
+import { FileType } from '../types';
 import { useNavigate } from '@tanstack/react-router';
 
 const Button = styled.button<{ isActive: boolean; depth: number }>`
@@ -124,7 +125,7 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
   const [openDialog, setOpenDialog] = useState<boolean>(false);
   const fileRef = useRef<HTMLButtonElement>(null);
 
-  const moduleId = useModuleBuilderContext((s) => s.moduleId);
+  const versionId = useModuleBuilderContext((s) => s.versionId);
   const fileMap = useModuleBuilderContext((s) => s.fileMap);
   const updateFile = useModuleBuilderContext((s) => s.updateFile);
   const addFile = useModuleBuilderContext((s) => s.addFile);
@@ -132,6 +133,7 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
   const deleteFile = useModuleBuilderContext((s) => s.deleteFile);
   const readOnly = useModuleBuilderContext((s) => s.readOnly);
   const renameFile = useModuleBuilderContext((s) => s.renameFile);
+  const moduleId = useModuleBuilderContext((s) => s.moduleId);
 
   const fileNameValidation = useMemo(
     () =>
@@ -154,10 +156,10 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
   const { mutateAsync: updateCronJob } = useCronJobUpdate();
   const { mutateAsync: updateFunction } = useFunctionUpdate();
 
-  const { mutateAsync: removeHook } = useHookRemove({ moduleId });
-  const { mutateAsync: removeCommand } = useCommandRemove({ moduleId });
-  const { mutateAsync: removeCronJob } = useCronJobRemove({ moduleId });
-  const { mutateAsync: removeFunction } = useFunctionRemove({ moduleId });
+  const { mutateAsync: removeHook } = useHookRemove();
+  const { mutateAsync: removeCommand } = useCommandRemove();
+  const { mutateAsync: removeCronJob } = useCronJobRemove();
+  const { mutateAsync: removeFunction } = useFunctionRemove();
 
   const { mutateAsync: createHook } = useHookCreate();
   const { mutateAsync: createCommand } = useCommandCreate();
@@ -169,7 +171,7 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
     if (openFile) {
       openFile(path);
       navigate({
-        from: '/module-builder/$moduleId',
+        from: '/module-builder/$moduleId/$moduleVersionTag',
         search: {
           file: path,
         },
@@ -187,6 +189,8 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
       case FileType.Hooks:
         await updateHook({
           hookId: toRename.itemId,
+          moduleId: moduleId,
+          versionId: versionId,
           hook: { name: newFileName },
         });
         break;
@@ -194,17 +198,23 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
         await updateCommand({
           commandId: toRename.itemId,
           command: { name: newFileName },
+          versionId,
+          moduleId,
         });
         break;
       case FileType.CronJobs:
         await updateCronJob({
           cronJobId: toRename.itemId,
           cronJob: { name: newFileName },
+          versionId,
+          moduleId,
         });
         break;
       case FileType.Functions:
         await updateFunction({
           functionId: toRename.functionId,
+          moduleId,
+          versionId,
           fn: { name: newFileName },
         });
         break;
@@ -222,16 +232,16 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
     try {
       switch (toDelete.type) {
         case FileType.Hooks:
-          await removeHook({ hookId: toDelete.itemId });
+          await removeHook({ hookId: toDelete.itemId, versionId, moduleId });
           break;
         case FileType.Commands:
-          await removeCommand({ commandId: toDelete.itemId });
+          await removeCommand({ commandId: toDelete.itemId, versionId, moduleId });
           break;
         case FileType.CronJobs:
-          await removeCronJob({ cronJobId: toDelete.itemId });
+          await removeCronJob({ cronJobId: toDelete.itemId, versionId, moduleId });
           break;
         case FileType.Functions:
-          await removeFunction({ functionId: toDelete.functionId });
+          await removeFunction({ functionId: toDelete.functionId, versionId, moduleId });
           break;
         default:
           throw new Error('Invalid type');
@@ -255,10 +265,14 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
       switch (type) {
         case FileType.Hooks: {
           const hook = await createHook({
+            hook: {
+              name: newFileName,
+              eventType: 'log',
+              regex: 'takaro-hook-regex-placeholder',
+              versionId,
+            },
+            versionId,
             moduleId,
-            name: newFileName,
-            eventType: 'log',
-            regex: 'takaro-hook-regex-placeholder',
           });
           functionId = hook.function.id;
           itemId = hook.id;
@@ -267,9 +281,13 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
         }
         case FileType.Commands: {
           const command = await createCommand({
+            versionId,
             moduleId,
-            name: newFileName,
-            trigger: newFileName,
+            command: {
+              name: newFileName,
+              trigger: newFileName,
+              versionId,
+            },
           });
           functionId = command.function.id;
           itemId = command.id;
@@ -278,9 +296,13 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
         }
         case FileType.CronJobs: {
           const cronjob = await createCronJob({
+            cronJob: {
+              name: newFileName,
+              temporalValue: '0 0 * * *',
+              versionId,
+            },
             moduleId,
-            name: newFileName,
-            temporalValue: '0 0 * * *',
+            versionId,
           });
           functionId = cronjob.function.id;
           itemId = cronjob.id;
@@ -289,8 +311,12 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
         }
         case FileType.Functions: {
           const func = await createFunction({
+            versionId,
             moduleId,
-            name: newFileName,
+            fn: {
+              versionId: versionId,
+              name: newFileName,
+            },
           });
           functionId = func.id;
           code = func.code;

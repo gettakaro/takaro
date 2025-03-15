@@ -3,17 +3,18 @@ import { useNavigate, createFileRoute } from '@tanstack/react-router';
 import { UpdateVerificationFlowBody, VerificationFlow } from '@ory/client';
 import { styled, Skeleton } from '@takaro/lib-components';
 import { UserAuthCard } from '@ory/elements';
-import { useDocumentTitle } from 'hooks/useDocumentTitle';
+import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import { z } from 'zod';
-import { useOry } from 'hooks/useOry';
-
-const searchSchema = z.object({
-  flowId: z.string().catch(''),
-});
+import { zodValidator } from '@tanstack/zod-adapter';
+import { useOry } from '../../hooks/useOry';
 
 export const Route = createFileRoute('/_single-page/account/verification')({
   component: Component,
-  validateSearch: (search) => searchSchema.parse(search),
+  validateSearch: zodValidator(
+    z.object({
+      flowId: z.string().catch(''),
+    }),
+  ),
 });
 
 const Container = styled.div`

@@ -10,10 +10,10 @@ import { queryClient } from './queryClient';
 import { PostHogProvider } from 'posthog-js/react';
 
 import { RouterProvider } from '@tanstack/react-router';
-import { OryProvider } from 'hooks/useOry';
-import { AuthProvider, useAuth } from 'hooks/useAuth';
+import { OryProvider } from './hooks/useOry';
+import { AuthProvider, useAuth } from './hooks/useAuth';
 import { router } from './router';
-import { getConfigVar } from 'util/getConfigVar';
+import { getConfigVar } from './util/getConfigVar';
 
 // Adds the typesafety to all @tanstack/react-router components.
 declare module '@tanstack/react-router' {

@@ -1,6 +1,6 @@
 import { TakaroService } from './Base.js';
 
-import { IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsOptional, IsString, IsUUID, Length } from 'class-validator';
 import { FunctionModel, FunctionRepo } from '../db/function.js';
 import { TakaroDTO, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { ITakaroQuery } from '@takaro/db';
@@ -9,38 +9,45 @@ import { PaginatedOutput } from '../db/base.js';
 export class FunctionOutputDTO extends TakaroModelDTO<FunctionOutputDTO> {
   @IsString()
   code: string;
-
   @IsString()
   @IsOptional()
   name: string;
-
+  @IsString()
+  @IsOptional()
+  @Length(1, 131072)
+  description?: string;
   @IsUUID()
   @IsOptional()
-  moduleId?: string;
+  versionId?: string;
 }
 
 export class FunctionCreateDTO extends TakaroDTO<FunctionCreateDTO> {
   @IsString()
   @IsOptional()
   code?: string;
-
   @IsString()
   @IsOptional()
   name: string;
-
+  @IsString()
+  @IsOptional()
+  @Length(1, 131072)
+  description?: string;
   @IsUUID()
   @IsOptional()
-  moduleId?: string;
+  versionId?: string;
 }
 
 export class FunctionUpdateDTO extends TakaroDTO<FunctionUpdateDTO> {
   @IsString()
   @IsOptional()
-  code: string;
-
+  name: string;
   @IsString()
   @IsOptional()
-  name: string;
+  @Length(1, 131072)
+  description?: string;
+  @IsString()
+  @IsOptional()
+  code: string;
 }
 
 const defaultFunctionCode = `import { data, takaro } from '@takaro/helpers';

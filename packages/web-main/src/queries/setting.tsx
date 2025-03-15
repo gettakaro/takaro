@@ -6,9 +6,9 @@ import {
   SettingsOutputDTOKeyEnum,
 } from '@takaro/apiclient';
 import { useMutation, useQueryClient, queryOptions } from '@tanstack/react-query';
-import { getApiClient } from 'util/getApiClient';
+import { getApiClient } from '../util/getApiClient';
 import { AxiosError } from 'axios';
-import { mutationWrapper } from 'queries/util';
+import { mutationWrapper } from '../queries/util';
 
 export const settingKeys = {
   all: ['settings'] as const,
