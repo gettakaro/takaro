@@ -8,6 +8,7 @@ import { z } from 'zod';
 import Ajv from 'ajv';
 
 const ajv = new Ajv({ useDefaults: true, allErrors: true, strictSchema: true });
+ajv.addKeyword('x-component');
 
 export const validationSchema = z.object({
   name: moduleNameShape,
