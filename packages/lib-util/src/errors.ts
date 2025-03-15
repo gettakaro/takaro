@@ -1,5 +1,6 @@
 import { ValidationError as CValidationError } from 'class-validator';
 import { ValidationError as YValidationError } from 'yup';
+import { ErrorObject as AjvValidationError } from 'ajv';
 
 export class TakaroError extends Error {
   public http: number;
@@ -34,7 +35,7 @@ export class NotImplementedError extends TakaroError {
 export class ValidationError extends TakaroError {
   constructor(
     message: string,
-    public details?: CValidationError[] | YValidationError[],
+    public details?: CValidationError[] | YValidationError[] | AjvValidationError[],
   ) {
     super(message);
 
