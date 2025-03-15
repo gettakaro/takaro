@@ -121,7 +121,11 @@ class WSServer {
         case 'gameEvent': {
           if (!ws.id) throw new errors.BadRequestError('WS ID is missing, WS not properly identified/connected');
           const gameServerId = this.WsToServerMap.get(ws.id);
-          if (!gameServerId) throw new errors.BadRequestError('Game server ID not found for WS ID');
+          if (!gameServerId) {
+            this.log.warn('Socket not properly identified/connected, Disconnecting to force re-identify');
+            ws.terminate();
+            throw new errors.BadRequestError('Game server ID not found for WS ID');
+          }
           gameServerManager.handleGameMessage(gameServerId, message);
           break;
         }
