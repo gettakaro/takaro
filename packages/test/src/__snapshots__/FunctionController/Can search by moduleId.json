@@ -1,0 +1,33 @@
+{
+  "body": {
+    "meta": {
+      "page": 0,
+      "limit": 100,
+      "total": 1
+    },
+    "data": [
+      {
+        "createdAt": "2025-03-15T16:17:43.125Z",
+        "updatedAt": "2025-03-15T16:17:43.125Z",
+        "id": "6b282552-31e5-46b5-a901-d2833d41eac0",
+        "code": "console.log(\"Hello world\")",
+        "name": null,
+        "versionId": "520e3ab9-452d-42c0-9232-2af0248cb1f1",
+        "description": "Cool description"
+      }
+    ]
+  },
+  "status": 200,
+  "test": {
+    "group": "FunctionController",
+    "snapshot": true,
+    "name": "Can search by moduleId",
+    "filteredFields": [
+      "moduleId",
+      "functionId",
+      "hookId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}
