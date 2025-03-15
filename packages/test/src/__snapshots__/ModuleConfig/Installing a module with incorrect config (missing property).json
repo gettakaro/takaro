@@ -2,8 +2,19 @@
   "body": {
     "meta": {
       "error": {
-        "code": "BadRequestError",
-        "message": "Invalid config:  must have required property 'foo'"
+        "code": "ValidationError",
+        "message": "Invalid config:  must have required property 'foo'",
+        "details": [
+          {
+            "instancePath": "",
+            "schemaPath": "#/required",
+            "keyword": "required",
+            "params": {
+              "missingProperty": "foo"
+            },
+            "message": "must have required property 'foo'"
+          }
+        ]
       }
     },
     "data": {}

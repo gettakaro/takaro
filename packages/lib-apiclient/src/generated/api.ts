@@ -5676,6 +5676,12 @@ export interface ModuleCreateVersionInputDTO {
   uiSchema?: string;
   /**
    *
+   * @type {string}
+   * @memberof ModuleCreateVersionInputDTO
+   */
+  defaultSystemConfig?: string;
+  /**
+   *
    * @type {Array<PermissionCreateDTO>}
    * @memberof ModuleCreateVersionInputDTO
    */
@@ -6311,6 +6317,12 @@ export interface ModuleVersionOutputDTO {
    * @type {string}
    * @memberof ModuleVersionOutputDTO
    */
+  defaultSystemConfig?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ModuleVersionOutputDTO
+   */
   moduleId: string;
   /**
    *
@@ -6518,6 +6530,12 @@ export interface ModuleVersionUpdateDTO {
    * @memberof ModuleVersionUpdateDTO
    */
   uiSchema?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ModuleVersionUpdateDTO
+   */
+  defaultSystemConfig?: string;
   /**
    *
    * @type {Array<PermissionCreateDTO>}

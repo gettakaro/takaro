@@ -11,6 +11,7 @@ import { ErrorBoundary } from '../../../components/ErrorBoundary';
 import { useModuleBuilderContext } from './useModuleBuilderStore';
 import { FileType } from './types';
 import { CronjobTrigger } from './Editor/CronjobTrigger';
+import { SystemConfig } from './Editor/configs/defaultSystemConfig';
 
 const EventsWrapper = styled.div`
   padding-right: ${({ theme }) => theme.spacing[1]};
@@ -101,6 +102,11 @@ export const ModuleBuilderInner: FC = () => {
               <CollapseList.Item title="File explorer">
                 <ErrorBoundary>
                   <FileExplorer />
+                </ErrorBoundary>
+              </CollapseList.Item>
+              <CollapseList.Item title={'Default system config'}>
+                <ErrorBoundary>
+                  <SystemConfig moduleId={moduleId} versionId={versionId} readOnly={readOnly} />
                 </ErrorBoundary>
               </CollapseList.Item>
               {activeFile && (

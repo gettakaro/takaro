@@ -1,0 +1,31 @@
+{
+  "body": {
+    "meta": {
+      "error": {
+        "code": "ValidationError",
+        "details": [
+          {
+            "instancePath": "/enabled",
+            "schemaPath": "#/properties/enabled/type",
+            "keyword": "type",
+            "params": {
+              "type": "boolean"
+            },
+            "message": "must be boolean"
+          }
+        ],
+        "message": "Invalid system config"
+      }
+    },
+    "data": {}
+  },
+  "status": 400,
+  "test": {
+    "group": "ModuleConfig",
+    "snapshot": true,
+    "name": "Setting a default system config runs the validation on it when creating module",
+    "expectedStatus": 400,
+    "filteredFields": [],
+    "standardEnvironment": true
+  }
+}

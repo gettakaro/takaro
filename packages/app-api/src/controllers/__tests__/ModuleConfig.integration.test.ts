@@ -335,6 +335,56 @@ const tests = [
       }
     },
   }),
+  new IntegrationTest<ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Installing a module takes the defaultSystemConfig into account',
+    setup,
+    test: async function () {
+      await this.client.module.moduleControllerUpdate(this.setupData.cronJobsModule.id, {
+        latestVersion: {
+          defaultSystemConfig: JSON.stringify({ cronJobs: { 'Test cron job': { temporalValue: '1 1 1 1 1' } } }),
+        },
+      });
+
+      const installRes = await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.cronJobsModule.latestVersion.id,
+      });
+
+      expect((installRes.data.data.systemConfig as any).cronJobs['Test cron job'].temporalValue).to.equal('1 1 1 1 1');
+    },
+  }),
+  new IntegrationTest<ISetupData>({
+    group,
+    snapshot: true,
+    name: 'Setting a default system config runs the validation on it when updating module',
+    setup,
+    test: async function () {
+      return this.client.module.moduleControllerUpdate(this.setupData.cronJobsModule.id, {
+        // Enabled should be a boolean ;)
+        latestVersion: { defaultSystemConfig: JSON.stringify({ enabled: 'a little bit' }) },
+      });
+    },
+    expectedStatus: 400,
+  }),
+  new IntegrationTest<ISetupData>({
+    group,
+    snapshot: true,
+    name: 'Setting a default system config runs the validation on it when creating module',
+    setup,
+    test: async function () {
+      return this.client.module.moduleControllerCreate({
+        name: 'Test module 2',
+        latestVersion: {
+          description: 'Test description',
+          // Enabled should be a boolean ;)
+          defaultSystemConfig: JSON.stringify({ enabled: 'a little bit' }),
+        },
+      });
+    },
+    expectedStatus: 400,
+  }),
 ];
 
 describe(group, function () {

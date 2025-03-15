@@ -31,6 +31,7 @@ export const Default: StoryFn<ModuleSelectViewProps> = () => {
         uiSchema: '',
         systemConfigSchema: '',
         configSchema: '',
+        defaultSystemConfig: undefined,
         permissions: [],
         createdAt: '',
         updatedAt: '',
