@@ -37,6 +37,9 @@ class FunctionSearchInputAllowedFilters extends AllowedFilters {
   @IsUUID(4, { each: true })
   moduleId: string[];
   @IsOptional()
+  @IsUUID(4, { each: true })
+  versionId!: string[];
+  @IsOptional()
   @IsString({ each: true })
   name: string[];
 }

@@ -1,0 +1,43 @@
+{
+  "body": {
+    "meta": {
+      "page": 0,
+      "limit": 100,
+      "total": 1
+    },
+    "data": [
+      {
+        "createdAt": "2025-03-15T16:16:28.677Z",
+        "updatedAt": "2025-03-15T16:16:28.678Z",
+        "id": "233d1d58-b358-4af8-9b08-b084be2251f9",
+        "name": "Test cronJob",
+        "temporalValue": "0 * * * *",
+        "functionId": "84973f54-448e-4d3d-a55d-2bdbc83b4126",
+        "versionId": "853bbb24-3837-41ba-a3b4-3f5a9572d1cc",
+        "description": "Cool description",
+        "function": {
+          "createdAt": "2025-03-15T16:16:28.677Z",
+          "updatedAt": "2025-03-15T16:16:28.677Z",
+          "id": "84973f54-448e-4d3d-a55d-2bdbc83b4126",
+          "code": "console.log(\"test\")",
+          "name": null,
+          "versionId": null,
+          "description": null
+        }
+      }
+    ]
+  },
+  "status": 200,
+  "test": {
+    "group": "CronJobController",
+    "snapshot": true,
+    "name": "Can search by moduleId",
+    "filteredFields": [
+      "moduleId",
+      "functionId",
+      "cronJobId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

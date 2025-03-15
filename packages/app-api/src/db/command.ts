@@ -1,4 +1,4 @@
-import { TakaroModel, ITakaroQuery, QueryBuilder } from '@takaro/db';
+import { TakaroModel, QueryBuilder } from '@takaro/db';
 import { Model } from 'objection';
 import { errors, traceableClass } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
@@ -11,6 +11,9 @@ import {
   CommandOutputDTO,
   CommandUpdateDTO,
 } from '../service/CommandService.js';
+import { CommandSearchInputDTO } from '../controllers/CommandController.js';
+import { PartialDeep } from 'type-fest/index.js';
+import { ModuleVersion } from './module.js';
 
 export const COMMANDS_TABLE_NAME = 'commands';
 export const COMMAND_ARGUMENTS_TABLE_NAME = 'commandArguments';
@@ -40,6 +43,14 @@ export class CommandModel extends TakaroModel {
         join: {
           from: `${COMMANDS_TABLE_NAME}.id`,
           to: `${COMMAND_ARGUMENTS_TABLE_NAME}.commandId`,
+        },
+      },
+      version: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: ModuleVersion,
+        join: {
+          from: `${COMMANDS_TABLE_NAME}.versionId`,
+          to: `${ModuleVersion.tableName}.id`,
         },
       },
     };
@@ -85,12 +96,20 @@ export class CommandRepo extends ITakaroRepo<CommandModel, CommandOutputDTO, Com
     };
   }
 
-  async find(filters: ITakaroQuery<CommandOutputDTO>) {
+  async find(filters: PartialDeep<CommandSearchInputDTO>) {
     const { query } = await this.getModel();
-    const result = await new QueryBuilder<CommandModel, CommandOutputDTO>({
+    const qry = new QueryBuilder<CommandModel, CommandOutputDTO>({
       ...filters,
       extend: ['function', 'arguments'],
     }).build(query);
+
+    if (filters.filters?.moduleId) {
+      const moduleIds = filters.filters.moduleId as string[];
+      qry.innerJoinRelated('version').whereIn('version.moduleId', moduleIds);
+    }
+
+    const result = await qry;
+
     return {
       total: result.total,
       results: await Promise.all(result.results.map((item) => new CommandOutputDTO(item))),

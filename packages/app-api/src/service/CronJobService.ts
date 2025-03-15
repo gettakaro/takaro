@@ -7,10 +7,11 @@ import { FunctionCreateDTO, FunctionOutputDTO, FunctionService, FunctionUpdateDT
 import { Type } from 'class-transformer';
 import { TakaroDTO, errors, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { PaginatedOutput } from '../db/base.js';
-import { ITakaroQuery } from '@takaro/db';
 import { randomUUID } from 'crypto';
 import { InstallModuleDTO, ModuleInstallationOutputDTO } from './Module/dto.js';
 import { ModuleService } from './Module/index.js';
+import { PartialDeep } from 'type-fest/index.js';
+import { CronJobSearchInputDTO } from '../controllers/CronJobController.js';
 
 export class CronJobOutputDTO extends TakaroModelDTO<CronJobOutputDTO> {
   @IsString()
@@ -78,7 +79,7 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
     return new CronJobRepo(this.domainId);
   }
 
-  find(filters: ITakaroQuery<CronJobOutputDTO>): Promise<PaginatedOutput<CronJobOutputDTO>> {
+  find(filters: PartialDeep<CronJobSearchInputDTO>): Promise<PaginatedOutput<CronJobOutputDTO>> {
     return this.repo.find(filters);
   }
 

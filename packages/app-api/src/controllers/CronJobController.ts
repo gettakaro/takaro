@@ -48,7 +48,9 @@ class CronJobSearchInputAllowedFilters extends AllowedFilters {
   @IsOptional()
   @IsUUID(4, { each: true })
   moduleId!: string[];
-
+  @IsOptional()
+  @IsUUID(4, { each: true })
+  versionId!: string[];
   @IsOptional()
   @IsString({ each: true })
   name!: string[];
@@ -60,7 +62,7 @@ class CronJobSearchInputAllowedSearch extends AllowedSearch {
   name!: string[];
 }
 
-class CronJobSearchInputDTO extends ITakaroQuery<CronJobSearchInputAllowedFilters> {
+export class CronJobSearchInputDTO extends ITakaroQuery<CronJobSearchInputAllowedFilters> {
   @ValidateNested()
   @Type(() => CronJobSearchInputAllowedFilters)
   declare filters: CronJobSearchInputAllowedFilters;

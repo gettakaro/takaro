@@ -1,0 +1,45 @@
+{
+  "body": {
+    "meta": {
+      "page": 0,
+      "limit": 100,
+      "total": 1
+    },
+    "data": [
+      {
+        "createdAt": "2025-03-15T15:54:07.806Z",
+        "updatedAt": "2025-03-15T15:54:07.807Z",
+        "id": "8933ce44-8839-42fe-bf0f-d208b67ec2bc",
+        "name": "Test command",
+        "functionId": "27778740-5226-4137-b59c-425ac333acc3",
+        "trigger": "test",
+        "helpText": "No help text available",
+        "versionId": "8282709c-e7ca-4af7-a7a9-ba9f627d1e3f",
+        "description": "Cool description",
+        "function": {
+          "createdAt": "2025-03-15T15:54:07.805Z",
+          "updatedAt": "2025-03-15T15:54:07.805Z",
+          "id": "27778740-5226-4137-b59c-425ac333acc3",
+          "code": "import { data, takaro } from '@takaro/helpers';\nasync function main() {\n    const {} = data;\n}\nawait main();",
+          "name": null,
+          "versionId": null,
+          "description": null
+        },
+        "arguments": []
+      }
+    ]
+  },
+  "status": 200,
+  "test": {
+    "group": "CommandController",
+    "snapshot": true,
+    "name": "Can search by moduleId",
+    "filteredFields": [
+      "moduleId",
+      "functionId",
+      "commandId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

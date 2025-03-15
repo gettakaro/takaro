@@ -1,0 +1,44 @@
+{
+  "body": {
+    "meta": {
+      "page": 0,
+      "limit": 100,
+      "total": 1
+    },
+    "data": [
+      {
+        "createdAt": "2025-03-15T16:16:10.791Z",
+        "updatedAt": "2025-03-15T16:16:10.791Z",
+        "id": "ea05907f-4d59-4820-8e10-d6ad75daf8ae",
+        "name": "Test hook",
+        "eventType": "log",
+        "regex": "/this (is) a [regex]/g",
+        "functionId": "629e9508-ca41-40a4-b11d-73e949672b4a",
+        "versionId": "457bdeba-9876-4252-9642-2f2e725b956e",
+        "description": "Cool description",
+        "function": {
+          "createdAt": "2025-03-15T16:16:10.790Z",
+          "updatedAt": "2025-03-15T16:16:10.790Z",
+          "id": "629e9508-ca41-40a4-b11d-73e949672b4a",
+          "code": "import { data, takaro } from '@takaro/helpers';\nasync function main() {\n    const {} = data;\n}\nawait main();",
+          "name": null,
+          "versionId": null,
+          "description": null
+        }
+      }
+    ]
+  },
+  "status": 200,
+  "test": {
+    "group": "HookController",
+    "snapshot": true,
+    "name": "Can search by moduleId",
+    "filteredFields": [
+      "moduleId",
+      "functionId",
+      "hookId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}
