@@ -6,6 +6,7 @@ import { CRONJOB_TABLE_NAME, CronJobModel } from './cronjob.js';
 import { FunctionCreateDTO, FunctionOutputDTO, FunctionUpdateDTO } from '../service/FunctionService.js';
 import { HOOKS_TABLE_NAME, HookModel } from './hook.js';
 import { CommandModel, COMMANDS_TABLE_NAME } from './command.js';
+import { ModuleVersion } from './module.js';
 
 export const FUNCTION_TABLE_NAME = 'functions';
 
@@ -40,6 +41,14 @@ export class FunctionModel extends TakaroModel {
           to: `${COMMANDS_TABLE_NAME}.id`,
         },
       },
+      version: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: ModuleVersion,
+        join: {
+          from: `${FunctionModel.tableName}.versionId`,
+          to: `${ModuleVersion.tableName}.id`,
+        },
+      },
     };
   }
 }
@@ -61,7 +70,15 @@ export class FunctionRepo extends ITakaroRepo<FunctionModel, FunctionOutputDTO, 
 
   async find(filters: ITakaroQuery<FunctionOutputDTO>) {
     const { query } = await this.getModel();
-    const result = await new QueryBuilder<FunctionModel, FunctionOutputDTO>(filters).build(query);
+    const qry = new QueryBuilder<FunctionModel, FunctionOutputDTO>(filters).build(query);
+
+    if (filters.filters?.moduleId) {
+      const moduleIds = filters.filters.moduleId as string[];
+      qry.innerJoinRelated('version').whereIn('version.moduleId', moduleIds);
+    }
+
+    const result = await qry;
+
     return {
       total: result.total,
       results: await Promise.all(result.results.map((item) => new FunctionOutputDTO(item))),

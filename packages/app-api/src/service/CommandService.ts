@@ -8,7 +8,7 @@ import { ICommandJobData, IParsedCommand, queueService } from '@takaro/queues';
 import { Type } from 'class-transformer';
 import { TakaroDTO, errors, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { ICommand, ICommandArgument, EventChatMessage, ChatChannel } from '@takaro/modules';
-import { ITakaroQuery, Redis } from '@takaro/db';
+import { Redis } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { SettingsService, SETTINGS_KEYS } from './SettingsService.js';
 import { parseCommand } from '../lib/commandParser.js';
@@ -18,6 +18,8 @@ import { PlayerOnGameServerService } from './PlayerOnGameserverService.js';
 import { UserService } from './User/index.js';
 import { ModuleService } from './Module/index.js';
 import { InstallModuleDTO } from './Module/dto.js';
+import { CommandSearchInputDTO } from '../controllers/CommandController.js';
+import { PartialDeep } from 'type-fest/index.js';
 
 export function commandsRunningKey(data: ICommandJobData) {
   return `commands-running:${data.pog.id}:${data.itemId}`;
@@ -178,7 +180,7 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
     return new CommandRepo(this.domainId);
   }
 
-  async find(filters: ITakaroQuery<CommandOutputDTO>): Promise<PaginatedOutput<CommandOutputDTO>> {
+  async find(filters: PartialDeep<CommandSearchInputDTO>): Promise<PaginatedOutput<CommandOutputDTO>> {
     return this.repo.find(filters);
   }
 
