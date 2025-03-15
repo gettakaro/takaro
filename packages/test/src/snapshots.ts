@@ -179,6 +179,59 @@ export async function matchSnapshot<SetupData>(
 
       throw new Error(`Snapshot updated: ${snapshotPath}\nChanged fields: ${changedPaths.join(', ')}`);
     }
+
+    console.error(generateReadableDiff(getDifferences(fullData, existingSnapshot, filteredFields)));
+
     throw error;
+  }
+}
+
+function generateReadableDiff(differences: Array<{ path: string[]; current: unknown; snapshot: unknown }>): string {
+  if (differences.length === 0) return 'No differences found.';
+
+  // Group differences by path prefix for better organization
+  const pathGroups: Record<string, Array<{ path: string[]; current: unknown; snapshot: unknown }>> = {};
+
+  for (const diff of differences) {
+    // Create a meaningful group key based on the path
+    const pathPrefix = diff.path.length > 1 ? diff.path.slice(0, -1).join('.') : 'root';
+
+    if (!pathGroups[pathPrefix]) {
+      pathGroups[pathPrefix] = [];
+    }
+
+    pathGroups[pathPrefix].push(diff);
+  }
+
+  // Format the diff as a readable string
+  let result = '\n=== SNAPSHOT DIFFERENCE ===\n';
+
+  Object.entries(pathGroups).forEach(([groupPath, groupDiffs]) => {
+    result += `\n${groupPath === 'root' ? 'Root level' : `In ${groupPath}`}:\n`;
+
+    groupDiffs.forEach((diff) => {
+      const propertyName = diff.path[diff.path.length - 1];
+
+      result += `  - ${propertyName}: \n`;
+      result += `    Expected: ${formatValue(diff.snapshot)}\n`;
+      result += `    Received: ${formatValue(diff.current)}\n`;
+    });
+  });
+
+  result += '\n==========================\n';
+  return result;
+}
+
+// Helper to format values for diff output
+function formatValue(value: unknown): string {
+  if (value === undefined) return 'undefined';
+
+  try {
+    if (typeof value === 'object' && value !== null) {
+      return JSON.stringify(value, null, 2).split('\n').join('\n    ');
+    }
+    return String(value);
+  } catch {
+    return `[Complex value: ${typeof value}]`;
   }
 }
