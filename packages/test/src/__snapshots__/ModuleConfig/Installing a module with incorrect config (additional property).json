@@ -2,8 +2,19 @@
   "body": {
     "meta": {
       "error": {
-        "code": "BadRequestError",
-        "message": "Invalid config: must NOT have additional properties, invalid: bar"
+        "code": "ValidationError",
+        "message": "Invalid config: must NOT have additional properties, invalid: bar",
+        "details": [
+          {
+            "instancePath": "",
+            "schemaPath": "#/additionalProperties",
+            "keyword": "additionalProperties",
+            "params": {
+              "additionalProperty": "bar"
+            },
+            "message": "must NOT have additional properties"
+          }
+        ]
       }
     },
     "data": {}

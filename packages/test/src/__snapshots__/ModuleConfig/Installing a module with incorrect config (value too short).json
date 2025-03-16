@@ -2,8 +2,19 @@
   "body": {
     "meta": {
       "error": {
-        "code": "BadRequestError",
-        "message": "Invalid config: /foo must NOT have fewer than 3 characters"
+        "code": "ValidationError",
+        "message": "Invalid config: /foo must NOT have fewer than 3 characters",
+        "details": [
+          {
+            "instancePath": "/foo",
+            "schemaPath": "#/properties/foo/minLength",
+            "keyword": "minLength",
+            "params": {
+              "limit": 3
+            },
+            "message": "must NOT have fewer than 3 characters"
+          }
+        ]
       }
     },
     "data": {}

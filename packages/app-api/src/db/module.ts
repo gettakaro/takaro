@@ -37,6 +37,7 @@ export class ModuleVersion extends TakaroModel {
   description: string;
   configSchema: string;
   uiSchema: string;
+  defaultSystemConfig: string;
 
   cronJobs: CronJobOutputDTO[];
   hooks: HookOutputDTO[];

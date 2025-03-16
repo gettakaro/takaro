@@ -3,6 +3,7 @@ import { TakaroDTO, TakaroModelDTO } from '@takaro/util';
 import { UserAssignmentOutputDTO } from '../RoleService.js';
 import { Type } from 'class-transformer';
 import { PlayerOutputWithRolesDTO } from '../Player/dto.js';
+import type { PlayerOutputWithRolesDTO as PlayerOutputWithRolesDTOType } from '../Player/dto.js';
 
 export class UserOutputDTO extends TakaroModelDTO<UserOutputDTO> {
   @IsString()
@@ -21,7 +22,7 @@ export class UserOutputDTO extends TakaroModelDTO<UserOutputDTO> {
   playerId?: string;
   @Type(() => PlayerOutputWithRolesDTO)
   @ValidateNested()
-  player?: PlayerOutputWithRolesDTO;
+  player?: PlayerOutputWithRolesDTOType;
   @IsBoolean()
   isDashboardUser: boolean;
 }
