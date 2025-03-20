@@ -191,7 +191,9 @@ class WSServer {
     return new Promise((resolve, reject) => {
       const requestId = randomUUID();
       const timeout = setTimeout(() => {
-        reject(new Error(`Request timed out: ${action} `));
+        reject(
+          new errors.BadRequestError(`Request timed out after ${config.get('ws.requestTimeoutMs')}ms : ${action} `),
+        );
       }, config.get('ws.requestTimeoutMs'));
 
       client.send(
