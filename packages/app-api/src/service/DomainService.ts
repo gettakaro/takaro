@@ -273,7 +273,7 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
 
   async resolveByRegistrationToken(registrationToken: string): Promise<DomainOutputDTO> {
     const result = await this.repo.find({ filters: { registrationToken: [registrationToken] } });
-    if (!result.results) throw new errors.NotFoundError();
+    if (!result.total) throw new errors.NotFoundError();
     return result.results[0];
   }
 }
