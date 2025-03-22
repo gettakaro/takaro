@@ -1,5 +1,5 @@
 import { EventPlayerConnected, GameEvents, IGamePlayer, IPosition } from '@takaro/modules';
-import { config } from '../../config.js';
+import { config, IMockServerConfig } from '../../config.js';
 import { WSClient } from './wsClient.js';
 import { faker } from '@faker-js/faker';
 import { errors, logger } from '@takaro/util';
@@ -15,6 +15,7 @@ import {
   TestReachabilityOutputDTO,
 } from '@takaro/gameserver';
 import { GameDataHandler } from './DataHandler.js';
+import { PartialDeep } from 'type-fest/index.js';
 
 interface ActionHandler {
   (args: any): Promise<any>;
@@ -24,10 +25,11 @@ interface IActionMap {
 }
 
 export class GameServer implements IGameServer {
-  private wsClient = new WSClient(config.get('ws.url'));
+  private config: IMockServerConfig = JSON.parse(config._config.toString());
+  private wsClient;
   private log = logger('GameServer');
   private dataHandler: GameDataHandler;
-  private serverId = config.get('mockserver.identityToken');
+  private serverId;
   private tickInterval: NodeJS.Timeout;
 
   // Implement the connectionInfo property
@@ -56,7 +58,10 @@ export class GameServer implements IGameServer {
     getMapTile: async (args: { x: number; y: number; z: number }) => this.getMapTile(args.x, args.y, args.z),
   };
 
-  constructor() {
+  constructor(configOverrides: PartialDeep<IMockServerConfig> = {}) {
+    this.config = { ...this.config, ...configOverrides } as IMockServerConfig;
+    this.serverId = this.config.mockserver.identityToken;
+    this.wsClient = new WSClient(this.config.ws.url);
     this.dataHandler = new GameDataHandler(this.serverId);
     this.tickInterval = setInterval(() => this.handleGameServerTick(), 10000);
   }
@@ -90,7 +95,7 @@ export class GameServer implements IGameServer {
           type: 'identify',
           payload: {
             identityToken: this.serverId,
-            registrationToken: config.get('mockserver.registrationToken'),
+            registrationToken: this.config.mockserver.registrationToken,
           },
         });
 
@@ -110,9 +115,14 @@ export class GameServer implements IGameServer {
   }
 
   private async createInitPlayers() {
-    const playersToCreate = Array.from({ length: 10 }, (_, i) => {
+    const totalPlayersWanted = 10;
+    const existingPlayers = await this.dataHandler.getAllPlayers();
+    const totalToCreate = totalPlayersWanted - existingPlayers.length;
+    if (totalToCreate <= 0) return;
+
+    const playersToCreate = Array.from({ length: totalToCreate }, (_) => {
       const player = new IGamePlayer({
-        gameId: i.toString(),
+        gameId: faker.string.alphanumeric(8),
         name: faker.internet.userName(),
         epicOnlineServicesId: faker.string.alphanumeric(16),
         steamId: faker.string.alphanumeric(16),
@@ -133,7 +143,7 @@ export class GameServer implements IGameServer {
 
     try {
       await Promise.all(playersToCreate.map(({ player, meta }) => this.dataHandler.addPlayer(player, meta)));
-      this.log.info('Successfully created mock players');
+      this.log.info(`Successfully created ${playersToCreate.length} mock players`);
     } catch (error) {
       this.log.error('Error creating players:', error);
     }
@@ -170,7 +180,7 @@ export class GameServer implements IGameServer {
           throw new Error(`Unknown action requested: ${action}`);
         }
 
-        const result = await handler(args);
+        const result = await handler(JSON.parse(args));
         this.sendResponse(requestId, result);
       } catch (error) {
         this.log.error(`Error handling action ${action}:`, error);
@@ -209,11 +219,11 @@ export class GameServer implements IGameServer {
       const playerData = await this.dataHandler.getPlayer(player);
       if (!playerData || !playerData.meta.position) return null;
 
-      return {
+      return new IPosition({
         x: playerData.meta.position.x,
         y: playerData.meta.position.y,
         z: playerData.meta.position.z,
-      };
+      });
     } catch (error) {
       this.log.error(`Error getting player location for ${player.gameId}:`, error);
       return null;

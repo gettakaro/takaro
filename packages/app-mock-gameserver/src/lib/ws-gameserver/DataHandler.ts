@@ -1,7 +1,7 @@
 import { Redis, RedisClient } from '@takaro/db';
 import { IGamePlayer } from '@takaro/modules';
 import { IPlayerReferenceDTO } from '@takaro/gameserver';
-import { logger } from '@takaro/util';
+import { errors, logger } from '@takaro/util';
 
 export interface IPlayerMeta {
   position: {
@@ -27,10 +27,12 @@ export class GameDataHandler {
   }
 
   private getPlayerKey(gameId: string): string {
+    if (!gameId) throw new errors.BadRequestError('gameId is required');
     return `${this.keyPrefix}:player:${gameId}`;
   }
 
   private getPlayerMetaKey(gameId: string): string {
+    if (!gameId) throw new errors.BadRequestError('gameId is required');
     return `${this.keyPrefix}:player:${gameId}:meta`;
   }
 

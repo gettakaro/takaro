@@ -1,7 +1,10 @@
 import axios, { AxiosError, AxiosInstance } from 'axios';
 import { config } from '../../config.js';
+import { logger } from '@takaro/util';
 
 function getConnectorClient() {
+  const log = logger('client:connector');
+
   const connectorClient = axios.create({
     baseURL: config.get('connector.host'),
     headers: {
@@ -11,16 +14,17 @@ function getConnectorClient() {
   });
 
   connectorClient.interceptors.request.use((request) => {
-    console.log(`➡️ ${request.method?.toUpperCase()} ${request.url}`, {
+    log.debug(`➡️ ${request.method?.toUpperCase()} ${request.url}`, {
       method: request.method,
       url: request.url,
+      operation: request.data?.operation,
     });
     return request;
   });
 
   connectorClient.interceptors.response.use(
     (response) => {
-      console.log(
+      log.debug(
         `⬅️ ${response.request.method?.toUpperCase()} ${response.request.path} ${response.status} ${
           response.statusText
         }`,
@@ -28,6 +32,7 @@ function getConnectorClient() {
           status: response.status,
           method: response.request.method,
           url: response.request.url,
+          operation: response.config.data?.operation,
         },
       );
 
@@ -41,7 +46,7 @@ function getConnectorClient() {
         details = JSON.stringify(data.error_description);
       }
 
-      console.error(`☠️ Request errored: [${error.response?.status}] ${details}`, {
+      log.warn(`☠️ Request errored: [${error.response?.status}] ${details}`, {
         status: error.response?.status,
         statusText: error.response?.statusText,
         method: error.config?.method,
@@ -63,6 +68,7 @@ export class TakaroConnector {
   }
 
   async requestFromServer(id: string, operation: string, data: string): Promise<any> {
-    return this.client.post(`/gameserver/${id}/request`, { operation, data });
+    const res = await this.client.post(`/gameserver/${id}/request`, { operation, data });
+    return res.data.data;
   }
 }

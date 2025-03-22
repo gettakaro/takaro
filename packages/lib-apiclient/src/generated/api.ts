@@ -1618,6 +1618,12 @@ export interface DomainOutputDTO {
     'state': DomainOutputDTOStateEnum;
     /**
      * 
+     * @type {string}
+     * @memberof DomainOutputDTO
+     */
+    'registrationToken': string;
+    /**
+     * 
      * @type {number}
      * @memberof DomainOutputDTO
      */

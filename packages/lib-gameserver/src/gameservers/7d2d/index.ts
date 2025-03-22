@@ -91,11 +91,11 @@ export class SevenDaysToDie implements IGameServer {
       return null;
     }
 
-    return {
+    return new IPosition({
       x: playerLocation.position.x,
       y: playerLocation.position.y,
       z: playerLocation.position.z,
-    };
+    });
   }
 
   async giveItem(player: IPlayerReferenceDTO, item: string, amount: number = 1, quality?: string): Promise<void> {

@@ -5,7 +5,7 @@ export enum EXECUTION_MODE {
   LOCAL = 'local',
 }
 
-interface IMockServerConfig extends IBaseConfig {
+export interface IMockServerConfig extends IBaseConfig {
   http: {
     port: number;
     allowedOrigins: string[];
@@ -89,13 +89,13 @@ const configSchema = {
       env: 'MOCK_SERVER_NAME',
     },
     registrationToken: {
-      doc: 'The registration token for the mock server',
+      doc: 'The registration token for the mock server. This is a secret value used to identify into the Takaro domain',
       format: String,
       default: 'default-token',
       env: 'TAKARO_MOCK_REGISTRATION_TOKEN',
     },
     identityToken: {
-      doc: 'The identity token for the mock server',
+      doc: 'The identity token for the mock server. This should stay stable, when this changes Takaro will create a new server',
       format: String,
       default: 'default-mock',
       env: 'TAKARO_MOCK_IDENTITY_TOKEN',

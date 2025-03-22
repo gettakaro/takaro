@@ -129,6 +129,10 @@ class WSServer {
           gameServerManager.handleGameMessage(gameServerId, message);
           break;
         }
+        case 'response': {
+          // Do nothing, we're handling response somewhere else.
+          break;
+        }
         default:
           this.log.warn(`Unknown message type: ${message.type}`);
       }

@@ -88,6 +88,8 @@ export class DomainOutputDTO extends NOT_DOMAIN_SCOPED_TakaroModelDTO<DomainOutp
   externalReference: string;
   @IsEnum(Object.values(DOMAIN_STATES))
   state: DOMAIN_STATES;
+  @IsString()
+  registrationToken: string;
   @IsNumber()
   rateLimitPoints: number;
   @IsNumber()

@@ -3,11 +3,11 @@
   "version": "0.0.18",
   "description": "A mock gameserver for testing purposes, acts just like a real gameserver",
   "main": "dist/main.js",
-  "types": "main.ts",
+  "types": "dist/main.d.ts",
   "type": "module",
   "scripts": {
-    "start": "node --loader ../../node_modules/@takaro/util/dist/tracing.js dist/main.js",
-    "start:dev": "nodemon --exec 'npm run build && node --loader ../../node_modules/@takaro/util/dist/tracing.js --inspect=0.0.0.0:12004 dist/main.js'  --config ../../nodemon.json",
+    "start": "node --loader ../../node_modules/@takaro/util/dist/tracing.js dist/bin.js",
+    "start:dev": "nodemon --exec 'npm run build && node --loader ../../node_modules/@takaro/util/dist/tracing.js --inspect=0.0.0.0:12004 dist/bin.js'  --config ../../nodemon.json",
     "build": "tsc -p ./tsconfig.build.json"
   },
   "keywords": [],

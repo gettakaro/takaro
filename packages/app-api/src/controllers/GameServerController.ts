@@ -397,11 +397,7 @@ export class GameServerController {
     @Body() data: TeleportPlayerInputDTO,
   ) {
     const service = new GameServerService(req.domainId);
-    await service.teleportPlayer(params.gameServerId, params.playerId, {
-      x: data.x,
-      y: data.y,
-      z: data.z,
-    });
+    await service.teleportPlayer(params.gameServerId, params.playerId, data);
     return apiResponse();
   }
 

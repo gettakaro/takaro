@@ -61,12 +61,6 @@ export class BaseGameEvent<T> extends BaseEvent<T> {
   msg: string;
 }
 
-export interface IPositionInterface {
-  x: number;
-  y: number;
-  z: number;
-}
-
 export class EventLogLine extends BaseGameEvent<EventLogLine> {
   @IsString()
   type = GameEvents.LOG_LINE;
@@ -105,7 +99,7 @@ export class EventChatMessage extends BaseGameEvent<EventChatMessage> {
   declare msg: string;
 }
 
-export class IPosition implements IPositionInterface {
+export class IPosition extends TakaroDTO<IPosition> {
   @IsNumber()
   x: number;
   @IsNumber()
