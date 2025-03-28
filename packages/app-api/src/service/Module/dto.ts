@@ -94,7 +94,7 @@ export class ModuleCreateDTO extends TakaroDTO<ModuleCreateDTO> {
 export class ModuleCreateVersionInputDTO extends TakaroDTO<ModuleCreateVersionInputDTO> {
   @IsString()
   @IsOptional()
-  @Length(1, 5000)
+  @Length(1, 500000)
   description?: string;
   @IsJSON()
   @IsOptional()
@@ -137,7 +137,7 @@ export class ModuleCreateInternalDTO extends TakaroDTO<ModuleCreateInternalDTO> 
 export class ModuleVersionUpdateDTO extends TakaroDTO<ModuleVersionUpdateDTO> {
   @IsString()
   @IsOptional()
-  @Length(1, 5000)
+  @Length(1, 500000)
   description?: string;
   @IsJSON()
   @IsOptional()
