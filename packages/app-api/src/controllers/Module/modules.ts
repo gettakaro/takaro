@@ -208,7 +208,10 @@ export class ModuleController {
     const versions = await service.findVersions({ filters: { moduleId: [params.id] } });
 
     if (options.versionIds) {
-      versions.results = versions.results.filter((_) => options.versionIds?.includes(_.id));
+      // If user specifies an empty list, we assume they want all versions
+      if (options.versionIds?.length) {
+        versions.results = versions.results.filter((_) => options.versionIds?.includes(_.id));
+      }
     }
 
     const preparedVersions = await Promise.all(
