@@ -35,6 +35,12 @@ const Wrapper = styled.div`
   }
 `;
 
+const DescriptionDiv = styled.div`
+  max-height: 100px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+`;
+
 interface IModuleCardProps {
   mod: ModuleOutputDTO;
   installation?: ModuleInstallationOutputDTO;
@@ -237,7 +243,7 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
                 </div>
               )}
             </div>
-            <p>{mod.latestVersion.description}</p>
+            <DescriptionDiv>{mod.latestVersion.description}</DescriptionDiv>
 
             <SpacedRow>
               <span style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>

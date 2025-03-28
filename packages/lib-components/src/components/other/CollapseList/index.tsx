@@ -82,7 +82,7 @@ const Item: FC<PropsWithChildren<ItemProps>> = ({ collapsed = false, title, chil
         style={{ maxHeight: '100%', overflowY: 'hidden' }}
         key={`collapse-item-${title}`}
         variants={{
-          open: { opacity: 1, height: 'auto', flexGrow: 1, minHeight: 0, overflowY: 'auto', visibility: 'visible' },
+          open: { opacity: 1, height: 'auto', flexGrow: 1, minHeight: 0, overflowY: 'unset', visibility: 'visible' },
           collapsed: { opacity: 0, height: 0, visibility: 'hidden' },
         }}
         initial="collapsed"
