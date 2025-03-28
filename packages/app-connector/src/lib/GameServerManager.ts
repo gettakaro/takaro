@@ -100,7 +100,7 @@ class GameServerManager {
           connectionInfo: JSON.stringify({ identityToken }),
           type: GameServerTypesOutputDTOTypeEnum.Generic,
           name,
-          identityToken
+          identityToken,
         })
       ).data.data;
     }
@@ -182,6 +182,10 @@ class GameServerManager {
     for (const [domainId, servers] of gameServers) {
       for (const server of servers) {
         try {
+          if (server.type === GameServerTypesOutputDTOTypeEnum.Generic) {
+            continue;
+          }
+
           if (this.emitterMap.has(server.id)) {
             continue;
           }

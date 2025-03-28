@@ -1621,7 +1621,7 @@ export interface DomainOutputDTO {
      * @type {string}
      * @memberof DomainOutputDTO
      */
-    'registrationToken': string;
+    'serverRegistrationToken': string;
     /**
      * 
      * @type {number}

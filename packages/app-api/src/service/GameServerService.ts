@@ -165,12 +165,15 @@ export class GameServerService extends TakaroService<
         meta: new TakaroEventGameserverCreated(),
       }),
     );
-    await queueService.queues.connector.queue.add({
-      domainId: this.domainId,
-      gameServerId: createdServer.id,
-      operation: 'create',
-      time: new Date().toISOString(),
-    });
+    if (createdServer.type !== GAME_SERVER_TYPE.GENERIC) {
+      await queueService.queues.connector.queue.add({
+        domainId: this.domainId,
+        gameServerId: createdServer.id,
+        operation: 'create',
+        time: new Date().toISOString(),
+      });
+    }
+
     await queueService.queues.itemsSync.queue.add(
       { domainId: this.domainId, gameServerId: createdServer.id },
       { jobId: `itemsSync-${this.domainId}-${createdServer.id}-init` },
@@ -184,6 +187,8 @@ export class GameServerService extends TakaroService<
   }
 
   async delete(id: string) {
+    const existing = await this.findOne(id, false);
+    if (!existing) throw new errors.NotFoundError('Game server not found');
     const installedModules = await this.moduleService.findInstallations({
       filters: { gameserverId: [id] },
     });
@@ -198,12 +203,15 @@ export class GameServerService extends TakaroService<
     const gateway = new Pushgateway(config.get('metrics.pushgatewayUrl'), {});
     gateway.delete({ jobName: 'worker', groupings: { gameserver: id } });
 
-    await queueService.queues.connector.queue.add({
-      domainId: this.domainId,
-      gameServerId: id,
-      operation: 'delete',
-      time: new Date().toISOString(),
-    });
+    if (existing.type !== GAME_SERVER_TYPE.GENERIC) {
+      await queueService.queues.connector.queue.add({
+        domainId: this.domainId,
+        gameServerId: id,
+        operation: 'delete',
+        time: new Date().toISOString(),
+      });
+    }
+
     await this.repo.delete(id);
     const eventsService = new EventService(this.domainId);
     await eventsService.create(
@@ -234,12 +242,15 @@ export class GameServerService extends TakaroService<
         meta: new TakaroEventGameserverUpdated(),
       }),
     );
-    await queueService.queues.connector.queue.add({
-      domainId: this.domainId,
-      gameServerId: id,
-      operation: 'update',
-      time: new Date().toISOString(),
-    });
+    if (updatedServer.type !== GAME_SERVER_TYPE.GENERIC) {
+      await queueService.queues.connector.queue.add({
+        domainId: this.domainId,
+        gameServerId: id,
+        operation: 'update',
+        time: new Date().toISOString(),
+      });
+    }
+
     return updatedServer;
   }
 

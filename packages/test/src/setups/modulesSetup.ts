@@ -1,6 +1,8 @@
 import { ModuleOutputDTO, GameServerOutputDTO, RoleOutputDTO, PlayerOutputDTO } from '@takaro/apiclient';
 import type { EventTypes } from '@takaro/modules';
-import { EventsAwaiter, IntegrationTest, integrationConfig } from '../main.js';
+import { EventsAwaiter, IntegrationTest } from '../main.js';
+import { randomUUID } from 'crypto';
+import { getMockServer } from '@takaro/mock-gameserver';
 
 export interface IDetectedEvent {
   event: EventTypes;
@@ -42,23 +44,28 @@ export const modulesTestSetup = async function (
   // 10 players, 10 pogs should be created
   const playerCreatedEvents = eventAwaiter.waitForEvents('player-created', 20);
 
-  const gameServer1 = await this.client.gameserver.gameServerControllerCreate({
-    name: 'Gameserver 1',
-    type: 'MOCK',
-    connectionInfo: JSON.stringify({
-      host: integrationConfig.get('mockGameserver.host'),
-      name: `test-${this.test.name}-${this.standardDomainId}-1`,
-    }),
+  if (!this.domainRegistrationToken) throw new Error('Domain registration token is not set. Invalid setup?');
+  const gameServer1IdentityToken = randomUUID();
+  const gameServer2IdentityToken = randomUUID();
+  await getMockServer({
+    mockserver: { registrationToken: this.domainRegistrationToken, identityToken: gameServer1IdentityToken },
+  });
+  await getMockServer({
+    mockserver: { registrationToken: this.domainRegistrationToken, identityToken: gameServer2IdentityToken },
   });
 
-  const gameServer2 = await this.client.gameserver.gameServerControllerCreate({
-    name: 'Gameserver 2',
-    type: 'MOCK',
-    connectionInfo: JSON.stringify({
-      host: integrationConfig.get('mockGameserver.host'),
-      name: `test-${this.test.name}-${this.standardDomainId}-2`,
-    }),
-  });
+  const gameServers = (
+    await this.client.gameserver.gameServerControllerSearch({
+      filters: { identityToken: [gameServer1IdentityToken, gameServer2IdentityToken] },
+    })
+  ).data.data;
+
+  const gameServer1 = gameServers.find((gs) => gs.identityToken === gameServer1IdentityToken);
+  const gameServer2 = gameServers.find((gs) => gs.identityToken === gameServer2IdentityToken);
+
+  if (!gameServer1 || !gameServer2) {
+    throw new Error('Game servers not found. Did something fail when registering?');
+  }
 
   const teleportsModule = modules.find((m) => m.name === 'teleports');
   if (!teleportsModule) throw new Error('teleports module not found');
@@ -85,8 +92,8 @@ export const modulesTestSetup = async function (
   if (!geoBlockModule) throw new Error('geoBlock module not found');
 
   await Promise.all([
-    this.client.gameserver.gameServerControllerExecuteCommand(gameServer1.data.data.id, { command: 'connectAll' }),
-    this.client.gameserver.gameServerControllerExecuteCommand(gameServer2.data.data.id, { command: 'connectAll' }),
+    this.client.gameserver.gameServerControllerExecuteCommand(gameServer1.id, { command: 'connectAll' }),
+    this.client.gameserver.gameServerControllerExecuteCommand(gameServer2.id, { command: 'connectAll' }),
   ]);
 
   await playerCreatedEvents;
@@ -96,7 +103,7 @@ export const modulesTestSetup = async function (
 
   const pogsRes = (
     await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
-      filters: { gameServerId: [gameServer1.data.data.id] },
+      filters: { gameServerId: [gameServer1.id] },
     })
   ).data.data;
   const playersRes = await this.client.player.playerControllerSearch({
@@ -120,7 +127,7 @@ export const modulesTestSetup = async function (
     economyUtilsModule,
     lotteryModule,
     geoBlockModule,
-    gameserver: gameServer1.data.data,
+    gameserver: gameServer1,
     role: roleRes.data.data,
     players: playersRes.data.data,
   };

@@ -137,7 +137,7 @@ class WSServer {
           this.log.warn(`Unknown message type: ${message.type}`);
       }
     } catch (error) {
-      this.log.error('Error handling message:', error);
+      this.log.warn('Error handling message:', error);
       this.sendToClient(ws, {
         type: 'error',
         payload: { message: 'Invalid message format' },
@@ -189,7 +189,7 @@ class WSServer {
   public async requestFromGameServer(id: string, action: string, args: string) {
     const client = this.servers.get(id);
     if (!client) {
-      throw new Error('Game server is not connected');
+      throw new errors.BadRequestError('Game server is not connected');
     }
 
     return new Promise((resolve, reject) => {

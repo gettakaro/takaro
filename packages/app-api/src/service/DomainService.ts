@@ -89,7 +89,7 @@ export class DomainOutputDTO extends NOT_DOMAIN_SCOPED_TakaroModelDTO<DomainOutp
   @IsEnum(Object.values(DOMAIN_STATES))
   state: DOMAIN_STATES;
   @IsString()
-  registrationToken: string;
+  serverRegistrationToken: string;
   @IsNumber()
   rateLimitPoints: number;
   @IsNumber()
@@ -274,7 +274,7 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
   }
 
   async resolveByRegistrationToken(registrationToken: string): Promise<DomainOutputDTO> {
-    const result = await this.repo.find({ filters: { registrationToken: [registrationToken] } });
+    const result = await this.repo.find({ filters: { serverRegistrationToken: [registrationToken] } });
     if (!result.total) throw new errors.NotFoundError();
     return result.results[0];
   }
