@@ -45,16 +45,16 @@ cd deploy/compose
 cat docker-compose.yml
 ```
 
-Copy the example .env file from the repo and edit it as needed
+Go back to the root of the repo and copy the example .env file from the repo and edit it as needed
 
 ```bash
-cp ../../.env.example .env
+cp .env.example .env
 ```
 
 Now we can start the services with Docker Compose:
 
 ```bash
-docker compose up -d
+docker compose -f deploy/compose/docker-compose.yml up -d
 ```
 
 You should be able to access the Takaro web interface at `https://takaro.your-domain.com`.
@@ -64,11 +64,20 @@ You should be able to access the Takaro web interface at `https://takaro.your-do
 If you encounter any issues, you should always check the logs of the services you are running. You can do this with the following command:
 
 ```bash
-docker compose logs -f
+docker compose -f deploy/compose/docker-compose.yml logs -f
 ```
 
 If you know the error is with a specific service, you can filter the logs to only show that service:
 
 ```bash
-docker compose logs -f <service-name>
+docker compose -f deploy/compose/docker-compose.yml logs -f <service-name>
+docker compose -f deploy/compose/docker-compose.yml logs -f api
+```
+
+You can also use grep to filter the logs:
+
+```bash
+docker compose -f deploy/compose/docker-compose.yml logs -f | grep error
+docker compose -f deploy/compose/docker-compose.yml logs -f | grep 123-some-id-456
+
 ```
