@@ -11,16 +11,33 @@ import { GameServerService } from '../service/GameServerService.js';
 import { CronJobService } from '../service/CronJobService.js';
 
 const log = logger(`worker:${config.get('queues.system.name')}`);
-export class SystemWorker extends TakaroWorker<IBaseJobData> {
+
+export enum SystemTaskType {
+  SEED_MODULES = 'seedModules',
+  CLEAN_EVENTS = 'cleanEvents',
+  CLEAN_EXPIRING_VARIABLES = 'cleanExpiringVariables',
+  ENSURE_CRONJOBS_SCHEDULED = 'ensureCronjobsScheduled',
+  DELETE_GAME_SERVERS = 'deleteGameServers',
+}
+
+export interface ISystemJobData extends IBaseJobData {
+  taskType?: SystemTaskType;
+}
+
+export function getAllSystemTasks(): SystemTaskType[] {
+  return Object.values(SystemTaskType);
+}
+
+export class SystemWorker extends TakaroWorker<ISystemJobData> {
   constructor() {
     super(config.get('queues.system.name'), 1, processJob);
 
     queueService.queues.system.queue.add(
       { domainId: 'all' },
       {
-        jobId: 'system',
+        jobId: 'system-trigger',
         repeat: {
-          jobId: 'system',
+          jobId: 'system-trigger',
           every: ms('1h'),
         },
       },
@@ -28,28 +45,87 @@ export class SystemWorker extends TakaroWorker<IBaseJobData> {
   }
 }
 
-export async function processJob(job: Job<IBaseJobData>) {
+export async function processJob(job: Job<ISystemJobData>) {
   if (job.data.domainId === 'all') {
+    log.info('🔍 Discovering domains and scheduling all system tasks');
     const domainService = new DomainService();
 
+    const domains = [];
     for await (const domain of domainService.getIterator()) {
+      domains.push(domain);
+    }
+
+    if (domains.length === 0) {
+      return;
+    }
+
+    const tasks = getAllSystemTasks();
+    const allJobs = [];
+
+    // Create a flat list of all domain+task combinations
+    for (const domain of domains) {
+      for (const taskType of tasks) {
+        allJobs.push({
+          domainId: domain.id,
+          taskType,
+        });
+      }
+    }
+
+    // Calculate the delay between each job to spread across the hour
+    const hourInMs = ms('1h');
+    const spreadDuration = hourInMs * 0.9; // Use 90% of the hour
+    const delayBetweenJobs = allJobs.length > 1 ? Math.floor(spreadDuration / (allJobs.length - 1)) : 0;
+
+    // Schedule all jobs with increasing delays
+    for (let i = 0; i < allJobs.length; i++) {
+      const job = allJobs[i];
+      const delay = i * delayBetweenJobs;
+
       await queueService.queues.system.queue.add(
-        { domainId: domain.id },
         {
-          jobId: `system-${domain.id.toString()}-${Date.now().toString()}`,
+          domainId: job.domainId,
+          taskType: job.taskType,
+        },
+        {
+          jobId: `system-${job.domainId}-${job.taskType}-${Date.now().toString()}`,
+          delay: delay,
         },
       );
     }
-  } else if (job.name === 'gameServerDelete') {
-    await deleteGameServers(job.data.domainId);
-  } else {
-    ctx.addData({ domain: job.data.domainId });
-    log.info('🧹 Running system tasks for domain');
-    await seedModules(job.data.domainId);
-    await cleanEvents(job.data.domainId);
-    await cleanExpiringVariables(job.data.domainId);
-    await ensureCronjobsAreScheduled(job.data.domainId);
-    await deleteGameServers(job.data.domainId);
+
+    return;
+  }
+
+  // Individual task execution
+  ctx.addData({ domain: job.data.domainId });
+  log.info(`🔧 Executing ${job.data.taskType} for domain ${job.data.domainId}`);
+
+  try {
+    switch (job.data.taskType) {
+      case SystemTaskType.SEED_MODULES:
+        await seedModules(job.data.domainId);
+        break;
+      case SystemTaskType.CLEAN_EVENTS:
+        await cleanEvents(job.data.domainId);
+        break;
+      case SystemTaskType.CLEAN_EXPIRING_VARIABLES:
+        await cleanExpiringVariables(job.data.domainId);
+        break;
+      case SystemTaskType.ENSURE_CRONJOBS_SCHEDULED:
+        await ensureCronjobsScheduled(job.data.domainId);
+        break;
+      case SystemTaskType.DELETE_GAME_SERVERS:
+        await deleteGameServers(job.data.domainId);
+        break;
+      default:
+        log.error(`❌ Unknown task type: ${job.data.taskType}`);
+        break;
+    }
+    log.info(`✅ Completed ${job.data.taskType} for domain ${job.data.domainId}`);
+  } catch (error) {
+    log.error(`❌ Error executing ${job.data.taskType} for domain ${job.data.domainId}`, error);
+    throw error;
   }
 }
 
@@ -75,7 +151,7 @@ async function seedModules(domainId: string) {
   await moduleService.seedBuiltinModules();
 }
 
-async function ensureCronjobsAreScheduled(domainId: string) {
+async function ensureCronjobsScheduled(domainId: string) {
   log.info('🕰 Ensuring cronjobs are scheduled');
   const gameServerService = new GameServerService(domainId);
   const cronjobService = new CronJobService(domainId);
@@ -95,6 +171,7 @@ async function ensureCronjobsAreScheduled(domainId: string) {
 }
 
 async function deleteGameServers(domainId: string) {
+  log.info('🗑️ Deleting marked game servers');
   const gameserverService = new GameServerService(domainId);
   const repo = gameserverService.repo;
   const { query } = await repo.getModel();
