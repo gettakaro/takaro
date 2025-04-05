@@ -1,4 +1,4 @@
-import { Company, Tooltip, IconButton, Card, Dropdown, useTheme, Chip } from '@takaro/lib-components';
+import { Company, Tooltip, IconButton, Card, Dropdown, useTheme, Chip, styled } from '@takaro/lib-components';
 import { PERMISSIONS, ModuleOutputDTO } from '@takaro/apiclient';
 import { FC, useState, MouseEvent, useRef } from 'react';
 import { useNavigate } from '@tanstack/react-router';
@@ -28,6 +28,12 @@ interface IModuleCardProps {
   mod: ModuleOutputDTO;
   canCopyModule: boolean;
 }
+
+const DescriptionDiv = styled.div`
+  max-height: 100px;
+  overflow-y: auto;
+  margin-bottom: 10px;
+`;
 
 export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod, canCopyModule }) => {
   const [openDeleteDialog, setOpenDeleteDialog] = useState<boolean>(false);
@@ -204,7 +210,7 @@ export const ModuleDefinitionCard: FC<IModuleCardProps> = ({ mod, canCopyModule 
                 </Dropdown>
               </ActionIconsContainer>
             </SpacedRow>
-            <p>{latestVersion.description}</p>
+            <DescriptionDiv>{latestVersion.description}</DescriptionDiv>
             <span style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
               {latestVersion.commands.length > 0 && <p>Commands: {latestVersion.commands.length}</p>}
               {latestVersion.hooks.length > 0 && <p>Hooks: {latestVersion.hooks.length}</p>}
