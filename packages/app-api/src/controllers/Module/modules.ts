@@ -228,6 +228,7 @@ export class ModuleController {
                   new ICommand({
                     function: _.function.code,
                     name: _.name,
+                    description: _.description,
                     trigger: _.trigger,
                     helpText: _.helpText,
                     arguments: _.arguments.map(
@@ -249,6 +250,7 @@ export class ModuleController {
                   new IHook({
                     function: _.function.code,
                     name: _.name,
+                    description: _.description,
                     eventType: _.eventType,
                   }),
               ),
@@ -259,6 +261,7 @@ export class ModuleController {
                   new ICronJob({
                     function: _.function.code,
                     name: _.name,
+                    description: _.description,
                     temporalValue: _.temporalValue,
                   }),
               ),
@@ -269,6 +272,7 @@ export class ModuleController {
                   new IFunction({
                     function: _.code,
                     name: _.name,
+                    description: _.description,
                   }),
               ),
             ),
