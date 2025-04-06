@@ -76,6 +76,7 @@ export class SevenDaysToDie implements IGameServer {
   }
 
   async steamIdOrXboxToGameId(id: string): Promise<IGamePlayer | undefined> {
+    if (!id) return undefined;
     if (id.startsWith('Steam_')) id = id.replace('Steam_', '');
     if (id.startsWith('XBL_')) id = id.replace('XBL_', '');
     const players = await this.getPlayers();
