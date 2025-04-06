@@ -1,6 +1,6 @@
 {
   "name": "@takaro/http",
-  "version": "0.0.19",
+  "version": "0.0.21",
   "description": "An opinionated http server",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",

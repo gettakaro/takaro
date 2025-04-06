@@ -1,6 +1,6 @@
 {
   "name": "web-docs",
-  "version": "0.0.19",
+  "version": "0.0.21",
   "description": "Takaro documentation",
   "main": "index.js",
   "scripts": {
