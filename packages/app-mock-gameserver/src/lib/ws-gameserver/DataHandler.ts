@@ -94,6 +94,8 @@ export class GameDataHandler {
 
       const online = metaData.online === 'true';
 
+      if (!online) return null;
+
       if (isNaN(x) || isNaN(y) || isNaN(z)) {
         this.log.error(`Invalid position data for player ${playerRef.gameId}`);
         return null;
@@ -118,11 +120,13 @@ export class GameDataHandler {
     }
   }
 
-  async getAllPlayers(): Promise<Array<{ player: IGamePlayer; meta: IPlayerMeta }>> {
+  async getPlayers(): Promise<Array<{ player: IGamePlayer; meta: IPlayerMeta }>> {
     try {
       const gameIds = await this.redis.sMembers(this.getPlayersSetKey());
       const players = await Promise.all(gameIds.map((gameId) => this.getPlayer(new IPlayerReferenceDTO({ gameId }))));
-      return players.filter((player): player is { player: IGamePlayer; meta: IPlayerMeta } => !!player);
+      return players
+        .filter((player): player is { player: IGamePlayer; meta: IPlayerMeta } => !!player)
+        .filter((player) => player.meta.online);
     } catch (error) {
       this.log.error(`Error retrieving all players: ${error}`);
       return [];

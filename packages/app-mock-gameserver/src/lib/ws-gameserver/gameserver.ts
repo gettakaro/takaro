@@ -44,11 +44,11 @@ export class GameServer implements IGameServer {
     giveItem: async (args: { player: IPlayerReferenceDTO; item: string; amount: number; quality?: string }) =>
       this.giveItem(new IPlayerReferenceDTO(args.player), args.item, args.amount, args.quality),
     listItems: async () => this.listItems(),
-    executeConsoleCommand: async (args: { rawCommand: string }) => this.executeConsoleCommand(args.rawCommand),
+    executeConsoleCommand: async (args: { command: string }) => this.executeConsoleCommand(args.command),
     sendMessage: async (args: { message: string; opts: IMessageOptsDTO }) =>
       this.sendMessage(args.message, new IMessageOptsDTO(args.opts)),
     teleportPlayer: async (args: { player: IPlayerReferenceDTO; x: number; y: number; z: number }) =>
-      this.teleportPlayer(new IPlayerReferenceDTO(args.player), args.x, args.y, args.z),
+      this.teleportPlayer(args.player, args.x, args.y, args.z),
     kickPlayer: async (args: { player: IPlayerReferenceDTO; reason: string }) =>
       this.kickPlayer(new IPlayerReferenceDTO(args.player), args.reason),
     banPlayer: async (args: BanDTO) => this.banPlayer(new BanDTO(args)),
@@ -87,10 +87,21 @@ export class GameServer implements IGameServer {
 
   async init() {
     // eslint-disable-next-line no-async-promise-executor
-    return new Promise<void>(async (resolve) => {
+    return new Promise<void>(async (resolve, reject) => {
       this.wsClient.on('connected', async () => {
         this.log.info('Connected to WebSocket server');
         this.log.info(`Gameserver identity is ${this.serverId}`);
+        const identifyListener = (message: any) => {
+          if (message.type !== 'identifyResponse') return;
+          if (message.payload.error) return reject(message.payload.error);
+
+          this.log.info('Successfully identified with the server');
+          this.wsClient.removeListener('message', identifyListener);
+          resolve();
+        };
+
+        this.wsClient.on('message', identifyListener);
+
         this.wsClient.send({
           type: 'identify',
           payload: {
@@ -98,8 +109,6 @@ export class GameServer implements IGameServer {
             registrationToken: this.config.mockserver.registrationToken,
           },
         });
-
-        resolve();
       });
 
       this.setupMessageHandlers();
@@ -281,10 +290,81 @@ export class GameServer implements IGameServer {
   async executeConsoleCommand(rawCommand: string): Promise<CommandOutput> {
     try {
       this.log.info(`Executing console command: ${rawCommand}`);
-      return new CommandOutput({
-        rawResult: `Executed command: ${rawCommand}`,
-        success: true,
+
+      const output = new CommandOutput({
+        rawResult: 'Unknown command (Command not implemented yet in mock game server 👼)',
+        success: false,
       });
+
+      if (rawCommand === 'version') {
+        output.rawResult = 'Mock game server v0.0.1';
+        output.success = true;
+      }
+
+      if (rawCommand === 'connectAll') {
+        const players = await this.dataHandler.getPlayers();
+        await Promise.all(
+          players.map(async (p) => {
+            await this.dataHandler.setOnlineStatus(p.player.gameId, true);
+          }),
+        );
+        output.rawResult = 'Connected all players';
+        output.success = true;
+      }
+
+      if (rawCommand === 'disconnectAll') {
+        const players = await this.getPlayers();
+        await Promise.all(
+          players.map(async (p) => {
+            await this.dataHandler.setOnlineStatus(p.gameId, false);
+          }),
+        );
+        output.rawResult = 'Disconnected all players';
+        output.success = true;
+      }
+
+      if (rawCommand.startsWith('say')) {
+        const message = rawCommand.replace('say ', '');
+        await this.sendMessage(message, new IMessageOptsDTO({}));
+        output.rawResult = `Sent message: ${message}`;
+        output.success = true;
+      }
+
+      if (rawCommand.startsWith('ban')) {
+        const [_, playerId, reason] = rawCommand.split(' ');
+        await this.banPlayer(
+          new BanDTO({
+            player: new IPlayerReferenceDTO({ gameId: playerId }),
+            reason,
+          }),
+        );
+        output.rawResult = `Banned player ${playerId} with reason: ${reason}`;
+        output.success = true;
+      }
+
+      if (rawCommand.startsWith('unban')) {
+        const [_, playerId] = rawCommand.split(' ');
+        await this.unbanPlayer(new IPlayerReferenceDTO({ gameId: playerId }));
+        output.rawResult = `Unbanned player ${playerId}`;
+        output.success = true;
+      }
+
+      if (rawCommand.startsWith('triggerKill')) {
+        const [_, playerId] = rawCommand.split(' ');
+        const player = await this.getPlayer(new IPlayerReferenceDTO({ gameId: playerId }));
+        this.emitEvent(
+          GameEvents.ENTITY_KILLED,
+          new EventEntityKilled({
+            entity: 'zombie',
+            player,
+            weapon: 'knife',
+          }),
+        );
+        output.rawResult = `Triggered kill for player ${playerId}`;
+        output.success = true;
+      }
+
+      await this.sendLog(`${output.success ? '🟢' : '🔴'} Command executed: ${rawCommand}`);
     } catch (error) {
       this.log.error(`Error executing console command: ${rawCommand}`, error);
       return new CommandOutput({

@@ -98,24 +98,51 @@ class WSServer {
           break;
         case 'identify': {
           const payload = message.payload;
-          if (!payload) throw new errors.BadRequestError('No payload provided');
-          if (!payload.identityToken) throw new errors.BadRequestError('No identityToken provided');
-          if (!payload.registrationToken) throw new errors.BadRequestError('No registrationToken provided');
+          if (!payload)
+            return this.sendToClient(ws, {
+              type: 'identifyResponse',
+              payload: { error: new errors.BadRequestError('No payload provided') },
+            });
+          if (!payload.identityToken || payload.identityToken === '')
+            return this.sendToClient(ws, {
+              type: 'identifyResponse',
+              payload: { error: new errors.BadRequestError('No identityToken provided') },
+            });
+          if (!payload.registrationToken)
+            return this.sendToClient(ws, {
+              type: 'identifyResponse',
+              payload: { error: new errors.BadRequestError('No registrationToken provided') },
+            });
 
           const { identityToken, registrationToken, name } = payload;
           if (typeof identityToken !== 'string') throw new errors.BadRequestError('Invalid identityToken provided');
           if (typeof registrationToken !== 'string')
             throw new errors.BadRequestError('Invalid registrationToken provided');
           const serverName = typeof name === 'string' ? name : identityToken;
-          const gameServerId = await gameServerManager.handleWsIdentify(identityToken, registrationToken, serverName);
+          let gameServerId;
+
+          try {
+            gameServerId = await gameServerManager.handleWsIdentify(identityToken, registrationToken, serverName);
+          } catch (error) {
+            this.log.warn('Error identifying game server:', error);
+            this.log.error(error);
+            this.sendToClient(ws, { type: 'identifyResponse', payload: { error } });
+            return;
+          }
+
           if (!gameServerId) {
             this.log.warn('Gameserver tried to identify, but we could not resolve it');
-            this.sendToClient(ws, { type: 'error', payload: { message: 'Could not identify game server' } });
+            this.sendToClient(ws, {
+              type: 'identifyResponse',
+              payload: { error: new errors.BadRequestError('Could not identify game server') },
+            });
             return;
           }
           this.servers.set(gameServerId, ws);
           if (!ws.id) throw new errors.BadRequestError('WS ID is missing, WS not properly identified/connected');
           this.WsToServerMap.set(ws.id, gameServerId);
+          this.sendToClient(ws, { type: 'identifyResponse', payload: { gameServerId } });
+          this.log.info(`Game server identified: ${gameServerId}`);
           break;
         }
         case 'gameEvent': {

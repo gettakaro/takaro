@@ -17,7 +17,7 @@ class RequestInputDTO extends TakaroDTO<RequestInputDTO> {
     'getPlayerInventory',
     'giveItem',
     'listItems',
-    'executeConsoleCOmmand',
+    'executeConsoleCommand',
     'sendMessage',
     'teleportPlayer',
     'testReachability',

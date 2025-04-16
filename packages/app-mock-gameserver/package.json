@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "start": "node --loader ../../node_modules/@takaro/util/dist/tracing.js dist/bin.js",
-    "start:dev": "nodemon --exec 'npm run build && node --loader ../../node_modules/@takaro/util/dist/tracing.js --inspect=0.0.0.0:12004 dist/bin.js'  --config ../../nodemon.json",
+    "start:dev": "tsc --watch --preserveWatchOutput -p ./tsconfig.build.json",
     "build": "tsc -p ./tsconfig.build.json"
   },
   "keywords": [],

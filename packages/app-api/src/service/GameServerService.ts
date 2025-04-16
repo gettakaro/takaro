@@ -179,7 +179,7 @@ export class GameServerService extends TakaroService<
       { jobId: `itemsSync-${this.domainId}-${createdServer.id}-init` },
     );
 
-    if (isReachable.connectable) {
+    if (isReachable.connectable && createdServer.type !== GAME_SERVER_TYPE.GENERIC) {
       await handlePlayerSync(createdServer.id, this.domainId);
     }
 

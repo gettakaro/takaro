@@ -8,6 +8,14 @@ export class TakaroError extends Error {
     this.http = 500;
     this.name = this.constructor.name;
   }
+
+  toJSON() {
+    return {
+      name: this.name,
+      message: this.message,
+      http: this.http,
+    };
+  }
 }
 
 export class InternalServerError extends TakaroError {

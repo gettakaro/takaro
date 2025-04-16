@@ -69,7 +69,7 @@ class GameServerManager {
     } catch (error) {
       if (isAxiosError(error) && error.response?.status === 404) {
         this.log.warn(`No domain found for registrationToken ${registrationToken}`);
-        return null;
+        throw new errors.UnauthorizedError();
       }
       throw error;
     }
