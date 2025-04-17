@@ -113,6 +113,12 @@ export async function moduleLimitProtectionMiddleware(
 ): Promise<void> {
   if (!req.domainId) return next(new errors.BadRequestError('Domain ID not found'));
   try {
+    // If the request is a DELETE or GET request, skip the limit check
+    // DELETE's are allowed, otherwise people get stuck with their filled module
+    if (req.method === 'DELETE' || req.method === 'GET') {
+      return next();
+    }
+
     // Check if the module has reached the domain limits
     const domainService = new DomainService();
     const domain = await domainService.findOne(req.domainId);

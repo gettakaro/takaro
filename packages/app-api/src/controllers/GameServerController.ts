@@ -211,8 +211,8 @@ export class ImportInputDTO extends TakaroDTO<ImportInputDTO> {
 export class ImportStatusOutputDTO extends TakaroDTO<ImportStatusOutputDTO> {
   @IsString()
   id!: string;
-  @IsEnum(['pending', 'completed', 'failed'])
-  status: 'pending' | 'completed' | 'failed';
+  @IsEnum(['pending', 'completed', 'failed', 'active'])
+  status: 'pending' | 'completed' | 'failed' | 'active';
   @IsOptional()
   @IsString()
   failedReason?: string;
