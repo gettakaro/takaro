@@ -1,6 +1,6 @@
 {
   "name": "@takaro/util",
-  "version": "0.0.21",
+  "version": "0.0.22",
   "description": "An opinionated logger",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",

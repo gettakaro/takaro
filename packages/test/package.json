@@ -1,6 +1,6 @@
 {
   "name": "@takaro/test",
-  "version": "0.0.21",
+  "version": "0.0.22",
   "description": "Test modules",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
