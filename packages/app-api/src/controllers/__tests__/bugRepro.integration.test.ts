@@ -372,6 +372,36 @@ const tests = [
       expect(newModule.data.data.name).to.equal('test module');
     },
   }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Creating a cronjob in a module that has latest version installed should work',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      // Create a module, install it
+      // Then create a cronjob in the module
+
+      const moduleRes = await this.client.module.moduleControllerCreate({
+        name: 'cronjob-test-module',
+        latestVersion: {
+          description: 'test module for cronjob',
+        },
+      });
+
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameServer1.id,
+        versionId: moduleRes.data.data.latestVersion.id,
+      });
+
+      const cronjobRes = await this.client.cronjob.cronJobControllerCreate({
+        name: 'cronjob-test',
+        versionId: moduleRes.data.data.latestVersion.id,
+        temporalValue: '0 0 * * *',
+      });
+
+      expect(cronjobRes.data.data.name).to.equal('cronjob-test');
+    },
+  }),
 ];
 
 describe(group, function () {
