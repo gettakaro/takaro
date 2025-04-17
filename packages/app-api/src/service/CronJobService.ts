@@ -99,14 +99,14 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
       );
       fnIdToAdd = newFn.id;
     } else {
-      const newFn = await functionsService.create(await new FunctionCreateDTO());
+      const newFn = await functionsService.create(new FunctionCreateDTO());
       fnIdToAdd = newFn.id;
     }
 
     const created = await this.repo.create(new CronJobCreateDTO({ ...item, function: fnIdToAdd }));
+    await this.moduleService.refreshInstallations(created.versionId);
     const installedModules = await this.moduleService.getInstalledModules({ versionId: item.versionId });
     await Promise.all(installedModules.map((mod) => this.addCronjobToQueue(created, mod)));
-    await this.moduleService.refreshInstallations(created.versionId);
     return created;
   }
   async update(id: string, item: CronJobUpdateDTO) {
