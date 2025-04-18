@@ -23,7 +23,7 @@ interface FunctionConfigProps {
 export const FunctionConfig: FC<FunctionConfigProps> = ({ itemId, readOnly = false, moduleId, versionId }) => {
   const { data, isPending, isError } = useQuery(functionQueryOptions(itemId));
   if (isPending) return <ConfigLoading />;
-  if (isError) return <Alert variant="error" text="Failed to load command config" />;
+  if (isError) return <Alert variant="error" text="Failed to load function config" />;
   return <FunctionConfigForm fn={data} readOnly={readOnly} moduleId={moduleId} versionId={versionId} />;
 };
 

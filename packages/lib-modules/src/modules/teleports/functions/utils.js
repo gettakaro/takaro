@@ -99,6 +99,9 @@ export async function waypointReconciler() {
         moduleId: [mod.moduleId],
         gameServerId: [gameServerId],
       },
+      search: {
+        key: [getWaypointName('')],
+      },
     })
   ).data.data;
 

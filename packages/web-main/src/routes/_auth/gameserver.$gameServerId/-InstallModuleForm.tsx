@@ -109,7 +109,7 @@ export const InstallModuleForm: FC<InstallModuleFormProps> = ({
                 readOnly={readOnly}
                 schema={JSON.parse(modVersion.systemConfigSchema as string)}
                 uiSchema={{}} /* System config does not have uiSchema*/
-                initialData={modInstallation?.systemConfig || systemConfig}
+                initialData={modInstallation?.systemConfig || modVersion.defaultSystemConfig || systemConfig}
                 hideSubmitButton
                 onSubmit={onSystemConfigSubmit}
                 onChange={() => {

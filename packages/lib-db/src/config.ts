@@ -2,6 +2,7 @@ import { Config, IBaseConfig, baseConfigConvict } from '@takaro/config';
 
 export interface IDbConfig extends IBaseConfig {
   postgres: {
+    connectionString: string;
     host: string;
     port: number;
     user: string;
@@ -23,6 +24,12 @@ export interface IDbConfig extends IBaseConfig {
 
 export const configSchema = {
   postgres: {
+    connectionString: {
+      doc: 'The Postgres connection string to use',
+      format: String,
+      default: '',
+      env: 'POSTGRES_CONNECTION_STRING',
+    },
     host: {
       doc: 'The Postgres host to connect to',
       format: String,

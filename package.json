@@ -1,6 +1,6 @@
 {
   "name": "takaro",
-  "version": "0.0.18",
+  "version": "0.0.21",
   "description": "",
   "keywords": [],
   "homepage": "https://takaro.app",
@@ -25,7 +25,7 @@
     "prepare": "[ -d '.husky' ] && husky || true",
     "prettier": "npx --workspaces --if-present prettier --log-level silent --check --no-error-on-unmatched-pattern 'src/**/*.{ts,md,tsx}'",
     "prettier:fix": "npx --workspaces --if-present prettier --log-level silent --write --no-error-on-unmatched-pattern 'src/**/*.{ts,md,tsx}'",
-    "release:patch": "npm version patch --no-git-tag-version --workspaces && git add **/package.json; npm version patch --include-workspace-root --force",
+    "release:patch": "npm version patch --no-git-tag-version --workspaces && git add **/package.json; npm version patch --include-workspace-root --force && git push && git push --tags",
     "shell": "docker compose exec takaro bash",
     "start": "COMMAND=\"start\" REGEX=app  ./scripts/run-all-pkgs.sh",
     "start:dev": "COMMAND=\"start:dev\"  ./scripts/run-all-pkgs.sh",

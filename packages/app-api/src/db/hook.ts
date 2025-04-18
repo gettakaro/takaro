@@ -5,6 +5,7 @@ import { ITakaroRepo } from './base.js';
 import { FUNCTION_TABLE_NAME, FunctionModel } from './function.js';
 import { EventTypes } from '@takaro/modules';
 import { HookCreateDTO, HookOutputDTO, HookUpdateDTO } from '../service/HookService.js';
+import { ModuleVersion } from './module.js';
 
 export const HOOKS_TABLE_NAME = 'hooks';
 
@@ -25,6 +26,14 @@ export class HookModel extends TakaroModel {
         join: {
           from: `${HOOKS_TABLE_NAME}.functionId`,
           to: `${FUNCTION_TABLE_NAME}.id`,
+        },
+      },
+      version: {
+        relation: Model.BelongsToOneRelation,
+        modelClass: ModuleVersion,
+        join: {
+          from: `${HookModel.tableName}.versionId`,
+          to: `${ModuleVersion.tableName}.id`,
         },
       },
     };
@@ -48,10 +57,17 @@ export class HookRepo extends ITakaroRepo<HookModel, HookOutputDTO, HookCreateDT
 
   async find(filters: ITakaroQuery<HookOutputDTO>) {
     const { query } = await this.getModel();
-    const result = await new QueryBuilder<HookModel, HookOutputDTO>({
+    const qry = new QueryBuilder<HookModel, HookOutputDTO>({
       ...filters,
       extend: ['function'],
     }).build(query);
+
+    if (filters.filters?.moduleId) {
+      const moduleIds = filters.filters.moduleId as string[];
+      qry.innerJoinRelated('version').whereIn('version.moduleId', moduleIds);
+    }
+    const result = await qry;
+
     return {
       total: result.total,
       results: await Promise.all(result.results.map((item) => new HookOutputDTO(item))),
