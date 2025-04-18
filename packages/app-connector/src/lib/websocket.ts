@@ -165,10 +165,19 @@ class WSServer {
       }
     } catch (error) {
       this.log.warn('Error handling message:', error);
-      this.sendToClient(ws, {
-        type: 'error',
-        payload: { message: 'Invalid message format' },
-      });
+      if (error instanceof errors.TakaroError) {
+        this.sendToClient(ws, {
+          type: 'error',
+          payload: { message: error.message },
+        });
+      } else {
+        this.log.error('Internal error handling message');
+        this.log.error(error);
+        this.sendToClient(ws, {
+          type: 'error',
+          payload: { message: 'Invalid message format' },
+        });
+      }
     }
   }
 

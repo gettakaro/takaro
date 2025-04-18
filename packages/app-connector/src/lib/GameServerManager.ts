@@ -1,5 +1,5 @@
 import { TakaroEmitter, getGame, GenericEmitter } from '@takaro/gameserver';
-import { GameEvents, GameEventTypes } from '@takaro/modules';
+import { EventMapping, GameEvents, GameEventTypes } from '@takaro/modules';
 import { errors, logger } from '@takaro/util';
 import {
   AdminClient,
@@ -116,6 +116,12 @@ class GameServerManager {
     if (emitter instanceof GenericEmitter) {
       if (!msg.payload) throw new errors.BadRequestError('No payload provided');
       const { type, data } = msg.payload;
+      const dtoCls = EventMapping[type as GameEventTypes];
+      if (!dtoCls) throw new errors.BadRequestError(`Event ${type} is not supported`);
+
+      const dto = new dtoCls(data as any);
+      await dto.validate();
+
       emitter.listener(type as GameEventTypes, data);
     }
   }

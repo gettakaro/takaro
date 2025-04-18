@@ -1,4 +1,14 @@
-import { EventPlayerConnected, GameEvents, IGamePlayer, IPosition } from '@takaro/modules';
+import {
+  EventEntityKilled,
+  EventLogLine,
+  EventPayload,
+  EventPlayerConnected,
+  EventPlayerDisconnected,
+  GameEvents,
+  GameEventTypes,
+  IGamePlayer,
+  IPosition,
+} from '@takaro/modules';
 import { config, IMockServerConfig } from '../../config.js';
 import { WSClient } from './wsClient.js';
 import { faker } from '@faker-js/faker';
@@ -68,7 +78,7 @@ export class GameServer implements IGameServer {
 
   private async handleGameServerTick() {
     try {
-      const allPlayers = await this.dataHandler.getAllPlayers();
+      const allPlayers = await this.dataHandler.getOnlinePlayers();
       if (allPlayers.length > 0) {
         this.wsClient.send({
           type: 'gameEvent',
@@ -87,7 +97,7 @@ export class GameServer implements IGameServer {
 
   async init() {
     // eslint-disable-next-line no-async-promise-executor
-    return new Promise<void>(async (resolve, reject) => {
+    const identifyPromise = new Promise<void>(async (resolve, reject) => {
       this.wsClient.on('connected', async () => {
         this.log.info('Connected to WebSocket server');
         this.log.info(`Gameserver identity is ${this.serverId}`);
@@ -110,11 +120,12 @@ export class GameServer implements IGameServer {
           },
         });
       });
-
-      this.setupMessageHandlers();
-      await this.dataHandler.init();
-      await this.createInitPlayers();
     });
+
+    this.setupMessageHandlers();
+    await identifyPromise;
+    await this.dataHandler.init();
+    await this.createInitPlayers();
   }
 
   async shutdown() {
@@ -125,7 +136,7 @@ export class GameServer implements IGameServer {
 
   private async createInitPlayers() {
     const totalPlayersWanted = 10;
-    const existingPlayers = await this.dataHandler.getAllPlayers();
+    const existingPlayers = await this.dataHandler.getOnlinePlayers();
     const totalToCreate = totalPlayersWanted - existingPlayers.length;
     if (totalToCreate <= 0) return;
 
@@ -144,7 +155,7 @@ export class GameServer implements IGameServer {
           y: faker.number.int({ min: 0, max: 512 }),
           z: faker.number.int({ min: -1000, max: 1000 }),
         },
-        online: faker.datatype.boolean(),
+        online: false,
       };
 
       return { player, meta };
@@ -171,6 +182,29 @@ export class GameServer implements IGameServer {
       requestId,
       payload: { message },
       type: 'error',
+    });
+  }
+
+  private sendEvent(type: GameEventTypes, data: EventPayload) {
+    this.wsClient.send({
+      type: 'gameEvent',
+      payload: {
+        type,
+        data,
+      },
+    });
+  }
+
+  private sendLog(message: string) {
+    this.wsClient.send({
+      type: 'gameEvent',
+      payload: {
+        type: 'log',
+        data: new EventLogLine({
+          msg: message,
+          type: GameEvents.LOG_LINE,
+        }),
+      },
     });
   }
 
@@ -215,7 +249,7 @@ export class GameServer implements IGameServer {
 
   async getPlayers(): Promise<IGamePlayer[]> {
     try {
-      const players = await this.dataHandler.getAllPlayers();
+      const players = await this.dataHandler.getOnlinePlayers();
       return players.map((p) => p.player);
     } catch (error) {
       this.log.error('Error getting all players:', error);
@@ -292,7 +326,7 @@ export class GameServer implements IGameServer {
       this.log.info(`Executing console command: ${rawCommand}`);
 
       const output = new CommandOutput({
-        rawResult: 'Unknown command (Command not implemented yet in mock game server 👼)',
+        rawResult: 'Unknown command (Command not implemented in mock game server)',
         success: false,
       });
 
@@ -302,10 +336,18 @@ export class GameServer implements IGameServer {
       }
 
       if (rawCommand === 'connectAll') {
-        const players = await this.dataHandler.getPlayers();
+        const players = await this.dataHandler.getAllPlayers();
         await Promise.all(
           players.map(async (p) => {
             await this.dataHandler.setOnlineStatus(p.player.gameId, true);
+            this.sendEvent(
+              GameEvents.PLAYER_CONNECTED,
+              new EventPlayerConnected({
+                player: p.player,
+                msg: 'Player connected',
+                type: GameEvents.PLAYER_CONNECTED,
+              }),
+            );
           }),
         );
         output.rawResult = 'Connected all players';
@@ -317,6 +359,14 @@ export class GameServer implements IGameServer {
         await Promise.all(
           players.map(async (p) => {
             await this.dataHandler.setOnlineStatus(p.gameId, false);
+            this.sendEvent(
+              GameEvents.PLAYER_DISCONNECTED,
+              new EventPlayerDisconnected({
+                player: p,
+                msg: 'Player disconnected',
+                type: GameEvents.PLAYER_DISCONNECTED,
+              }),
+            );
           }),
         );
         output.rawResult = 'Disconnected all players';
@@ -352,7 +402,7 @@ export class GameServer implements IGameServer {
       if (rawCommand.startsWith('triggerKill')) {
         const [_, playerId] = rawCommand.split(' ');
         const player = await this.getPlayer(new IPlayerReferenceDTO({ gameId: playerId }));
-        this.emitEvent(
+        this.sendEvent(
           GameEvents.ENTITY_KILLED,
           new EventEntityKilled({
             entity: 'zombie',
@@ -364,7 +414,8 @@ export class GameServer implements IGameServer {
         output.success = true;
       }
 
-      await this.sendLog(`${output.success ? '🟢' : '🔴'} Command executed: ${rawCommand}`);
+      this.sendLog(`${output.success ? '🟢' : '🔴'} Command executed: ${rawCommand}`);
+      return output;
     } catch (error) {
       this.log.error(`Error executing console command: ${rawCommand}`, error);
       return new CommandOutput({
