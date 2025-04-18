@@ -31,10 +31,7 @@ export async function up(knex: Knex): Promise<void> {
   await knex.raw(formatAlterTableEnumSql('gameservers', 'type', ['MOCK', 'RUST', 'SEVENDAYSTODIE', 'GENERIC']));
 
   await knex.schema.alterTable('domains', (table) => {
-    table
-      .string('serverRegistrationToken', 128)
-      .notNullable()
-      .defaultTo(knex.raw('generate_registration_token()'));
+    table.string('serverRegistrationToken', 128).notNullable().defaultTo(knex.raw('generate_registration_token()'));
   });
 
   await knex.schema.alterTable('gameservers', (table) => {

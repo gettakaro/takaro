@@ -11,9 +11,13 @@ export class GenericEmitter extends TakaroEmitter {
     super();
   }
 
-  async start(): Promise<void> { }
+  async start(): Promise<void> {
+    // No-op, generic connectors initiate the connection
+  }
 
-  async stop(): Promise<void> { }
+  async stop(): Promise<void> {
+    // No-op, generic connectors initiate the connection
+  }
 
   get listener() {
     return this.scopedListener;
