@@ -1,10 +1,6 @@
 import { Config, IBaseConfig } from '@takaro/config';
 import { errors } from '@takaro/util';
 
-export enum EXECUTION_MODE {
-  LOCAL = 'local',
-}
-
 export interface IMockServerConfig extends IBaseConfig {
   http: {
     port: number;

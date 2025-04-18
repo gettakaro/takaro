@@ -56,6 +56,10 @@ async function setupShop(client: Client, gameServerId: string) {
     })
   ).data.data;
 
+  if (!items || items.length === 0) {
+    throw new Error('No items found');
+  }
+
   const listing100Res = await client.shopListing.shopListingControllerCreate({
     gameServerId: gameServerId,
     items: [{ itemId: items[0].id, amount: 1 }],

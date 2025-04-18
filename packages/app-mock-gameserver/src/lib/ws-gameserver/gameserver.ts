@@ -35,7 +35,7 @@ interface IActionMap {
 }
 
 export class GameServer implements IGameServer {
-  private config: IMockServerConfig = JSON.parse(config._config.toString());
+  private config: IMockServerConfig;
   private wsClient;
   private log = logger('GameServer');
   private dataHandler: GameDataHandler;
@@ -69,7 +69,7 @@ export class GameServer implements IGameServer {
   };
 
   constructor(configOverrides: PartialDeep<IMockServerConfig> = {}) {
-    this.config = { ...this.config, ...configOverrides } as IMockServerConfig;
+    this.config = { ...JSON.parse(config._config.toString()), ...configOverrides } as IMockServerConfig;
     this.serverId = this.config.mockserver.identityToken;
     this.wsClient = new WSClient(this.config.ws.url);
     this.dataHandler = new GameDataHandler(this.serverId);
