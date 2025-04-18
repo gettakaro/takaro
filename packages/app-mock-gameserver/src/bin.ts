@@ -30,7 +30,14 @@ async function main() {
   await server.start();
   log.info('🚀 HTTP Server started');
 
-  await getMockServer();
+  if (
+    config.get('mockserver.registrationToken') !== 'default-token' &&
+    config.get('mockserver.identityToken') !== 'default-mock'
+  ) {
+    log.info('✅ Registration and identity tokens provided, will register with the Takaro server');
+    await getMockServer();
+  }
+
   process.on('uncaughtException', (err) => {
     log.error('uncaughtException', err);
   });
