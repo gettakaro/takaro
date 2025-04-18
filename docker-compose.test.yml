@@ -116,7 +116,8 @@ services:
       LOGGING_LEVEL: debug
       REDIS_HOST: 'redis'
       TRACING_ENABLED: ${TRACING_ENABLED}
-      TRACING_ENDPOINT: "http://grafana_agent:4317"          
+      TRACING_ENDPOINT: "http://grafana_agent:4317"
+      T_WS_URL: "ws://takaro_connector:3004"     
     ports:
       - 3002:3002
 
@@ -133,6 +134,7 @@ services:
       TRACING_ENDPOINT: "http://grafana_agent:4317"          
     ports:
       - 3003:3003
+      - 3004:3004
 
   mailhog:
     image: mailhog/mailhog
