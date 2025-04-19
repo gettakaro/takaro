@@ -1,6 +1,6 @@
 import { Job } from 'bullmq';
 import { TakaroWorker, ICSMMImportData, queueService } from '@takaro/queues';
-import { ctx, logger } from '@takaro/util';
+import { ctx, errors, logger } from '@takaro/util';
 import { config } from '../config.js';
 import {
   GameServerCreateDTO,
@@ -15,6 +15,7 @@ import { PlayerOnGameServerService } from '../service/PlayerOnGameserverService.
 import { IGamePlayer } from '@takaro/modules';
 import { ShopListingService } from '../service/Shop/index.js';
 import { ShopListingCreateDTO, ShopListingItemMetaInputDTO } from '../service/Shop/dto.js';
+import { SystemTaskType } from './systemWorkerDefinitions.js';
 
 const log = logger('worker:csmmImport');
 
@@ -213,12 +214,19 @@ async function process(job: Job<ICSMMImportData>) {
     log.warn('Error while determining CPM compatiblity', error);
   }
 
+  // Schedule the item sync job
+  let itemSyncJob: Job<Record<string, unknown>, any, string> | undefined = await queueService.queues.system.queue.add({
+    domainId: job.data.domainId,
+    taskType: SystemTaskType.SYNC_ITEMS,
+    gameServerId: server.id,
+  });
+
+  if (!itemSyncJob || !itemSyncJob.id) throw new errors.BadRequestError('Item sync job not found');
   // Poll the item sync job until it's done
   let isFinished = false;
   while (!isFinished) {
-    const itemSyncJob = await queueService.queues.itemsSync.queue.bullQueue.getJob(
-      `itemsSync-${job.data.domainId}-${server.id}-init`,
-    );
+    itemSyncJob = await queueService.queues.system.queue.bullQueue.getJob(itemSyncJob.id!);
+
     if (!itemSyncJob) {
       log.warn('Item sync job not found, skipping');
       break;
