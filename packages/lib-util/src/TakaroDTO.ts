@@ -1,5 +1,5 @@
 import { IsISO8601, IsString, ValidatorOptions, validate } from 'class-validator';
-import { Exclude, instanceToPlain, plainToClass } from 'class-transformer';
+import { ClassTransformOptions, Exclude, instanceToPlain, plainToClass } from 'class-transformer';
 import * as errors from './errors.js';
 
 type Nullable<T> = {
@@ -48,8 +48,8 @@ export class TakaroDTO<T> {
     }
   }
 
-  toJSON() {
-    return instanceToPlain(this, { enableImplicitConversion: true });
+  toJSON(optionOverrides: ClassTransformOptions = {}): Record<string, any> {
+    return instanceToPlain(this, { enableImplicitConversion: true, ...optionOverrides });
   }
 }
 

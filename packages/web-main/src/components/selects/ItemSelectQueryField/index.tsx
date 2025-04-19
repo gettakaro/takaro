@@ -26,6 +26,7 @@ const gameServerTypeToIconFolderMap = {
   [GameServerOutputDTOTypeEnum.Mock]: 'rust',
   [GameServerOutputDTOTypeEnum.Rust]: 'rust',
   [GameServerOutputDTOTypeEnum.Sevendaystodie]: '7d2d',
+  [GameServerOutputDTOTypeEnum.Generic]: 'generic',
 };
 
 export const ItemSelectQueryField: FC<ItemSelectQueryFieldProps> = ({

@@ -86,11 +86,11 @@ export class Rust implements IGameServer {
         const z = matches[4].replace(')', '');
 
         if (steamId === player.gameId) {
-          return {
+          return new IPosition({
             x: parseInt(x, 10),
             y: parseInt(y, 10),
             z: parseInt(z, 10),
-          };
+          });
         }
       }
     }

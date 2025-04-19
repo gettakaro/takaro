@@ -1,23 +1,17 @@
-import 'reflect-metadata';
-
 import { HTTP } from '@takaro/http';
 import { logger, errors } from '@takaro/util';
 import { config } from './config.js';
-import { ConnectorWorker } from './lib/worker.js';
-import { gameServerManager } from './lib/GameServerManager.js';
-import { GameServerController } from './controllers/gameserverController.js';
+import { getMockServer } from './main.js';
+
+const log = logger('mock-gameserver');
 
 export const server = new HTTP(
-  {
-    controllers: [GameServerController],
-  },
+  {},
   {
     port: config.get('http.port'),
     allowedOrigins: config.get('http.allowedOrigins'),
   },
 );
-
-const log = logger('main');
 
 async function main() {
   log.info('Starting...');
@@ -34,16 +28,19 @@ async function main() {
   }
 
   await server.start();
+  log.info('🚀 HTTP Server started');
 
-  new ConnectorWorker();
-  try {
-    await gameServerManager.init();
-  } catch (error) {
-    log.error('Error initializing game server manager', { error });
-    process.exit(1);
+  if (
+    config.get('mockserver.registrationToken') !== 'default-token' &&
+    config.get('mockserver.identityToken') !== 'default-mock'
+  ) {
+    log.info('✅ Registration and identity tokens provided, will register with the Takaro server');
+    await getMockServer();
   }
 
-  log.info('🚀 Server started');
+  process.on('uncaughtException', (err) => {
+    log.error('uncaughtException', err);
+  });
 }
 
 main();

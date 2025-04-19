@@ -1646,6 +1646,12 @@ export interface DomainOutputDTO {
   state: DomainOutputDTOStateEnum;
   /**
    *
+   * @type {string}
+   * @memberof DomainOutputDTO
+   */
+  serverRegistrationToken: string;
+  /**
+   *
    * @type {number}
    * @memberof DomainOutputDTO
    */
@@ -3059,12 +3065,19 @@ export interface GameServerCreateDTO {
    * @memberof GameServerCreateDTO
    */
   type: GameServerCreateDTOTypeEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerCreateDTO
+   */
+  identityToken?: string;
 }
 
 export const GameServerCreateDTOTypeEnum = {
   Mock: 'MOCK',
   Sevendaystodie: 'SEVENDAYSTODIE',
   Rust: 'RUST',
+  Generic: 'GENERIC',
 } as const;
 
 export type GameServerCreateDTOTypeEnum =
@@ -3130,6 +3143,12 @@ export interface GameServerOutputDTO {
    * @type {string}
    * @memberof GameServerOutputDTO
    */
+  identityToken?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerOutputDTO
+   */
   id: string;
   /**
    *
@@ -3149,6 +3168,7 @@ export const GameServerOutputDTOTypeEnum = {
   Mock: 'MOCK',
   Sevendaystodie: 'SEVENDAYSTODIE',
   Rust: 'RUST',
+  Generic: 'GENERIC',
 } as const;
 
 export type GameServerOutputDTOTypeEnum =
@@ -3208,6 +3228,12 @@ export interface GameServerSearchInputAllowedFilters {
    * @type {Array<string>}
    * @memberof GameServerSearchInputAllowedFilters
    */
+  identityToken?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof GameServerSearchInputAllowedFilters
+   */
   id?: Array<string>;
 }
 
@@ -3215,6 +3241,7 @@ export const GameServerSearchInputAllowedFiltersTypeEnum = {
   Mock: 'MOCK',
   Sevendaystodie: 'SEVENDAYSTODIE',
   Rust: 'RUST',
+  Generic: 'GENERIC',
 } as const;
 
 export type GameServerSearchInputAllowedFiltersTypeEnum =
@@ -3346,6 +3373,7 @@ export const GameServerTestReachabilityInputDTOTypeEnum = {
   Mock: 'MOCK',
   Sevendaystodie: 'SEVENDAYSTODIE',
   Rust: 'RUST',
+  Generic: 'GENERIC',
 } as const;
 
 export type GameServerTestReachabilityInputDTOTypeEnum =
@@ -3375,6 +3403,7 @@ export const GameServerTypesOutputDTOTypeEnum = {
   Mock: 'MOCK',
   Sevendaystodie: 'SEVENDAYSTODIE',
   Rust: 'RUST',
+  Generic: 'GENERIC',
 } as const;
 
 export type GameServerTypesOutputDTOTypeEnum =
@@ -3441,6 +3470,7 @@ export const GameServerUpdateDTOTypeEnum = {
   Mock: 'MOCK',
   Sevendaystodie: 'SEVENDAYSTODIE',
   Rust: 'RUST',
+  Generic: 'GENERIC',
 } as const;
 
 export type GameServerUpdateDTOTypeEnum =
@@ -8299,6 +8329,19 @@ export interface RedirectQs {
    * @memberof RedirectQs
    */
   redirect: string;
+}
+/**
+ *
+ * @export
+ * @interface ResolveRegistrationTokenInputDTO
+ */
+export interface ResolveRegistrationTokenInputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof ResolveRegistrationTokenInputDTO
+   */
+  registrationToken: string;
 }
 /**
  *
@@ -13549,6 +13592,48 @@ export const DomainApiAxiosParamCreator = function (configuration?: Configuratio
       };
     },
     /**
+     * <br> OperationId: `DomainControllerResolveRegistrationToken`
+     * @summary Resolve registration token
+     * @param {ResolveRegistrationTokenInputDTO} [resolveRegistrationTokenInputDTO] ResolveRegistrationTokenInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    domainControllerResolveRegistrationToken: async (
+      resolveRegistrationTokenInputDTO?: ResolveRegistrationTokenInputDTO,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/resolve-registration-token`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication adminAuth required
+      await setApiKeyToObject(localVarHeaderParameter, 'x-takaro-admin-token', configuration);
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        resolveRegistrationTokenInputDTO,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      * <br> OperationId: `DomainControllerSearch`
      * @summary Search
      * @param {DomainSearchInputDTO} [domainSearchInputDTO] DomainSearchInputDTO
@@ -13731,6 +13816,32 @@ export const DomainApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
+     * <br> OperationId: `DomainControllerResolveRegistrationToken`
+     * @summary Resolve registration token
+     * @param {ResolveRegistrationTokenInputDTO} [resolveRegistrationTokenInputDTO] ResolveRegistrationTokenInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async domainControllerResolveRegistrationToken(
+      resolveRegistrationTokenInputDTO?: ResolveRegistrationTokenInputDTO,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DomainOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.domainControllerResolveRegistrationToken(
+        resolveRegistrationTokenInputDTO,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['DomainApi.domainControllerResolveRegistrationToken']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
      * <br> OperationId: `DomainControllerSearch`
      * @summary Search
      * @param {DomainSearchInputDTO} [domainSearchInputDTO] DomainSearchInputDTO
@@ -13841,6 +13952,21 @@ export const DomainApiFactory = function (configuration?: Configuration, basePat
       return localVarFp.domainControllerRemove(id, options).then((request) => request(axios, basePath));
     },
     /**
+     * <br> OperationId: `DomainControllerResolveRegistrationToken`
+     * @summary Resolve registration token
+     * @param {ResolveRegistrationTokenInputDTO} [resolveRegistrationTokenInputDTO] ResolveRegistrationTokenInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    domainControllerResolveRegistrationToken(
+      resolveRegistrationTokenInputDTO?: ResolveRegistrationTokenInputDTO,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<DomainOutputDTOAPI> {
+      return localVarFp
+        .domainControllerResolveRegistrationToken(resolveRegistrationTokenInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
      * <br> OperationId: `DomainControllerSearch`
      * @summary Search
      * @param {DomainSearchInputDTO} [domainSearchInputDTO] DomainSearchInputDTO
@@ -13935,6 +14061,23 @@ export class DomainApi extends BaseAPI {
   public domainControllerRemove(id: string, options?: RawAxiosRequestConfig) {
     return DomainApiFp(this.configuration)
       .domainControllerRemove(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * <br> OperationId: `DomainControllerResolveRegistrationToken`
+   * @summary Resolve registration token
+   * @param {ResolveRegistrationTokenInputDTO} [resolveRegistrationTokenInputDTO] ResolveRegistrationTokenInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof DomainApi
+   */
+  public domainControllerResolveRegistrationToken(
+    resolveRegistrationTokenInputDTO?: ResolveRegistrationTokenInputDTO,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return DomainApiFp(this.configuration)
+      .domainControllerResolveRegistrationToken(resolveRegistrationTokenInputDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

@@ -65,6 +65,7 @@ export class IntegrationTest<SetupData> {
   public readonly client: Client;
 
   public standardDomainId: string | null = null;
+  public domainRegistrationToken: string | null = null;
   public setupData!: Awaited<SetupData>;
   public standardLogin: { username: string; password: string } = {
     username: '',
@@ -91,6 +92,7 @@ export class IntegrationTest<SetupData> {
       maxUsers: 5,
     });
     this.standardDomainId = createdDomain.data.data.createdDomain.id;
+    this.domainRegistrationToken = createdDomain.data.data.createdDomain.serverRegistrationToken;
 
     this.client.username = createdDomain.data.data.rootUser.email;
     this.client.password = createdDomain.data.data.password;

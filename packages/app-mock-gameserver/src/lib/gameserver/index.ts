@@ -158,11 +158,11 @@ export class MockGameserver implements IMockGameServer {
       return null;
     }
 
-    return {
+    return new IPosition({
       x: parseInt(player.positionX, 10),
       y: parseInt(player.positionY, 10),
       z: parseInt(player.positionZ, 10),
-    };
+    });
   }
 
   async executeConsoleCommand(rawCommand: string) {
