@@ -213,6 +213,7 @@ export class GameServerService extends TakaroService<
     await queueService.queues.system.queue.add(
       {
         domainId: this.domainId,
+        taskType: SystemTaskType.DELETE_GAME_SERVERS,
       },
       {},
       'gameServerDelete',
@@ -535,6 +536,7 @@ export class GameServerService extends TakaroService<
       domainId: this.domainId,
       taskType: input.type,
       gameServerId: input.id,
+      triggerId: randomUUID(),
     });
 
     if (!triggeredJob || !triggeredJob.id) {
