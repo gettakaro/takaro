@@ -414,6 +414,36 @@ const tests = [
       expect(cronjobRes.data.data.name).to.equal('cronjob-test');
     },
   }),
+  /**
+   * Depending on the endpoint, strings are allowed and not validated to be UUIDs.
+   * If this happens, the API would throw an internal server error
+   * Instead, it should throw a clean 400 error
+   */
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Passing a string as an arg to something that expects UUID returns a clean error',
+    test: async function () {
+      const roles = (await this.client.role.roleControllerSearch()).data.data;
+      const role = roles[0];
+
+      try {
+        await this.client.role.roleControllerUpdate(role.id, {
+          name: 'blabla',
+          permissions: [
+            {
+              permissionId: 'not-uuid',
+            },
+          ],
+        });
+        throw new Error('Should have thrown an error');
+      } catch (error) {
+        if (!isAxiosError(error)) throw error;
+        expect(error.response?.status).to.be.eq(400);
+        expect(error.response?.data.meta.error.message).to.be.eq('Invalid UUID. Passed a string instead of a UUID');
+      }
+    },
+  }),
 ];
 
 describe(group, function () {
