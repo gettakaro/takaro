@@ -1,6 +1,6 @@
 import { Redis, RedisClient } from '@takaro/db';
 import { IGamePlayer } from '@takaro/modules';
-import { IPlayerReferenceDTO } from '@takaro/gameserver';
+import { BanDTO, IPlayerReferenceDTO } from '@takaro/gameserver';
 import { errors, logger } from '@takaro/util';
 
 export interface IPlayerMeta {
@@ -38,6 +38,11 @@ export class GameDataHandler {
 
   private getPlayersSetKey(): string {
     return `${this.keyPrefix}:players`;
+  }
+
+  private getBanKey(gameId: string): string {
+    if (!gameId) throw new errors.BadRequestError('gameId is required');
+    return `${this.keyPrefix}:ban:${gameId}`;
   }
 
   async addPlayer(player: IGamePlayer, meta: IPlayerMeta): Promise<void> {
@@ -174,6 +179,92 @@ export class GameDataHandler {
     } catch (error) {
       this.log.error(`Error removing player ${gameId}: ${error}`);
       throw error;
+    }
+  }
+
+  async banPlayer(options: BanDTO): Promise<void> {
+    const player = await this.getPlayer(options.player);
+    if (!player) {
+      throw new errors.NotFoundError('Player not found');
+    }
+
+    const banKey = this.getBanKey(options.player.gameId);
+
+    try {
+      // Store the ban information
+      if (options.expiresAt) {
+        // Calculate the expiration timestamp if expiresAt is provided
+        const expireTimestamp = new Date(options.expiresAt).valueOf();
+
+        await this.redis.set(banKey, JSON.stringify(options), {
+          EXAT: Math.floor(expireTimestamp / 1000), // Redis expects seconds, not milliseconds
+        });
+      } else {
+        // Permanent ban without expiration
+        await this.redis.set(banKey, JSON.stringify(options));
+      }
+    } catch (error) {
+      this.log.error(`Error banning player ${options.player.gameId}: ${error}`);
+      throw error;
+    }
+  }
+
+  async unbanPlayer(playerRef: IPlayerReferenceDTO): Promise<void> {
+    const player = await this.getPlayer(playerRef);
+    if (!player) {
+      throw new errors.NotFoundError('Player not found');
+    }
+
+    const banKey = this.getBanKey(playerRef.gameId);
+
+    try {
+      await this.redis.del(banKey);
+    } catch (error) {
+      this.log.error(`Error unbanning player ${playerRef.gameId}: ${error}`);
+      throw error;
+    }
+  }
+
+  async listBans(): Promise<BanDTO[]> {
+    try {
+      // Get all ban keys
+      const banPattern = `${this.keyPrefix}:ban:*`;
+      const keys = await this.redis.keys(banPattern);
+
+      if (!keys.length) return [];
+
+      // Get all ban data
+      const banData = await this.redis.mGet(keys);
+
+      // Parse and process ban data
+      const banDTOs = await Promise.all(
+        banData.map(async (banJson) => {
+          if (!banJson) return null;
+
+          try {
+            const banDto = new BanDTO(...JSON.parse(banJson));
+
+            // Fetch the associated player data
+            const player = await this.getPlayer(banDto.player);
+            if (!player) return null;
+
+            // Return the ban with updated player information
+            return {
+              ...banDto,
+              player: player.player,
+            } as BanDTO;
+          } catch (error) {
+            this.log.error(`Error parsing ban data: ${error}`);
+            return null;
+          }
+        }),
+      );
+
+      // Filter out any nulls and return valid bans
+      return banDTOs.filter((ban): ban is BanDTO => ban !== null);
+    } catch (error) {
+      this.log.error(`Error listing bans: ${error}`);
+      return [];
     }
   }
 }

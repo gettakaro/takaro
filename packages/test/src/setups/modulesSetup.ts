@@ -1,4 +1,4 @@
-import { ModuleOutputDTO, GameServerOutputDTO, RoleOutputDTO, PlayerOutputDTO } from '@takaro/apiclient';
+import { ModuleOutputDTO, GameServerOutputDTO, RoleOutputDTO, PlayerOutputDTO, Client } from '@takaro/apiclient';
 import type { EventTypes } from '@takaro/modules';
 import { EventsAwaiter, IntegrationTest } from '../main.js';
 import { randomUUID } from 'crypto';
@@ -33,6 +33,27 @@ export const chatMessageSorter = (a: IDetectedEvent, b: IDetectedEvent) => {
   }
   return 0;
 };
+
+async function triggerItemSync(client: Client, gameServerId: string) {
+  const triggeredJobRes = await client.gameserver.gameServerControllerTriggerJob('syncItems', gameServerId);
+  const triggeredJob = triggeredJobRes.data.data;
+  if (!triggeredJob || !triggeredJob.id) throw new Error('Triggered job ID not found');
+
+  // Poll the job until it's done
+  while (true) {
+    const jobToAwait = await (
+      await client.gameserver.gameServerControllerGetJob('syncItems', triggeredJob.id)
+    ).data.data;
+    if (!jobToAwait) throw new Error('Job not found');
+    if (jobToAwait.status === 'completed') {
+      break;
+    }
+    if (jobToAwait.status === 'failed') {
+      throw new Error(`Job failed: ${jobToAwait.failedReason}.`);
+    }
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+}
 
 export const modulesTestSetup = async function (
   this: IntegrationTest<IModuleTestsSetupData>,
@@ -95,6 +116,9 @@ export const modulesTestSetup = async function (
     this.client.gameserver.gameServerControllerExecuteCommand(gameServer1.id, { command: 'connectAll' }),
     this.client.gameserver.gameServerControllerExecuteCommand(gameServer2.id, { command: 'connectAll' }),
   ]);
+
+  await triggerItemSync(this.client, gameServer1.id);
+  await triggerItemSync(this.client, gameServer2.id);
 
   await playerCreatedEvents;
 

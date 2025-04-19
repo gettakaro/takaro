@@ -196,6 +196,7 @@ export class GameServer implements IGameServer {
   }
 
   private sendLog(message: string) {
+    this.log.info(message);
     this.wsClient.send({
       type: 'gameEvent',
       payload: {
@@ -275,18 +276,18 @@ export class GameServer implements IGameServer {
 
   async getPlayerInventory(player: IPlayerReferenceDTO): Promise<IItemDTO[]> {
     try {
-      // Mock inventory with random items
-      return Array.from(
-        { length: faker.number.int({ min: 1, max: 10 }) },
-        (_, i) =>
-          new IItemDTO({
-            name: `Item ${i}`,
-            code: `item_${i}`,
-            description: faker.commerce.productDescription(),
-            amount: faker.number.int({ min: 1, max: 100 }),
-            quality: faker.helpers.arrayElement(['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary']),
-          }),
-      );
+      return [
+        new IItemDTO({
+          code: 'wood',
+          name: 'Wood',
+          description: 'Wood is good',
+        }),
+        new IItemDTO({
+          code: 'stone',
+          name: 'Stone',
+          description: 'Stone can get you stoned',
+        }),
+      ];
     } catch (error) {
       this.log.error(`Error getting inventory for player ${player.gameId}:`, error);
       return [];
@@ -442,7 +443,8 @@ export class GameServer implements IGameServer {
 
   async teleportPlayer(player: IPlayerReferenceDTO, x: number, y: number, z: number): Promise<void> {
     try {
-      this.log.info(`Teleporting player ${player.gameId} to coordinates (${x}, ${y}, ${z})`);
+      await this.dataHandler.updatePlayerPosition(player.gameId, { x, y, z });
+      this.sendLog(`Teleported ${player.gameId} to ${x}, ${y}, ${z}`);
       return Promise.resolve();
     } catch (error) {
       this.log.error(`Error teleporting player ${player.gameId}:`, error);
@@ -459,7 +461,16 @@ export class GameServer implements IGameServer {
 
   async kickPlayer(player: IPlayerReferenceDTO, reason: string): Promise<void> {
     try {
-      this.log.info(`Kicking player ${player.gameId} with reason: ${reason}`);
+      await this.dataHandler.setOnlineStatus(player.gameId, false);
+      this.sendEvent(
+        GameEvents.PLAYER_DISCONNECTED,
+        new EventPlayerDisconnected({
+          player,
+          msg: reason,
+          type: GameEvents.PLAYER_DISCONNECTED,
+        }),
+      );
+      this.sendLog(`Kicked player ${player.gameId} with reason: ${reason}`);
       return Promise.resolve();
     } catch (error) {
       this.log.error(`Error kicking player ${player.gameId}:`, error);
@@ -469,9 +480,16 @@ export class GameServer implements IGameServer {
 
   async banPlayer(options: BanDTO): Promise<void> {
     try {
-      this.log.info(
-        `Banning player ${options.player.gameId} with reason: ${options.reason}, expires: ${options.expiresAt || 'never'}`,
+      await this.dataHandler.banPlayer(options);
+      this.sendEvent(
+        GameEvents.PLAYER_DISCONNECTED,
+        new EventPlayerDisconnected({
+          player: options.player,
+          msg: options.reason,
+          type: GameEvents.PLAYER_DISCONNECTED,
+        }),
       );
+      this.sendLog(`Banned player ${options.player.gameId} with reason: ${options.reason}`);
       return Promise.resolve();
     } catch (error) {
       this.log.error(`Error banning player ${options.player.gameId}:`, error);
@@ -481,7 +499,8 @@ export class GameServer implements IGameServer {
 
   async unbanPlayer(player: IPlayerReferenceDTO): Promise<void> {
     try {
-      this.log.info(`Unbanning player ${player.gameId}`);
+      await this.dataHandler.unbanPlayer(player);
+      this.sendLog(`Unbanned player ${player.gameId}`);
       return Promise.resolve();
     } catch (error) {
       this.log.error(`Error unbanning player ${player.gameId}:`, error);
@@ -491,20 +510,8 @@ export class GameServer implements IGameServer {
 
   async listBans(): Promise<BanDTO[]> {
     try {
-      // Mock list of banned players
-      return Array.from({ length: faker.number.int({ min: 0, max: 5 }) }, () => {
-        const player = new IGamePlayer({
-          gameId: faker.string.alphanumeric(8),
-          name: faker.internet.userName(),
-          steamId: faker.string.alphanumeric(16),
-        });
-
-        return new BanDTO({
-          player,
-          reason: faker.helpers.arrayElement(['Cheating', 'Harassment', 'Exploiting', 'Toxic behavior']),
-          expiresAt: faker.helpers.arrayElement([faker.date.future().toISOString(), null]),
-        });
-      });
+      const bans = await this.dataHandler.listBans();
+      return bans.map((ban) => new BanDTO(ban));
     } catch (error) {
       this.log.error('Error listing bans:', error);
       return [];
