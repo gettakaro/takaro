@@ -43,6 +43,7 @@ import { config } from '../config.js';
 import { handlePlayerSync } from '../workers/playerSyncWorker.js';
 import { ImportInputDTO } from '../controllers/GameServerController.js';
 import { DomainService } from './DomainService.js';
+import { SystemTaskType } from '../workers/systemWorker.js';
 
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 const ajv = new Ajv({ useDefaults: true, strict: true });
@@ -154,10 +155,11 @@ export class GameServerService extends TakaroService<
       operation: 'create',
       time: new Date().toISOString(),
     });
-    await queueService.queues.itemsSync.queue.add(
-      { domainId: this.domainId, gameServerId: createdServer.id },
-      { jobId: `itemsSync-${this.domainId}-${createdServer.id}-init` },
-    );
+
+    await queueService.queues.system.queue.add({
+      domainId: this.domainId,
+      taskType: SystemTaskType.SYNC_ITEMS,
+    });
 
     if (isReachable.connectable) {
       await handlePlayerSync(createdServer.id, this.domainId);

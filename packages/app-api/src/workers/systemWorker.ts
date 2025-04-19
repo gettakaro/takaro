@@ -9,6 +9,9 @@ import { DomainService } from '../service/DomainService.js';
 import { ModuleService } from '../service/Module/index.js';
 import { GameServerService } from '../service/GameServerService.js';
 import { CronJobService } from '../service/CronJobService.js';
+import { BanService } from '../service/Ban/index.js';
+import { PlayerService } from '../service/Player/index.js';
+import { steamApi } from '../lib/steamApi.js';
 
 const log = logger(`worker:${config.get('queues.system.name')}`);
 
@@ -18,6 +21,9 @@ export enum SystemTaskType {
   CLEAN_EXPIRING_VARIABLES = 'cleanExpiringVariables',
   ENSURE_CRONJOBS_SCHEDULED = 'ensureCronjobsScheduled',
   DELETE_GAME_SERVERS = 'deleteGameServers',
+  SYNC_ITEMS = 'syncItems',
+  SYNC_BANS = 'syncBans',
+  SYNC_STEAM = 'syncSteam',
 }
 
 export interface ISystemJobData extends IBaseJobData {
@@ -30,7 +36,9 @@ export function getAllSystemTasks(): SystemTaskType[] {
 
 export class SystemWorker extends TakaroWorker<ISystemJobData> {
   constructor() {
-    super(config.get('queues.system.name'), 1, processJob);
+    super(config.get('queues.system.name'), 1, processJob, {
+      stalledInterval: ms('10minutes'),
+    });
 
     queueService.queues.system.queue.add(
       { domainId: 'all' },
@@ -98,7 +106,10 @@ export async function processJob(job: Job<ISystemJobData>) {
   }
 
   // Individual task execution
-  ctx.addData({ domain: job.data.domainId });
+  ctx.addData({
+    domain: job.data.domainId,
+    jobId: job.id,
+  });
   log.info(`🔧 Executing ${job.data.taskType} for domain ${job.data.domainId}`);
 
   try {
@@ -117,6 +128,15 @@ export async function processJob(job: Job<ISystemJobData>) {
         break;
       case SystemTaskType.DELETE_GAME_SERVERS:
         await deleteGameServers(job.data.domainId);
+        break;
+      case SystemTaskType.SYNC_ITEMS:
+        await syncItems(job.data.domainId);
+        break;
+      case SystemTaskType.SYNC_BANS:
+        await syncBans(job.data.domainId);
+        break;
+      case SystemTaskType.SYNC_STEAM:
+        await syncSteam(job.data.domainId);
         break;
       default:
         log.error(`❌ Unknown task type: ${job.data.taskType}`);
@@ -176,4 +196,58 @@ async function deleteGameServers(domainId: string) {
   const repo = gameserverService.repo;
   const { query } = await repo.getModel();
   await query.whereNotNull('deletedAt').delete();
+}
+
+async function syncItems(domainId: string) {
+  log.info('🔄 Syncing items for all game servers');
+  const gameServerService = new GameServerService(domainId);
+
+  for await (const gameServer of gameServerService.getIterator()) {
+    ctx.addData({ gameServer: gameServer.id });
+    log.info(`🔄 Testing reachability for game server ${gameServer.id}`);
+
+    const reachable = await gameServerService.testReachability(gameServer.id);
+    if (reachable.connectable) {
+      log.info(`🔄 Syncing items for game server ${gameServer.id}`);
+      await gameServerService.syncItems(gameServer.id);
+    } else {
+      log.info(`⚠️ Game server ${gameServer.id} not reachable, skipping items sync`);
+    }
+  }
+}
+
+async function syncBans(domainId: string) {
+  log.info('🔄 Syncing bans for all game servers');
+  const gameServerService = new GameServerService(domainId);
+  const banService = new BanService(domainId);
+
+  for await (const gameServer of gameServerService.getIterator()) {
+    ctx.addData({ gameServer: gameServer.id });
+    log.info(`🔄 Testing reachability for game server ${gameServer.id}`);
+
+    const reachable = await gameServerService.testReachability(gameServer.id);
+    if (reachable.connectable) {
+      log.info(`🔄 Syncing bans for game server ${gameServer.id}`);
+      await banService.syncBans(gameServer.id);
+    } else {
+      log.info(`⚠️ Game server ${gameServer.id} not reachable, skipping bans sync`);
+    }
+  }
+}
+
+async function syncSteam(domainId: string) {
+  log.info('🔄 Syncing Steam data');
+
+  const playerService = new PlayerService(domainId);
+  await steamApi.refreshRateLimitedStatus();
+  const remainingCalls = await steamApi.getRemainingCalls();
+
+  if (remainingCalls < 10000) {
+    log.warn(`⚠️ Less than 10k API calls remaining, skipping Steam sync for domain ${domainId}`);
+    return;
+  }
+
+  log.info(`🔄 Syncing Steam data for domain ${domainId}`);
+  const syncedCount = await playerService.handleSteamSync();
+  log.info(`✅ Successfully synced ${syncedCount} players for domain ${domainId}`);
 }
