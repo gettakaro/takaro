@@ -42,17 +42,8 @@ class QueuesService {
     connector: {
       queue: new TakaroQueue<IConnectorQueueData>(config.get('queues.connector.name')),
     },
-    itemsSync: {
-      queue: new TakaroQueue<IGameServerQueueData>(config.get('queues.itemsSync.name')),
-    },
-    bansSync: {
-      queue: new TakaroQueue<IGameServerQueueData>(config.get('queues.bansSync.name')),
-    },
     playerSync: {
       queue: new TakaroQueue<IGameServerQueueData>(config.get('queues.playerSync.name')),
-    },
-    steamSync: {
-      queue: new TakaroQueue<IGameServerQueueData>(config.get('queues.steamSync.name')),
     },
     csmmImport: {
       queue: new TakaroQueue<ICSMMImportData>(config.get('queues.csmmImport.name')),

@@ -1,4 +1,4 @@
-import { IBaseJobData, TakaroWorker, queueService } from '@takaro/queues';
+import { TakaroWorker, queueService } from '@takaro/queues';
 import { ctx, logger } from '@takaro/util';
 import { config } from '../config.js';
 import { Job } from 'bullmq';
@@ -9,20 +9,12 @@ import { DomainService } from '../service/DomainService.js';
 import { ModuleService } from '../service/Module/index.js';
 import { GameServerService } from '../service/GameServerService.js';
 import { CronJobService } from '../service/CronJobService.js';
+import { BanService } from '../service/Ban/index.js';
+import { PlayerService } from '../service/Player/index.js';
+import { steamApi } from '../lib/steamApi.js';
+import { ISystemJobData, systemTaskDefinitions, SystemTaskType } from './systemWorkerDefinitions.js';
 
 const log = logger(`worker:${config.get('queues.system.name')}`);
-
-export enum SystemTaskType {
-  SEED_MODULES = 'seedModules',
-  CLEAN_EVENTS = 'cleanEvents',
-  CLEAN_EXPIRING_VARIABLES = 'cleanExpiringVariables',
-  ENSURE_CRONJOBS_SCHEDULED = 'ensureCronjobsScheduled',
-  DELETE_GAME_SERVERS = 'deleteGameServers',
-}
-
-export interface ISystemJobData extends IBaseJobData {
-  taskType?: SystemTaskType;
-}
 
 export function getAllSystemTasks(): SystemTaskType[] {
   return Object.values(SystemTaskType);
@@ -30,7 +22,9 @@ export function getAllSystemTasks(): SystemTaskType[] {
 
 export class SystemWorker extends TakaroWorker<ISystemJobData> {
   constructor() {
-    super(config.get('queues.system.name'), 1, processJob);
+    super(config.get('queues.system.name'), 1, processJob, {
+      stalledInterval: ms('10minutes'),
+    });
 
     queueService.queues.system.queue.add(
       { domainId: 'all' },
@@ -49,57 +43,65 @@ export async function processJob(job: Job<ISystemJobData>) {
   if (job.data.domainId === 'all') {
     log.info('🔍 Discovering domains and scheduling all system tasks');
     const domainService = new DomainService();
-
     const domains = [];
+
     for await (const domain of domainService.getIterator()) {
       domains.push(domain);
     }
 
-    if (domains.length === 0) {
-      return;
-    }
+    if (domains.length === 0) return;
 
     const tasks = getAllSystemTasks();
     const allJobs = [];
 
-    // Create a flat list of all domain+task combinations
     for (const domain of domains) {
       for (const taskType of tasks) {
-        allJobs.push({
-          domainId: domain.id,
-          taskType,
-        });
+        const taskDef = systemTaskDefinitions[taskType];
+
+        if (taskDef.perGameserver) {
+          const gameServerService = new GameServerService(domain.id);
+          for await (const gs of gameServerService.getIterator()) {
+            allJobs.push({
+              domainId: domain.id,
+              taskType,
+              gameServerId: gs.id,
+            });
+          }
+        } else {
+          allJobs.push({
+            domainId: domain.id,
+            taskType,
+          });
+        }
       }
     }
 
-    // Calculate the delay between each job to spread across the hour
     const hourInMs = ms('1h');
     const spreadDuration = hourInMs * 0.9; // Use 90% of the hour
     const delayBetweenJobs = allJobs.length > 1 ? Math.floor(spreadDuration / (allJobs.length - 1)) : 0;
 
-    // Schedule all jobs with increasing delays
     for (let i = 0; i < allJobs.length; i++) {
-      const job = allJobs[i];
-      const delay = i * delayBetweenJobs;
-
+      const jobConfig = allJobs[i];
       await queueService.queues.system.queue.add(
+        { ...jobConfig },
         {
-          domainId: job.domainId,
-          taskType: job.taskType,
-        },
-        {
-          jobId: `system-${job.domainId}-${job.taskType}-${Date.now().toString()}`,
-          delay: delay,
+          jobId: `system-${jobConfig.domainId}-${jobConfig.taskType}-${jobConfig.gameServerId || 'domain'}-${Date.now()}`,
+          delay: i * delayBetweenJobs,
         },
       );
     }
-
     return;
   }
 
-  // Individual task execution
-  ctx.addData({ domain: job.data.domainId });
-  log.info(`🔧 Executing ${job.data.taskType} for domain ${job.data.domainId}`);
+  ctx.addData({
+    domain: job.data.domainId,
+    jobId: job.id,
+    gameServer: job.data.gameServerId,
+  });
+
+  const logTarget = job.data.gameServerId ? `game server ${job.data.gameServerId}` : `domain ${job.data.domainId}`;
+
+  log.info(`🔧 Executing ${job.data.taskType} for ${logTarget}`);
 
   try {
     switch (job.data.taskType) {
@@ -113,18 +115,27 @@ export async function processJob(job: Job<ISystemJobData>) {
         await cleanExpiringVariables(job.data.domainId);
         break;
       case SystemTaskType.ENSURE_CRONJOBS_SCHEDULED:
-        await ensureCronjobsScheduled(job.data.domainId);
+        await ensureCronjobsScheduled(job.data.domainId, job.data.gameServerId);
         break;
       case SystemTaskType.DELETE_GAME_SERVERS:
         await deleteGameServers(job.data.domainId);
+        break;
+      case SystemTaskType.SYNC_ITEMS:
+        await syncItems(job.data.domainId, job.data.gameServerId);
+        break;
+      case SystemTaskType.SYNC_BANS:
+        await syncBans(job.data.domainId, job.data.gameServerId);
+        break;
+      case SystemTaskType.SYNC_STEAM:
+        await syncSteam(job.data.domainId);
         break;
       default:
         log.error(`❌ Unknown task type: ${job.data.taskType}`);
         break;
     }
-    log.info(`✅ Completed ${job.data.taskType} for domain ${job.data.domainId}`);
+    log.info(`✅ Completed ${job.data.taskType} for ${logTarget}`);
   } catch (error) {
-    log.error(`❌ Error executing ${job.data.taskType} for domain ${job.data.domainId}`, error);
+    log.error(`❌ Error executing ${job.data.taskType} for ${logTarget}`, error);
     throw error;
   }
 }
@@ -151,22 +162,28 @@ async function seedModules(domainId: string) {
   await moduleService.seedBuiltinModules();
 }
 
-async function ensureCronjobsScheduled(domainId: string) {
+async function ensureCronjobsScheduled(domainId: string, gameServerId?: string) {
   log.info('🕰 Ensuring cronjobs are scheduled');
   const gameServerService = new GameServerService(domainId);
   const cronjobService = new CronJobService(domainId);
   const moduleService = new ModuleService(domainId);
 
-  for await (const gameserver of gameServerService.getIterator()) {
-    ctx.addData({ gameServer: gameserver.id });
-    const installedModules = await moduleService.getInstalledModules({
-      gameserverId: gameserver.id,
-    });
-    await Promise.all(
-      installedModules.map(async (mod) => {
-        await cronjobService.syncModuleCronjobs(mod);
-      }),
-    );
+  const processGameServer = async (gsId: string) => {
+    const gameserver = await gameServerService.findOne(gsId, false);
+    if (!gameserver) return;
+
+    ctx.addData({ gameServer: gsId });
+    log.info(`🕰 Processing cronjobs for game server ${gsId}`);
+    const installedModules = await moduleService.getInstalledModules({ gameserverId: gsId });
+    await Promise.all(installedModules.map((mod) => cronjobService.syncModuleCronjobs(mod)));
+  };
+
+  if (gameServerId) {
+    await processGameServer(gameServerId);
+  } else {
+    for await (const gs of gameServerService.getIterator()) {
+      await processGameServer(gs.id);
+    }
   }
 }
 
@@ -176,4 +193,74 @@ async function deleteGameServers(domainId: string) {
   const repo = gameserverService.repo;
   const { query } = await repo.getModel();
   await query.whereNotNull('deletedAt').delete();
+}
+
+async function syncItems(domainId: string, gameServerId?: string) {
+  log.info('🔄 Syncing items');
+  const gameServerService = new GameServerService(domainId);
+
+  const processGameServer = async (gsId: string) => {
+    ctx.addData({ gameServer: gsId });
+    log.info(`🔄 Testing reachability for game server ${gsId}`);
+
+    const reachable = await gameServerService.testReachability(gsId);
+    if (reachable.connectable) {
+      log.info(`🔄 Syncing items for game server ${gsId}`);
+      await gameServerService.syncItems(gsId);
+    } else {
+      log.info(`⚠️ Game server ${gsId} not reachable, skipping items sync`);
+    }
+  };
+
+  if (gameServerId) {
+    await processGameServer(gameServerId);
+  } else {
+    for await (const gs of gameServerService.getIterator()) {
+      await processGameServer(gs.id);
+    }
+  }
+}
+
+async function syncBans(domainId: string, gameServerId?: string) {
+  log.info('🔄 Syncing bans');
+  const gameServerService = new GameServerService(domainId);
+  const banService = new BanService(domainId);
+
+  const processGameServer = async (gsId: string) => {
+    ctx.addData({ gameServer: gsId });
+    log.info(`🔄 Testing reachability for game server ${gsId}`);
+
+    const reachable = await gameServerService.testReachability(gsId);
+    if (reachable.connectable) {
+      log.info(`🔄 Syncing bans for game server ${gsId}`);
+      await banService.syncBans(gsId);
+    } else {
+      log.info(`⚠️ Game server ${gsId} not reachable, skipping bans sync`);
+    }
+  };
+
+  if (gameServerId) {
+    await processGameServer(gameServerId);
+  } else {
+    for await (const gs of gameServerService.getIterator()) {
+      await processGameServer(gs.id);
+    }
+  }
+}
+
+async function syncSteam(domainId: string) {
+  log.info('🔄 Syncing Steam data');
+
+  const playerService = new PlayerService(domainId);
+  await steamApi.refreshRateLimitedStatus();
+  const remainingCalls = await steamApi.getRemainingCalls();
+
+  if (remainingCalls < 10000) {
+    log.warn(`⚠️ Less than 10k API calls remaining, skipping Steam sync for domain ${domainId}`);
+    return;
+  }
+
+  log.info(`🔄 Syncing Steam data for domain ${domainId}`);
+  const syncedCount = await playerService.handleSteamSync();
+  log.info(`✅ Successfully synced ${syncedCount} players for domain ${domainId}`);
 }
