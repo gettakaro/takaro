@@ -3479,16 +3479,37 @@ export type GameServerUpdateDTOTypeEnum =
 /**
  *
  * @export
- * @interface GenericConnectionInfo
+ * @interface GetJobInputDTO
  */
-export interface GenericConnectionInfo {
+export interface GetJobInputDTO {
   /**
    *
    * @type {string}
-   * @memberof GenericConnectionInfo
+   * @memberof GetJobInputDTO
    */
-  identityToken: string;
+  type: GetJobInputDTOTypeEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof GetJobInputDTO
+   */
+  id: string;
 }
+
+export const GetJobInputDTOTypeEnum = {
+  CsmmImport: 'csmmImport',
+  SeedModules: 'seedModules',
+  CleanEvents: 'cleanEvents',
+  CleanExpiringVariables: 'cleanExpiringVariables',
+  EnsureCronjobsScheduled: 'ensureCronjobsScheduled',
+  DeleteGameServers: 'deleteGameServers',
+  SyncItems: 'syncItems',
+  SyncBans: 'syncBans',
+  SyncSteam: 'syncSteam',
+} as const;
+
+export type GetJobInputDTOTypeEnum = (typeof GetJobInputDTOTypeEnum)[keyof typeof GetJobInputDTOTypeEnum];
+
 /**
  *
  * @export
@@ -4927,61 +4948,6 @@ export interface ImportOutputDTOAPI {
 /**
  *
  * @export
- * @interface ImportStatusOutputDTO
- */
-export interface ImportStatusOutputDTO {
-  /**
-   *
-   * @type {string}
-   * @memberof ImportStatusOutputDTO
-   */
-  id: string;
-  /**
-   *
-   * @type {string}
-   * @memberof ImportStatusOutputDTO
-   */
-  status: ImportStatusOutputDTOStatusEnum;
-  /**
-   *
-   * @type {string}
-   * @memberof ImportStatusOutputDTO
-   */
-  failedReason?: string;
-}
-
-export const ImportStatusOutputDTOStatusEnum = {
-  Pending: 'pending',
-  Completed: 'completed',
-  Failed: 'failed',
-  Active: 'active',
-} as const;
-
-export type ImportStatusOutputDTOStatusEnum =
-  (typeof ImportStatusOutputDTOStatusEnum)[keyof typeof ImportStatusOutputDTOStatusEnum];
-
-/**
- *
- * @export
- * @interface ImportStatusOutputDTOAPI
- */
-export interface ImportStatusOutputDTOAPI {
-  /**
-   *
-   * @type {ImportStatusOutputDTO}
-   * @memberof ImportStatusOutputDTOAPI
-   */
-  data: ImportStatusOutputDTO;
-  /**
-   *
-   * @type {MetadataOutput}
-   * @memberof ImportStatusOutputDTOAPI
-   */
-  meta: MetadataOutput;
-}
-/**
- *
- * @export
  * @interface InstallModuleDTO
  */
 export interface InstallModuleDTO {
@@ -5365,6 +5331,65 @@ export interface ItemsOutputDTO {
    * @memberof ItemsOutputDTO
    */
   updatedAt: NOTDOMAINSCOPEDTakaroModelDTOCreatedAt;
+}
+/**
+ *
+ * @export
+ * @interface JobStatusOutputDTO
+ */
+export interface JobStatusOutputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof JobStatusOutputDTO
+   */
+  id: string;
+  /**
+   *
+   * @type {string}
+   * @memberof JobStatusOutputDTO
+   */
+  status: JobStatusOutputDTOStatusEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof JobStatusOutputDTO
+   */
+  failedReason?: string;
+}
+
+export const JobStatusOutputDTOStatusEnum = {
+  Pending: 'pending',
+  Completed: 'completed',
+  Failed: 'failed',
+  Active: 'active',
+  Delayed: 'delayed',
+  Prioritized: 'prioritized',
+  Waiting: 'waiting',
+  WaitingChildren: 'waiting-children',
+} as const;
+
+export type JobStatusOutputDTOStatusEnum =
+  (typeof JobStatusOutputDTOStatusEnum)[keyof typeof JobStatusOutputDTOStatusEnum];
+
+/**
+ *
+ * @export
+ * @interface JobStatusOutputDTOAPI
+ */
+export interface JobStatusOutputDTOAPI {
+  /**
+   *
+   * @type {JobStatusOutputDTO}
+   * @memberof JobStatusOutputDTOAPI
+   */
+  data: JobStatusOutputDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof JobStatusOutputDTOAPI
+   */
+  meta: MetadataOutput;
 }
 /**
  *
@@ -15298,12 +15323,55 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
      * @summary Get import
      * @param {string} id
      * @param {*} [options] Override http request option.
+     * @deprecated
      * @throws {RequiredError}
      */
     gameServerControllerGetImport: async (id: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
       // verify required parameter 'id' is not null or undefined
       assertParamExists('gameServerControllerGetImport', 'id', id);
       const localVarPath = `/gameserver/import/{id}`.replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
+     * Fetch a job status   Required permissions: `MANAGE_GAMESERVERS`<br> OperationId: `GameServerControllerGetJob`
+     * @summary Get job
+     * @param {string} type
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerGetJob: async (
+      type: string,
+      id: string,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'type' is not null or undefined
+      assertParamExists('gameServerControllerGetJob', 'type', type);
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('gameServerControllerGetJob', 'id', id);
+      const localVarPath = `/gameserver/job/{type}/{id}`
+        .replace(`{${'type'}}`, encodeURIComponent(String(type)))
+        .replace(`{${'id'}}`, encodeURIComponent(String(id)));
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
       let baseOptions;
@@ -15942,6 +16010,48 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
+     * Manually trigger a job, you can poll the status with the GET endpoint   Required permissions: `MANAGE_GAMESERVERS`<br> OperationId: `GameServerControllerTriggerJob`
+     * @summary Trigger job
+     * @param {string} type
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerTriggerJob: async (
+      type: string,
+      id: string,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      // verify required parameter 'type' is not null or undefined
+      assertParamExists('gameServerControllerTriggerJob', 'type', type);
+      // verify required parameter 'id' is not null or undefined
+      assertParamExists('gameServerControllerTriggerJob', 'id', id);
+      const localVarPath = `/gameserver/job/{type}/{id}`
+        .replace(`{${'type'}}`, encodeURIComponent(String(type)))
+        .replace(`{${'id'}}`, encodeURIComponent(String(id)));
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      * Unban a player from a gameserver. Requires gameserver to be online and reachable.   Required permissions: `MANAGE_GAMESERVERS`<br> OperationId: `GameServerControllerUnbanPlayer`
      * @summary Unban player
      * @param {string} gameServerId
@@ -16128,16 +16238,42 @@ export const GameServerApiFp = function (configuration?: Configuration) {
      * @summary Get import
      * @param {string} id
      * @param {*} [options] Override http request option.
+     * @deprecated
      * @throws {RequiredError}
      */
     async gameServerControllerGetImport(
       id: string,
       options?: RawAxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ImportStatusOutputDTOAPI>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<JobStatusOutputDTOAPI>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerGetImport(id, options);
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
         operationServerMap['GameServerApi.gameServerControllerGetImport']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
+     * Fetch a job status   Required permissions: `MANAGE_GAMESERVERS`<br> OperationId: `GameServerControllerGetJob`
+     * @summary Get job
+     * @param {string} type
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerGetJob(
+      type: string,
+      id: string,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<JobStatusOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerGetJob(type, id, options);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['GameServerApi.gameServerControllerGetJob']?.[localVarOperationServerIndex]?.url;
       return (axios, basePath) =>
         createRequestFunction(
           localVarAxiosArgs,
@@ -16558,6 +16694,31 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
+     * Manually trigger a job, you can poll the status with the GET endpoint   Required permissions: `MANAGE_GAMESERVERS`<br> OperationId: `GameServerControllerTriggerJob`
+     * @summary Trigger job
+     * @param {string} type
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerTriggerJob(
+      type: string,
+      id: string,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<JobStatusOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerTriggerJob(type, id, options);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['GameServerApi.gameServerControllerTriggerJob']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
      * Unban a player from a gameserver. Requires gameserver to be online and reachable.   Required permissions: `MANAGE_GAMESERVERS`<br> OperationId: `GameServerControllerUnbanPlayer`
      * @summary Unban player
      * @param {string} gameServerId
@@ -16683,10 +16844,26 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
      * @summary Get import
      * @param {string} id
      * @param {*} [options] Override http request option.
+     * @deprecated
      * @throws {RequiredError}
      */
-    gameServerControllerGetImport(id: string, options?: RawAxiosRequestConfig): AxiosPromise<ImportStatusOutputDTOAPI> {
+    gameServerControllerGetImport(id: string, options?: RawAxiosRequestConfig): AxiosPromise<JobStatusOutputDTOAPI> {
       return localVarFp.gameServerControllerGetImport(id, options).then((request) => request(axios, basePath));
+    },
+    /**
+     * Fetch a job status   Required permissions: `MANAGE_GAMESERVERS`<br> OperationId: `GameServerControllerGetJob`
+     * @summary Get job
+     * @param {string} type
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerGetJob(
+      type: string,
+      id: string,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<JobStatusOutputDTOAPI> {
+      return localVarFp.gameServerControllerGetJob(type, id, options).then((request) => request(axios, basePath));
     },
     /**
      * Get map metadata for Leaflet<br> OperationId: `GameServerControllerGetMapInfo`
@@ -16911,6 +17088,21 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
         .then((request) => request(axios, basePath));
     },
     /**
+     * Manually trigger a job, you can poll the status with the GET endpoint   Required permissions: `MANAGE_GAMESERVERS`<br> OperationId: `GameServerControllerTriggerJob`
+     * @summary Trigger job
+     * @param {string} type
+     * @param {string} id
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerTriggerJob(
+      type: string,
+      id: string,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<JobStatusOutputDTOAPI> {
+      return localVarFp.gameServerControllerTriggerJob(type, id, options).then((request) => request(axios, basePath));
+    },
+    /**
      * Unban a player from a gameserver. Requires gameserver to be online and reachable.   Required permissions: `MANAGE_GAMESERVERS`<br> OperationId: `GameServerControllerUnbanPlayer`
      * @summary Unban player
      * @param {string} gameServerId
@@ -17015,12 +17207,28 @@ export class GameServerApi extends BaseAPI {
    * @summary Get import
    * @param {string} id
    * @param {*} [options] Override http request option.
+   * @deprecated
    * @throws {RequiredError}
    * @memberof GameServerApi
    */
   public gameServerControllerGetImport(id: string, options?: RawAxiosRequestConfig) {
     return GameServerApiFp(this.configuration)
       .gameServerControllerGetImport(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Fetch a job status   Required permissions: `MANAGE_GAMESERVERS`<br> OperationId: `GameServerControllerGetJob`
+   * @summary Get job
+   * @param {string} type
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerGetJob(type: string, id: string, options?: RawAxiosRequestConfig) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerGetJob(type, id, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -17279,6 +17487,21 @@ export class GameServerApi extends BaseAPI {
   public gameServerControllerTestReachabilityForId(id: string, options?: RawAxiosRequestConfig) {
     return GameServerApiFp(this.configuration)
       .gameServerControllerTestReachabilityForId(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Manually trigger a job, you can poll the status with the GET endpoint   Required permissions: `MANAGE_GAMESERVERS`<br> OperationId: `GameServerControllerTriggerJob`
+   * @summary Trigger job
+   * @param {string} type
+   * @param {string} id
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerTriggerJob(type: string, id: string, options?: RawAxiosRequestConfig) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerTriggerJob(type, id, options)
       .then((request) => request(this.axios, this.basePath));
   }
 

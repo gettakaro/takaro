@@ -26,6 +26,7 @@ import {
   GameServerOutputDTO,
   GameServerService,
   GameServerUpdateDTO,
+  JobStatusOutputDTO,
 } from '../service/GameServerService.js';
 import { AuthenticatedRequest, AuthService, checkPermissions } from '../service/AuthService.js';
 import {
@@ -50,6 +51,7 @@ import { PlayerOnGameserverOutputDTOAPI } from './PlayerOnGameserverController.j
 import { UserService } from '../service/User/index.js';
 import { AllowedFilters, AllowedSearch } from './shared.js';
 import multer from 'multer';
+import { SystemTaskType } from '../workers/systemWorkerDefinitions.js';
 
 const storage = multer.memoryStorage();
 const upload = multer({
@@ -211,21 +213,10 @@ export class ImportInputDTO extends TakaroDTO<ImportInputDTO> {
   @IsBoolean()
   shop: boolean;
 }
-
-export class ImportStatusOutputDTO extends TakaroDTO<ImportStatusOutputDTO> {
-  @IsString()
-  id!: string;
-  @IsEnum(['pending', 'completed', 'failed', 'active'])
-  status: 'pending' | 'completed' | 'failed' | 'active';
-  @IsOptional()
-  @IsString()
-  failedReason?: string;
-}
-
-export class ImportStatusOutputDTOAPI extends APIOutput<ImportStatusOutputDTO> {
-  @Type(() => ImportStatusOutputDTO)
+export class JobStatusOutputDTOAPI extends APIOutput<JobStatusOutputDTO> {
+  @Type(() => JobStatusOutputDTO)
   @ValidateNested()
-  declare data: ImportStatusOutputDTO;
+  declare data: JobStatusOutputDTO;
 }
 
 class ImportOutputDTO extends TakaroDTO<ImportOutputDTO> {
@@ -249,6 +240,16 @@ class ImportOutputDTOAPI extends APIOutput<ImportOutputDTO> {
   @ValidateNested()
   declare data: ImportOutputDTO;
 }
+
+export class GetJobInputDTO {
+  @IsEnum(['csmmImport', ...Object.values(SystemTaskType)], {
+    message: `key must be one of: ${[...Object.values(SystemTaskType), 'csmmImport'].join(', ')}`,
+  })
+  type: 'csmmImport' | SystemTaskType;
+  @IsString()
+  id: string;
+}
+
 @OpenAPI({
   security: [{ domainAuth: [] }],
 })
@@ -490,15 +491,40 @@ export class GameServerController {
     return apiResponse(result);
   }
 
+  @Get('/gameserver/job/:type/:id')
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
+  @OpenAPI({
+    description: 'Fetch a job status',
+  })
+  @ResponseSchema(JobStatusOutputDTOAPI)
+  async getJob(@Req() req: AuthenticatedRequest, @Params() params: GetJobInputDTO) {
+    const service = new GameServerService(req.domainId);
+    const result = await service.getJob(params);
+    return apiResponse(result);
+  }
+
+  @Post('/gameserver/job/:type/:id')
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
+  @OpenAPI({
+    description: 'Manually trigger a job, you can poll the status with the GET endpoint',
+  })
+  @ResponseSchema(JobStatusOutputDTOAPI)
+  async triggerJob(@Req() req: AuthenticatedRequest, @Params() params: GetJobInputDTO) {
+    const service = new GameServerService(req.domainId);
+    const result = await service.triggerJob(params);
+    return apiResponse(result);
+  }
+
   @Get('/gameserver/import/:id')
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
-  @ResponseSchema(ImportStatusOutputDTOAPI)
+  @ResponseSchema(JobStatusOutputDTOAPI)
   @OpenAPI({
     description: 'Fetch status of an import from CSMM',
+    deprecated: true,
   })
   async getImport(@Req() req: AuthenticatedRequest, @Params() params: ImportOutputDTO) {
     const service = new GameServerService(req.domainId);
-    const result = await service.getImport(params.id);
+    const result = await service.getCSMMImport(params.id);
     return apiResponse(result);
   }
 
