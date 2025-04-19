@@ -41,6 +41,7 @@ import { gameServerLatency } from '../lib/metrics.js';
 import { Pushgateway } from 'prom-client';
 import { config } from '../config.js';
 import { handlePlayerSync } from '../workers/playerSyncWorker.js';
+import type { GetJobInputDTO } from '../controllers/GameServerController.js';
 import { ImportInputDTO } from '../controllers/GameServerController.js';
 import { DomainService } from './DomainService.js';
 import { SystemTaskType } from '../workers/systemWorkerDefinitions.js';
@@ -53,6 +54,16 @@ const ajv = new Ajv({ useDefaults: true, strict: true });
 ajv.addKeyword('x-component');
 
 const gameClassCache = new Map<string, IGameServer>();
+
+export class JobStatusOutputDTO extends TakaroDTO<JobStatusOutputDTO> {
+  @IsString()
+  id!: string;
+  @IsEnum(['pending', 'completed', 'failed', 'active', 'delayed', 'prioritized', 'waiting', 'waiting-children'])
+  status: 'pending' | 'completed' | 'failed' | 'active' | 'delayed' | 'prioritized' | 'waiting' | 'waiting-children';
+  @IsOptional()
+  @IsString()
+  failedReason?: string;
+}
 
 class GameServerTypesOutputDTO extends TakaroDTO<GameServerTypesOutputDTO> {
   @IsEnum(GAME_SERVER_TYPE)
@@ -466,18 +477,76 @@ export class GameServerService extends TakaroService<
     );
   }
 
-  async getImport(id: string) {
+  async getCSMMImport(id: string) {
     const job = await queueService.queues.csmmImport.queue.bullQueue.getJob(id);
 
     if (!job) {
       throw new errors.NotFoundError('Job not found');
     }
 
-    return {
-      jobId: job.id,
-      status: await job.getState(),
+    const status = await job.getState();
+    if (!status) {
+      this.log.warn('Job status is undefined');
+      throw new errors.NotFoundError('Job status is unknown');
+    }
+
+    if (status === 'unknown') throw new errors.NotFoundError('Job status is unknown');
+
+    return new JobStatusOutputDTO({
+      id,
+      status,
       failedReason: job.failedReason,
-    };
+    });
+  }
+
+  async getJob(input: GetJobInputDTO): Promise<JobStatusOutputDTO> {
+    if (input.type === 'csmmImport') {
+      return this.getCSMMImport(input.id);
+    }
+
+    const job = await queueService.queues.system.queue.bullQueue.getJob(input.id);
+    if (!job) {
+      throw new errors.NotFoundError('Job not found');
+    }
+
+    const status = await job.getState();
+    if (!status) {
+      this.log.warn('Job status is undefined');
+      throw new errors.NotFoundError('Job status is unknown');
+    }
+
+    if (status === 'unknown') throw new errors.NotFoundError('Job status is unknown');
+
+    return new JobStatusOutputDTO({
+      failedReason: job.failedReason,
+      id: job.id,
+      status,
+    });
+  }
+
+  async triggerJob(input: GetJobInputDTO): Promise<JobStatusOutputDTO> {
+    if (input.type === 'csmmImport') {
+      throw new errors.BadRequestError(
+        'CSMM import jobs cannot be triggered with this endpoint, use the dedicated endpoint for importing CSMM data',
+      );
+    }
+
+    const triggeredJob = await queueService.queues.system.queue.add({
+      domainId: this.domainId,
+      taskType: input.type,
+      gameServerId: input.id,
+    });
+
+    if (!triggeredJob || !triggeredJob.id) {
+      this.log.error('Cannot find job that was just triggered');
+      this.log.error(triggeredJob);
+      throw new errors.InternalServerError();
+    }
+
+    return this.getJob({
+      type: input.type,
+      id: triggeredJob.id,
+    });
   }
 
   async import(importData: Record<string, unknown>, options: ImportInputDTO) {
