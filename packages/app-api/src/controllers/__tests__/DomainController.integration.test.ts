@@ -13,7 +13,7 @@ const tests = [
       if (!this.standardDomainId) throw new Error('No domain ID');
       return this.adminClient.domain.domainControllerGetOne(this.standardDomainId);
     },
-    filteredFields: ['name'],
+    filteredFields: ['name', 'serverRegistrationToken'],
   }),
   new IntegrationTest<void>({
     group,
@@ -28,6 +28,7 @@ const tests = [
     group,
     snapshot: true,
     name: 'Update by ID',
+    filteredFields: ['serverRegistrationToken'],
     test: async function () {
       if (!this.standardDomainId) throw new Error('No domain ID');
       return this.adminClient.domain.domainControllerUpdate(this.standardDomainId, {
