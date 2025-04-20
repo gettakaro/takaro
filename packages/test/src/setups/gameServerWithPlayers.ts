@@ -3,6 +3,7 @@ import { GameServerOutputDTO, ModuleOutputDTO, PlayerOnGameserverOutputDTO, Play
 import { IntegrationTest } from '../integrationTest.js';
 import { randomUUID } from 'crypto';
 import { getMockServer } from '@takaro/mock-gameserver';
+import { expect } from '../test/expect.js';
 
 export interface ISetupData {
   gameServer1: GameServerOutputDTO;
@@ -18,8 +19,8 @@ export interface ISetupData {
 export const setup = async function (this: IntegrationTest<ISetupData>): Promise<ISetupData> {
   const eventsAwaiter = new EventsAwaiter();
   await eventsAwaiter.connect(this.client);
-  // 10 players, 10 pogs should be created
-  const connectedEvents = eventsAwaiter.waitForEvents('player-created', 20);
+  // 20 players, 20 pogs should be created
+  const connectedEvents = eventsAwaiter.waitForEvents('player-created', 40);
 
   if (!this.domainRegistrationToken) throw new Error('Domain registration token is not set. Invalid setup?');
   const gameServer1IdentityToken = randomUUID();
@@ -57,6 +58,7 @@ export const setup = async function (this: IntegrationTest<ISetupData>): Promise
   ]);
 
   await connectedEvents;
+  expect(await connectedEvents).to.have.length(40, 'Setup fail: should have 20 players-created events');
 
   const players = (await this.client.player.playerControllerSearch()).data.data;
   const pogs1 = (
@@ -69,6 +71,10 @@ export const setup = async function (this: IntegrationTest<ISetupData>): Promise
       filters: { gameServerId: [gameServer2.id] },
     })
   ).data.data;
+
+  expect(pogs1.length).to.equal(10, 'Setup fail: should have 10 pogs on game server 1');
+  expect(pogs2.length).to.equal(10, 'Setup fail: should have 10 pogs on game server 2');
+  expect(players.length).to.equal(20, 'Setup fail: should have 20 players total');
 
   return {
     gameServer1: gameServer1,

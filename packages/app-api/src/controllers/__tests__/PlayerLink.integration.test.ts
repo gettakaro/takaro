@@ -79,7 +79,7 @@ async function checkRoleAndPermissions(client: Client, userClient: Client, userI
 
   try {
     const players = await client.player.playerControllerSearch();
-    expect(players.data.data).to.have.length(10);
+    expect(players.data.data).to.have.length(20);
   } catch (error) {
     if (!isAxiosError(error) || !error.response) throw error;
     expect(error.response?.data.meta.error.code).to.be.equal('ForbiddenError');
