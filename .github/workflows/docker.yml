@@ -121,7 +121,6 @@ jobs:
         env:
           DOCKER_TAG: ${{ needs.docker.outputs.docker_tag }}
           TEST_LOGGING_LEVEL: debug
-          LOGGING_LEVEL: debug
           NODE_ENV: test
           TRACING_ENABLED: false
           GRAFANA_CLOUD_TEMPO_URL: ${{ secrets.GRAFANA_CLOUD_TEMPO_URL }}
