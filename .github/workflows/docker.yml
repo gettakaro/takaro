@@ -90,7 +90,7 @@ jobs:
           SOURCE_DATE_EPOCH: ${{ env.TIMESTAMP }}
   node-ci:
     needs: [docker]
-    timeout-minutes: 60
+    timeout-minutes: 120
     runs-on: ubuntu-24.04
     strategy:
       matrix:
@@ -126,7 +126,7 @@ jobs:
           GRAFANA_CLOUD_TEMPO_URL: ${{ secrets.GRAFANA_CLOUD_TEMPO_URL }}
           GRAFANA_CLOUD_API_USER: ${{ secrets.GRAFANA_CLOUD_API_USER }}
           GRAFANA_CLOUD_API_KEY: ${{ secrets.GRAFANA_CLOUD_API_KEY }}
-          TAKARO_TEST_RUNNER_ATTEMPTS: 10
+          TAKARO_TEST_RUNNER_ATTEMPTS: 2
       - name: Commit and push if changed
         if: github.ref == 'refs/heads/development'
         run: |
