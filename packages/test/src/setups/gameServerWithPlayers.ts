@@ -12,6 +12,7 @@ export interface ISetupData {
   pogs2: PlayerOnGameserverOutputDTO[];
   mod: ModuleOutputDTO;
   eventsAwaiter: EventsAwaiter;
+  mockservers: Awaited<ReturnType<typeof getMockServer>>[];
 }
 
 export const setup = async function (this: IntegrationTest<ISetupData>): Promise<ISetupData> {
@@ -23,10 +24,11 @@ export const setup = async function (this: IntegrationTest<ISetupData>): Promise
   if (!this.domainRegistrationToken) throw new Error('Domain registration token is not set. Invalid setup?');
   const gameServer1IdentityToken = randomUUID();
   const gameServer2IdentityToken = randomUUID();
-  await getMockServer({
+
+  const mockserver1 = await getMockServer({
     mockserver: { registrationToken: this.domainRegistrationToken, identityToken: gameServer1IdentityToken },
   });
-  await getMockServer({
+  const mockserver2 = await getMockServer({
     mockserver: { registrationToken: this.domainRegistrationToken, identityToken: gameServer2IdentityToken },
   });
 
@@ -76,5 +78,6 @@ export const setup = async function (this: IntegrationTest<ISetupData>): Promise
     pogs2,
     mod,
     eventsAwaiter,
+    mockservers: [mockserver1, mockserver2],
   };
 };

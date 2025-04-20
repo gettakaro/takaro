@@ -22,6 +22,7 @@ export interface IModuleTestsSetupData {
   geoBlockModule: ModuleOutputDTO;
   role: RoleOutputDTO;
   players: PlayerOutputDTO[];
+  mockservers: Awaited<ReturnType<typeof getMockServer>>[];
 }
 
 export const chatMessageSorter = (a: IDetectedEvent, b: IDetectedEvent) => {
@@ -68,10 +69,10 @@ export const modulesTestSetup = async function (
   if (!this.domainRegistrationToken) throw new Error('Domain registration token is not set. Invalid setup?');
   const gameServer1IdentityToken = randomUUID();
   const gameServer2IdentityToken = randomUUID();
-  await getMockServer({
+  const mockserver1 = await getMockServer({
     mockserver: { registrationToken: this.domainRegistrationToken, identityToken: gameServer1IdentityToken },
   });
-  await getMockServer({
+  const mockserver2 = await getMockServer({
     mockserver: { registrationToken: this.domainRegistrationToken, identityToken: gameServer2IdentityToken },
   });
 
@@ -154,5 +155,6 @@ export const modulesTestSetup = async function (
     gameserver: gameServer1,
     role: roleRes.data.data,
     players: playersRes.data.data,
+    mockservers: [mockserver1, mockserver2],
   };
 };

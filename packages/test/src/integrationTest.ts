@@ -138,6 +138,17 @@ export class IntegrationTest<SetupData> {
         await integrationTestContext.test.teardown.bind(integrationTestContext)();
       }
 
+      if (
+        integrationTestContext.setupData &&
+        typeof integrationTestContext.setupData === 'object' &&
+        'mockservers' in integrationTestContext.setupData
+      ) {
+        const servers = integrationTestContext.setupData.mockservers as any[];
+        for (const mockserver of servers) {
+          await mockserver.shutdown();
+        }
+      }
+
       if (integrationTestContext.standardDomainId) {
         try {
           const failedFunctionsRes = await integrationTestContext.client.event.eventControllerGetFailedFunctions();
