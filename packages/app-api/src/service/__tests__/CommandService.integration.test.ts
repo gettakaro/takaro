@@ -3,7 +3,7 @@ import { CommandOutputDTO, GameServerOutputDTO, ModuleOutputDTO, ModuleInstallat
 import { CommandService } from '../CommandService.js';
 import { queueService } from '@takaro/queues';
 import { Mock } from '@takaro/gameserver';
-import { IGamePlayer, EventChatMessage, HookEvents, ChatChannel } from '@takaro/modules';
+import { IGamePlayer, EventChatMessage, HookEvents, ChatChannel, IPosition } from '@takaro/modules';
 import Sinon from 'sinon';
 import { EventService } from '../EventService.js';
 import { faker } from '@faker-js/faker';
@@ -90,11 +90,13 @@ const tests = [
     setup,
     test: async function () {
       const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
-      sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves({
-        x: 0,
-        y: 0,
-        z: 0,
-      });
+      sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves(
+        new IPosition({
+          x: 0,
+          y: 0,
+          z: 0,
+        }),
+      );
 
       await this.setupData.service.handleChatMessage(
         new EventChatMessage({
@@ -115,11 +117,13 @@ const tests = [
     setup,
     test: async function () {
       const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
-      sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves({
-        x: 0,
-        y: 0,
-        z: 0,
-      });
+      sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves(
+        new IPosition({
+          x: 0,
+          y: 0,
+          z: 0,
+        }),
+      );
 
       await this.setupData.service.handleChatMessage(
         new EventChatMessage({
@@ -140,11 +144,13 @@ const tests = [
     setup,
     test: async function () {
       const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
-      sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves({
-        x: 0,
-        y: 0,
-        z: 0,
-      });
+      sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves(
+        new IPosition({
+          x: 0,
+          y: 0,
+          z: 0,
+        }),
+      );
 
       await this.setupData.service.handleChatMessage(
         new EventChatMessage({
@@ -175,11 +181,13 @@ const tests = [
     setup,
     test: async function () {
       const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
-      sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves({
-        x: 0,
-        y: 0,
-        z: 0,
-      });
+      sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves(
+        new IPosition({
+          x: 0,
+          y: 0,
+          z: 0,
+        }),
+      );
 
       await this.client.module.moduleInstallationsControllerUninstallModule(
         this.setupData.installation.moduleId,
@@ -236,11 +244,13 @@ const tests = [
       const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
       sandbox.stub(EventService.prototype, 'create').resolves();
 
-      sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves({
-        x: 0,
-        y: 0,
-        z: 0,
-      });
+      sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves(
+        new IPosition({
+          x: 0,
+          y: 0,
+          z: 0,
+        }),
+      );
 
       await this.setupData.service.handleChatMessage(
         new EventChatMessage({
@@ -274,11 +284,13 @@ const tests = [
       });
 
       const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
-      sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves({
-        x: 0,
-        y: 0,
-        z: 0,
-      });
+      sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves(
+        new IPosition({
+          x: 0,
+          y: 0,
+          z: 0,
+        }),
+      );
 
       await this.setupData.service.handleChatMessage(
         new EventChatMessage({
@@ -299,11 +311,13 @@ const tests = [
     setup,
     test: async function () {
       const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
-      sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves({
-        x: 0,
-        y: 0,
-        z: 0,
-      });
+      sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves(
+        new IPosition({
+          x: 0,
+          y: 0,
+          z: 0,
+        }),
+      );
 
       await this.client.module.moduleInstallationsControllerInstallModule({
         gameServerId: this.setupData.gameserver.id,

@@ -1,6 +1,5 @@
-import { EventsAwaiter, IntegrationTest, SetupGameServerPlayers, expect, integrationConfig } from '@takaro/test';
+import { EventsAwaiter, IntegrationTest, SetupGameServerPlayers, expect } from '@takaro/test';
 import { GameEvents, IGamePlayer } from '@takaro/modules';
-import { GameServerOutputDTO } from '@takaro/apiclient';
 import { v4 as uuid } from 'uuid';
 import { PlayerService } from '../../service/Player/index.js';
 import { sleep } from '@takaro/util';
@@ -9,21 +8,11 @@ import { describe } from 'node:test';
 const group = 'Event worker';
 
 const tests = [
-  new IntegrationTest<GameServerOutputDTO>({
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
     snapshot: false,
     name: 'Handles player joined event correctly',
-    setup: async function () {
-      return (
-        await this.client.gameserver.gameServerControllerCreate({
-          name: 'my-server',
-          type: 'MOCK',
-          connectionInfo: JSON.stringify({
-            host: integrationConfig.get('mockGameserver.host'),
-          }),
-        })
-      ).data.data;
-    },
+    setup: SetupGameServerPlayers.setup,
     test: async function () {
       const playerService = new PlayerService(this.standardDomainId ?? '');
 
@@ -34,7 +23,7 @@ const tests = [
         steamId: '76561198021481871',
       });
 
-      await playerService.resolveRef(MOCK_PLAYER, this.setupData.id);
+      await playerService.resolveRef(MOCK_PLAYER, this.setupData.gameServer1.id);
 
       const players = await this.client.player.playerControllerSearch();
 
@@ -46,36 +35,18 @@ const tests = [
       return players;
     },
   }),
-  new IntegrationTest<GameServerOutputDTO[]>({
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
     snapshot: false,
     name: 'Handles player syncing correctly when same gameId exists for different servers',
-    setup: async function () {
-      const server1 = await this.client.gameserver.gameServerControllerCreate({
-        name: 'server1',
-        type: 'MOCK',
-        connectionInfo: JSON.stringify({
-          host: integrationConfig.get('mockGameserver.host'),
-        }),
-      });
-
-      const server2 = await this.client.gameserver.gameServerControllerCreate({
-        name: 'server2',
-        type: 'MOCK',
-        connectionInfo: JSON.stringify({
-          host: integrationConfig.get('mockGameserver.host'),
-        }),
-      });
-
-      return [server1.data.data, server2.data.data];
-    },
+    setup: SetupGameServerPlayers.setup,
     test: async function () {
       const playerService = new PlayerService(this.standardDomainId ?? '');
 
       const pogs = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
         filters: {
           gameId: ['1'],
-          gameServerId: [this.setupData[0].id],
+          gameServerId: [this.setupData.gameServer1.id],
         },
       });
 
@@ -92,8 +63,8 @@ const tests = [
         steamId: playerRes.data.data.steamId,
       });
 
-      await playerService.resolveRef(MOCK_PLAYER, this.setupData[0].id);
-      await playerService.resolveRef(MOCK_PLAYER, this.setupData[1].id);
+      await playerService.resolveRef(MOCK_PLAYER, this.setupData.gameServer1.id);
+      await playerService.resolveRef(MOCK_PLAYER, this.setupData.gameServer2.id);
 
       const playersResAfter = await this.client.player.playerControllerSearch({
         filters: {
@@ -115,7 +86,7 @@ const tests = [
         filters: { gameServerId: [this.setupData.gameServer1.id] },
       });
 
-      expect(originalPogs.data.data).to.have.lengthOf(5);
+      expect(originalPogs.data.data).to.have.lengthOf(10);
       // Should all have 0 playtime
       originalPogs.data.data.forEach((pog) => {
         expect(pog.playtimeSeconds).to.eq(0, 'Playtime should be 0 at start of test');
@@ -123,14 +94,14 @@ const tests = [
 
       const connectedEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(
         GameEvents.PLAYER_CONNECTED,
-        5,
+        10,
       );
       // First, make sure all players are online
       await this.client.gameserver.gameServerControllerExecuteCommand(this.setupData.gameServer1.id, {
         command: 'connectAll',
       });
 
-      expect(await connectedEvents).to.have.lengthOf(5);
+      expect(await connectedEvents).to.have.lengthOf(10);
 
       // Wait a second, to ensure there's a noticeable difference in playtime
       await sleep(1000);
@@ -139,13 +110,13 @@ const tests = [
       // This will trigger the logic of increasing playtime
       const disconnectedEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(
         GameEvents.PLAYER_DISCONNECTED,
-        5,
+        10,
       );
       await this.client.gameserver.gameServerControllerExecuteCommand(this.setupData.gameServer1.id, {
         command: 'disconnectAll',
       });
 
-      expect(await disconnectedEvents).to.have.lengthOf(5);
+      expect(await disconnectedEvents).to.have.lengthOf(10);
       // Playtime calc happens AFTER the event is handled, so we need to wait a bit
       await sleep(500);
 
@@ -153,7 +124,7 @@ const tests = [
         filters: { gameServerId: [this.setupData.gameServer1.id] },
       });
 
-      expect(updatedPogs.data.data).to.have.lengthOf(5);
+      expect(updatedPogs.data.data).to.have.lengthOf(10);
       // Should all have a playtime greater than 0
       // Due to the async nature of tests, we don't have tight control over the exact playtime
       // So just a simple check to see if it's greater than 0 is enough
@@ -168,7 +139,7 @@ const tests = [
       const players = await this.client.player.playerControllerSearch({
         filters: { id: updatedPogs.data.data.map((pog) => pog.playerId) },
       });
-      expect(players.data.data).to.have.lengthOf(5);
+      expect(players.data.data).to.have.lengthOf(10);
       players.data.data.forEach((player) => {
         expect(player.playtimeSeconds).to.be.greaterThan(
           0,

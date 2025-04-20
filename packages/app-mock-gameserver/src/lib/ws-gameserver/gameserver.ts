@@ -140,9 +140,9 @@ export class GameServer implements IGameServer {
     const totalToCreate = totalPlayersWanted - existingPlayers.length;
     if (totalToCreate <= 0) return;
 
-    const playersToCreate = Array.from({ length: totalToCreate }, (_) => {
+    const playersToCreate = Array.from({ length: totalToCreate }, (_, i) => {
       const player = new IGamePlayer({
-        gameId: faker.string.alphanumeric(8),
+        gameId: i.toString(),
         name: faker.internet.userName(),
         epicOnlineServicesId: faker.string.alphanumeric(16),
         steamId: faker.string.alphanumeric(16),
