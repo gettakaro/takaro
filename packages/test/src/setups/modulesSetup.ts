@@ -12,6 +12,7 @@ export interface IDetectedEvent {
 export interface IModuleTestsSetupData {
   modules: ModuleOutputDTO[];
   gameserver: GameServerOutputDTO;
+  gameserver2: GameServerOutputDTO;
   utilsModule: ModuleOutputDTO;
   teleportsModule: ModuleOutputDTO;
   gimmeModule: ModuleOutputDTO;
@@ -22,6 +23,7 @@ export interface IModuleTestsSetupData {
   geoBlockModule: ModuleOutputDTO;
   role: RoleOutputDTO;
   players: PlayerOutputDTO[];
+  players2: PlayerOutputDTO[];
   mockservers: Awaited<ReturnType<typeof getMockServer>>[];
 }
 
@@ -142,6 +144,23 @@ export const modulesTestSetup = async function (
     }),
   );
 
+  const pogsRes2 = (
+    await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
+      filters: { gameServerId: [gameServer2.id] },
+    })
+  ).data.data;
+
+  const playersRes2 = await this.client.player.playerControllerSearch({
+    filters: { id: pogsRes2.map((p) => p.playerId) },
+    extend: ['playerOnGameServers'],
+  });
+
+  await Promise.all(
+    playersRes2.data.data.map(async (player) => {
+      await this.client.player.playerControllerAssignRole(player.id, roleRes.data.data.id);
+    }),
+  );
+
   return {
     modules: modules,
     utilsModule,
@@ -153,8 +172,10 @@ export const modulesTestSetup = async function (
     lotteryModule,
     geoBlockModule,
     gameserver: gameServer1,
+    gameserver2: gameServer2,
     role: roleRes.data.data,
     players: playersRes.data.data,
+    players2: playersRes2.data.data,
     mockservers: [mockserver1, mockserver2],
   };
 };

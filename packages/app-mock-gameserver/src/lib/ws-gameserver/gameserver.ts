@@ -306,16 +306,18 @@ export class GameServer implements IGameServer {
 
   async listItems(): Promise<IItemDTO[]> {
     try {
-      // Mock list of available items
-      return Array.from(
-        { length: 20 },
-        (_, i) =>
-          new IItemDTO({
-            name: `Game Item ${i}`,
-            code: `game_item_${i}`,
-            description: faker.commerce.productDescription(),
-          }),
-      );
+      return [
+        new IItemDTO({
+          code: 'wood',
+          name: 'Wood',
+          description: 'Wood is good',
+        }),
+        new IItemDTO({
+          code: 'stone',
+          name: 'Stone',
+          description: 'Stone can get you stoned',
+        }),
+      ];
     } catch (error) {
       this.log.error('Error listing items:', error);
       return [];
