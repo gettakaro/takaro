@@ -224,7 +224,8 @@ export class GameServer implements IGameServer {
           throw new Error(`Unknown action requested: ${action}`);
         }
 
-        const result = await handler(JSON.parse(args));
+        const parsedArgs = JSON.parse(args);
+        const result = await handler(parsedArgs);
         this.sendResponse(requestId, result);
       } catch (error) {
         this.log.error(`Error handling action ${action}:`, error);
@@ -467,7 +468,7 @@ export class GameServer implements IGameServer {
       this.sendEvent(
         GameEvents.PLAYER_DISCONNECTED,
         new EventPlayerDisconnected({
-          player,
+          player: await this.getPlayer(player),
           msg: reason,
           type: GameEvents.PLAYER_DISCONNECTED,
         }),
@@ -486,7 +487,7 @@ export class GameServer implements IGameServer {
       this.sendEvent(
         GameEvents.PLAYER_DISCONNECTED,
         new EventPlayerDisconnected({
-          player: options.player,
+          player: await this.getPlayer(options.player),
           msg: options.reason,
           type: GameEvents.PLAYER_DISCONNECTED,
         }),

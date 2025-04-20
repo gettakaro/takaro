@@ -94,11 +94,11 @@ export class Generic implements IGameServer {
   }
 
   async teleportPlayer(player: IGamePlayer, x: number, y: number, z: number) {
-    await this.requestFromServer('teleportPlayer', { ...player.toJSON(), x, y, z });
+    await this.requestFromServer('teleportPlayer', { player: player.toJSON(), x, y, z });
   }
 
   async kickPlayer(player: IGamePlayer, reason: string) {
-    await this.requestFromServer('kickPlayer', { ...player.toJSON(), reason });
+    await this.requestFromServer('kickPlayer', { player: player.toJSON(), reason });
   }
 
   async banPlayer(options: BanDTO) {
