@@ -13,8 +13,7 @@
         "port": 9876
       },
       "type": "MOCK",
-      "reachable": true,
-      "deletedAt": null
+      "reachable": false
     }
   },
   "status": 200,
@@ -23,7 +22,9 @@
     "snapshot": true,
     "name": "Update",
     "expectedStatus": 200,
-    "filteredFields": [],
+    "filteredFields": [
+      "identityToken"
+    ],
     "standardEnvironment": true
   }
 }

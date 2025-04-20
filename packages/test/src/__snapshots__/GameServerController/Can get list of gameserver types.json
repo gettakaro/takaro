@@ -13,6 +13,10 @@
       {
         "type": "RUST",
         "connectionInfoSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"title\":\"RustConnectionInfo\",\"type\":\"object\",\"properties\":{\"host\":{\"type\":\"string\"},\"rconPort\":{\"type\":\"number\"},\"rconPassword\":{\"type\":\"string\"},\"useTls\":{\"type\":\"boolean\",\"default\":false}},\"required\":[\"host\",\"rconPort\",\"rconPassword\",\"useTls\"]}"
+      },
+      {
+        "type": "GENERIC",
+        "connectionInfoSchema": "{\"type\":\"object\",\"properties\":{},\"required\":[]}"
       }
     ]
   },

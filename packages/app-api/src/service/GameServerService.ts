@@ -345,6 +345,13 @@ export class GameServerService extends TakaroService<
           case GAME_SERVER_TYPE.MOCK:
             schema = mockJsonSchema;
             break;
+          case GAME_SERVER_TYPE.GENERIC:
+            schema = {
+              type: 'object',
+              properties: {},
+              required: [],
+            };
+            break;
           default:
             throw new errors.NotImplementedError();
         }

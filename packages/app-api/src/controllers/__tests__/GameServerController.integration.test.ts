@@ -23,7 +23,7 @@ const tests = [
     test: async function () {
       return this.client.gameserver.gameServerControllerGetOne(this.setupData.id);
     },
-    filteredFields: ['connectionInfo'],
+    filteredFields: ['connectionInfo', 'identityToken'],
   }),
   new IntegrationTest<GameServerOutputDTO>({
     group,
@@ -32,12 +32,13 @@ const tests = [
     test: async function () {
       return this.client.gameserver.gameServerControllerCreate(mockGameServer);
     },
-    filteredFields: ['connectionInfo'],
+    filteredFields: ['connectionInfo', 'identityToken'],
   }),
   new IntegrationTest<GameServerOutputDTO>({
     group,
     snapshot: true,
     name: 'Update',
+    filteredFields: ['identityToken'],
     setup: async function () {
       return (await this.client.gameserver.gameServerControllerCreate(mockGameServer)).data.data;
     },
