@@ -228,7 +228,7 @@ export class GameDataHandler {
   async listBans(): Promise<BanDTO[]> {
     try {
       // Get all ban keys
-      const banPattern = `${this.keyPrefix}:ban:*`;
+      const banPattern = this.getBanKey('*');
       const keys = await this.redis.keys(banPattern);
 
       if (!keys.length) return [];
@@ -240,9 +240,9 @@ export class GameDataHandler {
       const banDTOs = await Promise.all(
         banData.map(async (banJson) => {
           if (!banJson) return null;
-
+          const parsedBan = JSON.parse(banJson);
           try {
-            const banDto = new BanDTO(...JSON.parse(banJson));
+            const banDto = new BanDTO({ ...parsedBan });
 
             // Fetch the associated player data
             const player = await this.getPlayer(banDto.player);
