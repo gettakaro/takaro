@@ -51,6 +51,8 @@ class WSServer {
 
       ws.on('close', () => {
         this.clients.delete(clientId);
+        this.servers.delete(clientId);
+        this.WsToServerMap.delete(clientId);
         this.log.info(`Client disconnected: ${clientId}`);
       });
 
@@ -138,8 +140,8 @@ class WSServer {
             });
             return;
           }
-          this.servers.set(gameServerId, ws);
           if (!ws.id) throw new errors.BadRequestError('WS ID is missing, WS not properly identified/connected');
+          this.servers.set(gameServerId, ws);
           this.WsToServerMap.set(ws.id, gameServerId);
           this.sendToClient(ws, { type: 'identifyResponse', payload: { gameServerId } });
           this.log.info(`Game server identified: ${gameServerId}`);
