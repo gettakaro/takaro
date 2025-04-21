@@ -7,7 +7,6 @@ import {
   IPlayerReferenceDTO,
   sdtdJsonSchema,
   rustJsonSchema,
-  mockJsonSchema,
   GAME_SERVER_TYPE,
   getGame,
   BanDTO,
@@ -341,9 +340,6 @@ export class GameServerService extends TakaroService<
             break;
           case GAME_SERVER_TYPE.RUST:
             schema = rustJsonSchema;
-            break;
-          case GAME_SERVER_TYPE.MOCK:
-            schema = mockJsonSchema;
             break;
           case GAME_SERVER_TYPE.GENERIC:
             schema = {
