@@ -122,7 +122,6 @@ jobs:
           DOCKER_TAG: ${{ needs.docker.outputs.docker_tag }}
           TEST_LOGGING_LEVEL: debug
           NODE_ENV: test
-          TRACING_ENABLED: false
           GRAFANA_CLOUD_TEMPO_URL: ${{ secrets.GRAFANA_CLOUD_TEMPO_URL }}
           GRAFANA_CLOUD_API_USER: ${{ secrets.GRAFANA_CLOUD_API_USER }}
           GRAFANA_CLOUD_API_KEY: ${{ secrets.GRAFANA_CLOUD_API_KEY }}
