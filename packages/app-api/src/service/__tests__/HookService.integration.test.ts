@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 
 import { EventPlayerConnected, EventChatMessage, HookEvents, ChatChannel } from '@takaro/modules';
-import { IntegrationTest, expect, integrationConfig, EventsAwaiter, SetupGameServerPlayers } from '@takaro/test';
+import { IntegrationTest, expect, EventsAwaiter, SetupGameServerPlayers } from '@takaro/test';
 import {
   HookOutputDTO,
   GameServerOutputDTO,
@@ -12,7 +12,8 @@ import {
   PlayerOnGameserverOutputDTO,
 } from '@takaro/apiclient';
 import { describe } from 'node:test';
-
+import { randomUUID } from 'crypto';
+import { getMockServer } from '@takaro/mock-gameserver';
 const group = 'HookService';
 
 interface IStandardSetupData {
@@ -20,6 +21,7 @@ interface IStandardSetupData {
   gameserver: GameServerOutputDTO;
   mod: ModuleOutputDTO;
   assignment: ModuleInstallationOutputDTO;
+  mockservers: Awaited<ReturnType<typeof getMockServer>>[];
 }
 
 async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStandardSetupData> {
@@ -37,15 +39,22 @@ async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStanda
     })
   ).data.data;
 
-  const gameserver = (
-    await this.client.gameserver.gameServerControllerCreate({
-      name: 'Test gameserver',
-      type: 'MOCK',
-      connectionInfo: JSON.stringify({
-        host: integrationConfig.get('mockGameserver.host'),
-      }),
+  if (!this.domainRegistrationToken) throw new Error('Domain registration token is not set. Invalid setup?');
+  const identityToken = randomUUID();
+  const mockServer = await getMockServer({
+    mockserver: {
+      registrationToken: this.domainRegistrationToken,
+      identityToken,
+    },
+  });
+
+  const gameServerRes = (
+    await this.client.gameserver.gameServerControllerSearch({
+      filters: { identityToken: [identityToken] },
     })
   ).data.data;
+  const gameserver = gameServerRes.find((gs) => gs.identityToken === identityToken);
+  if (!gameserver) throw new Error('Game server not found. Did something fail when registering?');
 
   const assignment = (
     await this.client.module.moduleInstallationsControllerInstallModule({
@@ -61,6 +70,7 @@ async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStanda
     mod,
     gameserver,
     assignment,
+    mockservers: [mockServer],
   };
 }
 

@@ -1,4 +1,4 @@
-import { IntegrationTest, sandbox, expect, integrationConfig, EventsAwaiter } from '@takaro/test';
+import { IntegrationTest, sandbox, expect, EventsAwaiter } from '@takaro/test';
 import { CommandOutputDTO, GameServerOutputDTO, ModuleOutputDTO, ModuleInstallationOutputDTO } from '@takaro/apiclient';
 import { CommandService } from '../CommandService.js';
 import { queueService } from '@takaro/queues';
@@ -8,6 +8,8 @@ import Sinon from 'sinon';
 import { EventService } from '../EventService.js';
 import { faker } from '@faker-js/faker';
 import { describe } from 'node:test';
+import { randomUUID } from 'crypto';
+import { getMockServer } from '@takaro/mock-gameserver';
 
 export async function getMockPlayer(extra: Partial<IGamePlayer> = {}): Promise<IGamePlayer> {
   const data: Partial<IGamePlayer> = {
@@ -28,6 +30,7 @@ interface IStandardSetupData {
   gameserver: GameServerOutputDTO;
   mod: ModuleOutputDTO;
   installation: ModuleInstallationOutputDTO;
+  mockservers: Awaited<ReturnType<typeof getMockServer>>[];
 }
 
 async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStandardSetupData> {
@@ -48,15 +51,22 @@ async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStanda
   await eventsAwaiter.connect(this.client);
   const connectedEvents = eventsAwaiter.waitForEvents(HookEvents.PLAYER_CREATED, 5);
 
-  const gameserver = (
-    await this.client.gameserver.gameServerControllerCreate({
-      name: 'Test gameserver',
-      type: 'MOCK',
-      connectionInfo: JSON.stringify({
-        host: integrationConfig.get('mockGameserver.host'),
-      }),
+  if (!this.domainRegistrationToken) throw new Error('Domain registration token is not set. Invalid setup?');
+  const identityToken = randomUUID();
+  const mockServer = await getMockServer({
+    mockserver: {
+      registrationToken: this.domainRegistrationToken,
+      identityToken,
+    },
+  });
+
+  const gameServerRes = (
+    await this.client.gameserver.gameServerControllerSearch({
+      filters: { identityToken: [identityToken] },
     })
   ).data.data;
+  const gameserver = gameServerRes.find((gs) => gs.identityToken === identityToken);
+  if (!gameserver) throw new Error('Game server not found. Did something fail when registering?');
 
   await this.client.gameserver.gameServerControllerExecuteCommand(gameserver.id, {
     command: 'connectAll',
@@ -79,6 +89,7 @@ async function setup(this: IntegrationTest<IStandardSetupData>): Promise<IStanda
     mod,
     gameserver,
     installation,
+    mockservers: [mockServer],
   };
 }
 
