@@ -116,6 +116,9 @@ jobs:
 
       - run: npm run test:style
 
+      - name: Generate timestamp for artifact name
+        run: echo "DATE=$(date +'%Y-%m-%d_%H-%M-%S')" >> $GITHUB_ENV
+
       - name: Integration tests
         run: npx zx scripts/integration-tests.mjs
         env:
@@ -148,7 +151,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: integrationTests
+          name: integrationTests-${{ github.run_id }}-${{ env.DATE }}
           path: reports
           retention-days: 30
   e2e:
@@ -163,6 +166,8 @@ jobs:
       - run: ./scripts/dev-init.sh
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
+      - name: Generate timestamp for artifact name
+        run: echo "DATE=$(date +'%Y-%m-%d_%H-%M-%S')" >> $GITHUB_ENV
       - name: Integration tests e2e
         run: npx zx scripts/integration-tests.mjs
         env:
@@ -171,6 +176,6 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: e2e
+          name: e2e-${{ github.run_id }}-${{ env.DATE }}
           path: reports
           retention-days: 30
