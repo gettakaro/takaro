@@ -2,7 +2,7 @@ import { IntegrationTest, sandbox, expect, EventsAwaiter } from '@takaro/test';
 import { CommandOutputDTO, GameServerOutputDTO, ModuleOutputDTO, ModuleInstallationOutputDTO } from '@takaro/apiclient';
 import { CommandService } from '../CommandService.js';
 import { queueService } from '@takaro/queues';
-import { Mock } from '@takaro/gameserver';
+import { Generic } from '@takaro/gameserver';
 import { IGamePlayer, EventChatMessage, HookEvents, ChatChannel, IPosition } from '@takaro/modules';
 import Sinon from 'sinon';
 import { EventService } from '../EventService.js';
@@ -101,7 +101,7 @@ const tests = [
     setup,
     test: async function () {
       const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
-      sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves(
+      sandbox.stub(Generic.prototype, 'getPlayerLocation').resolves(
         new IPosition({
           x: 0,
           y: 0,
@@ -128,7 +128,7 @@ const tests = [
     setup,
     test: async function () {
       const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
-      sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves(
+      sandbox.stub(Generic.prototype, 'getPlayerLocation').resolves(
         new IPosition({
           x: 0,
           y: 0,
@@ -155,7 +155,7 @@ const tests = [
     setup,
     test: async function () {
       const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
-      sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves(
+      sandbox.stub(Generic.prototype, 'getPlayerLocation').resolves(
         new IPosition({
           x: 0,
           y: 0,
@@ -192,7 +192,7 @@ const tests = [
     setup,
     test: async function () {
       const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
-      sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves(
+      sandbox.stub(Generic.prototype, 'getPlayerLocation').resolves(
         new IPosition({
           x: 0,
           y: 0,
@@ -255,7 +255,7 @@ const tests = [
       const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
       sandbox.stub(EventService.prototype, 'create').resolves();
 
-      sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves(
+      sandbox.stub(Generic.prototype, 'getPlayerLocation').resolves(
         new IPosition({
           x: 0,
           y: 0,
@@ -295,7 +295,7 @@ const tests = [
       });
 
       const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
-      sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves(
+      sandbox.stub(Generic.prototype, 'getPlayerLocation').resolves(
         new IPosition({
           x: 0,
           y: 0,
@@ -322,7 +322,7 @@ const tests = [
     setup,
     test: async function () {
       const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
-      sandbox.stub(Mock.prototype, 'getPlayerLocation').resolves(
+      sandbox.stub(Generic.prototype, 'getPlayerLocation').resolves(
         new IPosition({
           x: 0,
           y: 0,
