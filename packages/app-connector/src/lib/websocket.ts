@@ -94,7 +94,7 @@ class WSServer {
     try {
       const message: WebSocketMessage = JSON.parse(data.toString());
 
-      this.log.debug(`Received message from client ${ws.id}:`, { message });
+      this.log.debug(`Received message from client ${ws.id}:`, { data: data.toString() });
 
       switch (message.type) {
         case 'ping':
