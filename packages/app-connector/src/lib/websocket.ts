@@ -1,8 +1,17 @@
-import { errors, logger } from '@takaro/util';
+import { errors, logger, TakaroDTO } from '@takaro/util';
 import WebSocket, { WebSocketServer, RawData } from 'ws';
 import { randomUUID } from 'crypto';
 import { config } from '../config.js';
 import { gameServerManager } from './GameServerManager.js';
+import { IGamePlayer, IPosition } from '@takaro/modules';
+import {
+  BanDTO,
+  CommandOutput,
+  GameServerActions,
+  IItemDTO,
+  MapInfoDTO,
+  TestReachabilityOutputDTO,
+} from '@takaro/gameserver';
 
 export interface WebSocketMessage {
   type: string;
@@ -189,12 +198,12 @@ class WSServer {
     return `client-${randomUUID()}`;
   }
 
-  private sendToClient(client: WebSocketClient, message: WebSocketMessage): void {
+  private sendToClient(client: WebSocketClient, message: WebSocketMessage, requestId?: string): void {
     try {
       client.send(
         JSON.stringify({
           ...message,
-          requestId: randomUUID(),
+          requestId: requestId || randomUUID(),
         }),
       );
     } catch (error) {
@@ -226,7 +235,7 @@ class WSServer {
     });
   }
 
-  public async requestFromGameServer(id: string, action: string, args: string) {
+  public async requestFromGameServer(id: string, action: GameServerActions, args: string) {
     const client = this.servers.get(id);
     if (!client) {
       throw new errors.BadRequestError('Game server is not connected');
@@ -240,22 +249,98 @@ class WSServer {
         );
       }, config.get('ws.requestTimeoutMs'));
 
-      client.send(
-        JSON.stringify({
+      this.sendToClient(
+        client,
+        {
           type: 'request',
           payload: { action, args },
-          requestId,
-        }),
+        },
+        requestId,
       );
 
-      client.on('message', (data: RawData) => {
+      client.on('message', async (data: RawData) => {
         const message: WebSocketMessage = JSON.parse(data.toString());
         if (message.requestId === requestId) {
           clearTimeout(timeout);
+
+          try {
+            await this.validateResponseDTO(action, message);
+          } catch (error) {
+            if (error instanceof errors.ValidationError) {
+              this.sendToClient(
+                client,
+                {
+                  type: 'error',
+                  payload: { message: error.message },
+                },
+                requestId,
+              );
+            } else {
+              this.log.error('Error validating response DTO:', error);
+              this.sendToClient(
+                client,
+                {
+                  type: 'error',
+                  payload: { message: 'Internal error validating response DTO' },
+                },
+                requestId,
+              );
+            }
+            return reject(error);
+          }
+
           resolve(message.payload);
         }
       });
     });
+  }
+
+  private async validateResponseDTO(action: GameServerActions, response: WebSocketMessage): Promise<void> {
+    type ActionResponse = {
+      dto: typeof TakaroDTO<any>;
+      isArray: boolean;
+    } | null;
+    const validationMap: Record<GameServerActions, ActionResponse> = {
+      getPlayer: { dto: IGamePlayer, isArray: false },
+      getPlayers: { dto: IGamePlayer, isArray: true },
+      getPlayerLocation: { dto: IPosition, isArray: false },
+      testReachability: { dto: TestReachabilityOutputDTO, isArray: false },
+      executeConsoleCommand: { dto: CommandOutput, isArray: false },
+      listBans: { dto: BanDTO, isArray: true },
+      listItems: { dto: IItemDTO, isArray: true },
+      getPlayerInventory: { dto: IItemDTO, isArray: true },
+      getMapInfo: { dto: MapInfoDTO, isArray: false },
+      getMapTile: null,
+      giveItem: null,
+      sendMessage: null,
+      teleportPlayer: null,
+      kickPlayer: null,
+      banPlayer: null,
+      unbanPlayer: null,
+      shutdown: null,
+    };
+
+    const validationConfig = validationMap[action];
+
+    if (validationConfig) {
+      if (!response.payload) {
+        throw new errors.ValidationError(`No payload provided but expected DTO: ${validationConfig.dto.name}`);
+      }
+
+      if (validationConfig.isArray) {
+        // Handle array responses
+        if (!Array.isArray(response.payload)) {
+          throw new errors.ValidationError(`Expected array for action ${action} but got ${typeof response.payload}`);
+        }
+
+        const dtoArray = response.payload.map((item) => new validationConfig.dto(item));
+        await Promise.all(dtoArray.map((dto) => dto.validate()));
+      } else {
+        // Handle single object responses
+        const dto = new validationConfig.dto(response.payload);
+        await dto.validate();
+      }
+    }
   }
 }
 

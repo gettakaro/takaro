@@ -42,7 +42,6 @@ export class GameServer implements IGameServer {
   private serverId;
   private tickInterval: NodeJS.Timeout;
 
-  // Implement the connectionInfo property
   public connectionInfo: unknown = {};
 
   private actionHandlers: IActionMap = {

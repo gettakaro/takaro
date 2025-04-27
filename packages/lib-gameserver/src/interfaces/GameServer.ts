@@ -119,3 +119,28 @@ export interface IGameServer {
   getMapInfo(): Promise<MapInfoDTO>;
   getMapTile(x: number, y: number, z: number): Promise<Buffer>;
 }
+
+// All actions that can be sent to the gameserver
+// So the IGameServer interface, but with some internal types omitted
+export type GameServerActions = keyof Omit<IGameServer, 'getEventEmitter' | 'connectionInfo'>;
+// Also create a runtime array with all the actions
+// This is used for class-validator
+export const GAME_SERVER_ACTIONS: GameServerActions[] = [
+  'getPlayer',
+  'getPlayers',
+  'getPlayerLocation',
+  'getPlayerInventory',
+  'giveItem',
+  'listItems',
+  'executeConsoleCommand',
+  'sendMessage',
+  'teleportPlayer',
+  'testReachability',
+  'kickPlayer',
+  'banPlayer',
+  'unbanPlayer',
+  'listBans',
+  'shutdown',
+  'getMapInfo',
+  'getMapTile',
+];

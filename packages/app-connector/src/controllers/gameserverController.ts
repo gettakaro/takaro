@@ -3,6 +3,7 @@ import { IsEnum, IsJSON, IsString } from 'class-validator';
 import { JsonController, Params, Post, Body } from 'routing-controllers';
 import { TakaroDTO } from '@takaro/util';
 import { wsServer } from '../lib/websocket.js';
+import { GAME_SERVER_ACTIONS, GameServerActions } from '@takaro/gameserver';
 
 class IdParam {
   @IsString()
@@ -10,26 +11,8 @@ class IdParam {
 }
 
 class RequestInputDTO extends TakaroDTO<RequestInputDTO> {
-  @IsEnum([
-    'getPlayer',
-    'getPlayers',
-    'getPlayerLocation',
-    'getPlayerInventory',
-    'giveItem',
-    'listItems',
-    'executeConsoleCommand',
-    'sendMessage',
-    'teleportPlayer',
-    'testReachability',
-    'kickPlayer',
-    'banPlayer',
-    'unbanPlayer',
-    'listBans',
-    'shutdown',
-    'getMapInfo',
-    'getMapTile',
-  ])
-  operation: string;
+  @IsEnum(GAME_SERVER_ACTIONS)
+  operation: GameServerActions;
   @IsJSON()
   data: string;
 }
