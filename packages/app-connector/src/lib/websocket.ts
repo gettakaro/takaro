@@ -12,6 +12,7 @@ import {
   MapInfoDTO,
   TestReachabilityOutputDTO,
 } from '@takaro/gameserver';
+import { Counter, Gauge, Histogram } from 'prom-client';
 
 export interface WebSocketMessage {
   type: string;
@@ -33,6 +34,43 @@ class WSServer {
   private WsToServerMap: Map<string, string> = new Map();
   private port: number;
 
+  private metrics = {
+    connections: new Gauge({
+      name: 'takaro_ws_active_connections',
+      help: 'Number of active WebSocket connections',
+    }),
+
+    messageCounter: new Counter({
+      name: 'takaro_ws_messages_total',
+      help: 'Total number of WebSocket messages processed',
+      labelNames: ['type', 'status'],
+    }),
+
+    messageLatency: new Histogram({
+      name: 'takaro_ws_message_processing_duration_seconds',
+      help: 'Time taken to process WebSocket messages',
+      labelNames: ['type'],
+      buckets: [0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1],
+    }),
+
+    requestLatency: new Histogram({
+      name: 'takaro_ws_request_duration_seconds',
+      help: 'Time taken for game server to respond to requests',
+      labelNames: ['action'],
+      buckets: [0.01, 0.05, 0.1, 0.5, 1, 3, 5, 10],
+    }),
+    gameserverRequests: new Counter({
+      name: 'takaro_ws_gameserver_requests_total',
+      help: 'Total number of requests sent to game servers',
+      labelNames: ['action'],
+    }),
+    errors: new Counter({
+      name: 'takaro_ws_errors_total',
+      help: 'Total number of WebSocket errors',
+      labelNames: ['type', 'code'],
+    }),
+  };
+
   constructor(port: number) {
     this.port = port;
     this.wss = new WebSocketServer({ port });
@@ -43,6 +81,7 @@ class WSServer {
 
   private setupWebSocketServer(): void {
     this.wss.on('connection', (ws: WebSocketClient) => {
+      this.metrics.connections.inc();
       const clientId = this.generateClientId();
       ws.id = clientId;
       ws.isAlive = true;
@@ -63,11 +102,16 @@ class WSServer {
         this.servers.delete(clientId);
         this.WsToServerMap.delete(clientId);
         this.log.info(`Client disconnected: ${clientId}`);
+        this.metrics.connections.dec();
       });
 
       ws.on('error', (error: Error) => {
         this.log.error(`WebSocket error for client ${clientId}:`, error);
         ws.terminate();
+        this.metrics.errors.inc({
+          type: 'connection',
+          code: error.name,
+        });
       });
 
       // Send welcome message
@@ -79,6 +123,10 @@ class WSServer {
 
     this.wss.on('error', (error: Error) => {
       this.log.error('WebSocket server error:', error);
+      this.metrics.errors.inc({
+        type: 'server',
+        code: error.name,
+      });
     });
 
     this.wss.on('listening', () => {
@@ -100,11 +148,10 @@ class WSServer {
   }
 
   private async handleMessage(ws: WebSocketClient, data: RawData): Promise<void> {
+    const message: WebSocketMessage = JSON.parse(data.toString());
+    this.log.debug(`Received message from client ${ws.id}:`, { data: data.toString() });
+    const timer = this.metrics.messageLatency.startTimer({ type: message.type });
     try {
-      const message: WebSocketMessage = JSON.parse(data.toString());
-
-      this.log.debug(`Received message from client ${ws.id}:`, { data: data.toString() });
-
       switch (message.type) {
         case 'ping':
           this.sendToClient(ws, { type: 'pong', payload: null });
@@ -177,6 +224,11 @@ class WSServer {
           this.log.warn(`Unknown message type: ${message.type}`);
       }
     } catch (error) {
+      this.metrics.messageCounter.inc({ type: message.type, status: 'error' });
+      this.metrics.errors.inc({
+        type: 'message_processing',
+        code: error instanceof errors.TakaroError ? error.constructor.name : 'InternalError',
+      });
       this.log.warn('Error handling message:', error);
       if (error instanceof errors.TakaroError) {
         this.sendToClient(ws, {
@@ -191,6 +243,9 @@ class WSServer {
           payload: { message: 'Invalid message format' },
         });
       }
+    } finally {
+      timer({ type: message.type });
+      this.metrics.messageCounter.inc({ type: message.type, status: 'success' });
     }
   }
 
@@ -236,14 +291,25 @@ class WSServer {
   }
 
   public async requestFromGameServer(id: string, action: GameServerActions, args: string) {
+    const timer = this.metrics.requestLatency.startTimer({ action });
+    this.metrics.gameserverRequests.inc({ action });
     const client = this.servers.get(id);
     if (!client) {
+      this.metrics.errors.inc({
+        type: 'request_processing',
+        code: 'GameServerNotConnected',
+      });
       throw new errors.BadRequestError('Game server is not connected');
     }
 
     return new Promise((resolve, reject) => {
       const requestId = randomUUID();
       const timeout = setTimeout(() => {
+        this.metrics.errors.inc({
+          type: 'request_processing',
+          code: 'RequestTimeout',
+        });
+        timer({ action });
         reject(
           new errors.BadRequestError(`Request timed out after ${config.get('ws.requestTimeoutMs')}ms : ${action} `),
         );
@@ -286,7 +352,13 @@ class WSServer {
                 requestId,
               );
             }
+            this.metrics.errors.inc({
+              type: 'request_processing',
+              code: error instanceof errors.TakaroError ? error.constructor.name : 'InternalError',
+            });
             return reject(error);
+          } finally {
+            timer({ action });
           }
 
           resolve(message.payload);
