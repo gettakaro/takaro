@@ -53,6 +53,9 @@ export class IHook extends TakaroDTO<IHook> {
   function: string;
   @IsEnum(Object.values(HookEvents))
   eventType: EventTypes;
+  @IsString()
+  @IsOptional()
+  regex?: string;
 }
 
 export class ICronJob extends TakaroDTO<ICronJob> {
