@@ -249,7 +249,7 @@
     "https-browserify": "1.0.0",
     "husky": "9.1.6",
     "jsdom": "25.0.1",
-    "libqp": "2.1.0",
+    "libqp": "2.1.1",
     "lightningcss": "1.27.0",
     "lint-staged": "15.2.10",
     "mocha": "10.7.3",
