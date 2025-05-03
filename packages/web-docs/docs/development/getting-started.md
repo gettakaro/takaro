@@ -23,7 +23,7 @@ The Takaro development environment targets Unix devices (with a focus on Linux)!
 ## Development setup
 
 **If you plan to make code changes, it's a good idea to first create a copy of the repo in your own Github account:
-  [Fork the repo](https://github.com/gettakaro/takaro/fork)
+[Fork the repo](https://github.com/gettakaro/takaro/fork)
 **
 
 This is an opinionated development setup. It will get you up and running quickly.
@@ -67,3 +67,46 @@ Optionally (but recommended!), you can set up some testing data automatically.
 # Generate data for the standard development setup
 docker compose exec takaro node scripts/dev-data.mjs
 ```
+
+### Frontend only development
+
+The full system is quite heavy and needs a lot of resources. If you are only working on the frontend, you can run the lightweight production containers and only run the frontend in dev mode
+
+```bash
+# Ensure your .env vars are loaded
+# You can use direnv or related tools to automatically load the .env file
+# Or you can run this ad-hoc command...
+export $(cat .env | sed '/^#/d' | xargs)
+# Start the backend services
+docker compose -f deploy/compose/docker-compose.yml up -d
+# Navigate to the web-main package
+cd packages/web-main
+# Start the dev server with some overrides for the backend services
+VITE_ORY_URL=http://127.0.0.1:4433 VITE_API=http://127.0.0.1:13000 VITE_TAKARO_VERSION=1.0.0 npm run start:dev
+
+# The frontend is available at http://localhost:13002
+```
+
+## Repo setup
+
+This repo is a monorepo, using [NPM workspaces](https://docs.npmjs.com/cli/v7/using-npm/workspaces).
+
+There are three types of packages; libraries (`lib-*`), applications (`app-*`) and web apps (`web-*`).
+
+## Libraries
+
+- Can be imported by other packages.
+- Do not have a `start` script.
+- Do have a `start:dev` script, typically, this runs the Typescript compiler in watch mode.
+
+## Applications
+
+- Can NOT be imported by other packages.
+- Do have a `start` script, which runs the application in production mode.
+- Do have a `start:dev` script, which runs the application with auto-reloading functionality.
+
+## Web
+
+- Similar to apps, but are intended to be deployed to a web server.
+- Do have a `start:dev` script, which runs the application with auto-reloading functionality.
+- Do have a `build` script, that outputs static HTML, CSS and JS files.
