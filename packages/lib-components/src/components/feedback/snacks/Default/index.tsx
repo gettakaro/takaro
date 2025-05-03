@@ -12,6 +12,7 @@ import { Wrapper, ContentContainer, TextContainer, IconContainer, ButtonContaine
 import { useTheme } from '../../../../hooks';
 import { ButtonProps, IconButton, Tooltip } from '../../../../components';
 import { AlertVariants } from '../../../../styled';
+import { IconBaseProps } from 'react-icons/lib';
 
 /* IMPORTANT: These props need to be kept in sync with the props defined in helpers/getSnackbarProvider */
 export interface DefaultSnackProps extends CustomContentProps {
@@ -19,7 +20,7 @@ export interface DefaultSnackProps extends CustomContentProps {
   button1?: FC<ButtonProps>;
   button2?: FC<ButtonProps>;
   type?: AlertVariants;
-  icon?: ReactElement;
+  icon?: ReactElement<IconBaseProps>;
 }
 
 export const DefaultSnack = forwardRef<HTMLDivElement, DefaultSnackProps>(function DefaultSnack(

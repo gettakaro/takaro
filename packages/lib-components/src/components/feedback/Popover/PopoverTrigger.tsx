@@ -1,4 +1,4 @@
-import { forwardRef, cloneElement, isValidElement, HTMLProps, PropsWithChildren } from 'react';
+import { forwardRef, cloneElement, isValidElement, HTMLProps, PropsWithChildren, JSX } from 'react';
 import { usePopoverContext } from './PopoverContext';
 import { useMergeRefs } from '@floating-ui/react';
 import { ReactNode } from '@tanstack/react-router';
@@ -23,7 +23,7 @@ export const PopoverTrigger = forwardRef<HTMLElement, PopoverTriggerProps>(funct
       context.getReferenceProps({
         ref,
         ...props,
-        ...children.props,
+        ...(children as JSX.Element).props,
         'data-state': context.open ? 'open' : 'closed',
         onFocus: props.onFocus,
         onBlur: props.onBlur,

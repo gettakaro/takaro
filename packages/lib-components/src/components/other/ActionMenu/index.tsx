@@ -11,7 +11,7 @@ export interface ActionMenuProps {
   };
   selected: number;
   setSelected: (selected: number) => void;
-  children: ReactElement | ReactElement[];
+  children: ReactElement<ActionProps> | Array<ReactElement<ActionProps>>;
   elevation?: Elevation;
 }
 
@@ -29,7 +29,7 @@ export const ActionMenu = forwardRef<HTMLUListElement, ActionMenuProps>(function
       }}
       ref={ref}
     >
-      {Children.map(children, (child: ReactElement<ActionProps>, idx) => (
+      {Children.map(children, (child, idx) => (
         <Item
           aria-disabled={child.props.disabled}
           onClick={() => {
@@ -53,13 +53,14 @@ export const ActionMenu = forwardRef<HTMLUListElement, ActionMenuProps>(function
   );
 });
 
-interface ActionProps {
+interface ActionProps extends PropsWithChildren {
   onClick: () => unknown;
   text: string;
+  /// Do not use this prop, it is used internally, and should not be exposed.
   disabled?: boolean;
 }
 
-export const Action: FC<PropsWithChildren<ActionProps>> = ({ children, disabled = false }) => {
+export const Action: FC<ActionProps> = ({ children, disabled = false }) => {
   const _ = disabled;
   return children;
 };

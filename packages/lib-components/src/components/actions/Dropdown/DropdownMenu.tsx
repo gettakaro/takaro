@@ -1,4 +1,4 @@
-import { forwardRef, HTMLProps, Ref, JSX } from 'react';
+import { forwardRef, HTMLProps, FC, ReactElement, ReactNode } from 'react';
 import {
   useMergeRefs,
   FloatingPortal,
@@ -7,7 +7,7 @@ import {
   useTransitionStyles,
 } from '@floating-ui/react';
 import { useDropdownContext } from './DropdownContext';
-import { DropdownMenuItem } from './DropdownMenuItem';
+import { DropdownMenuItem, DropdownMenuItemProps } from './DropdownMenuItem';
 import { DropdownMenuGroup } from './DropdownMenuGroup';
 import { styled } from '../../../styled';
 
@@ -18,13 +18,16 @@ const Container = styled.div`
   padding: ${({ theme }) => theme.spacing['0_5']};
 `;
 
-type DropdownMenuComponent = {
-  (props: HTMLProps<HTMLDivElement>, ref: Ref<HTMLButtonElement>): JSX.Element;
+interface DropdownMenuProps extends HTMLProps<HTMLDivElement> {
+  children: ReactElement<DropdownMenuItemProps> | Array<ReactElement<DropdownMenuItemProps>> | ReactNode;
+}
+
+type DropdownMenuComponent = FC<DropdownMenuProps> & {
   Item: typeof DropdownMenuItem;
   Group: typeof DropdownMenuGroup;
 };
 
-export const DropdownMenu = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElement>>(function DropdownMenu(
+const DropdownMenuBase = forwardRef<HTMLDivElement, DropdownMenuProps>(function DropdownMenu(
   { children, ...props },
   propRef,
 ) {
@@ -64,7 +67,9 @@ export const DropdownMenu = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElement>
       )}
     </FloatingPortal>
   );
-}) as unknown as DropdownMenuComponent;
+});
+
+export const DropdownMenu = DropdownMenuBase as unknown as DropdownMenuComponent;
 
 DropdownMenu.Item = DropdownMenuItem;
 DropdownMenu.Group = DropdownMenuGroup;

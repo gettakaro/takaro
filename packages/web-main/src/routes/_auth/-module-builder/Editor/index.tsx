@@ -34,7 +34,7 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
   const [modelVersionId, setModelVersionId] = useState<number>();
   const { enqueueSnackbar } = useSnackbar();
   const { mutateAsync: updateFunction } = useFunctionUpdate();
-  const editorInstance = useRef<mon.editor.IStandaloneCodeEditor>();
+  const editorInstance = useRef<mon.editor.IStandaloneCodeEditor>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const monacoRef = useRef<typeof mon | null>(null);
   const fileMap = useModuleBuilderContext((s) => s.fileMap);

@@ -9,6 +9,7 @@ import {
   cloneElement,
   useMemo,
   MouseEvent,
+  ReactElement,
 } from 'react';
 import {
   autoUpdate,
@@ -37,6 +38,7 @@ import { SelectContainer, SelectButton, StyledArrowIcon } from '../../sharedStyl
 import { IconButton, InfiniteScroll, Spinner } from '../../../../../components';
 import { GenericTextField } from '../../../TextField/Generic';
 import { Option, OptionGroup, SubComponentTypes } from '../../SubComponents';
+import { OptionGroupProps } from '../../SubComponents/OptionGroup';
 
 interface SharedSelectQueryFieldProps extends PaginationProps {
   // Enables loading data feedback for user
@@ -243,8 +245,8 @@ export const _GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSele
       const hasOptions =
         options &&
         options.some((optionGroup) =>
-          Children.toArray(optionGroup?.props?.children).some(
-            (option) => isValidElement(option) && option.props?.children,
+          Children.toArray(optionGroup.props.children).some(
+            (option) => isValidElement(option) && (option as any).props?.children,
           ),
         );
 
@@ -328,14 +330,22 @@ export const _GenericSelectQueryField = forwardRef<HTMLInputElement, GenericSele
           children,
           (child) =>
             isValidElement(child) && (
-              <ul key={child.props.label} role="group" aria-labelledby={`select-${child.props.label}`}>
-                {child.props.label && (
-                  <GroupLabel role="presentation" id={`select-${child.props.label}`} aria-hidden="true">
-                    {child.props.label}
+              <ul
+                key={(child as ReactElement<OptionGroupProps>).props.label}
+                role="group"
+                aria-labelledby={`select-${(child as ReactElement<OptionGroupProps>).props.label}`}
+              >
+                {(child as ReactElement<OptionGroupProps>).props.label && (
+                  <GroupLabel
+                    role="presentation"
+                    id={`select-${(child as ReactElement<OptionGroupProps>).props.label}`}
+                    aria-hidden="true"
+                  >
+                    {(child as ReactElement<OptionGroupProps>).props.label}
                   </GroupLabel>
                 )}
-                {Children.map(child.props.children, (option) => {
-                  return cloneElement(option, {
+                {Children.map((child as ReactElement<OptionGroupProps>).props.children, (option) => {
+                  return cloneElement(option as any, {
                     onChange: onChange,
                   });
                 })}

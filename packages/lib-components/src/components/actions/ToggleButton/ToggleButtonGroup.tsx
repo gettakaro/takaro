@@ -1,14 +1,4 @@
-import {
-  cloneElement,
-  FC,
-  Children,
-  ReactNode,
-  useState,
-  isValidElement,
-  FunctionComponentElement,
-  ReactElement,
-  useEffect,
-} from 'react';
+import { cloneElement, FC, Children, useState, isValidElement, ReactElement, useEffect } from 'react';
 import { Container } from './style';
 import { ToggleButton, ToggleButtonProps } from './ToggleButton';
 
@@ -23,7 +13,7 @@ export interface ToggleButtonGroupProps {
   orientation?: orientation;
   /// if `true` only allow one of the child ToggleButton values to be selected.
   exclusive?: boolean;
-  children: ReactNode | FunctionComponentElement<ToggleButtonProps>;
+  children: ReactElement<ToggleButtonProps> | Array<ReactElement<ToggleButtonProps>>;
   /// The currently selected value within the group or an array of selected values when `exclusive` is false
   defaultValue?: string;
   fullWidth?: boolean;

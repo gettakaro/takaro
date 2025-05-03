@@ -1,6 +1,7 @@
-import { Children, createContext, isValidElement, ReactElement, ReactNode } from 'react';
+import { Children, createContext, isValidElement, ReactElement, ReactNode, RefObject } from 'react';
 import { ContextData } from '@floating-ui/react';
 import { OptionProps } from './SubComponents/Option';
+import { OptionGroupProps } from './SubComponents/OptionGroup';
 
 export interface SelectItem {
   value: string;
@@ -12,7 +13,7 @@ interface ContextValue {
   setSelectedItems: (item: SelectItem[]) => void;
   activeIndex: number | null;
   setActiveIndex: (index: number | null) => void;
-  listRef: React.MutableRefObject<Array<HTMLLIElement | null>>;
+  listRef: RefObject<Array<HTMLLIElement | null>>;
   setOpen: (open: boolean) => void;
   getItemProps: (userProps?: React.HTMLProps<HTMLElement>) => any;
   dataRef: ContextData;
@@ -25,20 +26,20 @@ export const SelectContext = createContext<ContextValue>({} as ContextValue);
 export const getLabelFromChildren = (children: ReactNode, value: string) => {
   const matchedGroup = Children.toArray(children).find((group) => {
     if (!isValidElement(group)) return false;
-    const matchedOption = Children.toArray(group.props.children)
+    const matchedOption = Children.toArray((group as ReactElement<OptionGroupProps>).props.children)
       .filter(isValidElement)
-      .find((option: ReactElement) => option.props.value === value);
+      .find((option) => (option as ReactElement<OptionProps>).props.value === value);
 
     return Boolean(matchedOption);
   });
 
   if (matchedGroup && isValidElement(matchedGroup)) {
-    const matchedOption = Children.toArray(matchedGroup.props.children)
+    const matchedOption = Children.toArray((matchedGroup as ReactElement<OptionGroupProps>).props.children)
       .filter(isValidElement)
-      .find((option: ReactElement) => option.props.value === value) as ReactElement<OptionProps>;
+      .find((option) => (option as ReactElement<OptionProps>).props.value === value);
 
     if (matchedOption) {
-      return matchedOption.props.label;
+      return (matchedOption as ReactElement<OptionProps>).props.label;
     }
   }
 

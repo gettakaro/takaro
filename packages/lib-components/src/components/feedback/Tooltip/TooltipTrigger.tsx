@@ -1,4 +1,4 @@
-import { HTMLProps, forwardRef, isValidElement, cloneElement } from 'react';
+import { HTMLProps, forwardRef, isValidElement, cloneElement, JSX } from 'react';
 import { useTooltipContext } from './TooltipContext';
 import { useMergeRefs } from '@floating-ui/react';
 import { styled } from '../../../styled';
@@ -9,6 +9,7 @@ const Container = styled.div<{ isOpen: boolean }>`
 
 interface TooltipTriggerProps {
   asChild?: boolean;
+  children: JSX.Element;
 }
 
 export const TooltipTrigger = forwardRef<HTMLElement, HTMLProps<HTMLElement> & TooltipTriggerProps>(

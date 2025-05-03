@@ -42,6 +42,7 @@ export interface MenuItemProps extends React.ButtonHTMLAttributes<HTMLButtonElem
   label: string;
   shortcut?: string;
   disabled?: boolean;
+  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 export const MenuItem = forwardRef<HTMLButtonElement, MenuItemProps>(function MenuItem(

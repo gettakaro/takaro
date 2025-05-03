@@ -1,4 +1,4 @@
-import { FC, useEffect, Children, isValidElement, PropsWithChildren } from 'react';
+import { FC, useEffect, Children, isValidElement, PropsWithChildren, ReactElement } from 'react';
 import { Tooltip } from '../../../../components';
 import { useStepper } from '../useStepper';
 import { Container, StepperBody, StepperHeader, StepperHeaderItem, Dot } from './style';
@@ -6,7 +6,11 @@ import { StepStates } from '../stepStates';
 
 /* Dot behavior components */
 // wrapper <StepperSteps/> component around the multiple <step/>
-const StepperSteps: FC<PropsWithChildren<unknown>> = ({ children }) => {
+interface StepperStepsProps {
+  children: ReactElement<StepProps> | Array<ReactElement<StepProps>>;
+}
+
+const StepperSteps: FC<StepperStepsProps> = ({ children }) => {
   const { currentStep, steps, setSteps } = useStepper();
 
   useEffect(() => {
@@ -24,10 +28,7 @@ const StepperSteps: FC<PropsWithChildren<unknown>> = ({ children }) => {
   return (
     <div>
       {children &&
-        Children.map(
-          children,
-          (child) => steps.length !== 0 && isValidElement(child) && child.props.id === steps[currentStep].id && child,
-        )}
+        Children.map(children, (child) => steps.length !== 0 && child.props === steps[currentStep].id && child)}
     </div>
   );
 };
@@ -50,7 +51,7 @@ export interface SlimStepperProps {
 // Main <Stepper/> component which contains subcomponents
 export const SlimStepper: FC<PropsWithChildren<SlimStepperProps>> & {
   Step: FC<PropsWithChildren<StepProps>>;
-  Steps: FC<PropsWithChildren<unknown>>;
+  Steps: FC<PropsWithChildren<StepperStepsProps>>;
 } = ({ showTooltip = 'hover', canStepBack = true, children }) => {
   const { currentStep, steps, setCurrentStep } = useStepper();
 

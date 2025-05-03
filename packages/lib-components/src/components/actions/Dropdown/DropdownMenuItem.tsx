@@ -5,6 +5,7 @@ import { styled } from '../../../styled';
 import { AiOutlineClose as UndoIcon, AiOutlineCheck as CheckmarkIcon } from 'react-icons/ai';
 import { motion } from 'framer-motion';
 import { GenericCheckBox } from '../../../components/inputs/CheckBox/Generic';
+import { IconBaseProps } from 'react-icons/lib';
 
 const Container = styled(motion.button)<{ isActive: boolean }>`
   background-color: ${({ theme, isActive }) => (isActive ? theme.colors.secondary : theme.colors.background)};
@@ -37,10 +38,10 @@ const Container = styled(motion.button)<{ isActive: boolean }>`
   }
 `;
 
-interface DropdownMenuItemProps {
+export interface DropdownMenuItemProps {
   label: string;
   disabled?: boolean;
-  icon?: ReactElement;
+  icon?: ReactElement<IconBaseProps>;
   iconPosition?: 'left' | 'right';
   onClick: (e: MouseEvent<HTMLButtonElement>) => void;
   active?: boolean;

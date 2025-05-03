@@ -4,6 +4,7 @@ import { Size, styled } from '../../../styled';
 import { getIconSize } from '../../actions/IconButton/getIconSize';
 import { ButtonColor } from '../../actions/Button/style';
 import { shade } from 'polished';
+import { IconBaseProps } from 'react-icons/lib';
 
 type TooltipIconColor = Exclude<ButtonColor, 'white'>;
 
@@ -24,7 +25,7 @@ const ContentContainer = styled.div`
 `;
 
 export interface IconTooltipProps extends TooltipProps {
-  icon: ReactElement;
+  icon: ReactElement<IconBaseProps>;
   size?: Size;
   color?: TooltipIconColor;
 }

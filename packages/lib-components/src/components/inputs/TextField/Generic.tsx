@@ -14,6 +14,7 @@ import { AiOutlineEye as ShowPasswordIcon, AiOutlineEyeInvisible as HidePassword
 import { getFieldType, getInputMode } from './util';
 import { defaultInputProps, defaultInputPropsFactory, GenericInputProps } from '../InputProps';
 import { setAriaDescribedBy } from '../layout';
+import { IconBaseProps } from 'react-icons/lib';
 
 export type TextFieldType = 'text' | 'password' | 'email' | 'number' | 'cron';
 
@@ -23,7 +24,7 @@ export interface TextFieldProps {
   size?: Size;
   prefix?: string;
   suffix?: string | ReactElement;
-  icon?: ReactElement;
+  icon?: ReactElement<IconBaseProps>;
 }
 
 export type GenericTextFieldProps = GenericInputProps<string, HTMLInputElement> & TextFieldProps;

@@ -1,23 +1,14 @@
-import {
-  forwardRef,
-  cloneElement,
-  isValidElement,
-  HTMLProps,
-  PropsWithChildren,
-  useState,
-  ReactElement,
-  ReactNode,
-} from 'react';
+import { forwardRef, cloneElement, isValidElement, HTMLProps, useState, ReactElement, ReactNode, JSX } from 'react';
 import { useDropdownContext } from './DropdownContext';
 import { useMergeRefs } from '@floating-ui/react';
 import { TooltipOptions } from '../../feedback/Tooltip/useTooltip';
 import { Tooltip } from '../../../components';
 
-export type DropdownTriggerProps = HTMLProps<HTMLElement> &
-  PropsWithChildren<{
-    asChild?: boolean;
-    tooltipOptions?: TooltipOptions & { content: ReactNode };
-  }>;
+export type DropdownTriggerProps = HTMLProps<HTMLElement> & {
+  asChild?: boolean;
+  tooltipOptions?: TooltipOptions & { content: ReactNode };
+  children: JSX.Element | Array<JSX.Element>;
+};
 
 export const DropdownTrigger = forwardRef<HTMLElement, DropdownTriggerProps>(function DropdownTrigger(
   {

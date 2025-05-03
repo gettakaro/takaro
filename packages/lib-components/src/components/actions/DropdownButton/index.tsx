@@ -1,4 +1,4 @@
-import { useState, useEffect, ReactElement, useRef, forwardRef } from 'react';
+import { useState, useEffect, useRef, forwardRef, Children, PropsWithChildren } from 'react';
 import { useOutsideAlerter } from '../../../hooks';
 import { MdChevronRight as ArrowIcon } from 'react-icons/md';
 import { ActionMenu } from '../../../components';
@@ -67,8 +67,7 @@ const Container = styled.div<{ fullWidth: boolean }>`
   width: ${({ fullWidth }) => (fullWidth ? '100%' : 'max-content')};
 `;
 
-export interface DropdownButtonProps {
-  children: ReactElement[];
+export interface DropdownButtonProps extends PropsWithChildren {
   color?: ButtonColor;
   onSelectedChanged?: (index: number) => void;
   fullWidth?: boolean;
@@ -98,7 +97,9 @@ export const DropdownButton = forwardRef<HTMLDivElement, DropdownButtonProps>(fu
 
   const handleSelectedActionClicked = () => {
     setListVisible(false);
-    children[selected].props.onClick();
+
+    // @ts-expect-error: selected could be undefined
+    Children.toArray(children).at(selected)?.props.onClick();
   };
 
   // TODO: this element does not handle the case where there are no children/actions
@@ -107,6 +108,7 @@ export const DropdownButton = forwardRef<HTMLDivElement, DropdownButtonProps>(fu
     <Wrapper ref={ref}>
       <Container ref={refs.setReference} fullWidth={fullWidth}>
         <CurrentAction color={color} onClick={handleSelectedActionClicked} role="button">
+          {/* @ts-expect-error: selected could be undefined */}
           {children[selected].props.text}
         </CurrentAction>
         <DropdownActionContainer role="button" color={color} onClick={() => setListVisible(!listVisible)}>
@@ -119,6 +121,7 @@ export const DropdownButton = forwardRef<HTMLDivElement, DropdownButtonProps>(fu
             attributes={{ x, y, strategy }}
             ref={refs.setFloating}
           >
+            {/* @ts-expect-error: children cannot be undefined in this case */}
             {children}
           </ActionMenu>
         )}

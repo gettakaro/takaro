@@ -1,5 +1,6 @@
-import { FC, PropsWithChildren } from 'react';
+import { FC, PropsWithChildren, ReactElement } from 'react';
 import { styled } from '../../../styled';
+import { MenuItemProps } from './MenuItem';
 
 const Container = styled.div<{ divider: boolean; hasChildren: boolean }>`
   border-bottom: ${({ divider, theme, hasChildren }) =>
@@ -17,12 +18,13 @@ const Container = styled.div<{ divider: boolean; hasChildren: boolean }>`
   }
 `;
 
-interface DropdownGroupProps {
+export interface MenuGroupProps {
   label?: string;
   divider?: boolean;
+  children: ReactElement<MenuItemProps> | Array<ReactElement<MenuItemProps>>;
 }
 
-export const Group: FC<PropsWithChildren<DropdownGroupProps>> = ({ label, divider = false, children }) => {
+export const Group: FC<PropsWithChildren<MenuGroupProps>> = ({ label, divider = false, children }) => {
   const showDivider = divider || label ? true : false;
 
   return (

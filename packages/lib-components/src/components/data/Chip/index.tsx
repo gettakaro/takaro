@@ -2,6 +2,7 @@ import { forwardRef, ReactElement, cloneElement } from 'react';
 import { AiOutlineClose as Icon } from 'react-icons/ai';
 import { Container, Dot } from './style';
 import { AlertVariants, Color, Variant } from '../../../styled/types';
+import { IconBaseProps } from 'react-icons/lib';
 
 export type ChipColor = Color | AlertVariants | 'backgroundAccent';
 
@@ -17,7 +18,7 @@ export interface ChipProps {
   color: ChipColor;
   variant?: Variant;
   isLoading?: boolean;
-  icon?: ReactElement;
+  icon?: ReactElement<IconBaseProps>;
   showIcon?: ShowIcon;
 }
 

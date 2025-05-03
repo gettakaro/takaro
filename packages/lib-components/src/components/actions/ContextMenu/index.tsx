@@ -1,15 +1,4 @@
-import {
-  Children,
-  cloneElement,
-  isValidElement,
-  useEffect,
-  useRef,
-  useState,
-  HTMLProps,
-  RefObject,
-  ReactElement,
-  FC,
-} from 'react';
+import { Children, cloneElement, useEffect, useRef, useState, HTMLProps, RefObject, ReactElement, FC } from 'react';
 import {
   useFloating,
   autoUpdate,
@@ -25,7 +14,7 @@ import {
   FloatingFocusManager,
 } from '@floating-ui/react';
 import { MenuItem, MenuItemProps } from './MenuItem';
-import { Group } from './Group';
+import { Group, MenuGroupProps } from './Group';
 
 import { styled } from '../../../styled';
 
@@ -42,7 +31,12 @@ const Container = styled.div`
 export interface ContextMenuProps extends HTMLProps<HTMLButtonElement> {
   label?: string;
   nested?: boolean;
-  targetRef?: RefObject<HTMLElement>;
+  targetRef?: RefObject<HTMLElement | null>;
+  children:
+    | ReactElement<MenuItemProps>
+    | Array<ReactElement<MenuItemProps>>
+    | ReactElement<MenuGroupProps>
+    | Array<ReactElement<MenuGroupProps>>;
 }
 
 type SubComponentTypes = {
@@ -55,9 +49,7 @@ export const ContextMenu: FC<ContextMenuProps> & SubComponentTypes = ({ children
   const [isOpen, setIsOpen] = useState(false);
 
   const listItemsRef = useRef<Array<HTMLButtonElement | null>>([]);
-  const listContentRef = useRef(
-    Children.map(children, (child) => (isValidElement(child) ? child.props.label : null)) as Array<string | null>,
-  );
+  const listContentRef = useRef(Children.map(children, (child) => child.props.label));
   const allowMouseUpCloseRef = useRef(false);
 
   const { refs, floatingStyles, context } = useFloating({
@@ -154,51 +146,39 @@ export const ContextMenu: FC<ContextMenuProps> & SubComponentTypes = ({ children
         <FloatingFocusManager context={context} initialFocus={refs.floating}>
           <Container className="ContextMenu" ref={refs.setFloating} style={floatingStyles} {...getFloatingProps()}>
             {Children.map(children, (child, index) => {
-              if (isValidElement(child)) {
-                // If child is a Group, iterate over its children
-                if (child.type === ContextMenu.Group) {
-                  const newGroupChildren = Children.map(
-                    child.props.children,
-                    (groupChild: ReactElement<MenuItemProps>, groupIndex) => {
-                      if (isValidElement(groupChild)) {
-                        return cloneElement(
-                          groupChild,
-                          getItemProps({
-                            tabIndex: activeIndex === index ? 0 : -1,
-                            ref(node: HTMLButtonElement) {
-                              listItemsRef.current[groupIndex] = node;
-                            },
-                            onClick(e: React.MouseEvent<HTMLButtonElement>) {
-                              groupChild.props.onClick?.(e);
-                              setIsOpen(false);
-                            },
-                            onMouseUp(e: React.MouseEvent<HTMLButtonElement>) {
-                              groupChild.props.onClick?.(e);
-                              setIsOpen(false);
-                            },
-                          }),
-                        );
-                      }
-                      return groupChild;
-                    },
+              if (child.type === ContextMenu.Group) {
+                // if child is group, map through its children
+                const newGroupChildren = Children.map(child.props.children, (menuitem, groupIndex) => {
+                  return cloneElement(
+                    // we are certain children of group are of type MenuItem
+                    menuitem as unknown as ReactElement<MenuItemProps>,
+                    getItemProps({
+                      tabIndex: activeIndex === index ? 0 : -1,
+                      ref(node: HTMLButtonElement) {
+                        listItemsRef.current[groupIndex] = node;
+                      },
+                    }),
                   );
-                  return <ContextMenu.Group {...child.props}>{newGroupChildren}</ContextMenu.Group>;
-                }
+                });
+                return <ContextMenu.Group {...child.props}>{newGroupChildren as any}</ContextMenu.Group>;
+              }
 
+              // if child is not a MenuGroup, it is a MenuItem
+              else if (child.type === ContextMenu.Item) {
                 // If child is not a Group, handle it as before
                 return cloneElement(
-                  child,
+                  child as unknown as ReactElement<MenuItemProps>,
                   getItemProps({
                     tabIndex: activeIndex === index ? 0 : -1,
                     ref(node: HTMLButtonElement) {
                       listItemsRef.current[index] = node;
                     },
                     onClick(e) {
-                      child.props.onClick?.(e);
+                      (child.props as any).onClick?.(e);
                       setIsOpen(false);
                     },
                     onMouseUp(e) {
-                      child.props.onClick?.(e);
+                      (child.props as any).onClick?.(e);
                       setIsOpen(false);
                     },
                   }),

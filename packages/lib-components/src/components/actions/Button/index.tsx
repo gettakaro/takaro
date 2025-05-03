@@ -2,12 +2,13 @@ import { JSX, cloneElement, forwardRef, MouseEvent as ReactMouseEvent, ReactElem
 import { Spinner } from '../../../components';
 import { ButtonColor, Default, Outline, Clear, White } from './style';
 import { Size, Variant } from '../../../styled';
+import { IconBaseProps } from 'react-icons/lib';
 
 export interface ButtonProps {
   disabled?: boolean;
   onClick?: (event: ReactMouseEvent<HTMLButtonElement, MouseEvent>) => unknown;
   isLoading?: boolean;
-  icon?: ReactElement;
+  icon?: ReactElement<IconBaseProps>;
   iconPosition?: 'left' | 'right';
   className?: string;
   fullWidth?: boolean;

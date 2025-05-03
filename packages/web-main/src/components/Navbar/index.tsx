@@ -25,6 +25,7 @@ import { GameServerNav } from './GameServerNav';
 import { TAKARO_DOMAIN_COOKIE_REGEX } from '../../util/domainCookieRegex';
 import { getConfigVar, getTakaroVersionComponents } from '../../util/getConfigVar';
 import { renderLink } from './renderLink';
+import { IconBaseProps } from 'react-icons';
 
 const domainLinks: NavbarLink[] = [
   {
@@ -113,7 +114,7 @@ const domainLinks: NavbarLink[] = [
 export interface NavbarLink {
   linkProps: Partial<LinkProps>;
   label: string;
-  icon: ReactElement;
+  icon: ReactElement<IconBaseProps>;
   requiredPermissions?: RequiredPermissions;
   requiresDevelopmentModeEnabled?: boolean;
   end?: boolean;

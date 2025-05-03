@@ -1,12 +1,4 @@
-import {
-  cloneElement,
-  ForwardedRef,
-  forwardRef,
-  HTMLProps,
-  isValidElement,
-  PropsWithChildren,
-  ReactElement,
-} from 'react';
+import { forwardRef, HTMLProps } from 'react';
 import { useCollapsibleContext } from './CollapsibleContext';
 import { AiOutlineCaretRight as ArrowRight, AiOutlineCaretDown as ArrowDown } from 'react-icons/ai';
 import { styled } from '../../../styled';
@@ -40,9 +32,12 @@ const Container = styled.button<{ open: boolean }>`
   }
 `;
 
-export type TriggerProps = HTMLProps<HTMLElement> & PropsWithChildren<{ asChild?: boolean }>;
-export const CollapsibleTrigger = forwardRef<HTMLElement, TriggerProps>(function CollapsibleTrigger(
-  { children, asChild },
+export interface CollapsibleTriggerProps extends HTMLProps<HTMLElement> {
+  children: string;
+}
+
+export const CollapsibleTrigger = forwardRef<HTMLButtonElement, CollapsibleTriggerProps>(function CollapsibleTrigger(
+  { children },
   ref,
 ) {
   const { setOpen, open } = useCollapsibleContext();
@@ -51,30 +46,8 @@ export const CollapsibleTrigger = forwardRef<HTMLElement, TriggerProps>(function
     setOpen(!open);
   };
 
-  if (asChild && isValidElement(children)) {
-    const hasOnClick = children.props.onClick;
-    const mergedOnClick = () => {
-      if (hasOnClick) {
-        hasOnClick();
-      }
-      handleClick();
-    };
-
-    return cloneElement(children as ReactElement, {
-      onClick: mergedOnClick,
-      role: 'button',
-    });
-  }
-
   return (
-    <Container
-      open={open}
-      type="button"
-      onClick={handleClick}
-      aria-expanded={open}
-      tabIndex={0}
-      ref={ref as ForwardedRef<HTMLButtonElement>}
-    >
+    <Container open={open} type="button" onClick={handleClick} aria-expanded={open} tabIndex={0} ref={ref}>
       {children}
       {open === false && <ArrowRight size={12} />}
       {open === true && <ArrowDown size={12} />}

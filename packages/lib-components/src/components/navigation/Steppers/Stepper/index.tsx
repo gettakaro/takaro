@@ -7,7 +7,11 @@ import { StepStates } from '../stepStates';
 /* Dot behavior components */
 // wrapper <StepperSteps/> component around the multiple <step/>
 
-const StepperSteps: FC<PropsWithChildren<unknown>> = ({ children }) => {
+interface StepperStepsProps {
+  children: ReactElement<StepProps> | Array<ReactElement<StepProps>>;
+}
+
+const StepperSteps: FC<StepperStepsProps> = ({ children }) => {
   const { currentStep, steps, setSteps } = useStepper();
 
   useEffect(() => {
@@ -27,7 +31,8 @@ const StepperSteps: FC<PropsWithChildren<unknown>> = ({ children }) => {
       {children &&
         Children.map(
           children,
-          (child) => steps.length !== 0 && isValidElement(child) && child.props.id === steps[currentStep].id && child,
+          (child) =>
+            steps.length !== 0 && isValidElement<StepProps>(child) && child.props.id === steps[currentStep].id && child,
         )}
     </div>
   );
@@ -53,7 +58,7 @@ export interface StepperProps {
 // Main <Stepper/> component which contains subcomponents
 export const Stepper: FC<PropsWithChildren<StepperProps>> & {
   Step: FC<PropsWithChildren<StepProps>>;
-  Steps: FC<PropsWithChildren<unknown>>;
+  Steps: FC<PropsWithChildren<StepperStepsProps>>;
 } = ({ currentStepIsLoading = false, canStepBack = true, children }) => {
   const { currentStep, steps, setCurrentStep } = useStepper();
 

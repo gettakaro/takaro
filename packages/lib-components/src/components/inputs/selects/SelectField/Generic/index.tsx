@@ -36,6 +36,8 @@ import { Option, OptionGroup, SubComponentTypes } from '../../SubComponents';
 import { setAriaDescribedBy } from '../../../layout';
 import { SelectItem, SelectContext, getLabelFromChildren } from '../../';
 import { IconButton } from '../../../../../components/';
+import { OptionGroupProps } from '../../SubComponents/OptionGroup';
+import { OptionProps } from '../../SubComponents/Option';
 
 interface SharedSelectFieldProps {
   render: (selectedItems: SelectItem[]) => React.ReactNode;
@@ -180,15 +182,17 @@ export const GenericSelectField: FC<GenericSelectFieldProps> & SubComponentTypes
     return Children.map(children, (group) => {
       if (!isValidElement(group)) return null;
 
-      const filteredOptions = Children.toArray(group.props.children)
+      const filteredOptions = Children.toArray((group as ReactElement<OptionGroupProps>).props.children)
         .filter(isValidElement) // Ensures that only valid elements are processed
         .filter((option: ReactElement) => {
-          if (enableFilter && !('label' in option.props)) {
+          if (enableFilter && !('label' in (option as ReactElement<OptionProps>).props)) {
             throw new Error('When enableFilter is true, all options must have a label prop');
           }
 
           // Perform the filtering based on your condition
-          const valueMatches = filterText === '' || option.props.label.toLowerCase().includes(filterText.toLowerCase());
+          const valueMatches =
+            filterText === '' ||
+            (option as ReactElement<OptionProps>).props.label.toLowerCase().includes(filterText.toLowerCase());
           return valueMatches;
         })
         .map((option: ReactElement) => {
@@ -197,20 +201,34 @@ export const GenericSelectField: FC<GenericSelectFieldProps> & SubComponentTypes
 
           // Make sure your Option component can accept and use the index prop
           return cloneElement(option, {
+            // @ts-expect-error: we cannot ensure index is a real property
             index: optionIndex,
             onChange: onChange,
-            isGrouped: 'label' in group.props && 'icon' in group.props,
+            isGrouped:
+              'label' in (group as ReactElement<OptionProps>).props &&
+              'icon' in (group as ReactElement<OptionGroupProps>).props,
           });
         });
 
       if (filteredOptions.length === 0) return null;
 
       return (
-        <GroupContainer key={group.props.label} role="group" aria-labelledby={`select-${group.props.label}`}>
-          {group.props.label && (
-            <GroupLabel role="presentation" id={`select-${group.props.label}`} aria-hidden="true">
-              {group.props.icon && group.props.icon}
-              <span key={`select-span-${group.props.label}`}>{group.props.label}</span>
+        <GroupContainer
+          key={(group as ReactElement<OptionGroupProps>).props.label}
+          role="group"
+          aria-labelledby={`select-${(group as ReactElement<OptionGroupProps>).props.label}`}
+        >
+          {(group as ReactElement<OptionGroupProps>).props.label && (
+            <GroupLabel
+              role="presentation"
+              id={`select-${(group as ReactElement<OptionGroupProps>).props.label}`}
+              aria-hidden="true"
+            >
+              {(group as ReactElement<OptionGroupProps>).props.icon &&
+                (group as ReactElement<OptionGroupProps>).props.icon}
+              <span key={`select-span-${(group as ReactElement<OptionGroupProps>).props.label}`}>
+                {(group as ReactElement<OptionGroupProps>).props.label}
+              </span>
             </GroupLabel>
           )}
           {filteredOptions}

@@ -136,7 +136,7 @@ const createModuleBuilderStore = (initProps: ModuleBuilderProps) => {
 const ModuleBuilderContext = createContext<ModuleBuilderStore | null>(null);
 type ModuleBuilderProviderProps = PropsWithChildren<ModuleBuilderProps>;
 export function ModuleBuilderProvider({ children, ...props }: ModuleBuilderProviderProps) {
-  const storeRef = useRef<ModuleBuilderStore>();
+  const storeRef = useRef<ModuleBuilderStore>(null);
   if (!storeRef.current) {
     storeRef.current = createModuleBuilderStore(props);
   }
