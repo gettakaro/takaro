@@ -33,11 +33,13 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ mod, onSuccess }) => {
   const { mutateAsync: exportModule, isPending: moduleExportLoading, error: moduleExportError } = useModuleExport();
 
   const onSubmit: SubmitHandler<z.infer<typeof validationSchema>> = async ({ name, versions }) => {
+    const transformedVersions = versions[0] === 'null' ? undefined : versions;
+
     try {
       const exportedModule = await exportModule({
         moduleId: mod.id,
         options: {
-          versionIds: versions,
+          versionIds: transformedVersions,
         },
       });
 
