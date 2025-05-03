@@ -3,20 +3,20 @@ import { Button, TextField, styled, Company, FormError } from '@takaro/lib-compo
 import { AiFillMail as Mail } from 'react-icons/ai';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { createFileRoute, Link, useNavigate, useRouter, useSearch } from '@tanstack/react-router';
-import { LoginFlow } from '@ory/client';
+import { handleFlowError, LoginFlow } from '@ory/client-fetch';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { isAxiosError } from 'axios';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
-import { useOry } from '../hooks/useOry';
 import { getApiClient } from '../util/getApiClient';
 import { useAuth } from '../hooks/useAuth';
 import { zodValidator } from '@tanstack/zod-adapter';
+import { getOryClient } from '../util/ory';
 
 export const Route = createFileRoute('/login')({
   validateSearch: zodValidator(
     z.object({
       redirect: z.string().optional(),
+      flowId: z.string().optional(),
     }),
   ),
   component: Component,
@@ -68,8 +68,9 @@ function Component() {
   const [loading, setLoading] = useState(false);
   const [loginFlow, setLoginFlow] = useState<LoginFlow>();
   const [csrfToken, setCsrfToken] = useState<string>();
+  const { flowId } = Route.useSearch();
   const [error, setError] = useState<string>();
-  const { oryClient } = useOry();
+  const oryClient = getOryClient();
   const apiClient = getApiClient();
   const search = useSearch({ from: '/login' });
   const { login } = useAuth();
@@ -85,23 +86,27 @@ function Component() {
     [],
   );
 
-  async function createLoginFlow() {
-    const res = await oryClient.createBrowserLoginFlow({
-      refresh: true,
-    });
-    return res.data;
-  }
-
   async function logIn(flow: string, email: string, password: string, csrf_token: string): Promise<void> {
-    await oryClient.updateLoginFlow({
-      flow,
-      updateLoginFlowBody: {
-        csrf_token,
-        identifier: email,
-        password,
-        method: 'password',
-      },
-    });
+    oryClient
+      .updateLoginFlowRaw({
+        flow,
+        updateLoginFlowBody: {
+          csrf_token,
+          identifier: email,
+          password,
+          method: 'password',
+        },
+      })
+      .catch(
+        handleFlowError({
+          onValidationError: (responseBody) => {
+            setError((responseBody as any).ui.messages[0].text);
+          },
+          onRedirect: () => {},
+          onRestartFlow: () => {},
+        }),
+      );
+
     await apiClient.user.userControllerDeleteSelectedDomainCookie();
     const res = await apiClient.user.userControllerMe({
       headers: {
@@ -115,20 +120,31 @@ function Component() {
     await navigate({ to: search.redirect ?? '/' });
   }
 
-  useEffect(() => {
-    if (loginFlow) {
-      const csrfAttr = loginFlow.ui.nodes[0].attributes;
-      // @ts-expect-error Bad ory client types :(
+  async function getOrCreateLoginFlow(flowId?: string): Promise<LoginFlow> {
+    if (!flowId) {
+      const loginFlow = await oryClient.createBrowserLoginFlow({ refresh: true });
+      const csrfAttr = (loginFlow as LoginFlow).ui.nodes[0].attributes;
+      // @ts-expect-error: ory types are incorrect
       setCsrfToken(csrfAttr.value);
-    } else {
-      createLoginFlow().then((flow) => {
-        setLoginFlow(flow);
-        const csrfAttr = flow.ui.nodes[0].attributes;
-        // @ts-expect-error Bad ory client types :(
-        setCsrfToken(csrfAttr.value);
-      });
+      return loginFlow as LoginFlow;
     }
-  }, [loginFlow]);
+
+    const loginFlow = await oryClient
+      .getLoginFlowRaw({ id: flowId })
+      .then((res) => res.value())
+      .catch(
+        handleFlowError({
+          onValidationError: () => {},
+          onRestartFlow: () => {},
+          onRedirect: () => {},
+        }),
+      );
+
+    const csrfAttr = (loginFlow as LoginFlow).ui.nodes[0].attributes;
+    // @ts-expect-error: ory types are incorrect
+    setCsrfToken(csrfAttr.value);
+    return loginFlow as LoginFlow;
+  }
 
   const { control, handleSubmit, reset } = useForm<IFormInputs>({
     mode: 'onSubmit',
@@ -146,17 +162,18 @@ function Component() {
       if (loginFlow?.id && csrfToken) {
         await logIn(loginFlow.id, email, password, csrfToken);
       }
-    } catch (error) {
+    } catch {
       reset();
-      console.log(error);
-
-      if (isAxiosError(error)) {
-        setError(error.response?.data.ui.messages.map((message) => message.text));
-      }
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    getOrCreateLoginFlow(flowId).then((flow) => {
+      setLoginFlow(flow);
+    });
+  }, []);
 
   return (
     <>

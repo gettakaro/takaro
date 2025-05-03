@@ -1,11 +1,11 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { MeOutputDTO } from '@takaro/apiclient';
 import { createContext, useCallback, useContext } from 'react';
-import { useOry } from './useOry';
 import * as Sentry from '@sentry/react';
 import { getApiClient } from '../util/getApiClient';
 import { usePostHog } from 'posthog-js/react';
 import { userKeys } from '../queries/user';
+import { getOryClient } from '../util/ory';
 
 export interface IAuthContext {
   logOut: () => Promise<void>;
@@ -17,13 +17,13 @@ export const AuthContext = createContext<IAuthContext | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
-  const { oryClient } = useOry();
+  const oryClient = getOryClient();
   const posthog = usePostHog();
 
   const logOut = useCallback(async () => {
-    const logoutFlowRes = await oryClient.createBrowserLogoutFlow();
+    const logoutFlow = await oryClient.createBrowserLogoutFlow();
     queryClient.clear();
-    window.location.href = logoutFlowRes.data.logout_url;
+    window.location.href = logoutFlow.logout_url;
     // Extra clean up is done in /logout-return
     return Promise.resolve();
   }, [oryClient, queryClient]);

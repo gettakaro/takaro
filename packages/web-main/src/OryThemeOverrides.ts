@@ -1,7 +1,6 @@
 import { darkTheme } from '@takaro/lib-components';
-import { Theme } from '@ory/elements';
 
-export const oryThemeOverrides: Partial<Theme> = {
+export const oryThemeOverrides: Partial<unknown> = {
   fontFamily: 'Inter, sans-serif',
   accent: {
     def: darkTheme.colors.primary,

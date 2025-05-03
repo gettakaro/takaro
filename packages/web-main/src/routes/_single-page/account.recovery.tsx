@@ -1,14 +1,13 @@
-import { useCallback, useEffect, useState } from 'react';
-import { RecoveryFlow, UpdateRecoveryFlowBody } from '@ory/client';
+import { useEffect, useState } from 'react';
 import { styled, Company, LoadingPage } from '@takaro/lib-components';
-import { RecoverySectionAdditionalProps, UserAuthCard } from '@ory/elements';
+import { Recovery } from '@ory/elements-react/theme';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { z } from 'zod';
-import { useOry } from '../../hooks/useOry';
-import { AxiosError } from 'axios';
-import { useSnackbar } from 'notistack';
+import { getOryClient, oryClientConfiguration } from '../../util/ory';
 import { zodValidator } from '@tanstack/zod-adapter';
+import { handleFlowError, RecoveryFlow } from '@ory/client-fetch';
+import { useSnackbar } from 'notistack';
 
 export const Route = createFileRoute('/_single-page/account/recovery')({
   component: Component,
@@ -33,79 +32,61 @@ const Container = styled.div`
   gap: ${({ theme }) => theme.spacing[6]};
 `;
 
-const StyledUserCard = styled(UserAuthCard)`
-  width: 800px;
-  max-width: none;
-
-  h2 {
-    font-size: ${({ theme }) => theme.fontSize.mediumLarge}};
-  }
-`;
-
 function Component() {
   useDocumentTitle('Recovery');
-  const [flow, setFlow] = useState<RecoveryFlow | null>();
   const { flowId } = Route.useSearch();
-  const { oryClient, oryError } = useOry();
+  const [flow, setFlow] = useState<RecoveryFlow | null>(null);
+  const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
-  const navigate = Route.useNavigate();
+  const oryClient = getOryClient();
+  async function getOrCreateRecoveryFlow(flowId?: string): Promise<RecoveryFlow> {
+    const restartFlow = async () => {
+      return await getOryClient()
+        .createBrowserRecoveryFlow()
+        .catch(
+          handleFlowError({
+            onValidationError: (responseBody) => {
+              enqueueSnackbar((responseBody as any).error.reason, { variant: 'default', type: 'error' });
+              navigate({ to: '/' });
+              //window.location.href = '/';
+            },
+            onRestartFlow: () => {
+              restartFlow();
+            },
+            onRedirect: (url: string) => {
+              navigate({ to: url });
+            },
+            // TODO: we probably need to update kratos/ory containers
+            // to handle this with handleFlowError.
+            // For now we get: sdk cannot handle this error.
+            //window.location.assign('/login');
+          }),
+        );
+    };
 
-  const getFlow = useCallback(
-    (flowId: string) =>
-      oryClient
-        .getRecoveryFlow({ id: flowId })
-        .then(({ data: flow }) => {
-          setFlow(flow);
-        })
-        .catch(sdkErrorHandler),
-    [],
-  );
-
-  // initialize the sdkError for generic handling of errors
-  const sdkErrorHandler = oryError(getFlow, setFlow, '/account/recovery');
-
-  // create a new recovery flow
-  const createFlow = () => {
-    oryClient
-      .createBrowserRecoveryFlow()
-      // flow contains the form fields, error messages and csrf token
-      .then(({ data: flow }) => {
-        // Update URI query params to include flow id
-        navigate({ search: { flowId: flow.id } });
-        // Set the flow data
-        setFlow(flow);
-      })
-      .catch(sdkErrorHandler);
-  };
-
-  const submitFlow = async (body: UpdateRecoveryFlowBody) => {
-    if (!flow) {
-      enqueueSnackbar('Something went wrong, please try again', { type: 'error' });
-      return navigate({ to: '/login', replace: true });
+    if (!flowId) {
+      return restartFlow() as Promise<RecoveryFlow>;
     }
 
-    try {
-      const { data } = await oryClient.updateRecoveryFlow({
-        flow: flow.id,
-        updateRecoveryFlowBody: body,
-      });
-
-      // bandage fix, I expected this to automatically navigate to the settings flow (/account/profile).
-      if (data.continue_with && data.continue_with.length > 0) {
-        navigate({ to: '/account/profile', search: { flowId: data.continue_with[0]['flow']['id'] } });
-      }
-      setFlow(data);
-    } catch (e) {
-      sdkErrorHandler(e as AxiosError);
-    }
-  };
+    const recoveryFlow = await oryClient
+      .getRecoveryFlowRaw({ id: flowId! })
+      .then((res) => res.value())
+      .catch(
+        handleFlowError({
+          onValidationError: () => {},
+          onRestartFlow: restartFlow,
+          onRedirect: (url: string) => {
+            window.location.assign(url);
+          },
+        }),
+      );
+    return recoveryFlow as RecoveryFlow;
+  }
 
   useEffect(() => {
-    if (flowId) {
-      getFlow(flowId).catch(createFlow);
-    } else {
-      createFlow();
-    }
+    getOrCreateRecoveryFlow(flowId).then((flow) => {
+      setFlow(flow);
+    });
   }, []);
 
   if (!flow) return <LoadingPage />;
@@ -114,19 +95,7 @@ function Component() {
     <>
       <Container>
         <Company size="large" />
-        <StyledUserCard
-          flowType={'recovery'}
-          flow={flow}
-          additionalProps={
-            {
-              loginURL: {
-                handler: () => navigate({ to: '/login', replace: true }),
-                href: '/login',
-              },
-            } as RecoverySectionAdditionalProps
-          }
-          onSubmit={async ({ body }) => await submitFlow(body as UpdateRecoveryFlowBody)}
-        />
+        <Recovery flow={flow} config={oryClientConfiguration} />
       </Container>
     </>
   );

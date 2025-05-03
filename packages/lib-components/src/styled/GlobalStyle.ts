@@ -1,6 +1,7 @@
 import { createGlobalStyle, keyframes } from 'styled-components';
 import { ThemeType } from './theme';
 import { SnackBarStyles } from './Snackbar';
+import { OryStyles } from './ory';
 
 const skeletonLoading = keyframes`
   0% { transform: translateX(-100%); }
@@ -204,5 +205,8 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
 
   /* notistack snackbar styling */
   ${SnackBarStyles}
+
+  /* ory style overrides */
+  ${OryStyles}
 
   `;

@@ -9,6 +9,7 @@ import {
   FormError,
   IconTooltip,
   useTheme,
+  Divider,
 } from '@takaro/lib-components';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { validationSchema } from './validationSchema';
@@ -20,7 +21,6 @@ import { AnyInput, InputType } from '../../schemaConversion/inputTypes';
 import { schemaToInputs } from '../../schemaConversion/SchemaToInputs';
 import { inputsToSchema, inputsToUiSchema } from '../../schemaConversion/inputsToSchema';
 import { ConfigField } from './ConfigField';
-import { Divider } from '@ory/elements';
 import { PermissionField } from '../PermissionField/PermissionField';
 import { ConfigFieldErrorDetail } from './ConfigFieldErrorDetail';
 import { ModuleFormProps } from '..';
