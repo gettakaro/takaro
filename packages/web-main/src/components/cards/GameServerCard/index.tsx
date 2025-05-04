@@ -11,8 +11,8 @@ import { useQuery } from '@tanstack/react-query';
 import { GameServerActions } from '../../../routes/_auth/_global/gameservers';
 
 const StatusChip: FC<{ reachable: boolean; enabled: boolean }> = ({ reachable, enabled }) => {
-  if (!enabled) return <Chip label="disabled" color="warning" variant="outline" />;
-  if (!reachable) return <Chip label="offline" color="error" variant="outline" />;
+  if (!enabled) return <Chip label="disabled" color="warning" />;
+  if (!reachable) return <Chip label="offline" color="error" />;
   return 'online';
 };
 

@@ -32,7 +32,7 @@ export const GameServer: FC<GameServerProps> = ({ gameServerId, gameServerName, 
   }
 
   if (!gameServerName || hasError) {
-    return <Chip variant="outline" color="backgroundAccent" label="unknown" />;
+    return <Chip color="backgroundAccent" label="unknown" />;
   }
 
   return (

@@ -164,9 +164,9 @@ export const ModuleInstallationsTableView: FC<ModuleInstallationsTableViewProps>
       cell: ({ row }) => {
         const module = row.original;
         return module.installation ? (
-          <Chip variant="outline" color="success" label="Installed" />
+          <Chip color="success" label="Installed" />
         ) : (
-          <Chip variant="outline" color="error" label="Not Installed" />
+          <Chip color="error" label="Not Installed" />
         );
       },
       enableColumnFilter: true,

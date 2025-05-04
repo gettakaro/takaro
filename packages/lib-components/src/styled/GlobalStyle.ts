@@ -22,6 +22,7 @@ export const GlobalStyle = createGlobalStyle<{ theme: ThemeType }>`
   #takaro-root {
     margin: 0 auto;
     overflow-x: hidden;
+    background-color: ${({ theme }) => theme.colors.background};
   }
 
 

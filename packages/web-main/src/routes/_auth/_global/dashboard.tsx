@@ -208,7 +208,7 @@ function Component() {
         <Card variant="outline" style={{ marginTop: '2rem' }}>
           <Card.Title label="Global Player Map">
             <div style={{ display: 'flex', alignItems: 'center' }}>
-              <Chip variant="outline" color="warning" label="Beta" />
+              <Chip color="warning" label="Beta" />
               <IconTooltip color="background" icon={<QuestionIcon />}>
                 Shows where your players are from
               </IconTooltip>

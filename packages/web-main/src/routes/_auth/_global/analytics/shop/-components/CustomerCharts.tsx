@@ -254,7 +254,7 @@ export const CustomerCharts: FC<CustomerChartsProps> = ({ customers, orders, isL
               true customer loyalty patterns over time.
             </IconTooltip>
           </ChartTitle>
-          <Chip label={`${customers?.totalCustomers || 0} total`} color="primary" variant="outline" />
+          <Chip label={`${customers?.totalCustomers || 0} total`} color="primary" />
         </ChartHeader>
         <ChartContent>
           {isLoading ? (

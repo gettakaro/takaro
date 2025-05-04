@@ -22,6 +22,7 @@ const EventsWrapper = styled.div`
 `;
 
 const Wrapper = styled.div`
+  background-color: ${({ theme }) => theme.colors.background};
   padding: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[2]} ${theme.spacing[0]} 0`};
 `;
 

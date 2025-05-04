@@ -13,7 +13,6 @@ export const ResultContainer = styled.div<{ readOnly: boolean; hasError: boolean
   border: 0.1rem solid ${({ theme }) => theme.colors.secondary};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
-  box-shadow: ${({ theme }) => theme.elevation[4]};
   text-transform: capitalize;
   z-index: ${({ theme }) => theme.zIndex.dropdown};
   cursor: ${({ readOnly }) => (readOnly ? 'not-allowed' : 'pointer')};

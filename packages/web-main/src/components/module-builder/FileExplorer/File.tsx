@@ -363,12 +363,12 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
   };
 
   const getIcon = (): JSX.Element => {
-    if (openFile) return <JsIcon size={12} fill={theme.colors.secondary} />;
+    if (openFile) return <JsIcon size={12} fill={theme.colors.primary} />;
 
     return isDirOpen ? (
-      <DirOpenIcon fill={theme.colors.secondary} size={18} />
+      <DirOpenIcon fill={theme.colors.primary} size={18} />
     ) : (
-      <DirClosedIcon fill={theme.colors.secondary} size={18} />
+      <DirClosedIcon fill={theme.colors.primary} size={18} />
     );
   };
 

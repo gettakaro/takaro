@@ -1,3 +1,4 @@
+import { shade } from 'polished';
 import { styled } from '../../../../styled';
 import { StepStates } from '../stepStates';
 
@@ -81,7 +82,7 @@ export const StepCounter = styled.div<{
   border: 0.1rem solid
     ${({ theme, stepState }) => (stepState !== StepStates.OTHER ? theme.colors.primary : theme.colors.backgroundAccent)};
   background-color: ${({ stepState, theme }) =>
-    stepState === StepStates.CURRENT ? theme.colors.primaryShade : theme.colors.background};
+    stepState === StepStates.CURRENT ? shade(0.5, theme.colors.primary) : theme.colors.background};
   transition: all 0.2s ease-in-out;
   margin-bottom: ${({ theme }) => theme.spacing[1]};
   color: ${({ theme, stepState }) => (stepState !== StepStates.OTHER ? theme.colors.white : theme.colors.text)};

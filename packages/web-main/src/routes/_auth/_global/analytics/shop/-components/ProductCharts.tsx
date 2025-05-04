@@ -235,7 +235,7 @@ export const ProductCharts: FC<ProductChartsProps> = ({ products, orders, isLoad
               identify your best-performing products and inventory needs.
             </IconTooltip>
           </ChartTitle>
-          <Chip label={`${products?.totalProducts || 0} products`} color="primary" variant="outline" />
+          <Chip label={`${products?.totalProducts || 0} products`} color="primary" />
         </ChartHeader>
         <ChartContent>
           {isLoading ? (
@@ -318,7 +318,7 @@ export const ProductCharts: FC<ProductChartsProps> = ({ products, orders, isLoad
               identify potential issues with order completion.
             </IconTooltip>
           </ChartTitle>
-          <Chip label={`${orders?.totalOrders || 0} total`} color="primary" variant="outline" />
+          <Chip label={`${orders?.totalOrders || 0} total`} color="primary" />
         </ChartHeader>
         <ChartContent>
           {isLoading ? (

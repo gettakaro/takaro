@@ -21,5 +21,5 @@ export const CategoryBadge: FC<CategoryBadgeProps> = ({ category, onClick, size 
   const maxLength = size === 'small' ? 10 : size === 'medium' ? 15 : 20;
   const displayName = category.name.length > maxLength ? `${category.name.substring(0, maxLength)}...` : category.name;
 
-  return <Badge label={`${category.emoji} ${displayName}`} variant="outline" color="primary" onClick={onClick} />;
+  return <Badge label={`${category.emoji} ${displayName}`} color="primary" onClick={onClick} />;
 };

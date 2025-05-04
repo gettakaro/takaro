@@ -151,7 +151,7 @@ function Component() {
         );
       },
       id: 'isDashboardUser',
-      cell: (info) => (info.getValue() ? <Chip variant="outline" color="primary" label="Yes" /> : <div>No</div>),
+      cell: (info) => (info.getValue() ? <Chip color="primary" label="Yes" /> : <div>No</div>),
       enableSorting: true,
     }),
     columnHelper.accessor('createdAt', {

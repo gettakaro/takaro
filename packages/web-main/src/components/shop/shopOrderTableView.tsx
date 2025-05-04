@@ -92,11 +92,11 @@ export const ShopOrderTableView: FC<ShopOrderTableView> = ({ gameServerId }) => 
       cell: (info) => {
         switch (info.getValue()) {
           case 'PAID':
-            return <Chip variant="outline" color="warning" label={info.getValue()} />;
+            return <Chip color="warning" label={info.getValue()} />;
           case 'CANCELED':
-            return <Chip variant="outline" color="error" label={info.getValue()} />;
+            return <Chip color="error" label={info.getValue()} />;
           case 'COMPLETED':
-            return <Chip variant="outline" color="success" label={info.getValue()} />;
+            return <Chip color="success" label={info.getValue()} />;
         }
       },
       enableColumnFilter: true,

@@ -3,10 +3,10 @@ import MonacoEditor from '@monaco-editor/react';
 import * as mon from 'monaco-editor';
 import { FileTabs } from './FileTabs';
 import { FunctionType, setExtraLibs } from './customTypes';
-import { defineTheme } from './theme';
 import { useFunctionUpdate } from '../../../queries/module';
+import { getMonacoTheme } from './theme';
 import { useSnackbar } from 'notistack';
-import { Button, Tooltip, styled } from '@takaro/lib-components';
+import { Button, Tooltip, styled, useThemeSwitcher } from '@takaro/lib-components';
 import { AiFillSave as SaveIcon } from 'react-icons/ai';
 import { useModuleBuilderContext } from '../useModuleBuilderStore';
 import { useActiveCode } from '../useActiveCode';
@@ -40,6 +40,7 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
   const fileMap = useModuleBuilderContext((s) => s.fileMap);
   const moduleId = useModuleBuilderContext((s) => s.moduleId);
   const versionId = useModuleBuilderContext((s) => s.versionId);
+  const { theme } = useThemeSwitcher();
 
   const activeFile = useModuleBuilderContext((s) => s.activeFile);
   if (!activeFile) {
@@ -104,11 +105,11 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
           width="100%"
           height="99%"
           language="typescript"
-          theme="takaro"
           path={activeFile}
           key={activeFile}
           defaultValue={code}
           defaultLanguage="typescript"
+          loading={<div>Loading editor...</div>}
           beforeMount={async (monaco) => {
             // Monaco is calculating positions based on the font size.
             // If the font is not loaded yet, the positions will be wrong.
@@ -117,8 +118,10 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
 
             // this is ran everytime the file changes
             monacoRef.current = monaco;
-            defineTheme(monaco);
-            monaco.editor.setTheme('takaro');
+            console.log(theme);
+            console.log(getMonacoTheme(theme));
+            monaco.editor.defineTheme('takaro-dark', getMonacoTheme(theme));
+            monaco.editor.setTheme(`takaro-${theme}`);
             monaco.languages.typescript.typescriptDefaults.setEagerModelSync(true);
             const compilerOptions = monaco.languages.typescript.typescriptDefaults.getCompilerOptions();
 

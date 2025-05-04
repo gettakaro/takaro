@@ -47,11 +47,11 @@ export const TabButton = styled.button<{ isActive: boolean }>`
   align-items: center;
   border-radius: 0;
   background-color: ${({ theme }) => theme.colors.background};
-  ${({ isActive, theme }) => isActive && `border-bottom: 1px solid ${theme.colors.primary};`};
+  border-bottom: 2px solid ${({ theme, isActive }) => (isActive ? theme.colors.primary : theme.colors.background)};
   min-width: fit-content;
   width: 80px;
   font-size: ${({ theme }) => theme.fontSize.small};
-  color: ${({ theme, isActive }) => (isActive ? theme.colors.white : theme.colors.text)};
+  color: ${({ theme }) => theme.colors.text};
 
   span {
     margin-left: ${({ theme }) => theme.spacing['0_75']};
@@ -265,7 +265,7 @@ const Tab: FC<TabProps> = ({
           <Tooltip>
             <Tooltip.Trigger asChild>
               <CloseIcon
-                data-testid={`close-${getFileName(filePath)}-${isDirty ? 'dirty' : 'clean'}`}
+                data-testid={`close - ${getFileName(filePath)} -${isDirty ? 'dirty' : 'clean'} `}
                 isDirty={isDirty}
                 isActive={isActive}
                 onClick={(e) => {
