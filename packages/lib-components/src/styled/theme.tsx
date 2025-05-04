@@ -1,9 +1,9 @@
-import baseStyled, { ThemedStyledInterface } from 'styled-components';
+import baseStyled, { ThemedStyledInterface, ThemeProvider as StyledComponentsThemeProvider } from 'styled-components';
 import { breakpoint } from './breakpoint';
-import { elevationLight, elevationDark } from './elevation';
 import { spacing } from './spacing';
 import { zIndex } from './zIndex';
-import { shade } from 'polished';
+import { FC, PropsWithChildren, createContext, useContext } from 'react';
+import { useLocalStorage } from '../hooks';
 
 const fontSize = {
   tiny: '1rem',
@@ -24,7 +24,6 @@ const borderRadius = {
 };
 
 export const lightTheme = {
-  elevation: elevationLight,
   spacing,
   breakpoint,
   fontSize,
@@ -32,19 +31,16 @@ export const lightTheme = {
   zIndex,
   colors: {
     primary: '#664de5',
-    primaryShade: shade(0.5, '#664de5'),
-    secondary: '#030917',
-    placeholder: '#f5f5f5',
+    secondary: '#f0f0f0',
+    placeholder: '#f0f0f0',
     placeholderHighlight: '#ffffff',
-    shade: '#eaf8f0',
     white: '#ffffff',
-    background: '#f9f9f9',
-    backgroundAlt: '#e9e9e9',
-    // not set correctly yet.
-    backgroundAccent: '#353535',
-    disabled: '#151515',
-    text: '#030303',
-    textAlt: '#636363',
+    background: '#f5f5f5',
+    backgroundAlt: '#e0e0e0',
+    backgroundAccent: '#909090',
+    disabled: '#d0d0d0',
+    text: '#202020',
+    textAlt: '#666666',
     info: '#664de5',
     success: '#3ccd6A',
     warning: '#f57c00',
@@ -52,9 +48,7 @@ export const lightTheme = {
   },
 };
 
-// todo: this should be the color of modals:#343434
 export const darkTheme: ThemeType = {
-  elevation: elevationDark,
   spacing,
   breakpoint,
   fontSize,
@@ -62,12 +56,10 @@ export const darkTheme: ThemeType = {
   borderRadius,
   colors: {
     primary: '#664DE5',
-    primaryShade: shade(0.5, '#664de5'),
     secondary: '#353535',
     placeholder: '#202020',
     placeholderHighlight: '#303030',
     white: '#ffffff',
-    shade: '#eaf8f0',
     text: '#c2c2c2',
     textAlt: '#818181',
     background: '#080808',
@@ -85,3 +77,34 @@ export const darkTheme: ThemeType = {
 
 export type ThemeType = typeof lightTheme;
 export const styled = baseStyled as ThemedStyledInterface<ThemeType>;
+
+export type ThemeName = 'light' | 'dark';
+const themes: Record<ThemeName, ThemeType> = {
+  light: lightTheme,
+  dark: darkTheme,
+};
+
+/// Multiple themes:
+interface ThemeContextType {
+  theme: ThemeName;
+  setTheme: (theme: ThemeName) => void;
+}
+const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+
+export const useThemeSwitcher = () => {
+  const context = useContext(ThemeContext);
+  if (context == undefined) {
+    throw new Error('useThemeSwitcher must be used within a ThemeProvider');
+  }
+  return context;
+};
+
+export const ThemeProvider: FC<PropsWithChildren> = ({ children }) => {
+  const { storedValue, setValue } = useLocalStorage<ThemeName>('theme', 'dark');
+
+  return (
+    <ThemeContext.Provider value={{ theme: storedValue, setTheme: setValue }}>
+      <StyledComponentsThemeProvider theme={themes[storedValue]}>{children} </StyledComponentsThemeProvider>
+    </ThemeContext.Provider>
+  );
+};

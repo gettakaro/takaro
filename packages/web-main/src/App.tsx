@@ -1,9 +1,8 @@
 import { useState } from 'react';
-import { ThemeProvider } from 'styled-components';
 import { ThemeProvider as OryThemeProvider, IntlProvider as OryIntlProvider } from '@ory/elements';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { GlobalStyle, SnackbarProvider, darkTheme } from '@takaro/lib-components';
+import { GlobalStyle, SnackbarProvider, ThemeProvider } from '@takaro/lib-components';
 import { oryThemeOverrides } from './OryThemeOverrides';
 import '@ory/elements/style.css';
 import { queryClient } from './queryClient';
@@ -58,7 +57,7 @@ export function App() {
     >
       <OryThemeProvider themeOverrides={oryThemeOverrides}>
         <OryIntlProvider>
-          <ThemeProvider theme={darkTheme}>
+          <ThemeProvider>
             <SnackbarProvider>
               <QueryClientProvider client={queryClient}>
                 <OryProvider>

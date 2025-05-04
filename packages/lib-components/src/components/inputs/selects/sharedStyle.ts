@@ -15,7 +15,6 @@ export const SelectContainer = styled.div`
   border: 0.1rem solid ${({ theme }) => theme.colors.backgroundAccent};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
-  box-shadow: ${({ theme }) => theme.elevation[4]};
   z-index: ${({ theme }) => theme.zIndex.dropdown};
 `;
 

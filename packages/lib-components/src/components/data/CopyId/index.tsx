@@ -31,7 +31,6 @@ export const CopyId: FC<CopyIdProps> = ({ id, placeholder, copyText = 'copied' }
     <Chip
       icon={copied ? <CheckmarkIcon /> : <CopyIcon />}
       onClick={() => handleCopy(id)}
-      variant="outline"
       label={copied ? copyText : placeholder ? placeholder : id}
       color="backgroundAccent"
     />

@@ -42,7 +42,7 @@ export const Plan: FC<PlanProps> = ({
           <FeaturesContainer>
             <h1 style={{}}>
               {title}
-              {highlight && <Chip color="primary" variant="outline" label="Most popular" />}
+              {highlight && <Chip color="primary" label="Most popular" />}
             </h1>
             <p style={{ marginBottom: '3rem' }}>{description}</p>
             <Divider

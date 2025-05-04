@@ -13,7 +13,6 @@ const Container = styled.div`
   border-radius: ${({ theme }) => theme.borderRadius.large};
   width: 300px;
   background-color: white;
-  box-shadow: ${({ theme }): string => theme.elevation[4]};
   p {
     font-size: 1.325rem;
   }

@@ -22,20 +22,12 @@ export const Default = styled.button<{ color: Color }>`
     div {
       background-color: ${({ theme }) => theme.colors.backgroundAccent};
     }
-    svg {
-      fill: white;
-      stroke: white;
-    }
   }
 
   &:focus {
     border: 0.01rem solid ${({ theme, color }) => theme.colors[color]};
     div {
       border-color: ${({ theme, color }) => theme.colors[color]};
-    }
-    svg {
-      fill: white;
-      stroke: white;
     }
   }
 

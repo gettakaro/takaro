@@ -70,12 +70,12 @@ export const RolesTableView = () => {
         info.getValue() ? (
           <Tooltip>
             <Tooltip.Trigger>
-              <Chip variant="outline" color="primary" label="System" />
+              <Chip color="primary" label="System" />
             </Tooltip.Trigger>
             <Tooltip.Content>System roles are managed by Takaro and cannot be deleted.</Tooltip.Content>
           </Tooltip>
         ) : (
-          <Chip variant="outline" color="backgroundAccent" label="Custom" />
+          <Chip color="backgroundAccent" label="Custom" />
         ),
       enableColumnFilter: false,
       enableGlobalFilter: false,

@@ -45,7 +45,7 @@ export const Player: FC<PlayerProps> = ({ playerId, name, avatarUrl, showAvatar,
   const navigate = useNavigate();
 
   if (!name || hasError) {
-    return <Chip variant="outline" color="backgroundAccent" label="unknown" />;
+    return <Chip color="backgroundAccent" label="unknown" />;
   }
 
   const avatar = (

@@ -47,13 +47,13 @@ const Container = styled.div<{ hasBorder: boolean; direction: Direction }>`
 
   dt {
     font-size: ${({ theme }) => theme.fontSize.medium};
-    font-color: ${({ theme }) => theme.colors.secondary};
+    color: ${({ theme }) => theme.colors.textAlt};
     margin-bottom: ${({ theme }) => theme.spacing['0_5']};
   }
 
   dd {
     font-weight: bold;
-    color: ${({ theme }) => theme.colors.white};
+    color: ${({ theme }) => theme.colors.text};
     font-size: ${({ theme }) => theme.fontSize.mediumLarge};
     letter-spacing: 1px;
     margin: 0;

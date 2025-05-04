@@ -52,7 +52,7 @@ const Inner = styled(motion.div)<{ $isChecked: boolean; $readOnly: boolean }>`
   border-radius: 100%;
   background-color: ${({ theme, $readOnly }) => {
     if ($readOnly) return theme.colors.backgroundAlt;
-    return theme.colors.primaryShade;
+    return shade(0.5, theme.colors.primary);
   }};
   overflow: hidden;
   opacity: ${({ $isChecked }): number => ($isChecked ? 1 : 0)};

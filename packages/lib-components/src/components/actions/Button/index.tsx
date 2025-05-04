@@ -1,6 +1,6 @@
 import { JSX, cloneElement, forwardRef, MouseEvent as ReactMouseEvent, ReactElement } from 'react';
 import { Spinner } from '../../../components';
-import { ButtonColor, Default, Outline, Clear, White } from './style';
+import { ButtonColor, Default, Outline, Clear } from './style';
 import { Size, Variant } from '../../../styled';
 
 export interface ButtonProps {
@@ -14,7 +14,7 @@ export interface ButtonProps {
   size?: Size;
   type?: 'submit' | 'reset' | 'button';
   // TODO: clear should be renamed to text
-  variant?: Variant | 'white' | 'clear';
+  variant?: Variant | 'clear';
   color?: ButtonColor | 'white';
   text: string;
 
@@ -83,12 +83,6 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
           <Clear {...props}>
             {iconPosition === 'left' && getIcon()} <span>{text}</span> {iconPosition === 'right' && getIcon()}
           </Clear>
-        );
-      case 'white':
-        return (
-          <White {...props}>
-            {iconPosition === 'left' && getIcon()} <span>{text}</span> {iconPosition === 'right' && getIcon()}
-          </White>
         );
     }
   }
