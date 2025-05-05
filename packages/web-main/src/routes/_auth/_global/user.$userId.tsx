@@ -142,7 +142,7 @@ const UserRolesTable: FC<IUserRolesTableProps> = ({ roles, userId }) => {
       columns={columnDefs}
       data={roles}
       renderToolbar={() => (
-        <Button onClick={() => navigate({ to: '/user/$userId/role/assign', params: { userId } })} text="Assign role" />
+        <Button onClick={() => navigate({ to: '/user/$userId/role/assign', params: { userId } })}>Assign role</Button>
       )}
       pagination={{
         paginationState: pagination.paginationState,

@@ -88,7 +88,9 @@ export const HookConfigForm: FC<HookConfigFormProps> = ({ readOnly = false, hook
         </SelectField.OptionGroup>
       </SelectField>
       {!readOnly && (
-        <Button disabled={!formState.isDirty} isLoading={isPending} fullWidth type="submit" text="Save hook config" />
+        <Button disabled={!formState.isDirty} isLoading={isPending} fullWidth type="submit">
+          Save hook config
+        </Button>
       )}
     </form>
   );

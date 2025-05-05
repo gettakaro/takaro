@@ -52,7 +52,9 @@ export const PlayerRoleDeleteDialog: FC<PlayerRoleDeleteDialogProps> = ({
           <p>
             Are you sure you want to remove <strong>{roleName} </strong> from <strong>{playerName}</strong>?
           </p>
-          <Button isLoading={isPending} onClick={handleOnDelete} fullWidth text={'Remove role'} color="error" />
+          <Button isLoading={isPending} onClick={handleOnDelete} fullWidth color="error">
+            Remove role
+          </Button>
           {error && <FormError error={error} />}
         </StyledDialogBody>
       </Dialog.Content>

@@ -144,10 +144,9 @@ export const PlayerRolesTable: FC<IPlayerRolesTableProps> = ({ roles, playerId, 
         columns={columnDefs}
         data={roles}
         renderToolbar={() => (
-          <Button
-            onClick={() => navigate({ to: '/player/$playerId/role/assign', params: { playerId } })}
-            text="Assign role"
-          />
+          <Button onClick={() => navigate({ to: '/player/$playerId/role/assign', params: { playerId } })}>
+            Assign role
+          </Button>
         )}
         pagination={{
           paginationState: pagination.paginationState,

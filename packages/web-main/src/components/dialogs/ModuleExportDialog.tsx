@@ -83,7 +83,9 @@ export const ModuleExportDialog: FC<ModuleExportDialogProps> = ({ moduleId, modu
               returnVariant="versionId"
             />
             {error && <FormError error={error} />}
-            <Button fullWidth type="submit" text="Export module" isLoading={isExporting} />
+            <Button fullWidth type="submit" isLoading={isExporting}>
+              Export module
+            </Button>
           </form>
         </Dialog.Body>
       </Dialog.Content>

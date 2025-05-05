@@ -72,13 +72,9 @@ export const CopyModuleForm: FC<CopyModuleFormProps> = ({ mod, onSuccess }) => {
           moduleId={mod.id}
           returnVariant="versionId"
         />
-        <Button
-          isLoading={moduleImportLoading || moduleExportLoading}
-          type="submit"
-          icon={<CopyIcon />}
-          text="Copy Module"
-          fullWidth
-        />
+        <Button isLoading={moduleImportLoading || moduleExportLoading} type="submit" icon={<CopyIcon />} fullWidth>
+          Copy Module
+        </Button>
       </form>
 
       <div style={{ height: '10px' }} />

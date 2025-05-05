@@ -316,7 +316,9 @@ export const ModuleVersionInstallForm: FC<ModuleVersionInstallFormProps> = ({
         />
         <Tooltip disabled={!isLatestSelected}>
           <Tooltip.Trigger asChild>
-            <Button color={isLatestSelected ? 'warning' : 'primary'} type="submit" text="Install" />
+            <Button color={isLatestSelected ? 'warning' : 'primary'} type="submit">
+              Install
+            </Button>
           </Tooltip.Trigger>
           <Tooltip.Content>
             Installing <strong>latest</strong> is strongly discouraged as it might break your installed module. <br />

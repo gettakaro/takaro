@@ -68,8 +68,9 @@ export const ShopListingBuyForm: FC<ShopListingBuyFormProps> = ({
         fullWidth
         type="submit"
         disabled={playerCurrencyAmount < price || isDraft}
-        text={`Buy for ${price * watch('amount')} ${currencyName}`}
-      />
+      >
+        Buy for {price * watch('amount')} {currencyName}
+      </Button>
     </form>
   );
 };

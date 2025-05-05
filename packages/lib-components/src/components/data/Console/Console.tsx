@@ -78,8 +78,12 @@ export const Console: FC<ConsoleProps> = ({ listenerFactory, onExecuteCommand, s
   return (
     <Wrapper>
       <Header>
-        <Button onClick={() => setIsLiveModeEnabled(true)} text="Follow" disabled={isLiveModeEnabled} />
-        <Button onClick={() => setMessages([])} text="Clear" color="background" icon={<ClearIcon />} />
+        <Button onClick={() => setIsLiveModeEnabled(true)} disabled={isLiveModeEnabled}>
+          Follow
+        </Button>
+        <Button onClick={() => setMessages([])} color="background" icon={<ClearIcon />}>
+          Clear
+        </Button>
       </Header>
       <MessageContainer>
         <Autosizer>
