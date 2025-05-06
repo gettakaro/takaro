@@ -143,14 +143,13 @@ export const Navbar: FC<NavbarProps> = ({ showGameServerNav }) => {
           <Chip
             showIcon="hover"
             color="secondary"
-            variant="outline"
             label={`${document.cookie.replace(TAKARO_DOMAIN_COOKIE_REGEX, '$1')}`}
           />
         </div>
         <div
           style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: theme.spacing['0_75'] }}
         >
-          Version: <Chip showIcon="hover" color="secondary" variant="outline" label={version} />
+          Version: <Chip showIcon="hover" color="secondary" label={version} />
         </div>
         <IconNav>
           <Tooltip>

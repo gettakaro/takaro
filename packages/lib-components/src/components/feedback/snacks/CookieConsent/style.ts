@@ -6,7 +6,6 @@ export const Wrapper = styled.div`
   padding: ${({ theme }) => theme.spacing['1_5']};
   max-width: 450px;
   border-radius: ${({ theme }) => theme.borderRadius.large};
-  box-shadow: ${({ theme }) => theme.elevation[4]};
 
   & > p {
     margin-top: ${({ theme }) => theme.spacing[1]};

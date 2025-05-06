@@ -1,3 +1,4 @@
+import { shade } from 'polished';
 import { styled } from '../../../../../styled';
 
 export const List = styled.ul`
@@ -21,12 +22,13 @@ export const List = styled.ul`
 
 export const Item = styled.li<{ isSelected: boolean }>`
   cursor: pointer;
-  background-color: ${({ theme, isSelected }) => (isSelected ? theme.colors.primaryShade : 'transparent')};
+  background-color: ${({ theme, isSelected }) => (isSelected ? shade(0.5, theme.colors.primary) : 'transparent')};
   border: 1px solid ${({ theme, isSelected }) => (isSelected ? theme.colors.primary : 'transparent')};
   padding: ${({ theme }) => theme.spacing['0_5']};
   border-radius: ${({ theme }) => theme.borderRadius.small};
 
   &:hover {
-    background-color: ${({ theme, isSelected }) => (isSelected ? theme.colors.primaryShade : theme.colors.background)};
+    background-color: ${({ theme, isSelected }) =>
+      isSelected ? shade(0.5, theme.colors.primary) : theme.colors.background};
   }
 `;

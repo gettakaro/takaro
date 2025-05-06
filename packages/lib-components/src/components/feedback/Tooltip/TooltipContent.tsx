@@ -1,13 +1,12 @@
 import { forwardRef, HTMLProps } from 'react';
 import { useMergeRefs, FloatingPortal, FloatingArrow } from '@floating-ui/react';
 import { useTooltipContext } from './TooltipContext';
-import { Elevation, styled } from '../../../styled';
+import { styled } from '../../../styled';
 import { useTheme } from '../../../hooks';
 
-const Container = styled.div<{ elevation: Elevation }>`
+const Container = styled.div`
   background: ${({ theme }) => theme.colors.background};
   color: ${({ theme }) => theme.colors.text};
-  box-shadow: ${({ theme, elevation }) => theme.elevation[elevation]};
   pointer-events: none;
   border-radius: ${({ theme }) => theme.borderRadius.medium};
   border: 1px solid ${({ theme }) => theme.colors.backgroundAlt};
@@ -30,7 +29,6 @@ export const TooltipContent = forwardRef<HTMLDivElement, HTMLProps<HTMLDivElemen
   return (
     <FloatingPortal>
       <Container
-        elevation={1}
         ref={ref}
         style={{
           ...floatingStyles,

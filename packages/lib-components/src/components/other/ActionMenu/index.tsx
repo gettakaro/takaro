@@ -1,7 +1,6 @@
 import { Children, forwardRef, FC, ReactElement, PropsWithChildren } from 'react';
 import { Container, Item } from './style';
 import { AiOutlineCheck as CheckMarkIcon } from 'react-icons/ai';
-import { Elevation } from '../../../styled/';
 
 export interface ActionMenuProps {
   attributes: {
@@ -12,16 +11,14 @@ export interface ActionMenuProps {
   selected: number;
   setSelected: (selected: number) => void;
   children: ReactElement | ReactElement[];
-  elevation?: Elevation;
 }
 
 export const ActionMenu = forwardRef<HTMLUListElement, ActionMenuProps>(function ActionMenu(
-  { attributes, children, selected, setSelected, elevation = 4 },
+  { attributes, children, selected, setSelected },
   ref,
 ) {
   return (
     <Container
-      elevation={elevation}
       style={{
         position: attributes.strategy,
         top: attributes.y ? attributes.y + 5 : 0,

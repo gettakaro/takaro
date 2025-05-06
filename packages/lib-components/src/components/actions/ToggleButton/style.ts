@@ -1,3 +1,4 @@
+import { shade } from 'polished';
 import { styled } from '../../../styled';
 import { orientation } from './ToggleButtonGroup';
 
@@ -65,7 +66,7 @@ export const Item = styled.button<{ isSelected: boolean; isDisabled: boolean }>`
   font-weight: 400;
   border-left: none;
   background-color: ${({ theme, isSelected, isDisabled }) =>
-    isDisabled ? theme.colors.disabled : isSelected ? theme.colors.primary : theme.colors.background};
+    isDisabled ? theme.colors.disabled : isSelected ? shade(0.5, theme.colors.primary) : theme.colors.background};
   cursor: ${({ isDisabled }) => (isDisabled ? 'default' : 'pointer')};
 
   svg {

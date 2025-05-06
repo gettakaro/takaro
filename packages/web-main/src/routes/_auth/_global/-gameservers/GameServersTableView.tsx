@@ -65,21 +65,13 @@ export const GameServersTableView = () => {
       id: 'enabled',
       header: 'Status',
       cell: (info) =>
-        info.getValue() ? (
-          <Chip variant="outline" color="success" label="Enabled" />
-        ) : (
-          <Chip variant="outline" color="warning" label="Disabled" />
-        ),
+        info.getValue() ? <Chip color="success" label="Enabled" /> : <Chip color="warning" label="Disabled" />,
     }),
     columnHelper.accessor('reachable', {
       id: 'reachable',
       header: 'Reachable',
       cell: (info) =>
-        info.getValue() ? (
-          <Chip variant="outline" color="success" label="Online" />
-        ) : (
-          <Chip variant="outline" color="error" label="Offline" />
-        ),
+        info.getValue() ? <Chip color="success" label="Online" /> : <Chip color="error" label="Offline" />,
     }),
     columnHelper.display({
       id: 'actions',

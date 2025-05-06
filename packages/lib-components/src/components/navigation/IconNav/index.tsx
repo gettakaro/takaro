@@ -2,6 +2,7 @@ import { JSX, FC, cloneElement } from 'react';
 import { styled } from '../../../styled';
 import { Link, LinkProps } from '@tanstack/react-router';
 import { Tooltip } from '../../../components';
+import { shade } from 'polished';
 
 const Container = styled.nav`
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
@@ -19,7 +20,7 @@ const Container = styled.nav`
     border: 1px solid transparent;
     border-radius: ${({ theme }) => theme.borderRadius.small};
     &:hover {
-      background-color: ${({ theme }) => theme.colors.primaryShade};
+      background-color: ${({ theme }) => shade(0.5, theme.colors.primary)};
       border-color: ${({ theme }) => theme.colors.primary};
     }
   }

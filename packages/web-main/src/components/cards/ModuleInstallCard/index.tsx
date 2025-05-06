@@ -142,7 +142,7 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
                   {!installation.systemConfig['enabled'] && (
                     <Tooltip>
                       <Tooltip.Trigger asChild>
-                        <Chip label="disabled" variant="outline" color="error" />
+                        <Chip label="disabled" color="error" />
                       </Tooltip.Trigger>
                       <Tooltip.Content>
                         No module commands, hooks or cronjobs will be executed. Different from uninstalling the module,
@@ -152,7 +152,7 @@ export const ModuleInstallCard: FC<IModuleCardProps> = ({ mod, installation, gam
                   )}
                   <Tooltip>
                     <Tooltip.Trigger asChild>
-                      <Chip variant="outline" color="backgroundAccent" label={installation.version.tag} />
+                      <Chip color="backgroundAccent" label={installation.version.tag} />
                     </Tooltip.Trigger>
                     <Tooltip.Content>
                       <p>Installed version</p>
