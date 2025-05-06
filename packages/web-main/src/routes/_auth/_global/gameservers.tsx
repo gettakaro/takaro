@@ -89,7 +89,7 @@ function Component() {
         {hasManageGameServersPermission && (
           <Dropdown>
             <Dropdown.Trigger asChild>
-              <Button icon={<MenuIcon />} text="Game Server Actions" />
+              <Button icon={<MenuIcon />}>Game Server Actions</Button>
             </Dropdown.Trigger>
             <Dropdown.Menu>
               <Dropdown.Menu.Group divider>

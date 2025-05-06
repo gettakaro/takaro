@@ -126,16 +126,17 @@ export const VariablesForm: FC<CreateAndUpdateVariableformProps> = ({ variable, 
         <Drawer.Footer>
           <ButtonContainer>
             {readOnly ? (
-              <Button fullWidth text="Close View" onClick={() => setOpen(false)} color="primary" />
+              <Button fullWidth onClick={() => setOpen(false)} color="primary">
+                Close View
+              </Button>
             ) : (
               <>
-                <Button
-                  fullWidth
-                  text={variable ? 'Update variable' : 'save variable'}
-                  type="submit"
-                  form={`${variable ? 'update' : 'create'}-variable-form`}
-                />
-                <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
+                <Button fullWidth type="submit" form={`${variable ? 'update' : 'create'}-variable-form`}>
+                  {variable ? 'Update variable' : 'Save variable'}
+                </Button>
+                <Button onClick={() => setOpen(false)} color="background">
+                  Cancel
+                </Button>
               </>
             )}
           </ButtonContainer>

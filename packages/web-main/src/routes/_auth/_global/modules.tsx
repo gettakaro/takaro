@@ -101,7 +101,7 @@ function Component() {
             <PermissionsGuard requiredPermissions={[PERMISSIONS.ManageModules]}>
               <Dropdown placement="bottom-end">
                 <Dropdown.Trigger asChild>
-                  <Button text="Module actions" />
+                  <Button>Module actions</Button>
                 </Dropdown.Trigger>
                 <Dropdown.Menu>
                   <Dropdown.Menu.Group>

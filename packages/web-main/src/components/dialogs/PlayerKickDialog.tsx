@@ -35,7 +35,9 @@ export const PlayerKickDialog: FC<PlayerKickDialogProps> = ({ gameServerId, play
         <Dialog.Body>
           <form onSubmit={handleSubmit(onSubmit)}>
             <TextAreaField label="Kick reason" name="reason" control={control} />
-            <Button type="submit" fullWidth text="Kick player" />
+            <Button type="submit" fullWidth>
+              Kick player
+            </Button>
           </form>
         </Dialog.Body>
       </Dialog.Content>

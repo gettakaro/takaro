@@ -176,8 +176,9 @@ export const ModuleFormManual: FC<ModuleFormProps> = ({ moduleName, moduleVersio
                         });
                       }}
                       type="button"
-                      text="Create new permission"
-                    />
+                    >
+                      Create new permission
+                    </Button>
                   </div>
                 )}
               </CollapseList.Item>
@@ -222,11 +223,17 @@ export const ModuleFormManual: FC<ModuleFormProps> = ({ moduleName, moduleVersio
         <Drawer.Footer>
           {!readOnly ? (
             <ButtonContainer>
-              <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
-              <Button type="submit" form={formId} fullWidth text="Save changes" />
+              <Button onClick={() => setOpen(false)} color="background">
+                Cancel
+              </Button>
+              <Button type="submit" form={formId} fullWidth>
+                Save changes
+              </Button>
             </ButtonContainer>
           ) : (
-            <Button text="Close view" fullWidth onClick={() => setOpen(false)} color="primary" />
+            <Button fullWidth onClick={() => setOpen(false)} color="primary">
+              Close view
+            </Button>
           )}
         </Drawer.Footer>
       </Drawer.Content>

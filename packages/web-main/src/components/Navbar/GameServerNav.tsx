@@ -91,12 +91,9 @@ export const GameServerNav: FC = () => {
             animate={{ opacity: 1, y: 0 }}
           >
             <p>Step into the world of Takaro by adding your first server!</p>
-            <Button
-              icon={<AddServerIcon />}
-              fullWidth
-              onClick={() => navigate({ to: '/gameservers/create' })}
-              text="Add a server"
-            />
+            <Button icon={<AddServerIcon />} fullWidth onClick={() => navigate({ to: '/gameservers/create' })}>
+              Add a server
+            </Button>
           </NoServersCallToAction>
         </>
       )}

@@ -44,7 +44,9 @@ export const UserInviteDialog: FC<RequiredDialogOptions> = ({ ...dialogOptions }
               required
             />
             {isError && <FormError error={error} />}
-            <Button isLoading={isPending} text="Send invitation" type="submit" fullWidth />
+            <Button isLoading={isPending} type="submit" fullWidth>
+              Send invitation
+            </Button>
           </form>
         </Dialog.Body>
       </Dialog.Content>

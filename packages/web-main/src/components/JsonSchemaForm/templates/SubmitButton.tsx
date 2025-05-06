@@ -12,6 +12,8 @@ export function SubmitButton<T = any, S extends StrictRJSFSchema = RJSFSchema, F
   }
 
   return (
-    <Button type="submit" color="primary" text={submitText} disabled={props.disabled} className={props.className} />
+    <Button type="submit" color="primary" disabled={props.disabled} className={props.className}>
+      {submitText}
+    </Button>
   );
 }

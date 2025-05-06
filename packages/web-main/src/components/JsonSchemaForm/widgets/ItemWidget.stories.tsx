@@ -36,7 +36,9 @@ export const Default = () => {
   // todo should wrap this in a route?
   return (
     <JsonSchemaForm schema={schema} initialData={{}} uiSchema={uiSchema}>
-      <Button type="submit" text="Submit" onClick={() => console.log('form submitted')} />
+      <Button type="submit" onClick={() => console.log('form submitted')}>
+        Submit
+      </Button>
     </JsonSchemaForm>
   );
 };

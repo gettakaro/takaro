@@ -71,13 +71,9 @@ export const CronJobConfigForm: FC<CronJobConfigFormProps> = ({ cronjob, readOnl
         readOnly={readOnly}
       />
       {!readOnly && (
-        <Button
-          isLoading={isPending}
-          disabled={!formState.isDirty}
-          fullWidth
-          type="submit"
-          text="Save cronjob config"
-        />
+        <Button isLoading={isPending} disabled={!formState.isDirty} fullWidth type="submit">
+          Save cronjob config
+        </Button>
       )}
     </form>
   );
