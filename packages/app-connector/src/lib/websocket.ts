@@ -213,7 +213,28 @@ class WSServer {
             ws.terminate();
             throw new errors.BadRequestError('Game server ID not found for WS ID');
           }
-          gameServerManager.handleGameMessage(gameServerId, message);
+          try {
+            await gameServerManager.handleGameMessage(gameServerId, message);
+          } catch (error) {
+            if (error instanceof errors.ValidationError) {
+              this.sendToClient(ws, {
+                type: 'error',
+                payload: { message: error.message },
+              });
+              return;
+            }
+            this.log.error('Error handling game event:', error);
+            this.log.error(error);
+            this.metrics.errors.inc({
+              type: 'gameEvent',
+              code: error instanceof errors.TakaroError ? error.constructor.name : 'InternalError',
+            });
+            this.sendToClient(ws, {
+              type: 'error',
+              payload: { message: 'Internal error handling game event' },
+            });
+            return;
+          }
           break;
         }
         case 'response': {

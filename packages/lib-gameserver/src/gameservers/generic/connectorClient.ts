@@ -1,6 +1,6 @@
-import axios, { AxiosError, AxiosInstance } from 'axios';
+import axios, { AxiosError, AxiosInstance, isAxiosError } from 'axios';
 import { config } from '../../config.js';
-import { logger } from '@takaro/util';
+import { errors, logger } from '@takaro/util';
 
 function getConnectorClient() {
   const log = logger('client:connector');
@@ -68,7 +68,18 @@ export class TakaroConnector {
   }
 
   async requestFromServer(id: string, operation: string, data: string): Promise<any> {
-    const res = await this.client.post(`/gameserver/${id}/request`, { operation, data });
-    return res.data.data;
+    try {
+      const res = await this.client.post(`/gameserver/${id}/request`, { operation, data });
+      return res.data.data;
+    } catch (error) {
+      if (isAxiosError(error)) {
+        if (error.response?.data.meta.error.code === 'ValidationError') {
+          throw new errors.BadRequestError(
+            'The gameserver responded with bad data, please verify that the mod is up to date.',
+          );
+        }
+      }
+      throw error;
+    }
   }
 }

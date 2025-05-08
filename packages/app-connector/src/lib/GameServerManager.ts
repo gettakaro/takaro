@@ -120,7 +120,7 @@ class GameServerManager {
       if (!dtoCls) throw new errors.BadRequestError(`Event ${type} is not supported`);
 
       const dto = new dtoCls(data as any);
-      await dto.validate();
+      await dto.validate({ forbidNonWhitelisted: true, forbidUnknownValues: true });
 
       emitter.listener(type as GameEventTypes, data);
     }

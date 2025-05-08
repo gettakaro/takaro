@@ -39,6 +39,11 @@ export class Generic implements IGameServer {
   private async requestFromServer(operation: string, data?: JsonObject) {
     if (!data) data = {};
     const resp = await this.takaroConnector.requestFromServer(this.gameServerId, operation, JSON.stringify(data));
+
+    if (resp && resp.error) {
+      throw new errors.BadRequestError(`Error from server: ${resp.error}`);
+    }
+
     return resp;
   }
 
@@ -119,9 +124,8 @@ export class Generic implements IGameServer {
   }
 
   async giveItem(rawPlayer: IPlayerReferenceDTO, item: string, amount: number, quality: string): Promise<void> {
-    const player = new IPlayerReferenceDTO({ gameId: rawPlayer.gameId });
     await this.requestFromServer('giveItem', {
-      ...player.toJSON({ excludeExtraneousValues: true }),
+      gameId: rawPlayer.gameId,
       item,
       amount,
       quality,
