@@ -388,6 +388,9 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
 
           const redisClient = await Redis.getClient('worker:command-lock');
           await redisClient.incr(commandsRunningKey(jobData));
+          // Also set an expiration for this lock of 2 minutes
+          // This prevents the lock from being held forever if the job fails
+          await redisClient.expire(commandsRunningKey(jobData), 120);
           await queueService.queues.commands.queue.add(jobData, { delay });
         }
       });
