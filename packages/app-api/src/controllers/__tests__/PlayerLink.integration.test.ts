@@ -6,11 +6,12 @@ import {
   integrationConfig,
   EventsAwaiter,
 } from '@takaro/test';
-import { GameEvents } from '@takaro/modules';
+import { GameEvents, HookEvents } from '@takaro/modules';
 import { faker } from '@faker-js/faker';
 import { randomUUID } from 'crypto';
 import { Client, isAxiosError } from '@takaro/apiclient';
 import { describe } from 'node:test';
+import { Redis } from '@takaro/db';
 
 const group = 'Player-User linking';
 
@@ -52,7 +53,7 @@ async function triggerLink(
   });
   const chatEvents = await chatEventWaiter;
   expect(chatEvents).to.have.length(1);
-  const code = chatEvents[0].data.meta.msg.match(/code=(\w+-\w+-\w+)/)[1];
+  const code = await getSecretCodeForPlayer(setupData.pogs1[0].playerId);
   await userClient.user.userControllerLinkPlayerProfile({ email, code });
 }
 
@@ -86,6 +87,26 @@ async function checkRoleAndPermissions(client: Client, userClient: Client, userI
   }
 }
 
+async function getSecretCodeForPlayer(playerId: string) {
+  const redis = await Redis.getClient('playerLink');
+  // We store the code in redis with key as the code and the value is the actual secret code
+  // secret-code : playerId
+  // So we need to reverse it here and do a very inefficient search
+  // Unfortunate, but this is test code so not the end of the world
+  const allKeys = await redis.keys('*');
+  // Filter out the domain keys, we only want keys that store playerIds
+  const playerLinkKeys = allKeys.filter((key) => key.startsWith('playerLink') && !key.includes('-domain'));
+  // Search through the keys to find the one where the value matches our playerId
+  for (const key of playerLinkKeys) {
+    const storedPlayerId = await redis.get(key);
+    if (storedPlayerId === playerId) {
+      return key.split(':')[1];
+    }
+  }
+
+  throw new Error(`No secret code found for playerId ${playerId}`);
+}
+
 const tests = [
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
@@ -108,9 +129,11 @@ const tests = [
 
       const unAuthedClient = new Client({ url: integrationConfig.get('host'), auth: {} });
 
+      const code = await getSecretCodeForPlayer(this.setupData.pogs1[0].playerId);
+
       await unAuthedClient.user.userControllerLinkPlayerProfile({
         email: userEmail,
-        code: chatEvents[0].data.meta.msg.match(/code=(\w+-\w+-\w+)/)[1],
+        code,
       });
 
       await checkIfInviteLinkReceived(userEmail);
@@ -189,7 +212,7 @@ const tests = [
       try {
         await userBClient.user.userControllerLinkPlayerProfile({
           email: userA.user.email,
-          code: chatEvents[0].data.meta.msg.match(/code=(\w+-\w+-\w+)/)[1],
+          code: await getSecretCodeForPlayer(this.setupData.pogs1[0].playerId),
         });
         throw new Error('Should not be able to link with existing email');
       } catch (error) {
@@ -225,7 +248,7 @@ const tests = [
       try {
         await unAuthedClient.user.userControllerLinkPlayerProfile({
           email: userA.user.email,
-          code: chatEvents[0].data.meta.msg.match(/code=(\w+-\w+-\w+)/)[1],
+          code: await getSecretCodeForPlayer(this.setupData.pogs1[0].playerId),
         });
         throw new Error('Should not be able to link with existing email');
       } catch (error) {
@@ -233,6 +256,66 @@ const tests = [
         expect(error.response?.data.meta.error.code).to.be.equal('BadRequestError');
         expect(error.response?.data.meta.error.message).to.be.equal('Email already in use, please login first');
       }
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Linking should not include the secret code in the chat event',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      const eventsAwaiter = new EventsAwaiter();
+      await eventsAwaiter.connect(this.client);
+      const chatEventWaiter = eventsAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
+      await this.client.command.commandControllerTrigger(this.setupData.gameServer1.id, {
+        msg: '/link',
+        playerId: this.setupData.pogs1[0].playerId,
+      });
+
+      const chatEvents = await chatEventWaiter;
+      expect(chatEvents).to.have.length(1);
+
+      const code = await getSecretCodeForPlayer(this.setupData.pogs1[0].playerId);
+      expect(code).to.be.a.string;
+
+      const eventsRes = await this.client.event.eventControllerSearch({
+        filters: {
+          eventName: [GameEvents.CHAT_MESSAGE],
+        },
+      });
+
+      const events = eventsRes.data.data;
+
+      expect(JSON.stringify(events)).to.not.include(code);
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Linking should produce a command-executed event',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      const eventsAwaiter = new EventsAwaiter();
+      await eventsAwaiter.connect(this.client);
+      const chatEventWaiter = eventsAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
+      await this.client.command.commandControllerTrigger(this.setupData.gameServer1.id, {
+        msg: '/link',
+        playerId: this.setupData.pogs1[0].playerId,
+      });
+
+      const chatEvents = await chatEventWaiter;
+      expect(chatEvents).to.have.length(1);
+
+      const eventsRes = await this.client.event.eventControllerSearch({
+        filters: {
+          eventName: [HookEvents.COMMAND_EXECUTED],
+        },
+      });
+
+      const events = eventsRes.data.data;
+
+      expect(events).to.have.length(1);
+      expect(events[0].meta).to.have.property('command');
     },
   }),
 

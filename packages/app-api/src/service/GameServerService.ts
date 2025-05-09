@@ -348,6 +348,12 @@ export class GameServerService extends TakaroService<
     const gameInstance = await this.getGame(gameServerId);
     await gameInstance.sendMessage(message, opts);
 
+    // Hacky way to detect if the message is a linking message
+    if (message.includes('to complete the linking process')) {
+      // Replace the actual secret code with a xxx-xxx-xxx placeholder
+      message = message.replace(/code=(\w+-\w+-\w+)/, 'code=xxx-xxx-xxx');
+    }
+
     const eventService = new EventService(this.domainId);
     const meta = new EventChatMessage({
       msg: message,
