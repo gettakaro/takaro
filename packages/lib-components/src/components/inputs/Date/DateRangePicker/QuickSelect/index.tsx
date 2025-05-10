@@ -124,7 +124,7 @@ export const QuickSelect: FC<QuickSelectProps> = ({ id }) => {
             </SelectField.OptionGroup>
           </SelectField>
         </InputsContainer>
-        <Button type="submit" text="Apply" />
+        <Button type="submit">Apply</Button>
       </StyledForm>
 
       <Divider fullWidth />

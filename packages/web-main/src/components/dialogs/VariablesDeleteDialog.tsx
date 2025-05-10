@@ -28,13 +28,9 @@ export const VariablesDeleteDialog: FC<VariablesDeleteProps> = ({ variableIds, .
           <p>
             Are you sure you want to delete <strong>{variableIds.length} variables</strong>?{' '}
           </p>
-          <Button
-            isLoading={isDeleting}
-            onClick={(e) => handleOnDelete(e)}
-            fullWidth
-            text={'Delete variables'}
-            color="error"
-          />
+          <Button isLoading={isDeleting} onClick={(e) => handleOnDelete(e)} fullWidth color="error">
+            Delete variables
+          </Button>
         </Dialog.Body>
         {error && <FormError error={error} />}
       </Dialog.Content>

@@ -98,8 +98,8 @@ export const CookieConsentSnack = forwardRef<HTMLDivElement, CustomContentProps>
         </strong>
       </div>
       <ButtonContainer>
-        <Button text="Decline" />
-        <Button text="Accept" type="submit" />
+        <Button>Decline</Button>
+        <Button type="submit">Accept</Button>
       </ButtonContainer>
     </Wrapper>
   );

@@ -33,13 +33,9 @@ export const GameServerShutdownDialog = ({
             <br /> Are you sure you want to <strong>shutdown</strong> <strong>{gameServerName}</strong>?
           </p>
           <p></p>
-          <Button
-            isLoading={isShuttingDown}
-            onClick={handleOnShutdown}
-            fullWidth
-            text="Shutdown gameserver"
-            color="error"
-          />
+          <Button isLoading={isShuttingDown} onClick={handleOnShutdown} fullWidth color="error">
+            Shutdown gameserver
+          </Button>
         </Dialog.Body>
       </Dialog.Content>
     </Dialog>

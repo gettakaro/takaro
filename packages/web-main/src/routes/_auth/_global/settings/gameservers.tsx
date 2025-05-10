@@ -135,13 +135,9 @@ function Component() {
         <Fragment>
           {settings}
           {!readOnly && (
-            <Button
-              disabled={!formState.isDirty}
-              isLoading={isPending}
-              text="Save settings"
-              type="submit"
-              variant="default"
-            />
+            <Button disabled={!formState.isDirty} isLoading={isPending} type="submit" variant="default">
+              Save settings
+            </Button>
           )}
         </Fragment>
       </form>

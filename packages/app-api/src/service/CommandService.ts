@@ -7,7 +7,7 @@ import { IMessageOptsDTO } from '@takaro/gameserver';
 import { ICommandJobData, IParsedCommand, queueService } from '@takaro/queues';
 import { Type } from 'class-transformer';
 import { TakaroDTO, errors, TakaroModelDTO, traceableClass } from '@takaro/util';
-import { ICommand, ICommandArgument, EventChatMessage, ChatChannel } from '@takaro/modules';
+import { ICommand, ICommandArgument, EventChatMessage, ChatChannel, TakaroEventCommandExecuted } from '@takaro/modules';
 import { Redis } from '@takaro/db';
 import { PaginatedOutput } from '../db/base.js';
 import { SettingsService, SETTINGS_KEYS } from './SettingsService.js';
@@ -20,6 +20,7 @@ import { ModuleService } from './Module/index.js';
 import { InstallModuleDTO } from './Module/dto.js';
 import { CommandSearchInputDTO } from '../controllers/CommandController.js';
 import { PartialDeep } from 'type-fest/index.js';
+import { EventCreateDTO, EventService } from './EventService.js';
 
 export function commandsRunningKey(data: ICommandJobData) {
   return `commands-running:${data.pog.id}:${data.itemId}`;
@@ -304,6 +305,20 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
     if (commandName === 'link') {
       const { player, pog } = await this.playerService.resolveRef(chatMessage.player, gameServerId);
       await this.playerService.handlePlayerLink(player, pog);
+      await new EventService(this.domainId).create(
+        new EventCreateDTO({
+          playerId: player.id,
+          gameserverId: gameServerId,
+          eventName: 'command-executed',
+          meta: new TakaroEventCommandExecuted({
+            command: {
+              id: 'link',
+              name: 'link',
+              arguments: {},
+            },
+          }),
+        }),
+      );
     }
 
     const triggeredCommands = await this.repo.getTriggeredCommands(commandName, gameServerId);
@@ -388,6 +403,9 @@ export class CommandService extends TakaroService<CommandModel, CommandOutputDTO
 
           const redisClient = await Redis.getClient('worker:command-lock');
           await redisClient.incr(commandsRunningKey(jobData));
+          // Also set an expiration for this lock of 2 minutes
+          // This prevents the lock from being held forever if the job fails
+          await redisClient.expire(commandsRunningKey(jobData), 120);
           await queueService.queues.commands.queue.add(jobData, { delay });
         }
       });

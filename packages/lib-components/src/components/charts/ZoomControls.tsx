@@ -40,7 +40,9 @@ export const ZoomControls: FC<ZoomControlsProps> = ({ zoom }) => {
         </Tooltip.Trigger>
         <Tooltip.Content>Zoom out</Tooltip.Content>
       </Tooltip>
-      <Button size="tiny" onClick={zoom.reset} text="Reset" />
+      <Button size="tiny" onClick={zoom.reset}>
+        Reset
+      </Button>
       {/*<Button size="tiny" onClick={zoom.center} text="Center" />*/}
     </Controls>
   );

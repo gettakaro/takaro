@@ -291,13 +291,9 @@ const Tab: FC<TabProps> = ({
               Are you sure you want to continue without saving?
             </p>
             <ButtonContainer>
-              <Button
-                type="button"
-                color="error"
-                fullWidth
-                text="Discard changes"
-                onClick={() => handleDiscardAndClose(filePath)}
-              />
+              <Button type="button" color="error" fullWidth onClick={() => handleDiscardAndClose(filePath)}>
+                Discard changes
+              </Button>
             </ButtonContainer>
           </Dialog.Body>
         </Dialog.Content>

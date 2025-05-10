@@ -44,7 +44,9 @@ export const Default: StoryFn = () => {
   return (
     <Container>
       <JsonSchemaForm schema={schema} initialData={initialData} uiSchema={{}}>
-        <Button type="submit" text="Submit" onClick={() => console.log('form submitted')} />
+        <Button type="submit" onClick={() => console.log('form submitted')}>
+          Submit
+        </Button>
       </JsonSchemaForm>
     </Container>
   );
@@ -86,7 +88,9 @@ export const SubmitProgrammatically: StoryFn = () => {
         onSubmit={onSubmit}
       />
       <p>This button is a default button outside of the form, since we have to trigger the submit somehow</p>
-      <Button type="button" text="Programmatically submit form" onClick={() => formRef.current?.submit()} />
+      <Button type="button" onClick={() => formRef.current?.submit()}>
+        Programmatically submit form{' '}
+      </Button>
       <pre>result: {JSON.stringify(data, null, 2)}</pre>
     </Container>
   );
@@ -117,7 +121,9 @@ export const ModuleServerMessages: StoryFn = () => {
   return (
     <Container>
       <JsonSchemaForm schema={messagesSchema} initialData={initialData} uiSchema={{}}>
-        <Button type="submit" text="Submit" onClick={() => console.log('form submitted')} />
+        <Button type="submit" onClick={() => console.log('form submitted')}>
+          Submit
+        </Button>
       </JsonSchemaForm>
     </Container>
   );

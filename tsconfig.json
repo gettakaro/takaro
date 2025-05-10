@@ -2,7 +2,9 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "nodenext",
-    "lib": ["ES2022"],
+    "lib": [
+      "ES2022"
+    ],
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
@@ -15,7 +17,9 @@
     "moduleResolution": "nodenext",
     "baseUrl": ".",
     "paths": {
-      "*": ["node_modules/*"]
+      "*": [
+        "node_modules/*"
+      ]
     },
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": false,

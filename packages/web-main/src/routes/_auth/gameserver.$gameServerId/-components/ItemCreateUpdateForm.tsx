@@ -76,8 +76,12 @@ export const ItemCreateUpdateForm: FC<ItemFormProps> = ({ initialData, onSubmit,
         </Drawer.Body>
         <Drawer.Footer>
           <ButtonContainer>
-            <Button text="Cancel" onClick={() => setOpen(false)} color="background" type="button" />
-            <Button type="submit" fullWidth text="Save changes" form={formId} isLoading={isLoading} />
+            <Button onClick={() => setOpen(false)} color="background" type="button">
+              Cancel
+            </Button>
+            <Button type="submit" fullWidth form={formId} isLoading={isLoading}>
+              Save changes
+            </Button>
           </ButtonContainer>
         </Drawer.Footer>
       </Drawer.Content>

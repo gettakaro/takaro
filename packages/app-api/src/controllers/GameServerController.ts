@@ -19,6 +19,7 @@ import {
   IMessageOptsDTO,
   GAME_SERVER_TYPE,
   BanDTO,
+  MapInfoDTO,
 } from '@takaro/gameserver';
 import { APIOutput, apiResponse } from '@takaro/http';
 import {
@@ -29,19 +30,7 @@ import {
   JobStatusOutputDTO,
 } from '../service/GameServerService.js';
 import { AuthenticatedRequest, AuthService, checkPermissions } from '../service/AuthService.js';
-import {
-  Body,
-  Get,
-  Post,
-  Delete,
-  JsonController,
-  UseBefore,
-  Req,
-  Put,
-  Params,
-  Res,
-  ContentType,
-} from 'routing-controllers';
+import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Put, Params, Res } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
 import { ParamId, PogParam } from '../lib/validators.js';
@@ -229,6 +218,12 @@ class MapTileInputDTO extends TakaroDTO<MapTileInputDTO> {
   x: number;
   @IsNumber()
   y: number;
+}
+
+class MapInfoOutputDTOAPI extends APIOutput<MapInfoDTO> {
+  @Type(() => MapInfoDTO)
+  @ValidateNested()
+  declare data: MapInfoDTO;
 }
 
 class ImportOutputDTOAPI extends APIOutput<ImportOutputDTO> {
@@ -573,8 +568,9 @@ export class GameServerController {
 
   @Get('/gameserver/:id/map/info')
   @UseBefore(AuthService.getAuthMiddleware([]))
+  @ResponseSchema(MapInfoOutputDTOAPI)
   @OpenAPI({
-    description: 'Get map metadata for Leaflet',
+    description: 'Get map metadata',
   })
   async getMapInfo(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
     const service = new GameServerService(req.domainId);
@@ -583,13 +579,18 @@ export class GameServerController {
 
   @Get('/gameserver/:id/map/tile/:x/:y/:z')
   @UseBefore(AuthService.getAuthMiddleware([]))
-  @ContentType('image/png')
   @OpenAPI({
-    description: 'Get a map tile for Leaflet',
+    description: 'Get a map tile',
   })
-  async getMapTile(@Req() req: AuthenticatedRequest, @Params() params: MapTileInputDTO) {
+  async getMapTile(@Req() req: AuthenticatedRequest, @Params() params: MapTileInputDTO, @Res() res: Response) {
     const service = new GameServerService(req.domainId);
     const result = await service.getMapTile(params.id, params.x, params.y, params.z);
-    return result;
+    if (result) {
+      res.set('Content-Type', 'image/png');
+      res.set('Content-Length', result.length.toString());
+      res.send(result);
+    } else {
+      throw new errors.NotFoundError('Tile not found');
+    }
   }
 }

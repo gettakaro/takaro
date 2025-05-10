@@ -321,10 +321,10 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
   async handlePlayerLink(player: PlayerOutputDTO, pog: PlayerOnGameserverOutputDTO) {
     const secretCode = humanId({ separator: '-', capitalize: false });
     const redis = await Redis.getClient('playerLink');
-    await redis.set(secretCode, player.id, {
+    await redis.set(`playerLink:${secretCode}`, player.id, {
       EX: 60 * 30,
     });
-    await redis.set(`${secretCode}-domain`, this.domainId, {
+    await redis.set(`playerLink:${secretCode}-domain`, this.domainId, {
       EX: 60 * 30,
     });
 

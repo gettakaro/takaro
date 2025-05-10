@@ -189,7 +189,9 @@ function Component() {
             <Link to="/account/recovery">Forgot your password?</Link>
           </LinkContainer>
           {error && <FormError error={error} />}
-          <Button icon={<Mail />} isLoading={loading} fullWidth text="Log in" type="submit" variant="default" />
+          <Button icon={<Mail />} isLoading={loading} fullWidth type="submit" variant="default">
+            Log in
+          </Button>
         </form>
       </Container>
     </>

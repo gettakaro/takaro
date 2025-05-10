@@ -262,16 +262,18 @@ export const GenericDatePicker: FC<GenericDatePickerProps> = ({
                 fullWidth
                 variant="default"
                 color="secondary"
-                text="Cancel"
-              />
+              >
+                Cancel
+              </Button>
               <Button
                 fullWidth
                 onClick={() => {
                   handleOnChange(selectedDateTime);
                   setOpen(false);
                 }}
-                text="Select"
-              />
+              >
+                Select
+              </Button>
             </ButtonContainer>
           )}
         </ContentContainer>

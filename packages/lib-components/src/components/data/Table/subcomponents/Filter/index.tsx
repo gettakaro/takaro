@@ -195,7 +195,9 @@ export function Filter<DataType extends object>({ table }: FilterProps<DataType>
             })}
             <ButtonContainer justifyContent={fields.length > 0 ? 'space-between' : 'flex-end'}>
               {fields.length > 0 && (
-                <Button type="button" variant="clear" text="Clear filters" onClick={handleClearFilters} />
+                <Button type="button" variant="clear" onClick={handleClearFilters}>
+                  Clear filters
+                </Button>
               )}
               <FilterActions>
                 <Button
@@ -208,9 +210,10 @@ export function Filter<DataType extends object>({ table }: FilterProps<DataType>
                     })
                   }
                   variant="clear"
-                  text="Add filter"
-                />
-                <Button type="submit" text="Apply filters" />
+                >
+                  Add filter
+                </Button>
+                <Button type="submit">Apply filters</Button>
               </FilterActions>
             </ButtonContainer>
           </form>

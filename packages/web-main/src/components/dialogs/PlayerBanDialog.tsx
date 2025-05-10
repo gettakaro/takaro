@@ -82,7 +82,9 @@ export const PlayerBanDialog: FC<PlayerBanDialogProps> = ({ playerId, ...dialogO
             />
 
             {banError && <FormError error={banError} />}
-            <Button isLoading={isLoadingBanPlayer} type="submit" fullWidth text={'Ban player'} color="error" />
+            <Button isLoading={isLoadingBanPlayer} type="submit" fullWidth color="error">
+              Ban player
+            </Button>
           </form>
         </Dialog.Body>
       </Dialog.Content>

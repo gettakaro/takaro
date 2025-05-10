@@ -149,8 +149,12 @@ export const DrawerContent = forwardRef<HTMLElement, HTMLProps<HTMLDivElement>>(
                       <h2>Your progress will be lost</h2>
                       <p>Are you sure you want to exit? Your progress will not be saved.</p>
                       <ButtonContainer>
-                        <Button text="Cancel" color="secondary" onClick={() => setShowConfirmDialog(false)} />
-                        <Button text="Discard changes" onClick={() => setOpen(false)} color="error" />
+                        <Button color="secondary" onClick={() => setShowConfirmDialog(false)}>
+                          Cancel
+                        </Button>
+                        <Button onClick={() => setOpen(false)} color="error">
+                          Discard changes
+                        </Button>
                       </ButtonContainer>
                     </CloseConfirmationContainer>
                   </CloseConfirmationWrapper>

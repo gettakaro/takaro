@@ -71,7 +71,9 @@ export const EventFilter: FC<EventFilterProps> = ({ initialSelectedValues, onSub
         loading={isLoading}
         label="Interval"
       />
-      <Button disabled={!formState.isDirty} text="Apply filters" type="submit" fullWidth />
+      <Button disabled={!formState.isDirty} type="submit" fullWidth>
+        Apply filters
+      </Button>
     </Form>
   );
 };

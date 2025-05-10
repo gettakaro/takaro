@@ -99,9 +99,9 @@ function Component() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
             <MaxUsage value={customModuleCount} total={maxModulesCount} unit="Modules" />
             <PermissionsGuard requiredPermissions={[PERMISSIONS.ManageModules]}>
-              <Dropdown>
+              <Dropdown placement="bottom-end">
                 <Dropdown.Trigger asChild>
-                  <Button text="Module actions" />
+                  <Button>Module actions</Button>
                 </Dropdown.Trigger>
                 <Dropdown.Menu>
                   <Dropdown.Menu.Group>

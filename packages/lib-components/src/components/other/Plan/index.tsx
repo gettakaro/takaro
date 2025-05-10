@@ -81,7 +81,7 @@ export const Plan: FC<PlanProps> = ({
                 </p>
               )}
               <a style={{ width: '100%' }} className="button" href={to} target="_blank" rel="noreferrer">
-                <Button fullWidth text={buttonText} />
+                <Button fullWidth>{buttonText}</Button>
               </a>
               <p></p>
             </div>

@@ -33,7 +33,9 @@ export const Route = createFileRoute('/_auth/_global/roles')({
           header="No roles"
           description="Create a role and assign it to user or players."
           actions={[
-            <Button key="create-role-button" text="Create a role" onClick={() => redirect({ to: '/roles/create' })} />,
+            <Button key="create-role-button" onClick={() => redirect({ to: '/roles/create' })}>
+              Create a role
+            </Button>,
           ]}
         />
         <Outlet />
@@ -59,7 +61,9 @@ function Component() {
           gap: theme.spacing[1],
         }}
       >
-        <Button icon={<AddRoleIcon />} onClick={() => navigate({ to: '/roles/create' })} text="Create new role" />
+        <Button icon={<AddRoleIcon />} onClick={() => navigate({ to: '/roles/create' })}>
+          Create new role
+        </Button>
         <TableListToggleButton onChange={setView} value={view} />
       </div>
       {view === 'table' && <RolesTableView />}

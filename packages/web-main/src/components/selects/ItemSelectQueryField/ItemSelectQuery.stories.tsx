@@ -91,7 +91,7 @@ export const Default: StoryFn<ItemSelectQueryViewProps> = (args) => {
           fetchNextPage={() => {}}
           items={items}
         />
-        <Button type="submit" text="submit" />
+        <Button type="submit">Submit</Button>
       </form>
       <div>The search will not work since the items are placeholders. </div>
       <div>Selected Item: {selectItem}</div>

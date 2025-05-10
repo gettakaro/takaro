@@ -186,7 +186,9 @@ function Component() {
           )}
         </Drawer.Body>
         <Drawer.Footer>
-          <Button fullWidth text="Import gameserver" form="import-game-server-form" type="submit" />
+          <Button fullWidth form="import-game-server-form" type="submit">
+            Import gameserver
+          </Button>
         </Drawer.Footer>
       </Drawer.Content>
     </Drawer>

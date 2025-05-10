@@ -33,7 +33,7 @@ export const Default = () => {
   return (
     <Container>
       <JsonSchemaForm schema={schema} initialData={{}} uiSchema={uiSchema}>
-        <Button type="submit" text="Submit" />
+        <Button type="submit">Submit</Button>
       </JsonSchemaForm>
     </Container>
   );

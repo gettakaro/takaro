@@ -123,20 +123,25 @@ export const InstallModuleForm: FC<InstallModuleFormProps> = ({
         <Drawer.Footer>
           {error && <FormError error={error} />}
           {readOnly ? (
-            <Button fullWidth text="Close view" onClick={() => setOpen(false)} color="primary" />
+            <Button fullWidth onClick={() => setOpen(false)} color="primary">
+              Close view
+            </Button>
           ) : (
             <ButtonContainer>
-              <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
+              <Button onClick={() => setOpen(false)} color="background">
+                Cancel
+              </Button>
               <Button
                 fullWidth
                 isLoading={isPending}
-                text="Install module"
                 type="button"
                 onClick={() => {
                   systemConfigFormRef.current?.formElement.current.requestSubmit();
                   userConfigFormRef.current?.formElement.current.requestSubmit();
                 }}
-              />
+              >
+                Install module
+              </Button>
             </ButtonContainer>
           )}
         </Drawer.Footer>

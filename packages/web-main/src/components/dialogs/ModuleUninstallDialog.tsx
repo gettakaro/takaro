@@ -46,14 +46,9 @@ export const ModuleUninstallDialog = forwardRef<DeleteImperativeHandle, ModuleUn
               value={moduleName}
               label="Module name"
             />
-            <Button
-              isLoading={isDeleting}
-              onClick={handleUninstall}
-              fullWidth
-              disabled={!valid}
-              text="Uninstall module"
-              color="error"
-            />
+            <Button isLoading={isDeleting} onClick={handleUninstall} fullWidth disabled={!valid} color="error">
+              Uninstall module
+            </Button>
             {error && <FormError error={error} />}
           </Dialog.Body>
         </Dialog.Content>

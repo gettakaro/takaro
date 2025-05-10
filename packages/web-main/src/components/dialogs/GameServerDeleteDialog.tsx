@@ -41,14 +41,9 @@ export const GameServerDeleteDialog = forwardRef<DeleteImperativeHandle, GameSer
               label="Game server name"
               id="deleteGameServerConfirmation"
             />
-            <Button
-              isLoading={isDeleting}
-              onClick={handleOnDelete}
-              disabled={!valid}
-              fullWidth
-              text="Delete gameserver"
-              color="error"
-            />
+            <Button isLoading={isDeleting} onClick={handleOnDelete} disabled={!valid} fullWidth color="error">
+              Delete gameserver
+            </Button>
             {error && <FormError error={error} />}
           </Dialog.Body>
         </Dialog.Content>

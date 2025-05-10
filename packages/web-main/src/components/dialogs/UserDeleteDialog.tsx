@@ -29,13 +29,9 @@ export const UserDeleteDialog: FC<VariableDeleteProps> = ({ userId, userName, ..
             <br />
           </p>
           {error && <FormError error={error} />}
-          <Button
-            isLoading={isDeleting}
-            onClick={(e) => handleOnDelete(e)}
-            fullWidth
-            text={'Delete user'}
-            color="error"
-          />
+          <Button isLoading={isDeleting} onClick={(e) => handleOnDelete(e)} fullWidth color="error">
+            Delete user
+          </Button>
         </Dialog.Body>
       </Dialog.Content>
     </Dialog>

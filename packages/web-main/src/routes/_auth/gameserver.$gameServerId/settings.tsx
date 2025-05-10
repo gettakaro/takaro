@@ -247,7 +247,11 @@ function Component() {
               )}
             </SettingsContainer>
           ))}
-          {!readOnly && <Button disabled={!formState.isDirty} text="Save settings" type="submit" variant="default" />}
+          {!readOnly && (
+            <Button disabled={!formState.isDirty} type="submit" variant="default">
+              Save settings
+            </Button>
+          )}
         </>
       </form>
     </>

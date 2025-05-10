@@ -48,14 +48,9 @@ export const ModuleDeleteDialog = forwardRef<DeleteImperativeHandle, ModuleDelet
               value={moduleName}
               label="Module name"
             />
-            <Button
-              isLoading={isDeleting}
-              onClick={handleOnDelete}
-              fullWidth
-              disabled={!isValid}
-              text="Delete module"
-              color="error"
-            />
+            <Button isLoading={isDeleting} onClick={handleOnDelete} fullWidth disabled={!isValid} color="error">
+              Delete module
+            </Button>
             {deleteError && <FormError error={deleteError} />}
           </Dialog.Body>
         </Dialog.Content>

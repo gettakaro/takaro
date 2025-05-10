@@ -38,8 +38,10 @@ function Component() {
         <p>Get your first moth risk-free. If you do not like it, we will refund you.</p>
         <br />
         <ButtonContainer>
-          <Button text="Upgrade to Starter plan" />
-          <Button color="primary" variant="clear" text="See all plan options" />
+          <Button>Upgrade to Starter plan</Button>
+          <Button color="primary" variant="clear">
+            See all plan options
+          </Button>
         </ButtonContainer>
       </Card>
     </Container>

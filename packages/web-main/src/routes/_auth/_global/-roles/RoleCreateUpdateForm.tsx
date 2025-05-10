@@ -195,16 +195,17 @@ export const RoleForm: FC<CreateUpdateRoleFormProps> = ({
         </Drawer.Body>
         <Drawer.Footer>
           {readOnly ? (
-            <Button text="Close view" fullWidth onClick={() => setOpen(false)} color="primary" />
+            <Button fullWidth onClick={() => setOpen(false)} color="primary">
+              Close view
+            </Button>
           ) : (
             <ButtonContainer>
-              <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
-              <Button
-                fullWidth
-                text={initialData ? 'Update role' : 'Create role'}
-                type="submit"
-                form="create-role-form"
-              />
+              <Button onClick={() => setOpen(false)} color="background">
+                Cancel
+              </Button>
+              <Button fullWidth type="submit" form="create-role-form">
+                {initialData ? 'Update role' : 'Create role'}
+              </Button>
             </ButtonContainer>
           )}
         </Drawer.Footer>

@@ -254,9 +254,10 @@ const ShopOrderActions: FC<ShopOrderActionsProps> = ({ shopOrder, gameServerId, 
               isLoading={isPendingShopOrderCancel}
               onClick={() => cancelShopOrder({ shopOrderId: shopOrder.id })}
               fullWidth
-              text="Cancel order"
               color="error"
-            />
+            >
+              Cancel order
+            </Button>
           </Dialog.Body>
         </Dialog.Content>
       </Dialog>

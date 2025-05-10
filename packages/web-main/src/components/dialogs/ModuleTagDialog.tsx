@@ -119,7 +119,9 @@ export const ModuleTagDialog: FC<ModuleTagDialogProps> = ({ moduleId, moduleName
               </SelectField.OptionGroup>
             </SelectField>
             {tagError && <FormError error={tagError} />}
-            <Button type="submit" isLoading={isTagging} fullWidth text="Create tag" />
+            <Button type="submit" isLoading={isTagging} fullWidth>
+              Create tag
+            </Button>
           </form>
         </Dialog.Body>
       </Dialog.Content>

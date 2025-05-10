@@ -37,11 +37,9 @@ export const GameServersCardView = () => {
           header="Bro, what are you waiting on?"
           description="Create a game server to really get started with Takaro."
           actions={[
-            <Button
-              key="gameservers-create"
-              text="Create a game server"
-              onClick={() => navigate({ to: '/gameservers/create' })}
-            />,
+            <Button key="gameservers-create" onClick={() => navigate({ to: '/gameservers/create' })}>
+              Create a game server
+            </Button>,
           ]}
         />
         <Outlet />
