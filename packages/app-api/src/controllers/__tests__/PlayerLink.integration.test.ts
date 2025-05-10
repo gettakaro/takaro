@@ -5,13 +5,13 @@ import {
   MailhogAPI,
   integrationConfig,
   EventsAwaiter,
+  getSecretCodeForPlayer,
 } from '@takaro/test';
 import { GameEvents, HookEvents } from '@takaro/modules';
 import { faker } from '@faker-js/faker';
 import { randomUUID } from 'crypto';
 import { Client, isAxiosError } from '@takaro/apiclient';
 import { describe } from 'node:test';
-import { Redis } from '@takaro/db';
 
 const group = 'Player-User linking';
 
@@ -85,26 +85,6 @@ async function checkRoleAndPermissions(client: Client, userClient: Client, userI
     if (!isAxiosError(error) || !error.response) throw error;
     expect(error.response?.data.meta.error.code).to.be.equal('ForbiddenError');
   }
-}
-
-async function getSecretCodeForPlayer(playerId: string) {
-  const redis = await Redis.getClient('playerLink');
-  // We store the code in redis with key as the code and the value is the actual secret code
-  // secret-code : playerId
-  // So we need to reverse it here and do a very inefficient search
-  // Unfortunate, but this is test code so not the end of the world
-  const allKeys = await redis.keys('*');
-  // Filter out the domain keys, we only want keys that store playerIds
-  const playerLinkKeys = allKeys.filter((key) => key.startsWith('playerLink') && !key.includes('-domain'));
-  // Search through the keys to find the one where the value matches our playerId
-  for (const key of playerLinkKeys) {
-    const storedPlayerId = await redis.get(key);
-    if (storedPlayerId === playerId) {
-      return key.split(':')[1];
-    }
-  }
-
-  throw new Error(`No secret code found for playerId ${playerId}`);
 }
 
 const tests = [
