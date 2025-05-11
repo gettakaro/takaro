@@ -235,6 +235,7 @@ export class GameServer implements IGameServer {
 
   //#region IGameServer
   getEventEmitter(): TakaroEmitter {
+    // This is a relic from the legacy API. It's not used anymore with the new WS connection method.
     throw new errors.NotImplementedError();
   }
 

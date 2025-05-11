@@ -1,0 +1,872 @@
+import { Columns, Column } from '@site/src/components/columns';
+
+# Adding support for a new game
+
+Takaro has a generic connector which allows any game to connect to Takaro. The requirement is that there is a mod for the game that connects to the Takaro websocket server and implements a few functions.
+
+This document explains the requirements and technical details of how to add support for a new game.
+
+## Concepts
+
+Takaro uses the concept for a `gameId` to identify players. This is a unique identifier for the player in the game. Different games will have different ways of identifying players. For example, in 7 Days to Die, the `gameId` is the 'cross ID/EOS ID' of the player. In other games, it might be the SteamID, a UUID or some other identifier. When Takaro calls a function that pertains to a specific player, it will pass the `gameId` as an argument.
+
+## Connecting to Takaro
+
+Takaro exposes a websocket server at `wss://connect.takaro.io/`. The game mod should connect to this and send a `identify` message containing the identity token and registration token.
+
+- Identity token: This is a unique token that identifies the game instance. If you connect with a new token, Takaro will create a new gameserver record. If you connect with an existing token, Takaro will update the existing gameserver record. It is important to keep this token the same across restarts of the game, otherwise Takaro will start with fresh data every time.
+- Registration token: This is a **secret** token that is used to authenticate the game instance. This token is generated for a domain in Takaro. This should be kept secret, otherwise other game instances can connect to Takaro and insert their data in your domain.
+
+```json
+{
+  "type": "identify",
+  "data": {
+    "identityToken": "<identity token>",
+    "registrationToken": "<registration token>"
+  }
+}
+```
+
+You will get a `identifyResponse` message back saying if it worked or not. If the message contains a `error` field in the payload, there'll be more details about what went wrong.
+If the payload contains a `gameServerId` field, it was successful.
+
+## Functions
+
+Takaro will request data from the server and it will perform actions on the server. The game mod should implement the following functions.
+
+Each of these will be sent over the websocket connection as a JSON message. The game server will receive a message like:
+
+```js
+{
+  type: 'request',
+  payload: { action: 'getPlayers', args: [] },
+  requestId: '1234',
+}
+```
+
+The above message means that Takaro wants to call the `getPlayers` function on the game server. The game server should respond with a message like:
+
+```js
+{
+  type: 'response',
+  payload: [... player objects],
+  requestId: '1234',
+}
+```
+
+Note the `requestId` field. This is used to match the request and response. The game server should always respond with the same `requestId` as the request. Takaro might send multiple requests at the same time, so it is important to keep track of the request IDs.
+
+If the game server returns data in a bad format, Takaro will return a error over the websocket connection.
+
+### getPlayer
+
+Retrieves information about a specific player.
+
+<Columns>
+<Column className='text--left'>
+#### Request
+```json
+{
+  "type": "request",
+  "payload": {
+    "action": "getPlayer",
+    "args": [
+      {
+        "gameId": "12345"
+      }
+    ]
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+<Column className='text--left'>
+#### Response
+```json
+{
+  "type": "response",
+  "payload": {
+    "gameId": "12345",
+    "name": "PlayerName",
+    "steamId": "76561198123456789",
+    "ip": "192.168.1.1",
+    "ping": 50
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+</Columns>
+
+If the player is not found, return `null`:
+
+```json
+{
+  "type": "response",
+  "payload": null,
+  "requestId": "request-uuid"
+}
+```
+
+### getPlayers
+
+Retrieves a list of all currently connected players.
+
+<Columns>
+<Column className='text--left'>
+#### Request
+```json
+{
+  "type": "request",
+  "payload": {
+    "action": "getPlayers",
+    "args": []
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+<Column className='text--left'>
+#### Response
+```json
+{
+  "type": "response",
+  "payload": [
+    {
+      "gameId": "12345",
+      "name": "PlayerName1",
+      "steamId": "76561198123456789",
+      "ip": "192.168.1.1",
+      "ping": 50
+    },
+    {
+      "gameId": "67890",
+      "name": "PlayerName2",
+      "steamId": "76561198987654321",
+      "ip": "192.168.1.2",
+      "ping": 75
+    }
+  ],
+  "requestId": "request-uuid"
+}
+```
+</Column>
+</Columns>
+
+### getPlayerLocation
+
+Retrieves the current 3D position of a specific player.
+
+<Columns>
+<Column className='text--left'>
+#### Request
+```json
+{
+  "type": "request",
+  "payload": {
+    "action": "getPlayerLocation",
+    "args": [
+      {
+        "gameId": "12345"
+      }
+    ]
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+<Column className='text--left'>
+#### Response
+```json
+{
+  "type": "response",
+  "payload": {
+    "x": 123.45,
+    "y": 67.89,
+    "z": 10.11
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+</Columns>
+
+If the player is not found, return `null`:
+
+```json
+{
+  "type": "response",
+  "payload": null,
+  "requestId": "request-uuid"
+}
+```
+
+### getPlayerInventory
+
+Retrieves the items in a specific player's inventory.
+
+<Columns>
+<Column className='text--left'>
+#### Request
+```json
+{
+  "type": "request",
+  "payload": {
+    "action": "getPlayerInventory",
+    "args": [
+      {
+        "gameId": "12345"
+      }
+    ]
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+<Column className='text--left'>
+#### Response
+```json
+{
+  "type": "response",
+  "payload": [
+    {
+      "id": "item_id_1",
+      "name": "Baseball Bat",
+      "count": 1,
+      "quality": "5"
+    },
+    {
+      "id": "item_id_2",
+      "name": "First Aid Bandage",
+      "count": 5,
+      "quality": "3"
+    }
+  ],
+  "requestId": "request-uuid"
+}
+```
+</Column>
+</Columns>
+
+### giveItem
+
+Gives an item to a specific player.
+
+<Columns>
+<Column className='text--left'>
+#### Request
+```json
+{
+  "type": "request",
+  "payload": {
+    "action": "giveItem",
+    "args": [
+      {
+        "gameId": "12345"
+      },
+      "baseball_bat",
+      1,
+      "5"
+    ]
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+<Column className='text--left'>
+#### Response
+```json
+{
+  "type": "response",
+  "payload": null,
+  "requestId": "request-uuid"
+}
+```
+</Column>
+</Columns>
+
+### listItems
+
+Retrieves a list of all available items in the game.
+
+<Columns>
+<Column className='text--left'>
+#### Request
+```json
+{
+  "type": "request",
+  "payload": {
+    "action": "listItems",
+    "args": []
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+<Column className='text--left'>
+#### Response
+```json
+{
+  "type": "response",
+  "payload": [
+    {
+      "code": "baseball_bat",
+      "name": "Baseball Bat",
+      "description": "A wooden baseball bat"
+    },
+    {
+      "code": "first_aid_bandage",
+      "name": "First Aid Bandage",
+      "description": "Used to stop bleeding"
+    }
+  ],
+  "requestId": "request-uuid"
+}
+```
+</Column>
+</Columns>
+
+### executeConsoleCommand
+
+Executes a console command on the game server.
+
+<Columns>
+<Column className='text--left'>
+#### Request
+```json
+{
+  "type": "request",
+  "payload": {
+    "action": "executeConsoleCommand",
+    "args": [
+      "say Hi"
+    ]
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+<Column className='text--left'>
+#### Response
+```json
+{
+  "type": "response",
+  "payload": {
+    "success": true,
+    "rawResult": "Message sent: Hello World",
+    "errorMessage": null
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+</Columns>
+
+### sendMessage
+
+Sends a message to one or more players.
+
+<Columns>
+<Column className='text--left'>
+#### Request
+```json
+{
+  "type": "request",
+  "payload": {
+    "action": "sendMessage",
+    "args": [
+      "Welcome to the server!",
+      {
+        "recipients": ["12345"],
+        "senderName": "Admin",
+        "type": "private"
+      }
+    ]
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+<Column className='text--left'>
+#### Response
+```json
+{
+  "type": "response",
+  "payload": null,
+  "requestId": "request-uuid"
+}
+```
+</Column>
+</Columns>
+
+### teleportPlayer
+
+Teleports a player to a specific location.
+
+<Columns>
+<Column className='text--left'>
+#### Request
+```json
+{
+  "type": "request",
+  "payload": {
+    "action": "teleportPlayer",
+    "args": [
+      {
+        "gameId": "12345"
+      },
+      123.45,
+      67.89,
+      10.11
+    ]
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+<Column className='text--left'>
+#### Response
+```json
+{
+  "type": "response",
+  "payload": null,
+  "requestId": "request-uuid"
+}
+```
+</Column>
+</Columns>
+
+### testReachability
+
+Tests if the game server is reachable and properly configured.
+
+<Columns>
+<Column className='text--left'>
+#### Request
+```json
+{
+  "type": "request",
+  "payload": {
+    "action": "testReachability",
+    "args": []
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+<Column className='text--left'>
+#### Response
+```json
+{
+  "type": "response",
+  "payload": {
+    "success": true,
+    "message": "Game server is reachable",
+    "details": {
+      "version": "1.0.0",
+      "connectedPlayers": 10,
+      "maxPlayers": 50
+    }
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+</Columns>
+
+### kickPlayer
+
+Kicks a player from the server.
+
+<Columns>
+<Column className='text--left'>
+#### Request
+```json
+{
+  "type": "request",
+  "payload": {
+    "action": "kickPlayer",
+    "args": [
+      {
+        "gameId": "12345"
+      },
+      "Violated server rules"
+    ]
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+<Column className='text--left'>
+#### Response
+```json
+{
+  "type": "response",
+  "payload": null,
+  "requestId": "request-uuid"
+}
+```
+</Column>
+</Columns>
+
+### banPlayer
+
+Bans a player from the server.
+
+<Columns>
+<Column className='text--left'>
+#### Request
+```json
+{
+  "type": "request",
+  "payload": {
+    "action": "banPlayer",
+    "args": [
+      {
+        "player": {
+          "gameId": "12345"
+        },
+        "reason": "Cheating",
+        "duration": 3600,
+        "ipBan": true
+      }
+    ]
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+<Column className='text--left'>
+#### Response
+```json
+{
+  "type": "response",
+  "payload": null,
+  "requestId": "request-uuid"
+}
+```
+</Column>
+</Columns>
+
+### unbanPlayer
+
+Removes a ban for a specific player.
+
+<Columns>
+<Column className='text--left'>
+#### Request
+```json
+{
+  "type": "request",
+  "payload": {
+    "action": "unbanPlayer",
+    "args": [
+      {
+        "gameId": "12345"
+      }
+    ]
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+<Column className='text--left'>
+#### Response
+```json
+{
+  "type": "response",
+  "payload": null,
+  "requestId": "request-uuid"
+}
+```
+</Column>
+</Columns>
+
+### listBans
+
+Retrieves a list of all currently banned players.
+
+<Columns>
+<Column className='text--left'>
+#### Request
+```json
+{
+  "type": "request",
+  "payload": {
+    "action": "listBans",
+    "args": []
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+<Column className='text--left'>
+#### Response
+```json
+{
+  "type": "response",
+  "payload": [
+    {
+      "player": {
+        "gameId": "12345",
+        "name": "BannedPlayer1"
+      },
+      "reason": "Cheating",
+      "duration": 3600,
+      "ipBan": true,
+      "expiration": "2023-12-31T23:59:59Z"
+    },
+    {
+      "player": {
+        "gameId": "67890",
+        "name": "BannedPlayer2"
+      },
+      "reason": "Harassment",
+      "duration": 86400,
+      "ipBan": false,
+      "expiration": "2024-01-01T12:00:00Z"
+    }
+  ],
+  "requestId": "request-uuid"
+}
+```
+</Column>
+</Columns>
+
+### shutdown
+
+Initiates a shutdown sequence for the game server.
+
+<Columns>
+<Column className='text--left'>
+#### Request
+```json
+{
+  "type": "request",
+  "payload": {
+    "action": "shutdown",
+    "args": []
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+<Column className='text--left'>
+#### Response
+```json
+{
+  "type": "response",
+  "payload": null,
+  "requestId": "request-uuid"
+}
+```
+</Column>
+</Columns>
+
+## Takaro Game Events
+
+This document outlines the events that Takaro expects to receive from game servers. These events allow Takaro to react to changes in real-time.
+
+### Event Structure
+
+All events should be sent over the websocket connection as a JSON message with the following structure:
+
+```json
+{
+  "type": "gameEvent",
+  "payload": {
+    "type": "<event type>",
+    "data": {
+      /* event specific data */
+    }
+  }
+}
+```
+
+### Event Types
+
+Takaro expects the following types of events:
+
+#### LOG_LINE
+
+Sent when a new log line is generated by the game server.
+
+**Event Type:** `log`
+
+**Structure:**
+
+```json
+{
+  "type": "gameEvent",
+  "payload": {
+    "type": "log",
+    "msg": "Server started on port 26900"
+  }
+}
+```
+
+#### PLAYER_CONNECTED
+
+Sent when a player connects to the game server.
+
+**Event Type:** `player-connected`
+
+**Structure:**
+
+```json
+{
+  "type": "gameEvent",
+  "payload": {
+    "type": "player-connected",
+    "player": {
+      "gameId": "12345",
+      "name": "PlayerName",
+      "steamId": "76561198123456789",
+      "ip": "192.168.1.1",
+      "ping": 50
+    }
+  }
+}
+```
+
+The `player` object must include the required `gameId` and `name` fields. Other fields like `steamId`, `epicOnlineServicesId`, `xboxLiveId`, `platformId`, `ip`, and `ping` are optional.
+
+#### PLAYER_DISCONNECTED
+
+Sent when a player disconnects from the game server.
+
+**Event Type:** `player-disconnected`
+
+**Structure:**
+
+```json
+{
+  "type": "gameEvent",
+  "payload": {
+    "type": "player-disconnected",
+    "player": {
+      "gameId": "12345",
+      "name": "PlayerName"
+    }
+  }
+}
+```
+
+#### CHAT_MESSAGE
+
+Sent when a player sends a chat message.
+
+**Event Type:** `chat-message`
+
+**Structure:**
+
+```json
+{
+  "type": "gameEvent",
+  "payload": {
+    "type": "chat-message",
+    "player": {
+      "gameId": "12345",
+      "name": "PlayerName"
+    },
+    "channel": "global",
+    "msg": "Hello everyone!"
+  }
+}
+```
+
+The `channel` field must be one of:
+
+- `global`
+- `team`
+- `friends`
+- `whisper`
+
+The `player` field is optional, as some chat messages might be system messages without an associated player.
+
+#### PLAYER_DEATH
+
+Sent when a player dies in the game.
+
+**Event Type:** `player-death`
+
+**Structure:**
+
+```json
+{
+  "type": "gameEvent",
+  "payload": {
+    "type": "player-death",
+    "player": {
+      "gameId": "12345",
+      "name": "PlayerName"
+    },
+    "attacker": {
+      "gameId": "67890",
+      "name": "AttackerName"
+    },
+    "position": {
+      "x": 123.45,
+      "y": 67.89,
+      "z": 10.11
+    }
+  }
+}
+```
+
+The `attacker` field is optional and should only be included if the player was killed by another player.
+
+#### ENTITY_KILLED
+
+Sent when a player kills an entity in the game.
+
+**Event Type:** `entity-killed`
+
+**Structure:**
+
+```json
+{
+  "type": "gameEvent",
+  "payload": {
+    "type": "entity-killed",
+    "player": {
+      "gameId": "12345",
+      "name": "PlayerName"
+    },
+    "entity": "zombie",
+    "weapon": "baseball_bat"
+  }
+}
+```
+
+### Data Types
+
+#### IGamePlayer
+
+Contains player identification information:
+
+| Field                | Type   | Required | Description                                           |
+| -------------------- | ------ | -------- | ----------------------------------------------------- |
+| gameId               | string | Yes      | Unique identifier for the player, as used by the game |
+| name                 | string | Yes      | The player's username                                 |
+| steamId              | string | No       | Steam ID of the player                                |
+| epicOnlineServicesId | string | No       | Epic Online Services ID of the player                 |
+| xboxLiveId           | string | No       | Xbox Live ID of the player                            |
+| platformId           | string | No       | Generic platform ID                                   |
+| ip                   | string | No       | IP address of the player                              |
+| ping                 | number | No       | Ping/latency of the player                            |
+
+#### IPosition
+
+Represents a 3D position:
+
+| Field | Type   | Required | Description  |
+| ----- | ------ | -------- | ------------ |
+| x     | number | Yes      | X coordinate |
+| y     | number | Yes      | Y coordinate |
+| z     | number | Yes      | Z coordinate |
+
+## Reference implementations
+
+- [7 Days to Die](https://github.com/gettakaro/Takaro-7D2D)
+- [Mock implementation](https://github.com/niekcandaele/Takaro/blob/generic-connector/packages/app-mock-gameserver/src/lib/ws-gameserver/gameserver.ts#L242) (Used for internal Takaro testing)
