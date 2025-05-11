@@ -237,7 +237,7 @@
     "browserify-zlib": "0.2.0",
     "chai": "4.5.0",
     "chai-as-promised": "8.0.0",
-    "crypto-browserify": "3.12.0",
+    "crypto-browserify": "3.12.1",
     "deep-equal-in-any-order": "2.0.6",
     "docker-compose": "0.24.8",
     "dotenv": "16.4.5",
@@ -247,9 +247,9 @@
     "fs-extra": "11.2.0",
     "he": "1.2.0",
     "https-browserify": "1.0.0",
-    "husky": "9.1.6",
+    "husky": "9.1.7",
     "jsdom": "25.0.1",
-    "libqp": "2.1.0",
+    "libqp": "2.1.1",
     "lightningcss": "1.27.0",
     "lint-staged": "15.2.10",
     "mocha": "10.7.3",
@@ -275,7 +275,7 @@
     "zx": "7.2.3"
   },
   "optionalDependencies": {
-    "bufferutil": "4.0.8",
+    "bufferutil": "4.0.9",
     "utf-8-validate": "6.0.4"
   },
   "engines": {

@@ -244,9 +244,10 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
                       });
                     }}
                     type="button"
-                    text="Add item"
                     fullWidth
-                  />
+                  >
+                    Add item
+                  </Button>
                 )}
               </CollapseList.Item>
             </CollapseList>
@@ -256,11 +257,15 @@ export const ShopListingCreateUpdateForm: FC<ShopListingCreateUpdateFormProps> =
         </Drawer.Body>
         <Drawer.Footer>
           {readOnly ? (
-            <Button fullWidth text="Close view" />
+            <Button fullWidth>Close view</Button>
           ) : (
             <ButtonContainer>
-              <Button text="Cancel" onClick={() => setOpen(false)} color="background" type="button" />
-              <Button type="submit" fullWidth text="Save changes" form={formId} />
+              <Button onClick={() => setOpen(false)} color="background" type="button">
+                Cancel
+              </Button>
+              <Button type="submit" fullWidth form={formId}>
+                Save changes
+              </Button>
             </ButtonContainer>
           )}
         </Drawer.Footer>

@@ -168,6 +168,7 @@ docs/LoginDTO.md
 docs/LoginOutputDTO.md
 docs/LoginOutputDTOAPI.md
 docs/MapInfoDTO.md
+docs/MapInfoOutputDTOAPI.md
 docs/MapTileInputDTO.md
 docs/MeOutoutDTOAPI.md
 docs/MeOutputDTO.md

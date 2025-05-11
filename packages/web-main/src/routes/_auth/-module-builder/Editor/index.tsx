@@ -302,11 +302,12 @@ export const Editor: FC<EditorProps> = ({ readOnly }) => {
               <Tooltip.Trigger asChild>
                 <Button
                   icon={<SaveIcon />}
-                  text="Save file"
                   onClick={() => {
                     editorInstance.current?.getAction('save')?.run();
                   }}
-                />
+                >
+                  Save file
+                </Button>
               </Tooltip.Trigger>
               <Tooltip.Content>
                 You can also save with <strong>CTRL+S</strong>

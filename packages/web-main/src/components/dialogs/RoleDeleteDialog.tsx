@@ -42,14 +42,9 @@ export const RoleDeleteDialog = forwardRef<DeleteImperativeHandle, RoleDeleteDia
             label="Role name"
             id="deleteRoleConfirmation"
           />
-          <Button
-            isLoading={isDeleting}
-            onClick={handleOnDelete}
-            disabled={!valid}
-            fullWidth
-            text="Delete role"
-            color="error"
-          />
+          <Button isLoading={isDeleting} onClick={handleOnDelete} disabled={!valid} fullWidth color="error">
+            Delete role
+          </Button>
           {error && <FormError error={error} />}
         </Dialog.Body>
       </Dialog.Content>

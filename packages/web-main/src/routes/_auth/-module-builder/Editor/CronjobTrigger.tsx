@@ -39,7 +39,9 @@ export const CronjobTrigger: FC<CronjobTriggerProps> = ({ cronjobId, moduleId })
           required
           description="Game server to trigger cronjob on. This field does not validate if the gameserver has the module installed."
         />
-        <Button type="submit" fullWidth text="Trigger cronjob" isLoading={isPending} />
+        <Button type="submit" fullWidth isLoading={isPending}>
+          Trigger cronjob
+        </Button>
         <div style={{ marginBottom: '10px' }} />
         {error && <FormError error={error} />}
       </form>

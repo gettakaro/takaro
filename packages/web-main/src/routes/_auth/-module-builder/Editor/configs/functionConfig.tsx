@@ -64,13 +64,9 @@ export const FunctionConfigForm: FC<FunctionConfigFormProps> = ({ fn, readOnly =
         readOnly={readOnly}
       />
       {!readOnly && (
-        <Button
-          isLoading={isPending}
-          disabled={!formState.isDirty}
-          fullWidth
-          type="submit"
-          text="Save function config"
-        />
+        <Button isLoading={isPending} disabled={!formState.isDirty} fullWidth type="submit">
+          Save function config
+        </Button>
       )}
     </form>
   );

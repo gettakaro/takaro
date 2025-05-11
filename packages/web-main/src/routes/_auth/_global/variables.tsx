@@ -215,12 +215,13 @@ function Component() {
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', columnGap: '1rem' }}>
               <MaxUsage value={loaderData.currentVariableCount} total={maxVariableCount} unit="Variables" />
               <Button
-                text="Create variable"
                 onClick={() => {
                   navigate({ to: '/variables/create' });
                 }}
                 disabled={!canCreateVariable}
-              />
+              >
+                Create variable
+              </Button>
               <DocsLink href="https://docs.takaro.io/advanced/variables" target="_blank" rel="noopener noreferrer" />
             </div>
           );
@@ -228,11 +229,12 @@ function Component() {
         renderRowSelectionActions={() => {
           return (
             <Button
-              text={`Delete variables (${selectedVariableIds.length})`}
               onClick={() => {
                 setOpenVariablesDialog(true);
               }}
-            />
+            >
+              Delete variables ({selectedVariableIds.length})
+            </Button>
           );
         }}
         id="variables"

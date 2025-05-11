@@ -473,7 +473,9 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
               Are you sure you want to delete <strong>{fileName}</strong>? The file will be permanently removed.
             </p>
             <ButtonContainer>
-              <TakaroButton fullWidth onClick={handleDelete} text="Remove file" color="error" />
+              <TakaroButton fullWidth onClick={handleDelete} color="error">
+                Remove file
+              </TakaroButton>
             </ButtonContainer>
           </Dialog.Body>
         </Dialog.Content>

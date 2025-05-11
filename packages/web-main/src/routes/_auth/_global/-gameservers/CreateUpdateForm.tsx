@@ -132,8 +132,12 @@ export const CreateUpdateForm: FC<CreateUpdateFormProps> = ({ initialData, isLoa
         </Drawer.Body>
         <Drawer.Footer>
           <ButtonContainer>
-            <Button text="Cancel" onClick={() => setOpen(false)} color="background" type="button" />
-            <Button type="submit" fullWidth onClick={() => trigger()} text="Save changes" form={formId} />
+            <Button onClick={() => setOpen(false)} color="background" type="button">
+              Cancel
+            </Button>
+            <Button type="submit" fullWidth onClick={() => trigger()} form={formId}>
+              Save changes
+            </Button>
           </ButtonContainer>
         </Drawer.Footer>
       </Drawer.Content>

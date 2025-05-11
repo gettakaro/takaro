@@ -77,12 +77,9 @@ export const PlayerCurrencyDialog: FC<CurrencyDialogProps> = ({ playerId, gameSe
             {addCurrencyError && <FormError error={addCurrencyError} />}
             {deductCurrencyError && <FormError error={deductCurrencyError} />}
 
-            <Button
-              fullWidth
-              isLoading={isAddingCurrency || isDeductingCurrency}
-              type="submit"
-              text={`${watch('variant')} currency`}
-            />
+            <Button fullWidth isLoading={isAddingCurrency || isDeductingCurrency} type="submit">
+              {watch('variant')} currency
+            </Button>
           </form>
         </Dialog.Body>
       </Dialog.Content>
