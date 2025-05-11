@@ -6,7 +6,7 @@
   "scripts": {
     "docusaurus": "docusaurus",
     "start:dev": "docusaurus start --port 13005 --host 0.0.0.0",
-    "build": "docusaurus build",
+    "build": "docusaurus build --out-dir dist",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "serve": "docusaurus serve"
