@@ -276,6 +276,12 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
       });
     }
 
+    for (let i = 0; i < data.versions.length; i++) {
+      if (!data.versions[i].uiSchema) {
+        data.versions[i].uiSchema = JSON.stringify(getEmptyUiSchema());
+      }
+    }
+
     // Always ensure we pass it through the DTO constructor so transformations/logic can happen
     data = new ModuleTransferDTO({ ...data });
     // After our data wrangling, let's make sure the input is valid
