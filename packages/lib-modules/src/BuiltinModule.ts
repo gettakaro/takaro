@@ -100,7 +100,7 @@ export class ModuleTransferVersionDTO<T> extends TakaroDTO<T> {
   @IsString()
   public configSchema: string;
   @IsString()
-  public uiSchema = '{}';
+  public uiSchema: string;
   @ValidateNested({ each: true })
   @Type(() => ICommand)
   @IsOptional()
