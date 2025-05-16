@@ -354,10 +354,12 @@ export class GameServerService extends TakaroService<
       message = message.replace(/code=(\w+-\w+-\w+)/, 'code=xxx-xxx-xxx');
     }
 
+    const isPrivateMessage = opts && opts.recipient;
+
     const eventService = new EventService(this.domainId);
     const meta = new EventChatMessage({
       msg: message,
-      channel: ChatChannel.GLOBAL,
+      channel: isPrivateMessage ? ChatChannel.WHISPER : ChatChannel.GLOBAL,
       timestamp: new Date().toISOString(),
     });
 

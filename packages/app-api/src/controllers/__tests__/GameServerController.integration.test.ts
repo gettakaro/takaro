@@ -1,6 +1,7 @@
 import { IntegrationTest, expect, SetupGameServerPlayers, integrationConfig } from '@takaro/test';
-import { GameServerCreateDTOTypeEnum, GameServerOutputDTO, isAxiosError } from '@takaro/apiclient';
+import { EventChatMessage, GameServerCreateDTOTypeEnum, GameServerOutputDTO, isAxiosError } from '@takaro/apiclient';
 import { describe } from 'node:test';
+import { HookEvents } from '@takaro/modules';
 
 const group = 'GameServerController';
 
@@ -96,6 +97,43 @@ const tests = [
       });
 
       await this.client.gameserver.gameServerControllerCreate(mockGameServer);
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'When sending a message, the created event has the right channel set',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      await this.client.gameserver.gameServerControllerSendMessage(this.setupData.gameServer1.id, {
+        message: 'hello1',
+      });
+
+      await this.client.gameserver.gameServerControllerSendMessage(this.setupData.gameServer1.id, {
+        message: 'hello2',
+        opts: {
+          recipient: {
+            gameId: this.setupData.pogs1[0].gameId,
+          },
+        },
+      });
+
+      const events = (
+        await this.client.event.eventControllerSearch({
+          filters: {
+            eventName: [HookEvents.CHAT_MESSAGE],
+          },
+          sortBy: 'createdAt',
+          sortDirection: 'asc',
+        })
+      ).data.data;
+
+      expect(events.length).to.equal(2);
+
+      const meta1 = events[0].meta as EventChatMessage;
+      const meta2 = events[1].meta as EventChatMessage;
+      expect(meta1.channel).to.equal('global');
+      expect(meta2.channel).to.equal('whisper');
     },
   }),
 ];
