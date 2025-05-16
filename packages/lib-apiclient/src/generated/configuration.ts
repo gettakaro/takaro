@@ -17,10 +17,10 @@ export interface ConfigurationParameters {
   username?: string;
   password?: string;
   accessToken?:
-    | string
-    | Promise<string>
-    | ((name?: string, scopes?: string[]) => string)
-    | ((name?: string, scopes?: string[]) => Promise<string>);
+  | string
+  | Promise<string>
+  | ((name?: string, scopes?: string[]) => string)
+  | ((name?: string, scopes?: string[]) => Promise<string>);
   basePath?: string;
   serverIndex?: number;
   baseOptions?: any;
@@ -97,11 +97,10 @@ export class Configuration {
     this.basePath = param.basePath;
     this.serverIndex = param.serverIndex;
     this.baseOptions = {
+      ...param.baseOptions,
       headers: {
         ...param.baseOptions?.headers,
-        'User-Agent': 'OpenAPI-Generator/typescript-axios',
       },
-      ...param.baseOptions,
     };
     this.formDataCtor = param.formDataCtor;
   }

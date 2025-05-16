@@ -35,6 +35,7 @@ import {
 import { ModuleTransferDTO, ICommand, ICommandArgument, ICronJob, IFunction, IHook } from '@takaro/modules';
 import { PermissionCreateDTO } from '../../service/RoleService.js';
 import { ModuleTransferVersionDTO } from '@takaro/modules';
+import { getEmptyUiSchema } from '../../lib/systemConfig.js';
 
 export class ModuleOutputDTOAPI extends APIOutput<ModuleOutputDTO> {
   @Type(() => ModuleOutputDTO)
@@ -221,7 +222,7 @@ export class ModuleController {
             tag: version.tag,
             description: version.description,
             configSchema: version.configSchema,
-            uiSchema: version.uiSchema,
+            uiSchema: version.uiSchema || JSON.stringify(getEmptyUiSchema()),
             commands: await Promise.all(
               version.commands.map(
                 (_) =>
@@ -252,6 +253,7 @@ export class ModuleController {
                     name: _.name,
                     description: _.description,
                     eventType: _.eventType,
+                    regex: _.regex,
                   }),
               ),
             ),

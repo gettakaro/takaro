@@ -487,6 +487,52 @@ const tests = [
       expect(exportRes.data.data.versions).to.have.length(3);
     },
   }),
+  new IntegrationTest<ModuleOutputDTO>({
+    group,
+    snapshot: false,
+    name: 'Bug repro: Importing a hook should include the regex',
+    setup,
+    test: async function () {
+      const hook = (
+        await this.client.hook.hookControllerCreate({
+          versionId: this.setupData.latestVersion.id,
+          name: 'Test hook',
+          eventType: 'log',
+          regex: 'super-important-regex',
+        })
+      ).data.data;
+
+      const exportRes = await this.client.module.moduleControllerExport(this.setupData.id);
+
+      expect(exportRes.data.data.versions[0].hooks).to.have.length(1);
+      if (!exportRes.data.data.versions[0]) throw new Error('Version not found');
+      const exportedVersion = exportRes.data.data.versions[0];
+      expect(exportedVersion.hooks).to.have.length(1);
+      if (!exportedVersion.hooks) throw new Error('Hooks not found');
+      const exportedHook = exportedVersion.hooks[0];
+      expect(exportedHook.name).to.equal(hook.name);
+      expect(exportedHook.eventType).to.equal(hook.eventType);
+      expect(exportedHook.regex).to.equal(hook.regex);
+
+      await this.client.module.moduleControllerImport(exportRes.data.data);
+
+      const modsAfter = (
+        await this.client.module.moduleControllerSearch({
+          filters: {
+            name: [`${this.setupData.name}-imported`],
+          },
+        })
+      ).data.data;
+
+      expect(modsAfter).to.have.length(1);
+      const imported = modsAfter[0];
+      expect(imported.latestVersion.hooks).to.have.length(1);
+      const importedHook = imported.latestVersion.hooks[0];
+      expect(importedHook.name).to.equal(hook.name);
+      expect(importedHook.eventType).to.equal(hook.eventType);
+      expect(importedHook.regex).to.equal(hook.regex);
+    },
+  }),
   // #endregion Import/export
   // #region Versioning
   new IntegrationTest<ModuleOutputDTO>({

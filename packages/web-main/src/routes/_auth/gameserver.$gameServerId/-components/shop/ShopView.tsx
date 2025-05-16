@@ -117,7 +117,7 @@ export const ShopView: FC<ShopViewProps> = ({ gameServerId, currency, currencyNa
           <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'row', gap: '10px' }}>
             <Dropdown>
               <Dropdown.Trigger asChild>
-                <Button icon={<MenuIcon />} text="Shop actions" />
+                <Button icon={<MenuIcon />}>Shop actions</Button>
               </Dropdown.Trigger>
               <Dropdown.Menu>
                 <DropdownMenu.Group divider>

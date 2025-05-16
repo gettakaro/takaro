@@ -48,7 +48,9 @@ export const PlayerGiveItemDialog: FC<PlayerGiveItemDialogProps> = ({ gameServer
             <ItemSelectQueryField name="itemId" control={control} gameServerId={gameServerId} />
             <TextField label="Amount" name="amount" type="number" control={control} required />
             <TextField label="Quality" name="quality" control={control} />
-            <Button type="submit" fullWidth text="Give item" />
+            <Button type="submit" fullWidth>
+              Give item
+            </Button>
           </form>
         </Dialog.Body>
       </Dialog.Content>

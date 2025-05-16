@@ -53,6 +53,9 @@ export class IHook extends TakaroDTO<IHook> {
   function: string;
   @IsEnum(Object.values(HookEvents))
   eventType: EventTypes;
+  @IsString()
+  @IsOptional()
+  regex?: string;
 }
 
 export class ICronJob extends TakaroDTO<ICronJob> {
@@ -97,7 +100,7 @@ export class ModuleTransferVersionDTO<T> extends TakaroDTO<T> {
   @IsString()
   public configSchema: string;
   @IsString()
-  public uiSchema = '{}';
+  public uiSchema: string;
   @ValidateNested({ each: true })
   @Type(() => ICommand)
   @IsOptional()

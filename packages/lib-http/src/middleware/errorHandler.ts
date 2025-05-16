@@ -56,6 +56,11 @@ export async function ErrorHandler(
     parsedError = new errors.BadRequestError('Invalid data provided');
   }
 
+  if (originalError.name === 'DataError' && originalError.message.includes('invalid input syntax for type uuid')) {
+    status = 400;
+    parsedError = new errors.BadRequestError('Invalid UUID. Passed a string instead of a UUID');
+  }
+
   if ('constraint' in originalError && originalError['constraint'] === 'currency_positive') {
     status = 400;
     parsedError = new errors.BadRequestError('Not enough currency');

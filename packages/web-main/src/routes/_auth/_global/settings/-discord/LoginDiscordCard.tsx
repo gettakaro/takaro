@@ -22,7 +22,7 @@ export const LoginDiscordCard: FC = () => {
         <InnerBody>
           <DiscordIcon size={48} color={hasLinkedDiscord ? colors.primary : colors.backgroundAccent} />
           <a href={`${getConfigVar('apiUrl')}/auth/discord?redirect=${window.location.href}`}>
-            <Button text={hasLinkedDiscord ? 'Update connection' : 'Connect Discord'} />
+            <Button>{hasLinkedDiscord ? 'Update connection' : 'Connect Discord'}</Button>
           </a>
         </InnerBody>
       </Card.Body>

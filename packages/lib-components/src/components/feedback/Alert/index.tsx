@@ -95,9 +95,15 @@ export const Alert = forwardRef<HTMLDivElement, AlertProps>(function Alert(
               className="action"
             >
               {action && (
-                <Button size="tiny" variant="outline" onClick={handleExecute} text={action.text} color={variant} />
+                <Button size="tiny" variant="outline" onClick={handleExecute} color={variant}>
+                  {action.text}
+                </Button>
               )}
-              {dismiss && <Button size="tiny" color="white" variant="outline" onClick={handleDismiss} text="Dismiss" />}
+              {dismiss && (
+                <Button size="tiny" color="white" variant="outline" onClick={handleDismiss}>
+                  Dismiss
+                </Button>
+              )}
             </ButtonContainer>
           </Grid>
         </Container>

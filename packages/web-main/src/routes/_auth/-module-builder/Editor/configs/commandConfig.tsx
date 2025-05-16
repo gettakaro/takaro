@@ -294,21 +294,18 @@ export const CommandConfigForm: FC<CommandConfigFormProps> = ({ command, readOnl
               }}
               type="button"
               fullWidth
-              text="New"
               variant="outline"
-            ></Button>
+            >
+              New
+            </Button>
           )}
           {error && <FormError error={error} />}
         </ContentContainer>
       </CollapseList.Item>
       {!readOnly && (
-        <Button
-          isLoading={isPending}
-          disabled={!formState.isDirty}
-          fullWidth
-          type="submit"
-          text="Save command config"
-        />
+        <Button isLoading={isPending} disabled={!formState.isDirty} fullWidth type="submit">
+          Save command config
+        </Button>
       )}
     </form>
   );

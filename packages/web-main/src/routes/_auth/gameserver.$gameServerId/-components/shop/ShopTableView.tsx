@@ -141,7 +141,7 @@ export const ShopTableView: FC<ShopViewProps> = ({ gameServerId, currencyName, g
       cell: (info) => (
         <Popover>
           <Popover.Trigger asChild>
-            <Button size="small" text="Buy listing" />
+            <Button size="small">Buy listing</Button>
           </Popover.Trigger>
           <Popover.Content>
             <ShopListingBuyFormContainer>

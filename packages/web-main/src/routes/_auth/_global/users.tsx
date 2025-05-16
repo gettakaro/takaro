@@ -213,10 +213,11 @@ const InviteUser: FC<{
     <>
       <Button
         onClick={() => setOpen(true)}
-        text="Invite user"
         icon={<InviteUserIcon />}
         disabled={!hasManageUsersPermission || !canInviteUser}
-      />
+      >
+        Invite user
+      </Button>
       <MaxUsage value={currentUserCount} total={maxUserCount} unit="Users" />
       <UserInviteDialog open={open} onOpenChange={setOpen} />
     </>

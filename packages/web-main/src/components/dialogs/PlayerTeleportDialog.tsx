@@ -69,7 +69,9 @@ const TeleportPlayerForm: FC<TeleportPlayerForm> = ({ gameServerId, playerId, on
         <TextField type="number" label="Z coordinate" name="z" control={control} placeholder="100" />
       </Container>
       {error && <FormError error={error} />}
-      <Button type="submit" fullWidth text="Teleport player" />
+      <Button type="submit" fullWidth>
+        Teleport player
+      </Button>
     </form>
   );
 };

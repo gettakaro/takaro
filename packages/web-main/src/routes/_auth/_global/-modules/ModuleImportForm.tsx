@@ -93,8 +93,12 @@ export const ModuleImportForm: FC<ModuleFormProps> = ({ isSuccess = false, onSub
         </Drawer.Body>
         <Drawer.Footer>
           <ButtonContainer>
-            <Button text="Cancel" onClick={() => setOpen(false)} color="background" />
-            <Button type="submit" form="module-definition" fullWidth text="Import module" />
+            <Button onClick={() => setOpen(false)} color="background">
+              Cancel
+            </Button>
+            <Button type="submit" form="module-definition" fullWidth>
+              Import module
+            </Button>
           </ButtonContainer>
         </Drawer.Footer>
       </Drawer.Content>

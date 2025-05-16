@@ -125,7 +125,7 @@ export const RelativePicker: FC<RelativePickerProps> = ({ onChange, id, timeDire
               </SelectField.OptionGroup>
             </SelectField>
           </InputsContainer>
-          <Button type="submit" text="Apply" />
+          <Button type="submit">Apply</Button>
         </StyledForm>
 
         <Divider fullWidth />

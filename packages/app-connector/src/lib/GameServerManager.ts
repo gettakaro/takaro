@@ -51,7 +51,13 @@ class GameServerManager {
   async init() {
     await takaro.waitUntilHealthy(60000);
     await this.syncServers();
-    this.syncInterval = setInterval(() => this.syncServers(), SYNC_INTERVAL_MS);
+    this.syncInterval = setInterval(async () => {
+      try {
+        await this.syncServers();
+      } catch (error) {
+        this.log.error('Error syncing game servers', error);
+      }
+    }, SYNC_INTERVAL_MS);
     this.messageTimeoutInterval = setInterval(() => this.handleMessageTimeout(), 5000);
   }
 

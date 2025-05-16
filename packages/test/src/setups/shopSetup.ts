@@ -5,6 +5,7 @@ import { expect } from '../test/expect.js';
 import { EventsAwaiter } from '../test/waitForEvents.js';
 import { IntegrationTest } from '../integrationTest.js';
 import { faker } from '@faker-js/faker';
+import { getSecretCodeForPlayer } from './createUserForPlayer.js';
 
 export interface IShopSetup extends IModuleTestsSetupData {
   listing100: ShopListingOutputDTO;
@@ -47,7 +48,7 @@ async function createUserForPlayer(client: Client, playerId: string, gameServerI
   });
   const chatEvents = await chatEventWaiter;
   expect(chatEvents).to.have.length(1);
-  const code = chatEvents[0].data.meta.msg.match(/code=(\w+-\w+-\w+)/)[1];
+  const code = await getSecretCodeForPlayer(playerId);
   await userClient.user.userControllerLinkPlayerProfile({ email: user.email, code });
 
   return {

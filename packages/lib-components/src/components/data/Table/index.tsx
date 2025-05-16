@@ -375,8 +375,9 @@ export function Table<DataType extends object>({
                             key={id + '-learn-more-button'}
                             variant="clear"
                             onClick={() => window.open('https://docs.takaro.io')}
-                            text="Learn more"
-                          />,
+                          >
+                            Learn more
+                          </Button>,
                         ]}
                       />
                     </div>

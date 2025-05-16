@@ -5,8 +5,9 @@ import {
   MailhogAPI,
   integrationConfig,
   EventsAwaiter,
+  getSecretCodeForPlayer,
 } from '@takaro/test';
-import { GameEvents } from '@takaro/modules';
+import { GameEvents, HookEvents } from '@takaro/modules';
 import { faker } from '@faker-js/faker';
 import { randomUUID } from 'crypto';
 import { Client, isAxiosError } from '@takaro/apiclient';
@@ -52,7 +53,7 @@ async function triggerLink(
   });
   const chatEvents = await chatEventWaiter;
   expect(chatEvents).to.have.length(1);
-  const code = chatEvents[0].data.meta.msg.match(/code=(\w+-\w+-\w+)/)[1];
+  const code = await getSecretCodeForPlayer(setupData.pogs1[0].playerId);
   await userClient.user.userControllerLinkPlayerProfile({ email, code });
 }
 
@@ -108,9 +109,11 @@ const tests = [
 
       const unAuthedClient = new Client({ url: integrationConfig.get('host'), auth: {} });
 
+      const code = await getSecretCodeForPlayer(this.setupData.pogs1[0].playerId);
+
       await unAuthedClient.user.userControllerLinkPlayerProfile({
         email: userEmail,
-        code: chatEvents[0].data.meta.msg.match(/code=(\w+-\w+-\w+)/)[1],
+        code,
       });
 
       await checkIfInviteLinkReceived(userEmail);
@@ -189,7 +192,7 @@ const tests = [
       try {
         await userBClient.user.userControllerLinkPlayerProfile({
           email: userA.user.email,
-          code: chatEvents[0].data.meta.msg.match(/code=(\w+-\w+-\w+)/)[1],
+          code: await getSecretCodeForPlayer(this.setupData.pogs1[0].playerId),
         });
         throw new Error('Should not be able to link with existing email');
       } catch (error) {
@@ -225,7 +228,7 @@ const tests = [
       try {
         await unAuthedClient.user.userControllerLinkPlayerProfile({
           email: userA.user.email,
-          code: chatEvents[0].data.meta.msg.match(/code=(\w+-\w+-\w+)/)[1],
+          code: await getSecretCodeForPlayer(this.setupData.pogs1[0].playerId),
         });
         throw new Error('Should not be able to link with existing email');
       } catch (error) {
@@ -233,6 +236,66 @@ const tests = [
         expect(error.response?.data.meta.error.code).to.be.equal('BadRequestError');
         expect(error.response?.data.meta.error.message).to.be.equal('Email already in use, please login first');
       }
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Linking should not include the secret code in the chat event',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      const eventsAwaiter = new EventsAwaiter();
+      await eventsAwaiter.connect(this.client);
+      const chatEventWaiter = eventsAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
+      await this.client.command.commandControllerTrigger(this.setupData.gameServer1.id, {
+        msg: '/link',
+        playerId: this.setupData.pogs1[0].playerId,
+      });
+
+      const chatEvents = await chatEventWaiter;
+      expect(chatEvents).to.have.length(1);
+
+      const code = await getSecretCodeForPlayer(this.setupData.pogs1[0].playerId);
+      expect(code).to.be.a.string;
+
+      const eventsRes = await this.client.event.eventControllerSearch({
+        filters: {
+          eventName: [GameEvents.CHAT_MESSAGE],
+        },
+      });
+
+      const events = eventsRes.data.data;
+
+      expect(JSON.stringify(events)).to.not.include(code);
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Linking should produce a command-executed event',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      const eventsAwaiter = new EventsAwaiter();
+      await eventsAwaiter.connect(this.client);
+      const chatEventWaiter = eventsAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
+      await this.client.command.commandControllerTrigger(this.setupData.gameServer1.id, {
+        msg: '/link',
+        playerId: this.setupData.pogs1[0].playerId,
+      });
+
+      const chatEvents = await chatEventWaiter;
+      expect(chatEvents).to.have.length(1);
+
+      const eventsRes = await this.client.event.eventControllerSearch({
+        filters: {
+          eventName: [HookEvents.COMMAND_EXECUTED],
+        },
+      });
+
+      const events = eventsRes.data.data;
+
+      expect(events).to.have.length(1);
+      expect(events[0].meta).to.have.property('command');
     },
   }),
 

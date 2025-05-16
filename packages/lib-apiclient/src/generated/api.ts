@@ -4664,6 +4664,12 @@ export interface IHook {
    * @memberof IHook
    */
   eventType: IHookEventTypeEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof IHook
+   */
+  regex?: string;
 }
 
 export const IHookEventTypeEnum = {
@@ -5554,6 +5560,25 @@ export interface MapInfoDTO {
    * @memberof MapInfoDTO
    */
   mapSizeZ: number;
+}
+/**
+ *
+ * @export
+ * @interface MapInfoOutputDTOAPI
+ */
+export interface MapInfoOutputDTOAPI {
+  /**
+   *
+   * @type {MapInfoDTO}
+   * @memberof MapInfoOutputDTOAPI
+   */
+  data: MapInfoDTO;
+  /**
+   *
+   * @type {MetadataOutput}
+   * @memberof MapInfoOutputDTOAPI
+   */
+  meta: MetadataOutput;
 }
 /**
  *
@@ -15408,7 +15433,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     * Get map metadata for Leaflet<br> OperationId: `GameServerControllerGetMapInfo`
+     * Get map metadata<br> OperationId: `GameServerControllerGetMapInfo`
      * @summary Get map info
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -15441,7 +15466,7 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
-     * Get a map tile for Leaflet<br> OperationId: `GameServerControllerGetMapTile`
+     * Get a map tile<br> OperationId: `GameServerControllerGetMapTile`
      * @summary Get map tile
      * @param {string} id
      * @param {string} x
@@ -16296,7 +16321,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
-     * Get map metadata for Leaflet<br> OperationId: `GameServerControllerGetMapInfo`
+     * Get map metadata<br> OperationId: `GameServerControllerGetMapInfo`
      * @summary Get map info
      * @param {string} id
      * @param {*} [options] Override http request option.
@@ -16305,7 +16330,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
     async gameServerControllerGetMapInfo(
       id: string,
       options?: RawAxiosRequestConfig,
-    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<MapInfoOutputDTOAPI>> {
       const localVarAxiosArgs = await localVarAxiosParamCreator.gameServerControllerGetMapInfo(id, options);
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
@@ -16319,7 +16344,7 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
-     * Get a map tile for Leaflet<br> OperationId: `GameServerControllerGetMapTile`
+     * Get a map tile<br> OperationId: `GameServerControllerGetMapTile`
      * @summary Get map tile
      * @param {string} id
      * @param {string} x
@@ -16879,17 +16904,17 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
       return localVarFp.gameServerControllerGetJob(type, id, options).then((request) => request(axios, basePath));
     },
     /**
-     * Get map metadata for Leaflet<br> OperationId: `GameServerControllerGetMapInfo`
+     * Get map metadata<br> OperationId: `GameServerControllerGetMapInfo`
      * @summary Get map info
      * @param {string} id
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    gameServerControllerGetMapInfo(id: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
+    gameServerControllerGetMapInfo(id: string, options?: RawAxiosRequestConfig): AxiosPromise<MapInfoOutputDTOAPI> {
       return localVarFp.gameServerControllerGetMapInfo(id, options).then((request) => request(axios, basePath));
     },
     /**
-     * Get a map tile for Leaflet<br> OperationId: `GameServerControllerGetMapTile`
+     * Get a map tile<br> OperationId: `GameServerControllerGetMapTile`
      * @summary Get map tile
      * @param {string} id
      * @param {string} x
@@ -17246,7 +17271,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   * Get map metadata for Leaflet<br> OperationId: `GameServerControllerGetMapInfo`
+   * Get map metadata<br> OperationId: `GameServerControllerGetMapInfo`
    * @summary Get map info
    * @param {string} id
    * @param {*} [options] Override http request option.
@@ -17260,7 +17285,7 @@ export class GameServerApi extends BaseAPI {
   }
 
   /**
-   * Get a map tile for Leaflet<br> OperationId: `GameServerControllerGetMapTile`
+   * Get a map tile<br> OperationId: `GameServerControllerGetMapTile`
    * @summary Get map tile
    * @param {string} id
    * @param {string} x
