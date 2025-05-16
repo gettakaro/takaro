@@ -204,6 +204,7 @@ If the player is not found, return `null`:
 ### getPlayerInventory
 
 Retrieves the items in a specific player's inventory.
+Note that quality is a string, not all games will have a number for quality.
 
 <Columns>
 <Column className='text--left'>
@@ -230,16 +231,16 @@ Retrieves the items in a specific player's inventory.
   "type": "response",
   "payload": [
     {
-      "id": "item_id_1",
+      "code": "weapon_baseball_bat",
       "name": "Baseball Bat",
-      "count": 1,
+      "amount": 1,
       "quality": "5"
     },
     {
-      "id": "item_id_2",
+      "code": "first_aid_bandage",
       "name": "First Aid Bandage",
-      "count": 5,
-      "quality": "3"
+      "amount": 5,
+      "quality": "high"
     }
   ],
   "requestId": "request-uuid"
@@ -251,6 +252,7 @@ Retrieves the items in a specific player's inventory.
 ### giveItem
 
 Gives an item to a specific player.
+The item code (`baseball_bat` in this case) is the code used in the `listItems` function.
 
 <Columns>
 <Column className='text--left'>
@@ -353,7 +355,7 @@ Executes a console command on the game server.
   "type": "response",
   "payload": {
     "success": true,
-    "rawResult": "Message sent: Hello World",
+    "rawResult": "Message sent: Hi",
     "errorMessage": null
   },
   "requestId": "request-uuid"
@@ -366,6 +368,9 @@ Executes a console command on the game server.
 
 Sends a message to one or more players.
 
+If the `recipient` field is not provided, the message should be a global message.
+If the `recipient` field is provided, the message should be sent to the specified player (DM/whisper).
+
 <Columns>
 <Column className='text--left'>
 #### Request
@@ -377,9 +382,9 @@ Sends a message to one or more players.
     "args": [
       "Welcome to the server!",
       {
-        "recipients": ["12345"],
-        "senderName": "Admin",
-        "type": "private"
+        "recipient": {
+          "gameId": "12345"
+        }
       }
     ]
   },
@@ -401,7 +406,7 @@ Sends a message to one or more players.
 
 ### teleportPlayer
 
-Teleports a player to a specific location.
+Teleports a player to a specific location. The coordinates are passed as x, y, and z values.
 
 <Columns>
 <Column className='text--left'>
@@ -438,7 +443,8 @@ Teleports a player to a specific location.
 
 ### testReachability
 
-Tests if the game server is reachable and properly configured.
+Tests if the game server is reachable and properly configured. Think of this as a ping/pong test.
+If _something_ is misconfigured, the response can contain a `reason` field with a description of the issue.
 
 <Columns>
 <Column className='text--left'>
@@ -460,13 +466,8 @@ Tests if the game server is reachable and properly configured.
 {
   "type": "response",
   "payload": {
-    "success": true,
-    "message": "Game server is reachable",
-    "details": {
-      "version": "1.0.0",
-      "connectedPlayers": 10,
-      "maxPlayers": 50
-    }
+    "connectable": true,
+    "reason": null
   },
   "requestId": "request-uuid"
 }
@@ -512,6 +513,8 @@ Kicks a player from the server.
 ### banPlayer
 
 Bans a player from the server.
+The `expiresAt` field is optional. If not provided, the ban will be permanent.
+`expiresAt` is a ISO 8601 formatted date string.
 
 <Columns>
 <Column className='text--left'>
@@ -527,8 +530,7 @@ Bans a player from the server.
           "gameId": "12345"
         },
         "reason": "Cheating",
-        "duration": 3600,
-        "ipBan": true
+        "expiresAt": "2031-12-31T23:59:59Z",
       }
     ]
   },
@@ -612,19 +614,15 @@ Retrieves a list of all currently banned players.
         "name": "BannedPlayer1"
       },
       "reason": "Cheating",
-      "duration": 3600,
-      "ipBan": true,
-      "expiration": "2023-12-31T23:59:59Z"
+      "expiresAt": "2031-12-31T23:59:59Z",
     },
     {
       "player": {
         "gameId": "67890",
         "name": "BannedPlayer2"
       },
-      "reason": "Harassment",
-      "duration": 86400,
-      "ipBan": false,
-      "expiration": "2024-01-01T12:00:00Z"
+      "reason": "Being rude",
+      "expiresAt": "2031-12-31T23:59:59Z",
     }
   ],
   "requestId": "request-uuid"
@@ -635,7 +633,7 @@ Retrieves a list of all currently banned players.
 
 ### shutdown
 
-Initiates a shutdown sequence for the game server.
+Initiates a graceful shutdown sequence for the game server.
 
 <Columns>
 <Column className='text--left'>
