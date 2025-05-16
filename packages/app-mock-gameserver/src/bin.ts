@@ -36,6 +36,8 @@ async function main() {
   ) {
     log.info('✅ Registration and identity tokens provided, will register with the Takaro server');
     await getMockServer();
+  } else {
+    log.info('❌ No registration and identity tokens provided, will not register with the Takaro server');
   }
 
   process.on('uncaughtException', (err) => {
