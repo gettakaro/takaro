@@ -53,8 +53,6 @@ const ajv = new Ajv({ useDefaults: true, strict: true });
 // E.g. a select and country input both have an enum schema, to distinguish them we use the x-component: 'country'.
 ajv.addKeyword('x-component');
 
-const gameClassCache = new Map<string, IGameServer>();
-
 export class JobStatusOutputDTO extends TakaroDTO<JobStatusOutputDTO> {
   @IsString()
   id!: string;
@@ -64,7 +62,6 @@ export class JobStatusOutputDTO extends TakaroDTO<JobStatusOutputDTO> {
   @IsString()
   failedReason?: string;
 }
-
 class GameServerTypesOutputDTO extends TakaroDTO<GameServerTypesOutputDTO> {
   @IsEnum(GAME_SERVER_TYPE)
   type!: GAME_SERVER_TYPE;
@@ -130,10 +127,6 @@ export class GameServerService extends TakaroService<
     return new GameServerRepo(this.domainId);
   }
 
-  public refreshGameInstance(id: string) {
-    gameClassCache.delete(id);
-  }
-
   find(filters: ITakaroQuery<GameServerOutputDTO>): Promise<PaginatedOutput<GameServerOutputDTO>> {
     return this.repo.find(filters);
   }
@@ -190,8 +183,6 @@ export class GameServerService extends TakaroService<
       ),
     );
 
-    this.refreshGameInstance(id);
-
     const gateway = new Pushgateway(config.get('metrics.pushgatewayUrl'), {});
     gateway.delete({ jobName: 'worker', groupings: { gameserver: id } });
 
@@ -223,7 +214,6 @@ export class GameServerService extends TakaroService<
 
   async update(id: string, item: GameServerUpdateDTO): Promise<GameServerOutputDTO> {
     const updatedServer = await this.repo.update(id, item);
-    this.refreshGameInstance(id);
     const eventsService = new EventService(this.domainId);
     await eventsService.create(
       new EventCreateDTO({
@@ -265,11 +255,6 @@ export class GameServerService extends TakaroService<
         );
       }
 
-      // When a user is trying to fix their connection info, it's important we don't cache stale/wrong connection info
-      if (!reachability.connectable) {
-        this.refreshGameInstance(id);
-      }
-
       return reachability;
     } else if (connectionInfo && type) {
       const instance = await getGame(type, connectionInfo, {});
@@ -283,12 +268,6 @@ export class GameServerService extends TakaroService<
 
     if (!gameserver.enabled) throw new errors.BadRequestError('Game server is disabled');
 
-    let gameInstance = gameClassCache.get(id);
-
-    if (gameInstance) {
-      return gameInstance;
-    }
-
     const settingsService = new SettingsService(this.domainId, id);
     const settingsArr = await settingsService.getAll();
     const settings = settingsArr.reduce<Record<string, string>>((acc, curr) => {
@@ -296,11 +275,7 @@ export class GameServerService extends TakaroService<
       return acc;
     }, {});
 
-    gameInstance = await getGame(gameserver.type, gameserver.connectionInfo, settings);
-
-    gameClassCache.set(id, gameInstance);
-
-    return gameInstance;
+    return getGame(gameserver.type, gameserver.connectionInfo, settings);
   }
 
   async getTypes(): Promise<GameServerTypesOutputDTO[]> {
