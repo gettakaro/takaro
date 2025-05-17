@@ -26,6 +26,8 @@ import {
 } from '@takaro/gameserver';
 import { GameDataHandler } from './DataHandler.js';
 import { PartialDeep } from 'type-fest/index.js';
+import { readFile } from 'fs/promises';
+import path from 'path';
 
 interface ActionHandler {
   (args: any): Promise<any>;
@@ -537,11 +539,23 @@ export class GameServer implements IGameServer {
     }
   }
 
-  async getMapTile(x: number, y: number, z: number): Promise<Buffer> {
+  async getMapTile(x: number, y: number, z: number): Promise<string> {
     try {
       this.log.info(`Getting map tile at (${x}, ${y}, ${z})`);
-      // Return an empty buffer as a placeholder
-      return Buffer.from([]);
+      // We transform the y coordinate to a letter in the range A-Z
+      const yLetter = String.fromCharCode(65 + y);
+      const tilesDir = path.join(path.dirname(new URL(import.meta.url).pathname), '..', 'map', 'tiles');
+      const tilePath = path.join(tilesDir, `${yLetter}${x}.png`);
+      console.log('Tile path', tilePath);
+      console.log('Tile path', tilePath);
+      console.log('Tile path', tilePath);
+      console.log('Tile path', tilePath);
+      console.log('Tile path', tilePath);
+      console.log('Tile path', tilePath);
+      const tileBuffer = await readFile(tilePath);
+      if (!tileBuffer) return '';
+      const base64 = tileBuffer.toString('base64');
+      return base64;
     } catch (error) {
       this.log.error(`Error getting map tile at (${x}, ${y}, ${z}):`, error);
       throw error;

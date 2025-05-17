@@ -164,7 +164,8 @@ export class Generic implements IGameServer {
     return dto;
   }
 
-  async getMapTile(_x: number, _y: number, _z: number): Promise<Buffer> {
-    throw new Error('Not implemented');
+  async getMapTile(_x: number, _y: number, _z: number): Promise<string> {
+    const res = await this.requestFromServer('getMapTile', { x: _x, y: _y, z: _z });
+    return res;
   }
 }

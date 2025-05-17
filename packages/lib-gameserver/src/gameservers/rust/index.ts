@@ -250,7 +250,7 @@ export class Rust implements IGameServer {
     });
   }
 
-  async getMapTile(_x: number, _y: number, _z: number): Promise<Buffer> {
+  async getMapTile(_x: number, _y: number, _z: number): Promise<string> {
     throw new Error('Not implemented');
   }
 }
