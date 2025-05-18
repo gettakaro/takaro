@@ -111,7 +111,7 @@ class SocketServer {
   ) {
     this.io.to(domainId).emit(event, ...data);
     if (event === 'event') {
-      this.io.serverSideEmit(event, data as unknown as EventOutputDTO);
+      this.io.serverSideEmit(event, data[0] as unknown as EventOutputDTO);
     }
   }
 
