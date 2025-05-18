@@ -1,11 +1,13 @@
-import { logger, traceableClass } from '@takaro/util';
+import { errors, logger, traceableClass } from '@takaro/util';
 import WebSocket from 'ws';
 import { IGamePlayer, IPosition } from '@takaro/modules';
 import {
   BanDTO,
   CommandOutput,
+  IEntityDTO,
   IGameServer,
   IItemDTO,
+  ILocationDTO,
   IPlayerReferenceDTO,
   MapInfoDTO,
   TestReachabilityOutputDTO,
@@ -252,5 +254,13 @@ export class Rust implements IGameServer {
 
   async getMapTile(_x: number, _y: number, _z: number): Promise<string> {
     throw new Error('Not implemented');
+  }
+
+  async listEntities(): Promise<IEntityDTO[]> {
+    throw new errors.NotImplementedError();
+  }
+
+  async listLocations(): Promise<ILocationDTO[]> {
+    throw new errors.NotImplementedError();
   }
 }

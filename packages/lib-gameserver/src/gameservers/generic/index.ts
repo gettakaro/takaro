@@ -3,8 +3,10 @@ import { IGamePlayer, IPosition } from '@takaro/modules';
 import {
   BanDTO,
   CommandOutput,
+  IEntityDTO,
   IGameServer,
   IItemDTO,
+  ILocationDTO,
   IMessageOptsDTO,
   IPlayerReferenceDTO,
   MapInfoDTO,
@@ -167,5 +169,13 @@ export class Generic implements IGameServer {
   async getMapTile(_x: number, _y: number, _z: number): Promise<string> {
     const res = await this.requestFromServer('getMapTile', { x: _x, y: _y, z: _z });
     return res;
+  }
+
+  async listEntities(): Promise<IEntityDTO[]> {
+    throw new errors.NotImplementedError();
+  }
+
+  async listLocations(): Promise<ILocationDTO[]> {
+    throw new errors.NotImplementedError();
   }
 }

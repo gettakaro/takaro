@@ -1,7 +1,16 @@
 import { TakaroEmitter } from '../TakaroEmitter.js';
 import { IGamePlayer, IPosition } from '@takaro/modules';
 import { TakaroDTO } from '@takaro/util';
-import { IsBoolean, IsISO8601, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
+import {
+  IsBoolean,
+  IsEnum,
+  IsISO8601,
+  IsNumber,
+  IsObject,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CommandOutput extends TakaroDTO<CommandOutput> {
@@ -87,6 +96,54 @@ export class MapInfoDTO extends TakaroDTO<MapInfoDTO> {
   mapSizeZ: number;
 }
 
+enum EntityType {
+  HOSTILE = 'hostile',
+  FRIENDLY = 'friendly',
+  NEUTRAL = 'neutral',
+}
+
+export class IEntityDTO extends TakaroDTO<IEntityDTO> {
+  @IsString()
+  code: string;
+  @IsString()
+  name: string;
+  @IsString()
+  @IsOptional()
+  description: string;
+  @IsEnum(Object.values(EntityType))
+  @IsOptional()
+  type: EntityType;
+  @IsObject()
+  @IsOptional()
+  metadata?: Record<string, unknown>;
+}
+
+export class ILocationDTO extends TakaroDTO<ILocationDTO> {
+  @ValidateNested()
+  @Type(() => IPosition)
+  position: IPosition;
+  @IsNumber()
+  @IsOptional()
+  radius?: number; // For circular areas, radius in game units
+  @IsNumber()
+  @IsOptional()
+  sizeX?: number; // For rectangular areas, X dimension
+  @IsNumber()
+  @IsOptional()
+  sizeY?: number; // For rectangular areas, Y dimension
+  @IsNumber()
+  @IsOptional()
+  sizeZ?: number; // For rectangular areas, Z dimension (height)
+  @IsString()
+  name: string;
+  @IsString()
+  @IsOptional()
+  code?: string;
+  @IsObject()
+  @IsOptional()
+  metadata?: Record<string, unknown>;
+}
+
 export interface IGameServer {
   connectionInfo: unknown;
   getEventEmitter(): TakaroEmitter;
@@ -98,6 +155,9 @@ export interface IGameServer {
 
   giveItem(player: IPlayerReferenceDTO, item: string, amount: number, quality?: string): Promise<void>;
   listItems(): Promise<IItemDTO[]>;
+
+  listEntities(): Promise<IEntityDTO[]>;
+  listLocations(): Promise<ILocationDTO[]>;
 
   executeConsoleCommand(rawCommand: string): Promise<CommandOutput>;
   sendMessage(message: string, opts: IMessageOptsDTO): Promise<void>;

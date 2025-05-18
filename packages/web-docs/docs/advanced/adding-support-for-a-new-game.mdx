@@ -328,6 +328,122 @@ Retrieves a list of all available items in the game.
 </Column>
 </Columns>
 
+### listEntities
+
+Retrieves a list of all available entities in the game. This includes both NPCs and monsters.
+Vanilla and modded entities should be included.
+
+The `metadata` field is optional and can be used to store additional (game-specific) information about the entity.
+
+<Columns>
+<Column className='text--left'>
+#### Request
+```json
+{
+  "type": "request",
+  "payload": {
+    "action": "listEntities",
+    "args": []
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+<Column className='text--left'>
+#### Response
+```json
+{
+  "type": "response",
+  "payload": [
+    {
+      "code": "pig",
+      "name": "Pig",
+      "description": "Some tasty bacon",
+      "type": "friendly",
+      "metadata": {
+        "health": 10
+      }
+    },
+    {
+      "code": "skeleton",
+      "name": "Skeleton",
+      "description": "A spooky skeleton",
+      "type": "hostile",
+      "metadata": {
+        "health": 50,
+        "damage": 10
+      }
+    }
+  ],
+  "requestId": "request-uuid"
+}
+```
+</Column>
+</Columns>
+
+### listLocations
+
+List all locations in the game. Locations are game-defined structures or areas.
+Some examples:
+
+- Minecraft villages, nether fortresses, end cities, ...
+- 7 Days to Die POIs (Points of Interest)
+- Rust monuments
+
+Locations must be either rectangular or circular, not both.
+The `metadata` field is optional and can be used to store additional information about the location.
+
+<Columns>
+<Column className='text--left'>
+#### Request
+```json
+{
+  "type": "request",
+  "payload": {
+    "action": "listLocations",
+    "args": []
+  },
+  "requestId": "request-uuid"
+}
+```
+</Column>
+<Column className='text--left'>
+#### Response
+```json
+{
+  "type": "response",
+  "payload": [
+    {
+      "position": {
+        "x": 123.45,
+        "y": 67.89,
+        "z": 10.11
+      },
+      "radius": 50,
+      "name": "village",
+      "code": "village_1",
+      "metadata": {}
+    },
+    {
+      "position": {
+        "x": 200.0,
+        "y": 100.0,
+        "z": 50.0
+      },
+      "sizeX": 100,
+      "sizeY": 50,
+      "sizeZ": 100,
+      "name": "forest",
+      "code": "forest_38",
+      "metadata": {}
+    }
+  ],
+  "requestId": "request-uuid"
+}
+```
+</Column>
+</Columns>
+
 ### executeConsoleCommand
 
 Executes a console command on the game server.
