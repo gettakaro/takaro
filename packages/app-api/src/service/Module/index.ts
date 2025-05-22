@@ -253,7 +253,18 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
 
   async seedBuiltinModules() {
     const modules = getModules();
-    await Promise.all(modules.map((m: ModuleTransferDTO<unknown>) => this.seedModule(m, { isBuiltin: true })));
+    await Promise.all(
+      modules.map(async (m: ModuleTransferDTO<unknown>) => {
+        try {
+          await this.seedModule(m, { isBuiltin: true });
+        } catch (error) {
+          this.log.warn('Failed to seed builtin module', {
+            error: (error as Error).message,
+            module: m.name,
+          });
+        }
+      }),
+    );
   }
 
   async seedModule(data: ModuleTransferDTO<unknown>, { isBuiltin } = { isBuiltin: false }): Promise<ModuleOutputDTO> {

@@ -171,6 +171,7 @@ async function ensureCronjobsScheduled(domainId: string, gameServerId?: string) 
   const processGameServer = async (gsId: string) => {
     const gameserver = await gameServerService.findOne(gsId, false);
     if (!gameserver) return;
+    if (!gameserver.enabled) return;
 
     ctx.addData({ gameServer: gsId });
     log.info(`🕰 Processing cronjobs for game server ${gsId}`);
@@ -202,6 +203,9 @@ async function syncItems(domainId: string, gameServerId?: string) {
   const processGameServer = async (gsId: string) => {
     ctx.addData({ gameServer: gsId });
     log.info(`🔄 Testing reachability for game server ${gsId}`);
+    const gameserver = await gameServerService.findOne(gsId, false);
+    if (!gameserver) return;
+    if (!gameserver.enabled) return;
 
     const reachable = await gameServerService.testReachability(gsId);
     if (reachable.connectable) {
@@ -229,6 +233,9 @@ async function syncBans(domainId: string, gameServerId?: string) {
   const processGameServer = async (gsId: string) => {
     ctx.addData({ gameServer: gsId });
     log.info(`🔄 Testing reachability for game server ${gsId}`);
+    const gameserver = await gameServerService.findOne(gsId, false);
+    if (!gameserver) return;
+    if (!gameserver.enabled) return;
 
     const reachable = await gameServerService.testReachability(gsId);
     if (reachable.connectable) {
