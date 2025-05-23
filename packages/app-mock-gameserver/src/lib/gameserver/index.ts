@@ -415,7 +415,7 @@ export class MockGameserver implements IMockGameServer {
   }
 
   async getMapTile(_x: number, _y: number, _z: number) {
-    return '';
+    return Buffer.from('mock tile');
   }
 }
 
