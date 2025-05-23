@@ -11,7 +11,7 @@ const tests = [
     setup: shopSetup,
     name: 'Can claim an order happy path',
     test: async function () {
-      await this.setupData.userClient.shopOrder.shopOrderControllerCreate({
+      await this.setupData.client1.shopOrder.shopOrderControllerCreate({
         listingId: this.setupData.listing100.id,
         amount: 1,
       });
@@ -47,7 +47,7 @@ const tests = [
     setup: shopSetup,
     name: 'Handles double-claiming an order',
     test: async function () {
-      await this.setupData.userClient.shopOrder.shopOrderControllerCreate({
+      await this.setupData.client1.shopOrder.shopOrderControllerCreate({
         listingId: this.setupData.listing100.id,
         amount: 1,
       });
@@ -76,11 +76,11 @@ const tests = [
     setup: shopSetup,
     name: 'Only claims the first order by default',
     test: async function () {
-      await this.setupData.userClient.shopOrder.shopOrderControllerCreate({
+      await this.setupData.client1.shopOrder.shopOrderControllerCreate({
         listingId: this.setupData.listing100.id,
         amount: 1,
       });
-      await this.setupData.userClient.shopOrder.shopOrderControllerCreate({
+      await this.setupData.client1.shopOrder.shopOrderControllerCreate({
         listingId: this.setupData.listing33.id,
         amount: 1,
       });
@@ -111,11 +111,11 @@ const tests = [
     setup: shopSetup,
     name: 'Can claim all orders in one go',
     test: async function () {
-      await this.setupData.userClient.shopOrder.shopOrderControllerCreate({
+      await this.setupData.client1.shopOrder.shopOrderControllerCreate({
         listingId: this.setupData.listing100.id,
         amount: 1,
       });
-      await this.setupData.userClient.shopOrder.shopOrderControllerCreate({
+      await this.setupData.client1.shopOrder.shopOrderControllerCreate({
         listingId: this.setupData.listing33.id,
         amount: 1,
       });

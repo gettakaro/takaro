@@ -327,6 +327,60 @@ const tests = [
       }
     },
   }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'me endpoint returns the current user',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      const meRes = await this.client.user.userControllerMe();
+      expect(meRes.data.data.user).to.not.be.undefined;
+      expect(meRes.data.data.domain).to.not.be.undefined;
+      expect(meRes.data.data.domains).to.be.an('array');
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'me endpoint returns registration token only if user has required permissions',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      const fakePassword = randomUUID();
+      const fakeEmail = faker.internet.email();
+      await this.client.user.userControllerCreate({
+        email: fakeEmail,
+        password: fakePassword,
+        name: faker.internet.userName(),
+      });
+
+      const userClient = new Client({
+        auth: {
+          username: fakeEmail,
+          password: fakePassword,
+        },
+        url: integrationConfig.get('host'),
+      });
+
+      await userClient.login();
+
+      const meRes = await userClient.user.userControllerMe();
+      for (const domain of meRes.data.data.domains) {
+        expect(domain.serverRegistrationToken).to.be.undefined;
+      }
+
+      // Assign the user the required permissions
+      const permissions = await this.client.permissionCodesToInputs([PERMISSIONS.MANAGE_GAMESERVERS]);
+      const role = await this.client.role.roleControllerCreate({
+        name: 'Test role',
+        permissions,
+      });
+      await this.client.user.userControllerAssignRole(meRes.data.data.user.id, role.data.data.id);
+      const meRes2 = await userClient.user.userControllerMe();
+      for (const domain of meRes2.data.data.domains) {
+        expect(domain.serverRegistrationToken).to.not.be.undefined;
+      }
+    },
+  }),
 ];
 
 describe(group, function () {

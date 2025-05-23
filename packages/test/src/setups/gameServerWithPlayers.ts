@@ -1,8 +1,9 @@
 import { EventsAwaiter } from '../test/waitForEvents.js';
 import { GameServerOutputDTO, ModuleOutputDTO, PlayerOnGameserverOutputDTO, PlayerOutputDTO } from '@takaro/apiclient';
 import { IntegrationTest } from '../integrationTest.js';
-import { integrationConfig } from '../test/integrationConfig.js';
 import { randomUUID } from 'crypto';
+import { getMockServer } from '@takaro/mock-gameserver';
+import { expect } from '../test/expect.js';
 
 export interface ISetupData {
   gameServer1: GameServerOutputDTO;
@@ -12,33 +13,38 @@ export interface ISetupData {
   pogs2: PlayerOnGameserverOutputDTO[];
   mod: ModuleOutputDTO;
   eventsAwaiter: EventsAwaiter;
+  mockservers: Awaited<ReturnType<typeof getMockServer>>[];
 }
 
 export const setup = async function (this: IntegrationTest<ISetupData>): Promise<ISetupData> {
   const eventsAwaiter = new EventsAwaiter();
   await eventsAwaiter.connect(this.client);
-  // 10 players, 10 pogs should be created
-  const connectedEvents = eventsAwaiter.waitForEvents('player-created', 20);
+  // 20 players, 20 pogs should be created
+  const connectedEvents = eventsAwaiter.waitForEvents('player-created', 40);
 
-  const serverName = randomUUID();
+  if (!this.domainRegistrationToken) throw new Error('Domain registration token is not set. Invalid setup?');
+  const gameServer1IdentityToken = randomUUID();
+  const gameServer2IdentityToken = randomUUID();
 
-  const gameServer1 = await this.client.gameserver.gameServerControllerCreate({
-    name: 'Gameserver 1',
-    type: 'MOCK',
-    connectionInfo: JSON.stringify({
-      host: integrationConfig.get('mockGameserver.host'),
-      name: `mock1-${serverName}`,
-    }),
+  const mockserver1 = await getMockServer({
+    mockserver: { registrationToken: this.domainRegistrationToken, identityToken: gameServer1IdentityToken },
+  });
+  const mockserver2 = await getMockServer({
+    mockserver: { registrationToken: this.domainRegistrationToken, identityToken: gameServer2IdentityToken },
   });
 
-  const gameServer2 = await this.client.gameserver.gameServerControllerCreate({
-    name: 'Gameserver 2',
-    type: 'MOCK',
-    connectionInfo: JSON.stringify({
-      host: integrationConfig.get('mockGameserver.host'),
-      name: `mock2-${serverName}`,
-    }),
-  });
+  const gameServers = (
+    await this.client.gameserver.gameServerControllerSearch({
+      filters: { identityToken: [gameServer1IdentityToken, gameServer2IdentityToken] },
+    })
+  ).data.data;
+
+  const gameServer1 = gameServers.find((gs) => gs.identityToken === gameServer1IdentityToken);
+  const gameServer2 = gameServers.find((gs) => gs.identityToken === gameServer2IdentityToken);
+
+  if (!gameServer1 || !gameServer2) {
+    throw new Error('Game servers not found. Did something fail when registering?');
+  }
 
   const mod = (
     await this.client.module.moduleControllerCreate({
@@ -47,31 +53,37 @@ export const setup = async function (this: IntegrationTest<ISetupData>): Promise
   ).data.data;
 
   await Promise.all([
-    this.client.gameserver.gameServerControllerExecuteCommand(gameServer1.data.data.id, { command: 'connectAll' }),
-    this.client.gameserver.gameServerControllerExecuteCommand(gameServer2.data.data.id, { command: 'connectAll' }),
+    this.client.gameserver.gameServerControllerExecuteCommand(gameServer1.id, { command: 'connectAll' }),
+    this.client.gameserver.gameServerControllerExecuteCommand(gameServer2.id, { command: 'connectAll' }),
   ]);
 
   await connectedEvents;
+  expect(await connectedEvents).to.have.length(40, 'Setup fail: should have 20 players-created events');
 
   const players = (await this.client.player.playerControllerSearch()).data.data;
   const pogs1 = (
     await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
-      filters: { gameServerId: [gameServer1.data.data.id] },
+      filters: { gameServerId: [gameServer1.id] },
     })
   ).data.data;
   const pogs2 = (
     await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
-      filters: { gameServerId: [gameServer2.data.data.id] },
+      filters: { gameServerId: [gameServer2.id] },
     })
   ).data.data;
 
+  expect(pogs1.length).to.equal(10, 'Setup fail: should have 10 pogs on game server 1');
+  expect(pogs2.length).to.equal(10, 'Setup fail: should have 10 pogs on game server 2');
+  expect(players.length).to.equal(20, 'Setup fail: should have 20 players total');
+
   return {
-    gameServer1: gameServer1.data.data,
-    gameServer2: gameServer2.data.data,
+    gameServer1: gameServer1,
+    gameServer2: gameServer2,
     players,
     pogs1,
     pogs2,
     mod,
     eventsAwaiter,
+    mockservers: [mockserver1, mockserver2],
   };
 };

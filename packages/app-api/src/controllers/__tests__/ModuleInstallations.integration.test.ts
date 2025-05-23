@@ -1,6 +1,8 @@
-import { IntegrationTest, expect, integrationConfig } from '@takaro/test';
+import { IntegrationTest, expect } from '@takaro/test';
 import { ModuleOutputDTO, GameServerOutputDTO, HookCreateDTOEventTypeEnum } from '@takaro/apiclient';
 import { describe } from 'node:test';
+import { randomUUID } from 'node:crypto';
+import { getMockServer } from '@takaro/mock-gameserver';
 
 const group = 'Module Assignments';
 
@@ -16,18 +18,28 @@ interface ISetupData {
   gameserver: GameServerOutputDTO;
   utilsModule: ModuleOutputDTO;
   teleportsModule: ModuleOutputDTO;
+  mockservers: Awaited<ReturnType<typeof getMockServer>>[];
 }
 
 const defaultSetup = async function (this: IntegrationTest<ISetupData>): Promise<ISetupData> {
   const modules = (await this.client.module.moduleControllerSearch()).data.data;
 
-  const gameserver = await this.client.gameserver.gameServerControllerCreate({
-    connectionInfo: JSON.stringify({
-      host: integrationConfig.get('mockGameserver.host'),
-    }),
-    type: 'MOCK',
-    name: 'Test gameserver',
+  if (!this.domainRegistrationToken) throw new Error('Domain registration token is not set. Invalid setup?');
+  const identityToken = randomUUID();
+  const mockServer = await getMockServer({
+    mockserver: {
+      registrationToken: this.domainRegistrationToken,
+      identityToken,
+    },
   });
+
+  const gameServerRes = (
+    await this.client.gameserver.gameServerControllerSearch({
+      filters: { identityToken: [identityToken] },
+    })
+  ).data.data;
+  const gameserver = gameServerRes.find((gs) => gs.identityToken === identityToken);
+  if (!gameserver) throw new Error('Game server not found. Did something fail when registering?');
 
   const teleportsModule = modules.find((m) => m.name === 'teleports');
 
@@ -41,7 +53,8 @@ const defaultSetup = async function (this: IntegrationTest<ISetupData>): Promise
     modules: modules,
     utilsModule,
     teleportsModule,
-    gameserver: gameserver.data.data,
+    gameserver: gameserver,
+    mockservers: [mockServer],
   };
 };
 

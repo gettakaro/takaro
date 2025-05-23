@@ -1,128 +1,7 @@
-import { IntegrationTest, expect, SetupGameServerPlayers, createUserForPlayer } from '@takaro/test';
-import {
-  Client,
-  ItemsOutputDTO,
-  ShopListingOutputDTO,
-  ShopOrderOutputDTOStatusEnum,
-  UserOutputDTO,
-  isAxiosError,
-} from '@takaro/apiclient';
+import { IntegrationTest, expect, IShopSetup, shopSetup } from '@takaro/test';
+import { ShopOrderOutputDTOStatusEnum, isAxiosError } from '@takaro/apiclient';
 import { describe } from 'node:test';
 const group = 'ShopOrderController';
-
-interface IShopSetup extends SetupGameServerPlayers.ISetupData {
-  items: ItemsOutputDTO[];
-  listing100: ShopListingOutputDTO;
-  listing33: ShopListingOutputDTO;
-  user1: UserOutputDTO;
-  client1: Client;
-  user2: UserOutputDTO;
-  client2: Client;
-  user3: UserOutputDTO;
-  client3: Client;
-  user4: UserOutputDTO;
-  client4: Client;
-}
-
-const shopSetup = async function (this: IntegrationTest<IShopSetup>): Promise<IShopSetup> {
-  const setupData = await SetupGameServerPlayers.setup.bind(
-    this as unknown as IntegrationTest<SetupGameServerPlayers.ISetupData>,
-  )();
-
-  await this.client.settings.settingsControllerSet('economyEnabled', {
-    value: 'true',
-    gameServerId: setupData.gameServer1.id,
-  });
-
-  await this.client.settings.settingsControllerSet('economyEnabled', {
-    value: 'true',
-    gameServerId: setupData.gameServer2.id,
-  });
-
-  await this.client.settings.settingsControllerSet('currencyName', {
-    gameServerId: setupData.gameServer1.id,
-    value: 'test coin',
-  });
-
-  const items = (await this.client.item.itemControllerSearch()).data.data;
-
-  const listing100Res = await this.client.shopListing.shopListingControllerCreate({
-    gameServerId: setupData.gameServer1.id,
-    items: [{ code: items[0].code, amount: 1 }],
-    price: 100,
-    name: 'Test item',
-  });
-
-  const listing33Res = await this.client.shopListing.shopListingControllerCreate({
-    gameServerId: setupData.gameServer1.id,
-    items: [{ code: items[1].code, amount: 1 }],
-    price: 33,
-    name: 'Test item 2',
-  });
-
-  await this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(
-    setupData.gameServer1.id,
-    setupData.pogs1[0].playerId,
-    { currency: 250 },
-  );
-
-  await this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(
-    setupData.gameServer1.id,
-    setupData.pogs1[1].playerId,
-    { currency: 250 },
-  );
-
-  await this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(
-    setupData.gameServer2.id,
-    setupData.pogs2[0].playerId,
-    { currency: 250 },
-  );
-
-  await this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(
-    setupData.gameServer2.id,
-    setupData.pogs2[1].playerId,
-    { currency: 250 },
-  );
-
-  const { client: user1Client, user: user1 } = await createUserForPlayer(
-    this.client,
-    setupData.pogs1[0].playerId,
-    setupData.gameServer1.id,
-  );
-
-  const { client: user2Client, user: user2 } = await createUserForPlayer(
-    this.client,
-    setupData.pogs1[1].playerId,
-    setupData.gameServer1.id,
-  );
-
-  const { client: user3Client, user: user3 } = await createUserForPlayer(
-    this.client,
-    setupData.pogs2[0].playerId,
-    setupData.gameServer2.id,
-  );
-
-  const { client: user4Client, user: user4 } = await createUserForPlayer(
-    this.client,
-    setupData.pogs2[1].playerId,
-    setupData.gameServer2.id,
-  );
-
-  return {
-    ...setupData,
-    items,
-    listing100: listing100Res.data.data,
-    listing33: listing33Res.data.data,
-    user1,
-    client1: user1Client,
-    user2,
-    client2: user2Client,
-    user3,
-    client3: user3Client,
-    user4,
-    client4: user4Client,
-  };
-};
 
 const tests = [
   new IntegrationTest<IShopSetup>({
@@ -489,8 +368,8 @@ const tests = [
     setup: shopSetup,
     test: async function () {
       await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
-        this.setupData.gameServer1.id,
-        this.setupData.pogs1[0].playerId,
+        this.setupData.gameserver.id,
+        this.setupData.players[0].id,
         { currency: 250 },
       );
 
@@ -502,8 +381,8 @@ const tests = [
       const order = orderRes.data.data;
 
       const pogsResBefore = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
-        this.setupData.gameServer1.id,
-        this.setupData.pogs1[0].playerId,
+        this.setupData.gameserver.id,
+        this.setupData.players[0].id,
       );
 
       expect(pogsResBefore.data.data.currency).to.be.eq(150);
@@ -511,8 +390,8 @@ const tests = [
       await this.setupData.client1.shopOrder.shopOrderControllerCancel(order.id);
 
       const pogResAfter = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
-        this.setupData.gameServer1.id,
-        this.setupData.pogs1[0].playerId,
+        this.setupData.gameserver.id,
+        this.setupData.players[0].id,
       );
 
       expect(pogResAfter.data.data.currency).to.be.eq(250);
@@ -527,8 +406,8 @@ const tests = [
     setup: shopSetup,
     test: async function () {
       await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
-        this.setupData.gameServer1.id,
-        this.setupData.pogs1[0].playerId,
+        this.setupData.gameserver.id,
+        this.setupData.players[0].id,
         { currency: 250 },
       );
 
@@ -540,8 +419,8 @@ const tests = [
       const order = orderRes.data.data;
 
       const pogsResBefore = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
-        this.setupData.gameServer1.id,
-        this.setupData.pogs1[0].playerId,
+        this.setupData.gameserver.id,
+        this.setupData.players[0].id,
       );
 
       expect(pogsResBefore.data.data.currency).to.be.eq(150);
@@ -549,8 +428,8 @@ const tests = [
       await this.client.shopListing.shopListingControllerDelete(this.setupData.listing100.id);
 
       const pogResAfter = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
-        this.setupData.gameServer1.id,
-        this.setupData.pogs1[0].playerId,
+        this.setupData.gameserver.id,
+        this.setupData.players[0].id,
       );
 
       expect(pogResAfter.data.data.currency).to.be.eq(250);
@@ -616,8 +495,8 @@ const tests = [
     setup: shopSetup,
     test: async function () {
       await this.client.playerOnGameserver.playerOnGameServerControllerSetCurrency(
-        this.setupData.gameServer1.id,
-        this.setupData.pogs1[0].playerId,
+        this.setupData.gameserver.id,
+        this.setupData.players[0].id,
         { currency: 250 },
       );
 
@@ -629,8 +508,8 @@ const tests = [
       const order = orderRes.data.data;
 
       const pogsResBefore = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
-        this.setupData.gameServer1.id,
-        this.setupData.pogs1[0].playerId,
+        this.setupData.gameserver.id,
+        this.setupData.players[0].id,
       );
 
       expect(pogsResBefore.data.data.currency).to.be.eq(150);
@@ -638,8 +517,8 @@ const tests = [
       await this.client.shopListing.shopListingControllerUpdate(this.setupData.listing100.id, { draft: true });
 
       const pogResAfter = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
-        this.setupData.gameServer1.id,
-        this.setupData.pogs1[0].playerId,
+        this.setupData.gameserver.id,
+        this.setupData.players[0].id,
       );
 
       expect(pogResAfter.data.data.currency).to.be.eq(250);
@@ -683,7 +562,7 @@ const tests = [
        */
       const listingGameserver1 = (
         await this.client.shopListing.shopListingControllerCreate({
-          gameServerId: this.setupData.gameServer1.id,
+          gameServerId: this.setupData.gameserver.id,
           items: [{ code: this.setupData.items[0].code, amount: 1 }],
           price: 1,
           name: 'Test item 1',
@@ -692,7 +571,7 @@ const tests = [
 
       const listingGameserver2 = (
         await this.client.shopListing.shopListingControllerCreate({
-          gameServerId: this.setupData.gameServer2.id,
+          gameServerId: this.setupData.gameserver2.id,
           items: [{ code: this.setupData.items[0].code, amount: 1 }],
           price: 1,
           name: 'Test item 2',
@@ -710,14 +589,14 @@ const tests = [
       });
 
       const filteredOrders = await this.client.shopOrder.shopOrderControllerSearch({
-        filters: { gameServerId: [this.setupData.gameServer1.id] },
+        filters: { gameServerId: [this.setupData.gameserver.id] },
         extend: ['listing'],
       });
 
       const allOrders = await this.client.shopOrder.shopOrderControllerSearch();
 
       expect(filteredOrders.data.data).to.have.length(1);
-      expect(filteredOrders.data.data[0].listing?.gameServerId).to.be.eq(this.setupData.gameServer1.id);
+      expect(filteredOrders.data.data[0].listing?.gameServerId).to.be.eq(this.setupData.gameserver.id);
       expect(allOrders.data.data).to.have.length(2);
     },
   }),
@@ -735,7 +614,7 @@ const tests = [
        */
       const listingGameserver1 = (
         await this.client.shopListing.shopListingControllerCreate({
-          gameServerId: this.setupData.gameServer1.id,
+          gameServerId: this.setupData.gameserver.id,
           items: [{ code: this.setupData.items[0].code, amount: 1 }],
           price: 1,
           name: 'Test item 1',
@@ -744,7 +623,7 @@ const tests = [
 
       const listingGameserver2 = (
         await this.client.shopListing.shopListingControllerCreate({
-          gameServerId: this.setupData.gameServer2.id,
+          gameServerId: this.setupData.gameserver2.id,
           items: [{ code: this.setupData.items[0].code, amount: 1 }],
           price: 1,
           name: 'Test item 2',
@@ -768,7 +647,7 @@ const tests = [
       const allOrders = await this.client.shopOrder.shopOrderControllerSearch();
 
       expect(filteredOrders.data.data).to.have.length(1);
-      expect(filteredOrders.data.data[0].playerId).to.be.eq(this.setupData.pogs1[0].playerId);
+      expect(filteredOrders.data.data[0].playerId).to.be.eq(this.setupData.players[0].id);
       expect(allOrders.data.data).to.have.length(2);
     },
   }),
@@ -786,7 +665,7 @@ const tests = [
        */
       const listingGameserver1 = (
         await this.client.shopListing.shopListingControllerCreate({
-          gameServerId: this.setupData.gameServer1.id,
+          gameServerId: this.setupData.gameserver.id,
           items: [{ code: this.setupData.items[0].code, amount: 1 }],
           price: 1,
           name: 'Test item 1',
@@ -795,7 +674,7 @@ const tests = [
 
       const listingGameserver2 = (
         await this.client.shopListing.shopListingControllerCreate({
-          gameServerId: this.setupData.gameServer2.id,
+          gameServerId: this.setupData.gameserver2.id,
           items: [{ code: this.setupData.items[0].code, amount: 1 }],
           price: 1,
           name: 'Test item 2',
@@ -813,13 +692,13 @@ const tests = [
       });
 
       const filteredOrders = await this.client.shopOrder.shopOrderControllerSearch({
-        filters: { playerId: [this.setupData.pogs1[0].playerId] },
+        filters: { playerId: [this.setupData.players[0].id] },
       });
 
       const allOrders = await this.client.shopOrder.shopOrderControllerSearch();
 
       expect(filteredOrders.data.data).to.have.length(1);
-      expect(filteredOrders.data.data[0].playerId).to.be.eq(this.setupData.pogs1[0].playerId);
+      expect(filteredOrders.data.data[0].playerId).to.be.eq(this.setupData.players[0].id);
       expect(allOrders.data.data).to.have.length(2);
     },
   }),

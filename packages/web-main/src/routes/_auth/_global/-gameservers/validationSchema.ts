@@ -70,5 +70,12 @@ export const validationSchema = baseShape.and(
         name: z.string().min(1, { message: 'Name cannot be empty' }).optional(),
       }),
     }),
+
+    z.object({
+      type: z.literal(GameServerCreateDTOTypeEnum.Generic.valueOf()),
+      connectionInfo: z.object({
+        code: z.string().min(1, { message: 'Code cannot be empty' }).optional(),
+      }),
+    }),
   ]),
 );

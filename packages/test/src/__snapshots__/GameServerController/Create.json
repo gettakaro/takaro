@@ -12,8 +12,7 @@
         "host": "http://takaro:3002"
       },
       "type": "MOCK",
-      "reachable": true,
-      "deletedAt": null
+      "reachable": true
     }
   },
   "status": 200,
@@ -22,7 +21,8 @@
     "snapshot": true,
     "name": "Create",
     "filteredFields": [
-      "connectionInfo"
+      "connectionInfo",
+      "identityToken"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true

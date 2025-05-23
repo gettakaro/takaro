@@ -1,9 +1,18 @@
-import { TakaroEmitter, getGame } from '@takaro/gameserver';
-import { GameEvents } from '@takaro/modules';
-import { logger } from '@takaro/util';
-import { AdminClient, Client, DomainOutputDTOStateEnum, GameServerOutputDTO } from '@takaro/apiclient';
+import { TakaroEmitter, getGame, GenericEmitter } from '@takaro/gameserver';
+import { EventMapping, GameEvents, GameEventTypes } from '@takaro/modules';
+import { errors, logger } from '@takaro/util';
+import {
+  AdminClient,
+  Client,
+  DomainOutputDTO,
+  DomainOutputDTOStateEnum,
+  GameServerOutputDTO,
+  GameServerTypesOutputDTOTypeEnum,
+  isAxiosError,
+} from '@takaro/apiclient';
 import { config } from '../config.js';
 import { queueService } from '@takaro/queues';
+import { WebSocketMessage } from './websocket.js';
 
 const RECONNECT_AFTER_MS = config.get('gameServerManager.reconnectAfterMs');
 const SYNC_INTERVAL_MS = config.get('gameServerManager.syncIntervalMs');
@@ -32,7 +41,7 @@ async function getDomainClient(domainId: string) {
 
 class GameServerManager {
   private log = logger('GameServerManager');
-  private emitterMap = new Map<string, { domainId: string; emitter: TakaroEmitter }>();
+  private emitterMap = new Map<string, { domainId: string; emitter: TakaroEmitter | GenericEmitter }>();
   private eventsQueue = queueService.queues.events.queue;
   private lastMessageMap = new Map<string, number>();
   private gameServerDomainMap = new Map<string, string>();
@@ -50,6 +59,77 @@ class GameServerManager {
       }
     }, SYNC_INTERVAL_MS);
     this.messageTimeoutInterval = setInterval(() => this.handleMessageTimeout(), 5000);
+  }
+
+  /**
+   * When a generic server connects to WS, we want to add it to the list of servers
+   * However, we first will need to check what domain it belongs to
+   * and if the GameServer record already exists in Takaro.
+   * @param identityToken
+   * @param registrationToken
+   */
+  async handleWsIdentify(identityToken: string, registrationToken: string, name?: string): Promise<string | null> {
+    let domain: DomainOutputDTO;
+    try {
+      domain = (await takaro.domain.domainControllerResolveRegistrationToken({ registrationToken })).data.data;
+    } catch (error) {
+      if (isAxiosError(error) && error.response?.status === 404) {
+        this.log.warn(`No domain found for registrationToken ${registrationToken}`);
+        throw new errors.BadRequestError('Invalid registrationToken provided');
+      }
+      throw error;
+    }
+
+    const client = await getDomainClient(domain.id);
+    // Find all 'generic' gameservers and see if any of them have the same identityToken
+    const gameServers = (
+      await client.gameserver.gameServerControllerSearch({
+        filters: { type: [GameServerTypesOutputDTOTypeEnum.Generic], identityToken: [identityToken] },
+      })
+    ).data.data;
+
+    let existingGameServer: GameServerOutputDTO | null = null;
+
+    for (const gameServer of gameServers) {
+      if (gameServer.identityToken === identityToken) {
+        existingGameServer = gameServer;
+        break;
+      }
+    }
+
+    // Gameserver does not exist yet, let's register it
+    if (!existingGameServer) {
+      this.log.info(`GameServer ${identityToken} does not exist, creating...`);
+      if (!name) name = identityToken;
+      existingGameServer = (
+        await client.gameserver.gameServerControllerCreate({
+          connectionInfo: JSON.stringify({ identityToken }),
+          type: GameServerTypesOutputDTOTypeEnum.Generic,
+          name,
+          identityToken,
+        })
+      ).data.data;
+    }
+
+    await this.add(domain.id, existingGameServer.id);
+    return existingGameServer.id;
+  }
+
+  async handleGameMessage(gameServerId: string, msg: WebSocketMessage) {
+    const res = this.emitterMap.get(gameServerId);
+    if (!res) throw new errors.NotFoundError(`GameServer ${gameServerId} not found in active emitters`);
+    const { emitter } = res;
+    if (emitter instanceof GenericEmitter) {
+      if (!msg.payload) throw new errors.BadRequestError('No payload provided');
+      const { type, data } = msg.payload;
+      const dtoCls = EventMapping[type as GameEventTypes];
+      if (!dtoCls) throw new errors.BadRequestError(`Event ${type} is not supported`);
+
+      const dto = new dtoCls(data as any);
+      await dto.validate({ forbidNonWhitelisted: true, forbidUnknownValues: true });
+
+      emitter.listener(type as GameEventTypes, data);
+    }
   }
 
   private async getGameServer(gameServerId: string) {
@@ -114,6 +194,10 @@ class GameServerManager {
     for (const [domainId, servers] of gameServers) {
       for (const server of servers) {
         try {
+          if (server.type === GameServerTypesOutputDTOTypeEnum.Generic) {
+            continue;
+          }
+
           if (this.emitterMap.has(server.id)) {
             continue;
           }
@@ -160,7 +244,7 @@ class GameServerManager {
     }
 
     const emitter = (
-      await getGame(gameServer.type, gameServer.connectionInfo as Record<string, unknown>, {})
+      await getGame(gameServer.type, gameServer.connectionInfo as Record<string, unknown>, {}, gameServerId)
     ).getEventEmitter();
     this.emitterMap.set(gameServer.id, { domainId, emitter });
 

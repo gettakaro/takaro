@@ -3,11 +3,13 @@ import { IGamePlayer, IPosition } from '@takaro/modules';
 import {
   BanDTO,
   CommandOutput,
+  IEntityDTO,
   IGameServer,
   IItemDTO,
   IMessageOptsDTO,
   IPlayerReferenceDTO,
   TestReachabilityOutputDTO,
+  ILocationDTO,
 } from '../../interfaces/GameServer.js';
 import { SevenDaysToDieEmitter } from './emitter.js';
 import { SdtdApiClient } from './sdtdAPIClient.js';
@@ -92,11 +94,11 @@ export class SevenDaysToDie implements IGameServer {
       return null;
     }
 
-    return {
+    return new IPosition({
       x: playerLocation.position.x,
       y: playerLocation.position.y,
       z: playerLocation.position.z,
-    };
+    });
   }
 
   async giveItem(player: IPlayerReferenceDTO, item: string, amount: number = 1, quality?: string): Promise<void> {
@@ -348,5 +350,13 @@ export class SevenDaysToDie implements IGameServer {
 
   async getMapTile(x: number, y: number, z: number) {
     return this.apiClient.getMapTile(x, y, z);
+  }
+
+  async listEntities(): Promise<IEntityDTO[]> {
+    throw new errors.NotImplementedError();
+  }
+
+  async listLocations(): Promise<ILocationDTO[]> {
+    throw new errors.NotImplementedError();
   }
 }

@@ -26,7 +26,8 @@
     "name": "Get by ID",
     "expectedStatus": 200,
     "filteredFields": [
-      "name"
+      "name",
+      "serverRegistrationToken"
     ],
     "standardEnvironment": true
   }

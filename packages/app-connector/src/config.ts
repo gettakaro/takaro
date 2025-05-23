@@ -9,6 +9,11 @@ interface IConnectorConfig extends IBaseConfig {
     port: number;
     allowedOrigins: string[];
   };
+  ws: {
+    port: number;
+    heartbeatIntervalMs: number;
+    requestTimeoutMs: number;
+  };
   gameServerManager: {
     reconnectAfterMs: number;
     syncIntervalMs: number;
@@ -46,6 +51,26 @@ const configSchema = {
       format: Array,
       default: [],
       env: 'CORS_ALLOWED_ORIGINS',
+    },
+  },
+  ws: {
+    port: {
+      doc: 'The port to bind the WebSocket server to',
+      format: 'integer',
+      default: 3004,
+      env: 'T_WEBSOCKET_PORT',
+    },
+    heartbeatIntervalMs: {
+      doc: 'How often we send a heartbeat to the clients',
+      format: 'integer',
+      default: ms('30s'),
+      env: 'T_WEBSOCKET_HEARTBEAT_INTERVAL_MS',
+    },
+    requestTimeoutMs: {
+      doc: 'How long we wait for a response to a request before timing out',
+      format: 'integer',
+      default: ms('10s'),
+      env: 'T_WEBSOCKET_REQUEST_TIMEOUT_MS',
     },
   },
   gameServerManager: {

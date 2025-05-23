@@ -10,6 +10,6 @@ export * from './encryption.js';
 
 export { configSchema, IDbConfig } from './config.js';
 
-export { Redis } from './redis.js';
+export { Redis, RedisClient } from './redis.js';
 
 export * from './errorTypeGuards.js';

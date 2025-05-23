@@ -7,10 +7,11 @@ import {
   IPlayerReferenceDTO,
   sdtdJsonSchema,
   rustJsonSchema,
-  mockJsonSchema,
   GAME_SERVER_TYPE,
   getGame,
   BanDTO,
+  TestReachabilityOutputDTO,
+  TakaroConnector,
 } from '@takaro/gameserver';
 import { errors, TakaroModelDTO, traceableClass, TakaroDTO } from '@takaro/util';
 import { SettingsService } from './SettingsService.js';
@@ -85,6 +86,9 @@ export class GameServerOutputDTO extends TakaroModelDTO<GameServerOutputDTO> {
   reachable: boolean;
   @IsBoolean()
   enabled: boolean;
+  @IsString()
+  @IsOptional()
+  identityToken?: string;
 }
 
 export class GameServerCreateDTO extends TakaroDTO<GameServerCreateDTO> {
@@ -96,6 +100,9 @@ export class GameServerCreateDTO extends TakaroDTO<GameServerCreateDTO> {
   @IsString()
   @IsEnum(GAME_SERVER_TYPE)
   type: GAME_SERVER_TYPE;
+  @IsString()
+  @IsOptional()
+  identityToken?: string;
 }
 
 export class GameServerUpdateDTO extends TakaroDTO<GameServerUpdateDTO> {
@@ -149,7 +156,17 @@ export class GameServerService extends TakaroService<
     if (currentServers.total >= domain.maxGameservers) {
       throw new errors.BadRequestError('Max game servers reached');
     }
-    const isReachable = await this.testReachability(undefined, JSON.parse(item.connectionInfo), item.type);
+    let isReachable = new TestReachabilityOutputDTO({ connectable: false, reason: 'Unknown' });
+    // Generic gameservers start the connection, so they are always reachable
+    if (item.type === GAME_SERVER_TYPE.GENERIC) {
+      isReachable = new TestReachabilityOutputDTO({
+        connectable: true,
+        reason: 'Generic gameservers are always reachable',
+      });
+      if (!item.identityToken) throw new errors.BadRequestError('Identity token is required for generic gameservers');
+    } else {
+      isReachable = await this.testReachability(undefined, JSON.parse(item.connectionInfo), item.type);
+    }
     const createdServer = await this.repo.create(item);
 
     const eventsService = new EventService(this.domainId);
@@ -160,12 +177,14 @@ export class GameServerService extends TakaroService<
         meta: new TakaroEventGameserverCreated(),
       }),
     );
-    await queueService.queues.connector.queue.add({
-      domainId: this.domainId,
-      gameServerId: createdServer.id,
-      operation: 'create',
-      time: new Date().toISOString(),
-    });
+    if (createdServer.type !== GAME_SERVER_TYPE.GENERIC) {
+      await queueService.queues.connector.queue.add({
+        domainId: this.domainId,
+        gameServerId: createdServer.id,
+        operation: 'create',
+        time: new Date().toISOString(),
+      });
+    }
 
     queueService.queues.system.queue.add({
       domainId: this.domainId,
@@ -173,7 +192,7 @@ export class GameServerService extends TakaroService<
       gameServerId: createdServer.id,
     });
 
-    if (isReachable.connectable) {
+    if (isReachable.connectable && createdServer.type !== GAME_SERVER_TYPE.GENERIC) {
       await handlePlayerSync(createdServer.id, this.domainId);
     }
 
@@ -181,6 +200,8 @@ export class GameServerService extends TakaroService<
   }
 
   async delete(id: string) {
+    const existing = await this.findOne(id, false);
+    if (!existing) throw new errors.NotFoundError('Game server not found');
     const installedModules = await this.moduleService.findInstallations({
       filters: { gameserverId: [id] },
     });
@@ -195,12 +216,15 @@ export class GameServerService extends TakaroService<
     const gateway = new Pushgateway(config.get('metrics.pushgatewayUrl'), {});
     gateway.delete({ jobName: 'worker', groupings: { gameserver: id } });
 
-    await queueService.queues.connector.queue.add({
-      domainId: this.domainId,
-      gameServerId: id,
-      operation: 'delete',
-      time: new Date().toISOString(),
-    });
+    if (existing.type !== GAME_SERVER_TYPE.GENERIC) {
+      await queueService.queues.connector.queue.add({
+        domainId: this.domainId,
+        gameServerId: id,
+        operation: 'delete',
+        time: new Date().toISOString(),
+      });
+    }
+
     await this.repo.delete(id);
     const eventsService = new EventService(this.domainId);
     await eventsService.create(
@@ -232,12 +256,15 @@ export class GameServerService extends TakaroService<
         meta: new TakaroEventGameserverUpdated(),
       }),
     );
-    await queueService.queues.connector.queue.add({
-      domainId: this.domainId,
-      gameServerId: id,
-      operation: 'update',
-      time: new Date().toISOString(),
-    });
+    if (updatedServer.type !== GAME_SERVER_TYPE.GENERIC) {
+      await queueService.queues.connector.queue.add({
+        domainId: this.domainId,
+        gameServerId: id,
+        operation: 'update',
+        time: new Date().toISOString(),
+      });
+    }
+
     return updatedServer;
   }
 
@@ -272,7 +299,7 @@ export class GameServerService extends TakaroService<
 
       return reachability;
     } else if (connectionInfo && type) {
-      const instance = await getGame(type, connectionInfo, {});
+      const instance = await getGame(type, connectionInfo, {}, 'unknown-id');
       return instance.testReachability();
     }
     throw new errors.BadRequestError('Missing required parameters');
@@ -296,7 +323,7 @@ export class GameServerService extends TakaroService<
       return acc;
     }, {});
 
-    gameInstance = await getGame(gameserver.type, gameserver.connectionInfo, settings);
+    gameInstance = await getGame(gameserver.type, gameserver.connectionInfo, settings, id);
 
     gameClassCache.set(id, gameInstance);
 
@@ -315,8 +342,19 @@ export class GameServerService extends TakaroService<
           case GAME_SERVER_TYPE.RUST:
             schema = rustJsonSchema;
             break;
+          case GAME_SERVER_TYPE.GENERIC:
+            schema = {
+              type: 'object',
+              properties: {},
+              required: [],
+            };
+            break;
           case GAME_SERVER_TYPE.MOCK:
-            schema = mockJsonSchema;
+            schema = {
+              type: 'object',
+              properties: {},
+              required: [],
+            };
             break;
           default:
             throw new errors.NotImplementedError();
@@ -579,6 +617,25 @@ export class GameServerService extends TakaroService<
 
   async getMapTile(gameServerId: string, x: number, y: number, z: number) {
     const gameInstance = await this.getGame(gameServerId);
-    return gameInstance.getMapTile(x, y, z);
+    const str = await gameInstance.getMapTile(x, y, z);
+    // Convert the base64 string to a buffer
+    const buffer = Buffer.from(str, 'base64');
+    return buffer;
+  }
+
+  async regenerateRegistrationToken() {
+    const domainService = new DomainService();
+    const { query, model } = await domainService.repo.getModel();
+    await query.where({ id: this.domainId }).update({
+      serverRegistrationToken: model.raw('generate_registration_token()'),
+    });
+
+    const servers = await this.find({ filters: { type: [GAME_SERVER_TYPE.GENERIC] } });
+    const connectorClient = new TakaroConnector();
+    await Promise.all(
+      servers.results.map(async (server) => {
+        await connectorClient.resetConnection(server.id);
+      }),
+    );
   }
 }

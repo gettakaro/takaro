@@ -65,9 +65,11 @@ services:
       FUNCTIONS_EXECUTION_MODE: 'local'
       MOCK_GAMESERVER_HOST: 'http://takaro_mock_gameserver:3002'
       TAKARO_TEST_RUNNER_ATTEMPTS: ${TAKARO_TEST_RUNNER_ATTEMPTS}
-      TRACING_ENABLED: ${TRACING_ENABLED}
-      TRACING_ENDPOINT: "http://grafana_agent:4317"        
-
+      TRACING_ENABLED: "true"
+      T_WS_URL: "ws://takaro_connector:3004" 
+      CONNECTOR_HOST: http://takaro_connector:3003
+      LOGGING_LEVEL: none
+      
   takaro_api:
     image: ghcr.io/gettakaro/takaro-app-api:${DOCKER_TAG}
     restart: always
@@ -89,8 +91,8 @@ services:
       TAKARO_HOST: http://takaro_api:3000
       MOCK_GAMESERVER_HOST: http://takaro_mock_gameserver:3002
       CORS_ALLOWED_ORIGINS: http://127.0.0.1:13000,http://127.0.0.1:13001
-      TRACING_ENABLED: ${TRACING_ENABLED}
-      TRACING_ENDPOINT: "http://grafana_agent:4317"      
+      TRACING_ENABLED: "true"
+      CONNECTOR_HOST: http://takaro_connector:3003
     ports:
       # api
       - 13000:3000
@@ -115,8 +117,8 @@ services:
     environment:
       LOGGING_LEVEL: debug
       REDIS_HOST: 'redis'
-      TRACING_ENABLED: ${TRACING_ENABLED}
-      TRACING_ENDPOINT: "http://grafana_agent:4317"          
+      TRACING_ENABLED: "true"
+      T_WS_URL: "ws://takaro_connector:3004"     
     ports:
       - 3002:3002
 
@@ -129,10 +131,10 @@ services:
       REDIS_HOST: 'redis'
       ADMIN_CLIENT_SECRET: ${ADMIN_CLIENT_SECRET}
       TAKARO_HOST: http://takaro_api:3000
-      TRACING_ENABLED: ${TRACING_ENABLED}
-      TRACING_ENDPOINT: "http://grafana_agent:4317"          
+      TRACING_ENABLED: "true"
     ports:
       - 3003:3003
+      - 3004:3004
 
   mailhog:
     image: mailhog/mailhog

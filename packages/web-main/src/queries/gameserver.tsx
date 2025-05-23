@@ -368,3 +368,20 @@ export const useGameServerShutdown = () => {
     {},
   );
 };
+
+export const useGameServerResetToken = () => {
+  const apiClient = getApiClient();
+  const { enqueueSnackbar } = useSnackbar();
+
+  return mutationWrapper<APIOutput, void>(
+    useMutation<void, AxiosError<void>, void>({
+      mutationFn: async () => {
+        await apiClient.gameserver.gameServerControllerRegenerateRegistrationToken();
+      },
+      onSuccess: async () => {
+        enqueueSnackbar('Gameserver registration token reset.', { variant: 'default', type: 'info' });
+      },
+    }),
+    {},
+  );
+};
