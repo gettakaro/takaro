@@ -8,7 +8,9 @@ import {
   BanDTO,
   CommandOutput,
   GameServerActions,
+  IEntityDTO,
   IItemDTO,
+  ILocationDTO,
   MapInfoDTO,
   TestReachabilityOutputDTO,
 } from '@takaro/gameserver';
@@ -401,6 +403,8 @@ class WSServer {
       executeConsoleCommand: { dto: CommandOutput, isArray: false },
       listBans: { dto: BanDTO, isArray: true },
       listItems: { dto: IItemDTO, isArray: true },
+      listEntities: { dto: IEntityDTO, isArray: true },
+      listLocations: { dto: ILocationDTO, isArray: true },
       getPlayerInventory: { dto: IItemDTO, isArray: true },
       getMapInfo: { dto: MapInfoDTO, isArray: false },
       getMapTile: null,
