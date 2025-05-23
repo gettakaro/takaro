@@ -131,6 +131,78 @@ const tests = [
       await checkRoleAndPermissions(this.client, userClient, existingUser.user.id);
     },
   }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'ingame-flow: happy path with existing identity and logged in to old domain',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      const existingUser = await createUser(this.client);
+      const userClient = await getClient(existingUser.user.email, existingUser.password);
+      await triggerLink(this.client, userClient, this.setupData, existingUser.user.email);
+      await checkRoleAndPermissions(this.client, userClient, existingUser.user.id);
+
+      // Create a new domain and server
+      const newDomain = (
+        await this.adminClient.domain.domainControllerCreate({
+          name: 'integration-test-link',
+        })
+      ).data.data;
+
+      const newDomainRootUser = newDomain.rootUser.email;
+      const newDomainRootUserPassword = newDomain.password;
+      const newDomainClient = await getClient(newDomainRootUser, newDomainRootUserPassword);
+
+      const serverName = randomUUID();
+
+      const eventsAwaiter = new EventsAwaiter();
+      await eventsAwaiter.connect(newDomainClient);
+
+      const connectedEvents = eventsAwaiter.waitForEvents('player-created', 10);
+      const newGameServer = await newDomainClient.gameserver.gameServerControllerCreate({
+        name: `Gameserver ${serverName}`,
+        type: 'MOCK',
+        connectionInfo: JSON.stringify({
+          host: integrationConfig.get('mockGameserver.host'),
+          name: `new-${serverName}`,
+        }),
+      });
+      await newDomainClient.gameserver.gameServerControllerExecuteCommand(newGameServer.data.data.id, {
+        command: 'connectAll',
+      });
+      expect(await connectedEvents).to.have.length(10);
+
+      const newPogs = (
+        await newDomainClient.playerOnGameserver.playerOnGameServerControllerSearch({
+          filters: { gameServerId: [newGameServer.data.data.id] },
+        })
+      ).data.data;
+
+      const chatEventWaiter = (await new EventsAwaiter().connect(newDomainClient)).waitForEvents(
+        GameEvents.CHAT_MESSAGE,
+      );
+      await newDomainClient.command.commandControllerTrigger(newGameServer.data.data.id, {
+        msg: '/link',
+        playerId: newPogs[0].playerId,
+      });
+
+      const chatEvents = await chatEventWaiter;
+      expect(chatEvents).to.have.length(1);
+
+      const code = await getSecretCodeForPlayer(newPogs[0].playerId);
+      await userClient.user.userControllerLinkPlayerProfile({
+        email: existingUser.user.email,
+        code,
+      });
+
+      const newUsers = (await newDomainClient.user.userControllerSearch()).data.data;
+      // Should return root user and linked user
+      expect(newUsers).to.have.length(2);
+      const newUsersWithoutRoot = newUsers.filter((user) => user.id !== newDomain.rootUser.id);
+      expect(newUsersWithoutRoot).to.have.length(1);
+      expect(newUsersWithoutRoot[0].idpId).to.be.equal(existingUser.user.idpId);
+    },
+  }),
 
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
