@@ -1,6 +1,6 @@
 {
   "name": "@takaro/config",
-  "version": "0.0.24",
+  "version": "0.0.28",
   "description": "An opinionated config handler",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",

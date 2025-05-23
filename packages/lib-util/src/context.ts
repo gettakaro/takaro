@@ -11,7 +11,11 @@ interface TransactionStore {
 }
 
 function isValidTransactionStore(store: unknown): store is TransactionStore {
-  return typeof store === 'object' && store !== null && Object.values(store).every((val) => typeof val === 'string');
+  return (
+    typeof store === 'object' &&
+    store !== null &&
+    Object.values(store).every((val) => typeof val === 'string' || val === undefined || val === null)
+  );
 }
 
 class Context {

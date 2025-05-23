@@ -1,6 +1,6 @@
 {
   "name": "@takaro/email",
-  "version": "0.0.24",
+  "version": "0.0.28",
   "description": "",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",

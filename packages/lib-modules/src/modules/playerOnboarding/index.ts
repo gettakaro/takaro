@@ -8,7 +8,7 @@ export class PlayerOnboarding extends ModuleTransferDTO<PlayerOnboarding> {
     this.name = 'playerOnboarding';
     this.versions = [
       new ModuleTransferVersionDTO({
-        tag: '0.0.1',
+        tag: '0.0.2',
         description:
           'Collection of functions that are executed when a player joins the server. Helps with onboarding new players, like sending a welcome message.',
         configSchema: JSON.stringify({

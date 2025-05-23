@@ -19,6 +19,14 @@ export const server = new HTTP(
 
 const log = logger('main');
 
+process.on('unhandledRejection', (reason, promise) => {
+  log.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+process.on('uncaughtException', (error) => {
+  log.error('Uncaught Exception thrown:', error);
+});
+
 async function main() {
   log.info('Starting...');
 

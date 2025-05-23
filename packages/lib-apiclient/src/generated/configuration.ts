@@ -17,10 +17,10 @@ export interface ConfigurationParameters {
   username?: string;
   password?: string;
   accessToken?:
-    | string
-    | Promise<string>
-    | ((name?: string, scopes?: string[]) => string)
-    | ((name?: string, scopes?: string[]) => Promise<string>);
+  | string
+  | Promise<string>
+  | ((name?: string, scopes?: string[]) => string)
+  | ((name?: string, scopes?: string[]) => Promise<string>);
   basePath?: string;
   serverIndex?: number;
   baseOptions?: any;

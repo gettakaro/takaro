@@ -172,9 +172,10 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
 
   async syncModuleCronjobs(modInstallation: ModuleInstallationOutputDTO) {
     this.log.debug(`Syncing cronjobs for module ${modInstallation.moduleId}`);
+
+    await this.removeCronjobFromQueue(modInstallation.version.cronJobs, modInstallation);
     await Promise.all(
       modInstallation.version.cronJobs.map(async (cronJob) => {
-        await this.removeCronjobFromQueue(cronJob, modInstallation);
         await this.addCronjobToQueue(cronJob, modInstallation);
       }),
     );
@@ -189,11 +190,7 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
   }
 
   async uninstallCronJobs(modInstallation: ModuleInstallationOutputDTO) {
-    await Promise.all(
-      modInstallation.version.cronJobs.map(async (cronJob) => {
-        await this.removeCronjobFromQueue(cronJob, modInstallation);
-      }),
-    );
+    await this.removeCronjobFromQueue(modInstallation.version.cronJobs, modInstallation);
   }
 
   private async addCronjobToQueue(cronJob: CronJobOutputDTO, modInstallation: ModuleInstallationOutputDTO) {
@@ -223,15 +220,28 @@ export class CronJobService extends TakaroService<CronJobModel, CronJobOutputDTO
     this.log.debug(`Added repeatable job ${key}`);
   }
 
-  private async removeCronjobFromQueue(cronJob: CronJobOutputDTO, modInstallation: ModuleInstallationOutputDTO) {
-    const repeatables = await queueService.queues.cronjobs.queue.getRepeatableJobs();
-    const key = this.getJobKey(modInstallation, cronJob);
+  private async removeCronjobFromQueue(
+    cronJobs: CronJobOutputDTO | CronJobOutputDTO[],
+    modInstallation: ModuleInstallationOutputDTO,
+  ) {
+    const jobsArray = Array.isArray(cronJobs) ? cronJobs : [cronJobs];
 
-    const repeatable = repeatables.find((r) => r.key === key);
-    if (repeatable) {
-      await queueService.queues.cronjobs.queue.removeRepeatableByKey(repeatable.key);
-      this.log.debug(`Removed repeatable job ${key}`);
-    }
+    if (jobsArray.length === 0) return;
+
+    const repeatables = await queueService.queues.cronjobs.queue.getRepeatableJobs();
+
+    const repeatablesByKey = new Map(repeatables.map((r) => [r.key, r]));
+
+    const keysToRemove = jobsArray
+      .map((cronJob) => this.getJobKey(modInstallation, cronJob))
+      .filter((key) => repeatablesByKey.has(key));
+
+    await Promise.all(
+      keysToRemove.map(async (key) => {
+        await queueService.queues.cronjobs.queue.removeRepeatableByKey(key);
+        this.log.debug(`Removed repeatable job ${key}`);
+      }),
+    );
   }
 
   async trigger(data: CronJobTriggerDTO) {

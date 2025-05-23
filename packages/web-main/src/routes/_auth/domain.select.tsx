@@ -86,13 +86,13 @@ function DomainCard({ domain, isCurrentDomain }: DomainCardProps) {
     if (isCurrentDomain === false) {
       mutate({ domainId: domain.id });
     } else {
-      navigate({ to: '/dashboard' });
+      navigate({ to: '/' });
     }
   };
 
   if (isSuccess) {
     queryClient.clear();
-    navigate({ to: '/dashboard' });
+    navigate({ to: '/' });
   }
 
   function getDomainChip() {
@@ -141,7 +141,8 @@ function DomainCard({ domain, isCurrentDomain }: DomainCardProps) {
             </div>
           </div>
           <h2 style={{ display: 'flex', alignItems: 'center' }}>
-            {domain.name}
+            <div style={{ marginRight: '10px' }}>{domain.name}</div>
+            <Chip variant="outline" color="primary" label={domain.id} />
             <ArrowRightIcon size={18} style={{ marginLeft: '10px' }} />
           </h2>
         </InnerBody>
