@@ -218,9 +218,10 @@ export class UserService extends TakaroService<UserModel, UserOutputDTO, UserCre
     if (existingIdpProfile) {
       const maybeUser = await userService.find({ filters: { idpId: [existingIdpProfile.id] } });
       if (maybeUser.results.length === 0) {
-        throw new errors.InternalServerError();
+        user = await userService.inviteUser(email, { isDashboardUser: false });
+      } else {
+        user = maybeUser.results[0];
       }
-      user = maybeUser.results[0];
     } else {
       user = await userService.inviteUser(email, { isDashboardUser: false });
     }

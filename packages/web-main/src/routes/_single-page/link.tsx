@@ -67,7 +67,7 @@ function Component() {
 
   if (isSuccess && session?.user.email === watch('email')) {
     enqueueSnackbar('Player linked successfully!', { variant: 'default', type: 'success' });
-    return <Navigate to="/dashboard" />;
+    return <Navigate to="/" />;
   }
 
   if (isSuccess) {
