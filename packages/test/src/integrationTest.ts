@@ -92,7 +92,7 @@ export class IntegrationTest<SetupData> {
       maxUsers: 5,
     });
     this.standardDomainId = createdDomain.data.data.createdDomain.id;
-    this.domainRegistrationToken = createdDomain.data.data.createdDomain.serverRegistrationToken;
+    this.domainRegistrationToken = createdDomain.data.data.createdDomain.serverRegistrationToken!;
 
     this.client.username = createdDomain.data.data.rootUser.email;
     this.client.password = createdDomain.data.data.password;
