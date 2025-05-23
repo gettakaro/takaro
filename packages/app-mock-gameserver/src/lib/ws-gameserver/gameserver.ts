@@ -16,8 +16,10 @@ import { errors, logger } from '@takaro/util';
 import {
   BanDTO,
   CommandOutput,
+  IEntityDTO,
   IGameServer,
   IItemDTO,
+  ILocationDTO,
   IMessageOptsDTO,
   IPlayerReferenceDTO,
   MapInfoDTO,
@@ -539,7 +541,7 @@ export class GameServer implements IGameServer {
     }
   }
 
-  async getMapTile(x: number, y: number, z: number): Promise<Buffer> {
+  async getMapTile(x: number, y: number, z: number): Promise<string> {
     try {
       this.log.info(`Getting map tile at (${x}, ${y}, ${z})`);
       // We transform the y coordinate to a letter in the range A-Z
@@ -553,12 +555,21 @@ export class GameServer implements IGameServer {
       console.log('Tile path', tilePath);
       console.log('Tile path', tilePath);
       const tileBuffer = await readFile(tilePath);
-      if (!tileBuffer) throw new errors.NotFoundError(`Tile not found at (${x}, ${y}, ${z})`);
-      return tileBuffer;
+      if (!tileBuffer) return '';
+      const base64 = tileBuffer.toString('base64');
+      return base64;
     } catch (error) {
       this.log.error(`Error getting map tile at (${x}, ${y}, ${z}):`, error);
       throw error;
     }
+  }
+
+  async listEntities(): Promise<IEntityDTO[]> {
+    return [];
+  }
+
+  async listLocations(): Promise<ILocationDTO[]> {
+    return [];
   }
   //#endregion
 }
