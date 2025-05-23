@@ -281,6 +281,19 @@ export class GameServerController {
     return apiResponse(await service.getTypes());
   }
 
+  @Delete('/gameserver/registrationToken')
+  @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
+  @OpenAPI({
+    description:
+      'Regenerate the registration token for a gameserver. Careful, this will invalidate all existing connections.',
+  })
+  @ResponseSchema(APIOutput)
+  async regenerateRegistrationToken(@Req() req: AuthenticatedRequest) {
+    const service = new GameServerService(req.domainId);
+    await service.regenerateRegistrationToken();
+    return apiResponse();
+  }
+
   @UseBefore(AuthService.getAuthMiddleware([]))
   @ResponseSchema(GameServerOutputDTOAPI)
   @OpenAPI({

@@ -11,6 +11,7 @@ import {
   getGame,
   BanDTO,
   TestReachabilityOutputDTO,
+  TakaroConnector,
 } from '@takaro/gameserver';
 import { errors, TakaroModelDTO, traceableClass, TakaroDTO } from '@takaro/util';
 import { SettingsService } from './SettingsService.js';
@@ -348,6 +349,13 @@ export class GameServerService extends TakaroService<
               required: [],
             };
             break;
+          case GAME_SERVER_TYPE.MOCK:
+            schema = {
+              type: 'object',
+              properties: {},
+              required: [],
+            };
+            break;
           default:
             throw new errors.NotImplementedError();
         }
@@ -613,5 +621,21 @@ export class GameServerService extends TakaroService<
     // Convert the base64 string to a buffer
     const buffer = Buffer.from(str, 'base64');
     return buffer;
+  }
+
+  async regenerateRegistrationToken() {
+    const domainService = new DomainService();
+    const { query, model } = await domainService.repo.getModel();
+    await query.where({ id: this.domainId }).update({
+      serverRegistrationToken: model.raw('generate_registration_token()'),
+    });
+
+    const servers = await this.find({ filters: { type: [GAME_SERVER_TYPE.GENERIC] } });
+    const connectorClient = new TakaroConnector();
+    await Promise.all(
+      servers.results.map(async (server) => {
+        await connectorClient.resetConnection(server.id);
+      }),
+    );
   }
 }

@@ -78,6 +78,28 @@ export class TakaroConnector {
             'The gameserver responded with bad data, please verify that the mod is up to date.',
           );
         }
+
+        if (error.response?.status) {
+          if (error.response?.status >= 400 && error.response?.status < 500) {
+            throw new errors.BadRequestError(error.response?.data.meta.error.message);
+          }
+        }
+      }
+      throw error;
+    }
+  }
+
+  async resetConnection(id: string): Promise<any> {
+    try {
+      await this.client.post(`/gameserver/${id}/reset`);
+      return;
+    } catch (error) {
+      if (isAxiosError(error)) {
+        if (error.response?.data.meta.error.code === 'ValidationError') {
+          throw new errors.BadRequestError(
+            'The gameserver responded with bad data, please verify that the mod is up to date.',
+          );
+        }
       }
       throw error;
     }

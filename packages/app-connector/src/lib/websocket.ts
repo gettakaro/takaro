@@ -313,6 +313,18 @@ class WSServer {
     });
   }
 
+  public async resetConnection(id: string): Promise<void> {
+    const client = this.servers.get(id);
+    if (!client) {
+      this.log.warn(`Game server ${id} not found`);
+      return;
+    }
+    client.terminate();
+    this.servers.delete(id);
+    if (client.id) this.WsToServerMap.delete(client.id);
+    this.log.info(`Game server ${id} connection reset`);
+  }
+
   public async requestFromGameServer(id: string, action: GameServerActions, args: string) {
     const timer = this.metrics.requestLatency.startTimer({ action });
     this.metrics.gameserverRequests.inc({ action });

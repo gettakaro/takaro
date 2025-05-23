@@ -24,4 +24,10 @@ export class GameServerController {
     const result = await wsServer.requestFromGameServer(params.id, body.operation, body.data);
     return apiResponse(result);
   }
+
+  @Post('/:id/reset')
+  async resetServerConnection(@Params() params: IdParam) {
+    const result = await wsServer.resetConnection(params.id);
+    return apiResponse(result);
+  }
 }

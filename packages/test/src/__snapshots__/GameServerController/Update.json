@@ -8,12 +8,9 @@
       "deletedAt": null,
       "name": "Test gameserver 2",
       "enabled": true,
-      "connectionInfo": {
-        "host": "somewhere.else",
-        "port": 9876
-      },
-      "type": "MOCK",
-      "reachable": false
+      "connectionInfo": {},
+      "type": "GENERIC",
+      "reachable": true
     }
   },
   "status": 200,

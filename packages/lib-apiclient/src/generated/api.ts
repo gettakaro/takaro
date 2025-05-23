@@ -15854,6 +15854,38 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
+     * Regenerate the registration token for a gameserver. Careful, this will invalidate all existing connections.   Required permissions: `MANAGE_GAMESERVERS`<br> OperationId: `GameServerControllerRegenerateRegistrationToken`
+     * @summary Regenerate registration token
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerRegenerateRegistrationToken: async (
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/gameserver/registrationToken`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      * Delete a gameserver   Required permissions: `MANAGE_GAMESERVERS`<br> OperationId: `GameServerControllerRemove`
      * @summary Remove
      * @param {string} id
@@ -16631,6 +16663,30 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
+     * Regenerate the registration token for a gameserver. Careful, this will invalidate all existing connections.   Required permissions: `MANAGE_GAMESERVERS`<br> OperationId: `GameServerControllerRegenerateRegistrationToken`
+     * @summary Regenerate registration token
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerRegenerateRegistrationToken(
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.gameServerControllerRegenerateRegistrationToken(options);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['GameServerApi.gameServerControllerRegenerateRegistrationToken']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
      * Delete a gameserver   Required permissions: `MANAGE_GAMESERVERS`<br> OperationId: `GameServerControllerRemove`
      * @summary Remove
      * @param {string} id
@@ -17107,6 +17163,17 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
       return localVarFp.gameServerControllerListBans(id, options).then((request) => request(axios, basePath));
     },
     /**
+     * Regenerate the registration token for a gameserver. Careful, this will invalidate all existing connections.   Required permissions: `MANAGE_GAMESERVERS`<br> OperationId: `GameServerControllerRegenerateRegistrationToken`
+     * @summary Regenerate registration token
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerRegenerateRegistrationToken(options?: RawAxiosRequestConfig): AxiosPromise<APIOutput> {
+      return localVarFp
+        .gameServerControllerRegenerateRegistrationToken(options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
      * Delete a gameserver   Required permissions: `MANAGE_GAMESERVERS`<br> OperationId: `GameServerControllerRemove`
      * @summary Remove
      * @param {string} id
@@ -17491,6 +17558,19 @@ export class GameServerApi extends BaseAPI {
   public gameServerControllerListBans(id: string, options?: RawAxiosRequestConfig) {
     return GameServerApiFp(this.configuration)
       .gameServerControllerListBans(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Regenerate the registration token for a gameserver. Careful, this will invalidate all existing connections.   Required permissions: `MANAGE_GAMESERVERS`<br> OperationId: `GameServerControllerRegenerateRegistrationToken`
+   * @summary Regenerate registration token
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerRegenerateRegistrationToken(options?: RawAxiosRequestConfig) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerRegenerateRegistrationToken(options)
       .then((request) => request(this.axios, this.basePath));
   }
 

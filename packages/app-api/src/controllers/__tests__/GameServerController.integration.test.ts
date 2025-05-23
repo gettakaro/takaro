@@ -2,6 +2,7 @@ import { IntegrationTest, expect, SetupGameServerPlayers, integrationConfig } fr
 import { EventChatMessage, GameServerCreateDTOTypeEnum, GameServerOutputDTO, isAxiosError } from '@takaro/apiclient';
 import { describe } from 'node:test';
 import { HookEvents } from '@takaro/modules';
+import { randomUUID } from 'crypto';
 
 const group = 'GameServerController';
 
@@ -10,59 +11,53 @@ const mockGameServer = {
   connectionInfo: JSON.stringify({
     host: integrationConfig.get('mockGameserver.host'),
   }),
-  type: GameServerCreateDTOTypeEnum.Mock,
+  type: GameServerCreateDTOTypeEnum.Generic,
+  identityToken: randomUUID(),
 };
 
 const tests = [
-  new IntegrationTest<GameServerOutputDTO>({
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
     snapshot: true,
     name: 'Get by ID',
-    setup: async function () {
-      return (await this.client.gameserver.gameServerControllerCreate(mockGameServer)).data.data;
-    },
+    setup: SetupGameServerPlayers.setup,
     test: async function () {
-      return this.client.gameserver.gameServerControllerGetOne(this.setupData.id);
+      return this.client.gameserver.gameServerControllerGetOne(this.setupData.gameServer1.id);
     },
-    filteredFields: ['connectionInfo', 'identityToken'],
+    filteredFields: ['connectionInfo', 'identityToken', 'name'],
   }),
-  new IntegrationTest<GameServerOutputDTO>({
-    group,
-    snapshot: true,
-    name: 'Create',
-    test: async function () {
-      return this.client.gameserver.gameServerControllerCreate(mockGameServer);
-    },
-    filteredFields: ['connectionInfo', 'identityToken'],
-  }),
-  new IntegrationTest<GameServerOutputDTO>({
+  // Commented out because only generic gameserver types are supported which don't need to be registered by a user
+  // This flow is already tested in the mock server tests
+  // new IntegrationTest<GameServerOutputDTO>({
+  //   group,
+  //   snapshot: true,
+  //   name: 'Create',
+  //   test: async function () {
+  //     return this.client.gameserver.gameServerControllerCreate(mockGameServer);
+  //   },
+  //   filteredFields: ['connectionInfo', 'identityToken'],
+  // }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
     snapshot: true,
     name: 'Update',
     filteredFields: ['identityToken'],
-    setup: async function () {
-      return (await this.client.gameserver.gameServerControllerCreate(mockGameServer)).data.data;
-    },
+    setup: SetupGameServerPlayers.setup,
     test: async function () {
-      return this.client.gameserver.gameServerControllerUpdate(this.setupData.id, {
+      return this.client.gameserver.gameServerControllerUpdate(this.setupData.gameServer1.id, {
         name: 'Test gameserver 2',
-        connectionInfo: JSON.stringify({
-          host: 'somewhere.else',
-          port: 9876,
-        }),
-        type: GameServerCreateDTOTypeEnum.Mock,
+        connectionInfo: JSON.stringify({}),
+        type: GameServerCreateDTOTypeEnum.Generic,
       });
     },
   }),
-  new IntegrationTest<GameServerOutputDTO>({
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
     group,
     snapshot: true,
     name: 'Delete',
-    setup: async function () {
-      return (await this.client.gameserver.gameServerControllerCreate(mockGameServer)).data.data;
-    },
+    setup: SetupGameServerPlayers.setup,
     test: async function () {
-      return this.client.gameserver.gameServerControllerRemove(this.setupData.id);
+      return this.client.gameserver.gameServerControllerRemove(this.setupData.gameServer1.id);
     },
   }),
   new IntegrationTest<GameServerOutputDTO>({
@@ -135,6 +130,39 @@ const tests = [
       const meta2 = events[1].meta as EventChatMessage;
       expect(meta1.channel).to.equal('global');
       expect(meta2.channel).to.equal('whisper');
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'When regenerating the registration token, old connections are invalidated',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      const meRes = await this.client.user.userControllerMe();
+      const oldRegistrationToken = meRes.data.data.domains[0].serverRegistrationToken;
+
+      // Verify that server connection works initially
+      const serverRes = await this.client.gameserver.gameServerControllerTestReachabilityForId(
+        this.setupData.gameServer1.id,
+      );
+      expect(serverRes.data.data.connectable).to.equal(true);
+
+      // Regenerate the token
+      await this.client.gameserver.gameServerControllerRegenerateRegistrationToken();
+
+      const newMeRes = await this.client.user.userControllerMe();
+      const newRegistrationToken = newMeRes.data.data.domains[0].serverRegistrationToken;
+      expect(newRegistrationToken).to.not.equal(oldRegistrationToken);
+
+      // Verify that server connection fails with the old token
+      try {
+        await this.client.gameserver.gameServerControllerTestReachabilityForId(this.setupData.gameServer1.id);
+        throw new Error('Should have thrown');
+      } catch (error) {
+        if (!isAxiosError(error)) throw error;
+        expect(error.response?.status).to.equal(400);
+        expect(error.response?.data.meta.error.message).to.equal('Game server is not connected');
+      }
     },
   }),
 ];
