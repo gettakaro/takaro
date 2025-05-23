@@ -12,6 +12,7 @@ export enum GAME_SERVER_TYPE {
   'SEVENDAYSTODIE' = 'SEVENDAYSTODIE',
   'RUST' = 'RUST',
   'GENERIC' = 'GENERIC',
+  'MOCK' = 'MOCK',
 }
 
 export async function getGame(
