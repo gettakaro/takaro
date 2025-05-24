@@ -41,6 +41,7 @@ import { BanController } from './controllers/BanController.js';
 import { ModuleController } from './controllers/Module/modules.js';
 import { ModuleVersionController } from './controllers/Module/versions.js';
 import { ModuleInstallationsController } from './controllers/Module/installations.js';
+import { TrackingController } from './controllers/TrackingController.js';
 
 export const server = new HTTP(
   {
@@ -68,6 +69,7 @@ export const server = new HTTP(
       ShopListingController,
       ShopOrderController,
       BanController,
+      TrackingController,
     ],
   },
   {
