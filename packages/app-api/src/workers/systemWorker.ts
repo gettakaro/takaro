@@ -13,6 +13,7 @@ import { BanService } from '../service/Ban/index.js';
 import { PlayerService } from '../service/Player/index.js';
 import { steamApi } from '../lib/steamApi.js';
 import { ISystemJobData, systemTaskDefinitions, SystemTaskType } from './systemWorkerDefinitions.js';
+import { TrackingService } from '../service/Tracking/index.js';
 
 const log = logger(`worker:${config.get('queues.system.name')}`);
 
@@ -143,11 +144,13 @@ export async function processJob(job: Job<ISystemJobData>) {
 async function cleanEvents(domainId: string) {
   log.info('🧹 Cleaning old events');
   const eventService = new EventService(domainId);
+  const trackingService = new TrackingService(domainId);
   const domain = await new DomainService().findOne(domainId);
   if (!domain) throw new Error('Domain not found');
   const now = Date.now();
   const deleteAfter = new Date(now - domain.eventRetentionDays * 24 * 60 * 60 * 1000);
   await eventService.deleteOldEvents(deleteAfter.toISOString());
+  await trackingService.repo.cleanupLocation(deleteAfter.toISOString());
 }
 
 async function cleanExpiringVariables(domainId: string) {

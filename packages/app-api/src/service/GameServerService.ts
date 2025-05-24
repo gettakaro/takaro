@@ -45,6 +45,7 @@ import type { GetJobInputDTO } from '../controllers/GameServerController.js';
 import { ImportInputDTO } from '../controllers/GameServerController.js';
 import { DomainService } from './DomainService.js';
 import { SystemTaskType } from '../workers/systemWorkerDefinitions.js';
+import { TrackingService } from './Tracking/index.js';
 
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 const ajv = new Ajv({ useDefaults: true, strict: true });
@@ -439,6 +440,7 @@ export class GameServerService extends TakaroService<
     if (!location) return location;
 
     const playerOnGameServerService = new PlayerOnGameServerService(this.domainId);
+    const trackingService = new TrackingService(this.domainId);
 
     await playerOnGameServerService.update(
       pog.id,
@@ -448,6 +450,8 @@ export class GameServerService extends TakaroService<
         positionZ: location.z,
       }),
     );
+
+    await trackingService.repo.observePlayerLocation(pog.id, location.x, location.y, location.z);
 
     return location;
   }
