@@ -7,6 +7,7 @@ import { GameServerService } from '../service/GameServerService.js';
 import { PlayerService } from '../service/Player/index.js';
 import { PlayerOnGameServerService, PlayerOnGameServerUpdateDTO } from '../service/PlayerOnGameserverService.js';
 import { getWorkerMetrics } from '../lib/metrics.js';
+import { TrackingService } from '../service/Tracking/index.js';
 
 const log = logger('worker:playerSync');
 
@@ -44,6 +45,9 @@ export async function processJob(job: Job<IGameServerQueueData>) {
     domainPromises.push(
       ...domains.results.map(async (domain) => {
         const promises = [];
+
+        const trackingService = new TrackingService(domain.id);
+        await trackingService.repo.ensureLocationPartition();
 
         const gameserverService = new GameServerService(domain.id);
         const gameServers = await gameserverService.find({ filters: { enabled: [true] } });

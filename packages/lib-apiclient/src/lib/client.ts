@@ -17,6 +17,7 @@ import {
   StatsApi,
   ShopOrderApi,
   ShopListingApi,
+  TrackingApi,
 } from '../generated/api.js';
 import { BaseApiClient, IBaseApiClientConfig } from './baseClient.js';
 
@@ -254,6 +255,16 @@ export class Client extends BaseApiClient<IApiClientConfig> {
 
   get shopOrder() {
     return new ShopOrderApi(
+      {
+        isJsonMime: this.isJsonMime,
+      },
+      '',
+      this.axios,
+    );
+  }
+
+  get tracking() {
+    return new TrackingApi(
       {
         isJsonMime: this.isJsonMime,
       },

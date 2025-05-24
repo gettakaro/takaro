@@ -2,6 +2,11 @@ import { getKnex, ITakaroQuery, TakaroModel, NOT_DOMAIN_SCOPED_TakaroModel } fro
 import { TakaroDTO, logger } from '@takaro/util';
 import { ModelClass, QueryBuilder } from 'objection';
 
+export class voidDTO extends TakaroDTO<voidDTO> {
+  // This is a placeholder DTO for operations that do not return any data
+  // Or for repos where CRUD operations are not (all) applicable
+}
+
 export interface PaginatedOutput<T> {
   total: number;
   results: T[];
