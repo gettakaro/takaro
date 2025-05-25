@@ -325,7 +325,7 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
       // If not builtin and tagged -> skip - We will never replace user-tagged versions
       // If not builtin and versionTag=latest -> replace
       // If builtin and in dev mode -> replace - This provides hot-reload for builtin modules
-      // If builtin and in prod -> throw - We will never replace versions in prod, we should be incrementing the version
+      // If builtin and in prod -> skip - We will never replace versions in prod, we should be incrementing the version
       if (versionExists) {
         if (!isBuiltin && !importingLatest) {
           this.log.info('Version already exists, skipping', { moduleId: mod.id, tag: version.tag });
@@ -343,6 +343,14 @@ export class ModuleService extends TakaroService<ModuleModel, ModuleOutputDTO, M
             tag: version.tag,
           });
           await this.repo.deleteVersion(existingVersions[0].id);
+        }
+
+        if (isBuiltin && process.env.NODE_ENV === 'production') {
+          this.log.info('Builtin version already exists and in prod mode, skipping', {
+            moduleId: mod.id,
+            tag: version.tag,
+          });
+          continue;
         }
       }
 
