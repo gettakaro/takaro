@@ -370,8 +370,71 @@ const tests = [
       expect(events[0].meta).to.have.property('command');
     },
   }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Creating 2 codes by using the /link command, the final code should be used',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      const eventsAwaiter = new EventsAwaiter();
+      await eventsAwaiter.connect(this.client);
+      const chatEventWaiter = eventsAwaiter.waitForEvents(GameEvents.CHAT_MESSAGE);
 
-  // TODO: Link 2 players to 2 different domains
+      // Trigger the first link command
+      await this.client.command.commandControllerTrigger(this.setupData.gameServer1.id, {
+        msg: '/link',
+        playerId: this.setupData.pogs1[0].playerId,
+      });
+
+      // Wait for the first chat event
+      const chatEvents1 = await chatEventWaiter;
+      expect(chatEvents1).to.have.length(1);
+
+      // Get the code from the first event
+      const code1 = await getSecretCodeForPlayer(this.setupData.pogs1[0].playerId);
+      expect(code1).to.be.a.string;
+
+      // Trigger the second link command
+      await this.client.command.commandControllerTrigger(this.setupData.gameServer1.id, {
+        msg: '/link',
+        playerId: this.setupData.pogs1[0].playerId,
+      });
+
+      // Wait for the second chat event
+      const chatEvents2 = await chatEventWaiter;
+      expect(chatEvents2).to.have.length(1);
+
+      // Get the code from the second event
+      const code2 = await getSecretCodeForPlayer(this.setupData.pogs1[0].playerId);
+      expect(code2).to.be.a.string;
+
+      // Codes should be different
+      expect(code2).to.not.equal(code1);
+
+      // Try to link with the first code, should fail
+      try {
+        await this.client.user.userControllerLinkPlayerProfile({
+          email: `test_${faker.internet.email()}`,
+          code: code1,
+        });
+        throw new Error('Should not be able to link with the first code');
+      } catch (error) {
+        if (!isAxiosError(error)) throw error;
+        expect(error.response?.data.meta.error.code).to.be.equal('BadRequestError');
+        expect(error.response?.data.meta.error.message).to.be.equal(
+          'Invalid player link code. Please verify the code and try again.',
+        );
+      }
+
+      // Link with the second code, should succeed
+      const userEmail = `test_${faker.internet.email()}`;
+      await this.client.user.userControllerLinkPlayerProfile({
+        email: userEmail,
+        code: code2,
+      });
+      await checkIfInviteLinkReceived(userEmail);
+    },
+  }),
 ];
 
 describe(group, function () {
