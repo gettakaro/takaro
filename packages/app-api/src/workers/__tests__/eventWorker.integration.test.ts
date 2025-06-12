@@ -4,6 +4,7 @@ import { v4 as uuid } from 'uuid';
 import { PlayerService } from '../../service/Player/index.js';
 import { sleep } from '@takaro/util';
 import { describe } from 'node:test';
+import { faker } from '@faker-js/faker';
 
 const group = 'Event worker';
 
@@ -43,24 +44,11 @@ const tests = [
     test: async function () {
       const playerService = new PlayerService(this.standardDomainId ?? '');
 
-      const pogs = await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
-        filters: {
-          gameId: ['1'],
-          gameServerId: [this.setupData.gameServer1.id],
-        },
-      });
-
-      const pog = pogs.data.data[0];
-
-      if (!pog) throw new Error('No player on game server found');
-
-      const playerRes = await this.client.player.playerControllerGetOne(pog.playerId);
-
       const MOCK_PLAYER = new IGamePlayer({
         ip: '169.169.169.80',
         name: 'jefke',
-        gameId: pog.gameId,
-        steamId: playerRes.data.data.steamId,
+        gameId: '42',
+        steamId: faker.string.alphanumeric(16),
       });
 
       await playerService.resolveRef(MOCK_PLAYER, this.setupData.gameServer1.id);
