@@ -1,5 +1,5 @@
 import { ITakaroQuery, QueryBuilder, TakaroModel } from '@takaro/db';
-import { Model, transaction } from 'objection';
+import { Model } from 'objection';
 import { errors, traceableClass } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
 import { IItemDTO } from '@takaro/gameserver';
@@ -12,8 +12,8 @@ import {
   PlayerOnGameserverOutputWithRolesDTO,
 } from '../service/PlayerOnGameserverService.js';
 import { PlayerRoleAssignmentOutputDTO } from '../service/RoleService.js';
-import { ItemRepo } from './items.js';
 import { IGamePlayer } from '@takaro/modules';
+import { PlayerInventoryTrackingModel } from './tracking.js';
 
 export const PLAYER_ON_GAMESERVER_TABLE_NAME = 'playerOnGameServer';
 const PLAYER_INVENTORY_TABLE_NAME = 'playerInventory';
@@ -92,15 +92,6 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
   async getModel() {
     const knex = await this.getKnex();
     const model = PlayerOnGameServerModel.bindKnex(knex);
-    return {
-      model,
-      query: model.query().modify('domainScoped', this.domainId),
-    };
-  }
-
-  async getInventoryModel() {
-    const knex = await this.getKnex();
-    const model = PlayerInventoryModel.bindKnex(knex);
     return {
       model,
       query: model.query().modify('domainScoped', this.domainId),
@@ -322,59 +313,32 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
     return this.findOne(playerId);
   }
 
-  async getInventory(playerId: string): Promise<IItemDTO[]> {
-    const { query } = await this.getInventoryModel();
+  async getInventory(pogId: string): Promise<IItemDTO[]> {
+    const knex = await this.getKnex();
+    const model = PlayerInventoryTrackingModel.bindKnex(knex);
+    const query = model.query().modify('domainScoped', this.domainId);
 
-    const items = await query
-      .select('items.name', 'items.code', 'items.description', 'playerInventory.quantity')
-      .join('items', 'items.id', '=', 'playerInventory.itemId')
-      .where('playerInventory.playerId', playerId);
+    // First, find the latest snapshot for the player
+    const latestSnapshot = await query
+      .select('createdAt')
+      .where('playerId', pogId)
+      .orderBy('createdAt', 'desc')
+      .first();
+
+    if (!latestSnapshot) {
+      return [];
+    }
+
+    // Now, query the inventory history for the player using the latest snapshot
+    const query2 = model.query().modify('domainScoped', this.domainId);
+
+    const items = await query2
+      .select('items.name', 'items.code', 'items.description', 'playerInventoryHistory.quantity')
+      .join('items', 'items.id', '=', 'playerInventoryHistory.itemId')
+      .where('playerInventoryHistory.playerId', pogId)
+      .andWhere('playerInventoryHistory.createdAt', latestSnapshot.createdAt);
 
     return Promise.all(items.map((item) => new IItemDTO({ ...item, amount: item.quantity })));
-  }
-
-  async syncInventory(playerId: string, gameServerId: string, items: IItemDTO[]) {
-    const { query, model } = await this.getInventoryModel();
-    const { query: query2 } = await this.getInventoryModel();
-
-    const itemRepo = new ItemRepo(this.domainId);
-    const itemDefs = await itemRepo.findItemsByCodes(
-      items.map((item) => item.code),
-      gameServerId,
-    );
-
-    const toInsert = await Promise.all(
-      items.map(async (item) => {
-        const itemDef = itemDefs.find((itemDef) => itemDef.code === item.code);
-
-        if (!itemDef) {
-          throw new errors.BadRequestError(`Item ${item.code} not found`);
-        }
-
-        return {
-          playerId,
-          itemId: itemDef.id,
-          quantity: item.amount,
-          domain: this.domainId,
-        };
-      }),
-    );
-
-    const trx = await transaction.start(model.knex());
-
-    try {
-      await query.delete().where({ playerId }).transacting(trx);
-      if (toInsert.length) {
-        await query2.insert(toInsert).transacting(trx);
-      }
-
-      // If everything is ok, commit the transaction
-      await trx.commit();
-    } catch (error) {
-      // If we got an error, rollback the transaction
-      await trx.rollback();
-      throw error;
-    }
   }
 
   async setOnlinePlayers(gameServerId: string, players: IGamePlayer[]) {

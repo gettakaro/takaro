@@ -1,4 +1,4 @@
-import { IsUUID, IsNumber, IsISO8601, IsOptional } from 'class-validator';
+import { IsUUID, IsNumber, IsISO8601, IsOptional, IsString } from 'class-validator';
 import { TakaroDTO, TakaroModelDTO } from '@takaro/util';
 
 export class PlayerLocationOutputDTO extends TakaroModelDTO<PlayerLocationOutputDTO> {
@@ -61,4 +61,48 @@ export class RadiusSearchInputDTO extends TakaroDTO<RadiusSearchInputDTO> {
   @IsISO8601()
   @IsOptional()
   timestamp?: string;
+}
+
+export class PlayerInventoryOutputDTO extends TakaroModelDTO<PlayerInventoryOutputDTO> {
+  @IsUUID('4')
+  playerId: string;
+  @IsUUID('4')
+  itemId: string;
+  @IsString()
+  itemName: string;
+  @IsString()
+  itemCode: string;
+  @IsNumber({ allowNaN: false, allowInfinity: false })
+  quantity: number;
+  @IsISO8601()
+  createdAt: string;
+}
+
+export class PlayerInventoryHistoryInputDTO extends TakaroDTO<PlayerInventoryHistoryInputDTO> {
+  @IsUUID('4')
+  playerId: string;
+  @IsISO8601()
+  startDate: string;
+  @IsISO8601()
+  endDate: string;
+}
+
+export class PlayersByItemInputDTO extends TakaroDTO<PlayersByItemInputDTO> {
+  @IsString()
+  itemCode: string;
+  @IsISO8601()
+  @IsOptional()
+  startDate?: string;
+  @IsISO8601()
+  @IsOptional()
+  endDate?: string;
+}
+
+export class PlayerItemHistoryOutputDTO extends TakaroModelDTO<PlayerItemHistoryOutputDTO> {
+  @IsUUID('4')
+  playerId: string;
+  @IsNumber({ allowNaN: false, allowInfinity: false })
+  quantity: number;
+  @IsISO8601()
+  createdAt: string;
 }

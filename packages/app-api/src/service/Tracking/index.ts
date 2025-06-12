@@ -7,6 +7,10 @@ import {
   PlayerLocationOutputDTO,
   PlayerMovementHistoryInputDTO,
   RadiusSearchInputDTO,
+  PlayerInventoryOutputDTO,
+  PlayerInventoryHistoryInputDTO,
+  PlayersByItemInputDTO,
+  PlayerItemHistoryOutputDTO,
 } from './dto.js';
 import { ITakaroQuery } from '@takaro/db';
 
@@ -51,5 +55,13 @@ export class TrackingService extends TakaroService<
 
   async getRadiusPlayers(input: RadiusSearchInputDTO): Promise<PlayerLocationOutputDTO[]> {
     return this.repo.getRadiusPlayers(input);
+  }
+
+  async getPlayerInventoryHistory(input: PlayerInventoryHistoryInputDTO): Promise<PlayerInventoryOutputDTO[]> {
+    return this.repo.getPlayerInventoryHistory(input);
+  }
+
+  async getPlayersByItem(input: PlayersByItemInputDTO): Promise<PlayerItemHistoryOutputDTO[]> {
+    return this.repo.getPlayersByItem(input);
   }
 }
