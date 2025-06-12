@@ -70,6 +70,12 @@ export async function up(knex: Knex): Promise<void> {
   await knex.raw(
     `CREATE INDEX "playerInventoryHistory_playerId_createdAt_idx" ON "playerInventoryHistory" ("playerId", "createdAt" DESC)`,
   );
+  await knex.raw(
+    `CREATE INDEX "playerInventoryHistory_itemId_createdAt_idx" ON "playerInventoryHistory" ("itemId", "createdAt" DESC)`,
+  );
+  await knex.raw(
+    `CREATE INDEX "playerInventoryHistory_domain_itemId_createdAt_idx" ON "playerInventoryHistory" (domain, "itemId", "createdAt" DESC)`,
+  );
 
   // Delete the old playerInventory table
   await knex.raw('DROP TABLE IF EXISTS "playerInventory" CASCADE');
