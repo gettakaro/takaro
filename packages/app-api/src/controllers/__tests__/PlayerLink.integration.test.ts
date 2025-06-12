@@ -167,7 +167,7 @@ const tests = [
       });
 
       const gameServers = (
-        await this.client.gameserver.gameServerControllerSearch({
+        await newDomainClient.gameserver.gameServerControllerSearch({
           filters: { identityToken: [serverName] },
         })
       ).data.data;
