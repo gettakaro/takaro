@@ -87,16 +87,18 @@ const tests = [
     setup: shopSetup,
     filteredFields: ['itemId', 'gameServerId', 'gameserverId', 'listingId'],
     test: async function () {
+      const updateItem = this.setupData.items[1];
+
       const res = await this.client.shopListing.shopListingControllerUpdate(this.setupData.listing.id, {
         price: 200,
-        items: [{ code: this.setupData.items[1].code, amount: 5 }],
+        items: [{ code: updateItem.code, amount: 5 }],
         gameServerId: this.setupData.gameServer1.id,
         name: 'Updated item',
       });
 
       const findRes = await this.client.shopListing.shopListingControllerGetOne(res.data.data.id);
       expect(findRes.data.data.price).to.be.equal(200);
-      expect(findRes.data.data.items[0].item.id).to.be.equal(this.setupData.items[1].id);
+      expect(findRes.data.data.items[0].item.id).to.be.equal(updateItem.id);
       expect(findRes.data.data.items[0].amount).to.be.equal(5);
       expect(findRes.data.data.name).to.be.equal('Updated item');
 
