@@ -31,9 +31,12 @@ const shopSetup = async function (this: IntegrationTest<IShopSetup>): Promise<IS
     })
   ).data.data;
 
+  const stoneItem = items.find((i) => i.name === 'Stone');
+  if (!stoneItem) throw new Error('Stone item not found in setup data');
+
   const listingRes = await this.client.shopListing.shopListingControllerCreate({
     gameServerId: setupData.gameServer1.id,
-    items: [{ code: items[0].code, amount: 1 }],
+    items: [{ code: stoneItem.code, amount: 1 }],
     price: 100,
     name: 'Test item',
   });
