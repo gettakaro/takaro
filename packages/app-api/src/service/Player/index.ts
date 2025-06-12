@@ -321,6 +321,18 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
   async handlePlayerLink(player: PlayerOutputDTO, pog: PlayerOnGameserverOutputDTO) {
     const secretCode = humanId({ separator: '-', capitalize: false });
     const redis = await Redis.getClient('playerLink');
+
+    // First, check if the player has any pending codes from before
+    const allKeys = await redis.keys('playerLink:*');
+    for (const key of allKeys) {
+      const storedPlayerId = await redis.get(key);
+      if (storedPlayerId === player.id) {
+        this.log.info('Found existing player link code', { key, playerId: player.id });
+        await redis.del(key);
+        await redis.del(`${key}-domain`);
+      }
+    }
+
     await redis.set(`playerLink:${secretCode}`, player.id, {
       EX: 60 * 30,
     });

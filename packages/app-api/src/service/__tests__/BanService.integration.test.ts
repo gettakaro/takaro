@@ -309,6 +309,56 @@ const tests = [
       }
     },
   }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Can handle bans with a very long reason',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      if (!this.standardDomainId) throw new Error('Standard domain ID not found');
+      const longReason = 'a'.repeat(1000);
+      await this.client.player.banControllerCreate({
+        gameServerId: this.setupData.gameServer1.id,
+        playerId: this.setupData.pogs1[0].playerId,
+        reason: longReason,
+        isGlobal: false,
+      });
+
+      await triggerBanSync(this.client, this.standardDomainId, this.setupData.gameServer1.id);
+
+      const bans = await this.client.player.banControllerSearch({
+        filters: { gameServerId: [this.setupData.gameServer1.id] },
+      });
+
+      expect(bans.data.data.length).to.equal(1);
+      expect(bans.data.data[0].reason).to.equal(longReason);
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Bans with reason longer than 10,000 characters are truncated',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      if (!this.standardDomainId) throw new Error('Standard domain ID not found');
+      const longReason = 'a'.repeat(15000);
+      await this.client.player.banControllerCreate({
+        gameServerId: this.setupData.gameServer1.id,
+        playerId: this.setupData.pogs1[0].playerId,
+        reason: longReason,
+        isGlobal: false,
+      });
+
+      await triggerBanSync(this.client, this.standardDomainId, this.setupData.gameServer1.id);
+
+      const bans = await this.client.player.banControllerSearch({
+        filters: { gameServerId: [this.setupData.gameServer1.id] },
+      });
+
+      expect(bans.data.data.length).to.equal(1);
+      expect(bans.data.data[0].reason?.length).to.be.at.most(10000); // Ensure the reason is truncated to 10,000 characters
+    },
+  }),
 ];
 
 describe(group, function () {
