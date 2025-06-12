@@ -75,6 +75,7 @@ services:
       NODE_OPTIONS: '--import=ts-node-maintained/register/esm'
       REDIS_HOST: redis
       POSTGRES_HOST: postgresql
+      POSTGRES_PORT: 5432
 
       TAKARO_HOST: http://takaro:3000
 
