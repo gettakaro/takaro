@@ -46,7 +46,8 @@ const tests = [
         });
         throw new Error('Should have thrown an error');
       } catch (error) {
-        expect((error as Error).name).to.equal('UnauthorizedError');
+        expect((error as Error).name).to.equal('BadRequestError');
+        expect((error as Error).message).to.equal('Invalid registrationToken provided');
       }
     },
   }),
