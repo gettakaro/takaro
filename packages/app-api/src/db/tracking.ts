@@ -278,12 +278,11 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
 
   async getPlayersByItem(input: PlayersByItemInputDTO): Promise<PlayerItemHistoryOutputDTO[]> {
     const { query } = await this.getInventoryModel();
-    const { itemCode, startDate, endDate } = input;
+    const { itemId, startDate, endDate } = input;
 
     const qb = query
       .select('playerInventoryHistory.playerId', 'playerInventoryHistory.quantity', 'playerInventoryHistory.createdAt')
-      .join('items', 'items.id', '=', 'playerInventoryHistory.itemId')
-      .where('items.code', itemCode);
+      .where('playerInventoryHistory.itemId', itemId);
 
     if (startDate) {
       qb.andWhere('playerInventoryHistory.createdAt', '>=', startDate);

@@ -8532,7 +8532,7 @@ export interface PlayersByItemInputDTO {
    * @type {string}
    * @memberof PlayersByItemInputDTO
    */
-  itemCode: string;
+  itemId: string;
   /**
    *
    * @type {NOTDOMAINSCOPEDTakaroModelDTOCreatedAt}

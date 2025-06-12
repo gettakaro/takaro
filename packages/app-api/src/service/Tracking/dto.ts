@@ -88,8 +88,8 @@ export class PlayerInventoryHistoryInputDTO extends TakaroDTO<PlayerInventoryHis
 }
 
 export class PlayersByItemInputDTO extends TakaroDTO<PlayersByItemInputDTO> {
-  @IsString()
-  itemCode: string;
+  @IsUUID('4')
+  itemId: string;
   @IsISO8601()
   @IsOptional()
   startDate?: string;
