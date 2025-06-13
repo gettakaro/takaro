@@ -10,6 +10,24 @@ This document explains the requirements and technical details of how to add supp
 
 Takaro uses the concept for a `gameId` to identify players. This is a unique identifier for the player in the game. Different games will have different ways of identifying players. For example, in 7 Days to Die, the `gameId` is the 'cross ID/EOS ID' of the player. In other games, it might be the SteamID, a UUID or some other identifier. When Takaro calls a function that pertains to a specific player, it will pass the `gameId` as an argument.
 
+### Player Object Structure
+
+Takaro expects player objects to follow the `IGamePlayer` interface structure. This interface supports multiple gaming platforms and provides a consistent way to represent player data across different games.
+
+**Required Fields:**
+- `gameId` (string): Unique identifier for the player in the game
+- `name` (string): Player's display name/username
+
+**Optional Fields:**
+- `steamId` (string): Steam platform identifier
+- `epicOnlineServicesId` (string): Epic Games platform identifier
+- `xboxLiveId` (string): Xbox Live platform identifier
+- `platformId` (string): Generic platform identifier
+- `ip` (string): Player's IP address
+- `ping` (number): Player's connection ping
+
+Game connectors should populate the appropriate platform-specific fields based on how players authenticate in their game. For example, a Steam-based game would populate `steamId`, while an Epic Games Store game would populate `epicOnlineServicesId`.
+
 ## Connecting to Takaro
 
 Takaro exposes a websocket server at `wss://connect.takaro.io/`. The game mod should connect to this and send a `identify` message containing the identity token and registration token.
@@ -89,6 +107,9 @@ Retrieves information about a specific player.
     "gameId": "12345",
     "name": "PlayerName",
     "steamId": "76561198123456789",
+    "epicOnlineServicesId": null,
+    "xboxLiveId": null,
+    "platformId": null,
     "ip": "192.168.1.1",
     "ping": 50
   },
@@ -136,13 +157,19 @@ Retrieves a list of all currently connected players.
       "gameId": "12345",
       "name": "PlayerName1",
       "steamId": "76561198123456789",
+      "epicOnlineServicesId": null,
+      "xboxLiveId": null,
+      "platformId": null,
       "ip": "192.168.1.1",
       "ping": 50
     },
     {
       "gameId": "67890",
       "name": "PlayerName2",
-      "steamId": "76561198987654321",
+      "steamId": null,
+      "epicOnlineServicesId": "abc123def456",
+      "xboxLiveId": null,
+      "platformId": "epic_67890",
       "ip": "192.168.1.2",
       "ping": 75
     }
@@ -840,6 +867,9 @@ The `player` object must include the required `gameId` and `name` fields. Other 
       "gameId": "12345",
       "name": "PlayerName",
       "steamId": "76561198123456789",
+      "epicOnlineServicesId": null,
+      "xboxLiveId": null,
+      "platformId": null,
       "ip": "192.168.1.1",
       "ping": 50
     }
