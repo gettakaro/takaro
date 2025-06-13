@@ -96,7 +96,7 @@ export class Generic implements IGameServer {
     if (!opts) opts = new IMessageOptsDTO();
     await this.requestFromServer('sendMessage', {
       message,
-      ...opts.toJSON(),
+      opts: opts.toJSON(),
     });
   }
 
@@ -127,7 +127,7 @@ export class Generic implements IGameServer {
 
   async giveItem(rawPlayer: IPlayerReferenceDTO, item: string, amount: number, quality: string): Promise<void> {
     await this.requestFromServer('giveItem', {
-      gameId: rawPlayer.gameId,
+      player: { gameId: rawPlayer.gameId },
       item,
       amount,
       quality,

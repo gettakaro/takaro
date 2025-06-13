@@ -111,8 +111,8 @@ export class MockGameserver implements IMockGameServer {
     );
   }
 
-  async giveItem(player: IPlayerReferenceDTO, item: string, amount: number): Promise<void> {
-    this.sendLog(`Giving ${player.gameId} ${amount}x${item}`);
+  async giveItem(player: IPlayerReferenceDTO, item: string, amount: number, quality?: string): Promise<void> {
+    this.sendLog(`Giving ${player.gameId} ${amount}x${item}${quality ? ` (quality: ${quality})` : ''}`);
   }
 
   async getPlayer(playerRef: IPlayerReferenceDTO, onlyOnline = true): Promise<IGamePlayer | null> {
