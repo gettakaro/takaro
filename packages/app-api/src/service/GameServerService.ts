@@ -416,9 +416,9 @@ export class GameServerService extends TakaroService<
 
     return gameInstance.teleportPlayer(
       await this.pogService.getPog(playerId, gameServerId),
-      position.x,
-      position.y,
-      position.z,
+      Math.round(position.x),
+      Math.round(position.y),
+      Math.round(position.z),
     );
   }
 
@@ -483,13 +483,18 @@ export class GameServerService extends TakaroService<
     await playerOnGameServerService.update(
       pog.id,
       new PlayerOnGameServerUpdateDTO({
-        positionX: location.x,
-        positionY: location.y,
-        positionZ: location.z,
+        positionX: Math.round(location.x),
+        positionY: Math.round(location.y),
+        positionZ: Math.round(location.z),
       }),
     );
 
-    await trackingService.repo.observePlayerLocation(pog.id, location.x, location.y, location.z);
+    await trackingService.repo.observePlayerLocation(
+      pog.id,
+      Math.round(location.x),
+      Math.round(location.y),
+      Math.round(location.z),
+    );
 
     return location;
   }
