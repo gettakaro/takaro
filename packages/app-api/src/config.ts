@@ -5,11 +5,6 @@ import { IAuthConfig, authConfigSchema } from '@takaro/auth';
 import { errors } from '@takaro/util';
 import ms from 'ms';
 
-enum CLUSTER_MODE {
-  SINGLE = 'single',
-  CLUSTER = 'cluster',
-}
-
 interface IHttpConfig extends IBaseConfig {
   http: {
     port: number;
@@ -35,10 +30,13 @@ interface IHttpConfig extends IBaseConfig {
     handleEvents: boolean;
   };
   takaro: {
-    clusterMode: CLUSTER_MODE;
+    maxVariables: number;
     url: string;
     startWorkers: boolean;
     kpiInterval: number;
+    connector: {
+      host: string;
+    };
   };
   steam: {
     apiKey: string;
@@ -159,11 +157,11 @@ const configSchema = {
     },
   },
   takaro: {
-    clusterMode: {
-      doc: 'The mode to run the app in',
-      format: ['single', 'cluster'],
-      default: CLUSTER_MODE.SINGLE,
-      env: 'CLUSTER_MODE',
+    maxVariables: {
+      doc: 'The maximum number of variables that can be stored per domain',
+      format: Number,
+      default: 100,
+      env: 'MAX_VARIABLES',
     },
     url: {
       doc: 'The URL of the Takaro server',
@@ -182,6 +180,14 @@ const configSchema = {
       format: Number,
       default: ms('60m'),
       env: 'KPI_INTERVAL',
+    },
+    connector: {
+      host: {
+        doc: 'The host of the connector',
+        format: String,
+        default: 'http://localhost:3003',
+        env: 'CONNECTOR_HOST',
+      },
     },
   },
   steam: {

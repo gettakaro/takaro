@@ -130,6 +130,13 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     gamePlayer: IGamePlayer,
     gameServerId: string,
   ): Promise<{ player: PlayerOutputWithRolesDTO; pog: PlayerOnGameserverOutputWithRolesDTO }> {
+    // Validate that at least one platform identifier is provided
+    if (!gamePlayer.steamId && !gamePlayer.epicOnlineServicesId && !gamePlayer.xboxLiveId && !gamePlayer.platformId) {
+      throw new errors.ValidationError(
+        'At least one platform identifier (steamId, epicOnlineServicesId, xboxLiveId, or platformId) must be provided',
+      );
+    }
+
     const playerOnGameServerService = new PlayerOnGameServerService(this.domainId);
     let pog = await playerOnGameServerService.findAssociations(gamePlayer.gameId, gameServerId);
 
@@ -141,6 +148,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
     if (gamePlayer.epicOnlineServicesId)
       promises.push(this.find({ filters: { epicOnlineServicesId: [gamePlayer.epicOnlineServicesId] } }));
     if (gamePlayer.xboxLiveId) promises.push(this.find({ filters: { xboxLiveId: [gamePlayer.xboxLiveId] } }));
+    if (gamePlayer.platformId) promises.push(this.find({ filters: { platformId: [gamePlayer.platformId] } }));
 
     const promiseResults = await Promise.all(promises);
     // Merge all results into one array
@@ -159,6 +167,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
           steamId: gamePlayer.steamId,
           epicOnlineServicesId: gamePlayer.epicOnlineServicesId,
           xboxLiveId: gamePlayer.xboxLiveId,
+          platformId: gamePlayer.platformId,
         }),
       );
     } else {
@@ -173,6 +182,7 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
           steamId: gamePlayer.steamId,
           xboxLiveId: gamePlayer.xboxLiveId,
           epicOnlineServicesId: gamePlayer.epicOnlineServicesId,
+          platformId: gamePlayer.platformId,
         }),
       );
     }

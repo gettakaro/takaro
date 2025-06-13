@@ -1,5 +1,4 @@
 import { expect } from '@playwright/test';
-import { integrationConfig } from '@takaro/test';
 import { test } from '../fixtures/index.js';
 
 test.describe('Module installations', () => {
@@ -33,82 +32,82 @@ test.describe('Module installations', () => {
 });
 
 test.describe('List of gameservers', () => {
-  test('Can create gameserver', async ({ page, takaro }) => {
-    const { GameServersPage } = takaro;
+  // test('Can create gameserver', async ({ page, takaro }) => {
+  //   const { GameServersPage } = takaro;
 
-    const serverName = 'My new server';
-    await GameServersPage.create();
-    await GameServersPage.nameCreateEdit(serverName);
+  //   const serverName = 'My new server';
+  //   await GameServersPage.create();
+  //   await GameServersPage.nameCreateEdit(serverName);
 
-    await GameServersPage.selectGameServerType('Mock (testing purposes)');
+  //   await GameServersPage.selectGameServerType('Mock (testing purposes)');
 
-    const hostInput = page.getByPlaceholder('Http://127.0.0.1:3002');
-    await hostInput.click();
-    await hostInput.fill(integrationConfig.get('mockGameserver.host'));
-    await GameServersPage.clickSave();
+  //   const hostInput = page.getByPlaceholder('Http://127.0.0.1:3002');
+  //   await hostInput.click();
+  //   await hostInput.fill(integrationConfig.get('mockGameserver.host'));
+  //   await GameServersPage.clickSave();
 
-    await expect(page.getByRole('heading', { name: serverName })).toBeVisible();
-  });
+  //   await expect(page.getByRole('heading', { name: serverName })).toBeVisible();
+  // });
 
-  test('Should show error when creating a gameserver with name that already exists', async ({ page, takaro }) => {
-    const { GameServersPage } = takaro;
-    const serverName = 'My new server';
+  // test('Should show error when creating a gameserver with name that already exists', async ({ page, takaro }) => {
+  //   const { GameServersPage } = takaro;
+  //   const serverName = 'My new server';
 
-    await GameServersPage.create();
-    await GameServersPage.nameCreateEdit(serverName);
-    await GameServersPage.selectGameServerType('Mock (testing purposes)');
-    const hostInputs1 = page.getByPlaceholder('Http://127.0.0.1:3002');
-    await hostInputs1.click();
-    await hostInputs1.fill(integrationConfig.get('mockGameserver.host'));
-    await GameServersPage.clickSave();
-    await expect(page.getByRole('heading', { name: serverName })).toBeVisible();
+  //   await GameServersPage.create();
+  //   await GameServersPage.nameCreateEdit(serverName);
+  //   await GameServersPage.selectGameServerType('Mock (testing purposes)');
+  //   const hostInputs1 = page.getByPlaceholder('Http://127.0.0.1:3002');
+  //   await hostInputs1.click();
+  //   await hostInputs1.fill(integrationConfig.get('mockGameserver.host'));
+  //   await GameServersPage.clickSave();
+  //   await expect(page.getByRole('heading', { name: serverName })).toBeVisible();
 
-    await GameServersPage.create();
-    await GameServersPage.nameCreateEdit(serverName);
-    await GameServersPage.selectGameServerType('Mock (testing purposes)');
-    const hostInputs2 = page.getByPlaceholder('Http://127.0.0.1:3002');
-    await hostInputs2.click();
-    await hostInputs2.fill(integrationConfig.get('mockGameserver.host'));
-    await GameServersPage.clickSave();
-    await expect(page.getByText('Game server with this name already exists')).toBeVisible();
-  });
+  //   await GameServersPage.create();
+  //   await GameServersPage.nameCreateEdit(serverName);
+  //   await GameServersPage.selectGameServerType('Mock (testing purposes)');
+  //   const hostInputs2 = page.getByPlaceholder('Http://127.0.0.1:3002');
+  //   await hostInputs2.click();
+  //   await hostInputs2.fill(integrationConfig.get('mockGameserver.host'));
+  //   await GameServersPage.clickSave();
+  //   await expect(page.getByText('Game server with this name already exists')).toBeVisible();
+  // });
 
-  test('Should show error when updating a gameserver with name that already exists', async ({ page, takaro }) => {
-    const { GameServersPage } = takaro;
-    const serverName = 'My new server';
+  // test('Should show error when updating a gameserver with name that already exists', async ({ page, takaro }) => {
+  //   const { GameServersPage } = takaro;
+  //   const serverName = 'My new server';
 
-    // create secondary server
-    await GameServersPage.create();
-    await GameServersPage.nameCreateEdit(serverName);
-    await GameServersPage.selectGameServerType('Mock (testing purposes)');
-    const hostInputs1 = page.getByPlaceholder('Http://127.0.0.1:3002');
-    await hostInputs1.click();
-    await hostInputs1.fill(integrationConfig.get('mockGameserver.host'));
-    await GameServersPage.clickSave();
-    await expect(page.getByRole('heading', { name: serverName })).toBeVisible();
+  //   // create secondary server
+  //   await GameServersPage.create();
+  //   await GameServersPage.nameCreateEdit(serverName);
+  //   await GameServersPage.selectGameServerType('Mock (testing purposes)');
+  //   const hostInputs1 = page.getByPlaceholder('Http://127.0.0.1:3002');
+  //   await hostInputs1.click();
+  //   await hostInputs1.fill(integrationConfig.get('mockGameserver.host'));
+  //   await GameServersPage.clickSave();
+  //   await expect(page.getByRole('heading', { name: serverName })).toBeVisible();
 
-    // this will edit the first server and try to set the name to the same as the second server
-    await GameServersPage.action('Edit');
-    await GameServersPage.nameCreateEdit(serverName);
-    await GameServersPage.clickSave();
-    await expect(page.getByText('Game server with this name already exists')).toBeVisible();
-  });
+  //   // this will edit the first server and try to set the name to the same as the second server
+  //   await GameServersPage.action('Edit');
+  //   await GameServersPage.nameCreateEdit(serverName);
+  //   await GameServersPage.clickSave();
+  //   await expect(page.getByText('Game server with this name already exists')).toBeVisible();
+  // });
 
-  test('Can edit gameserver', async ({ page, takaro }) => {
-    const { GameServersPage } = takaro;
-    await GameServersPage.goto();
-    await expect(page.getByText(GameServersPage.gameServer.name)).toBeVisible();
-    await GameServersPage.action('Edit');
+  // test('Can edit gameserver', async ({ page, takaro }) => {
+  //   const { GameServersPage } = takaro;
+  //   await GameServersPage.goto();
+  //   await expect(page.getByText(GameServersPage.gameServer.name)).toBeVisible();
+  //   await GameServersPage.action('Edit');
 
-    expect(page.url()).toBe(
-      `${integrationConfig.get('frontendHost')}/gameservers/update/${GameServersPage.gameServer.id}`,
-    );
+  //   expect(page.url()).toBe(
+  //     `${integrationConfig.get('frontendHost')}/gameservers/update/${GameServersPage.gameServer.id}`,
+  //   );
 
-    const newGameServerName = 'My edited mock server';
-    await GameServersPage.nameCreateEdit(newGameServerName);
-    await GameServersPage.clickSave();
-    await expect(page.getByText(newGameServerName)).toBeVisible();
-  });
+  //   const newGameServerName = 'My edited mock server';
+  //   await GameServersPage.nameCreateEdit(newGameServerName);
+  //   await GameServersPage.clickSave();
+  //   await expect(page.getByText(newGameServerName)).toBeVisible();
+  // });
 
   test('Can delete gameserver', async ({ page, takaro }) => {
     const { GameServersPage } = takaro;

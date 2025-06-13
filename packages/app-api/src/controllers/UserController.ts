@@ -3,7 +3,7 @@ import { ITakaroQuery } from '@takaro/db';
 import { APIOutput, apiResponse } from '@takaro/http';
 import { UserCreateInputDTO, UserOutputDTO, UserOutputWithRolesDTO, UserUpdateDTO } from '../service/User/dto.js';
 import { UserService } from '../service/User/index.js';
-import { AuthenticatedRequest, AuthService, LoginOutputDTO } from '../service/AuthService.js';
+import { AuthenticatedRequest, AuthService, checkPermissions, LoginOutputDTO } from '../service/AuthService.js';
 import { Body, Get, Post, Delete, JsonController, UseBefore, Req, Put, Params, Res, Param } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Type } from 'class-transformer';
@@ -174,7 +174,17 @@ export class UserController {
   async me(@Req() req: AuthenticatedRequest) {
     const user = await new UserService(req.domainId).findOne(req.user.id);
     const domainService = new DomainService();
-    const domains = await domainService.resolveDomainByIdpId(user.idpId);
+    let domains = await domainService.resolveDomainByIdpId(user.idpId);
+
+    const hasManageServersPermission = checkPermissions([PERMISSIONS.MANAGE_GAMESERVERS], user);
+
+    if (!hasManageServersPermission) {
+      domains = domains.map((d) => {
+        delete d.serverRegistrationToken;
+        return d;
+      });
+    }
+
     const response = new MeOutputDTO({ user, domains, domain: req.domainId, pogs: [] });
 
     if (user.playerId) {

@@ -1695,6 +1695,12 @@ export interface DomainOutputDTO {
   state: DomainOutputDTOStateEnum;
   /**
    *
+   * @type {string}
+   * @memberof DomainOutputDTO
+   */
+  serverRegistrationToken?: string;
+  /**
+   *
    * @type {number}
    * @memberof DomainOutputDTO
    */
@@ -3108,12 +3114,19 @@ export interface GameServerCreateDTO {
    * @memberof GameServerCreateDTO
    */
   type: GameServerCreateDTOTypeEnum;
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerCreateDTO
+   */
+  identityToken?: string;
 }
 
 export const GameServerCreateDTOTypeEnum = {
-  Mock: 'MOCK',
   Sevendaystodie: 'SEVENDAYSTODIE',
   Rust: 'RUST',
+  Generic: 'GENERIC',
+  Mock: 'MOCK',
 } as const;
 
 export type GameServerCreateDTOTypeEnum =
@@ -3179,6 +3192,12 @@ export interface GameServerOutputDTO {
    * @type {string}
    * @memberof GameServerOutputDTO
    */
+  identityToken?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof GameServerOutputDTO
+   */
   id: string;
   /**
    *
@@ -3195,9 +3214,10 @@ export interface GameServerOutputDTO {
 }
 
 export const GameServerOutputDTOTypeEnum = {
-  Mock: 'MOCK',
   Sevendaystodie: 'SEVENDAYSTODIE',
   Rust: 'RUST',
+  Generic: 'GENERIC',
+  Mock: 'MOCK',
 } as const;
 
 export type GameServerOutputDTOTypeEnum =
@@ -3257,13 +3277,20 @@ export interface GameServerSearchInputAllowedFilters {
    * @type {Array<string>}
    * @memberof GameServerSearchInputAllowedFilters
    */
+  identityToken?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof GameServerSearchInputAllowedFilters
+   */
   id?: Array<string>;
 }
 
 export const GameServerSearchInputAllowedFiltersTypeEnum = {
-  Mock: 'MOCK',
   Sevendaystodie: 'SEVENDAYSTODIE',
   Rust: 'RUST',
+  Generic: 'GENERIC',
+  Mock: 'MOCK',
 } as const;
 
 export type GameServerSearchInputAllowedFiltersTypeEnum =
@@ -3392,9 +3419,10 @@ export interface GameServerTestReachabilityInputDTO {
 }
 
 export const GameServerTestReachabilityInputDTOTypeEnum = {
-  Mock: 'MOCK',
   Sevendaystodie: 'SEVENDAYSTODIE',
   Rust: 'RUST',
+  Generic: 'GENERIC',
+  Mock: 'MOCK',
 } as const;
 
 export type GameServerTestReachabilityInputDTOTypeEnum =
@@ -3421,9 +3449,10 @@ export interface GameServerTypesOutputDTO {
 }
 
 export const GameServerTypesOutputDTOTypeEnum = {
-  Mock: 'MOCK',
   Sevendaystodie: 'SEVENDAYSTODIE',
   Rust: 'RUST',
+  Generic: 'GENERIC',
+  Mock: 'MOCK',
 } as const;
 
 export type GameServerTypesOutputDTOTypeEnum =
@@ -3487,14 +3516,28 @@ export interface GameServerUpdateDTO {
 }
 
 export const GameServerUpdateDTOTypeEnum = {
-  Mock: 'MOCK',
   Sevendaystodie: 'SEVENDAYSTODIE',
   Rust: 'RUST',
+  Generic: 'GENERIC',
+  Mock: 'MOCK',
 } as const;
 
 export type GameServerUpdateDTOTypeEnum =
   (typeof GameServerUpdateDTOTypeEnum)[keyof typeof GameServerUpdateDTOTypeEnum];
 
+/**
+ *
+ * @export
+ * @interface GenericConnectionInfo
+ */
+export interface GenericConnectionInfo {
+  /**
+   *
+   * @type {string}
+   * @memberof GenericConnectionInfo
+   */
+  identityToken: string;
+}
 /**
  *
  * @export
@@ -4563,6 +4606,52 @@ export interface ICronJob {
 /**
  *
  * @export
+ * @interface IEntityDTO
+ */
+export interface IEntityDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof IEntityDTO
+   */
+  code: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IEntityDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IEntityDTO
+   */
+  description?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof IEntityDTO
+   */
+  type?: IEntityDTOTypeEnum;
+  /**
+   *
+   * @type {object}
+   * @memberof IEntityDTO
+   */
+  metadata?: object;
+}
+
+export const IEntityDTOTypeEnum = {
+  Hostile: 'hostile',
+  Friendly: 'friendly',
+  Neutral: 'neutral',
+} as const;
+
+export type IEntityDTOTypeEnum = (typeof IEntityDTOTypeEnum)[keyof typeof IEntityDTOTypeEnum];
+
+/**
+ *
+ * @export
  * @interface IFunction
  */
 export interface IFunction {
@@ -4754,6 +4843,61 @@ export interface IItemDTO {
    * @memberof IItemDTO
    */
   quality?: string;
+}
+/**
+ *
+ * @export
+ * @interface ILocationDTO
+ */
+export interface ILocationDTO {
+  /**
+   *
+   * @type {IPosition}
+   * @memberof ILocationDTO
+   */
+  position: IPosition;
+  /**
+   *
+   * @type {number}
+   * @memberof ILocationDTO
+   */
+  radius?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof ILocationDTO
+   */
+  sizeX?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof ILocationDTO
+   */
+  sizeY?: number;
+  /**
+   *
+   * @type {number}
+   * @memberof ILocationDTO
+   */
+  sizeZ?: number;
+  /**
+   *
+   * @type {string}
+   * @memberof ILocationDTO
+   */
+  name: string;
+  /**
+   *
+   * @type {string}
+   * @memberof ILocationDTO
+   */
+  code?: string;
+  /**
+   *
+   * @type {object}
+   * @memberof ILocationDTO
+   */
+  metadata?: object;
 }
 /**
  *
@@ -5728,25 +5872,6 @@ export interface MetadataOutput {
    * @memberof MetadataOutput
    */
   total?: number;
-}
-/**
- *
- * @export
- * @interface MockConnectionInfo
- */
-export interface MockConnectionInfo {
-  /**
-   *
-   * @type {string}
-   * @memberof MockConnectionInfo
-   */
-  host: string;
-  /**
-   *
-   * @type {string}
-   * @memberof MockConnectionInfo
-   */
-  name: string;
 }
 /**
  *
@@ -7169,6 +7294,12 @@ export interface PlayerCreateDTO {
    * @memberof PlayerCreateDTO
    */
   epicOnlineServicesId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerCreateDTO
+   */
+  platformId?: string;
 }
 /**
  *
@@ -7978,6 +8109,12 @@ export interface PlayerOutputDTO {
    * @type {string}
    * @memberof PlayerOutputDTO
    */
+  platformId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOutputDTO
+   */
   steamAvatar?: string;
   /**
    *
@@ -8131,6 +8268,12 @@ export interface PlayerOutputWithRolesDTO {
    * @memberof PlayerOutputWithRolesDTO
    */
   epicOnlineServicesId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOutputWithRolesDTO
+   */
+  platformId?: string;
   /**
    *
    * @type {string}
@@ -8323,6 +8466,12 @@ export interface PlayerSearchInputAllowedFilters {
   xboxLiveId?: Array<string>;
   /**
    *
+   * @type {Array<string>}
+   * @memberof PlayerSearchInputAllowedFilters
+   */
+  platformId?: Array<string>;
+  /**
+   *
    * @type {Array<boolean>}
    * @memberof PlayerSearchInputAllowedFilters
    */
@@ -8413,6 +8562,12 @@ export interface PlayerSearchInputAllowedSearch {
    * @memberof PlayerSearchInputAllowedSearch
    */
   steamId?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof PlayerSearchInputAllowedSearch
+   */
+  platformId?: Array<string>;
 }
 /**
  *
@@ -8514,6 +8669,12 @@ export interface PlayerUpdateDTO {
    * @memberof PlayerUpdateDTO
    */
   epicOnlineServicesId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerUpdateDTO
+   */
+  platformId?: string;
   /**
    *
    * @type {number}
@@ -8689,6 +8850,19 @@ export interface RedirectQs {
    * @memberof RedirectQs
    */
   redirect: string;
+}
+/**
+ *
+ * @export
+ * @interface ResolveRegistrationTokenInputDTO
+ */
+export interface ResolveRegistrationTokenInputDTO {
+  /**
+   *
+   * @type {string}
+   * @memberof ResolveRegistrationTokenInputDTO
+   */
+  registrationToken: string;
 }
 /**
  *
@@ -13939,6 +14113,48 @@ export const DomainApiAxiosParamCreator = function (configuration?: Configuratio
       };
     },
     /**
+     * <br> OperationId: `DomainControllerResolveRegistrationToken`
+     * @summary Resolve registration token
+     * @param {ResolveRegistrationTokenInputDTO} [resolveRegistrationTokenInputDTO] ResolveRegistrationTokenInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    domainControllerResolveRegistrationToken: async (
+      resolveRegistrationTokenInputDTO?: ResolveRegistrationTokenInputDTO,
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/resolve-registration-token`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication adminAuth required
+      await setApiKeyToObject(localVarHeaderParameter, 'x-takaro-admin-token', configuration);
+
+      localVarHeaderParameter['Content-Type'] = 'application/json';
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+      localVarRequestOptions.data = serializeDataIfNeeded(
+        resolveRegistrationTokenInputDTO,
+        localVarRequestOptions,
+        configuration,
+      );
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      * <br> OperationId: `DomainControllerSearch`
      * @summary Search
      * @param {DomainSearchInputDTO} [domainSearchInputDTO] DomainSearchInputDTO
@@ -14121,6 +14337,32 @@ export const DomainApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
+     * <br> OperationId: `DomainControllerResolveRegistrationToken`
+     * @summary Resolve registration token
+     * @param {ResolveRegistrationTokenInputDTO} [resolveRegistrationTokenInputDTO] ResolveRegistrationTokenInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async domainControllerResolveRegistrationToken(
+      resolveRegistrationTokenInputDTO?: ResolveRegistrationTokenInputDTO,
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DomainOutputDTOAPI>> {
+      const localVarAxiosArgs = await localVarAxiosParamCreator.domainControllerResolveRegistrationToken(
+        resolveRegistrationTokenInputDTO,
+        options,
+      );
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['DomainApi.domainControllerResolveRegistrationToken']?.[localVarOperationServerIndex]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
      * <br> OperationId: `DomainControllerSearch`
      * @summary Search
      * @param {DomainSearchInputDTO} [domainSearchInputDTO] DomainSearchInputDTO
@@ -14231,6 +14473,21 @@ export const DomainApiFactory = function (configuration?: Configuration, basePat
       return localVarFp.domainControllerRemove(id, options).then((request) => request(axios, basePath));
     },
     /**
+     * <br> OperationId: `DomainControllerResolveRegistrationToken`
+     * @summary Resolve registration token
+     * @param {ResolveRegistrationTokenInputDTO} [resolveRegistrationTokenInputDTO] ResolveRegistrationTokenInputDTO
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    domainControllerResolveRegistrationToken(
+      resolveRegistrationTokenInputDTO?: ResolveRegistrationTokenInputDTO,
+      options?: RawAxiosRequestConfig,
+    ): AxiosPromise<DomainOutputDTOAPI> {
+      return localVarFp
+        .domainControllerResolveRegistrationToken(resolveRegistrationTokenInputDTO, options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
      * <br> OperationId: `DomainControllerSearch`
      * @summary Search
      * @param {DomainSearchInputDTO} [domainSearchInputDTO] DomainSearchInputDTO
@@ -14325,6 +14582,23 @@ export class DomainApi extends BaseAPI {
   public domainControllerRemove(id: string, options?: RawAxiosRequestConfig) {
     return DomainApiFp(this.configuration)
       .domainControllerRemove(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * <br> OperationId: `DomainControllerResolveRegistrationToken`
+   * @summary Resolve registration token
+   * @param {ResolveRegistrationTokenInputDTO} [resolveRegistrationTokenInputDTO] ResolveRegistrationTokenInputDTO
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof DomainApi
+   */
+  public domainControllerResolveRegistrationToken(
+    resolveRegistrationTokenInputDTO?: ResolveRegistrationTokenInputDTO,
+    options?: RawAxiosRequestConfig,
+  ) {
+    return DomainApiFp(this.configuration)
+      .domainControllerResolveRegistrationToken(resolveRegistrationTokenInputDTO, options)
       .then((request) => request(this.axios, this.basePath));
   }
 
@@ -15981,6 +16255,38 @@ export const GameServerApiAxiosParamCreator = function (configuration?: Configur
       };
     },
     /**
+     * Regenerate the registration token for a gameserver. Careful, this will invalidate all existing connections.   Required permissions: `MANAGE_GAMESERVERS`<br> OperationId: `GameServerControllerRegenerateRegistrationToken`
+     * @summary Regenerate registration token
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerRegenerateRegistrationToken: async (
+      options: RawAxiosRequestConfig = {},
+    ): Promise<RequestArgs> => {
+      const localVarPath = `/gameserver/registrationToken`;
+      // use dummy base URL string because the URL constructor only accepts absolute URLs.
+      const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+      let baseOptions;
+      if (configuration) {
+        baseOptions = configuration.baseOptions;
+      }
+
+      const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options };
+      const localVarHeaderParameter = {} as any;
+      const localVarQueryParameter = {} as any;
+
+      // authentication domainAuth required
+
+      setSearchParams(localVarUrlObj, localVarQueryParameter);
+      let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+      localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+
+      return {
+        url: toPathString(localVarUrlObj),
+        options: localVarRequestOptions,
+      };
+    },
+    /**
      * Delete a gameserver   Required permissions: `MANAGE_GAMESERVERS`<br> OperationId: `GameServerControllerRemove`
      * @summary Remove
      * @param {string} id
@@ -16758,6 +17064,30 @@ export const GameServerApiFp = function (configuration?: Configuration) {
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
+     * Regenerate the registration token for a gameserver. Careful, this will invalidate all existing connections.   Required permissions: `MANAGE_GAMESERVERS`<br> OperationId: `GameServerControllerRegenerateRegistrationToken`
+     * @summary Regenerate registration token
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    async gameServerControllerRegenerateRegistrationToken(
+      options?: RawAxiosRequestConfig,
+    ): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<APIOutput>> {
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.gameServerControllerRegenerateRegistrationToken(options);
+      const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+      const localVarOperationServerBasePath =
+        operationServerMap['GameServerApi.gameServerControllerRegenerateRegistrationToken']?.[
+          localVarOperationServerIndex
+        ]?.url;
+      return (axios, basePath) =>
+        createRequestFunction(
+          localVarAxiosArgs,
+          globalAxios,
+          BASE_PATH,
+          configuration,
+        )(axios, localVarOperationServerBasePath || basePath);
+    },
+    /**
      * Delete a gameserver   Required permissions: `MANAGE_GAMESERVERS`<br> OperationId: `GameServerControllerRemove`
      * @summary Remove
      * @param {string} id
@@ -17234,6 +17564,17 @@ export const GameServerApiFactory = function (configuration?: Configuration, bas
       return localVarFp.gameServerControllerListBans(id, options).then((request) => request(axios, basePath));
     },
     /**
+     * Regenerate the registration token for a gameserver. Careful, this will invalidate all existing connections.   Required permissions: `MANAGE_GAMESERVERS`<br> OperationId: `GameServerControllerRegenerateRegistrationToken`
+     * @summary Regenerate registration token
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    gameServerControllerRegenerateRegistrationToken(options?: RawAxiosRequestConfig): AxiosPromise<APIOutput> {
+      return localVarFp
+        .gameServerControllerRegenerateRegistrationToken(options)
+        .then((request) => request(axios, basePath));
+    },
+    /**
      * Delete a gameserver   Required permissions: `MANAGE_GAMESERVERS`<br> OperationId: `GameServerControllerRemove`
      * @summary Remove
      * @param {string} id
@@ -17618,6 +17959,19 @@ export class GameServerApi extends BaseAPI {
   public gameServerControllerListBans(id: string, options?: RawAxiosRequestConfig) {
     return GameServerApiFp(this.configuration)
       .gameServerControllerListBans(id, options)
+      .then((request) => request(this.axios, this.basePath));
+  }
+
+  /**
+   * Regenerate the registration token for a gameserver. Careful, this will invalidate all existing connections.   Required permissions: `MANAGE_GAMESERVERS`<br> OperationId: `GameServerControllerRegenerateRegistrationToken`
+   * @summary Regenerate registration token
+   * @param {*} [options] Override http request option.
+   * @throws {RequiredError}
+   * @memberof GameServerApi
+   */
+  public gameServerControllerRegenerateRegistrationToken(options?: RawAxiosRequestConfig) {
+    return GameServerApiFp(this.configuration)
+      .gameServerControllerRegenerateRegistrationToken(options)
       .then((request) => request(this.axios, this.basePath));
   }
 

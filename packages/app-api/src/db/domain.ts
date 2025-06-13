@@ -24,6 +24,8 @@ export class DomainModel extends NOT_DOMAIN_SCOPED_TakaroModel {
   maxModules: number;
   maxFunctionsInModule: number;
 
+  serverRegistrationToken?: string;
+
   rateLimitPoints: number;
   rateLimitDuration: number;
 

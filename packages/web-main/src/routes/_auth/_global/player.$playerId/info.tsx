@@ -110,6 +110,7 @@ const PlayerInfoCard: FC<{ player: PlayerOutputDTO }> = ({ player }) => {
           <span>Epic Online Services ID </span>
           {player.epicOnlineServicesId ? <CopyId id={player.epicOnlineServicesId} /> : '/'}
           <span>Xbox Live ID </span> {player.xboxLiveId ? <CopyId id={player.xboxLiveId} /> : '/'}
+          <span>Platform ID </span> {player.platformId ? <CopyId id={player.platformId} /> : '/'}
         </InnerBody>
       </InfoCard.Body>
     </InfoCard>

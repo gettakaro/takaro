@@ -1,52 +1,7 @@
-import { IntegrationTest, expect, SetupGameServerPlayers } from '@takaro/test';
-import { ItemsOutputDTO, ShopListingOutputDTO } from '@takaro/apiclient';
+import { IntegrationTest, expect, IShopSetup, shopSetup } from '@takaro/test';
 import { describe } from 'node:test';
 
 const group = 'ShopController';
-
-interface IShopSetup extends SetupGameServerPlayers.ISetupData {
-  items: ItemsOutputDTO[];
-  listing: ShopListingOutputDTO;
-}
-
-const shopSetup = async function (this: IntegrationTest<IShopSetup>): Promise<IShopSetup> {
-  const setupData = await SetupGameServerPlayers.setup.bind(
-    this as unknown as IntegrationTest<SetupGameServerPlayers.ISetupData>,
-  )();
-
-  await this.client.settings.settingsControllerSet('economyEnabled', {
-    value: 'true',
-    gameServerId: setupData.gameServer1.id,
-  });
-
-  await this.client.settings.settingsControllerSet('currencyName', {
-    gameServerId: setupData.gameServer1.id,
-    value: 'test coin',
-  });
-
-  const items = (
-    await this.client.item.itemControllerSearch({
-      sortBy: 'name',
-      filters: { gameserverId: [setupData.gameServer1.id] },
-    })
-  ).data.data;
-
-  const stoneItem = items.find((i) => i.name === 'Stone');
-  if (!stoneItem) throw new Error('Stone item not found in setup data');
-
-  const listingRes = await this.client.shopListing.shopListingControllerCreate({
-    gameServerId: setupData.gameServer1.id,
-    items: [{ code: stoneItem.code, amount: 1 }],
-    price: 100,
-    name: 'Test item',
-  });
-
-  return {
-    ...setupData,
-    items,
-    listing: listingRes.data.data,
-  };
-};
 
 const tests = [
   new IntegrationTest<IShopSetup>({
@@ -56,7 +11,7 @@ const tests = [
     setup: shopSetup,
     filteredFields: ['itemId', 'gameServerId', 'gameserverId', 'listingId'],
     test: async function () {
-      return this.client.shopListing.shopListingControllerGetOne(this.setupData.listing.id);
+      return this.client.shopListing.shopListingControllerGetOne(this.setupData.listing100.id);
     },
   }),
   new IntegrationTest<IShopSetup>({
@@ -68,7 +23,7 @@ const tests = [
     test: async function () {
       const items = (await this.client.item.itemControllerSearch({ filters: { name: ['Stone'] } })).data.data;
       const res = await this.client.shopListing.shopListingControllerCreate({
-        gameServerId: this.setupData.gameServer1.id,
+        gameServerId: this.setupData.gameserver.id,
         items: [{ code: items[0].code, amount: 1 }],
         price: 150,
         name: 'Test item',
@@ -90,18 +45,19 @@ const tests = [
       const woodItem = this.setupData.items.find((i) => i.name === 'Wood');
       if (!woodItem) throw new Error('Wood item not found in setup data');
 
-      const res = await this.client.shopListing.shopListingControllerUpdate(this.setupData.listing.id, {
+      const res = await this.client.shopListing.shopListingControllerUpdate(this.setupData.listing100.id, {
         price: 200,
         items: [{ code: woodItem.code, amount: 5 }],
-        gameServerId: this.setupData.gameServer1.id,
+        gameServerId: this.setupData.gameserver.id,
         name: 'Updated item',
       });
 
-      const findRes = await this.client.shopListing.shopListingControllerGetOne(res.data.data.id);
+      const findRes = await this.client.shopListing.shopListingControllerGetOne(this.setupData.listing100.id);
       expect(findRes.data.data.price).to.be.equal(200);
       expect(findRes.data.data.items[0].item.id).to.be.equal(woodItem.id);
       expect(findRes.data.data.items[0].amount).to.be.equal(5);
       expect(findRes.data.data.name).to.be.equal('Updated item');
+      expect(findRes.data.data.items[0].item.id).to.be.equal(this.setupData.items[1].id);
 
       return res;
     },
@@ -114,8 +70,8 @@ const tests = [
     setup: shopSetup,
     expectedStatus: 404,
     test: async function () {
-      await this.client.shopListing.shopListingControllerDelete(this.setupData.listing.id);
-      return this.client.shopListing.shopListingControllerGetOne(this.setupData.listing.id);
+      await this.client.shopListing.shopListingControllerDelete(this.setupData.listing100.id);
+      return this.client.shopListing.shopListingControllerGetOne(this.setupData.listing100.id);
     },
   }),
   // Creating a listing with no item should fail
@@ -127,7 +83,7 @@ const tests = [
     expectedStatus: 400,
     test: async function () {
       return this.client.shopListing.shopListingControllerCreate({
-        gameServerId: this.setupData.gameServer1.id,
+        gameServerId: this.setupData.gameserver.id,
         price: 150,
         name: 'Test item',
         items: [],
@@ -143,7 +99,7 @@ const tests = [
     expectedStatus: 400,
     test: async function () {
       return this.client.shopListing.shopListingControllerCreate({
-        gameServerId: this.setupData.gameServer1.id,
+        gameServerId: this.setupData.gameserver.id,
         items: [{ code: this.setupData.items[1].code, amount: 1 }],
         price: -100,
         name: 'Test item',
@@ -159,7 +115,7 @@ const tests = [
     expectedStatus: 400,
     test: async function () {
       return this.client.shopListing.shopListingControllerCreate({
-        gameServerId: this.setupData.gameServer1.id,
+        gameServerId: this.setupData.gameserver.id,
         items: [{ code: this.setupData.items[1].code, amount: 1 }],
         price: 0,
         name: 'Test item',
@@ -169,13 +125,14 @@ const tests = [
   // Should not include deleted listings in search
   new IntegrationTest<IShopSetup>({
     group,
-    snapshot: true,
+    snapshot: false,
     name: 'Search with deleted listing',
     setup: shopSetup,
     test: async function () {
-      await this.client.shopListing.shopListingControllerDelete(this.setupData.listing.id);
+      const beforeRes = await this.client.shopListing.shopListingControllerSearch({});
+      await this.client.shopListing.shopListingControllerDelete(this.setupData.listing100.id);
       const res = await this.client.shopListing.shopListingControllerSearch({});
-      expect(res.data.data.length).to.be.equal(0);
+      expect(res.data.data.length).to.be.equal(beforeRes.data.data.length - 1);
       return res;
     },
   }),
@@ -191,7 +148,7 @@ const tests = [
       await Promise.all(
         Array.from({ length: listingsToMake }).map(async (_, i) => {
           return this.client.shopListing.shopListingControllerCreate({
-            gameServerId: this.setupData.gameServer1.id,
+            gameServerId: this.setupData.gameserver.id,
             items: [{ code: items[0].code, amount: 1 }],
             price: 100 + i,
             name: `Test item ${i}`,
@@ -201,12 +158,12 @@ const tests = [
 
       const shop1Listings = (
         await this.client.shopListing.shopListingControllerSearch({
-          filters: { gameServerId: [this.setupData.gameServer1.id] },
+          filters: { gameServerId: [this.setupData.gameserver.id] },
         })
       ).data.data;
       const shop2ListingsBefore = (
         await this.client.shopListing.shopListingControllerSearch({
-          filters: { gameServerId: [this.setupData.gameServer2.id] },
+          filters: { gameServerId: [this.setupData.gameserver2.id] },
         })
       ).data.data;
       // Export the listings
@@ -219,7 +176,7 @@ const tests = [
         'options',
         JSON.stringify({
           replace: true,
-          gameServerId: this.setupData.gameServer2.id,
+          gameServerId: this.setupData.gameserver2.id,
         }),
       );
 
@@ -228,7 +185,7 @@ const tests = [
 
       const shop2Listings = (
         await this.client.shopListing.shopListingControllerSearch({
-          filters: { gameServerId: [this.setupData.gameServer2.id] },
+          filters: { gameServerId: [this.setupData.gameserver2.id] },
         })
       ).data.data;
       expect(shop2Listings).to.have.length(shop1Listings.length);
@@ -250,7 +207,7 @@ const tests = [
       await Promise.all(
         Array.from({ length: listingsToMake }).map(async (_, i) => {
           return this.client.shopListing.shopListingControllerCreate({
-            gameServerId: this.setupData.gameServer1.id,
+            gameServerId: this.setupData.gameserver.id,
             items: [{ code: items[0].code, amount: 1 }],
             price: 100 + i,
             name: `Test item ${i}`,
@@ -260,12 +217,12 @@ const tests = [
 
       const shop1Listings = (
         await this.client.shopListing.shopListingControllerSearch({
-          filters: { gameServerId: [this.setupData.gameServer1.id] },
+          filters: { gameServerId: [this.setupData.gameserver.id] },
         })
       ).data.data;
       const shop2ListingsBefore = (
         await this.client.shopListing.shopListingControllerSearch({
-          filters: { gameServerId: [this.setupData.gameServer2.id] },
+          filters: { gameServerId: [this.setupData.gameserver2.id] },
         })
       ).data.data;
       // Export the listings
@@ -278,7 +235,7 @@ const tests = [
         'options',
         JSON.stringify({
           replace: false,
-          gameServerId: this.setupData.gameServer2.id,
+          gameServerId: this.setupData.gameserver2.id,
         }),
       );
 
@@ -287,7 +244,7 @@ const tests = [
 
       const shop2Listings = (
         await this.client.shopListing.shopListingControllerSearch({
-          filters: { gameServerId: [this.setupData.gameServer2.id] },
+          filters: { gameServerId: [this.setupData.gameserver2.id] },
         })
       ).data.data;
       expect(shop2Listings).to.have.length(shop1Listings.length + shop2ListingsBefore.length);
@@ -307,7 +264,7 @@ const tests = [
       await Promise.all(
         Array.from({ length: listingsToMake }).map(async (_, i) => {
           return this.client.shopListing.shopListingControllerCreate({
-            gameServerId: this.setupData.gameServer1.id,
+            gameServerId: this.setupData.gameserver.id,
             items: [{ code: items[0].code, amount: 1 }],
             price: 100 + i,
             name: `Test item ${i}`,
@@ -317,12 +274,12 @@ const tests = [
 
       const shop1Listings = (
         await this.client.shopListing.shopListingControllerSearch({
-          filters: { gameServerId: [this.setupData.gameServer1.id] },
+          filters: { gameServerId: [this.setupData.gameserver.id] },
         })
       ).data.data;
       const shop2ListingsBefore = (
         await this.client.shopListing.shopListingControllerSearch({
-          filters: { gameServerId: [this.setupData.gameServer2.id] },
+          filters: { gameServerId: [this.setupData.gameserver2.id] },
         })
       ).data.data;
       // Export the listings
@@ -335,7 +292,7 @@ const tests = [
         'options',
         JSON.stringify({
           replace: false,
-          gameServerId: this.setupData.gameServer2.id,
+          gameServerId: this.setupData.gameserver2.id,
           draft: true,
         }),
       );
@@ -345,7 +302,7 @@ const tests = [
 
       const shop2Listings = (
         await this.client.shopListing.shopListingControllerSearch({
-          filters: { gameServerId: [this.setupData.gameServer2.id] },
+          filters: { gameServerId: [this.setupData.gameserver2.id] },
         })
       ).data.data;
       expect(shop2Listings).to.have.length(shop1Listings.length + shop2ListingsBefore.length);

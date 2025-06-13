@@ -9,7 +9,40 @@ Takaro regularly syncs player data from your servers into the Takaro database. O
 ## Global Player Profile
 
 - Uniform Across All Servers: The global 'Player' profile remains consistent across all game servers. This profile represents the player's universal identity in Takaro.
-- Tracks General Information: It includes global data such as the player's name, SteamID, and other platform-wide details.
+- Tracks General Information: It includes global data such as the player's name, platform identifiers, and other platform-wide details.
+
+## Platform Identification
+
+Takaro supports multiple ways to identify players across different gaming platforms. Each player can have one or more of the following platform identifiers:
+
+### Supported Platform Identifiers
+
+- **Steam ID**: For players using Steam platform (e.g., `76561198123456789`)
+- **Xbox Live ID**: For players using Xbox Live platform
+- **Epic Online Services ID**: For players using Epic Games Store platform
+- **Platform ID**: Generic identifier for other platforms using the format `platform:id`
+
+### Platform ID Format
+
+The Platform ID is a flexible system that supports games and platforms beyond Steam, Xbox, and Epic. It uses a standardized format:
+
+**Format**: `platform:identifier`
+
+**Examples**:
+- `minecraft:550e8400-e29b-41d4-a716-446655440000` - Minecraft player UUID
+- `battlenet:PlayerName#1234` - Battle.net player tag
+- `origin:OriginPlayerID` - Origin/EA platform
+- `discord:123456789012345678` - Discord user ID
+- `custom-game:unique-player-id` - Custom game platform
+
+### How Platform Identification Works
+
+1. **Priority System**: Takaro will use the most specific platform identifier available
+2. **Fallback Support**: If a game-specific ID (Steam, Xbox, Epic) isn't available, Platform ID provides a generic alternative
+3. **Multiple Identifiers**: A single player can have multiple platform identifiers if they play across different platforms
+4. **Cross-Platform Play**: Platform ID enables support for games that don't use traditional gaming platforms
+
+You can view all of a player's platform identifiers in their profile page under the "General" information section.
 
 ## Server-Specific Player Profile (PlayerOnGameServer)
 

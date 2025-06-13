@@ -12,6 +12,7 @@ import { faker } from '@faker-js/faker';
 import { randomUUID } from 'crypto';
 import { Client, isAxiosError } from '@takaro/apiclient';
 import { describe } from 'node:test';
+import { getMockServer } from '@takaro/mock-gameserver';
 
 const group = 'Player-User linking';
 
@@ -80,7 +81,7 @@ async function checkRoleAndPermissions(client: Client, userClient: Client, userI
 
   try {
     const players = await client.player.playerControllerSearch();
-    expect(players.data.data).to.have.length(10);
+    expect(players.data.data).to.have.length(20);
   } catch (error) {
     if (!isAxiosError(error) || !error.response) throw error;
     expect(error.response?.data.meta.error.code).to.be.equal('ForbiddenError');
@@ -152,6 +153,7 @@ const tests = [
       const newDomainRootUser = newDomain.rootUser.email;
       const newDomainRootUserPassword = newDomain.password;
       const newDomainClient = await getClient(newDomainRootUser, newDomainRootUserPassword);
+      const newDomainRegistrationToken = newDomain.createdDomain.serverRegistrationToken;
 
       const serverName = randomUUID();
 
@@ -159,29 +161,35 @@ const tests = [
       await eventsAwaiter.connect(newDomainClient);
 
       const connectedEvents = eventsAwaiter.waitForEvents('player-created', 10);
-      const newGameServer = await newDomainClient.gameserver.gameServerControllerCreate({
-        name: `Gameserver ${serverName}`,
-        type: 'MOCK',
-        connectionInfo: JSON.stringify({
-          host: integrationConfig.get('mockGameserver.host'),
-          name: `new-${serverName}`,
-        }),
+
+      await getMockServer({
+        mockserver: { registrationToken: newDomainRegistrationToken, identityToken: serverName },
       });
-      await newDomainClient.gameserver.gameServerControllerExecuteCommand(newGameServer.data.data.id, {
+
+      const gameServers = (
+        await newDomainClient.gameserver.gameServerControllerSearch({
+          filters: { identityToken: [serverName] },
+        })
+      ).data.data;
+
+      if (!gameServers[0]) throw new Error('Game server not found. Did something fail when registering?');
+      const newGameServer = gameServers[0];
+
+      await newDomainClient.gameserver.gameServerControllerExecuteCommand(newGameServer.id, {
         command: 'connectAll',
       });
       expect(await connectedEvents).to.have.length(10);
 
       const newPogs = (
         await newDomainClient.playerOnGameserver.playerOnGameServerControllerSearch({
-          filters: { gameServerId: [newGameServer.data.data.id] },
+          filters: { gameServerId: [newGameServer.id] },
         })
       ).data.data;
 
       const chatEventWaiter = (await new EventsAwaiter().connect(newDomainClient)).waitForEvents(
         GameEvents.CHAT_MESSAGE,
       );
-      await newDomainClient.command.commandControllerTrigger(newGameServer.data.data.id, {
+      await newDomainClient.command.commandControllerTrigger(newGameServer.id, {
         msg: '/link',
         playerId: newPogs[0].playerId,
       });
