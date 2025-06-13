@@ -69,7 +69,7 @@ const main = pwTest.extend<IBaseFixtures>({
       // User with no permissions
       const password = 'test';
 
-      const identityToken = randomUUID();
+      const identityToken = 'Test server';
 
       const [user, emptyRole, mockServer, mod, mods] = await Promise.all([
         // User creation

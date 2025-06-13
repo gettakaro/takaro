@@ -17,14 +17,15 @@ class RedisClass {
    * @returns
    */
   async getClient(name: string, extra: RedisClientOptions = {}): Promise<RedisClient> {
-    const cachedClient = this.clients.get(name);
+    const normalizedName = name.toLowerCase().replaceAll(/[^a-z0-9]/g, '_');
+    const cachedClient = this.clients.get(normalizedName);
 
     if (cachedClient) return cachedClient;
 
-    this.log.debug(`Creating new Redis client for ${name}`);
+    this.log.debug(`Creating new Redis client for ${normalizedName}`);
 
     const client = createClient({
-      name,
+      name: normalizedName,
       username: config.get('redis.username'),
       password: config.get('redis.password'),
       socket: {
@@ -35,9 +36,9 @@ class RedisClass {
     });
 
     await client.connect();
-    this.clients.set(name, client);
+    this.clients.set(normalizedName, client);
 
-    health.registerHook(name, async () => {
+    health.registerHook(normalizedName, async () => {
       await client.ping();
     });
 
