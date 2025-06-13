@@ -106,6 +106,7 @@ docs/GameServerTestReachabilityInputDTO.md
 docs/GameServerTypesOutputDTO.md
 docs/GameServerTypesOutputDTOAPI.md
 docs/GameServerUpdateDTO.md
+docs/GenericConnectionInfo.md
 docs/GetJobInputDTO.md
 docs/GetSettingsInput.md
 docs/GetSettingsOneInput.md
@@ -135,10 +136,12 @@ docs/HookUpdateDTO.md
 docs/ICommand.md
 docs/ICommandArgument.md
 docs/ICronJob.md
+docs/IEntityDTO.md
 docs/IFunction.md
 docs/IGamePlayer.md
 docs/IHook.md
 docs/IItemDTO.md
+docs/ILocationDTO.md
 docs/IMessageOptsDTO.md
 docs/IPermission.md
 docs/IPlayerReferenceDTO.md
@@ -176,7 +179,6 @@ docs/MeOutputDTO.md
 docs/MessageSendInputDTO.md
 docs/MetaApi.md
 docs/MetadataOutput.md
-docs/MockConnectionInfo.md
 docs/ModuleApi.md
 docs/ModuleCreateAPIDTO.md
 docs/ModuleCreateDTO.md
@@ -265,6 +267,7 @@ docs/PogStatsInputDTO.md
 docs/RadiusSearchInputDTO.md
 docs/RangeFilterCreatedAndUpdatedAt.md
 docs/RedirectQs.md
+docs/ResolveRegistrationTokenInputDTO.md
 docs/RoleApi.md
 docs/RoleCreateInputDTO.md
 docs/RoleMembersOutputDTO.md
