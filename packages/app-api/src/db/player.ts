@@ -65,6 +65,7 @@ export class PlayerModel extends TakaroModel {
   steamId?: string;
   xboxLiveId?: string;
   epicOnlineServicesId?: string;
+  platformId?: string;
 
   steamLastFetch: Date;
   steamAvatar: string;

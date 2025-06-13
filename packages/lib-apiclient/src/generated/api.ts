@@ -7294,6 +7294,12 @@ export interface PlayerCreateDTO {
    * @memberof PlayerCreateDTO
    */
   epicOnlineServicesId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerCreateDTO
+   */
+  platformId?: string;
 }
 /**
  *
@@ -8103,6 +8109,12 @@ export interface PlayerOutputDTO {
    * @type {string}
    * @memberof PlayerOutputDTO
    */
+  platformId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOutputDTO
+   */
   steamAvatar?: string;
   /**
    *
@@ -8256,6 +8268,12 @@ export interface PlayerOutputWithRolesDTO {
    * @memberof PlayerOutputWithRolesDTO
    */
   epicOnlineServicesId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerOutputWithRolesDTO
+   */
+  platformId?: string;
   /**
    *
    * @type {string}
@@ -8448,6 +8466,12 @@ export interface PlayerSearchInputAllowedFilters {
   xboxLiveId?: Array<string>;
   /**
    *
+   * @type {Array<string>}
+   * @memberof PlayerSearchInputAllowedFilters
+   */
+  platformId?: Array<string>;
+  /**
+   *
    * @type {Array<boolean>}
    * @memberof PlayerSearchInputAllowedFilters
    */
@@ -8538,6 +8562,12 @@ export interface PlayerSearchInputAllowedSearch {
    * @memberof PlayerSearchInputAllowedSearch
    */
   steamId?: Array<string>;
+  /**
+   *
+   * @type {Array<string>}
+   * @memberof PlayerSearchInputAllowedSearch
+   */
+  platformId?: Array<string>;
 }
 /**
  *
@@ -8639,6 +8669,12 @@ export interface PlayerUpdateDTO {
    * @memberof PlayerUpdateDTO
    */
   epicOnlineServicesId?: string;
+  /**
+   *
+   * @type {string}
+   * @memberof PlayerUpdateDTO
+   */
+  platformId?: string;
   /**
    *
    * @type {number}

@@ -1,4 +1,4 @@
-import { IsBoolean, IsISO8601, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsBoolean, IsISO8601, IsNumber, IsOptional, IsString, ValidateNested, Matches } from 'class-validator';
 import { TakaroDTO, TakaroModelDTO } from '@takaro/util';
 import { PlayerOnGameserverOutputDTO } from '../PlayerOnGameserverService.js';
 import { Type } from 'class-transformer';
@@ -17,6 +17,14 @@ export class PlayerOutputDTO extends TakaroModelDTO<PlayerOutputDTO> {
   @IsString()
   @IsOptional()
   epicOnlineServicesId?: string;
+
+  @IsString()
+  @IsOptional()
+  @Matches(/^[a-zA-Z0-9_-]+:[a-zA-Z0-9_-]+$/, {
+    // eslint-disable-next-line quotes
+    message: "Platform ID must be in format 'platform:id' (e.g., 'minecraft:player-uuid')",
+  })
+  platformId?: string;
 
   @IsString()
   @IsOptional()
@@ -106,6 +114,13 @@ export class PlayerCreateDTO extends TakaroDTO<PlayerCreateDTO> {
   @IsString()
   @IsOptional()
   epicOnlineServicesId?: string;
+
+  @IsString()
+  @IsOptional()
+  @Matches(/^[a-zA-Z0-9_-]+:[a-zA-Z0-9_-]+$/, {
+    message: "Platform ID must be in format 'platform:id' (e.g., 'minecraft:player-uuid')",
+  })
+  platformId?: string;
 }
 
 export class PlayerUpdateDTO extends TakaroDTO<PlayerUpdateDTO> {
@@ -120,6 +135,12 @@ export class PlayerUpdateDTO extends TakaroDTO<PlayerUpdateDTO> {
   @IsString()
   @IsOptional()
   epicOnlineServicesId?: string;
+  @IsString()
+  @IsOptional()
+  @Matches(/^[a-zA-Z0-9_-]+:[a-zA-Z0-9_-]+$/, {
+    message: "Platform ID must be in format 'platform:id' (e.g., 'minecraft:player-uuid')",
+  })
+  platformId?: string;
   @IsNumber()
   @IsOptional()
   playtimeSeconds?: number;

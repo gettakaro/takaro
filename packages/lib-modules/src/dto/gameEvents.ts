@@ -1,4 +1,4 @@
-import { IsEnum, IsString, ValidateNested, IsOptional, IsNumber } from 'class-validator';
+import { IsEnum, IsString, ValidateNested, IsOptional, IsNumber, Matches } from 'class-validator';
 import { TakaroDTO } from '@takaro/util';
 import { Type } from 'class-transformer';
 import { BaseEvent } from './base.js';
@@ -41,6 +41,10 @@ export class IGamePlayer extends TakaroDTO<IGamePlayer> {
 
   @IsString()
   @IsOptional()
+  @Matches(/^[a-zA-Z0-9_-]+:[a-zA-Z0-9_-]+$/, {
+    // eslint-disable-next-line quotes
+    message: "Platform ID must be in format 'platform:id' (e.g., 'minecraft:player-uuid')",
+  })
   platformId?: string;
 
   @IsString()

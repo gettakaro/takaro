@@ -136,6 +136,100 @@ const tests = [
       });
     },
   }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Handles player joined event correctly with platformId',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      const playerService = new PlayerService(this.standardDomainId ?? '');
+
+      const MOCK_PLAYER = new IGamePlayer({
+        ip: '169.169.169.80',
+        name: 'minecraft_player',
+        gameId: uuid(),
+        platformId: 'minecraft:test-player-uuid',
+      });
+
+      await playerService.resolveRef(MOCK_PLAYER, this.setupData.gameServer1.id);
+
+      const players = await this.client.player.playerControllerSearch();
+
+      const player = players.data.data.find((player) => player.platformId === MOCK_PLAYER.platformId);
+
+      expect(player).to.not.be.null;
+      expect(player?.platformId).to.eq(MOCK_PLAYER.platformId);
+      expect(player?.name).to.eq(MOCK_PLAYER.name);
+
+      return players;
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Finds existing player by platformId when resolving reference',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      const playerService = new PlayerService(this.standardDomainId ?? '');
+
+      // Create a player with platformId first
+      const MOCK_PLAYER_1 = new IGamePlayer({
+        ip: '169.169.169.80',
+        name: 'original_name',
+        gameId: uuid(),
+        platformId: 'minecraft:existing-player-uuid',
+      });
+
+      await playerService.resolveRef(MOCK_PLAYER_1, this.setupData.gameServer1.id);
+
+      // Now try to resolve with the same platformId but different gameId and name
+      const MOCK_PLAYER_2 = new IGamePlayer({
+        ip: '169.169.169.81',
+        name: 'updated_name',
+        gameId: uuid(),
+        platformId: 'minecraft:existing-player-uuid',
+      });
+
+      await playerService.resolveRef(MOCK_PLAYER_2, this.setupData.gameServer2.id);
+
+      const players = await this.client.player.playerControllerSearch({
+        filters: {
+          platformId: [MOCK_PLAYER_1.platformId as string],
+        },
+      });
+
+      // Should find only one player (the existing one, updated with new name)
+      expect(players.data.data).to.have.lengthOf(1);
+      expect(players.data.data[0].platformId).to.eq(MOCK_PLAYER_1.platformId);
+      expect(players.data.data[0].name).to.eq(MOCK_PLAYER_2.name); // Should be updated
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Throws ValidationError when no platform identifiers are provided',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      const playerService = new PlayerService(this.standardDomainId ?? '');
+
+      const MOCK_PLAYER = new IGamePlayer({
+        ip: '169.169.169.80',
+        name: 'no_id_player',
+        gameId: uuid(),
+        // No platform identifiers provided
+      });
+
+      let errorThrown = false;
+      try {
+        await playerService.resolveRef(MOCK_PLAYER, this.setupData.gameServer1.id);
+      } catch (error: any) {
+        errorThrown = true;
+        expect(error.message).to.include('At least one platform identifier');
+      }
+
+      expect(errorThrown).to.be.true;
+    },
+  }),
 ];
 
 describe(group, () => {
