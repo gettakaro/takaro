@@ -226,6 +226,11 @@ docs/PermissionOutputDTOAPI.md
 docs/PermissionVersionDTO.md
 docs/PlayerApi.md
 docs/PlayerCreateDTO.md
+docs/PlayerInventoryArrayOutputDTOAPI.md
+docs/PlayerInventoryHistoryInputDTO.md
+docs/PlayerInventoryOutputDTO.md
+docs/PlayerItemHistoryArrayOutputDTOAPI.md
+docs/PlayerItemHistoryOutputDTO.md
 docs/PlayerLocationArrayOutputDTOAPI.md
 docs/PlayerLocationOutputDTO.md
 docs/PlayerMeOutputDTO.md
@@ -253,6 +258,7 @@ docs/PlayerSearchInputAllowedRangeFilter.md
 docs/PlayerSearchInputAllowedSearch.md
 docs/PlayerSearchInputDTO.md
 docs/PlayerUpdateDTO.md
+docs/PlayersByItemInputDTO.md
 docs/PlayersOnlineInputDTO.md
 docs/PogParam.md
 docs/PogStatsInputDTO.md

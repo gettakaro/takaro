@@ -17,6 +17,7 @@ export class GameServerModel extends TakaroModel {
   reachable!: boolean;
   deletedAt?: Date;
   type!: GAME_SERVER_TYPE;
+  identityToken?: string;
 
   static get relationMappings() {
     return {

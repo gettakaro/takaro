@@ -1,4 +1,4 @@
-import { Client, ShopListingOutputDTO, UserOutputDTO } from '@takaro/apiclient';
+import { Client, ItemsOutputDTO, ShopListingOutputDTO, UserOutputDTO } from '@takaro/apiclient';
 import { IModuleTestsSetupData, modulesTestSetup } from './modulesSetup.js';
 import { integrationConfig } from '../test/integrationConfig.js';
 import { expect } from '../test/expect.js';
@@ -8,10 +8,19 @@ import { faker } from '@faker-js/faker';
 import { getSecretCodeForPlayer } from './createUserForPlayer.js';
 
 export interface IShopSetup extends IModuleTestsSetupData {
-  userClient: Client;
   listing100: ShopListingOutputDTO;
   listing33: ShopListingOutputDTO;
   createListings: (client: Client, opts: ICreateListingsOpts) => Promise<ShopListingOutputDTO[]>;
+  items: ItemsOutputDTO[];
+  items2: ItemsOutputDTO[];
+  user1: UserOutputDTO;
+  client1: Client;
+  user2: UserOutputDTO;
+  client2: Client;
+  user3: UserOutputDTO;
+  client3: Client;
+  user4: UserOutputDTO;
+  client4: Client;
 }
 
 async function createUserForPlayer(client: Client, playerId: string, gameServerId: string) {
@@ -57,16 +66,21 @@ async function setupShop(client: Client, gameServerId: string) {
     })
   ).data.data;
 
+  const stoneItem = items.find((item) => item.code === 'stone');
+  if (!stoneItem) throw new Error('Stone item not found');
+  const woodItem = items.find((item) => item.code === 'wood');
+  if (!woodItem) throw new Error('Wood item not found');
+
   const listing100Res = await client.shopListing.shopListingControllerCreate({
     gameServerId: gameServerId,
-    items: [{ itemId: items[0].id, amount: 1 }],
+    items: [{ itemId: stoneItem.id, amount: 1 }],
     price: 100,
     name: 'Test item',
   });
 
   const listing33Res = await client.shopListing.shopListingControllerCreate({
     gameServerId: gameServerId,
-    items: [{ itemId: items[1].id, amount: 1 }],
+    items: [{ itemId: woodItem.id, amount: 1 }],
     price: 33,
     name: 'Test item 2',
   });
@@ -126,12 +140,31 @@ export const shopSetup = async function (this: IntegrationTest<IShopSetup>): Pro
     versionId: setupData.economyUtilsModule.latestVersion.id,
   });
 
-  const { client: userClient } = await createUserForPlayer(
+  const { listing100, listing33 } = await setupShop(this.client, setupData.gameserver.id);
+
+  const { client: user1Client, user: user1 } = await createUserForPlayer(
     this.client,
     setupData.players[0].id,
     setupData.gameserver.id,
   );
-  const { listing100, listing33 } = await setupShop(this.client, setupData.gameserver.id);
+
+  const { client: user2Client, user: user2 } = await createUserForPlayer(
+    this.client,
+    setupData.players[1].id,
+    setupData.gameserver.id,
+  );
+
+  const { client: user3Client, user: user3 } = await createUserForPlayer(
+    this.client,
+    setupData.players2[0].id,
+    setupData.gameserver2.id,
+  );
+
+  const { client: user4Client, user: user4 } = await createUserForPlayer(
+    this.client,
+    setupData.players2[1].id,
+    setupData.gameserver2.id,
+  );
 
   await this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(
     setupData.gameserver.id,
@@ -139,5 +172,51 @@ export const shopSetup = async function (this: IntegrationTest<IShopSetup>): Pro
     { currency: 250 },
   );
 
-  return { ...setupData, userClient, listing100, listing33, createListings };
+  await this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(
+    setupData.gameserver.id,
+    setupData.players[1].id,
+    { currency: 250 },
+  );
+
+  await this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(
+    setupData.gameserver2.id,
+    setupData.players2[0].id,
+    { currency: 250 },
+  );
+
+  await this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(
+    setupData.gameserver2.id,
+    setupData.players2[1].id,
+    { currency: 250 },
+  );
+
+  const items = (
+    await this.client.item.itemControllerSearch({
+      sortBy: 'name',
+      filters: { gameserverId: [setupData.gameserver.id] },
+    })
+  ).data.data;
+  const items2 = (
+    await this.client.item.itemControllerSearch({
+      sortBy: 'name',
+      filters: { gameserverId: [setupData.gameserver2.id] },
+    })
+  ).data.data;
+
+  return {
+    ...setupData,
+    listing100,
+    listing33,
+    items,
+    items2,
+    createListings,
+    user1,
+    client1: user1Client,
+    user2,
+    client2: user2Client,
+    user3,
+    client3: user3Client,
+    user4,
+    client4: user4Client,
+  };
 };

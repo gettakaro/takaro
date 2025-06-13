@@ -47,6 +47,9 @@ class PlayerSearchInputAllowedFilters extends AllowedFilters {
   @IsString({ each: true })
   xboxLiveId?: string[];
   @IsOptional()
+  @IsString({ each: true })
+  platformId?: string[];
+  @IsOptional()
   @IsBoolean({ each: true })
   steamCommunityBanned?: boolean[];
   @IsOptional()
@@ -64,6 +67,9 @@ class PlayerSearchInputAllowedSearch extends AllowedSearch {
   @IsOptional()
   @IsString({ each: true })
   steamId?: string[];
+  @IsOptional()
+  @IsString({ each: true })
+  platformId?: string[];
 }
 
 class PlayerSearchInputAllowedRangeFilter extends RangeFilterCreatedAndUpdatedAt {

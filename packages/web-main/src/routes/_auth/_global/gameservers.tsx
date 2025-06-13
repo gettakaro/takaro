@@ -22,11 +22,13 @@ import {
   AiOutlineFunction as ModulesIcon,
   AiOutlineSetting as SettingsIcon,
   AiOutlineStop as ShutdownIcon,
+  AiOutlineReload as ResetTokenIcon,
 } from 'react-icons/ai';
 import { FC, MouseEvent, useRef, useState } from 'react';
 import { PermissionsGuard } from '../../../components/PermissionsGuard';
 import { TableListToggleButton } from '../../../components/TableListToggleButton';
 import { GameServerDeleteDialog } from '../../../components/dialogs/GameServerDeleteDialog';
+import { GameServerResetTokenDialog } from '../../../components/dialogs/GameServerResetRegistrationToken';
 import { DeleteImperativeHandle } from '../../../components/dialogs';
 import { MaxUsage } from '../../../components/MaxUsage';
 import { userMeQueryOptions } from '../../../queries/user';
@@ -61,6 +63,7 @@ function Component() {
   const navigate = Route.useNavigate();
   const theme = useTheme();
   const hasManageGameServersPermission = useHasPermission(['MANAGE_GAMESERVERS']);
+  const [openResetTokenDialog, setOpenResetTokenDialog] = useState<boolean>(false);
 
   const maxGameserverCount = getCurrentDomain(me).maxGameservers;
   const canCreateGameServer = currentGameServerCount < maxGameserverCount;
@@ -72,6 +75,10 @@ function Component() {
   const onClickImportGameServer = (e: MouseEvent) => {
     e.preventDefault();
     navigate({ to: '/gameservers/create/import' });
+  };
+  const onClickResetToken = (e: MouseEvent) => {
+    e.preventDefault();
+    setOpenResetTokenDialog(true);
   };
 
   return (
@@ -105,12 +112,18 @@ function Component() {
                   onClick={onClickImportGameServer}
                   disabled={!canCreateGameServer}
                 />
+                <Dropdown.Menu.Item
+                  icon={<ResetTokenIcon />}
+                  label="Reset registration token"
+                  onClick={onClickResetToken}
+                />
               </Dropdown.Menu.Group>
             </Dropdown.Menu>
           </Dropdown>
         )}
         <TableListToggleButton onChange={setView} value={view} />
       </div>
+      <GameServerResetTokenDialog open={openResetTokenDialog} onOpenChange={setOpenResetTokenDialog} />
       {view === 'table' && <GameServersTableView />}
       {view === 'list' && <GameServersCardView />}
       <Outlet />

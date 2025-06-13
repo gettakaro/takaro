@@ -84,7 +84,8 @@
       "roleId",
       "gameServerId",
       "epicOnlineServicesId",
-      "xboxLiveId"
+      "xboxLiveId",
+      "platformId"
     ],
     "expectedStatus": 200,
     "standardEnvironment": true

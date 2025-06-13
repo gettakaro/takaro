@@ -25,7 +25,9 @@
     "group": "DomainController",
     "name": "Update by ID",
     "expectedStatus": 200,
-    "filteredFields": [],
+    "filteredFields": [
+      "serverRegistrationToken"
+    ],
     "standardEnvironment": true
   }
 }

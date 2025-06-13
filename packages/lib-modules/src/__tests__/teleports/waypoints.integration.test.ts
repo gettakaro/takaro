@@ -1,14 +1,9 @@
-import {
-  IntegrationTest,
-  expect,
-  integrationConfig,
-  IModuleTestsSetupData,
-  modulesTestSetup,
-  EventsAwaiter,
-} from '@takaro/test';
+import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { GameEvents, HookEvents } from '../../dto/index.js';
-import { GameServerTypesOutputDTOTypeEnum, PlayerOutputDTO, RoleOutputDTO } from '@takaro/apiclient';
+import { PlayerOutputDTO, RoleOutputDTO } from '@takaro/apiclient';
 import { describe } from 'node:test';
+import { randomUUID } from 'crypto';
+import { getMockServer } from '@takaro/mock-gameserver';
 
 const group = 'Teleports - waypoints';
 
@@ -69,17 +64,20 @@ const waypointsSetup = async function (this: IntegrationTest<WaypointsSetup>): P
 };
 
 async function setupSecondServer(this: IntegrationTest<WaypointsSetup>) {
-  const newGameServer = await this.client.gameserver.gameServerControllerCreate({
-    name: 'newServer',
-    connectionInfo: JSON.stringify({
-      host: integrationConfig.get('mockGameserver.host'),
-      name: 'newServer',
-    }),
-    type: GameServerTypesOutputDTOTypeEnum.Mock,
+  if (!this.domainRegistrationToken) throw new Error('Domain registration token not set');
+  const identityToken = randomUUID();
+  const mockserver = await getMockServer({
+    mockserver: { registrationToken: this.domainRegistrationToken, identityToken },
   });
+  this.setupData.mockservers.push(mockserver);
+  const gameserverRes = await this.client.gameserver.gameServerControllerSearch({
+    filters: { identityToken: [identityToken] },
+  });
+  const newGameServer = gameserverRes.data.data[0];
+  if (!newGameServer) throw new Error('Game server not found');
 
   await this.client.module.moduleInstallationsControllerInstallModule({
-    gameServerId: newGameServer.data.data.id,
+    gameServerId: newGameServer.id,
     versionId: this.setupData.teleportsModule.latestVersion.id,
   });
 
@@ -88,7 +86,7 @@ async function setupSecondServer(this: IntegrationTest<WaypointsSetup>) {
     5,
   );
 
-  await this.client.gameserver.gameServerControllerExecuteCommand(newGameServer.data.data.id, {
+  await this.client.gameserver.gameServerControllerExecuteCommand(newGameServer.id, {
     command: 'connectAll',
   });
 
@@ -96,7 +94,7 @@ async function setupSecondServer(this: IntegrationTest<WaypointsSetup>) {
 
   const newServerPlayers = (
     await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
-      filters: { gameServerId: [newGameServer.data.data.id] },
+      filters: { gameServerId: [newGameServer.id] },
     })
   ).data.data;
   const newServerModerator = newServerPlayers[0];
@@ -546,7 +544,7 @@ const tests = [
 
       // Make a waypoint on the new gameserver
       const setEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE);
-      await this.client.command.commandControllerTrigger(newGameServer.data.data.id, {
+      await this.client.command.commandControllerTrigger(newGameServer.id, {
         msg: '/setwaypoint A',
         playerId: newServerModerator.playerId,
       });
@@ -562,16 +560,14 @@ const tests = [
       expect((await setEvents2).length).to.be.eq(1);
       expect((await setEvents2)[0].data.meta.msg).to.be.eq('Waypoint notused set.');
 
-      const useWaypointPermission = await this.client.permissionCodesToInputs([
-        `WAYPOINTS_USE_A_${newGameServer.data.data.id}`,
-      ]);
+      const useWaypointPermission = await this.client.permissionCodesToInputs([`WAYPOINTS_USE_A_${newGameServer.id}`]);
       await this.client.role.roleControllerUpdate(this.setupData.playerRole.id, {
         permissions: useWaypointPermission,
       });
 
       // Use the waypoint from the new gameserver -> success
       const teleportEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
-      await this.client.command.commandControllerTrigger(newGameServer.data.data.id, {
+      await this.client.command.commandControllerTrigger(newGameServer.id, {
         msg: '/A',
         playerId: newServerPlayer.playerId,
       });
@@ -615,7 +611,7 @@ const tests = [
 
       // Make a waypoint on the new gameserver
       const setEvents2 = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE);
-      await this.client.command.commandControllerTrigger(newGameServer.data.data.id, {
+      await this.client.command.commandControllerTrigger(newGameServer.id, {
         msg: '/setwaypoint A',
         playerId: newServerModerator.playerId,
       });
@@ -641,7 +637,7 @@ const tests = [
         GameEvents.CHAT_MESSAGE,
         1,
       );
-      await this.client.command.commandControllerTrigger(newGameServer.data.data.id, {
+      await this.client.command.commandControllerTrigger(newGameServer.id, {
         msg: '/A',
         playerId: newServerPlayer.playerId,
       });

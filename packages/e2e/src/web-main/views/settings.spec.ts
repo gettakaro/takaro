@@ -1,8 +1,7 @@
 import { expect } from '@playwright/test';
 import { test } from '../fixtures/index.js';
-import { GameServerCreateDTOTypeEnum } from '@takaro/apiclient';
-import { integrationConfig } from '@takaro/test';
 import { navigateTo } from '../helpers.js';
+import { getMockServer } from '@takaro/mock-gameserver';
 
 test('Can set global settings', async ({ page }) => {
   await navigateTo(page, 'global-settings');
@@ -32,12 +31,11 @@ test('Can set server-scoped settings', async ({ page, takaro }) => {
 });
 
 test('Setting server-scoped setting for server A does not affect server B', async ({ page, takaro }) => {
-  await takaro.rootClient.gameserver.gameServerControllerCreate({
-    name: 'Second server',
-    type: GameServerCreateDTOTypeEnum.Mock,
-    connectionInfo: JSON.stringify({
-      host: integrationConfig.get('mockGameserver.host'),
-    }),
+  await getMockServer({
+    mockserver: {
+      registrationToken: takaro.domain.createdDomain.serverRegistrationToken,
+      identityToken: 'Second server',
+    },
   });
 
   await takaro.GameServersPage.goto();

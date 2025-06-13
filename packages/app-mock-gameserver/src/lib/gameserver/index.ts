@@ -10,6 +10,8 @@ import {
   BanDTO,
   IItemDTO,
   MapInfoDTO,
+  IEntityDTO,
+  ILocationDTO,
 } from '@takaro/gameserver';
 import {
   EventLogLine,
@@ -109,8 +111,8 @@ export class MockGameserver implements IMockGameServer {
     );
   }
 
-  async giveItem(player: IPlayerReferenceDTO, item: string, amount: number): Promise<void> {
-    this.sendLog(`Giving ${player.gameId} ${amount}x${item}`);
+  async giveItem(player: IPlayerReferenceDTO, item: string, amount: number, quality?: string): Promise<void> {
+    this.sendLog(`Giving ${player.gameId} ${amount}x${item}${quality ? ` (quality: ${quality})` : ''}`);
   }
 
   async getPlayer(playerRef: IPlayerReferenceDTO, onlyOnline = true): Promise<IGamePlayer | null> {
@@ -158,11 +160,11 @@ export class MockGameserver implements IMockGameServer {
       return null;
     }
 
-    return {
+    return new IPosition({
       x: parseInt(player.positionX, 10),
       y: parseInt(player.positionY, 10),
       z: parseInt(player.positionZ, 10),
-    };
+    });
   }
 
   async executeConsoleCommand(rawCommand: string) {
@@ -376,6 +378,31 @@ export class MockGameserver implements IMockGameServer {
         name: 'Stone',
         description: 'Stone can get you stoned',
       }),
+      new IItemDTO({
+        code: 'iron',
+        name: 'Iron',
+        description: 'Iron is strong',
+      }),
+      new IItemDTO({
+        code: 'gold',
+        name: 'Gold',
+        description: 'Gold is shiny',
+      }),
+      new IItemDTO({
+        code: 'adminGun',
+        name: 'Admin Gun',
+        description: 'A powerful gun for admins',
+      }),
+      new IItemDTO({
+        code: 'healingPotion',
+        name: 'Healing Potion',
+        description: 'Restores health over time',
+      }),
+      new IItemDTO({
+        code: 'magicWand',
+        name: 'Magic Wand',
+        description: 'A wand that casts spells',
+      }),
     ];
   }
 
@@ -415,7 +442,15 @@ export class MockGameserver implements IMockGameServer {
   }
 
   async getMapTile(_x: number, _y: number, _z: number) {
-    return Buffer.from('mock-tile');
+    return '';
+  }
+
+  async listEntities(): Promise<IEntityDTO[]> {
+    return [];
+  }
+
+  async listLocations(): Promise<ILocationDTO[]> {
+    return [];
   }
 }
 

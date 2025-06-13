@@ -65,6 +65,7 @@ export class IntegrationTest<SetupData> {
   public readonly client: Client;
 
   public standardDomainId: string | null = null;
+  public domainRegistrationToken: string | null = null;
   public setupData!: Awaited<SetupData>;
   public standardLogin: { username: string; password: string } = {
     username: '',
@@ -91,6 +92,7 @@ export class IntegrationTest<SetupData> {
       maxUsers: 5,
     });
     this.standardDomainId = createdDomain.data.data.createdDomain.id;
+    this.domainRegistrationToken = createdDomain.data.data.createdDomain.serverRegistrationToken!;
 
     this.client.username = createdDomain.data.data.rootUser.email;
     this.client.password = createdDomain.data.data.password;
@@ -134,6 +136,17 @@ export class IntegrationTest<SetupData> {
     async function teardown(): Promise<void> {
       if (integrationTestContext.test.teardown) {
         await integrationTestContext.test.teardown.bind(integrationTestContext)();
+      }
+
+      if (
+        integrationTestContext.setupData &&
+        typeof integrationTestContext.setupData === 'object' &&
+        'mockservers' in integrationTestContext.setupData
+      ) {
+        const servers = integrationTestContext.setupData.mockservers as any[];
+        for (const mockserver of servers) {
+          await mockserver.shutdown();
+        }
       }
 
       if (integrationTestContext.standardDomainId) {

@@ -1,6 +1,8 @@
-import { IntegrationTest, expect, integrationConfig } from '@takaro/test';
-import { GameServerCreateDTOTypeEnum, GameServerOutputDTO, isAxiosError, ModuleOutputDTO } from '@takaro/apiclient';
+import { IntegrationTest, expect } from '@takaro/test';
+import { GameServerOutputDTO, isAxiosError, ModuleOutputDTO } from '@takaro/apiclient';
 import { describe } from 'node:test';
+import { randomUUID } from 'node:crypto';
+import { getMockServer } from '@takaro/mock-gameserver';
 
 const group = 'ModuleConfig';
 
@@ -11,13 +13,21 @@ interface ISetupData {
 }
 
 const setup = async function (this: IntegrationTest<ISetupData>): Promise<ISetupData> {
-  const gameserverRes = await this.client.gameserver.gameServerControllerCreate({
-    name: 'Test gameserver',
-    connectionInfo: JSON.stringify({
-      host: integrationConfig.get('mockGameserver.host'),
-    }),
-    type: GameServerCreateDTOTypeEnum.Mock,
+  if (!this.domainRegistrationToken) throw new Error('Domain registration token is not set. Invalid setup?');
+
+  const gameServer1IdentityToken = randomUUID();
+
+  await getMockServer({
+    mockserver: { registrationToken: this.domainRegistrationToken, identityToken: gameServer1IdentityToken },
   });
+
+  const gameServers = (
+    await this.client.gameserver.gameServerControllerSearch({
+      filters: { identityToken: [gameServer1IdentityToken] },
+    })
+  ).data.data;
+
+  if (!gameServers[0]) throw new Error('Game server not found. Did something fail when registering?');
 
   const moduleRes = await this.client.module.moduleControllerCreate({
     name: 'Test module',
@@ -63,7 +73,7 @@ const setup = async function (this: IntegrationTest<ISetupData>): Promise<ISetup
   const cronjobModuleRes = await this.client.module.moduleControllerGetOne(cronjobModuleCreateRes.data.data.id);
 
   return {
-    gameserver: gameserverRes.data.data,
+    gameserver: gameServers[0],
     module: moduleRes.data.data,
     cronJobsModule: cronjobModuleRes.data.data,
   };

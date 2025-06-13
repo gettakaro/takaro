@@ -33,7 +33,15 @@ type PlayerContainerProps = Pick<PlayerProps, 'showAvatar' | 'playerId'>;
 export const PlayerContainer: FC<PlayerContainerProps> = ({ playerId, showAvatar }) => {
   const { data: player, error } = useQuery(playerQueryOptions(playerId));
 
-  return <Player playerId={playerId} name={player?.name} showAvatar={showAvatar} hasError={error !== null} />;
+  return (
+    <Player
+      playerId={playerId}
+      name={player?.name}
+      avatarUrl={player?.steamAvatar}
+      showAvatar={showAvatar}
+      hasError={error !== null}
+    />
+  );
 };
 
 export const Player: FC<PlayerProps> = ({ playerId, name, avatarUrl, showAvatar, hasError, gameServerId }) => {

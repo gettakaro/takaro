@@ -15,6 +15,7 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 
 const gameTypeMap = {
   [GameServerOutputDTOTypeEnum.Mock]: { icon: <TakaroIcon /> },
+  [GameServerOutputDTOTypeEnum.Generic]: { icon: <TakaroIcon /> },
   [GameServerOutputDTOTypeEnum.Rust]: { icon: <img width="5px" height="5px" src={iconRust} /> },
   [GameServerOutputDTOTypeEnum.Sevendaystodie]: { icon: <img width="20px" height="20px" src={icon7d2d} /> },
 };
@@ -144,6 +145,7 @@ export const GameServerSelectView: FC<GameServerSelectQueryViewProps> = ({
   const gameServersMock = gameServers.filter((server) => server.type === GameServerOutputDTOTypeEnum.Mock);
   const gameServersRust = gameServers.filter((server) => server.type === GameServerOutputDTOTypeEnum.Rust);
   const gameServers7d2d = gameServers.filter((server) => server.type === GameServerOutputDTOTypeEnum.Sevendaystodie);
+  const gameServersGeneric = gameServers.filter((server) => server.type === GameServerOutputDTOTypeEnum.Generic);
 
   return (
     <SelectQueryField
@@ -200,6 +202,9 @@ export const GameServerSelectView: FC<GameServerSelectQueryViewProps> = ({
       {groupByGameServerType &&
         gameServers7d2d.length > 0 &&
         renderOptionGroup(gameServers7d2d, '7 Days to Die', GameServerOutputDTOTypeEnum.Sevendaystodie)}
+      {groupByGameServerType &&
+        gameServersGeneric.length > 0 &&
+        renderOptionGroup(gameServersGeneric, 'Generic', GameServerOutputDTOTypeEnum.Generic)}
 
       {!groupByGameServerType && renderOptionGroup(gameServers, 'Servers', GameServerOutputDTOTypeEnum.Mock)}
     </SelectQueryField>
