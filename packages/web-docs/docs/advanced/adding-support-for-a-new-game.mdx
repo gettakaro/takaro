@@ -141,11 +141,7 @@ Retrieves information about a specific player.
   "type": "request",
   "payload": {
     "action": "getPlayer",
-    "args": [
-      {
-        "gameId": "12345"
-      }
-    ]
+    "args": "{\"gameId\": \"12345\"}"
   },
   "requestId": "request-uuid"
 }
@@ -255,11 +251,7 @@ Retrieves the current 3D position of a specific player.
   "type": "request",
   "payload": {
     "action": "getPlayerLocation",
-    "args": [
-      {
-        "gameId": "12345"
-      }
-    ]
+    "args": "{\"gameId\": \"12345\"}"
   },
   "requestId": "request-uuid"
 }
@@ -304,11 +296,7 @@ Note that quality is a string, not all games will have a number for quality.
   "type": "request",
   "payload": {
     "action": "getPlayerInventory",
-    "args": [
-      {
-        "gameId": "12345"
-      }
-    ]
+    "args": "{\"gameId\": \"12345\"}"
   },
   "requestId": "request-uuid"
 }
@@ -352,14 +340,7 @@ The item code (`baseball_bat` in this case) is the code used in the `listItems` 
   "type": "request",
   "payload": {
     "action": "giveItem",
-    "args": [
-      {
-        "gameId": "12345"
-      },
-      "baseball_bat",
-      1,
-      "5"
-    ]
+    "args": "{\"player\": {\"gameId\": \"12345\"}, \"item\": \"baseball_bat\", \"amount\": 1, \"quality\": \"5\"}"
   },
   "requestId": "request-uuid"
 }
@@ -546,9 +527,7 @@ Executes a console command on the game server.
   "type": "request",
   "payload": {
     "action": "executeConsoleCommand",
-    "args": [
-      "say Hi"
-    ]
+    "args": "{\"command\": \"say Hi\"}"
   },
   "requestId": "request-uuid"
 }
@@ -585,14 +564,7 @@ If the `recipient` field is provided, the message should be sent to the specifie
   "type": "request",
   "payload": {
     "action": "sendMessage",
-    "args": [
-      "Welcome to the server!",
-      {
-        "recipient": {
-          "gameId": "12345"
-        }
-      }
-    ]
+    "args": "{\"message\": \"Welcome to the server!\", \"opts\": {\"recipient\": {\"gameId\": \"12345\"}}}"
   },
   "requestId": "request-uuid"
 }
@@ -622,14 +594,7 @@ Teleports a player to a specific location. The coordinates are passed as x, y, a
   "type": "request",
   "payload": {
     "action": "teleportPlayer",
-    "args": [
-      {
-        "gameId": "12345"
-      },
-      123.45,
-      67.89,
-      10.11
-    ]
+    "args": "{\"player\": {\"gameId\": \"12345\"}, \"x\": 123.45, \"y\": 67.89, \"z\": 10.11}"
   },
   "requestId": "request-uuid"
 }
@@ -693,12 +658,7 @@ Kicks a player from the server.
   "type": "request",
   "payload": {
     "action": "kickPlayer",
-    "args": [
-      {
-        "gameId": "12345"
-      },
-      "Violated server rules"
-    ]
+    "args": "{\"player\": {\"gameId\": \"12345\"}, \"reason\": \"Violated server rules\"}"
   },
   "requestId": "request-uuid"
 }
@@ -730,15 +690,7 @@ The `expiresAt` field is optional. If not provided, the ban will be permanent.
   "type": "request",
   "payload": {
     "action": "banPlayer",
-    "args": [
-      {
-        "player": {
-          "gameId": "12345"
-        },
-        "reason": "Cheating",
-        "expiresAt": "2031-12-31T23:59:59Z",
-      }
-    ]
+    "args": "{\"player\": {\"gameId\": \"12345\"}, \"reason\": \"Cheating\", \"expiresAt\": \"2031-12-31T23:59:59Z\"}"
   },
   "requestId": "request-uuid"
 }
@@ -768,11 +720,7 @@ Removes a ban for a specific player.
   "type": "request",
   "payload": {
     "action": "unbanPlayer",
-    "args": [
-      {
-        "gameId": "12345"
-      }
-    ]
+    "args": "{\"gameId\": \"12345\"}"
   },
   "requestId": "request-uuid"
 }
