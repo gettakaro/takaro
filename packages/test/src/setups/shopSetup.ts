@@ -66,20 +66,21 @@ async function setupShop(client: Client, gameServerId: string) {
     })
   ).data.data;
 
-  if (!items || items.length === 0) {
-    throw new Error('No items found');
-  }
+  const stoneItem = items.find((item) => item.code === 'stone');
+  if (!stoneItem) throw new Error('Stone item not found');
+  const woodItem = items.find((item) => item.code === 'wood');
+  if (!woodItem) throw new Error('Wood item not found');
 
   const listing100Res = await client.shopListing.shopListingControllerCreate({
     gameServerId: gameServerId,
-    items: [{ itemId: items[0].id, amount: 1 }],
+    items: [{ itemId: stoneItem.id, amount: 1 }],
     price: 100,
     name: 'Test item',
   });
 
   const listing33Res = await client.shopListing.shopListingControllerCreate({
     gameServerId: gameServerId,
-    items: [{ itemId: items[1].id, amount: 1 }],
+    items: [{ itemId: woodItem.id, amount: 1 }],
     price: 33,
     name: 'Test item 2',
   });

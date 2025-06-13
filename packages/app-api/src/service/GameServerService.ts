@@ -515,15 +515,15 @@ export class GameServerService extends TakaroService<
   async syncInventories(gameServerId: string) {
     const onlinePlayers = await this.getPlayers(gameServerId);
     const gameInstance = await this.getGame(gameServerId);
-    const pogService = new PlayerOnGameServerService(this.domainId);
-    const pogRepo = pogService.repo;
+    const trackingService = new TrackingService(this.domainId);
+    await trackingService.repo.ensureInventoryPartition();
 
     await Promise.all(
       onlinePlayers.map(async (p) => {
         const inventory = await gameInstance.getPlayerInventory(p);
         const { pog } = await this.playerService.resolveRef(p, gameServerId);
         if (!pog) throw new errors.NotFoundError('Player not found');
-        await pogRepo.syncInventory(pog.id, gameServerId, inventory);
+        await trackingService.repo.observePlayerInventory(pog.id, gameServerId, inventory);
       }),
     );
   }

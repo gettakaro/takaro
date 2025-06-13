@@ -42,15 +42,19 @@ const tests = [
     setup: shopSetup,
     filteredFields: ['itemId', 'gameServerId', 'gameserverId', 'listingId'],
     test: async function () {
+      const woodItem = this.setupData.items.find((i) => i.name === 'Wood');
+      if (!woodItem) throw new Error('Wood item not found in setup data');
+
       const res = await this.client.shopListing.shopListingControllerUpdate(this.setupData.listing100.id, {
         price: 200,
-        items: [{ code: this.setupData.items[1].code, amount: 5 }],
+        items: [{ code: woodItem.code, amount: 5 }],
         gameServerId: this.setupData.gameserver.id,
         name: 'Updated item',
       });
 
       const findRes = await this.client.shopListing.shopListingControllerGetOne(this.setupData.listing100.id);
       expect(findRes.data.data.price).to.be.equal(200);
+      expect(findRes.data.data.items[0].item.id).to.be.equal(woodItem.id);
       expect(findRes.data.data.items[0].amount).to.be.equal(5);
       expect(findRes.data.data.name).to.be.equal('Updated item');
       expect(findRes.data.data.items[0].item.id).to.be.equal(this.setupData.items[1].id);
