@@ -85,6 +85,7 @@
       "gameServerId",
       "epicOnlineServicesId",
       "xboxLiveId",
+      "platformId",
       "expiresAt"
     ],
     "expectedStatus": 200,
