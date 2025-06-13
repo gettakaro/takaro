@@ -118,6 +118,7 @@ export class PlayerCreateDTO extends TakaroDTO<PlayerCreateDTO> {
   @IsString()
   @IsOptional()
   @Matches(/^[a-zA-Z0-9_-]+:[a-zA-Z0-9_-]+$/, {
+    // eslint-disable-next-line quotes
     message: "Platform ID must be in format 'platform:id' (e.g., 'minecraft:player-uuid')",
   })
   platformId?: string;
@@ -138,6 +139,7 @@ export class PlayerUpdateDTO extends TakaroDTO<PlayerUpdateDTO> {
   @IsString()
   @IsOptional()
   @Matches(/^[a-zA-Z0-9_-]+:[a-zA-Z0-9_-]+$/, {
+    // eslint-disable-next-line quotes
     message: "Platform ID must be in format 'platform:id' (e.g., 'minecraft:player-uuid')",
   })
   platformId?: string;
