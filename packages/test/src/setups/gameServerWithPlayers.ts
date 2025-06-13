@@ -1,5 +1,11 @@
 import { EventsAwaiter } from '../test/waitForEvents.js';
-import { GameServerOutputDTO, ModuleOutputDTO, PlayerOnGameserverOutputDTO, PlayerOutputDTO } from '@takaro/apiclient';
+import {
+  GameServerOutputDTO,
+  ModuleOutputDTO,
+  PlayerOnGameserverOutputDTO,
+  PlayerOutputDTO,
+  Client,
+} from '@takaro/apiclient';
 import { IntegrationTest } from '../integrationTest.js';
 import { randomUUID } from 'crypto';
 import { getMockServer } from '@takaro/mock-gameserver';
@@ -14,6 +20,25 @@ export interface ISetupData {
   mod: ModuleOutputDTO;
   eventsAwaiter: EventsAwaiter;
   mockservers: Awaited<ReturnType<typeof getMockServer>>[];
+}
+
+async function triggerItemSync(client: Client, gameServerId: string) {
+  const triggeredJobRes = await client.gameserver.gameServerControllerTriggerJob('syncItems', gameServerId);
+  const triggeredJob = triggeredJobRes.data.data;
+  if (!triggeredJob || !triggeredJob.id) throw new Error('Triggered job ID not found');
+
+  // Poll the job until it's done
+  while (true) {
+    const jobToAwait = (await client.gameserver.gameServerControllerGetJob('syncItems', triggeredJob.id)).data.data;
+    if (!jobToAwait) throw new Error('Job not found');
+    if (jobToAwait.status === 'completed') {
+      break;
+    }
+    if (jobToAwait.status === 'failed') {
+      throw new Error(`Job failed: ${jobToAwait.failedReason}.`);
+    }
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
 }
 
 export const setup = async function (this: IntegrationTest<ISetupData>): Promise<ISetupData> {
@@ -58,6 +83,9 @@ export const setup = async function (this: IntegrationTest<ISetupData>): Promise
   ]);
 
   await connectedEvents;
+
+  // Trigger itemSync jobs for both game servers and wait for completion
+  await Promise.all([triggerItemSync(this.client, gameServer1.id), triggerItemSync(this.client, gameServer2.id)]);
   expect(await connectedEvents).to.have.length(40, 'Setup fail: should have 20 players-created events');
 
   const players = (await this.client.player.playerControllerSearch()).data.data;
