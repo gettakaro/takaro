@@ -36,6 +36,7 @@ import _Ajv from 'ajv';
 import { PlayerService } from './Player/index.js';
 import { PlayerOnGameServerService, PlayerOnGameServerUpdateDTO } from './PlayerOnGameserverService.js';
 import { ItemCreateDTO, ItemsService } from './ItemsService.js';
+import { EntityCreateDTO, EntitiesService } from './EntitiesService.js';
 import { randomUUID } from 'crypto';
 import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
 import { gameServerLatency } from '../lib/metrics.js';
@@ -520,6 +521,27 @@ export class GameServerService extends TakaroService<
     );
 
     await itemsService.upsertMany(toInsert);
+  }
+
+  async syncEntities(gameServerId: string) {
+    const entitiesService = new EntitiesService(this.domainId);
+    const gameInstance = await this.getGame(gameServerId);
+    const entities = await gameInstance.listEntities();
+
+    const toInsert = await Promise.all(
+      entities.map((entity) => {
+        return new EntityCreateDTO({
+          name: entity.name,
+          code: entity.code,
+          description: entity.description,
+          type: entity.type,
+          metadata: entity.metadata,
+          gameserverId: gameServerId,
+        });
+      }),
+    );
+
+    await entitiesService.upsertMany(toInsert);
   }
 
   async syncInventories(gameServerId: string) {

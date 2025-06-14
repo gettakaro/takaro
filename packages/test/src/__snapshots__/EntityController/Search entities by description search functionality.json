@@ -1,0 +1,46 @@
+{
+  "body": {
+    "meta": {
+      "page": 0,
+      "limit": 100,
+      "total": 2
+    },
+    "data": [
+      {
+        "id": "7fd28d4f-e097-45df-ac5b-04b39f79ba2d",
+        "createdAt": "2025-06-14T11:04:46.908Z",
+        "updatedAt": "2025-06-14T11:04:46.908Z",
+        "gameserverId": "7d1220a3-3071-445b-afea-c533093f15c2",
+        "name": "Skeleton",
+        "code": "skeleton",
+        "description": "An undead archer",
+        "type": "hostile",
+        "metadata": null
+      },
+      {
+        "id": "22c55e7c-55be-4952-88a0-4dbe17ce5738",
+        "createdAt": "2025-06-14T11:04:46.908Z",
+        "updatedAt": "2025-06-14T11:04:46.908Z",
+        "gameserverId": "7d1220a3-3071-445b-afea-c533093f15c2",
+        "name": "Zombie",
+        "code": "zombie",
+        "description": "A shambling undead creature",
+        "type": "hostile",
+        "metadata": null
+      }
+    ]
+  },
+  "status": 200,
+  "test": {
+    "group": "EntityController",
+    "snapshot": true,
+    "name": "Search entities by description search functionality",
+    "filteredFields": [
+      "id",
+      "createdAt",
+      "gameserverId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}
