@@ -30,7 +30,7 @@
     "start": "COMMAND=\"start\" REGEX=app  ./scripts/run-all-pkgs.sh",
     "start:dev": "COMMAND=\"start:dev\"  ./scripts/run-all-pkgs.sh",
     "test": "node packages/test/dist/waitUntilReady.js && npm run test:base -- 'packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.test.ts'",
-    "test:base": "COMMAND=\"--if-present test:unit\" REGEX='(web-main)|(lib-components)' ./scripts/run-all-pkgs.sh && node --test-concurrency 1 --test-force-exit --import=ts-node-maintained/register/esm --test",
+    "test:base": "COMMAND=\"--if-present test:unit\" REGEX='(web-main)|(lib-components)' ./scripts/run-all-pkgs.sh && node --test-concurrency 5 --test-force-exit --import=ts-node-maintained/register/esm --test",
     "test:ci": "node packages/test/dist/waitUntilReady.js && npm run test:base -- --test-reporter=spec --test-reporter-destination=stdout --test-reporter=@reporters/github --test-reporter-destination=stdout 'packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.test.ts'",
     "test:integration": "node packages/test/dist/waitUntilReady.js && npm run test:base -- 'packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.integration.test.ts'",
     "test:style": "npm run lint && npm run prettier",
