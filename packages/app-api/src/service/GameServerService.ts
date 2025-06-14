@@ -419,6 +419,7 @@ export class GameServerService extends TakaroService<
       Math.round(position.x),
       Math.round(position.y),
       Math.round(position.z),
+      position.dimension,
     );
   }
 

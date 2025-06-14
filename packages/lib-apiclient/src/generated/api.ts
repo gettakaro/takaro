@@ -11028,6 +11028,12 @@ export interface TeleportPlayerInputDTO {
    * @memberof TeleportPlayerInputDTO
    */
   z: number;
+  /**
+   *
+   * @type {string}
+   * @memberof TeleportPlayerInputDTO
+   */
+  dimension?: string;
 }
 /**
  *

@@ -738,6 +738,88 @@ const tests = [
       );
     },
   }),
+  new IntegrationTest<WaypointsSetup>({
+    group,
+    snapshot: false,
+    setup: waypointsSetup,
+    name: 'Waypoints store and use dimension information correctly',
+    test: async function () {
+      // Create a waypoint with dimension data via setwaypoint command
+      const setEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/setwaypoint dimension_waypoint',
+        playerId: this.setupData.moderator.id,
+      });
+
+      expect((await setEvents).length).to.be.eq(1);
+      expect((await setEvents)[0].data.meta.msg).to.be.eq('Waypoint dimension_waypoint set.');
+
+      // Give player permission to use the waypoint
+      const useWaypointPermission = await this.client.permissionCodesToInputs([
+        `WAYPOINTS_USE_DIMENSION_WAYPOINT_${this.setupData.gameserver.id}`,
+      ]);
+      await this.client.role.roleControllerUpdate(this.setupData.playerRole.id, {
+        permissions: useWaypointPermission,
+      });
+
+      // Teleport to the waypoint - should include dimension data
+      const teleportEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/dimension_waypoint',
+        playerId: this.setupData.player.id,
+      });
+
+      expect((await teleportEvents).length).to.be.eq(1);
+      expect((await teleportEvents)[0].data.meta.msg).to.be.eq('Teleported to waypoint dimension_waypoint.');
+    },
+  }),
+  new IntegrationTest<WaypointsSetup>({
+    group,
+    snapshot: false,
+    setup: waypointsSetup,
+    name: 'Waypoints work with API teleport endpoint including dimension parameter',
+    test: async function () {
+      // Create a waypoint
+      const setEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/setwaypoint api_test_waypoint',
+        playerId: this.setupData.moderator.id,
+      });
+
+      expect((await setEvents).length).to.be.eq(1);
+      expect((await setEvents)[0].data.meta.msg).to.be.eq('Waypoint api_test_waypoint set.');
+
+      // Test direct API teleport with dimension
+      await this.client.gameserver.gameServerControllerTeleportPlayer(
+        this.setupData.gameserver.id,
+        this.setupData.player.id,
+        {
+          x: 500,
+          y: 600,
+          z: 700,
+          dimension: 'end',
+        },
+      );
+
+      // Give player permission to use the waypoint
+      const useWaypointPermission = await this.client.permissionCodesToInputs([
+        `WAYPOINTS_USE_API_TEST_WAYPOINT_${this.setupData.gameserver.id}`,
+      ]);
+      await this.client.role.roleControllerUpdate(this.setupData.playerRole.id, {
+        permissions: useWaypointPermission,
+      });
+
+      // Teleport using waypoint command - should work with stored dimension
+      const teleportEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/api_test_waypoint',
+        playerId: this.setupData.player.id,
+      });
+
+      expect((await teleportEvents).length).to.be.eq(1);
+      expect((await teleportEvents)[0].data.meta.msg).to.be.eq('Teleported to waypoint api_test_waypoint.');
+    },
+  }),
 ];
 
 describe(group, function () {

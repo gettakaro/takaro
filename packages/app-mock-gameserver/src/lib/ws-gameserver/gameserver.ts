@@ -60,8 +60,13 @@ export class GameServer implements IGameServer {
     executeConsoleCommand: async (args: { command: string }) => this.executeConsoleCommand(args.command),
     sendMessage: async (args: { message: string; opts: IMessageOptsDTO }) =>
       this.sendMessage(args.message, new IMessageOptsDTO(args.opts)),
-    teleportPlayer: async (args: { player: IPlayerReferenceDTO; x: number; y: number; z: number }) =>
-      this.teleportPlayer(args.player, args.x, args.y, args.z),
+    teleportPlayer: async (args: {
+      player: IPlayerReferenceDTO;
+      x: number;
+      y: number;
+      z: number;
+      dimension?: string;
+    }) => this.teleportPlayer(args.player, args.x, args.y, args.z, args.dimension),
     kickPlayer: async (args: { player: IPlayerReferenceDTO; reason: string }) =>
       this.kickPlayer(new IPlayerReferenceDTO(args.player), args.reason),
     banPlayer: async (args: BanDTO) => this.banPlayer(new BanDTO(args)),
@@ -452,14 +457,20 @@ export class GameServer implements IGameServer {
     }
   }
 
-  async teleportPlayer(player: IPlayerReferenceDTO, x: number, y: number, z: number): Promise<void> {
+  async teleportPlayer(
+    player: IPlayerReferenceDTO,
+    x: number,
+    y: number,
+    z: number,
+    dimension?: string,
+  ): Promise<void> {
     try {
-      // Keep the existing dimension when teleporting
+      // Use the provided dimension or keep the existing one
       const playerData = await this.dataHandler.getPlayer(player);
-      const dimension = playerData?.meta.position.dimension;
+      const targetDimension = dimension || playerData?.meta.position.dimension;
 
-      await this.dataHandler.updatePlayerPosition(player.gameId, { x, y, z, dimension });
-      const dimensionMsg = dimension ? ` in dimension ${dimension}` : '';
+      await this.dataHandler.updatePlayerPosition(player.gameId, { x, y, z, dimension: targetDimension });
+      const dimensionMsg = targetDimension ? ` in dimension ${targetDimension}` : '';
       this.sendLog(`Teleported ${player.gameId} to ${x}, ${y}, ${z}${dimensionMsg}`);
       return Promise.resolve();
     } catch (error) {

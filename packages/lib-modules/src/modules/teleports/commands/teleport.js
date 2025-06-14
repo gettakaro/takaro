@@ -60,6 +60,7 @@ async function main() {
       x: teleport.x,
       y: teleport.y,
       z: teleport.z,
+      dimension: teleport.dimension,
     });
 
     await data.player.pm(`Teleported to ${teleport.name}.`);
@@ -78,6 +79,7 @@ async function main() {
     x: teleport.x,
     y: teleport.y,
     z: teleport.z,
+    dimension: teleport.dimension,
   });
 
   await data.player.pm(`Teleported to ${teleport.name}.`);

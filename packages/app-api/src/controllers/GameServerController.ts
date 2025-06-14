@@ -165,6 +165,10 @@ class TeleportPlayerInputDTO extends TakaroDTO<TeleportPlayerInputDTO> {
 
   @IsNumber({ allowNaN: false, allowInfinity: false })
   z: number;
+
+  @IsString()
+  @IsOptional()
+  dimension?: string;
 }
 
 class KickPlayerInputDTO extends TakaroDTO<KickPlayerInputDTO> {
