@@ -16,6 +16,7 @@ import { errors, logger } from '@takaro/util';
 import {
   BanDTO,
   CommandOutput,
+  EntityType,
   IEntityDTO,
   IGameServer,
   IItemDTO,
@@ -57,6 +58,7 @@ export class GameServer implements IGameServer {
     giveItem: async (args: { player: IPlayerReferenceDTO; item: string; amount: number; quality?: string }) =>
       this.giveItem(new IPlayerReferenceDTO(args.player), args.item, args.amount, args.quality),
     listItems: async () => this.listItems(),
+    listEntities: async () => this.listEntities(),
     executeConsoleCommand: async (args: { command: string }) => this.executeConsoleCommand(args.command),
     sendMessage: async (args: { message: string; opts: IMessageOptsDTO }) =>
       this.sendMessage(args.message, new IMessageOptsDTO(args.opts)),
@@ -585,7 +587,88 @@ export class GameServer implements IGameServer {
   }
 
   async listEntities(): Promise<IEntityDTO[]> {
-    return [];
+    try {
+      return [
+        new IEntityDTO({
+          code: 'zombie',
+          name: 'Zombie',
+          description: 'A shambling undead creature',
+          type: EntityType.HOSTILE,
+        }),
+        new IEntityDTO({
+          code: 'skeleton',
+          name: 'Skeleton',
+          description: 'An undead archer',
+          type: EntityType.HOSTILE,
+        }),
+        new IEntityDTO({
+          code: 'spider',
+          name: 'Spider',
+          description: 'A large arachnid',
+          type: EntityType.HOSTILE,
+        }),
+        new IEntityDTO({
+          code: 'cow',
+          name: 'Cow',
+          description: 'A peaceful farm animal',
+          type: EntityType.FRIENDLY,
+        }),
+        new IEntityDTO({
+          code: 'pig',
+          name: 'Pig',
+          description: 'A pink farm animal',
+          type: EntityType.FRIENDLY,
+        }),
+        new IEntityDTO({
+          code: 'sheep',
+          name: 'Sheep',
+          description: 'A woolly farm animal',
+          type: EntityType.FRIENDLY,
+        }),
+        new IEntityDTO({
+          code: 'chicken',
+          name: 'Chicken',
+          description: 'A small farm bird',
+          type: EntityType.FRIENDLY,
+        }),
+        new IEntityDTO({
+          code: 'wolf',
+          name: 'Wolf',
+          description: 'A wild canine that can be tamed',
+          type: EntityType.NEUTRAL,
+        }),
+        new IEntityDTO({
+          code: 'enderman',
+          name: 'Enderman',
+          description: 'A tall dark creature from another dimension',
+          type: EntityType.NEUTRAL,
+        }),
+        new IEntityDTO({
+          code: 'villager',
+          name: 'Villager',
+          description: 'A peaceful NPC that trades items',
+          type: EntityType.FRIENDLY,
+          metadata: { profession: 'merchant', canTrade: true },
+        }),
+        new IEntityDTO({
+          code: 'creeper',
+          name: 'Creeper',
+          description: 'An explosive green creature',
+          type: EntityType.HOSTILE,
+          metadata: { explosive: true, range: 3 },
+        }),
+        new IEntityDTO({
+          code: 'horse',
+          name: 'Horse',
+          description: 'A rideable animal',
+          type: EntityType.FRIENDLY,
+          metadata: { rideable: true, speed: 'fast' },
+        }),
+      ];
+    } catch (error) {
+      this.log.error('Error listing entities:', error);
+      return [];
+    }
   }
 
   async listLocations(): Promise<ILocationDTO[]> {

@@ -124,6 +124,9 @@ export async function processJob(job: Job<ISystemJobData>) {
       case SystemTaskType.SYNC_ITEMS:
         await syncItems(job.data.domainId, job.data.gameServerId);
         break;
+      case SystemTaskType.SYNC_ENTITIES:
+        await syncEntities(job.data.domainId, job.data.gameServerId);
+        break;
       case SystemTaskType.SYNC_BANS:
         await syncBans(job.data.domainId, job.data.gameServerId);
         break;
@@ -216,6 +219,35 @@ async function syncItems(domainId: string, gameServerId?: string) {
       await gameServerService.syncItems(gsId);
     } else {
       log.info(`⚠️ Game server ${gsId} not reachable, skipping items sync`);
+    }
+  };
+
+  if (gameServerId) {
+    await processGameServer(gameServerId);
+  } else {
+    for await (const gs of gameServerService.getIterator()) {
+      await processGameServer(gs.id);
+    }
+  }
+}
+
+async function syncEntities(domainId: string, gameServerId?: string) {
+  log.info('🔄 Syncing entities');
+  const gameServerService = new GameServerService(domainId);
+
+  const processGameServer = async (gsId: string) => {
+    ctx.addData({ gameServer: gsId });
+    log.info(`🔄 Testing reachability for game server ${gsId}`);
+    const gameserver = await gameServerService.findOne(gsId, false);
+    if (!gameserver) return;
+    if (!gameserver.enabled) return;
+
+    const reachable = await gameServerService.testReachability(gsId);
+    if (reachable.connectable) {
+      log.info(`🔄 Syncing entities for game server ${gsId}`);
+      await gameServerService.syncEntities(gsId);
+    } else {
+      log.info(`⚠️ Game server ${gsId} not reachable, skipping entities sync`);
     }
   };
 
