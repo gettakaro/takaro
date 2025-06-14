@@ -186,7 +186,8 @@ export class SevenDaysToDie implements IGameServer {
     await this.executeConsoleCommand(command);
   }
 
-  async teleportPlayer(player: IGamePlayer, x: number, y: number, z: number) {
+  async teleportPlayer(player: IGamePlayer, x: number, y: number, z: number, _dimension?: string) {
+    // 7D2D doesn't support dimensions, so we ignore the dimension parameter
     const command = `teleportplayer EOS_${player.gameId} ${x} ${y} ${z}`;
     await this.executeConsoleCommand(command);
   }

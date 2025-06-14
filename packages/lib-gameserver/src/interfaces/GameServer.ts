@@ -161,7 +161,7 @@ export interface IGameServer {
 
   executeConsoleCommand(rawCommand: string): Promise<CommandOutput>;
   sendMessage(message: string, opts: IMessageOptsDTO): Promise<void>;
-  teleportPlayer(player: IPlayerReferenceDTO, x: number, y: number, z: number): Promise<void>;
+  teleportPlayer(player: IPlayerReferenceDTO, x: number, y: number, z: number, dimension?: string): Promise<void>;
 
   /**
    * Try and connect to the gameserver

@@ -110,6 +110,9 @@ export class IPosition extends TakaroDTO<IPosition> {
   y: number;
   @IsNumber()
   z: number;
+  @IsString()
+  @IsOptional()
+  dimension?: string;
 }
 
 export class EventPlayerDeath extends BaseGameEvent<EventPlayerDeath> {

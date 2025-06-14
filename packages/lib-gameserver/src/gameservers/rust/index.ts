@@ -147,7 +147,8 @@ export class Rust implements IGameServer {
     await this.executeConsoleCommand(`say "${message}"`);
   }
 
-  async teleportPlayer(player: IGamePlayer, x: number, y: number, z: number) {
+  async teleportPlayer(player: IGamePlayer, x: number, y: number, z: number, _dimension?: string) {
+    // Rust doesn't support dimensions, so we ignore the dimension parameter
     await this.executeConsoleCommand(`teleportplayer.pos ${player.gameId} ${x} ${y} ${z}`);
   }
 

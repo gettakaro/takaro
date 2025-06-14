@@ -24,6 +24,7 @@ export class PlayerLocationTrackingModel extends TakaroModel {
   x: number;
   y: number;
   z: number;
+  dimension?: string;
 
   static get relationMappings() {
     return {
@@ -111,13 +112,14 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
     throw new errors.NotImplementedError();
   }
 
-  async observePlayerLocation(playerId: string, x: number, y: number, z: number) {
+  async observePlayerLocation(playerId: string, x: number, y: number, z: number, dimension?: string) {
     const { query } = await this.getModel();
     await query.insert({
       playerId,
       x,
       y,
       z,
+      dimension,
       domain: this.domainId,
     });
   }

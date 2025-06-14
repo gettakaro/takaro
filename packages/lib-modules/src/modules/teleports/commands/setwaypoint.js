@@ -17,6 +17,7 @@ async function main() {
         x: pog.positionX,
         y: pog.positionY,
         z: pog.positionZ,
+        dimension: pog.dimension,
       }),
     });
   } catch (error) {

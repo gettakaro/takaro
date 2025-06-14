@@ -35,6 +35,10 @@ export class PlayerOnGameserverOutputDTO extends TakaroModelDTO<PlayerOnGameserv
   @IsOptional()
   positionZ: number;
 
+  @IsString()
+  @IsOptional()
+  dimension?: string;
+
   @IsIP()
   @IsOptional()
   ip: string;
@@ -89,6 +93,10 @@ export class PlayerOnGameServerUpdateDTO extends TakaroDTO<PlayerOnGameServerUpd
   @IsNumber()
   @IsOptional()
   positionZ: number;
+
+  @IsString()
+  @IsOptional()
+  dimension?: string;
 
   @IsIP()
   @IsOptional()

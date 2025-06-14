@@ -60,8 +60,13 @@ export class GameServer implements IGameServer {
     executeConsoleCommand: async (args: { command: string }) => this.executeConsoleCommand(args.command),
     sendMessage: async (args: { message: string; opts: IMessageOptsDTO }) =>
       this.sendMessage(args.message, new IMessageOptsDTO(args.opts)),
-    teleportPlayer: async (args: { player: IPlayerReferenceDTO; x: number; y: number; z: number }) =>
-      this.teleportPlayer(args.player, args.x, args.y, args.z),
+    teleportPlayer: async (args: {
+      player: IPlayerReferenceDTO;
+      x: number;
+      y: number;
+      z: number;
+      dimension?: string;
+    }) => this.teleportPlayer(args.player, args.x, args.y, args.z, args.dimension),
     kickPlayer: async (args: { player: IPlayerReferenceDTO; reason: string }) =>
       this.kickPlayer(new IPlayerReferenceDTO(args.player), args.reason),
     banPlayer: async (args: BanDTO) => this.banPlayer(new BanDTO(args)),
@@ -143,6 +148,8 @@ export class GameServer implements IGameServer {
     const totalToCreate = totalPlayersWanted - existingPlayers.length;
     if (totalToCreate <= 0) return;
 
+    const dimensions = ['overworld', 'nether', 'end'];
+
     const playersToCreate = Array.from({ length: totalToCreate }, (_, i) => {
       const player = new IGamePlayer({
         gameId: i.toString(),
@@ -157,6 +164,7 @@ export class GameServer implements IGameServer {
           x: faker.number.int({ min: -1000, max: 1000 }),
           y: faker.number.int({ min: 0, max: 512 }),
           z: faker.number.int({ min: -1000, max: 1000 }),
+          dimension: dimensions[faker.number.int({ min: 0, max: dimensions.length - 1 })],
         },
         online: false,
       };
@@ -272,6 +280,7 @@ export class GameServer implements IGameServer {
         x: playerData.meta.position.x,
         y: playerData.meta.position.y,
         z: playerData.meta.position.z,
+        dimension: playerData.meta.position.dimension,
       });
     } catch (error) {
       this.log.error(`Error getting player location for ${player.gameId}:`, error);
@@ -448,10 +457,21 @@ export class GameServer implements IGameServer {
     }
   }
 
-  async teleportPlayer(player: IPlayerReferenceDTO, x: number, y: number, z: number): Promise<void> {
+  async teleportPlayer(
+    player: IPlayerReferenceDTO,
+    x: number,
+    y: number,
+    z: number,
+    dimension?: string,
+  ): Promise<void> {
     try {
-      await this.dataHandler.updatePlayerPosition(player.gameId, { x, y, z });
-      this.sendLog(`Teleported ${player.gameId} to ${x}, ${y}, ${z}`);
+      // Use the provided dimension or keep the existing one
+      const playerData = await this.dataHandler.getPlayer(player);
+      const targetDimension = dimension || playerData?.meta.position.dimension;
+
+      await this.dataHandler.updatePlayerPosition(player.gameId, { x, y, z, dimension: targetDimension });
+      const dimensionMsg = targetDimension ? ` in dimension ${targetDimension}` : '';
+      this.sendLog(`Teleported ${player.gameId} to ${x}, ${y}, ${z}${dimensionMsg}`);
       return Promise.resolve();
     } catch (error) {
       this.log.error(`Error teleporting player ${player.gameId}:`, error);

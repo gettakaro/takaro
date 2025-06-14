@@ -92,6 +92,8 @@ export class MockGameserver implements IMockGameServer {
       return;
     }
 
+    const dimensions = ['overworld', 'nether', 'end'];
+
     const players = Array.from(Array(5).keys()).map((p) => ({
       gameId: p.toString(),
       name: faker.internet.userName(),
@@ -101,6 +103,7 @@ export class MockGameserver implements IMockGameServer {
       positionX: 500 - faker.number.int({ max: 999 }),
       positionY: 500 - faker.number.int({ max: 999 }),
       positionZ: 500 - faker.number.int({ max: 999 }),
+      dimension: dimensions[faker.number.int({ min: 0, max: dimensions.length - 1 })],
       online: 'true',
     }));
 
@@ -164,6 +167,7 @@ export class MockGameserver implements IMockGameServer {
       x: parseInt(player.positionX, 10),
       y: parseInt(player.positionY, 10),
       z: parseInt(player.positionZ, 10),
+      dimension: player.dimension || undefined,
     });
   }
 
@@ -269,7 +273,7 @@ export class MockGameserver implements IMockGameServer {
     await this.sendLog(fullMessage);
   }
 
-  async teleportPlayer(playerRef: IPlayerReferenceDTO, x: number, y: number, z: number) {
+  async teleportPlayer(playerRef: IPlayerReferenceDTO, x: number, y: number, z: number, dimension?: string) {
     const player = await (await this.redis).hGetAll(this.getRedisKey(`player:${playerRef.gameId}`));
 
     if (!player) {
@@ -280,9 +284,14 @@ export class MockGameserver implements IMockGameServer {
     player.positionY = y.toString();
     player.positionZ = z.toString();
 
+    if (dimension !== undefined) {
+      player.dimension = dimension;
+    }
+
     await (await this.redis).hSet(this.getRedisKey(`player:${playerRef.gameId}`), player);
 
-    await this.sendLog(`Teleported ${player.name} to ${x}, ${y}, ${z}`);
+    const dimensionMsg = dimension ? ` in dimension ${dimension}` : '';
+    await this.sendLog(`Teleported ${player.name} to ${x}, ${y}, ${z}${dimensionMsg}`);
   }
 
   async kickPlayer(playerRef: IPlayerReferenceDTO, reason: string): Promise<void> {
