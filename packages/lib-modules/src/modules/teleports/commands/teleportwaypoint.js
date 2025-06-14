@@ -48,6 +48,7 @@ async function main() {
     x: waypoint.x,
     y: waypoint.y,
     z: waypoint.z,
+    dimension: waypoint.dimension,
   });
 
   await pog.pm(`Teleported to waypoint ${trigger}.`);

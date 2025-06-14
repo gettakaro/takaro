@@ -100,6 +100,50 @@ const tests = [
       );
     },
   }),
+  new IntegrationTest<IModuleTestsSetupData>({
+    group,
+    snapshot: false,
+    setup: modulesTestSetup,
+    name: 'Can teleport with dimension parameter through API endpoint',
+    test: async function () {
+      await this.client.module.moduleInstallationsControllerInstallModule({
+        gameServerId: this.setupData.gameserver.id,
+        versionId: this.setupData.teleportsModule.latestVersion.id,
+      });
+
+      // First, set a teleport with a specific dimension via command
+      const setEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/settp dimension_test',
+        playerId: this.setupData.players[0].id,
+      });
+
+      expect((await setEvents).length).to.be.eq(1);
+      expect((await setEvents)[0].data.meta.msg).to.be.eq('Teleport dimension_test set.');
+
+      // Now teleport using the API endpoint with a specific dimension
+      await this.client.gameserver.gameServerControllerTeleportPlayer(
+        this.setupData.gameserver.id,
+        this.setupData.players[0].id,
+        {
+          x: 100,
+          y: 200,
+          z: 300,
+          dimension: 'nether',
+        },
+      );
+
+      // Verify that the teleport command works with the saved teleport (which includes dimension)
+      const tpEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
+      await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
+        msg: '/tp dimension_test',
+        playerId: this.setupData.players[0].id,
+      });
+
+      expect((await tpEvents).length).to.be.eq(1);
+      expect((await tpEvents)[0].data.meta.msg).to.be.eq('Teleported to dimension_test.');
+    },
+  }),
 ];
 
 describe(group, function () {

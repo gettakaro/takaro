@@ -419,6 +419,7 @@ export class GameServerService extends TakaroService<
       Math.round(position.x),
       Math.round(position.y),
       Math.round(position.z),
+      position.dimension,
     );
   }
 
@@ -488,6 +489,7 @@ export class GameServerService extends TakaroService<
         positionX: Math.round(location.x),
         positionY: Math.round(location.y),
         positionZ: Math.round(location.z),
+        dimension: location.dimension,
       }),
     );
 
@@ -496,6 +498,7 @@ export class GameServerService extends TakaroService<
       Math.round(location.x),
       Math.round(location.y),
       Math.round(location.z),
+      location.dimension,
     );
 
     return location;

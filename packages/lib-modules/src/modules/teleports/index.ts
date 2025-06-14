@@ -15,7 +15,7 @@ export class Teleports extends ModuleTransferDTO<Teleports> {
     this.name = 'teleports';
     this.versions = [
       new ModuleTransferVersionDTO({
-        tag: '0.0.2',
+        tag: '0.0.3',
         description: 'A set of commands to allow players to set their own teleport points and teleport to them.',
         configSchema: JSON.stringify({
           $schema: 'http://json-schema.org/draft-07/schema#',

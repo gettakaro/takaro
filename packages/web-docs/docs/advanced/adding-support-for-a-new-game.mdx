@@ -241,7 +241,7 @@ Retrieves a list of all currently connected players.
 
 ### getPlayerLocation
 
-Retrieves the current 3D position of a specific player.
+Retrieves the current 3D position of a specific player. The response includes optional dimension information for games that support multiple dimensions/worlds.
 
 <Columns>
 <Column className='text--left'>
@@ -265,7 +265,8 @@ Retrieves the current 3D position of a specific player.
   "payload": {
     "x": 123.45,
     "y": 67.89,
-    "z": 10.11
+    "z": 10.11,
+    "dimension": "overworld"
   },
   "requestId": "request-uuid"
 }
@@ -488,7 +489,8 @@ The `metadata` field is optional and can be used to store additional information
       "position": {
         "x": 123.45,
         "y": 67.89,
-        "z": 10.11
+        "z": 10.11,
+        "dimension": "overworld"
       },
       "radius": 50,
       "name": "village",
@@ -499,7 +501,8 @@ The `metadata` field is optional and can be used to store additional information
       "position": {
         "x": 200.0,
         "y": 100.0,
-        "z": 50.0
+        "z": 50.0,
+        "dimension": "nether"
       },
       "sizeX": 100,
       "sizeY": 50,
@@ -585,6 +588,7 @@ If the `recipient` field is provided, the message should be sent to the specifie
 ### teleportPlayer
 
 Teleports a player to a specific location. The coordinates are passed as x, y, and z values.
+The `dimension` parameter is optional and allows teleportation across different game dimensions/worlds (e.g., overworld, nether, end in Minecraft).
 
 <Columns>
 <Column className='text--left'>
@@ -594,7 +598,7 @@ Teleports a player to a specific location. The coordinates are passed as x, y, a
   "type": "request",
   "payload": {
     "action": "teleportPlayer",
-    "args": "{\"player\": {\"gameId\": \"12345\"}, \"x\": 123.45, \"y\": 67.89, \"z\": 10.11}"
+    "args": "{\"player\": {\"gameId\": \"12345\"}, \"x\": 123.45, \"y\": 67.89, \"z\": 10.11, \"dimension\": \"nether\"}"
   },
   "requestId": "request-uuid"
 }
@@ -611,6 +615,8 @@ Teleports a player to a specific location. The coordinates are passed as x, y, a
 ```
 </Column>
 </Columns>
+
+**Note**: The `dimension` parameter is optional. If not provided, the player will be teleported within their current dimension. Games that don't support dimensions can safely ignore this parameter.
 
 ### testReachability
 
@@ -1004,7 +1010,8 @@ The `attacker` field is optional and should only be included if the player was k
     "position": {
       "x": 123.45,
       "y": 67.89,
-      "z": 10.11
+      "z": 10.11,
+      "dimension": "overworld"
     }
   }
 }

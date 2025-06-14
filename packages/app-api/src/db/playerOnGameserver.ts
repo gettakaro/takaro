@@ -31,6 +31,7 @@ export class PlayerOnGameServerModel extends TakaroModel {
   positionX: number;
   positionY: number;
   positionZ: number;
+  dimension?: string;
 
   lastSeen: string;
   playtimeSeconds: number;
@@ -170,6 +171,7 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
       positionX: data.positionX,
       positionY: data.positionY,
       positionZ: data.positionZ,
+      dimension: data.dimension,
       currency: data.currency,
       online: data.online,
       playtimeSeconds: data.playtimeSeconds,

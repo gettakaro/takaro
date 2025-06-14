@@ -8,6 +8,7 @@ export interface IPlayerMeta {
     x: number;
     y: number;
     z: number;
+    dimension?: string;
   };
   online: boolean;
 }
@@ -59,12 +60,16 @@ export class GameDataHandler {
     if (player.steamId) playerFields.steamId = player.steamId;
     if (player.xboxLiveId) playerFields.xboxLiveId = player.xboxLiveId;
 
-    const metaFields = {
+    const metaFields: Record<string, string> = {
       'position.x': meta.position.x.toString(),
       'position.y': meta.position.y.toString(),
       'position.z': meta.position.z.toString(),
       online: meta.online.toString(),
     };
+
+    if (meta.position.dimension) {
+      metaFields['position.dimension'] = meta.position.dimension;
+    }
 
     const multi = this.redis.multi();
     multi.hSet(playerKey, playerFields);
@@ -113,7 +118,12 @@ export class GameDataHandler {
           xboxLiveId: playerData.xboxLiveId || undefined,
         }),
         meta: {
-          position: { x, y, z },
+          position: {
+            x,
+            y,
+            z,
+            dimension: metaData['position.dimension'] || undefined,
+          },
           online,
         },
       };
@@ -139,14 +149,23 @@ export class GameDataHandler {
     return allPlayers.filter((player) => player.meta.online);
   }
 
-  async updatePlayerPosition(gameId: string, position: { x: number; y: number; z: number }): Promise<void> {
+  async updatePlayerPosition(
+    gameId: string,
+    position: { x: number; y: number; z: number; dimension?: string },
+  ): Promise<void> {
     const metaKey = this.getPlayerMetaKey(gameId);
     try {
-      await this.redis.hSet(metaKey, {
+      const fields: Record<string, string> = {
         'position.x': position.x.toString(),
         'position.y': position.y.toString(),
         'position.z': position.z.toString(),
-      });
+      };
+
+      if (position.dimension !== undefined) {
+        fields['position.dimension'] = position.dimension;
+      }
+
+      await this.redis.hSet(metaKey, fields);
     } catch (error) {
       this.log.error(`Error updating position for player ${gameId}: ${error}`);
       throw error;
