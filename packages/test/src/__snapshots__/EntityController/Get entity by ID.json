@@ -1,0 +1,30 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "id": "a4587bfe-d8de-407c-8e27-8d0721a31079",
+      "createdAt": "2025-06-14T11:19:47.506Z",
+      "updatedAt": "2025-06-14T11:19:47.506Z",
+      "gameserverId": "0e8eb812-3117-4e68-9125-43c34be2e62a",
+      "name": "Chicken",
+      "code": "chicken",
+      "description": "A small farm bird",
+      "type": "friendly",
+      "metadata": null
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "EntityController",
+    "snapshot": true,
+    "name": "Get entity by ID",
+    "filteredFields": [
+      "id",
+      "createdAt",
+      "gameserverId",
+      "updatedAt"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

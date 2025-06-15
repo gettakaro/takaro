@@ -96,7 +96,7 @@ export class MapInfoDTO extends TakaroDTO<MapInfoDTO> {
   mapSizeZ: number;
 }
 
-enum EntityType {
+export enum EntityType {
   HOSTILE = 'hostile',
   FRIENDLY = 'friendly',
   NEUTRAL = 'neutral',
@@ -193,6 +193,8 @@ export const GAME_SERVER_ACTIONS: GameServerActions[] = [
   'getPlayerInventory',
   'giveItem',
   'listItems',
+  'listEntities',
+  'listLocations',
   'executeConsoleCommand',
   'sendMessage',
   'teleportPlayer',
