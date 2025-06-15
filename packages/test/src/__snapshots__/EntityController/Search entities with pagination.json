@@ -1,0 +1,85 @@
+{
+  "body": {
+    "meta": {
+      "page": 0,
+      "limit": 5,
+      "total": 12
+    },
+    "data": [
+      {
+        "id": "a6a274f7-23b4-4b95-bb47-ffc4bf0f574a",
+        "createdAt": "2025-06-14T11:04:50.985Z",
+        "updatedAt": "2025-06-14T11:04:50.985Z",
+        "gameserverId": "9077bd25-f793-4537-b308-239ff14151e5",
+        "name": "Chicken",
+        "code": "chicken",
+        "description": "A small farm bird",
+        "type": "friendly",
+        "metadata": null
+      },
+      {
+        "id": "ecbeb5d0-b57b-4e89-abb9-33a26af9bf23",
+        "createdAt": "2025-06-14T11:04:50.985Z",
+        "updatedAt": "2025-06-14T11:04:50.985Z",
+        "gameserverId": "9077bd25-f793-4537-b308-239ff14151e5",
+        "name": "Cow",
+        "code": "cow",
+        "description": "A peaceful farm animal",
+        "type": "friendly",
+        "metadata": null
+      },
+      {
+        "id": "3f17a846-6696-4dcf-9ebb-80695cc8f216",
+        "createdAt": "2025-06-14T11:04:50.985Z",
+        "updatedAt": "2025-06-14T11:04:50.985Z",
+        "gameserverId": "9077bd25-f793-4537-b308-239ff14151e5",
+        "name": "Creeper",
+        "code": "creeper",
+        "description": "An explosive green creature",
+        "type": "hostile",
+        "metadata": {
+          "range": 3,
+          "explosive": true
+        }
+      },
+      {
+        "id": "e312da1e-a908-462c-ae85-429638ca5d43",
+        "createdAt": "2025-06-14T11:04:50.985Z",
+        "updatedAt": "2025-06-14T11:04:50.985Z",
+        "gameserverId": "9077bd25-f793-4537-b308-239ff14151e5",
+        "name": "Enderman",
+        "code": "enderman",
+        "description": "A tall dark creature from another dimension",
+        "type": "neutral",
+        "metadata": null
+      },
+      {
+        "id": "bc6caf0f-b0a2-435c-b667-77836524a812",
+        "createdAt": "2025-06-14T11:04:50.985Z",
+        "updatedAt": "2025-06-14T11:04:50.985Z",
+        "gameserverId": "9077bd25-f793-4537-b308-239ff14151e5",
+        "name": "Horse",
+        "code": "horse",
+        "description": "A rideable animal",
+        "type": "friendly",
+        "metadata": {
+          "speed": "fast",
+          "rideable": true
+        }
+      }
+    ]
+  },
+  "status": 200,
+  "test": {
+    "group": "EntityController",
+    "snapshot": true,
+    "name": "Search entities with pagination",
+    "filteredFields": [
+      "id",
+      "createdAt",
+      "gameserverId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

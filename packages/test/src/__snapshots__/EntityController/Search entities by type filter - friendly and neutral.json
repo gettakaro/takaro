@@ -1,0 +1,118 @@
+{
+  "body": {
+    "meta": {
+      "page": 0,
+      "limit": 100,
+      "total": 8
+    },
+    "data": [
+      {
+        "id": "856fad69-8dfb-4f1f-b755-9ef332671cc1",
+        "createdAt": "2025-06-14T11:04:20.909Z",
+        "updatedAt": "2025-06-14T11:04:20.909Z",
+        "gameserverId": "fe805535-537a-4274-8ac0-a8c10ec9460f",
+        "name": "Chicken",
+        "code": "chicken",
+        "description": "A small farm bird",
+        "type": "friendly",
+        "metadata": null
+      },
+      {
+        "id": "fb3fe3e4-973f-4774-b91f-4ba3c80d69df",
+        "createdAt": "2025-06-14T11:04:20.909Z",
+        "updatedAt": "2025-06-14T11:04:20.909Z",
+        "gameserverId": "fe805535-537a-4274-8ac0-a8c10ec9460f",
+        "name": "Cow",
+        "code": "cow",
+        "description": "A peaceful farm animal",
+        "type": "friendly",
+        "metadata": null
+      },
+      {
+        "id": "d5a9719d-f24a-43c5-9126-7e8a366e7a66",
+        "createdAt": "2025-06-14T11:04:20.909Z",
+        "updatedAt": "2025-06-14T11:04:20.909Z",
+        "gameserverId": "fe805535-537a-4274-8ac0-a8c10ec9460f",
+        "name": "Enderman",
+        "code": "enderman",
+        "description": "A tall dark creature from another dimension",
+        "type": "neutral",
+        "metadata": null
+      },
+      {
+        "id": "cb6f53cc-ed29-439f-abd8-5a1fc1e1eda5",
+        "createdAt": "2025-06-14T11:04:20.909Z",
+        "updatedAt": "2025-06-14T11:04:20.909Z",
+        "gameserverId": "fe805535-537a-4274-8ac0-a8c10ec9460f",
+        "name": "Horse",
+        "code": "horse",
+        "description": "A rideable animal",
+        "type": "friendly",
+        "metadata": {
+          "speed": "fast",
+          "rideable": true
+        }
+      },
+      {
+        "id": "5af30842-9980-4848-9f00-839c8a1af64a",
+        "createdAt": "2025-06-14T11:04:20.909Z",
+        "updatedAt": "2025-06-14T11:04:20.909Z",
+        "gameserverId": "fe805535-537a-4274-8ac0-a8c10ec9460f",
+        "name": "Pig",
+        "code": "pig",
+        "description": "A pink farm animal",
+        "type": "friendly",
+        "metadata": null
+      },
+      {
+        "id": "71aa277f-33b0-4ffb-a9fe-486a19557aaf",
+        "createdAt": "2025-06-14T11:04:20.909Z",
+        "updatedAt": "2025-06-14T11:04:20.909Z",
+        "gameserverId": "fe805535-537a-4274-8ac0-a8c10ec9460f",
+        "name": "Sheep",
+        "code": "sheep",
+        "description": "A woolly farm animal",
+        "type": "friendly",
+        "metadata": null
+      },
+      {
+        "id": "55c9b1bc-5b53-4e8d-8543-10bbce7b0989",
+        "createdAt": "2025-06-14T11:04:20.909Z",
+        "updatedAt": "2025-06-14T11:04:20.909Z",
+        "gameserverId": "fe805535-537a-4274-8ac0-a8c10ec9460f",
+        "name": "Villager",
+        "code": "villager",
+        "description": "A peaceful NPC that trades items",
+        "type": "friendly",
+        "metadata": {
+          "canTrade": true,
+          "profession": "merchant"
+        }
+      },
+      {
+        "id": "83ad5378-5fc0-49ff-84e7-e87ca2d908a9",
+        "createdAt": "2025-06-14T11:04:20.909Z",
+        "updatedAt": "2025-06-14T11:04:20.909Z",
+        "gameserverId": "fe805535-537a-4274-8ac0-a8c10ec9460f",
+        "name": "Wolf",
+        "code": "wolf",
+        "description": "A wild canine that can be tamed",
+        "type": "neutral",
+        "metadata": null
+      }
+    ]
+  },
+  "status": 200,
+  "test": {
+    "group": "EntityController",
+    "snapshot": true,
+    "name": "Search entities by type filter - friendly and neutral",
+    "filteredFields": [
+      "id",
+      "createdAt",
+      "gameserverId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

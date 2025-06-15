@@ -41,6 +41,25 @@ async function triggerItemSync(client: Client, gameServerId: string) {
   }
 }
 
+async function triggerEntitySync(client: Client, gameServerId: string) {
+  const triggeredJobRes = await client.gameserver.gameServerControllerTriggerJob('syncEntities', gameServerId);
+  const triggeredJob = triggeredJobRes.data.data;
+  if (!triggeredJob || !triggeredJob.id) throw new Error('Triggered job ID not found');
+
+  // Poll the job until it's done
+  while (true) {
+    const jobToAwait = (await client.gameserver.gameServerControllerGetJob('syncEntities', triggeredJob.id)).data.data;
+    if (!jobToAwait) throw new Error('Job not found');
+    if (jobToAwait.status === 'completed') {
+      break;
+    }
+    if (jobToAwait.status === 'failed') {
+      throw new Error(`Job failed: ${jobToAwait.failedReason}.`);
+    }
+    await new Promise((resolve) => setTimeout(resolve, 100));
+  }
+}
+
 export const setup = async function (this: IntegrationTest<ISetupData>): Promise<ISetupData> {
   const eventsAwaiter = new EventsAwaiter();
   await eventsAwaiter.connect(this.client);
@@ -84,8 +103,13 @@ export const setup = async function (this: IntegrationTest<ISetupData>): Promise
 
   await connectedEvents;
 
-  // Trigger itemSync jobs for both game servers and wait for completion
-  await Promise.all([triggerItemSync(this.client, gameServer1.id), triggerItemSync(this.client, gameServer2.id)]);
+  // Trigger itemSync and entitySync jobs for both game servers and wait for completion
+  await Promise.all([
+    triggerItemSync(this.client, gameServer1.id),
+    triggerItemSync(this.client, gameServer2.id),
+    triggerEntitySync(this.client, gameServer1.id),
+    triggerEntitySync(this.client, gameServer2.id),
+  ]);
   expect(await connectedEvents).to.have.length(40, 'Setup fail: should have 20 players-created events');
 
   const players = (await this.client.player.playerControllerSearch()).data.data;
