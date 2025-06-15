@@ -1,0 +1,46 @@
+{
+  "body": {
+    "meta": {
+      "page": 0,
+      "limit": 100,
+      "total": 2
+    },
+    "data": [
+      {
+        "id": "70535413-2606-4ec3-a1ba-3b20e8988772",
+        "createdAt": "2025-06-14T11:04:25.038Z",
+        "updatedAt": "2025-06-14T11:04:25.038Z",
+        "gameserverId": "e87a1acf-3f86-4fb4-be65-bdd27be81568",
+        "name": "Pig",
+        "code": "pig",
+        "description": "A pink farm animal",
+        "type": "friendly",
+        "metadata": null
+      },
+      {
+        "id": "96f55950-626c-48db-a627-ccc29e4e2b33",
+        "createdAt": "2025-06-14T11:04:25.038Z",
+        "updatedAt": "2025-06-14T11:04:25.038Z",
+        "gameserverId": "e87a1acf-3f86-4fb4-be65-bdd27be81568",
+        "name": "Zombie",
+        "code": "zombie",
+        "description": "A shambling undead creature",
+        "type": "hostile",
+        "metadata": null
+      }
+    ]
+  },
+  "status": 200,
+  "test": {
+    "group": "EntityController",
+    "snapshot": true,
+    "name": "Search entities by name filter",
+    "filteredFields": [
+      "id",
+      "createdAt",
+      "gameserverId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}
