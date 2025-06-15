@@ -77,10 +77,17 @@ export class Generic implements IGameServer {
   }
 
   async testReachability(): Promise<TestReachabilityOutputDTO> {
-    const response = await this.takaroConnector.requestFromServer(this.gameServerId, 'testReachability', '{}');
-    const dto = new TestReachabilityOutputDTO(response);
-    await dto.validate();
-    return dto;
+    try {
+      const response = await this.takaroConnector.requestFromServer(this.gameServerId, 'testReachability', '{}');
+      const dto = new TestReachabilityOutputDTO(response);
+      await dto.validate();
+      return dto;
+    } catch (error) {
+      return new TestReachabilityOutputDTO({
+        connectable: false,
+        reason: error instanceof Error ? error.message : 'Unknown error occurred',
+      });
+    }
   }
 
   async executeConsoleCommand(rawCommand: string): Promise<CommandOutput> {

@@ -87,7 +87,17 @@ export async function processJob(job: Job<IGameServerQueueData>) {
       }),
     );
 
-    await Promise.allSettled(domainPromises);
+    const domainRes = await Promise.allSettled(domainPromises);
+
+    for (const r of domainRes) {
+      if (r.status === 'rejected') {
+        log.error(r.reason);
+        await job.log(r.reason);
+      }
+    }
+    if (domainRes.some((r) => r.status === 'rejected')) {
+      throw new Error('Some domain promises failed');
+    }
 
     return;
   }
