@@ -66,6 +66,15 @@ docs/DomainSearchInputAllowedFilters.md
 docs/DomainSearchInputAllowedSearch.md
 docs/DomainSearchInputDTO.md
 docs/DomainUpdateInputDTO.md
+docs/EntityApi.md
+docs/EntityCreateDTO.md
+docs/EntityOutputArrayDTOAPI.md
+docs/EntityOutputDTO.md
+docs/EntityOutputDTOAPI.md
+docs/EntitySearchInputAllowedFilters.md
+docs/EntitySearchInputAllowedSearch.md
+docs/EntitySearchInputDTO.md
+docs/EntityUpdateDTO.md
 docs/ErrorOutput.md
 docs/EventApi.md
 docs/EventChatMessage.md
