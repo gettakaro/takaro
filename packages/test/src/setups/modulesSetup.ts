@@ -21,6 +21,7 @@ export interface IModuleTestsSetupData {
   serverMessagesModule: ModuleOutputDTO;
   lotteryModule: ModuleOutputDTO;
   geoBlockModule: ModuleOutputDTO;
+  highPingKickerModule: ModuleOutputDTO;
   role: RoleOutputDTO;
   players: PlayerOutputDTO[];
   players2: PlayerOutputDTO[];
@@ -115,6 +116,9 @@ export const modulesTestSetup = async function (
   const geoBlockModule = modules.find((m) => m.name === 'geoBlock');
   if (!geoBlockModule) throw new Error('geoBlock module not found');
 
+  const highPingKickerModule = modules.find((m) => m.name === 'highPingKicker');
+  if (!highPingKickerModule) throw new Error('highPingKicker module not found');
+
   await Promise.all([
     this.client.gameserver.gameServerControllerExecuteCommand(gameServer1.id, { command: 'connectAll' }),
     this.client.gameserver.gameServerControllerExecuteCommand(gameServer2.id, { command: 'connectAll' }),
@@ -171,6 +175,7 @@ export const modulesTestSetup = async function (
     economyUtilsModule,
     lotteryModule,
     geoBlockModule,
+    highPingKickerModule,
     gameserver: gameServer1,
     gameserver2: gameServer2,
     role: roleRes.data.data,

@@ -59,6 +59,9 @@ export class GameDataHandler {
     if (player.epicOnlineServicesId) playerFields.epicOnlineServicesId = player.epicOnlineServicesId;
     if (player.steamId) playerFields.steamId = player.steamId;
     if (player.xboxLiveId) playerFields.xboxLiveId = player.xboxLiveId;
+    if (player.platformId) playerFields.platformId = player.platformId;
+    if (player.ip) playerFields.ip = player.ip;
+    if (player.ping !== undefined) playerFields.ping = player.ping.toString();
 
     const metaFields: Record<string, string> = {
       'position.x': meta.position.x.toString(),
@@ -116,6 +119,9 @@ export class GameDataHandler {
           epicOnlineServicesId: playerData.epicOnlineServicesId || undefined,
           steamId: playerData.steamId || undefined,
           xboxLiveId: playerData.xboxLiveId || undefined,
+          platformId: playerData.platformId || undefined,
+          ip: playerData.ip || undefined,
+          ping: playerData.ping ? parseInt(playerData.ping, 10) : undefined,
         }),
         meta: {
           position: {
@@ -180,6 +186,73 @@ export class GameDataHandler {
       });
     } catch (error) {
       this.log.error(`Error updating online status for player ${gameId}: ${error}`);
+      throw error;
+    }
+  }
+
+  async updatePlayerData(
+    gameId: string,
+    updates: {
+      // Player fields
+      name?: string;
+      steamId?: string;
+      epicOnlineServicesId?: string;
+      xboxLiveId?: string;
+      platformId?: string;
+      ip?: string;
+      ping?: number;
+      // Meta fields
+      position?: { x: number; y: number; z: number; dimension?: string };
+      online?: boolean;
+    },
+  ): Promise<void> {
+    // Validate player exists
+    const player = await this.getPlayer(new IPlayerReferenceDTO({ gameId }));
+    if (!player) {
+      throw new errors.NotFoundError(`Player ${gameId} not found`);
+    }
+
+    const multi = this.redis.multi();
+
+    // Update player fields if provided
+    const playerFields: Record<string, string> = {};
+    if (updates.name !== undefined) playerFields.name = updates.name;
+    if (updates.steamId !== undefined) playerFields.steamId = updates.steamId;
+    if (updates.epicOnlineServicesId !== undefined) playerFields.epicOnlineServicesId = updates.epicOnlineServicesId;
+    if (updates.xboxLiveId !== undefined) playerFields.xboxLiveId = updates.xboxLiveId;
+    if (updates.platformId !== undefined) playerFields.platformId = updates.platformId;
+    if (updates.ip !== undefined) playerFields.ip = updates.ip;
+    if (updates.ping !== undefined) playerFields.ping = updates.ping.toString();
+
+    if (Object.keys(playerFields).length > 0) {
+      const playerKey = this.getPlayerKey(gameId);
+      multi.hSet(playerKey, playerFields);
+    }
+
+    // Update meta fields if provided
+    const metaFields: Record<string, string> = {};
+    if (updates.position !== undefined) {
+      metaFields['position.x'] = updates.position.x.toString();
+      metaFields['position.y'] = updates.position.y.toString();
+      metaFields['position.z'] = updates.position.z.toString();
+      if (updates.position.dimension !== undefined) {
+        metaFields['position.dimension'] = updates.position.dimension;
+      }
+    }
+    if (updates.online !== undefined) {
+      metaFields.online = updates.online.toString();
+    }
+
+    if (Object.keys(metaFields).length > 0) {
+      const metaKey = this.getPlayerMetaKey(gameId);
+      multi.hSet(metaKey, metaFields);
+    }
+
+    try {
+      await multi.exec();
+      this.log.info(`Updated player ${gameId} data:`, updates);
+    } catch (error) {
+      this.log.error(`Error updating player ${gameId} data:`, error);
       throw error;
     }
   }
