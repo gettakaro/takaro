@@ -1,0 +1,35 @@
+{
+  "body": {
+    "meta": {},
+    "data": {
+      "createdAt": "2025-06-14T12:31:46.424Z",
+      "updatedAt": "2025-06-14T12:31:46.425Z",
+      "id": "grumpy-waves-doubt",
+      "name": "integration--720318dd-c578-40c5-b3bc-5f3cc47c5084",
+      "state": "ACTIVE",
+      "rateLimitPoints": 2500,
+      "rateLimitDuration": 900000,
+      "externalReference": null,
+      "serverRegistrationToken": "n3InkYMeQ4a63zgnwCXkp7To8zSUEU2JonnyYKYLf+0=",
+      "maxGameservers": 100,
+      "maxUsers": 5,
+      "eventRetentionDays": 7,
+      "maxVariables": 10000,
+      "maxModules": 1000,
+      "maxFunctionsInModule": 50
+    }
+  },
+  "status": 200,
+  "test": {
+    "group": "DomainController",
+    "snapshot": true,
+    "name": "Resolve registration token - valid token",
+    "filteredFields": [
+      "name",
+      "serverRegistrationToken",
+      "externalReference"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}
