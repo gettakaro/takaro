@@ -431,6 +431,31 @@ export class GameServer implements IGameServer {
         output.success = true;
       }
 
+      if (rawCommand.startsWith('setPlayerData')) {
+        try {
+          // Parse command: setPlayerData <gameId> {data}
+          const match = rawCommand.match(/^setPlayerData\s+(\S+)\s+(.+)$/);
+          if (!match) {
+            output.rawResult = 'Invalid command format. Use: setPlayerData <gameId> {data}';
+            output.success = false;
+          } else {
+            const [_, playerId, dataJson] = match;
+            try {
+              const data = JSON.parse(dataJson);
+              await this.dataHandler.updatePlayerData(playerId, data);
+              output.rawResult = `Updated player ${playerId} data`;
+              output.success = true;
+            } catch (parseError) {
+              output.rawResult = `Failed to parse JSON data: ${parseError instanceof Error ? parseError.message : 'Unknown error'}`;
+              output.success = false;
+            }
+          }
+        } catch (error) {
+          output.rawResult = `Error updating player data: ${error instanceof Error ? error.message : 'Unknown error'}`;
+          output.success = false;
+        }
+      }
+
       this.sendLog(`${output.success ? '🟢' : '🔴'} Command executed: ${rawCommand}`);
       return output;
     } catch (error) {

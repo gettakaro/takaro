@@ -10,16 +10,16 @@ async function main() {
       if (player.ping > data.module.userConfig.pingThreshold) {
         const takaroPlayerRes = await takaro.player.playerControllerSearch({
           filters: {
-            steamId: player.steamId,
+            steamId: [player.steamId],
           },
         });
 
         const takaroPlayer = takaroPlayerRes.data.data[0];
 
-        const currentWarningsRes = await takaro.variable.variableControllerFind({
+        const currentWarningsRes = await takaro.variable.variableControllerSearch({
           filters: {
-            playerId: takaroPlayer.id,
-            key: VARIABLE_KEY,
+            playerId: [takaroPlayer.id],
+            key: [VARIABLE_KEY],
           },
         });
 
@@ -33,14 +33,24 @@ async function main() {
             value: '1',
           });
         } else {
-          currentWarnings = parseInt(currentWarningsRecords[0].value, 10);
+          currentWarnings = parseInt(currentWarningsRecords[0].value, 10) + 1;
+          await takaro.variable.variableControllerUpdate(currentWarningsRecords[0].id, {
+            value: currentWarnings.toString(),
+          });
         }
 
-        if (currentWarningsRecords.length === 1) {
-          await takaro.variable.variableControllerUpdate(currentWarningsRecords[0].id, {
-            value: (currentWarnings + 1).toString(),
+        // Check if player should be kicked before sending warning
+        if (currentWarnings >= data.module.userConfig.warningsBeforeKick) {
+          await takaro.gameserver.gameServerControllerKickPlayer(data.gameServerId, takaroPlayer.id, {
+            reason: `Your ping (${player.ping}) is too high, please try again later.`,
           });
 
+          // Delete the warning record after kicking
+          if (currentWarningsRecords.length > 0) {
+            await takaro.variable.variableControllerDelete(currentWarningsRecords[0].id);
+          }
+        } else {
+          // Only send warning if player won't be kicked
           await takaro.gameserver.gameServerControllerSendMessage(data.gameServerId, {
             message: `Your ping (${player.ping}) is too high. Warning ${currentWarnings}/${data.module.userConfig.warningsBeforeKick}`,
             opts: {
@@ -50,16 +60,8 @@ async function main() {
             },
           });
         }
-
-        if (currentWarnings >= data.module.userConfig.warningsBeforeKick) {
-          await takaro.gameserver.gameServerControllerKickPlayer(data.gameServerId, takaroPlayer.id, {
-            reason: `Your ping (${player.ping}) is too high, please try again later.`,
-          });
-
-          await takaro.variable.variableControllerDelete(currentWarningsRecords[0].id);
-        }
       }
-    })
+    }),
   );
 }
 
