@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsBoolean, IsOptional, IsString, IsUUID } from 'class-validator';
 import { TakaroDTO, TakaroModelDTO, traceableClass } from '@takaro/util';
 import { TakaroService } from './Base.js';
 import { ITakaroQuery } from '@takaro/db';
@@ -18,7 +18,14 @@ export class ItemsOutputDTO extends TakaroModelDTO<ItemsOutputDTO> {
 
   @IsString()
   @IsOptional()
-  icon: string;
+  iconId: string;
+
+  @IsString()
+  @IsOptional()
+  iconBase64: string;
+
+  @IsBoolean()
+  iconOverride: boolean;
 
   @IsUUID()
   gameserverId: string;
@@ -37,7 +44,15 @@ export class ItemCreateDTO extends TakaroDTO<ItemCreateDTO> {
 
   @IsString()
   @IsOptional()
-  icon: string;
+  iconId: string;
+
+  @IsString()
+  @IsOptional()
+  iconBase64: string;
+
+  @IsBoolean()
+  @IsOptional()
+  iconOverride: boolean;
 
   @IsUUID()
   gameserverId: string;
@@ -58,7 +73,15 @@ export class ItemUpdateDTO extends TakaroDTO<ItemUpdateDTO> {
 
   @IsString()
   @IsOptional()
-  icon: string;
+  iconId: string;
+
+  @IsString()
+  @IsOptional()
+  iconBase64: string;
+
+  @IsBoolean()
+  @IsOptional()
+  iconOverride: boolean;
 }
 
 @traceableClass('service:items')

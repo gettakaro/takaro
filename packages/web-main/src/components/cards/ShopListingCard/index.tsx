@@ -1,17 +1,11 @@
-import { Avatar, Card, Chip, getInitials, Tooltip } from '@takaro/lib-components';
+import { Card, Chip, Tooltip } from '@takaro/lib-components';
 import { FC } from 'react';
 import { Header, CardBody } from './style';
 import { GameServerOutputDTOTypeEnum, ShopListingOutputDTO } from '@takaro/apiclient';
 import { useHasPermission } from '../../../hooks/useHasPermission';
 import { ShopListingActions } from '../../../routes/_auth/gameserver.$gameServerId/-components/shop/ShopListingActions';
 import { ShopListingBuyForm } from '../../../routes/_auth/gameserver.$gameServerId/-components/shop/ShopListingBuyForm';
-
-const gameServerTypeToIconFolderMap = {
-  [GameServerOutputDTOTypeEnum.Mock]: 'rust',
-  [GameServerOutputDTOTypeEnum.Rust]: 'rust',
-  [GameServerOutputDTOTypeEnum.Sevendaystodie]: '7d2d',
-  [GameServerOutputDTOTypeEnum.Generic]: 'generic',
-};
+import { ItemIcon } from '../../ItemIcon';
 
 interface ShopListingCard {
   shopListing: ShopListingOutputDTO;
@@ -48,13 +42,13 @@ export const ShopListingCard: FC<ShopListingCard> = ({
                   />
                 )}
               </Header>
-              <Avatar size="huge">
-                <Avatar.Image
-                  src={`/icons/${gameServerTypeToIconFolderMap[gameServerType]}/${firstItem.code}.png`}
-                  alt={`Item icon of ${firstItem.name}`}
-                />
-                <Avatar.FallBack>{getInitials(shopListingName)}</Avatar.FallBack>
-              </Avatar>
+              <ItemIcon
+                itemIcon={firstItem.icon}
+                itemName={firstItem.name}
+                itemCode={firstItem.code}
+                gameServerType={gameServerType}
+                size="huge"
+              />
               <h2>{shopListingName}</h2>
               <div
                 style={{ display: 'flex', flexWrap: 'wrap', textAlign: 'left', width: '100%', marginBottom: '1.5rem' }}
@@ -63,13 +57,13 @@ export const ShopListingCard: FC<ShopListingCard> = ({
                   return (
                     <Tooltip key={itemMeta.id}>
                       <Tooltip.Trigger>
-                        <Avatar size="small">
-                          <Avatar.Image
-                            src={`/icons/${gameServerTypeToIconFolderMap[gameServerType]}/${itemMeta.item.code}.png`}
-                            alt={`Item icon of ${itemMeta.item.name}`}
-                          />
-                          <Avatar.FallBack>{getInitials(shopListingName)}</Avatar.FallBack>
-                        </Avatar>
+                        <ItemIcon
+                          itemIcon={itemMeta.item.icon}
+                          itemName={itemMeta.item.name}
+                          itemCode={itemMeta.item.code}
+                          gameServerType={gameServerType}
+                          size="small"
+                        />
                       </Tooltip.Trigger>
                       <Tooltip.Content>
                         {itemMeta.amount} of {itemMeta.item.name}

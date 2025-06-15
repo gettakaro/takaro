@@ -1,11 +1,9 @@
 import { FormContextType, RJSFSchema, StrictRJSFSchema, WidgetProps } from '@rjsf/utils';
-import { GameServerOutputDTO, GameServerOutputDTOTypeEnum, ItemsOutputDTO } from '@takaro/apiclient';
+import { GameServerOutputDTO, ItemsOutputDTO } from '@takaro/apiclient';
 import {
   styled,
-  Avatar,
   SelectQueryField,
   UnControlledSelectQueryField,
-  getInitials,
   Skeleton,
   ToggleButtonGroup,
 } from '@takaro/lib-components';
@@ -14,13 +12,7 @@ import { useParams } from '@tanstack/react-router';
 import { gameServerQueryOptions } from '../../../queries/gameserver';
 import { ItemsInfiniteQueryOptions } from '../../../queries/item';
 import { useState } from 'react';
-
-const gameServerTypeToIconFolderMap = {
-  [GameServerOutputDTOTypeEnum.Mock]: 'rust',
-  [GameServerOutputDTOTypeEnum.Rust]: 'rust',
-  [GameServerOutputDTOTypeEnum.Sevendaystodie]: '7d2d',
-  [GameServerOutputDTOTypeEnum.Generic]: 'generic',
-};
+import { ItemIcon } from '../../ItemIcon';
 
 const Inner = styled.div`
   display: flex;
@@ -96,15 +88,15 @@ export function ItemWidget<T = unknown, S extends StrictRJSFSchema = RJSFSchema,
   );
 
   const renderIcon = (gameServer: GameServerOutputDTO, item: ItemsOutputDTO) => {
-    if (item.code && gameServer && gameServerTypeToIconFolderMap[gameServer.type] !== 'Mock') {
+    if (item.code && gameServer) {
       return (
-        <Avatar size="small">
-          <Avatar.Image
-            src={`/icons/${gameServerTypeToIconFolderMap[gameServer.type]}/${item.code}.png`}
-            alt={`Item icon of ${item.name}`}
-          />
-          <Avatar.FallBack>{getInitials(item.name)}</Avatar.FallBack>
-        </Avatar>
+        <ItemIcon
+          itemIcon={item.icon}
+          itemName={item.name}
+          itemCode={item.code}
+          gameServerType={gameServer.type}
+          size="small"
+        />
       );
     }
   };

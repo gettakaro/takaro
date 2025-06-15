@@ -59,6 +59,9 @@ export class IItemDTO extends TakaroDTO<IItemDTO> {
   @IsString()
   @IsOptional()
   quality?: string;
+  @IsString()
+  @IsOptional()
+  icon?: string;
 }
 
 export class IMessageOptsDTO extends TakaroDTO<IMessageOptsDTO> {

@@ -1,11 +1,12 @@
-import { GameServerOutputDTO, GameServerOutputDTOTypeEnum, ItemsOutputDTO } from '@takaro/apiclient';
-import { Avatar, getInitials, PaginationProps, SelectQueryField, Skeleton, styled } from '@takaro/lib-components';
+import { GameServerOutputDTO, ItemsOutputDTO } from '@takaro/apiclient';
+import { PaginationProps, SelectQueryField, Skeleton, styled } from '@takaro/lib-components';
 import { gameServerQueryOptions } from '../../../queries/gameserver';
 import { itemQueryOptions, ItemsInfiniteQueryOptions } from '../../../queries/item';
 import { FC, useState, useCallback } from 'react';
 import { CustomSelectQueryProps } from '..';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useController } from 'react-hook-form';
+import { ItemIcon } from '../../ItemIcon';
 
 export interface ItemSelectQueryFieldProps extends CustomSelectQueryProps {
   gameServerId: string;
@@ -21,13 +22,6 @@ const Inner = styled.div`
     margin-left: ${({ theme }) => theme.spacing['1']};
   }
 `;
-
-const gameServerTypeToIconFolderMap = {
-  [GameServerOutputDTOTypeEnum.Mock]: 'rust',
-  [GameServerOutputDTOTypeEnum.Rust]: 'rust',
-  [GameServerOutputDTOTypeEnum.Sevendaystodie]: '7d2d',
-  [GameServerOutputDTOTypeEnum.Generic]: 'generic',
-};
 
 export const ItemSelectQueryField: FC<ItemSelectQueryFieldProps> = ({
   control,
@@ -139,15 +133,15 @@ export const ItemSelectQueryView: FC<ItemSelectQueryViewProps> = ({
   isFetchingNextPage,
 }) => {
   const renderIcon = useCallback((gameServer: GameServerOutputDTO, item: ItemsOutputDTO) => {
-    if (item.code && gameServer && gameServerTypeToIconFolderMap[gameServer.type] !== 'Mock') {
+    if (item.code && gameServer) {
       return (
-        <Avatar size="small">
-          <Avatar.Image
-            src={`/icons/${gameServerTypeToIconFolderMap[gameServer.type]}/${item.code}.png`}
-            alt={`Item icon of ${item.name}`}
-          />
-          <Avatar.FallBack>{getInitials(item.name)}</Avatar.FallBack>
-        </Avatar>
+        <ItemIcon
+          itemIcon={item.icon}
+          itemName={item.name}
+          itemCode={item.code}
+          gameServerType={gameServer.type}
+          size="small"
+        />
       );
     }
   }, []);

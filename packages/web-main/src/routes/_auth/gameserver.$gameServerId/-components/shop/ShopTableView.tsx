@@ -4,17 +4,7 @@ import {
   ShopListingOutputDTO,
   ShopListingSearchInputDTOSortDirectionEnum,
 } from '@takaro/apiclient';
-import {
-  Avatar,
-  Button,
-  Chip,
-  DateFormatter,
-  Popover,
-  Table,
-  getInitials,
-  styled,
-  useTableActions,
-} from '@takaro/lib-components';
+import { Button, Chip, DateFormatter, Popover, Table, styled, useTableActions } from '@takaro/lib-components';
 import { useQuery } from '@tanstack/react-query';
 import { FC, useState } from 'react';
 import { createColumnHelper, Row } from '@tanstack/react-table';
@@ -23,13 +13,7 @@ import { useHasPermission } from '../../../../../hooks/useHasPermission';
 import { ShopViewProps } from './ShopView';
 import { ShopListingActions } from './ShopListingActions';
 import { ShopListingBuyForm } from './ShopListingBuyForm';
-
-const gameServerTypeToIconFolderMap = {
-  [GameServerOutputDTOTypeEnum.Mock]: 'rust',
-  [GameServerOutputDTOTypeEnum.Rust]: 'rust',
-  [GameServerOutputDTOTypeEnum.Sevendaystodie]: '7d2d',
-  [GameServerOutputDTOTypeEnum.Generic]: 'generic',
-};
+import { ItemIcon } from '../../../../../components/ItemIcon';
 
 const ShopListingBuyFormContainer = styled.div`
   padding: 1rem;
@@ -236,13 +220,13 @@ const ShopListingMetaItem: FC<ShopListingMetaItemProps> = ({ gameServerType, met
       <td />
       <td></td>
       <td>
-        <Avatar size="small">
-          <Avatar.Image
-            src={`/icons/${gameServerTypeToIconFolderMap[gameServerType]}/${metaItem.item.code}.png`}
-            alt={`Item icon of ${metaItem.item.name}`}
-          />
-          <Avatar.FallBack>{getInitials(metaItem.item.name)}</Avatar.FallBack>
-        </Avatar>
+        <ItemIcon
+          itemIcon={metaItem.item.icon}
+          itemName={metaItem.item.name}
+          itemCode={metaItem.item.code}
+          gameServerType={gameServerType}
+          size="small"
+        />
       </td>
       <td>{metaItem.item.name}</td>
       <td>{metaItem.amount}</td>

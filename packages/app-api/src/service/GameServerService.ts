@@ -513,7 +513,11 @@ export class GameServerService extends TakaroService<
       items.map((item) => {
         delete item.amount;
         return new ItemCreateDTO({
-          ...item,
+          name: item.name,
+          code: item.code,
+          description: item.description,
+          iconId: item.icon, // Map IItemDTO.icon to ItemCreateDTO.iconId
+          iconOverride: false, // Default to false for game server items
           gameserverId: gameServerId,
         });
       }),

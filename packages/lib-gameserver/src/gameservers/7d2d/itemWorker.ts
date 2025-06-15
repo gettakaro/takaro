@@ -27,6 +27,7 @@ parentPort.on('message', async (itemLines) => {
       if (trimmed in vanillaItems) {
         dto.name = vanillaItems[trimmed].name;
         dto.description = vanillaItems[trimmed].description;
+        dto.icon = vanillaItems[trimmed].customIcon;
       }
 
       if (!dto.name) dto.name = dto.code;

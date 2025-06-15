@@ -12,7 +12,9 @@ export class ItemsModel extends TakaroModel {
   name!: string;
   code!: string;
   description?: string;
-  icon?: string;
+  iconId?: string;
+  iconBase64?: string;
+  iconOverride!: boolean;
 
   gameserverId!: string;
 
@@ -127,7 +129,9 @@ export class ItemRepo extends ITakaroRepo<ItemsModel, ItemsOutputDTO, ItemCreate
         code: item.code,
         gameserverId: item.gameserverId,
         description: item.description || null,
-        icon: item.icon || null,
+        icon: item.iconId || null,
+        iconBase64: item.iconBase64 || null,
+        iconOverride: item.iconOverride || false,
         domain: this.domainId,
       };
     });
