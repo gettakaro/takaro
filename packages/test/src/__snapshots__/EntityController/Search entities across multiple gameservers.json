@@ -1,0 +1,306 @@
+{
+  "body": {
+    "meta": {
+      "page": 0,
+      "limit": 100,
+      "total": 24
+    },
+    "data": [
+      {
+        "id": "bc039f83-7972-4684-a6a7-cf580f8d68e6",
+        "createdAt": "2025-06-14T11:04:33.388Z",
+        "updatedAt": "2025-06-14T11:04:33.388Z",
+        "gameserverId": "54a249af-d921-4ab4-a82b-75fd7f00408a",
+        "name": "Chicken",
+        "code": "chicken",
+        "description": "A small farm bird",
+        "type": "friendly",
+        "metadata": null
+      },
+      {
+        "id": "5f6edc30-1710-4b97-aeb0-8169b607b148",
+        "createdAt": "2025-06-14T11:04:33.372Z",
+        "updatedAt": "2025-06-14T11:04:33.372Z",
+        "gameserverId": "0b7c64fd-118a-47b9-ae30-580cc26d14c4",
+        "name": "Chicken",
+        "code": "chicken",
+        "description": "A small farm bird",
+        "type": "friendly",
+        "metadata": null
+      },
+      {
+        "id": "bb6ea42c-d112-4380-8377-2b5d65832681",
+        "createdAt": "2025-06-14T11:04:33.388Z",
+        "updatedAt": "2025-06-14T11:04:33.388Z",
+        "gameserverId": "54a249af-d921-4ab4-a82b-75fd7f00408a",
+        "name": "Cow",
+        "code": "cow",
+        "description": "A peaceful farm animal",
+        "type": "friendly",
+        "metadata": null
+      },
+      {
+        "id": "a56b696a-bef8-4e28-af94-2fa5f6b198b4",
+        "createdAt": "2025-06-14T11:04:33.372Z",
+        "updatedAt": "2025-06-14T11:04:33.372Z",
+        "gameserverId": "0b7c64fd-118a-47b9-ae30-580cc26d14c4",
+        "name": "Cow",
+        "code": "cow",
+        "description": "A peaceful farm animal",
+        "type": "friendly",
+        "metadata": null
+      },
+      {
+        "id": "d1cedccf-7869-4c7d-bf09-03c4fce9d87a",
+        "createdAt": "2025-06-14T11:04:33.388Z",
+        "updatedAt": "2025-06-14T11:04:33.388Z",
+        "gameserverId": "54a249af-d921-4ab4-a82b-75fd7f00408a",
+        "name": "Creeper",
+        "code": "creeper",
+        "description": "An explosive green creature",
+        "type": "hostile",
+        "metadata": {
+          "range": 3,
+          "explosive": true
+        }
+      },
+      {
+        "id": "8086552b-06bd-41df-9edb-d36dcdf2e3a2",
+        "createdAt": "2025-06-14T11:04:33.372Z",
+        "updatedAt": "2025-06-14T11:04:33.372Z",
+        "gameserverId": "0b7c64fd-118a-47b9-ae30-580cc26d14c4",
+        "name": "Creeper",
+        "code": "creeper",
+        "description": "An explosive green creature",
+        "type": "hostile",
+        "metadata": {
+          "range": 3,
+          "explosive": true
+        }
+      },
+      {
+        "id": "11ff4d00-5bd8-4787-8ecb-74a396d1ad44",
+        "createdAt": "2025-06-14T11:04:33.388Z",
+        "updatedAt": "2025-06-14T11:04:33.388Z",
+        "gameserverId": "54a249af-d921-4ab4-a82b-75fd7f00408a",
+        "name": "Enderman",
+        "code": "enderman",
+        "description": "A tall dark creature from another dimension",
+        "type": "neutral",
+        "metadata": null
+      },
+      {
+        "id": "25910bb7-f47f-4049-9e5b-d24a47f1a36c",
+        "createdAt": "2025-06-14T11:04:33.372Z",
+        "updatedAt": "2025-06-14T11:04:33.372Z",
+        "gameserverId": "0b7c64fd-118a-47b9-ae30-580cc26d14c4",
+        "name": "Enderman",
+        "code": "enderman",
+        "description": "A tall dark creature from another dimension",
+        "type": "neutral",
+        "metadata": null
+      },
+      {
+        "id": "d4397768-b120-473d-8d4d-f7343733caff",
+        "createdAt": "2025-06-14T11:04:33.372Z",
+        "updatedAt": "2025-06-14T11:04:33.372Z",
+        "gameserverId": "0b7c64fd-118a-47b9-ae30-580cc26d14c4",
+        "name": "Horse",
+        "code": "horse",
+        "description": "A rideable animal",
+        "type": "friendly",
+        "metadata": {
+          "speed": "fast",
+          "rideable": true
+        }
+      },
+      {
+        "id": "9e34f0fe-a2dd-48f9-a4ee-574b7aee25a4",
+        "createdAt": "2025-06-14T11:04:33.388Z",
+        "updatedAt": "2025-06-14T11:04:33.388Z",
+        "gameserverId": "54a249af-d921-4ab4-a82b-75fd7f00408a",
+        "name": "Horse",
+        "code": "horse",
+        "description": "A rideable animal",
+        "type": "friendly",
+        "metadata": {
+          "speed": "fast",
+          "rideable": true
+        }
+      },
+      {
+        "id": "a9050ec4-1e80-4385-bfa6-cae5ebe588d1",
+        "createdAt": "2025-06-14T11:04:33.388Z",
+        "updatedAt": "2025-06-14T11:04:33.388Z",
+        "gameserverId": "54a249af-d921-4ab4-a82b-75fd7f00408a",
+        "name": "Pig",
+        "code": "pig",
+        "description": "A pink farm animal",
+        "type": "friendly",
+        "metadata": null
+      },
+      {
+        "id": "5b67f14a-3a34-4456-982f-34653f21b7af",
+        "createdAt": "2025-06-14T11:04:33.372Z",
+        "updatedAt": "2025-06-14T11:04:33.372Z",
+        "gameserverId": "0b7c64fd-118a-47b9-ae30-580cc26d14c4",
+        "name": "Pig",
+        "code": "pig",
+        "description": "A pink farm animal",
+        "type": "friendly",
+        "metadata": null
+      },
+      {
+        "id": "99fc558b-af86-46d5-a40a-a8de2b97a937",
+        "createdAt": "2025-06-14T11:04:33.388Z",
+        "updatedAt": "2025-06-14T11:04:33.388Z",
+        "gameserverId": "54a249af-d921-4ab4-a82b-75fd7f00408a",
+        "name": "Sheep",
+        "code": "sheep",
+        "description": "A woolly farm animal",
+        "type": "friendly",
+        "metadata": null
+      },
+      {
+        "id": "15e362e6-eafd-446b-8ad8-c67967935a60",
+        "createdAt": "2025-06-14T11:04:33.372Z",
+        "updatedAt": "2025-06-14T11:04:33.372Z",
+        "gameserverId": "0b7c64fd-118a-47b9-ae30-580cc26d14c4",
+        "name": "Sheep",
+        "code": "sheep",
+        "description": "A woolly farm animal",
+        "type": "friendly",
+        "metadata": null
+      },
+      {
+        "id": "f09fd488-dad9-483d-95b0-b31a03fca67b",
+        "createdAt": "2025-06-14T11:04:33.372Z",
+        "updatedAt": "2025-06-14T11:04:33.372Z",
+        "gameserverId": "0b7c64fd-118a-47b9-ae30-580cc26d14c4",
+        "name": "Skeleton",
+        "code": "skeleton",
+        "description": "An undead archer",
+        "type": "hostile",
+        "metadata": null
+      },
+      {
+        "id": "b06744e8-4bab-4819-9fd1-6da9d3c352f0",
+        "createdAt": "2025-06-14T11:04:33.388Z",
+        "updatedAt": "2025-06-14T11:04:33.388Z",
+        "gameserverId": "54a249af-d921-4ab4-a82b-75fd7f00408a",
+        "name": "Skeleton",
+        "code": "skeleton",
+        "description": "An undead archer",
+        "type": "hostile",
+        "metadata": null
+      },
+      {
+        "id": "efd0985a-4272-4ece-a70a-aab9dce003a8",
+        "createdAt": "2025-06-14T11:04:33.388Z",
+        "updatedAt": "2025-06-14T11:04:33.388Z",
+        "gameserverId": "54a249af-d921-4ab4-a82b-75fd7f00408a",
+        "name": "Spider",
+        "code": "spider",
+        "description": "A large arachnid",
+        "type": "hostile",
+        "metadata": null
+      },
+      {
+        "id": "323fb88c-7df1-4072-b392-4f5c8838348a",
+        "createdAt": "2025-06-14T11:04:33.372Z",
+        "updatedAt": "2025-06-14T11:04:33.372Z",
+        "gameserverId": "0b7c64fd-118a-47b9-ae30-580cc26d14c4",
+        "name": "Spider",
+        "code": "spider",
+        "description": "A large arachnid",
+        "type": "hostile",
+        "metadata": null
+      },
+      {
+        "id": "d6a0fd51-6296-4542-9315-58add9370565",
+        "createdAt": "2025-06-14T11:04:33.388Z",
+        "updatedAt": "2025-06-14T11:04:33.388Z",
+        "gameserverId": "54a249af-d921-4ab4-a82b-75fd7f00408a",
+        "name": "Villager",
+        "code": "villager",
+        "description": "A peaceful NPC that trades items",
+        "type": "friendly",
+        "metadata": {
+          "canTrade": true,
+          "profession": "merchant"
+        }
+      },
+      {
+        "id": "4d679e03-a180-4071-9d74-cdd761291683",
+        "createdAt": "2025-06-14T11:04:33.372Z",
+        "updatedAt": "2025-06-14T11:04:33.372Z",
+        "gameserverId": "0b7c64fd-118a-47b9-ae30-580cc26d14c4",
+        "name": "Villager",
+        "code": "villager",
+        "description": "A peaceful NPC that trades items",
+        "type": "friendly",
+        "metadata": {
+          "canTrade": true,
+          "profession": "merchant"
+        }
+      },
+      {
+        "id": "f859fab9-46b2-4746-a53b-38716d31aab5",
+        "createdAt": "2025-06-14T11:04:33.372Z",
+        "updatedAt": "2025-06-14T11:04:33.372Z",
+        "gameserverId": "0b7c64fd-118a-47b9-ae30-580cc26d14c4",
+        "name": "Wolf",
+        "code": "wolf",
+        "description": "A wild canine that can be tamed",
+        "type": "neutral",
+        "metadata": null
+      },
+      {
+        "id": "fab03f01-8430-4cf2-b92e-28f26481f1d7",
+        "createdAt": "2025-06-14T11:04:33.388Z",
+        "updatedAt": "2025-06-14T11:04:33.388Z",
+        "gameserverId": "54a249af-d921-4ab4-a82b-75fd7f00408a",
+        "name": "Wolf",
+        "code": "wolf",
+        "description": "A wild canine that can be tamed",
+        "type": "neutral",
+        "metadata": null
+      },
+      {
+        "id": "c79c69d7-d4d4-4e48-a55c-eef03f637351",
+        "createdAt": "2025-06-14T11:04:33.388Z",
+        "updatedAt": "2025-06-14T11:04:33.388Z",
+        "gameserverId": "54a249af-d921-4ab4-a82b-75fd7f00408a",
+        "name": "Zombie",
+        "code": "zombie",
+        "description": "A shambling undead creature",
+        "type": "hostile",
+        "metadata": null
+      },
+      {
+        "id": "6c4df8a0-7ba2-4c70-8482-f60b3e023b15",
+        "createdAt": "2025-06-14T11:04:33.372Z",
+        "updatedAt": "2025-06-14T11:04:33.372Z",
+        "gameserverId": "0b7c64fd-118a-47b9-ae30-580cc26d14c4",
+        "name": "Zombie",
+        "code": "zombie",
+        "description": "A shambling undead creature",
+        "type": "hostile",
+        "metadata": null
+      }
+    ]
+  },
+  "status": 200,
+  "test": {
+    "group": "EntityController",
+    "snapshot": true,
+    "name": "Search entities across multiple gameservers",
+    "filteredFields": [
+      "id",
+      "createdAt",
+      "gameserverId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

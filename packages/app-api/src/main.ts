@@ -29,6 +29,7 @@ import { CronJobWorker } from './workers/cronjobWorker.js';
 import { CommandWorker } from './workers/commandWorker.js';
 import { PlayerOnGameServerController } from './controllers/PlayerOnGameserverController.js';
 import { ItemController } from './controllers/ItemController.js';
+import { EntityController } from './controllers/EntityController.js';
 import { PlayerSyncWorker } from './workers/playerSyncWorker.js';
 import { CSMMImportWorker } from './workers/csmmImportWorker.js';
 import { AxiosError } from 'axios';
@@ -65,6 +66,7 @@ export const server = new HTTP(
       EventController,
       PlayerOnGameServerController,
       ItemController,
+      EntityController,
       StatsController,
       ShopListingController,
       ShopOrderController,

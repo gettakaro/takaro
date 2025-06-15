@@ -1,0 +1,66 @@
+{
+  "body": {
+    "meta": {
+      "page": 0,
+      "limit": 100,
+      "total": 3
+    },
+    "data": [
+      {
+        "id": "71a3fee9-c5f2-4fe2-a82a-2a42d501cebe",
+        "createdAt": "2025-06-14T11:04:59.993Z",
+        "updatedAt": "2025-06-14T11:04:59.993Z",
+        "gameserverId": "a8ad8b8f-cde3-4782-86c0-6577f86532ff",
+        "name": "Creeper",
+        "code": "creeper",
+        "description": "An explosive green creature",
+        "type": "hostile",
+        "metadata": {
+          "range": 3,
+          "explosive": true
+        }
+      },
+      {
+        "id": "b9957ba8-bef4-4730-926f-2ff27b0c6ad4",
+        "createdAt": "2025-06-14T11:04:59.993Z",
+        "updatedAt": "2025-06-14T11:04:59.993Z",
+        "gameserverId": "a8ad8b8f-cde3-4782-86c0-6577f86532ff",
+        "name": "Horse",
+        "code": "horse",
+        "description": "A rideable animal",
+        "type": "friendly",
+        "metadata": {
+          "speed": "fast",
+          "rideable": true
+        }
+      },
+      {
+        "id": "4f7b74d5-3d4f-4410-84ce-f7b33ff481ff",
+        "createdAt": "2025-06-14T11:04:59.993Z",
+        "updatedAt": "2025-06-14T11:04:59.993Z",
+        "gameserverId": "a8ad8b8f-cde3-4782-86c0-6577f86532ff",
+        "name": "Villager",
+        "code": "villager",
+        "description": "A peaceful NPC that trades items",
+        "type": "friendly",
+        "metadata": {
+          "canTrade": true,
+          "profession": "merchant"
+        }
+      }
+    ]
+  },
+  "status": 200,
+  "test": {
+    "group": "EntityController",
+    "snapshot": true,
+    "name": "Verify entities with metadata are handled correctly",
+    "filteredFields": [
+      "id",
+      "createdAt",
+      "gameserverId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

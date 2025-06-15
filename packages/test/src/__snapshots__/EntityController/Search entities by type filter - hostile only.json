@@ -1,0 +1,71 @@
+{
+  "body": {
+    "meta": {
+      "page": 0,
+      "limit": 100,
+      "total": 4
+    },
+    "data": [
+      {
+        "id": "921936de-7397-4292-b615-2c5f639f56b4",
+        "createdAt": "2025-06-14T11:04:16.830Z",
+        "updatedAt": "2025-06-14T11:04:16.830Z",
+        "gameserverId": "6f73dd99-9032-42f8-8d1f-6e0dc271a8b8",
+        "name": "Creeper",
+        "code": "creeper",
+        "description": "An explosive green creature",
+        "type": "hostile",
+        "metadata": {
+          "range": 3,
+          "explosive": true
+        }
+      },
+      {
+        "id": "89583dec-04f8-4de6-a8c4-1589ab2d57ad",
+        "createdAt": "2025-06-14T11:04:16.830Z",
+        "updatedAt": "2025-06-14T11:04:16.830Z",
+        "gameserverId": "6f73dd99-9032-42f8-8d1f-6e0dc271a8b8",
+        "name": "Skeleton",
+        "code": "skeleton",
+        "description": "An undead archer",
+        "type": "hostile",
+        "metadata": null
+      },
+      {
+        "id": "f611dccd-845d-4912-bd44-941de0ddf5d5",
+        "createdAt": "2025-06-14T11:04:16.830Z",
+        "updatedAt": "2025-06-14T11:04:16.830Z",
+        "gameserverId": "6f73dd99-9032-42f8-8d1f-6e0dc271a8b8",
+        "name": "Spider",
+        "code": "spider",
+        "description": "A large arachnid",
+        "type": "hostile",
+        "metadata": null
+      },
+      {
+        "id": "5530359c-7171-4088-add2-28daff5c9f0a",
+        "createdAt": "2025-06-14T11:04:16.830Z",
+        "updatedAt": "2025-06-14T11:04:16.830Z",
+        "gameserverId": "6f73dd99-9032-42f8-8d1f-6e0dc271a8b8",
+        "name": "Zombie",
+        "code": "zombie",
+        "description": "A shambling undead creature",
+        "type": "hostile",
+        "metadata": null
+      }
+    ]
+  },
+  "status": 200,
+  "test": {
+    "group": "EntityController",
+    "snapshot": true,
+    "name": "Search entities by type filter - hostile only",
+    "filteredFields": [
+      "id",
+      "createdAt",
+      "gameserverId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}
