@@ -307,6 +307,9 @@ const tests = [
 
       expect(existingPermission.id).to.equal(newPermission.id);
 
+      // Sort permissions by permission name to ensure deterministic order for snapshot
+      versionRes.data.data.permissions.sort((a, b) => a.permission.localeCompare(b.permission));
+
       return versionRes;
     },
     filteredFields: ['moduleId', 'moduleVersionId'],
