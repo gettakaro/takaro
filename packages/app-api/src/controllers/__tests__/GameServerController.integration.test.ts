@@ -155,14 +155,9 @@ const tests = [
       expect(newRegistrationToken).to.not.equal(oldRegistrationToken);
 
       // Verify that server connection fails with the old token
-      try {
-        await this.client.gameserver.gameServerControllerTestReachabilityForId(this.setupData.gameServer1.id);
-        throw new Error('Should have thrown');
-      } catch (error) {
-        if (!isAxiosError(error)) throw error;
-        expect(error.response?.status).to.equal(400);
-        expect(error.response?.data.meta.error.message).to.equal('Game server is not connected');
-      }
+      const res = await this.client.gameserver.gameServerControllerTestReachabilityForId(this.setupData.gameServer1.id);
+      expect(res.data.data.connectable).to.equal(false);
+      expect(res.data.data.reason).to.equal('Game server is not connected');
     },
   }),
 ];
