@@ -130,7 +130,7 @@ export class MockGameserver implements IMockGameServer {
       name: player.name,
       ip: player.ip,
       steamId: player.steamId,
-      ping: faker.number.int({ max: 99 }),
+      ping: player.ping ? parseInt(player.ping, 10) : faker.number.int({ max: 99 }),
     });
   }
 
@@ -152,7 +152,7 @@ export class MockGameserver implements IMockGameServer {
             name: player.name,
             ip: player.ip,
             steamId: player.steamId,
-            ping: faker.number.int({ max: 99 }),
+            ping: player.ping ? parseInt(player.ping, 10) : faker.number.int({ max: 99 }),
           }),
       ),
     );
@@ -253,6 +253,51 @@ export class MockGameserver implements IMockGameServer {
       );
       output.rawResult = `Triggered kill for player ${playerId}`;
       output.success = true;
+    }
+
+    if (rawCommand.startsWith('setPlayerPing')) {
+      const [_, steamId, pingValue] = rawCommand.split(' ');
+      const allPlayerKeys = await (await this.redis).keys(this.getRedisKey('player:*'));
+      let playerFound = false;
+
+      for (const playerKey of allPlayerKeys) {
+        const player = await (await this.redis).hGetAll(playerKey);
+        if (player.steamId === steamId) {
+          await (await this.redis).hSet(playerKey, 'ping', pingValue);
+          output.rawResult = `Set ping for player ${steamId} to ${pingValue}`;
+          output.success = true;
+          playerFound = true;
+          break;
+        }
+      }
+
+      if (!playerFound) {
+        output.rawResult = `Player with steamId ${steamId} not found`;
+        output.success = false;
+      }
+    }
+
+    if (rawCommand.startsWith('connectPlayer')) {
+      const [_, steamId] = rawCommand.split(' ');
+      const allPlayerKeys = await (await this.redis).keys(this.getRedisKey('player:*'));
+      let playerFound = false;
+
+      for (const playerKey of allPlayerKeys) {
+        const player = await (await this.redis).hGetAll(playerKey);
+        if (player.steamId === steamId) {
+          const playerRef = new IPlayerReferenceDTO({ gameId: player.gameId });
+          await this.setPlayerOnlineStatus(playerRef, true);
+          output.rawResult = `Connected player ${steamId}`;
+          output.success = true;
+          playerFound = true;
+          break;
+        }
+      }
+
+      if (!playerFound) {
+        output.rawResult = `Player with steamId ${steamId} not found`;
+        output.success = false;
+      }
     }
 
     await this.sendLog(`${output.success ? '🟢' : '🔴'} Command executed: ${rawCommand}`);
