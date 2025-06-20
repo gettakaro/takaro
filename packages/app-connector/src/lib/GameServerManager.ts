@@ -279,7 +279,7 @@ class GameServerManager {
     this.gameServerDomainMap.set(gameServerId, domainId);
     const gameServer = await this.getGameServer(gameServerId);
 
-    if (!gameServer.reachable) {
+    if (!gameServer.reachable && gameServer.type !== GameServerTypesOutputDTOTypeEnum.Generic) {
       this.log.warn(`GameServer ${gameServerId} is not reachable, skipping...`);
       return;
     }

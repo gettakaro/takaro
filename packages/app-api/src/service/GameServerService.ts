@@ -162,7 +162,7 @@ export class GameServerService extends TakaroService<
     if (item.type === GAME_SERVER_TYPE.GENERIC) {
       isReachable = new TestReachabilityOutputDTO({
         connectable: true,
-        reason: 'Generic gameservers are always reachable',
+        reason: 'Generic gameservers initiated this connection, so they are reachable',
       });
       if (!item.identityToken) throw new errors.BadRequestError('Identity token is required for generic gameservers');
     } else {
