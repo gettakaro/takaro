@@ -12,6 +12,7 @@ import {
   MapInfoDTO,
   IEntityDTO,
   ILocationDTO,
+  EntityType,
 } from '@takaro/gameserver';
 import {
   EventLogLine,
@@ -500,7 +501,83 @@ export class MockGameserver implements IMockGameServer {
   }
 
   async listEntities(): Promise<IEntityDTO[]> {
-    return [];
+    return [
+      new IEntityDTO({
+        code: 'zombie',
+        name: 'Zombie',
+        description: 'A shambling undead creature',
+        type: EntityType.HOSTILE,
+      }),
+      new IEntityDTO({
+        code: 'skeleton',
+        name: 'Skeleton',
+        description: 'An undead archer',
+        type: EntityType.HOSTILE,
+      }),
+      new IEntityDTO({
+        code: 'spider',
+        name: 'Spider',
+        description: 'A large arachnid',
+        type: EntityType.HOSTILE,
+      }),
+      new IEntityDTO({
+        code: 'cow',
+        name: 'Cow',
+        description: 'A peaceful farm animal',
+        type: EntityType.FRIENDLY,
+      }),
+      new IEntityDTO({
+        code: 'pig',
+        name: 'Pig',
+        description: 'A pink farm animal',
+        type: EntityType.FRIENDLY,
+      }),
+      new IEntityDTO({
+        code: 'sheep',
+        name: 'Sheep',
+        description: 'A woolly farm animal',
+        type: EntityType.FRIENDLY,
+      }),
+      new IEntityDTO({
+        code: 'chicken',
+        name: 'Chicken',
+        description: 'A small farm bird',
+        type: EntityType.FRIENDLY,
+      }),
+      new IEntityDTO({
+        code: 'wolf',
+        name: 'Wolf',
+        description: 'A wild canine that can be tamed',
+        type: EntityType.NEUTRAL,
+      }),
+      new IEntityDTO({
+        code: 'enderman',
+        name: 'Enderman',
+        description: 'A tall dark creature from another dimension',
+        type: EntityType.NEUTRAL,
+      }),
+      new IEntityDTO({
+        code: 'villager',
+        name: 'Villager',
+        description: 'A peaceful NPC that trades items',
+        type: EntityType.FRIENDLY,
+        metadata: { profession: 'merchant', canTrade: true },
+      }),
+      new IEntityDTO({
+        code: 'creeper',
+        name: 'Creeper',
+        description: 'An explosive green creature',
+        type: EntityType.HOSTILE,
+        metadata: { explosive: true, range: 3 },
+      }),
+      new IEntityDTO({
+        code: 'horse',
+        name: 'Horse',
+        description: 'A rideable animal',
+        type: EntityType.FRIENDLY,
+        metadata: { rideable: true, speed: 'fast' },
+      }),
+    ];
   }
 
   async listLocations(): Promise<ILocationDTO[]> {
