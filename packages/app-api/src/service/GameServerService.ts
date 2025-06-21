@@ -188,11 +188,33 @@ export class GameServerService extends TakaroService<
       });
     }
 
-    queueService.queues.system.queue.add({
-      domainId: this.domainId,
-      taskType: SystemTaskType.SYNC_ITEMS,
-      gameServerId: createdServer.id,
-    });
+    // Trigger sync jobs for items, entities, and bans
+    await Promise.all([
+      queueService.queues.system.queue.add(
+        {
+          domainId: this.domainId,
+          taskType: SystemTaskType.SYNC_ITEMS,
+          gameServerId: createdServer.id,
+        },
+        { delay: 1000 },
+      ),
+      queueService.queues.system.queue.add(
+        {
+          domainId: this.domainId,
+          taskType: SystemTaskType.SYNC_ENTITIES,
+          gameServerId: createdServer.id,
+        },
+        { delay: 1000 },
+      ),
+      queueService.queues.system.queue.add(
+        {
+          domainId: this.domainId,
+          taskType: SystemTaskType.SYNC_BANS,
+          gameServerId: createdServer.id,
+        },
+        { delay: 1000 },
+      ),
+    ]);
 
     if (isReachable.connectable && createdServer.type !== GAME_SERVER_TYPE.GENERIC) {
       await handlePlayerSync(createdServer.id, this.domainId);

@@ -3,6 +3,7 @@ import { EventChatMessage, GameServerCreateDTOTypeEnum, GameServerOutputDTO, isA
 import { describe } from 'node:test';
 import { HookEvents } from '@takaro/modules';
 import { randomUUID } from 'crypto';
+import { getMockServer } from '@takaro/mock-gameserver';
 
 const group = 'GameServerController';
 
@@ -158,6 +159,61 @@ const tests = [
       const res = await this.client.gameserver.gameServerControllerTestReachabilityForId(this.setupData.gameServer1.id);
       expect(res.data.data.connectable).to.equal(false);
       expect(res.data.data.reason).to.equal('Game server is not connected');
+    },
+  }),
+  new IntegrationTest({
+    group,
+    snapshot: false,
+    name: 'Automatic sync jobs are triggered when server registers',
+    test: async function () {
+      if (!this.domainRegistrationToken) throw new Error('Domain registration token is not set. Invalid setup?');
+      const gameServerIdentityToken = randomUUID();
+
+      // Create a new mock server that will register automatically
+      const mockServer = await getMockServer({
+        mockserver: { registrationToken: this.domainRegistrationToken, identityToken: gameServerIdentityToken },
+      });
+
+      // Wait for the server to register and sync jobs to complete
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+
+      // Find the registered server
+      const gameServerRes = (
+        await this.client.gameserver.gameServerControllerSearch({
+          filters: { identityToken: [gameServerIdentityToken] },
+        })
+      ).data.data;
+
+      expect(gameServerRes).to.have.lengthOf(1);
+      const gameServer = gameServerRes[0];
+
+      // Query items - should have been automatically synced
+      const itemsRes = await this.client.item.itemControllerSearch({
+        filters: { gameserverId: [gameServer.id] },
+      });
+
+      // Verify that items were automatically synced
+      expect(itemsRes.data.data.length).to.be.greaterThan(0);
+
+      // Verify we have the expected mock items
+      const itemCodes = itemsRes.data.data.map((item) => item.code);
+      expect(itemCodes).to.include('wood');
+      expect(itemCodes).to.include('stone');
+
+      // Query entities - should have been automatically synced
+      const entitiesRes = await this.client.entity.entityControllerSearch({
+        filters: { gameserverId: [gameServer.id] },
+      });
+
+      // Verify that entities were automatically synced
+      expect(entitiesRes.data.data.length).to.be.greaterThan(0);
+
+      // Verify we have some expected mock entities
+      const entityCodes = entitiesRes.data.data.map((entity) => entity.code);
+      expect(entityCodes).to.include('zombie');
+      expect(entityCodes).to.include('cow');
+
+      await mockServer.shutdown();
     },
   }),
 ];
