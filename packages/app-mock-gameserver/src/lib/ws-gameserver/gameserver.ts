@@ -28,6 +28,8 @@ import {
   TestReachabilityOutputDTO,
 } from '@takaro/gameserver';
 import { GameDataHandler } from './DataHandler.js';
+import { ActivitySimulator } from './ActivitySimulator.js';
+import { SimulationConfig, EVENT_TYPE_NAMES } from './SimulationState.js';
 import { PartialDeep } from 'type-fest/index.js';
 import { readFile } from 'fs/promises';
 import path from 'path';
@@ -44,6 +46,7 @@ export class GameServer implements IGameServer {
   private wsClient;
   private log = logger('GameServer');
   private dataHandler: GameDataHandler;
+  private activitySimulator: ActivitySimulator;
   private serverId;
   private tickInterval: NodeJS.Timeout;
 
@@ -83,6 +86,11 @@ export class GameServer implements IGameServer {
     this.serverId = this.config.mockserver.identityToken;
     this.wsClient = new WSClient(this.config.ws.url);
     this.dataHandler = new GameDataHandler(this.serverId);
+    this.activitySimulator = new ActivitySimulator({
+      dataHandler: this.dataHandler,
+      eventEmitter: async (type: string, data: any) => this.sendEvent(type as GameEventTypes, data),
+      serverLogger: (message: string) => this.sendLog(message),
+    });
     this.tickInterval = setInterval(() => this.handleGameServerTick(), 10000);
   }
 
@@ -454,6 +462,186 @@ export class GameServer implements IGameServer {
           }
         } catch (error) {
           output.rawResult = `Error updating player data: ${error instanceof Error ? error.message : 'Unknown error'}`;
+          output.success = false;
+        }
+      }
+
+      if (rawCommand === 'startSimulation') {
+        try {
+          if (this.activitySimulator.isActive()) {
+            output.rawResult = 'Activity simulation is already running';
+            output.success = false;
+          } else {
+            await this.activitySimulator.start();
+            output.rawResult = 'Activity simulation started successfully';
+            output.success = true;
+          }
+        } catch (error) {
+          output.rawResult = `Error starting simulation: ${error instanceof Error ? error.message : 'Unknown error'}`;
+          output.success = false;
+        }
+      }
+
+      if (rawCommand === 'stopSimulation') {
+        try {
+          if (!this.activitySimulator.isActive()) {
+            output.rawResult = 'Activity simulation is not running';
+            output.success = false;
+          } else {
+            await this.activitySimulator.stop();
+            output.rawResult = 'Activity simulation stopped successfully';
+            output.success = true;
+          }
+        } catch (error) {
+          output.rawResult = `Error stopping simulation: ${error instanceof Error ? error.message : 'Unknown error'}`;
+          output.success = false;
+        }
+      }
+
+      if (rawCommand === 'simulationStatus') {
+        try {
+          const isActive = this.activitySimulator.isActive();
+          const config = this.activitySimulator.getConfig();
+          const frequencies = this.activitySimulator.getFrequencies();
+
+          const eventDetails = Object.entries(config)
+            .map(([key, eventConfig]) => {
+              const freq = frequencies[key as keyof typeof frequencies];
+              return `${key}: ${freq}% (${eventConfig.enabled ? 'enabled' : 'disabled'})`;
+            })
+            .join(', ');
+
+          output.rawResult = `Simulation ${isActive ? 'ACTIVE' : 'INACTIVE'}. Events: ${eventDetails}`;
+          output.success = true;
+        } catch (error) {
+          output.rawResult = `Error getting simulation status: ${error instanceof Error ? error.message : 'Unknown error'}`;
+          output.success = false;
+        }
+      }
+
+      if (rawCommand.startsWith('setSimulationFrequency')) {
+        try {
+          const parts = rawCommand.split(' ');
+          if (parts.length !== 2) {
+            output.rawResult = 'Usage: setSimulationFrequency <0-100>';
+            output.success = false;
+          } else {
+            const frequency = parseInt(parts[1], 10);
+            if (isNaN(frequency) || frequency < 0 || frequency > 100) {
+              output.rawResult = 'Invalid frequency. Must be a number between 0 and 100.';
+              output.success = false;
+            } else {
+              this.activitySimulator.setGlobalFrequency(frequency);
+              output.rawResult = `Global simulation frequency set to ${frequency}%`;
+              output.success = true;
+            }
+          }
+        } catch (error) {
+          output.rawResult = `Error setting simulation frequency: ${error instanceof Error ? error.message : 'Unknown error'}`;
+          output.success = false;
+        }
+      }
+
+      if (rawCommand.startsWith('setSimulationEventFrequency')) {
+        try {
+          const parts = rawCommand.split(' ');
+          if (parts.length !== 3) {
+            output.rawResult = 'Usage: setSimulationEventFrequency <eventType> <0-100>';
+            output.success = false;
+          } else {
+            const eventType = parts[1];
+            const frequency = parseInt(parts[2], 10);
+
+            if (isNaN(frequency) || frequency < 0 || frequency > 100) {
+              output.rawResult = 'Invalid frequency. Must be a number between 0 and 100.';
+              output.success = false;
+            } else {
+              // Use imported event type names mapping
+              const internalEventType = EVENT_TYPE_NAMES[eventType] || eventType;
+
+              if (
+                !EVENT_TYPE_NAMES[eventType] &&
+                !Object.keys(this.activitySimulator.getConfig()).includes(eventType)
+              ) {
+                output.rawResult = `Unknown event type: ${eventType}. Valid types: ${Object.keys(EVENT_TYPE_NAMES).join(', ')}`;
+                output.success = false;
+              } else {
+                this.activitySimulator.setEventFrequency(internalEventType as keyof SimulationConfig, frequency);
+                output.rawResult = `${eventType} frequency set to ${frequency}%`;
+                output.success = true;
+              }
+            }
+          }
+        } catch (error) {
+          output.rawResult = `Error setting event frequency: ${error instanceof Error ? error.message : 'Unknown error'}`;
+          output.success = false;
+        }
+      }
+
+      if (rawCommand === 'getSimulationFrequency') {
+        try {
+          const frequencies = this.activitySimulator.getFrequencies();
+          const isActive = this.activitySimulator.isActive();
+
+          let result = `Simulation Frequencies (${isActive ? 'ACTIVE' : 'INACTIVE'}):\n`;
+
+          // Map internal names to user-friendly names
+          const displayNames: Record<string, string> = {
+            chatMessage: 'Chat',
+            playerMovement: 'Movement',
+            connection: 'Connection',
+            death: 'Death',
+            kill: 'Kill',
+            itemInteraction: 'Items',
+          };
+
+          Object.entries(frequencies).forEach(([key, value]) => {
+            const displayName = displayNames[key] || key;
+            result += `- ${displayName}: ${value}%\n`;
+          });
+
+          output.rawResult = result.trim();
+          output.success = true;
+        } catch (error) {
+          output.rawResult = `Error getting simulation frequencies: ${error instanceof Error ? error.message : 'Unknown error'}`;
+          output.success = false;
+        }
+      }
+
+      if (rawCommand === 'simulationDebug') {
+        try {
+          const isActive = this.activitySimulator.isActive();
+          const config = this.activitySimulator.getConfig();
+          const onlinePlayers = await this.dataHandler.getOnlinePlayers();
+          const allPlayers = await this.dataHandler.getAllPlayers();
+
+          let result = '🔍 Simulation Debug Information\\n';
+          result += `Status: ${isActive ? 'ACTIVE ✅' : 'INACTIVE ❌'}\\n`;
+          result += `Online Players: ${onlinePlayers.length}\\n`;
+          result += `Total Players: ${allPlayers.length}\\n\\n`;
+
+          result += 'Event Intervals (at current frequencies):\\n';
+
+          Object.entries(config).forEach(([eventType, eventConfig]) => {
+            const intervals = this.activitySimulator.calculateIntervals(
+              eventConfig.frequency,
+              eventType as keyof SimulationConfig,
+            );
+            const minSec = Math.round(intervals.minInterval / 1000);
+            const maxSec = Math.round(intervals.maxInterval / 1000);
+            const status = eventConfig.enabled ? '✅' : '❌';
+
+            result += `- ${eventType}: ${eventConfig.frequency}% ${status} (${minSec}-${maxSec}s)\\n`;
+          });
+
+          if (onlinePlayers.length === 0) {
+            result += "\\n⚠️ Warning: No online players - most events won't fire";
+          }
+
+          output.rawResult = result.trim();
+          output.success = true;
+        } catch (error) {
+          output.rawResult = `Error getting debug info: ${error instanceof Error ? error.message : 'Unknown error'}`;
           output.success = false;
         }
       }
