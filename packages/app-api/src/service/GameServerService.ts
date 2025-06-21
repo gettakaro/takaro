@@ -36,6 +36,7 @@ import _Ajv from 'ajv';
 import { PlayerService } from './Player/index.js';
 import { PlayerOnGameServerService, PlayerOnGameServerUpdateDTO } from './PlayerOnGameserverService.js';
 import { ItemCreateDTO, ItemsService } from './ItemsService.js';
+import { EntityCreateDTO, EntitiesService } from './EntitiesService.js';
 import { randomUUID } from 'crypto';
 import { EVENT_TYPES, EventCreateDTO, EventService } from './EventService.js';
 import { gameServerLatency } from '../lib/metrics.js';
@@ -162,7 +163,7 @@ export class GameServerService extends TakaroService<
     if (item.type === GAME_SERVER_TYPE.GENERIC) {
       isReachable = new TestReachabilityOutputDTO({
         connectable: true,
-        reason: 'Generic gameservers are always reachable',
+        reason: 'Generic gameservers initiated this connection, so they are reachable',
       });
       if (!item.identityToken) throw new errors.BadRequestError('Identity token is required for generic gameservers');
     } else {
@@ -187,11 +188,33 @@ export class GameServerService extends TakaroService<
       });
     }
 
-    queueService.queues.system.queue.add({
-      domainId: this.domainId,
-      taskType: SystemTaskType.SYNC_ITEMS,
-      gameServerId: createdServer.id,
-    });
+    // Trigger sync jobs for items, entities, and bans
+    await Promise.all([
+      queueService.queues.system.queue.add(
+        {
+          domainId: this.domainId,
+          taskType: SystemTaskType.SYNC_ITEMS,
+          gameServerId: createdServer.id,
+        },
+        { delay: 1000 },
+      ),
+      queueService.queues.system.queue.add(
+        {
+          domainId: this.domainId,
+          taskType: SystemTaskType.SYNC_ENTITIES,
+          gameServerId: createdServer.id,
+        },
+        { delay: 1000 },
+      ),
+      queueService.queues.system.queue.add(
+        {
+          domainId: this.domainId,
+          taskType: SystemTaskType.SYNC_BANS,
+          gameServerId: createdServer.id,
+        },
+        { delay: 1000 },
+      ),
+    ]);
 
     if (isReachable.connectable && createdServer.type !== GAME_SERVER_TYPE.GENERIC) {
       await handlePlayerSync(createdServer.id, this.domainId);
@@ -520,6 +543,27 @@ export class GameServerService extends TakaroService<
     );
 
     await itemsService.upsertMany(toInsert);
+  }
+
+  async syncEntities(gameServerId: string) {
+    const entitiesService = new EntitiesService(this.domainId);
+    const gameInstance = await this.getGame(gameServerId);
+    const entities = await gameInstance.listEntities();
+
+    const toInsert = await Promise.all(
+      entities.map((entity) => {
+        return new EntityCreateDTO({
+          name: entity.name,
+          code: entity.code,
+          description: entity.description,
+          type: entity.type,
+          metadata: entity.metadata,
+          gameserverId: gameServerId,
+        });
+      }),
+    );
+
+    await entitiesService.upsertMany(toInsert);
   }
 
   async syncInventories(gameServerId: string) {

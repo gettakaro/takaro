@@ -117,7 +117,7 @@ const main = pwTest.extend<IBaseFixtures>({
 
       // get versionId of the module
       const versionId = (await client.module.moduleControllerGetTags(mods.data.data[0].id)).data.data.find(
-        (smallVersion) => smallVersion.tag === '0.0.1',
+        (smallVersion) => smallVersion.tag !== 'latest',
       )?.id!;
 
       // Install utils module

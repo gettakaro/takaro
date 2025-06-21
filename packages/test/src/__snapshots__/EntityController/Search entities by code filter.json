@@ -1,0 +1,60 @@
+{
+  "body": {
+    "meta": {
+      "page": 0,
+      "limit": 100,
+      "total": 3
+    },
+    "data": [
+      {
+        "id": "2d473185-8a54-4f05-9215-2c1b0c7a3170",
+        "createdAt": "2025-06-14T11:04:29.198Z",
+        "updatedAt": "2025-06-14T11:04:29.198Z",
+        "gameserverId": "788a741b-2a3c-40c5-9397-ea3d25f2186e",
+        "name": "Cow",
+        "code": "cow",
+        "description": "A peaceful farm animal",
+        "type": "friendly",
+        "metadata": null
+      },
+      {
+        "id": "6b308522-9ba1-495b-bb6f-0bc7f83ca08c",
+        "createdAt": "2025-06-14T11:04:29.198Z",
+        "updatedAt": "2025-06-14T11:04:29.198Z",
+        "gameserverId": "788a741b-2a3c-40c5-9397-ea3d25f2186e",
+        "name": "Creeper",
+        "code": "creeper",
+        "description": "An explosive green creature",
+        "type": "hostile",
+        "metadata": {
+          "range": 3,
+          "explosive": true
+        }
+      },
+      {
+        "id": "203caeb5-3c87-453a-ade4-0b0b1d443e79",
+        "createdAt": "2025-06-14T11:04:29.198Z",
+        "updatedAt": "2025-06-14T11:04:29.198Z",
+        "gameserverId": "788a741b-2a3c-40c5-9397-ea3d25f2186e",
+        "name": "Zombie",
+        "code": "zombie",
+        "description": "A shambling undead creature",
+        "type": "hostile",
+        "metadata": null
+      }
+    ]
+  },
+  "status": 200,
+  "test": {
+    "group": "EntityController",
+    "snapshot": true,
+    "name": "Search entities by code filter",
+    "filteredFields": [
+      "id",
+      "createdAt",
+      "gameserverId"
+    ],
+    "expectedStatus": 200,
+    "standardEnvironment": true
+  }
+}

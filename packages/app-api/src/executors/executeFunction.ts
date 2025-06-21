@@ -252,6 +252,11 @@ export async function executeFunction(
         throw new errors.ConfigError(`Invalid execution mode: ${config.get('functions.executionMode')}`);
     }
 
+    // if result.success is not defined, assume failure
+    if (result.success === undefined) {
+      result.success = false;
+    }
+
     if (!result.logs) result.logs = [];
     const cleanLogs = result.logs.map((rawLog) => {
       let cleanMsg = rawLog.msg;

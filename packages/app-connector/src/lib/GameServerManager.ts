@@ -69,18 +69,35 @@ class GameServerManager {
    * @param registrationToken
    */
   async handleWsIdentify(identityToken: string, registrationToken: string, name?: string): Promise<string | null> {
+    this.log.info('Starting WS identification process', {
+      identityToken,
+      registrationToken: registrationToken.slice(0, 8) + '...', // Log partial token for debugging
+      name,
+    });
+
     let domain: DomainOutputDTO;
     try {
       domain = (await takaro.domain.domainControllerResolveRegistrationToken({ registrationToken })).data.data;
+      this.log.info('Registration token resolved to domain', {
+        domainId: domain.id,
+        domainName: domain.name,
+        identityToken,
+      });
     } catch (error) {
       if (isAxiosError(error) && error.response?.status === 404) {
-        this.log.warn(`No domain found for registrationToken ${registrationToken}`);
+        this.log.warn(`No domain found for registrationToken ${registrationToken.slice(0, 8)}...`, { identityToken });
         throw new errors.BadRequestError('Invalid registrationToken provided');
       }
+      this.log.error('Error resolving registration token', { error, identityToken });
       throw error;
     }
 
     const client = await getDomainClient(domain.id);
+    this.log.debug('Created domain client, searching for existing game servers', {
+      domainId: domain.id,
+      identityToken,
+    });
+
     // Find all 'generic' gameservers and see if any of them have the same identityToken
     const gameServers = (
       await client.gameserver.gameServerControllerSearch({
@@ -88,18 +105,35 @@ class GameServerManager {
       })
     ).data.data;
 
+    this.log.debug('Game server search completed', {
+      domainId: domain.id,
+      identityToken,
+      foundServers: gameServers.length,
+      serverIds: gameServers.map((s) => s.id),
+    });
+
     let existingGameServer: GameServerOutputDTO | null = null;
 
     for (const gameServer of gameServers) {
       if (gameServer.identityToken === identityToken) {
         existingGameServer = gameServer;
+        this.log.info('Found existing game server with matching identity token', {
+          domainId: domain.id,
+          identityToken,
+          gameServerId: gameServer.id,
+          gameServerName: gameServer.name,
+        });
         break;
       }
     }
 
     // Gameserver does not exist yet, let's register it
     if (!existingGameServer) {
-      this.log.info(`GameServer ${identityToken} does not exist, creating...`);
+      this.log.info('No existing game server found, creating new one', {
+        domainId: domain.id,
+        identityToken,
+        name: name || identityToken,
+      });
       if (!name) name = identityToken;
       existingGameServer = (
         await client.gameserver.gameServerControllerCreate({
@@ -109,9 +143,26 @@ class GameServerManager {
           identityToken,
         })
       ).data.data;
+      this.log.info('New game server created successfully', {
+        domainId: domain.id,
+        identityToken,
+        gameServerId: existingGameServer.id,
+        gameServerName: existingGameServer.name,
+      });
     }
 
+    this.log.info('WS identification completed, adding server to manager', {
+      domainId: domain.id,
+      identityToken,
+      gameServerId: existingGameServer.id,
+    });
     await this.add(domain.id, existingGameServer.id);
+
+    this.log.info('Game server successfully added to manager', {
+      domainId: domain.id,
+      identityToken,
+      gameServerId: existingGameServer.id,
+    });
     return existingGameServer.id;
   }
 
@@ -228,7 +279,7 @@ class GameServerManager {
     this.gameServerDomainMap.set(gameServerId, domainId);
     const gameServer = await this.getGameServer(gameServerId);
 
-    if (!gameServer.reachable) {
+    if (!gameServer.reachable && gameServer.type !== GameServerTypesOutputDTOTypeEnum.Generic) {
       this.log.warn(`GameServer ${gameServerId} is not reachable, skipping...`);
       return;
     }
