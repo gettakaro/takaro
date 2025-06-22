@@ -53,6 +53,76 @@ export class EventGenerator {
     'back',
     'lag?',
 
+    // Simple commands (no parameters)
+    '/ping',
+    '/help',
+    '/balance',
+    '/topcurrency',
+    '/tplist',
+    '/viewtickets',
+    '/nextdraw',
+    '/daily',
+    '/streak',
+    '/topstreak',
+    '/gimme',
+    '/claim',
+    '/confirmtransfer',
+
+    // Common command typos
+    '/balacne',
+    '/trnasfer',
+    '/hlep',
+    '/dayli',
+    '/gime',
+
+    // Partial commands
+    '/tp',
+    '/tra',
+    '/sho',
+    '/buy',
+
+    // Teleport commands with common location names
+    '/tp home',
+    '/tp base',
+    '/tp spawn',
+    '/tp farm',
+    '/tp mine',
+    '/tp shop',
+    '/tp friend',
+    '/settp home',
+    '/settp base',
+    '/settp farm',
+    '/settp mine',
+    '/settp secret',
+    '/deletetp old',
+    '/deletetp temp',
+    '/setpublic spawn',
+    '/setpublic shop',
+    '/setprivate base',
+    '/setprivate home',
+
+    // Economy commands with realistic amounts
+    '/transfer bob 50',
+    '/transfer alice 100',
+    '/transfer friend 25',
+    '/transfer teammate 500',
+    '/transfer newbie 10',
+    '/grantcurrency newplayer 1000',
+    '/revokecurrency hacker 99999',
+
+    // Shop commands
+    '/shop',
+    '/shop 1',
+    '/shop 2',
+    '/shop 1 3',
+    '/shop 1 3 buy',
+    '/shop 2 1 buy',
+
+    // Lottery commands
+    '/buyticket 1',
+    '/buyticket 5',
+    '/buyticket 10',
+
     // Short (4-7 words)
     'Hello everyone!',
     'Anyone want to team up?',
