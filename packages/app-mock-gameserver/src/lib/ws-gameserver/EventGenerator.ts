@@ -11,6 +11,7 @@ import {
   ChatChannel,
 } from '@takaro/modules';
 import { logger } from '@takaro/util';
+import { GameDataHandler } from './DataHandler.js';
 
 interface ConnectionEventResult {
   type: string;
@@ -19,6 +20,11 @@ interface ConnectionEventResult {
 
 export class EventGenerator {
   private log = logger('EventGenerator');
+  private dataHandler?: GameDataHandler;
+
+  constructor(dataHandler?: GameDataHandler) {
+    this.dataHandler = dataHandler;
+  }
 
   // Predefined content arrays
   private static readonly CHAT_MESSAGES = [
@@ -242,16 +248,7 @@ export class EventGenerator {
     'map',
   ];
 
-  private static readonly ACTIONS = [
-    'picked up',
-    'dropped',
-    'crafted',
-    'found',
-    'collected',
-    'discovered',
-    'obtained',
-    'acquired',
-  ];
+  private static readonly ACTIONS = ['picked up', 'dropped'];
 
   /**
    * Generate a random chat message event
@@ -382,15 +379,43 @@ export class EventGenerator {
   }
 
   /**
-   * Generate a random item interaction log event
+   * Generate a random item interaction log event and apply inventory changes
    */
-  generateItemInteraction(players: Array<{ player: IGamePlayer; meta: any }>): EventLogLine {
+  async generateItemInteraction(players: Array<{ player: IGamePlayer; meta: any }>): Promise<EventLogLine> {
     const player = this.getRandomPlayer(players);
     const item = this.getRandomElement(EventGenerator.ITEMS);
     const action = this.getRandomElement(EventGenerator.ACTIONS);
-    const quantity = Math.floor(Math.random() * 10) + 1;
+    const quantity = Math.floor(Math.random() * 3) + 1; // 1-3 items for more reasonable quantities
 
-    const message = `${player.player.name} ${action} ${quantity}x ${item}`;
+    let message: string;
+
+    if (this.dataHandler) {
+      try {
+        if (action === 'picked up') {
+          // Add item to inventory
+          await this.dataHandler.addItemToInventory(player.player.gameId, item, quantity);
+          message = `${player.player.name} ${action} ${quantity}x ${item}`;
+        } else if (action === 'dropped') {
+          // Try to remove item from inventory
+          const success = await this.dataHandler.removeItemFromInventory(player.player.gameId, item, quantity);
+          if (success) {
+            message = `${player.player.name} ${action} ${quantity}x ${item}`;
+          } else {
+            // Fallback to pickup if they don't have the item
+            await this.dataHandler.addItemToInventory(player.player.gameId, item, quantity);
+            message = `${player.player.name} picked up ${quantity}x ${item}`;
+          }
+        } else {
+          message = `${player.player.name} ${action} ${quantity}x ${item}`;
+        }
+      } catch (error) {
+        this.log.error('Error applying inventory changes:', error);
+        message = `${player.player.name} ${action} ${quantity}x ${item} (inventory update failed)`;
+      }
+    } else {
+      // Fallback when no data handler available
+      message = `${player.player.name} ${action} ${quantity}x ${item}`;
+    }
 
     return new EventLogLine({
       msg: message,

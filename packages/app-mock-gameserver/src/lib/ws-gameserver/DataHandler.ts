@@ -1,6 +1,6 @@
 import { Redis, RedisClient } from '@takaro/db';
 import { IGamePlayer } from '@takaro/modules';
-import { BanDTO, IPlayerReferenceDTO } from '@takaro/gameserver';
+import { BanDTO, IPlayerReferenceDTO, IItemDTO } from '@takaro/gameserver';
 import { errors, logger } from '@takaro/util';
 
 export interface IPlayerMeta {
@@ -11,6 +11,13 @@ export interface IPlayerMeta {
     dimension?: string;
   };
   online: boolean;
+}
+
+export interface IInventoryItem {
+  code: string;
+  name: string;
+  description: string;
+  quantity: number;
 }
 
 export class GameDataHandler {
@@ -44,6 +51,11 @@ export class GameDataHandler {
   private getBanKey(gameId: string): string {
     if (!gameId) throw new errors.BadRequestError('gameId is required');
     return `${this.keyPrefix}:ban:${gameId}`;
+  }
+
+  private getPlayerInventoryKey(gameId: string): string {
+    if (!gameId) throw new errors.BadRequestError('gameId is required');
+    return `${this.keyPrefix}:player:${gameId}:inventory`;
   }
 
   async addPlayer(player: IGamePlayer, meta: IPlayerMeta): Promise<void> {
@@ -406,5 +418,193 @@ export class GameDataHandler {
       this.log.error(`Error setting simulation config: ${error}`);
       throw error;
     }
+  }
+
+  // Inventory Management Methods
+
+  async getPlayerInventory(gameId: string): Promise<IItemDTO[]> {
+    try {
+      const inventoryKey = this.getPlayerInventoryKey(gameId);
+      const inventoryJson = await this.redis.get(inventoryKey);
+
+      if (!inventoryJson) {
+        this.log.debug(`No inventory found for player ${gameId}, initializing default inventory`);
+        await this.initializePlayerInventory(gameId);
+        return this.getDefaultInventory();
+      }
+
+      const inventoryItems: IInventoryItem[] = JSON.parse(inventoryJson);
+      return inventoryItems.map(
+        (item) =>
+          new IItemDTO({
+            code: item.code,
+            name: item.name,
+            description: item.description,
+          }),
+      );
+    } catch (error) {
+      this.log.error(`Error getting inventory for player ${gameId}: ${error}`);
+      return [];
+    }
+  }
+
+  async setPlayerInventory(gameId: string, items: IInventoryItem[]): Promise<void> {
+    try {
+      const inventoryKey = this.getPlayerInventoryKey(gameId);
+      await this.redis.set(inventoryKey, JSON.stringify(items));
+      this.log.debug(`Set inventory for player ${gameId}`, { itemCount: items.length });
+    } catch (error) {
+      this.log.error(`Error setting inventory for player ${gameId}: ${error}`);
+      throw error;
+    }
+  }
+
+  async addItemToInventory(gameId: string, itemCode: string, quantity: number): Promise<void> {
+    try {
+      const currentInventory = await this.getPlayerInventoryRaw(gameId);
+      const existingItemIndex = currentInventory.findIndex((item) => item.code === itemCode);
+
+      if (existingItemIndex >= 0) {
+        // Update existing item quantity
+        currentInventory[existingItemIndex].quantity += quantity;
+      } else {
+        // Add new item
+        const itemInfo = this.getItemInfo(itemCode);
+        currentInventory.push({
+          code: itemCode,
+          name: itemInfo.name,
+          description: itemInfo.description,
+          quantity: quantity,
+        });
+      }
+
+      await this.setPlayerInventory(gameId, currentInventory);
+      this.log.debug(`Added ${quantity}x ${itemCode} to player ${gameId} inventory`);
+    } catch (error) {
+      this.log.error(`Error adding item to inventory for player ${gameId}: ${error}`);
+      throw error;
+    }
+  }
+
+  async removeItemFromInventory(gameId: string, itemCode: string, quantity: number): Promise<boolean> {
+    try {
+      const currentInventory = await this.getPlayerInventoryRaw(gameId);
+      const existingItemIndex = currentInventory.findIndex((item) => item.code === itemCode);
+
+      if (existingItemIndex < 0) {
+        this.log.warn(`Attempted to remove ${itemCode} from player ${gameId} but item not found`);
+        return false;
+      }
+
+      const currentQuantity = currentInventory[existingItemIndex].quantity;
+      if (currentQuantity < quantity) {
+        this.log.warn(
+          `Attempted to remove ${quantity}x ${itemCode} from player ${gameId} but only ${currentQuantity} available`,
+        );
+        return false;
+      }
+
+      // Remove or update quantity
+      if (currentQuantity === quantity) {
+        // Remove item completely
+        currentInventory.splice(existingItemIndex, 1);
+      } else {
+        // Reduce quantity
+        currentInventory[existingItemIndex].quantity -= quantity;
+      }
+
+      await this.setPlayerInventory(gameId, currentInventory);
+      this.log.debug(`Removed ${quantity}x ${itemCode} from player ${gameId} inventory`);
+      return true;
+    } catch (error) {
+      this.log.error(`Error removing item from inventory for player ${gameId}: ${error}`);
+      return false;
+    }
+  }
+
+  async initializePlayerInventory(gameId: string): Promise<void> {
+    try {
+      const defaultInventory = this.getDefaultInventory();
+      const inventoryItems: IInventoryItem[] = defaultInventory.map((item) => ({
+        code: item.code,
+        name: item.name,
+        description: item.description,
+        quantity: 1,
+      }));
+
+      await this.setPlayerInventory(gameId, inventoryItems);
+      this.log.debug(`Initialized default inventory for player ${gameId}`);
+    } catch (error) {
+      this.log.error(`Error initializing inventory for player ${gameId}: ${error}`);
+      throw error;
+    }
+  }
+
+  private async getPlayerInventoryRaw(gameId: string): Promise<IInventoryItem[]> {
+    const inventoryKey = this.getPlayerInventoryKey(gameId);
+    const inventoryJson = await this.redis.get(inventoryKey);
+
+    if (!inventoryJson) {
+      await this.initializePlayerInventory(gameId);
+      return this.getDefaultInventoryRaw();
+    }
+
+    return JSON.parse(inventoryJson);
+  }
+
+  private getDefaultInventory(): IItemDTO[] {
+    return [
+      new IItemDTO({
+        code: 'wood',
+        name: 'Wood',
+        description: 'Wood is good',
+      }),
+      new IItemDTO({
+        code: 'stone',
+        name: 'Stone',
+        description: 'Stone can get you stoned',
+      }),
+    ];
+  }
+
+  private getDefaultInventoryRaw(): IInventoryItem[] {
+    return [
+      {
+        code: 'wood',
+        name: 'Wood',
+        description: 'Wood is good',
+        quantity: 1,
+      },
+      {
+        code: 'stone',
+        name: 'Stone',
+        description: 'Stone can get you stoned',
+        quantity: 1,
+      },
+    ];
+  }
+
+  private getItemInfo(itemCode: string): { name: string; description: string } {
+    // Known items mapping
+    const itemMap: Record<string, { name: string; description: string }> = {
+      wood: { name: 'Wood', description: 'Wood is good' },
+      stone: { name: 'Stone', description: 'Stone can get you stoned' },
+      'iron ore': { name: 'Iron Ore', description: 'Raw iron ore' },
+      'gold nugget': { name: 'Gold Nugget', description: 'Shiny gold nugget' },
+      apple: { name: 'Apple', description: 'Fresh red apple' },
+      bread: { name: 'Bread', description: 'Freshly baked bread' },
+      'water bottle': { name: 'Water Bottle', description: 'Clean drinking water' },
+      bandage: { name: 'Bandage', description: 'Medical bandage for healing' },
+      coal: { name: 'Coal', description: 'Black coal for fuel' },
+      diamond: { name: 'Diamond', description: 'Precious diamond' },
+      emerald: { name: 'Emerald', description: 'Green emerald' },
+      ruby: { name: 'Ruby', description: 'Red ruby' },
+      rope: { name: 'Rope', description: 'Strong rope' },
+      torch: { name: 'Torch', description: 'Light source' },
+      lantern: { name: 'Lantern', description: 'Bright lantern' },
+      map: { name: 'Map', description: 'Navigation map' },
+    };
+
+    return itemMap[itemCode] || { name: itemCode, description: `Unknown item: ${itemCode}` };
   }
 }

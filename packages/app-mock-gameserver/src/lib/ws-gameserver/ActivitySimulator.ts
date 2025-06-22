@@ -28,7 +28,7 @@ export class ActivitySimulator {
     this.eventEmitter = options.eventEmitter;
     this.serverLogger = options.serverLogger;
     this.state = new SimulationState(options.config);
-    this.eventGenerator = new EventGenerator();
+    this.eventGenerator = new EventGenerator(this.dataHandler);
     this.movementSimulator = new PlayerMovementSimulator(this.dataHandler);
     this.populationManager = new PlayerPopulationManager();
   }
@@ -433,9 +433,9 @@ export class ActivitySimulator {
             return;
           }
 
-          const logEvent = this.eventGenerator.generateItemInteraction(players);
+          const logEvent = await this.eventGenerator.generateItemInteraction(players);
           await this.eventEmitter('log', logEvent);
-          this.log.debug('Generated item interaction event');
+          this.log.debug('Generated item interaction event with inventory changes');
           this.serverLogger(`📦 Simulated item interaction: ${logEvent.msg}`);
         } catch (error) {
           this.log.error('Error generating item interaction:', error);

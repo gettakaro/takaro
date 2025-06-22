@@ -199,8 +199,13 @@ export class GameServer implements IGameServer {
     });
 
     try {
-      await Promise.all(playersToCreate.map(({ player, meta }) => this.dataHandler.addPlayer(player, meta)));
-      this.log.info(`Successfully created ${playersToCreate.length} mock players`);
+      await Promise.all(
+        playersToCreate.map(async ({ player, meta }) => {
+          await this.dataHandler.addPlayer(player, meta);
+          await this.dataHandler.initializePlayerInventory(player.gameId);
+        }),
+      );
+      this.log.info(`Successfully created ${playersToCreate.length} mock players with default inventory`);
     } catch (error) {
       this.log.error('Error creating players:', error);
     }
@@ -316,18 +321,7 @@ export class GameServer implements IGameServer {
 
   async getPlayerInventory(player: IPlayerReferenceDTO): Promise<IItemDTO[]> {
     try {
-      return [
-        new IItemDTO({
-          code: 'wood',
-          name: 'Wood',
-          description: 'Wood is good',
-        }),
-        new IItemDTO({
-          code: 'stone',
-          name: 'Stone',
-          description: 'Stone can get you stoned',
-        }),
-      ];
+      return await this.dataHandler.getPlayerInventory(player.gameId);
     } catch (error) {
       this.log.error(`Error getting inventory for player ${player.gameId}:`, error);
       return [];
@@ -336,8 +330,8 @@ export class GameServer implements IGameServer {
 
   async giveItem(player: IPlayerReferenceDTO, item: string, amount: number, quality?: string): Promise<void> {
     try {
-      this.log.info(`Giving ${amount} of ${item} (quality: ${quality || 'default'}) to player ${player.gameId}`);
-      return Promise.resolve();
+      await this.dataHandler.addItemToInventory(player.gameId, item, amount);
+      this.log.info(`Gave ${amount}x ${item} (quality: ${quality || 'default'}) to player ${player.gameId}`);
     } catch (error) {
       this.log.error(`Error giving item to player ${player.gameId}:`, error);
       throw error;
@@ -658,6 +652,36 @@ export class GameServer implements IGameServer {
           output.success = true;
         } catch (error) {
           output.rawResult = `Error getting debug info: ${error instanceof Error ? error.message : 'Unknown error'}`;
+          output.success = false;
+        }
+      }
+
+      if (rawCommand.startsWith('testInventory')) {
+        try {
+          const [_, playerId] = rawCommand.split(' ');
+          if (!playerId) {
+            output.rawResult = 'Usage: testInventory <playerId>';
+            output.success = false;
+          } else {
+            // Test inventory operations
+            const currentInventory = await this.dataHandler.getPlayerInventory(playerId);
+            let result = `Player ${playerId} inventory before: `;
+            result += currentInventory.map((item) => `${item.code}(${item.name})`).join(', ') || 'empty';
+
+            // Add an item
+            await this.dataHandler.addItemToInventory(playerId, 'apple', 3);
+            result += '\nAdded 3x apple';
+
+            // Check inventory after
+            const updatedInventory = await this.dataHandler.getPlayerInventory(playerId);
+            result += `\nPlayer ${playerId} inventory after: `;
+            result += updatedInventory.map((item) => `${item.code}(${item.name})`).join(', ') || 'empty';
+
+            output.rawResult = result;
+            output.success = true;
+          }
+        } catch (error) {
+          output.rawResult = `Error testing inventory: ${error instanceof Error ? error.message : 'Unknown error'}`;
           output.success = false;
         }
       }
