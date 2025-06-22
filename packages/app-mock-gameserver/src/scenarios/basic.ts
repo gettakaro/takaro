@@ -1,4 +1,3 @@
-/* eslint-disable quotes */
 import { IScenarioEvent } from '../lib/gameserver/scenario.js';
 
 export const Basic: IScenarioEvent[] = [

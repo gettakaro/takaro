@@ -16,12 +16,7 @@ describe('GameEventEmitter', () => {
     const listenerSpy = sandbox.spy();
 
     emitter.on(GameEvents.PLAYER_CONNECTED, async (e) => {
-      expect(() => e.player.name).to.throw(
-        // Eslint and prettier disagree on how to format this
-        // And I cba fixing it for this specific instance :)
-        // eslint-disable-next-line quotes
-        "Cannot read properties of undefined (reading 'name')",
-      );
+      expect(() => e.player.name).to.throw("Cannot read properties of undefined (reading 'name')");
     });
     emitter.on(GameEvents.PLAYER_CONNECTED, listenerSpy);
 

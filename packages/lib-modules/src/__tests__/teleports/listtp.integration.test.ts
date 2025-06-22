@@ -141,7 +141,6 @@ const tests = [
     group,
     snapshot: false,
     setup: modulesTestSetup,
-    // eslint-disable-next-line quotes
     name: "bug repro /tplist: Player A and B have teleports set but B cannot see A's teleports",
     test: async function () {
       await this.client.module.moduleInstallationsControllerInstallModule({
