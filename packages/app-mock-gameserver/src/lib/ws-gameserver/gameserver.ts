@@ -655,6 +655,49 @@ export class GameServer implements IGameServer {
         }
       }
 
+      if (rawCommand === 'populationStats') {
+        try {
+          const onlinePlayers = await this.dataHandler.getOnlinePlayers();
+          const allPlayers = await this.dataHandler.getAllPlayers();
+          const populationManager = new (await import('./PlayerPopulationManager.js')).PlayerPopulationManager();
+
+          const populationStats = populationManager.analyzePopulation(onlinePlayers.length, allPlayers.length);
+          const timePeriod = populationManager.getCurrentTimePeriod();
+
+          let result = '📊 Population Statistics\n';
+          result += `Current Time Period: ${timePeriod}\n`;
+          result += `Online: ${populationStats.currentOnlineCount}/${populationStats.totalPlayerCount} (${populationStats.currentPercentage}%)\n`;
+          result += `Target: ${populationStats.targetPercentage}%\n`;
+          result += `Connection Bias: ${Math.round(populationStats.bias * 100)}% toward connecting\n`;
+          result += `Next Action: ${populationStats.shouldConnect ? 'CONNECT' : 'DISCONNECT'}\n\n`;
+
+          const hourlyTargets = [];
+          for (let hour = 0; hour < 24; hour++) {
+            const testDate = new Date();
+            testDate.setHours(hour);
+            const testManager = new (await import('./PlayerPopulationManager.js')).PlayerPopulationManager();
+            // Temporarily override the current time for testing
+            const originalGetHours = Date.prototype.getHours;
+            Date.prototype.getHours = function () {
+              return hour;
+            };
+            const target = testManager.getTargetOnlinePercentage();
+            Date.prototype.getHours = originalGetHours;
+
+            hourlyTargets.push(`${hour.toString().padStart(2, '0')}:00 - ${target}%`);
+          }
+
+          result += 'Hourly Target Schedule (Today):\n';
+          result += hourlyTargets.join('\n');
+
+          output.rawResult = result.trim();
+          output.success = true;
+        } catch (error) {
+          output.rawResult = `Error getting population stats: ${error instanceof Error ? error.message : 'Unknown error'}`;
+          output.success = false;
+        }
+      }
+
       this.sendLog(`${output.success ? '🟢' : '🔴'} Command executed: ${rawCommand}`);
       return output;
     } catch (error) {

@@ -18,7 +18,7 @@ export interface SimulationConfig {
 export const BASE_INTERVALS = {
   chatMessage: { min: 3000, max: 60000 }, // 3s to 1min
   playerMovement: { min: 2000, max: 20000 }, // 2s to 20s
-  connection: { min: 30000, max: 300000 }, // 30s to 5min
+  connection: { min: 10000, max: 30000 }, // 10s to 30s (faster for testing)
   death: { min: 15000, max: 120000 }, // 15s to 2min
   kill: { min: 10000, max: 90000 }, // 10s to 1.5min
   itemInteraction: { min: 5000, max: 60000 }, // 5s to 1min

@@ -272,7 +272,10 @@ export class EventGenerator {
   /**
    * Generate a random connection/disconnection event
    */
-  generateConnectionEvent(players: Array<{ player: IGamePlayer; meta: any }>): ConnectionEventResult {
+  generateConnectionEvent(
+    players: Array<{ player: IGamePlayer; meta: any }>,
+    biasTowardConnection?: boolean,
+  ): ConnectionEventResult {
     // Filter players by online status
     const onlinePlayers = players.filter((p) => p.meta.online);
     const offlinePlayers = players.filter((p) => !p.meta.online);
@@ -281,6 +284,7 @@ export class EventGenerator {
       totalPlayers: players.length,
       onlinePlayers: onlinePlayers.length,
       offlinePlayers: offlinePlayers.length,
+      biasTowardConnection,
     });
 
     // Determine what action to take based on available players
@@ -296,9 +300,15 @@ export class EventGenerator {
       shouldConnect = true;
       availablePlayers = offlinePlayers;
     } else if (offlinePlayers.length > 0 && onlinePlayers.length > 0) {
-      // Both types available, prefer connecting offline players (70% chance)
-      shouldConnect = Math.random() > 0.3;
-      availablePlayers = shouldConnect ? offlinePlayers : onlinePlayers;
+      // Both types available - use population bias if provided, otherwise default logic
+      if (biasTowardConnection !== undefined) {
+        shouldConnect = biasTowardConnection;
+        availablePlayers = shouldConnect ? offlinePlayers : onlinePlayers;
+      } else {
+        // Default: prefer connecting offline players (70% chance)
+        shouldConnect = Math.random() > 0.3;
+        availablePlayers = shouldConnect ? offlinePlayers : onlinePlayers;
+      }
     } else {
       // No players available (shouldn't happen)
       throw new Error('No players available for connection event generation');

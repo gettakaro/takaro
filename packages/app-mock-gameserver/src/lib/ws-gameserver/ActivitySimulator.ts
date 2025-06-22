@@ -2,6 +2,7 @@ import { logger } from '@takaro/util';
 import { GameDataHandler } from './DataHandler.js';
 import { EventGenerator } from './EventGenerator.js';
 import { PlayerMovementSimulator } from './PlayerMovementSimulator.js';
+import { PlayerPopulationManager } from './PlayerPopulationManager.js';
 import { SimulationState, SimulationConfig } from './SimulationState.js';
 
 export interface ActivitySimulatorOptions {
@@ -19,6 +20,7 @@ export class ActivitySimulator {
   private state: SimulationState;
   private eventGenerator: EventGenerator;
   private movementSimulator: PlayerMovementSimulator;
+  private populationManager: PlayerPopulationManager;
   private timers: Map<string, NodeJS.Timeout> = new Map();
 
   constructor(options: ActivitySimulatorOptions) {
@@ -28,6 +30,7 @@ export class ActivitySimulator {
     this.state = new SimulationState(options.config);
     this.eventGenerator = new EventGenerator();
     this.movementSimulator = new PlayerMovementSimulator(this.dataHandler);
+    this.populationManager = new PlayerPopulationManager();
   }
 
   /**
@@ -262,9 +265,24 @@ export class ActivitySimulator {
             return;
           }
 
-          // Generate connection event based on current Redis state
-          const connectionEvent = this.eventGenerator.generateConnectionEvent(players);
-          const isConnection = connectionEvent.type.includes('connected');
+          // Analyze current population vs target
+          const onlineCount = players.filter((p) => p.meta.online).length;
+          const populationStats = this.populationManager.analyzePopulation(onlineCount, players.length);
+
+          // Debug log population decision
+          this.log.info('🎯 Population analysis for connection event', {
+            onlineCount,
+            totalCount: players.length,
+            currentPercentage: populationStats.currentPercentage,
+            targetPercentage: populationStats.targetPercentage,
+            bias: populationStats.bias,
+            shouldConnect: populationStats.shouldConnect,
+            timePeriod: this.populationManager.getCurrentTimePeriod(),
+          });
+
+          // Generate connection event with population bias
+          const connectionEvent = this.eventGenerator.generateConnectionEvent(players, populationStats.shouldConnect);
+          const isConnection = connectionEvent.type === 'player-connected';
           const playerName = connectionEvent.data.player?.name || 'Unknown Player';
           const playerId = connectionEvent.data.player?.gameId;
 
@@ -273,16 +291,42 @@ export class ActivitySimulator {
             return;
           }
 
-          // Update player online status in Redis
+          // CRITICAL: Log what EventGenerator decided vs what we requested
+          this.log.info('🔍 EventGenerator result', {
+            requestedAction: populationStats.shouldConnect ? 'CONNECT' : 'DISCONNECT',
+            generatedEventType: connectionEvent.type,
+            interpretedAsConnection: isConnection,
+            playerName,
+            playerId,
+          });
+
+          // Validate that the action matches the intention
+          if (populationStats.shouldConnect !== isConnection) {
+            this.log.error('🚨 CRITICAL: Population bias mismatch - intended action differs from generated event', {
+              intended: populationStats.shouldConnect ? 'CONNECT' : 'DISCONNECT',
+              actual: isConnection ? 'CONNECT' : 'DISCONNECT',
+              playerName,
+              bias: populationStats.bias,
+              eventType: connectionEvent.type,
+            });
+          }
+
+          // Update player online status in Redis FIRST and track what we actually did
           await this.dataHandler.setOnlineStatus(playerId, isConnection);
 
           // Emit the connection event
           await this.eventEmitter(connectionEvent.type, connectionEvent.data);
           this.log.debug('Generated connection event', { type: connectionEvent.type, player: playerName });
 
+          // Log based on what we ACTUALLY did (isConnection), not the event type
           const actionType = isConnection ? 'connected' : 'disconnected';
           const statusEmoji = isConnection ? '🟢' : '🔴';
-          this.serverLogger(`${statusEmoji} Simulated connection: ${playerName} ${actionType}`);
+          const newOnlineCount = isConnection ? onlineCount + 1 : onlineCount - 1;
+          const timePeriod = this.populationManager.getCurrentTimePeriod();
+
+          this.serverLogger(
+            `${statusEmoji} Simulated connection: ${playerName} ${actionType} (${onlineCount}→${newOnlineCount}/${players.length}, ${populationStats.currentPercentage}%→${populationStats.targetPercentage}% target, ${timePeriod})`,
+          );
         } catch (error) {
           this.log.error('Error generating connection event:', error);
           this.serverLogger('⚠️ Connection simulation error - check logs');
