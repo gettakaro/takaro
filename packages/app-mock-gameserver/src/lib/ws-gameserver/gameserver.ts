@@ -48,7 +48,6 @@ export class GameServer implements IGameServer {
   private dataHandler: GameDataHandler;
   private activitySimulator: ActivitySimulator;
   private serverId;
-  private tickInterval: NodeJS.Timeout;
 
   public connectionInfo: unknown = {};
 
@@ -91,29 +90,9 @@ export class GameServer implements IGameServer {
       eventEmitter: async (type: string, data: any) => this.sendEvent(type as GameEventTypes, data),
       serverLogger: (message: string) => this.sendLog(message),
     });
-    this.tickInterval = setInterval(() => this.handleGameServerTick(), 10000);
 
     // Restore simulation state after initialization
     this.restoreSimulationState();
-  }
-
-  private async handleGameServerTick() {
-    try {
-      const allPlayers = await this.dataHandler.getOnlinePlayers();
-      if (allPlayers.length > 0) {
-        this.wsClient.send({
-          type: 'gameEvent',
-          payload: {
-            type: GameEvents.PLAYER_CONNECTED,
-            data: new EventPlayerConnected({
-              player: allPlayers[0].player,
-            }),
-          },
-        });
-      }
-    } catch (error) {
-      this.log.error('Error in game server tick:', error);
-    }
   }
 
   async init() {
@@ -150,7 +129,6 @@ export class GameServer implements IGameServer {
   }
 
   async shutdown() {
-    clearInterval(this.tickInterval);
     this.wsClient.disconnect();
     return Promise.resolve();
   }

@@ -262,15 +262,30 @@ export class ActivitySimulator {
             return;
           }
 
+          // Generate connection event based on current Redis state
           const connectionEvent = this.eventGenerator.generateConnectionEvent(players);
-          await this.eventEmitter(connectionEvent.type, connectionEvent.data);
-          this.log.debug('Generated connection event', { type: connectionEvent.type });
-
-          const actionType = connectionEvent.type.includes('connected') ? 'connected' : 'disconnected';
+          const isConnection = connectionEvent.type.includes('connected');
           const playerName = connectionEvent.data.player?.name || 'Unknown Player';
-          this.serverLogger(`🔗 Simulated connection: ${playerName} ${actionType}`);
+          const playerId = connectionEvent.data.player?.gameId;
+
+          if (!playerId) {
+            this.log.error('Connection event generated without valid player ID');
+            return;
+          }
+
+          // Update player online status in Redis
+          await this.dataHandler.setOnlineStatus(playerId, isConnection);
+
+          // Emit the connection event
+          await this.eventEmitter(connectionEvent.type, connectionEvent.data);
+          this.log.debug('Generated connection event', { type: connectionEvent.type, player: playerName });
+
+          const actionType = isConnection ? 'connected' : 'disconnected';
+          const statusEmoji = isConnection ? '🟢' : '🔴';
+          this.serverLogger(`${statusEmoji} Simulated connection: ${playerName} ${actionType}`);
         } catch (error) {
           this.log.error('Error generating connection event:', error);
+          this.serverLogger('⚠️ Connection simulation error - check logs');
         }
       },
       intervals.minInterval,

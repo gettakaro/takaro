@@ -273,20 +273,50 @@ export class EventGenerator {
    * Generate a random connection/disconnection event
    */
   generateConnectionEvent(players: Array<{ player: IGamePlayer; meta: any }>): ConnectionEventResult {
-    const randomPlayer = this.getRandomPlayer(players);
-    const isConnection = Math.random() > 0.5;
+    // Filter players by online status
+    const onlinePlayers = players.filter((p) => p.meta.online);
+    const offlinePlayers = players.filter((p) => !p.meta.online);
 
-    if (isConnection) {
+    this.log.debug('Connection event generation', {
+      totalPlayers: players.length,
+      onlinePlayers: onlinePlayers.length,
+      offlinePlayers: offlinePlayers.length,
+    });
+
+    // Determine what action to take based on available players
+    let shouldConnect: boolean;
+    let availablePlayers: Array<{ player: IGamePlayer; meta: any }>;
+
+    if (offlinePlayers.length === 0 && onlinePlayers.length > 0) {
+      // Only online players available, must disconnect someone
+      shouldConnect = false;
+      availablePlayers = onlinePlayers;
+    } else if (onlinePlayers.length === 0 && offlinePlayers.length > 0) {
+      // Only offline players available, must connect someone
+      shouldConnect = true;
+      availablePlayers = offlinePlayers;
+    } else if (offlinePlayers.length > 0 && onlinePlayers.length > 0) {
+      // Both types available, prefer connecting offline players (70% chance)
+      shouldConnect = Math.random() > 0.3;
+      availablePlayers = shouldConnect ? offlinePlayers : onlinePlayers;
+    } else {
+      // No players available (shouldn't happen)
+      throw new Error('No players available for connection event generation');
+    }
+
+    const selectedPlayer = this.getRandomElement(availablePlayers);
+
+    if (shouldConnect) {
       const event = new EventPlayerConnected({
-        player: randomPlayer.player,
-        msg: `${randomPlayer.player.name} joined the game`,
+        player: selectedPlayer.player,
+        msg: `${selectedPlayer.player.name} joined the game`,
         type: GameEvents.PLAYER_CONNECTED,
       });
       return { type: 'player-connected', data: event };
     } else {
       const event = new EventPlayerDisconnected({
-        player: randomPlayer.player,
-        msg: `${randomPlayer.player.name} left the game`,
+        player: selectedPlayer.player,
+        msg: `${selectedPlayer.player.name} left the game`,
         type: GameEvents.PLAYER_DISCONNECTED,
       });
       return { type: 'player-disconnected', data: event };
