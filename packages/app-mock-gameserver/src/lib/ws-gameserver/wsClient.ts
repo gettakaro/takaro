@@ -18,8 +18,11 @@ export class WSClient extends EventEmitter {
   private isConnected = false;
   private reconnectAttempts = 0;
   private readonly maxReconnectAttempts = config.get('ws.maxReconnectAttempts') ?? 10;
-  private readonly reconnectInterval = config.get('ws.reconnectIntervalMs') ?? 5000;
+  private readonly baseReconnectInterval = config.get('ws.reconnectIntervalMs') ?? 5000;
+  private readonly maxReconnectInterval = config.get('ws.maxReconnectIntervalMs') ?? 60000;
   private readonly pingInterval = config.get('ws.heartbeatIntervalMs') ?? 30000;
+  private readonly continuousReconnect = config.get('ws.continuousReconnect') ?? true;
+  private hasConnectedOnce = false;
 
   constructor(url: string) {
     super();
@@ -50,6 +53,7 @@ export class WSClient extends EventEmitter {
       this.log.info('Connected to WebSocket server');
       this.isConnected = true;
       this.reconnectAttempts = 0;
+      this.hasConnectedOnce = true;
       this.emit('connected');
       this.setupPingTimeout();
     });
@@ -111,17 +115,28 @@ export class WSClient extends EventEmitter {
       clearTimeout(this.reconnectTimeout);
     }
 
-    if (this.reconnectAttempts >= this.maxReconnectAttempts) {
+    // Check if we should continue reconnecting
+    const shouldContinueReconnecting =
+      this.continuousReconnect || !this.hasConnectedOnce || this.reconnectAttempts < this.maxReconnectAttempts;
+
+    if (!shouldContinueReconnecting) {
       this.log.error('Max reconnection attempts reached');
       this.emit('maxReconnectAttemptsReached');
       return;
     }
 
+    // Calculate reconnection delay with exponential backoff
+    const exponentialDelay = Math.min(
+      this.baseReconnectInterval * Math.pow(2, Math.min(this.reconnectAttempts, 6)),
+      this.maxReconnectInterval,
+    );
+
     this.reconnectTimeout = setTimeout(() => {
       this.reconnectAttempts++;
-      this.log.info(`Reconnection attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts}`);
+      const maxAttemptsMsg = this.continuousReconnect && !this.hasConnectedOnce ? '∞' : this.maxReconnectAttempts;
+      this.log.info(`Reconnection attempt ${this.reconnectAttempts}/${maxAttemptsMsg} (delay: ${exponentialDelay}ms)`);
       this.connect();
-    }, this.reconnectInterval);
+    }, exponentialDelay);
   }
 
   public reconnect(): void {
