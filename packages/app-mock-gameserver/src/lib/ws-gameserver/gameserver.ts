@@ -90,9 +90,6 @@ export class GameServer implements IGameServer {
       eventEmitter: async (type: string, data: any) => this.sendEvent(type as GameEventTypes, data),
       serverLogger: (message: string) => this.sendLog(message),
     });
-
-    // Restore simulation state after initialization
-    this.restoreSimulationState();
   }
 
   async init() {
@@ -126,6 +123,9 @@ export class GameServer implements IGameServer {
     await identifyPromise;
     await this.dataHandler.init();
     await this.createInitPlayers();
+
+    // Restore simulation state after all initialization is complete
+    await this.restoreSimulationState();
   }
 
   async shutdown() {
@@ -135,7 +135,6 @@ export class GameServer implements IGameServer {
 
   private async restoreSimulationState(): Promise<void> {
     try {
-      await this.dataHandler.init();
       const savedState = await this.dataHandler.getSimulationState();
 
       if (savedState) {
@@ -185,10 +184,10 @@ export class GameServer implements IGameServer {
     const dimensions = ['overworld', 'nether', 'end'];
 
     const playersToCreate = Array.from({ length: totalToCreate }, (_, i) => {
-      // Generate unique gameId to avoid collisions with existing players
-      const uniqueGameId = `${Date.now()}-${i}`;
+      // Use simple sequential gameIds starting from existing player count
+      const gameId = (existingPlayers.length + i).toString();
       const player = new IGamePlayer({
-        gameId: uniqueGameId,
+        gameId,
         name: faker.internet.userName(),
         epicOnlineServicesId: faker.string.alphanumeric(16),
         steamId: faker.string.alphanumeric(16),
@@ -209,17 +208,6 @@ export class GameServer implements IGameServer {
     });
 
     try {
-      // Additional safeguard: ensure no gameId conflicts
-      const existingGameIds = new Set(existingPlayers.map((p) => p.player.gameId));
-      const conflictingPlayers = playersToCreate.filter(({ player }) => existingGameIds.has(player.gameId));
-
-      if (conflictingPlayers.length > 0) {
-        this.log.warn(`Detected ${conflictingPlayers.length} gameId conflicts - regenerating unique IDs`);
-        conflictingPlayers.forEach(({ player }) => {
-          player.gameId = `${Date.now()}-${Math.random().toString(36).substring(2)}`;
-        });
-      }
-
       await Promise.all(
         playersToCreate.map(async ({ player, meta }) => {
           await this.dataHandler.addPlayer(player, meta);
