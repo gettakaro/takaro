@@ -17,6 +17,28 @@ export interface IMockServerConfig extends IBaseConfig {
     registrationToken: string;
     identityToken: string;
   };
+  simulation: {
+    autoStart: boolean;
+    chatFrequency: number;
+    chatEnabled: boolean;
+    movementFrequency: number;
+    movementEnabled: boolean;
+    connectionFrequency: number;
+    connectionEnabled: boolean;
+    deathFrequency: number;
+    deathEnabled: boolean;
+    killFrequency: number;
+    killEnabled: boolean;
+    itemFrequency: number;
+    itemEnabled: boolean;
+  };
+  population: {
+    totalPlayers: number;
+    weekendBoost: number;
+    variance: number;
+    minThreshold: number;
+    maxThreshold: number;
+  };
 }
 
 const configSchema = {
@@ -95,6 +117,118 @@ const configSchema = {
       format: String,
       default: 'default-mock',
       env: 'TAKARO_MOCK_IDENTITY_TOKEN',
+    },
+  },
+  simulation: {
+    autoStart: {
+      doc: 'Automatically start the activity simulation when the server initializes',
+      format: Boolean,
+      default: false,
+      env: 'MOCK_SIM_AUTO_START',
+    },
+    chatFrequency: {
+      doc: 'Chat message event frequency (0-100%)',
+      format: Number,
+      default: 50,
+      env: 'MOCK_SIM_CHAT_FREQUENCY',
+    },
+    chatEnabled: {
+      doc: 'Enable/disable chat message events',
+      format: Boolean,
+      default: true,
+      env: 'MOCK_SIM_CHAT_ENABLED',
+    },
+    movementFrequency: {
+      doc: 'Player movement event frequency (0-100%)',
+      format: Number,
+      default: 50,
+      env: 'MOCK_SIM_MOVEMENT_FREQUENCY',
+    },
+    movementEnabled: {
+      doc: 'Enable/disable player movement events',
+      format: Boolean,
+      default: true,
+      env: 'MOCK_SIM_MOVEMENT_ENABLED',
+    },
+    connectionFrequency: {
+      doc: 'Connection/disconnection event frequency (0-100%)',
+      format: Number,
+      default: 50,
+      env: 'MOCK_SIM_CONNECTION_FREQUENCY',
+    },
+    connectionEnabled: {
+      doc: 'Enable/disable connection events',
+      format: Boolean,
+      default: true,
+      env: 'MOCK_SIM_CONNECTION_ENABLED',
+    },
+    deathFrequency: {
+      doc: 'Player death event frequency (0-100%)',
+      format: Number,
+      default: 50,
+      env: 'MOCK_SIM_DEATH_FREQUENCY',
+    },
+    deathEnabled: {
+      doc: 'Enable/disable death events',
+      format: Boolean,
+      default: true,
+      env: 'MOCK_SIM_DEATH_ENABLED',
+    },
+    killFrequency: {
+      doc: 'Entity kill event frequency (0-100%)',
+      format: Number,
+      default: 50,
+      env: 'MOCK_SIM_KILL_FREQUENCY',
+    },
+    killEnabled: {
+      doc: 'Enable/disable kill events',
+      format: Boolean,
+      default: true,
+      env: 'MOCK_SIM_KILL_ENABLED',
+    },
+    itemFrequency: {
+      doc: 'Item interaction event frequency (0-100%)',
+      format: Number,
+      default: 50,
+      env: 'MOCK_SIM_ITEM_FREQUENCY',
+    },
+    itemEnabled: {
+      doc: 'Enable/disable item interaction events',
+      format: Boolean,
+      default: true,
+      env: 'MOCK_SIM_ITEM_ENABLED',
+    },
+  },
+  population: {
+    totalPlayers: {
+      doc: 'Total number of players in the player pool',
+      format: Number,
+      default: 10,
+      env: 'MOCK_TOTAL_PLAYERS',
+    },
+    weekendBoost: {
+      doc: 'Weekend population boost percentage',
+      format: Number,
+      default: 15,
+      env: 'MOCK_POPULATION_WEEKEND_BOOST',
+    },
+    variance: {
+      doc: 'Random variance in population targets (±%)',
+      format: Number,
+      default: 5,
+      env: 'MOCK_POPULATION_VARIANCE',
+    },
+    minThreshold: {
+      doc: 'Minimum population percentage threshold',
+      format: Number,
+      default: 5,
+      env: 'MOCK_POPULATION_MIN_THRESHOLD',
+    },
+    maxThreshold: {
+      doc: 'Maximum population percentage threshold',
+      format: Number,
+      default: 95,
+      env: 'MOCK_POPULATION_MAX_THRESHOLD',
     },
   },
 };

@@ -1,4 +1,5 @@
 import { logger } from '@takaro/util';
+import { config } from '../../config.js';
 
 export interface PopulationStats {
   currentOnlineCount: number;
@@ -23,18 +24,21 @@ export class PlayerPopulationManager {
     // Base hourly curve (0-23 hours)
     let basePercentage = this.calculateHourlyCurve(hour);
 
-    // Weekend boost: Friday evening through Sunday get +15%
+    // Weekend boost: Friday evening through Sunday
     const isWeekend = dayOfWeek === 0 || dayOfWeek === 5 || dayOfWeek === 6;
     if (isWeekend) {
-      basePercentage += 15;
+      basePercentage += config.get('population.weekendBoost');
     }
 
-    // Add some random variance (±5%) to make it feel more organic
-    const variance = (Math.random() - 0.5) * 10; // -5 to +5
+    // Add some random variance to make it feel more organic
+    const varianceRange = config.get('population.variance');
+    const variance = (Math.random() - 0.5) * (varianceRange * 2); // ±variance%
     const finalPercentage = basePercentage + variance;
 
-    // Clamp between reasonable bounds
-    return Math.max(5, Math.min(95, Math.round(finalPercentage)));
+    // Clamp between configurable bounds
+    const minThreshold = config.get('population.minThreshold');
+    const maxThreshold = config.get('population.maxThreshold');
+    return Math.max(minThreshold, Math.min(maxThreshold, Math.round(finalPercentage)));
   }
 
   /**

@@ -1,4 +1,5 @@
 import { logger } from '@takaro/util';
+import { config } from '../../config.js';
 
 export interface EventFrequency {
   frequency: number; // 0-100 frequency value
@@ -34,34 +35,32 @@ export const EVENT_TYPE_NAMES: Record<string, keyof SimulationConfig> = {
   items: 'itemInteraction',
 };
 
-export const DEFAULT_FREQUENCY = 50; // Default to 50% frequency
-
-export const DEFAULT_SIMULATION_CONFIG: SimulationConfig = {
+export const getDefaultSimulationConfig = (): SimulationConfig => ({
   chatMessage: {
-    frequency: DEFAULT_FREQUENCY,
-    enabled: true,
+    frequency: config.get('simulation.chatFrequency'),
+    enabled: config.get('simulation.chatEnabled'),
   },
   playerMovement: {
-    frequency: DEFAULT_FREQUENCY,
-    enabled: true,
+    frequency: config.get('simulation.movementFrequency'),
+    enabled: config.get('simulation.movementEnabled'),
   },
   connection: {
-    frequency: DEFAULT_FREQUENCY,
-    enabled: true,
+    frequency: config.get('simulation.connectionFrequency'),
+    enabled: config.get('simulation.connectionEnabled'),
   },
   death: {
-    frequency: DEFAULT_FREQUENCY,
-    enabled: true,
+    frequency: config.get('simulation.deathFrequency'),
+    enabled: config.get('simulation.deathEnabled'),
   },
   kill: {
-    frequency: DEFAULT_FREQUENCY,
-    enabled: true,
+    frequency: config.get('simulation.killFrequency'),
+    enabled: config.get('simulation.killEnabled'),
   },
   itemInteraction: {
-    frequency: DEFAULT_FREQUENCY,
-    enabled: true,
+    frequency: config.get('simulation.itemFrequency'),
+    enabled: config.get('simulation.itemEnabled'),
   },
-};
+});
 
 export class SimulationState {
   private log = logger('SimulationState');
@@ -71,7 +70,7 @@ export class SimulationState {
   private stoppedAt?: Date;
 
   constructor(initialConfig?: Partial<SimulationConfig>) {
-    this.config = this.mergeConfig(DEFAULT_SIMULATION_CONFIG, initialConfig);
+    this.config = this.mergeConfig(getDefaultSimulationConfig(), initialConfig);
     this.log.debug('SimulationState initialized', { config: this.config });
   }
 
@@ -151,7 +150,7 @@ export class SimulationState {
    */
   resetConfig(): void {
     const oldConfig = this.deepClone(this.config);
-    this.config = this.deepClone(DEFAULT_SIMULATION_CONFIG);
+    this.config = this.deepClone(getDefaultSimulationConfig());
 
     this.log.info('Simulation configuration reset to defaults', {
       oldConfig,

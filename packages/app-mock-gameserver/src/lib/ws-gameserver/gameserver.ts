@@ -155,6 +155,13 @@ export class GameServer implements IGameServer {
             this.sendLog('🔄 Activity simulation restored from previous state');
           }, 2000);
         }
+      } else if (this.config.simulation.autoStart) {
+        // Auto-start simulation if configured
+        this.log.info('Auto-starting simulation based on configuration');
+        setTimeout(async () => {
+          await this.activitySimulator.start();
+          this.sendLog('🚀 Activity simulation auto-started from configuration');
+        }, 2000);
       }
     } catch (error) {
       this.log.error('Error restoring simulation state:', error);
@@ -162,7 +169,7 @@ export class GameServer implements IGameServer {
   }
 
   private async createInitPlayers() {
-    const totalPlayersWanted = 10;
+    const totalPlayersWanted = this.config.population.totalPlayers;
     const existingPlayers = await this.dataHandler.getOnlinePlayers();
     const totalToCreate = totalPlayersWanted - existingPlayers.length;
     if (totalToCreate <= 0) return;
