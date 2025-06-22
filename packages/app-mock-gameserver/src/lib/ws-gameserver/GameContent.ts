@@ -92,42 +92,6 @@ export const GAME_ENTITIES: IEntityDTO[] = [
     type: EntityType.FRIENDLY,
     metadata: { rideable: true, speed: 'fast' },
   }),
-  new IEntityDTO({
-    code: 'bear',
-    name: 'Bear',
-    description: 'A dangerous wild animal',
-    type: EntityType.HOSTILE,
-  }),
-  new IEntityDTO({
-    code: 'deer',
-    name: 'Deer',
-    description: 'A swift forest animal',
-    type: EntityType.FRIENDLY,
-  }),
-  new IEntityDTO({
-    code: 'rabbit',
-    name: 'Rabbit',
-    description: 'A small quick creature',
-    type: EntityType.FRIENDLY,
-  }),
-  new IEntityDTO({
-    code: 'witch',
-    name: 'Witch',
-    description: 'A magical hostile creature',
-    type: EntityType.HOSTILE,
-  }),
-  new IEntityDTO({
-    code: 'slime',
-    name: 'Slime',
-    description: 'A bouncing gelatinous creature',
-    type: EntityType.HOSTILE,
-  }),
-  new IEntityDTO({
-    code: 'bat',
-    name: 'Bat',
-    description: 'A flying cave dweller',
-    type: EntityType.NEUTRAL,
-  }),
 ];
 
 // Utility functions to extract codes for random selection in event generation
