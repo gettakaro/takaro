@@ -16,7 +16,6 @@ import { errors, logger } from '@takaro/util';
 import {
   BanDTO,
   CommandOutput,
-  EntityType,
   IEntityDTO,
   IGameServer,
   IItemDTO,
@@ -30,6 +29,7 @@ import {
 import { GameDataHandler } from './DataHandler.js';
 import { ActivitySimulator } from './ActivitySimulator.js';
 import { SimulationConfig, EVENT_TYPE_NAMES } from './SimulationState.js';
+import { GAME_ITEMS, GAME_ENTITIES } from './GameContent.js';
 import { PartialDeep } from 'type-fest/index.js';
 import { readFile } from 'fs/promises';
 import path from 'path';
@@ -340,18 +340,7 @@ export class GameServer implements IGameServer {
 
   async listItems(): Promise<IItemDTO[]> {
     try {
-      return [
-        new IItemDTO({
-          code: 'wood',
-          name: 'Wood',
-          description: 'Wood is good',
-        }),
-        new IItemDTO({
-          code: 'stone',
-          name: 'Stone',
-          description: 'Stone can get you stoned',
-        }),
-      ];
+      return GAME_ITEMS;
     } catch (error) {
       this.log.error('Error listing items:', error);
       return [];
@@ -884,83 +873,7 @@ export class GameServer implements IGameServer {
 
   async listEntities(): Promise<IEntityDTO[]> {
     try {
-      return [
-        new IEntityDTO({
-          code: 'zombie',
-          name: 'Zombie',
-          description: 'A shambling undead creature',
-          type: EntityType.HOSTILE,
-        }),
-        new IEntityDTO({
-          code: 'skeleton',
-          name: 'Skeleton',
-          description: 'An undead archer',
-          type: EntityType.HOSTILE,
-        }),
-        new IEntityDTO({
-          code: 'spider',
-          name: 'Spider',
-          description: 'A large arachnid',
-          type: EntityType.HOSTILE,
-        }),
-        new IEntityDTO({
-          code: 'cow',
-          name: 'Cow',
-          description: 'A peaceful farm animal',
-          type: EntityType.FRIENDLY,
-        }),
-        new IEntityDTO({
-          code: 'pig',
-          name: 'Pig',
-          description: 'A pink farm animal',
-          type: EntityType.FRIENDLY,
-        }),
-        new IEntityDTO({
-          code: 'sheep',
-          name: 'Sheep',
-          description: 'A woolly farm animal',
-          type: EntityType.FRIENDLY,
-        }),
-        new IEntityDTO({
-          code: 'chicken',
-          name: 'Chicken',
-          description: 'A small farm bird',
-          type: EntityType.FRIENDLY,
-        }),
-        new IEntityDTO({
-          code: 'wolf',
-          name: 'Wolf',
-          description: 'A wild canine that can be tamed',
-          type: EntityType.NEUTRAL,
-        }),
-        new IEntityDTO({
-          code: 'enderman',
-          name: 'Enderman',
-          description: 'A tall dark creature from another dimension',
-          type: EntityType.NEUTRAL,
-        }),
-        new IEntityDTO({
-          code: 'villager',
-          name: 'Villager',
-          description: 'A peaceful NPC that trades items',
-          type: EntityType.FRIENDLY,
-          metadata: { profession: 'merchant', canTrade: true },
-        }),
-        new IEntityDTO({
-          code: 'creeper',
-          name: 'Creeper',
-          description: 'An explosive green creature',
-          type: EntityType.HOSTILE,
-          metadata: { explosive: true, range: 3 },
-        }),
-        new IEntityDTO({
-          code: 'horse',
-          name: 'Horse',
-          description: 'A rideable animal',
-          type: EntityType.FRIENDLY,
-          metadata: { rideable: true, speed: 'fast' },
-        }),
-      ];
+      return GAME_ENTITIES;
     } catch (error) {
       this.log.error('Error listing entities:', error);
       return [];
