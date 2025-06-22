@@ -170,15 +170,25 @@ export class GameServer implements IGameServer {
 
   private async createInitPlayers() {
     const totalPlayersWanted = this.config.population.totalPlayers;
-    const existingPlayers = await this.dataHandler.getOnlinePlayers();
+    const existingPlayers = await this.dataHandler.getAllPlayers();
     const totalToCreate = totalPlayersWanted - existingPlayers.length;
-    if (totalToCreate <= 0) return;
+
+    this.log.info(
+      `Player population check: wanted=${totalPlayersWanted}, existing=${existingPlayers.length}, toCreate=${totalToCreate}`,
+    );
+
+    if (totalToCreate <= 0) {
+      this.log.info('No new players needed - using existing persisted players');
+      return;
+    }
 
     const dimensions = ['overworld', 'nether', 'end'];
 
     const playersToCreate = Array.from({ length: totalToCreate }, (_, i) => {
+      // Generate unique gameId to avoid collisions with existing players
+      const uniqueGameId = `${Date.now()}-${i}`;
       const player = new IGamePlayer({
-        gameId: i.toString(),
+        gameId: uniqueGameId,
         name: faker.internet.userName(),
         epicOnlineServicesId: faker.string.alphanumeric(16),
         steamId: faker.string.alphanumeric(16),
@@ -199,13 +209,26 @@ export class GameServer implements IGameServer {
     });
 
     try {
+      // Additional safeguard: ensure no gameId conflicts
+      const existingGameIds = new Set(existingPlayers.map((p) => p.player.gameId));
+      const conflictingPlayers = playersToCreate.filter(({ player }) => existingGameIds.has(player.gameId));
+
+      if (conflictingPlayers.length > 0) {
+        this.log.warn(`Detected ${conflictingPlayers.length} gameId conflicts - regenerating unique IDs`);
+        conflictingPlayers.forEach(({ player }) => {
+          player.gameId = `${Date.now()}-${Math.random().toString(36).substring(2)}`;
+        });
+      }
+
       await Promise.all(
         playersToCreate.map(async ({ player, meta }) => {
           await this.dataHandler.addPlayer(player, meta);
           await this.dataHandler.initializePlayerInventory(player.gameId);
         }),
       );
-      this.log.info(`Successfully created ${playersToCreate.length} mock players with default inventory`);
+      this.log.info(
+        `Successfully created ${playersToCreate.length} new mock players with default inventory (total players now: ${totalPlayersWanted})`,
+      );
     } catch (error) {
       this.log.error('Error creating players:', error);
     }
@@ -671,6 +694,34 @@ export class GameServer implements IGameServer {
           }
         } catch (error) {
           output.rawResult = `Error testing inventory: ${error instanceof Error ? error.message : 'Unknown error'}`;
+          output.success = false;
+        }
+      }
+
+      if (rawCommand === 'playerPersistenceCheck') {
+        try {
+          const allPlayers = await this.dataHandler.getAllPlayers();
+          const onlinePlayers = await this.dataHandler.getOnlinePlayers();
+
+          let result = '🔍 Player Persistence Check\n';
+          result += `Total players in Redis: ${allPlayers.length}\n`;
+          result += `Online players: ${onlinePlayers.length}\n`;
+          result += `Offline players: ${allPlayers.length - onlinePlayers.length}\n\n`;
+
+          if (allPlayers.length > 0) {
+            result += 'Sample player data:\n';
+            const sample = allPlayers.slice(0, 3);
+            sample.forEach((p, i) => {
+              result += `${i + 1}. ${p.player.name} (ID: ${p.player.gameId}) - ${p.meta.online ? 'ONLINE' : 'OFFLINE'}\n`;
+            });
+          } else {
+            result += 'No players found in Redis\n';
+          }
+
+          output.rawResult = result.trim();
+          output.success = true;
+        } catch (error) {
+          output.rawResult = `Error checking persistence: ${error instanceof Error ? error.message : 'Unknown error'}`;
           output.success = false;
         }
       }
