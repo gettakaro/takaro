@@ -247,7 +247,6 @@ const tests = [
       });
 
       expect((await events).length).to.be.eq(1);
-      // eslint-disable-next-line quotes
       expect((await events)[0].data.meta.msg).to.be.eq("Waypoint A doesn't exist.");
     },
   }),

@@ -46,7 +46,6 @@ export const Plan: FC<PlanProps> = ({
             </h1>
             <p style={{ marginBottom: '3rem' }}>{description}</p>
             <Divider
-              // eslint-disable-next-line quotes
               label={{ text: "What's included", labelPosition: 'center', color: 'primary' }}
               fullWidth
               size="large"

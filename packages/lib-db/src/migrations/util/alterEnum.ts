@@ -1,4 +1,3 @@
-/* eslint-disable quotes */
 export function formatAlterTableEnumSql(tableName: string, columnName: string, enums: string[]) {
   const constraintName = `${tableName}_${columnName}_check`;
   return [

@@ -31,7 +31,6 @@ export interface AreaChartProps<T> extends ChartProps {
   brushMargin?: Margin;
 }
 
-// eslint-disable-next-line quotes
 const formatDate = timeFormat("%b %d, '%y");
 
 const defaultMargin = { top: 20, left: 50, bottom: 20, right: 5 };

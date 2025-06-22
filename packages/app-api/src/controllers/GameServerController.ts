@@ -469,7 +469,6 @@ export class GameServerController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @OpenAPI({
     description:
-      // eslint-disable-next-line quotes
       "Give an item to a player. Requires gameserver to be online and reachable. Depending on the underlying game implementation, it's possible that the item is dropped on the ground instead of placed directly in the player's inventory.",
   })
   async giveItem(@Req() req: AuthenticatedRequest, @Params() params: PogParam, @Body() data: GiveItemInputDTO) {
@@ -482,7 +481,6 @@ export class GameServerController {
   @UseBefore(AuthService.getAuthMiddleware([PERMISSIONS.MANAGE_GAMESERVERS]))
   @OpenAPI({
     description:
-      // eslint-disable-next-line quotes
       "Shuts down the gameserver. This is a 'soft' shutdown, meaning the gameserver will be stopped gracefully. If the gameserver is not reachable, this will have no effect. Note that most hosting providers will automatically restart the gameserver after a shutdown, which makes this operation act as a 'restart' instead.",
   })
   async shutdown(@Req() req: AuthenticatedRequest, @Params() params: ParamId) {
