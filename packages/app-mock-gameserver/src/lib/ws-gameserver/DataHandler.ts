@@ -359,4 +359,52 @@ export class GameDataHandler {
       return [];
     }
   }
+
+  private getSimulationStateKey(): string {
+    return `${this.keyPrefix}:simulation:state`;
+  }
+
+  private getSimulationConfigKey(): string {
+    return `${this.keyPrefix}:simulation:config`;
+  }
+
+  async getSimulationState(): Promise<{ isRunning: boolean; config: any } | null> {
+    try {
+      const [stateJson, configJson] = await this.redis.mGet([
+        this.getSimulationStateKey(),
+        this.getSimulationConfigKey(),
+      ]);
+
+      if (!stateJson) return null;
+
+      return {
+        isRunning: JSON.parse(stateJson).isRunning,
+        config: configJson ? JSON.parse(configJson) : null,
+      };
+    } catch (error) {
+      this.log.error(`Error getting simulation state: ${error}`);
+      return null;
+    }
+  }
+
+  async setSimulationState(isRunning: boolean): Promise<void> {
+    try {
+      await this.redis.set(
+        this.getSimulationStateKey(),
+        JSON.stringify({ isRunning, timestamp: new Date().toISOString() }),
+      );
+    } catch (error) {
+      this.log.error(`Error setting simulation state: ${error}`);
+      throw error;
+    }
+  }
+
+  async setSimulationConfig(config: any): Promise<void> {
+    try {
+      await this.redis.set(this.getSimulationConfigKey(), JSON.stringify(config));
+    } catch (error) {
+      this.log.error(`Error setting simulation config: ${error}`);
+      throw error;
+    }
+  }
 }

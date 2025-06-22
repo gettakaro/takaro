@@ -92,6 +92,9 @@ export class GameServer implements IGameServer {
       serverLogger: (message: string) => this.sendLog(message),
     });
     this.tickInterval = setInterval(() => this.handleGameServerTick(), 10000);
+
+    // Restore simulation state after initialization
+    this.restoreSimulationState();
   }
 
   private async handleGameServerTick() {
@@ -150,6 +153,34 @@ export class GameServer implements IGameServer {
     clearInterval(this.tickInterval);
     this.wsClient.disconnect();
     return Promise.resolve();
+  }
+
+  private async restoreSimulationState(): Promise<void> {
+    try {
+      await this.dataHandler.init();
+      const savedState = await this.dataHandler.getSimulationState();
+
+      if (savedState) {
+        this.log.info('Found saved simulation state', savedState);
+
+        // Apply saved config if available
+        if (savedState.config) {
+          this.activitySimulator.updateConfig(savedState.config);
+        }
+
+        // Start simulation if it was running before
+        if (savedState.isRunning) {
+          this.log.info('Restoring active simulation state');
+          // Use setTimeout to ensure all initialization is complete
+          setTimeout(async () => {
+            await this.activitySimulator.start();
+            this.sendLog('🔄 Activity simulation restored from previous state');
+          }, 2000);
+        }
+      }
+    } catch (error) {
+      this.log.error('Error restoring simulation state:', error);
+    }
   }
 
   private async createInitPlayers() {
@@ -531,7 +562,7 @@ export class GameServer implements IGameServer {
               output.rawResult = 'Invalid frequency. Must be a number between 0 and 100.';
               output.success = false;
             } else {
-              this.activitySimulator.setGlobalFrequency(frequency);
+              await this.activitySimulator.setGlobalFrequency(frequency);
               output.rawResult = `Global simulation frequency set to ${frequency}%`;
               output.success = true;
             }
@@ -566,7 +597,7 @@ export class GameServer implements IGameServer {
                 output.rawResult = `Unknown event type: ${eventType}. Valid types: ${Object.keys(EVENT_TYPE_NAMES).join(', ')}`;
                 output.success = false;
               } else {
-                this.activitySimulator.setEventFrequency(internalEventType as keyof SimulationConfig, frequency);
+                await this.activitySimulator.setEventFrequency(internalEventType as keyof SimulationConfig, frequency);
                 output.rawResult = `${eventType} frequency set to ${frequency}%`;
                 output.success = true;
               }
@@ -615,12 +646,12 @@ export class GameServer implements IGameServer {
           const onlinePlayers = await this.dataHandler.getOnlinePlayers();
           const allPlayers = await this.dataHandler.getAllPlayers();
 
-          let result = '🔍 Simulation Debug Information\\n';
-          result += `Status: ${isActive ? 'ACTIVE ✅' : 'INACTIVE ❌'}\\n`;
-          result += `Online Players: ${onlinePlayers.length}\\n`;
-          result += `Total Players: ${allPlayers.length}\\n\\n`;
+          let result = '🔍 Simulation Debug Information\n';
+          result += `Status: ${isActive ? 'ACTIVE ✅' : 'INACTIVE ❌'}\n`;
+          result += `Online Players: ${onlinePlayers.length}\n`;
+          result += `Total Players: ${allPlayers.length}\n\n`;
 
-          result += 'Event Intervals (at current frequencies):\\n';
+          result += 'Event Intervals (at current frequencies):\n';
 
           Object.entries(config).forEach(([eventType, eventConfig]) => {
             const intervals = this.activitySimulator.calculateIntervals(
@@ -631,11 +662,11 @@ export class GameServer implements IGameServer {
             const maxSec = Math.round(intervals.maxInterval / 1000);
             const status = eventConfig.enabled ? '✅' : '❌';
 
-            result += `- ${eventType}: ${eventConfig.frequency}% ${status} (${minSec}-${maxSec}s)\\n`;
+            result += `- ${eventType}: ${eventConfig.frequency}% ${status} (${minSec}-${maxSec}s)\n`;
           });
 
           if (onlinePlayers.length === 0) {
-            result += "\\n⚠️ Warning: No online players - most events won't fire";
+            result += "\n⚠️ Warning: No online players - most events won't fire";
           }
 
           output.rawResult = result.trim();

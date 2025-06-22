@@ -42,6 +42,10 @@ export class ActivitySimulator {
     this.log.info('Starting activity simulation');
     this.state.start();
 
+    // Save state to Redis
+    await this.dataHandler.setSimulationState(true);
+    await this.dataHandler.setSimulationConfig(this.state.getConfig());
+
     // Immediate server log feedback
     this.serverLogger('🚀 Activity simulation started - server logging enabled');
 
@@ -70,6 +74,9 @@ export class ActivitySimulator {
 
     this.log.info('Stopping activity simulation');
     this.state.stop();
+
+    // Save state to Redis
+    await this.dataHandler.setSimulationState(false);
 
     // Clear all timers
     this.clearAllTimers();
@@ -105,14 +112,17 @@ export class ActivitySimulator {
   /**
    * Set global frequency for all event types
    */
-  setGlobalFrequency(frequency: number): void {
+  async setGlobalFrequency(frequency: number): Promise<void> {
     this.state.setGlobalFrequency(frequency);
+
+    // Save config to Redis
+    await this.dataHandler.setSimulationConfig(this.state.getConfig());
 
     // If simulation is running, restart to apply new frequencies
     if (this.state.isActive()) {
       this.log.info('Restarting simulation to apply new frequency settings');
       this.serverLogger(`🔄 Global frequency changed to ${frequency}% - restarting simulation`);
-      this.restart();
+      await this.restart();
     } else {
       this.serverLogger(`🔄 Global frequency set to ${frequency}% (will apply when simulation starts)`);
     }
@@ -121,14 +131,17 @@ export class ActivitySimulator {
   /**
    * Set frequency for specific event type
    */
-  setEventFrequency(eventType: keyof SimulationConfig, frequency: number): void {
+  async setEventFrequency(eventType: keyof SimulationConfig, frequency: number): Promise<void> {
     this.state.setEventFrequency(eventType, frequency);
+
+    // Save config to Redis
+    await this.dataHandler.setSimulationConfig(this.state.getConfig());
 
     // If simulation is running, restart to apply new frequency
     if (this.state.isActive()) {
       this.log.info(`Restarting simulation to apply new ${eventType} frequency`);
       this.serverLogger(`🔄 ${eventType} frequency changed to ${frequency}% - restarting simulation`);
-      this.restart();
+      await this.restart();
     } else {
       this.serverLogger(`🔄 ${eventType} frequency set to ${frequency}% (will apply when simulation starts)`);
     }
@@ -400,17 +413,6 @@ export class ActivitySimulator {
     };
 
     scheduleNext();
-  }
-
-  /**
-   * Clear a specific timer
-   */
-  private clearTimer(id: string): void {
-    const timer = this.timers.get(id);
-    if (timer) {
-      clearTimeout(timer);
-      this.timers.delete(id);
-    }
   }
 
   /**
