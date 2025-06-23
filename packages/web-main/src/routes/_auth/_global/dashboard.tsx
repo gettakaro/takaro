@@ -221,6 +221,7 @@ function Component() {
                     tooltipAccessor={(d) => `${d.country}:${d.playerCount}`}
                     allowZoomAndDrag={false}
                     showZoomControls={false}
+                    showCountrySidebar={true}
                   />
                 )}
               </div>
