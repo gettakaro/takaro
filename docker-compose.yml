@@ -27,7 +27,9 @@ services:
     # sudo sysctl -w vm.overcommit_memory=1 (enables on-the-fly temporary)
     # https://github.com/redis/docker-library-redis/issues/19#issuecomment-96080885
     # Kernel docs: https://www.kernel.org/doc/Documentation/vm/overcommit-accounting
-    command: redis-server --maxmemory-policy noeviction
+    command: redis-server --maxmemory-policy noeviction --save 60 1 --dbfilename dump.rdb
+    volumes:
+      - ./_data/redis:/data
     ports:
       - 6379:6379
 
