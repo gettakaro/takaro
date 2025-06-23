@@ -1,4 +1,3 @@
-/* eslint-disable quotes */
 // Static content arrays for event generation
 // Separated for better maintainability and potential localization support
 

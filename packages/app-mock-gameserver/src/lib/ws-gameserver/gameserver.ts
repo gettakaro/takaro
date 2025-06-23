@@ -645,7 +645,6 @@ export class GameServer implements IGameServer {
           });
 
           if (onlinePlayers.length === 0) {
-            // eslint-disable-next-line quotes
             result += "\n⚠️ Warning: No online players - most events won't fire";
           }
 
