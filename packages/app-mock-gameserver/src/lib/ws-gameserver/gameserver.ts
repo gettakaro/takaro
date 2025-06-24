@@ -106,7 +106,7 @@ export class GameServer implements IGameServer {
   }
 
   private async connectToServer(timeoutMs: number = 120000): Promise<void> {
-    return new Promise<void>((resolve, _reject) => {
+    return new Promise<void>((resolve, reject) => {
       let isResolved = false;
 
       // Set up timeout for initial connection
@@ -128,6 +128,17 @@ export class GameServer implements IGameServer {
             if (message.type !== 'identifyResponse') return;
             if (message.payload.error) {
               this.log.error('Failed to identify with server:', message.payload.error);
+              this.wsClient.removeListener('message', identifyListener);
+
+              if (!isResolved) {
+                isResolved = true;
+                clearTimeout(connectionTimeout);
+                // Handle error objects properly - extract message and name
+                const errorObj = message.payload.error;
+                const error = new Error(errorObj.message || errorObj);
+                error.name = errorObj.name || 'BadRequestError';
+                reject(error);
+              }
               return;
             }
 
@@ -181,11 +192,16 @@ export class GameServer implements IGameServer {
         this.wsClient.removeListener('error', onError);
       };
 
-      // Clean up on resolution
+      // Clean up on resolution or rejection
       const originalResolve = resolve;
+      const originalReject = reject;
       resolve = (...args) => {
         cleanup();
         originalResolve(...args);
+      };
+      reject = (...args) => {
+        cleanup();
+        originalReject(...args);
       };
     });
   }
