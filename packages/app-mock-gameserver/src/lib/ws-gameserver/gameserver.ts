@@ -30,6 +30,7 @@ import { GameDataHandler } from './DataHandler.js';
 import { ActivitySimulator } from './ActivitySimulator.js';
 import { SimulationConfig, EVENT_TYPE_NAMES } from './SimulationState.js';
 import { GAME_ITEMS, GAME_ENTITIES } from './GameContent.js';
+import { getRandomPublicIP } from './IpGenerator.js';
 import { PartialDeep } from 'type-fest/index.js';
 import { readFile } from 'fs/promises';
 import path from 'path';
@@ -192,6 +193,7 @@ export class GameServer implements IGameServer {
         epicOnlineServicesId: faker.string.alphanumeric(16),
         steamId: faker.string.alphanumeric(16),
         xboxLiveId: faker.string.alphanumeric(16),
+        ip: getRandomPublicIP(),
       });
 
       const meta = {
