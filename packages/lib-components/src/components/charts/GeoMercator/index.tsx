@@ -243,7 +243,7 @@ const Chart = <T,>({
   const scale = Math.min(mapWidth, height) * 0.25;
 
   const colorScale = scaleLinear({
-    domain: [Math.min(...data.map((d) => yAccessor(d))), Math.max(...data.map((d) => yAccessor(d)))],
+    domain: [0, Math.max(...data.map((d) => yAccessor(d)))],
     range: [theme.colors.backgroundAlt, theme.colors.primary],
   });
 
