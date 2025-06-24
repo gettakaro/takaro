@@ -49,10 +49,18 @@ const SidebarContainer = styled.div`
 `;
 
 const SidebarTitle = styled.h3`
-  margin: 0 0 ${({ theme }) => theme.spacing['3']} 0;
-  font-size: ${({ theme }) => theme.fontSize.small};
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.text};
+  margin: 0 0 ${({ theme }) => theme.spacing['2']} 0;
+  font-size: ${({ theme }) => theme.fontSize.tiny};
+  font-weight: 500;
+  color: ${({ theme }) => theme.colors.textAlt};
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+`;
+
+const CountryGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: ${({ theme }) => theme.spacing['2']};
 `;
 
 const CountryTable = styled.div`
@@ -84,24 +92,24 @@ const CountryCell = styled.div`
 `;
 
 const FlagCell = styled(CountryCell)`
-  width: 20px;
+  width: 16px;
   text-align: center;
-  font-size: 12px;
-  padding-right: ${({ theme }) => theme.spacing['1']};
+  font-size: 10px;
+  padding-right: 4px;
 `;
 
 const CountryCell2 = styled(CountryCell)`
-  padding-right: ${({ theme }) => theme.spacing['1']};
+  padding-right: 4px;
   font-weight: 500;
-  font-size: ${({ theme }) => theme.fontSize.small};
+  font-size: ${({ theme }) => theme.fontSize.tiny};
 `;
 
 const CountCell = styled(CountryCell)`
   text-align: right;
   font-weight: 600;
   color: ${({ theme }) => theme.colors.primary};
-  width: 30px;
-  font-size: ${({ theme }) => theme.fontSize.small};
+  width: 20px;
+  font-size: ${({ theme }) => theme.fontSize.tiny};
 `;
 
 const FlexContainer = styled.div`
@@ -132,27 +140,39 @@ interface CountrySidebarProps<T> {
 const CountrySidebar = <T,>({ data, xAccessor, yAccessor }: CountrySidebarProps<T>) => {
   const sortedData = [...data].sort((a, b) => yAccessor(b) - yAccessor(a));
 
+  // Split data into two columns
+  const midPoint = Math.ceil(sortedData.length / 2);
+  const leftColumnData = sortedData.slice(0, midPoint);
+  const rightColumnData = sortedData.slice(midPoint);
+
+  const renderCountryTable = (columnData: T[]) => (
+    <CountryTable>
+      {columnData.map((item, index) => {
+        const countryCode = xAccessor(item);
+        const playerCount = yAccessor(item);
+        const alpha2Code = countryCode.length === 3 ? alpha3ToAlpha2[countryCode] : countryCode;
+        const flag = getCountryFlag(alpha2Code);
+        // Prefer 2-letter country codes for display if available
+        const displayCode = alpha2Code || countryCode;
+
+        return (
+          <CountryRow key={`${countryCode}-${index}`}>
+            <FlagCell>{flag}</FlagCell>
+            <CountryCell2>{displayCode}</CountryCell2>
+            <CountCell>{playerCount}</CountCell>
+          </CountryRow>
+        );
+      })}
+    </CountryTable>
+  );
+
   return (
     <SidebarContainer>
       <SidebarTitle>Countries ({sortedData.length})</SidebarTitle>
-      <CountryTable>
-        {sortedData.map((item, index) => {
-          const countryCode = xAccessor(item);
-          const playerCount = yAccessor(item);
-          const alpha2Code = countryCode.length === 3 ? alpha3ToAlpha2[countryCode] : countryCode;
-          const flag = getCountryFlag(alpha2Code);
-          // Prefer 2-letter country codes for display if available
-          const displayCode = alpha2Code || countryCode;
-
-          return (
-            <CountryRow key={`${countryCode}-${index}`}>
-              <FlagCell>{flag}</FlagCell>
-              <CountryCell2>{displayCode}</CountryCell2>
-              <CountCell>{playerCount}</CountCell>
-            </CountryRow>
-          );
-        })}
-      </CountryTable>
+      <CountryGrid>
+        {renderCountryTable(leftColumnData)}
+        {renderCountryTable(rightColumnData)}
+      </CountryGrid>
     </SidebarContainer>
   );
 };
