@@ -57,7 +57,6 @@ export const countryCodes = [
   { code: 'CD', name: 'Congo, Democratic Republic' },
   { code: 'CK', name: 'Cook Islands' },
   { code: 'CR', name: 'Costa Rica' },
-  // eslint-disable-next-line quotes
   { code: 'CI', name: "Cote D'Ivoire" },
   { code: 'HR', name: 'Croatia' },
   { code: 'CU', name: 'Cuba' },
@@ -123,7 +122,6 @@ export const countryCodes = [
   { code: 'KR', name: 'Korea' },
   { code: 'KW', name: 'Kuwait' },
   { code: 'KG', name: 'Kyrgyzstan' },
-  // eslint-disable-next-line quotes
   { code: 'LA', name: "Lao People's Democratic Republic" },
   { code: 'LV', name: 'Latvia' },
   { code: 'LB', name: 'Lebanon' },

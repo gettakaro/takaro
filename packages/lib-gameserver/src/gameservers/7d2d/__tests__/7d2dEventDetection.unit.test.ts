@@ -1,4 +1,3 @@
-/* eslint-disable quotes */
 import { expect, sandbox } from '@takaro/test';
 import {
   EventChatMessage,

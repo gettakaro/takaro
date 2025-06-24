@@ -16,7 +16,6 @@ import { errors, logger } from '@takaro/util';
 import {
   BanDTO,
   CommandOutput,
-  EntityType,
   IEntityDTO,
   IGameServer,
   IItemDTO,
@@ -28,6 +27,9 @@ import {
   TestReachabilityOutputDTO,
 } from '@takaro/gameserver';
 import { GameDataHandler } from './DataHandler.js';
+import { ActivitySimulator } from './ActivitySimulator.js';
+import { SimulationConfig, EVENT_TYPE_NAMES } from './SimulationState.js';
+import { GAME_ITEMS, GAME_ENTITIES } from './GameContent.js';
 import { PartialDeep } from 'type-fest/index.js';
 import { readFile } from 'fs/promises';
 import path from 'path';
@@ -44,8 +46,8 @@ export class GameServer implements IGameServer {
   private wsClient;
   private log = logger('GameServer');
   private dataHandler: GameDataHandler;
+  private activitySimulator: ActivitySimulator;
   private serverId;
-  private tickInterval: NodeJS.Timeout;
 
   public connectionInfo: unknown = {};
 
@@ -83,26 +85,11 @@ export class GameServer implements IGameServer {
     this.serverId = this.config.mockserver.identityToken;
     this.wsClient = new WSClient(this.config.ws.url);
     this.dataHandler = new GameDataHandler(this.serverId);
-    this.tickInterval = setInterval(() => this.handleGameServerTick(), 10000);
-  }
-
-  private async handleGameServerTick() {
-    try {
-      const allPlayers = await this.dataHandler.getOnlinePlayers();
-      if (allPlayers.length > 0) {
-        this.wsClient.send({
-          type: 'gameEvent',
-          payload: {
-            type: GameEvents.PLAYER_CONNECTED,
-            data: new EventPlayerConnected({
-              player: allPlayers[0].player,
-            }),
-          },
-        });
-      }
-    } catch (error) {
-      this.log.error('Error in game server tick:', error);
-    }
+    this.activitySimulator = new ActivitySimulator({
+      dataHandler: this.dataHandler,
+      eventEmitter: async (type: string, data: any) => this.sendEvent(type as GameEventTypes, data),
+      serverLogger: (message: string) => this.sendLog(message),
+    });
   }
 
   async init() {
@@ -113,6 +100,9 @@ export class GameServer implements IGameServer {
 
     await this.dataHandler.init();
     await this.createInitPlayers();
+
+    // Restore simulation state after all initialization is complete
+    await this.restoreSimulationState();
   }
 
   private async connectToServer(timeoutMs: number = 120000): Promise<void> {
@@ -201,22 +191,65 @@ export class GameServer implements IGameServer {
   }
 
   async shutdown() {
-    clearInterval(this.tickInterval);
     this.wsClient.disconnect();
     return Promise.resolve();
   }
 
+  private async restoreSimulationState(): Promise<void> {
+    try {
+      const savedState = await this.dataHandler.getSimulationState();
+
+      if (savedState) {
+        this.log.info('Found saved simulation state', savedState);
+
+        // Apply saved config if available
+        if (savedState.config) {
+          this.activitySimulator.updateConfig(savedState.config);
+        }
+
+        // Start simulation if it was running before
+        if (savedState.isRunning) {
+          this.log.info('Restoring active simulation state');
+          // Use setTimeout to ensure all initialization is complete
+          setTimeout(async () => {
+            await this.activitySimulator.start();
+            this.sendLog('🔄 Activity simulation restored from previous state');
+          }, 2000);
+        }
+      } else if (this.config.simulation.autoStart) {
+        // Auto-start simulation if configured
+        this.log.info('Auto-starting simulation based on configuration');
+        setTimeout(async () => {
+          await this.activitySimulator.start();
+          this.sendLog('🚀 Activity simulation auto-started from configuration');
+        }, 2000);
+      }
+    } catch (error) {
+      this.log.error('Error restoring simulation state:', error);
+    }
+  }
+
   private async createInitPlayers() {
-    const totalPlayersWanted = 10;
-    const existingPlayers = await this.dataHandler.getOnlinePlayers();
+    const totalPlayersWanted = this.config.population.totalPlayers;
+    const existingPlayers = await this.dataHandler.getAllPlayers();
     const totalToCreate = totalPlayersWanted - existingPlayers.length;
-    if (totalToCreate <= 0) return;
+
+    this.log.info(
+      `Player population check: wanted=${totalPlayersWanted}, existing=${existingPlayers.length}, toCreate=${totalToCreate}`,
+    );
+
+    if (totalToCreate <= 0) {
+      this.log.info('No new players needed - using existing persisted players');
+      return;
+    }
 
     const dimensions = ['overworld', 'nether', 'end'];
 
     const playersToCreate = Array.from({ length: totalToCreate }, (_, i) => {
+      // Use simple sequential gameIds starting from existing player count
+      const gameId = (existingPlayers.length + i).toString();
       const player = new IGamePlayer({
-        gameId: i.toString(),
+        gameId,
         name: faker.internet.userName(),
         epicOnlineServicesId: faker.string.alphanumeric(16),
         steamId: faker.string.alphanumeric(16),
@@ -237,8 +270,15 @@ export class GameServer implements IGameServer {
     });
 
     try {
-      await Promise.all(playersToCreate.map(({ player, meta }) => this.dataHandler.addPlayer(player, meta)));
-      this.log.info(`Successfully created ${playersToCreate.length} mock players`);
+      await Promise.all(
+        playersToCreate.map(async ({ player, meta }) => {
+          await this.dataHandler.addPlayer(player, meta);
+          await this.dataHandler.initializePlayerInventory(player.gameId);
+        }),
+      );
+      this.log.info(
+        `Successfully created ${playersToCreate.length} new mock players with default inventory (total players now: ${totalPlayersWanted})`,
+      );
     } catch (error) {
       this.log.error('Error creating players:', error);
     }
@@ -354,18 +394,7 @@ export class GameServer implements IGameServer {
 
   async getPlayerInventory(player: IPlayerReferenceDTO): Promise<IItemDTO[]> {
     try {
-      return [
-        new IItemDTO({
-          code: 'wood',
-          name: 'Wood',
-          description: 'Wood is good',
-        }),
-        new IItemDTO({
-          code: 'stone',
-          name: 'Stone',
-          description: 'Stone can get you stoned',
-        }),
-      ];
+      return await this.dataHandler.getPlayerInventory(player.gameId);
     } catch (error) {
       this.log.error(`Error getting inventory for player ${player.gameId}:`, error);
       return [];
@@ -374,8 +403,8 @@ export class GameServer implements IGameServer {
 
   async giveItem(player: IPlayerReferenceDTO, item: string, amount: number, quality?: string): Promise<void> {
     try {
-      this.log.info(`Giving ${amount} of ${item} (quality: ${quality || 'default'}) to player ${player.gameId}`);
-      return Promise.resolve();
+      await this.dataHandler.addItemToInventory(player.gameId, item, amount);
+      this.log.info(`Gave ${amount}x ${item} (quality: ${quality || 'default'}) to player ${player.gameId}`);
     } catch (error) {
       this.log.error(`Error giving item to player ${player.gameId}:`, error);
       throw error;
@@ -384,18 +413,7 @@ export class GameServer implements IGameServer {
 
   async listItems(): Promise<IItemDTO[]> {
     try {
-      return [
-        new IItemDTO({
-          code: 'wood',
-          name: 'Wood',
-          description: 'Wood is good',
-        }),
-        new IItemDTO({
-          code: 'stone',
-          name: 'Stone',
-          description: 'Stone can get you stoned',
-        }),
-      ];
+      return GAME_ITEMS;
     } catch (error) {
       this.log.error('Error listing items:', error);
       return [];
@@ -516,6 +534,287 @@ export class GameServer implements IGameServer {
           }
         } catch (error) {
           output.rawResult = `Error updating player data: ${error instanceof Error ? error.message : 'Unknown error'}`;
+          output.success = false;
+        }
+      }
+
+      if (rawCommand === 'startSimulation') {
+        try {
+          if (this.activitySimulator.isActive()) {
+            output.rawResult = 'Activity simulation is already running';
+            output.success = false;
+          } else {
+            await this.activitySimulator.start();
+            output.rawResult = 'Activity simulation started successfully';
+            output.success = true;
+          }
+        } catch (error) {
+          output.rawResult = `Error starting simulation: ${error instanceof Error ? error.message : 'Unknown error'}`;
+          output.success = false;
+        }
+      }
+
+      if (rawCommand === 'stopSimulation') {
+        try {
+          if (!this.activitySimulator.isActive()) {
+            output.rawResult = 'Activity simulation is not running';
+            output.success = false;
+          } else {
+            await this.activitySimulator.stop();
+            output.rawResult = 'Activity simulation stopped successfully';
+            output.success = true;
+          }
+        } catch (error) {
+          output.rawResult = `Error stopping simulation: ${error instanceof Error ? error.message : 'Unknown error'}`;
+          output.success = false;
+        }
+      }
+
+      if (rawCommand === 'simulationStatus') {
+        try {
+          const isActive = this.activitySimulator.isActive();
+          const config = this.activitySimulator.getConfig();
+          const frequencies = this.activitySimulator.getFrequencies();
+
+          const eventDetails = Object.entries(config)
+            .map(([key, eventConfig]) => {
+              const freq = frequencies[key as keyof typeof frequencies];
+              return `${key}: ${freq}% (${eventConfig.enabled ? 'enabled' : 'disabled'})`;
+            })
+            .join(', ');
+
+          output.rawResult = `Simulation ${isActive ? 'ACTIVE' : 'INACTIVE'}. Events: ${eventDetails}`;
+          output.success = true;
+        } catch (error) {
+          output.rawResult = `Error getting simulation status: ${error instanceof Error ? error.message : 'Unknown error'}`;
+          output.success = false;
+        }
+      }
+
+      if (rawCommand.startsWith('setSimulationFrequency')) {
+        try {
+          const parts = rawCommand.split(' ');
+          if (parts.length !== 2) {
+            output.rawResult = 'Usage: setSimulationFrequency <0-100>';
+            output.success = false;
+          } else {
+            const frequency = parseInt(parts[1], 10);
+            if (isNaN(frequency) || frequency < 0 || frequency > 100) {
+              output.rawResult = 'Invalid frequency. Must be a number between 0 and 100.';
+              output.success = false;
+            } else {
+              await this.activitySimulator.setGlobalFrequency(frequency);
+              output.rawResult = `Global simulation frequency set to ${frequency}%`;
+              output.success = true;
+            }
+          }
+        } catch (error) {
+          output.rawResult = `Error setting simulation frequency: ${error instanceof Error ? error.message : 'Unknown error'}`;
+          output.success = false;
+        }
+      }
+
+      if (rawCommand.startsWith('setSimulationEventFrequency')) {
+        try {
+          const parts = rawCommand.split(' ');
+          if (parts.length !== 3) {
+            output.rawResult = 'Usage: setSimulationEventFrequency <eventType> <0-100>';
+            output.success = false;
+          } else {
+            const eventType = parts[1];
+            const frequency = parseInt(parts[2], 10);
+
+            if (isNaN(frequency) || frequency < 0 || frequency > 100) {
+              output.rawResult = 'Invalid frequency. Must be a number between 0 and 100.';
+              output.success = false;
+            } else {
+              // Use imported event type names mapping
+              const internalEventType = EVENT_TYPE_NAMES[eventType] || eventType;
+
+              if (
+                !EVENT_TYPE_NAMES[eventType] &&
+                !Object.keys(this.activitySimulator.getConfig()).includes(eventType)
+              ) {
+                output.rawResult = `Unknown event type: ${eventType}. Valid types: ${Object.keys(EVENT_TYPE_NAMES).join(', ')}`;
+                output.success = false;
+              } else {
+                await this.activitySimulator.setEventFrequency(internalEventType as keyof SimulationConfig, frequency);
+                output.rawResult = `${eventType} frequency set to ${frequency}%`;
+                output.success = true;
+              }
+            }
+          }
+        } catch (error) {
+          output.rawResult = `Error setting event frequency: ${error instanceof Error ? error.message : 'Unknown error'}`;
+          output.success = false;
+        }
+      }
+
+      if (rawCommand === 'getSimulationFrequency') {
+        try {
+          const frequencies = this.activitySimulator.getFrequencies();
+          const isActive = this.activitySimulator.isActive();
+
+          let result = `Simulation Frequencies (${isActive ? 'ACTIVE' : 'INACTIVE'}):\n`;
+
+          // Map internal names to user-friendly names
+          const displayNames: Record<string, string> = {
+            chatMessage: 'Chat',
+            playerMovement: 'Movement',
+            connection: 'Connection',
+            death: 'Death',
+            kill: 'Kill',
+            itemInteraction: 'Items',
+          };
+
+          Object.entries(frequencies).forEach(([key, value]) => {
+            const displayName = displayNames[key] || key;
+            result += `- ${displayName}: ${value}%\n`;
+          });
+
+          output.rawResult = result.trim();
+          output.success = true;
+        } catch (error) {
+          output.rawResult = `Error getting simulation frequencies: ${error instanceof Error ? error.message : 'Unknown error'}`;
+          output.success = false;
+        }
+      }
+
+      if (rawCommand === 'simulationDebug') {
+        try {
+          const isActive = this.activitySimulator.isActive();
+          const config = this.activitySimulator.getConfig();
+          const onlinePlayers = await this.dataHandler.getOnlinePlayers();
+          const allPlayers = await this.dataHandler.getAllPlayers();
+
+          let result = '🔍 Simulation Debug Information\n';
+          result += `Status: ${isActive ? 'ACTIVE ✅' : 'INACTIVE ❌'}\n`;
+          result += `Online Players: ${onlinePlayers.length}\n`;
+          result += `Total Players: ${allPlayers.length}\n\n`;
+
+          result += 'Event Intervals (at current frequencies):\n';
+
+          Object.entries(config).forEach(([eventType, eventConfig]) => {
+            const intervals = this.activitySimulator.calculateIntervals(
+              eventConfig.frequency,
+              eventType as keyof SimulationConfig,
+            );
+            const minSec = Math.round(intervals.minInterval / 1000);
+            const maxSec = Math.round(intervals.maxInterval / 1000);
+            const status = eventConfig.enabled ? '✅' : '❌';
+
+            result += `- ${eventType}: ${eventConfig.frequency}% ${status} (${minSec}-${maxSec}s)\n`;
+          });
+
+          if (onlinePlayers.length === 0) {
+            result += "\n⚠️ Warning: No online players - most events won't fire";
+          }
+
+          output.rawResult = result.trim();
+          output.success = true;
+        } catch (error) {
+          output.rawResult = `Error getting debug info: ${error instanceof Error ? error.message : 'Unknown error'}`;
+          output.success = false;
+        }
+      }
+
+      if (rawCommand.startsWith('testInventory')) {
+        try {
+          const [_, playerId] = rawCommand.split(' ');
+          if (!playerId) {
+            output.rawResult = 'Usage: testInventory <playerId>';
+            output.success = false;
+          } else {
+            // Test inventory operations
+            const currentInventory = await this.dataHandler.getPlayerInventory(playerId);
+            let result = `Player ${playerId} inventory before: `;
+            result += currentInventory.map((item) => `${item.code}(${item.name})`).join(', ') || 'empty';
+
+            // Add an item
+            await this.dataHandler.addItemToInventory(playerId, 'apple', 3);
+            result += '\nAdded 3x apple';
+
+            // Check inventory after
+            const updatedInventory = await this.dataHandler.getPlayerInventory(playerId);
+            result += `\nPlayer ${playerId} inventory after: `;
+            result += updatedInventory.map((item) => `${item.code}(${item.name})`).join(', ') || 'empty';
+
+            output.rawResult = result;
+            output.success = true;
+          }
+        } catch (error) {
+          output.rawResult = `Error testing inventory: ${error instanceof Error ? error.message : 'Unknown error'}`;
+          output.success = false;
+        }
+      }
+
+      if (rawCommand === 'playerPersistenceCheck') {
+        try {
+          const allPlayers = await this.dataHandler.getAllPlayers();
+          const onlinePlayers = await this.dataHandler.getOnlinePlayers();
+
+          let result = '🔍 Player Persistence Check\n';
+          result += `Total players in Redis: ${allPlayers.length}\n`;
+          result += `Online players: ${onlinePlayers.length}\n`;
+          result += `Offline players: ${allPlayers.length - onlinePlayers.length}\n\n`;
+
+          if (allPlayers.length > 0) {
+            result += 'Sample player data:\n';
+            const sample = allPlayers.slice(0, 3);
+            sample.forEach((p, i) => {
+              result += `${i + 1}. ${p.player.name} (ID: ${p.player.gameId}) - ${p.meta.online ? 'ONLINE' : 'OFFLINE'}\n`;
+            });
+          } else {
+            result += 'No players found in Redis\n';
+          }
+
+          output.rawResult = result.trim();
+          output.success = true;
+        } catch (error) {
+          output.rawResult = `Error checking persistence: ${error instanceof Error ? error.message : 'Unknown error'}`;
+          output.success = false;
+        }
+      }
+
+      if (rawCommand === 'populationStats') {
+        try {
+          const onlinePlayers = await this.dataHandler.getOnlinePlayers();
+          const allPlayers = await this.dataHandler.getAllPlayers();
+          const populationManager = new (await import('./PlayerPopulationManager.js')).PlayerPopulationManager();
+
+          const populationStats = populationManager.analyzePopulation(onlinePlayers.length, allPlayers.length);
+          const timePeriod = populationManager.getCurrentTimePeriod();
+
+          let result = '📊 Population Statistics\n';
+          result += `Current Time Period: ${timePeriod}\n`;
+          result += `Online: ${populationStats.currentOnlineCount}/${populationStats.totalPlayerCount} (${populationStats.currentPercentage}%)\n`;
+          result += `Target: ${populationStats.targetPercentage}%\n`;
+          result += `Connection Bias: ${Math.round(populationStats.bias * 100)}% toward connecting\n`;
+          result += `Next Action: ${populationStats.shouldConnect ? 'CONNECT' : 'DISCONNECT'}\n\n`;
+
+          const hourlyTargets = [];
+          for (let hour = 0; hour < 24; hour++) {
+            const testDate = new Date();
+            testDate.setHours(hour);
+            const testManager = new (await import('./PlayerPopulationManager.js')).PlayerPopulationManager();
+            // Temporarily override the current time for testing
+            const originalGetHours = Date.prototype.getHours;
+            Date.prototype.getHours = function () {
+              return hour;
+            };
+            const target = testManager.getTargetOnlinePercentage();
+            Date.prototype.getHours = originalGetHours;
+
+            hourlyTargets.push(`${hour.toString().padStart(2, '0')}:00 - ${target}%`);
+          }
+
+          result += 'Hourly Target Schedule (Today):\n';
+          result += hourlyTargets.join('\n');
+
+          output.rawResult = result.trim();
+          output.success = true;
+        } catch (error) {
+          output.rawResult = `Error getting population stats: ${error instanceof Error ? error.message : 'Unknown error'}`;
           output.success = false;
         }
       }
@@ -675,83 +974,7 @@ export class GameServer implements IGameServer {
 
   async listEntities(): Promise<IEntityDTO[]> {
     try {
-      return [
-        new IEntityDTO({
-          code: 'zombie',
-          name: 'Zombie',
-          description: 'A shambling undead creature',
-          type: EntityType.HOSTILE,
-        }),
-        new IEntityDTO({
-          code: 'skeleton',
-          name: 'Skeleton',
-          description: 'An undead archer',
-          type: EntityType.HOSTILE,
-        }),
-        new IEntityDTO({
-          code: 'spider',
-          name: 'Spider',
-          description: 'A large arachnid',
-          type: EntityType.HOSTILE,
-        }),
-        new IEntityDTO({
-          code: 'cow',
-          name: 'Cow',
-          description: 'A peaceful farm animal',
-          type: EntityType.FRIENDLY,
-        }),
-        new IEntityDTO({
-          code: 'pig',
-          name: 'Pig',
-          description: 'A pink farm animal',
-          type: EntityType.FRIENDLY,
-        }),
-        new IEntityDTO({
-          code: 'sheep',
-          name: 'Sheep',
-          description: 'A woolly farm animal',
-          type: EntityType.FRIENDLY,
-        }),
-        new IEntityDTO({
-          code: 'chicken',
-          name: 'Chicken',
-          description: 'A small farm bird',
-          type: EntityType.FRIENDLY,
-        }),
-        new IEntityDTO({
-          code: 'wolf',
-          name: 'Wolf',
-          description: 'A wild canine that can be tamed',
-          type: EntityType.NEUTRAL,
-        }),
-        new IEntityDTO({
-          code: 'enderman',
-          name: 'Enderman',
-          description: 'A tall dark creature from another dimension',
-          type: EntityType.NEUTRAL,
-        }),
-        new IEntityDTO({
-          code: 'villager',
-          name: 'Villager',
-          description: 'A peaceful NPC that trades items',
-          type: EntityType.FRIENDLY,
-          metadata: { profession: 'merchant', canTrade: true },
-        }),
-        new IEntityDTO({
-          code: 'creeper',
-          name: 'Creeper',
-          description: 'An explosive green creature',
-          type: EntityType.HOSTILE,
-          metadata: { explosive: true, range: 3 },
-        }),
-        new IEntityDTO({
-          code: 'horse',
-          name: 'Horse',
-          description: 'A rideable animal',
-          type: EntityType.FRIENDLY,
-          metadata: { rideable: true, speed: 'fast' },
-        }),
-      ];
+      return GAME_ENTITIES;
     } catch (error) {
       this.log.error('Error listing entities:', error);
       return [];

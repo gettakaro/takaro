@@ -42,7 +42,6 @@ export class IGamePlayer extends TakaroDTO<IGamePlayer> {
   @IsString()
   @IsOptional()
   @Matches(/^[a-zA-Z0-9_-]+:[a-zA-Z0-9_-]+$/, {
-    // eslint-disable-next-line quotes
     message: "Platform ID must be in format 'platform:id' (e.g., 'minecraft:player-uuid')",
   })
   platformId?: string;

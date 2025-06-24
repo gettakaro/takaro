@@ -165,7 +165,6 @@ export class SevenDaysToDie implements IGameServer {
   }
 
   async sendMessage(message: string, opts?: IMessageOptsDTO) {
-    // eslint-disable-next-line quotes
     const escapedMessage = message.replaceAll(/"/g, "'");
 
     let command = `say "${escapedMessage}"`;
