@@ -36,58 +36,81 @@ const alpha3ToAlpha2: Record<string, string> = Object.entries(alpha2ToAlpha3).re
 );
 
 const SidebarContainer = styled.div`
-  width: 280px;
-  max-height: 100%;
+  width: 320px;
+  min-width: 320px;
+  flex-shrink: 0;
+  height: 100%;
   overflow: auto;
   background-color: ${({ theme }) => theme.colors.backgroundAlt};
+  border: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
-  padding: ${({ theme }) => theme.spacing['4']};
+  padding: ${({ theme }) => theme.spacing['3']};
   margin-left: ${({ theme }) => theme.spacing['4']};
 `;
 
 const SidebarTitle = styled.h3`
-  margin: 0 0 ${({ theme }) => theme.spacing['4']} 0;
-  font-size: ${({ theme }) => theme.fontSize.medium};
+  margin: 0 0 ${({ theme }) => theme.spacing['3']} 0;
+  font-size: ${({ theme }) => theme.fontSize.small};
   font-weight: 600;
   color: ${({ theme }) => theme.colors.text};
 `;
 
-const CountryList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing['2']};
-`;
-
-const CountryItem = styled.div`
-  display: flex;
-  align-items: center;
-  padding: ${({ theme }) => theme.spacing['2']} ${({ theme }) => theme.spacing['3']};
-  background-color: ${({ theme }) => theme.colors.background};
-  border-radius: ${({ theme }) => theme.borderRadius.small};
+const CountryTable = styled.div`
+  display: table;
+  width: 100%;
   font-size: ${({ theme }) => theme.fontSize.small};
+  border-collapse: collapse;
+`;
+
+const CountryRow = styled.div`
+  display: table-row;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.backgroundAccent};
+  }
+
+  &:last-child > div {
+    border-bottom: none;
+  }
+`;
+
+const CountryCell = styled.div`
+  display: table-cell;
+  padding: 2px 0;
+  vertical-align: middle;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
   color: ${({ theme }) => theme.colors.text};
+  line-height: 1.3;
 `;
 
-const CountryFlag = styled.span`
-  font-size: 18px;
-  margin-right: ${({ theme }) => theme.spacing['2']};
-  min-width: 24px;
+const FlagCell = styled(CountryCell)`
+  width: 20px;
+  text-align: center;
+  font-size: 12px;
+  padding-right: ${({ theme }) => theme.spacing['1']};
 `;
 
-const CountryName = styled.span`
-  flex: 1;
-  margin-right: ${({ theme }) => theme.spacing['2']};
+const CountryCell2 = styled(CountryCell)`
+  padding-right: ${({ theme }) => theme.spacing['1']};
+  font-weight: 500;
+  font-size: ${({ theme }) => theme.fontSize.small};
 `;
 
-const PlayerCount = styled.span`
+const CountCell = styled(CountryCell)`
+  text-align: right;
   font-weight: 600;
   color: ${({ theme }) => theme.colors.primary};
+  width: 30px;
+  font-size: ${({ theme }) => theme.fontSize.small};
 `;
 
 const FlexContainer = styled.div`
   display: flex;
+  flex-direction: row;
+  align-items: stretch;
   position: relative;
   height: 100%;
+  width: 100%;
 `;
 
 const MapContainer = styled.div`
@@ -112,24 +135,24 @@ const CountrySidebar = <T,>({ data, xAccessor, yAccessor }: CountrySidebarProps<
   return (
     <SidebarContainer>
       <SidebarTitle>Countries ({sortedData.length})</SidebarTitle>
-      <CountryList>
+      <CountryTable>
         {sortedData.map((item, index) => {
           const countryCode = xAccessor(item);
           const playerCount = yAccessor(item);
           const alpha2Code = countryCode.length === 3 ? alpha3ToAlpha2[countryCode] : countryCode;
           const flag = getCountryFlag(alpha2Code);
+          // Prefer 2-letter country codes for display if available
+          const displayCode = alpha2Code || countryCode;
 
           return (
-            <CountryItem key={`${countryCode}-${index}`}>
-              <CountryFlag>{flag}</CountryFlag>
-              <CountryName>{countryCode}</CountryName>
-              <PlayerCount>
-                {playerCount} {playerCount === 1 ? 'player' : 'players'}
-              </PlayerCount>
-            </CountryItem>
+            <CountryRow key={`${countryCode}-${index}`}>
+              <FlagCell>{flag}</FlagCell>
+              <CountryCell2>{displayCode}</CountryCell2>
+              <CountCell>{playerCount}</CountCell>
+            </CountryRow>
           );
         })}
-      </CountryList>
+      </CountryTable>
     </SidebarContainer>
   );
 };
@@ -209,9 +232,15 @@ const Chart = <T,>({
   const theme = useTheme();
   const { hideTooltip, showTooltip, tooltipData, tooltipLeft = 0, tooltipTop = 0 } = useTooltip<T>();
 
-  const centerX = width / 2;
+  // Calculate sidebar width including margin
+  const sidebarTotalWidth = showCountrySidebar ? 320 + parseInt(theme.spacing['4']) : 0;
+
+  // Adjust map width to account for sidebar
+  const mapWidth = width - sidebarTotalWidth;
+
+  const centerX = mapWidth / 2;
   const centerY = height / 2;
-  const scale = Math.min(width, height) * 0.25;
+  const scale = Math.min(mapWidth, height) * 0.25;
 
   const colorScale = scaleLinear({
     domain: [Math.min(...data.map((d) => yAccessor(d))), Math.max(...data.map((d) => yAccessor(d)))],
@@ -242,7 +271,7 @@ const Chart = <T,>({
     <svg
       id={name}
       name={name}
-      width={width}
+      width={mapWidth}
       height={height}
       ref={zoom?.containerRef}
       style={{
@@ -250,7 +279,7 @@ const Chart = <T,>({
         cursor: allowZoomAndDrag && zoom ? (zoom.isDragging ? 'grabbing' : 'grab') : 'default',
       }}
     >
-      <rect x={0} y={0} width={width} height={height} fill={theme.colors.background} rx={10} />
+      <rect x={0} y={0} width={mapWidth} height={height} fill={theme.colors.background} rx={10} />
       <Mercator<FeatureShape>
         data={world.features}
         scale={zoom?.transformMatrix.scaleX || scale}
@@ -292,7 +321,7 @@ const Chart = <T,>({
         <rect
           x={0}
           y={0}
-          width={width}
+          width={mapWidth}
           height={height}
           rx={14}
           fill="transparent"
@@ -327,7 +356,7 @@ const Chart = <T,>({
 
   return allowZoomAndDrag ? (
     <Zoom<SVGSVGElement>
-      width={width}
+      width={mapWidth}
       height={height}
       scaleXMin={100}
       scaleXMax={1000}
