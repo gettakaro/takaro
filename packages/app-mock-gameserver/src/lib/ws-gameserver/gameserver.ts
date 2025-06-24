@@ -94,39 +94,117 @@ export class GameServer implements IGameServer {
   }
 
   async init() {
-    // eslint-disable-next-line no-async-promise-executor
-    const identifyPromise = new Promise<void>(async (resolve, reject) => {
-      this.wsClient.on('connected', async () => {
-        this.log.info('Connected to WebSocket server');
-        this.log.info(`Gameserver identity is ${this.serverId}`);
-        const identifyListener = (message: any) => {
-          if (message.type !== 'identifyResponse') return;
-          if (message.payload.error) return reject(message.payload.error);
-
-          this.log.info('Successfully identified with the server');
-          this.wsClient.removeListener('message', identifyListener);
-          resolve();
-        };
-
-        this.wsClient.on('message', identifyListener);
-
-        this.wsClient.send({
-          type: 'identify',
-          payload: {
-            identityToken: this.serverId,
-            registrationToken: this.config.mockserver.registrationToken,
-          },
-        });
-      });
-    });
-
     this.setupMessageHandlers();
-    await identifyPromise;
+
+    // Set up WebSocket connection with proper error handling
+    await this.connectToServer();
+
     await this.dataHandler.init();
     await this.createInitPlayers();
 
     // Restore simulation state after all initialization is complete
     await this.restoreSimulationState();
+  }
+
+  private async connectToServer(timeoutMs: number = 120000): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      let isResolved = false;
+
+      // Set up timeout for initial connection
+      const connectionTimeout = setTimeout(() => {
+        if (!isResolved) {
+          isResolved = true;
+          this.log.warn('Initial connection timeout reached, but continuing with reconnection attempts');
+          resolve(); // Don't reject, allow the app to continue running
+        }
+      }, timeoutMs);
+
+      // Handle successful connection and identification
+      const onConnected = async () => {
+        try {
+          this.log.info('Connected to WebSocket server');
+          this.log.info(`Gameserver identity is ${this.serverId}`);
+
+          const identifyListener = (message: any) => {
+            if (message.type !== 'identifyResponse') return;
+            if (message.payload.error) {
+              this.log.error('Failed to identify with server:', message.payload.error);
+              this.wsClient.removeListener('message', identifyListener);
+
+              if (!isResolved) {
+                isResolved = true;
+                clearTimeout(connectionTimeout);
+                // Handle error objects properly - extract message and name
+                const errorObj = message.payload.error;
+                const error = new Error(errorObj.message || errorObj);
+                error.name = errorObj.name || 'BadRequestError';
+                reject(error);
+              }
+              return;
+            }
+
+            this.log.info('Successfully identified with the server');
+            this.wsClient.removeListener('message', identifyListener);
+
+            if (!isResolved) {
+              isResolved = true;
+              clearTimeout(connectionTimeout);
+              resolve();
+            }
+          };
+
+          this.wsClient.on('message', identifyListener);
+
+          this.wsClient.send({
+            type: 'identify',
+            payload: {
+              identityToken: this.serverId,
+              registrationToken: this.config.mockserver.registrationToken,
+            },
+          });
+        } catch (error) {
+          this.log.error('Error during identification process:', error);
+        }
+      };
+
+      // Handle connection failures
+      const onMaxReconnectReached = () => {
+        this.log.warn('Max reconnection attempts reached, will retry after delay');
+        // Reset and try again after a longer delay
+        setTimeout(() => {
+          this.wsClient.reconnect();
+        }, 30000);
+      };
+
+      const onError = (error: Error) => {
+        this.log.error('WebSocket connection error:', error);
+        // Don't reject here, let the reconnection logic handle it
+      };
+
+      // Set up event listeners
+      this.wsClient.on('connected', onConnected);
+      this.wsClient.on('maxReconnectAttemptsReached', onMaxReconnectReached);
+      this.wsClient.on('error', onError);
+
+      // Clean up listeners when resolved
+      const cleanup = () => {
+        this.wsClient.removeListener('connected', onConnected);
+        this.wsClient.removeListener('maxReconnectAttemptsReached', onMaxReconnectReached);
+        this.wsClient.removeListener('error', onError);
+      };
+
+      // Clean up on resolution or rejection
+      const originalResolve = resolve;
+      const originalReject = reject;
+      resolve = (...args) => {
+        cleanup();
+        originalResolve(...args);
+      };
+      reject = (...args) => {
+        cleanup();
+        originalReject(...args);
+      };
+    });
   }
 
   async shutdown() {

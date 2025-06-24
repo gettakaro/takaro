@@ -10,7 +10,9 @@ export interface IMockServerConfig extends IBaseConfig {
     url: string;
     maxReconnectAttempts: number;
     reconnectIntervalMs: number;
+    maxReconnectIntervalMs: number;
     heartbeatIntervalMs: number;
+    continuousReconnect: boolean;
   };
   mockserver: {
     name: string;
@@ -87,16 +89,28 @@ const configSchema = {
       env: 'T_WS_MAX_RECONNECT_ATTEMPTS',
     },
     reconnectIntervalMs: {
-      doc: 'The interval in milliseconds between reconnection attempts',
+      doc: 'The base interval in milliseconds between reconnection attempts',
       format: Number,
       default: 5000,
       env: 'T_WS_RECONNECT_INTERVAL_MS',
+    },
+    maxReconnectIntervalMs: {
+      doc: 'The maximum interval in milliseconds between reconnection attempts (for exponential backoff)',
+      format: Number,
+      default: 60000,
+      env: 'T_WS_MAX_RECONNECT_INTERVAL_MS',
     },
     heartbeatIntervalMs: {
       doc: 'The interval in milliseconds between ping messages',
       format: Number,
       default: 30000,
       env: 'T_WS_HEARTBEAT_INTERVAL_MS',
+    },
+    continuousReconnect: {
+      doc: 'Whether to continuously reconnect indefinitely during initial connection phase',
+      format: Boolean,
+      default: true,
+      env: 'T_WS_CONTINUOUS_RECONNECT',
     },
   },
   mockserver: {
