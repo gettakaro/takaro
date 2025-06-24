@@ -4,7 +4,7 @@ exports[`Should render <IconButton /> 1`] = `
 <div>
   <button
     aria-label="test"
-    class="sc-lgjHQU dkJBtd"
+    class="sc-cgjDci duTlkQ"
     color="primary"
     type="button"
   >
