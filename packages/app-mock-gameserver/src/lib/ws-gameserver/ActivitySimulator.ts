@@ -4,6 +4,7 @@ import { EventGenerator } from './EventGenerator.js';
 import { PlayerMovementSimulator } from './PlayerMovementSimulator.js';
 import { PlayerPopulationManager } from './PlayerPopulationManager.js';
 import { SimulationState, SimulationConfig } from './SimulationState.js';
+import { getRandomPublicIP } from './IpGenerator.js';
 
 export interface ActivitySimulatorOptions {
   dataHandler: GameDataHandler;
@@ -313,6 +314,17 @@ export class ActivitySimulator {
 
           // Update player online status in Redis FIRST and track what we actually did
           await this.dataHandler.setOnlineStatus(playerId, isConnection);
+
+          // If player is connecting, assign a new random IP address to simulate realistic behavior
+          if (isConnection) {
+            const newIP = getRandomPublicIP();
+            await this.dataHandler.updatePlayerData(playerId, { ip: newIP });
+            this.log.debug(`Assigned new IP address to connecting player`, {
+              playerId,
+              playerName,
+              newIP,
+            });
+          }
 
           // Emit the connection event
           await this.eventEmitter(connectionEvent.type, connectionEvent.data);
