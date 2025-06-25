@@ -75,7 +75,6 @@ const configSchema = {
   },
   gameServerManager: {
     reconnectAfterMs: {
-      // eslint-disable-next-line
       doc: "If we don't receive a message from a server in this time, we consider it dead and try to reconnect",
       format: 'integer',
       default: ms('5m'),

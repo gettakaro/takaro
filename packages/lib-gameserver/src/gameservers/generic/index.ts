@@ -77,10 +77,17 @@ export class Generic implements IGameServer {
   }
 
   async testReachability(): Promise<TestReachabilityOutputDTO> {
-    const response = await this.takaroConnector.requestFromServer(this.gameServerId, 'testReachability', '{}');
-    const dto = new TestReachabilityOutputDTO(response);
-    await dto.validate();
-    return dto;
+    try {
+      const response = await this.takaroConnector.requestFromServer(this.gameServerId, 'testReachability', '{}');
+      const dto = new TestReachabilityOutputDTO(response);
+      await dto.validate();
+      return dto;
+    } catch (error) {
+      return new TestReachabilityOutputDTO({
+        connectable: false,
+        reason: error instanceof Error ? error.message : 'Unknown error occurred',
+      });
+    }
   }
 
   async executeConsoleCommand(rawCommand: string): Promise<CommandOutput> {
@@ -172,7 +179,12 @@ export class Generic implements IGameServer {
   }
 
   async listEntities(): Promise<IEntityDTO[]> {
-    throw new errors.NotImplementedError();
+    const res = await this.requestFromServer('listEntities');
+    if (!res)
+      throw new errors.ValidationError('Nothing returned from server, is the server responding the right data?');
+    const dto: IEntityDTO[] = res.map((p: any) => new IEntityDTO(p));
+    await Promise.all(dto.map((p) => p.validate()));
+    return dto;
   }
 
   async listLocations(): Promise<ILocationDTO[]> {

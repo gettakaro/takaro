@@ -5,6 +5,7 @@ import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import reactPlugin from 'eslint-plugin-react';
 import storybookPlugin from 'eslint-plugin-storybook';
+import prettierConfig from 'eslint-config-prettier';
 
 import { FlatCompat } from '@eslint/eslintrc';
 
@@ -44,6 +45,7 @@ export default tseslint.config(
   // extends
   eslint.configs.recommended,
   ...tseslint.configs.recommended,
+  prettierConfig,
 
   //
   // base config
@@ -65,7 +67,6 @@ export default tseslint.config(
     rules: {
 
       'no-console': 'off',
-      quotes: ['error', 'single'],
       semi: ['error', 'always'],
       'logical-assignment-operators': 'error',
       'no-else-return': 'off',

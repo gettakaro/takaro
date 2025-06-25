@@ -7,11 +7,175 @@ import { ParentSize } from '@visx/responsive';
 import { getDefaultTooltipStyles, InnerChartProps, Margin } from '../util';
 import { useTheme } from '../../../hooks';
 import { useTooltip, Tooltip } from '@visx/tooltip';
+import { styled } from '../../../styled';
 import { Zoom } from '@visx/zoom';
 import { useCallback } from 'react';
 import { localPoint } from '@visx/event';
 import { ZoomControls } from '../ZoomControls';
 import { alpha2ToAlpha3 } from './iso3166-alpha2-to-alpha3';
+
+const getCountryFlag = (countryCode: string): string => {
+  if (!countryCode || countryCode.length !== 2) {
+    return '';
+  }
+
+  const codePoints = countryCode
+    .toUpperCase()
+    .split('')
+    .map((char) => 127397 + char.charCodeAt(0));
+
+  return String.fromCodePoint(...codePoints);
+};
+
+const alpha3ToAlpha2: Record<string, string> = Object.entries(alpha2ToAlpha3).reduce(
+  (acc, [alpha2, alpha3]) => {
+    acc[alpha3] = alpha2;
+    return acc;
+  },
+  {} as Record<string, string>,
+);
+
+const SidebarContainer = styled.div`
+  width: 320px;
+  min-width: 320px;
+  flex-shrink: 0;
+  height: 100%;
+  overflow: auto;
+  background-color: ${({ theme }) => theme.colors.backgroundAlt};
+  border: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+  padding: ${({ theme }) => theme.spacing['3']};
+  margin-left: ${({ theme }) => theme.spacing['4']};
+`;
+
+const SidebarTitle = styled.h3`
+  margin: 0 0 ${({ theme }) => theme.spacing['2']} 0;
+  font-size: ${({ theme }) => theme.fontSize.tiny};
+  font-weight: 500;
+  color: ${({ theme }) => theme.colors.textAlt};
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+`;
+
+const CountryGrid = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: ${({ theme }) => theme.spacing['2']};
+`;
+
+const CountryTable = styled.div`
+  display: table;
+  width: 100%;
+  font-size: ${({ theme }) => theme.fontSize.small};
+  border-collapse: collapse;
+`;
+
+const CountryRow = styled.div`
+  display: table-row;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.backgroundAccent};
+  }
+
+  &:last-child > div {
+    border-bottom: none;
+  }
+`;
+
+const CountryCell = styled.div`
+  display: table-cell;
+  padding: 2px 0;
+  vertical-align: middle;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
+  color: ${({ theme }) => theme.colors.text};
+  line-height: 1.3;
+`;
+
+const FlagCell = styled(CountryCell)`
+  width: 16px;
+  text-align: center;
+  font-size: 10px;
+  padding-right: 4px;
+`;
+
+const CountryCell2 = styled(CountryCell)`
+  padding-right: 4px;
+  font-weight: 500;
+  font-size: ${({ theme }) => theme.fontSize.tiny};
+`;
+
+const CountCell = styled(CountryCell)`
+  text-align: right;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.primary};
+  width: 20px;
+  font-size: ${({ theme }) => theme.fontSize.tiny};
+`;
+
+const FlexContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  position: relative;
+  height: 100%;
+  width: 100%;
+`;
+
+const MapContainer = styled.div`
+  flex: 1;
+  position: relative;
+`;
+
+const StyledTooltip = styled(Tooltip)`
+  text-align: center;
+  transform: translate(-50%);
+`;
+
+interface CountrySidebarProps<T> {
+  data: T[];
+  xAccessor: (d: T) => string;
+  yAccessor: (d: T) => number;
+}
+
+const CountrySidebar = <T,>({ data, xAccessor, yAccessor }: CountrySidebarProps<T>) => {
+  const sortedData = [...data].sort((a, b) => yAccessor(b) - yAccessor(a));
+
+  // Split data into two columns
+  const midPoint = Math.ceil(sortedData.length / 2);
+  const leftColumnData = sortedData.slice(0, midPoint);
+  const rightColumnData = sortedData.slice(midPoint);
+
+  const renderCountryTable = (columnData: T[]) => (
+    <CountryTable>
+      {columnData.map((item, index) => {
+        const countryCode = xAccessor(item);
+        const playerCount = yAccessor(item);
+        const alpha2Code = countryCode.length === 3 ? alpha3ToAlpha2[countryCode] : countryCode;
+        const flag = getCountryFlag(alpha2Code);
+        // Prefer 2-letter country codes for display if available
+        const displayCode = alpha2Code || countryCode;
+
+        return (
+          <CountryRow key={`${countryCode}-${index}`}>
+            <FlagCell>{flag}</FlagCell>
+            <CountryCell2>{displayCode}</CountryCell2>
+            <CountCell>{playerCount}</CountCell>
+          </CountryRow>
+        );
+      })}
+    </CountryTable>
+  );
+
+  return (
+    <SidebarContainer>
+      <SidebarTitle>Countries ({sortedData.length})</SidebarTitle>
+      <CountryGrid>
+        {renderCountryTable(leftColumnData)}
+        {renderCountryTable(rightColumnData)}
+      </CountryGrid>
+    </SidebarContainer>
+  );
+};
 
 interface FeatureShape {
   type: 'Feature';
@@ -36,6 +200,7 @@ export interface GeoMercatorProps<T> {
   tooltipAccessor?: (d: T) => string;
   showZoomControls?: boolean;
   allowZoomAndDrag?: boolean;
+  showCountrySidebar?: boolean;
 }
 
 type InnerGeoMercator<T> = InnerChartProps & GeoMercatorProps<T>;
@@ -49,6 +214,7 @@ export const GeoMercator = <T,>({
   tooltipAccessor,
   showZoomControls = false,
   allowZoomAndDrag = false,
+  showCountrySidebar = false,
 }: GeoMercatorProps<T>) => {
   return (
     <ParentSize>
@@ -64,6 +230,7 @@ export const GeoMercator = <T,>({
           allowZoomAndDrag={allowZoomAndDrag}
           showZoomControls={showZoomControls}
           tooltipAccessor={tooltipAccessor}
+          showCountrySidebar={showCountrySidebar}
         />
       )}
     </ParentSize>
@@ -80,16 +247,23 @@ const Chart = <T,>({
   name,
   allowZoomAndDrag,
   showZoomControls,
+  showCountrySidebar,
 }: InnerGeoMercator<T>) => {
   const theme = useTheme();
   const { hideTooltip, showTooltip, tooltipData, tooltipLeft = 0, tooltipTop = 0 } = useTooltip<T>();
 
-  const centerX = width / 2;
+  // Calculate sidebar width including margin
+  const sidebarTotalWidth = showCountrySidebar ? 320 + parseInt(theme.spacing['4']) : 0;
+
+  // Adjust map width to account for sidebar
+  const mapWidth = width - sidebarTotalWidth;
+
+  const centerX = mapWidth / 2;
   const centerY = height / 2;
-  const scale = Math.min(width, height) * 0.25;
+  const scale = Math.min(mapWidth, height) * 0.25;
 
   const colorScale = scaleLinear({
-    domain: [Math.min(...data.map((d) => yAccessor(d))), Math.max(...data.map((d) => yAccessor(d)))],
+    domain: [0, Math.max(...data.map((d) => yAccessor(d)))],
     range: [theme.colors.backgroundAlt, theme.colors.primary],
   });
 
@@ -117,7 +291,7 @@ const Chart = <T,>({
     <svg
       id={name}
       name={name}
-      width={width}
+      width={mapWidth}
       height={height}
       ref={zoom?.containerRef}
       style={{
@@ -125,7 +299,7 @@ const Chart = <T,>({
         cursor: allowZoomAndDrag && zoom ? (zoom.isDragging ? 'grabbing' : 'grab') : 'default',
       }}
     >
-      <rect x={0} y={0} width={width} height={height} fill={theme.colors.background} rx={10} />
+      <rect x={0} y={0} width={mapWidth} height={height} fill={theme.colors.background} rx={10} />
       <Mercator<FeatureShape>
         data={world.features}
         scale={zoom?.transformMatrix.scaleX || scale}
@@ -167,7 +341,7 @@ const Chart = <T,>({
         <rect
           x={0}
           y={0}
-          width={width}
+          width={mapWidth}
           height={height}
           rx={14}
           fill="transparent"
@@ -185,9 +359,24 @@ const Chart = <T,>({
     </svg>
   );
 
+  const renderContent = (zoomProps?: any) => (
+    <FlexContainer>
+      <MapContainer>
+        {renderMap(zoomProps)}
+        {showZoomControls && zoomProps && <ZoomControls zoom={zoomProps} />}
+        {tooltipData && (
+          <StyledTooltip top={tooltipTop} left={tooltipLeft} style={getDefaultTooltipStyles(theme)}>
+            {tooltipAccessor ? tooltipAccessor(tooltipData) : `${xAccessor(tooltipData)}: ${yAccessor(tooltipData)}`}
+          </StyledTooltip>
+        )}
+      </MapContainer>
+      {showCountrySidebar && <CountrySidebar data={data} xAccessor={xAccessor} yAccessor={yAccessor} />}
+    </FlexContainer>
+  );
+
   return allowZoomAndDrag ? (
     <Zoom<SVGSVGElement>
-      width={width}
+      width={mapWidth}
       height={height}
       scaleXMin={100}
       scaleXMax={1000}
@@ -202,42 +391,9 @@ const Chart = <T,>({
         skewY: 0,
       }}
     >
-      {(zoom) => (
-        <div style={{ position: 'relative' }}>
-          {renderMap(zoom)}
-          {showZoomControls && <ZoomControls zoom={zoom} />}
-          {tooltipData && (
-            <Tooltip
-              top={tooltipTop}
-              left={tooltipLeft}
-              style={{
-                ...getDefaultTooltipStyles(theme),
-                textAlign: 'center',
-                transform: 'translate(-50%)',
-              }}
-            >
-              {tooltipAccessor ? tooltipAccessor(tooltipData) : `${xAccessor(tooltipData)}: ${yAccessor(tooltipData)}`}
-            </Tooltip>
-          )}
-        </div>
-      )}
+      {(zoom) => renderContent(zoom)}
     </Zoom>
   ) : (
-    <div style={{ position: 'relative' }}>
-      {renderMap()}
-      {tooltipData && (
-        <Tooltip
-          top={tooltipTop}
-          left={tooltipLeft}
-          style={{
-            ...getDefaultTooltipStyles(theme),
-            textAlign: 'center',
-            transform: 'translate(-50%)',
-          }}
-        >
-          {tooltipAccessor ? tooltipAccessor(tooltipData) : `${xAccessor(tooltipData)}: ${yAccessor(tooltipData)}`}
-        </Tooltip>
-      )}
-    </div>
+    renderContent()
   );
 };

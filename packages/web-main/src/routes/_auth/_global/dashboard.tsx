@@ -194,39 +194,43 @@ function Component() {
           <Card>
             <Card.Title label="Module errors" />
             <Card.Body>
-              <EventFeed>
-                {failedFunctions?.data.flatMap((event) => (
-                  <EventItem key={event.id} event={event} onDetailClick={() => {}} />
-                ))}
-              </EventFeed>
-            </Card.Body>
-          </Card>
-          <Card variant="outline">
-            <Card.Title label="Global Player Map">
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <Chip variant="outline" color="warning" label="Beta" />
-                <IconTooltip color="background" icon={<QuestionIcon />}>
-                  Shows where your players are from
-                </IconTooltip>
-              </div>
-            </Card.Title>
-            <Card.Body>
-              <div style={{ height: '600px', width: '100%', position: 'relative' }}>
-                {!isPendingCountriesStats && (
-                  <GeoMercator
-                    name="Countries"
-                    data={countriesStatsData}
-                    xAccessor={(d) => d.country}
-                    yAccessor={(d) => parseInt(d.playerCount)}
-                    tooltipAccessor={(d) => `${d.country}:${d.playerCount}`}
-                    allowZoomAndDrag={false}
-                    showZoomControls={false}
-                  />
-                )}
+              <div style={{ height: '400px', width: '100%', position: 'relative', overflow: 'auto' }}>
+                <EventFeed>
+                  {failedFunctions?.data.flatMap((event) => (
+                    <EventItem key={event.id} event={event} onDetailClick={() => {}} />
+                  ))}
+                </EventFeed>
               </div>
             </Card.Body>
           </Card>
         </div>
+
+        <Card variant="outline" style={{ marginTop: '2rem' }}>
+          <Card.Title label="Global Player Map">
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <Chip variant="outline" color="warning" label="Beta" />
+              <IconTooltip color="background" icon={<QuestionIcon />}>
+                Shows where your players are from
+              </IconTooltip>
+            </div>
+          </Card.Title>
+          <Card.Body>
+            <div style={{ height: '600px', width: '100%', position: 'relative' }}>
+              {!isPendingCountriesStats && (
+                <GeoMercator
+                  name="Countries"
+                  data={countriesStatsData}
+                  xAccessor={(d) => d.country}
+                  yAccessor={(d) => parseInt(d.playerCount)}
+                  tooltipAccessor={(d) => `${d.country}:${d.playerCount}`}
+                  allowZoomAndDrag={false}
+                  showZoomControls={false}
+                  showCountrySidebar={true}
+                />
+              )}
+            </div>
+          </Card.Body>
+        </Card>
       </Container>
     </>
   );
