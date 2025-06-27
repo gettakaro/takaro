@@ -1,7 +1,7 @@
 import { Fragment, useMemo, ReactElement } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { Button, Switch, TextField, camelCaseToSpaces } from '@takaro/lib-components';
-import { Settings, PERMISSIONS } from '@takaro/apiclient';
+import { Settings, PERMISSIONS, SettingsControllerGetKeysEnum } from '@takaro/apiclient';
 import { useSetGlobalSetting, globalGameServerSettingsQueryOptions } from '../../../../queries/setting';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -35,13 +35,10 @@ function dirtyValues(dirtyFields: object | boolean, allValues: object): object {
   );
 }
 
-interface IFormInputs {
-  commandPrefix: string;
-  serverChatName: string;
-  economyEnabled: boolean;
-  currencyName: string;
-  developerMode: boolean;
-}
+type SettingsKeys = (typeof SettingsControllerGetKeysEnum)[keyof typeof SettingsControllerGetKeysEnum];
+type IFormInputs = {
+  [K in SettingsKeys]: K extends 'economyEnabled' | 'developerMode' ? boolean : string;
+};
 
 function mapSettings<T extends Promise<unknown>>(data: Settings, fn: (key: keyof IFormInputs, value?: string) => T) {
   const promises: Promise<unknown>[] = [];
