@@ -1,4 +1,5 @@
 import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
+import { errors } from '@takaro/util';
 import {
   QueryBuilder as ObjectionQueryBuilder,
   Model as ObjectionModel,
@@ -81,6 +82,31 @@ export class QueryBuilder<Model extends ObjectionModel, OutputDTO> {
   private query: ITakaroQuery<OutputDTO>;
   constructor(rawQuery: ITakaroQuery<OutputDTO> = new ITakaroQuery()) {
     this.query = JSON.parse(JSON.stringify(rawQuery));
+    this.validateArrayFilters();
+  }
+
+  private validateArrayFilters() {
+    // Validate filters
+    if (this.query.filters) {
+      for (const [key, value] of Object.entries(this.query.filters)) {
+        if (value !== null && value !== undefined && !Array.isArray(value)) {
+          throw new errors.BadRequestError(
+            `All filter values must be arrays. Found invalid value for '${key}': '${value}'. Example: { ${key}: ["${value}"] }`,
+          );
+        }
+      }
+    }
+
+    // Validate search
+    if (this.query.search) {
+      for (const [key, value] of Object.entries(this.query.search)) {
+        if (value !== null && value !== undefined && !Array.isArray(value)) {
+          throw new errors.BadRequestError(
+            `All search values must be arrays. Found invalid value for '${key}': '${value}'. Example: { ${key}: ["${value}"] }`,
+          );
+        }
+      }
+    }
   }
 
   /**
