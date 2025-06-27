@@ -13,7 +13,7 @@ export function Module() {
   "name": "lottery",
   "versions": [
     {
-      "tag": "0.0.1",
+      "tag": "0.0.2",
       "description": "Players can buy tickets for a lottery, and the winner is chosen at random.",
       "configSchema": "{\"$schema\":\"http://json-schema.org/draft-07/schema#\",\"type\":\"object\",\"properties\":{\"profitMargin\":{\"type\":\"number\",\"maximum\":1,\"minimum\":0,\"description\":\"The profit margin the server takes from the lottery.\",\"default\":0.1}},\"required\":[],\"additionalProperties\":false}",
       "permissions": [
@@ -54,7 +54,7 @@ export function Module() {
           ]
         },
         {
-          "function": "import { takaro, data, checkPermission, TakaroUserError } from '@takaro/helpers';\nasync function main() {\n    const { pog, gameServerId, module: mod } = data;\n    const varKey = 'lottery_tickets_bought';\n    if (!checkPermission(pog, 'LOTTERY_VIEW_TICKETS')) {\n        throw new TakaroUserError('You do not have permission to view lottery tickets.');\n    }\n    const tickets = (await takaro.variable.variableControllerSearch({\n        filters: {\n            gameServerId,\n            key: varKey,\n            moduleId: mod.id,\n            playerId: pog.playerId,\n        },\n    })).data.data;\n    let ticketsBought = 0;\n    if (tickets.length === 1) {\n        ticketsBought = parseInt(JSON.parse(tickets[0].value).amount, 10);\n    }\n    await pog.pm(`You have bought ${ticketsBought} tickets.`);\n}\nawait main();\n//# sourceMappingURL=viewTickets.js.map",
+          "function": "import { takaro, data, checkPermission, TakaroUserError } from '@takaro/helpers';\nasync function main() {\n    const { pog, gameServerId, module: mod } = data;\n    const varKey = 'lottery_tickets_bought';\n    if (!checkPermission(pog, 'LOTTERY_VIEW_TICKETS')) {\n        throw new TakaroUserError('You do not have permission to view lottery tickets.');\n    }\n    const tickets = (await takaro.variable.variableControllerSearch({\n        filters: {\n            gameServerId: [gameServerId],\n            key: [varKey],\n            moduleId: [mod.id],\n            playerId: [pog.playerId],\n        },\n    })).data.data;\n    let ticketsBought = 0;\n    if (tickets.length === 1) {\n        ticketsBought = parseInt(JSON.parse(tickets[0].value).amount, 10);\n    }\n    await pog.pm(`You have bought ${ticketsBought} tickets.`);\n}\nawait main();\n//# sourceMappingURL=viewTickets.js.map",
           "name": "viewTickets",
           "trigger": "viewTickets",
           "helpText": "View your lottery tickets.",
