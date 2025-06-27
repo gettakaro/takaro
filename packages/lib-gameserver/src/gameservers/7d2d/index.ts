@@ -58,7 +58,6 @@ export class SevenDaysToDie implements IGameServer {
           ip: p.ip,
           name: p.name,
           epicOnlineServicesId: p.crossplatformid.replace('EOS_', ''),
-          platformId: p.steamid.replace('Steam_', ''),
           ping: p.ping,
         };
 
