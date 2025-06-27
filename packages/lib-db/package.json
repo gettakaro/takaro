@@ -1,6 +1,6 @@
 {
   "name": "@takaro/db",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "An opinionated data layer",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
