@@ -12,10 +12,10 @@ async function main() {
   const tickets = (
     await takaro.variable.variableControllerSearch({
       filters: {
-        gameServerId,
-        key: varKey,
-        moduleId: mod.id,
-        playerId: pog.playerId,
+        gameServerId: [gameServerId],
+        key: [varKey],
+        moduleId: [mod.id],
+        playerId: [pog.playerId],
       },
     })
   ).data.data;

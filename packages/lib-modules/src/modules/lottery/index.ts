@@ -7,7 +7,7 @@ export class Lottery extends ModuleTransferDTO<Lottery> {
     this.name = 'lottery';
     this.versions = [
       new ModuleTransferVersionDTO({
-        tag: '0.0.1',
+        tag: '0.0.2',
         description: 'Players can buy tickets for a lottery, and the winner is chosen at random.',
         configSchema: JSON.stringify({
           $schema: 'http://json-schema.org/draft-07/schema#',
