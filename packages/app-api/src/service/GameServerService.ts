@@ -14,7 +14,7 @@ import {
   TakaroConnector,
 } from '@takaro/gameserver';
 import { errors, TakaroModelDTO, traceableClass, TakaroDTO } from '@takaro/util';
-import { SettingsService } from './SettingsService.js';
+import { SettingsService, SETTINGS_KEYS } from './SettingsService.js';
 import { queueService } from '@takaro/queues';
 import {
   HookEvents,
@@ -403,6 +403,15 @@ export class GameServerService extends TakaroService<
   }
 
   async sendMessage(gameServerId: string, message: string, opts: IMessageOptsDTO) {
+    // Get settings to check for message prefix
+    const settingsService = new SettingsService(this.domainId, gameServerId);
+    const messagePrefixSetting = await settingsService.get(SETTINGS_KEYS.messagePrefix);
+
+    // Apply prefix if it exists
+    if (messagePrefixSetting.value && messagePrefixSetting.value.trim() !== '') {
+      message = messagePrefixSetting.value + message;
+    }
+
     // Limit message length to 300 characters
     // Longer than this and gameservers start acting _weird_
     message = message.substring(0, 300);

@@ -102,7 +102,6 @@ function Component() {
         method: 'password',
       },
     });
-    await apiClient.user.userControllerDeleteSelectedDomainCookie();
     const res = await apiClient.user.userControllerMe({
       headers: {
         'Cache-Control': 'no-cache',

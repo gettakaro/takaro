@@ -26,6 +26,11 @@
         "key": "developerMode",
         "value": "false",
         "type": "default"
+      },
+      {
+        "key": "messagePrefix",
+        "value": "",
+        "type": "default"
       }
     ]
   },

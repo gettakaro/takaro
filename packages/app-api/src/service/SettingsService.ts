@@ -12,6 +12,7 @@ export enum SETTINGS_KEYS {
   economyEnabled = 'economyEnabled',
   currencyName = 'currencyName',
   developerMode = 'developerMode',
+  messagePrefix = 'messagePrefix',
 }
 
 export const DEFAULT_SETTINGS: Record<SETTINGS_KEYS, string> = {
@@ -20,6 +21,7 @@ export const DEFAULT_SETTINGS: Record<SETTINGS_KEYS, string> = {
   economyEnabled: 'false',
   currencyName: 'Takaro coins',
   developerMode: 'false',
+  messagePrefix: '',
 };
 export class Settings extends TakaroModelDTO<Settings> {
   @IsString()
@@ -32,6 +34,8 @@ export class Settings extends TakaroModelDTO<Settings> {
   currencyName: string;
   @IsString()
   developerMode: string;
+  @IsString()
+  messagePrefix: string;
 }
 
 export enum SettingsMode {
