@@ -1,5 +1,11 @@
 import { IntegrationTest, expect, SetupGameServerPlayers, integrationConfig } from '@takaro/test';
-import { EventChatMessage, GameServerCreateDTOTypeEnum, GameServerOutputDTO, isAxiosError } from '@takaro/apiclient';
+import {
+  EventChatMessage,
+  GameServerCreateDTOTypeEnum,
+  GameServerOutputDTO,
+  isAxiosError,
+  SettingsOutputDTOKeyEnum,
+} from '@takaro/apiclient';
 import { describe } from 'node:test';
 import { HookEvents } from '@takaro/modules';
 import { randomUUID } from 'crypto';
@@ -214,6 +220,81 @@ const tests = [
       expect(entityCodes).to.include('cow');
 
       await mockServer.shutdown();
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Message prefix is applied when sending messages',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      // Set the message prefix setting
+      await this.client.settings.settingsControllerSet(SettingsOutputDTOKeyEnum.MessagePrefix, {
+        value: '[TEST] ',
+        gameServerId: this.setupData.gameServer1.id,
+      });
+
+      // Send a test message
+      const testMessage = 'Hello world!';
+      await this.client.gameserver.gameServerControllerSendMessage(this.setupData.gameServer1.id, {
+        message: testMessage,
+      });
+
+      // Query for the chat message event
+      const events = (
+        await this.client.event.eventControllerSearch({
+          filters: {
+            eventName: [HookEvents.CHAT_MESSAGE],
+          },
+          sortBy: 'createdAt',
+          sortDirection: 'desc',
+          limit: 1,
+        })
+      ).data.data;
+
+      // Verify the message contains the prefix
+      expect(events.length).to.equal(1);
+      const meta = events[0].meta as EventChatMessage;
+      expect(meta.msg).to.equal('[TEST] Hello world!');
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Message prefix respects 300 character limit',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      // Set a long message prefix
+      const prefix = '[VERY LONG PREFIX] ';
+      await this.client.settings.settingsControllerSet(SettingsOutputDTOKeyEnum.MessagePrefix, {
+        value: prefix,
+        gameServerId: this.setupData.gameServer1.id,
+      });
+
+      // Send a very long message that would exceed 300 chars with prefix
+      const longMessage = 'A'.repeat(290);
+      await this.client.gameserver.gameServerControllerSendMessage(this.setupData.gameServer1.id, {
+        message: longMessage,
+      });
+
+      // Query for the chat message event
+      const events = (
+        await this.client.event.eventControllerSearch({
+          filters: {
+            eventName: [HookEvents.CHAT_MESSAGE],
+          },
+          sortBy: 'createdAt',
+          sortDirection: 'desc',
+          limit: 1,
+        })
+      ).data.data;
+
+      // Verify the total message is truncated to 300 characters
+      expect(events.length).to.equal(1);
+      const meta = events[0].meta as EventChatMessage;
+      if (!meta.msg) throw new Error('Message is undefined');
+      expect(meta.msg.length).to.equal(300);
+      expect(meta.msg.startsWith(prefix)).to.be.true;
     },
   }),
 ];
