@@ -6,6 +6,8 @@ import { MdDomain as DomainIcon } from 'react-icons/md';
 import { AiOutlineArrowRight as ArrowRightIcon } from 'react-icons/ai';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { TAKARO_DOMAIN_COOKIE_REGEX } from '../../util/domainCookieRegex';
+import { getLastUsedDomainId, setLastUsedDomainId } from '../../util/lastUsedDomain';
+import { useEffect } from 'react';
 
 const Container = styled.div`
   padding: ${({ theme }) => theme.spacing[4]};
@@ -44,15 +46,38 @@ function Component() {
   const loaderData = Route.useLoaderData();
   const currentDomain = document.cookie.replace(TAKARO_DOMAIN_COOKIE_REGEX, '$1');
   const { data: me } = useQuery({ ...userMeQueryOptions(), initialData: loaderData });
+  const navigate = useNavigate();
+  const { mutate } = useUserSetSelectedDomain();
+  const queryClient = useQueryClient();
 
-  // Keep current domain at the top
+  // Get last used domain on component mount
+  const lastUsedDomainId = getLastUsedDomainId();
+
+  // Auto-select last used domain if available and different from current
+  useEffect(() => {
+    if (
+      lastUsedDomainId &&
+      lastUsedDomainId !== currentDomain &&
+      me.domains.some((d) => d.id === lastUsedDomainId && d.state === DomainOutputDTOStateEnum.Active)
+    ) {
+      mutate(
+        { domainId: lastUsedDomainId },
+        {
+          onSuccess: () => {
+            queryClient.clear();
+            navigate({ to: '/' });
+          },
+        },
+      );
+    }
+  }, [lastUsedDomainId, currentDomain, me.domains, mutate, navigate, queryClient]);
+
+  // Sort domains: current domain first, then last used domain, then others
   me.domains.sort((a, b) => {
-    if (a.id === currentDomain) {
-      return -1;
-    }
-    if (b.id === currentDomain) {
-      return 1;
-    }
+    if (a.id === currentDomain) return -1;
+    if (b.id === currentDomain) return 1;
+    if (a.id === lastUsedDomainId) return -1;
+    if (b.id === lastUsedDomainId) return 1;
     return 0;
   });
 
@@ -84,6 +109,8 @@ function DomainCard({ domain, isCurrentDomain }: DomainCardProps) {
     if (isDisabled) return;
 
     if (isCurrentDomain === false) {
+      // Save as last used domain when selecting
+      setLastUsedDomainId(domain.id);
       mutate({ domainId: domain.id });
     } else {
       navigate({ to: '/' });
