@@ -25,7 +25,7 @@ async function main() {
     } else {
       const item = (await takaro.item.itemControllerFindOne(randomOption.item)).data.data;
       await takaro.gameserver.gameServerControllerGiveItem(data.gameServerId, data.player.id, {
-        name: item.id,
+        name: item.code,
         amount: randomOption.amount,
         quality: randomOption.quality ?? '',
       });

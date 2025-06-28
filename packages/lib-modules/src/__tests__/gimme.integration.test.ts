@@ -25,6 +25,7 @@ const tests = [
           commands: [],
         }),
       });
+
       const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE);
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
