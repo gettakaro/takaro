@@ -118,7 +118,7 @@ function Component() {
           settingsComponents.push(
             <TextField readOnly={readOnly} control={control} label={camelCaseToSpaces(key)} name={key} key={key} />,
           );
-          if (value) setValue(key, value);
+          if (value !== undefined && value !== null) setValue(key, value);
         }
       });
     }
