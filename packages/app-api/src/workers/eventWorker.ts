@@ -33,11 +33,15 @@ async function processJob(job: Job<IEventQueueData>) {
 
   if (type === HookEvents.LOG_LINE) {
     const hooksService = new HookService(domainId);
-    await hooksService.handleEvent({
-      eventType: HookEvents.LOG_LINE,
-      eventData: event,
-      gameServerId,
-    });
+    hooksService
+      .handleEvent({
+        eventType: HookEvents.LOG_LINE,
+        eventData: event,
+        gameServerId,
+      })
+      .catch((err) => {
+        log.error('Failed to handle log line event', { error: err, event });
+      });
   }
 
   const socketServer = await getSocketServer();

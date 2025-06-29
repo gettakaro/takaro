@@ -537,13 +537,17 @@ export class GameServerService extends TakaroService<
       }),
     );
 
-    await trackingService.repo.observePlayerLocation(
-      pog.id,
-      Math.round(location.x),
-      Math.round(location.y),
-      Math.round(location.z),
-      location.dimension,
-    );
+    trackingService.repo
+      .observePlayerLocation(
+        pog.id,
+        Math.round(location.x),
+        Math.round(location.y),
+        Math.round(location.z),
+        location.dimension,
+      )
+      .catch((err) => {
+        this.log.error('Failed to observe player location', { error: err });
+      });
 
     return location;
   }
