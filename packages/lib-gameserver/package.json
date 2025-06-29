@@ -1,6 +1,6 @@
 {
   "name": "@takaro/gameserver",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Handles abstraction between Takaro and game servers",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",
