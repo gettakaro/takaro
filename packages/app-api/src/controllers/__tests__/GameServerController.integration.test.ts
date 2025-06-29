@@ -6,7 +6,7 @@ import {
   isAxiosError,
   SettingsOutputDTOKeyEnum,
 } from '@takaro/apiclient';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 import { HookEvents } from '@takaro/modules';
 import { randomUUID } from 'crypto';
 import { getMockServer } from '@takaro/mock-gameserver';
@@ -190,7 +190,7 @@ const tests = [
         })
       ).data.data;
 
-      expect(gameServerRes).to.have.lengthOf(1);
+      expect(gameServerRes).to.have.length(1);
       const gameServer = gameServerRes[0];
 
       // Query items - should have been automatically synced
@@ -203,8 +203,8 @@ const tests = [
 
       // Verify we have the expected mock items
       const itemCodes = itemsRes.data.data.map((item) => item.code);
-      expect(itemCodes).to.include('wood');
-      expect(itemCodes).to.include('stone');
+      expect(itemCodes).to.contain('wood');
+      expect(itemCodes).to.contain('stone');
 
       // Query entities - should have been automatically synced
       const entitiesRes = await this.client.entity.entityControllerSearch({
@@ -216,8 +216,8 @@ const tests = [
 
       // Verify we have some expected mock entities
       const entityCodes = entitiesRes.data.data.map((entity) => entity.code);
-      expect(entityCodes).to.include('zombie');
-      expect(entityCodes).to.include('cow');
+      expect(entityCodes).to.contain('zombie');
+      expect(entityCodes).to.contain('cow');
 
       await mockServer.shutdown();
     },

@@ -34,3 +34,19 @@ We welcome contributions from the community! Whether you're a developer, designe
 
 ### Code contributions
 Begin your journey with Takaro's development by visiting our [Getting started](https://docs.takaro.io/development/getting-started) guide.
+
+#### Quick testing for contributors
+After setting up your development environment, verify your changes work correctly:
+
+```bash
+# Run tests for a specific package you've modified
+PKG=lib-config npm run test:package
+
+# Run a specific test file  
+npm run test:file packages/app-api/src/controllers/__tests__/SettingsController.integration.test.ts
+
+# Check for TypeScript errors before submitting
+npm run test:style:fix && npm run test:check
+```
+
+See our [Testing documentation](https://docs.takaro.io/development/common-tasks/running-tests) for comprehensive testing workflows.

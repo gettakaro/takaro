@@ -4,11 +4,11 @@ import { expect } from '@takaro/test';
 import { adminAuthMiddleware } from '../adminAuth.js';
 import { Request, Response } from 'express';
 import { config } from '../../config.js';
-import { describe, before, after, it } from 'node:test';
+import { describe, beforeAll, afterAll, it } from 'vitest';
 
 describe('adminAuth', () => {
   let http: HTTP;
-  before(async () => {
+  beforeAll(async () => {
     http = new HTTP({}, { port: undefined });
     http.expressInstance.use(
       '/test',
@@ -21,7 +21,7 @@ describe('adminAuth', () => {
     await http.start();
   });
 
-  after(async () => {
+  afterAll(async () => {
     await http.stop();
   });
 

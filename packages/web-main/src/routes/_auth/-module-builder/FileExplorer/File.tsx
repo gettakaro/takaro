@@ -17,7 +17,6 @@ import {
   AiFillFileAdd as AddFileIcon,
 } from 'react-icons/ai';
 import { z } from 'zod';
-import * as Sentry from '@sentry/react';
 import { DiJsBadge as JsIcon } from 'react-icons/di';
 
 import { motion, AnimatePresence } from 'framer-motion';
@@ -249,7 +248,7 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
       closeFile(path);
       deleteFile(path);
     } catch (e) {
-      Sentry.captureException(e);
+      console.error('Error deleting file:', e);
     }
   };
 
@@ -335,7 +334,7 @@ export const File: FC<FileProps> = ({ path, openFile, isDirOpen, active, onClick
       });
       setInternalFileName(newFileName);
     } catch (e) {
-      Sentry.captureException(e);
+      console.error('Error creating new file:', e);
     } finally {
       setLoadingNewFile(false);
     }

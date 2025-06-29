@@ -7,7 +7,7 @@ import { IGamePlayer, EventChatMessage, HookEvents, ChatChannel, IPosition } fro
 import Sinon from 'sinon';
 import { EventService } from '../EventService.js';
 import { faker } from '@faker-js/faker';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 import { randomUUID } from 'crypto';
 import { getMockServer } from '@takaro/mock-gameserver';
 
@@ -100,7 +100,7 @@ const tests = [
     name: 'Basic command trigger',
     setup,
     test: async function () {
-      const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
+      const addStub = sandbox.spy(queueService.queues.commands.queue, 'add');
       sandbox.stub(Generic.prototype, 'getPlayerLocation').resolves(
         new IPosition({
           x: 0,
@@ -127,7 +127,7 @@ const tests = [
     name: 'Commands are case insensitive',
     setup,
     test: async function () {
-      const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
+      const addStub = sandbox.spy(queueService.queues.commands.queue, 'add');
       sandbox.stub(Generic.prototype, 'getPlayerLocation').resolves(
         new IPosition({
           x: 0,
@@ -154,7 +154,7 @@ const tests = [
     name: 'Doesnt trigger when message doesnt start with prefix',
     setup,
     test: async function () {
-      const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
+      const addStub = sandbox.spy(queueService.queues.commands.queue, 'add');
       sandbox.stub(Generic.prototype, 'getPlayerLocation').resolves(
         new IPosition({
           x: 0,
@@ -172,7 +172,7 @@ const tests = [
         this.setupData.gameserver.id,
       );
 
-      expect(addStub).to.not.have.been.calledOnce;
+      expect(addStub).to.not.have.been.called;
 
       await this.setupData.service.handleChatMessage(
         new EventChatMessage({
@@ -191,7 +191,7 @@ const tests = [
     name: 'Doesnt trigger when module is uninstalled',
     setup,
     test: async function () {
-      const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
+      const addStub = sandbox.spy(queueService.queues.commands.queue, 'add');
       sandbox.stub(Generic.prototype, 'getPlayerLocation').resolves(
         new IPosition({
           x: 0,
@@ -215,7 +215,7 @@ const tests = [
         this.setupData.gameserver.id,
       );
 
-      expect(addStub).to.not.have.been.calledOnce;
+      expect(addStub).to.not.have.been.called;
 
       await this.client.module.moduleInstallationsControllerInstallModule({
         gameServerId: this.setupData.gameserver.id,
@@ -252,7 +252,7 @@ const tests = [
         }),
       });
 
-      const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
+      const addStub = sandbox.spy(queueService.queues.commands.queue, 'add');
       sandbox.stub(EventService.prototype, 'create').resolves();
 
       sandbox.stub(Generic.prototype, 'getPlayerLocation').resolves(
@@ -294,7 +294,7 @@ const tests = [
         trigger: 'test2',
       });
 
-      const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
+      const addStub = sandbox.spy(queueService.queues.commands.queue, 'add');
       sandbox.stub(Generic.prototype, 'getPlayerLocation').resolves(
         new IPosition({
           x: 0,
@@ -321,7 +321,7 @@ const tests = [
     name: 'Doesnt trigger when module is disabled',
     setup,
     test: async function () {
-      const addStub = sandbox.stub(queueService.queues.commands.queue, 'add');
+      const addStub = sandbox.spy(queueService.queues.commands.queue, 'add');
       sandbox.stub(Generic.prototype, 'getPlayerLocation').resolves(
         new IPosition({
           x: 0,
@@ -353,7 +353,7 @@ const tests = [
         this.setupData.gameserver.id,
       );
 
-      expect(addStub).to.not.have.been.calledOnce;
+      expect(addStub).to.not.have.been.called;
 
       await this.client.module.moduleInstallationsControllerInstallModule({
         gameServerId: this.setupData.gameserver.id,

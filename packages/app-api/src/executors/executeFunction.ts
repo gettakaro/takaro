@@ -1,5 +1,5 @@
 import { EXECUTION_MODE } from '@takaro/config';
-import { Sentry, errors, logger } from '@takaro/util';
+import { errors, logger } from '@takaro/util';
 import { Redis } from '@takaro/db';
 import { AdminClient, Client } from '@takaro/apiclient';
 import { executeFunctionLocal } from './executeLocal.js';
@@ -353,7 +353,6 @@ export async function executeFunction(
       });
     }
 
-    Sentry.captureException(err);
     log.error('executeFunction', err);
     await eventService.create(new EventCreateDTO({ ...eventData, meta }));
     return null;

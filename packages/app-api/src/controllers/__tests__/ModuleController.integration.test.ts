@@ -1,7 +1,7 @@
 import { IntegrationTest, expect } from '@takaro/test';
 import { isAxiosError, ModuleOutputDTO } from '@takaro/apiclient';
 import { getModules } from '@takaro/modules';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 
 const group = 'ModuleController';
 

@@ -4,7 +4,7 @@ import { expect } from '@takaro/test';
 import { TakaroModel } from '../TakaroModel.js';
 import { Model } from 'objection';
 import { sleep } from '@takaro/util';
-import { describe, beforeEach, afterEach, it } from 'node:test';
+import { describe, beforeEach, afterEach, it } from 'vitest';
 
 const TEST_TABLE_USERS_NAME = 'test_users';
 const TEST_TABLE_POSTS_NAME = 'test_posts';
@@ -80,7 +80,7 @@ describe('QueryBuilder', () => {
       filters: { name: ['test2'] },
     }).build(TestUserModel.query());
 
-    expect(res.results).to.have.lengthOf(1);
+    expect(res.results).to.have.length(1);
     expect(res.results[0].name).to.equal('test2');
   });
 
@@ -94,7 +94,7 @@ describe('QueryBuilder', () => {
       sortBy: 'name',
     }).build(TestUserModel.query());
 
-    expect(res.results).to.have.lengthOf(2);
+    expect(res.results).to.have.length(2);
     expect(res.results[0].name).to.equal('test2');
     expect(res.results[1].name).to.equal('test3');
   });
@@ -114,7 +114,7 @@ describe('QueryBuilder', () => {
       sortDirection: SortDirection.asc,
     }).build(TestUserModel.query());
 
-    expect(res.results).to.have.lengthOf(10);
+    expect(res.results).to.have.length(10);
     expect(res.results[0].name).to.equal('test020');
     expect(res.total).to.equal(totalTestRecords);
   });
@@ -129,7 +129,7 @@ describe('QueryBuilder', () => {
       sortDirection: SortDirection.desc,
     }).build(TestUserModel.query());
 
-    expect(res.results).to.have.lengthOf(3);
+    expect(res.results).to.have.length(3);
     expect(res.results[0].name).to.equal('test3');
   });
 
@@ -142,7 +142,7 @@ describe('QueryBuilder', () => {
       TestPostModel & { author?: TestUserModel }
     >({ extend: ['author'] }).build(TestPostModel.query());
 
-    expect(res.results).to.have.lengthOf(1);
+    expect(res.results).to.have.length(1);
     expect(res.results[0].author?.name).to.equal('test1');
   });
 
@@ -157,7 +157,7 @@ describe('QueryBuilder', () => {
       },
     }).build(TestUserModel.query());
 
-    expect(res.results).to.have.lengthOf(3);
+    expect(res.results).to.have.length(3);
 
     const res2 = await new QueryBuilder<TestUserModel, TestUserModel>({
       search: {
@@ -165,7 +165,7 @@ describe('QueryBuilder', () => {
       },
     }).build(TestUserModel.query());
 
-    expect(res2.results).to.have.lengthOf(1);
+    expect(res2.results).to.have.length(1);
   });
 
   it('Can search for multiple values, ORs them', async () => {
@@ -179,7 +179,7 @@ describe('QueryBuilder', () => {
       },
     }).build(TestUserModel.query());
 
-    expect(res.results).to.have.lengthOf(2);
+    expect(res.results).to.have.length(2);
   });
 
   it('Can search between a date range', async () => {
@@ -203,6 +203,6 @@ describe('QueryBuilder', () => {
       },
     }).build(TestUserModel.query());
 
-    expect(res.results).to.have.lengthOf(2);
+    expect(res.results).to.have.length(2);
   });
 });

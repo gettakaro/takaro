@@ -2,7 +2,7 @@ import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, Event
 import { GameEvents, HookEvents } from '../dto/index.js';
 import { EventChatMessageChannelEnum } from '@takaro/apiclient';
 import { randomUUID } from 'crypto';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 
 const group = 'Bug repros';
 
@@ -64,7 +64,7 @@ const tests = [
         },
       });
 
-      expect((await events).length).to.be.eq(2);
+      expect((await events).length).to.equal(2);
       expect((await events).map((e) => e.data.meta.msg)).to.include.members(['First hook', 'Second hook']);
     },
   }),
@@ -170,8 +170,8 @@ const tests = [
       expect(result.success).to.be.true;
       const logs = result.logs;
       const msgs = logs.map((l: any) => l.msg);
-      expect(msgs[0]).to.be.eq('undefined');
-      expect(msgs[1]).to.be.eq('null');
+      expect(msgs[0]).to.equal('undefined');
+      expect(msgs[1]).to.equal('null');
     },
   }),
   /**
@@ -218,8 +218,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.meta.msg).to.be.eq('pong');
+      expect((await events).length).to.equal(1);
+      expect((await events)[0].data.meta.msg).to.equal('pong');
 
       // Rename the function
       await this.client.command.commandControllerUpdate(createdCommand.data.data.id, { name: 'testcmd2' });
@@ -231,8 +231,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await eventsAfter).length).to.be.eq(1);
-      expect((await eventsAfter)[0].data.meta.msg).to.be.eq('pong');
+      expect((await eventsAfter).length).to.equal(1);
+      expect((await eventsAfter)[0].data.meta.msg).to.equal('pong');
     },
   }),
   /**
@@ -286,7 +286,7 @@ const tests = [
 
       const result = (await events)[0].data.meta.result;
       expect(result.success).to.be.false;
-      expect(result.reason).to.include('SyntaxError: Unexpected end of input.');
+      expect(result.reason).to.contain('SyntaxError: Unexpected end of input.');
     },
   }),
   /**
@@ -339,8 +339,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.meta.msg).to.be.eq('hello world');
+      expect((await events).length).to.equal(1);
+      expect((await events)[0].data.meta.msg).to.equal('hello world');
 
       // Update the command
       await this.client.command.commandControllerUpdate(createdCommand.data.data.id, {
@@ -373,8 +373,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await eventsAfter).length).to.be.eq(1);
-      expect((await eventsAfter)[0].data.meta.msg).to.be.eq('goodbye world');
+      expect((await eventsAfter).length).to.equal(1);
+      expect((await eventsAfter)[0].data.meta.msg).to.equal('goodbye world');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -450,7 +450,7 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await events)[0].data.meta.msg).to.be.eq('yes permission');
+      expect((await events)[0].data.meta.msg).to.equal('yes permission');
 
       // Tag a new version
       const v2 = (
@@ -473,7 +473,7 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await eventsAfter)[0].data.meta.msg).to.be.eq('yes permission');
+      expect((await eventsAfter)[0].data.meta.msg).to.equal('yes permission');
     },
   }),
 ];

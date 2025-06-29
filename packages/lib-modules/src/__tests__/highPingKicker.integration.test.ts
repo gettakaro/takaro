@@ -1,6 +1,6 @@
 import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '../dto/index.js';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 
 const group = 'High Ping Kicker';
 
@@ -33,7 +33,7 @@ const tests = [
 
       await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait for event processing
 
-      expect((await events).length).to.be.eq(1);
+      expect((await events).length).to.equal(1);
       expect((await events)[0].data.meta.msg).to.match(/Your ping \(250\) is too high\. Warning 1\/3/);
     },
   }),
@@ -62,7 +62,7 @@ const tests = [
         gameServerId: this.setupData.gameserver.id,
         moduleId: this.setupData.highPingKickerModule.id,
       });
-      expect((await events1).length).to.be.eq(1);
+      expect((await events1).length).to.equal(1);
       expect((await events1)[0].data.meta.msg).to.match(/Your ping \(300\) is too high\. Warning 1\/3/);
 
       // Second warning
@@ -72,7 +72,7 @@ const tests = [
         gameServerId: this.setupData.gameserver.id,
         moduleId: this.setupData.highPingKickerModule.id,
       });
-      expect((await events2).length).to.be.eq(1);
+      expect((await events2).length).to.equal(1);
       expect((await events2)[0].data.meta.msg).to.match(/Your ping \(300\) is too high\. Warning 2\/3/);
 
       // Third warning should trigger kick
@@ -83,7 +83,7 @@ const tests = [
         moduleId: this.setupData.highPingKickerModule.id,
       });
 
-      expect((await kickEvent).length).to.be.eq(1);
+      expect((await kickEvent).length).to.equal(1);
     },
   }),
 
@@ -115,7 +115,7 @@ const tests = [
         gameServerId: this.setupData.gameserver.id,
         moduleId: this.setupData.highPingKickerModule.id,
       });
-      expect((await events1).length).to.be.eq(1);
+      expect((await events1).length).to.equal(1);
       expect((await events1)[0].data.meta.msg).to.match(/Your ping \(150\) is too high\. Warning 1\/2/);
 
       // Second warning should trigger kick
@@ -126,7 +126,7 @@ const tests = [
         moduleId: this.setupData.highPingKickerModule.id,
       });
 
-      expect((await kickEvent).length).to.be.eq(1);
+      expect((await kickEvent).length).to.equal(1);
     },
   }),
 
@@ -162,7 +162,7 @@ const tests = [
         expect.fail('Should not have received any warning messages');
       } catch (error: any) {
         // Expected timeout
-        expect(error.message).to.include('timed out');
+        expect(error.message).to.contain('timed out');
       }
     },
   }),
@@ -201,7 +201,7 @@ const tests = [
 
       // Should receive warnings for players 0 and 2, but not player 1
       const receivedEvents = await events;
-      expect(receivedEvents.length).to.be.eq(2);
+      expect(receivedEvents.length).to.equal(2);
 
       const messages = receivedEvents.map((e) => e.data.meta.msg);
       expect(messages).to.satisfy((msgs: string[]) => msgs.some((msg) => msg.includes('Your ping (250) is too high')));
@@ -237,7 +237,7 @@ const tests = [
         gameServerId: this.setupData.gameserver.id,
         moduleId: this.setupData.highPingKickerModule.id,
       });
-      expect((await kickEvent).length).to.be.eq(1);
+      expect((await kickEvent).length).to.equal(1);
 
       // Reconnect the player by setting online status
       await this.client.gameserver.gameServerControllerExecuteCommand(this.setupData.gameserver.id, {
@@ -256,7 +256,7 @@ const tests = [
         gameServerId: this.setupData.gameserver.id,
         moduleId: this.setupData.highPingKickerModule.id,
       });
-      expect((await kickEvent2).length).to.be.eq(1);
+      expect((await kickEvent2).length).to.equal(1);
     },
   }),
 
@@ -289,7 +289,7 @@ const tests = [
         moduleId: this.setupData.highPingKickerModule.id,
       });
 
-      expect((await kickEvent).length).to.be.eq(1);
+      expect((await kickEvent).length).to.equal(1);
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -324,7 +324,7 @@ const tests = [
         expect.fail('Should not have received any warning messages for ping exactly at threshold');
       } catch (error: any) {
         // Expected timeout
-        expect(error.message).to.include('timed out');
+        expect(error.message).to.contain('timed out');
       }
     },
   }),
@@ -355,7 +355,7 @@ const tests = [
         moduleId: this.setupData.highPingKickerModule.id,
       });
 
-      expect((await events).length).to.be.eq(1);
+      expect((await events).length).to.equal(1);
       expect((await events)[0].data.meta.msg).to.match(/Your ping \(201\) is too high\. Warning 1\/3/);
     },
   }),
@@ -386,7 +386,7 @@ const tests = [
         moduleId: this.setupData.highPingKickerModule.id,
       });
 
-      expect((await events).length).to.be.eq(1);
+      expect((await events).length).to.equal(1);
       expect((await events)[0].data.meta.msg).to.match(/Your ping \(9999\) is too high\. Warning 1\/3/);
     },
   }),
@@ -423,7 +423,7 @@ const tests = [
         expect.fail('Should not have received any warning messages for offline players');
       } catch (error: any) {
         // Expected timeout
-        expect(error.message).to.include('timed out');
+        expect(error.message).to.contain('timed out');
       }
     },
   }),
@@ -452,7 +452,7 @@ const tests = [
         gameServerId: this.setupData.gameserver.id,
         moduleId: this.setupData.highPingKickerModule.id,
       });
-      expect((await events1).length).to.be.eq(1);
+      expect((await events1).length).to.equal(1);
 
       // Lower ping temporarily
       await this.client.gameserver.gameServerControllerExecuteCommand(this.setupData.gameserver.id, {
@@ -471,7 +471,7 @@ const tests = [
         await events2;
         expect.fail('Should not have received warning for good ping');
       } catch (error: any) {
-        expect(error.message).to.include('timed out');
+        expect(error.message).to.contain('timed out');
       }
 
       // Raise ping again
@@ -486,7 +486,7 @@ const tests = [
         gameServerId: this.setupData.gameserver.id,
         moduleId: this.setupData.highPingKickerModule.id,
       });
-      expect((await events3).length).to.be.eq(1);
+      expect((await events3).length).to.equal(1);
       expect((await events3)[0].data.meta.msg).to.match(/Warning 2\/3/);
     },
   }),
@@ -521,7 +521,7 @@ const tests = [
         moduleId: this.setupData.highPingKickerModule.id,
       });
 
-      expect((await events).length).to.be.eq(1);
+      expect((await events).length).to.equal(1);
       expect((await events)[0].data.meta.msg).to.match(/Your ping \(50\) is too high\. Warning 1\/10/);
     },
   }),
@@ -565,7 +565,7 @@ const tests = [
       });
 
       const receivedEvents = await events;
-      expect(receivedEvents.length).to.be.eq(3);
+      expect(receivedEvents.length).to.equal(3);
 
       // All should get warning 1
       receivedEvents.forEach((event) => {
@@ -605,7 +605,7 @@ const tests = [
         await events;
         expect.fail('Should not have received warning for undefined ping');
       } catch (error: any) {
-        expect(error.message).to.include('timed out');
+        expect(error.message).to.contain('timed out');
       }
     },
   }),

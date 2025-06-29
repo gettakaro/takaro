@@ -1,6 +1,6 @@
 import { IntegrationTest, expect } from '@takaro/test';
 import { GameServerOutputDTO, isAxiosError, ModuleOutputDTO } from '@takaro/apiclient';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 import { randomUUID } from 'node:crypto';
 import { getMockServer } from '@takaro/mock-gameserver';
 

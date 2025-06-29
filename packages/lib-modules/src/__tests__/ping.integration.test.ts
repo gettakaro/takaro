@@ -1,6 +1,6 @@
 import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { HookEvents } from '../dto/index.js';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 
 const group = 'Ping command';
 
@@ -23,8 +23,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.meta.msg).to.be.eq('Pong!');
+      expect((await events).length).to.equal(1);
+      expect((await events)[0].data.meta.msg).to.equal('Pong!');
     },
   }),
 ];

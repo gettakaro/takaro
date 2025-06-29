@@ -1,6 +1,6 @@
 import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '../dto/index.js';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 
 const group = 'Role expiry';
 
@@ -28,7 +28,7 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await eventsBeforeRole).length).to.be.eq(1);
+      expect((await eventsBeforeRole).length).to.equal(1);
       expect((await eventsBeforeRole)[0].data.meta.msg).to.match(/You do not have permission to use teleports/);
 
       // Assign the role with expiry 10 minutes from now
@@ -44,7 +44,7 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await eventsWithRole).length).to.be.eq(1);
+      expect((await eventsWithRole).length).to.equal(1);
       expect((await eventsWithRole)[0].data.meta.msg).to.match(/Teleport test2 set/);
 
       // Remove the role and reassign with expiry 1 ms from now
@@ -61,7 +61,7 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await eventsAfterExpire).length).to.be.eq(1);
+      expect((await eventsAfterExpire).length).to.equal(1);
       expect((await eventsAfterExpire)[0].data.meta.msg).to.match(/You do not have permission to use teleports/);
     },
   }),

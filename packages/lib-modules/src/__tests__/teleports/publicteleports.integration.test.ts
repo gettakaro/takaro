@@ -1,6 +1,6 @@
 import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '../../dto/index.js';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 
 const group = 'Teleports suite';
 
@@ -26,8 +26,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await setTpEvent).length).to.be.eq(1);
-      expect((await setTpEvent)[0].data.meta.msg).to.be.eq('Teleport test set.');
+      expect((await setTpEvent).length).to.equal(1);
+      expect((await setTpEvent)[0].data.meta.msg).to.equal('Teleport test set.');
 
       const setPublicEvent = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
@@ -36,8 +36,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await setPublicEvent).length).to.be.eq(1);
-      expect((await setPublicEvent)[0].data.meta.msg).to.be.eq('Teleport test is now public.');
+      expect((await setPublicEvent).length).to.equal(1);
+      expect((await setPublicEvent)[0].data.meta.msg).to.equal('Teleport test is now public.');
 
       const tpEvent = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
@@ -46,7 +46,7 @@ const tests = [
         playerId: this.setupData.players[1].id,
       });
 
-      expect((await tpEvent)[0].data.meta.msg).to.be.eq('Teleported to test.');
+      expect((await tpEvent)[0].data.meta.msg).to.equal('Teleported to test.');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -70,8 +70,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await setTpEvent).length).to.be.eq(1);
-      expect((await setTpEvent)[0].data.meta.msg).to.be.eq('Teleport test set.');
+      expect((await setTpEvent).length).to.equal(1);
+      expect((await setTpEvent)[0].data.meta.msg).to.equal('Teleport test set.');
 
       const setPublicEvent = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
@@ -80,8 +80,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await setPublicEvent).length).to.be.eq(1);
-      expect((await setPublicEvent)[0].data.meta.msg).to.be.eq('Teleport test is now public.');
+      expect((await setPublicEvent).length).to.equal(1);
+      expect((await setPublicEvent)[0].data.meta.msg).to.equal('Teleport test is now public.');
 
       const setPrivateEvent = (await new EventsAwaiter().connect(this.client)).waitForEvents(
         GameEvents.CHAT_MESSAGE,
@@ -93,8 +93,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await setPrivateEvent).length).to.be.eq(1);
-      expect((await setPrivateEvent)[0].data.meta.msg).to.be.eq('Teleport test is now private.');
+      expect((await setPrivateEvent).length).to.equal(1);
+      expect((await setPrivateEvent)[0].data.meta.msg).to.equal('Teleport test is now private.');
 
       const tpEvent = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
@@ -103,7 +103,7 @@ const tests = [
         playerId: this.setupData.players[1].id,
       });
 
-      expect((await tpEvent)[0].data.meta.msg).to.be.eq('Teleport test does not exist.');
+      expect((await tpEvent)[0].data.meta.msg).to.equal('Teleport test does not exist.');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -128,8 +128,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await setTpEvent).length).to.be.eq(1);
-      expect((await setTpEvent)[0].data.meta.msg).to.be.eq('Teleport test set.');
+      expect((await setTpEvent).length).to.equal(1);
+      expect((await setTpEvent)[0].data.meta.msg).to.equal('Teleport test set.');
 
       const setPublicEvent = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
@@ -138,8 +138,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await setPublicEvent).length).to.be.eq(1);
-      expect((await setPublicEvent)[0].data.meta.msg).to.be.eq('Public teleports are disabled.');
+      expect((await setPublicEvent).length).to.equal(1);
+      expect((await setPublicEvent)[0].data.meta.msg).to.equal('Public teleports are disabled.');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -164,8 +164,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await setTpEvent).length).to.be.eq(1);
-      expect((await setTpEvent)[0].data.meta.msg).to.be.eq('Teleport test set.');
+      expect((await setTpEvent).length).to.equal(1);
+      expect((await setTpEvent)[0].data.meta.msg).to.equal('Teleport test set.');
 
       const setPublicEvent = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
@@ -174,8 +174,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await setPublicEvent).length).to.be.eq(1);
-      expect((await setPublicEvent)[0].data.meta.msg).to.be.eq('Teleport test is now public.');
+      expect((await setPublicEvent).length).to.equal(1);
+      expect((await setPublicEvent)[0].data.meta.msg).to.equal('Teleport test is now public.');
 
       const tpEvent = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
@@ -184,8 +184,8 @@ const tests = [
         playerId: this.setupData.players[1].id,
       });
 
-      expect((await tpEvent).length).to.be.eq(1);
-      expect((await tpEvent)[0].data.meta.msg).to.be.eq('Teleported to test.');
+      expect((await tpEvent).length).to.equal(1);
+      expect((await tpEvent)[0].data.meta.msg).to.equal('Teleported to test.');
 
       await this.client.module.moduleInstallationsControllerInstallModule({
         gameServerId: this.setupData.gameserver.id,
@@ -203,8 +203,8 @@ const tests = [
         playerId: this.setupData.players[1].id,
       });
 
-      expect((await tpEvent2).length).to.be.eq(1);
-      expect((await tpEvent2)[0].data.meta.msg).to.be.eq('Teleport test does not exist.');
+      expect((await tpEvent2).length).to.equal(1);
+      expect((await tpEvent2)[0].data.meta.msg).to.equal('Teleport test does not exist.');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -239,8 +239,8 @@ const tests = [
         playerId: this.setupData.players[1].id,
       });
 
-      expect((await setTpEvent).length).to.be.eq(1);
-      expect((await setTpEvent)[0].data.meta.msg).to.be.eq('Teleport test set.');
+      expect((await setTpEvent).length).to.equal(1);
+      expect((await setTpEvent)[0].data.meta.msg).to.equal('Teleport test set.');
 
       const setPublicEvent = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
@@ -249,8 +249,8 @@ const tests = [
         playerId: this.setupData.players[1].id,
       });
 
-      expect((await setPublicEvent).length).to.be.eq(1);
-      expect((await setPublicEvent)[0].data.meta.msg).to.be.eq(
+      expect((await setPublicEvent).length).to.equal(1);
+      expect((await setPublicEvent)[0].data.meta.msg).to.equal(
         'You do not have permission to create public teleports.',
       );
     },
@@ -296,7 +296,7 @@ const tests = [
         }),
       );
 
-      expect((await setTpEvent).length).to.be.eq(4);
+      expect((await setTpEvent).length).to.equal(4);
 
       for (const event of await setTpEvent) {
         expect(event.data.meta.msg).to.match(/Teleport test\d set\./);
@@ -313,7 +313,7 @@ const tests = [
         }),
       );
 
-      expect((await setPublicEvent).length).to.be.eq(3);
+      expect((await setPublicEvent).length).to.equal(3);
 
       for (const event of await setPublicEvent) {
         expect(event.data.meta.msg).to.match(/Teleport test\d is now public\./);
@@ -329,9 +329,9 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await setPublicEvent2).length).to.be.eq(1);
+      expect((await setPublicEvent2).length).to.equal(1);
 
-      expect((await setPublicEvent2)[0].data.meta.msg).to.be.eq(
+      expect((await setPublicEvent2)[0].data.meta.msg).to.equal(
         'You have reached the maximum number of public teleports for your role, maximum allowed is 3',
       );
     },

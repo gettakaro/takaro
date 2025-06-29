@@ -1,5 +1,3 @@
-export { Sentry } from './sentry.js';
-
 export { TakaroDTO, TakaroModelDTO, NOT_DOMAIN_SCOPED_TakaroModelDTO, isTakaroDTO } from './TakaroDTO.js';
 export * as errors from './errors.js';
 

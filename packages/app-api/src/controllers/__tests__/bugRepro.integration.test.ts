@@ -5,7 +5,7 @@ import { join } from 'path';
 import * as url from 'url';
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 import { HookCreateDTOEventTypeEnum, PERMISSIONS, isAxiosError } from '@takaro/apiclient';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 
 const group = 'Bug repros';
 
@@ -84,10 +84,10 @@ const tests = [
 
       // Ensure the role is assigned
       const user = await this.client.user.userControllerGetOne(users.data.data[0].id);
-      expect(user.data.data.roles.map((r) => r.roleId)).to.include(role.data.data.id);
+      expect(user.data.data.roles.map((r) => r.roleId)).to.contain(role.data.data.id);
 
-      expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.meta.msg).to.be.eq('pong');
+      expect((await events).length).to.equal(1);
+      expect((await events)[0].data.meta.msg).to.equal('pong');
     },
   }),
   /*
@@ -130,10 +130,10 @@ const tests = [
 
       const tags = (await this.client.module.moduleControllerGetTags(importedModule[0].id)).data.data;
 
-      expect(importedModule.length).to.be.eq(1);
-      expect(tags.length).to.be.eq(1);
+      expect(importedModule.length).to.equal(1);
+      expect(tags.length).to.equal(1);
       const importedVersions = await this.client.module.moduleVersionControllerGetModuleVersion(tags[0].id);
-      expect(importedVersions.data.data.hooks.length).to.be.eq(1);
+      expect(importedVersions.data.data.hooks.length).to.equal(1);
     },
   }),
   /**
@@ -157,11 +157,11 @@ const tests = [
       ).data.data;
       const tags = (await this.client.module.moduleControllerGetTags(importedModule[0].id)).data.data;
 
-      expect(importedModule.length).to.be.eq(1);
-      expect(tags.length).to.be.eq(1);
+      expect(importedModule.length).to.equal(1);
+      expect(tags.length).to.equal(1);
       const importedVersions = await this.client.module.moduleVersionControllerGetModuleVersion(tags[0].id);
 
-      expect(importedVersions.data.data.cronJobs.length).to.be.eq(1);
+      expect(importedVersions.data.data.cronJobs.length).to.equal(1);
     },
   }),
   /**
@@ -195,15 +195,15 @@ const tests = [
         throw new Error('Should have thrown an error');
       } catch (error) {
         if (!isAxiosError(error)) throw error;
-        expect(error.response?.status).to.be.eq(403);
-        expect(error.response?.data.meta.error.message).to.be.eq('Forbidden');
+        expect(error.response?.status).to.equal(403);
+        expect(error.response?.data.meta.error.message).to.equal('Forbidden');
       }
 
       // Then assign the permission
       await this.client.player.playerControllerAssignRole(playerId, role.data.data.id);
       // Next attempt should work
       const mod = (await userClient.module.moduleControllerSearch()).data.data;
-      expect(mod).to.be.an('array');
+      expect(mod).to.be.instanceOf(Array);
     },
   }),
   /**
@@ -255,8 +255,8 @@ const tests = [
         throw new Error('Should have thrown an error');
       } catch (error) {
         if (!isAxiosError(error)) throw error;
-        expect(error.response?.status).to.be.eq(400);
-        expect(error.response?.data.meta.error.message).to.be.eq('This module has reached the limit of 50 functions');
+        expect(error.response?.status).to.equal(400);
+        expect(error.response?.data.meta.error.message).to.equal('This module has reached the limit of 50 functions');
       }
 
       try {
@@ -273,8 +273,8 @@ const tests = [
         throw new Error('Should have thrown an error');
       } catch (error) {
         if (!isAxiosError(error)) throw error;
-        expect(error.response?.status).to.be.eq(400);
-        expect(error.response?.data.meta.error.message).to.be.eq('This module has reached the limit of 50 functions');
+        expect(error.response?.status).to.equal(400);
+        expect(error.response?.data.meta.error.message).to.equal('This module has reached the limit of 50 functions');
       }
 
       try {
@@ -291,8 +291,8 @@ const tests = [
         throw new Error('Should have thrown an error');
       } catch (error) {
         if (!isAxiosError(error)) throw error;
-        expect(error.response?.status).to.be.eq(400);
-        expect(error.response?.data.meta.error.message).to.be.eq('This module has reached the limit of 50 functions');
+        expect(error.response?.status).to.equal(400);
+        expect(error.response?.data.meta.error.message).to.equal('This module has reached the limit of 50 functions');
       }
 
       try {
@@ -308,8 +308,8 @@ const tests = [
         throw new Error('Should have thrown an error');
       } catch (error) {
         if (!isAxiosError(error)) throw error;
-        expect(error.response?.status).to.be.eq(400);
-        expect(error.response?.data.meta.error.message).to.be.eq('This module has reached the limit of 50 functions');
+        expect(error.response?.status).to.equal(400);
+        expect(error.response?.data.meta.error.message).to.equal('This module has reached the limit of 50 functions');
       }
 
       // We can still search for them
@@ -363,7 +363,7 @@ const tests = [
 
       // Should be able to read modules
       const modules = await userClient.module.moduleControllerSearch();
-      expect(modules.data.data).to.be.an('array');
+      expect(modules.data.data).to.be.instanceOf(Array);
 
       // Should NOT be able to create modules (not a dashboard user)
       try {
@@ -371,7 +371,7 @@ const tests = [
         throw new Error('Should have thrown an error');
       } catch (error) {
         if (!isAxiosError(error)) throw error;
-        expect(error.response?.status).to.be.eq(400);
+        expect(error.response?.status).to.equal(400);
         expect(error.response?.data.meta.error.message).to.contain('dashboard user');
       }
 
@@ -439,8 +439,8 @@ const tests = [
         throw new Error('Should have thrown an error');
       } catch (error) {
         if (!isAxiosError(error)) throw error;
-        expect(error.response?.status).to.be.eq(400);
-        expect(error.response?.data.meta.error.message).to.be.eq('Invalid UUID. Passed a string instead of a UUID');
+        expect(error.response?.status).to.equal(400);
+        expect(error.response?.data.meta.error.message).to.equal('Invalid UUID. Passed a string instead of a UUID');
       }
     },
   }),

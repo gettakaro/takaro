@@ -1,7 +1,7 @@
 import { IntegrationTest, expect } from '@takaro/test';
 import { DomainCreateOutputDTOAPI } from '@takaro/apiclient';
 import { PERMISSIONS } from '@takaro/auth';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 
 const group = 'Multitenancy';
 

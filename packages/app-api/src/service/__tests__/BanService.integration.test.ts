@@ -1,6 +1,6 @@
 import { IntegrationTest, SetupGameServerPlayers, expect } from '@takaro/test';
 import { Client, isAxiosError } from '@takaro/apiclient';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 
 async function triggerBanSync(client: Client, domainId: string, gameServerId: string) {
   const triggeredJobRes = await client.gameserver.gameServerControllerTriggerJob('syncBans', gameServerId);

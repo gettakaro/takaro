@@ -2,7 +2,7 @@ import { expect, sandbox } from '@takaro/test';
 import { SevenDaysToDie } from '../index.js';
 import { CommandOutput } from '../../../interfaces/GameServer.js';
 import { SdtdConnectionInfo } from '../connectionInfo.js';
-import { describe, it } from 'node:test';
+import { describe, it } from 'vitest';
 
 const testData = {
   oneBan:
@@ -34,7 +34,7 @@ describe('7d2d Actions', () => {
       const result = await new SevenDaysToDie(await mockSdtdConnectionInfo).listBans();
 
       expect(result).to.be.an('array');
-      expect(result).to.have.lengthOf(1);
+      expect(result).to.have.length(1);
       expect(result[0].player.gameId).to.equal('00028a9b73bb45b2b74e8f22cda7d225');
       expect(result[0].player.epicOnlineServicesId).to.equal('00028a9b73bb45b2b74e8f22cda7d225');
       expect(result[0].expiresAt).to.equal('2023-06-29T19:39:56.000Z');
@@ -51,7 +51,7 @@ describe('7d2d Actions', () => {
       const result = await new SevenDaysToDie(await mockSdtdConnectionInfo).listBans();
 
       expect(result).to.be.an('array');
-      expect(result).to.have.lengthOf(2);
+      expect(result).to.have.length(2);
 
       expect(result[0].player.gameId).to.equal('0002e0daea3b493fa146ce6d06e79a57');
       expect(result[0].player.epicOnlineServicesId).to.equal('0002e0daea3b493fa146ce6d06e79a57');
@@ -73,7 +73,7 @@ describe('7d2d Actions', () => {
       const result = await new SevenDaysToDie(await mockSdtdConnectionInfo).listBans();
 
       expect(result).to.be.an('array');
-      expect(result).to.have.lengthOf(0);
+      expect(result).to.have.length(0);
     });
 
     it('Can parse ban list with a single ban with a display name', async () => {
@@ -87,7 +87,7 @@ describe('7d2d Actions', () => {
       const result = await new SevenDaysToDie(await mockSdtdConnectionInfo).listBans();
 
       expect(result).to.be.an('array');
-      expect(result).to.have.lengthOf(1);
+      expect(result).to.have.length(1);
       expect(result[0].player.gameId).to.equal('00028a9b73bb45b2b74e8f22cda7d225');
       expect(result[0].player.epicOnlineServicesId).to.equal('00028a9b73bb45b2b74e8f22cda7d225');
       expect(result[0].expiresAt).to.equal('2023-06-29T19:40:59.000Z');

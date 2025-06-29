@@ -1,7 +1,7 @@
 import { ory } from '../ory.js';
 import { faker } from '@faker-js/faker';
 import { expect } from '@takaro/test';
-import { describe, it } from 'node:test';
+import { describe, it } from 'vitest';
 
 describe('Ory', () => {
   it('Create and delete identities', async () => {
@@ -14,7 +14,7 @@ describe('Ory', () => {
     // Fetch the first one by ID
 
     const firstIdentity = await ory.getIdentity(identities[0].id);
-    expect(firstIdentity.email).to.be.eq(identities[0].email);
+    expect(firstIdentity.email).to.equal(identities[0].email);
 
     // Delete them all
     await Promise.all(identities.map((i) => ory.deleteIdentity(i.id)));

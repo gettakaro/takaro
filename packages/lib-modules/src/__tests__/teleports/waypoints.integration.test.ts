@@ -1,7 +1,7 @@
 import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { GameEvents, HookEvents } from '../../dto/index.js';
 import { PlayerOutputDTO, RoleOutputDTO } from '@takaro/apiclient';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 import { randomUUID } from 'crypto';
 import { getMockServer } from '@takaro/mock-gameserver';
 
@@ -126,8 +126,8 @@ const tests = [
         playerId: this.setupData.moderator.id,
       });
 
-      expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.meta.msg).to.be.eq('Waypoint A set.');
+      expect((await events).length).to.equal(1);
+      expect((await events)[0].data.meta.msg).to.equal('Waypoint A set.');
     },
   }),
   new IntegrationTest<WaypointsSetup>({
@@ -143,8 +143,8 @@ const tests = [
         playerId: this.setupData.moderator.id,
       });
 
-      expect((await firstEvents).length).to.be.eq(1);
-      expect((await firstEvents)[0].data.meta.msg).to.be.eq('Waypoint A set.');
+      expect((await firstEvents).length).to.equal(1);
+      expect((await firstEvents)[0].data.meta.msg).to.equal('Waypoint A set.');
 
       const secondEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
@@ -153,8 +153,8 @@ const tests = [
         playerId: this.setupData.moderator.id,
       });
 
-      expect((await secondEvents).length).to.be.eq(1);
-      expect((await secondEvents)[0].data.meta.msg).to.be.eq('Waypoint A already exists.');
+      expect((await secondEvents).length).to.equal(1);
+      expect((await secondEvents)[0].data.meta.msg).to.equal('Waypoint A already exists.');
     },
   }),
   new IntegrationTest<WaypointsSetup>({
@@ -170,8 +170,8 @@ const tests = [
         playerId: this.setupData.player.id,
       });
 
-      expect((await firstEvents).length).to.be.eq(1);
-      expect((await firstEvents)[0].data.meta.msg).to.be.eq('You do not have permission to manage waypoints.');
+      expect((await firstEvents).length).to.equal(1);
+      expect((await firstEvents)[0].data.meta.msg).to.equal('You do not have permission to manage waypoints.');
 
       await this.client.player.playerControllerAssignRole(
         this.setupData.player.id,
@@ -185,8 +185,8 @@ const tests = [
         playerId: this.setupData.moderator.id,
       });
 
-      expect((await secondEvents).length).to.be.eq(1);
-      expect((await secondEvents)[0].data.meta.msg).to.be.eq('Waypoint A set.');
+      expect((await secondEvents).length).to.equal(1);
+      expect((await secondEvents)[0].data.meta.msg).to.equal('Waypoint A set.');
     },
   }),
   new IntegrationTest<WaypointsSetup>({
@@ -202,8 +202,8 @@ const tests = [
         playerId: this.setupData.moderator.id,
       });
 
-      expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.meta.msg).to.be.eq('Waypoint A set.');
+      expect((await events).length).to.equal(1);
+      expect((await events)[0].data.meta.msg).to.equal('Waypoint A set.');
 
       const teleportEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE);
 
@@ -219,8 +219,8 @@ const tests = [
         playerId: this.setupData.player.id,
       });
 
-      expect((await teleportEvents).length).to.be.eq(1);
-      expect((await teleportEvents)[0].data.meta.msg).to.be.eq('Teleported to waypoint A.');
+      expect((await teleportEvents).length).to.equal(1);
+      expect((await teleportEvents)[0].data.meta.msg).to.equal('Teleported to waypoint A.');
 
       const deleteEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE);
 
@@ -229,8 +229,8 @@ const tests = [
         playerId: this.setupData.moderator.id,
       });
 
-      expect((await deleteEvents).length).to.be.eq(1);
-      expect((await deleteEvents)[0].data.meta.msg).to.be.eq('Waypoint A deleted.');
+      expect((await deleteEvents).length).to.equal(1);
+      expect((await deleteEvents)[0].data.meta.msg).to.equal('Waypoint A deleted.');
     },
   }),
   new IntegrationTest<WaypointsSetup>({
@@ -246,8 +246,8 @@ const tests = [
         playerId: this.setupData.moderator.id,
       });
 
-      expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.meta.msg).to.be.eq("Waypoint A doesn't exist.");
+      expect((await events).length).to.equal(1);
+      expect((await events)[0].data.meta.msg).to.equal("Waypoint A doesn't exist.");
     },
   }),
   new IntegrationTest<WaypointsSetup>({
@@ -267,8 +267,8 @@ const tests = [
         playerId: this.setupData.moderator.id,
       });
 
-      expect((await firstEvents).length).to.be.eq(1);
-      expect((await firstEvents)[0].data.meta.msg).to.be.eq('Waypoint A set.');
+      expect((await firstEvents).length).to.equal(1);
+      expect((await firstEvents)[0].data.meta.msg).to.equal('Waypoint A set.');
 
       const secondEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
@@ -277,8 +277,8 @@ const tests = [
         playerId: this.setupData.player.id,
       });
 
-      expect((await secondEvents).length).to.be.eq(1);
-      expect((await secondEvents)[0].data.meta.msg).to.be.eq('You do not have permission to manage waypoints.');
+      expect((await secondEvents).length).to.equal(1);
+      expect((await secondEvents)[0].data.meta.msg).to.equal('You do not have permission to manage waypoints.');
 
       const thirdEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
@@ -287,8 +287,8 @@ const tests = [
         playerId: this.setupData.moderator.id,
       });
 
-      expect((await thirdEvents).length).to.be.eq(1);
-      expect((await thirdEvents)[0].data.meta.msg).to.be.eq('Waypoint A deleted.');
+      expect((await thirdEvents).length).to.equal(1);
+      expect((await thirdEvents)[0].data.meta.msg).to.equal('Waypoint A deleted.');
     },
   }),
   new IntegrationTest<WaypointsSetup>({
@@ -312,8 +312,8 @@ const tests = [
         playerId: this.setupData.moderator.id,
       });
 
-      expect((await setWaypointAEvents).length).to.be.eq(1);
-      expect((await setWaypointAEvents)[0].data.meta.msg).to.be.eq('Waypoint A set.');
+      expect((await setWaypointAEvents).length).to.equal(1);
+      expect((await setWaypointAEvents)[0].data.meta.msg).to.equal('Waypoint A set.');
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/setwaypoint B',
@@ -323,8 +323,8 @@ const tests = [
       const setWaypointBEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(
         GameEvents.CHAT_MESSAGE,
       );
-      expect((await setWaypointBEvents).length).to.be.eq(1);
-      expect((await setWaypointBEvents)[0].data.meta.msg).to.be.eq('Waypoint B set.');
+      expect((await setWaypointBEvents).length).to.equal(1);
+      expect((await setWaypointBEvents)[0].data.meta.msg).to.equal('Waypoint B set.');
 
       const useWaypointAPermission = await this.client.permissionCodesToInputs([
         `WAYPOINTS_USE_A_${this.setupData.gameserver.id}`,
@@ -344,8 +344,8 @@ const tests = [
         playerId: this.setupData.player.id,
       });
 
-      expect((await listEvents).length).to.be.eq(1);
-      expect((await listEvents)[0].data.meta.msg).to.be.eq('Available waypoints: A, B');
+      expect((await listEvents).length).to.equal(1);
+      expect((await listEvents)[0].data.meta.msg).to.equal('Available waypoints: A, B');
 
       await this.client.role.roleControllerUpdate(this.setupData.playerRole.id, {
         permissions: useWaypointAPermission,
@@ -358,8 +358,8 @@ const tests = [
         playerId: this.setupData.player.id,
       });
 
-      expect((await listEvents2).length).to.be.eq(1);
-      expect((await listEvents2)[0].data.meta.msg).to.be.eq('Available waypoints: A');
+      expect((await listEvents2).length).to.equal(1);
+      expect((await listEvents2)[0].data.meta.msg).to.equal('Available waypoints: A');
     },
   }),
   new IntegrationTest<WaypointsSetup>({
@@ -375,8 +375,8 @@ const tests = [
         playerId: this.setupData.player.id,
       });
 
-      expect((await listEvents).length).to.be.eq(1);
-      expect((await listEvents)[0].data.meta.msg).to.be.eq('There are no waypoints available.');
+      expect((await listEvents).length).to.equal(1);
+      expect((await listEvents)[0].data.meta.msg).to.equal('There are no waypoints available.');
     },
   }),
   new IntegrationTest<WaypointsSetup>({
@@ -390,8 +390,8 @@ const tests = [
         msg: '/setwaypoint trader',
         playerId: this.setupData.moderator.id,
       });
-      expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.meta.msg).to.be.eq('Waypoint trader set.');
+      expect((await events).length).to.equal(1);
+      expect((await events)[0].data.meta.msg).to.equal('Waypoint trader set.');
 
       const useWaypointPermission = await this.client.permissionCodesToInputs([
         `WAYPOINTS_USE_TRADER_${this.setupData.gameserver.id}`,
@@ -405,8 +405,8 @@ const tests = [
         msg: '/trader',
         playerId: this.setupData.player.id,
       });
-      expect((await teleportEvents).length).to.be.eq(1);
-      expect((await teleportEvents)[0].data.meta.msg).to.be.eq('Teleported to waypoint trader.');
+      expect((await teleportEvents).length).to.equal(1);
+      expect((await teleportEvents)[0].data.meta.msg).to.equal('Teleported to waypoint trader.');
     },
   }),
   new IntegrationTest<WaypointsSetup>({
@@ -424,8 +424,8 @@ const tests = [
         playerId: this.setupData.moderator.id,
       });
 
-      expect((await setWaypointAEvents).length).to.be.eq(1);
-      expect((await setWaypointAEvents)[0].data.meta.msg).to.be.eq('Waypoint A set.');
+      expect((await setWaypointAEvents).length).to.equal(1);
+      expect((await setWaypointAEvents)[0].data.meta.msg).to.equal('Waypoint A set.');
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/setwaypoint B',
@@ -435,8 +435,8 @@ const tests = [
       const setWaypointBEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(
         GameEvents.CHAT_MESSAGE,
       );
-      expect((await setWaypointBEvents).length).to.be.eq(1);
-      expect((await setWaypointBEvents)[0].data.meta.msg).to.be.eq('Waypoint B set.');
+      expect((await setWaypointBEvents).length).to.equal(1);
+      expect((await setWaypointBEvents)[0].data.meta.msg).to.equal('Waypoint B set.');
 
       const useWaypointPermission = await this.client.permissionCodesToInputs([
         `WAYPOINTS_USE_A_${this.setupData.gameserver.id}`,
@@ -453,8 +453,8 @@ const tests = [
         playerId: this.setupData.player.id,
       });
 
-      expect((await teleportAEvents).length).to.be.eq(1);
-      expect((await teleportAEvents)[0].data.meta.msg).to.be.eq('Teleported to waypoint A.');
+      expect((await teleportAEvents).length).to.equal(1);
+      expect((await teleportAEvents)[0].data.meta.msg).to.equal('Teleported to waypoint A.');
 
       const teleportBEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE);
 
@@ -463,8 +463,8 @@ const tests = [
         playerId: this.setupData.player.id,
       });
 
-      expect((await teleportBEvents).length).to.be.eq(1);
-      expect((await teleportBEvents)[0].data.meta.msg).to.be.eq('Teleported to waypoint B.');
+      expect((await teleportBEvents).length).to.equal(1);
+      expect((await teleportBEvents)[0].data.meta.msg).to.equal('Teleported to waypoint B.');
     },
   }),
   new IntegrationTest<WaypointsSetup>({
@@ -487,8 +487,8 @@ const tests = [
         playerId: this.setupData.moderator.id,
       });
 
-      expect((await setWaypointAEvents).length).to.be.eq(1);
-      expect((await setWaypointAEvents)[0].data.meta.msg).to.be.eq('Waypoint A set.');
+      expect((await setWaypointAEvents).length).to.equal(1);
+      expect((await setWaypointAEvents)[0].data.meta.msg).to.equal('Waypoint A set.');
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/setwaypoint B',
@@ -498,8 +498,8 @@ const tests = [
       const setWaypointBEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(
         GameEvents.CHAT_MESSAGE,
       );
-      expect((await setWaypointBEvents).length).to.be.eq(1);
-      expect((await setWaypointBEvents)[0].data.meta.msg).to.be.eq('Waypoint B set.');
+      expect((await setWaypointBEvents).length).to.equal(1);
+      expect((await setWaypointBEvents)[0].data.meta.msg).to.equal('Waypoint B set.');
 
       const useWaypointPermission = await this.client.permissionCodesToInputs([
         `WAYPOINTS_USE_A_${this.setupData.gameserver.id}`,
@@ -515,8 +515,8 @@ const tests = [
         playerId: this.setupData.player.id,
       });
 
-      expect((await teleportAEvents).length).to.be.eq(1);
-      expect((await teleportAEvents)[0].data.meta.msg).to.be.eq('Teleported to waypoint A.');
+      expect((await teleportAEvents).length).to.equal(1);
+      expect((await teleportAEvents)[0].data.meta.msg).to.equal('Teleported to waypoint A.');
 
       const teleportBEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE);
 
@@ -525,8 +525,8 @@ const tests = [
         playerId: this.setupData.player.id,
       });
 
-      expect((await teleportBEvents).length).to.be.eq(1);
-      expect((await teleportBEvents)[0].data.meta.msg).to.be.eq('You are not allowed to use the waypoint B.');
+      expect((await teleportBEvents).length).to.equal(1);
+      expect((await teleportBEvents)[0].data.meta.msg).to.equal('You are not allowed to use the waypoint B.');
     },
   }),
   new IntegrationTest<WaypointsSetup>({
@@ -547,8 +547,8 @@ const tests = [
         msg: '/setwaypoint A',
         playerId: newServerModerator.playerId,
       });
-      expect((await setEvents).length).to.be.eq(1);
-      expect((await setEvents)[0].data.meta.msg).to.be.eq('Waypoint A set.');
+      expect((await setEvents).length).to.equal(1);
+      expect((await setEvents)[0].data.meta.msg).to.equal('Waypoint A set.');
 
       // Make a waypoint on the original gameserver
       const setEvents2 = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE);
@@ -556,8 +556,8 @@ const tests = [
         msg: '/setwaypoint notused',
         playerId: this.setupData.moderator.id,
       });
-      expect((await setEvents2).length).to.be.eq(1);
-      expect((await setEvents2)[0].data.meta.msg).to.be.eq('Waypoint notused set.');
+      expect((await setEvents2).length).to.equal(1);
+      expect((await setEvents2)[0].data.meta.msg).to.equal('Waypoint notused set.');
 
       const useWaypointPermission = await this.client.permissionCodesToInputs([`WAYPOINTS_USE_A_${newGameServer.id}`]);
       await this.client.role.roleControllerUpdate(this.setupData.playerRole.id, {
@@ -570,8 +570,8 @@ const tests = [
         msg: '/A',
         playerId: newServerPlayer.playerId,
       });
-      expect((await teleportEvents).length).to.be.eq(1);
-      expect((await teleportEvents)[0].data.meta.msg).to.be.eq('Teleported to waypoint A.');
+      expect((await teleportEvents).length).to.equal(1);
+      expect((await teleportEvents)[0].data.meta.msg).to.equal('Teleported to waypoint A.');
 
       // Use the waypoint from the original gameserver -> "waypoint does not exist"
       const teleportEvents2 = (await new EventsAwaiter().connect(this.client)).waitForEvents(
@@ -581,8 +581,8 @@ const tests = [
         msg: '/A',
         playerId: this.setupData.player.id,
       });
-      expect((await teleportEvents2).length).to.be.eq(1);
-      expect((await teleportEvents2)[0].data.meta.result.logs[0].msg).to.be.eq('Waypoint A is not for this server.');
+      expect((await teleportEvents2).length).to.equal(1);
+      expect((await teleportEvents2)[0].data.meta.result.logs[0].msg).to.equal('Waypoint A is not for this server.');
     },
   }),
   new IntegrationTest<WaypointsSetup>({
@@ -606,7 +606,7 @@ const tests = [
         msg: '/setwaypoint A',
         playerId: this.setupData.moderator.id,
       });
-      expect((await setEvents)[0].data.meta.msg).to.be.eq('Waypoint A set.');
+      expect((await setEvents)[0].data.meta.msg).to.equal('Waypoint A set.');
 
       // Make a waypoint on the new gameserver
       const setEvents2 = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE);
@@ -614,7 +614,7 @@ const tests = [
         msg: '/setwaypoint A',
         playerId: newServerModerator.playerId,
       });
-      expect((await setEvents2)[0].data.meta.msg).to.be.eq('Waypoint A set.');
+      expect((await setEvents2)[0].data.meta.msg).to.equal('Waypoint A set.');
 
       const useWaypointPermission = await this.client.permissionCodesToInputs([
         `WAYPOINTS_USE_A_${this.setupData.gameserver.id}`,
@@ -629,7 +629,7 @@ const tests = [
         msg: '/A',
         playerId: this.setupData.player.id,
       });
-      expect((await teleportEvents)[0].data.meta.msg).to.be.eq('Teleported to waypoint A.');
+      expect((await teleportEvents)[0].data.meta.msg).to.equal('Teleported to waypoint A.');
 
       // Use the waypoint from the new gameserver -> error
       const teleportEvents2 = (await new EventsAwaiter().connect(this.client)).waitForEvents(
@@ -640,7 +640,7 @@ const tests = [
         msg: '/A',
         playerId: newServerPlayer.playerId,
       });
-      expect((await teleportEvents2)[0].data.meta.msg).to.be.eq('You are not allowed to use the waypoint A.');
+      expect((await teleportEvents2)[0].data.meta.msg).to.equal('You are not allowed to use the waypoint A.');
     },
   }),
   new IntegrationTest<WaypointsSetup>({
@@ -659,7 +659,7 @@ const tests = [
         msg: '/setwaypoint A',
         playerId: this.setupData.moderator.id,
       });
-      expect((await setEvents)[0].data.meta.msg).to.be.eq('Waypoint A set.');
+      expect((await setEvents)[0].data.meta.msg).to.equal('Waypoint A set.');
 
       const waypointsModuleToRemove = await this.client.module.moduleControllerSearch({
         filters: { name: ['Waypoints'] },
@@ -675,7 +675,7 @@ const tests = [
         msg: '/setwaypoint B',
         playerId: this.setupData.moderator.id,
       });
-      expect((await setEvents2)[0].data.meta.msg).to.be.eq('Waypoint B set.');
+      expect((await setEvents2)[0].data.meta.msg).to.equal('Waypoint B set.');
 
       const waypointsModule = await this.client.module.moduleControllerSearch({ filters: { name: ['Waypoints'] } });
       if (!waypointsModule.data.data.length) {
@@ -704,7 +704,7 @@ const tests = [
         msg: '/settp A',
         playerId: this.setupData.moderator.id,
       });
-      expect((await setTeleportEvents)[0].data.meta.msg).to.be.eq('Teleport A set.');
+      expect((await setTeleportEvents)[0].data.meta.msg).to.equal('Teleport A set.');
 
       const setPublicTeleportEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(
         GameEvents.CHAT_MESSAGE,
@@ -715,7 +715,7 @@ const tests = [
         playerId: this.setupData.moderator.id,
       });
 
-      expect((await setPublicTeleportEvents)[0].data.meta.msg).to.be.eq('Teleport A is now public.');
+      expect((await setPublicTeleportEvents)[0].data.meta.msg).to.equal('Teleport A is now public.');
 
       const setWaypointEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(
         GameEvents.CHAT_MESSAGE,
@@ -726,13 +726,13 @@ const tests = [
         playerId: this.setupData.moderator.id,
       });
 
-      expect((await setWaypointEvents)[0].data.meta.msg).to.be.eq('Waypoint B set.');
+      expect((await setWaypointEvents)[0].data.meta.msg).to.equal('Waypoint B set.');
       const waypointsModule = await this.client.module.moduleControllerSearch({ filters: { name: ['Waypoints'] } });
       if (!waypointsModule.data.data.length) {
         throw new Error('Waypoints module not found');
       }
       expect(waypointsModule.data.data[0].latestVersion.commands).to.be.lengthOf(1);
-      expect(waypointsModule.data.data[0].latestVersion.commands[0].name).to.be.eq(
+      expect(waypointsModule.data.data[0].latestVersion.commands[0].name).to.equal(
         `waypoint B server ${this.setupData.gameserver.id}`,
       );
     },
@@ -750,8 +750,8 @@ const tests = [
         playerId: this.setupData.moderator.id,
       });
 
-      expect((await setEvents).length).to.be.eq(1);
-      expect((await setEvents)[0].data.meta.msg).to.be.eq('Waypoint dimension_waypoint set.');
+      expect((await setEvents).length).to.equal(1);
+      expect((await setEvents)[0].data.meta.msg).to.equal('Waypoint dimension_waypoint set.');
 
       // Give player permission to use the waypoint
       const useWaypointPermission = await this.client.permissionCodesToInputs([
@@ -768,8 +768,8 @@ const tests = [
         playerId: this.setupData.player.id,
       });
 
-      expect((await teleportEvents).length).to.be.eq(1);
-      expect((await teleportEvents)[0].data.meta.msg).to.be.eq('Teleported to waypoint dimension_waypoint.');
+      expect((await teleportEvents).length).to.equal(1);
+      expect((await teleportEvents)[0].data.meta.msg).to.equal('Teleported to waypoint dimension_waypoint.');
     },
   }),
   new IntegrationTest<WaypointsSetup>({
@@ -785,8 +785,8 @@ const tests = [
         playerId: this.setupData.moderator.id,
       });
 
-      expect((await setEvents).length).to.be.eq(1);
-      expect((await setEvents)[0].data.meta.msg).to.be.eq('Waypoint api_test_waypoint set.');
+      expect((await setEvents).length).to.equal(1);
+      expect((await setEvents)[0].data.meta.msg).to.equal('Waypoint api_test_waypoint set.');
 
       // Test direct API teleport with dimension
       await this.client.gameserver.gameServerControllerTeleportPlayer(
@@ -815,8 +815,8 @@ const tests = [
         playerId: this.setupData.player.id,
       });
 
-      expect((await teleportEvents).length).to.be.eq(1);
-      expect((await teleportEvents)[0].data.meta.msg).to.be.eq('Teleported to waypoint api_test_waypoint.');
+      expect((await teleportEvents).length).to.equal(1);
+      expect((await teleportEvents)[0].data.meta.msg).to.equal('Teleported to waypoint api_test_waypoint.');
     },
   }),
 ];

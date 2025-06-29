@@ -1,6 +1,6 @@
 import { IntegrationTest, expect, SetupGameServerPlayers } from '@takaro/test';
 import { isAxiosError } from '@takaro/apiclient';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 import { randomUUID } from 'node:crypto';
 
 const group = 'EntityController';
@@ -213,7 +213,7 @@ const tests = [
       // Assert all entities belong to one of the specified gameservers
       const validGameserverIds = [this.setupData.gameServer1.id, this.setupData.gameServer2.id];
       for (const entity of res.data.data) {
-        expect(validGameserverIds).to.include(entity.gameserverId);
+        expect(validGameserverIds).to.contain(entity.gameserverId);
       }
 
       // Assert we have entities from both gameservers
@@ -282,7 +282,7 @@ const tests = [
 
       // Assert all returned entities contain "undead" in their description
       for (const entity of res.data.data) {
-        expect(entity.description?.toLowerCase()).to.include('undead');
+        expect(entity.description?.toLowerCase()).to.contain('undead');
         expect(entity.gameserverId).to.equal(this.setupData.gameServer1.id);
       }
 
@@ -391,7 +391,7 @@ const tests = [
       // Check that metadata exists for these entities
       entitiesRes.data.data.forEach((entity) => {
         expect(entity.metadata).to.not.be.null;
-        expect(entity.metadata).to.be.an('object');
+        expect(entity.metadata).to.be.a('object');
       });
 
       return entitiesRes;
@@ -435,7 +435,7 @@ const tests = [
       } catch (error) {
         if (isAxiosError(error)) {
           expect(error.response?.status).to.equal(404);
-          expect(error.response?.data.meta.error.message).to.include('Not found');
+          expect(error.response?.data.meta.error.message).to.contain('Not found');
           return;
         }
         throw error;

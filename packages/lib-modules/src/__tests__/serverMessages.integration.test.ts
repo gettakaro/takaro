@@ -1,6 +1,6 @@
 import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '../dto/index.js';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 
 const group = 'Server messages';
 
@@ -24,8 +24,8 @@ const tests = [
         moduleId: this.setupData.serverMessagesModule.id,
       });
 
-      expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.meta.msg).to.be.eq(
+      expect((await events).length).to.equal(1);
+      expect((await events)[0].data.meta.msg).to.equal(
         "This is an automated message, don't forget to read the server rules!",
       );
     },
@@ -52,8 +52,8 @@ const tests = [
         moduleId: this.setupData.serverMessagesModule.id,
       });
 
-      expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.meta.msg).to.be.eq('This is a custom message');
+      expect((await events).length).to.equal(1);
+      expect((await events)[0].data.meta.msg).to.equal('This is a custom message');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -80,8 +80,8 @@ const tests = [
         moduleId: this.setupData.serverMessagesModule.id,
       });
 
-      expect((await firstEvents).length).to.be.eq(1);
-      expect((await firstEvents)[0].data.meta.msg).to.be.eq('Test message 1');
+      expect((await firstEvents).length).to.equal(1);
+      expect((await firstEvents)[0].data.meta.msg).to.equal('Test message 1');
 
       const secondEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
@@ -91,8 +91,8 @@ const tests = [
         moduleId: this.setupData.serverMessagesModule.id,
       });
 
-      expect((await secondEvents).length).to.be.eq(1);
-      expect((await secondEvents)[0].data.meta.msg).to.be.eq('Test message 2');
+      expect((await secondEvents).length).to.equal(1);
+      expect((await secondEvents)[0].data.meta.msg).to.equal('Test message 2');
 
       // After this, it should loop back to the first message
       const thirdEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
@@ -103,8 +103,8 @@ const tests = [
         moduleId: this.setupData.serverMessagesModule.id,
       });
 
-      expect((await thirdEvents).length).to.be.eq(1);
-      expect((await thirdEvents)[0].data.meta.msg).to.be.eq('Test message 1');
+      expect((await thirdEvents).length).to.equal(1);
+      expect((await thirdEvents)[0].data.meta.msg).to.equal('Test message 1');
     },
   }),
 ];

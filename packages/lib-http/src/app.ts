@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import express, { Application } from 'express';
-import { logger, errors, Sentry } from '@takaro/util';
+import { logger, errors } from '@takaro/util';
 import { Server, createServer } from 'node:http';
 import { RoutingControllersOptions, useExpressServer } from 'routing-controllers';
 import { Meta } from './controllers/meta.js';
@@ -29,7 +29,6 @@ export class HTTP {
     this.logger = logger('http');
     this.app = express();
     this.httpServer = createServer(this.app);
-    this.app.use(Sentry.Handlers.requestHandler());
     this.app.use(
       bodyParser.json({
         limit: '1mb',
@@ -76,8 +75,6 @@ export class HTTP {
         validation: { whitelist: true, forbidNonWhitelisted: true },
       });
     }
-
-    this.app.use(Sentry.Handlers.errorHandler());
 
     this.app.use(ErrorHandler);
   }

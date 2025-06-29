@@ -1,10 +1,10 @@
 import { compareHashed, decrypt, encrypt, hash } from '../encryption.js';
 import { expect } from '@takaro/test';
 import { getKnex } from '../knex.js';
-import { describe, before, it } from 'node:test';
+import { describe, beforeAll, it } from 'vitest';
 
 describe('Database encryption', () => {
-  before(async () => {
+  beforeAll(async () => {
     const knex = await getKnex();
     await knex.raw('CREATE EXTENSION IF NOT EXISTS pgcrypto;');
   });
@@ -18,20 +18,20 @@ describe('Database encryption', () => {
     it('Can decrypt a simple string', async () => {
       const encrypted = await encrypt('test');
       const decrypted = await decrypt(encrypted);
-      expect(decrypted).to.eq('test');
+      expect(decrypted).to.equal('test');
     });
 
     it('Can handle complex JSON structures', async () => {
       const encrypted = await encrypt(JSON.stringify({ foo: 'bar' }));
       const decrypted = await decrypt(encrypted);
-      expect(decrypted).to.eq(JSON.stringify({ foo: 'bar' }));
+      expect(decrypted).to.equal(JSON.stringify({ foo: 'bar' }));
     });
 
     it('Can handle very long values', async () => {
       const longValue = 'a'.repeat(10000);
       const encrypted = await encrypt(longValue);
       const decrypted = await decrypt(encrypted);
-      expect(decrypted).to.eq(longValue);
+      expect(decrypted).to.equal(longValue);
     });
   });
 
@@ -45,13 +45,13 @@ describe('Database encryption', () => {
     it('Can compare a simple string', async () => {
       const hashed = await hash('test');
       const result = await compareHashed('test', hashed);
-      expect(result).to.eq(true);
+      expect(result).to.equal(true);
     });
 
     it('Returns false when comparing different strings', async () => {
       const hashed = await hash('test');
       const result = await compareHashed('test2', hashed);
-      expect(result).to.eq(false);
+      expect(result).to.equal(false);
     });
   });
 });

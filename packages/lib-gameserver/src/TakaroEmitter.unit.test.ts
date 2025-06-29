@@ -1,7 +1,7 @@
 import { TakaroEmitter } from './TakaroEmitter.js';
 import { expect, sandbox } from '@takaro/test';
 import { EventLogLine, GameEvents } from '@takaro/modules';
-import { describe, it } from 'node:test';
+import { describe, it } from 'vitest';
 
 class ExtendedTakaroEmitter extends TakaroEmitter {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -28,7 +28,7 @@ describe('TakaroEmitter', () => {
       }),
     );
 
-    expect(spy).to.have.been.calledOnce;
+    expect(spy).to.have.callCount(1);
 
     await emitter.emit(
       GameEvents.LOG_LINE,
@@ -37,7 +37,7 @@ describe('TakaroEmitter', () => {
       }),
     );
 
-    expect(spy).to.have.been.calledTwice;
+    expect(spy).to.have.callCount(2);
   });
 
   it('Can remove a listener, which causes further events to not be received', async () => {
@@ -53,7 +53,7 @@ describe('TakaroEmitter', () => {
       }),
     );
 
-    expect(spy).to.have.been.calledOnce;
+    expect(spy).to.have.callCount(1);
 
     emitter.off(GameEvents.LOG_LINE, spy);
 
@@ -64,7 +64,7 @@ describe('TakaroEmitter', () => {
       }),
     );
 
-    expect(spy).to.have.been.calledOnce;
+    expect(spy).to.have.callCount(1);
   });
 
   it('Errors happening inside extended class do not interrupt flow of events', async () => {
@@ -77,7 +77,7 @@ describe('TakaroEmitter', () => {
 
     await expect(emitter.foo()).to.eventually.be.rejectedWith('testing error');
 
-    expect(errorSpy).to.have.been.calledOnce;
+    expect(errorSpy).to.have.callCount(1);
 
     await emitter.emit(
       GameEvents.LOG_LINE,
@@ -86,7 +86,7 @@ describe('TakaroEmitter', () => {
       }),
     );
 
-    expect(spy).to.have.been.calledOnce;
+    expect(spy).to.have.callCount(1);
   });
 
   // it('Validates data on emitting', async (t) => {
@@ -107,7 +107,7 @@ describe('TakaroEmitter', () => {
   //     }),
   //   );
 
-  //   expect(errorSpy).to.have.been.calledOnce;
+  //   expect(errorSpy).toHaveBeenCalledOnce();
   //   expect(errorSpy.getCall(0).args[0].message).to.match(
   //     /property unknownProperty has failed the following constraints: whitelistValidation/,
   //   );
@@ -122,6 +122,6 @@ describe('TakaroEmitter', () => {
     emitter.on('error', errorSpy);
 
     await expect(emitter.foo()).to.eventually.be.rejectedWith('testing error');
-    expect(errorSpy).to.have.been.calledOnce;
+    expect(errorSpy).to.have.callCount(1);
   });
 });

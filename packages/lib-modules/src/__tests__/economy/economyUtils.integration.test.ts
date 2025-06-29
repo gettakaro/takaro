@@ -7,7 +7,7 @@ import {
   EventsAwaiter,
 } from '@takaro/test';
 import { GameEvents } from '../../dto/index.js';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 
 const group = 'EconomyUtils';
 
@@ -68,9 +68,9 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await events).length).to.be.eq(2);
-      expect((await events)[0].data.meta.msg).to.be.eq('balance: 0 test coin');
-      expect((await events)[1].data.meta.msg).to.be.eq('balance: 1000 test coin');
+      expect((await events).length).to.equal(2);
+      expect((await events)[0].data.meta.msg).to.equal('balance: 0 test coin');
+      expect((await events)[1].data.meta.msg).to.equal('balance: 1000 test coin');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -111,7 +111,7 @@ const tests = [
       });
 
       const messages = (await events).map((e) => e.data.meta.msg as string);
-      expect((await events).length).to.be.eq(6);
+      expect((await events).length).to.equal(6);
       for (const message of messages) {
         expect(message).to.match(
           /(Richest players\:|1\. .+ - 9000 test coin|2\. .+ - 8000 test coin|3\. .+ - 7000 test coin|4\. .+ - 6000 test coin|5\. .+ - 5000 test coin)/,
@@ -148,7 +148,7 @@ const tests = [
         (pog) => pog.gameServerId === this.setupData.gameserver.id,
       );
       if (!receiverPog) throw new Error('Receiver playerOnGameServer does not exist');
-      expect(receiverPog.currency).to.be.eq(0);
+      expect(receiverPog.currency).to.equal(0);
 
       const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 2);
 
@@ -158,23 +158,23 @@ const tests = [
       });
 
       const messages = (await events).sort(chatMessageSorter).map((e) => e.data.meta.msg as string);
-      expect((await events).length).to.be.eq(2);
+      expect((await events).length).to.equal(2);
 
       // check if balances are correct
       const updatedSender = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
         senderPog.gameServerId,
         senderPog.playerId,
       );
-      expect(updatedSender.data.data.currency).to.be.eq(0);
+      expect(updatedSender.data.data.currency).to.equal(0);
 
       const updatedReceiver = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
         receiverPog.gameServerId,
         receiverPog.playerId,
       );
-      expect(updatedReceiver.data.data.currency).to.be.eq(transferAmount);
+      expect(updatedReceiver.data.data.currency).to.equal(transferAmount);
 
-      expect(messages[0]).to.be.eq(`You received ${transferAmount} test coin from ${sender.name}`);
-      expect(messages[1]).to.be.eq(`You successfully transferred ${transferAmount} test coin to ${receiver.name}`);
+      expect(messages[0]).to.equal(`You received ${transferAmount} test coin from ${sender.name}`);
+      expect(messages[1]).to.equal(`You successfully transferred ${transferAmount} test coin to ${receiver.name}`);
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -200,8 +200,8 @@ const tests = [
       });
 
       const messages = (await events).sort(chatMessageSorter).map((e) => e.data.meta.msg as string);
-      expect((await events).length).to.be.eq(1);
-      expect(messages[0]).to.be.eq(
+      expect((await events).length).to.equal(1);
+      expect(messages[0]).to.equal(
         `Failed to transfer ${transferAmount} test coin to ${receiver.name}. Are you sure you have enough balance?`,
       );
     },
@@ -241,7 +241,7 @@ const tests = [
         (pog) => pog.gameServerId === this.setupData.gameserver.id,
       );
       if (!receiverPog) throw new Error('Receiver playerOnGameServer does not exist');
-      expect(receiverPog.currency).to.be.eq(0);
+      expect(receiverPog.currency).to.equal(0);
 
       let events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
@@ -260,7 +260,7 @@ const tests = [
             senderPog.playerId,
           )
         ).data.data.currency,
-      ).to.be.eq(transferAmount);
+      ).to.equal(transferAmount);
       expect(
         (
           await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
@@ -268,9 +268,9 @@ const tests = [
             receiverPog.playerId,
           )
         ).data.data.currency,
-      ).to.be.eq(0);
-      expect(messages.length).to.be.eq(1);
-      expect(messages[0]).to.be.eq(
+      ).to.equal(0);
+      expect(messages.length).to.equal(1);
+      expect(messages[0]).to.equal(
         `You are about to send ${transferAmount} test coin to ${receiver.name}. (Please confirm by typing ${prefix}confirmtransfer)`,
       );
 
@@ -284,7 +284,7 @@ const tests = [
       });
 
       messages = (await events).sort(chatMessageSorter).map((e) => e.data.meta.msg as string);
-      expect((await events).length).to.be.eq(2);
+      expect((await events).length).to.equal(2);
       expect(
         (
           await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
@@ -292,7 +292,7 @@ const tests = [
             senderPog.playerId,
           )
         ).data.data.currency,
-      ).to.be.eq(0);
+      ).to.equal(0);
       expect(
         (
           await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
@@ -300,10 +300,10 @@ const tests = [
             receiverPog.playerId,
           )
         ).data.data.currency,
-      ).to.be.eq(transferAmount);
+      ).to.equal(transferAmount);
 
-      expect(messages[0]).to.be.eq(`You received ${transferAmount} test coin from ${sender.name}`);
-      expect(messages[1]).to.be.eq(`You successfully transferred ${transferAmount} test coin to ${receiver.name}`);
+      expect(messages[0]).to.equal(`You received ${transferAmount} test coin from ${sender.name}`);
+      expect(messages[1]).to.equal(`You successfully transferred ${transferAmount} test coin to ${receiver.name}`);
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -326,7 +326,7 @@ const tests = [
       });
 
       const messages = (await events).sort(chatMessageSorter).map((e) => e.data.meta.msg as string);
-      expect(messages[0]).to.be.eq('You have no pending transfer.');
+      expect(messages[0]).to.equal('You have no pending transfer.');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -358,7 +358,7 @@ const tests = [
         (pog) => pog.gameServerId === this.setupData.gameserver.id,
       );
       if (!receiverPog) throw new Error('Receiver playerOnGameServer does not exist');
-      expect(receiverPog.currency).to.be.eq(0);
+      expect(receiverPog.currency).to.equal(0);
 
       const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 2);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
@@ -374,9 +374,9 @@ const tests = [
             receiverPog.playerId,
           )
         ).data.data.currency,
-      ).to.be.eq(grantAmount);
-      expect(messages[0]).to.be.eq(`Granted ${grantAmount} test coin by ${granter.name}`);
-      expect(messages[1]).to.be.eq(`You successfully granted ${grantAmount} test coin to ${receiver.name}`);
+      ).to.equal(grantAmount);
+      expect(messages[0]).to.equal(`Granted ${grantAmount} test coin by ${granter.name}`);
+      expect(messages[1]).to.equal(`You successfully granted ${grantAmount} test coin to ${receiver.name}`);
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -420,7 +420,7 @@ const tests = [
       // currency before revoke
       expect(
         receiver.playerOnGameServers?.find((pog) => pog.gameServerId === this.setupData.gameserver.id)?.currency,
-      ).to.be.eq(0);
+      ).to.equal(0);
 
       const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 2);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
@@ -436,9 +436,9 @@ const tests = [
             receiverPog.playerId,
           )
         ).data.data.currency,
-      ).to.be.eq(0);
-      expect(messages[0]).to.be.eq(`${revokeAmount} test coin were revoked by ${revoker.name}`);
-      expect(messages[1]).to.be.eq(`You successfully revoked ${revokeAmount} test coin of ${receiver.name}'s balance`);
+      ).to.equal(0);
+      expect(messages[0]).to.equal(`${revokeAmount} test coin were revoked by ${revoker.name}`);
+      expect(messages[1]).to.equal(`You successfully revoked ${revokeAmount} test coin of ${receiver.name}'s balance`);
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -464,7 +464,7 @@ const tests = [
       // currency before revoke
       expect(
         receiver.playerOnGameServers?.find((pog) => pog.gameServerId === this.setupData.gameserver.id)?.currency,
-      ).to.be.eq(0);
+      ).to.equal(0);
 
       const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 2);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
@@ -478,8 +478,8 @@ const tests = [
       });
 
       const messages = (await events).sort(chatMessageSorter).map((e) => e.data.meta.msg as string);
-      expect(messages[0]).to.be.eq('You do not have permission to use grant currency command.');
-      expect(messages[1]).to.be.eq('You do not have permission to use revoke currency command.');
+      expect(messages[0]).to.equal('You do not have permission to use grant currency command.');
+      expect(messages[1]).to.equal('You do not have permission to use revoke currency command.');
     },
   }),
 ];

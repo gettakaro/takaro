@@ -3,7 +3,7 @@ import { IntegrationTest, expect } from '@takaro/test';
 import { getModules } from '@takaro/modules';
 import { getSystemConfigSchema } from '../systemConfig.js';
 import _Ajv from 'ajv';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 
 const Ajv = _Ajv as unknown as typeof _Ajv.default;
 

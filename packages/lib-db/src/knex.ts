@@ -32,7 +32,16 @@ export async function getKnex(): Promise<KnexClient> {
   if (cachedKnex) return cachedKnex;
 
   log.debug('Missed knex cache, creating new client');
-  const knex = createKnex(getKnexOptions());
+
+  let knex;
+  // If knexPkg is a function call it, otherwise use the createKnex function
+  // This is some nasty ESM business...
+  if (typeof knexPkg === 'function') {
+    knex = knexPkg(getKnexOptions());
+  } else {
+    knex = createKnex(getKnexOptions());
+  }
+
   cachedKnex = knex;
 
   health.registerHook('db', isDbAvailable);

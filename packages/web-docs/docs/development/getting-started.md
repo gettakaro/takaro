@@ -68,6 +68,23 @@ Optionally (but recommended!), you can set up some testing data automatically.
 docker compose exec takaro node scripts/dev-data.mjs
 ```
 
+### Verify your setup with tests
+
+Once everything is running, you can verify your development environment by running some tests:
+
+```bash
+# Quick verification - run a simple unit test
+docker compose exec takaro npm run test:file packages/lib-config/src/__tests__/config.unit.test.ts
+
+# Run all unit tests (faster, no external dependencies)
+docker compose exec takaro npm run test:unit
+
+# If you want to test the full integration (takes longer)
+docker compose exec takaro npm test
+```
+
+If the tests pass, your development environment is working correctly! If you encounter issues, check the [Running tests](./common-tasks/running-tests.md) documentation for troubleshooting.
+
 ### Frontend only development
 
 The full system is quite heavy and needs a lot of resources. If you are only working on the frontend, you can run the lightweight production containers and only run the frontend in dev mode

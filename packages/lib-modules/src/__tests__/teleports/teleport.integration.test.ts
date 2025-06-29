@@ -1,6 +1,6 @@
 import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '../../dto/index.js';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 
 const group = 'Teleports suite';
 
@@ -22,8 +22,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await setEvents).length).to.be.eq(1);
-      expect((await setEvents)[0].data.meta.msg).to.be.eq('Teleport test set.');
+      expect((await setEvents).length).to.equal(1);
+      expect((await setEvents)[0].data.meta.msg).to.equal('Teleport test set.');
 
       const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
@@ -31,8 +31,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.meta.msg).to.be.eq('Teleported to test.');
+      expect((await events).length).to.equal(1);
+      expect((await events)[0].data.meta.msg).to.equal('Teleported to test.');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -52,8 +52,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.meta.msg).to.be.eq('Teleport test does not exist.');
+      expect((await events).length).to.equal(1);
+      expect((await events)[0].data.meta.msg).to.equal('Teleport test does not exist.');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -77,7 +77,7 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await setTpEvent).length).to.be.eq(1);
+      expect((await setTpEvent).length).to.equal(1);
 
       const tpEvent = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
@@ -86,7 +86,7 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await tpEvent)[0].data.meta.msg).to.be.eq('Teleported to test.');
+      expect((await tpEvent)[0].data.meta.msg).to.equal('Teleported to test.');
 
       const tpTimeoutEvent = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
@@ -95,7 +95,7 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await tpTimeoutEvent)[0].data.meta.msg).to.be.eq(
+      expect((await tpTimeoutEvent)[0].data.meta.msg).to.equal(
         'You cannot teleport yet. Please wait before trying again.',
       );
     },
@@ -118,8 +118,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await setEvents).length).to.be.eq(1);
-      expect((await setEvents)[0].data.meta.msg).to.be.eq('Teleport dimension_test set.');
+      expect((await setEvents).length).to.equal(1);
+      expect((await setEvents)[0].data.meta.msg).to.equal('Teleport dimension_test set.');
 
       // Now teleport using the API endpoint with a specific dimension
       await this.client.gameserver.gameServerControllerTeleportPlayer(
@@ -140,8 +140,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await tpEvents).length).to.be.eq(1);
-      expect((await tpEvents)[0].data.meta.msg).to.be.eq('Teleported to dimension_test.');
+      expect((await tpEvents).length).to.equal(1);
+      expect((await tpEvents)[0].data.meta.msg).to.equal('Teleported to dimension_test.');
     },
   }),
 ];

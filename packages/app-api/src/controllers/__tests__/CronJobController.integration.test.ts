@@ -1,6 +1,6 @@
 import { IntegrationTest, expect } from '@takaro/test';
 import { CronJobOutputDTO, ModuleOutputDTO } from '@takaro/apiclient';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 import { randomUUID } from 'crypto';
 
 const group = 'CronJobController';

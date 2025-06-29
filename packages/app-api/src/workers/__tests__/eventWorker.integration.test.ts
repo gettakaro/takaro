@@ -3,7 +3,7 @@ import { GameEvents, IGamePlayer } from '@takaro/modules';
 import { v4 as uuid } from 'uuid';
 import { PlayerService } from '../../service/Player/index.js';
 import { sleep } from '@takaro/util';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 import { faker } from '@faker-js/faker';
 
 const group = 'Event worker';
@@ -31,7 +31,7 @@ const tests = [
       const player = players.data.data.find((player) => player.steamId === MOCK_PLAYER.steamId);
 
       expect(player).to.not.be.null;
-      expect(player?.steamId).to.eq(MOCK_PLAYER.steamId);
+      expect(player?.steamId).to.equal(MOCK_PLAYER.steamId);
 
       return players;
     },
@@ -61,7 +61,7 @@ const tests = [
         extend: ['playerOnGameServers'],
       });
 
-      expect(playersResAfter.data.data[0].playerOnGameServers).to.have.lengthOf(2);
+      expect(playersResAfter.data.data[0].playerOnGameServers).to.have.length(2);
     },
   }),
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
@@ -74,10 +74,10 @@ const tests = [
         filters: { gameServerId: [this.setupData.gameServer1.id] },
       });
 
-      expect(originalPogs.data.data).to.have.lengthOf(10);
+      expect(originalPogs.data.data).to.have.length(10);
       // Should all have 0 playtime
       originalPogs.data.data.forEach((pog) => {
-        expect(pog.playtimeSeconds).to.eq(0, 'Playtime should be 0 at start of test');
+        expect(pog.playtimeSeconds).to.equal(0, 'Playtime should be 0 at start of test');
       });
 
       const connectedEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(
@@ -89,7 +89,7 @@ const tests = [
         command: 'connectAll',
       });
 
-      expect(await connectedEvents).to.have.lengthOf(10);
+      expect(await connectedEvents).to.have.length(10);
 
       // Wait a second, to ensure there's a noticeable difference in playtime
       await sleep(1000);
@@ -104,7 +104,7 @@ const tests = [
         command: 'disconnectAll',
       });
 
-      expect(await disconnectedEvents).to.have.lengthOf(10);
+      expect(await disconnectedEvents).to.have.length(10);
       // Playtime calc happens AFTER the event is handled, so we need to wait a bit
       await sleep(500);
 
@@ -112,7 +112,7 @@ const tests = [
         filters: { gameServerId: [this.setupData.gameServer1.id] },
       });
 
-      expect(updatedPogs.data.data).to.have.lengthOf(10);
+      expect(updatedPogs.data.data).to.have.length(10);
       // Should all have a playtime greater than 0
       // Due to the async nature of tests, we don't have tight control over the exact playtime
       // So just a simple check to see if it's greater than 0 is enough
@@ -127,7 +127,7 @@ const tests = [
       const players = await this.client.player.playerControllerSearch({
         filters: { id: updatedPogs.data.data.map((pog) => pog.playerId) },
       });
-      expect(players.data.data).to.have.lengthOf(10);
+      expect(players.data.data).to.have.length(10);
       players.data.data.forEach((player) => {
         expect(player.playtimeSeconds).to.be.greaterThan(
           0,
@@ -158,8 +158,8 @@ const tests = [
       const player = players.data.data.find((player) => player.platformId === MOCK_PLAYER.platformId);
 
       expect(player).to.not.be.null;
-      expect(player?.platformId).to.eq(MOCK_PLAYER.platformId);
-      expect(player?.name).to.eq(MOCK_PLAYER.name);
+      expect(player?.platformId).to.equal(MOCK_PLAYER.platformId);
+      expect(player?.name).to.equal(MOCK_PLAYER.name);
 
       return players;
     },
@@ -199,9 +199,9 @@ const tests = [
       });
 
       // Should find only one player (the existing one, updated with new name)
-      expect(players.data.data).to.have.lengthOf(1);
-      expect(players.data.data[0].platformId).to.eq(MOCK_PLAYER_1.platformId);
-      expect(players.data.data[0].name).to.eq(MOCK_PLAYER_2.name); // Should be updated
+      expect(players.data.data).to.have.length(1);
+      expect(players.data.data[0].platformId).to.equal(MOCK_PLAYER_1.platformId);
+      expect(players.data.data[0].name).to.equal(MOCK_PLAYER_2.name); // Should be updated
     },
   }),
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
@@ -224,7 +224,7 @@ const tests = [
         await playerService.resolveRef(MOCK_PLAYER, this.setupData.gameServer1.id);
       } catch (error: any) {
         errorThrown = true;
-        expect(error.message).to.include('At least one platform identifier');
+        expect(error.message).to.contain('At least one platform identifier');
       }
 
       expect(errorThrown).to.be.true;

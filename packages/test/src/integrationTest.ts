@@ -4,7 +4,7 @@ import { integrationConfig, sandbox } from './main.js';
 import { expect } from './test/expect.js';
 import { AdminClient, Client, AxiosResponse, isAxiosError, TakaroEventCommandExecuted } from '@takaro/apiclient';
 import { randomUUID } from 'crypto';
-import { before, it } from 'node:test';
+import { beforeAll, it } from 'vitest';
 
 export class IIntegrationTest<SetupData> {
   snapshot!: boolean;
@@ -36,7 +36,7 @@ const adminClient = new AdminClient({
   log: noopLog,
 });
 
-before(async () => {
+beforeAll(async () => {
   try {
     const danglingDomains = await adminClient.domain.domainControllerSearch({
       search: {

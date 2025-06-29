@@ -5,7 +5,7 @@ import { HTTP } from '../../main.js';
 import { createRateLimitMiddleware } from '../rateLimit.js';
 import { ctx } from '@takaro/util';
 import supertest from 'supertest';
-import { describe, beforeEach, afterEach, after, it } from 'node:test';
+import { describe, beforeEach, afterEach, after, it } from 'vitest';
 
 describe('rateLimit middleware', () => {
   let http: HTTP;

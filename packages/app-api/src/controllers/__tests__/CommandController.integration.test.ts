@@ -1,6 +1,6 @@
 import { IntegrationTest, expect } from '@takaro/test';
 import { CommandOutputDTOAPI, CommandCreateDTO, CommandArgumentCreateDTO } from '@takaro/apiclient';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 import { randomUUID } from 'crypto';
 
 const group = 'CommandController';
@@ -129,7 +129,7 @@ const tests = [
         mockArgument(newCommand.data.data.id, ARG_NAME),
       );
 
-      expect(arg2res.data.data.name).to.be.eq(ARG_NAME);
+      expect(arg2res.data.data.name).to.equal(ARG_NAME);
 
       // Creating an argument with the same name in the same command should fail
       return this.client.command.commandControllerCreateArgument(mockArgument(this.setupData.data.id, ARG_NAME));

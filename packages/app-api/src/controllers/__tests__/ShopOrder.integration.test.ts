@@ -1,6 +1,6 @@
 import { IntegrationTest, expect, IShopSetup, shopSetup } from '@takaro/test';
 import { ShopOrderOutputDTOStatusEnum, isAxiosError } from '@takaro/apiclient';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 const group = 'ShopOrderController';
 
 const tests = [
@@ -16,7 +16,7 @@ const tests = [
         amount: 1,
       });
 
-      expect(res.data.data.status).to.be.eq(ShopOrderOutputDTOStatusEnum.Paid);
+      expect(res.data.data.status).to.equal(ShopOrderOutputDTOStatusEnum.Paid);
 
       return res;
     },
@@ -38,8 +38,8 @@ const tests = [
       } catch (error) {
         if (!isAxiosError(error)) throw error;
         if (!error.response) throw error;
-        expect(error.response.data.meta.error.code).to.be.eq('BadRequestError');
-        expect(error.response.data.meta.error.message).to.be.eq('Not enough currency');
+        expect(error.response.data.meta.error.code).to.equal('BadRequestError');
+        expect(error.response.data.meta.error.message).to.equal('Not enough currency');
         return error.response;
       }
     },
@@ -79,7 +79,7 @@ const tests = [
       } catch (error) {
         if (!isAxiosError(error)) throw error;
         if (!error.response) throw error;
-        expect(error.response.data.meta.error.code).to.be.eq('NotFoundError');
+        expect(error.response.data.meta.error.code).to.equal('NotFoundError');
         return error.response;
       }
     },
@@ -187,7 +187,7 @@ const tests = [
       });
 
       const res = await this.setupData.client1.shopOrder.shopOrderControllerClaim(order.data.data.id);
-      expect(res.data.data.status).to.be.eq(ShopOrderOutputDTOStatusEnum.Completed);
+      expect(res.data.data.status).to.equal(ShopOrderOutputDTOStatusEnum.Completed);
       return res;
     },
   }),
@@ -210,7 +210,7 @@ const tests = [
       } catch (error) {
         if (!isAxiosError(error)) throw error;
         if (!error.response) throw error;
-        expect(error.response.data.meta.error.code).to.be.eq('NotFoundError');
+        expect(error.response.data.meta.error.code).to.equal('NotFoundError');
         return error.response;
       }
     },
@@ -236,8 +236,8 @@ const tests = [
       } catch (error) {
         if (!isAxiosError(error)) throw error;
         if (!error.response) throw error;
-        expect(error.response.data.meta.error.code).to.be.eq('BadRequestError');
-        expect(error.response.data.meta.error.message).to.be.eq(
+        expect(error.response.data.meta.error.code).to.equal('BadRequestError');
+        expect(error.response.data.meta.error.message).to.equal(
           'Can only claim paid, unclaimed orders. Current status: COMPLETED',
         );
         return error.response;
@@ -265,8 +265,8 @@ const tests = [
       } catch (error) {
         if (!isAxiosError(error)) throw error;
         if (!error.response) throw error;
-        expect(error.response.data.meta.error.code).to.be.eq('BadRequestError');
-        expect(error.response.data.meta.error.message).to.be.eq(
+        expect(error.response.data.meta.error.code).to.equal('BadRequestError');
+        expect(error.response.data.meta.error.message).to.equal(
           'Can only claim paid, unclaimed orders. Current status: CANCELED',
         );
         return error.response;
@@ -286,7 +286,7 @@ const tests = [
       });
 
       const res = await this.setupData.client1.shopOrder.shopOrderControllerCancel(order.data.data.id);
-      expect(res.data.data.status).to.be.eq(ShopOrderOutputDTOStatusEnum.Canceled);
+      expect(res.data.data.status).to.equal(ShopOrderOutputDTOStatusEnum.Canceled);
       return res;
     },
   }),
@@ -309,7 +309,7 @@ const tests = [
       } catch (error) {
         if (!isAxiosError(error)) throw error;
         if (!error.response) throw error;
-        expect(error.response.data.meta.error.code).to.be.eq('NotFoundError');
+        expect(error.response.data.meta.error.code).to.equal('NotFoundError');
         return error.response;
       }
     },
@@ -327,7 +327,7 @@ const tests = [
       });
 
       const res = await this.client.shopOrder.shopOrderControllerCancel(order.data.data.id);
-      expect(res.data.data.status).to.be.eq(ShopOrderOutputDTOStatusEnum.Canceled);
+      expect(res.data.data.status).to.equal(ShopOrderOutputDTOStatusEnum.Canceled);
       return res;
     },
   }),
@@ -352,8 +352,8 @@ const tests = [
       } catch (error) {
         if (!isAxiosError(error)) throw error;
         if (!error.response) throw error;
-        expect(error.response.data.meta.error.code).to.be.eq('BadRequestError');
-        expect(error.response.data.meta.error.message).to.be.eq(
+        expect(error.response.data.meta.error.code).to.equal('BadRequestError');
+        expect(error.response.data.meta.error.message).to.equal(
           "Can only cancel paid orders that weren't claimed yet. Current status: CANCELED",
         );
         return error.response;
@@ -384,7 +384,7 @@ const tests = [
         this.setupData.players[0].id,
       );
 
-      expect(pogsResBefore.data.data.currency).to.be.eq(150);
+      expect(pogsResBefore.data.data.currency).to.equal(150);
 
       await this.setupData.client1.shopOrder.shopOrderControllerCancel(order.id);
 
@@ -393,7 +393,7 @@ const tests = [
         this.setupData.players[0].id,
       );
 
-      expect(pogResAfter.data.data.currency).to.be.eq(250);
+      expect(pogResAfter.data.data.currency).to.equal(250);
 
       return pogResAfter;
     },
@@ -422,7 +422,7 @@ const tests = [
         this.setupData.players[0].id,
       );
 
-      expect(pogsResBefore.data.data.currency).to.be.eq(150);
+      expect(pogsResBefore.data.data.currency).to.equal(150);
 
       await this.client.shopListing.shopListingControllerDelete(this.setupData.listing100.id);
 
@@ -431,11 +431,11 @@ const tests = [
         this.setupData.players[0].id,
       );
 
-      expect(pogResAfter.data.data.currency).to.be.eq(250);
+      expect(pogResAfter.data.data.currency).to.equal(250);
 
       const orderResAfter = await this.setupData.client1.shopOrder.shopOrderControllerGetOne(order.id);
 
-      expect(orderResAfter.data.data.status).to.be.eq(ShopOrderOutputDTOStatusEnum.Canceled);
+      expect(orderResAfter.data.data.status).to.equal(ShopOrderOutputDTOStatusEnum.Canceled);
 
       return pogResAfter;
     },
@@ -458,7 +458,7 @@ const tests = [
       } catch (error) {
         if (!isAxiosError(error)) throw error;
         if (!error.response) throw error;
-        expect(error.response.data.meta.error.code).to.be.eq('NotFoundError');
+        expect(error.response.data.meta.error.code).to.equal('NotFoundError');
         return error.response;
       }
     },
@@ -481,8 +481,8 @@ const tests = [
       } catch (error) {
         if (!isAxiosError(error)) throw error;
         if (!error.response) throw error;
-        expect(error.response.data.meta.error.code).to.be.eq('BadRequestError');
-        expect(error.response.data.meta.error.message).to.be.eq('Cannot order a draft listing');
+        expect(error.response.data.meta.error.code).to.equal('BadRequestError');
+        expect(error.response.data.meta.error.message).to.equal('Cannot order a draft listing');
         return error.response;
       }
     },
@@ -511,7 +511,7 @@ const tests = [
         this.setupData.players[0].id,
       );
 
-      expect(pogsResBefore.data.data.currency).to.be.eq(150);
+      expect(pogsResBefore.data.data.currency).to.equal(150);
 
       await this.client.shopListing.shopListingControllerUpdate(this.setupData.listing100.id, { draft: true });
 
@@ -520,11 +520,11 @@ const tests = [
         this.setupData.players[0].id,
       );
 
-      expect(pogResAfter.data.data.currency).to.be.eq(250);
+      expect(pogResAfter.data.data.currency).to.equal(250);
 
       const orderResAfter = await this.setupData.client1.shopOrder.shopOrderControllerGetOne(order.id);
 
-      expect(orderResAfter.data.data.status).to.be.eq(ShopOrderOutputDTOStatusEnum.Canceled);
+      expect(orderResAfter.data.data.status).to.equal(ShopOrderOutputDTOStatusEnum.Canceled);
 
       return pogResAfter;
     },
@@ -543,7 +543,7 @@ const tests = [
       const order = orderRes.data.data;
 
       const res = await this.client.shopOrder.shopOrderControllerClaim(order.id);
-      expect(res.data.data.status).to.be.eq(ShopOrderOutputDTOStatusEnum.Completed);
+      expect(res.data.data.status).to.equal(ShopOrderOutputDTOStatusEnum.Completed);
       return res;
     },
   }),
@@ -595,7 +595,7 @@ const tests = [
       const allOrders = await this.client.shopOrder.shopOrderControllerSearch();
 
       expect(filteredOrders.data.data).to.have.length(1);
-      expect(filteredOrders.data.data[0].listing?.gameServerId).to.be.eq(this.setupData.gameserver.id);
+      expect(filteredOrders.data.data[0].listing?.gameServerId).to.equal(this.setupData.gameserver.id);
       expect(allOrders.data.data).to.have.length(2);
     },
   }),
@@ -646,7 +646,7 @@ const tests = [
       const allOrders = await this.client.shopOrder.shopOrderControllerSearch();
 
       expect(filteredOrders.data.data).to.have.length(1);
-      expect(filteredOrders.data.data[0].playerId).to.be.eq(this.setupData.players[0].id);
+      expect(filteredOrders.data.data[0].playerId).to.equal(this.setupData.players[0].id);
       expect(allOrders.data.data).to.have.length(2);
     },
   }),
@@ -697,7 +697,7 @@ const tests = [
       const allOrders = await this.client.shopOrder.shopOrderControllerSearch();
 
       expect(filteredOrders.data.data).to.have.length(1);
-      expect(filteredOrders.data.data[0].playerId).to.be.eq(this.setupData.players[0].id);
+      expect(filteredOrders.data.data[0].playerId).to.equal(this.setupData.players[0].id);
       expect(allOrders.data.data).to.have.length(2);
     },
   }),

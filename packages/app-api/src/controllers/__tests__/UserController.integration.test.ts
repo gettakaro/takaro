@@ -4,7 +4,7 @@ import { Client, UserOutputDTO } from '@takaro/apiclient';
 import { faker } from '@faker-js/faker';
 import { AxiosError, isAxiosError } from 'axios';
 import { randomUUID } from 'crypto';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 
 const group = 'UserController';
 
@@ -83,7 +83,7 @@ const tests = [
       });
 
       const userRes = await this.client.user.userControllerGetOne(this.setupData.user.id);
-      expect(userRes.data.data.roles[0].expiresAt).to.be.eq(expiresAt);
+      expect(userRes.data.data.roles[0].expiresAt).to.equal(expiresAt);
 
       return assignRes;
     },
@@ -178,11 +178,11 @@ const tests = [
 
       // Fetch the members of the role
       const members1 = (await this.client.user.userControllerSearch({ filters: { roleId: [role1.id] } })).data.data;
-      expect(members1).to.have.lengthOf(1);
+      expect(members1).to.have.length(1);
 
       // Fetch members of role2
       const members2 = (await this.client.user.userControllerSearch({ filters: { roleId: [role2.id] } })).data.data;
-      expect(members2).to.have.lengthOf(0);
+      expect(members2).to.have.length(0);
     },
   }),
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
@@ -195,7 +195,7 @@ const tests = [
       const role = await this.client.role.roleControllerSearch({ filters: { name: ['Player'] } });
       const members = (await this.client.user.userControllerSearch({ filters: { roleId: [role.data.data[0].id] } }))
         .data.data;
-      expect(members.length).to.be.eq(users.length);
+      expect(members.length).to.equal(users.length);
     },
   }),
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
@@ -208,7 +208,7 @@ const tests = [
       const role = await this.client.role.roleControllerSearch({ filters: { name: ['User'] } });
       const members = (await this.client.user.userControllerSearch({ filters: { roleId: [role.data.data[0].id] } }))
         .data.data;
-      expect(members.length).to.be.eq(users.length);
+      expect(members.length).to.equal(users.length);
     },
   }),
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
@@ -225,7 +225,7 @@ const tests = [
         throw new Error('Should have thrown');
       } catch (error) {
         if (error instanceof AxiosError && error.response) {
-          expect(error.response.data.meta.error.message).to.be.eq(
+          expect(error.response.data.meta.error.message).to.equal(
             'Cannot assign Player or User role, everyone has these by default',
           );
         } else {
@@ -249,7 +249,7 @@ const tests = [
         throw new Error('Should have thrown');
       } catch (error) {
         if (error instanceof AxiosError && error.response) {
-          expect(error.response.data.meta.error.message).to.be.eq(
+          expect(error.response.data.meta.error.message).to.equal(
             'Cannot assign Player or User role, everyone has these by default',
           );
         } else {
@@ -323,7 +323,7 @@ const tests = [
         throw new Error('Should have thrown');
       } catch (error) {
         if (!isAxiosError(error)) throw error;
-        expect(error.response?.data.meta.error.message).to.be.eq('Max users (5) limit reached');
+        expect(error.response?.data.meta.error.message).to.equal('Max users (5) limit reached');
       }
     },
   }),
@@ -336,7 +336,7 @@ const tests = [
       const meRes = await this.client.user.userControllerMe();
       expect(meRes.data.data.user).to.not.be.undefined;
       expect(meRes.data.data.domain).to.not.be.undefined;
-      expect(meRes.data.data.domains).to.be.an('array');
+      expect(meRes.data.data.domains).to.be.instanceOf(Array);
     },
   }),
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({

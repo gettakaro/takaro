@@ -1,5 +1,5 @@
 import { expect, integrationConfig, IntegrationTest } from '@takaro/test';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 import { getMockServer } from '@takaro/mock-gameserver';
 import { randomUUID } from 'crypto';
 import { AdminClient, Client } from '@takaro/apiclient';
@@ -33,7 +33,7 @@ const tests = [
         })
       ).data.data;
 
-      expect(gameServerRes).to.have.lengthOf(1);
+      expect(gameServerRes).to.have.length(1);
       expect(gameServerRes[0].identityToken).to.equal(gameServerIdentityToken);
 
       await mockServer.shutdown();
@@ -82,7 +82,7 @@ const tests = [
         })
       ).data.data;
 
-      expect(gameServerRes).to.have.lengthOf(1);
+      expect(gameServerRes).to.have.length(1);
       expect(gameServerRes[0].identityToken).to.equal(gameServerIdentityToken);
 
       await mockServer1.shutdown();
@@ -176,7 +176,7 @@ const tests = [
               filters: { identityToken: [gameServerIdentityToken] },
             })
           ).data.data;
-          expect(gameServerRes).to.have.lengthOf(1);
+          expect(gameServerRes).to.have.length(1);
           expect(gameServerRes[0].identityToken).to.equal(gameServerIdentityToken);
           await mockServer.shutdown();
         }),

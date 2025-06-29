@@ -1,6 +1,6 @@
 import { AdminClient } from '../main.js';
 import { expect, integrationConfig } from '@takaro/test';
-import { describe, it } from 'node:test';
+import { describe, it } from 'vitest';
 
 const TEST_DOMAIN_NAME = 'apiClient-test';
 
@@ -30,7 +30,7 @@ describe('API client', () => {
         filters: { name: [TEST_DOMAIN_NAME] },
       });
 
-      expect(domainsRes.data.data).to.have.lengthOf(1);
+      expect(domainsRes.data.data).to.have.length(1);
       expect(domainsRes.data.data[0].name).to.equal(TEST_DOMAIN_NAME);
 
       await adminClient.domain.domainControllerRemove(domain.data.data.createdDomain.id);

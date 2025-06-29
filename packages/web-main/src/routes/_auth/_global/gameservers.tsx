@@ -1,6 +1,6 @@
 import { createFileRoute, Outlet, useNavigate } from '@tanstack/react-router';
 import { useHasPermission } from '../../../hooks/useHasPermission';
-import { ErrorBoundary } from '@sentry/react';
+import { ErrorBoundary } from '../../../components/ErrorBoundary';
 import { PERMISSIONS } from '@takaro/apiclient';
 import { Button, Dropdown, IconButton, useLocalStorage, useTheme } from '@takaro/lib-components';
 import { GameServersCardView } from './-gameservers/GameServersCardView';

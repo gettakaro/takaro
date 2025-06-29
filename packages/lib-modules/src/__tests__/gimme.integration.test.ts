@@ -1,7 +1,7 @@
 import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { GameEvents, HookEvents } from '../dto/index.js';
 import { faker } from '@faker-js/faker';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 
 const group = 'gimme suite';
 
@@ -67,8 +67,8 @@ const tests = [
           playerId: this.setupData.players[0].id,
         });
   
-        expect((await events).length).to.be.eq(1);
-        expect((await events)[0].data.meta.msg).to.eq('hello from test');
+        expect((await events).length).to.equal(1);
+        expect((await events)[0].data.meta.msg).to.equal('hello from test');
       },
     }), */
   new IntegrationTest<IModuleTestsSetupData>({
@@ -93,7 +93,7 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await events).length).to.be.eq(1);
+      expect((await events).length).to.equal(1);
       expect((await events)[0].data.meta.msg).to.match(/No items or commands configured/);
     },
   }),
