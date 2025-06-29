@@ -10,6 +10,7 @@ import { CommandService } from '../service/CommandService.js';
 import { EVENT_TYPES, EventCreateDTO, EventService } from '../service/EventService.js';
 import { PlayerOnGameServerService, PlayerOnGameServerUpdateDTO } from '../service/PlayerOnGameserverService.js';
 import { GameServerService } from '../service/GameServerService.js';
+import { checkRateLimit as checkEventRateLimit } from '../lib/eventRateLimit.js';
 
 const log = logger('worker:events');
 
@@ -28,6 +29,15 @@ async function processJob(job: Job<IEventQueueData>) {
   log.verbose('Processing an event', { data: job.data });
 
   const { type, event, domainId, gameServerId } = job.data;
+
+  // Check rate limit
+  const canProcess = await checkEventRateLimit(domainId, gameServerId, type);
+
+  if (!canProcess) {
+    // Just drop the event and return successfully
+    log.debug(`Dropped ${type} event due to rate limit`);
+    return;
+  }
 
   const eventService = new EventService(domainId);
 

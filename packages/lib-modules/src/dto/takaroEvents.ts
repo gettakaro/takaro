@@ -45,6 +45,7 @@ export const TakaroEvents = {
   GAMESERVER_CREATED: 'gameserver-created',
   GAMESERVER_UPDATED: 'gameserver-updated',
   GAMESERVER_DELETED: 'gameserver-deleted',
+  RATE_LIMIT_EXCEEDED: 'rate-limit-exceeded',
 } as const;
 
 export class BaseTakaroEvent<T> extends BaseEvent<T> {
@@ -348,6 +349,17 @@ export class TakaroEventGameserverDeleted extends BaseEvent<TakaroEventGameserve
   type = TakaroEvents.GAMESERVER_DELETED;
 }
 
+export class TakaroEventRateLimitExceeded extends BaseEvent<TakaroEventRateLimitExceeded> {
+  @IsString()
+  type = TakaroEvents.RATE_LIMIT_EXCEEDED;
+
+  @IsString()
+  eventType: string;
+
+  @IsNumber()
+  rateLimitPerMinute: number;
+}
+
 export const TakaroEventsMapping = {
   [TakaroEvents.ROLE_ASSIGNED]: TakaroEventRoleAssigned,
   [TakaroEvents.PLAYER_NEW_IP_DETECTED]: TakaroEventPlayerNewIpDetected,
@@ -377,4 +389,5 @@ export const TakaroEventsMapping = {
   [TakaroEvents.GAMESERVER_CREATED]: TakaroEventGameserverCreated,
   [TakaroEvents.GAMESERVER_UPDATED]: TakaroEventGameserverUpdated,
   [TakaroEvents.GAMESERVER_DELETED]: TakaroEventGameserverDeleted,
+  [TakaroEvents.RATE_LIMIT_EXCEEDED]: TakaroEventRateLimitExceeded,
 } as const;

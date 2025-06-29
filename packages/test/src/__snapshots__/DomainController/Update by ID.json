@@ -17,7 +17,13 @@
       "eventRetentionDays": 7,
       "maxVariables": 10000,
       "maxModules": 1000,
-      "maxFunctionsInModule": 50
+      "maxFunctionsInModule": 50,
+      "eventRateLimitLogLine": 600,
+      "eventRateLimitChatMessage": 120,
+      "eventRateLimitPlayerConnected": 60,
+      "eventRateLimitPlayerDisconnected": 60,
+      "eventRateLimitPlayerDeath": 200,
+      "eventRateLimitEntityKilled": 200
     }
   },
   "status": 200,

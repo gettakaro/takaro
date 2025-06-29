@@ -5,7 +5,7 @@ import { randomBytes } from 'crypto';
 import { PermissionInputDTO, RoleService, ServiceRoleCreateInputDTO, RoleOutputDTO } from './RoleService.js';
 import type { RoleOutputDTO as RoleOutputDTOType } from './RoleService.js';
 import { NOT_DOMAIN_SCOPED_TakaroService } from './Base.js';
-import { IsEnum, IsNumber, IsOptional, IsString, Length, ValidateNested } from 'class-validator';
+import { IsEnum, IsNumber, IsOptional, IsString, Length, ValidateNested, Min } from 'class-validator';
 import { DOMAIN_STATES, DomainModel, DomainRepo } from '../db/domain.js';
 import { humanId } from 'human-id';
 import { Type } from 'class-transformer';
@@ -16,6 +16,7 @@ import { ModuleService } from './Module/index.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { config } from '../config.js';
 import { EXECUTION_MODE } from '@takaro/config';
+import { clearDomainConfigCache } from '../lib/eventRateLimit.js';
 
 export { DOMAIN_STATES } from '../db/domain.js';
 
@@ -49,6 +50,30 @@ export class DomainCreateInputDTO extends TakaroDTO<DomainCreateInputDTO> {
   @IsNumber()
   @IsOptional()
   maxFunctionsInModule: number;
+  @Min(1)
+  @IsNumber()
+  @IsOptional()
+  eventRateLimitLogLine: number;
+  @Min(1)
+  @IsNumber()
+  @IsOptional()
+  eventRateLimitChatMessage: number;
+  @Min(1)
+  @IsNumber()
+  @IsOptional()
+  eventRateLimitPlayerConnected: number;
+  @Min(1)
+  @IsNumber()
+  @IsOptional()
+  eventRateLimitPlayerDisconnected: number;
+  @Min(1)
+  @IsNumber()
+  @IsOptional()
+  eventRateLimitPlayerDeath: number;
+  @Min(1)
+  @IsNumber()
+  @IsOptional()
+  eventRateLimitEntityKilled: number;
 }
 
 export class DomainUpdateInputDTO extends TakaroDTO<DomainUpdateInputDTO> {
@@ -79,6 +104,30 @@ export class DomainUpdateInputDTO extends TakaroDTO<DomainUpdateInputDTO> {
   @IsNumber()
   @IsOptional()
   maxFunctionsInModule: number;
+  @Min(1)
+  @IsNumber()
+  @IsOptional()
+  eventRateLimitLogLine: number;
+  @Min(1)
+  @IsNumber()
+  @IsOptional()
+  eventRateLimitChatMessage: number;
+  @Min(1)
+  @IsNumber()
+  @IsOptional()
+  eventRateLimitPlayerConnected: number;
+  @Min(1)
+  @IsNumber()
+  @IsOptional()
+  eventRateLimitPlayerDisconnected: number;
+  @Min(1)
+  @IsNumber()
+  @IsOptional()
+  eventRateLimitPlayerDeath: number;
+  @Min(1)
+  @IsNumber()
+  @IsOptional()
+  eventRateLimitEntityKilled: number;
 }
 
 export class DomainOutputDTO extends NOT_DOMAIN_SCOPED_TakaroModelDTO<DomainOutputDTO> {
@@ -107,6 +156,18 @@ export class DomainOutputDTO extends NOT_DOMAIN_SCOPED_TakaroModelDTO<DomainOutp
   maxModules: number;
   @IsNumber()
   maxFunctionsInModule: number;
+  @IsNumber()
+  eventRateLimitLogLine: number;
+  @IsNumber()
+  eventRateLimitChatMessage: number;
+  @IsNumber()
+  eventRateLimitPlayerConnected: number;
+  @IsNumber()
+  eventRateLimitPlayerDisconnected: number;
+  @IsNumber()
+  eventRateLimitPlayerDeath: number;
+  @IsNumber()
+  eventRateLimitEntityKilled: number;
 }
 
 export class DomainCreateOutputDTO extends TakaroDTO<DomainCreateOutputDTO> {
@@ -156,7 +217,28 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
       }
     }
 
-    return this.repo.update(id, item);
+    // Check if any rate limit settings are being updated
+    const rateLimitFields = [
+      'eventRateLimitLogLine',
+      'eventRateLimitChatMessage',
+      'eventRateLimitPlayerConnected',
+      'eventRateLimitPlayerDisconnected',
+      'eventRateLimitPlayerDeath',
+      'eventRateLimitEntityKilled',
+    ];
+
+    const hasRateLimitChanges = rateLimitFields.some(
+      (field) => item[field as keyof DomainUpdateInputDTO] !== undefined,
+    );
+
+    const result = await this.repo.update(id, item);
+
+    // Clear domain config cache if rate limits were updated
+    if (hasRateLimitChanges) {
+      clearDomainConfigCache(id);
+    }
+
+    return result;
   }
 
   async delete(id: string) {
