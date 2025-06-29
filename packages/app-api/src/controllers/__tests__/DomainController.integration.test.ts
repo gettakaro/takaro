@@ -1,6 +1,6 @@
 import { IntegrationTest, integrationConfig, expect } from '@takaro/test';
 import { DomainOutputDTOStateEnum, Client } from '@takaro/apiclient';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 import { randomUUID } from 'crypto';
 
 const group = 'DomainController';

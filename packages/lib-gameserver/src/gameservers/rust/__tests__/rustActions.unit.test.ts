@@ -1,10 +1,11 @@
-import { expect, sandbox } from '@takaro/test';
+import { expect } from '@takaro/test';
+import { vi } from 'vitest';
 
 import { RustConnectionInfo } from '../connectionInfo.js';
 import { CommandOutput } from '../../../interfaces/GameServer.js';
 import { Rust } from '../index.js';
 import { IGamePlayer } from '@takaro/modules';
-import { describe, it } from 'node:test';
+import { describe, it } from 'vitest';
 
 const MOCK_PLAYER = new IGamePlayer({
   ip: '169.169.169.80',
@@ -29,7 +30,7 @@ const mockRustConnectionInfo = new RustConnectionInfo({
 describe('rust actions', () => {
   describe('listBans', () => {
     it('Can parse ban list with a single ban', async () => {
-      sandbox.stub(Rust.prototype, 'executeConsoleCommand').resolves(
+      vi.spyOn(Rust.prototype, 'executeConsoleCommand').mockResolvedValue(
         new CommandOutput({
           rawResult: testData.oneBan,
           success: true,
@@ -38,14 +39,14 @@ describe('rust actions', () => {
 
       const result = await new Rust(await mockRustConnectionInfo).listBans();
 
-      expect(result).to.be.an('array');
-      expect(result).to.have.lengthOf(1);
+      expect(result).to.be.instanceOf(Array);
+      expect(result).to.have.length(1);
       expect(result[0].player.gameId).to.equal('76561198028175941');
       expect(result[0].expiresAt).to.equal(null);
     });
 
     it('Can parse expiry time', async () => {
-      sandbox.stub(Rust.prototype, 'executeConsoleCommand').resolves(
+      vi.spyOn(Rust.prototype, 'executeConsoleCommand').mockResolvedValue(
         new CommandOutput({
           rawResult: testData.oneBanWithTime,
           success: true,
@@ -54,14 +55,14 @@ describe('rust actions', () => {
 
       const result = await new Rust(await mockRustConnectionInfo).listBans();
 
-      expect(result).to.be.an('array');
-      expect(result).to.have.lengthOf(1);
+      expect(result).to.be.instanceOf(Array);
+      expect(result).to.have.length(1);
       expect(result[0].player.gameId).to.equal('76561198028175941');
       expect(result[0].expiresAt).to.equal('2023-07-01T01:00:52.000Z');
     });
 
     it('Can parse ban list with two bans', async () => {
-      sandbox.stub(Rust.prototype, 'executeConsoleCommand').resolves(
+      vi.spyOn(Rust.prototype, 'executeConsoleCommand').mockResolvedValue(
         new CommandOutput({
           rawResult: testData.twoBans,
           success: true,
@@ -70,8 +71,8 @@ describe('rust actions', () => {
 
       const result = await new Rust(await mockRustConnectionInfo).listBans();
 
-      expect(result).to.be.an('array');
-      expect(result).to.have.lengthOf(2);
+      expect(result).to.be.instanceOf(Array);
+      expect(result).to.have.length(2);
 
       expect(result[0].player.gameId).to.equal('76561198028175941');
       expect(result[0].expiresAt).to.equal('2023-07-01T01:00:52.000Z');
@@ -81,7 +82,7 @@ describe('rust actions', () => {
     });
 
     it('Can parse ban list with no bans', async () => {
-      sandbox.stub(Rust.prototype, 'executeConsoleCommand').resolves(
+      vi.spyOn(Rust.prototype, 'executeConsoleCommand').mockResolvedValue(
         new CommandOutput({
           rawResult: testData.noBans,
           success: true,
@@ -90,8 +91,8 @@ describe('rust actions', () => {
 
       const result = await new Rust(await mockRustConnectionInfo).listBans();
 
-      expect(result).to.be.an('array');
-      expect(result).to.have.lengthOf(0);
+      expect(result).to.be.instanceOf(Array);
+      expect(result).to.have.length(0);
     });
   });
 
@@ -106,11 +107,11 @@ describe('rust actions', () => {
       });
 
       const rustInstance = new Rust({} as RustConnectionInfo);
-      sandbox.stub(rustInstance, 'executeConsoleCommand').resolves(res);
+      vi.spyOn(rustInstance, 'executeConsoleCommand').mockResolvedValue(res);
 
       const location = await rustInstance.getPlayerLocation(await MOCK_PLAYER);
 
-      expect(location).to.deep.equal({
+      expect(location).to.equal({
         x: -770.0,
         y: 1.0,
         z: -1090,
@@ -127,11 +128,11 @@ describe('rust actions', () => {
       });
 
       const rustInstance = new Rust({} as RustConnectionInfo);
-      sandbox.stub(rustInstance, 'executeConsoleCommand').resolves(res);
+      vi.spyOn(rustInstance, 'executeConsoleCommand').mockResolvedValue(res);
 
       const location = await rustInstance.getPlayerLocation(await MOCK_PLAYER);
 
-      expect(location).to.deep.equal({
+      expect(location).to.equal({
         x: -780.0,
         y: 2.0,
         z: -1100,

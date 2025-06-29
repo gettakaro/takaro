@@ -1,7 +1,7 @@
 import { IntegrationTest, expect } from '@takaro/test';
 import { GameServerOutputDTO, ModuleOutputDTO, CronJobOutputDTO, ModuleInstallationOutputDTO } from '@takaro/apiclient';
 import { queueService } from '@takaro/queues';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 import { randomUUID } from 'crypto';
 import { getMockServer } from '@takaro/mock-gameserver';
 const group = 'CronJobService';

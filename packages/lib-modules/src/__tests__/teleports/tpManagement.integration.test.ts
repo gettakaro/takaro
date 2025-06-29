@@ -1,6 +1,6 @@
 import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '../../dto/index.js';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 
 const group = 'Teleports suite';
 
@@ -22,8 +22,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.meta.msg).to.be.eq('Teleport test set.');
+      expect((await events).length).to.equal(1);
+      expect((await events)[0].data.meta.msg).to.equal('Teleport test set.');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -44,8 +44,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await firstEvents).length).to.be.eq(1);
-      expect((await firstEvents)[0].data.meta.msg).to.be.eq('Teleport test set.');
+      expect((await firstEvents).length).to.equal(1);
+      expect((await firstEvents)[0].data.meta.msg).to.equal('Teleport test set.');
 
       const secondEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
@@ -54,8 +54,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await secondEvents).length).to.be.eq(1);
-      expect((await secondEvents)[0].data.meta.msg).to.be.eq(
+      expect((await secondEvents).length).to.equal(1);
+      expect((await secondEvents)[0].data.meta.msg).to.equal(
         'Teleport test already exists, use /deletetp test to delete it.',
       );
     },
@@ -92,7 +92,7 @@ const tests = [
         }),
       );
 
-      expect((await setEvents).length).to.be.eq(3);
+      expect((await setEvents).length).to.equal(3);
 
       for (const event of await setEvents) {
         expect(event.data.meta.msg).to.match(/Teleport test\d set\./);
@@ -104,8 +104,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.meta.msg).to.be.eq(
+      expect((await events).length).to.equal(1);
+      expect((await events)[0].data.meta.msg).to.equal(
         'You have reached the maximum number of teleports for your role, maximum allowed is 3',
       );
     },
@@ -131,7 +131,7 @@ const tests = [
         }),
       );
 
-      expect((await setEvents).length).to.be.eq(3);
+      expect((await setEvents).length).to.equal(3);
 
       for (const event of await setEvents) {
         expect(event.data.meta.msg).to.match(/Teleport test\d set\./);
@@ -142,8 +142,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.meta.msg).to.be.eq('Teleport test1 deleted.');
+      expect((await events).length).to.equal(1);
+      expect((await events)[0].data.meta.msg).to.equal('Teleport test1 deleted.');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -162,8 +162,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.meta.msg).to.be.eq('Teleport test does not exist.');
+      expect((await events).length).to.equal(1);
+      expect((await events)[0].data.meta.msg).to.equal('Teleport test does not exist.');
     },
   }),
 ];

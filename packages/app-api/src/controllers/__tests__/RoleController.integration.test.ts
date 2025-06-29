@@ -2,7 +2,7 @@ import { IntegrationTest, expect } from '@takaro/test';
 import { RoleOutputDTO } from '@takaro/apiclient';
 import { PERMISSIONS } from '@takaro/auth';
 import { AxiosError } from 'axios';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 
 const group = 'RoleController';
 
@@ -124,8 +124,8 @@ const tests = [
         throw new Error('Should have errored');
       } catch (error) {
         if (error instanceof AxiosError) {
-          expect(error.response?.status).to.eq(400);
-          expect(error.response?.data.meta.error.message).to.be.eq('Cannot delete system roles');
+          expect(error.response?.status).to.equal(400);
+          expect(error.response?.data.meta.error.message).to.equal('Cannot delete system roles');
           return error.response;
         }
         throw error;
@@ -146,8 +146,8 @@ const tests = [
         throw new Error('Should have errored');
       } catch (error) {
         if (error instanceof AxiosError) {
-          expect(error.response?.status).to.eq(409);
-          expect(error.response?.data.meta.error.message).to.be.eq('Unique constraint violation');
+          expect(error.response?.status).to.equal(409);
+          expect(error.response?.data.meta.error.message).to.equal('Unique constraint violation');
           return error.response;
         }
         throw error;
@@ -169,8 +169,8 @@ const tests = [
         throw new Error('Should have errored');
       } catch (error) {
         if (error instanceof AxiosError) {
-          expect(error.response?.status).to.eq(400);
-          expect(error.response?.data.meta.error.message).to.be.eq('Cannot update root role');
+          expect(error.response?.status).to.equal(400);
+          expect(error.response?.data.meta.error.message).to.equal('Cannot update root role');
           return error.response;
         }
         throw error;

@@ -1,7 +1,7 @@
 import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '../dto/gameEvents.js';
 import { CommandArgumentCreateDTO } from '@takaro/apiclient';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 
 const group = 'Command args';
 
@@ -90,8 +90,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.meta.msg).to.be.eq(
+      expect((await events).length).to.equal(1);
+      expect((await events)[0].data.meta.msg).to.equal(
         'The value for "test" should be a number. Please correct it and try again.',
       );
     },
@@ -113,8 +113,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.meta.msg).to.be.eq('{"name":"test","public":false,"number":42}');
+      expect((await events).length).to.equal(1);
+      expect((await events)[0].data.meta.msg).to.equal('{"name":"test","public":false,"number":42}');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -133,8 +133,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.meta.msg).to.be.eq('{"name":"test test","public":true}');
+      expect((await events).length).to.equal(1);
+      expect((await events)[0].data.meta.msg).to.equal('{"name":"test test","public":true}');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -158,9 +158,9 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await events).length).to.be.eq(2);
-      expect((await events)[0].data.meta.msg).to.be.eq(pog.gameId);
-      expect((await events)[1].data.meta.msg).to.be.eq(pog.positionX?.toString());
+      expect((await events).length).to.equal(2);
+      expect((await events)[0].data.meta.msg).to.equal(pog.gameId);
+      expect((await events)[1].data.meta.msg).to.equal(pog.positionX?.toString());
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -184,9 +184,9 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await events).length).to.be.eq(2);
-      expect((await events)[0].data.meta.msg).to.be.eq(pog.gameId);
-      expect((await events)[1].data.meta.msg).to.be.eq(pog.positionX?.toString());
+      expect((await events).length).to.equal(2);
+      expect((await events)[0].data.meta.msg).to.equal(pog.gameId);
+      expect((await events)[1].data.meta.msg).to.equal(pog.positionX?.toString());
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -210,9 +210,9 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await events).length).to.be.eq(2);
-      expect((await events)[0].data.meta.msg).to.be.eq(pog.gameId);
-      expect((await events)[1].data.meta.msg).to.be.eq(pog.positionX?.toString());
+      expect((await events).length).to.equal(2);
+      expect((await events)[0].data.meta.msg).to.equal(pog.gameId);
+      expect((await events)[1].data.meta.msg).to.equal(pog.positionX?.toString());
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -236,9 +236,9 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await events).length).to.be.eq(2);
-      expect((await events)[0].data.meta.msg).to.be.eq(pog.gameId);
-      expect((await events)[1].data.meta.msg).to.be.eq(pog.positionX?.toString());
+      expect((await events).length).to.equal(2);
+      expect((await events)[0].data.meta.msg).to.equal(pog.gameId);
+      expect((await events)[1].data.meta.msg).to.equal(pog.positionX?.toString());
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -261,7 +261,7 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await events).length).to.be.eq(1);
+      expect((await events).length).to.equal(1);
       expect((await events)[0].data.meta.msg).to.match(/Multiple players found/);
     },
   }),
@@ -278,7 +278,7 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await events).length).to.be.eq(1);
+      expect((await events).length).to.equal(1);
       expect((await events)[0].data.meta.msg).to.match(/No player found with the name or ID/);
     },
   }),

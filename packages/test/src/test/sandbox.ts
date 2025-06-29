@@ -1,5 +1,5 @@
 import sinon from 'sinon';
-import { afterEach } from 'node:test';
+import { afterEach } from 'vitest';
 
 export const sandbox = sinon.createSandbox();
 

@@ -1,6 +1,6 @@
 import { IntegrationTest, expect } from '@takaro/test';
 import { HookCreateDTOEventTypeEnum, ModuleOutputDTO, HookOutputDTO } from '@takaro/apiclient';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 import { randomUUID } from 'crypto';
 
 const group = 'HookController';
@@ -110,7 +110,7 @@ const tests = [
         })
       ).data.data;
 
-      expect(hook.name).to.be.eq('New name');
+      expect(hook.name).to.equal('New name');
 
       // But using the same name again should fail
       return this.client.hook.hookControllerCreate(mockHook(this.setupData.module.latestVersion.id));

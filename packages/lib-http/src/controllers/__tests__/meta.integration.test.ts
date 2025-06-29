@@ -1,6 +1,6 @@
 import { HTTP } from '../../app.js';
 import supertest from 'supertest';
-import { describe, it, before, after } from 'node:test';
+import { describe, it, before, after } from 'vitest';
 
 describe('app', () => {
   let http: HTTP;

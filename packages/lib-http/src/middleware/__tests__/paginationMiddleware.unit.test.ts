@@ -2,7 +2,7 @@ import { sandbox, expect } from '@takaro/test';
 import { NextFunction, Request, Response } from 'express';
 import { errors } from '@takaro/util';
 import { paginationMiddleware } from '../paginationMiddleware.js';
-import { describe, it } from 'node:test';
+import { describe, it } from 'vitest';
 
 async function runPagination(page?: number, limit?: number) {
   const req = { query: { page, limit } } as unknown as Request;
@@ -29,21 +29,21 @@ describe('pagination middleware', () => {
     const { next } = await runPagination(1, -1);
     expect(next).to.have.been.calledOnce;
     const callArg = next.getCalls()[0].args[0];
-    expect(callArg).to.be.an.instanceOf(Error);
+    expect(callArg).to.be.instanceOf(Error);
     expect(callArg.message).to.equal('Invalid pagination: limit must be greater than or equal to 1');
   });
   it('Handles negative page', async () => {
     const { next } = await runPagination(-1, 5);
     expect(next).to.have.been.calledOnce;
     const callArg = next.getCalls()[0].args[0];
-    expect(callArg).to.be.an.instanceOf(Error);
+    expect(callArg).to.be.instanceOf(Error);
     expect(callArg.message).to.equal('Invalid pagination: page must be greater than or equal to 0');
   });
   it('Handles limit too high', async () => {
     const { next } = await runPagination(1, 1001);
     expect(next).to.have.been.calledOnce;
     const callArg = next.getCalls()[0].args[0];
-    expect(callArg).to.be.an.instanceOf(Error);
+    expect(callArg).to.be.instanceOf(Error);
     expect(callArg.message).to.equal('Invalid pagination: limit must be less than or equal to 1000');
   });
 });

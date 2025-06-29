@@ -1,0 +1,4 @@
+_data/
+**/storybook-static/
+**/dist/
+**/node_modules/

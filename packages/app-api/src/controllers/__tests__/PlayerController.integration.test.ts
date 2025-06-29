@@ -3,7 +3,7 @@ import { PERMISSIONS } from '@takaro/auth';
 import { faker } from '@faker-js/faker';
 import { Client } from '@takaro/apiclient';
 import { AxiosError } from 'axios';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 
 const group = 'PlayerController';
 
@@ -98,7 +98,7 @@ const tests = [
       });
 
       const playerRes = await this.client.player.playerControllerGetOne(player.id);
-      expect(playerRes.data.data.roleAssignments[0].expiresAt).to.be.eq(expiresAt);
+      expect(playerRes.data.data.roleAssignments[0].expiresAt).to.equal(expiresAt);
 
       return assignRes;
     },
@@ -245,7 +245,7 @@ const tests = [
       const roleAssignment = res.data.data.roleAssignments.find((a) => a.role.name === role.data.data.name);
       if (!roleAssignment) throw new Error('Role assignment not found');
 
-      expect(roleAssignment.expiresAt).to.be.eq(newExpiresAt);
+      expect(roleAssignment.expiresAt).to.equal(newExpiresAt);
       return res;
     },
     filteredFields: [
@@ -273,10 +273,10 @@ const tests = [
 
       // Fetch the members of the role
       const members1 = (await this.client.player.playerControllerSearch({ filters: { roleId: [role1.id] } })).data.data;
-      expect(members1.length).to.be.eq(1);
+      expect(members1.length).to.equal(1);
 
       const members2 = (await this.client.player.playerControllerSearch({ filters: { roleId: [role2.id] } })).data.data;
-      expect(members2.length).to.be.eq(0);
+      expect(members2.length).to.equal(0);
     },
   }),
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
@@ -288,7 +288,7 @@ const tests = [
       const role = await this.client.role.roleControllerSearch({ filters: { name: ['Player'] } });
       const members = (await this.client.player.playerControllerSearch({ filters: { roleId: [role.data.data[0].id] } }))
         .data.data;
-      expect(members.length).to.be.eq(this.setupData.players.length);
+      expect(members.length).to.equal(this.setupData.players.length);
     },
   }),
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
@@ -300,7 +300,7 @@ const tests = [
       const role = await this.client.role.roleControllerSearch({ filters: { name: ['User'] } });
       const members = (await this.client.player.playerControllerSearch({ filters: { roleId: [role.data.data[0].id] } }))
         .data.data;
-      expect(members.length).to.be.eq(this.setupData.players.length);
+      expect(members.length).to.equal(this.setupData.players.length);
     },
   }),
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
@@ -316,7 +316,7 @@ const tests = [
         throw new Error('Should have thrown');
       } catch (error) {
         if (error instanceof AxiosError && error.response) {
-          expect(error.response.data.meta.error.message).to.be.eq(
+          expect(error.response.data.meta.error.message).to.equal(
             'Cannot assign Player or User role, everyone has these by default',
           );
         } else {
@@ -339,7 +339,7 @@ const tests = [
         throw new Error('Should have thrown');
       } catch (error) {
         if (error instanceof AxiosError && error.response) {
-          expect(error.response.data.meta.error.message).to.be.eq(
+          expect(error.response.data.meta.error.message).to.equal(
             'Cannot assign Player or User role, everyone has these by default',
           );
         } else {
@@ -361,7 +361,7 @@ const tests = [
         filters: { platformId: [nonExistentPlatformId] },
       });
 
-      expect(searchResult.data.data.length).to.be.eq(0);
+      expect(searchResult.data.data.length).to.equal(0);
       return searchResult;
     },
     filteredFields: ['id', 'createdAt', 'updatedAt', 'domain'],
@@ -389,7 +389,7 @@ const tests = [
         });
 
         // Search should return empty results for invalid format
-        expect(searchResult.data.data.length).to.be.eq(0);
+        expect(searchResult.data.data.length).to.equal(0);
       }
     },
   }),
@@ -417,7 +417,7 @@ const tests = [
         });
 
         // This should execute without validation errors
-        expect(searchResult.data.data.length).to.be.eq(0);
+        expect(searchResult.data.data.length).to.equal(0);
       }
     },
   }),

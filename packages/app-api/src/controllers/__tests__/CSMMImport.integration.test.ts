@@ -4,7 +4,7 @@ import { readFile } from 'fs/promises';
 import { join } from 'path';
 import * as url from 'url';
 import { GAME_SERVER_TYPE } from '@takaro/gameserver';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 

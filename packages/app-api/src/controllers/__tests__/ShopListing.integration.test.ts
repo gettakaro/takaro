@@ -1,5 +1,5 @@
 import { IntegrationTest, expect, IShopSetup, shopSetup } from '@takaro/test';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 
 const group = 'ShopController';
 

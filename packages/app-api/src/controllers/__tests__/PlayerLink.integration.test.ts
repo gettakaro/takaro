@@ -11,7 +11,7 @@ import { GameEvents, HookEvents } from '@takaro/modules';
 import { faker } from '@faker-js/faker';
 import { randomUUID } from 'crypto';
 import { Client, isAxiosError } from '@takaro/apiclient';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 import { getMockServer } from '@takaro/mock-gameserver';
 
 const group = 'Player-User linking';

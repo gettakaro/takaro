@@ -1,6 +1,6 @@
 import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '../../dto/index.js';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 
 const group = 'Teleports suite';
 
@@ -27,7 +27,7 @@ const tests = [
         }),
       );
 
-      expect((await setEvents).length).to.be.eq(3);
+      expect((await setEvents).length).to.equal(3);
 
       for (const event of await setEvents) {
         expect(event.data.meta.msg).to.match(/Teleport test\d set\./);
@@ -40,8 +40,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await events).length).to.be.eq(4);
-      expect((await events)[0].data.meta.msg).to.be.eq('You have 3 teleports available');
+      expect((await events).length).to.equal(4);
+      expect((await events)[0].data.meta.msg).to.equal('You have 3 teleports available');
       expect((await events)[1].data.meta.msg).to.match(/test0: \([-\d]+,[-\d]+,[-\d]+\)/);
       expect((await events)[2].data.meta.msg).to.match(/test1: \([-\d]+,[-\d]+,[-\d]+\)/);
       expect((await events)[3].data.meta.msg).to.match(/test2: \([-\d]+,[-\d]+,[-\d]+\)/);
@@ -68,8 +68,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await setTpEvent).length).to.be.eq(1);
-      expect((await setTpEvent)[0].data.meta.msg).to.be.eq('Teleport test set.');
+      expect((await setTpEvent).length).to.equal(1);
+      expect((await setTpEvent)[0].data.meta.msg).to.equal('Teleport test set.');
 
       const setPublicEvent = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
@@ -78,8 +78,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await setPublicEvent).length).to.be.eq(1);
-      expect((await setPublicEvent)[0].data.meta.msg).to.be.eq('Teleport test is now public.');
+      expect((await setPublicEvent).length).to.equal(1);
+      expect((await setPublicEvent)[0].data.meta.msg).to.equal('Teleport test is now public.');
 
       const setTpEvent2 = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
@@ -88,8 +88,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await setTpEvent2).length).to.be.eq(1);
-      expect((await setTpEvent2)[0].data.meta.msg).to.be.eq('Teleport test2 set.');
+      expect((await setTpEvent2).length).to.equal(1);
+      expect((await setTpEvent2)[0].data.meta.msg).to.equal('Teleport test2 set.');
 
       const tpEvent = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 2);
 
@@ -98,8 +98,8 @@ const tests = [
         playerId: this.setupData.players[1].id,
       });
 
-      expect((await tpEvent).length).to.be.eq(2);
-      expect((await tpEvent)[0].data.meta.msg).to.be.eq('You have 1 teleport available');
+      expect((await tpEvent).length).to.equal(2);
+      expect((await tpEvent)[0].data.meta.msg).to.equal('You have 1 teleport available');
       expect((await tpEvent)[1].data.meta.msg).to.match(/test: \([-\d]+,[-\d]+,[-\d]+\) \(public\)/);
     },
   }),
@@ -121,8 +121,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await setTpEvent).length).to.be.eq(1);
-      expect((await setTpEvent)[0].data.meta.msg).to.be.eq('Teleport test set.');
+      expect((await setTpEvent).length).to.equal(1);
+      expect((await setTpEvent)[0].data.meta.msg).to.equal('Teleport test set.');
 
       const tpEvent = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
@@ -131,8 +131,8 @@ const tests = [
         playerId: this.setupData.players[1].id,
       });
 
-      expect((await tpEvent).length).to.be.eq(1);
-      expect((await tpEvent)[0].data.meta.msg).to.be.eq(
+      expect((await tpEvent).length).to.equal(1);
+      expect((await tpEvent)[0].data.meta.msg).to.equal(
         'You have no teleports available, use /settp <name> to set one.',
       );
     },
@@ -155,8 +155,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await setTpEvent).length).to.be.eq(1);
-      expect((await setTpEvent)[0].data.meta.msg).to.be.eq('Teleport test set.');
+      expect((await setTpEvent).length).to.equal(1);
+      expect((await setTpEvent)[0].data.meta.msg).to.equal('Teleport test set.');
 
       const setTpEvent2 = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
 
@@ -165,8 +165,8 @@ const tests = [
         playerId: this.setupData.players[1].id,
       });
 
-      expect((await setTpEvent2).length).to.be.eq(1);
-      expect((await setTpEvent2)[0].data.meta.msg).to.be.eq('Teleport test2 set.');
+      expect((await setTpEvent2).length).to.equal(1);
+      expect((await setTpEvent2)[0].data.meta.msg).to.equal('Teleport test2 set.');
 
       const tpEvent = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 2);
 
@@ -175,8 +175,8 @@ const tests = [
         playerId: this.setupData.players[1].id,
       });
 
-      expect((await tpEvent).length).to.be.eq(2);
-      expect((await tpEvent)[0].data.meta.msg).to.be.eq('You have 1 teleport available');
+      expect((await tpEvent).length).to.equal(2);
+      expect((await tpEvent)[0].data.meta.msg).to.equal('You have 1 teleport available');
       expect((await tpEvent)[1].data.meta.msg).to.match(/test2: \([-\d]+,[-\d]+,[-\d]+\)/);
     },
   }),

@@ -11,7 +11,7 @@ import {
   isAxiosError,
   PlayerOnGameserverOutputDTO,
 } from '@takaro/apiclient';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 import { randomUUID } from 'crypto';
 import { getMockServer } from '@takaro/mock-gameserver';
 const group = 'HookService';
@@ -203,7 +203,7 @@ const tests = [
       } catch (error) {
         if (!isAxiosError(error)) throw error;
         expect(error.response?.status).to.equal(400);
-        expect(error.response?.data.meta.error.message).to.be.eq(
+        expect(error.response?.data.meta.error.message).to.equal(
           `Invalid config: /hooks/${this.setupData.normalHook.name}/delay must be <= 86400`,
         );
       }

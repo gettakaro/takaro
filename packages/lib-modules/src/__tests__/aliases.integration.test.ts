@@ -1,6 +1,6 @@
 import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '../dto/index.js';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 
 const group = 'Aliases';
 
@@ -30,8 +30,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await setEvents).length).to.be.eq(1);
-      expect((await setEvents)[0].data.meta.msg).to.be.eq('Teleport test set.');
+      expect((await setEvents).length).to.equal(1);
+      expect((await setEvents)[0].data.meta.msg).to.equal('Teleport test set.');
 
       const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
@@ -39,8 +39,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.meta.msg).to.be.eq('Teleported to test.');
+      expect((await events).length).to.equal(1);
+      expect((await events)[0].data.meta.msg).to.equal('Teleported to test.');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -68,8 +68,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await setEvents).length).to.be.eq(1);
-      expect((await setEvents)[0].data.meta.msg).to.be.eq('Teleport test set.');
+      expect((await setEvents).length).to.equal(1);
+      expect((await setEvents)[0].data.meta.msg).to.equal('Teleport test set.');
 
       const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE, 1);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
@@ -77,8 +77,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.meta.msg).to.be.eq('Teleported to test.');
+      expect((await events).length).to.equal(1);
+      expect((await events)[0].data.meta.msg).to.equal('Teleported to test.');
     },
   }),
 ];

@@ -2,7 +2,7 @@ import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, Event
 import { GameEvents } from '../dto/gameEvents.js';
 import { HookEvents } from '../main.js';
 import { faker } from '@faker-js/faker';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 
 const group = 'Onboarding';
 const groupStarterkit = 'Onboarding - Starterkit';
@@ -23,7 +23,7 @@ const tests = [
         command: 'connectAll',
       });
 
-      expect((await events).length).to.be.eq(5);
+      expect((await events).length).to.equal(5);
       // Expect all messages to match
       expect((await events).every((event) => event.data.meta.msg.match(/Welcome .+ to the server!/))).to.be.true;
     },
@@ -89,7 +89,7 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await secondEvents).length).to.be.eq(1);
+      expect((await secondEvents).length).to.equal(1);
       expect((await secondEvents)[0].data.meta.msg).to.match(/ou already used starterkit on this server/);
     },
   }),
@@ -109,7 +109,7 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await events).length).to.be.eq(1);
+      expect((await events).length).to.equal(1);
       expect((await events)[0].data.meta.msg).to.match(/No starter kit items configured/);
     },
   }),

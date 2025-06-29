@@ -1,6 +1,6 @@
 import { IntegrationTest, expect, SetupGameServerPlayers } from '@takaro/test';
 import { isAxiosError, PlayerOnGameserverOutputDTO, ItemsOutputDTO } from '@takaro/apiclient';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 import { TrackingRepo } from '../../db/tracking.js';
 
 const group = 'TrackingController';
@@ -345,7 +345,7 @@ const tests = [
           throw error;
         }
         expect(error.response?.status).to.equal(400);
-        expect(error.response?.data.meta.error.message).to.be.eq(
+        expect(error.response?.data.meta.error.message).to.equal(
           'Invalid pagination: limit must be less than or equal to 1000',
         );
       }
@@ -427,7 +427,7 @@ const tests = [
 
       // Verify all returned data belongs only to the selected players
       data.forEach((point) => {
-        expect(selectedPlayerIds).to.include(point.playerId);
+        expect(selectedPlayerIds).to.contain(point.playerId);
       });
 
       // Verify we don't have data from other players
@@ -462,7 +462,7 @@ const tests = [
       // Should find the expected player(s) in the bounding box
       const playerIds = data.map((location) => location.playerId);
       testPoint.expectedPlayers.forEach((expectedId) => {
-        expect(playerIds).to.include(expectedId);
+        expect(playerIds).to.contain(expectedId);
       });
     },
   }),
@@ -499,7 +499,7 @@ const tests = [
 
       // Should find at least player 0
       const playerIds = data.map((location) => location.playerId);
-      expect(playerIds).to.include(this.setupData.pogs1[0].id);
+      expect(playerIds).to.contain(this.setupData.pogs1[0].id);
     },
   }),
 
@@ -527,7 +527,7 @@ const tests = [
       // Should find the expected player(s) within radius
       const playerIds = data.map((location) => location.playerId);
       testPoint.expectedPlayers.forEach((expectedId) => {
-        expect(playerIds).to.include(expectedId);
+        expect(playerIds).to.contain(expectedId);
       });
     },
   }),
@@ -561,7 +561,7 @@ const tests = [
 
       // Should find at least player 2
       const playerIds = data.map((location) => location.playerId);
-      expect(playerIds).to.include(this.setupData.pogs1[2].id);
+      expect(playerIds).to.contain(this.setupData.pogs1[2].id);
     },
   }),
 

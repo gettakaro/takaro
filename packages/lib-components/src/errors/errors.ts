@@ -1,6 +1,5 @@
 import { AxiosError } from 'axios';
 import { BaseError } from './base';
-import * as Sentry from '@sentry/react';
 import { ValidationError } from 'class-validator';
 
 // Define a type for the error message mapping
@@ -23,7 +22,6 @@ export function getErrorUserMessage(
   const err = transformError(apiError);
 
   if (!err) {
-    Sentry.captureException(apiError);
     return defaultMesssage;
   }
 
@@ -52,7 +50,7 @@ export function transformError(apiError: AxiosError<any>) {
   const error = apiError.response?.data.meta.error;
 
   if (!error) {
-    Sentry.captureException(apiError);
+    return;
   }
   if (error.code === 'ForbiddenError') {
     return new NotAuthorizedError('Not authorized');

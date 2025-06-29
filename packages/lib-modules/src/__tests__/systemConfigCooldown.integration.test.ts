@@ -1,6 +1,6 @@
 import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { HookEvents } from '../dto/index.js';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 
 const group = 'System config - cooldown';
 
@@ -34,7 +34,7 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await events).length).to.be.eq(1);
+      expect((await events).length).to.equal(1);
 
       const events2 = (await new EventsAwaiter().connect(this.client)).waitForEvents(HookEvents.CHAT_MESSAGE, 1);
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
@@ -42,7 +42,7 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await events2).length).to.be.eq(1);
+      expect((await events2).length).to.equal(1);
       expect((await events2)[0].data.meta.msg).to.match(
         /This command can only be executed once every 60 seconds\. You can execute it again at /,
       );
@@ -68,11 +68,11 @@ const tests = [
       ]);
 
       const sorted = (await events).sort((a, b) => a.data.meta.msg - b.data.meta.msg);
-      expect(sorted.length).to.be.eq(2);
-      expect(sorted[0].data.meta.msg).to.be.eq(
+      expect(sorted.length).to.equal(2);
+      expect(sorted[0].data.meta.msg).to.equal(
         'You can only execute one command at a time. Please wait for the previous command to finish.',
       );
-      expect(sorted[1].data.meta.msg).to.be.eq('Pong!');
+      expect(sorted[1].data.meta.msg).to.equal('Pong!');
     },
   }),
 ];

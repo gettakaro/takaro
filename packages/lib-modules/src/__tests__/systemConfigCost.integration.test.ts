@@ -1,7 +1,7 @@
 import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '../dto/index.js';
 import { sleep } from '@takaro/util';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 
 const group = 'System config - cost';
 
@@ -35,8 +35,8 @@ const customSetup = async function (this: IntegrationTest<IModuleTestsSetupData>
     playerId: setupData.players[0].id,
   });
 
-  expect((await setEvents).length).to.be.eq(1);
-  expect((await setEvents)[0].data.meta.msg).to.be.eq('Teleport test set.');
+  expect((await setEvents).length).to.equal(1);
+  expect((await setEvents)[0].data.meta.msg).to.equal('Teleport test set.');
 
   const giveCurrencies = setupData.players.map(async (player) => {
     const playerOnGameServer = (
@@ -71,7 +71,7 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await events).length).to.be.eq(1);
+      expect((await events).length).to.equal(1);
 
       const playerOnGameServerAfter = (
         await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
@@ -79,7 +79,7 @@ const tests = [
         })
       ).data.data;
 
-      expect(playerOnGameServerAfter[0].currency).to.be.eq(90);
+      expect(playerOnGameServerAfter[0].currency).to.equal(90);
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -102,7 +102,7 @@ const tests = [
         }),
       );
 
-      expect((await setEvents).length).to.be.eq(amount);
+      expect((await setEvents).length).to.equal(amount);
 
       const events = (await new EventsAwaiter().connect(this.client)).waitForEvents('command-executed', amount);
       await Promise.all(
@@ -115,9 +115,9 @@ const tests = [
         }),
       );
 
-      expect((await events).length).to.be.eq(amount);
+      expect((await events).length).to.equal(amount);
       for (const event of await events) {
-        expect(event.data.meta.result.success).to.be.eq(true);
+        expect(event.data.meta.result.success).to.equal(true);
       }
 
       const playerOnGameServerAfter = (
@@ -126,7 +126,7 @@ const tests = [
         })
       ).data.data;
 
-      expect(playerOnGameServerAfter[0].currency).to.be.eq(0);
+      expect(playerOnGameServerAfter[0].currency).to.equal(0);
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -141,8 +141,8 @@ const tests = [
         playerId: this.setupData.players[0].id,
       });
 
-      expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.meta.result.success).to.be.eq(false);
+      expect((await events).length).to.equal(1);
+      expect((await events)[0].data.meta.result.success).to.equal(false);
 
       const playerOnGameServerAfter = (
         await this.client.playerOnGameserver.playerOnGameServerControllerSearch({
@@ -150,7 +150,7 @@ const tests = [
         })
       ).data.data;
 
-      expect(playerOnGameServerAfter[0].currency).to.be.eq(100);
+      expect(playerOnGameServerAfter[0].currency).to.equal(100);
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -181,8 +181,8 @@ const tests = [
         playerId: this.setupData.players[1].id,
       });
 
-      expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.meta.msg).to.be.eq('You do not have enough currency to execute this command.');
+      expect((await events).length).to.equal(1);
+      expect((await events)[0].data.meta.msg).to.equal('You do not have enough currency to execute this command.');
     },
   }),
 ];

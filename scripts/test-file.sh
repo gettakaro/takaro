@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Test file script for running individual test files
+# Test file script for running individual test files with Vitest
 # Supports TypeScript checking and debugging
 
 set -e
@@ -8,8 +8,6 @@ set -e
 # Default values
 CHECK_TYPES=false
 DEBUG_MODE=false
-LOGGING_LEVEL="${LOGGING_LEVEL:-none}"
-TEST_CONCURRENCY="${TEST_CONCURRENCY:-1}"
 
 show_usage() {
     echo "Usage: $0 [OPTIONS] <test_file_path>"
@@ -29,21 +27,31 @@ run_typescript_check() {
     local test_file="$1"
     echo "Running TypeScript checks for: $test_file"
     # Check TypeScript for the specific test file and its dependencies
-    tsc --noEmit --skipLibCheck "$test_file"
+    npx tsc --noEmit --skipLibCheck "$test_file"
 }
 
 run_single_file_test() {
     local test_file="$1"
     
-    local cmd_args="--test-concurrency $TEST_CONCURRENCY --test-force-exit --import=ts-node-maintained/register/esm --test"
+    # Find the package directory
+    local package_dir=$(echo "$test_file" | grep -o "packages/[^/]*" | head -1)
     
-    if [ "$DEBUG_MODE" = true ]; then
-        cmd_args="--inspect-brk $cmd_args"
-        echo "Starting test in debug mode. Connect your debugger to the process."
+    if [ -z "$package_dir" ]; then
+        echo "Error: Could not determine package directory for $test_file"
+        exit 1
     fi
     
     echo "Running test: $test_file"
-    LOGGING_LEVEL="$LOGGING_LEVEL" node $cmd_args "$test_file"
+    
+    # Get the relative path from the package directory
+    local relative_path=${test_file#$package_dir/}
+    
+    if [ "$DEBUG_MODE" = true ]; then
+        echo "Starting test in debug mode. Connect your debugger to port 9229."
+        cd "$package_dir" && npx vitest run --inspect-brk --reporter=verbose "$relative_path"
+    else
+        cd "$package_dir" && npx vitest run --reporter=verbose "$relative_path"
+    fi
 }
 
 # Parse arguments

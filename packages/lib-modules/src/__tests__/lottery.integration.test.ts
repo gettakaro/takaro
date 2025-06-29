@@ -1,7 +1,7 @@
 import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
 import { GameEvents } from '../dto/index.js';
 import { Client } from '@takaro/apiclient';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 
 const group = 'lottery suite';
 const ticketCost = 50;
@@ -25,7 +25,7 @@ async function expectTicketAmountLengthToBe(
     return acc + parseInt(JSON.parse(variable.value).amount, 10);
   }, 0);
 
-  expect(expectedAmount).to.be.eq(amount);
+  expect(expectedAmount).to.equal(amount);
 }
 
 const setup = async function (this: IntegrationTest<IModuleTestsSetupData>): Promise<IModuleTestsSetupData> {
@@ -99,8 +99,8 @@ const tests = [
         playerId: player.id,
       });
 
-      expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.meta.msg).to.be.eq('You must buy at least 1 ticket.');
+      expect((await events).length).to.equal(1);
+      expect((await events)[0].data.meta.msg).to.equal('You must buy at least 1 ticket.');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -125,8 +125,8 @@ const tests = [
         await this.client.settings.settingsControllerGetOne('currencyName', this.setupData.gameserver.id)
       ).data.data.value;
 
-      expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.meta.msg).to.be.eq(
+      expect((await events).length).to.equal(1);
+      expect((await events)[0].data.meta.msg).to.equal(
         `You have successfully bought ${ticketAmount} tickets for ${ticketPrice} ${currencyName}. Good luck!`,
       );
 
@@ -134,7 +134,7 @@ const tests = [
         await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(this.setupData.gameserver.id, player.id)
       ).data.data;
 
-      expect(pog.currency).to.be.eq(playerStartBalance - ticketPrice);
+      expect(pog.currency).to.equal(playerStartBalance - ticketPrice);
       await expectTicketAmountLengthToBe(this.client, this.setupData.gameserver.id, this.setupData.lotteryModule.id, 1);
 
       events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE);
@@ -144,15 +144,15 @@ const tests = [
         playerId: player.id,
       });
 
-      expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.meta.msg).to.be.eq(
+      expect((await events).length).to.equal(1);
+      expect((await events)[0].data.meta.msg).to.equal(
         `You have successfully bought ${ticketAmount} tickets for ${ticketPrice} ${currencyName}. Good luck!`,
       );
 
       pog = (
         await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(this.setupData.gameserver.id, player.id)
       ).data.data;
-      expect(pog.currency).to.be.eq(playerStartBalance - 2 * ticketPrice);
+      expect(pog.currency).to.equal(playerStartBalance - 2 * ticketPrice);
       await expectTicketAmountLengthToBe(this.client, this.setupData.gameserver.id, this.setupData.lotteryModule.id, 2);
     },
   }),
@@ -182,8 +182,8 @@ const tests = [
 
       const events = await waitForViewEvent;
 
-      expect(events.length).to.be.eq(1);
-      expect(events[0].data.meta.msg).to.be.eq(`You have bought ${wantAmount} tickets.`);
+      expect(events.length).to.equal(1);
+      expect(events[0].data.meta.msg).to.equal(`You have bought ${wantAmount} tickets.`);
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -231,7 +231,7 @@ const tests = [
 
       const events = await lotteryEvents;
 
-      expect(events.length).to.be.eq(4);
+      expect(events.length).to.equal(4);
       expect(events[3].data.meta.msg).to.contain(`${prize} ${currencyName}`);
 
       const winnerName = events[3].data.meta.msg.split('!')[0];
@@ -243,7 +243,7 @@ const tests = [
       const winnerPog = (
         await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(this.setupData.gameserver.id, winner.id)
       ).data.data;
-      expect(winnerPog.currency).to.be.eq(playerStartBalance + (prize - ticketCost));
+      expect(winnerPog.currency).to.equal(playerStartBalance + (prize - ticketCost));
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -262,8 +262,8 @@ const tests = [
 
       const events = await waitForEvents;
 
-      expect(events.length).to.be.eq(1);
-      expect(events[0].data.meta.msg).to.eq('No one has bought any tickets. The lottery has been cancelled.');
+      expect(events.length).to.equal(1);
+      expect(events[0].data.meta.msg).to.equal('No one has bought any tickets. The lottery has been cancelled.');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -298,16 +298,16 @@ const tests = [
 
       const events = await waitForEvents;
 
-      expect(events.length).to.be.eq(2);
-      expect(events[0].data.meta.msg).to.eq('Only one person has bought a ticket. The lottery has been cancelled.');
-      expect(events[1].data.meta.msg).to.eq(
+      expect(events.length).to.equal(2);
+      expect(events[0].data.meta.msg).to.equal('Only one person has bought a ticket. The lottery has been cancelled.');
+      expect(events[1].data.meta.msg).to.equal(
         `You have been refunded ${ticketCost} ${currencyName} because the lottery has been cancelled.`,
       );
 
       const pog = (
         await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(this.setupData.gameserver.id, player.id)
       ).data.data;
-      expect(pog.currency).to.be.eq(playerStartBalance);
+      expect(pog.currency).to.equal(playerStartBalance);
 
       await expectTicketAmountLengthToBe(this.client, this.setupData.gameserver.id, this.setupData.lotteryModule.id);
     },
@@ -327,7 +327,7 @@ const tests = [
 
       const events = await waitForEvents;
 
-      expect(events.length).to.be.eq(1);
+      expect(events.length).to.equal(1);
       expect(events[0].data.meta.msg).to.contain('The next lottery draw is in');
     },
   }),

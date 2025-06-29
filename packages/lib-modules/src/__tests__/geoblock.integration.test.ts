@@ -2,7 +2,7 @@ import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, Event
 import { HookEvents } from '../dto/index.js';
 import { TakaroEventPlayerNewIpDetected } from '@takaro/modules';
 import { faker } from '@faker-js/faker';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 
 const group = 'Geo Block';
 
@@ -48,8 +48,8 @@ const tests = [
         }),
       });
 
-      expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.playerId).to.be.eq(this.setupData.players[0].id);
+      expect((await events).length).to.equal(1);
+      expect((await events)[0].data.playerId).to.equal(this.setupData.players[0].id);
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -82,11 +82,11 @@ const tests = [
         }),
       });
 
-      expect((await events).length).to.be.eq(1);
+      expect((await events).length).to.equal(1);
       const containsAllowedCountryMessage = (await events)[0].data.meta.result.logs.some((log: any) => {
         return log.msg.includes('Allowed country detected, no action');
       });
-      expect(containsAllowedCountryMessage).to.be.eq(true, 'Decision message not found');
+      expect(containsAllowedCountryMessage).to.equal(true, 'Decision message not found');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -119,11 +119,11 @@ const tests = [
         }),
       });
 
-      expect((await events).length).to.be.eq(1);
+      expect((await events).length).to.equal(1);
       const containsAllowedCountryMessage = (await events)[0].data.meta.result.logs.some((log: any) => {
         return log.msg.includes('Allowed country detected, no action');
       });
-      expect(containsAllowedCountryMessage).to.be.eq(true, 'Decision message not found');
+      expect(containsAllowedCountryMessage).to.equal(true, 'Decision message not found');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -156,8 +156,8 @@ const tests = [
         }),
       });
 
-      expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.playerId).to.be.eq(this.setupData.players[0].id);
+      expect((await events).length).to.equal(1);
+      expect((await events)[0].data.playerId).to.equal(this.setupData.players[0].id);
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -190,8 +190,8 @@ const tests = [
         }),
       });
 
-      expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.playerId).to.be.eq(this.setupData.players[0].id);
+      expect((await events).length).to.equal(1);
+      expect((await events)[0].data.playerId).to.equal(this.setupData.players[0].id);
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -225,8 +225,8 @@ const tests = [
         }),
       });
 
-      expect((await events).length).to.be.eq(1);
-      expect((await events)[0].data.playerId).to.be.eq(this.setupData.players[0].id);
+      expect((await events).length).to.equal(1);
+      expect((await events)[0].data.playerId).to.equal(this.setupData.players[0].id);
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -268,11 +268,11 @@ const tests = [
         }),
       });
 
-      expect((await events).length).to.be.eq(1);
+      expect((await events).length).to.equal(1);
       const containsAllowedCountryMessage = (await events)[0].data.meta.result.logs.some((log: any) => {
         return log.msg.includes('Player has immunity, no action');
       });
-      expect(containsAllowedCountryMessage).to.be.eq(true, 'Decision message not found');
+      expect(containsAllowedCountryMessage).to.equal(true, 'Decision message not found');
     },
   }),
   new IntegrationTest<IModuleTestsSetupData>({
@@ -306,11 +306,11 @@ const tests = [
         }),
       });
 
-      expect((await events).length).to.be.eq(1);
+      expect((await events).length).to.equal(1);
       const containsAllowedCountryMessage = (await events)[0].data.meta.result.logs.some((log: any) => {
         return log.msg.includes('Allowed country detected, no action');
       });
-      expect(containsAllowedCountryMessage).to.be.eq(true, 'Decision message not found');
+      expect(containsAllowedCountryMessage).to.equal(true, 'Decision message not found');
     },
   }),
 ];

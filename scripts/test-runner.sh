@@ -1,20 +1,14 @@
 #!/bin/bash
 
 # Test runner script for Takaro monorepo
-# Handles core test execution logic with various modes
+# Uses vitest for all backend package tests
 
 set -e
 
 # Default values
 LOGGING_LEVEL="${LOGGING_LEVEL:-none}"
-TEST_CONCURRENCY="${TEST_CONCURRENCY:-1}"
 DEBUG_MODE=false
 CHECK_TYPES=false
-
-# Test patterns
-ALL_PACKAGES_PATTERN="packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.test.ts"
-UNIT_PATTERN="packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.unit.test.ts"
-INTEGRATION_PATTERN="packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.integration.test.ts"
 
 show_usage() {
     echo "Usage: $0 [OPTIONS] [TEST_PATTERN]"
@@ -42,20 +36,62 @@ run_web_tests() {
 
 run_typescript_check() {
     echo "Running TypeScript checks..."
-    tsc --noEmit --skipLibCheck
+    npx tsc --noEmit --skipLibCheck
 }
 
-run_node_tests() {
+run_vitest_tests() {
     local pattern="$1"
     local extra_args="$2"
     
-    local cmd_args="--test-concurrency $TEST_CONCURRENCY --test-force-exit --import=ts-node-maintained/register/esm --test"
+    echo "Running tests with vitest..."
     
     if [ "$DEBUG_MODE" = true ]; then
-        cmd_args="--inspect-brk $cmd_args"
+        echo "Debug mode: Connect debugger to port 9229"
+        extra_args="--inspect-brk $extra_args"
     fi
     
-    LOGGING_LEVEL="$LOGGING_LEVEL" node $cmd_args $extra_args "$pattern"
+    # Run vitest in each package that has tests matching the pattern
+    local packages=($(find packages -name "vitest.config.mts" -type f | sed 's|/vitest.config.mts||' | sort))
+    
+    for package_dir in "${packages[@]}"; do
+        # Skip the packages directory itself
+        if [ "$package_dir" = "packages" ]; then
+            continue
+        fi
+        
+        # Check if package has tests matching pattern
+        local has_tests=false
+        if [ -z "$pattern" ]; then
+            # No pattern, check for any test files
+            if find "$package_dir" -name "*.test.ts" -type f 2>/dev/null | grep -q .; then
+                has_tests=true
+            fi
+        else
+            # Check for specific pattern
+            case "$pattern" in
+                *unit*)
+                    if find "$package_dir" -name "*.unit.test.ts" -type f 2>/dev/null | grep -q .; then
+                        has_tests=true
+                    fi
+                    ;;
+                *integration*)
+                    if find "$package_dir" -name "*.integration.test.ts" -type f 2>/dev/null | grep -q .; then
+                        has_tests=true
+                    fi
+                    ;;
+                *)
+                    if find "$package_dir" -name "*.test.ts" -type f 2>/dev/null | grep -q .; then
+                        has_tests=true
+                    fi
+                    ;;
+            esac
+        fi
+        
+        if [ "$has_tests" = true ]; then
+            echo "Running tests in $package_dir..."
+            (cd "$package_dir" && npx vitest run --reporter=verbose $extra_args) || exit 1
+        fi
+    done
 }
 
 wait_for_services() {
@@ -84,7 +120,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --ci)
             MODE="ci"
-            EXTRA_ARGS="--test-reporter=spec --test-reporter-destination=stdout --test-reporter=@reporters/github --test-reporter-destination=stdout"
+            EXTRA_ARGS="--reporter=junit --reporter=default --outputFile=test-results.xml"
             shift
             ;;
         --debug)
@@ -116,25 +152,33 @@ if [ "$CHECK_TYPES" = true ]; then
     run_typescript_check
 fi
 
-# Determine test pattern
+# Determine test pattern and run tests
 case $MODE in
     all)
-        PATTERN="${CUSTOM_PATTERN:-$ALL_PACKAGES_PATTERN}"
-        wait_for_services
-        run_web_tests
+        if [ -z "$CUSTOM_PATTERN" ]; then
+            wait_for_services
+            run_web_tests
+        fi
+        run_vitest_tests "$CUSTOM_PATTERN" "$EXTRA_ARGS"
         ;;
     unit)
-        PATTERN="${CUSTOM_PATTERN:-$UNIT_PATTERN}"
+        if [ -z "$CUSTOM_PATTERN" ]; then
+            CUSTOM_PATTERN="packages/**/*.unit.test.ts"
+        fi
+        run_vitest_tests "$CUSTOM_PATTERN" "$EXTRA_ARGS"
         ;;
     integration)
-        PATTERN="${CUSTOM_PATTERN:-$INTEGRATION_PATTERN}"
-        wait_for_services
-        run_web_tests
+        if [ -z "$CUSTOM_PATTERN" ]; then
+            CUSTOM_PATTERN="packages/**/*.integration.test.ts"
+            wait_for_services
+            run_web_tests
+        fi
+        run_vitest_tests "$CUSTOM_PATTERN" "$EXTRA_ARGS"
         ;;
     ci)
-        PATTERN="${CUSTOM_PATTERN:-$ALL_PACKAGES_PATTERN}"
         wait_for_services
         run_web_tests
+        run_vitest_tests "$CUSTOM_PATTERN" "$EXTRA_ARGS"
         ;;
     *)
         echo "Unknown mode: $MODE"
@@ -142,6 +186,4 @@ case $MODE in
         ;;
 esac
 
-# Run the tests
-echo "Running tests with pattern: $PATTERN"
-run_node_tests "$PATTERN" "$EXTRA_ARGS"
+echo "✅ All tests completed successfully!"

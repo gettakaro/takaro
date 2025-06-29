@@ -1,6 +1,6 @@
 import { IntegrationTest, SetupGameServerPlayers, expect } from '@takaro/test';
 import { isAxiosError } from 'axios';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 
 const group = 'PlayerOnGameserverController';
 
@@ -18,7 +18,7 @@ const tests = [
         },
       });
       // Divide by 2 because we setup 2 test servers
-      expect(res.data.data.length).to.be.eq(this.setupData.players.length / 2);
+      expect(res.data.data.length).to.equal(this.setupData.players.length / 2);
     },
   }),
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
@@ -35,7 +35,7 @@ const tests = [
         player.gameServerId,
         player.playerId,
       );
-      expect(playerRes.data.data.id).to.be.eq(player.id);
+      expect(playerRes.data.data.id).to.equal(player.id);
     },
   }),
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
@@ -64,7 +64,7 @@ const tests = [
         player.playerId,
       );
 
-      expect(playerRes.data.data.currency).to.be.eq(100);
+      expect(playerRes.data.data.currency).to.equal(100);
     },
   }),
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
@@ -90,7 +90,7 @@ const tests = [
         },
       );
 
-      expect(rejectedRes.data.meta.error.message).to.be.eq('Currency must be positive');
+      expect(rejectedRes.data.meta.error.message).to.equal('Currency must be positive');
 
       return rejectedRes;
     },
@@ -118,7 +118,7 @@ const tests = [
         },
       );
 
-      expect(rejectedRes.data.meta.error.message).to.be.eq('Economy is not enabled');
+      expect(rejectedRes.data.meta.error.message).to.equal('Economy is not enabled');
 
       return rejectedRes;
     },
@@ -175,8 +175,8 @@ const tests = [
         player2.playerId,
       );
 
-      expect(player1Res.data.data.currency).to.be.eq(50);
-      expect(player2Res.data.data.currency).to.be.eq(150);
+      expect(player1Res.data.data.currency).to.equal(50);
+      expect(player2Res.data.data.currency).to.equal(150);
     },
   }),
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
@@ -226,7 +226,7 @@ const tests = [
       } catch (error) {
         if (!isAxiosError(error)) throw error;
         if (!error.response) throw error;
-        expect(error.response.data.meta.error.message).to.be.eq('Insufficient funds');
+        expect(error.response.data.meta.error.message).to.equal('Insufficient funds');
       }
 
       const player1Res = await this.client.playerOnGameserver.playerOnGameServerControllerGetOne(
@@ -238,8 +238,8 @@ const tests = [
         player2.playerId,
       );
 
-      expect(player1Res.data.data.currency).to.be.eq(100);
-      expect(player2Res.data.data.currency).to.be.eq(100);
+      expect(player1Res.data.data.currency).to.equal(100);
+      expect(player2Res.data.data.currency).to.equal(100);
     },
   }),
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
@@ -280,7 +280,7 @@ const tests = [
       } catch (error) {
         if (!isAxiosError(error)) throw error;
         if (!error.response) throw error;
-        expect(error.response.data.meta.error.message).to.be.eq('Players are not on the same game server');
+        expect(error.response.data.meta.error.message).to.equal('Players are not on the same game server');
       }
     },
   }),
@@ -341,8 +341,8 @@ const tests = [
         player2.playerId,
       );
 
-      expect(player1Res.data.data.currency).to.be.eq(0);
-      expect(player2Res.data.data.currency).to.be.eq(200);
+      expect(player1Res.data.data.currency).to.equal(0);
+      expect(player2Res.data.data.currency).to.equal(200);
     },
   }),
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
@@ -374,7 +374,7 @@ const tests = [
         player.playerId,
       );
 
-      expect(playerRes.data.data.currency).to.be.eq(100);
+      expect(playerRes.data.data.currency).to.equal(100);
     },
   }),
   new IntegrationTest<SetupGameServerPlayers.ISetupData>({
@@ -418,7 +418,7 @@ const tests = [
         player.playerId,
       );
 
-      expect(playerRes.data.data.currency).to.be.eq(0);
+      expect(playerRes.data.data.currency).to.equal(0);
     },
   }),
 ];

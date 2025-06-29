@@ -1,5 +1,5 @@
 import { expect } from '@takaro/test';
-import { describe, it } from 'node:test';
+import { describe, it } from 'vitest';
 
 import { Config, IBaseConfig } from '../main.js';
 

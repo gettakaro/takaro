@@ -11,7 +11,7 @@ describe('schemaToInputs', () => {
 
   invalidSchemas.forEach((test) => {
     it(`Should fail to convert ${test.name} schema to inputs`, () => {
-      expect(schemaToInputs(test.schema).errors).toHaveLength(1);
+      expect(schemaToInputs(test.schema).errors).to.have.length(1);
     });
   });
 });

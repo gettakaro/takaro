@@ -1,14 +1,12 @@
 #!/bin/bash
 
-# Test package script for running tests within specific packages
+# Test package script for running tests within specific packages using Vitest
 # Supports unit, integration, and all tests for a given package
 
 set -e
 
 # Default values
 MODE="all"
-LOGGING_LEVEL="${LOGGING_LEVEL:-none}"
-TEST_CONCURRENCY="${TEST_CONCURRENCY:-1}"
 CHECK_TYPES=false
 
 show_usage() {
@@ -58,7 +56,7 @@ validate_package() {
 run_typescript_check() {
     local pkg="$1"
     echo "Running TypeScript checks for package: $pkg"
-    tsc --noEmit --skipLibCheck "packages/$pkg/**/*.ts"
+    npx tsc --noEmit --skipLibCheck "packages/$pkg/**/*.ts"
 }
 
 run_package_tests() {
@@ -68,13 +66,13 @@ run_package_tests() {
     local pattern
     case $test_type in
         unit)
-            pattern="packages/$pkg/**/*.unit.test.ts"
+            pattern="**/*.unit.test.ts"
             ;;
         integration)
-            pattern="packages/$pkg/**/*.integration.test.ts"
+            pattern="**/*.integration.test.ts"
             ;;
         all)
-            pattern="packages/$pkg/**/*.test.ts"
+            pattern="**/*.test.ts"
             ;;
         *)
             echo "Error: Unknown test type: $test_type"
@@ -105,10 +103,10 @@ run_package_tests() {
     
     echo "Running $test_type tests for package: $pkg"
     echo "Pattern: $pattern"
+    echo "Found ${#files[@]} test files"
     
-    local cmd_args="--test-concurrency $TEST_CONCURRENCY --test-force-exit --import=ts-node-maintained/register/esm --test"
-    
-    LOGGING_LEVEL="$LOGGING_LEVEL" node $cmd_args "$pattern"
+    # Run vitest from the package directory
+    cd "packages/$pkg" && npx vitest run --reporter=verbose
 }
 
 # Parse arguments

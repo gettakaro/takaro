@@ -1,6 +1,6 @@
 import { IntegrationTest, expect } from '@takaro/test';
 import { GameServerOutputDTO, SettingsOutputDTOKeyEnum, SettingsOutputDTOTypeEnum } from '@takaro/apiclient';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 import { randomUUID } from 'node:crypto';
 import { getMockServer } from '@takaro/mock-gameserver';
 
@@ -33,7 +33,7 @@ const tests = [
     name: 'Get a value',
     test: async function () {
       const res = await this.client.settings.settingsControllerGetOne(SettingsOutputDTOKeyEnum.CommandPrefix);
-      expect(res.data.data.value).to.be.eq('/');
+      expect(res.data.data.value).to.equal('/');
       return res;
     },
   }),
@@ -46,7 +46,7 @@ const tests = [
         value: '!',
       });
       const res = await this.client.settings.settingsControllerGetOne(SettingsOutputDTOKeyEnum.CommandPrefix);
-      expect(res.data.data.value).to.be.eq('!');
+      expect(res.data.data.value).to.equal('!');
       return res;
     },
   }),
@@ -56,7 +56,7 @@ const tests = [
     name: 'Get a value with invalid key',
     test: async function () {
       const res = await this.client.settings.settingsControllerGetOne('invalidKey');
-      expect(res.data.data).to.be.eq(undefined);
+      expect(res.data.data).to.equal(undefined);
       return res;
     },
     expectedStatus: 400,
@@ -102,15 +102,15 @@ const tests = [
         gameServerId: this.setupData.id,
       });
       const resGlobal = await this.client.settings.settingsControllerGetOne(SettingsOutputDTOKeyEnum.CommandPrefix);
-      expect(resGlobal.data.data.value).to.be.eq('/');
-      expect(resGlobal.data.data.type).to.be.eq(SettingsOutputDTOTypeEnum.Default);
+      expect(resGlobal.data.data.value).to.equal('/');
+      expect(resGlobal.data.data.type).to.equal(SettingsOutputDTOTypeEnum.Default);
 
       const resGameServer = await this.client.settings.settingsControllerGetOne(
         SettingsOutputDTOKeyEnum.CommandPrefix,
         this.setupData.id,
       );
-      expect(resGameServer.data.data.value).to.be.eq('!');
-      expect(resGameServer.data.data.type).to.be.eq(SettingsOutputDTOTypeEnum.Override);
+      expect(resGameServer.data.data.value).to.equal('!');
+      expect(resGameServer.data.data.type).to.equal(SettingsOutputDTOTypeEnum.Override);
 
       return resGameServer;
     },
@@ -126,24 +126,24 @@ const tests = [
         gameServerId: this.setupData.id,
       });
       const res = await this.client.settings.settingsControllerGet(undefined, this.setupData.id);
-      expect(res.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.CommandPrefix)?.value).to.be.eq('!');
-      expect(res.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.CommandPrefix)?.type).to.be.eq(
+      expect(res.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.CommandPrefix)?.value).to.equal('!');
+      expect(res.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.CommandPrefix)?.type).to.equal(
         SettingsOutputDTOTypeEnum.Override,
       );
-      expect(res.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.ServerChatName)?.value).to.be.eq('Takaro');
-      expect(res.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.ServerChatName)?.type).to.be.eq(
+      expect(res.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.ServerChatName)?.value).to.equal('Takaro');
+      expect(res.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.ServerChatName)?.type).to.equal(
         SettingsOutputDTOTypeEnum.Default,
       );
 
       const globalRes = await this.client.settings.settingsControllerGet();
-      expect(globalRes.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.CommandPrefix)?.value).to.be.eq('/');
-      expect(globalRes.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.CommandPrefix)?.type).to.be.eq(
+      expect(globalRes.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.CommandPrefix)?.value).to.equal('/');
+      expect(globalRes.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.CommandPrefix)?.type).to.equal(
         SettingsOutputDTOTypeEnum.Default,
       );
-      expect(globalRes.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.ServerChatName)?.value).to.be.eq(
+      expect(globalRes.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.ServerChatName)?.value).to.equal(
         'Takaro',
       );
-      expect(globalRes.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.ServerChatName)?.type).to.be.eq(
+      expect(globalRes.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.ServerChatName)?.type).to.equal(
         SettingsOutputDTOTypeEnum.Default,
       );
 
@@ -169,8 +169,8 @@ const tests = [
         [SettingsOutputDTOKeyEnum.CommandPrefix],
         this.setupData.id,
       );
-      expect(res.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.CommandPrefix)?.value).to.be.eq('server!');
-      expect(res.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.CommandPrefix)?.type).to.be.eq(
+      expect(res.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.CommandPrefix)?.value).to.equal('server!');
+      expect(res.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.CommandPrefix)?.type).to.equal(
         SettingsOutputDTOTypeEnum.Override,
       );
 
@@ -180,8 +180,8 @@ const tests = [
         [SettingsOutputDTOKeyEnum.CommandPrefix],
         this.setupData.id,
       );
-      expect(res2.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.CommandPrefix)?.value).to.be.eq('global!');
-      expect(res2.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.CommandPrefix)?.type).to.be.eq(
+      expect(res2.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.CommandPrefix)?.value).to.equal('global!');
+      expect(res2.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.CommandPrefix)?.type).to.equal(
         SettingsOutputDTOTypeEnum.Inherit,
       );
 
@@ -199,16 +199,16 @@ const tests = [
       });
 
       const res = await this.client.settings.settingsControllerGet([SettingsOutputDTOKeyEnum.CommandPrefix]);
-      expect(res.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.CommandPrefix)?.value).to.be.eq('global!');
-      expect(res.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.CommandPrefix)?.type).to.be.eq(
+      expect(res.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.CommandPrefix)?.value).to.equal('global!');
+      expect(res.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.CommandPrefix)?.type).to.equal(
         SettingsOutputDTOTypeEnum.Global,
       );
 
       await this.client.settings.settingsControllerDelete(SettingsOutputDTOKeyEnum.CommandPrefix);
 
       const res2 = await this.client.settings.settingsControllerGet([SettingsOutputDTOKeyEnum.CommandPrefix]);
-      expect(res2.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.CommandPrefix)?.value).to.be.eq('/');
-      expect(res2.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.CommandPrefix)?.type).to.be.eq(
+      expect(res2.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.CommandPrefix)?.value).to.equal('/');
+      expect(res2.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.CommandPrefix)?.type).to.equal(
         SettingsOutputDTOTypeEnum.Default,
       );
 
@@ -231,24 +231,24 @@ const tests = [
       });
 
       const res = await this.client.settings.settingsControllerGet(undefined, this.setupData.id);
-      expect(res.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.CommandPrefix)?.value).to.be.eq('!');
-      expect(res.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.CommandPrefix)?.type).to.be.eq(
+      expect(res.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.CommandPrefix)?.value).to.equal('!');
+      expect(res.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.CommandPrefix)?.type).to.equal(
         SettingsOutputDTOTypeEnum.Override,
       );
-      expect(res.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.ServerChatName)?.value).to.be.eq('Takaro');
-      expect(res.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.ServerChatName)?.type).to.be.eq(
+      expect(res.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.ServerChatName)?.value).to.equal('Takaro');
+      expect(res.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.ServerChatName)?.type).to.equal(
         SettingsOutputDTOTypeEnum.Default,
       );
 
       const globalRes = await this.client.settings.settingsControllerGet();
-      expect(globalRes.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.CommandPrefix)?.value).to.be.eq('/');
-      expect(globalRes.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.CommandPrefix)?.type).to.be.eq(
+      expect(globalRes.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.CommandPrefix)?.value).to.equal('/');
+      expect(globalRes.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.CommandPrefix)?.type).to.equal(
         SettingsOutputDTOTypeEnum.Default,
       );
-      expect(globalRes.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.ServerChatName)?.value).to.be.eq(
+      expect(globalRes.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.ServerChatName)?.value).to.equal(
         'Takaro',
       );
-      expect(globalRes.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.ServerChatName)?.type).to.be.eq(
+      expect(globalRes.data.data.find((k) => k.key === SettingsOutputDTOKeyEnum.ServerChatName)?.type).to.equal(
         SettingsOutputDTOTypeEnum.Default,
       );
 

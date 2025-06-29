@@ -2,7 +2,7 @@ import { expect, sandbox } from '@takaro/test';
 import { GenericConnectionInfo } from '../gameservers/generic/connectionInfo.js';
 import { Generic } from '../gameservers/generic/index.js';
 import { GameEvents } from '@takaro/modules';
-import { describe, it } from 'node:test';
+import { describe, it } from 'vitest';
 
 describe('GameEventEmitter', () => {
   /**

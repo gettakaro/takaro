@@ -1,6 +1,6 @@
 import { EventsAwaiter, expect, IntegrationTest, IShopSetup, shopSetup } from '@takaro/test';
 import { HookEvents } from '../../dto/index.js';
-import { describe } from 'node:test';
+import { describe } from 'vitest';
 
 const group = 'EconomyUtils:Shop:Browse';
 
@@ -18,13 +18,15 @@ const tests = [
       });
 
       expect(await events).to.have.length(5);
-      expect((await events)[0].data.meta.msg).to.eq(
+      expect((await events)[0].data.meta.msg).to.equal(
         'This command allows you to browse the shop and view available items.',
       );
-      expect((await events)[1].data.meta.msg).to.eq('Usage: /shop [page] [item] [action]');
-      expect((await events)[2].data.meta.msg).to.eq('/shop 2 - View the second page of shop items');
-      expect((await events)[3].data.meta.msg).to.eq('/shop 1 3 - View details about the third item on the first page');
-      expect((await events)[4].data.meta.msg).to.eq('/shop 1 3 buy - Purchase the third item on the first page');
+      expect((await events)[1].data.meta.msg).to.equal('Usage: /shop [page] [item] [action]');
+      expect((await events)[2].data.meta.msg).to.equal('/shop 2 - View the second page of shop items');
+      expect((await events)[3].data.meta.msg).to.equal(
+        '/shop 1 3 - View details about the third item on the first page',
+      );
+      expect((await events)[4].data.meta.msg).to.equal('/shop 1 3 buy - Purchase the third item on the first page');
     },
   }),
   new IntegrationTest<IShopSetup>({
@@ -74,7 +76,7 @@ const tests = [
       });
 
       expect(await events).to.have.length(3);
-      expect((await events)[(await events).length - 1].data.meta.msg).to.eq('Pong!');
+      expect((await events)[(await events).length - 1].data.meta.msg).to.equal('Pong!');
     },
   }),
   new IntegrationTest<IShopSetup>({

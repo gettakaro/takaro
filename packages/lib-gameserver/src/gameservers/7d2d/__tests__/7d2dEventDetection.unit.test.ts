@@ -1,4 +1,5 @@
 import { expect, sandbox } from '@takaro/test';
+import { vi } from 'vitest';
 import {
   EventChatMessage,
   EventEntityKilled,
@@ -10,7 +11,7 @@ import {
 import { SdtdConnectionInfo } from '../connectionInfo.js';
 import { SevenDaysToDieEmitter } from '../emitter.js';
 import { SevenDaysToDie } from '../index.js';
-import { describe, beforeEach, it } from 'node:test';
+import { describe, beforeEach, it } from 'vitest';
 
 const mockConnectionInfo = async (overrides?: Partial<SdtdConnectionInfo>) =>
   new SdtdConnectionInfo({
@@ -29,12 +30,12 @@ const mockGamePlayer = new IGamePlayer({
 });
 
 describe('7d2d event detection', () => {
-  let emitStub = sandbox.stub(SevenDaysToDieEmitter.prototype, 'emit');
+  let emitStub = vi.spyOn(SevenDaysToDieEmitter.prototype, 'emit');
 
   beforeEach(() => {
     sandbox.restore();
-    emitStub = sandbox.stub(SevenDaysToDieEmitter.prototype, 'emit');
-    sandbox.stub(SevenDaysToDie.prototype, 'steamIdOrXboxToGameId').resolves(mockGamePlayer);
+    emitStub = vi.spyOn(SevenDaysToDieEmitter.prototype, 'emit');
+    vi.spyOn(SevenDaysToDie.prototype, 'steamIdOrXboxToGameId').mockResolvedValue(mockGamePlayer);
   });
 
   it('[PlayerConnected]: Can detect simple player connected', async () => {
@@ -42,10 +43,10 @@ describe('7d2d event detection', () => {
     await emitter.parseMessage({
       msg: `PlayerSpawnedInWorld (reason: JoinMultiplayer, position: 1873, 66, 347): EntityID=171, PltfmId='Steam_76561198028175941', CrossId='EOS_0002b5d970954287afdcb5dc35af0424', OwnerID='Steam_76561198028175941', PlayerName='Catalysm'`,
     });
-    expect(emitStub).to.have.been.calledTwice;
+    expect(emitStub).to.have.callCount(2);
 
     expect(emitStub.getCalls()[0].args[0]).to.equal(GameEvents.PLAYER_CONNECTED);
-    expect((emitStub.getCalls()[0].args[1] as EventPlayerConnected).player).to.deep.equal({
+    expect((emitStub.getCalls()[0].args[1] as EventPlayerConnected).player).to.equal({
       name: 'Catalysm',
 
       gameId: '0002b5d970954287afdcb5dc35af0424',
@@ -61,10 +62,10 @@ describe('7d2d event detection', () => {
     await emitter.parseMessage({
       msg: `PlayerSpawnedInWorld (reason: EnterMultiplayer, position: 1080, 61, 1089): EntityID=3812, PltfmId='Steam_76561198028175941', CrossId='EOS_0002b5d970954287afdcb5dc35af0424', OwnerID='Steam_76561198028175941', PlayerName='Catalysm', ClientNumber='6'`,
     });
-    expect(emitStub).to.have.been.calledTwice;
+    expect(emitStub).to.have.callCount(2);
 
     expect(emitStub.getCalls()[0].args[0]).to.equal(GameEvents.PLAYER_CONNECTED);
-    expect((emitStub.getCalls()[0].args[1] as EventPlayerConnected).player).to.deep.equal({
+    expect((emitStub.getCalls()[0].args[1] as EventPlayerConnected).player).to.equal({
       name: 'Catalysm',
 
       gameId: '0002b5d970954287afdcb5dc35af0424',
@@ -79,10 +80,10 @@ describe('7d2d event detection', () => {
     await new SevenDaysToDieEmitter(await mockConnectionInfo()).parseMessage({
       msg: `PlayerSpawnedInWorld (reason: JoinMultiplayer, position: 1873, 66, 347): EntityID=171, PltfmId='XBL_123456abcdef', CrossId='EOS_0002b5d970954287afdcb5dc35af0424', OwnerID='Steam_76561198028175941', PlayerName='Catalysm'`,
     });
-    expect(emitStub).to.have.been.calledTwice;
+    expect(emitStub).to.have.callCount(2);
 
     expect(emitStub.getCalls()[0].args[0]).to.equal(GameEvents.PLAYER_CONNECTED);
-    expect((emitStub.getCalls()[0].args[1] as EventPlayerConnected).player).to.deep.equal({
+    expect((emitStub.getCalls()[0].args[1] as EventPlayerConnected).player).to.equal({
       name: 'Catalysm',
 
       gameId: '0002b5d970954287afdcb5dc35af0424',
@@ -97,10 +98,10 @@ describe('7d2d event detection', () => {
     await new SevenDaysToDieEmitter(await mockConnectionInfo()).parseMessage({
       msg: `PlayerSpawnedInWorld (reason: JoinMultiplayer, position: 1873, 66, 347): EntityID=171, PltfmId='Steam_76561198028175941', CrossId='EOS_0002b5d970954287afdcb5dc35af0424', OwnerID='Steam_76561198028175941', PlayerName='Cata lysm'`,
     });
-    expect(emitStub).to.have.been.calledTwice;
+    expect(emitStub).to.have.callCount(2);
 
     expect(emitStub.getCalls()[0].args[0]).to.equal(GameEvents.PLAYER_CONNECTED);
-    expect((emitStub.getCalls()[0].args[1] as EventPlayerConnected).player).to.deep.equal({
+    expect((emitStub.getCalls()[0].args[1] as EventPlayerConnected).player).to.equal({
       name: 'Cata lysm',
 
       gameId: '0002b5d970954287afdcb5dc35af0424',
@@ -115,10 +116,10 @@ describe('7d2d event detection', () => {
     await new SevenDaysToDieEmitter(await mockConnectionInfo()).parseMessage({
       msg: `Player disconnected: EntityID=171, PltfmId='Steam_76561198028175941', CrossId='EOS_0002b5d970954287afdcb5dc35af0424', OwnerID='Steam_76561198028175941', PlayerName='Catalysm'`,
     });
-    expect(emitStub).to.have.been.calledTwice;
+    expect(emitStub).to.have.callCount(2);
 
     expect(emitStub.getCalls()[0].args[0]).to.equal(GameEvents.PLAYER_DISCONNECTED);
-    expect((emitStub.getCalls()[0].args[1] as EventPlayerConnected).player).to.deep.equal({
+    expect((emitStub.getCalls()[0].args[1] as EventPlayerConnected).player).to.equal({
       name: 'Catalysm',
 
       gameId: '0002b5d970954287afdcb5dc35af0424',
@@ -136,12 +137,12 @@ describe('7d2d event detection', () => {
       msg: `Chat handled by mod 'CSMM Patrons': Chat (from 'Steam_76561198028175941', entity id '549', to 'Global'): fsafsafasf`,
     });
 
-    expect(emitStub).to.have.been.calledTwice;
+    expect(emitStub).to.have.callCount(2);
 
     expect(emitStub.getCalls()[0].args[0]).to.equal(GameEvents.CHAT_MESSAGE);
     expect(emitStub.getCalls()[1].args[0]).to.equal(GameEvents.LOG_LINE);
 
-    expect((emitStub.getCalls()[0].args[1] as EventChatMessage).player).to.deep.equal({
+    expect((emitStub.getCalls()[0].args[1] as EventChatMessage).player).to.equal({
       name: 'Catalysm',
       ping: undefined,
       gameId: '0002b5d970954287afdcb5dc35af0424',
@@ -160,13 +161,13 @@ describe('7d2d event detection', () => {
       msg: `Chat handled by mod '1CSMM_Patrons': Chat (from 'Steam_76561198028175941', entity id '546', to 'Global'): &ping`,
     });
 
-    expect(emitStub).to.have.been.calledThrice;
+    expect(emitStub).to.have.callCount(3);
 
     expect(emitStub.getCalls()[0].args[0]).to.equal(GameEvents.LOG_LINE);
     expect(emitStub.getCalls()[1].args[0]).to.equal(GameEvents.CHAT_MESSAGE);
     expect(emitStub.getCalls()[2].args[0]).to.equal(GameEvents.LOG_LINE);
 
-    expect((emitStub.getCalls()[1].args[1] as EventChatMessage).player).to.deep.equal({
+    expect((emitStub.getCalls()[1].args[1] as EventChatMessage).player).to.equal({
       name: 'Catalysm',
       ping: undefined,
       gameId: '0002b5d970954287afdcb5dc35af0424',
@@ -217,7 +218,7 @@ describe('7d2d event detection', () => {
       msg: `[CSMM_Patrons]playerDied: ${mockGamePlayer.name} (Steam_${mockGamePlayer.steamId}) died @ 702 34 -2938`,
     });
 
-    expect(emitStub).to.have.been.calledThrice;
+    expect(emitStub).to.have.callCount(3);
 
     expect(emitStub.getCalls()[0].args[0]).to.equal(GameEvents.PLAYER_DEATH);
     expect(emitStub.getCalls()[1].args[0]).to.equal(GameEvents.LOG_LINE);
@@ -225,7 +226,7 @@ describe('7d2d event detection', () => {
 
     expect((emitStub.getCalls()[0].args[1] as EventPlayerDeath).player.name).to.equal(mockGamePlayer.name);
 
-    expect((emitStub.getCalls()[0].args[1] as EventPlayerDeath).position).to.deep.equal({
+    expect((emitStub.getCalls()[0].args[1] as EventPlayerDeath).position).to.equal({
       x: NaN,
       y: NaN,
       z: NaN,
@@ -242,7 +243,7 @@ describe('7d2d event detection', () => {
       msg: `[CSMM_Patrons]playerDied: ${mockGamePlayer.name} (Steam_${mockGamePlayer.steamId}) died @ 702 34 -2938`,
     });
 
-    expect(emitStub).to.have.been.calledThrice;
+    expect(emitStub).to.have.callCount(3);
 
     expect(emitStub.getCalls()[0].args[0]).to.equal(GameEvents.LOG_LINE);
     expect(emitStub.getCalls()[1].args[0]).to.equal(GameEvents.PLAYER_DEATH);
@@ -250,7 +251,7 @@ describe('7d2d event detection', () => {
 
     expect((emitStub.getCalls()[1].args[1] as EventPlayerDeath).player.name).to.equal(mockGamePlayer.name);
 
-    expect((emitStub.getCalls()[1].args[1] as EventPlayerDeath).position).to.deep.equal({
+    expect((emitStub.getCalls()[1].args[1] as EventPlayerDeath).position).to.equal({
       x: 702,
       y: 34,
       z: -2938,
@@ -267,7 +268,7 @@ describe('7d2d event detection', () => {
       msg: `[CSMM_Patrons]entityKilled: ${mockGamePlayer.name} (Steam_${mockGamePlayer.steamId}) killed zombie zombieNurse with S.H.I.E.L.D. Auto Shotgun`,
     });
 
-    expect(emitStub).to.have.been.calledThrice;
+    expect(emitStub).to.have.callCount(3);
 
     expect(emitStub.getCalls()[0].args[0]).to.equal(GameEvents.ENTITY_KILLED);
     expect(emitStub.getCalls()[1].args[0]).to.equal(GameEvents.LOG_LINE);
@@ -288,7 +289,7 @@ describe('7d2d event detection', () => {
       msg: `[CSMM_Patrons]entityKilled: ${mockGamePlayer.name} (Steam_${mockGamePlayer.steamId}) killed zombie zombieNurse with S.H.I.E.L.D. Auto Shotgun`,
     });
 
-    expect(emitStub).to.have.been.calledThrice;
+    expect(emitStub).to.have.callCount(3);
 
     expect(emitStub.getCalls()[0].args[0]).to.equal(GameEvents.LOG_LINE);
     expect(emitStub.getCalls()[1].args[0]).to.equal(GameEvents.ENTITY_KILLED);

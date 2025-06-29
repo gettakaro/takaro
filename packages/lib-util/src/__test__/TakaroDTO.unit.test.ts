@@ -1,8 +1,8 @@
 import { TakaroDTO } from '../TakaroDTO.js';
-import { expect } from '@takaro/test';
 import { IsNumber, IsString, Max, Min, ValidateNested } from 'class-validator';
 import { Exclude, Type } from 'class-transformer';
-import { describe, it } from 'node:test';
+import { expect } from '@takaro/test';
+import { describe, it } from 'vitest';
 
 class TestDTO extends TakaroDTO<TestDTO> {
   @IsString()
@@ -60,7 +60,7 @@ describe('TakaroDTO', () => {
       secretPassword: 'takaro_ftw!!',
     });
     const json = test.toJSON();
-    await expect(json.secretPassword).to.be.undefined;
+    expect(json.secretPassword).to.be.undefined;
   });
 
   it('Can construct nested DTOs', () => {

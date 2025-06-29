@@ -119,6 +119,43 @@ DOCKER_TAG=pr-1246 npx zx scripts/integration-tests.mjs
 
 See the [Github Actions config](https://github.com/gettakaro/takaro/tree/main/.github/workflows) for more details.
 
+## Vitest Migration Status
+
+Takaro has been migrated to use **Vitest** for all test execution, replacing the previous Node.js test runner.
+
+### Migration Completed ✅
+- **Test Runner**: All packages now use Vitest instead of Node.js test runner
+- **Test Scripts**: Updated to use `npx vitest` commands  
+- **Configuration**: All packages have `vitest.config.mts` files
+- **Base Configuration**: Shared config at `vitest.config.base.mts`
+
+### Fully Migrated Packages ✅
+- `lib-config` - Complete vitest migration (imports and assertions)
+- `lib-util` - Complete vitest migration (imports and assertions)
+
+### Partially Migrated Packages 🔄
+- All other packages have vitest configs and use `describe/it` from vitest
+- However, they still use `expect` from `@takaro/test` causing mixed output
+- This allows tests to run but with legacy assertion library
+
+### Known Issues
+- Tests may output TAP format due to mixed vitest/`@takaro/test` usage
+- Some packages may have Sentry dependency conflicts when fully migrated
+- Integration tests still work but may show mixed test runner output
+
+### How It Works
+
+All test scripts now use Vitest:
+
+```sh
+# All commands now use vitest under the hood
+npm run test:unit       # Runs vitest in each package with unit tests
+npm run test:integration # Runs vitest in each package with integration tests
+
+# Show packages with vitest configs (all of them)
+find packages -name "vitest.config.mts" -type f
+```
+
 ## Debugging Tests
 
 ### View detailed logs
