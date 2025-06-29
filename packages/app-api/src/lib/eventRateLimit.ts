@@ -3,7 +3,7 @@ import { RateLimiterRedis, RateLimiterRes } from 'rate-limiter-flexible';
 import { Redis } from '@takaro/db';
 import { DomainService } from '../service/DomainService.js';
 import { EventCreateDTO, EventService, EVENT_TYPES } from '../service/EventService.js';
-import { TakaroEventRateLimitExceeded } from '@takaro/modules';
+import { TakaroEventRateLimitExceeded, GameEvents } from '@takaro/modules';
 
 const log = logger('eventRateLimit');
 
@@ -74,17 +74,17 @@ export async function createRateLimitEvent(
 
 export function getEventRateLimit(domain: any, eventType: string): number | null {
   switch (eventType) {
-    case 'log':
+    case GameEvents.LOG_LINE:
       return domain.eventRateLimitLogLine;
-    case 'chat-message':
+    case GameEvents.CHAT_MESSAGE:
       return domain.eventRateLimitChatMessage;
-    case 'player-connected':
+    case GameEvents.PLAYER_CONNECTED:
       return domain.eventRateLimitPlayerConnected;
-    case 'player-disconnected':
+    case GameEvents.PLAYER_DISCONNECTED:
       return domain.eventRateLimitPlayerDisconnected;
-    case 'player-death':
+    case GameEvents.PLAYER_DEATH:
       return domain.eventRateLimitPlayerDeath;
-    case 'entity-killed':
+    case GameEvents.ENTITY_KILLED:
       return domain.eventRateLimitEntityKilled;
     default:
       return null;
