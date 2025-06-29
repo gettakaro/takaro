@@ -5,7 +5,7 @@ import { randomBytes } from 'crypto';
 import { PermissionInputDTO, RoleService, ServiceRoleCreateInputDTO, RoleOutputDTO } from './RoleService.js';
 import type { RoleOutputDTO as RoleOutputDTOType } from './RoleService.js';
 import { NOT_DOMAIN_SCOPED_TakaroService } from './Base.js';
-import { IsEnum, IsNumber, IsOptional, IsString, Length, ValidateNested } from 'class-validator';
+import { IsEnum, IsNumber, IsOptional, IsString, Length, ValidateNested, Min } from 'class-validator';
 import { DOMAIN_STATES, DomainModel, DomainRepo } from '../db/domain.js';
 import { humanId } from 'human-id';
 import { Type } from 'class-transformer';
@@ -50,21 +50,27 @@ export class DomainCreateInputDTO extends TakaroDTO<DomainCreateInputDTO> {
   @IsNumber()
   @IsOptional()
   maxFunctionsInModule: number;
+  @Min(1)
   @IsNumber()
   @IsOptional()
   eventRateLimitLogLine: number;
+  @Min(1)
   @IsNumber()
   @IsOptional()
   eventRateLimitChatMessage: number;
+  @Min(1)
   @IsNumber()
   @IsOptional()
   eventRateLimitPlayerConnected: number;
+  @Min(1)
   @IsNumber()
   @IsOptional()
   eventRateLimitPlayerDisconnected: number;
+  @Min(1)
   @IsNumber()
   @IsOptional()
   eventRateLimitPlayerDeath: number;
+  @Min(1)
   @IsNumber()
   @IsOptional()
   eventRateLimitEntityKilled: number;
@@ -98,21 +104,27 @@ export class DomainUpdateInputDTO extends TakaroDTO<DomainUpdateInputDTO> {
   @IsNumber()
   @IsOptional()
   maxFunctionsInModule: number;
+  @Min(1)
   @IsNumber()
   @IsOptional()
   eventRateLimitLogLine: number;
+  @Min(1)
   @IsNumber()
   @IsOptional()
   eventRateLimitChatMessage: number;
+  @Min(1)
   @IsNumber()
   @IsOptional()
   eventRateLimitPlayerConnected: number;
+  @Min(1)
   @IsNumber()
   @IsOptional()
   eventRateLimitPlayerDisconnected: number;
+  @Min(1)
   @IsNumber()
   @IsOptional()
   eventRateLimitPlayerDeath: number;
+  @Min(1)
   @IsNumber()
   @IsOptional()
   eventRateLimitEntityKilled: number;
