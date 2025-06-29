@@ -37,6 +37,7 @@ export interface IQueuesConfig extends IBaseConfig {
     };
     system: {
       name: string;
+      concurrency: number;
     };
   };
   redis: {
@@ -193,6 +194,12 @@ export const queuesConfigSchema = {
         format: String,
         default: 'system',
         env: 'SYSTEM_QUEUE_NAME',
+      },
+      concurrency: {
+        doc: 'The number of system tasks to run at once',
+        format: Number,
+        default: 5,
+        env: 'SYSTEM_QUEUE_CONCURRENCY',
       },
     },
   },

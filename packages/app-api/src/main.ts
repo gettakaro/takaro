@@ -121,7 +121,7 @@ async function main() {
     new KPIWorker();
     log.info('👷 kpi worker started');
 
-    new SystemWorker();
+    new SystemWorker(config.get('queues.system.concurrency'));
     log.info('👷 system worker started');
   }
 
