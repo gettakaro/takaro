@@ -29,6 +29,13 @@ export class DomainModel extends NOT_DOMAIN_SCOPED_TakaroModel {
   rateLimitPoints: number;
   rateLimitDuration: number;
 
+  eventRateLimitLogLine: number;
+  eventRateLimitChatMessage: number;
+  eventRateLimitPlayerConnected: number;
+  eventRateLimitPlayerDisconnected: number;
+  eventRateLimitPlayerDeath: number;
+  eventRateLimitEntityKilled: number;
+
   externalReference?: string;
 }
 

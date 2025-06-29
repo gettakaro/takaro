@@ -49,6 +49,24 @@ export class DomainCreateInputDTO extends TakaroDTO<DomainCreateInputDTO> {
   @IsNumber()
   @IsOptional()
   maxFunctionsInModule: number;
+  @IsNumber()
+  @IsOptional()
+  eventRateLimitLogLine: number;
+  @IsNumber()
+  @IsOptional()
+  eventRateLimitChatMessage: number;
+  @IsNumber()
+  @IsOptional()
+  eventRateLimitPlayerConnected: number;
+  @IsNumber()
+  @IsOptional()
+  eventRateLimitPlayerDisconnected: number;
+  @IsNumber()
+  @IsOptional()
+  eventRateLimitPlayerDeath: number;
+  @IsNumber()
+  @IsOptional()
+  eventRateLimitEntityKilled: number;
 }
 
 export class DomainUpdateInputDTO extends TakaroDTO<DomainUpdateInputDTO> {
@@ -79,6 +97,24 @@ export class DomainUpdateInputDTO extends TakaroDTO<DomainUpdateInputDTO> {
   @IsNumber()
   @IsOptional()
   maxFunctionsInModule: number;
+  @IsNumber()
+  @IsOptional()
+  eventRateLimitLogLine: number;
+  @IsNumber()
+  @IsOptional()
+  eventRateLimitChatMessage: number;
+  @IsNumber()
+  @IsOptional()
+  eventRateLimitPlayerConnected: number;
+  @IsNumber()
+  @IsOptional()
+  eventRateLimitPlayerDisconnected: number;
+  @IsNumber()
+  @IsOptional()
+  eventRateLimitPlayerDeath: number;
+  @IsNumber()
+  @IsOptional()
+  eventRateLimitEntityKilled: number;
 }
 
 export class DomainOutputDTO extends NOT_DOMAIN_SCOPED_TakaroModelDTO<DomainOutputDTO> {
@@ -107,6 +143,18 @@ export class DomainOutputDTO extends NOT_DOMAIN_SCOPED_TakaroModelDTO<DomainOutp
   maxModules: number;
   @IsNumber()
   maxFunctionsInModule: number;
+  @IsNumber()
+  eventRateLimitLogLine: number;
+  @IsNumber()
+  eventRateLimitChatMessage: number;
+  @IsNumber()
+  eventRateLimitPlayerConnected: number;
+  @IsNumber()
+  eventRateLimitPlayerDisconnected: number;
+  @IsNumber()
+  eventRateLimitPlayerDeath: number;
+  @IsNumber()
+  eventRateLimitEntityKilled: number;
 }
 
 export class DomainCreateOutputDTO extends TakaroDTO<DomainCreateOutputDTO> {
