@@ -15,22 +15,13 @@ async function main() {
   const randomOption = items.concat(commands)[randomIndex];
 
   if (randomIndex < items.length) {
-    if (typeof randomOption === 'string') {
-      await takaro.gameserver.gameServerControllerGiveItem(data.gameServerId, data.player.id, {
-        name: randomOption,
-        amount: 1,
-        quality: '0',
-      });
-      await data.player.pm(`You received ${randomOption}!`);
-    } else {
-      const item = (await takaro.item.itemControllerFindOne(randomOption.item)).data.data;
-      await takaro.gameserver.gameServerControllerGiveItem(data.gameServerId, data.player.id, {
-        name: item.code,
-        amount: randomOption.amount,
-        quality: randomOption.quality ?? '',
-      });
-      await data.player.pm(`You received ${randomOption.amount}x ${item.name}!`);
-    }
+    const item = (await takaro.item.itemControllerFindOne(randomOption.item)).data.data;
+    await takaro.gameserver.gameServerControllerGiveItem(data.gameServerId, data.player.id, {
+      name: randomOption.item,
+      amount: randomOption.amount,
+      quality: randomOption.quality ?? '',
+    });
+    await data.player.pm(`You received ${randomOption.amount}x ${item.name}!`);
   } else {
     await takaro.gameserver.gameServerControllerExecuteCommand(data.gameServerId, { command: randomOption });
   }
