@@ -16,6 +16,7 @@ import { ModuleService } from './Module/index.js';
 import { PERMISSIONS } from '@takaro/auth';
 import { config } from '../config.js';
 import { EXECUTION_MODE } from '@takaro/config';
+import { clearDomainConfigCache } from '../lib/eventRateLimit.js';
 
 export { DOMAIN_STATES } from '../db/domain.js';
 
@@ -204,7 +205,28 @@ export class DomainService extends NOT_DOMAIN_SCOPED_TakaroService<
       }
     }
 
-    return this.repo.update(id, item);
+    // Check if any rate limit settings are being updated
+    const rateLimitFields = [
+      'eventRateLimitLogLine',
+      'eventRateLimitChatMessage',
+      'eventRateLimitPlayerConnected',
+      'eventRateLimitPlayerDisconnected',
+      'eventRateLimitPlayerDeath',
+      'eventRateLimitEntityKilled',
+    ];
+
+    const hasRateLimitChanges = rateLimitFields.some(
+      (field) => item[field as keyof DomainUpdateInputDTO] !== undefined,
+    );
+
+    const result = await this.repo.update(id, item);
+
+    // Clear domain config cache if rate limits were updated
+    if (hasRateLimitChanges) {
+      clearDomainConfigCache(id);
+    }
+
+    return result;
   }
 
   async delete(id: string) {

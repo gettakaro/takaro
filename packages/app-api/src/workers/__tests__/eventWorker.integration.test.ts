@@ -1,10 +1,13 @@
 import { EventsAwaiter, IntegrationTest, SetupGameServerPlayers, expect } from '@takaro/test';
-import { GameEvents, IGamePlayer } from '@takaro/modules';
+import { GameEvents, IGamePlayer, EventLogLine } from '@takaro/modules';
 import { v4 as uuid } from 'uuid';
 import { PlayerService } from '../../service/Player/index.js';
 import { sleep } from '@takaro/util';
 import { describe } from 'node:test';
 import { faker } from '@faker-js/faker';
+import { queueService } from '@takaro/queues';
+import { EVENT_TYPES } from '../../service/EventService.js';
+import { randomUUID } from 'crypto';
 
 const group = 'Event worker';
 
@@ -228,6 +231,81 @@ const tests = [
       }
 
       expect(errorThrown).to.be.true;
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Creates rate limit event when events exceed configured limits',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      if (!this.standardDomainId) throw new Error('standardDomainId is not set in the test context');
+      // 1. Update domain to have very low rate limits for quick testing
+      await this.adminClient.domain.domainControllerUpdate(this.standardDomainId, {
+        eventRateLimitLogLine: 2, // Very low limit for testing
+      });
+
+      // Small delay to ensure domain update and cache clearing propagates
+      await sleep(200);
+
+      // 2. Set up event listener for rate limit event
+      const rateLimitEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(
+        EVENT_TYPES.RATE_LIMIT_EXCEEDED,
+        1,
+      );
+
+      function createLogEvent() {
+        return new EventLogLine({
+          msg: `Test log message for rate limiting - ${randomUUID()}`,
+          timestamp: new Date().toISOString(),
+        });
+      }
+
+      // 3. Hammer the queue with log events to exceed the rate limit
+
+      // Add 10 events rapidly - this should exceed our limit of 2 per minute
+      for (let i = 0; i < 10; i++) {
+        await queueService.queues.events.queue.add({
+          type: GameEvents.LOG_LINE,
+          event: createLogEvent(),
+          domainId: this.standardDomainId,
+          gameServerId: this.setupData.gameServer1.id,
+        });
+      }
+
+      // 4. Wait for and validate rate limit event
+      const events = await rateLimitEvents;
+      expect(events).to.have.lengthOf(1);
+
+      const rateLimitEvent = events[0];
+      expect(rateLimitEvent.data.eventName).to.eq(EVENT_TYPES.RATE_LIMIT_EXCEEDED);
+      expect(rateLimitEvent.data.meta.eventType).to.eq('log');
+      expect(rateLimitEvent.data.meta.rateLimitPerMinute).to.eq(2);
+      expect(rateLimitEvent.data.gameserverId).to.eq(this.setupData.gameServer1.id);
+
+      // 5. Verify that multiple rate limit hits don't create duplicate events
+      // Add more events - these should be rate limited but not create new events due to Redis deduplication
+      for (let i = 0; i < 5; i++) {
+        await queueService.queues.events.queue.add({
+          type: GameEvents.LOG_LINE,
+          event: createLogEvent(),
+          domainId: this.standardDomainId,
+          gameServerId: this.setupData.gameServer1.id,
+        });
+      }
+
+      // Wait a bit to ensure no additional events are created
+      await sleep(500);
+
+      // Should still be only 1 rate limit event due to deduplication
+      const allEvents = await this.client.event.eventControllerSearch({
+        filters: {
+          eventName: [EVENT_TYPES.RATE_LIMIT_EXCEEDED],
+          gameserverId: [this.setupData.gameServer1.id],
+        },
+      });
+
+      expect(allEvents.data.data).to.have.lengthOf(1);
     },
   }),
 ];

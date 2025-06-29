@@ -37,6 +37,7 @@ export const categorizedEventNames = [
       e.EntityKilled,
       e.PlayerNewIpDetected,
       e.ServerStatusChanged,
+      e.RateLimitExceeded,
     ],
   },
   {
