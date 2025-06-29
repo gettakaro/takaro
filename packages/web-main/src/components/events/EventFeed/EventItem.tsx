@@ -297,6 +297,15 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
         </>
       );
       break;
+    case EventOutputDTOEventNameEnum.RateLimitExceeded:
+      properties = (
+        <>
+          <EventProperty name="gameserver" value={event.gameServer?.name} />
+          <EventProperty name="event type" value={(event.meta as any)?.eventType} />
+          <EventProperty name="limit per minute" value={(event.meta as any)?.rateLimitPerMinute} />
+        </>
+      );
+      break;
   }
 
   return (
