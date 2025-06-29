@@ -10,6 +10,7 @@ Takaro uses simplified test scripts that make running tests easy and provide cle
 ## Quick Start
 
 ### Run all tests
+
 ```sh
 # In Docker (recommended for integration tests)
 docker compose exec takaro npm test
@@ -19,15 +20,17 @@ npm test
 ```
 
 ### Run a specific test file
+
 ```sh
 # In Docker
 docker compose exec takaro npm run test:file packages/lib-config/src/__tests__/config.unit.test.ts
 
-# Locally  
+# Locally
 npm run test:file packages/lib-config/src/__tests__/config.unit.test.ts
 ```
 
 ### Run tests for a specific package
+
 ```sh
 # All tests in a package
 docker compose exec takaro bash -c "PKG=lib-config npm run test:package"
@@ -35,29 +38,33 @@ docker compose exec takaro bash -c "PKG=lib-config npm run test:package"
 # Only unit tests
 docker compose exec takaro bash -c "PKG=app-api npm run test:package:unit"
 
-# Only integration tests  
+# Only integration tests
 docker compose exec takaro bash -c "PKG=app-api npm run test:package:integration"
 ```
 
 ## Test Commands Reference
 
 ### Single File Testing
+
 - **`npm run test:file <path>`** - Run a specific test file
 - **`npm run test:file:check <path>`** - Run test with TypeScript checking first
 - **`npm run test:debug <path>`** - Run test with debugger (connects on port 9229)
 
 ### Package Testing
+
 - **`PKG=<name> npm run test:package`** - Run all tests in a package
 - **`PKG=<name> npm run test:package:unit`** - Run unit tests only
 - **`PKG=<name> npm run test:package:integration`** - Run integration tests only
 
 ### Full Test Suite
+
 - **`npm test`** - Run all tests (unit + integration)
 - **`npm run test:unit`** - Run all unit tests
 - **`npm run test:integration`** - Run all integration tests
 - **`npm run test:ci`** - Run tests with CI reporters
 
 ### TypeScript & Code Quality
+
 - **`npm run test:check`** - Check TypeScript in test files
 - **`npm run test:style`** - Run linting and formatting checks
 - **`npm run test:style:fix`** - Fix linting and formatting issues
@@ -65,6 +72,7 @@ docker compose exec takaro bash -c "PKG=app-api npm run test:package:integration
 ## Examples
 
 ### Testing Specific Controllers
+
 ```sh
 # Test a specific controller
 docker compose exec takaro npm run test:file packages/app-api/src/controllers/__tests__/SettingsController.integration.test.ts
@@ -74,6 +82,7 @@ docker compose exec takaro npm run test:file:check packages/app-api/src/controll
 ```
 
 ### Package-Specific Testing
+
 ```sh
 # Test all of lib-config package
 docker compose exec takaro bash -c "PKG=lib-config npm run test:package"
@@ -86,6 +95,7 @@ docker compose exec takaro bash -c "PKG=lib-modules npm run test:package:unit --
 ```
 
 ### Debugging Tests
+
 ```sh
 # Debug a specific test (opens debugger on port 9229)
 docker compose exec takaro npm run test:debug packages/lib-modules/src/__tests__/ping.integration.test.ts
@@ -94,6 +104,7 @@ docker compose exec takaro npm run test:debug packages/lib-modules/src/__tests__
 ```
 
 ### TypeScript Error Checking
+
 ```sh
 # Check for TypeScript errors before running tests
 docker compose exec takaro npm run test:file:check packages/app-api/src/controllers/__tests__/TrackingController.integration.test.ts
@@ -124,23 +135,26 @@ See the [Github Actions config](https://github.com/gettakaro/takaro/tree/main/.g
 Takaro has been migrated to use **Vitest** for all test execution, replacing the previous Node.js test runner.
 
 ### Migration Completed ✅
+
 - **Test Runner**: All packages now use Vitest instead of Node.js test runner
-- **Test Scripts**: Updated to use `npx vitest` commands  
+- **Test Scripts**: Updated to use `npx vitest` commands
 - **Configuration**: All packages have `vitest.config.mts` files
 - **Base Configuration**: Shared config at `vitest.config.base.mts`
 
 ### Fully Migrated Packages ✅
+
 - `lib-config` - Complete vitest migration (imports and assertions)
 - `lib-util` - Complete vitest migration (imports and assertions)
 
 ### Partially Migrated Packages 🔄
+
 - All other packages have vitest configs and use `describe/it` from vitest
 - However, they still use `expect` from `@takaro/test` causing mixed output
 - This allows tests to run but with legacy assertion library
 
 ### Known Issues
+
 - Tests may output TAP format due to mixed vitest/`@takaro/test` usage
-- Some packages may have Sentry dependency conflicts when fully migrated
 - Integration tests still work but may show mixed test runner output
 
 ### How It Works
@@ -159,6 +173,7 @@ find packages -name "vitest.config.mts" -type f
 ## Debugging Tests
 
 ### View detailed logs
+
 ```sh
 # Add debug logging to any test command
 docker compose exec -e LOGGING_LEVEL=debug takaro npm test
@@ -168,6 +183,7 @@ docker compose exec -e LOGGING_LEVEL=debug takaro npm run test:file packages/app
 ```
 
 ### Interactive debugging
+
 ```sh
 # Start test in debug mode
 docker compose exec takaro npm run test:debug packages/lib-modules/src/__tests__/ping.integration.test.ts
@@ -177,6 +193,7 @@ docker compose exec takaro npm run test:debug packages/lib-modules/src/__tests__
 ```
 
 ## Playwright E2E Tests
+
 Playwright tests are run locally, so make sure to set all required environment variables in your shell.
 
 ```sh
@@ -214,7 +231,7 @@ Our new test scripts provide several advantages over the old complex commands:
 # Quick verification during development
 PKG=lib-config npm run test:package:unit
 
-# Full controller testing with type checking  
+# Full controller testing with type checking
 npm run test:file:check packages/app-api/src/controllers/__tests__/TrackingController.integration.test.ts
 
 # Debug failing test

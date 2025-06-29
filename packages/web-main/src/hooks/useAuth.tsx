@@ -2,7 +2,6 @@ import { useQueryClient } from '@tanstack/react-query';
 import { MeOutputDTO } from '@takaro/apiclient';
 import { createContext, useCallback, useContext } from 'react';
 import { useOry } from './useOry';
-import * as Sentry from '@sentry/react';
 import { getApiClient } from '../util/getApiClient';
 import { usePostHog } from 'posthog-js/react';
 import { userKeys } from '../queries/user';
@@ -29,7 +28,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [oryClient, queryClient]);
 
   const login = useCallback((session: MeOutputDTO) => {
-    Sentry.setUser({ id: session.user.id, email: session.user.email, username: session.user.name });
     posthog.identify(session.user.idpId, {
       email: session.user.email,
       domain: session.domain,

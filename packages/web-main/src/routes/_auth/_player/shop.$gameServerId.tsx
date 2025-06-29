@@ -1,4 +1,4 @@
-import { ErrorBoundary } from '@sentry/react';
+import { ErrorBoundary } from '../../../components/ErrorBoundary';
 import { HorizontalNav, styled } from '@takaro/lib-components';
 import { useDocumentTitle } from '../../../hooks/useDocumentTitle';
 import { Link, Outlet, createFileRoute } from '@tanstack/react-router';

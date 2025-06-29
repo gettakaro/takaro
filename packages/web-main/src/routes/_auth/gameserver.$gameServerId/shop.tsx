@@ -1,4 +1,4 @@
-import { ErrorBoundary } from '@sentry/react';
+import { ErrorBoundary } from '../../../components/ErrorBoundary';
 import { ShopOrderUpdateDTOStatusEnum } from '@takaro/apiclient';
 import { Badge, HorizontalNav, styled, Tooltip } from '@takaro/lib-components';
 import { useQuery } from '@tanstack/react-query';
