@@ -41,27 +41,24 @@ elif [[ "$CHECK_TESTS" == "true" ]]; then
   echo "Checking test files..."
   
   # Find all test files and check them
-  TEST_FILES=$(find packages -name "*.test.ts" -type f | head -20)
+  mapfile -t TEST_FILES < <(find packages -name "*.test.ts" -type f)
   
-  if [[ -z "$TEST_FILES" ]]; then
+  if [[ ${#TEST_FILES[@]} -eq 0 ]]; then
     echo "No test files found to check"
     exit 0
   fi
   
-  echo "Found test files to check:"
-  echo "$TEST_FILES" | while read -r file; do
+  echo "Found ${#TEST_FILES[@]} test files to check:"
+  for file in "${TEST_FILES[@]}"; do
     echo "  - $file"
   done
   
   # Check each test file
-  echo "$TEST_FILES" | while read -r file; do
-    if [[ -n "$file" ]]; then
-      echo "Checking: $file"
-      npx tsc --noEmit "$file"
-      if [[ $? -ne 0 ]]; then
-        echo "TypeScript check failed for: $file"
-        exit 1
-      fi
+  for file in "${TEST_FILES[@]}"; do
+    echo "Checking: $file"
+    if ! npx tsc --noEmit "$file"; then
+      echo "TypeScript check failed for: $file"
+      exit 1
     fi
   done
 fi
