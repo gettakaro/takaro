@@ -38,21 +38,15 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# Check if PKG environment variable is set (alternative way to specify package)
-if [[ -z "$PACKAGE_NAME" && -n "$PKG" ]]; then
-  PACKAGE_NAME="$PKG"
-fi
 
 # Validate package name is provided
 if [[ -z "$PACKAGE_NAME" ]]; then
   echo "Error: Please specify a package name"
   echo "Usage: $0 [--unit|--integration] <package-name>"
-  echo "   or: PKG=<package-name> $0 [--unit|--integration]"
   echo "Examples:"
   echo "  $0 lib-config"
   echo "  $0 --unit app-api"
   echo "  $0 --integration lib-modules"
-  echo "  PKG=lib-config $0"
   exit 1
 fi
 
