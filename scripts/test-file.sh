@@ -57,8 +57,7 @@ fi
 # TypeScript checking mode
 if [[ "$CHECK_MODE" == "true" ]]; then
   echo "Running TypeScript check on $TEST_FILE..."
-  npx tsc --noEmit "$TEST_FILE"
-  if [[ $? -ne 0 ]]; then
+  if ! npx tsc --noEmit "$TEST_FILE"; then
     echo "TypeScript check failed for $TEST_FILE"
     exit 1
   fi
