@@ -31,7 +31,6 @@
     "start": "COMMAND=\"start\" REGEX=app bash ./scripts/run-all-pkgs.sh",
     "start:dev": "COMMAND=\"start:dev\" bash ./scripts/run-all-pkgs.sh",
     "test": "bash ./scripts/test-runner.sh --all",
-    "test:base": "COMMAND=\"--if-present test:unit\" REGEX='(web-main)|(lib-components)' bash ./scripts/run-all-pkgs.sh && node --test-concurrency 1 --test-force-exit --import=ts-node-maintained/register/esm --test",
     "test:check": "bash ./scripts/test-check.sh --tests",
     "test:ci": "bash ./scripts/test-runner.sh --ci",
     "test:debug": "bash ./scripts/test-file.sh --debug",
