@@ -1,6 +1,6 @@
 {
   "name": "@takaro/modules",
-  "version": "0.1.1",
+  "version": "0.1.3",
   "description": "Built-in modules for Takaro",
   "main": "dist/main.js",
   "types": "dist/main.d.ts",

@@ -297,6 +297,79 @@ const tests = [
       expect(meta.msg.startsWith(prefix)).to.be.true;
     },
   }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Give item using UUID (database lookup)',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      // Get available items
+      const itemsRes = await this.client.item.itemControllerSearch({
+        filters: { gameserverId: [this.setupData.gameServer1.id] },
+      });
+      expect(itemsRes.data.data.length).to.be.greaterThan(0);
+
+      const testItem = itemsRes.data.data[0];
+
+      // Give item using UUID
+      await this.client.gameserver.gameServerControllerGiveItem(
+        this.setupData.gameServer1.id,
+        this.setupData.pogs1[0].playerId,
+        {
+          name: testItem.id, // Using UUID
+          amount: 5,
+          quality: '1',
+        },
+      );
+
+      // Verify the operation succeeded (no error thrown means success)
+      expect(true).to.be.true;
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Give item using item code (direct)',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      // Give item using item code directly
+      await this.client.gameserver.gameServerControllerGiveItem(
+        this.setupData.gameServer1.id,
+        this.setupData.pogs1[0].playerId,
+        {
+          name: 'wood', // Using item code directly
+          amount: 10,
+          quality: '2',
+        },
+      );
+
+      // Verify the operation succeeded (no error thrown means success)
+      expect(true).to.be.true;
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Give item fails with invalid UUID',
+    setup: SetupGameServerPlayers.setup,
+    test: async function () {
+      try {
+        await this.client.gameserver.gameServerControllerGiveItem(
+          this.setupData.gameServer1.id,
+          this.setupData.pogs1[0].playerId,
+          {
+            name: '00000000-0000-4000-8000-000000000000', // Valid UUID format but non-existent
+            amount: 1,
+            quality: '1',
+          },
+        );
+        throw new Error('Should have thrown an error for invalid UUID');
+      } catch (error) {
+        if (!isAxiosError(error)) throw error;
+        expect(error.response?.status).to.equal(404);
+      }
+    },
+  }),
 ];
 
 describe(group, function () {

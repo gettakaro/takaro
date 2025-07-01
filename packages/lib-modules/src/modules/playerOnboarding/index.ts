@@ -8,9 +8,9 @@ export class PlayerOnboarding extends ModuleTransferDTO<PlayerOnboarding> {
     this.name = 'playerOnboarding';
     this.versions = [
       new ModuleTransferVersionDTO({
-        tag: '0.0.2',
+        tag: '0.0.3',
         description:
-          'Collection of functions that are executed when a player joins the server. Helps with onboarding new players, like sending a welcome message.',
+          'Collection of functions that are executed when a player joins the server. Helps with onboarding new players, like sending a welcome message. Fixed issue with starterkit item identifiers.',
         configSchema: JSON.stringify({
           $schema: 'http://json-schema.org/draft-07/schema#',
           type: 'object',

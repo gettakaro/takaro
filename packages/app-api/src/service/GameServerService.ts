@@ -1,6 +1,6 @@
 import { TakaroService } from './Base.js';
 import { GameServerModel, GameServerRepo } from '../db/gameserver.js';
-import { IsBoolean, IsEnum, IsJSON, IsObject, IsOptional, IsString, Length } from 'class-validator';
+import { IsBoolean, IsEnum, IsJSON, IsObject, IsOptional, IsString, Length, isUUID } from 'class-validator';
 import {
   IMessageOptsDTO,
   IGameServer,
@@ -486,12 +486,24 @@ export class GameServerService extends TakaroService<
     const gameInstance = await this.getGame(gameServerId);
     return gameInstance.listBans();
   }
-  async giveItem(gameServerId: string, playerId: string, itemId: string, amount: number, quality?: string) {
-    const itemsService = new ItemsService(this.domainId);
+  async giveItem(gameServerId: string, playerId: string, itemIdentifier: string, amount: number, quality?: string) {
     const gameInstance = await this.getGame(gameServerId);
     const pog = await this.pogService.getPog(playerId, gameServerId);
-    const resolvedItem = await itemsService.findOne(itemId);
-    return gameInstance.giveItem(pog, resolvedItem.code, amount, quality);
+
+    let itemCode: string;
+
+    // Check if input is a UUID (new way) or item code (old way)
+    if (isUUID(itemIdentifier)) {
+      // UUID: lookup in database to get item code
+      const itemsService = new ItemsService(this.domainId);
+      const resolvedItem = await itemsService.findOne(itemIdentifier);
+      itemCode = resolvedItem.code;
+    } else {
+      // Item code: use directly (old way)
+      itemCode = itemIdentifier;
+    }
+
+    return gameInstance.giveItem(pog, itemCode, amount, quality);
   }
 
   async shutdown(gameServerId: string) {
@@ -525,13 +537,17 @@ export class GameServerService extends TakaroService<
       }),
     );
 
-    await trackingService.repo.observePlayerLocation(
-      pog.id,
-      Math.round(location.x),
-      Math.round(location.y),
-      Math.round(location.z),
-      location.dimension,
-    );
+    trackingService.repo
+      .observePlayerLocation(
+        pog.id,
+        Math.round(location.x),
+        Math.round(location.y),
+        Math.round(location.z),
+        location.dimension,
+      )
+      .catch((err) => {
+        this.log.error('Failed to observe player location', { error: err });
+      });
 
     return location;
   }

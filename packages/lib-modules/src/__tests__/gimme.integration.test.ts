@@ -1,5 +1,5 @@
 import { IntegrationTest, expect, IModuleTestsSetupData, modulesTestSetup, EventsAwaiter } from '@takaro/test';
-import { GameEvents } from '../dto/index.js';
+import { GameEvents, HookEvents } from '../dto/index.js';
 import { faker } from '@faker-js/faker';
 import { describe } from 'node:test';
 
@@ -25,12 +25,19 @@ const tests = [
           commands: [],
         }),
       });
+
       const events = (await new EventsAwaiter().connect(this.client)).waitForEvents(GameEvents.CHAT_MESSAGE);
+      const executionEvents = (await new EventsAwaiter().connect(this.client)).waitForEvents(
+        HookEvents.COMMAND_EXECUTED,
+      );
 
       await this.client.command.commandControllerTrigger(this.setupData.gameserver.id, {
         msg: '/gimme',
         playerId: this.setupData.players[0].id,
       });
+
+      const resultLogs = (await executionEvents)[0].data.meta.result.logs;
+      expect(resultLogs.some((log: any) => log.msg.match(/giveItem 200 OK/))).to.be.true;
 
       expect((await events).length).to.be.eq(1);
       expect((await events)[0].data.meta.msg).to.match(/You received \dx \w/);
