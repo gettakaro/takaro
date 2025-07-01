@@ -207,9 +207,19 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
 
   async handleEvent(opts: IHandleHookOptions) {
     const { eventData, eventType, gameServerId, playerId } = opts;
+    this.log.debug('handleEvent: Processing event for hooks', {
+      eventType,
+      gameServerId,
+      hasPlayer: !!playerId,
+    });
+
     const redis = await Redis.getClient('service:hook');
 
     const triggeredHooks = await this.repo.getTriggeredHooks(eventType, gameServerId);
+    this.log.debug('handleEvent: Found triggered hooks', {
+      eventType,
+      hookCount: triggeredHooks.length,
+    });
 
     const hooksAfterFilters = triggeredHooks
       // Regex checks
@@ -223,6 +233,10 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
 
     if (hooksAfterFilters.length) {
       this.log.info(`Found ${hooksAfterFilters.length} hooks that match the event`);
+      this.log.debug('handleEvent: Hooks after regex filtering', {
+        originalCount: triggeredHooks.length,
+        filteredCount: hooksAfterFilters.length,
+      });
       const hookData: Partial<IHookJobData> = {
         eventData: eventData,
         domainId: this.domainId,
@@ -296,9 +310,19 @@ export class HookService extends TakaroService<HookModel, HookOutputDTO, HookCre
             });
           }
 
+          this.log.debug('handleEvent: Adding hook job to queue', {
+            hookId: hook.id,
+            hookName: hook.name,
+            delay: (hookConfig.delay || 0) * 1000,
+            cooldown: hookConfig.cooldown,
+            cooldownType: hookConfig.cooldownType,
+          });
+
           await queueService.queues.hooks.queue.add(copiedHookData as IHookJobData, {
             delay: (hookConfig.delay || 0) * 1000,
           });
+
+          this.log.debug('handleEvent: Hook job added to queue successfully');
         }
       }
     }

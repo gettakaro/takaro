@@ -57,8 +57,13 @@ async function processJob(job: Job<IEventQueueData>) {
 
     if (type === HookEvents.CHAT_MESSAGE) {
       const chatMessage = event as EventChatMessage;
+      log.debug('Received chat message event, checking for commands', {
+        player: chatMessage.player?.gameId,
+        msgPreview: chatMessage.msg.substring(0, 50),
+      });
       const commandService = new CommandService(domainId);
       await commandService.handleChatMessage(chatMessage, gameServerId);
+      log.debug('Finished handling chat message for potential commands');
 
       await eventService.create(
         new EventCreateDTO({
