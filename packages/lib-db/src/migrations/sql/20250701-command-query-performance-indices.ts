@@ -25,7 +25,7 @@ export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
     CREATE INDEX idx_moduleinstallations_systemconfig_commands_gin 
     ON "moduleInstallations" 
-    USING gin ((("systemConfig" -> 'commands')))
+    USING gin (("systemConfig" -> 'commands'))
   `);
 
   // 5. Composite index on commands for better join performance
