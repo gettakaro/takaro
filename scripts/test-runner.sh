@@ -46,19 +46,23 @@ fi
 echo "Waiting for test dependencies..."
 node packages/test/dist/waitUntilReady.js
 
+# Run workspace tests first (for web-main and lib-components)
+echo "Running workspace tests..."
+COMMAND="--if-present test:unit" REGEX='(web-main)|(lib-components)' bash ./scripts/run-all-pkgs.sh
+
 # Run tests based on type
 case $TEST_TYPE in
   "all")
     if [[ "$CI_MODE" == "true" ]]; then
-      npm run test:base -- --test-reporter=spec --test-reporter-destination=stdout --test-reporter=@reporters/github --test-reporter-destination=stdout 'packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.test.ts'
+      node --test-concurrency 1 --test-force-exit --import=ts-node-maintained/register/esm --test --test-reporter=spec --test-reporter-destination=stdout --test-reporter=@reporters/github --test-reporter-destination=stdout 'packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.test.ts'
     else
-      npm run test:base -- 'packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.test.ts'
+      node --test-concurrency 1 --test-force-exit --import=ts-node-maintained/register/esm --test 'packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.test.ts'
     fi
     ;;
   "unit")
-    npm run test:base -- 'packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.unit.test.ts'
+    node --test-concurrency 1 --test-force-exit --import=ts-node-maintained/register/esm --test 'packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.unit.test.ts'
     ;;
   "integration")
-    npm run test:base -- 'packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.integration.test.ts'
+    node --test-concurrency 1 --test-force-exit --import=ts-node-maintained/register/esm --test 'packages/{app-*,lib-apiclient,lib-auth,lib-aws,lib-config,lib-db,lib-email,lib-function-helpers,lib-gameserver,lib-http,lib-modules,lib-queues,lib-util,test,web-docs}/**/*.integration.test.ts'
     ;;
 esac
