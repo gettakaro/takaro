@@ -4,6 +4,8 @@
 # Allows running tests for specific packages with unit/integration options
 
 set -e
+# allow ** to match recursively & avoid literal patterns when nothing matches
+shopt -s globstar nullglob
 
 # Default values
 PACKAGE_NAME=""
