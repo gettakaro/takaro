@@ -457,4 +457,35 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
 
     return Promise.all(result.map(async (player) => new PlayerOutputWithRolesDTO(player)));
   }
+
+  async batchRemoveRoles(
+    expiredRoles: Array<{
+      playerId: string;
+      roleId: string;
+      gameServerId?: string;
+    }>,
+  ): Promise<void> {
+    if (expiredRoles.length === 0) return;
+
+    const knex = await this.getKnex();
+    const roleOnPlayerModel = RoleOnPlayerModel.bindKnex(knex);
+
+    // Build a query to delete all expired roles in one operation
+    const query = roleOnPlayerModel.query().delete();
+
+    // Use OR conditions to match all the expired role assignments
+    query.where((builder) => {
+      expiredRoles.forEach((expiredRole) => {
+        const whereClause: Record<string, string | null> = {
+          playerId: expiredRole.playerId,
+          roleId: expiredRole.roleId,
+          gameServerId: expiredRole.gameServerId || null,
+        };
+        builder.orWhere(whereClause);
+      });
+    });
+
+    const deletedCount = await query;
+    this.log.info('Batch removed expired roles', { requestedCount: expiredRoles.length, deletedCount });
+  }
 }

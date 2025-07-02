@@ -40,14 +40,41 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
   private async handleRoleExpiry(players: PlayerOutputWithRolesDTO[]): Promise<PlayerOutputWithRolesDTO[]> {
     const now = new Date();
 
+    // Collect all expired role assignments across all players
+    const allExpiredRoles: Array<{
+      playerId: string;
+      roleId: string;
+      gameServerId?: string;
+      role?: any;
+    }> = [];
+
     for (const player of players) {
       const expired = player.roleAssignments.filter((item) => item.expiresAt && new Date(item.expiresAt) < now);
 
-      if (expired.length) this.log.info('Removing expired roles', { expired: expired.map((item) => item.roleId) });
-      await Promise.all(expired.map((item) => this.removeRole(item.roleId, player.id, item.gameServerId)));
+      if (expired.length) {
+        this.log.info('Found expired roles for player', {
+          playerId: player.id,
+          expiredRoles: expired.map((item) => item.roleId),
+        });
 
-      // Delete expired roles from original object
+        // Collect expired roles for batch processing
+        expired.forEach((item) => {
+          allExpiredRoles.push({
+            playerId: player.id,
+            roleId: item.roleId,
+            gameServerId: item.gameServerId,
+            role: item.role,
+          });
+        });
+      }
+
+      // Remove expired roles from the player object
       player.roleAssignments = player.roleAssignments.filter((item) => !expired.includes(item));
+    }
+
+    // Batch remove all expired roles if any exist
+    if (allExpiredRoles.length > 0) {
+      await this.batchRemoveRoles(allExpiredRoles);
     }
 
     return players;
@@ -243,6 +270,41 @@ export class PlayerService extends TakaroService<PlayerModel, PlayerOutputDTO, P
         meta: new TakaroEventRoleRemoved({ role: { id: role.id, name: role.name } }),
       }),
     );
+  }
+
+  private async batchRemoveRoles(
+    expiredRoles: Array<{
+      playerId: string;
+      roleId: string;
+      gameServerId?: string;
+      role?: any;
+    }>,
+  ) {
+    if (expiredRoles.length === 0) return;
+
+    this.log.info('Batch removing expired roles', { count: expiredRoles.length });
+
+    // Batch remove roles from database
+    await this.repo.batchRemoveRoles(expiredRoles);
+
+    // Create events for all removed roles
+    const eventService = new EventService(this.domainId);
+    const events = expiredRoles.map(
+      (expiredRole) =>
+        new EventCreateDTO({
+          eventName: EVENT_TYPES.ROLE_REMOVED,
+          playerId: expiredRole.playerId,
+          gameserverId: expiredRole.gameServerId,
+          meta: new TakaroEventRoleRemoved({
+            role: expiredRole.role
+              ? { id: expiredRole.role.id, name: expiredRole.role.name }
+              : { id: expiredRole.roleId, name: 'Unknown' },
+          }),
+        }),
+    );
+
+    // Batch create all events
+    await Promise.all(events.map((event) => eventService.create(event)));
   }
 
   /**
