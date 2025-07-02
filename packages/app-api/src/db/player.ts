@@ -449,7 +449,7 @@ export class PlayerRepo extends ITakaroRepo<PlayerModel, PlayerOutputDTO, Player
       }
     });
 
-    const result = await qb.withGraphFetched('roleOnPlayer.role.permissions.permission');
+    const result = await qb.withGraphFetched('roleAssignments.role.permissions.permission');
 
     if (!result.length) {
       return [];
