@@ -317,6 +317,30 @@ export class TakaroEventShopOrderCreated extends BaseEvent<TakaroEventShopOrderC
   type = TakaroEvents.SHOP_ORDER_CREATED;
   @IsUUID()
   id: string;
+  @IsString()
+  listingName: string;
+  @IsNumber()
+  price: number;
+  @IsNumber()
+  amount: number;
+  @IsNumber()
+  totalPrice: number;
+  @ValidateNested({ each: true })
+  @Type(() => TakaroEventShopItem)
+  @IsOptional()
+  items?: TakaroEventShopItem[];
+}
+
+export class TakaroEventShopItem extends TakaroDTO<TakaroEventShopItem> {
+  @IsString()
+  name: string;
+  @IsString()
+  code: string;
+  @IsNumber()
+  amount: number;
+  @IsString()
+  @IsOptional()
+  quality?: string;
 }
 
 export class TakaroEventShopOrderStatusChanged extends BaseEvent<TakaroEventShopOrderStatusChanged> {

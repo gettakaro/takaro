@@ -28,6 +28,7 @@ import {
   TakaroEventShopListingDeleted,
   TakaroEventShopListingUpdated,
   TakaroEventShopOrderStatusChanged,
+  TakaroEventShopItem,
 } from '@takaro/modules';
 import { IMessageOptsDTO, IPlayerReferenceDTO } from '@takaro/gameserver';
 import { ItemsService } from '../ItemsService.js';
@@ -246,6 +247,19 @@ export class ShopListingService extends TakaroService<
         playerId: pog.playerId,
         meta: new TakaroEventShopOrderCreated({
           id: order.id,
+          listingName: listing.name,
+          price: listing.price,
+          amount: amount,
+          totalPrice: listing.price * amount,
+          items: listing.items.map(
+            (item) =>
+              new TakaroEventShopItem({
+                name: item.item.name,
+                code: item.item.code,
+                amount: item.amount,
+                quality: item.quality,
+              }),
+          ),
         }),
       }),
     );
