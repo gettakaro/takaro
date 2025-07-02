@@ -1,4 +1,4 @@
-import { ITakaroQuery, TakaroModel } from '@takaro/db';
+import { ITakaroQuery, TakaroModel, Redis } from '@takaro/db';
 import { errors, traceableClass } from '@takaro/util';
 import { Model, ModelClass, QueryBuilder } from 'objection';
 import { ITakaroRepo, PaginatedOutput, voidDTO } from './base.js';
@@ -153,6 +153,31 @@ export class TrackingRepo extends ITakaroRepo<PlayerLocationTrackingModel, Playe
 
     const { query } = await this.getInventoryModel();
     await query.insert(toInsert);
+
+    // Invalidate and update the cache
+    try {
+      const redis = await Redis.getClient('inventory');
+      const cacheKey = `inventory:${this.domainId}:${playerId}`;
+
+      // Delete the old cache
+      await redis.del(cacheKey);
+
+      // Pre-populate cache with new data
+      const inventoryItems = items.map((item) => {
+        const itemDef = itemDefs.find((def) => def.code === item.code);
+        return new IItemDTO({
+          code: item.code,
+          name: itemDef?.name || item.name,
+          description: itemDef?.description || item.description,
+          amount: item.amount,
+        });
+      });
+
+      await redis.set(cacheKey, JSON.stringify(inventoryItems), { EX: 1800 });
+      this.log.debug('Inventory cache updated', { playerId, itemCount: items.length });
+    } catch (error) {
+      this.log.warn('Failed to update inventory cache', { error, playerId });
+    }
   }
 
   /**

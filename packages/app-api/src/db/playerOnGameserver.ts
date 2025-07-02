@@ -1,4 +1,4 @@
-import { ITakaroQuery, QueryBuilder, TakaroModel } from '@takaro/db';
+import { ITakaroQuery, QueryBuilder, TakaroModel, Redis } from '@takaro/db';
 import { Model } from 'objection';
 import { errors, traceableClass } from '@takaro/util';
 import { ITakaroRepo } from './base.js';
@@ -316,6 +316,34 @@ export class PlayerOnGameServerRepo extends ITakaroRepo<
   }
 
   async getInventory(pogId: string): Promise<IItemDTO[]> {
+    const redis = await Redis.getClient('inventory');
+    const cacheKey = `inventory:${this.domainId}:${pogId}`;
+
+    // Try cache first
+    try {
+      const cached = await redis.get(cacheKey);
+      if (cached) {
+        this.log.debug('Inventory cache hit', { pogId });
+        return JSON.parse(cached);
+      }
+    } catch (error) {
+      this.log.warn('Redis cache error, falling back to database', { error, pogId });
+    }
+
+    // Fall back to database query
+    const inventory = await this.getInventoryFromDB(pogId);
+
+    // Cache for 30 minutes
+    try {
+      await redis.set(cacheKey, JSON.stringify(inventory), { EX: 1800 });
+    } catch (error) {
+      this.log.warn('Failed to cache inventory', { error, pogId });
+    }
+
+    return inventory;
+  }
+
+  private async getInventoryFromDB(pogId: string): Promise<IItemDTO[]> {
     const knex = await this.getKnex();
     const model = PlayerInventoryTrackingModel.bindKnex(knex);
     const query = model.query().modify('domainScoped', this.domainId);
