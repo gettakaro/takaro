@@ -208,11 +208,22 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
       );
       break;
     case EventOutputDTOEventNameEnum.ShopOrderCreated:
+      properties = (
+        <>
+          <EventProperty name="gameserver" value={event.gameServer?.name} />
+          <EventProperty name="player" value={event.player?.name} />
+          <EventProperty name="listing" value={meta?.listingName} />
+          <EventProperty name="amount" value={meta?.amount} />
+          <EventProperty name="total price" value={meta?.totalPrice} />
+        </>
+      );
+      break;
     case EventOutputDTOEventNameEnum.ShopOrderStatusChanged:
       properties = (
         <>
           <EventProperty name="gameserver" value={event.gameServer?.name} />
           <EventProperty name="player" value={event.player?.name} />
+          <EventProperty name="status" value={meta?.status} />
         </>
       );
       break;
