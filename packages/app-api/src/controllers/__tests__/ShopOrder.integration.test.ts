@@ -215,7 +215,7 @@ const tests = [
       // Give the player enough currency
       await this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(
         this.setupData.gameserver.id,
-        this.setupData.pogs1.playerId,
+        this.setupData.players[0].id,
         { currency: 1000 },
       );
 
