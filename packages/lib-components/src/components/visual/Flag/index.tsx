@@ -23,7 +23,7 @@ export const Flag: FC<FlagProps> = ({ countryCode, countryName, size = 1, style,
   }
 
   const uppercaseCode = countryCode.toUpperCase();
-  const flagUrl = `http://purecatamphetamine.github.io/country-flag-icons/3x2/${uppercaseCode}.svg`;
+  const flagUrl = `https://purecatamphetamine.github.io/country-flag-icons/3x2/${uppercaseCode}.svg`;
   const altText = countryName ? `Flag of ${countryName}` : `Flag of ${uppercaseCode}`;
 
   return (
