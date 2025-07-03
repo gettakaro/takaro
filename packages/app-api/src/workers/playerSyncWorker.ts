@@ -8,6 +8,7 @@ import { PlayerService } from '../service/Player/index.js';
 import { PlayerOnGameServerService, PlayerOnGameServerUpdateDTO } from '../service/PlayerOnGameserverService.js';
 import { getWorkerMetrics } from '../lib/metrics.js';
 import { TrackingService } from '../service/Tracking/index.js';
+import { isIP } from 'net';
 
 const log = logger('worker:playerSync');
 
@@ -159,6 +160,7 @@ export async function handlePlayerSync(gameServerId: string, domainId: string) {
         pog.id,
         new PlayerOnGameServerUpdateDTO({
           ping: gamePlayer.ping,
+          ip: gamePlayer.ip && isIP(gamePlayer.ip) ? gamePlayer.ip : undefined,
         }),
       );
       log.debug(`Synced player ${gamePlayer.gameId} on game server ${gameServerId}`);
