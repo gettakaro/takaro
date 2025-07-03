@@ -1,6 +1,7 @@
 import { IntegrationTest, expect, IShopSetup, shopSetup } from '@takaro/test';
 import { ShopOrderOutputDTOStatusEnum, isAxiosError } from '@takaro/apiclient';
 import { describe } from 'node:test';
+import { EventChatMessage } from '@takaro/modules';
 const group = 'ShopOrderController';
 
 const tests = [
@@ -228,9 +229,13 @@ const tests = [
       const res = await this.setupData.client1.shopOrder.shopOrderControllerClaim(order.data.data.id);
       expect(res.data.data.status).to.be.eq(ShopOrderOutputDTOStatusEnum.Completed);
 
-      // The fix ensures that when ordering 3 units of a listing with 5 items each,
-      // the player receives 15 items in total (not 5 items 3 times, which would be wrong)
-      expect(res.data.data.amount).to.be.eq(3);
+      // Bug repro: before when ordering 3 units, we would send 3 messages to the player,
+      // each with 5 items, resulting in 15 items total but 3 separate messages
+      // Now we should only have 1 message with 15 items total
+      const messages = (await this.client.event.eventControllerSearch({ filters: { eventName: ['chat-message'] } }))
+        .data.data;
+      const containsItemMessgage = messages.some((msg) => (msg.meta as EventChatMessage)?.msg?.includes(`15x Wood`));
+      expect(containsItemMessgage).to.be.true;
 
       return res;
     },
