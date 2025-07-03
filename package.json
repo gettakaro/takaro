@@ -280,7 +280,7 @@
     "vite-plugin-checker": "0.8.0",
     "vite-tsconfig-paths": "5.0.1",
     "vitest": "3.0.4",
-    "zx": "7.2.3"
+    "zx": "7.2.4"
   },
   "optionalDependencies": {
     "bufferutil": "4.0.9",
