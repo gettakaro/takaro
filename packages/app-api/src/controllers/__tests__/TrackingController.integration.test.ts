@@ -898,6 +898,68 @@ const tests = [
       });
     },
   }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Returns helpful error when Player ID is used instead of PoG ID for movement history',
+    setup: SetupGameServerPlayers.setup,
+    expectedStatus: 400,
+    test: async function () {
+      if (!this.standardDomainId) throw new Error('standardDomainId is not set');
+
+      // Get the actual player ID (not PoG ID)
+      const playerId = this.setupData.players[0].id;
+
+      try {
+        await this.client.tracking.trackingControllerGetPlayerMovementHistory({
+          playerId: [playerId], // Using player ID instead of PoG ID
+          startDate: '2024-01-01T00:00:00Z',
+          endDate: '2024-01-10T00:00:00Z',
+        });
+        throw new Error('Expected request to fail');
+      } catch (error) {
+        if (isAxiosError(error)) {
+          expect(error.response?.status).to.equal(400);
+          expect(error.response?.data.meta.error.message).to.include('This appears to be a Player ID');
+          expect(error.response?.data.meta.error.message).to.include('PlayerOnGameserver ID');
+          expect(error.response?.data.meta.error.message).to.include('/gameservers/{gameServerId}/players/{playerId}');
+        } else {
+          throw error;
+        }
+      }
+    },
+  }),
+  new IntegrationTest<SetupGameServerPlayers.ISetupData>({
+    group,
+    snapshot: false,
+    name: 'Returns helpful error when Player ID is used instead of PoG ID for inventory history',
+    setup: SetupGameServerPlayers.setup,
+    expectedStatus: 400,
+    test: async function () {
+      if (!this.standardDomainId) throw new Error('standardDomainId is not set');
+
+      // Get the actual player ID (not PoG ID)
+      const playerId = this.setupData.players[0].id;
+
+      try {
+        await this.client.tracking.trackingControllerGetPlayerInventoryHistory({
+          playerId: playerId, // Using player ID instead of PoG ID
+          startDate: '2024-01-01T00:00:00Z',
+          endDate: '2024-01-10T00:00:00Z',
+        });
+        throw new Error('Expected request to fail');
+      } catch (error) {
+        if (isAxiosError(error)) {
+          expect(error.response?.status).to.equal(400);
+          expect(error.response?.data.meta.error.message).to.include('This appears to be a Player ID');
+          expect(error.response?.data.meta.error.message).to.include('PlayerOnGameserver ID');
+          expect(error.response?.data.meta.error.message).to.include('/gameservers/{gameServerId}/players/{playerId}');
+        } else {
+          throw error;
+        }
+      }
+    },
+  }),
 ];
 
 describe(group, function () {
