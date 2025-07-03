@@ -8,6 +8,8 @@ import {
   Dialog,
   DateFormatter,
   CopyId,
+  IpLink,
+  SteamIdLink,
   Chip,
 } from '@takaro/lib-components';
 import { PlayerOutputDTO, PERMISSIONS, PlayerSearchInputDTOSortDirectionEnum } from '@takaro/apiclient';
@@ -121,7 +123,7 @@ function Component() {
               <td>
                 <Chip color="secondary" label={pog.online ? 'Online' : 'Offline'} />
               </td>
-              <td>{pog.ip ? pog.ip : 'Unknown'}</td>
+              <td><IpLink ip={pog.ip} placeholder="Unknown" /></td>
             </tr>
           );
         })}
@@ -147,7 +149,7 @@ function Component() {
     columnHelper.accessor('steamId', {
       header: 'Steam ID',
       id: 'steamId',
-      cell: (info) => <CopyId placeholder={info.getValue()} id={info.getValue()} />,
+      cell: (info) => <SteamIdLink steamId={info.getValue()} placeholder={info.getValue()} />,
       enableColumnFilter: true,
     }),
 

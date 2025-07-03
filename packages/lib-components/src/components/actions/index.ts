@@ -14,3 +14,6 @@ export { Dropdown } from './Dropdown';
 
 export { ContextMenu } from './ContextMenu';
 export type { ContextMenuProps } from './ContextMenu';
+
+export { ExternalLink } from './ExternalLink';
+export type { ExternalLinkProps } from './ExternalLink';

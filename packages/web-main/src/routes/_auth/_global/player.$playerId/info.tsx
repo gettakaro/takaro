@@ -1,5 +1,5 @@
 import { IpHistoryOutputDTO, PlayerOutputDTO } from '@takaro/apiclient';
-import { Card, CopyId, Tooltip, styled } from '@takaro/lib-components';
+import { Card, CopyId, IpLink, SteamIdLink, Tooltip, styled } from '@takaro/lib-components';
 import { createFileRoute } from '@tanstack/react-router';
 import { PlayerRolesTable } from './-PlayerRolesTable';
 import { FC } from 'react';
@@ -63,11 +63,7 @@ const IpInfo: FC<{ ipInfo: IpHistoryOutputDTO[] }> = ({ ipInfo }) => {
               <Tooltip.Content>{ip.country}</Tooltip.Content>
             </Tooltip>
             <span>{DateTime.fromISO(ip.createdAt).toLocaleString(DateTime.DATETIME_MED)}</span>
-            <span>
-              <IpWhoisLink href={`https://www.whois.com/whois/${ip.ip}`} target="_blank">
-                {ip.ip}
-              </IpWhoisLink>
-            </span>
+            <IpLink ip={ip.ip} />
             <span>{ip.city}</span>
           </IpInfoLine>
         );
@@ -106,7 +102,7 @@ const PlayerInfoCard: FC<{ player: PlayerOutputDTO }> = ({ player }) => {
       <InfoCard.Body>
         <InnerBody>
           <span>Player ID </span> <CopyId id={player.id} />
-          <span>Steam ID </span> {player.steamId ? <CopyId id={player.steamId} /> : '/'}
+          <span>Steam ID </span> {player.steamId ? <SteamIdLink steamId={player.steamId} /> : '/'}
           <span>Epic Online Services ID </span>
           {player.epicOnlineServicesId ? <CopyId id={player.epicOnlineServicesId} /> : '/'}
           <span>Xbox Live ID </span> {player.xboxLiveId ? <CopyId id={player.xboxLiveId} /> : '/'}
@@ -119,10 +115,11 @@ const PlayerInfoCard: FC<{ player: PlayerOutputDTO }> = ({ player }) => {
 
 const SteamInfoCard: FC<{ player: PlayerOutputDTO }> = ({ player }) => {
   return (
-    <InfoCard variant="outline" onClick={() => window.open(`https://steamcommunity.com/profiles/${player.steamId}`)}>
+    <InfoCard variant="outline">
       <InfoCard.Title label="Steam" />
       <InfoCard.Body>
         <InnerBody>
+          <span>Steam Profile</span> {player.steamId ? <SteamIdLink steamId={player.steamId} placeholder="View Profile" /> : '/'}
           <span>VAC banned</span> {player.steamVacBanned ? 'Yes' : 'No'}
           <span>VAC bans</span> {player.steamNumberOfVACBans ?? 0}
           <span>Days since last ban</span> {player.steamsDaysSinceLastBan ?? 0}
@@ -154,7 +151,3 @@ const IpInfoLine = styled.div`
   gap: ${({ theme }) => theme.spacing['0_5']};
 `;
 
-const IpWhoisLink = styled.a`
-  color: ${({ theme }) => theme.colors.primary};
-  text-decoration: underline;
-`;

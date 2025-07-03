@@ -23,3 +23,9 @@ export type { DateFormatterProps } from './DateFormatter';
 
 export { CopyId } from './CopyId';
 export type { CopyIdProps } from './CopyId';
+
+export { IpLink } from './IpLink';
+export type { IpLinkProps } from './IpLink';
+
+export { SteamIdLink } from './SteamIdLink';
+export type { SteamIdLinkProps } from './SteamIdLink';
