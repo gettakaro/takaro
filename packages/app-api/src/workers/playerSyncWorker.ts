@@ -159,6 +159,7 @@ export async function handlePlayerSync(gameServerId: string, domainId: string) {
         pog.id,
         new PlayerOnGameServerUpdateDTO({
           ping: gamePlayer.ping,
+          ip: gamePlayer.ip,
         }),
       );
       log.debug(`Synced player ${gamePlayer.gameId} on game server ${gameServerId}`);
