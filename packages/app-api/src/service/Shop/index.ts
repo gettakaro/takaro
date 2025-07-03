@@ -288,13 +288,17 @@ export class ShopListingService extends TakaroService<
 
     const gameServerService = new GameServerService(this.domainId);
     if (listing.items.length) {
-      for (let i = 0; i < order.amount; i++) {
-        await Promise.all(
-          listing.items.map((item) =>
-            gameServerService.giveItem(gameServerId, pog.playerId, item.item.id, item.amount, item.quality),
+      await Promise.all(
+        listing.items.map((item) =>
+          gameServerService.giveItem(
+            gameServerId,
+            pog.playerId,
+            item.item.id,
+            item.amount * order.amount,
+            item.quality,
           ),
-        );
-      }
+        ),
+      );
 
       await gameServerService.sendMessage(
         gameServerId,
@@ -306,7 +310,7 @@ export class ShopListingService extends TakaroService<
       for (const item of listing.items) {
         await gameServerService.sendMessage(
           gameServerId,
-          `${item.amount}x ${item.item.name}`,
+          `${item.amount * order.amount}x ${item.item.name}`,
           new IMessageOptsDTO({
             recipient: new IPlayerReferenceDTO({ gameId: pog.gameId }),
           }),

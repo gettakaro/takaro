@@ -193,6 +193,50 @@ const tests = [
   }),
   new IntegrationTest<IShopSetup>({
     group,
+    snapshot: false,
+    name: 'Claim order with multiple amounts gives correct quantity',
+    setup: shopSetup,
+    test: async function () {
+      // First create a listing with multiple items per order
+      const items = (
+        await this.client.item.itemControllerSearch({
+          filters: { gameserverId: [this.setupData.gameserver.id] },
+        })
+      ).data.data;
+      const testItem = items[0];
+
+      const multiItemListing = await this.client.shopListing.shopListingControllerCreate({
+        gameServerId: this.setupData.gameserver.id,
+        items: [{ itemId: testItem.id, amount: 5 }], // 5 items per order
+        price: 50,
+        name: 'Multi-item test listing',
+      });
+
+      // Give the player enough currency
+      await this.client.playerOnGameserver.playerOnGameServerControllerAddCurrency(
+        this.setupData.gameserver.id,
+        this.setupData.pogs1.playerId,
+        { currency: 1000 },
+      );
+
+      // Create an order for 3 units (should give 5 * 3 = 15 items total)
+      const order = await this.setupData.client1.shopOrder.shopOrderControllerCreate({
+        listingId: multiItemListing.data.data.id,
+        amount: 3,
+      });
+
+      const res = await this.setupData.client1.shopOrder.shopOrderControllerClaim(order.data.data.id);
+      expect(res.data.data.status).to.be.eq(ShopOrderOutputDTOStatusEnum.Completed);
+
+      // The fix ensures that when ordering 3 units of a listing with 5 items each,
+      // the player receives 15 items in total (not 5 items 3 times, which would be wrong)
+      expect(res.data.data.amount).to.be.eq(3);
+
+      return res;
+    },
+  }),
+  new IntegrationTest<IShopSetup>({
+    group,
     snapshot: true,
     name: 'Claim order that is not yours -> error',
     setup: shopSetup,
