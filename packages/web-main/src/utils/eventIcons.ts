@@ -1,0 +1,60 @@
+import { EventOutputDTOEventNameEnum } from '@takaro/apiclient';
+import {
+  HiServerStack,
+  HiChatBubbleLeftRight,
+  HiCommandLine,
+  HiCog,
+  HiClock,
+  HiGlobeAlt,
+  HiUser,
+  HiUserPlus,
+  HiUserMinus,
+  HiCurrencyDollar,
+  HiShoppingCart,
+  HiPuzzlePiece,
+  HiShieldCheck,
+  HiServer,
+  HiVariable,
+  HiExclamationTriangle,
+} from 'react-icons/hi2';
+import { IconType } from 'react-icons';
+
+export const eventIcons: Record<EventOutputDTOEventNameEnum, IconType> = {
+  [EventOutputDTOEventNameEnum.ServerStatusChanged]: HiServerStack,
+  [EventOutputDTOEventNameEnum.ChatMessage]: HiChatBubbleLeftRight,
+  [EventOutputDTOEventNameEnum.CommandExecuted]: HiCommandLine,
+  [EventOutputDTOEventNameEnum.HookExecuted]: HiCog,
+  [EventOutputDTOEventNameEnum.CronjobExecuted]: HiClock,
+  [EventOutputDTOEventNameEnum.PlayerNewIpDetected]: HiGlobeAlt,
+  [EventOutputDTOEventNameEnum.PlayerConnected]: HiUserPlus,
+  [EventOutputDTOEventNameEnum.PlayerDisconnected]: HiUserMinus,
+  [EventOutputDTOEventNameEnum.PlayerDeath]: HiExclamationTriangle,
+  [EventOutputDTOEventNameEnum.EntityKilled]: HiExclamationTriangle,
+  [EventOutputDTOEventNameEnum.CurrencyAdded]: HiCurrencyDollar,
+  [EventOutputDTOEventNameEnum.CurrencyDeducted]: HiCurrencyDollar,
+  [EventOutputDTOEventNameEnum.SettingsSet]: HiCog,
+  [EventOutputDTOEventNameEnum.ShopListingCreated]: HiShoppingCart,
+  [EventOutputDTOEventNameEnum.ShopListingUpdated]: HiShoppingCart,
+  [EventOutputDTOEventNameEnum.ShopListingDeleted]: HiShoppingCart,
+  [EventOutputDTOEventNameEnum.ShopOrderCreated]: HiShoppingCart,
+  [EventOutputDTOEventNameEnum.ShopOrderStatusChanged]: HiShoppingCart,
+  [EventOutputDTOEventNameEnum.PlayerLinked]: HiUser,
+  [EventOutputDTOEventNameEnum.RoleCreated]: HiShieldCheck,
+  [EventOutputDTOEventNameEnum.RoleDeleted]: HiShieldCheck,
+  [EventOutputDTOEventNameEnum.RoleUpdated]: HiShieldCheck,
+  [EventOutputDTOEventNameEnum.RoleAssigned]: HiShieldCheck,
+  [EventOutputDTOEventNameEnum.RoleRemoved]: HiShieldCheck,
+  [EventOutputDTOEventNameEnum.ModuleCreated]: HiPuzzlePiece,
+  [EventOutputDTOEventNameEnum.ModuleUpdated]: HiPuzzlePiece,
+  [EventOutputDTOEventNameEnum.ModuleDeleted]: HiPuzzlePiece,
+  [EventOutputDTOEventNameEnum.ModuleInstalled]: HiPuzzlePiece,
+  [EventOutputDTOEventNameEnum.ModuleUninstalled]: HiPuzzlePiece,
+  [EventOutputDTOEventNameEnum.PlayerCreated]: HiUserPlus,
+  [EventOutputDTOEventNameEnum.GameserverCreated]: HiServer,
+  [EventOutputDTOEventNameEnum.GameserverUpdated]: HiServer,
+  [EventOutputDTOEventNameEnum.GameserverDeleted]: HiServer,
+};
+
+export function getEventIcon(eventName: EventOutputDTOEventNameEnum): IconType {
+  return eventIcons[eventName] || HiExclamationTriangle;
+}

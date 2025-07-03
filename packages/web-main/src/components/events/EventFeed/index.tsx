@@ -1,20 +1,39 @@
 import { FC, PropsWithChildren } from 'react';
 import { styled } from '@takaro/lib-components';
 
-const List = styled.ol`
+const TimelineContainer = styled.div`
   width: 100%;
   position: relative;
   padding: 0;
-  border-left: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
   margin: 0;
   height: fit-content;
-  /* The dots from the list items exceeds this container, so we add a margin to the left to compensate */
-  margin-left: 5px;
+  padding-left: ${({ theme }) => theme.spacing['6']};
+  
+  &::before {
+    content: '';
+    position: absolute;
+    left: ${({ theme }) => theme.spacing['3']};
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: ${({ theme }) => theme.colors.backgroundAccent};
+    z-index: 1;
+  }
 `;
 
+// Keep EventFeed as alias for backward compatibility during transition
 export const EventFeed: FC<PropsWithChildren> = ({ children }) => {
-  return <List>{children}</List>;
+  return <TimelineContainer>{children}</TimelineContainer>;
+};
+
+// Export Timeline as the new preferred component name
+export const Timeline: FC<PropsWithChildren> = ({ children }) => {
+  return <TimelineContainer>{children}</TimelineContainer>;
 };
 
 export { EventItem } from './EventItem';
 export type { EventItemProps } from './EventItem';
+
+// Export TimelineItem as alias for backward compatibility during transition
+export { EventItem as TimelineItem } from './EventItem';
+export type { EventItemProps as TimelineItemProps } from './EventItem';

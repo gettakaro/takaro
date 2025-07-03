@@ -1,61 +1,117 @@
 import { FC, useState } from 'react';
-import { styled, Dropdown, IconButton } from '@takaro/lib-components';
+import { styled, Dropdown, IconButton, Button, Collapsible } from '@takaro/lib-components';
 import { DateTime } from 'luxon';
 import { EventOutputDTO, EventOutputDTOEventNameEnum } from '@takaro/apiclient';
 
 import { CountryCodeToEmoji } from '../../../components/CountryCodeToEmoji';
 import { useCronJobTrigger } from '../../../queries/module';
-import { AiOutlineMenu as MenuIcon, AiOutlineEye as ViewIcon, AiOutlineSend as TriggerIcon } from 'react-icons/ai';
+import { AiOutlineMenu as MenuIcon, AiOutlineEye as ViewIcon, AiOutlineSend as TriggerIcon, AiOutlineCode as CodeIcon } from 'react-icons/ai';
+import { HiChevronDown, HiChevronUp } from 'react-icons/hi2';
 import { EventDetailDialog } from '../../../components/dialogs/EventDetailDialog';
+import { getEventIcon } from '../../../utils/eventIcons';
+
+const TimelineItemContainer = styled.div`
+  position: relative;
+  margin-bottom: ${({ theme }) => theme.spacing['4']};
+  background: ${({ theme }) => theme.colors.background};
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+  padding: ${({ theme }) => theme.spacing['3']};
+  box-shadow: ${({ theme }) => theme.elevation[1]};
+  
+  &::before {
+    content: '';
+    position: absolute;
+    left: -${({ theme }) => theme.spacing['6']};
+    top: ${({ theme }) => theme.spacing['3']};
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: ${({ theme }) => theme.colors.primary};
+    border: 3px solid ${({ theme }) => theme.colors.backgroundAlt};
+    z-index: 2;
+  }
+`;
 
 const Header = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: top;
+  align-items: flex-start;
+  margin-bottom: ${({ theme }) => theme.spacing['2']};
 `;
 
-const EventType = styled.div`
+const EventInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing['0_5']};
+`;
+
+const EventType = styled.h3`
+  margin: 0;
+  font-size: ${({ theme }) => theme.fontSize.medium};
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.text};
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing['0_5']};
-
-  p:first-child {
-    font-weight: bold;
-  }
-
-  p:last-child {
-    color: ${({ theme }) => theme.colors.textAlt};
+  gap: ${({ theme }) => theme.spacing['1']};
+  
+  .event-icon {
+    color: ${({ theme }) => theme.colors.primary};
   }
 `;
 
-const ListItem = styled.li`
-  margin-bottom: ${({ theme }) => theme.spacing['7']};
-  margin-left: ${({ theme }) => theme.spacing['2']};
+const EventMeta = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing['2']};
+  font-size: ${({ theme }) => theme.fontSize.small};
+  color: ${({ theme }) => theme.colors.textAlt};
+`;
+
+const ActionsContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 const Data = styled.div`
   display: grid;
-  gap: ${({ theme }) => theme.spacing[2]};
-  grid-template-columns: 0.5fr 0.5fr 2fr;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: ${({ theme }) => theme.spacing['2']};
+  margin-top: ${({ theme }) => theme.spacing['2']};
+`;
+
+const ExpandedContent = styled.div`
+  margin-top: ${({ theme }) => theme.spacing['3']};
+  padding-top: ${({ theme }) => theme.spacing['3']};
+  border-top: 1px solid ${({ theme }) => theme.colors.backgroundAccent};
+`;
+
+const JsonView = styled.pre`
+  background: ${({ theme }) => theme.colors.backgroundAlt};
+  padding: ${({ theme }) => theme.spacing['2']};
+  border-radius: ${({ theme }) => theme.borderRadius.small};
+  overflow-x: auto;
+  font-size: ${({ theme }) => theme.fontSize.small};
+  color: ${({ theme }) => theme.colors.text};
 `;
 
 const DataItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing['0_5']};
+  
   p:first-child {
-    text-transform: capitalize;
+    font-size: ${({ theme }) => theme.fontSize.small};
     color: ${({ theme }) => theme.colors.textAlt};
+    text-transform: capitalize;
+    margin: 0;
   }
-`;
-
-const Circle = styled.div`
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  margin-top: 5px;
-  left: -5px;
-
-  position: absolute;
-
-  background-color: ${({ theme }) => theme.colors.backgroundAccent};
+  
+  p:last-child {
+    font-size: ${({ theme }) => theme.fontSize.medium};
+    color: ${({ theme }) => theme.colors.text};
+    margin: 0;
+  }
 `;
 const EventProperty: FC<{ name: string; value: unknown }> = ({ name, value }) => {
   const val = (value as string) === '' ? '-' : value;
@@ -77,6 +133,9 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
   const timeAgo = DateTime.fromMillis(timestamp).toRelative();
   const { mutate } = useCronJobTrigger();
   const [openDetailsDialog, setOpenDetailsDialog] = useState<boolean>(false);
+  const [showRawJson, setShowRawJson] = useState<boolean>(false);
+  
+  const EventIcon = getEventIcon(event.eventName);
 
   const meta = event.meta as any;
 
@@ -300,14 +359,20 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
   }
 
   return (
-    <ListItem>
-      <Circle />
+    <TimelineItemContainer>
       <Header>
-        <EventType>
-          <p>{event.eventName}</p>
-          <p>{timeAgo}</p>
-        </EventType>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <EventInfo>
+          <EventType>
+            <EventIcon className="event-icon" />
+            {event.eventName}
+          </EventType>
+          <EventMeta>
+            <span>{timeAgo}</span>
+            {event.gameServer && <span>• {event.gameServer.name}</span>}
+            {event.player && <span>• {event.player.name}</span>}
+          </EventMeta>
+        </EventInfo>
+        <ActionsContainer>
           <EventDetailDialog
             open={openDetailsDialog}
             onOpenChange={setOpenDetailsDialog}
@@ -317,7 +382,7 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
 
           <Dropdown placement="left">
             <Dropdown.Trigger asChild>
-              <IconButton icon={<MenuIcon />} ariaLabel="click me" />
+              <IconButton icon={<MenuIcon />} ariaLabel="Event actions" />
             </Dropdown.Trigger>
             <Dropdown.Menu>
               <Dropdown.Menu.Item
@@ -340,9 +405,62 @@ export const EventItem: FC<EventItemProps> = ({ event }) => {
               )}
             </Dropdown.Menu>
           </Dropdown>
-        </div>
+        </ActionsContainer>
       </Header>
       <Data>{properties}</Data>
-    </ListItem>
+      
+      {/* Expand/Collapse button */}
+      <Collapsible>
+        <Collapsible.Trigger asChild>
+          <Button
+            size="small"
+            color="secondary"
+            variant="outline"
+            icon={<HiChevronDown />}
+          >
+            Show More
+          </Button>
+        </Collapsible.Trigger>
+        
+        <Collapsible.Content>
+          <ExpandedContent>
+          {/* Additional metadata */}
+          <Data>
+            <DataItem>
+              <p>Event ID</p>
+              <p>{event.id}</p>
+            </DataItem>
+            <DataItem>
+              <p>Created At</p>
+              <p>{new Date(event.createdAt).toLocaleString()}</p>
+            </DataItem>
+            {event.actingUserId && (
+              <DataItem>
+                <p>Acting User ID</p>
+                <p>{event.actingUserId}</p>
+              </DataItem>
+            )}
+          </Data>
+          
+          {/* Raw JSON toggle */}
+          <Button
+            size="small"
+            color="secondary"
+            variant="outline"
+            onClick={() => setShowRawJson(!showRawJson)}
+            icon={<CodeIcon />}
+          >
+            {showRawJson ? 'Hide' : 'Show'} Raw JSON
+          </Button>
+          
+          {showRawJson && (
+            <JsonView>
+              {JSON.stringify(event, null, 2)}
+            </JsonView>
+          )}
+          </ExpandedContent>
+        </Collapsible.Content>
+      </Collapsible>
+    </TimelineItemContainer>
   );
 };
